@@ -142,7 +142,7 @@ describe('directive', () => {
       }
 
       function MyComponent_ng_template_Template_0(rf: RenderFlags, ctx: any) {
-        if (rf & 1) {
+        if (rf & RenderFlags.Create) {
           text(0, 'Some content');
         }
       }
@@ -151,7 +151,7 @@ describe('directive', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: () => new MyComponent(),
-          consts: 2,
+          consts: 1,
           vars: 0,
           // <ng-template directiveA>Some content</ng-template>
           template: function MyComponent_Template(rf: RenderFlags, ctx: any) {
@@ -160,7 +160,7 @@ describe('directive', () => {
                   0, MyComponent_ng_template_Template_0, 1, 0, 'ng-template', ['directiveA', '']);
             }
           },
-          directives: [DirectiveA, NgIf]
+          directives: [DirectiveA]
         });
       }
 
@@ -188,7 +188,7 @@ describe('directive', () => {
       }
 
       function MyComponent_ng_container_Template_0(rf: RenderFlags, ctx: any) {
-        if (rf & 1) {
+        if (rf & RenderFlags.Create) {
           elementContainerStart(0, ['directiveA', '']);
           text(1, 'Some content');
           elementContainerEnd();
@@ -206,7 +206,9 @@ describe('directive', () => {
           // <ng-container *ngIf="visible" directiveA>Some content</ng-container>
           template: function MyComponent_Template(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              template(0, MyComponent_ng_container_Template_0, 2, 0, 'ng-container', [1, 'ngIf']);
+              template(
+                  0, MyComponent_ng_container_Template_0, 2, 0, 'ng-container',
+                  [AttributeMarker.SelectOnly, 'ngIf']);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngIf', bind(ctx.visible));

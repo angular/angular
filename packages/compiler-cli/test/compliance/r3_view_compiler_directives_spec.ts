@@ -23,7 +23,7 @@ describe('compiler compliance: directives', () => {
       const files = {
         app: {
           'spec.ts': `
-                import {Component, Directive, Input, NgModule} from '@angular/core';
+                import {Component, Directive, NgModule} from '@angular/core';
     
                 @Directive({selector: '[i18n]'})
                 export class I18nDirective {}
@@ -63,7 +63,7 @@ describe('compiler compliance: directives', () => {
       const files = {
         app: {
           'spec.ts': `
-                import {Component, Directive, Input, NgModule} from '@angular/core';
+                import {Component, Directive, NgModule} from '@angular/core';
     
                 @Directive({selector: '[i18n]'})
                 export class I18nDirective {}
@@ -158,7 +158,7 @@ describe('compiler compliance: directives', () => {
       const files = {
         app: {
           'spec.ts': `
-            import {Component, Directive, Input, NgModule, TemplateRef} from '@angular/core';
+            import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
 
             @Directive({
                 selector: 'ng-template[directiveA]'
@@ -211,7 +211,7 @@ describe('compiler compliance: directives', () => {
       const files = {
         app: {
           'spec.ts': `
-              import {Component, Directive, Input, NgModule, TemplateRef} from '@angular/core';
+              import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
 
               @Directive({
                   selector: 'ng-container[directiveA]'
