@@ -503,7 +503,9 @@ function setProvidersOverride(
     getProviderOverride?: (token: any) => Provider | undefined) {
   if (!getProviderOverride) return;
 
-  const token = (provider: any) => typeof provider === 'function' ? provider : provider.provide;
+  const token = (provider: any) =>
+      typeof provider === 'object' && provider.hasOwnProperty('provide') ? provider.provide :
+                                                                           provider;
   const setOverridesFor = (resolver: any, def: any) => {
     if (!def) return;
     const current = getProvidersFromDef(def);

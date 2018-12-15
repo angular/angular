@@ -696,7 +696,6 @@ class CompWithUrlTemplate {
               constructor(@Inject('a') a: any, @Inject('b') b: any) {}
             }
 
-            // akushnir
             it('should inject providers that were declared before it', () => {
               TestBed.overrideProvider(
                   'b', {useFactory: (a: string) => `mockB: ${a}`, deps: ['a']});
