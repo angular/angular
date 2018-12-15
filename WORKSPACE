@@ -59,7 +59,7 @@ local_repository(
 #
 # Load and install our dependencies downloaded above.
 #
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
 
 # Bazel version must be at least v0.21.0 because:
 #   - 0.21.0 --experimental_strict_action_env flag turned on by default which fixes cache when
@@ -70,7 +70,8 @@ Angular has a dependency on the @bazel/bazel package which supplies it.
 Try running `yarn bazel` instead.
     (If you did run that, check that you've got a fresh `yarn install`)
 
-""")
+"""
+)
 
 node_repositories(
     node_version = "10.9.0",

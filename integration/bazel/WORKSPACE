@@ -43,7 +43,7 @@ http_archive(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-check_bazel_version("0.17.0")
+check_bazel_version(minimum_bazel_version = "0.17.0")
 
 node_repositories(
     node_version = "10.9.0",

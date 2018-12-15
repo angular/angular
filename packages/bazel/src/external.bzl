@@ -2,6 +2,11 @@
 """
 
 load(
+    "@build_bazel_rules_nodejs//internal/common:node_module_info.bzl",
+    _NodeModuleInfo = "NodeModuleInfo",
+    _collect_node_modules_aspect = "collect_node_modules_aspect",
+)
+load(
     "@build_bazel_rules_typescript//internal:build_defs.bzl",
     _tsc_wrapped_tsconfig = "tsc_wrapped_tsconfig",
 )
@@ -12,11 +17,6 @@ load(
     _DEPS_ASPECTS = "DEPS_ASPECTS",
     _compile_ts = "compile_ts",
     _ts_providers_dict_to_struct = "ts_providers_dict_to_struct",
-)
-load(
-    "@build_bazel_rules_nodejs//internal/common:node_module_info.bzl",
-    _NodeModuleInfo = "NodeModuleInfo",
-    _collect_node_modules_aspect = "collect_node_modules_aspect",
 )
 
 NodeModuleInfo = _NodeModuleInfo

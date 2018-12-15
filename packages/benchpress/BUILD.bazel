@@ -2,6 +2,8 @@ package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "npm_package", "ts_library")
 
+package(default_visibility = ["//visibility:public"])
+
 ts_library(
     name = "benchpress",
     srcs = glob(

@@ -238,15 +238,15 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         expected_outs = outs.closure_js
 
     angular_compiler_options = {
-        "enableResourceInlining": ctx.attr.inline_resources,
-        "generateCodeForLibraries": False,
         "allowEmptyCodegenFiles": True,
+        "enableIvy": _enable_ivy_value(ctx),
+        "enableResourceInlining": ctx.attr.inline_resources,
         # Summaries are only enabled if Angular outputs are to be produced.
         "enableSummariesForJit": is_legacy_ngc,
-        "enableIvy": _enable_ivy_value(ctx),
-        "fullTemplateTypeCheck": ctx.attr.type_check,
         # FIXME: wrong place to de-dupe
         "expectedOut": depset([o.path for o in expected_outs]).to_list(),
+        "fullTemplateTypeCheck": ctx.attr.type_check,
+        "generateCodeForLibraries": False,
     }
 
     if _should_produce_flat_module_outs(ctx):
@@ -471,8 +471,8 @@ def ng_module_impl(ctx, ts_compile_actions):
 
     if is_legacy_ngc:
         providers["angular"] = {
-            "summaries": outs.summaries,
             "metadata": outs.metadata,
+            "summaries": outs.summaries,
         }
         providers["ngc_messages"] = outs.i18n_messages
 
@@ -499,13 +499,6 @@ local_deps_aspects = [collect_node_modules_aspect, _collect_summaries_aspect]
 
 NG_MODULE_ATTRIBUTES = {
     "srcs": attr.label_list(allow_files = [".ts"]),
-
-    # Note: DEPS_ASPECTS is already a list, we add the cast to workaround
-    # https://github.com/bazelbuild/skydoc/issues/21
-    "deps": attr.label_list(
-        doc = "Targets that are imported by this target",
-        aspects = local_deps_aspects,
-    ),
     "assets": attr.label_list(
         doc = ".html and .css files needed by the Angular compiler",
         allow_files = [
@@ -514,14 +507,6 @@ NG_MODULE_ATTRIBUTES = {
             ".html",
         ],
     ),
-    "factories": attr.label_list(
-        allow_files = [".ts", ".html"],
-        mandatory = False,
-    ),
-    "filter_summaries": attr.bool(default = False),
-    "type_check": attr.bool(default = True),
-    "inline_resources": attr.bool(default = True),
-    "no_i18n": attr.bool(default = False),
     "compiler": attr.label(
         doc = """Sets a different ngc compiler binary to use for this library.
 
@@ -536,16 +521,40 @@ NG_MODULE_ATTRIBUTES = {
         executable = True,
         cfg = "host",
     ),
+    "factories": attr.label_list(
+        allow_files = [".ts", ".html"],
+        mandatory = False,
+    ),
+    "filter_summaries": attr.bool(default = False),
+    "inline_resources": attr.bool(default = True),
     "ng_xi18n": attr.label(
         default = Label(DEFAULT_NG_XI18N),
         executable = True,
         cfg = "host",
     ),
+    "no_i18n": attr.bool(default = False),
+    "type_check": attr.bool(default = True),
+
+    # Note: DEPS_ASPECTS is already a list, we add the cast to workaround
+    # https://github.com/bazelbuild/skydoc/issues/21
+    "deps": attr.label_list(
+        doc = "Targets that are imported by this target",
+        aspects = local_deps_aspects,
+    ),
     "_supports_workers": attr.bool(default = True),
 }
 
 NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
-    "tsconfig": attr.label(allow_files = True, single_file = True),
+    "entry_point": attr.string(),
+
+    # Default is %{name}_public_index
+    # The suffix points to the generated "bundle index" files that users import from
+    # The default is intended to avoid collisions with the users input files.
+    # Later packaging rules will point to these generated files as the entry point
+    # into the package.
+    # See the flatModuleOutFile documentation in
+    # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/transformers/api.ts
+    "flat_module_out_file": attr.string(),
     "node_modules": attr.label(
         doc = """The npm packages which should be available during the compile.
 
@@ -610,16 +619,7 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
         """,
         default = Label("@npm//typescript:typescript__typings"),
     ),
-    "entry_point": attr.string(),
-
-    # Default is %{name}_public_index
-    # The suffix points to the generated "bundle index" files that users import from
-    # The default is intended to avoid collisions with the users input files.
-    # Later packaging rules will point to these generated files as the entry point
-    # into the package.
-    # See the flatModuleOutFile documentation in
-    # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/transformers/api.ts
-    "flat_module_out_file": attr.string(),
+    "tsconfig": attr.label(allow_single_file = True),
 })
 
 ng_module = rule(
