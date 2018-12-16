@@ -6191,62 +6191,120 @@ It's also logged to the browser's console.
 
 {@a redirect-advanced}
 
+<!--
 ## Migrating URLs with Redirects
+-->
+## 리다이렉트로 URL 마이그레이션 하기
 
+<!--
 You've setup the routes for navigating around your application. You've used navigation imperatively and declaratively to many different routes. But like any application, requirements change over time. You've setup links and navigation to `/heroes` and `/hero/:id` from the `HeroListComponent` and `HeroDetailComponent` components. If there was a requirement that links to `heroes` become `superheroes`, you still want the previous URLs to navigate correctly. You also don't want to go and update every link in your application, so redirects makes refactoring routes trivial.
-
+-->
+라우팅 규칙은 애플리케이션에서 네비게이션 동작을 실행하기 위해 작성합니다.
+그리고 이 때 명시적으로 네비게이션을 실행하기 위해 여러가지 라우팅 규칙을 작성해보기도 했습니다.
+하지만 애플리케이션을 개발하면서 요구사항은 언제나 바뀔 수 있습니다.
+지금까지는 `HeroListComponent`와 `HeroDetailComponent`로 네비게이션하기 위해 `/heroes`와 `/hero/:id` 라우팅 규칙을 정의했습니다.
+그런데 요구사항이 변경되어 `heroes` 주소가 `superheroes`로 변경해야 하지만, 이전에 제공하던 URL도 그대로 제공해야 한다고 합시다.
+개발자의 입장에서도 애플리케이션에 존재하는 모든 링크를 수정하는 것은 반가운 일이 아닙니다. 그래서 이전 주소를 새로운 주소로 리다이렉트하는 방식으로 리팩토링하는 방법에 대해 알아봅시다.
 
 {@a url-refactor}
 
+<!--
 ### Changing /heroes to /superheroes
+-->
+### /heroes를 /superheroes로 변경하기
 
+<!--
 Let's take the `Hero` routes and migrate them to new URLs. The `Router` checks for redirects in your configuration before navigating, so each redirect is triggered when needed. To support this change, you'll add redirects from the old routes to the new routes in the `heroes-routing.module`.
+-->
+`Hero`와 관련된 라우팅 규칙을 모두 새로운 URL로 마이그레이션 해봅시다.
+`Router`는 네비게이션 동작을 실행하기 전에 해당 라우팅 규칙에 리다이렉트 설정이 있는지 확인하며, 리다이렉트 설정이 있으면 이 주소로 이동합니다.
+그래서 `heroes-routing.module`에서 원래 사용하던 주소는 새로운 주소로 리다이렉트하는 설정을 추가해야 합니다.
 
+<!--
 <code-example path="router/src/app/heroes/heroes-routing.module.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (heroes redirects)">
+-->
+<code-example path="router/src/app/heroes/heroes-routing.module.ts" linenums="false" header="src/app/heroes/heroes-routing.module.ts (heroes 리다이렉트)">
 
 </code-example>
 
-
+<!--
 You'll notice two different types of redirects. The first change is from  `/heroes` to `/superheroes` without any parameters. This is a straightforward redirect, unlike the change from `/hero/:id` to `/superhero/:id`, which includes the `:id` route parameter. Router redirects also use powerful pattern matching, so the `Router` inspects the URL and replaces route parameters in the `path` with their appropriate destination. Previously, you navigated to a URL such as `/hero/15` with a route parameter `id` of `15`.
+-->
+이 코드에서 두가지 종류의 리다이렉트를 확인할 수 있습니다.
+첫번째는 라우팅 변수 없이 `/heroes`에서 `/superheroes`로 리다이렉트하는 라우팅 규칙입니다.
+이 방식은 `/hero/:id`를 `/superhero/:id`로 리다이렉트할 때 라우팅 변수 `:id`를 사용하는 것과 비교했을 때 좀 더 간단합니다.
+그리고 라우터는 훌륭한 패턴 매칭 시스젬을 제공하기 때문에 네비게이션하는 주소에 존재하는 라우팅 변수를 추출할 수 있습니다.
+위에서 살펴본 것처럼 `/hero/15` 라는 주소로 이동할 때 라우터가 추출하는 라우팅 변수 `id`의 값은 `15`입니다.
 
 <div class="alert is-helpful">
 
+<!--
 The `Router` also supports [query parameters](#query-parameters) and the [fragment](#fragment) when using redirects.
 
 * When using absolute redirects, the `Router` will use the query parameters and the fragment from the redirectTo in the route config.
 * When using relative redirects, the `Router` use the query params and the fragment from the source URL.
+-->
+`Router`에서 리다이렉트를 할 때도 [쿼리 파라미터](#query-parameters)와 [프래그먼트](#fragment)를 사용할 수 있습니다.
+
+* 절대 주소로 리다이렉트 하면 `Router`는 라우팅 규칙의 `reditercTo`에 해당하는 쿼리 파라미터와 프래그먼트를 활용합니다.
+* 상대 주소로 리다이렉트 하면 `Router`는 해당 URL에 해당하는 쿼리 파라미터와 프래그먼트를 활용합니다.
 
 </div>
 
+<!--
 Before updating the `app-routing.module.ts`, you'll need to consider an important rule. Currently, our empty path route redirects to `/heroes`, which redirects to `/superheroes`. This _won't_ work and is by design as the `Router` handles redirects once at each level of routing configuration. This prevents chaining of redirects, which can lead to endless redirect loops.
 
 So instead, you'll update the empty path route in `app-routing.module.ts` to redirect to `/superheroes`.
+-->
+그런데 `app-routing.module.ts` 파일을 수정하기 전에 중요하게 짚고 넘어가야 할 것이 있습니다.
+애플리케이션이 처음 실행되면 빈 문자열 라우팅 규칙이 적용되기 때문에 `/heroes`로 리다이렉트하는데, `/heroes` 주소는 `/superheroes`로 다시 리다이렉트 될것이라 생각할 수 있습니다.
+하지만 라우터는 한 번에 하나씩 라우팅 규칙을 처리하기 때문에 이런 리다이렉션은 동작하지 않습니다.
+그리고 이 방식은 리다이렉션 체이닝 때문에 발생할 수 있는 무한루프를 방지하기 위한 것이기도 합니다.
 
+<!--
 <code-example path="router/src/app/app-routing.module.ts" linenums="false" header="src/app/app-routing.module.ts (superheroes redirect)">
+-->
+<code-example path="router/src/app/app-routing.module.ts" linenums="false" header="src/app/app-routing.module.ts (superheroes 리다이렉트)">
 
 </code-example>
 
+<!--
 `RouterLink`s aren't tied to route configuration, so you'll need to update the associated router links so they remain active when the new route is active. You'll update the `app.component.ts` template for the `/heroes` routerLink.
+-->
+`RouterLink`는 라우팅 규칙 설정과 직접적으로 연결되지 않기 때문에 변경된 주소로 이동할 수 있도록 라우터 링크의 설정을 수정해야 합니다.
+`app.component.ts` 템플릿에 있는 라우터 링크 중 `/heroes`로 이동하던 라우터 링크를 다음과 같이 변경합니다.
 
+<!--
 <code-example path="router/src/app/app.component.html" linenums="false" header="src/app/app.component.html (superheroes active routerLink)">
+-->
+<code-example path="router/src/app/app.component.html" linenums="false" header="src/app/app.component.html (superheroes 라우터 링크)">
 
 </code-example>
 
+<!--
 Update the `goToHeroes()` method in the `hero-detail.component.ts` to navigate back to `/superheroes` with the optional route parameters.
+-->
+그리고 `hero-detail.component.ts` 파일에 잇는 `goToHeroes()` 메소드에서도 `/superheroes`로 이동하도록 수정합니다.
 
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.ts" linenums="false" region="redirect" header="src/app/heroes/hero-detail/hero-detail.component.ts (goToHeroes)">
 
 </code-example>
 
+<!--
 With the redirects setup, all previous routes now point to their new destinations and both URLs still function as intended.
+-->
+여기까지 수정하고 나면 기존에 동작하던 라우팅 규칙은 모두 새로운 주소로 연결됩니다.
 
 
 {@a inspect-config}
 
 
-
+<!--
 ## Inspect the router's configuration
+-->
+## 라우터 설정 확인하기
 
+<!--
 You put a lot of effort into configuring the router in several routing module files
 and were careful to list them [in the proper order](#routing-module-order).
 Are routes actually evaluated as you planned?
@@ -6256,6 +6314,13 @@ You can inspect the router's current configuration any time by injecting it and
 examining its `config` property.
 For example, update the `AppModule` as follows and look in the browser console window
 to see the finished route configuration.
+-->
+라우팅 규칙은 여러 모듈에 분산되어 작성될 수 있기 때문에 이 라우팅 규칙들은 [올바른 순서로](#routing-module-order) 등록되어야 합니다.
+라우팅 규칙이 최종적으로 어떻게 조합되었는지 확인하는 방법이 있을까요?
+라우터는 실제로 어떻게 설정되었을까요?
+
+라우터의 설정값은 `config` 프로퍼티를 참조하면 확인할 수 있습니다.
+간단하게 `AppModule`을 다음과 같이 수정하고 브라우저 콘솔을 확인하면, 브라우저 콘솔로 이 라우터가 어떻게 설정되었는지 확인할 수 있습니다.
 
 <code-example path="router/src/app/app.module.7.ts" linenums="false" header="src/app/app.module.ts (inspect the router config)" region="inspect-config">
 
@@ -6264,38 +6329,59 @@ to see the finished route configuration.
 
 {@a final-app}
 
-
+<!--
 ## Wrap up and final app
+-->
+## 정리하기
 
+<!--
 You've covered a lot of ground in this guide and the application is too big to reprint here.
 Please visit the <live-example title="Router Sample in Stackblitz"></live-example>
 where you can download the final source code.
-
+-->
+이 가이드에서는 라우터와 네비게이션에 대한 내용을 방대하게 살펴봤기 때문에 애플리케이션 코드를 여기에 모두 나열하기에는 너무 내용이 많습니다.
+예제로 다룬 코드의 최종 버전은 <live-example title="Router Sample in Stackblitz"></live-example>에서 확인하거나 다운받아 확인하는 것을 권장합니다.
 
 {@a appendices}
 
 
-
+<!--
 ## Appendices
+-->
+## 부록
 
+<!--
 The balance of this guide is a set of appendices that
 elaborate some of the points you covered quickly above.
 
 The appendix material isn't essential. Continued reading is for the curious.
+-->
+지금까지 설명한 내용중 간단하게 짚고 넘어갔던 부분은 부록으로 제공합니다.
 
+부록에서 설명하는 내용을 꼭 알아야 하는 것은 아닙니다. 참고삼아 읽어보세요.
 
 {@a link-parameters-array}
 
 
-
+<!--
 ### Appendix: link parameters array
+-->
+### 부록: 링크 파라미터 배열 (link parameters array)
 
+<!--
 A link parameters array holds the following ingredients for router navigation:
 
 * The *path* of the route to the destination component.
 * Required and optional route parameters that go into the route URL.
 
 You can bind the `RouterLink` directive to such an array like this:
+-->
+링크 파라미터 배열은 라우터가 네비게이션할 때 필요한 정보를 지정하는 용도로 사용합니다:
+
+* 화면에 표시할 컴포넌트에 해당하는 *주소*를 지정할 수 있습니다.
+* 목적지로 이동할 때 사용하는 필수 라우팅 변수나 옵션 라우팅 변수를 지정할 수 있습니다.
+
+그래서 `RouterLink` 디렉티브는 다음과 같이 사용하는 것이 일반적입니다:
 
 
 <code-example path="router/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (h-anchor)" region="h-anchor">
@@ -6303,37 +6389,43 @@ You can bind the `RouterLink` directive to such an array like this:
 </code-example>
 
 
-
+<!--
 You've written a two element array when specifying a route parameter like this:
-
+-->
+그리고 라우팅 변수를 지정하려면 다음과 같이 엘리먼트가 2개인 배열을 사용할 수 있습니다:
 
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (nav-to-detail)" region="nav-to-detail">
 
 </code-example>
 
 
-
+<!--
 You can provide optional route parameters in an object like this:
-
+-->
+옵션 인자는 다음과 같이 객체 형태로 전달할 수도 있습니다:
 
 <code-example path="router/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (cc-query-params)" region="cc-query-params">
 
 </code-example>
 
 
-
+<!--
 These three examples cover the need for an app with one level routing.
 The moment you add a child router, such as the crisis center, you create new link array possibilities.
 
 Recall that you specified a default child route for the crisis center so this simple `RouterLink` is fine.
+-->
+이 3가지 예제로도 애플리케이션에 필요한 기본 라우팅은 모두 처리할 수 있습니다.
+그리고 위기대응센터와 같은 자식 라우터를 활용한다면 이 배열을 좀 더 확장해서 사용할 수도 있습니다.
 
+기본 자식 라우팅 규칙을 지정했다면 다음과 같이 간단하게 사용할 수 있습니다.
 
 <code-example path="router/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (cc-anchor-w-default)" region="cc-anchor-w-default">
 
 </code-example>
 
 
-
+<!--
 Parse it out.
 
 * The first item in the array identifies the parent route (`/crisis-center`).
@@ -6344,14 +6436,21 @@ Parse it out.
 
 Take it a step further. Consider the following router link that
 navigates from the root of the application down to the *Dragon Crisis*:
+-->
+이 코드는 다음과 같이 해석할 수 있습니다.
 
+* 배열의 첫번째 항목은 새로 적용될 부모 라우팅 규칙(`/crisis-center`)을 의미합니다.
+* 부모 라우팅 규칙에 사용되는 라우팅 변수는 없습니다.
+* 자식 라우터의 기본 라우팅 규칙은 지정되지 않았기 때문에 하나를 골라야 합니다.
+* 이동하려는 컴포넌트는 `CrisisListComponent`이며 이 라우팅 규칙의 주소는 '/'로 지정되어 있지만, 슬래시를 직접 추가할 필요는 없습니다.
+* 배열의 최종 형태는 `['/crisis-center']`가 됩니다.
 
 <code-example path="router/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (Dragon-anchor)" region="Dragon-anchor">
 
 </code-example>
 
 
-
+<!--
 * The first item in the array identifies the parent route (`/crisis-center`).
 * There are no parameters for this parent route so you're done with it.
 * The second item identifies the child route details about a particular crisis (`/:id`).
@@ -6361,18 +6460,29 @@ navigates from the root of the application down to the *Dragon Crisis*:
 
 
 If you wanted to, you could redefine the `AppComponent` template with *Crisis Center* routes exclusively:
+-->
+* 배열의 첫번째 항목은 새로 적용될 부모 라우팅 규칙(`/crisis-center`)을 의미합니다.
+* 부모 라우팅 규칙에 사용되는 라우팅 변수는 없습니다.
+* 배열의 두번째 아이템은 자식 라우팅 규칙에서 표시할 특정 위기의 `id`를 의미합니다. 이 변수는 `/:id`와 맵핑됩니다.
+* 세부정보를 표시하는 자식 라우팅 규칙에는 `id` 라우팅 변수가 필요합니다.
+* *용 출현 위기*에 해당하는 `id`를 지정하기 위해 배열의 두 번째 아이템에는 `1`을 지정합니다.
+* 최종 주소는 `/crisis-center/1`이 됩니다.
 
-
+<!--
 <code-example path="router/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (template)" region="template">
+-->
+<code-example path="router/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (템플릿)" region="template">
 
 </code-example>
 
 
-
+<!--
 In sum, you can write applications with one, two or more levels of routing.
 The link parameters array affords the flexibility to represent any routing depth and
 any legal sequence of route paths, (required) router parameters, and (optional) route parameter objects.
-
+-->
+정리하자면, 라우팅 규칙은 한 단계 이상을 한 번에 적용할 수 있습니다.
+그래서 링크 파라미터 배열은 자유로운 라우팅을 위해 유연하게 설계되었으며, 필수 라우팅 변수나 옵션 라우팅 변수도, 객체 형태의 라우팅 변수도 모두 처리할 수 있습니다.
 
 {@a browser-url-styles}
 
