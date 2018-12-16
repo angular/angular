@@ -39,7 +39,7 @@ const appRoutes: Routes = [
       appRoutes,
       // #enddocregion preload-v1
       {
-        enableTracing: true, // <-- debugging purposes only
+        enableTracing: true, // <-- 디버그 활성화
         preloadingStrategy: PreloadAllModules
       }
       // #docregion preload-v1

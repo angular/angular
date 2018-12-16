@@ -5638,19 +5638,35 @@ the `queryParamsHandling` and `preserveFragment` bindings respectively.
 
 {@a asynchronous-routing}
 
+<!--
 ## Milestone 6: Asynchronous routing
+-->
+## 6단계: 비동기 라우팅
 
+<!--
 As you've worked through the milestones, the application has naturally gotten larger.
 As you continue to build out feature areas, the overall application size will continue to grow.
 At some point you'll reach a tipping point where the application takes a long time to load.
+-->
+지금까지 진행하는 동안 애플리케이션은 점점 복잡해졌습니다.
+그리고 새로운 기능을 추가할 때마다 애플리케이션의 용량도 점점 커질 것입니다.
+그래서 언젠가는 애플리케이션이 시작되는 것이 느리다고 느껴지는 때가 찾아옵니다.
 
+<!--
 How do you combat this problem?  With asynchronous routing, which loads feature modules _lazily_, on request.
 Lazy loading has multiple benefits.
 
 * You can load feature areas only when requested by the user.
 * You can speed up load time for users that only visit certain areas of the application.
 * You can continue expanding lazy loaded feature areas without increasing the size of the initial load bundle.
+-->
+이 문제는 어떻게 해결할 수 있을까요? 비동기 라우팅을 활용하면 기능 모듈이 필요할 때까지 _기다렸다가_ 필요할 때 비동기로 로드할 수 있습니다.
 
+* 사용자에게 필요한 기능 모듈만 로드할 수 있습니다.
+* 특정 페이지에 직접 접근한다면 애플리케이션이 실행되는 속도를 빠르게 할 수 있습니다.
+* 애플리케이션 실행에 꼭 필요한 용량은 그대로 둔 채로 기능 모듈을 붙이는 방식으로 확장할 수 있습니다.
+
+<!--
 You're already part of the way there.
 By organizing the application into modules&mdash;`AppModule`,
 `HeroesModule`, `AdminModule` and `CrisisCenterModule`&mdash;you
@@ -5660,76 +5676,127 @@ Some modules, like `AppModule`, must be loaded from the start.
 But others can and should be lazy loaded.
 The `AdminModule`, for example, is needed by a few authorized users, so
 you should only load it when requested by the right people.
+-->
+비동기 라우팅은 이미 적용할 준비가 되어 있습니다.
+애플리케이션을 `AppModule`, `HeroesModule`, `AdminModule`, `CrisisCenterModule`과 같은 모듈 단위로 구축하는 과정은 모듈을 지연로딩할 수 있는 준비를 한 것이기도 합니다.
 
+`AppModule`은 애플리케이션이 실행되기 전에 반드시 로드되어야 합니다.
+하지만 다른 모듈은 모두 지연로딩할 수 있습니다.
+`AdminModule`을 생각해 본다면 이 모듈은 아주 일부의 사용자만 사용하기 때문에, 이 모듈은 해당 기능이 필요한 사용자만 로드하도록 하는 것이 좋습니다.
 
 {@a lazy-loading-route-config}
 
 
+<!--
 ### Lazy Loading route configuration
+-->
+#### 지연로딩 라우팅 규칙 설정
 
+<!--
 Change the `admin` **path** in the `admin-routing.module.ts` from `'admin'` to an empty string, `''`, the _empty path_.
+-->
+`admin-routing.module.ts` 파일에서 `admin`에 해당하는 라우팅 규칙의 주소를 `admin`이 아니라 `''` 빈 문자열로 변경합니다.
 
+<!--
 The `Router` supports  *empty path* routes;
 use them to group routes together without adding any additional path segments to the URL.
 Users will still visit `/admin` and the `AdminComponent` still serves as the *Routing Component* containing child routes.
+-->
+`Router`는 *빈 경로* 의 라우팅 규칙을 지원합니다. 이 방식을 사용하면 현재 URL을 변경하지 않으면서 여러 라우팅 경로를 그룹으로 묶을 수 있습니다.
+이 기능을 사용하는 사용자는 여전히 `/admin`으로 접속할 것이며 자식 라우팅 규칙에 해당하는 *라우팅 컴포넌트* 도 여전히 `AdminComponent`로 제공됩니다.
 
+<!--
 Open the `AppRoutingModule` and add a new `admin` route to its `appRoutes` array.
 
 Give it a `loadChildren` property instead of a `children` property, set to the address of the `AdminModule`.
 The address is the `AdminModule` file location (relative to the app root),
 followed by a `#` separator, followed by the name of the exported module class, `AdminModule`.
+-->
+`AppRoutingModule`을 열고 `appRoutes` 배열에 새로운 `admin` 라우팅을 추가합니다.
 
+그리고 `children` 프로퍼티 대신 `loadChildren` 프로퍼티를 사용해서 `AdminModule`의 위치를 지정합니다.
+이 때 지정하는 `AdminModule`의 위치는 애플리케이션 최상위 폴더부터 시작되는 상대주소입니다. 파일의 경로까지 지정했으면 `#` 구분자를 붙이고 지연로딩 하려는 모듈의 이름을 지정합니다.
 
+<!--
 <code-example path="router/src/app/app-routing.module.5.ts" region="admin-1" header="app-routing.module.ts (load children)">
+-->
+<code-example path="router/src/app/app-routing.module.5.ts" region="admin-1" header="app-routing.module.ts (loadChildren)">
 
 </code-example>
 
 <div class="alert is-important">
 
+<!--
 *Note*: When using absolute paths, the `NgModule` file location must begin with `src/app` in order to resolve correctly. For custom [path mapping with absolute paths](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping), the `baseUrl` and `paths` properties in the project `tsconfig.json` must be configured.
+-->
+*참고*: 만약 `NgModule`의 경로를 절대주소로 참조하려면 이 주소는 `src/app`로 시작해야 합니다.
+이 주소는 TypeScript에서 [절대 주소를 맵핑](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping)하는 설정의 영향을 받기 때문에 `tsconfig.json` 파일의 `baseUrl`과 `paths` 프로퍼티를 설정해야 합니다.
 
 </div>
 
-
+<!--
 When the router navigates to this route, it uses the `loadChildren` string to dynamically load the `AdminModule`.
 Then it adds the `AdminModule` routes to its current route configuration.
 Finally, it loads the requested route to the destination admin component.
 
 The lazy loading and re-configuration happen just once, when the route is _first_ requested;
 the module and routes are available immediately for subsequent requests.
+-->
+이제 라우터가 이 라우팅 규칙을 만나면 `loadChildren` 문자열에 설정된 값으로 `AdminModule`을 동적으로 로드합니다.
+그리고 `AdminModule`에 정의된 라우팅 규칙은 애플리케이션 전체 라우팅 규칙과 합쳐집니다.
+결국 기존에 사용하던 대로 `admin` 주소로 접근하면 `AdminComponent`가 화면에 표시됩니다.
 
+모듈 지연로딩은 이 라우팅 규칙이 _처음_ 요청받았을 때 한 번만 실행됩니다.
+이후에 이 주소로 라우팅하면 이미 조합된 전체 라우팅 규칙을 그대로 사용합니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 Angular provides a built-in module loader that supports SystemJS to load modules asynchronously. If you were
 using another bundling tool, such as Webpack, you would use the Webpack mechanism for asynchronously loading modules.
-
+-->
+Angular는 모듈을 지연로딩 할 때 SystemJS 모듈 로더를 사용합니다.
+Webpack과 같은 다른 번들링 툴을 직접 사용한다면 Webpack에서 제공하는 미동기 모듈 로딩 메커니즘을 사용해야 합니다.
 
 </div>
 
 
-
+<!--
 Take the final step and detach the admin feature set from the main application.
 The root `AppModule` must neither load nor reference the `AdminModule` or its files.
 
 In `app.module.ts`, remove the `AdminModule` import statement from the top of the file
 and remove the `AdminModule` from the NgModule's `imports` array.
+-->
+마지막 단계는 관리자 기능모듈을 애플리케이션의 다른 모듈과 분리하는 것입니다.
+`AdminModule`을 지연로딩하려면 `AppModule`은 `AdminModule`이나 이 모듈 내부의 파일들을 직접 로드하거나 참조하면 안됩니다.
 
+`app.module.ts` 파일 제일 위쪽에서 `AdminModule`을 로드하는 구문을 제거하고, `AppModule`의 `imports` 배열에서도 `AdminModule`을 제거합니다.
 
 {@a can-load-guard}
 
 
+<!--
 ### _CanLoad_ Guard: guarding unauthorized loading of feature modules
+-->
+### _CanLoad_ 가드: 로그인하지 않은 사용자의 모듈 로딩 방지하기
 
+<!--
 You're already protecting the `AdminModule` with a `CanActivate` guard that prevents unauthorized users from
 accessing the admin feature area.
 It redirects to the  login page if the user is not authorized.
 
 But the router is still loading the `AdminModule` even if the user can't visit any of its components.
 Ideally, you'd only load the `AdminModule` if the user is logged in.
+-->
+지금도 `AdminModule`은 `CanActivate` 라우팅 가드에 의해 보호받고 있기 때문에 로그인하지 않은 사용자가 이 모듈에 접근하는 것은 제한할 수 있습니다.
+로그인하지 않은 사용자가 이 모듈에 접근하면 로그인 페이지로 리다이렉트 됩니다.
 
+하지만 이 경우에 사용자가 `AdminModule`의 컴포넌트 중 아무것도 화면에서 확인하지 못했지만 `AdminModule`은 로딩됩니다.
+이 모듈은 사용자가 로그인한 후에 실제로 활용할 때만 로딩하는 것이 이상적입니다.
+
+<!--
 Add a **`CanLoad`** guard that only loads the `AdminModule` once the user is logged in _and_ attempts to access the admin feature area.
 
 The existing `AuthGuard` already has the essential logic in
@@ -5739,23 +5806,42 @@ Open `auth.guard.ts`.
 Import the `CanLoad` interface from `@angular/router`.
 Add it to the `AuthGuard` class's `implements` list.
 Then implement `canLoad()` as follows:
+-->
+**`CanLoad`** 라우팅 가드는 로그인 한 사용자가 `AdminModule` 모듈에 해당하는 주소에 접근했을 때만 `AdminModule`을 지연로딩하도록 제어할 때 사용합니다.
 
+이전에 만든 `AuthGuard`에 있는 `checkLogin()` 메소드는 `CanLoad` 라우팅 가드에서도 그대로 활용할 수 있습니다.
 
+구현방법은 이렇습니다.
+먼저 `auth.guard.ts` 파일을 엽니다.
+그리고 `@angular/router` 패키지에서 `CanLoad` 인터페이스를 로드합니다.
+`AuthGuard` 클래스의 `implements` 목록에 이 인터페이스를 추가합니다.
+`canLoad()` 메소드는 다음과 같이 구현합니다:
+
+<!--
 <code-example path="router/src/app/auth/auth.guard.ts" linenums="false" header="src/app/auth/auth.guard.ts (CanLoad guard)" region="canLoad">
+-->
+<code-example path="router/src/app/auth/auth.guard.ts" linenums="false" header="src/app/auth/auth.guard.ts (CanLoad 라우팅 가드)" region="canLoad">
 
 </code-example>
 
 
-
+<!--
 The router sets the `canLoad()` method's `route` parameter to the intended destination URL.
 The `checkLogin()` method redirects to that URL once the user has logged in.
 
 Now import the `AuthGuard` into the `AppRoutingModule` and add the `AuthGuard` to the `canLoad`
 array property for the `admin` route.
 The completed admin route looks like this:
+-->
+ `canLoad()` 메소드는 이동하려는 URL을 `route` 인자로 받습니다.
+ 그리고 `checkLogin()` 메소드가 실행되는데, 사용자가 로그인했다면 지금 이동하려던 주소로 그대로 리다이렉트 합니다.
 
+ 이제 `AppRoutingModule`에 `AuthGuard`를 로드하고 이 라우팅 가드를 `admin` 라우팅 규칙의 `canLoad` 배열 프로퍼티에 다음과 같이 추가합니다.
 
+<!--
 <code-example path="router/src/app/app-routing.module.5.ts" region="admin" header="app-routing.module.ts (lazy admin route)">
+-->
+<code-example path="router/src/app/app-routing.module.5.ts" region="admin" header="app-routing.module.ts (지연로딩하는 admin 라우팅 규칙)">
 
 </code-example>
 
@@ -5763,22 +5849,41 @@ The completed admin route looks like this:
 
 {@a preloading}
 
-
+<!--
 ### Preloading: background loading of feature areas
+-->
+### 사전로딩(Preloading): 기능 모듈을 백그라운드에서 로딩하기
+
+<!--
 You've learned how to load modules on-demand.
 You can also load modules asynchronously with _preloading_.
 
 This may seem like what the app has been doing all along. Not quite.
 The `AppModule` is loaded when the application starts; that's _eager_ loading.
 Now the `AdminModule` loads only when the user clicks on a link; that's _lazy_ loading.
+-->
+지금까지 모듈을 필요할 때만 로딩하는 방법에 대해 알아봤습니다.
+그런데 모듈은 필요한 경우를 대비해서 _미리_ 비동기로 로딩할 수도 있습니다.
 
+이제까지 만들었던 앱을 생각해봅시다.
+`AppModule`은 애플리케이션이 시작될 때 _즉시_ 로딩됩니다.
+그리고 `AdminModule`은 사용자가 링크를 클릭 했을 때 _지연_ 로딩됩니다.
+
+<!--
 _Preloading_ is something in between.
 Consider the _Crisis Center_.
 It isn't the first view that a user sees.
 By default, the _Heroes_ are the first view.
 For the smallest initial payload and fastest launch time,
 you should eagerly load the `AppModule` and the `HeroesModule`.
+-->
+_사전로딩(preloading)_ 은 두 방식의 중간 개념입니다.
+_위기 관리 센터_ 를 생각해 봅시다.
+이 모듈은 사용자가 처음 애플리케이션을 실행했을 때 보는 화면이 아닙니다.
+기본적으로 이 애플리케이션의 첫 화면은 _히어로_ 화면입니다.
+그래서 애플리케이션의 실행 속도를 빠르게 하려면 `AppModule`과 `HeroesModule`은 즉시 로딩하는 것이 좋습니다.
 
+<!--
 You could lazy load the _Crisis Center_.
 But you're almost certain that the user will visit the _Crisis Center_ within minutes of launching the app.
 Ideally, the app would launch with just the `AppModule` and the `HeroesModule` loaded
@@ -5786,21 +5891,41 @@ and then, almost immediately, load the `CrisisCenterModule` in the background.
 By the time the user navigates to the _Crisis Center_, its module will have been loaded and ready to go.
 
 That's _preloading_.
+-->
+_위기대응센터_ 는 물론 지연로딩 할 수도 있습니다.
+하지만 대부분의 사용자가 _위기대응센터_ 에 접속한다고 합시다.
+이 경우에 이상적인 경우를 생각해보면, 애플리케이션이 실행될 때는 `AppModule`과 `HeroesModule`을 즉시 로드한 채로 실행하지만, 그 이후에 바로 `CrisisCenterModule`을 백그라운드에서 로드하는 것이 좋을 것입니다.
+이렇게 구현하면 사용자가 _위기대응센터_ 로 이동했을 때 모듈은 이미 로드되었기 때문에 바로 사용할 수 있습니다.
 
+이것이 _사전로딩_ 입니다.
 
 {@a how-preloading}
 
 
+<!--
 #### How preloading works
+-->
+#### 사전로딩이 동작하는 방식
 
+<!--
 After each _successful_ navigation, the router looks in its configuration for an unloaded module that it can preload.
 Whether it preloads a module, and which modules it preloads, depends upon the *preload strategy*.
+-->
+네비게이션이 _성공적으로_ 실행되고 나면 라우터는 라우터 설정에서 사전로딩할 수 있는 모듈 중에 로드되지 않은 것을 찾습니다.
+이 때 모듈을 사전로딩 할지 판단하는데, 이 과정은 *사전로딩 전략(preload strategy)*에 따라 달라집니다.
 
+<!--
 The `Router` offers two preloading strategies out of the box:
 
 * No preloading at all which is the default. Lazy loaded feature areas are still loaded on demand.
 * Preloading of all lazy loaded feature areas.
+-->
+`Router`는 두 가지 방식의 사전로딩 전략을 제공합니다:
 
+* 기본값은 모듈을 사전로딩하지 않는 것입니다. 지연로딩은 그대로 사용할 수 있습니다.
+* 지연로딩되는 모든 모듈을 사전로딩합니다.
+
+<!--
 Out of the box, the router either never preloads, or preloads every lazy load module.
 The `Router` also supports [custom preloading strategies](#custom-preloading) for
 fine control over which modules to preload and when.
@@ -5808,13 +5933,21 @@ fine control over which modules to preload and when.
 In this next section, you'll update the `CrisisCenterModule` to load lazily
 by default and use the `PreloadAllModules` strategy
 to load it (and _all other_ lazy loaded modules) as soon as possible.
+-->
+라우터는 모든 모듈을 사전로딩하지 않거나, 모든 모듈을 사전로딩합니다.
+그리고 특정 모듈만 사전로딩하려면 [커스텀 사전로딩 전략](#custom-preloading)을 정의해서 사용할 수도 있습니다.
 
+이제부터 `CrisisCenterModule`은 지금과 마찬가지로 지연로딩하고, 다른 모듈은 모두 `PreloadAllModules` 전략을 사용해서 사전로딩하는 방법에 대해 알아봅시다.
 
 {@a lazy-load-crisis-center}
 
 
+<!--
 #### Lazy load the _crisis center_
+-->
+#### _위기대응센터_ 지연로딩하기
 
+<!--
 Update the route configuration to lazy load the `CrisisCenterModule`.
 Take the same steps you used to configure `AdminModule` for lazy load.
 
@@ -5828,7 +5961,20 @@ Take the same steps you used to configure `AdminModule` for lazy load.
 
 
 Here are the updated modules _before enabling preload_:
+-->
+`CrisisCenterModule`을 지연로딩할 수 있도록 라우팅 규칙을 수정합니다.
+이 과정은 `AdminModule`에 지연로딩을 적용했던 과정과 같습니다.
 
+1. `CrisisCenterRoutingModule`에서 `crisis-center`에 해당되는 주소를 빈 문자열로 수정합니다.
+
+1. `crisis-center` 라우팅 규칙을 `AppRoutingModule`에 추가합니다.
+
+1. `loadChildren`을 사용해서 `CrisisCenterModule`을 지연로딩 합니다.
+
+1. `app.module.ts` 파일에서 `CrisisCenterModule`과 관련된 코드를 모두 제거합니다.
+
+
+그러면 애플리케이션 코드는 다음과 같이 변경될 것입니다:
 
 <code-tabs>
 
@@ -5847,7 +5993,7 @@ Here are the updated modules _before enabling preload_:
 </code-tabs>
 
 
-
+<!--
 You could try this now and confirm that the  `CrisisCenterModule` loads after you click the "Crisis Center" button.
 
 To enable preloading of all lazy loaded modules, import the `PreloadAllModules` token from the Angular router package.
@@ -5855,20 +6001,35 @@ To enable preloading of all lazy loaded modules, import the `PreloadAllModules` 
 The second argument in the `RouterModule.forRoot` method takes an object for additional configuration options.
 The `preloadingStrategy` is one of those options.
 Add the `PreloadAllModules` token to the `forRoot` call:
+-->
+이렇게 구현한 후에 사용자가 "Crisis Center" 버튼을 클릭하면 `CrisisCenterModule`이 로드되는 것을 확인할 수 있습니다.
 
+그리고 지연로딩되는 모듈을 모두 사전로딩하려면 라우터 패키지에서 `PreloadAllModules`를 로드해서 적용하면 됩니다.
+
+`RouterModule.forRoot` 메소드는 두 번째 인자로 라우터 설정 옵션을 받을 수 있는데, `preloadingStrategy`가 여기에 적용할 수 있는 옵션  중 하나입니다.
+`forRoot` 메소드에 다음과 같이 `PreloadAllModules` 토큰을 추가합니다.
+
+<!--
 <code-example path="router/src/app/app-routing.module.6.ts" linenums="false" header="src/app/app-routing.module.ts (preload all)" region="forRoot">
+-->
+<code-example path="router/src/app/app-routing.module.6.ts" linenums="false" header="src/app/app-routing.module.ts (모두 사전로딩)" region="forRoot">
 
 </code-example>
 
 
-
+<!--
 This tells the `Router` preloader to immediately load _all_ lazy loaded routes (routes with a `loadChildren` property).
 
 When you visit `http://localhost:4200`, the `/heroes` route loads immediately upon launch
 and the router starts loading the `CrisisCenterModule` right after the `HeroesModule` loads.
 
 Surprisingly, the `AdminModule` does _not_ preload. Something is blocking it.
+-->
+이렇게 구현하면 `Router`는 지연로딩이 적용된 라우팅 규칙(`loadChildren` 프로퍼티가 있는 라우팅 규칙)을 _모두_ 사전로딩합니다.
 
+그래서 `http://localhost:4200`에 접속하면 `/heroes` 주소로 자동으로 이동하는데, 이 때 `HeroesModule`이 로드된 직후에 `CrisisCenterModule`이 바로 로딩되기 시작합니다.
+
+그리고 `AdminModule`은 사전로딩되지 _않습니다_. 이 모듈은 라우팅 가드로 보호되기 때문입니다.
 
 {@a preload-canload}
 
@@ -5888,63 +6049,113 @@ drop the `canLoad()` guard method and rely on the [canActivate()](#can-activate-
 
 {@a custom-preloading}
 
-
+<!--
 ### Custom Preloading Strategy
+-->
+### 커스텀 사전로딩 전략
 
+<!--
 Preloading every lazy loaded modules works well in many situations,
 but it isn't always the right choice, especially on mobile devices and over low bandwidth connections.
 You may choose to preload only certain feature modules, based on user metrics and other business and technical factors.
+-->
+지연로딩되는 모듈을 사전로딩하는 것은 대부분의 경우에 활용할 수 있지만 이 방식이 항상 최선인 것은 아닙니다. 대역폭이 상대적으로 작은 모바일 장치의 경우가 특히 그렇습니다.
+이런 경우에는 개발자의 의도나 애플리케이션의 필요에 따라, 기술적인 이슈를 고려하며 특정 기능모듈만 선택적으로 사전로딩하는 것이 나을 수 있습니다.
 
+<!--
 You can control what and how the router preloads with a custom preloading strategy.
 
 In this section, you'll add a custom strategy that _only_ preloads routes whose `data.preload` flag is set to `true`.
 Recall that you can add anything to the `data` property of a route.
 
 Set the `data.preload` flag in the `crisis-center` route in the `AppRoutingModule`.
+-->
+커스텀 사전로딩 전략을 작성하면 라우터의 사전로딩 동작을 제어할 수 있습니다.
 
+이번 섹션에서는 커스텀 사전로딩 전략을 작성해서 라우팅 규칙의 `data.preload` 플래그가 `true`인 모듈만 사전로딩하도록 구현해 봅시다.
+이전에 살펴봤던 것처럼 라우팅 규칙에는 `data` 프로퍼티를 사용해서 인자를 전달할 수 있습니다.
 
+`AppRoutingModule`에 정의된 `crisis-center` 라우팅 규칙에 `data.preload` 플래그를 다음과 같이 설정합니다.
+
+<!--
 <code-example path="router/src/app/app-routing.module.ts" linenums="false" header="src/app/app-routing.module.ts (route data preload)" region="preload-v2">
+-->
+<code-example path="router/src/app/app-routing.module.ts" linenums="false" header="src/app/app-routing.module.ts (사전로딩 설정)" region="preload-v2">
 
 </code-example>
 
+<!--
 Generate a new `SelectivePreloadingStrategy` service.
+-->
+그리고 다음 명령을 실행해서 `SelectivePreloadingStrategy` 서비스를 생성합니다.
 
 <code-example language="none" class="code-shell">
   ng generate service selective-preloading-strategy
 </code-example>
 
 
+<!--
 <code-example path="router/src/app/selective-preloading-strategy.service.ts" linenums="false" header="src/app/selective-preloading-strategy.service.ts (excerpt)">
+-->
+<code-example path="router/src/app/selective-preloading-strategy.service.ts" linenums="false" header="src/app/selective-preloading-strategy.service.ts (일부)">
 
 </code-example>
 
 
-
+<!--
 `SelectivePreloadingStrategyService` implements the `PreloadingStrategy`, which has one method, `preload`.
 
 The router calls the `preload` method with two arguments:
 
 1. The route to consider.
 1. A loader function that can load the routed module asynchronously.
+-->
+`SelectivePreloadingStrategyService`는 `PreloadingStrategy` 인터페이스를 기반으로 구현하며, `preload` 메소드를 작성해야 합니다.
 
+그러면 라우터가 이 `preload` 메소드를 실행할 때 두 개의 인자를 함께 전달합니다:
+
+1. 판단 대상이 되는 라우팅 규칙
+1. 모듈을 비동기로 로드하는 함수
+
+<!--
 An implementation of `preload` must return an `Observable`.
 If the route should preload, it returns the observable returned by calling the loader function.
 If the route should _not_ preload, it returns an `Observable` of `null`.
+-->
+`preload` 메소드는 반드시 `Observable`을 반환해야 합니다.
+이 때 라우팅 규칙을 사전로딩하려면 로더 함수를 실행한 결과를 반환하면 됩니다.
+그리고 라우팅 규칙을 사전로딩하지 _않으려면_ `null`을 `Observable` 타입으로 반환하면 됩니다.
 
+<!--
 In this sample, the  `preload` method loads the route if the route's `data.preload` flag is truthy.
 
 It also has a side-effect.
 `SelectivePreloadingStrategyService` logs the `path` of a selected route in its public `preloadedModules` array.
 
 Shortly, you'll extend the `AdminDashboardComponent` to inject this service and display its `preloadedModules` array.
+-->
+이 예제에서는 `data.preload` 플래그 값에 따라 `preload` 메소드가 라우팅 규칙을 로드한 결과를 반환하거나 `null` 값을 반환합니다.
 
+그리고 이 함수는 또 다른 동작을 하나 합니다.
+`SelectivePreloadingStrategyService`는 처리되고 있는 라우팅 규칙을 콘솔에 출력하면서 이 서비스 인스턴스의 `preloadedModules` 배열에 이 라우팅 규칙을 추가합니다.
+
+그래서 `AdminDashboardComponent`에서 이 서비스를 의존성으로 주입받으면서 `preloadedModules` 배열에 있는 내용을 확인하는 용도로 확장할 수도 있습니다.
+
+<!--
 But first, make a few changes to the `AppRoutingModule`.
 
 1. Import `SelectivePreloadingStrategyService` into `AppRoutingModule`.
 1. Replace the `PreloadAllModules` strategy in the call to `forRoot` with this `SelectivePreloadingStrategyService`.
 1. Add the `SelectivePreloadingStrategyService` strategy to the `AppRoutingModule` providers array so it can be injected
 elsewhere in the app.
+-->
+그러기 위해서는 먼저 `AppRoutingModule`을 조금 수정해야 합니다.
 
+1. `AppRoutingModule`에 `SelectivePreloadingStrategyService`를 로드합니다.
+1. `forRoot`에 적용했던 `PreloadAllModules` 전략을 `SelectivePreloadingStrategyService`로 변경합니다.
+1. 애플리케이션 전역에 사용할 수 있도록 `SelectivePreloadingStrategyService` 전략을 `AppRoutingModule` 프로바이더 배열에 추가합니다.
+
+<!--
 Now edit the `AdminDashboardComponent` to display the log of preloaded routes.
 
 1. Import the `SelectivePreloadingStrategyService`.
@@ -5952,18 +6163,31 @@ Now edit the `AdminDashboardComponent` to display the log of preloaded routes.
 1. Update the template to display the strategy service's `preloadedModules` array.
 
 When you're done it looks like this.
+-->
+그리고 이제 사전로딩되는 라우팅 규칙을 확인하기 위해 `AdminDashboardComponent`를 수정합니다.
 
+1. `SelectivePreloadingStrategyService`를 로드합니다.
+1. 컴포넌트의 생성자에 이 서비스를 주입합니다.
+1. 서비스의 `preloadedModules` 배열을 화면에 표시하도록 템플릿을 수정합니다.
 
+이렇게 작성하면 다음과 같은 코드가 됩니다.
+
+<!--
 <code-example path="router/src/app/admin/admin-dashboard/admin-dashboard.component.ts" linenums="false" header="src/app/admin/admin-dashboard/admin-dashboard.component.ts (preloaded modules)">
+-->
+<code-example path="router/src/app/admin/admin-dashboard/admin-dashboard.component.ts" linenums="false" header="src/app/admin/admin-dashboard/admin-dashboard.component.ts (사전로딩하는 모듈 확인하기)">
 
 </code-example>
 
 
-
+<!--
 Once the application loads the initial route, the `CrisisCenterModule` is preloaded.
 Verify this by logging in to the `Admin` feature area and noting that the `crisis-center` is listed in the `Preloaded Modules`.
 It's also logged to the browser's console.
-
+-->
+이제 애플리케이션이 실행되고 초기 라우팅 동작이 끝나고 나면 `CrisisCenterModule`이 사전로딩됩니다.
+이 동작은 `Admin` 기능 모듈에서 화면에 표시하는 내용으로 확인할 수 있으며, `crisis-center` 라우팅 규칙은 이 목록에 표함되지 않는 것도 확인할 수 있습니다.
+이 내용은 브라우저 콘솔에도 동일하게 표시됩니다.
 
 {@a redirect-advanced}
 
