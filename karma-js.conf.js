@@ -96,6 +96,7 @@ module.exports = function(config) {
       'karma-jasmine',
       'karma-browserstack-launcher',
       'karma-sauce-launcher',
+      'karma-spec-reporter',
       'karma-chrome-launcher',
       'karma-sourcemap-loader',
     ],
