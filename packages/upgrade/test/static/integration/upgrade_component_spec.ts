@@ -465,240 +465,252 @@ withEachNg1Version(() => {
     });
 
     describe('bindings', () => {
-      it('should support `@` bindings', fakeAsync(() => {
-           let ng2ComponentInstance: Ng2Component;
+      fixmeIvy('FW-724: upgraded ng1 components are not being rendered')
+          .it('should support `@` bindings', fakeAsync(() => {
+                let ng2ComponentInstance: Ng2Component;
 
-           // Define `ng1Component`
-           const ng1Component: angular.IComponent = {
-             template: 'Inside: {{ $ctrl.inputA }}, {{ $ctrl.inputB }}',
-             bindings: {inputA: '@inputAttrA', inputB: '@'}
-           };
+                // Define `ng1Component`
+                const ng1Component: angular.IComponent = {
+                  template: 'Inside: {{ $ctrl.inputA }}, {{ $ctrl.inputB }}',
+                  bindings: {inputA: '@inputAttrA', inputB: '@'}
+                };
 
-           // Define `Ng1ComponentFacade`
-           @Directive({selector: 'ng1'})
-           class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
-             @Input('inputAttrA') inputA !: string;
-             // TODO(issue/24571): remove '!'.
-             @Input() inputB !: string;
+                // Define `Ng1ComponentFacade`
+                @Directive({selector: 'ng1'})
+                class Ng1ComponentFacade extends UpgradeComponent {
+                  // TODO(issue/24571): remove '!'.
+                  @Input('inputAttrA') inputA !: string;
+                  // TODO(issue/24571): remove '!'.
+                  @Input() inputB !: string;
 
-             constructor(elementRef: ElementRef, injector: Injector) {
-               super('ng1', elementRef, injector);
-             }
-           }
+                  constructor(elementRef: ElementRef, injector: Injector) {
+                    super('ng1', elementRef, injector);
+                  }
+                }
 
-           // Define `Ng2Component`
-           @Component({
-             selector: 'ng2',
-             template: `
+                // Define `Ng2Component`
+                @Component({
+                  selector: 'ng2',
+                  template: `
                <ng1 inputAttrA="{{ dataA }}" inputB="{{ dataB }}"></ng1>
                | Outside: {{ dataA }}, {{ dataB }}
              `
-           })
-           class Ng2Component {
-             dataA = 'foo';
-             dataB = 'bar';
+                })
+                class Ng2Component {
+                  dataA = 'foo';
+                  dataB = 'bar';
 
-             constructor() { ng2ComponentInstance = this; }
-           }
+                  constructor() { ng2ComponentInstance = this; }
+                }
 
-           // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
-                                 .component('ng1', ng1Component)
-                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+                // Define `ng1Module`
+                const ng1Module =
+                    angular.module('ng1Module', [])
+                        .component('ng1', ng1Component)
+                        .directive('ng2', downgradeComponent({component: Ng2Component}));
 
-           // Define `Ng2Module`
-           @NgModule({
-             declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
-             imports: [BrowserModule, UpgradeModule]
-           })
-           class Ng2Module {
-             ngDoBootstrap() {}
-           }
+                // Define `Ng2Module`
+                @NgModule({
+                  declarations: [Ng1ComponentFacade, Ng2Component],
+                  entryComponents: [Ng2Component],
+                  imports: [BrowserModule, UpgradeModule]
+                })
+                class Ng2Module {
+                  ngDoBootstrap() {}
+                }
 
-           // Bootstrap
-           const element = html(`<ng2></ng2>`);
+                // Bootstrap
+                const element = html(`<ng2></ng2>`);
 
-           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             const ng1 = element.querySelector('ng1') !;
-             const ng1Controller = angular.element(ng1).controller !('ng1');
+                bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+                  const ng1 = element.querySelector('ng1') !;
+                  const ng1Controller = angular.element(ng1).controller !('ng1');
 
-             expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
+                  expect(multiTrim(element.textContent))
+                      .toBe('Inside: foo, bar | Outside: foo, bar');
 
-             ng1Controller.inputA = 'baz';
-             ng1Controller.inputB = 'qux';
-             tick();
+                  ng1Controller.inputA = 'baz';
+                  ng1Controller.inputB = 'qux';
+                  tick();
 
-             expect(multiTrim(element.textContent)).toBe('Inside: baz, qux | Outside: foo, bar');
+                  expect(multiTrim(element.textContent))
+                      .toBe('Inside: baz, qux | Outside: foo, bar');
 
-             ng2ComponentInstance.dataA = 'foo2';
-             ng2ComponentInstance.dataB = 'bar2';
-             $digest(adapter);
-             tick();
+                  ng2ComponentInstance.dataA = 'foo2';
+                  ng2ComponentInstance.dataB = 'bar2';
+                  $digest(adapter);
+                  tick();
 
-             expect(multiTrim(element.textContent))
-                 .toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
-           });
-         }));
+                  expect(multiTrim(element.textContent))
+                      .toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
+                });
+              }));
 
-      it('should support `<` bindings', fakeAsync(() => {
-           let ng2ComponentInstance: Ng2Component;
+      fixmeIvy('FW-724: upgraded ng1 components are not being rendered')
+          .it('should support `<` bindings', fakeAsync(() => {
+                let ng2ComponentInstance: Ng2Component;
 
-           // Define `ng1Component`
-           const ng1Component: angular.IComponent = {
-             template: 'Inside: {{ $ctrl.inputA.value }}, {{ $ctrl.inputB.value }}',
-             bindings: {inputA: '<inputAttrA', inputB: '<'}
-           };
+                // Define `ng1Component`
+                const ng1Component: angular.IComponent = {
+                  template: 'Inside: {{ $ctrl.inputA.value }}, {{ $ctrl.inputB.value }}',
+                  bindings: {inputA: '<inputAttrA', inputB: '<'}
+                };
 
-           // Define `Ng1ComponentFacade`
-           @Directive({selector: 'ng1'})
-           class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
-             @Input('inputAttrA') inputA !: string;
-             // TODO(issue/24571): remove '!'.
-             @Input() inputB !: string;
+                // Define `Ng1ComponentFacade`
+                @Directive({selector: 'ng1'})
+                class Ng1ComponentFacade extends UpgradeComponent {
+                  // TODO(issue/24571): remove '!'.
+                  @Input('inputAttrA') inputA !: string;
+                  // TODO(issue/24571): remove '!'.
+                  @Input() inputB !: string;
 
-             constructor(elementRef: ElementRef, injector: Injector) {
-               super('ng1', elementRef, injector);
-             }
-           }
+                  constructor(elementRef: ElementRef, injector: Injector) {
+                    super('ng1', elementRef, injector);
+                  }
+                }
 
-           // Define `Ng2Component`
-           @Component({
-             selector: 'ng2',
-             template: `
+                // Define `Ng2Component`
+                @Component({
+                  selector: 'ng2',
+                  template: `
                <ng1 [inputAttrA]="dataA" [inputB]="dataB"></ng1>
                | Outside: {{ dataA.value }}, {{ dataB.value }}
              `
-           })
-           class Ng2Component {
-             dataA = {value: 'foo'};
-             dataB = {value: 'bar'};
+                })
+                class Ng2Component {
+                  dataA = {value: 'foo'};
+                  dataB = {value: 'bar'};
 
-             constructor() { ng2ComponentInstance = this; }
-           }
+                  constructor() { ng2ComponentInstance = this; }
+                }
 
-           // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
-                                 .component('ng1', ng1Component)
-                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+                // Define `ng1Module`
+                const ng1Module =
+                    angular.module('ng1Module', [])
+                        .component('ng1', ng1Component)
+                        .directive('ng2', downgradeComponent({component: Ng2Component}));
 
-           // Define `Ng2Module`
-           @NgModule({
-             declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
-             imports: [BrowserModule, UpgradeModule]
-           })
-           class Ng2Module {
-             ngDoBootstrap() {}
-           }
+                // Define `Ng2Module`
+                @NgModule({
+                  declarations: [Ng1ComponentFacade, Ng2Component],
+                  entryComponents: [Ng2Component],
+                  imports: [BrowserModule, UpgradeModule]
+                })
+                class Ng2Module {
+                  ngDoBootstrap() {}
+                }
 
-           // Bootstrap
-           const element = html(`<ng2></ng2>`);
+                // Bootstrap
+                const element = html(`<ng2></ng2>`);
 
-           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             const ng1 = element.querySelector('ng1') !;
-             const ng1Controller = angular.element(ng1).controller !('ng1');
+                bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+                  const ng1 = element.querySelector('ng1') !;
+                  const ng1Controller = angular.element(ng1).controller !('ng1');
 
-             expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
+                  expect(multiTrim(element.textContent))
+                      .toBe('Inside: foo, bar | Outside: foo, bar');
 
-             ng1Controller.inputA = {value: 'baz'};
-             ng1Controller.inputB = {value: 'qux'};
-             tick();
+                  ng1Controller.inputA = {value: 'baz'};
+                  ng1Controller.inputB = {value: 'qux'};
+                  tick();
 
-             expect(multiTrim(element.textContent)).toBe('Inside: baz, qux | Outside: foo, bar');
+                  expect(multiTrim(element.textContent))
+                      .toBe('Inside: baz, qux | Outside: foo, bar');
 
-             ng2ComponentInstance.dataA = {value: 'foo2'};
-             ng2ComponentInstance.dataB = {value: 'bar2'};
-             $digest(adapter);
-             tick();
+                  ng2ComponentInstance.dataA = {value: 'foo2'};
+                  ng2ComponentInstance.dataB = {value: 'bar2'};
+                  $digest(adapter);
+                  tick();
 
-             expect(multiTrim(element.textContent))
-                 .toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
-           });
-         }));
+                  expect(multiTrim(element.textContent))
+                      .toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
+                });
+              }));
 
-      it('should support `=` bindings', fakeAsync(() => {
-           let ng2ComponentInstance: Ng2Component;
+      fixmeIvy('FW-724: upgraded ng1 components are not being rendered')
+          .it('should support `=` bindings', fakeAsync(() => {
+                let ng2ComponentInstance: Ng2Component;
 
-           // Define `ng1Component`
-           const ng1Component: angular.IComponent = {
-             template: 'Inside: {{ $ctrl.inputA.value }}, {{ $ctrl.inputB.value }}',
-             bindings: {inputA: '=inputAttrA', inputB: '='}
-           };
+                // Define `ng1Component`
+                const ng1Component: angular.IComponent = {
+                  template: 'Inside: {{ $ctrl.inputA.value }}, {{ $ctrl.inputB.value }}',
+                  bindings: {inputA: '=inputAttrA', inputB: '='}
+                };
 
-           // Define `Ng1ComponentFacade`
-           @Directive({selector: 'ng1'})
-           class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
-             @Input('inputAttrA') inputA !: string;
-             // TODO(issue/24571): remove '!'.
-             @Output('inputAttrAChange') inputAChange !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
-             @Input() inputB !: string;
-             // TODO(issue/24571): remove '!'.
-             @Output() inputBChange !: EventEmitter<any>;
+                // Define `Ng1ComponentFacade`
+                @Directive({selector: 'ng1'})
+                class Ng1ComponentFacade extends UpgradeComponent {
+                  // TODO(issue/24571): remove '!'.
+                  @Input('inputAttrA') inputA !: string;
+                  // TODO(issue/24571): remove '!'.
+                  @Output('inputAttrAChange') inputAChange !: EventEmitter<any>;
+                  // TODO(issue/24571): remove '!'.
+                  @Input() inputB !: string;
+                  // TODO(issue/24571): remove '!'.
+                  @Output() inputBChange !: EventEmitter<any>;
 
-             constructor(elementRef: ElementRef, injector: Injector) {
-               super('ng1', elementRef, injector);
-             }
-           }
+                  constructor(elementRef: ElementRef, injector: Injector) {
+                    super('ng1', elementRef, injector);
+                  }
+                }
 
-           // Define `Ng2Component`
-           @Component({
-             selector: 'ng2',
-             template: `
+                // Define `Ng2Component`
+                @Component({
+                  selector: 'ng2',
+                  template: `
                <ng1 [(inputAttrA)]="dataA" [(inputB)]="dataB"></ng1>
                | Outside: {{ dataA.value }}, {{ dataB.value }}
              `
-           })
-           class Ng2Component {
-             dataA = {value: 'foo'};
-             dataB = {value: 'bar'};
+                })
+                class Ng2Component {
+                  dataA = {value: 'foo'};
+                  dataB = {value: 'bar'};
 
-             constructor() { ng2ComponentInstance = this; }
-           }
+                  constructor() { ng2ComponentInstance = this; }
+                }
 
-           // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
-                                 .component('ng1', ng1Component)
-                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+                // Define `ng1Module`
+                const ng1Module =
+                    angular.module('ng1Module', [])
+                        .component('ng1', ng1Component)
+                        .directive('ng2', downgradeComponent({component: Ng2Component}));
 
-           // Define `Ng2Module`
-           @NgModule({
-             declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
-             imports: [BrowserModule, UpgradeModule]
-           })
-           class Ng2Module {
-             ngDoBootstrap() {}
-           }
+                // Define `Ng2Module`
+                @NgModule({
+                  declarations: [Ng1ComponentFacade, Ng2Component],
+                  entryComponents: [Ng2Component],
+                  imports: [BrowserModule, UpgradeModule]
+                })
+                class Ng2Module {
+                  ngDoBootstrap() {}
+                }
 
-           // Bootstrap
-           const element = html(`<ng2></ng2>`);
+                // Bootstrap
+                const element = html(`<ng2></ng2>`);
 
-           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             const ng1 = element.querySelector('ng1') !;
-             const ng1Controller = angular.element(ng1).controller !('ng1');
+                bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+                  const ng1 = element.querySelector('ng1') !;
+                  const ng1Controller = angular.element(ng1).controller !('ng1');
 
-             expect(multiTrim(element.textContent)).toBe('Inside: foo, bar | Outside: foo, bar');
+                  expect(multiTrim(element.textContent))
+                      .toBe('Inside: foo, bar | Outside: foo, bar');
 
-             ng1Controller.inputA = {value: 'baz'};
-             ng1Controller.inputB = {value: 'qux'};
-             tick();
+                  ng1Controller.inputA = {value: 'baz'};
+                  ng1Controller.inputB = {value: 'qux'};
+                  tick();
 
-             expect(multiTrim(element.textContent)).toBe('Inside: baz, qux | Outside: baz, qux');
+                  expect(multiTrim(element.textContent))
+                      .toBe('Inside: baz, qux | Outside: baz, qux');
 
-             ng2ComponentInstance.dataA = {value: 'foo2'};
-             ng2ComponentInstance.dataB = {value: 'bar2'};
-             $digest(adapter);
-             tick();
+                  ng2ComponentInstance.dataA = {value: 'foo2'};
+                  ng2ComponentInstance.dataB = {value: 'bar2'};
+                  $digest(adapter);
+                  tick();
 
-             expect(multiTrim(element.textContent))
-                 .toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
-           });
-         }));
+                  expect(multiTrim(element.textContent))
+                      .toBe('Inside: foo2, bar2 | Outside: foo2, bar2');
+                });
+              }));
 
       it('should support `&` bindings', fakeAsync(() => {
            // Define `ng1Component`
@@ -765,56 +777,58 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('should bind properties, events', fakeAsync(() => {
-           // Define `ng1Component`
-           const ng1Component: angular.IComponent = {
-             template: `
+      fixmeIvy('FW-724: upgraded ng1 components are not being rendered')
+          .it('should bind properties, events', fakeAsync(() => {
+                // Define `ng1Component`
+                const ng1Component: angular.IComponent = {
+                  template: `
                Hello {{ $ctrl.fullName }};
                A: {{ $ctrl.modelA }};
                B: {{ $ctrl.modelB }};
                C: {{ $ctrl.modelC }}
              `,
-             bindings: {fullName: '@', modelA: '<dataA', modelB: '=dataB', modelC: '=', event: '&'},
-             controller: function($scope: angular.IScope) {
-               $scope.$watch('$ctrl.modelB', (v: string) => {
-                 if (v === 'Savkin') {
-                   this.modelB = 'SAVKIN';
-                   this.event('WORKS');
+                  bindings:
+                      {fullName: '@', modelA: '<dataA', modelB: '=dataB', modelC: '=', event: '&'},
+                  controller: function($scope: angular.IScope) {
+                    $scope.$watch('$ctrl.modelB', (v: string) => {
+                      if (v === 'Savkin') {
+                        this.modelB = 'SAVKIN';
+                        this.event('WORKS');
 
-                   // Should not update because `modelA: '<dataA'` is uni-directional.
-                   this.modelA = 'VICTOR';
+                        // Should not update because `modelA: '<dataA'` is uni-directional.
+                        this.modelA = 'VICTOR';
 
-                   // Should not update because `[modelC]` is uni-directional.
-                   this.modelC = 'sf';
-                 }
-               });
-             }
-           };
+                        // Should not update because `[modelC]` is uni-directional.
+                        this.modelC = 'sf';
+                      }
+                    });
+                  }
+                };
 
-           // Define `Ng1ComponentFacade`
-           @Directive({selector: 'ng1'})
-           class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
-             @Input() fullName !: string;
-             @Input('dataA') modelA: any;
-             @Input('dataB') modelB: any;
-             // TODO(issue/24571): remove '!'.
-             @Output('dataBChange') modelBChange !: EventEmitter<any>;
-             @Input() modelC: any;
-             // TODO(issue/24571): remove '!'.
-             @Output() modelCChange !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
-             @Output() event !: EventEmitter<any>;
+                // Define `Ng1ComponentFacade`
+                @Directive({selector: 'ng1'})
+                class Ng1ComponentFacade extends UpgradeComponent {
+                  // TODO(issue/24571): remove '!'.
+                  @Input() fullName !: string;
+                  @Input('dataA') modelA: any;
+                  @Input('dataB') modelB: any;
+                  // TODO(issue/24571): remove '!'.
+                  @Output('dataBChange') modelBChange !: EventEmitter<any>;
+                  @Input() modelC: any;
+                  // TODO(issue/24571): remove '!'.
+                  @Output() modelCChange !: EventEmitter<any>;
+                  // TODO(issue/24571): remove '!'.
+                  @Output() event !: EventEmitter<any>;
 
-             constructor(elementRef: ElementRef, injector: Injector) {
-               super('ng1', elementRef, injector);
-             }
-           }
+                  constructor(elementRef: ElementRef, injector: Injector) {
+                    super('ng1', elementRef, injector);
+                  }
+                }
 
-           // Define `Ng2Component`
-           @Component({
-             selector: 'ng2',
-             template: `
+                // Define `Ng2Component`
+                @Component({
+                  selector: 'ng2',
+                  template: `
                <ng1 fullName="{{ last }}, {{ first }}, {{ city }}"
                    [(dataA)]="first" [(dataB)]="last" [modelC]="city"
                    (event)="event = $event">
@@ -822,146 +836,153 @@ withEachNg1Version(() => {
                <ng1 fullName="{{ 'TEST' }}" dataA="First" dataB="Last" modelC="City"></ng1> |
                {{ event }} - {{ last }}, {{ first }}, {{ city }}
              `
-           })
-           class Ng2Component {
-             first = 'Victor';
-             last = 'Savkin';
-             city = 'SF';
-             event = '?';
-           }
+                })
+                class Ng2Component {
+                  first = 'Victor';
+                  last = 'Savkin';
+                  city = 'SF';
+                  event = '?';
+                }
 
-           // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
-                                 .component('ng1', ng1Component)
-                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+                // Define `ng1Module`
+                const ng1Module =
+                    angular.module('ng1Module', [])
+                        .component('ng1', ng1Component)
+                        .directive('ng2', downgradeComponent({component: Ng2Component}));
 
-           // Define `Ng2Module`
-           @NgModule({
-             declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
-             imports: [BrowserModule, UpgradeModule]
-           })
-           class Ng2Module {
-             ngDoBootstrap() {}
-           }
+                // Define `Ng2Module`
+                @NgModule({
+                  declarations: [Ng1ComponentFacade, Ng2Component],
+                  entryComponents: [Ng2Component],
+                  imports: [BrowserModule, UpgradeModule]
+                })
+                class Ng2Module {
+                  ngDoBootstrap() {}
+                }
 
-           // Bootstrap
-           const element = html(`<ng2></ng2>`);
+                // Bootstrap
+                const element = html(`<ng2></ng2>`);
 
-           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
-             expect(multiTrim(element.textContent))
-                 .toBe(
-                     'Hello Savkin, Victor, SF; A: VICTOR; B: SAVKIN; C: sf | ' +
-                     'Hello TEST; A: First; B: Last; C: City | ' +
-                     'WORKS - SAVKIN, Victor, SF');
+                bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(() => {
+                  expect(multiTrim(element.textContent))
+                      .toBe(
+                          'Hello Savkin, Victor, SF; A: VICTOR; B: SAVKIN; C: sf | ' +
+                          'Hello TEST; A: First; B: Last; C: City | ' +
+                          'WORKS - SAVKIN, Victor, SF');
 
-             // Detect changes
-             tick();
+                  // Detect changes
+                  tick();
 
-             expect(multiTrim(element.textContent))
-                 .toBe(
-                     'Hello SAVKIN, Victor, SF; A: VICTOR; B: SAVKIN; C: sf | ' +
-                     'Hello TEST; A: First; B: Last; C: City | ' +
-                     'WORKS - SAVKIN, Victor, SF');
-           });
-         }));
+                  expect(multiTrim(element.textContent))
+                      .toBe(
+                          'Hello SAVKIN, Victor, SF; A: VICTOR; B: SAVKIN; C: sf | ' +
+                          'Hello TEST; A: First; B: Last; C: City | ' +
+                          'WORKS - SAVKIN, Victor, SF');
+                });
+              }));
 
-      it('should bind optional properties', fakeAsync(() => {
-           // Define `ng1Component`
-           const ng1Component: angular.IComponent = {
-             template: 'Inside: {{ $ctrl.inputA.value }}, {{ $ctrl.inputB }}',
-             bindings:
-                 {inputA: '=?inputAttrA', inputB: '=?', outputA: '&?outputAttrA', outputB: '&?'}
-           };
+      fixmeIvy('FW-724: upgraded ng1 components are not being rendered')
+          .it('should bind optional properties', fakeAsync(() => {
+                // Define `ng1Component`
+                const ng1Component: angular.IComponent = {
+                  template: 'Inside: {{ $ctrl.inputA.value }}, {{ $ctrl.inputB }}',
+                  bindings: {
+                    inputA: '=?inputAttrA',
+                    inputB: '=?',
+                    outputA: '&?outputAttrA',
+                    outputB: '&?'
+                  }
+                };
 
-           // Define `Ng1ComponentFacade`
-           @Directive({selector: 'ng1'})
-           class Ng1ComponentFacade extends UpgradeComponent {
-             // TODO(issue/24571): remove '!'.
-             @Input('inputAttrA') inputA !: string;
-             // TODO(issue/24571): remove '!'.
-             @Output('inputAttrAChange') inputAChange !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
-             @Input() inputB !: string;
-             // TODO(issue/24571): remove '!'.
-             @Output() inputBChange !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
-             @Output('outputAttrA') outputA !: EventEmitter<any>;
-             // TODO(issue/24571): remove '!'.
-             @Output() outputB !: EventEmitter<any>;
+                // Define `Ng1ComponentFacade`
+                @Directive({selector: 'ng1'})
+                class Ng1ComponentFacade extends UpgradeComponent {
+                  // TODO(issue/24571): remove '!'.
+                  @Input('inputAttrA') inputA !: string;
+                  // TODO(issue/24571): remove '!'.
+                  @Output('inputAttrAChange') inputAChange !: EventEmitter<any>;
+                  // TODO(issue/24571): remove '!'.
+                  @Input() inputB !: string;
+                  // TODO(issue/24571): remove '!'.
+                  @Output() inputBChange !: EventEmitter<any>;
+                  // TODO(issue/24571): remove '!'.
+                  @Output('outputAttrA') outputA !: EventEmitter<any>;
+                  // TODO(issue/24571): remove '!'.
+                  @Output() outputB !: EventEmitter<any>;
 
-             constructor(elementRef: ElementRef, injector: Injector) {
-               super('ng1', elementRef, injector);
-             }
-           }
+                  constructor(elementRef: ElementRef, injector: Injector) {
+                    super('ng1', elementRef, injector);
+                  }
+                }
 
-           // Define `Ng2Component`
-           @Component({
-             selector: 'ng2',
-             template: `
+                // Define `Ng2Component`
+                @Component({
+                  selector: 'ng2',
+                  template: `
                <ng1 [(inputAttrA)]="dataA" [(inputB)]="dataB.value"></ng1> |
                <ng1 inputB="Bar" (outputAttrA)="dataA = $event"></ng1> |
                <ng1 (outputB)="updateDataB($event)"></ng1> |
                <ng1></ng1> |
                Outside: {{ dataA.value }}, {{ dataB.value }}
              `
-           })
-           class Ng2Component {
-             dataA = {value: 'foo'};
-             dataB = {value: 'bar'};
+                })
+                class Ng2Component {
+                  dataA = {value: 'foo'};
+                  dataB = {value: 'bar'};
 
-             updateDataB(value: any) { this.dataB.value = value; }
-           }
+                  updateDataB(value: any) { this.dataB.value = value; }
+                }
 
-           // Define `ng1Module`
-           const ng1Module = angular.module('ng1Module', [])
-                                 .component('ng1', ng1Component)
-                                 .directive('ng2', downgradeComponent({component: Ng2Component}));
+                // Define `ng1Module`
+                const ng1Module =
+                    angular.module('ng1Module', [])
+                        .component('ng1', ng1Component)
+                        .directive('ng2', downgradeComponent({component: Ng2Component}));
 
-           // Define `Ng2Module`
-           @NgModule({
-             declarations: [Ng1ComponentFacade, Ng2Component],
-             entryComponents: [Ng2Component],
-             imports: [BrowserModule, UpgradeModule]
-           })
-           class Ng2Module {
-             ngDoBootstrap() {}
-           }
+                // Define `Ng2Module`
+                @NgModule({
+                  declarations: [Ng1ComponentFacade, Ng2Component],
+                  entryComponents: [Ng2Component],
+                  imports: [BrowserModule, UpgradeModule]
+                })
+                class Ng2Module {
+                  ngDoBootstrap() {}
+                }
 
-           // Bootstrap
-           const element = html(`<ng2></ng2>`);
+                // Bootstrap
+                const element = html(`<ng2></ng2>`);
 
-           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-             const ng1s = element.querySelectorAll('ng1') !;
-             const ng1Controller0 = angular.element(ng1s[0]).controller !('ng1');
-             const ng1Controller1 = angular.element(ng1s[1]).controller !('ng1');
-             const ng1Controller2 = angular.element(ng1s[2]).controller !('ng1');
+                bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+                  const ng1s = element.querySelectorAll('ng1') !;
+                  const ng1Controller0 = angular.element(ng1s[0]).controller !('ng1');
+                  const ng1Controller1 = angular.element(ng1s[1]).controller !('ng1');
+                  const ng1Controller2 = angular.element(ng1s[2]).controller !('ng1');
 
-             expect(multiTrim(element.textContent))
-                 .toBe(
-                     'Inside: foo, bar | Inside: , Bar | Inside: , | Inside: , | Outside: foo, bar');
+                  expect(multiTrim(element.textContent))
+                      .toBe(
+                          'Inside: foo, bar | Inside: , Bar | Inside: , | Inside: , | Outside: foo, bar');
 
-             ng1Controller0.inputA.value = 'baz';
-             ng1Controller0.inputB = 'qux';
-             tick();
+                  ng1Controller0.inputA.value = 'baz';
+                  ng1Controller0.inputB = 'qux';
+                  tick();
 
-             expect(multiTrim(element.textContent))
-                 .toBe(
-                     'Inside: baz, qux | Inside: , Bar | Inside: , | Inside: , | Outside: baz, qux');
+                  expect(multiTrim(element.textContent))
+                      .toBe(
+                          'Inside: baz, qux | Inside: , Bar | Inside: , | Inside: , | Outside: baz, qux');
 
-             ng1Controller1.outputA({value: 'foo again'});
-             ng1Controller2.outputB('bar again');
-             $digest(adapter);
-             tick();
+                  ng1Controller1.outputA({value: 'foo again'});
+                  ng1Controller2.outputB('bar again');
+                  $digest(adapter);
+                  tick();
 
-             expect(ng1Controller0.inputA).toEqual({value: 'foo again'});
-             expect(ng1Controller0.inputB).toEqual('bar again');
-             expect(multiTrim(element.textContent))
-                 .toBe(
-                     'Inside: foo again, bar again | Inside: , Bar | Inside: , | Inside: , | ' +
-                     'Outside: foo again, bar again');
-           });
-         }));
+                  expect(ng1Controller0.inputA).toEqual({value: 'foo again'});
+                  expect(ng1Controller0.inputB).toEqual('bar again');
+                  expect(multiTrim(element.textContent))
+                      .toBe(
+                          'Inside: foo again, bar again | Inside: , Bar | Inside: , | Inside: , | ' +
+                          'Outside: foo again, bar again');
+                });
+              }));
 
       it('should bind properties, events to scope when bindToController is not used',
          fakeAsync(() => {
@@ -3968,22 +3989,23 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should support ng2 > ng1 > ng2 (with inputs/outputs)', fakeAsync(() => {
-         let ng2ComponentAInstance: Ng2ComponentA;
-         let ng2ComponentBInstance: Ng2ComponentB;
-         let ng1ControllerXInstance: Ng1ControllerX;
+    fixmeIvy('FW-724: upgraded ng1 components are not being rendered')
+        .it('should support ng2 > ng1 > ng2 (with inputs/outputs)', fakeAsync(() => {
+              let ng2ComponentAInstance: Ng2ComponentA;
+              let ng2ComponentBInstance: Ng2ComponentB;
+              let ng1ControllerXInstance: Ng1ControllerX;
 
-         // Define `ng1Component`
-         class Ng1ControllerX {
-           // TODO(issue/24571): remove '!'.
-           ng1XInputA !: string;
-           ng1XInputB: any;
-           ng1XInputC: any;
+              // Define `ng1Component`
+              class Ng1ControllerX {
+                // TODO(issue/24571): remove '!'.
+                ng1XInputA !: string;
+                ng1XInputB: any;
+                ng1XInputC: any;
 
-           constructor() { ng1ControllerXInstance = this; }
-         }
-         const ng1Component: angular.IComponent = {
-           template: `
+                constructor() { ng1ControllerXInstance = this; }
+              }
+              const ng1Component: angular.IComponent = {
+                template: `
               ng1X({{ $ctrl.ng1XInputA }}, {{ $ctrl.ng1XInputB.value }}, {{ $ctrl.ng1XInputC.value }}) |
               <ng2-b
                 [ng2-b-input1]="$ctrl.ng1XInputA"
@@ -3991,39 +4013,39 @@ withEachNg1Version(() => {
                 (ng2-b-output-c)="$ctrl.ng1XInputC = {value: $event}">
               </ng2-b>
             `,
-           bindings: {
-             ng1XInputA: '@',
-             ng1XInputB: '<',
-             ng1XInputC: '=',
-             ng1XOutputA: '&',
-             ng1XOutputB: '&'
-           },
-           controller: Ng1ControllerX
-         };
+                bindings: {
+                  ng1XInputA: '@',
+                  ng1XInputB: '<',
+                  ng1XInputC: '=',
+                  ng1XOutputA: '&',
+                  ng1XOutputB: '&'
+                },
+                controller: Ng1ControllerX
+              };
 
-         // Define `Ng1ComponentFacade`
-         @Directive({selector: 'ng1X'})
-         class Ng1ComponentXFacade extends UpgradeComponent {
-           // TODO(issue/24571): remove '!'.
-           @Input() ng1XInputA !: string;
-           @Input() ng1XInputB: any;
-           @Input() ng1XInputC: any;
-           // TODO(issue/24571): remove '!'.
-           @Output() ng1XInputCChange !: EventEmitter<any>;
-           // TODO(issue/24571): remove '!'.
-           @Output() ng1XOutputA !: EventEmitter<any>;
-           // TODO(issue/24571): remove '!'.
-           @Output() ng1XOutputB !: EventEmitter<any>;
+              // Define `Ng1ComponentFacade`
+              @Directive({selector: 'ng1X'})
+              class Ng1ComponentXFacade extends UpgradeComponent {
+                // TODO(issue/24571): remove '!'.
+                @Input() ng1XInputA !: string;
+                @Input() ng1XInputB: any;
+                @Input() ng1XInputC: any;
+                // TODO(issue/24571): remove '!'.
+                @Output() ng1XInputCChange !: EventEmitter<any>;
+                // TODO(issue/24571): remove '!'.
+                @Output() ng1XOutputA !: EventEmitter<any>;
+                // TODO(issue/24571): remove '!'.
+                @Output() ng1XOutputB !: EventEmitter<any>;
 
-           constructor(elementRef: ElementRef, injector: Injector) {
-             super('ng1X', elementRef, injector);
-           }
-         }
+                constructor(elementRef: ElementRef, injector: Injector) {
+                  super('ng1X', elementRef, injector);
+                }
+              }
 
-         // Define `Ng2Component`
-         @Component({
-           selector: 'ng2-a',
-           template: `
+              // Define `Ng2Component`
+              @Component({
+                selector: 'ng2-a',
+                template: `
               ng2A({{ ng2ADataA.value }}, {{ ng2ADataB.value }}, {{ ng2ADataC.value }}) |
               <ng1X
                   ng1XInputA="{{ ng2ADataA.value }}"
@@ -4033,130 +4055,131 @@ withEachNg1Version(() => {
                   on-ng1XOutputB="ng2ADataB.value = $event">
               </ng1X>
             `
-         })
-         class Ng2ComponentA {
-           ng2ADataA = {value: 'foo'};
-           ng2ADataB = {value: 'bar'};
-           ng2ADataC = {value: 'baz'};
+              })
+              class Ng2ComponentA {
+                ng2ADataA = {value: 'foo'};
+                ng2ADataB = {value: 'bar'};
+                ng2ADataC = {value: 'baz'};
 
-           constructor() { ng2ComponentAInstance = this; }
-         }
+                constructor() { ng2ComponentAInstance = this; }
+              }
 
-         @Component({selector: 'ng2-b', template: 'ng2B({{ ng2BInputA }}, {{ ng2BInputC }})'})
-         class Ng2ComponentB {
-           @Input('ng2BInput1') ng2BInputA: any;
-           @Input() ng2BInputC: any;
-           @Output() ng2BOutputC = new EventEmitter();
+              @Component({selector: 'ng2-b', template: 'ng2B({{ ng2BInputA }}, {{ ng2BInputC }})'})
+              class Ng2ComponentB {
+                @Input('ng2BInput1') ng2BInputA: any;
+                @Input() ng2BInputC: any;
+                @Output() ng2BOutputC = new EventEmitter();
 
-           constructor() { ng2ComponentBInstance = this; }
-         }
+                constructor() { ng2ComponentBInstance = this; }
+              }
 
-         // Define `ng1Module`
-         const ng1Module = angular.module('ng1', [])
-                               .component('ng1X', ng1Component)
-                               .directive('ng2A', downgradeComponent({component: Ng2ComponentA}))
-                               .directive('ng2B', downgradeComponent({component: Ng2ComponentB}));
+              // Define `ng1Module`
+              const ng1Module =
+                  angular.module('ng1', [])
+                      .component('ng1X', ng1Component)
+                      .directive('ng2A', downgradeComponent({component: Ng2ComponentA}))
+                      .directive('ng2B', downgradeComponent({component: Ng2ComponentB}));
 
-         // Define `Ng2Module`
-         @NgModule({
-           declarations: [Ng1ComponentXFacade, Ng2ComponentA, Ng2ComponentB],
-           entryComponents: [Ng2ComponentA, Ng2ComponentB],
-           imports: [BrowserModule, UpgradeModule],
-           schemas: [NO_ERRORS_SCHEMA],
-         })
-         class Ng2Module {
-           ngDoBootstrap() {}
-         }
+              // Define `Ng2Module`
+              @NgModule({
+                declarations: [Ng1ComponentXFacade, Ng2ComponentA, Ng2ComponentB],
+                entryComponents: [Ng2ComponentA, Ng2ComponentB],
+                imports: [BrowserModule, UpgradeModule],
+                schemas: [NO_ERRORS_SCHEMA],
+              })
+              class Ng2Module {
+                ngDoBootstrap() {}
+              }
 
-         // Bootstrap
-         const element = html(`<ng2-a></ng2-a>`);
+              // Bootstrap
+              const element = html(`<ng2-a></ng2-a>`);
 
-         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
-           // Initial value propagation.
-           // (ng2A > ng1X > ng2B)
-           expect(multiTrim(document.body.textContent))
-               .toBe('ng2A(foo, bar, baz) | ng1X(foo, bar, baz) | ng2B(foo, baz)');
+              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+                // Initial value propagation.
+                // (ng2A > ng1X > ng2B)
+                expect(multiTrim(document.body.textContent))
+                    .toBe('ng2A(foo, bar, baz) | ng1X(foo, bar, baz) | ng2B(foo, baz)');
 
-           // Update `ng2BInputA`/`ng2BInputC`.
-           // (Should not propagate upwards.)
-           ng2ComponentBInstance.ng2BInputA = 'foo2';
-           ng2ComponentBInstance.ng2BInputC = 'baz2';
-           $digest(adapter);
-           tick();
+                // Update `ng2BInputA`/`ng2BInputC`.
+                // (Should not propagate upwards.)
+                ng2ComponentBInstance.ng2BInputA = 'foo2';
+                ng2ComponentBInstance.ng2BInputC = 'baz2';
+                $digest(adapter);
+                tick();
 
-           expect(multiTrim(document.body.textContent))
-               .toBe('ng2A(foo, bar, baz) | ng1X(foo, bar, baz) | ng2B(foo2, baz2)');
+                expect(multiTrim(document.body.textContent))
+                    .toBe('ng2A(foo, bar, baz) | ng1X(foo, bar, baz) | ng2B(foo2, baz2)');
 
-           // Emit from `ng2BOutputC`.
-           // (Should propagate all the way up to `ng1ADataC` and back all the way down to
-           // `ng2BInputC`.)
-           ng2ComponentBInstance.ng2BOutputC.emit('baz3');
-           $digest(adapter);
-           tick();
+                // Emit from `ng2BOutputC`.
+                // (Should propagate all the way up to `ng1ADataC` and back all the way down to
+                // `ng2BInputC`.)
+                ng2ComponentBInstance.ng2BOutputC.emit('baz3');
+                $digest(adapter);
+                tick();
 
-           expect(multiTrim(document.body.textContent))
-               .toBe('ng2A(foo, bar, baz3) | ng1X(foo, bar, baz3) | ng2B(foo2, baz3)');
+                expect(multiTrim(document.body.textContent))
+                    .toBe('ng2A(foo, bar, baz3) | ng1X(foo, bar, baz3) | ng2B(foo2, baz3)');
 
-           // Update `ng1XInputA`/`ng1XInputB`.
-           // (Should not propagate upwards, only downwards.)
-           ng1ControllerXInstance.ng1XInputA = 'foo4';
-           ng1ControllerXInstance.ng1XInputB = {value: 'bar4'};
-           $digest(adapter);
-           tick();
+                // Update `ng1XInputA`/`ng1XInputB`.
+                // (Should not propagate upwards, only downwards.)
+                ng1ControllerXInstance.ng1XInputA = 'foo4';
+                ng1ControllerXInstance.ng1XInputB = {value: 'bar4'};
+                $digest(adapter);
+                tick();
 
-           expect(multiTrim(document.body.textContent))
-               .toBe('ng2A(foo, bar, baz3) | ng1X(foo4, bar4, baz3) | ng2B(foo4, baz3)');
+                expect(multiTrim(document.body.textContent))
+                    .toBe('ng2A(foo, bar, baz3) | ng1X(foo4, bar4, baz3) | ng2B(foo4, baz3)');
 
-           // Update `ng1XInputC`.
-           // (Should propagate upwards and downwards.)
-           ng1ControllerXInstance.ng1XInputC = {value: 'baz5'};
-           $digest(adapter);
-           tick();
+                // Update `ng1XInputC`.
+                // (Should propagate upwards and downwards.)
+                ng1ControllerXInstance.ng1XInputC = {value: 'baz5'};
+                $digest(adapter);
+                tick();
 
-           expect(multiTrim(document.body.textContent))
-               .toBe('ng2A(foo, bar, baz5) | ng1X(foo4, bar4, baz5) | ng2B(foo4, baz5)');
+                expect(multiTrim(document.body.textContent))
+                    .toBe('ng2A(foo, bar, baz5) | ng1X(foo4, bar4, baz5) | ng2B(foo4, baz5)');
 
-           // Update a property on `ng1XInputC`.
-           // (Should propagate upwards and downwards.)
-           ng1ControllerXInstance.ng1XInputC.value = 'baz6';
-           $digest(adapter);
-           tick();
+                // Update a property on `ng1XInputC`.
+                // (Should propagate upwards and downwards.)
+                ng1ControllerXInstance.ng1XInputC.value = 'baz6';
+                $digest(adapter);
+                tick();
 
-           expect(multiTrim(document.body.textContent))
-               .toBe('ng2A(foo, bar, baz6) | ng1X(foo4, bar4, baz6) | ng2B(foo4, baz6)');
+                expect(multiTrim(document.body.textContent))
+                    .toBe('ng2A(foo, bar, baz6) | ng1X(foo4, bar4, baz6) | ng2B(foo4, baz6)');
 
-           // Emit from `ng1XOutputA`.
-           // (Should propagate upwards to `ng1ADataA` and back all the way down to
-           // `ng2BInputA`.)
-           (ng1ControllerXInstance as any).ng1XOutputA({value: 'foo7'});
-           $digest(adapter);
-           tick();
+                // Emit from `ng1XOutputA`.
+                // (Should propagate upwards to `ng1ADataA` and back all the way down to
+                // `ng2BInputA`.)
+                (ng1ControllerXInstance as any).ng1XOutputA({value: 'foo7'});
+                $digest(adapter);
+                tick();
 
-           expect(multiTrim(document.body.textContent))
-               .toBe('ng2A(foo7, bar, baz6) | ng1X(foo7, bar4, baz6) | ng2B(foo7, baz6)');
+                expect(multiTrim(document.body.textContent))
+                    .toBe('ng2A(foo7, bar, baz6) | ng1X(foo7, bar4, baz6) | ng2B(foo7, baz6)');
 
-           // Emit from `ng1XOutputB`.
-           // (Should propagate upwards to `ng1ADataB`, but not downwards,
-           //  since `ng1XInputB` has been re-assigned (i.e. `ng2ADataB !== ng1XInputB`).)
-           (ng1ControllerXInstance as any).ng1XOutputB('bar8');
-           $digest(adapter);
-           tick();
+                // Emit from `ng1XOutputB`.
+                // (Should propagate upwards to `ng1ADataB`, but not downwards,
+                //  since `ng1XInputB` has been re-assigned (i.e. `ng2ADataB !== ng1XInputB`).)
+                (ng1ControllerXInstance as any).ng1XOutputB('bar8');
+                $digest(adapter);
+                tick();
 
-           expect(multiTrim(document.body.textContent))
-               .toBe('ng2A(foo7, bar8, baz6) | ng1X(foo7, bar4, baz6) | ng2B(foo7, baz6)');
+                expect(multiTrim(document.body.textContent))
+                    .toBe('ng2A(foo7, bar8, baz6) | ng1X(foo7, bar4, baz6) | ng2B(foo7, baz6)');
 
-           // Update `ng2ADataA`/`ng2ADataB`/`ng2ADataC`.
-           // (Should propagate everywhere.)
-           ng2ComponentAInstance.ng2ADataA = {value: 'foo9'};
-           ng2ComponentAInstance.ng2ADataB = {value: 'bar9'};
-           ng2ComponentAInstance.ng2ADataC = {value: 'baz9'};
-           $digest(adapter);
-           tick();
+                // Update `ng2ADataA`/`ng2ADataB`/`ng2ADataC`.
+                // (Should propagate everywhere.)
+                ng2ComponentAInstance.ng2ADataA = {value: 'foo9'};
+                ng2ComponentAInstance.ng2ADataB = {value: 'bar9'};
+                ng2ComponentAInstance.ng2ADataC = {value: 'baz9'};
+                $digest(adapter);
+                tick();
 
-           expect(multiTrim(document.body.textContent))
-               .toBe('ng2A(foo9, bar9, baz9) | ng1X(foo9, bar9, baz9) | ng2B(foo9, baz9)');
-         });
-       }));
+                expect(multiTrim(document.body.textContent))
+                    .toBe('ng2A(foo9, bar9, baz9) | ng1X(foo9, bar9, baz9) | ng2B(foo9, baz9)');
+              });
+            }));
 
     it('should support ng2 > ng1 > ng2 > ng1 (with `require`)', async(() => {
          // Define `ng1Component`
