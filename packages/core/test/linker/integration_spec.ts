@@ -399,29 +399,30 @@ function declareTests(config?: {useJit: boolean}) {
         expect(fixture.nativeElement).toHaveText('baz');
       });
 
-      fixmeIvy(
-          'FW-665: Discovery util fails with "Unable to find the given context data for the given target"')
-          .it('should not detach views in ViewContainers when the parent view is destroyed.', () => {
-            TestBed.configureTestingModule({declarations: [MyComp, SomeViewport]});
-            const template =
-                '<div *ngIf="ctxBoolProp"><ng-template some-viewport let-greeting="someTmpl"><span>{{greeting}}</span></ng-template></div>';
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp);
+      it('should not detach views in ViewContainers when the parent view is destroyed.', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, SomeViewport]});
+        const template =
+            '<div *ngIf="ctxBoolProp"><ng-template some-viewport let-greeting="someTmpl"><span>{{greeting}}</span></ng-template></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
 
-            fixture.componentInstance.ctxBoolProp = true;
-            fixture.detectChanges();
+        fixture.componentInstance.ctxBoolProp = true;
+        fixture.detectChanges();
 
-            const ngIfEl = fixture.debugElement.children[0];
-            const someViewport: SomeViewport = ngIfEl.childNodes[0].injector.get(SomeViewport);
-            expect(someViewport.container.length).toBe(2);
-            expect(ngIfEl.children.length).toBe(2);
+        const ngIfEl = fixture.debugElement.children[0];
+        const someViewport: SomeViewport =
+            ngIfEl.childNodes
+                .find(debugElement => debugElement.nativeNode.nodeType === Node.COMMENT_NODE)
+                .injector.get(SomeViewport);
+        expect(someViewport.container.length).toBe(2);
+        expect(ngIfEl.children.length).toBe(2);
 
-            fixture.componentInstance.ctxBoolProp = false;
-            fixture.detectChanges();
+        fixture.componentInstance.ctxBoolProp = false;
+        fixture.detectChanges();
 
-            expect(someViewport.container.length).toBe(2);
-            expect(fixture.debugElement.children.length).toBe(0);
-          });
+        expect(someViewport.container.length).toBe(2);
+        expect(fixture.debugElement.children.length).toBe(0);
+      });
 
       it('should use a comment while stamping out `<ng-template>` elements.', () => {
         const fixture =
@@ -798,40 +799,37 @@ function declareTests(config?: {useJit: boolean}) {
            emitter.fireEvent('fired !');
          }));
 
-      fixmeIvy(
-          'FW-665: Discovery util fails with Unable to find the given context data for the given target')
-          .it('should support events via EventEmitter on template elements', async(() => {
-                const fixture =
-                    TestBed
-                        .configureTestingModule({
-                          declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent]
-                        })
-                        .overrideComponent(MyComp, {
-                          set: {
-                            template:
-                                '<ng-template emitter listener (event)="ctxProp=$event"></ng-template>'
-                          }
-                        })
-                        .createComponent(MyComp);
+      it('should support events via EventEmitter on template elements', async(() => {
+           const fixture =
+               TestBed
+                   .configureTestingModule(
+                       {declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent]})
+                   .overrideComponent(MyComp, {
+                     set: {
+                       template:
+                           '<ng-template emitter listener (event)="ctxProp=$event"></ng-template>'
+                     }
+                   })
+                   .createComponent(MyComp);
+           const tc = fixture.debugElement.childNodes.find(
+               debugElement => debugElement.nativeNode.nodeType === Node.COMMENT_NODE);
 
-                const tc = fixture.debugElement.childNodes[0];
+           const emitter = tc.injector.get(DirectiveEmittingEvent);
+           const myComp = fixture.debugElement.injector.get(MyComp);
+           const listener = tc.injector.get(DirectiveListeningEvent);
 
-                const emitter = tc.injector.get(DirectiveEmittingEvent);
-                const myComp = fixture.debugElement.injector.get(MyComp);
-                const listener = tc.injector.get(DirectiveListeningEvent);
+           myComp.ctxProp = '';
+           expect(listener.msg).toEqual('');
 
-                myComp.ctxProp = '';
-                expect(listener.msg).toEqual('');
+           emitter.event.subscribe({
+             next: () => {
+               expect(listener.msg).toEqual('fired !');
+               expect(myComp.ctxProp).toEqual('fired !');
+             }
+           });
 
-                emitter.event.subscribe({
-                  next: () => {
-                    expect(listener.msg).toEqual('fired !');
-                    expect(myComp.ctxProp).toEqual('fired !');
-                  }
-                });
-
-                emitter.fireEvent('fired !');
-              }));
+           emitter.fireEvent('fired !');
+         }));
 
       it('should support [()] syntax', async(() => {
            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithTwoWayBinding]});
