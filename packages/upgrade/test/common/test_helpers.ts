@@ -11,15 +11,15 @@ import {setAngularJSGlobal} from '@angular/upgrade/src/common/angular1';
 const ng1Versions = [
   {
     label: '1.5',
-    files: ['angular-1.5/angular.js', 'angular-mocks-1.5/angular-mocks.js'],
+    files: ['angular-1.5/angular.min.js', 'angular-mocks-1.5/angular-mocks.js'],
   },
   {
     label: '1.6',
-    files: ['angular-1.6/angular.js', 'angular-mocks-1.6/angular-mocks.js'],
+    files: ['angular-1.6/angular.min.js', 'angular-mocks-1.6/angular-mocks.js'],
   },
   {
     label: '1.7',
-    files: ['angular/angular.js', 'angular-mocks/angular-mocks.js'],
+    files: ['angular/angular.min.js', 'angular-mocks/angular-mocks.js'],
   },
 ];
 
