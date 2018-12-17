@@ -124,7 +124,11 @@ export class TestBedRender3 implements Injector, TestBed {
   }
 
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): void {
-    throw new Error('Render3TestBed.overrideTemplateUsingTestingModule is not implemented yet');
+    if (this._instantiated) {
+      throw new Error(
+          'Cannot override template when the test module has already been instantiated');
+    }
+    this._templateOverrides.set(component, template);
   }
 
   static overrideProvider(token: any, provider: {
@@ -185,6 +189,7 @@ export class TestBedRender3 implements Injector, TestBed {
   private _providerOverrides: Provider[] = [];
   private _rootProviderOverrides: Provider[] = [];
   private _providerOverridesByToken: Map<any, Provider[]> = new Map();
+  private _templateOverrides: Map<Type<any>, string> = new Map();
 
   // test module configuration
   private _providers: Provider[] = [];
@@ -195,6 +200,7 @@ export class TestBedRender3 implements Injector, TestBed {
   private _activeFixtures: ComponentFixture<any>[] = [];
 
   private _moduleRef: NgModuleRef<any> = null !;
+  private _testModuleType: NgModuleType<any> = null !;
 
   private _instantiated: boolean = false;
 
@@ -241,6 +247,7 @@ export class TestBedRender3 implements Injector, TestBed {
     this._providerOverrides = [];
     this._rootProviderOverrides = [];
     this._providerOverridesByToken.clear();
+    this._templateOverrides.clear();
 
     // reset test module config
     this._providers = [];
@@ -248,6 +255,7 @@ export class TestBedRender3 implements Injector, TestBed {
     this._imports = [];
     this._schemas = [];
     this._moduleRef = null !;
+    this._testModuleType = null !;
 
     this._instantiated = false;
     this._activeFixtures.forEach((fixture) => {
@@ -402,11 +410,11 @@ export class TestBedRender3 implements Injector, TestBed {
     }
 
     const resolvers = this._getResolvers();
-    const testModuleType = this._createTestModule();
-    this._compileNgModule(testModuleType, resolvers);
+    this._testModuleType = this._createTestModule();
+    this._compileNgModule(this._testModuleType, resolvers);
 
     const parentInjector = this.platform.injector;
-    this._moduleRef = new NgModuleRef(testModuleType, parentInjector);
+    this._moduleRef = new NgModuleRef(this._testModuleType, parentInjector);
 
     // ApplicationInitStatus.runInitializers() is marked @internal
     // to core. Cast it to any before accessing it.
@@ -472,15 +480,20 @@ export class TestBedRender3 implements Injector, TestBed {
     return DynamicTestModule as NgModuleType;
   }
 
-  private _getMetaWithOverrides(meta: Component|Directive|NgModule) {
+  private _getMetaWithOverrides(meta: Component|Directive|NgModule, type?: Type<any>) {
+    const overrides: {providers?: any[], template?: string} = {};
     if (meta.providers && meta.providers.length) {
-      const overrides =
+      const providerOverrides =
           flatten(meta.providers, (provider: any) => this._getProviderOverrides(provider));
-      if (overrides.length) {
-        return {...meta, providers: [...meta.providers, ...overrides]};
+      if (providerOverrides.length) {
+        overrides.providers = [...meta.providers, ...providerOverrides];
       }
     }
-    return meta;
+    const hasTemplateOverride = !!type && this._templateOverrides.has(type);
+    if (hasTemplateOverride) {
+      overrides.template = this._templateOverrides.get(type !);
+    }
+    return Object.keys(overrides).length ? {...meta, ...overrides} : meta;
   }
 
   private _compileNgModule(moduleType: NgModuleType, resolvers: Resolvers): void {
@@ -501,7 +514,7 @@ export class TestBedRender3 implements Injector, TestBed {
     declarations.forEach(declaration => {
       const component = resolvers.component.resolve(declaration);
       if (component) {
-        const metadata = this._getMetaWithOverrides(component);
+        const metadata = this._getMetaWithOverrides(component, declaration);
         compileComponent(declaration, metadata);
         compiledComponents.push(declaration);
         return;
@@ -523,8 +536,15 @@ export class TestBedRender3 implements Injector, TestBed {
 
     // Compile transitive modules, components, directives and pipes
     const transitiveScope = this._transitiveScopesFor(moduleType, resolvers);
-    compiledComponents.forEach(
-        cmp => patchComponentDefWithScope((cmp as any).ngComponentDef, transitiveScope));
+    compiledComponents.forEach(cmp => {
+      const scope = this._templateOverrides.has(cmp) ?
+          // if we have template override via `TestBed.overrideTemplateUsingTestingModule` -
+          // define Component scope as TestingModule scope, instead of the scope of NgModule
+          // where this Component was declared
+          this._transitiveScopesFor(this._testModuleType, resolvers) :
+          transitiveScope;
+      patchComponentDefWithScope((cmp as any).ngComponentDef, scope);
+    });
   }
 
   /**
