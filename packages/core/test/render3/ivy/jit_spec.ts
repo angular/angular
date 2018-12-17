@@ -264,7 +264,7 @@ ivyEnabled && describe('render3 jit', () => {
 
     const InputCompAny = InputComp as any;
     expect(InputCompAny.ngComponentDef.inputs).toEqual({publicName: 'privateName'});
-    expect(InputCompAny.ngComponentDef.declaredInputs).toEqual({privateName: 'privateName'});
+    expect(InputCompAny.ngComponentDef.declaredInputs).toEqual({publicName: 'privateName'});
   });
 
   it('should add @Input properties to a directive', () => {
@@ -277,7 +277,7 @@ ivyEnabled && describe('render3 jit', () => {
 
     const InputDirAny = InputDir as any;
     expect(InputDirAny.ngDirectiveDef.inputs).toEqual({publicName: 'privateName'});
-    expect(InputDirAny.ngDirectiveDef.declaredInputs).toEqual({privateName: 'privateName'});
+    expect(InputDirAny.ngDirectiveDef.declaredInputs).toEqual({publicName: 'privateName'});
   });
 
   it('should add ngBaseDef to types with @Input properties', () => {

@@ -345,8 +345,8 @@ export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): nev
  *   @Input()
  *   propName1: string;
  *
- *   @Input('publicName')
- *   propName2: number;
+ *   @Input('publicName2')
+ *   declaredPropName2: number;
  * }
  * ```
  *
@@ -354,26 +354,35 @@ export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): nev
  *
  * ```
  * {
- *   a0: 'propName1',
- *   b1: ['publicName', 'propName2'],
+ *   propName1: 'propName1',
+ *   declaredPropName2: ['publicName2', 'declaredPropName2'],
  * }
  * ```
  *
- * becomes
+ * which is than translated by the minifier as:
  *
  * ```
  * {
- *  'propName1': 'a0',
- *  'publicName': 'b1'
+ *   minifiedPropName1: 'propName1',
+ *   minifiedPropName2: ['publicName2', 'declaredPropName2'],
  * }
  * ```
  *
- * Optionally the function can take `secondary` which will result in:
+ * becomes: (public name => minifiedName)
  *
  * ```
  * {
- *  'propName1': 'a0',
- *  'propName2': 'b1'
+ *  'propName1': 'minifiedPropName1',
+ *  'publicName2': 'minifiedPropName2',
+ * }
+ * ```
+ *
+ * Optionally the function can take `secondary` which will result in: (public name => declared name)
+ *
+ * ```
+ * {
+ *  'propName1': 'propName1',
+ *  'publicName2': 'declaredPropName2',
  * }
  * ```
  *
@@ -384,7 +393,7 @@ function invertObject(obj: any, secondary?: any): any {
   const newLookup: any = {};
   for (const minifiedKey in obj) {
     if (obj.hasOwnProperty(minifiedKey)) {
-      let publicName = obj[minifiedKey];
+      let publicName: string = obj[minifiedKey];
       let declaredName = publicName;
       if (Array.isArray(publicName)) {
         declaredName = publicName[1];
@@ -392,7 +401,7 @@ function invertObject(obj: any, secondary?: any): any {
       }
       newLookup[publicName] = minifiedKey;
       if (secondary) {
-        (secondary[declaredName] = minifiedKey);
+        (secondary[publicName] = declaredName);
       }
     }
   }
