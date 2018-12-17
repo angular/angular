@@ -328,7 +328,7 @@ export function getOrCreateInjectable<T>(
       parentLocation = injectorIndex === -1 ? getParentInjectorLocation(tNode, lView) :
                                               lView[injectorIndex + PARENT_INJECTOR];
 
-      if (!shouldSearchParent(flags, tNode === hostTElementNode)) {
+      if (!shouldSearchParent(flags, false)) {
         injectorIndex = -1;
       } else {
         previousTView = lView[TVIEW];

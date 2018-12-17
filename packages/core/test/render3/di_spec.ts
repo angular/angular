@@ -1283,118 +1283,131 @@ describe('di', () => {
           }, 1, 0, [DirComp]);
 
           /* <comp></comp> */
-          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-            if (rf & RenderFlags.Create) {
-              element(0, 'comp');
-            }
-          }, 1, 0, [Comp]);
+          class App {
+            static ngComponentDef = defineComponent({
+              type: App,
+              selectors: [['app']],
+              consts: 1,
+              vars: 0,
+              factory: () => new App,
+              template: function(rf: RenderFlags, ctx: any) {
+                if (rf & RenderFlags.Create) {
+                  element(0, 'comp');
+                }
+              },
+              directives: [Comp],
+            });
+          }
 
           expect(() => {
             new ComponentFixture(App);
-          }).toThrowError(/NodeInjector: NOT_FOUND \[Component\]/);
+          }).toThrowError(/NodeInjector: NOT_FOUND \[App\]/);
         });
 
         describe('regression', () => {
           // based on https://stackblitz.com/edit/angular-riss8k?file=src/app/app.component.ts
-          it('should behave same as ViewEngine', () => {
-            let controlContainers: ControlContainer[] = [];
-            let injectedControlContainer: ControlContainer|null = null;
+          it('should allow directives with Host flag to inject view providers from containing component',
+             () => {
+               let controlContainers: ControlContainer[] = [];
+               let injectedControlContainer: ControlContainer|null = null;
 
-            class ControlContainer {}
+               class ControlContainer {}
 
-            /*
-            @Directive({
-              selector: '[group]',
-              providers: [{provide: ControlContainer, useExisting: GroupDirective}]
-            })
-            */
-            class GroupDirective {
-              constructor() { controlContainers.push(this); }
+               /*
+               @Directive({
+                 selector: '[group]',
+                 providers: [{provide: ControlContainer, useExisting: GroupDirective}]
+               })
+               */
+               class GroupDirective {
+                 constructor() { controlContainers.push(this); }
 
-              static ngDirectiveDef = defineDirective({
-                type: GroupDirective,
-                selectors: [['', 'group', '']],
-                factory: () => new GroupDirective(),
-                features:
-                    [ProvidersFeature([{provide: ControlContainer, useExisting: GroupDirective}])],
-              });
-            }
+                 static ngDirectiveDef = defineDirective({
+                   type: GroupDirective,
+                   selectors: [['', 'group', '']],
+                   factory: () => new GroupDirective(),
+                   features: [ProvidersFeature(
+                       [{provide: ControlContainer, useExisting: GroupDirective}])],
+                 });
+               }
 
-            // @Directive({selector: '[controlName]'})
-            class ControlNameDirective {
-              constructor(@Host() @SkipSelf() @Inject(ControlContainer) parent: ControlContainer) {
-                injectedControlContainer = parent;
-              }
+               // @Directive({selector: '[controlName]'})
+               class ControlNameDirective {
+                 constructor(@Host() @SkipSelf() @Inject(ControlContainer) parent:
+                                 ControlContainer) {
+                   injectedControlContainer = parent;
+                 }
 
-              static ngDirectiveDef = defineDirective({
-                type: GroupDirective,
-                selectors: [['', 'controlName', '']],
-                factory: () => new ControlNameDirective(directiveInject(
-                             ControlContainer, InjectFlags.Host|InjectFlags.SkipSelf))
-              });
-            }
+                 static ngDirectiveDef = defineDirective({
+                   type: ControlNameDirective,
+                   selectors: [['', 'controlName', '']],
+                   factory: () => new ControlNameDirective(directiveInject(
+                                ControlContainer, InjectFlags.Host|InjectFlags.SkipSelf))
+                 });
+               }
 
-            /*
-            @Component({
-              selector: 'child',
-              template: `
-                <input controlName type="text">
-              `,
-              viewProviders: [{provide: ControlContainer, useExisting: GroupDirective}]
-            })
-            */
-            class ChildComponent {
-              static ngComponentDef = defineComponent({
-                type: ChildComponent,
-                selectors: [['child']],
-                consts: 1,
-                vars: 0,
-                factory: () => new ChildComponent(),
-                template: function(rf: RenderFlags, ctx: ChildComponent) {
-                  if (rf & RenderFlags.Create) {
-                    element(0, 'input', ['controlName', '', 'type', 'text']);
-                  }
-                },
-                directives: [ControlNameDirective],
-                features: [ProvidersFeature(
-                    [], [{provide: ControlContainer, useExisting: GroupDirective}])],
-              });
-            }
-            /*
-            @Component({
-              selector: 'my-app',
-              template: `
-                <div group>
-                  <child></child>
-                </div>
-              `
-            })
-            */
-            class AppComponent {
-              static ngComponentDef = defineComponent({
-                type: AppComponent,
-                selectors: [['my-app']],
-                consts: 2,
-                vars: 0,
-                factory: () => new AppComponent(),
-                template: function(rf: RenderFlags, ctx: AppComponent) {
-                  if (rf & RenderFlags.Create) {
-                    elementStart(0, 'div', ['group', '']);
-                    element(1, 'child');
-                    elementEnd();
-                  }
-                },
-                directives: [ChildComponent, GroupDirective]
-              });
-            }
+               /*
+               @Component({
+                 selector: 'child',
+                 template: `
+                   <input controlName type="text">
+                 `,
+                 viewProviders: [{provide: ControlContainer, useExisting: GroupDirective}]
+               })
+               */
+               class ChildComponent {
+                 static ngComponentDef = defineComponent({
+                   type: ChildComponent,
+                   selectors: [['child']],
+                   consts: 1,
+                   vars: 0,
+                   factory: () => new ChildComponent(),
+                   template: function(rf: RenderFlags, ctx: ChildComponent) {
+                     if (rf & RenderFlags.Create) {
+                       element(0, 'input', ['controlName', '', 'type', 'text']);
+                     }
+                   },
+                   directives: [ControlNameDirective],
+                   features: [ProvidersFeature(
+                       [], [{provide: ControlContainer, useExisting: GroupDirective}])],
+                 });
+               }
+               /*
+               @Component({
+                 selector: 'my-app',
+                 template: `
+                   <div group>
+                     <child></child>
+                   </div>
+                 `
+               })
+               */
+               class AppComponent {
+                 static ngComponentDef = defineComponent({
+                   type: AppComponent,
+                   selectors: [['my-app']],
+                   consts: 2,
+                   vars: 0,
+                   factory: () => new AppComponent(),
+                   template: function(rf: RenderFlags, ctx: AppComponent) {
+                     if (rf & RenderFlags.Create) {
+                       elementStart(0, 'div', ['group', '']);
+                       element(1, 'child');
+                       elementEnd();
+                     }
+                   },
+                   directives: [ChildComponent, GroupDirective]
+                 });
+               }
 
-            const fixture = new ComponentFixture(AppComponent as ComponentType<AppComponent>);
-            expect(fixture.html)
-                .toEqual('<div group=""><child><input controlname="" type="text"></child></div>');
+               const fixture = new ComponentFixture(AppComponent as ComponentType<AppComponent>);
+               expect(fixture.html)
+                   .toEqual(
+                       '<div group=""><child><input controlname="" type="text"></child></div>');
 
-            expect(controlContainers).toEqual([injectedControlContainer !]);
+               expect(controlContainers).toEqual([injectedControlContainer !]);
 
-          });
+             });
         });
       });
     });
