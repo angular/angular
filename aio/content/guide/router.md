@@ -6490,22 +6490,34 @@ any legal sequence of route paths, (required) router parameters, and (optional) 
 {@a location-strategy}
 
 
-
+<!--
 ### Appendix: *LocationStrategy* and browser URL styles
+-->
+### 부록: *LocationStrategy*와 브라우저 URL 스타일
 
+<!--
 When the router navigates to a new component view, it updates the browser's location and history
 with a URL for that view.
 This is a strictly local URL. The browser shouldn't send this URL to the server
 and should not reload the page.
+-->
+라우터는 새로운 컴포넌트를 화면에 띄울 때 이 컴포넌트에 해당하는 주소를 브라우저의 현재 위치에 반영하고 히스토리에도 추가합니다.
+이 때 사용하는 주소는 온전히 로컬 URL입니다. 브라우저는 이 URL을 서버로 보내거나 새로운 주소로 다시 접속하지 않습니다.
 
+<!--
 Modern HTML5 browsers support
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>,
 a technique that changes a browser's location and history without triggering a server page request.
 The router can compose a "natural" URL that is indistinguishable from
 one that would otherwise require a page load.
+-->
+최신 HTML5를 지원하는 브라우저는 현재 주소를 바꾸면서 서버로 추가 요청을 보내지 않을 때 사용하는 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>를 제공합니다.
+그래서 Angular 라우터도 페이지를 새로 로드하지 않으면서 URL을 "자연스럽게" 변경할 수 있습니다.
 
+<!--
 Here's the *Crisis Center* URL in this "HTML5 pushState" style:
-
+-->
+*위기대응센터*에 해당하는 URL을 "HTML5 pushState" 스타일로 표현하면 다음과 같습니다:
 
 <code-example format="nocode">
   localhost:3002/crisis-center/
@@ -6513,12 +6525,15 @@ Here's the *Crisis Center* URL in this "HTML5 pushState" style:
 </code-example>
 
 
-
+<!--
 Older browsers send page requests to the server when the location URL changes
 _unless_ the change occurs after a "#" (called the "hash").
 Routers can take advantage of this exception by composing in-application route
 URLs with hashes.  Here's a "hash URL" that routes to the *Crisis Center*.
-
+-->
+하지만 최신 스펙을 제공하지 않는 브라우저는 URL이 변경될 때마다 서버로 새로운 페이지 요청을 보내는데, 이 동작은 해시("#") 이후의 주소가 바뀔 때도 마찬가지입니다.
+그래서 라우터는 이렇게 주소가 바뀌는 동작은 애플리케이션 안에서 라우팅할 수 있도록 예외로 처리합니다.
+*위기대응센터*에 해당하는 URL을 "해시방식의 URL" 스타일로 표현하면 다음과 같습니다:
 
 <code-example format="nocode">
   localhost:3002/src/#/crisis-center/
@@ -6526,7 +6541,7 @@ URLs with hashes.  Here's a "hash URL" that routes to the *Crisis Center*.
 </code-example>
 
 
-
+<!--
 The router supports both styles with two `LocationStrategy` providers:
 
 1. `PathLocationStrategy`&mdash;the default "HTML5 pushState" style.
@@ -6535,15 +6550,23 @@ The router supports both styles with two `LocationStrategy` providers:
 The `RouterModule.forRoot` function sets the `LocationStrategy` to the `PathLocationStrategy`,
 making it the default strategy.
 You can switch to the `HashLocationStrategy` with an override during the bootstrapping process if you prefer it.
+-->
+`LocationStrategy` 프로바이더를 사용하면 이 두 동작 중 어떤 방식을 사용할지 선택할 수 있습니다.
 
+1. `PathLocationStrategy`&mdash;기본값이며 "HTML5 pushState" 스타일을 사용합니다.
+1. `HashLocationStrategy`&mdash;"해시방식의 URL" 스타일을 사용합니다.
+
+이 옵션은 `RouterModule.forRoot` 함수에 지정합니다.
+그래서 `HashLocationStrategy` 방식을 사용하려면 부트스트랩 과정에 이 옵션을 적용하면 됩니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 Learn about providers and the bootstrap process in the
 [Dependency Injection guide](guide/dependency-injection#bootstrap).
-
+-->
+부트스트랩 단계에서 프로바이더를 등록하는 방법을 더 알아보려면 [의존성 주입 가이드](guide/dependency-injection#bootstrap) 문서를 참고하세요.
 
 </div>
 
