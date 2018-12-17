@@ -54,7 +54,7 @@ describe('host bindings', () => {
           allocHostVars(1);
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(elementIndex, 'id', bind(ctx.id));
+          elementProperty(elementIndex, 'id', bind(ctx.id), null, true);
         }
       }
     });
@@ -75,7 +75,7 @@ describe('host bindings', () => {
           allocHostVars(1);
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(elIndex, 'id', bind(ctx.id));
+          elementProperty(elIndex, 'id', bind(ctx.id), null, true);
         }
       },
       template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -99,7 +99,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elementIndex, 'className', bind(ctx.klass));
+            elementProperty(elementIndex, 'className', bind(ctx.klass), null, true);
           }
         }
       });
@@ -137,7 +137,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.id));
+            elementProperty(elIndex, 'id', bind(ctx.id), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -182,7 +182,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.id));
+            elementProperty(elIndex, 'id', bind(ctx.id), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: CompWithProviders) => {},
@@ -218,7 +218,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(ctx.title));
+            elementProperty(elIndex, 'title', bind(ctx.title), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostTitleComp) => {}
@@ -271,7 +271,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.id));
+            elementProperty(elIndex, 'id', bind(ctx.id), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -361,7 +361,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(ctx.value));
+            elementProperty(elIndex, 'title', bind(ctx.value), null, true);
           }
         },
         inputs: {inputValue: 'inputValue'}
@@ -594,10 +594,11 @@ describe('host bindings', () => {
             allocHostVars(8);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(pureFunction1(3, ff, ctx.id)));
-            elementProperty(elIndex, 'dir', bind(ctx.dir));
+            elementProperty(elIndex, 'id', bind(pureFunction1(3, ff, ctx.id)), null, true);
+            elementProperty(elIndex, 'dir', bind(ctx.dir), null, true);
             elementProperty(
-                elIndex, 'title', bind(pureFunction2(5, ff2, ctx.title, ctx.otherTitle)));
+                elIndex, 'title', bind(pureFunction2(5, ff2, ctx.title, ctx.otherTitle)), null,
+                true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -672,7 +673,7 @@ describe('host bindings', () => {
             allocHostVars(3);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(pureFunction1(1, ff, ctx.id)));
+            elementProperty(elIndex, 'id', bind(pureFunction1(1, ff, ctx.id)), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -703,7 +704,7 @@ describe('host bindings', () => {
             allocHostVars(3);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)));
+            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)), null, true);
           }
         }
       });
@@ -760,7 +761,7 @@ describe('host bindings', () => {
             allocHostVars(3);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)));
+            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)), null, true);
           }
         }
       });
@@ -831,10 +832,12 @@ describe('host bindings', () => {
           }
           if (rf & RenderFlags.Update) {
             elementProperty(
-                elIndex, 'id', bind(ctx.condition ? pureFunction1(2, ff, ctx.id) : 'green'));
+                elIndex, 'id', bind(ctx.condition ? pureFunction1(2, ff, ctx.id) : 'green'), null,
+                true);
             elementProperty(
                 elIndex, 'title',
-                bind(ctx.otherCondition ? pureFunction1(4, ff1, ctx.title) : 'other title'));
+                bind(ctx.otherCondition ? pureFunction1(4, ff1, ctx.title) : 'other title'), null,
+                true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -891,7 +894,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elementIndex, 'id', bind(ctx.id));
+            elementProperty(elementIndex, 'id', bind(ctx.id), null, true);
           }
         },
         factory: () => superDir = new SuperDirective(),
@@ -909,7 +912,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elementIndex, 'title', bind(ctx.title));
+            elementProperty(elementIndex, 'title', bind(ctx.title), null, true);
           }
         },
         factory: () => subDir = new SubDirective(),
@@ -997,7 +1000,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.foos.length));
+            elementProperty(elIndex, 'id', bind(ctx.foos.length), null, true);
           }
         },
         contentQueries: (dirIndex) => { registerContentQuery(query(null, ['foo']), dirIndex); },
@@ -1056,7 +1059,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.myValue));
+            elementProperty(elIndex, 'id', bind(ctx.myValue), null, true);
           }
         },
         template: (rf: RenderFlags, cmp: HostBindingWithContentHooks) => {}
