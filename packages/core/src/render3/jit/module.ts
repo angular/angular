@@ -125,7 +125,7 @@ export function compileNgModuleDefs(moduleType: NgModuleType, ngModule: NgModule
   Object.defineProperty(moduleType, NG_INJECTOR_DEF, {
     get: () => {
       if (ngInjectorDef === null) {
-        ngDevMode && verifySemanticsOfNgModuleDef(moduleType as unknown as NgModuleType);
+        ngDevMode && verifySemanticsOfNgModuleDef(moduleType as any as NgModuleType);
         const meta: R3InjectorMetadataFacade = {
           name: moduleType.name,
           type: moduleType,
@@ -296,7 +296,7 @@ function computeCombinedExports(type: Type<any>): Type<any>[] {
   return [...flatten(ngModuleDef.exports.map((type) => {
     const ngModuleDef = getNgModuleDef(type);
     if (ngModuleDef) {
-      verifySemanticsOfNgModuleDef(type as unknown as NgModuleType);
+      verifySemanticsOfNgModuleDef(type as any as NgModuleType);
       return computeCombinedExports(type);
     } else {
       return type;
