@@ -20,6 +20,7 @@ ts_library(
     data = [
         "schema.json",
     ],
+    module_name = "@angular/bazel/src/builders",
     deps = [
         "@ngdeps//@angular-devkit/architect",
         "@ngdeps//@angular-devkit/core",
