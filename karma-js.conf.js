@@ -29,11 +29,11 @@ module.exports = function(config) {
       {pattern: 'dist/all/@angular/**/*.js', included: false, watched: true},
 
       // Serve AngularJS for `ngUpgrade` testing.
-      {pattern: 'node_modules/angular-1.5/angular.js', included: false, watched: false},
+      {pattern: 'node_modules/angular-1.5/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks-1.5/angular-mocks.js', included: false, watched: false},
-      {pattern: 'node_modules/angular-1.6/angular.js', included: false, watched: false},
+      {pattern: 'node_modules/angular-1.6/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks-1.6/angular-mocks.js', included: false, watched: false},
-      {pattern: 'node_modules/angular/angular.js', included: false, watched: false},
+      {pattern: 'node_modules/angular/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
       'node_modules/core-js/client/core.js',

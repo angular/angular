@@ -7,19 +7,23 @@
  */
 import {setAngularJSGlobal} from '@angular/upgrade/src/common/angular1';
 
+// Whether the upgrade tests should run against AngularJS minified or not. This can be
+// temporarily switched to "false" in order to make it easy to debug AngularJS locally.
+const TEST_MINIFIED = true;
+const ANGULARJS_FILENAME = TEST_MINIFIED ? 'angular.min.js' : 'angular.js';
 
 const ng1Versions = [
   {
     label: '1.5',
-    files: ['angular-1.5/angular.js', 'angular-mocks-1.5/angular-mocks.js'],
+    files: [`angular-1.5/${ANGULARJS_FILENAME}`, 'angular-mocks-1.5/angular-mocks.js'],
   },
   {
     label: '1.6',
-    files: ['angular-1.6/angular.js', 'angular-mocks-1.6/angular-mocks.js'],
+    files: [`angular-1.6/${ANGULARJS_FILENAME}`, 'angular-mocks-1.6/angular-mocks.js'],
   },
   {
     label: '1.7',
-    files: ['angular/angular.js', 'angular-mocks/angular-mocks.js'],
+    files: [`angular/${ANGULARJS_FILENAME}`, 'angular-mocks/angular-mocks.js'],
   },
 ];
 
