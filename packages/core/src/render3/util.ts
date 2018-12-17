@@ -35,6 +35,8 @@ export function stringify(value: any): string {
   if (typeof value == 'function') return value.name || value;
   if (typeof value == 'string') return value;
   if (value == null) return '';
+  if (typeof value == 'object' && typeof value.type == 'function')
+    return value.type.name || value.type;
   return '' + value;
 }
 
