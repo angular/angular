@@ -3968,6 +3968,7 @@ withEachNg1Version(() => {
          });
        }));
 
+    // fixmeIvy('FW-724: upgraded ng1 components are not being rendered')
     it('should support ng2 > ng1 > ng2 (with inputs/outputs)', fakeAsync(() => {
          let ng2ComponentAInstance: Ng2ComponentA;
          let ng2ComponentBInstance: Ng2ComponentB;

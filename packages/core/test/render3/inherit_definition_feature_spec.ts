@@ -84,10 +84,10 @@ describe('InheritDefinitionFeature', () => {
       qux: 'subQux',
     });
     expect(subDef.declaredInputs).toEqual({
-      declaredFoo: 'superFoo',
-      bar: 'superBar',
-      baz: 'subBaz',
-      qux: 'subQux',
+      foo: 'declaredFoo',
+      bar: 'bar',
+      baz: 'baz',
+      qux: 'qux',
     });
   });
 
@@ -228,7 +228,7 @@ describe('InheritDefinitionFeature', () => {
     expect(subDef.declaredInputs).toEqual({
       input1: 'input1',
       input2: 'input2',
-      input3: 'input3',
+      alias3: 'input3',
       input4: 'input4',
       input5: 'input5',
     });

@@ -110,7 +110,7 @@ function baseDirectiveFields(
           meta, elVarExp, contextVarExp, styleBuilder, bindingParser, constantPool, hostVarsCount));
 
   // e.g 'inputs: {a: 'a'}`
-  definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs));
+  definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs, true));
 
   // e.g 'outputs: {a: 'a'}`
   definitionMap.set('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
