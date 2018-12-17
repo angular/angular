@@ -115,7 +115,7 @@ module.exports = function(config) {
       '/base/ngdeps/': '/base/',
     },
 
-    reporters: ['dots'],
+    reporters: ['spec'],
     sauceLabs: {
       testName: 'Angular2',
       retryLimit: 3,
