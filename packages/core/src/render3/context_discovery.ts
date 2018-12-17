@@ -206,16 +206,15 @@ function traverseNextElement(tNode: TNode): TNode|null {
     return tNode.child;
   } else if (tNode.next) {
     return tNode.next;
-  } else if (tNode.parent) {
-    while (tNode) {
-      tNode = tNode.parent !;
-      if (tNode && tNode.next) {
-        return tNode.next;
-      }
+  } else {
+    // Let's take the following template: <div><span>text</span></div><component/>
+    // After checking the text node, we need to find the next parent that has a "next" TNode,
+    // in this case the parent `div`, so that we can find the component.
+    while (tNode.parent && !tNode.parent.next) {
+      tNode = tNode.parent;
     }
-    return null;
+    return tNode.parent && tNode.parent.next;
   }
-  return null;
 }
 
 /**

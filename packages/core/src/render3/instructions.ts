@@ -215,6 +215,8 @@ export function createNodeAtIndex(
   }
 
   // Now link ourselves into the tree.
+  // We need this even if tNode exists, otherwise we might end up pointing to unexisting tNodes when
+  // we use i18n (especially with ICU expressions that update the DOM during the update phase).
   const previousOrParentTNode = getPreviousOrParentTNode();
   const isParent = getIsParent();
   if (previousOrParentTNode) {
