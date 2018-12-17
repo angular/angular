@@ -82,7 +82,7 @@
     "codelyzer": "^4.5.0",
     "conventional-changelog": "^3.0.5",
     "dgeni": "^0.4.10",
-    "dgeni-packages": "^0.26.12",
+    "dgeni-packages": "^0.27.0",
     "firebase-tools": "^4.1.0",
     "fs-extra": "^3.0.1",
     "glob": "^7.1.2",
