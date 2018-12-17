@@ -8,17 +8,15 @@
 import {createInjector} from '@angular/core';
 
 import {StaticInjector} from '../../src/di/injector';
-import {getComponent, getContext, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getRootComponents, getViewComponent} from '../../src/render3/discovery_utils';
-import {ProvidersFeature, RenderFlags, defineComponent, defineDirective, getHostElement} from '../../src/render3/index';
-
+import {getComponent, getContext, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getRootComponents, getViewComponent, loadLContext} from '../../src/render3/discovery_utils';
+import {ProvidersFeature, RenderFlags, defineComponent, defineDirective, elementContainerEnd, elementContainerStart, getHostElement, i18n, i18nApply, i18nExp} from '../../src/render3/index';
 import {element, elementEnd, elementStart, elementStyling, elementStylingApply, template, bind, elementProperty, text, textBinding, markDirty, listener} from '../../src/render3/instructions';
-
 import {ComponentFixture} from './render_util';
 import {NgIf} from './common_with_def';
 
 describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
-  let myApp: MyApp[];
+  let myApp: MyApp;
   let dirA: DirectiveA[];
   let childComponent: DirectiveA[];
   let child: NodeListOf<Element>;
@@ -29,7 +27,6 @@ describe('discovery utils', () => {
 
   beforeEach(() => {
     log = [];
-    myApp = [];
     dirA = [];
     childComponent = [];
     fixture = new ComponentFixture(
@@ -63,6 +60,7 @@ describe('discovery utils', () => {
    *         <p></p>
    *       <VIEW>
    *     </child>
+   *     <i18n>ICU expression</i18n>
    *   </#VIEW>
    * </my-app>
    * ```
@@ -96,15 +94,19 @@ describe('discovery utils', () => {
     });
   }
 
+  const MSG_DIV = `{�0�, select, 
+        other {ICU expression}
+      }`;
+
   class MyApp {
     text: string = 'INIT';
-    constructor() { myApp.push(this); }
+    constructor() { myApp = this; }
 
     static ngComponentDef = defineComponent({
       type: MyApp,
       selectors: [['my-app']],
       factory: () => new MyApp(),
-      consts: 9,
+      consts: 13,
       vars: 1,
       directives: [Child, DirectiveA, NgIf],
       template: (rf: RenderFlags, ctx: MyApp) => {
@@ -121,10 +123,18 @@ describe('discovery utils', () => {
               element(0, 'child');
             }
           }, 1, 0, 'child', ['ngIf', '']);
+          elementStart(9, 'i18n');
+          i18n(10, MSG_DIV);
+          elementEnd();
+          elementContainerStart(11);
+          { text(12, 'content'); }
+          elementContainerEnd();
         }
         if (rf & RenderFlags.Update) {
           textBinding(1, bind(ctx.text));
           elementProperty(8, 'ngIf', bind(true));
+          i18nExp(bind(ctx.text));
+          i18nApply(10);
         }
       }
     });
@@ -141,7 +151,7 @@ describe('discovery utils', () => {
       expect(() => getComponent(dirA[1] as any)).toThrowError(/Expecting instance of DOM Node/);
     });
     it('should return component from element', () => {
-      expect(getComponent<MyApp>(fixture.hostElement)).toEqual(myApp[0]);
+      expect(getComponent<MyApp>(fixture.hostElement)).toEqual(myApp);
       expect(getComponent<Child>(child[0])).toEqual(childComponent[0]);
       expect(getComponent<Child>(child[1])).toEqual(childComponent[1]);
     });
@@ -153,7 +163,7 @@ describe('discovery utils', () => {
       expect(() => getContext(dirA[1] as any)).toThrowError(/Expecting instance of DOM Node/);
     });
     it('should return context from element', () => {
-      expect(getContext<MyApp>(child[0])).toEqual(myApp[0]);
+      expect(getContext<MyApp>(child[0])).toEqual(myApp);
       expect(getContext<{$implicit: boolean}>(child[2]) !.$implicit).toEqual(true);
       expect(getContext<Child>(p[0])).toEqual(childComponent[0]);
     });
@@ -161,7 +171,7 @@ describe('discovery utils', () => {
 
   describe('getHostElement', () => {
     it('should return element on component', () => {
-      expect(getHostElement(myApp[0])).toEqual(fixture.hostElement);
+      expect(getHostElement(myApp)).toEqual(fixture.hostElement);
       expect(getHostElement(childComponent[0])).toEqual(child[0]);
       expect(getHostElement(childComponent[1])).toEqual(child[1]);
     });
@@ -181,7 +191,7 @@ describe('discovery utils', () => {
       expect(getInjector(p[0]).get(String)).toEqual('Child');
     });
     it('should return node-injector from component with providers', () => {
-      expect(getInjector(myApp[0]).get(String)).toEqual('Module');
+      expect(getInjector(myApp).get(String)).toEqual('Module');
       expect(getInjector(childComponent[0]).get(String)).toEqual('Child');
       expect(getInjector(childComponent[1]).get(String)).toEqual('Child');
     });
@@ -206,34 +216,34 @@ describe('discovery utils', () => {
   describe('getViewComponent', () => {
     it('should return null when called on root component', () => {
       expect(getViewComponent(fixture.hostElement)).toEqual(null);
-      expect(getViewComponent(myApp[0])).toEqual(null);
+      expect(getViewComponent(myApp)).toEqual(null);
     });
     it('should return containing component of child component', () => {
-      expect(getViewComponent<MyApp>(child[0])).toEqual(myApp[0]);
-      expect(getViewComponent<MyApp>(child[1])).toEqual(myApp[0]);
-      expect(getViewComponent<MyApp>(child[2])).toEqual(myApp[0]);
+      expect(getViewComponent<MyApp>(child[0])).toEqual(myApp);
+      expect(getViewComponent<MyApp>(child[1])).toEqual(myApp);
+      expect(getViewComponent<MyApp>(child[2])).toEqual(myApp);
 
-      expect(getViewComponent<MyApp>(childComponent[0])).toEqual(myApp[0]);
-      expect(getViewComponent<MyApp>(childComponent[1])).toEqual(myApp[0]);
-      expect(getViewComponent<MyApp>(childComponent[2])).toEqual(myApp[0]);
+      expect(getViewComponent<MyApp>(childComponent[0])).toEqual(myApp);
+      expect(getViewComponent<MyApp>(childComponent[1])).toEqual(myApp);
+      expect(getViewComponent<MyApp>(childComponent[2])).toEqual(myApp);
     });
     it('should return containing component of any view element', () => {
-      expect(getViewComponent<MyApp>(span[0])).toEqual(myApp[0]);
-      expect(getViewComponent<MyApp>(div[0])).toEqual(myApp[0]);
+      expect(getViewComponent<MyApp>(span[0])).toEqual(myApp);
+      expect(getViewComponent<MyApp>(div[0])).toEqual(myApp);
       expect(getViewComponent<Child>(p[0])).toEqual(childComponent[0]);
       expect(getViewComponent<Child>(p[1])).toEqual(childComponent[1]);
       expect(getViewComponent<Child>(p[2])).toEqual(childComponent[2]);
     });
     it('should return containing component of child directive', () => {
-      expect(getViewComponent<MyApp>(dirA[0])).toEqual(myApp[0]);
-      expect(getViewComponent<MyApp>(dirA[1])).toEqual(myApp[0]);
+      expect(getViewComponent<MyApp>(dirA[0])).toEqual(myApp);
+      expect(getViewComponent<MyApp>(dirA[1])).toEqual(myApp);
     });
   });
 
   describe('getLocalRefs', () => {
     it('should retrieve empty map', () => {
       expect(getLocalRefs(fixture.hostElement)).toEqual({});
-      expect(getLocalRefs(myApp[0])).toEqual({});
+      expect(getLocalRefs(myApp)).toEqual({});
       expect(getLocalRefs(span[0])).toEqual({});
       expect(getLocalRefs(child[0])).toEqual({});
     });
@@ -249,8 +259,8 @@ describe('discovery utils', () => {
 
   describe('getRootComponents', () => {
     it('should return root components from component', () => {
-      const rootComponents = [myApp[0]];
-      expect(getRootComponents(myApp[0])).toEqual(rootComponents);
+      const rootComponents = [myApp];
+      expect(getRootComponents(myApp)).toEqual(rootComponents);
       expect(getRootComponents(childComponent[0])).toEqual(rootComponents);
       expect(getRootComponents(childComponent[1])).toEqual(rootComponents);
       expect(getRootComponents(dirA[0])).toEqual(rootComponents);
@@ -289,10 +299,44 @@ describe('discovery utils', () => {
   describe('markDirty', () => {
     it('should re-render component', () => {
       expect(span[0].textContent).toEqual('INIT');
-      myApp[0].text = 'WORKS';
-      markDirty(myApp[0]);
+      myApp.text = 'WORKS';
+      markDirty(myApp);
       fixture.requestAnimationFrame.flush();
       expect(span[0].textContent).toEqual('WORKS');
+    });
+  });
+
+  describe('loadLContext', () => {
+    it('should work on components', () => {
+      const lContext = loadLContext(child[0]);
+      expect(lContext).toBeDefined();
+      expect(lContext.native as any).toBe(child[0]);
+    });
+
+    it('should work on templates', () => {
+      const templateComment = Array.from(fixture.hostElement.childNodes)
+                                  .find((node: ChildNode) => node.nodeType === Node.COMMENT_NODE);
+      const lContext = loadLContext(templateComment);
+      expect(lContext).toBeDefined();
+      expect(lContext.native as any).toBe(templateComment);
+    });
+
+    it('should work on ICU expressions', () => {
+      const icuComment = Array.from(fixture.hostElement.querySelector('i18n') !.childNodes)
+                             .find((node: ChildNode) => node.nodeType === Node.COMMENT_NODE);
+      const lContext = loadLContext(icuComment);
+      expect(lContext).toBeDefined();
+      expect(lContext.native as any).toBe(icuComment);
+    });
+
+    it('should work on ng-container', () => {
+      const ngContainerComment = Array.from(fixture.hostElement.childNodes)
+                                     .find(
+                                         (node: ChildNode) => node.nodeType === Node.COMMENT_NODE &&
+                                             node.textContent === `ng-container`);
+      const lContext = loadLContext(ngContainerComment);
+      expect(lContext).toBeDefined();
+      expect(lContext.native as any).toBe(ngContainerComment);
     });
   });
 });
