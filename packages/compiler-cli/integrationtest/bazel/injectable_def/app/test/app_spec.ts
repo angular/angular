@@ -9,7 +9,6 @@
 import {Component, INJECTOR, Injectable, NgModule} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {renderModuleFactory} from '@angular/platform-server';
-import {fixmeIvy} from '@angular/private/testing';
 import {BasicAppModuleNgFactory} from 'app_built/src/basic.ngfactory';
 import {DepAppModuleNgFactory} from 'app_built/src/dep.ngfactory';
 import {HierarchyAppModuleNgFactory} from 'app_built/src/hierarchy.ngfactory';
@@ -168,21 +167,20 @@ describe('ngInjectableDef Bazel Integration', () => {
     expect(TestBed.get(INJECTOR).get('foo')).toEqual('bar');
   });
 
-  fixmeIvy('FW-646: Directive providers don\'t support primitive types')
-      .it('Component injector understands requests for INJECTABLE', () => {
-        @Component({
-          selector: 'test-cmp',
-          template: 'test',
-          providers: [{provide: 'foo', useValue: 'bar'}],
-        })
-        class TestCmp {
-        }
+  it('Component injector understands requests for INJECTABLE', () => {
+    @Component({
+      selector: 'test-cmp',
+      template: 'test',
+      providers: [{provide: 'foo', useValue: 'bar'}],
+    })
+    class TestCmp {
+    }
 
-        TestBed.configureTestingModule({
-          declarations: [TestCmp],
-        });
+    TestBed.configureTestingModule({
+      declarations: [TestCmp],
+    });
 
-        const fixture = TestBed.createComponent(TestCmp);
-        expect(fixture.componentRef.injector.get(INJECTOR).get('foo')).toEqual('bar');
-      });
+    const fixture = TestBed.createComponent(TestCmp);
+    expect(fixture.componentRef.injector.get(INJECTOR).get('foo')).toEqual('bar');
+  });
 });
