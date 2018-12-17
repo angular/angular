@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {resolveForwardRef} from '../di/forward_ref';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
@@ -42,7 +41,6 @@ import {BoundPlayerFactory} from './styling/player_factory';
 import {getStylingContext, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
-
 
 
 /**
@@ -212,24 +210,26 @@ export function createNodeAtIndex(
 
   let tNode = tView.data[adjustedIndex] as TNode;
   if (tNode == null) {
-    const previousOrParentTNode = getPreviousOrParentTNode();
-    const isParent = getIsParent();
     // TODO(misko): Refactor createTNode so that it does not depend on LView.
     tNode = tView.data[adjustedIndex] = createTNode(lView, type, adjustedIndex, name, attrs, null);
+  }
 
-    // Now link ourselves into the tree.
-    if (previousOrParentTNode) {
-      if (isParent && previousOrParentTNode.child == null &&
-          (tNode.parent !== null || previousOrParentTNode.type === TNodeType.View)) {
-        // We are in the same view, which means we are adding content node to the parent view.
-        previousOrParentTNode.child = tNode;
-      } else if (!isParent) {
-        previousOrParentTNode.next = tNode;
-      }
+  // Now link ourselves into the tree.
+  // We need this even if tNode exists, otherwise we might end up pointing to unexisting tNodes when
+  // we use i18n (especially with ICU expressions that update the DOM during the update phase).
+  const previousOrParentTNode = getPreviousOrParentTNode();
+  const isParent = getIsParent();
+  if (previousOrParentTNode) {
+    if (isParent && previousOrParentTNode.child == null &&
+        (tNode.parent !== null || previousOrParentTNode.type === TNodeType.View)) {
+      // We are in the same view, which means we are adding content node to the parent view.
+      previousOrParentTNode.child = tNode;
+    } else if (!isParent) {
+      previousOrParentTNode.next = tNode;
     }
   }
 
-  if (tView.firstChild == null && type === TNodeType.Element) {
+  if (tView.firstChild == null) {
     tView.firstChild = tNode;
   }
 
@@ -504,6 +504,7 @@ export function elementContainerStart(
 
   appendChild(native, tNode, lView);
   createDirectivesAndLocals(tView, lView, localRefs);
+  attachPatchData(native, lView);
 }
 
 /** Mark the end of the <ng-container>. */
@@ -1921,6 +1922,8 @@ export function template(
   createDirectivesAndLocals(tView, lView, localRefs, localRefExtractor);
   const currentQueries = lView[QUERIES];
   const previousOrParentTNode = getPreviousOrParentTNode();
+  const native = getNativeByTNode(previousOrParentTNode, lView);
+  attachPatchData(native, lView);
   if (currentQueries) {
     lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TContainerNode);
   }

@@ -284,7 +284,7 @@ export interface TView {
   /**
    * Pointer to the `TNode` that represents the root of the view.
    *
-   * If this is a `TNode` for an `LViewNode`, this is an embedded view of a container.
+   * If this is a `TViewNode` for an `LViewNode`, this is an embedded view of a container.
    * We need this pointer to be able to efficiently find this node when inserting the view
    * into an anchor.
    *

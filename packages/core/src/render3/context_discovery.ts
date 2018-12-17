@@ -6,15 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import './ng_dev_mode';
-
 import {assertDomNode} from './assert';
 import {EMPTY_ARRAY} from './definition';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, TVIEW} from './interfaces/view';
-import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData} from './util';
-
+import {getComponentViewByIndex, getNativeByTNode, getTNode, readElementValue, readPatchedData} from './util';
 
 
 /** Returns the matching `LContext` data for a given DOM node, directive or component instance.
@@ -67,8 +65,8 @@ export function getLContext(target: any): LContext|null {
       }
 
       // the goal is not to fill the entire context full of data because the lookups
-      // are expensive. Instead, only the target data (the element, compontent or
-      // directive details) are filled into the context. If called multiple times
+      // are expensive. Instead, only the target data (the element, component, container, ICU
+      // expression or directive details) are filled into the context. If called multiple times
       // with different target values then the missing target data will be filled in.
       const native = readElementValue(lView[nodeIndex]);
       const existingCtx = readPatchedData(native);
@@ -208,10 +206,15 @@ function traverseNextElement(tNode: TNode): TNode|null {
     return tNode.child;
   } else if (tNode.next) {
     return tNode.next;
-  } else if (tNode.parent) {
-    return tNode.parent.next || null;
+  } else {
+    // Let's take the following template: <div><span>text</span></div><component/>
+    // After checking the text node, we need to find the next parent that has a "next" TNode,
+    // in this case the parent `div`, so that we can find the component.
+    while (tNode.parent && !tNode.parent.next) {
+      tNode = tNode.parent;
+    }
+    return tNode.parent && tNode.parent.next;
   }
-  return null;
 }
 
 /**
