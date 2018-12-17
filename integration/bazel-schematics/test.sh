@@ -9,15 +9,13 @@ function test() {
   # Create project
   ng new demo --collection=@angular/bazel --defaults --skip-git
   cd demo
-  # TODO(kyliau): Use bazel commands directly for now. Once 7.1.4 is out we can
-  # switch to use builders (ng build and ng test)
   # Run build
+  # TODO(kyliau): Use `bazel build` for now. Running `ng build` requires
+  # node_modules to be available in project directory.
   bazel build //src:bundle
   # Run test
-  bazel test \
-    //src:test \
-    //e2e:devserver_test \
-    //e2e:prodserver_test
+  ng test
+  ng e2e
 }
 
 test
