@@ -727,61 +727,58 @@ class CompWithUrlTemplate {
       });
 
       describe('overrideTemplateUsingTestingModule', () => {
-        fixmeIvy('FW-851: TestBed.overrideTemplateUsingTestingModule is not implemented')
-            .it('should compile the template in the context of the testing module', () => {
-              @Component({selector: 'comp', template: 'a'})
-              class MyComponent {
-                prop = 'some prop';
-              }
+        it('should compile the template in the context of the testing module', () => {
+          @Component({selector: 'comp', template: 'a'})
+          class MyComponent {
+            prop = 'some prop';
+          }
 
-              let testDir: TestDir|undefined;
+          let testDir: TestDir|undefined;
 
-              @Directive({selector: '[test]'})
-              class TestDir {
-                constructor() { testDir = this; }
+          @Directive({selector: '[test]'})
+          class TestDir {
+            constructor() { testDir = this; }
 
-                // TODO(issue/24571): remove '!'.
-                @Input('test')
-                test !: string;
-              }
+            // TODO(issue/24571): remove '!'.
+            @Input('test')
+            test !: string;
+          }
 
-              TestBed.overrideTemplateUsingTestingModule(
-                  MyComponent, '<div [test]="prop">Hello world!</div>');
+          TestBed.overrideTemplateUsingTestingModule(
+              MyComponent, '<div [test]="prop">Hello world!</div>');
 
-              const fixture = TestBed.configureTestingModule({declarations: [MyComponent, TestDir]})
-                                  .createComponent(MyComponent);
-              fixture.detectChanges();
-              expect(fixture.nativeElement).toHaveText('Hello world!');
-              expect(testDir).toBeAnInstanceOf(TestDir);
-              expect(testDir !.test).toBe('some prop');
-            });
+          const fixture = TestBed.configureTestingModule({declarations: [MyComponent, TestDir]})
+                              .createComponent(MyComponent);
+          fixture.detectChanges();
+          expect(fixture.nativeElement).toHaveText('Hello world!');
+          expect(testDir).toBeAnInstanceOf(TestDir);
+          expect(testDir !.test).toBe('some prop');
+        });
 
-        fixmeIvy('FW-851: TestBed.overrideTemplateUsingTestingModule is not implemented')
-            .it('should throw if the TestBed is already created', () => {
-              @Component({selector: 'comp', template: 'a'})
-              class MyComponent {
-              }
+        it('should throw if the TestBed is already created', () => {
+          @Component({selector: 'comp', template: 'a'})
+          class MyComponent {
+          }
 
-              TestBed.get(Injector);
+          TestBed.get(Injector);
 
-              expect(() => TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b'))
-                  .toThrowError(
-                      /Cannot override template when the test module has already been instantiated/);
-            });
+          expect(() => TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b'))
+              .toThrowError(
+                  /Cannot override template when the test module has already been instantiated/);
+        });
 
-        fixmeIvy('FW-851: TestBed.overrideTemplateUsingTestingModule is not implemented')
-            .it('should reset overrides when the testing module is resetted', () => {
-              @Component({selector: 'comp', template: 'a'})
-              class MyComponent {
-              }
+        it('should reset overrides when the testing module is resetted', () => {
+          @Component({selector: 'comp', template: 'a'})
+          class MyComponent {
+          }
 
-              TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b');
+          TestBed.overrideTemplateUsingTestingModule(MyComponent, 'b');
 
-              const fixture = TestBed.resetTestingModule()
-                                  .configureTestingModule({declarations: [MyComponent]})
-                                  .createComponent(MyComponent);
-              expect(fixture.nativeElement).toHaveText('a');
-            });
+          const fixture = TestBed.resetTestingModule()
+                              .configureTestingModule({declarations: [MyComponent]})
+                              .createComponent(MyComponent);
+          expect(fixture.nativeElement).toHaveText('a');
+        });
       });
 
       describe('setting up the compiler', () => {
