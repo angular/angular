@@ -388,12 +388,11 @@ class CompWithUrlTemplate {
                 .overridePipe(SomePipe, {set: {name: 'somePipe'}})
                 .overridePipe(SomePipe, {add: {pure: false}});
           });
-          fixmeIvy('FW-788: Support metadata override in TestBed (for AOT-compiled components)')
-              .it('should work', () => {
-                const compFixture = TestBed.createComponent(SomeComponent);
-                compFixture.detectChanges();
-                expect(compFixture.nativeElement).toHaveText('transformed hello');
-              });
+          it('should work', () => {
+            const compFixture = TestBed.createComponent(SomeComponent);
+            compFixture.detectChanges();
+            expect(compFixture.nativeElement).toHaveText('transformed hello');
+          });
         });
 
         describe('template', () => {
