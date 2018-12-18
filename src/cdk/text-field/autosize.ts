@@ -226,23 +226,13 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     textarea.classList.remove('cdk-textarea-autosize-measuring');
     textarea.placeholder = placeholderText;
 
-    // On Firefox resizing the textarea will prevent it from scrolling to the caret position.
-    // We need to re-set the selection in order for it to scroll to the proper position.
-    if (typeof requestAnimationFrame !== 'undefined') {
-      this._ngZone.runOutsideAngular(() => requestAnimationFrame(() => {
-        const {selectionStart, selectionEnd} = textarea;
-
-        // IE will throw an "Unspecified error" if we try to set the selection range after the
-        // element has been removed from the DOM. Assert that the directive hasn't been destroyed
-        // between the time we requested the animation frame and when it was executed.
-        // Also note that we have to assert that the textarea is focused before we set the
-        // selection range. Setting the selection range on a non-focused textarea will cause
-        // it to receive focus on IE and Edge.
-        if (!this._destroyed.isStopped && document.activeElement === textarea) {
-          textarea.setSelectionRange(selectionStart, selectionEnd);
-        }
-      }));
-    }
+    this._ngZone.runOutsideAngular(() => {
+      if (typeof requestAnimationFrame !== 'undefined') {
+        requestAnimationFrame(() => this._scrollToCaretPosition(textarea));
+      } else {
+        setTimeout(() => this._scrollToCaretPosition(textarea));
+      }
+    });
 
     this._previousValue = value;
     this._previousMinRows = this._minRows;
@@ -262,5 +252,24 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
 
   _noopInputHandler() {
     // no-op handler that ensures we're running change detection on input events.
+  }
+
+  /**
+   * Scrolls a textarea to the caret position. On Firefox resizing the textarea will
+   * prevent it from scrolling to the caret position. We need to re-set the selection
+   * in order for it to scroll to the proper position.
+   */
+  private _scrollToCaretPosition(textarea: HTMLTextAreaElement) {
+    const {selectionStart, selectionEnd} = textarea;
+
+    // IE will throw an "Unspecified error" if we try to set the selection range after the
+    // element has been removed from the DOM. Assert that the directive hasn't been destroyed
+    // between the time we requested the animation frame and when it was executed.
+    // Also note that we have to assert that the textarea is focused before we set the
+    // selection range. Setting the selection range on a non-focused textarea will cause
+    // it to receive focus on IE and Edge.
+    if (!this._destroyed.isStopped && document.activeElement === textarea) {
+      textarea.setSelectionRange(selectionStart, selectionEnd);
+    }
   }
 }
