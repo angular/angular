@@ -106,7 +106,7 @@ publishPackage() {
   git add -A
   git commit --allow-empty -m "${buildCommitMessage}"
   git tag "${buildTagName}"
-  git push origin ${branchName} --tags
+  git push origin ${branchName} --tags --force
 
   echo "Published package artifacts for ${packageName}#${buildVersionName} into ${branchName}"
 }

@@ -124,6 +124,6 @@ echo "Credentials for docs-content repository are now set up. Publishing.."
 git add -A
 git commit --allow-empty -m "${buildCommitMessage}"
 git tag "${buildTagName}"
-git push origin ${branchName} --tags
+git push origin ${branchName} --tags --force
 
 echo "Published docs-content for ${buildVersionName} into ${branchName} successfully"
