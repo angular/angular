@@ -65,7 +65,7 @@
     "fs-extra": "4.0.2",
     "jasmine": "^3.1.0",
     "jasmine-core": "^3.1.0",
-    "karma": "^2.0.4",
+    "karma": "^3.1.4",
     "magic-string": "^0.25.0",
     "minimist": "1.2.0",
     "mock-fs": "^4.5.0",
