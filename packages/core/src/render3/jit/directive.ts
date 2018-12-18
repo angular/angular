@@ -7,6 +7,7 @@
  */
 
 import {ComponentType} from '..';
+import {resolveForwardRef} from '../../di/forward_ref';
 import {Query} from '../../metadata/di';
 import {Component, Directive} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
@@ -155,7 +156,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
 }
 
 function convertToR3QueryPredicate(selector: any): any|string[] {
-  return typeof selector === 'string' ? splitByComma(selector) : selector;
+  return typeof selector === 'string' ? splitByComma(selector) : resolveForwardRef(selector);
 }
 
 export function convertToR3QueryMetadata(propertyName: string, ann: Query): R3QueryMetadataFacade {

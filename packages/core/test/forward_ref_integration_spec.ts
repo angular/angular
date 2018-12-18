@@ -10,19 +10,16 @@ import {CommonModule} from '@angular/common';
 import {Component, ContentChildren, Directive, Inject, NO_ERRORS_SCHEMA, NgModule, QueryList, asNativeElements, forwardRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
 
 describe('forwardRef integration', function() {
   beforeEach(() => { TestBed.configureTestingModule({imports: [Module], declarations: [App]}); });
 
-  fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
-      .it('should instantiate components which are declared using forwardRef', () => {
-        const a =
-            TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
-        a.detectChanges();
-        expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
-        expect(TestBed.get(ModuleFrame)).toBeDefined();
-      });
+  it('should instantiate components which are declared using forwardRef', () => {
+    const a = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
+    a.detectChanges();
+    expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
+    expect(TestBed.get(ModuleFrame)).toBeDefined();
+  });
 });
 
 @NgModule({
