@@ -88,28 +88,12 @@ First time setup:
 - Add the following to the `configurations` array:
 
 ```json
-        {
-            "name": "Attach (inspect)",
-            "type": "node",
-            "request": "attach",
-            "port": 9229,
-            "address": "localhost",
-            "restart": false,
-            "sourceMaps": true,
-            "localRoot": "${workspaceRoot}",
-            "remoteRoot": null
-        },
-        {
-            "name": "Attach (no-sm,inspect)",
-            "type": "node",
-            "request": "attach",
-            "port": 9229,
-            "address": "localhost",
-            "restart": false,
-            "sourceMaps": false,
-            "localRoot": "${workspaceRoot}",
-            "remoteRoot": null
-        },
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach to Remote",
+      "port": 9229,
+    }
 ```
 
 **Setting breakpoints directly in your code files may not work in VSCode**. This is because the files you're actually debugging are built files that exist in a `./private/...` folder.
@@ -118,7 +102,7 @@ and launch the bazel corresponding test (`yarn bazel test <target> --config=debu
 
 Bazel will wait on a connection. Go to the debug view (by clicking on the sidebar or
 Apple+Shift+D on Mac) and click on the green play icon next to the configuration name
-(ie `Attach (inspect)`).
+(ie `Attach to Remote`).
 
 ### Debugging a Karma Test
 
