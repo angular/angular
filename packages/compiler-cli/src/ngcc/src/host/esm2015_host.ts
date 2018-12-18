@@ -8,8 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, CtorParameter, Decorator, Import} from '../../../ngtsc/host';
-import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/metadata';
+import {ClassMember, ClassMemberKind, CtorParameter, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/reflection';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, isDefined} from '../utils';
 

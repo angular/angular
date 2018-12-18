@@ -11,8 +11,6 @@ ts_library(
     module_name = "@angular/compiler-cli/src/ngtsc/shims",
     deps = [
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngtsc/host",
-        "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/util",
         "@ngdeps//@types/node",
         "@ngdeps//typescript",

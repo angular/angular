@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ReflectionHost} from '../../host';
-import {AbsoluteReference, Reference, ResolvedReference, reflectTypeEntityToDeclaration} from '../../metadata';
-import {reflectIdentifierOfDeclaration, reflectNameOfDeclaration} from '../../metadata/src/reflector';
+import {AbsoluteReference, Reference, ResolvedReference} from '../../imports';
+import {ReflectionHost, reflectIdentifierOfDeclaration, reflectNameOfDeclaration, reflectTypeEntityToDeclaration} from '../../reflection';
 import {TypeCheckableDirectiveMeta} from '../../typecheck';
 
 import {extractDirectiveGuards} from './util';

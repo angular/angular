@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMemberKind, Import} from '../../../ngtsc/host';
+import {ClassMemberKind, Import} from '../../../ngtsc/reflection';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {getDeclaration, makeTestProgram} from '../helpers/utils';

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Statement} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {TypeScriptReflectionHost} from '../../metadata';
+import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {ImportManager, translateStatement} from '../../translator';
+
 import {generateSetClassMetadataCall} from '../src/metadata';
 
 const CORE = {

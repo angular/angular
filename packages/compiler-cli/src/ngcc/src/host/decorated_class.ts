@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {Decorator} from '../../../ngtsc/host';
+import {Decorator} from '../../../ngtsc/reflection';
 
 /**
  * A simple container that holds the details of a decorated class that has been

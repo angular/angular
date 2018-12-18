@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
+import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import * as path from 'canonical-path';
 import * as fs from 'fs';
 import * as ts from 'typescript';
@@ -59,16 +60,17 @@ export class FileResourceLoader implements ResourceLoader {
 export class DecorationAnalyzer {
   resourceLoader = new FileResourceLoader();
   scopeRegistry = new SelectorScopeRegistry(this.typeChecker, this.host);
+  evaluator = new PartialEvaluator(this.host, this.typeChecker);
   handlers: DecoratorHandler<any, any>[] = [
-    new BaseDefDecoratorHandler(this.typeChecker, this.host),
+    new BaseDefDecoratorHandler(this.host, this.evaluator),
     new ComponentDecoratorHandler(
-        this.typeChecker, this.host, this.scopeRegistry, this.isCore, this.resourceLoader,
+        this.host, this.evaluator, this.scopeRegistry, this.isCore, this.resourceLoader,
         this.rootDirs, /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true),
-    new DirectiveDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
+    new DirectiveDecoratorHandler(this.host, this.evaluator, this.scopeRegistry, this.isCore),
     new InjectableDecoratorHandler(this.host, this.isCore),
     new NgModuleDecoratorHandler(
-        this.typeChecker, this.host, this.scopeRegistry, this.referencesRegistry, this.isCore),
-    new PipeDecoratorHandler(this.typeChecker, this.host, this.scopeRegistry, this.isCore),
+        this.host, this.evaluator, this.scopeRegistry, this.referencesRegistry, this.isCore),
+    new PipeDecoratorHandler(this.host, this.evaluator, this.scopeRegistry, this.isCore),
   ];
 
   constructor(

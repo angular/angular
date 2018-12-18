@@ -9,7 +9,7 @@
 import {ExternalExpr, Identifiers, InvokeFunctionExpr, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {CtorParameter, Decorator, ReflectionHost} from '../../host';
+import {CtorParameter, Decorator, ReflectionHost} from '../../reflection';
 
 /**
  * Given a class declaration, generate a call to `setClassMetadata` with the Angular metadata

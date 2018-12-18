@@ -8,8 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, Decorator, FunctionDefinition, Parameter} from '../../../ngtsc/host';
-import {reflectObjectLiteral} from '../../../ngtsc/metadata';
+import {ClassMember, ClassMemberKind, Decorator, FunctionDefinition, Parameter, reflectObjectLiteral} from '../../../ngtsc/reflection';
 import {getNameText} from '../utils';
 
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
