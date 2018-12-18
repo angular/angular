@@ -50,11 +50,7 @@ ts_devserver(
         "npm/node_modules/zone.js/dist",
         "npm/node_modules/tslib",
     ],
-<<<<<<< HEAD
-    entry_module = "<%= name %>/src/main",
-=======
-    entry_module = "<%= utils.underscore(name) %>/src/main.dev",
->>>>>>> a2669d4f4... fix(bazel): devserver entry_module should have underscore name (#27719)
+    entry_module = "<%= utils.underscore(name) %>/src/main",
     serving_path = "/bundle.min.js",
     static_files = [
         "@npm//node_modules/zone.js:dist/zone.min.js",

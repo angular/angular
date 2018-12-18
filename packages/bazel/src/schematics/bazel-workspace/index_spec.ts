@@ -29,8 +29,6 @@ describe('Bazel-workspace Schematic', () => {
     expect(files).toContain('/demo/yarn.lock');
   });
 
-<<<<<<< HEAD
-=======
   it('should find existing Angular version', () => {
     let host = new UnitTestTree(new HostTree);
     host.create('/demo/node_modules/@angular/core/package.json', JSON.stringify({
@@ -53,7 +51,6 @@ describe('Bazel-workspace Schematic', () => {
     expect(content).toContain('entry_module = "demo_app/src/main.dev"');
   });
 
->>>>>>> a2669d4f4... fix(bazel): devserver entry_module should have underscore name (#27719)
   describe('WORKSPACE', () => {
     it('should contain project name', () => {
       const options = {...defaultOptions};
