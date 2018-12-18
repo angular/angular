@@ -174,7 +174,10 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
       if (!ref.isDragging()) {
         ref.disabled = this.disabled;
         ref.lockAxis = this.lockAxis;
-        ref.withBoundaryElement(this._getBoundaryElement());
+        ref
+          .withBoundaryElement(this._getBoundaryElement())
+          .withPlaceholderTemplate(this._placeholderTemplate)
+          .withPreviewTemplate(this._previewTemplate);
       }
     });
     this._proxyEvents(ref);
@@ -213,11 +216,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
                       `Currently attached to "${rootElement.nodeName}".`);
         }
 
-        this._dragRef
-          .withRootElement(rootElement)
-          .withPlaceholderTemplate(this._placeholderTemplate)
-          .withPreviewTemplate(this._previewTemplate);
-
+        this._dragRef.withRootElement(rootElement);
         this._handles.changes
           .pipe(startWith(this._handles))
           .subscribe((handleList: QueryList<CdkDragHandle>) => {

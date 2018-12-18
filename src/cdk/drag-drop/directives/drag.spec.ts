@@ -1776,6 +1776,23 @@ describe('CdkDrag', () => {
       expect(preview.textContent!.trim()).toContain('Custom preview');
     }));
 
+    it('should handle the custom preview being removed', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
+      fixture.detectChanges();
+      flush();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      fixture.componentInstance.renderCustomPreview = false;
+      fixture.detectChanges();
+      startDraggingViaMouse(fixture, item);
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+
+      expect(preview).toBeTruthy();
+      expect(preview.classList).not.toContain('custom-preview');
+      expect(preview.textContent!.trim()).not.toContain('Custom preview');
+    }));
+
     it('should be able to constrain the position of a custom preview', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
       fixture.componentInstance.boundarySelector = '.cdk-drop-list';
@@ -1898,6 +1915,25 @@ describe('CdkDrag', () => {
       expect(placeholder).toBeTruthy();
       expect(placeholder.classList).toContain('custom-placeholder');
       expect(placeholder.textContent!.trim()).toContain('Custom placeholder');
+    }));
+
+    it('should handle the custom placeholder being removed', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithCustomPlaceholder);
+      fixture.detectChanges();
+      flush();
+
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      fixture.componentInstance.renderPlaceholder = false;
+      fixture.detectChanges();
+
+      startDraggingViaMouse(fixture, item);
+
+      const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+
+      expect(placeholder).toBeTruthy();
+      expect(placeholder.classList).not.toContain('custom-placeholder');
+      expect(placeholder.textContent!.trim()).not.toContain('Custom placeholder');
     }));
 
     it('should clear the `transform` value from siblings when item is dropped`', fakeAsync(() => {
@@ -2713,10 +2749,13 @@ class DraggableInHorizontalDropZone {
         [cdkDragBoundary]="boundarySelector"
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">
           {{item}}
-          <div
-            class="custom-preview"
-            style="width: 50px; height: 50px; background: purple;"
-            *cdkDragPreview>Custom preview</div>
+
+          <ng-container *ngIf="renderCustomPreview">
+            <div
+              class="custom-preview"
+              style="width: 50px; height: 50px; background: purple;"
+              *cdkDragPreview>Custom preview</div>
+          </ng-container>
       </div>
     </div>
   `
@@ -2726,6 +2765,7 @@ class DraggableInDropZoneWithCustomPreview {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   items = ['Zero', 'One', 'Two', 'Three'];
   boundarySelector: string;
+  renderCustomPreview = true;
 }
 
 
@@ -2735,7 +2775,9 @@ class DraggableInDropZoneWithCustomPreview {
       <div *ngFor="let item of items" cdkDrag
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">
           {{item}}
-          <div class="custom-placeholder" *cdkDragPlaceholder>Custom placeholder</div>
+          <ng-container *ngIf="renderPlaceholder">
+            <div class="custom-placeholder" *cdkDragPlaceholder>Custom placeholder</div>
+          </ng-container>
       </div>
     </div>
   `
@@ -2743,6 +2785,7 @@ class DraggableInDropZoneWithCustomPreview {
 class DraggableInDropZoneWithCustomPlaceholder {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   items = ['Zero', 'One', 'Two', 'Three'];
+  renderPlaceholder = true;
 }
 
 
