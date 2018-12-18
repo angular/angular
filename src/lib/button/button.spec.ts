@@ -48,7 +48,7 @@ describe('MatButton', () => {
     expect(button.ripple).toBeTruthy();
   });
 
-  it('should should not clear previous defined classes', () => {
+  it('should not clear previous defined classes', () => {
     let fixture = TestBed.createComponent(TestApp);
     let testComponent = fixture.debugElement.componentInstance;
     let buttonDebugElement = fixture.debugElement.query(By.css('button'));

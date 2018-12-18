@@ -444,7 +444,7 @@ describe('MatCheckbox', () => {
         expect(checkboxNativeElement.classList.contains('mat-accent')).toBe(true);
       });
 
-      it('should should not clear previous defined classes', () => {
+      it('should not clear previous defined classes', () => {
         checkboxNativeElement.classList.add('custom-class');
 
         testComponent.checkboxColor = 'primary';

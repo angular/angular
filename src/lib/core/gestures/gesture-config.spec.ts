@@ -44,7 +44,7 @@ describe('GestureConfig', () => {
     expect(firstCallArgs[1].cssProps.touchAction).toBe('auto');
   });
 
-  it('should should not error when HammerJS is not loaded', () => {
+  it('should not error when HammerJS is not loaded', () => {
     // Remove the Hammer global from the environment, storing it to restore at the end of the test.
     const hammerGlobal = (window as any).Hammer;
     (window as any).Hammer = undefined;

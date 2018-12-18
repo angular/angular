@@ -597,7 +597,7 @@ describe('MatSlideToggle without forms', () => {
       expect(slideThumbContainer.classList).not.toContain('mat-dragging');
     }));
 
-    it('should should emit a change event after drag', fakeAsync(() => {
+    it('should emit a change event after drag', fakeAsync(() => {
       expect(slideToggle.checked).toBe(false);
 
       gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
