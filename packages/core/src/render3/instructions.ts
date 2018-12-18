@@ -48,6 +48,8 @@ import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootCont
 /**
  * A permanent marker promise which signifies that the current CD tree is
  * clean.
+ *
+ * test test test
  */
 const _CLEAN_PROMISE = Promise.resolve(null);
 
