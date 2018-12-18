@@ -2,7 +2,9 @@
 
 #options for the size plugin
 size:
-  disabled: false
+  # Temporary disabled until we figure out why the size status check is not being
+  # updated properly. TODO(devversion): re-add once the size check is reliable.
+  disabled: true
   # Name of the status that will be responsible for providing
   # artifacts that will be measured by the robot.
   circleCiStatusName: "ci/circleci: build_release_packages"
