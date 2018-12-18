@@ -22,6 +22,7 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     exited: EventEmitter<CdkDragExit<any>>;
     lockAxis: 'x' | 'y';
     moved: Observable<CdkDragMove<T>>;
+    released: EventEmitter<CdkDragRelease>;
     rootElementSelector: string;
     started: EventEmitter<CdkDragStart>;
     constructor(
@@ -90,6 +91,10 @@ export declare class CdkDragPreview<T = any> {
     data: T;
     templateRef: TemplateRef<T>;
     constructor(templateRef: TemplateRef<T>);
+}
+
+export interface CdkDragRelease<T = any> {
+    source: CdkDrag<T>;
 }
 
 export interface CdkDragSortEvent<T = any, I = T> {

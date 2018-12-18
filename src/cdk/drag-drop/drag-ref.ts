@@ -213,6 +213,9 @@ export class DragRef<T = any> {
   /** Emits when the user starts dragging the item. */
   started = new Subject<{source: DragRef}>();
 
+  /** Emits when the user has released a drag item, before any animations have started. */
+  released = new Subject<{source: DragRef}>();
+
   /** Emits when the user stops dragging an item in the container. */
   ended = new Subject<{source: DragRef}>();
 
@@ -355,6 +358,7 @@ export class DragRef<T = any> {
     this._removeSubscriptions();
     this.beforeStarted.complete();
     this.started.complete();
+    this.released.complete();
     this.ended.complete();
     this.entered.complete();
     this.exited.complete();
@@ -515,6 +519,8 @@ export class DragRef<T = any> {
     if (!this._hasStartedDragging) {
       return;
     }
+
+    this.released.next({source: this});
 
     if (!this.dropContainer) {
       // Convert the active transform into a passive one. This means that next time

@@ -38,6 +38,7 @@ import {
   CdkDragExit,
   CdkDragMove,
   CdkDragStart,
+  CdkDragRelease,
 } from '../drag-events';
 import {CdkDragHandle} from './drag-handle';
 import {CdkDragPlaceholder} from './drag-placeholder';
@@ -117,6 +118,10 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
 
   /** Emits when the user starts dragging the item. */
   @Output('cdkDragStarted') started: EventEmitter<CdkDragStart> = new EventEmitter<CdkDragStart>();
+
+  /** Emits when the user has released a drag item, before any animations have started. */
+  @Output('cdkDragReleased') released: EventEmitter<CdkDragRelease> =
+      new EventEmitter<CdkDragRelease>();
 
   /** Emits when the user stops dragging an item in the container. */
   @Output('cdkDragEnded') ended: EventEmitter<CdkDragEnd> = new EventEmitter<CdkDragEnd>();
@@ -252,6 +257,10 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
   private _proxyEvents(ref: DragRef<CdkDrag<T>>) {
     ref.started.subscribe(() => {
       this.started.emit({source: this});
+    });
+
+    ref.released.subscribe(() => {
+      this.released.emit({source: this});
     });
 
     ref.ended.subscribe(() => {

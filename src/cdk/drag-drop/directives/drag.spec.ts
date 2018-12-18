@@ -354,6 +354,7 @@ describe('CdkDrag', () => {
       dragElementViaMouse(fixture, fixture.componentInstance.dragElement.nativeElement, 2, 2);
 
       expect(fixture.componentInstance.startedSpy).not.toHaveBeenCalled();
+      expect(fixture.componentInstance.releasedSpy).not.toHaveBeenCalled();
       expect(fixture.componentInstance.endedSpy).not.toHaveBeenCalled();
       expect(moveSpy).not.toHaveBeenCalled();
       subscription.unsubscribe();
@@ -1219,6 +1220,40 @@ describe('CdkDrag', () => {
 
       expect(preview.parentNode)
           .toBeFalsy('Expected preview to be removed from the DOM if the transition timed out');
+    }));
+
+    it('should emit the released event as soon as the item is released', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1];
+      const endedSpy = jasmine.createSpy('ended spy');
+      const releasedSpy = jasmine.createSpy('released spy');
+      const endedSubscription = item.ended.subscribe(endedSpy);
+      const releasedSubscription = item.released.subscribe(releasedSpy);
+
+      startDraggingViaMouse(fixture, item.element.nativeElement);
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+
+      // Add a duration since the tests won't include one.
+      preview.style.transitionDuration = '500ms';
+
+      // Move somewhere so the draggable doesn't exit immediately.
+      dispatchMouseEvent(document, 'mousemove', 50, 50);
+      fixture.detectChanges();
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+
+      // Expected the released event to fire immediately upon release.
+      expect(releasedSpy).toHaveBeenCalled();
+      tick(1000);
+
+      // Expected the ended event to fire once the entire sequence is done.
+      expect(endedSpy).toHaveBeenCalled();
+
+      endedSubscription.unsubscribe();
+      releasedSubscription.unsubscribe();
     }));
 
     it('should reset immediately when failed drag happens after a successful one', fakeAsync(() => {
@@ -2597,6 +2632,7 @@ describe('CdkDrag', () => {
         cdkDrag
         [cdkDragBoundary]="boundarySelector"
         (cdkDragStarted)="startedSpy($event)"
+        (cdkDragReleased)="releasedSpy($event)"
         (cdkDragEnded)="endedSpy($event)"
         #dragElement
         style="width: 100px; height: 100px; background: red;"></div>
@@ -2608,6 +2644,7 @@ class StandaloneDraggable {
   @ViewChild(CdkDrag) dragInstance: CdkDrag;
   startedSpy = jasmine.createSpy('started spy');
   endedSpy = jasmine.createSpy('ended spy');
+  releasedSpy = jasmine.createSpy('released spy');
   boundarySelector: string;
 }
 
