@@ -129,6 +129,11 @@
       "./tools/package-tools/rollup-globals.ts",
       "src/+(lib|cdk|material-examples|material-experimental|cdk-experimental)/!(schematics)**/*.ts"
     ],
+    "file-name-casing-scoped": [
+      true,
+      // Exclude lint rule files since they have to always be camel cased and end with `Rule`.
+      "**/*Rule.ts"
+    ],
     "no-unescaped-html-tag": true
   },
   "linterOptions": {

@@ -5,7 +5,7 @@ import {task} from 'gulp';
 import {buildConfig, sequenceTask} from 'material2-build-tools';
 import * as minimist from 'minimist';
 import {join} from 'path';
-import {execTask} from '../../util/task_helpers';
+import {execTask} from '../../util/task-helpers';
 
 /** Packages that will be published to NPM by the release task. */
 export const releasePackages = [

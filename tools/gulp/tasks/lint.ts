@@ -3,7 +3,7 @@ import {readdirSync, readFileSync, statSync} from 'fs';
 import {task} from 'gulp';
 import {IMinimatch, Minimatch} from 'minimatch';
 import {join} from 'path';
-import {execNodeTask} from '../util/task_helpers';
+import {execNodeTask} from '../util/task-helpers';
 
 /** Glob that matches all SCSS or CSS files that should be linted. */
 const styleGlob = 'src/**/*.+(css|scss)';

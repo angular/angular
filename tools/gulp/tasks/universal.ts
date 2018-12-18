@@ -1,5 +1,5 @@
 import {dest, task} from 'gulp';
-import {ngcBuildTask, tsBuildTask, copyTask, execTask} from '../util/task_helpers';
+import {ngcBuildTask, tsBuildTask, copyTask, execTask} from '../util/task-helpers';
 import {join} from 'path';
 import {copySync} from 'fs-extra';
 import {buildConfig, buildScssPipeline, sequenceTask} from 'material2-build-tools';

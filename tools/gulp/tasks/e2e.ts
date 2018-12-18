@@ -7,7 +7,7 @@ import {
   getActiveBrowserSyncInstance,
   ngcBuildTask,
   serverTask
-} from '../util/task_helpers';
+} from '../util/task-helpers';
 
 const {outputDir, packagesDir, projectDir} = buildConfig;
 

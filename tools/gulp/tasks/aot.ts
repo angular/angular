@@ -1,5 +1,5 @@
 import {task} from 'gulp';
-import {execNodeTask} from '../util/task_helpers';
+import {execNodeTask} from '../util/task-helpers';
 import {join} from 'path';
 import {buildConfig, sequenceTask} from 'material2-build-tools';
 

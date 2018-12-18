@@ -1,5 +1,5 @@
 import {watchFiles} from 'material2-build-tools';
-import {getActiveBrowserSyncInstance} from './task_helpers';
+import {getActiveBrowserSyncInstance} from './task-helpers';
 
 /**
  * Function that watches a set of file globs and runs the specified tasks if a file
