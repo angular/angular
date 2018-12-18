@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "dist/packages/dev-app",
+    "public": "dist/devapp-deploy",
     "rewrites": [
       {
         "source": "/**/!(*.@(js|ts|html|css|json|svg|png|jpg|jpeg))",
