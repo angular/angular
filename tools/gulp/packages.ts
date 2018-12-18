@@ -3,11 +3,15 @@ import {join} from 'path';
 
 export const cdkPackage = new BuildPackage('cdk');
 export const materialPackage = new BuildPackage('material', [cdkPackage]);
-export const cdkExperimentalPackage = new BuildPackage('cdk-experimental', [materialPackage]);
+export const cdkExperimentalPackage = new BuildPackage('cdk-experimental', [cdkPackage]);
 export const materialExperimentalPackage = new BuildPackage('material-experimental',
-    [cdkExperimentalPackage]);
+    [materialPackage]);
 export const momentAdapterPackage = new BuildPackage('material-moment-adapter', [materialPackage]);
-export const examplesPackage = new BuildPackage('material-examples', [momentAdapterPackage]);
+export const examplesPackage = new BuildPackage('material-examples', [
+  cdkPackage,
+  materialPackage,
+  momentAdapterPackage
+]);
 
 // The material package re-exports its secondary entry-points at the root so that all of the
 // components can still be imported through `@angular/material`.
