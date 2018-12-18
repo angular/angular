@@ -14,6 +14,17 @@ $mat-menu-submenu-indicator-size: 10px !default;
   border-radius: $mat-menu-border-radius;
   outline: 0;
 
+  // Prevent users from interacting with the panel while it's animating. Note that
+  // people won't be able to click through it, because the overlay pane will catch the click.
+  // This fixes the following issues:
+  //  * Users accidentally opening sub-menus when the `overlapTrigger` option is enabled.
+  //  * Users accidentally tapping on content inside the sub-menu on touch devices, if the
+  //    sub-menu overlaps the trigger. The issue is due to touch devices emulating the
+  //    `mouseenter` event by dispatching it on tap.
+  &.ng-animating {
+    pointer-events: none;
+  }
+
   @include cdk-high-contrast {
     outline: solid 1px;
   }
@@ -69,13 +80,6 @@ $mat-menu-submenu-indicator-size: 10px !default;
       left: $mat-menu-side-padding;
       transform: rotateY(180deg) translateY(-50%);
     }
-  }
-
-  // Prevent the user from interacting while the panel is still animating.
-  // This avoids issues where the user could accidentally open a sub-menu,
-  // because of the `overlapTrigger` option.
-  .mat-menu-panel.ng-animating & {
-    pointer-events: none;
   }
 }
 
