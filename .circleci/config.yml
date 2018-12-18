@@ -182,6 +182,37 @@ jobs:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
           destination: core/todo/bundle.br
 
+  test_saucelabs:
+    <<: *job_defaults
+    # In order to avoid the bottleneck of having a slow host machine, we acquire a better
+    # container for this job. This is necessary because we launch a lot of browsers concurrently
+    # and therefore the tunnel and Karma need to process a lot of file requests and tests.
+    resource_class: xlarge
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - *restore_cache
+      - *init_environment
+      - *yarn_install
+      - run:
+          name: Preparing environment for running tests on Saucelabs.
+          command: setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
+      - run:
+          name: Starting Saucelabs tunnel
+          command: ./scripts/saucelabs/start-tunnel.sh
+          background: true
+        # Waits for the Saucelabs tunnel to be ready. This ensures that we don't run tests
+        # too early without Saucelabs not being ready.
+      - run: ./scripts/saucelabs/wait-for-tunnel.sh
+        # All web tests are contained within a single //:test_web_all target for Saucelabs
+        # as running each set of tests as a separate target will attempt to acquire too
+        # many browsers on Saucelabs (7 per target currently) and some tests will always
+        # fail to acquire browsers. For example:
+        # 14 02 2019 19:52:33.170:WARN [launcher]: chrome beta on SauceLabs have not captured in 180000 ms, killing.
+        # //packages/forms/test:web_test_sauce TIMEOUT in 315.0s
+      - run: yarn bazel test --config=saucelabs //:test_web_all
+      - run: ./scripts/saucelabs/stop-tunnel.sh
+
   test_aio:
     <<: *job_defaults
     docker:
@@ -612,7 +643,12 @@ workflows:
 
   saucelabs_tests:
     jobs:
+      - test_saucelabs
       - legacy-unit-tests-saucelabs
+          # Don't open up multiple saucelabs tunnels at the same
+          # time to minimize flakes
+          requires:
+            - test_saucelabs
     triggers:
       - schedule:
           # Runs the Saucelabs legacy tests every hour. We still want to run Saucelabs

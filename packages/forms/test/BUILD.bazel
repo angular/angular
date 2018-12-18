@@ -4,6 +4,8 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
+    # Visible to //:test_web_all target
+    visibility = ["//:__pkg__"],
     deps = [
         "//packages/core",
         "//packages/core/testing",
