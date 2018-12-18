@@ -27,7 +27,7 @@ import {CheckboxDemo, MatCheckboxDemoNestedChecklist} from './checkbox/checkbox-
 import {ChipsDemo} from './chips/chips-demo';
 import {ConnectedOverlayDemo} from './connected-overlay/connected-overlay-demo';
 import {CustomHeader, CustomHeaderNgContent, DatepickerDemo} from './datepicker/datepicker-demo';
-import {DevAppComponent, DevAppHome} from './dev-app';
+import {DevAppComponent, DevAppHome, DevApp404} from './dev-app';
 import {ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog} from './dialog/dialog-demo';
 import {DragAndDropDemo} from './drag-drop/drag-drop-demo';
 import {DrawerDemo} from './drawer/drawer-demo';
@@ -99,6 +99,7 @@ import {VirtualScrollDemo} from './virtual-scroll/virtual-scroll-demo';
     DatepickerDemo,
     DevAppComponent,
     DevAppHome,
+    DevApp404,
     DialogDemo,
     DragAndDropDemo,
     DrawerDemo,

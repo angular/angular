@@ -18,7 +18,7 @@ import {CheckboxDemo} from './checkbox/checkbox-demo';
 import {ChipsDemo} from './chips/chips-demo';
 import {ConnectedOverlayDemo} from './connected-overlay/connected-overlay-demo';
 import {DatepickerDemo} from './datepicker/datepicker-demo';
-import {DevAppHome} from './dev-app';
+import {DevAppHome, DevApp404} from './dev-app';
 import {DialogDemo} from './dialog/dialog-demo';
 import {DragAndDropDemo} from './drag-drop/drag-drop-demo';
 import {DrawerDemo} from './drawer/drawer-demo';
@@ -103,4 +103,5 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'connected-overlay', component: ConnectedOverlayDemo},
   {path: 'virtual-scroll', component: VirtualScrollDemo},
   {path: 'examples', component: ExamplesPage},
+  {path: '**', component: DevApp404},
 ];
