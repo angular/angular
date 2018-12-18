@@ -143,5 +143,8 @@
     "vlq": "0.2.2",
     "vrsource-tslint-rules": "5.1.1",
     "webpack": "1.12.9"
+  },
+  "resolutions": {
+    "natives": "1.1.6"
   }
 }
