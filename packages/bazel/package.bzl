@@ -23,15 +23,15 @@ def rules_angular_dependencies():
     _maybe(
         http_archive,
         name = "build_bazel_rules_nodejs",
-        url = "https://github.com/bazelbuild/rules_nodejs/archive/ee218e2a98b9f09ba07cecac8496a5918c47bc5d.zip",
-        strip_prefix = "rules_nodejs-ee218e2a98b9f09ba07cecac8496a5918c47bc5d",
+        url = "https://github.com/bazelbuild/rules_nodejs/archive/1795d45aba6bf1ec97885f83bb1d293261c11007.zip",
+        strip_prefix = "rules_nodejs-1795d45aba6bf1ec97885f83bb1d293261c11007",
     )
 
     _maybe(
         http_archive,
         name = "build_bazel_rules_typescript",
-        url = "https://github.com/bazelbuild/rules_typescript/archive/0.22.0.zip",
-        strip_prefix = "rules_typescript-0.22.0",
+        url = "https://github.com/bazelbuild/rules_typescript/archive/2afddf1086e7bd2578638bcfc744882e4ded53aa.zip",
+        strip_prefix = "rules_typescript-2afddf1086e7bd2578638bcfc744882e4ded53aa",
     )
 
     # Needed for Remote Execution
