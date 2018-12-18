@@ -8,6 +8,7 @@
 
 import {ApplicationInitStatus, Component, Directive, Injector, NgModule, NgZone, Pipe, PlatformRef, Provider, SchemaMetadata, Type, ɵInjectableDef as InjectableDef, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵresetCompiledComponents as resetCompiledComponents, ɵstringify as stringify} from '@angular/core';
 
+import {resolveForwardRef} from '../../src/di/forward_ref';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
@@ -493,7 +494,8 @@ export class TestBedRender3 implements Injector, TestBed {
     const metadata = this._getMetaWithOverrides(ngModule);
     compileNgModuleDefs(moduleType, metadata);
 
-    const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
+    const declarations: Type<any>[] =
+        flatten(ngModule.declarations || EMPTY_ARRAY, resolveForwardRef);
     const compiledComponents: Type<any>[] = [];
 
     // Compile the components, directives and pipes declared by this module

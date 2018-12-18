@@ -7,6 +7,7 @@
  */
 
 import {ComponentType} from '..';
+import {resolveForwardRef} from '../../di/forward_ref';
 import {Query} from '../../metadata/di';
 import {Component, Directive} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
@@ -65,7 +66,8 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           pipes: new Map(),
           encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
           interpolation: metadata.interpolation,
-          viewProviders: metadata.viewProviders || null,
+          viewProviders: metadata.viewProviders ? metadata.viewProviders.map(resolveForwardRef) :
+                                                  null,
         };
         ngComponentDef = compiler.compileComponent(
             angularCoreEnv, `ng://${stringify(type)}/template.html`, meta);
@@ -132,7 +134,6 @@ export function extendsDirectlyFromObject(type: Type<any>): boolean {
 function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMetadataFacade {
   // Reflect inputs and outputs.
   const propMetadata = getReflect().propMetadata(type);
-
   return {
     name: type.name,
     type: type,
@@ -150,12 +151,12 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     typeSourceSpan: null !,
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: metadata.exportAs || null,
-    providers: metadata.providers || null,
+    providers: metadata.providers ? metadata.providers.map(resolveForwardRef) : null,
   };
 }
 
 function convertToR3QueryPredicate(selector: any): any|string[] {
-  return typeof selector === 'string' ? splitByComma(selector) : selector;
+  return typeof selector === 'string' ? splitByComma(selector) : resolveForwardRef(selector);
 }
 
 export function convertToR3QueryMetadata(propertyName: string, ann: Query): R3QueryMetadataFacade {
