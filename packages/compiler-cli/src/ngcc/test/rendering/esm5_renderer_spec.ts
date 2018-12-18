@@ -21,9 +21,10 @@ function setup(file: {name: string, contents: string}) {
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm5ReflectionHost(false, typeChecker);
   const referencesRegistry = new NgccReferencesRegistry(host);
-  const decorationAnalyses =
-      new DecorationAnalyzer(typeChecker, host, referencesRegistry, [''], false)
-          .analyzeProgram(bundle.src.program);
+  const decorationAnalyses = new DecorationAnalyzer(
+                                 bundle.src.program, bundle.src.options, bundle.src.host,
+                                 typeChecker, host, referencesRegistry, [''], false)
+                                 .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
   const renderer = new Esm5Renderer(host, false, bundle, dir, dir);
   return {

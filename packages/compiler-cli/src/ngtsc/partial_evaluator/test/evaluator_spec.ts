@@ -20,47 +20,50 @@ function makeSimpleProgram(contents: string): ts.Program {
 }
 
 function makeExpression(
-    code: string, expr: string): {expression: ts.Expression, checker: ts.TypeChecker} {
-  const {program} =
-      makeProgram([{name: 'entry.ts', contents: `${code}; const target$ = ${expr};`}]);
+    code: string, expr: string, supportingFiles: {name: string, contents: string}[] = []): {
+  expression: ts.Expression,
+  host: ts.CompilerHost,
+  checker: ts.TypeChecker,
+  program: ts.Program,
+  options: ts.CompilerOptions
+} {
+  const {program, options, host} = makeProgram(
+      [{name: 'entry.ts', contents: `${code}; const target$ = ${expr};`}, ...supportingFiles]);
   const checker = program.getTypeChecker();
   const decl = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
   return {
     expression: decl.initializer !,
+    host,
+    options,
     checker,
+    program,
   };
 }
 
-function evaluate<T extends ResolvedValue>(code: string, expr: string): T {
-  const {expression, checker} = makeExpression(code, expr);
-  const host = new TypeScriptReflectionHost(checker);
-  const evaluator = new PartialEvaluator(host, checker);
+function evaluate<T extends ResolvedValue>(
+    code: string, expr: string, supportingFiles: {name: string, contents: string}[] = []): T {
+  const {expression, checker} = makeExpression(code, expr, supportingFiles);
+  const reflectionHost = new TypeScriptReflectionHost(checker);
+  const evaluator = new PartialEvaluator(reflectionHost, checker);
   return evaluator.evaluate(expression) as T;
 }
 
 describe('ngtsc metadata', () => {
   it('reads a file correctly', () => {
-    const {program} = makeProgram([
-      {
-        name: 'entry.ts',
-        contents: `
-      import {Y} from './other';
-      const A = Y;
-        export const X = A;
-      `
-      },
-      {
-        name: 'other.ts',
-        contents: `
+    const value = evaluate(
+        `
+        import {Y} from './other';
+        const A = Y;
+    `,
+        'A', [
+          {
+            name: 'other.ts',
+            contents: `
       export const Y = 'test';
       `
-      }
-    ]);
-    const decl = getDeclaration(program, 'entry.ts', 'X', ts.isVariableDeclaration);
-    const host = new TypeScriptReflectionHost(program.getTypeChecker());
-    const evaluator = new PartialEvaluator(host, program.getTypeChecker());
+          },
+        ]);
 
-    const value = evaluator.evaluate(decl.initializer !);
     expect(value).toEqual('test');
   });
 
@@ -143,10 +146,10 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
-    const host = new TypeScriptReflectionHost(checker);
+    const reflectionHost = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    const evaluator = new PartialEvaluator(host, checker);
+    const evaluator = new PartialEvaluator(reflectionHost, checker);
     const resolved = evaluator.evaluate(expr);
     if (!(resolved instanceof Reference)) {
       return fail('Expected expression to resolve to a reference');
@@ -175,10 +178,10 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
-    const host = new TypeScriptReflectionHost(checker);
+    const reflectionHost = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    const evaluator = new PartialEvaluator(host, checker);
+    const evaluator = new PartialEvaluator(reflectionHost, checker);
     const resolved = evaluator.evaluate(expr);
     if (!(resolved instanceof AbsoluteReference)) {
       return fail('Expected expression to resolve to an absolute reference');
@@ -197,60 +200,31 @@ describe('ngtsc metadata', () => {
   });
 
   it('reads values from default exports', () => {
-    const {program} = makeProgram([
-      {name: 'second.ts', contents: 'export default {property: "test"}'},
-      {
-        name: 'entry.ts',
-        contents: `
-          import mod from './second';
-          const target$ = mod.property;
-      `
-      },
-    ]);
-    const checker = program.getTypeChecker();
-    const host = new TypeScriptReflectionHost(checker);
-    const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
-    const expr = result.initializer !;
-    const evaluator = new PartialEvaluator(host, checker);
-    expect(evaluator.evaluate(expr)).toEqual('test');
+    const value = evaluate(
+        `
+      import mod from './second';
+      `,
+        'mod.property', [
+          {name: 'second.ts', contents: 'export default {property: "test"}'},
+        ]);
+    expect(value).toEqual('test');
   });
 
   it('reads values from named exports', () => {
-    const {program} = makeProgram([
+    const value = evaluate(`import * as mod from './second';`, 'mod.a.property', [
       {name: 'second.ts', contents: 'export const a = {property: "test"};'},
-      {
-        name: 'entry.ts',
-        contents: `
-          import * as mod from './second';
-          const target$ = mod.a.property;
-      `
-      },
     ]);
-    const checker = program.getTypeChecker();
-    const host = new TypeScriptReflectionHost(checker);
-    const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
-    const expr = result.initializer !;
-    const evaluator = new PartialEvaluator(host, checker);
-    expect(evaluator.evaluate(expr)).toEqual('test');
+    expect(value).toEqual('test');
   });
 
   it('chain of re-exports works', () => {
-    const {program} = makeProgram([
+    const value = evaluate(`import * as mod from './direct-reexport';`, 'mod.value.property', [
       {name: 'const.ts', contents: 'export const value = {property: "test"};'},
       {name: 'def.ts', contents: `import {value} from './const'; export default value;`},
       {name: 'indirect-reexport.ts', contents: `import value from './def'; export {value};`},
       {name: 'direct-reexport.ts', contents: `export {value} from './indirect-reexport';`},
-      {
-        name: 'entry.ts',
-        contents: `import * as mod from './direct-reexport'; const target$ = mod.value.property;`
-      },
     ]);
-    const checker = program.getTypeChecker();
-    const host = new TypeScriptReflectionHost(checker);
-    const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
-    const expr = result.initializer !;
-    const evaluator = new PartialEvaluator(host, checker);
-    expect(evaluator.evaluate(expr)).toEqual('test');
+    expect(value).toEqual('test');
   });
 
   it('map spread works', () => {
@@ -299,15 +273,9 @@ describe('ngtsc metadata', () => {
   });
 
   it('variable declaration resolution works', () => {
-    const {program} = makeProgram([
+    const value = evaluate(`import {value} from './decl';`, 'value', [
       {name: 'decl.d.ts', contents: 'export declare let value: number;'},
-      {name: 'entry.ts', contents: `import {value} from './decl'; const target$ = value;`},
     ]);
-    const checker = program.getTypeChecker();
-    const host = new TypeScriptReflectionHost(checker);
-    const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
-    const evaluator = new PartialEvaluator(host, checker);
-    const res = evaluator.evaluate(result.initializer !);
-    expect(res instanceof Reference).toBe(true);
+    expect(value instanceof Reference).toBe(true);
   });
 });
