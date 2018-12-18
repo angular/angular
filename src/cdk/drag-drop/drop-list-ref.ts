@@ -158,6 +158,9 @@ export class DropListRef<T = any> {
   /** Direction in which the list is oriented. */
   private _orientation: 'horizontal' | 'vertical' = 'vertical';
 
+  /** Amount of connected siblings that currently have a dragged item. */
+  private _activeSiblings = 0;
+
   constructor(
     public element: ElementRef<HTMLElement>,
     private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>,
@@ -188,6 +191,7 @@ export class DropListRef<T = any> {
     this._isDragging = true;
     this._activeDraggables = this._draggables.slice();
     this._cachePositions();
+    this._positionCache.siblings.forEach(sibling => sibling.drop._toggleIsReceiving(true));
   }
 
   /**
@@ -306,6 +310,14 @@ export class DropListRef<T = any> {
         this._positionCache.items.slice().reverse() : this._positionCache.items;
 
     return findIndex(items, currentItem => currentItem.drag === item);
+  }
+
+  /**
+   * Whether the list is able to receive the item that
+   * is currently being dragged inside a connected drop list.
+   */
+  isReceiving(): boolean {
+    return this._activeSiblings > 0;
   }
 
   /**
@@ -431,12 +443,21 @@ export class DropListRef<T = any> {
     }));
   }
 
+  /**
+   * Toggles whether the list can receive the item that is currently being dragged.
+   * Usually called by a sibling that initiated the dragging.
+   */
+  _toggleIsReceiving(isDragging: boolean) {
+    this._activeSiblings = Math.max(0, this._activeSiblings + (isDragging ? 1 : -1));
+  }
+
   /** Resets the container to its initial state. */
   private _reset() {
     this._isDragging = false;
 
     // TODO(crisbeto): may have to wait for the animations to finish.
     this._activeDraggables.forEach(item => item.getRootElement().style.transform = '');
+    this._positionCache.siblings.forEach(sibling => sibling.drop._toggleIsReceiving(false));
     this._activeDraggables = [];
     this._positionCache.items = [];
     this._positionCache.siblings = [];

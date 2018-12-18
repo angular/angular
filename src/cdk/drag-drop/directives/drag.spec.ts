@@ -2536,6 +2536,56 @@ describe('CdkDrag', () => {
         });
       }));
 
+      it('should set a class when a container can receive an item', fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+
+        const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+        const item = fixture.componentInstance.groupedDragItems[0][1];
+
+        expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
+            .toBe(true, 'Expected neither of the containers to have the class.');
+
+        startDraggingViaMouse(fixture, item.element.nativeElement);
+        fixture.detectChanges();
+
+        expect(dropZones[0].classList).not.toContain('cdk-drop-list-receiving',
+            'Expected source container not to have the receiving class.');
+
+        expect(dropZones[1].classList).toContain('cdk-drop-list-receiving',
+            'Expected target container to have the receiving class.');
+      }));
+
+      it('should toggle the `receiving` class when the item enters a new list', fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems;
+        const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+        const item = groups[0][1];
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        expect(dropZones.every(c => !c.classList.contains('cdk-drop-list-receiving')))
+            .toBe(true, 'Expected neither of the containers to have the class.');
+
+        startDraggingViaMouse(fixture, item.element.nativeElement);
+
+        expect(dropZones[0].classList).not.toContain('cdk-drop-list-receiving',
+            'Expected source container not to have the receiving class.');
+
+        expect(dropZones[1].classList).toContain('cdk-drop-list-receiving',
+            'Expected target container to have the receiving class.');
+
+        dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[0].classList).toContain('cdk-drop-list-receiving',
+            'Expected old container not to have the receiving class after exiting.');
+
+        expect(dropZones[1].classList).not.toContain('cdk-drop-list-receiving',
+            'Expected new container not to have the receiving class after entering.');
+      }));
+
   });
 
 });
