@@ -6,261 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * resolver.ts implements partial computation of expressions, resolving expressions to static
- * values where possible and returning a `DynamicValue` signal when not.
- */
-
-import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
-import * as path from 'path';
 import * as ts from 'typescript';
 
-import {ClassMemberKind, ReflectionHost} from '../../host';
+import {AbsoluteReference, NodeReference, Reference, ResolvedReference} from '../../imports';
+import {ReflectionHost} from '../../reflection';
 
-const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
+import {ArraySliceBuiltinFn} from './builtin';
+import {BuiltinFn, DYNAMIC_VALUE, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap, isDynamicValue} from './result';
 
-/**
- * Represents a value which cannot be determined statically.
- *
- * Use `isDynamicValue` to determine whether a `ResolvedValue` is a `DynamicValue`.
- */
-export class DynamicValue {
-  /**
-   * This is needed so the "is DynamicValue" assertion of `isDynamicValue` actually has meaning.
-   *
-   * Otherwise, "is DynamicValue" is akin to "is {}" which doesn't trigger narrowing.
-   */
-  private _isDynamic = true;
-}
-
-/**
- * An internal flyweight for `DynamicValue`. Eventually the dynamic value will carry information
- * on the location of the node that could not be statically computed.
- */
-const DYNAMIC_VALUE: DynamicValue = new DynamicValue();
-
-/**
- * Used to test whether a `ResolvedValue` is a `DynamicValue`.
- */
-export function isDynamicValue(value: any): value is DynamicValue {
-  return value === DYNAMIC_VALUE;
-}
-
-/**
- * A value resulting from static resolution.
- *
- * This could be a primitive, collection type, reference to a `ts.Node` that declares a
- * non-primitive value, or a special `DynamicValue` type which indicates the value was not
- * available statically.
- */
-export type ResolvedValue = number | boolean | string | null | undefined | Reference | EnumValue |
-    ResolvedValueArray | ResolvedValueMap | BuiltinFn | DynamicValue;
-
-/**
- * An array of `ResolvedValue`s.
- *
- * This is a reified type to allow the circular reference of `ResolvedValue` -> `ResolvedValueArray`
- * ->
- * `ResolvedValue`.
- */
-export interface ResolvedValueArray extends Array<ResolvedValue> {}
-
-/**
- * A map of strings to `ResolvedValue`s.
- *
- * This is a reified type to allow the circular reference of `ResolvedValue` -> `ResolvedValueMap` ->
- * `ResolvedValue`.
- */ export interface ResolvedValueMap extends Map<string, ResolvedValue> {}
-
-/**
- * A value member of an enumeration.
- *
- * Contains a `Reference` to the enumeration itself, and the name of the referenced member.
- */
-export class EnumValue {
-  constructor(readonly enumRef: Reference<ts.EnumDeclaration>, readonly name: string) {}
-}
-
-/**
- * An implementation of a builtin function, such as `Array.prototype.slice`.
- */
-export abstract class BuiltinFn { abstract evaluate(args: ResolvedValueArray): ResolvedValue; }
-
-class ArraySliceBuiltinFn extends BuiltinFn {
-  constructor(private lhs: ResolvedValueArray) { super(); }
-
-  evaluate(args: ResolvedValueArray): ResolvedValue {
-    if (args.length === 0) {
-      return this.lhs;
-    } else {
-      return DYNAMIC_VALUE;
-    }
-  }
-}
 
 /**
  * Tracks the scope of a function body, which includes `ResolvedValue`s for the parameters of that
  * body.
  */
 type Scope = Map<ts.ParameterDeclaration, ResolvedValue>;
-
-export enum ImportMode {
-  UseExistingImport,
-  ForceNewImport,
-}
-
-/**
- * A reference to a `ts.Node`.
- *
- * For example, if an expression evaluates to a function or class definition, it will be returned
- * as a `Reference` (assuming references are allowed in evaluation).
- */
-export abstract class Reference<T extends ts.Node = ts.Node> {
-  constructor(readonly node: T) {}
-
-  /**
-   * Whether an `Expression` can be generated which references the node.
-   */
-  // TODO(issue/24571): remove '!'.
-  readonly expressable !: boolean;
-
-  /**
-   * Generate an `Expression` representing this type, in the context of the given SourceFile.
-   *
-   * This could be a local variable reference, if the symbol is imported, or it could be a new
-   * import if needed.
-   */
-  abstract toExpression(context: ts.SourceFile, importMode?: ImportMode): Expression|null;
-
-  abstract addIdentifier(identifier: ts.Identifier): void;
-}
-
-/**
- * A reference to a node only, without any ability to get an `Expression` representing that node.
- *
- * This is used for returning references to things like method declarations, which are not directly
- * referenceable.
- */
-export class NodeReference<T extends ts.Node = ts.Node> extends Reference<T> {
-  constructor(node: T, readonly moduleName: string|null) { super(node); }
-
-  toExpression(context: ts.SourceFile): null { return null; }
-
-  addIdentifier(identifier: ts.Identifier): void {}
-}
-
-/**
- * A reference to a node which has a `ts.Identifier` and can be resolved to an `Expression`.
- *
- * Imports generated by `ResolvedReference`s are always relative.
- */
-export class ResolvedReference<T extends ts.Node = ts.Node> extends Reference<T> {
-  protected identifiers: ts.Identifier[] = [];
-
-  constructor(node: T, protected primaryIdentifier: ts.Identifier) { super(node); }
-
-  readonly expressable = true;
-
-  toExpression(context: ts.SourceFile, importMode: ImportMode = ImportMode.UseExistingImport):
-      Expression {
-    const localIdentifier =
-        pickIdentifier(context, this.primaryIdentifier, this.identifiers, importMode);
-    if (localIdentifier !== null) {
-      return new WrappedNodeExpr(localIdentifier);
-    } else {
-      // Relative import from context -> this.node.getSourceFile().
-      // TODO(alxhub): investigate the impact of multiple source roots here.
-      // TODO(alxhub): investigate the need to map such paths via the Host for proper g3 support.
-      let relative =
-          path.posix.relative(path.dirname(context.fileName), this.node.getSourceFile().fileName)
-              .replace(TS_DTS_JS_EXTENSION, '');
-
-      // path.relative() does not include the leading './'.
-      if (!relative.startsWith('.')) {
-        relative = `./${relative}`;
-      }
-
-      // path.relative() returns the empty string (converted to './' above) if the two paths are the
-      // same.
-      if (relative === './') {
-        // Same file after all.
-        return new WrappedNodeExpr(this.primaryIdentifier);
-      } else {
-        return new ExternalExpr(new ExternalReference(relative, this.primaryIdentifier.text));
-      }
-    }
-  }
-
-  addIdentifier(identifier: ts.Identifier): void { this.identifiers.push(identifier); }
-}
-
-/**
- * A reference to a node which has a `ts.Identifer` and an expected absolute module name.
- *
- * An `AbsoluteReference` can be resolved to an `Expression`, and if that expression is an import
- * the module specifier will be an absolute module name, not a relative path.
- */
-export class AbsoluteReference<T extends ts.Node> extends Reference<T> {
-  private identifiers: ts.Identifier[] = [];
-  constructor(
-      node: T, private primaryIdentifier: ts.Identifier, readonly moduleName: string,
-      readonly symbolName: string) {
-    super(node);
-  }
-
-  readonly expressable = true;
-
-  toExpression(context: ts.SourceFile, importMode: ImportMode = ImportMode.UseExistingImport):
-      Expression {
-    const localIdentifier =
-        pickIdentifier(context, this.primaryIdentifier, this.identifiers, importMode);
-    if (localIdentifier !== null) {
-      return new WrappedNodeExpr(localIdentifier);
-    } else {
-      return new ExternalExpr(new ExternalReference(this.moduleName, this.symbolName));
-    }
-  }
-
-  addIdentifier(identifier: ts.Identifier): void { this.identifiers.push(identifier); }
-}
-
-function pickIdentifier(
-    context: ts.SourceFile, primary: ts.Identifier, secondaries: ts.Identifier[],
-    mode: ImportMode): ts.Identifier|null {
-  context = ts.getOriginalNode(context) as ts.SourceFile;
-
-  if (ts.getOriginalNode(primary).getSourceFile() === context) {
-    return primary;
-  } else if (mode === ImportMode.UseExistingImport) {
-    return secondaries.find(id => ts.getOriginalNode(id).getSourceFile() === context) || null;
-  } else {
-    return null;
-  }
-}
-
-/**
- * Statically resolve the given `ts.Expression` into a `ResolvedValue`.
- *
- * @param node the expression to statically resolve if possible
- * @param checker a `ts.TypeChecker` used to understand the expression
- * @param foreignFunctionResolver a function which will be used whenever a "foreign function" is
- * encountered. A foreign function is a function which has no body - usually the result of calling
- * a function declared in another library's .d.ts file. In these cases, the foreignFunctionResolver
- * will be called with the function's declaration, and can optionally return a `ts.Expression`
- * (possibly extracted from the foreign function's type signature) which will be used as the result
- * of the call.
- * @returns a `ResolvedValue` representing the resolved value
- */
-export function staticallyResolve(
-    node: ts.Expression, host: ReflectionHost, checker: ts.TypeChecker,
-    foreignFunctionResolver?:
-        (node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration>, args: ts.Expression[]) =>
-            ts.Expression | null): ResolvedValue {
-  return new StaticInterpreter(host, checker).visit(node, {
-    absoluteModuleName: null,
-    scope: new Map<ts.ParameterDeclaration, ResolvedValue>(), foreignFunctionResolver,
-  });
-}
 
 interface BinaryOperatorDef {
   literal: boolean;
@@ -309,7 +68,7 @@ interface Context {
        args: ReadonlyArray<ts.Expression>): ts.Expression|null;
 }
 
-class StaticInterpreter {
+export class StaticInterpreter {
   constructor(private host: ReflectionHost, private checker: ts.TypeChecker) {}
 
   visit(node: ts.Expression, context: Context): ResolvedValue {

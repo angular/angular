@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {Decorator} from '../../../ngtsc/host';
+import {Decorator} from '../../../ngtsc/reflection';
 import {DecoratorHandler} from '../../../ngtsc/transform';
 import {DecorationAnalyses, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';

@@ -9,9 +9,11 @@
 import {WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {TypeScriptReflectionHost} from '..';
+import {AbsoluteReference, Reference} from '../../imports';
+import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
-import {AbsoluteReference, EnumValue, Reference, ResolvedValue, staticallyResolve} from '../src/resolver';
+import {PartialEvaluator} from '../src/interface';
+import {EnumValue, ResolvedValue} from '../src/result';
 
 function makeSimpleProgram(contents: string): ts.Program {
   return makeProgram([{name: 'entry.ts', contents}]).program;
@@ -32,7 +34,8 @@ function makeExpression(
 function evaluate<T extends ResolvedValue>(code: string, expr: string): T {
   const {expression, checker} = makeExpression(code, expr);
   const host = new TypeScriptReflectionHost(checker);
-  return staticallyResolve(expression, host, checker) as T;
+  const evaluator = new PartialEvaluator(host, checker);
+  return evaluator.evaluate(expression) as T;
 }
 
 describe('ngtsc metadata', () => {
@@ -55,8 +58,9 @@ describe('ngtsc metadata', () => {
     ]);
     const decl = getDeclaration(program, 'entry.ts', 'X', ts.isVariableDeclaration);
     const host = new TypeScriptReflectionHost(program.getTypeChecker());
+    const evaluator = new PartialEvaluator(host, program.getTypeChecker());
 
-    const value = staticallyResolve(decl.initializer !, host, program.getTypeChecker());
+    const value = evaluator.evaluate(decl.initializer !);
     expect(value).toEqual('test');
   });
 
@@ -142,7 +146,8 @@ describe('ngtsc metadata', () => {
     const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    const resolved = staticallyResolve(expr, host, checker);
+    const evaluator = new PartialEvaluator(host, checker);
+    const resolved = evaluator.evaluate(expr);
     if (!(resolved instanceof Reference)) {
       return fail('Expected expression to resolve to a reference');
     }
@@ -173,7 +178,8 @@ describe('ngtsc metadata', () => {
     const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    const resolved = staticallyResolve(expr, host, checker);
+    const evaluator = new PartialEvaluator(host, checker);
+    const resolved = evaluator.evaluate(expr);
     if (!(resolved instanceof AbsoluteReference)) {
       return fail('Expected expression to resolve to an absolute reference');
     }
@@ -205,7 +211,8 @@ describe('ngtsc metadata', () => {
     const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    expect(staticallyResolve(expr, host, checker)).toEqual('test');
+    const evaluator = new PartialEvaluator(host, checker);
+    expect(evaluator.evaluate(expr)).toEqual('test');
   });
 
   it('reads values from named exports', () => {
@@ -223,7 +230,8 @@ describe('ngtsc metadata', () => {
     const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    expect(staticallyResolve(expr, host, checker)).toEqual('test');
+    const evaluator = new PartialEvaluator(host, checker);
+    expect(evaluator.evaluate(expr)).toEqual('test');
   });
 
   it('chain of re-exports works', () => {
@@ -241,7 +249,8 @@ describe('ngtsc metadata', () => {
     const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    expect(staticallyResolve(expr, host, checker)).toEqual('test');
+    const evaluator = new PartialEvaluator(host, checker);
+    expect(evaluator.evaluate(expr)).toEqual('test');
   });
 
   it('map spread works', () => {
@@ -297,7 +306,8 @@ describe('ngtsc metadata', () => {
     const checker = program.getTypeChecker();
     const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
-    const res = staticallyResolve(result.initializer !, host, checker);
+    const evaluator = new PartialEvaluator(host, checker);
+    const res = evaluator.evaluate(result.initializer !);
     expect(res instanceof Reference).toBe(true);
   });
 });
