@@ -42,6 +42,15 @@ describe('Bazel-workspace Schematic', () => {
     expect(workspace).toMatch('ANGULAR_VERSION = "6.6.6"');
   });
 
+  it('should have the correct entry_module for devserver', () => {
+    const options = {...defaultOptions, name: 'demo-app'};
+    const host = schematicRunner.runSchematic('bazel-workspace', options);
+    const {files} = host;
+    expect(files).toContain('/demo-app/src/BUILD.bazel');
+    const content = host.readContent('/demo-app/src/BUILD.bazel');
+    expect(content).toContain('entry_module = "demo_app/src/main.dev"');
+  });
+
   describe('WORKSPACE', () => {
     it('should contain project name', () => {
       const options = {...defaultOptions};
