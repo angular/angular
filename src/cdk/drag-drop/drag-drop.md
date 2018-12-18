@@ -41,7 +41,7 @@ by referencing the `id` of another drop container:
 
 If you have an unknown number of connected drop lists, you can use the `cdkDropListGroup` directive
 to set up the connection automatically. Note that any new `cdkDropList` that is added under a group
-will be connected to all other automatically.
+will be connected to all other lists automatically.
 
 ```html
 <div cdkDropListGroup>
