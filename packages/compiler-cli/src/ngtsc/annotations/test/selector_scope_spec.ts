@@ -8,15 +8,14 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteReference, ResolvedReference} from '../../imports';
+import {AbsoluteReference, ResolvedReference, TsReferenceResolver} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
-
 import {SelectorScopeRegistry} from '../src/selector_scope';
 
 describe('SelectorScopeRegistry', () => {
   it('absolute imports work', () => {
-    const {program} = makeProgram([
+    const {program, options, host} = makeProgram([
       {
         name: 'node_modules/@angular/core/index.d.ts',
         contents: `
@@ -29,6 +28,7 @@ describe('SelectorScopeRegistry', () => {
         contents: `
         import {NgModuleDef} from '@angular/core';
         import * as i0 from './component';
+        export {SomeCmp} from './component';
         
         export declare class SomeModule {
           static ngModuleDef: NgModuleDef<SomeModule, [typeof i0.SomeCmp], never, [typeof i0.SomeCmp]>;
@@ -54,7 +54,7 @@ describe('SelectorScopeRegistry', () => {
       },
     ]);
     const checker = program.getTypeChecker();
-    const host = new TypeScriptReflectionHost(checker);
+    const reflectionHost = new TypeScriptReflectionHost(checker);
     const ProgramModule =
         getDeclaration(program, 'entry.ts', 'ProgramModule', ts.isClassDeclaration);
     const ProgramCmp = getDeclaration(program, 'entry.ts', 'ProgramCmp', ts.isClassDeclaration);
@@ -65,7 +65,8 @@ describe('SelectorScopeRegistry', () => {
 
     const ProgramCmpRef = new ResolvedReference(ProgramCmp, ProgramCmp.name !);
 
-    const registry = new SelectorScopeRegistry(checker, host);
+    const resolver = new TsReferenceResolver(program, checker, options, host);
+    const registry = new SelectorScopeRegistry(checker, reflectionHost, resolver);
 
     registry.registerModule(ProgramModule, {
       declarations: [new ResolvedReference(ProgramCmp, ProgramCmp.name !)],
@@ -95,7 +96,7 @@ describe('SelectorScopeRegistry', () => {
   });
 
   it('exports of third-party libs work', () => {
-    const {program} = makeProgram([
+    const {program, options, host} = makeProgram([
       {
         name: 'node_modules/@angular/core/index.d.ts',
         contents: `
@@ -126,7 +127,7 @@ describe('SelectorScopeRegistry', () => {
       },
     ]);
     const checker = program.getTypeChecker();
-    const host = new TypeScriptReflectionHost(checker);
+    const reflectionHost = new TypeScriptReflectionHost(checker);
     const ProgramModule =
         getDeclaration(program, 'entry.ts', 'ProgramModule', ts.isClassDeclaration);
     const ProgramCmp = getDeclaration(program, 'entry.ts', 'ProgramCmp', ts.isClassDeclaration);
@@ -137,7 +138,8 @@ describe('SelectorScopeRegistry', () => {
 
     const ProgramCmpRef = new ResolvedReference(ProgramCmp, ProgramCmp.name !);
 
-    const registry = new SelectorScopeRegistry(checker, host);
+    const resolver = new TsReferenceResolver(program, checker, options, host);
+    const registry = new SelectorScopeRegistry(checker, reflectionHost, resolver);
 
     registry.registerModule(ProgramModule, {
       declarations: [new ResolvedReference(ProgramCmp, ProgramCmp.name !)],

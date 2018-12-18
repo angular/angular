@@ -16,7 +16,7 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
-import {Reference} from './imports';
+import {Reference, TsReferenceResolver} from './imports';
 import {PartialEvaluator} from './partial_evaluator';
 import {TypeScriptReflectionHost} from './reflection';
 import {FileResourceLoader, HostResourceLoader} from './resource_loader';
@@ -274,8 +274,9 @@ export class NgtscProgram implements api.Program {
 
   private makeCompilation(): IvyCompilation {
     const checker = this.tsProgram.getTypeChecker();
-    const evaluator = new PartialEvaluator(this.reflector, checker);
-    const scopeRegistry = new SelectorScopeRegistry(checker, this.reflector);
+    const refResolver = new TsReferenceResolver(this.tsProgram, checker, this.options, this.host);
+    const evaluator = new PartialEvaluator(this.reflector, checker, refResolver);
+    const scopeRegistry = new SelectorScopeRegistry(checker, this.reflector, refResolver);
 
     // If a flat module entrypoint was specified, then track references via a `ReferenceGraph` in
     // order to produce proper diagnostics for incorrectly exported directives/pipes/etc. If there

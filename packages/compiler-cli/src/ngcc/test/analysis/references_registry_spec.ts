@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Reference} from '../../../ngtsc/imports';
+import {Reference, TsReferenceResolver} from '../../../ngtsc/imports';
 import {PartialEvaluator} from '../../../ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '../../../ngtsc/reflection';
 import {getDeclaration, makeProgram} from '../../../ngtsc/testing/in_memory_typescript';
@@ -16,7 +16,7 @@ import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registr
 
 describe('NgccReferencesRegistry', () => {
   it('should return a mapping from resolved reference identifiers to their declarations', () => {
-    const {program} = makeProgram([{
+    const {program, options, host} = makeProgram([{
       name: 'index.ts',
       contents: `
         export class SomeClass {}
@@ -38,9 +38,10 @@ describe('NgccReferencesRegistry', () => {
         getDeclaration(program, 'index.ts', 'someVariable', ts.isVariableDeclaration);
     const testArrayExpression = testArrayDeclaration.initializer !;
 
-    const host = new TypeScriptReflectionHost(checker);
-    const evaluator = new PartialEvaluator(host, checker);
-    const registry = new NgccReferencesRegistry(host);
+    const reflectionHost = new TypeScriptReflectionHost(checker);
+    const resolver = new TsReferenceResolver(program, checker, options, host);
+    const evaluator = new PartialEvaluator(reflectionHost, checker, resolver);
+    const registry = new NgccReferencesRegistry(reflectionHost);
 
     const references = evaluator.evaluate(testArrayExpression) as Reference<ts.Declaration>[];
     registry.add(null !, ...references);

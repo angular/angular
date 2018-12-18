@@ -8,8 +8,8 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteReference, NodeReference, Reference, ResolvedReference} from '../../imports';
-import {ReflectionHost} from '../../reflection';
+import {AbsoluteReference, NodeReference, Reference, ReferenceResolver, ResolvedReference} from '../../imports';
+import {Declaration, ReflectionHost} from '../../reflection';
 
 import {ArraySliceBuiltinFn} from './builtin';
 import {BuiltinFn, DYNAMIC_VALUE, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap, isDynamicValue} from './result';
@@ -61,7 +61,16 @@ const UNARY_OPERATORS = new Map<ts.SyntaxKind, (a: any) => any>([
 ]);
 
 interface Context {
+  /**
+   * The module name (if any) which was used to reach the currently resolving symbols.
+   */
   absoluteModuleName: string|null;
+
+  /**
+   * A file name representing the context in which the current `absoluteModuleName`, if any, was
+   * resolved.
+   */
+  resolutionContext: string;
   scope: Scope;
   foreignFunctionResolver?
       (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
@@ -69,7 +78,9 @@ interface Context {
 }
 
 export class StaticInterpreter {
-  constructor(private host: ReflectionHost, private checker: ts.TypeChecker) {}
+  constructor(
+      private host: ReflectionHost, private checker: ts.TypeChecker,
+      private refResolver: ReferenceResolver) {}
 
   visit(node: ts.Expression, context: Context): ResolvedValue {
     return this.visitExpression(node, context);
@@ -203,8 +214,8 @@ export class StaticInterpreter {
     if (decl === null) {
       return DYNAMIC_VALUE;
     }
-    const result = this.visitDeclaration(
-        decl.node, {...context, absoluteModuleName: decl.viaModule || context.absoluteModuleName});
+    const result =
+        this.visitDeclaration(decl.node, {...context, ...joinModuleContext(context, node, decl)});
     if (result instanceof Reference) {
       result.addIdentifier(node);
     }
@@ -292,10 +303,10 @@ export class StaticInterpreter {
     }
     const map = new Map<string, ResolvedValue>();
     declarations.forEach((decl, name) => {
-      const value = this.visitDeclaration(decl.node, {
-        ...context,
-        absoluteModuleName: decl.viaModule || context.absoluteModuleName,
-      });
+      const value = this.visitDeclaration(
+          decl.node, {
+                         ...context, ...joinModuleContext(context, node, decl),
+                     });
       map.set(name, value);
     });
     return map;
@@ -381,12 +392,16 @@ export class StaticInterpreter {
 
       // If the function is declared in a different file, resolve the foreign function expression
       // using the absolute module name of that file (if any).
-      let absoluteModuleName: string|null = context.absoluteModuleName;
-      if (lhs instanceof NodeReference || lhs instanceof AbsoluteReference) {
-        absoluteModuleName = lhs.moduleName || absoluteModuleName;
+      if ((lhs instanceof NodeReference || lhs instanceof AbsoluteReference) &&
+          lhs.moduleName !== null) {
+        context = {
+          ...context,
+          absoluteModuleName: lhs.moduleName,
+          resolutionContext: node.getSourceFile().fileName,
+        };
       }
 
-      return this.visitExpression(expr, {...context, absoluteModuleName});
+      return this.visitExpression(expr, context);
     }
 
     const body = fn.body;
@@ -473,17 +488,7 @@ export class StaticInterpreter {
   }
 
   private getReference(node: ts.Declaration, context: Context): Reference {
-    const id = identifierOfDeclaration(node);
-    if (id === undefined) {
-      throw new Error(`Don't know how to refer to ${ts.SyntaxKind[node.kind]}`);
-    }
-    if (context.absoluteModuleName !== null) {
-      // TODO(alxhub): investigate whether this can get symbol names wrong in the event of
-      // re-exports under different names.
-      return new AbsoluteReference(node, id, context.absoluteModuleName, id.text);
-    } else {
-      return new ResolvedReference(node, id);
-    }
+    return this.refResolver.resolve(node, context.absoluteModuleName, context.resolutionContext);
   }
 }
 
@@ -504,22 +509,6 @@ function literal(value: ResolvedValue): any {
   throw new Error(`Value ${value} is not literal and cannot be used in this context.`);
 }
 
-function identifierOfDeclaration(decl: ts.Declaration): ts.Identifier|undefined {
-  if (ts.isClassDeclaration(decl)) {
-    return decl.name;
-  } else if (ts.isEnumDeclaration(decl)) {
-    return decl.name;
-  } else if (ts.isFunctionDeclaration(decl)) {
-    return decl.name;
-  } else if (ts.isVariableDeclaration(decl) && ts.isIdentifier(decl.name)) {
-    return decl.name;
-  } else if (ts.isShorthandPropertyAssignment(decl)) {
-    return decl.name;
-  } else {
-    return undefined;
-  }
-}
-
 function isVariableDeclarationDeclared(node: ts.VariableDeclaration): boolean {
   if (node.parent === undefined || !ts.isVariableDeclarationList(node.parent)) {
     return false;
@@ -531,4 +520,20 @@ function isVariableDeclarationDeclared(node: ts.VariableDeclaration): boolean {
   const varStmt = declList.parent;
   return varStmt.modifiers !== undefined &&
       varStmt.modifiers.some(mod => mod.kind === ts.SyntaxKind.DeclareKeyword);
+}
+
+const EMPTY = {};
+
+function joinModuleContext(existing: Context, node: ts.Node, decl: Declaration): {
+  absoluteModuleName?: string,
+  resolutionContext?: string,
+} {
+  if (decl.viaModule !== null && decl.viaModule !== existing.absoluteModuleName) {
+    return {
+      absoluteModuleName: decl.viaModule,
+      resolutionContext: node.getSourceFile().fileName,
+    };
+  } else {
+    return EMPTY;
+  }
 }

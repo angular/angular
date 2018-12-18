@@ -420,10 +420,12 @@ describe('ngtsc behavioral tests', () => {
       env.write('node_modules/router/index.d.ts', `
         import {ModuleWithProviders} from '@angular/core';
         import * as internal from './internal';
+        export {InternalRouterModule} from './internal';
 
-        declare class RouterModule {
+        declare export class RouterModule {
           static forRoot(): ModuleWithProviders<internal.InternalRouterModule>;
         }
+
     `);
 
       env.write('node_modules/router/internal.d.ts', `
@@ -1195,40 +1197,81 @@ describe('ngtsc behavioral tests', () => {
     // Success is enough to indicate that this passes.
   });
 
-  it('should not emit multiple references to the same directive', () => {
-    env.tsconfig();
-    env.write('node_modules/external/index.d.ts', `
-      import {ɵDirectiveDefWithMeta, ɵNgModuleDefWithMeta} from '@angular/core';
+  describe('when processing external directives', () => {
+    it('should not emit multiple references to the same directive', () => {
+      env.tsconfig();
+      env.write('node_modules/external/index.d.ts', `
+        import {ɵDirectiveDefWithMeta, ɵNgModuleDefWithMeta} from '@angular/core';
+  
+        export declare class ExternalDir {
+          static ngDirectiveDef: ɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+        }
+  
+        export declare class ExternalModule {
+          static ngModuleDef: ɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+        }
+      `);
+      env.write('test.ts', `
+        import {Component, Directive, NgModule} from '@angular/core';
+        import {ExternalModule} from 'external';
+  
+        @Component({
+          template: '<div test></div>',
+        })
+        class Cmp {}
+  
+        @NgModule({
+          declarations: [Cmp],
+          // Multiple imports of the same module used to result in duplicate directive references
+          // in the output.
+          imports: [ExternalModule, ExternalModule],
+        })
+        class Module {}
+      `);
 
-      export declare class ExternalDir {
-        static ngDirectiveDef: ɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
-      }
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toMatch(/directives: \[i1\.ExternalDir\]/);
+    });
 
-      export declare class ExternalModule {
-        static ngModuleDef: ɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
-      }
-    `);
-    env.write('test.ts', `
-      import {Component, Directive, NgModule} from '@angular/core';
-      import {ExternalModule} from 'external';
+    it('should import directives by their external name', () => {
+      env.tsconfig();
+      env.write('node_modules/external/index.d.ts', `
+        import {ɵDirectiveDefWithMeta, ɵNgModuleDefWithMeta} from '@angular/core';
+        import {InternalDir} from './internal';
 
-      @Component({
-        template: '<div test></div>',
-      })
-      class Cmp {}
+        export {InternalDir as ExternalDir} from './internal';
 
-      @NgModule({
-        declarations: [Cmp],
-        // Multiple imports of the same module used to result in duplicate directive references
-        // in the output.
-        imports: [ExternalModule, ExternalModule],
-      })
-      class Module {}
-    `);
+        export declare class ExternalModule {
+          static ngModuleDef: ɵNgModuleDefWithMeta<ExternalModule, [typeof InternalDir], never, [typeof InternalDir]>;
+        }
+      `);
+      env.write('node_modules/external/internal.d.ts', `
 
-    env.driveMain();
-    const jsContents = env.getContents('test.js');
-    expect(jsContents).toMatch(/directives: \[i1\.ExternalDir\]/);
+        export declare class InternalDir {
+          static ngDirectiveDef: ɵDirectiveDefWithMeta<InternalDir, '[test]', never, never, never, never>;
+        }
+      `);
+      env.write('test.ts', `
+        import {Component, Directive, NgModule} from '@angular/core';
+        import {ExternalModule} from 'external';
+
+        @Component({
+          template: '<div test></div>',
+        })
+        class Cmp {}
+
+        @NgModule({
+          declarations: [Cmp],
+          imports: [ExternalModule],
+        })
+        class Module {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toMatch(/directives: \[i1\.ExternalDir\]/);
+    });
   });
 
   describe('flat module indices', () => {
