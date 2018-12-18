@@ -47,8 +47,11 @@ export class MatBottomSheetConfig<D = any> {
    */
   closeOnNavigation?: boolean = true;
 
+  // Note that this is disabled by default, because while the a11y recommendations are to focus
+  // the first focusable element, doing so prevents screen readers from reading out the
+  // rest of the bottom sheet content.
   /** Whether the bottom sheet should focus the first focusable element on open. */
-  autoFocus?: boolean = true;
+  autoFocus?: boolean = false;
 
   /**
    * Whether the bottom sheet should restore focus to the
