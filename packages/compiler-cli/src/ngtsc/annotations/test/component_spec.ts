@@ -9,9 +9,9 @@
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {TsReferenceResolver} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost} from '../../reflection';
-
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {ResourceLoader} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
@@ -23,7 +23,7 @@ export class NoopResourceLoader implements ResourceLoader {
 
 describe('ComponentDecoratorHandler', () => {
   it('should produce a diagnostic when @Component has non-literal argument', () => {
-    const {program} = makeProgram([
+    const {program, options, host} = makeProgram([
       {
         name: 'node_modules/@angular/core/index.d.ts',
         contents: 'export const Component: any;',
@@ -39,13 +39,14 @@ describe('ComponentDecoratorHandler', () => {
       },
     ]);
     const checker = program.getTypeChecker();
-    const host = new TypeScriptReflectionHost(checker);
-    const evaluator = new PartialEvaluator(host, checker);
+    const reflectionHost = new TypeScriptReflectionHost(checker);
+    const resolver = new TsReferenceResolver(program, checker, options, host);
+    const evaluator = new PartialEvaluator(reflectionHost, checker, resolver);
     const handler = new ComponentDecoratorHandler(
-        host, evaluator, new SelectorScopeRegistry(checker, host), false, new NoopResourceLoader(),
-        [''], false, true);
+        reflectionHost, evaluator, new SelectorScopeRegistry(checker, reflectionHost, resolver),
+        false, new NoopResourceLoader(), [''], false, true);
     const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', ts.isClassDeclaration);
-    const detected = handler.detect(TestCmp, host.getDecoratorsOfDeclaration(TestCmp));
+    const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
     if (detected === undefined) {
       return fail('Failed to recognize @Component');
     }

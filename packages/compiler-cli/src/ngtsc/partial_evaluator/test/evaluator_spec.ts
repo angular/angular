@@ -9,7 +9,7 @@
 import {WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {AbsoluteReference, Reference} from '../../imports';
+import {AbsoluteReference, Reference, TsReferenceResolver} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {PartialEvaluator} from '../src/interface';
@@ -42,9 +42,10 @@ function makeExpression(
 
 function evaluate<T extends ResolvedValue>(
     code: string, expr: string, supportingFiles: {name: string, contents: string}[] = []): T {
-  const {expression, checker} = makeExpression(code, expr, supportingFiles);
+  const {expression, checker, program, options, host} = makeExpression(code, expr, supportingFiles);
   const reflectionHost = new TypeScriptReflectionHost(checker);
-  const evaluator = new PartialEvaluator(reflectionHost, checker);
+  const resolver = new TsReferenceResolver(program, checker, options, host);
+  const evaluator = new PartialEvaluator(reflectionHost, checker, resolver);
   return evaluator.evaluate(expression) as T;
 }
 
@@ -135,7 +136,7 @@ describe('ngtsc metadata', () => {
   });
 
   it('imports work', () => {
-    const {program} = makeProgram([
+    const {program, options, host} = makeProgram([
       {name: 'second.ts', contents: 'export function foo(bar) { return bar; }'},
       {
         name: 'entry.ts',
@@ -149,7 +150,8 @@ describe('ngtsc metadata', () => {
     const reflectionHost = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    const evaluator = new PartialEvaluator(reflectionHost, checker);
+    const resolver = new TsReferenceResolver(program, checker, options, host);
+    const evaluator = new PartialEvaluator(reflectionHost, checker, resolver);
     const resolved = evaluator.evaluate(expr);
     if (!(resolved instanceof Reference)) {
       return fail('Expected expression to resolve to a reference');
@@ -167,7 +169,7 @@ describe('ngtsc metadata', () => {
   });
 
   it('absolute imports work', () => {
-    const {program} = makeProgram([
+    const {program, options, host} = makeProgram([
       {name: 'node_modules/some_library/index.d.ts', contents: 'export declare function foo(bar);'},
       {
         name: 'entry.ts',
@@ -181,7 +183,8 @@ describe('ngtsc metadata', () => {
     const reflectionHost = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    const evaluator = new PartialEvaluator(reflectionHost, checker);
+    const resolver = new TsReferenceResolver(program, checker, options, host);
+    const evaluator = new PartialEvaluator(reflectionHost, checker, resolver);
     const resolved = evaluator.evaluate(expr);
     if (!(resolved instanceof AbsoluteReference)) {
       return fail('Expected expression to resolve to an absolute reference');

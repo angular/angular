@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
+import {TsReferenceResolver} from '@angular/compiler-cli/src/ngtsc/imports';
 import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import * as path from 'canonical-path';
 import * as fs from 'fs';
@@ -59,8 +60,9 @@ export class FileResourceLoader implements ResourceLoader {
  */
 export class DecorationAnalyzer {
   resourceLoader = new FileResourceLoader();
-  scopeRegistry = new SelectorScopeRegistry(this.typeChecker, this.reflectionHost);
-  evaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker);
+  resolver = new TsReferenceResolver(this.program, this.typeChecker, this.options, this.host);
+  scopeRegistry = new SelectorScopeRegistry(this.typeChecker, this.reflectionHost, this.resolver);
+  evaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker, this.resolver);
   handlers: DecoratorHandler<any, any>[] = [
     new BaseDefDecoratorHandler(this.reflectionHost, this.evaluator),
     new ComponentDecoratorHandler(

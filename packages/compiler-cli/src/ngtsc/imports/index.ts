@@ -7,3 +7,4 @@
  */
 
 export {AbsoluteReference, ImportMode, NodeReference, Reference, ResolvedReference} from './src/references';
+export {ReferenceResolver, TsReferenceResolver} from './src/resolver';
