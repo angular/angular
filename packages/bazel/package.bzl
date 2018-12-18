@@ -27,11 +27,13 @@ def rules_angular_dependencies():
         strip_prefix = "rules_nodejs-bbf31af8aafad8dd5193356081c6b233ba143aa3",
     )
 
+    # Fetching specific commit here that adds karma_web_test
+    # TODO(gregmagolan): update to next release of rules_typescript
     _maybe(
         http_archive,
         name = "build_bazel_rules_typescript",
-        url = "https://github.com/bazelbuild/rules_typescript/archive/0.22.0.zip",
-        strip_prefix = "rules_typescript-0.22.0",
+        url = "https://github.com/bazelbuild/rules_typescript/archive/50837cfe886c6330628f72b33d321fa90b704c1e.zip",
+        strip_prefix = "rules_typescript-50837cfe886c6330628f72b33d321fa90b704c1e",
     )
 
     # Needed for Remote Execution

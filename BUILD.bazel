@@ -6,6 +6,8 @@ exports_files([
     "tsconfig.json",
     "LICENSE",
     "protractor-perf.conf.js",
+    "karma-js.conf.js",
+    "browser-providers.conf.js",
 ])
 
 filegroup(
@@ -53,4 +55,101 @@ nodejs_binary(
     entry_point = "@angular/bazel/src/ngc-wrapped/index.js",
     install_source_map_support = False,
     templated_args = ["--node_options=--expose-gc"],
+)
+
+load("//tools:defaults.bzl", "karma_web_test")
+
+# An aggregate target for all karma_web_test files so that
+# it can be run on SauceLabs and BrowserStack as a single
+# test and not re-aquire browsers for each fine grained
+# test target. This is to limit flakiness and
+# prevent rate limiting on SauceLabs.
+#
+# To test on SauceLabs:
+#
+# yarn bazel test //:test_web_all --define=KARMA_WEB_TEST_MODE=SL_REQUIRED
+# -or for optional tests-
+# yarn bazel test //:test_web_all --define=KARMA_WEB_TEST_MODE=SL_OPTIONAL
+#
+# You will need the SAUCE_USERNAME and SAUCE_ACCESS_KEY variabiles
+# defined in your environment.
+#
+# Browserstack tests are not yet functional.
+karma_web_test(
+    name = "test_web_all",
+    deps = [
+        # "//packages/animations/browser/test:test_lib",
+        # "//packages/animations/test:test_lib",
+        # "//packages/common/http/test:test_lib",
+        # "//packages/common/http/testing/test:test_lib",
+        "//packages/common/test:test_lib",
+        # "//packages/compiler/test:test_lib",
+        # "//packages/compiler/test/css_parser:css_parser_lib",
+        # "//packages/compiler/test/expression_parser:expression_parser_lib",
+        # "//packages/compiler/test/ml_parser:ml_parser_lib",
+        # "//packages/compiler/test/selector:selector_lib",
+        # "//packages/core/test:test_lib",
+        # "//packages/core/test/render3:render3_lib",
+        # "//packages/core/test/view:view_lib",
+        # Target `//packages/elements/test:test_lib` requires extra bootstrap.
+        # Can that bootstrap be included in the aggregate test?
+        # "//packages/elements/test:test_lib",
+        # "//packages/forms/test:test_lib",
+        # "//packages/http/test:test_lib",
+        # "//packages/platform-browser-dynamic/test:test_lib",
+        # "//packages/platform-browser/animations/test:test_lib",
+        # "//packages/platform-browser/test:test_lib",
+        # "//packages/platform-webworker/test:test_lib",
+        # "//packages/router/test:test_lib",
+        # "//packages/router/upgrade/test:test_lib",
+        # "//packages/service-worker/test:test_lib",
+        # "//packages/upgrade/test:test_lib",
+    ],
+)
+
+# An aggregate target for all karma_web_test files so that
+# it can be run on SauceLabs and BrowserStack as a single
+# test and not re-aquire browsers for each fine grained
+# test target. This is to limit flakiness and
+# prevent rate limiting on SauceLabs.
+#
+# To test on SauceLabs:
+#
+# yarn test-ivy-aot //:test_web_ivy_aot_all --define=KARMA_WEB_TEST_MODE=SL_REQUIRED
+# -or for optional tests-
+# yarn test-ivy-aot //:test_web_ivy_aot_all --define=KARMA_WEB_TEST_MODE=SL_OPTIONAL
+#
+# You will need the SAUCE_USERNAME and SAUCE_ACCESS_KEY variabiles
+# defined in your environment.
+#
+# Browserstack tests are not yet functional.
+karma_web_test(
+    name = "test_web_ivy_aot_all",
+    deps = [
+        # "//packages/animations/browser/test:test_lib",
+        # "//packages/animations/test:test_lib",
+        # "//packages/common/http/test:test_lib",
+        # "//packages/common/http/testing/test:test_lib",
+        "//packages/common/test:test_lib",
+        # "//packages/compiler/test/css_parser:css_parser_lib",
+        # "//packages/compiler/test/expression_parser:expression_parser_lib",
+        # "//packages/compiler/test/ml_parser:ml_parser_lib",
+        # "//packages/compiler/test/selector:selector_lib",
+        # "//packages/core/test:test_lib",
+        # "//packages/core/test/render3:render3_lib",
+        # Target `//packages/elements/test:test_lib` requires extra bootstrap.
+        # Can that bootstrap be included in the aggregate test?
+        # "//packages/elements/test:test_lib",
+        # "//packages/forms/test:test_lib",
+        # "//packages/http/test:test_lib",
+        # Target `//packages/platform-browser-dynamic/test:test_lib` broken on ivy
+        # "//packages/platform-browser-dynamic/test:test_lib",
+        # "//packages/platform-browser/animations/test:test_lib",
+        # "//packages/platform-browser/test:test_lib",
+        # "//packages/platform-webworker/test:test_lib",
+        # "//packages/router/test:test_lib",
+        # "//packages/router/upgrade/test:test_lib",
+        # "//packages/service-worker/test:test_lib",
+        # "//packages/upgrade/test:test_lib",
+    ],
 )

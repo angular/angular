@@ -31,5 +31,22 @@ setSecretVar CI_SECRET_PAYLOAD_FIREBASE_TOKEN "$ANGULAR_PAYLOAD_TOKEN";
 setSecretVar CI_SECRET_SLACK_CARETAKER_WEBHOOK_URL "$SLACK_CARETAKER_WEBHOOK_URL";
 
 
+####################################################################################################
+# Define SauceLabs environment variables for CircleCI.
+####################################################################################################
+setPublicVar SAUCE_CONNECT_VERSION "4.5.3";
+setPublicVar SAUCE_CONNECT_READY_FILE "/tmp/sauce-connect-tunnel-init.lock"
+# In order to have a meaningful SauceLabs badge on the repo page,
+# the angular2-ci account is used only when pushing commits to master;
+# in all other cases, the regular angular-ci account is used.
+if [ "${CI_PULL_REQUEST}" = "false" ] && [ "${CI_BRANCH}" = "master" ]; then
+  setPublicVar SAUCE_USERNAME "angular2-ci";
+  setSecretVar SAUCE_ACCESS_KEY "e4f2662a-66d8-4161-b5b0-a80261cbe396"
+else
+  setPublicVar SAUCE_USERNAME "angular-ci";
+  setSecretVar SAUCE_ACCESS_KEY "78924453-3ea4-4aa8-acbf-8ff434f889b9"
+fi
+
+
 # Source `$BASH_ENV` to make the variables available immediately.
 source $BASH_ENV;

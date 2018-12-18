@@ -6,6 +6,7 @@ ts_library(
     srcs = glob(
         ["**/*.ts"],
     ),
+    visibility = ["//visibility:public"],
     deps = [
         "//packages/common",
         "//packages/common/locales",

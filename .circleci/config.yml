@@ -52,6 +52,17 @@ var_9: &setup_circleci_bazel_config
     name: Setting up CircleCI bazel configuration
     command: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
 
+var_10: &setup_sauce_connect
+  run:
+    name: Setup Sauce Connect
+    command: ./.circleci/setup_sauce_connect.sh
+    background: true
+
+var_11: &wait_for_sauce_connect
+  run:
+    name: Wait for SauceLabs connection
+    command: ./.circleci/wait_for_sauce_connect.sh
+
 version: 2
 jobs:
   lint:
@@ -134,6 +145,26 @@ jobs:
       - store_artifacts:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
           destination: core/todo/bundle.br
+
+  test_sauce:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - *define_env_vars
+      - *setup_circleci_bazel_config
+      - *setup_sauce_connect
+      - *yarn_install
+      - *wait_for_sauce_connect
+      - run:
+          name: Web tests on SauceLabs
+          command: yarn bazel test //:test_web_all --define=KARMA_WEB_TEST_MODE=SL_REQUIRED
+      - run:
+          name: Ivy-aot web tests on SauceLabs
+          command: yarn test-ivy-aot //:test_web_ivy_aot_all --define=KARMA_WEB_TEST_MODE=SL_REQUIRED
 
   test_aio:
     <<: *job_defaults
@@ -406,6 +437,7 @@ workflows:
       - lint
       - test
       - test_ivy_aot
+      - test_sauce
       - build-packages-dist
       - test_aio
       - deploy_aio:
@@ -443,6 +475,7 @@ workflows:
             # Only publish if tests and integration tests pass
             - test
             - test_ivy_aot
+            - test_sauce
             - integration_test
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local

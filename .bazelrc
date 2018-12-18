@@ -37,6 +37,15 @@ run --nolegacy_external_runfiles
 test --nolegacy_external_runfiles
 
 ###############################
+# Environment variables       #
+# available to actions        #
+###############################
+
+# Expose the following environment variables to actions
+build --action_env=SAUCE_USERNAME
+build --action_env=SAUCE_ACCESS_KEY
+
+###############################
 # Release support             #
 # Turn on these settings with #
 #  --config=release           #
