@@ -8,7 +8,7 @@
 import * as ts from 'typescript';
 
 import {ReferencesRegistry} from '../../../ngtsc/annotations';
-import {Declaration} from '../../../ngtsc/host';
+import {Declaration} from '../../../ngtsc/reflection';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {hasNameIdentifier, isDefined} from '../utils';
 

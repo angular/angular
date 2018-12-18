@@ -10,8 +10,7 @@ import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {FatalDiagnosticError} from '../../diagnostics';
-import {Decorator, ReflectionHost} from '../../host';
-import {reflectNameOfDeclaration} from '../../metadata/src/reflector';
+import {Decorator, ReflectionHost, reflectNameOfDeclaration} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler} from './api';

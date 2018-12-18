@@ -8,10 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {TypeScriptReflectionHost} from '../../metadata';
-import {AbsoluteReference, ResolvedReference} from '../../metadata/src/resolver';
+import {AbsoluteReference, ResolvedReference} from '../../imports';
+import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
-import {NgModuleDecoratorHandler} from '../src/ng_module';
+
 import {SelectorScopeRegistry} from '../src/selector_scope';
 
 describe('SelectorScopeRegistry', () => {

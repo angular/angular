@@ -11,8 +11,9 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Decorator, ReflectionHost} from '../../host';
-import {AbsoluteReference, Reference, ResolvedReference, filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {ResolvedReference} from '../../imports';
+import {PartialEvaluator} from '../../partial_evaluator';
+import {Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 import {TypeCheckContext, TypeCheckableDirectiveMeta} from '../../typecheck';
 
@@ -37,7 +38,7 @@ export interface ComponentHandlerData {
 export class ComponentDecoratorHandler implements
     DecoratorHandler<ComponentHandlerData, Decorator> {
   constructor(
-      private checker: ts.TypeChecker, private reflector: ReflectionHost,
+      private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean,
       private resourceLoader: ResourceLoader, private rootDirs: string[],
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean) {}
@@ -62,7 +63,7 @@ export class ComponentDecoratorHandler implements
 
     if (this.resourceLoader.preload !== undefined && component.has('templateUrl')) {
       const templateUrlExpr = component.get('templateUrl') !;
-      const templateUrl = staticallyResolve(templateUrlExpr, this.reflector, this.checker);
+      const templateUrl = this.evaluator.evaluate(templateUrlExpr);
       if (typeof templateUrl !== 'string') {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
@@ -97,7 +98,7 @@ export class ComponentDecoratorHandler implements
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
     const directiveResult = extractDirectiveMetadata(
-        node, decorator, this.checker, this.reflector, this.isCore,
+        node, decorator, this.reflector, this.evaluator, this.isCore,
         this.elementSchemaRegistry.getDefaultComponentElementName());
     if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
@@ -112,7 +113,7 @@ export class ComponentDecoratorHandler implements
     let templateStr: string|null = null;
     if (component.has('templateUrl')) {
       const templateUrlExpr = component.get('templateUrl') !;
-      const templateUrl = staticallyResolve(templateUrlExpr, this.reflector, this.checker);
+      const templateUrl = this.evaluator.evaluate(templateUrlExpr);
       if (typeof templateUrl !== 'string') {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
@@ -120,7 +121,7 @@ export class ComponentDecoratorHandler implements
       templateStr = this.resourceLoader.load(templateUrl, containingFile);
     } else if (component.has('template')) {
       const templateExpr = component.get('template') !;
-      const resolvedTemplate = staticallyResolve(templateExpr, this.reflector, this.checker);
+      const resolvedTemplate = this.evaluator.evaluate(templateExpr);
       if (typeof resolvedTemplate !== 'string') {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateExpr, 'template must be a string');
@@ -134,7 +135,7 @@ export class ComponentDecoratorHandler implements
     let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
     if (component.has('preserveWhitespaces')) {
       const expr = component.get('preserveWhitespaces') !;
-      const value = staticallyResolve(expr, this.reflector, this.checker);
+      const value = this.evaluator.evaluate(expr);
       if (typeof value !== 'boolean') {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, expr, 'preserveWhitespaces must be a boolean');
@@ -161,7 +162,7 @@ export class ComponentDecoratorHandler implements
     let interpolation: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG;
     if (component.has('interpolation')) {
       const expr = component.get('interpolation') !;
-      const value = staticallyResolve(expr, this.reflector, this.checker);
+      const value = this.evaluator.evaluate(expr);
       if (!Array.isArray(value) || value.length !== 2 ||
           !value.every(element => typeof element === 'string')) {
         throw new FatalDiagnosticError(
@@ -200,21 +201,21 @@ export class ComponentDecoratorHandler implements
     const coreModule = this.isCore ? undefined : '@angular/core';
     const viewChildFromFields = queriesFromFields(
         filterToMembersWithDecorator(decoratedElements, 'ViewChild', coreModule), this.reflector,
-        this.checker);
+        this.evaluator);
     const viewChildrenFromFields = queriesFromFields(
         filterToMembersWithDecorator(decoratedElements, 'ViewChildren', coreModule), this.reflector,
-        this.checker);
+        this.evaluator);
     const viewQueries = [...viewChildFromFields, ...viewChildrenFromFields];
 
     if (component.has('queries')) {
       const queriesFromDecorator = extractQueriesFromDecorator(
-          component.get('queries') !, this.reflector, this.checker, this.isCore);
+          component.get('queries') !, this.reflector, this.evaluator, this.isCore);
       viewQueries.push(...queriesFromDecorator.view);
     }
 
     let styles: string[]|null = null;
     if (component.has('styles')) {
-      styles = parseFieldArrayValue(component, 'styles', this.reflector, this.checker);
+      styles = parseFieldArrayValue(component, 'styles', this.evaluator);
     }
 
     let styleUrls = this._extractStyleUrls(component);
@@ -227,8 +228,7 @@ export class ComponentDecoratorHandler implements
 
     let encapsulation: number = 0;
     if (component.has('encapsulation')) {
-      encapsulation = parseInt(staticallyResolve(
-          component.get('encapsulation') !, this.reflector, this.checker) as string);
+      encapsulation = parseInt(this.evaluator.evaluate(component.get('encapsulation') !) as string);
     }
 
     let animations: Expression|null = null;
@@ -333,7 +333,7 @@ export class ComponentDecoratorHandler implements
     }
 
     const styleUrlsExpr = component.get('styleUrls') !;
-    const styleUrls = staticallyResolve(styleUrlsExpr, this.reflector, this.checker);
+    const styleUrls = this.evaluator.evaluate(styleUrlsExpr);
     if (!Array.isArray(styleUrls) || !styleUrls.every(url => typeof url === 'string')) {
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, styleUrlsExpr, 'styleUrls must be an array of strings');

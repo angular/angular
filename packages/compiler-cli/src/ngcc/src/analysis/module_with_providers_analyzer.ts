@@ -8,8 +8,8 @@
 import * as ts from 'typescript';
 
 import {ReferencesRegistry} from '../../../ngtsc/annotations';
-import {Declaration} from '../../../ngtsc/host';
-import {ResolvedReference} from '../../../ngtsc/metadata';
+import {ResolvedReference} from '../../../ngtsc/imports';
+import {Declaration} from '../../../ngtsc/reflection';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {isDefined} from '../utils';
 

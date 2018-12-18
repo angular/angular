@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
+import {R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {ClassMemberKind, Decorator, ReflectionHost} from '../../host';
-import {AbsoluteReference, ImportMode, Reference} from '../../metadata';
+import {AbsoluteReference, ImportMode, Reference} from '../../imports';
+import {ClassMemberKind, Decorator, ReflectionHost} from '../../reflection';
 
 export function getConstructorDependencies(
     clazz: ts.ClassDeclaration, reflector: ReflectionHost, isCore: boolean): R3DependencyMetadata[]|

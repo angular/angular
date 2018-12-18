@@ -9,8 +9,8 @@
 import {R3BaseRefMetaData, compileBaseDefFromMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ClassMember, Decorator, ReflectionHost} from '../../host';
-import {staticallyResolve} from '../../metadata';
+import {PartialEvaluator} from '../../partial_evaluator';
+import {ClassMember, Decorator, ReflectionHost} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 import {isAngularCore} from './util';
 
@@ -26,7 +26,7 @@ function containsNgTopLevelDecorator(decorators: Decorator[] | null): boolean {
 
 export class BaseDefDecoratorHandler implements
     DecoratorHandler<R3BaseRefMetaData, R3BaseRefDecoratorDetection> {
-  constructor(private checker: ts.TypeChecker, private reflector: ReflectionHost, ) {}
+  constructor(private reflector: ReflectionHost, private evaluator: PartialEvaluator) {}
 
   detect(node: ts.ClassDeclaration, decorators: Decorator[]|null): R3BaseRefDecoratorDetection
       |undefined {
@@ -69,7 +69,7 @@ export class BaseDefDecoratorHandler implements
         const args = decorator.args;
         let value: string|[string, string];
         if (args && args.length > 0) {
-          const resolvedValue = staticallyResolve(args[0], this.reflector, this.checker);
+          const resolvedValue = this.evaluator.evaluate(args[0]);
           if (typeof resolvedValue !== 'string') {
             throw new TypeError('Input alias does not resolve to a string value');
           }
@@ -88,7 +88,7 @@ export class BaseDefDecoratorHandler implements
         const args = decorator.args;
         let value: string;
         if (args && args.length > 0) {
-          const resolvedValue = staticallyResolve(args[0], this.reflector, this.checker);
+          const resolvedValue = this.evaluator.evaluate(args[0]);
           if (typeof resolvedValue !== 'string') {
             throw new TypeError('Output alias does not resolve to a string value');
           }

@@ -7,8 +7,8 @@
  */
 
 import * as ts from 'typescript';
-import {Declaration} from '../../host';
-import {Reference} from '../../metadata';
+import {Reference} from '../../imports';
+import {Declaration} from '../../reflection';
 
 /**
  * Implement this interface if you want DecoratorHandlers to register

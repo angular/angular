@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ResolvedReference} from '@angular/compiler-cli/src/ngtsc/metadata';
 import * as ts from 'typescript';
 
+import {ResolvedReference} from '../../../ngtsc/imports';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';

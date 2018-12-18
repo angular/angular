@@ -10,8 +10,8 @@ import {LiteralExpr, R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFrom
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Decorator, ReflectionHost} from '../../host';
-import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {PartialEvaluator} from '../../partial_evaluator';
+import {Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
@@ -25,7 +25,7 @@ export interface PipeHandlerData {
 
 export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, Decorator> {
   constructor(
-      private checker: ts.TypeChecker, private reflector: ReflectionHost,
+      private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
 
   detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
@@ -63,7 +63,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
           ErrorCode.PIPE_MISSING_NAME, meta, `@Pipe decorator is missing name field`);
     }
     const pipeNameExpr = pipe.get('name') !;
-    const pipeName = staticallyResolve(pipeNameExpr, this.reflector, this.checker);
+    const pipeName = this.evaluator.evaluate(pipeNameExpr);
     if (typeof pipeName !== 'string') {
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, pipeNameExpr, `@Pipe.name must be a string`);
@@ -73,7 +73,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     let pure = true;
     if (pipe.has('pure')) {
       const expr = pipe.get('pure') !;
-      const pureValue = staticallyResolve(expr, this.reflector, this.checker);
+      const pureValue = this.evaluator.evaluate(expr);
       if (typeof pureValue !== 'boolean') {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `@Pipe.pure must be a boolean`);

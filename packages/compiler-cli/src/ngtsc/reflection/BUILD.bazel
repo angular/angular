@@ -3,11 +3,11 @@ package(default_visibility = ["//visibility:public"])
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
-    name = "host",
+    name = "reflection",
     srcs = glob([
         "index.ts",
         "src/**/*.ts",
     ]),
-    module_name = "@angular/compiler-cli/src/ngtsc/host",
+    module_name = "@angular/compiler-cli/src/ngtsc/reflection",
     deps = ["@ngdeps//typescript"],
 )

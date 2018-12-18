@@ -10,8 +10,9 @@ import {Expression, LiteralArrayExpr, R3InjectorMetadata, R3NgModuleMetadata, R3
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Decorator, ReflectionHost} from '../../host';
-import {Reference, ResolvedReference, ResolvedValue, reflectObjectLiteral, staticallyResolve, typeNodeToValueExpr} from '../../metadata';
+import {Reference, ResolvedReference} from '../../imports';
+import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
+import {Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
@@ -32,7 +33,7 @@ export interface NgModuleAnalysis {
  */
 export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalysis, Decorator> {
   constructor(
-      private checker: ts.TypeChecker, private reflector: ReflectionHost,
+      private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private scopeRegistry: SelectorScopeRegistry, private referencesRegistry: ReferencesRegistry,
       private isCore: boolean) {}
 
@@ -72,32 +73,30 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     let declarations: Reference<ts.Declaration>[] = [];
     if (ngModule.has('declarations')) {
       const expr = ngModule.get('declarations') !;
-      const declarationMeta = staticallyResolve(expr, this.reflector, this.checker);
+      const declarationMeta = this.evaluator.evaluate(expr);
       declarations = this.resolveTypeList(expr, declarationMeta, 'declarations');
       this.referencesRegistry.add(...declarations);
     }
     let imports: Reference<ts.Declaration>[] = [];
     if (ngModule.has('imports')) {
       const expr = ngModule.get('imports') !;
-      const importsMeta = staticallyResolve(
-          expr, this.reflector, this.checker,
-          ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
+      const importsMeta = this.evaluator.evaluate(
+          expr, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       imports = this.resolveTypeList(expr, importsMeta, 'imports');
       this.referencesRegistry.add(...imports);
     }
     let exports: Reference<ts.Declaration>[] = [];
     if (ngModule.has('exports')) {
       const expr = ngModule.get('exports') !;
-      const exportsMeta = staticallyResolve(
-          expr, this.reflector, this.checker,
-          ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
+      const exportsMeta = this.evaluator.evaluate(
+          expr, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       exports = this.resolveTypeList(expr, exportsMeta, 'exports');
       this.referencesRegistry.add(...exports);
     }
     let bootstrap: Reference<ts.Declaration>[] = [];
     if (ngModule.has('bootstrap')) {
       const expr = ngModule.get('bootstrap') !;
-      const bootstrapMeta = staticallyResolve(expr, this.reflector, this.checker);
+      const bootstrapMeta = this.evaluator.evaluate(expr);
       bootstrap = this.resolveTypeList(expr, bootstrapMeta, 'bootstrap');
       this.referencesRegistry.add(...bootstrap);
     }

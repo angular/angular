@@ -9,7 +9,9 @@
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {TypeScriptReflectionHost} from '../../metadata';
+import {PartialEvaluator} from '../../partial_evaluator';
+import {TypeScriptReflectionHost} from '../../reflection';
+
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {ResourceLoader} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
@@ -38,8 +40,9 @@ describe('ComponentDecoratorHandler', () => {
     ]);
     const checker = program.getTypeChecker();
     const host = new TypeScriptReflectionHost(checker);
+    const evaluator = new PartialEvaluator(host, checker);
     const handler = new ComponentDecoratorHandler(
-        checker, host, new SelectorScopeRegistry(checker, host), false, new NoopResourceLoader(),
+        host, evaluator, new SelectorScopeRegistry(checker, host), false, new NoopResourceLoader(),
         [''], false, true);
     const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', ts.isClassDeclaration);
     const detected = handler.detect(TestCmp, host.getDecoratorsOfDeclaration(TestCmp));

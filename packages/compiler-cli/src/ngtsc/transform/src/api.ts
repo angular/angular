@@ -9,7 +9,7 @@
 import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator} from '../../host';
+import {Decorator} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 
 
