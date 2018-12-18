@@ -107,10 +107,12 @@ export function compileNgModuleDefs(moduleType: NgModuleType, ngModule: NgModule
         ngModuleDef = getCompilerFacade().compileNgModule(
             angularCoreEnv, `ng://${moduleType.name}/ngModuleDef.js`, {
               type: moduleType,
-              bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY),
-              declarations: declarations,
-              imports: flatten(ngModule.imports || EMPTY_ARRAY).map(expandModuleWithProviders),
-              exports: flatten(ngModule.exports || EMPTY_ARRAY).map(expandModuleWithProviders),
+              bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY, resolveForwardRef),
+              declarations: declarations.map(resolveForwardRef),
+              imports: flatten(ngModule.imports || EMPTY_ARRAY, resolveForwardRef)
+                           .map(expandModuleWithProviders),
+              exports: flatten(ngModule.exports || EMPTY_ARRAY, resolveForwardRef)
+                           .map(expandModuleWithProviders),
               emitInline: true,
             });
       }
@@ -132,8 +134,8 @@ export function compileNgModuleDefs(moduleType: NgModuleType, ngModule: NgModule
           deps: reflectDependencies(moduleType),
           providers: ngModule.providers || EMPTY_ARRAY,
           imports: [
-            ngModule.imports || EMPTY_ARRAY,
-            ngModule.exports || EMPTY_ARRAY,
+            (ngModule.imports || EMPTY_ARRAY).map(resolveForwardRef),
+            (ngModule.exports || EMPTY_ARRAY).map(resolveForwardRef),
           ],
         };
         ngInjectorDef = getCompilerFacade().compileInjector(
@@ -154,8 +156,8 @@ function verifySemanticsOfNgModuleDef(moduleType: NgModuleType): void {
   const errors: string[] = [];
   ngModuleDef.declarations.forEach(verifyDeclarationsHaveDefinitions);
   const combinedDeclarations: Type<any>[] = [
-    ...ngModuleDef.declarations,  //
-    ...flatten(ngModuleDef.imports.map(computeCombinedExports)),
+    ...ngModuleDef.declarations.map(resolveForwardRef),  //
+    ...flatten(ngModuleDef.imports.map(computeCombinedExports), resolveForwardRef),
   ];
   ngModuleDef.exports.forEach(verifyExportsAreDeclaredOrReExported);
   ngModuleDef.declarations.forEach(verifyDeclarationIsUnique);
