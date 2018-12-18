@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Reference} from '../../imports';
+import {Reference, ReferenceResolver} from '../../imports';
 import {ReflectionHost} from '../../reflection';
 
 import {StaticInterpreter} from './interpreter';
@@ -19,12 +19,15 @@ export type ForeignFunctionResolver =
         ts.Expression | null;
 
 export class PartialEvaluator {
-  constructor(private host: ReflectionHost, private checker: ts.TypeChecker) {}
+  constructor(
+      private host: ReflectionHost, private checker: ts.TypeChecker,
+      private refResolver: ReferenceResolver) {}
 
   evaluate(expr: ts.Expression, foreignFunctionResolver?: ForeignFunctionResolver): ResolvedValue {
-    const interpreter = new StaticInterpreter(this.host, this.checker);
+    const interpreter = new StaticInterpreter(this.host, this.checker, this.refResolver);
     return interpreter.visit(expr, {
       absoluteModuleName: null,
+      resolutionContext: expr.getSourceFile().fileName,
       scope: new Map<ts.ParameterDeclaration, ResolvedValue>(), foreignFunctionResolver,
     });
   }
