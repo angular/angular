@@ -5912,7 +5912,7 @@ After each _successful_ navigation, the router looks in its configuration for an
 Whether it preloads a module, and which modules it preloads, depends upon the *preload strategy*.
 -->
 네비게이션이 _성공적으로_ 실행되고 나면 라우터는 라우터 설정에서 사전로딩할 수 있는 모듈 중에 로드되지 않은 것을 찾습니다.
-이 때 모듈을 사전로딩 할지 판단하는데, 이 과정은 *사전로딩 전략(preload strategy)*에 따라 달라집니다.
+이 때 모듈을 사전로딩 할지 판단하는데, 이 과정은 *사전로딩 정책(preload strategy)*에 따라 달라집니다.
 
 <!--
 The `Router` offers two preloading strategies out of the box:
@@ -5920,7 +5920,7 @@ The `Router` offers two preloading strategies out of the box:
 * No preloading at all which is the default. Lazy loaded feature areas are still loaded on demand.
 * Preloading of all lazy loaded feature areas.
 -->
-`Router`는 두 가지 방식의 사전로딩 전략을 제공합니다:
+`Router`는 두 가지 방식의 사전로딩 정책을 제공합니다:
 
 * 기본값은 모듈을 사전로딩하지 않는 것입니다. 지연로딩은 그대로 사용할 수 있습니다.
 * 지연로딩되는 모든 모듈을 사전로딩합니다.
@@ -5935,9 +5935,9 @@ by default and use the `PreloadAllModules` strategy
 to load it (and _all other_ lazy loaded modules) as soon as possible.
 -->
 라우터는 모든 모듈을 사전로딩하지 않거나, 모든 모듈을 사전로딩합니다.
-그리고 특정 모듈만 사전로딩하려면 [커스텀 사전로딩 전략](#custom-preloading)을 정의해서 사용할 수도 있습니다.
+그리고 특정 모듈만 사전로딩하려면 [커스텀 사전로딩 정책](#custom-preloading)을 정의해서 사용할 수도 있습니다.
 
-이제부터 `CrisisCenterModule`은 지금과 마찬가지로 지연로딩하고, 다른 모듈은 모두 `PreloadAllModules` 전략을 사용해서 사전로딩하는 방법에 대해 알아봅시다.
+이제부터 `CrisisCenterModule`은 지금과 마찬가지로 지연로딩하고, 다른 모듈은 모두 `PreloadAllModules` 정책을 사용해서 사전로딩하는 방법에 대해 알아봅시다.
 
 {@a lazy-load-crisis-center}
 
@@ -6052,7 +6052,7 @@ drop the `canLoad()` guard method and rely on the [canActivate()](#can-activate-
 <!--
 ### Custom Preloading Strategy
 -->
-### 커스텀 사전로딩 전략
+### 커스텀 사전로딩 정책
 
 <!--
 Preloading every lazy loaded modules works well in many situations,
@@ -6070,9 +6070,9 @@ Recall that you can add anything to the `data` property of a route.
 
 Set the `data.preload` flag in the `crisis-center` route in the `AppRoutingModule`.
 -->
-커스텀 사전로딩 전략을 작성하면 라우터의 사전로딩 동작을 제어할 수 있습니다.
+커스텀 사전로딩 정책을 작성하면 라우터의 사전로딩 동작을 제어할 수 있습니다.
 
-이번 섹션에서는 커스텀 사전로딩 전략을 작성해서 라우팅 규칙의 `data.preload` 플래그가 `true`인 모듈만 사전로딩하도록 구현해 봅시다.
+이번 섹션에서는 커스텀 사전로딩 정책을 작성해서 라우팅 규칙의 `data.preload` 플래그가 `true`인 모듈만 사전로딩하도록 구현해 봅시다.
 이전에 살펴봤던 것처럼 라우팅 규칙에는 `data` 프로퍼티를 사용해서 인자를 전달할 수 있습니다.
 
 `AppRoutingModule`에 정의된 `crisis-center` 라우팅 규칙에 `data.preload` 플래그를 다음과 같이 설정합니다.
@@ -6152,8 +6152,8 @@ elsewhere in the app.
 그러기 위해서는 먼저 `AppRoutingModule`을 조금 수정해야 합니다.
 
 1. `AppRoutingModule`에 `SelectivePreloadingStrategyService`를 로드합니다.
-1. `forRoot`에 적용했던 `PreloadAllModules` 전략을 `SelectivePreloadingStrategyService`로 변경합니다.
-1. 애플리케이션 전역에 사용할 수 있도록 `SelectivePreloadingStrategyService` 전략을 `AppRoutingModule` 프로바이더 배열에 추가합니다.
+1. `forRoot`에 적용했던 `PreloadAllModules` 정책을 `SelectivePreloadingStrategyService`로 변경합니다.
+1. 애플리케이션 전역에 사용할 수 있도록 `SelectivePreloadingStrategyService` 정책을 `AppRoutingModule` 프로바이더 배열에 추가합니다.
 
 <!--
 Now edit the `AdminDashboardComponent` to display the log of preloaded routes.
@@ -6571,55 +6571,87 @@ Learn about providers and the bootstrap process in the
 </div>
 
 
-
+<!--
 #### Which strategy is best?
+-->
+#### 어떤 방식이 제일 좋은가요?
 
+<!--
 You must choose a strategy and you need to make the right call early in the project.
 It won't be easy to change later once the application is in production
 and there are lots of application URL references in the wild.
+-->
+브라우저에서 URL을 표시하는 정책은 프로젝트 초반에 결정해야 합니다.
+왜냐하면 URL을 사용하는 부분이 이미 많은 곳에 적용되어 운영중인 애플리케이션에서 이 정책을 변경하는 것은 매우 어렵기 때문입니다.
 
+<!--
 Almost all Angular projects should use the default HTML5 style.
 It produces URLs that are easier for users to understand.
 And it preserves the option to do _server-side rendering_ later.
+-->
+대부분의 Angular 프로젝트는 HTML5 스타일을 그대로 사용하는 것이 좋습니다.
+HTML5 스타일을 사용하는 것이 사용자가 더 이해하기 쉽기도 합니다.
+그리고 이 정책을 사용하면 이후에 _서버사이드 렌더링_ 을 적용하기도 쉽습니다.
 
+<!--
 Rendering critical pages on the server is a technique that can greatly improve
 perceived responsiveness when the app first loads.
 An app that would otherwise take ten or more seconds to start
 could be rendered on the server and delivered to the user's device
 in less than a second.
+-->
+페이지를 서버에서 렌더링하는 것은 앱 실행 속도를 비약적으로 향상시킬 수 있는 테크닉입니다.
+실행하는 데에 10초 이상 걸리는 앱을 서버에서 렌더링하면 사용자의 디바이스에서 1초 안에 실행되게 할 수 있습니다. 
 
+<!--
 This option is only available if application URLs look like normal web URLs
 without hashes (#) in the middle.
+-->
+하지만 이 방식은 애플리케이션의 URL이 해시(#) 없이 일반적으로 사용하는 웹 URL 형식일 때만 유효합니다.
 
+<!--
 Stick with the default unless you have a compelling reason to
 resort to hash routes.
+-->
+해시 라우팅을 반드시 사용해야 하는 경우가 아니라면 기본 방식을 사용하는 것이 좋습니다.
 
-
+<!--
 #### The *&lt;base href>*
+-->
+#### *&lt;base href>*
 
+<!--
 The router uses the browser's
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>
 for navigation. Thanks to `pushState`, you can make in-app URL paths look the way you want them to
 look, e.g. `localhost:4200/crisis-center`. The in-app URLs can be indistinguishable from server URLs.
+-->
+라우터는 네비게이션 동작을 실행할 때 브라우저가 제공하는 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a> API를 사용합니다.
+애플리케이션에서 동작하는 URL을 이해하기 쉽게 `localhost:4200/crisis-center`와 같은 형식으로 표시할 수 있도 `pushState` 덕분입니다.
+애플리케이션 안에서 사용하는 URL은 서버에 요청하는 URL과 같은 형식이기 때문에 이질감없이 사용할 수 있습니다.
 
+<!--
 Modern HTML5 browsers were the first to support `pushState` which is why many people refer to these URLs as
 "HTML5 style" URLs.
-
-
+-->
+많은 개발자들이 이런 URL 방식을 선호하기 때문에 최근 HTML5 스펙을 지원하는 브라우저는 모두 `pushState`를 지원하고 있습니다.
+ 
 <div class="alert is-helpful">
 
 
-
+<!--
 HTML5 style navigation is the router default.
 In the [LocationStrategy and browser URL styles](#browser-url-styles) Appendix,
 learn why HTML5 style is preferred, how to adjust its behavior, and how to switch to the
 older hash (#) style, if necessary.
-
+-->
+라우터를 기본 설정으로 사용하면 HTML5 스타일로 네비게이션합니다.
+왜 HTML5 스타일이 더 인기가 있는지, 두 방식의 동작이 어떻게 다른지, 이전 방식인 해시(#) 스타일로 바꾸는지 알아보려면 부록 [LocationStrategy와 브라우저 URL 스타일](#browser-url-styles)을 참고하세요.
 
 </div>
 
 
-
+<!--
 You must **add a
 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a>**
 to the app's `index.html` for `pushState` routing to work.
@@ -6629,14 +6661,23 @@ CSS files, scripts, and images.
 Add the `<base>` element just after the  `<head>` tag.
 If the `app` folder is the application root, as it is for this application,
 set the `href` value in **`index.html`** *exactly* as shown here.
+-->
+`pushState`를 사용하는 라우팅이 제대로 동작하려면 애플리케이션의 `index.html` 파일에 **<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; 엘리먼트</a>**를 추가해야 합니다.
+그러면 브라우저는 `<base href>`에 지정된 주소를 기준으로 CSS 파일과 스크립트, 이미지 파일에 대한 *상대* 주소를 참조합니다.
 
+`<base>` 엘리먼트는 `<head>` 태그 바로 아래에 추가하는 것이 좋습니다.
+이 예제에서 살펴본 것처럼 애플리케이션의 최상위 폴더가 `app` 폴더라면 **`index.html`**에 지정하는 `href` 값을 다음과 같이 지정하면 됩니다.
 
 <code-example path="router/src/index.html" linenums="false" header="src/index.html (base-href)" region="base-href">
 
 </code-example>
 
+<!--
 #### HTML5 URLs and the  *&lt;base href>*
+-->
+#### HTML5 방식의 URL과 *&lt;base href>*
 
+<!--
 While the router uses the
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a>
 style by default, you *must* configure that strategy with a **base href**.
@@ -6644,36 +6685,56 @@ style by default, you *must* configure that strategy with a **base href**.
 The preferred way to configure the strategy is to add a
 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a>
 tag in the `<head>` of the `index.html`.
+-->
+라우터가 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a> 스타일을 기본 옵션으로 사용하지만 **base href**는 *반드시* 설정해야 합니다.
 
+그리고 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a> 엘리먼트를 설정하는 방법 중 가장 편한 방법은 `index.html` 파일의 `<head>` 태그 안에 이 엘리먼트를 추가하는 것입니다.
 
 <code-example path="router/src/index.html" linenums="false" header="src/index.html (base-href)" region="base-href">
 
 </code-example>
 
 
-
+<!--
 Without that tag, the browser may not be able to load resources
 (images, CSS, scripts) when "deep linking" into the app.
 Bad things could happen when someone pastes an application link into the
 browser's address bar or clicks such a link in an email.
+-->
+이 태그가 없으면 애플리케이션의 "딥 링크 (deep linking)" 기능으로 참조하는 이미지 파일이나 CSS, 스크립트 파일을 로드할 수 없습니다.
+그리고 애플리케이션이 동작하던 주소를 브라우저 주소표시줄에 그대로 붙여넣거나 이메일에 있던 링크를 클릭해도 애플리케이션은 제대로 동작하지 않습니다.
 
+<!--
 Some developers may not be able to add the `<base>` element, perhaps because they don't have
 access to `<head>` or the `index.html`.
+-->
+`index.html` 파일이나 `<head>` 태그를 직접 수정할 수 없는 이유가 있어서 `<base>` 엘리먼트를 적용할 수 없을 수도 있습니다.
 
+<!--
 Those developers may still use HTML5 URLs by taking two remedial steps:
 
 1. Provide the router with an appropriate [APP_BASE_HREF][] value.
 1. Use _root URLs_ for all web resources: CSS, images, scripts, and template HTML files.
+-->
+이 경우에는 다음과 같이 우회하는 방법으로 HTML5 방식의 URL을 사용할 수 있습니다.
+
+1. 라우터에 [APP_BASE_HREF][] 값을 직접 설정합니다.
+1. CSS 파일이나 이미지 파일, 스크립트 파일, 템플릿 HTML 파일을 모두 _루트 URL_ 부터 시작하도록 작성합니다.
 
 {@a hashlocationstrategy}
 
 #### *HashLocationStrategy*
 
+<!--
 You can go old-school with the `HashLocationStrategy` by
 providing the `useHash: true` in an object as the second argument of the `RouterModule.forRoot`
 in the `AppModule`.
+-->
+`AppModule`에 등록하는 `RouterModule.forRoot` 메소드에는 두 번째 인자로 옵션을 지정할 수 있는데, 이 객체에 `useHash: true`를 지정하면 `HashLocationStrategy` 방식을 사용할 수 있습니다.
 
-
+<!--
 <code-example path="router/src/app/app.module.6.ts" linenums="false" header="src/app/app.module.ts (hash URL strategy)">
+-->
+<code-example path="router/src/app/app.module.6.ts" linenums="false" header="src/app/app.module.ts (해시 URL 정책)">
 
 </code-example>
