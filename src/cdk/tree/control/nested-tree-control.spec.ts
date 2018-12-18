@@ -1,3 +1,4 @@
+import {fakeAsync, flush} from '@angular/core/testing';
 import {of as observableOf} from 'rxjs';
 import {NestedTreeControl} from './nested-tree-control';
 
@@ -91,6 +92,20 @@ describe('CdkNestedTreeControl', () => {
       expect(treeControl.expansionModel.selected.length)
         .toBe(totalNumber, `Expect ${totalNumber} expanded nodes`);
     });
+
+    // Note that this needs to be `fakeAsync` in order to
+    // catch the error inside an observable correctly.
+    it('should handle null children', fakeAsync(() => {
+      const nodes = generateData(3, 2);
+
+      nodes[1].children = null!;
+      treeControl.dataNodes = nodes;
+
+      expect(() => {
+        treeControl.expandAll();
+        flush();
+      }).not.toThrow();
+    }));
 
     describe('with children array', () => {
       let getStaticChildren = (node: TestData) => node.children;
@@ -201,12 +216,12 @@ export class TestData {
 
 function generateData(dataLength: number, childLength: number, grandChildLength: number = 0)
     : TestData[] {
-  let data = <any>[];
+  let data: TestData[] = [];
   let nextIndex = 0;
   for (let i = 0; i < dataLength; i++) {
-    let children = <any>[];
+    let children: TestData[] = [];
     for (let j = 0; j < childLength; j++) {
-      let grandChildren = <any>[];
+      let grandChildren: TestData[] = [];
       for (let k = 0; k < grandChildLength; k++) {
         grandChildren.push(new TestData(`a_${nextIndex}`, `b_${nextIndex}`, `c_${nextIndex++}`, 3));
       }
