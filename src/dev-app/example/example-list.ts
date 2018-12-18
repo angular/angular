@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, SimpleChanges, OnChanges, Injector} from '@angular/core';
 import {EXAMPLE_COMPONENTS} from '@angular/material-examples';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {createCustomElement} from '@angular/elements';
 
 /** Displays a set of material examples in a mat-accordion. */
 @Component({
@@ -51,7 +52,10 @@ import {coerceBooleanProperty} from '@angular/cdk/coercion';
     }
   `]
 })
-export class ExampleList {
+export class ExampleList implements OnChanges {
+  /** Keeps track of the example ids that have been compiled already. */
+  private static _compiledComponents = new Set<string>();
+
   /** Type of examples being displayed. */
   @Input() type: string;
 
@@ -64,4 +68,20 @@ export class ExampleList {
   _expandAll: boolean;
 
   exampleComponents = EXAMPLE_COMPONENTS;
+
+  constructor(private _injector: Injector) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.ids) {
+      (changes.ids.currentValue as string[])
+        .filter(id => !ExampleList._compiledComponents.has(id))
+        .forEach(id => {
+          const element = createCustomElement(EXAMPLE_COMPONENTS[id].component, {
+            injector: this._injector
+          });
+          customElements.define(id, element);
+          ExampleList._compiledComponents.add(id);
+        });
+    }
+  }
 }
