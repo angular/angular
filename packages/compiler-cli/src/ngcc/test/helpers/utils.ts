@@ -35,20 +35,27 @@ export function makeTestEntryPointBundle(
  * @param files The source files of the bundle program.
  */
 export function makeTestBundleProgram(files: {name: string, contents: string}[]): BundleProgram {
-  const program = makeTestProgram(...files);
+  const {program, options, host} = makeTestProgramInternal(...files);
   const path = files[0].name;
   const file = program.getSourceFile(path) !;
   const r3SymbolsInfo = files.find(file => file.name.indexOf('r3_symbols') !== -1) || null;
   const r3SymbolsPath = r3SymbolsInfo && r3SymbolsInfo.name;
   const r3SymbolsFile = r3SymbolsPath && program.getSourceFile(r3SymbolsPath) || null;
-  return {program, path, file, r3SymbolsPath, r3SymbolsFile};
+  return {program, options, host, path, file, r3SymbolsPath, r3SymbolsFile};
 }
 
+function makeTestProgramInternal(
+    ...files: {name: string, contents: string, isRoot?: boolean | undefined}[]): {
+  program: ts.Program,
+  host: ts.CompilerHost,
+  options: ts.CompilerOptions,
+} {
+  return makeProgram([getFakeCore(), getFakeTslib(), ...files], {allowJs: true, checkJs: false});
+}
 
 export function makeTestProgram(
     ...files: {name: string, contents: string, isRoot?: boolean | undefined}[]): ts.Program {
-  return makeProgram([getFakeCore(), getFakeTslib(), ...files], {allowJs: true, checkJs: false})
-      .program;
+  return makeTestProgramInternal(...files).program;
 }
 
 // TODO: unify this with the //packages/compiler-cli/test/ngtsc/fake_core package

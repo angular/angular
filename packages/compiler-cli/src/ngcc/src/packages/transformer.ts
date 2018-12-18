@@ -110,8 +110,9 @@ export class Transformer {
     const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
 
     const decorationAnalyzer = new DecorationAnalyzer(
-        typeChecker, reflectionHost, referencesRegistry, bundle.rootDirs, isCore);
-    const decorationAnalyses = decorationAnalyzer.analyzeProgram(bundle.src.program);
+        bundle.src.program, bundle.src.options, bundle.src.host, typeChecker, reflectionHost,
+        referencesRegistry, bundle.rootDirs, isCore);
+    const decorationAnalyses = decorationAnalyzer.analyzeProgram();
 
     const moduleWithProvidersAnalyzer =
         bundle.dts && new ModuleWithProvidersAnalyzer(reflectionHost, referencesRegistry);
