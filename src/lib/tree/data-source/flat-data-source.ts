@@ -50,7 +50,8 @@ export class MatTreeFlattener<T, F> {
   constructor(public transformFunction: (node: T, level: number) => F,
               public getLevel: (node: F) => number,
               public isExpandable: (node: F) => boolean,
-              public getChildren: (node: T) => Observable<T[]> | T[]) {}
+              public getChildren: (node: T) =>
+                  Observable<T[]> | T[] | undefined | null) {}
 
   _flattenNode(node: T, level: number,
                resultNodes: F[], parentMap: boolean[]): F[] {
@@ -59,12 +60,14 @@ export class MatTreeFlattener<T, F> {
 
     if (this.isExpandable(flatNode)) {
       const childrenNodes = this.getChildren(node);
-      if (Array.isArray(childrenNodes)) {
-        this._flattenChildren(childrenNodes, level, resultNodes, parentMap);
-      } else {
-        childrenNodes.pipe(take(1)).subscribe(children => {
-          this._flattenChildren(children, level, resultNodes, parentMap);
-        });
+      if (childrenNodes) {
+        if (Array.isArray(childrenNodes)) {
+          this._flattenChildren(childrenNodes, level, resultNodes, parentMap);
+        } else {
+          childrenNodes.pipe(take(1)).subscribe(children => {
+            this._flattenChildren(children, level, resultNodes, parentMap);
+          });
+        }
       }
     }
     return resultNodes;

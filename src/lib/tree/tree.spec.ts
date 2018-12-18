@@ -216,6 +216,27 @@ describe('MatTree', () => {
     });
   });
 
+  describe('flat tree with undefined or null children', () => {
+    describe('should initialize', () => {
+      let fixture: ComponentFixture<MatTreeWithNullOrUndefinedChild >;
+
+      beforeEach(() => {
+        configureMatTreeTestingModule([MatTreeWithNullOrUndefinedChild ]);
+        fixture = TestBed.createComponent(MatTreeWithNullOrUndefinedChild );
+        treeElement = fixture.nativeElement.querySelector('mat-tree');
+
+        fixture.detectChanges();
+      });
+
+      it('with rendered dataNodes', () => {
+        const nodes = getNodes(treeElement);
+
+        expect(nodes).toBeDefined('Expect nodes to be defined');
+        expect(nodes[0].classList).toContain('customNodeClass');
+      });
+    });
+  });
+
   describe('nested tree', () => {
     describe('should initialize', () => {
       let fixture: ComponentFixture<NestedMatTreeApp>;
@@ -608,6 +629,85 @@ class SimpleMatTreeApp {
       this.dataSource.data = data;
     });
   }
+}
+
+interface FoodNode {
+  name: string;
+  children?: FoodNode[] | null;
+}
+
+/** Flat node with expandable and level information */
+interface ExampleFlatNode {
+  expandable: boolean;
+  name: string;
+  level: number;
+}
+
+/**
+ * Food data with nested structure.
+ * Each node has a name and an optiona list of children.
+ */
+const TREE_DATA: FoodNode[] = [
+  {
+    name: 'Fruit',
+    children: [
+      {name: 'Apple'},
+      {name: 'Banana'},
+      {name: 'Fruit loops',
+       children: null},
+    ]
+  }, {
+    name: 'Vegetables',
+    children: [
+      {
+        name: 'Green',
+        children: [
+          {name: 'Broccoli'},
+          {name: 'Brussel sprouts'},
+        ]
+      }, {
+        name: 'Orange',
+        children: [
+          {name: 'Pumpkins'},
+          {name: 'Carrots'},
+        ]
+      },
+    ]
+  },
+];
+
+@Component({
+  template: `
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <mat-tree-node *matTreeNodeDef="let node" class="customNodeClass"
+                     matTreeNodePadding matTreeNodeToggle>
+        {{node.name}}
+      </mat-tree-node>
+    </mat-tree>
+  `
+})
+class MatTreeWithNullOrUndefinedChild {
+  private transformer = (node: FoodNode, level: number) => {
+    return {
+      expandable: !!node.children,
+      name: node.name,
+      level: level,
+    };
+  }
+
+  treeControl = new FlatTreeControl<ExampleFlatNode>(
+    node => node.level, node => node.expandable);
+
+  treeFlattener = new MatTreeFlattener(
+     this.transformer, node => node.level, node => node.expandable, node => node.children);
+
+  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener, TREE_DATA);
+
+  constructor() {
+    this.dataSource.data = TREE_DATA;
+  }
+
+  hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
 }
 
 @Component({
