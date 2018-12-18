@@ -2,7 +2,10 @@
   "$schema": "./node_modules/@angular-devkit/core/src/workspace/workspace-schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "yarn"
+    "packageManager": "yarn",
+    "warnings": {
+      "typescriptMismatch": false
+    }
   },
   "newProjectRoot": "projects",
   "projects": {
