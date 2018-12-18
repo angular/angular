@@ -11,6 +11,8 @@ ts_library(
             "**/*_node_only_spec.ts",
         ],
     ),
+    # Visible to //:test_web_all target
+    visibility = ["//:__pkg__"],
     deps = [
         "//packages/animations",
         "//packages/animations/browser",
