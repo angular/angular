@@ -684,6 +684,58 @@ describe('CdkDrag', () => {
           .toBe('translate3d(50px, 100px, 0px)', 'Expected to drag the element by its handle.');
     }));
 
+    it('should disable the tap highlight while dragging via the handle', fakeAsync(() => {
+      // This test is irrelevant if the browser doesn't support styling the tap highlight color.
+      if (!('webkitTapHighlightColor' in document.body.style)) {
+        return;
+      }
+
+      const fixture = createComponent(StandaloneDraggableWithHandle);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const handle = fixture.componentInstance.handleElement.nativeElement;
+
+      expect(dragElement.style.webkitTapHighlightColor).toBeFalsy();
+
+      startDraggingViaMouse(fixture, handle);
+
+      expect(dragElement.style.webkitTapHighlightColor).toBe('transparent');
+
+      dispatchMouseEvent(document, 'mousemove', 50, 100);
+      fixture.detectChanges();
+
+      dispatchMouseEvent(document, 'mouseup', 50, 100);
+      fixture.detectChanges();
+
+      expect(dragElement.style.webkitTapHighlightColor).toBeFalsy();
+    }));
+
+    it('should preserve any existing `webkitTapHighlightColor`', fakeAsync(() => {
+      // This test is irrelevant if the browser doesn't support styling the tap highlight color.
+      if (!('webkitTapHighlightColor' in document.body.style)) {
+        return;
+      }
+
+      const fixture = createComponent(StandaloneDraggableWithHandle);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const handle = fixture.componentInstance.handleElement.nativeElement;
+
+      dragElement.style.webkitTapHighlightColor = 'purple';
+
+      startDraggingViaMouse(fixture, handle);
+
+      expect(dragElement.style.webkitTapHighlightColor).toBe('transparent');
+
+      dispatchMouseEvent(document, 'mousemove', 50, 100);
+      fixture.detectChanges();
+
+      dispatchMouseEvent(document, 'mouseup', 50, 100);
+      fixture.detectChanges();
+
+      expect(dragElement.style.webkitTapHighlightColor).toBe('purple');
+    }));
+
   });
 
   describe('in a drop container', () => {
