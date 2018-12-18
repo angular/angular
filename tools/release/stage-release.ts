@@ -8,7 +8,7 @@ import {GitClient} from './git/git-client';
 import {getGithubBranchCommitsUrl} from './git/github-urls';
 import {promptForNewVersion} from './prompt/new-version-prompt';
 import {parseVersionName, Version} from './version-name/parse-version';
-import {getExpectedPublishBranch} from './version-name/publish-branch';
+import {getAllowedPublishBranches} from './version-name/publish-branches';
 
 /** Default filename for the changelog. */
 const CHANGELOG_FILE_NAME = 'CHANGELOG.md';
@@ -84,20 +84,22 @@ class StageReleaseTask {
     console.log();
 
     const newVersion = await promptForNewVersion(this.currentVersion);
-    const expectedPublishBranch = getExpectedPublishBranch(newVersion);
+    const newVersionName = newVersion.format();
+    const stagingBranch = `release-stage/${newVersionName}`;
 
     // After the prompt for the new version, we print a new line because we want the
     // new log messages to be more in the foreground.
     console.log();
 
+    // Ensure there are no uncommitted changes. Checking this before switching to a
+    // publish branch is sufficient as unstaged changes are not specific to Git branches.
     this.verifyNoUncommittedChanges();
-    this.switchToPublishBranch(expectedPublishBranch);
 
-    this.verifyLocalCommitsMatchUpstream(expectedPublishBranch);
-    await this.verifyPassingGithubStatus(expectedPublishBranch);
+    // Branch that will be used to stage the release for the new selected version.
+    const publishBranch = this.switchToPublishBranch(newVersion);
 
-    const newVersionName = newVersion.format();
-    const stagingBranch = `release-stage/${newVersionName}`;
+    this.verifyLocalCommitsMatchUpstream(publishBranch);
+    await this.verifyPassingGithubStatus(publishBranch);
 
     if (!this.git.checkoutNewBranch(stagingBranch)) {
       console.error(red(`Could not create release staging branch: ${stagingBranch}. Aborting...`));
@@ -146,24 +148,39 @@ class StageReleaseTask {
    * Checks if the user is on the expected publish branch. If the user is on a different branch,
    * this function automatically tries to checkout the publish branch.
    */
-  private switchToPublishBranch(expectedPublishBranch: string): boolean {
+  private switchToPublishBranch(newVersion: Version): string {
+    const allowedBranches = getAllowedPublishBranches(newVersion);
     const currentBranchName = this.git.getCurrentBranch();
 
-    // If current branch already matches the expected publish branch, just continue
-    // by exiting this function.
-    if (expectedPublishBranch === currentBranchName) {
-      return;
+    // If current branch already matches one of the allowed publish branches, just continue
+    // by exiting this function and returning the currently used publish branch.
+    if (allowedBranches.includes(currentBranchName)) {
+      console.log(green(`  ✓   Using the "${italic(currentBranchName)}" branch.`));
+      return currentBranchName;
     }
 
-    if (!this.git.checkoutBranch(expectedPublishBranch)) {
-      console.error(red(`  ✘   Could not switch to the "${italic(expectedPublishBranch)}" ` +
+    // In case there are multiple allowed publish branches for this version, we just
+    // exit and let the user decide which branch they want to release from.
+    if (allowedBranches.length !== 1) {
+      console.warn(yellow('  ✘   You are not on an allowed publish branch.'));
+      console.warn(yellow(`      Please switch to one of the following branches: ` +
+        `${allowedBranches.join(', ')}`));
+      process.exit(0);
+    }
+
+    // For this version there is only *one* allowed publish branch, so we could
+    // automatically switch to that branch in case the user isn't on it yet.
+    const defaultPublishBranch = allowedBranches[0];
+
+    if (!this.git.checkoutBranch(defaultPublishBranch)) {
+      console.error(red(`  ✘   Could not switch to the "${italic(defaultPublishBranch)}" ` +
         `branch.`));
       console.error(red(`      Please ensure that the branch exists or manually switch to the ` +
         `branch.`));
       process.exit(1);
     }
 
-    console.log(green(`  ✓   Switched to the "${italic(expectedPublishBranch)}" branch.`));
+    console.log(green(`  ✓   Switched to the "${italic(defaultPublishBranch)}" branch.`));
   }
 
   /** Verifies that the local branch is up to date with the given publish branch. */
