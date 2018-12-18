@@ -159,6 +159,29 @@ describe('CdkDrag', () => {
           expect(dragElement.style.transform).toBeFalsy();
         }));
 
+      it('should be able to stop dragging after a double click', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable, [], 5);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+        expect(dragElement.style.transform).toBeFalsy();
+
+        dispatchMouseEvent(dragElement, 'mousedown');
+        fixture.detectChanges();
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        dispatchMouseEvent(dragElement, 'mousedown');
+        fixture.detectChanges();
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+
+        dragElementViaMouse(fixture, dragElement, 50, 50);
+        dispatchMouseEvent(document, 'mousemove', 100, 100);
+        fixture.detectChanges();
+
+        expect(dragElement.style.transform).toBeFalsy();
+      }));
+
       it('should preserve the previous `transform` value', fakeAsync(() => {
         const fixture = createComponent(StandaloneDraggable);
         fixture.detectChanges();
