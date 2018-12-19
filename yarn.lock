@@ -3482,17 +3482,18 @@ graphviz@0.0.7:
   dependencies:
     temp "~0.4.0"
 
-gulp-clang-format@1.0.27:
-  version "1.0.27"
-  resolved "https://registry.yarnpkg.com/gulp-clang-format/-/gulp-clang-format-1.0.27.tgz#c89716c26745703356c4ff3f2b0964393c73969e"
-  integrity sha512-Jj4PGuNXKdqVCh9fijvL7wdzma5TQRJz1vv8FjOjnSkfq3s/mvbdE/jq+5HG1c/q+jcYkXTEGkYT3CrdnJOLaQ==
+gulp-clang-format@1.0.23:
+  version "1.0.23"
+  resolved "https://registry.yarnpkg.com/gulp-clang-format/-/gulp-clang-format-1.0.23.tgz#fe258586b83998491e632fc0c4fc0ecdfa10c89f"
+  integrity sha1-/iWFhrg5mEkeYy/AxPwOzfoQyJ8=
   dependencies:
     clang-format "^1.0.32"
-    fancy-log "^1.3.2"
     gulp-diff "^1.0.0"
-    plugin-error "^1.0.1"
+    gulp-util "^3.0.4"
+    pkginfo "^0.3.0"
     stream-combiner2 "^1.1.1"
-    through2 "^2.0.3"
+    stream-equal "0.1.6"
+    through2 "^0.6.3"
 
 gulp-connect@5.0.0:
   version "5.0.0"
@@ -3561,7 +3562,7 @@ gulp-tslint@8.1.2:
     map-stream "~0.0.7"
     through "~2.3.8"
 
-gulp-util@^3.0.0, gulp-util@^3.0.6, gulp-util@~3.0.8:
+gulp-util@^3.0.0, gulp-util@^3.0.4, gulp-util@^3.0.6, gulp-util@~3.0.8:
   version "3.0.8"
   resolved "https://registry.yarnpkg.com/gulp-util/-/gulp-util-3.0.8.tgz#0054e1e744502e27c04c187c3ecc505dd54bbb4f"
   integrity sha1-AFTh50RQLifATBh8PsxQXdVLu08=
@@ -6353,6 +6354,11 @@ pinkie@^2.0.0:
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
   integrity sha1-clVrgM+g1IqXToDnckjoDtT3+HA=
 
+pkginfo@^0.3.0:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/pkginfo/-/pkginfo-0.3.1.tgz#5b29f6a81f70717142e09e765bbeab97b4f81e21"
+  integrity sha1-Wyn2qB9wcXFC4J52W76rl7T4HiE=
+
 plugin-error@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/plugin-error/-/plugin-error-0.1.2.tgz#3b9bb3335ccf00f425e07437e19276967da47ace"
@@ -7798,6 +7804,11 @@ stream-counter@~0.2.0:
   dependencies:
     readable-stream "~1.1.8"
 
+stream-equal@0.1.6:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/stream-equal/-/stream-equal-0.1.6.tgz#cc522fab38516012e4d4ee47513b147b72359019"
+  integrity sha1-zFIvqzhRYBLk1O5HUTsUe3I1kBk=
+
 stream-to-array@~2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/stream-to-array/-/stream-to-array-2.3.0.tgz#bbf6b39f5f43ec30bc71babcb37557acecf34353"
@@ -8016,7 +8027,7 @@ throttleit@~0.0.2:
   resolved "https://registry.yarnpkg.com/throttleit/-/throttleit-0.0.2.tgz#cfedf88e60c00dd9697b61fdd2a8343a9b680eaf"
   integrity sha1-z+34jmDADdlpe2H90qg0OptoDq8=
 
-through2@^0.6.1:
+through2@^0.6.1, through2@^0.6.3:
   version "0.6.5"
   resolved "https://registry.yarnpkg.com/through2/-/through2-0.6.5.tgz#41ab9c67b29d57209071410e1d7a7a968cd3ad48"
   integrity sha1-QaucZ7KdVyCQcUEOHXp6lozTrUg=
