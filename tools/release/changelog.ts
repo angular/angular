@@ -44,7 +44,6 @@ export async function prependChangelogFromLatestTag(changelogPath: string, relea
         .once('error', (error: any) => reject(error))
         .once('finish', () => resolve());
     });
-
   });
 }
 
@@ -73,7 +72,7 @@ function createDedupeWriterOptions(changelogPath: string) {
     // Specify a writer option that can be used to modify the content of a new changelog section.
     // See: conventional-changelog/tree/master/packages/conventional-changelog-writer
     finalizeContext: (context: any) => {
-      context.commitGroups.forEach((group: any) => {
+      context.commitGroups = context.commitGroups.filter((group: any) => {
         group.commits = group.commits.filter((commit: any) => {
           // NOTE: We cannot compare the SHA's because the commits will have a different SHA
           // if they are being cherry-picked into a different branch.
@@ -83,7 +82,12 @@ function createDedupeWriterOptions(changelogPath: string) {
           }
           return true;
         });
+
+        // Filter out commit groups which don't have any commits. Commit groups will become
+        // empty if we filter out all duplicated commits.
+        return group.commits.length;
       });
+
       return context;
     }
   };
