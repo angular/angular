@@ -114,6 +114,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // Selectors found in the <ng-content> tags in the template.
   private _ngContentSelectors: string[] = [];
 
+  // Number of non-default selectors found in all parent templates of this template. We need to
+  // track it to properly adjust projection bucket index in the `projection` instruction.
+  private _ngContentSelectorsOffset = 0;
+
   constructor(
       private constantPool: ConstantPool, parentBindingScope: BindingScope, private level = 0,
       private contextName: string|null, private i18nContext: I18nContext|null,
@@ -166,7 +170,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         });
   }
 
-  buildTemplateFunction(nodes: t.Node[], variables: t.Variable[], i18n?: i18n.AST): o.FunctionExpr {
+  buildTemplateFunction(
+      nodes: t.Node[], variables: t.Variable[], ngContentSelectorsOffset: number = 0,
+      i18n?: i18n.AST): o.FunctionExpr {
+    this._ngContentSelectorsOffset = ngContentSelectorsOffset;
+
     if (this._namespace !== R3.namespaceHTML) {
       this.creationInstruction(null, this._namespace);
     }
@@ -192,8 +200,23 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // resolving bindings. We also count bindings in this pass as we walk bound expressions.
     t.visitAll(this, nodes);
 
-    // Output a `ProjectionDef` instruction when some `<ng-content>` are present
-    if (this._hasNgContent) {
+    // Add total binding count to pure function count so pure function instructions are
+    // generated with the correct slot offset when update instructions are processed.
+    this._pureFunctionSlots += this._bindingSlots;
+
+    // Pipes are walked in the first pass (to enqueue `pipe()` creation instructions and
+    // `pipeBind` update instructions), so we have to update the slot offsets manually
+    // to account for bindings.
+    this._valueConverter.updatePipeSlotOffsets(this._bindingSlots);
+
+    // Nested templates must be processed before creation instructions so template()
+    // instructions can be generated with the correct internal const count.
+    this._nestedTemplateFns.forEach(buildTemplateFn => buildTemplateFn());
+
+    // Output the `projectionDef` instruction when some `<ng-content>` are present.
+    // The `projectionDef` instruction only emitted for the component template and it is skipped for
+    // nested templates (<ng-template> tags).
+    if (this.level === 0 && this._hasNgContent) {
       const parameters: o.Expression[] = [];
 
       // Only selectors with a non-default value are generated
@@ -211,19 +234,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // any `projection` instructions
       this.creationInstruction(null, R3.projectionDef, parameters, /* prepend */ true);
     }
-
-    // Add total binding count to pure function count so pure function instructions are
-    // generated with the correct slot offset when update instructions are processed.
-    this._pureFunctionSlots += this._bindingSlots;
-
-    // Pipes are walked in the first pass (to enqueue `pipe()` creation instructions and
-    // `pipeBind` update instructions), so we have to update the slot offsets manually
-    // to account for bindings.
-    this._valueConverter.updatePipeSlotOffsets(this._bindingSlots);
-
-    // Nested templates must be processed before creation instructions so template()
-    // instructions can be generated with the correct internal const count.
-    this._nestedTemplateFns.forEach(buildTemplateFn => buildTemplateFn());
 
     if (initI18nContext) {
       this.i18nEnd(null, selfClosingI18nInstruction);
@@ -419,7 +429,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const slot = this.allocateDataSlot();
     let selectorIndex = ngContent.selector === DEFAULT_NG_CONTENT_SELECTOR ?
         0 :
-        this._ngContentSelectors.push(ngContent.selector);
+        this._ngContentSelectors.push(ngContent.selector) + this._ngContentSelectorsOffset;
     const parameters: o.Expression[] = [o.literal(slot)];
 
     const attributeAsList: string[] = [];
@@ -738,8 +748,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // template definition. e.g. <div *ngIf="showing"> {{ foo }} </div>  <div #foo></div>
     this._nestedTemplateFns.push(() => {
       const templateFunctionExpr = templateVisitor.buildTemplateFunction(
-          template.children, template.variables, template.i18n);
+          template.children, template.variables,
+          this._ngContentSelectors.length + this._ngContentSelectorsOffset, template.i18n);
       this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(templateName, null));
+      if (templateVisitor._hasNgContent) {
+        this._hasNgContent = true;
+        this._ngContentSelectors.push(...templateVisitor._ngContentSelectors);
+      }
     });
 
     // e.g. template(1, MyComp_Template_1)
