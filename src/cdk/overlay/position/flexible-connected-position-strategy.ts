@@ -19,7 +19,7 @@ import {
 import {Observable, Subscription, Subject, Observer} from 'rxjs';
 import {OverlayReference} from '../overlay-reference';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
-import {coerceCssPixelValue, coerceArray} from '@angular/cdk/coercion';
+import {coerceCssPixelValue, coerceArray, coerceElement} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {OverlayContainer} from '../overlay-container';
 
@@ -431,7 +431,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    * @param origin Reference to the new origin element.
    */
   setOrigin(origin: ElementRef | HTMLElement): this {
-    this._origin = origin instanceof ElementRef ? origin.nativeElement : origin;
+    this._origin = coerceElement(origin);
     return this;
   }
 

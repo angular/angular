@@ -19,6 +19,7 @@ import {
   SkipSelf,
 } from '@angular/core';
 import {Observable, of as observableOf, Subject, Subscription} from 'rxjs';
+import {coerceElement} from '@angular/cdk/coercion';
 
 
 // This is the value used by AngularJS Material. Through trial and error (on iPhone 6S) they found
@@ -158,7 +159,7 @@ export class FocusMonitor implements OnDestroy {
       return observableOf(null);
     }
 
-    const nativeElement = this._getNativeElement(element);
+    const nativeElement = coerceElement(element);
 
     // Check if we're already monitoring this element.
     if (this._elementInfo.has(nativeElement)) {
@@ -206,7 +207,7 @@ export class FocusMonitor implements OnDestroy {
   stopMonitoring(element: ElementRef<HTMLElement>): void;
 
   stopMonitoring(element: HTMLElement | ElementRef<HTMLElement>): void {
-    const nativeElement = this._getNativeElement(element);
+    const nativeElement = coerceElement(element);
     const elementInfo = this._elementInfo.get(nativeElement);
 
     if (elementInfo) {
@@ -239,7 +240,7 @@ export class FocusMonitor implements OnDestroy {
           origin: FocusOrigin,
           options?: FocusOptions): void {
 
-    const nativeElement = this._getNativeElement(element);
+    const nativeElement = coerceElement(element);
 
     this._setOriginForCurrentEventQueue(origin);
 
@@ -417,10 +418,6 @@ export class FocusMonitor implements OnDestroy {
       clearTimeout(this._touchTimeoutId);
       clearTimeout(this._originTimeoutId);
     }
-  }
-
-  private _getNativeElement(element: HTMLElement | ElementRef<HTMLElement>): HTMLElement {
-    return element instanceof ElementRef ? element.nativeElement : element;
   }
 }
 

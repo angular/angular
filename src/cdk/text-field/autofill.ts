@@ -17,6 +17,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
+import {coerceElement} from '@angular/cdk/coercion';
 import {EMPTY, Observable, Subject} from 'rxjs';
 
 
@@ -70,7 +71,7 @@ export class AutofillMonitor implements OnDestroy {
       return EMPTY;
     }
 
-    const element = elementOrRef instanceof ElementRef ? elementOrRef.nativeElement : elementOrRef;
+    const element = coerceElement(elementOrRef);
     const info = this._monitoredElements.get(element);
 
     if (info) {
@@ -122,7 +123,7 @@ export class AutofillMonitor implements OnDestroy {
   stopMonitoring(element: ElementRef<Element>): void;
 
   stopMonitoring(elementOrRef: Element | ElementRef<Element>): void {
-    const element = elementOrRef instanceof ElementRef ? elementOrRef.nativeElement : elementOrRef;
+    const element = coerceElement(elementOrRef);
     const info = this._monitoredElements.get(element);
 
     if (info) {

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
+import {coerceBooleanProperty, coerceNumberProperty, coerceElement} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
   Directive,
@@ -63,7 +63,7 @@ export class ContentObserver implements OnDestroy {
   observe(element: ElementRef<Element>): Observable<MutationRecord[]>;
 
   observe(elementOrRef: Element | ElementRef<Element>): Observable<MutationRecord[]> {
-    const element = elementOrRef instanceof ElementRef ? elementOrRef.nativeElement : elementOrRef;
+    const element = coerceElement(elementOrRef);
 
     return Observable.create((observer: Observer<MutationRecord[]>) => {
       const stream = this._observeElement(element);
