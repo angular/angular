@@ -26,6 +26,8 @@ import {
   QueryList,
   SkipSelf,
   ViewContainerRef,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Observable, Subscription, Observer} from 'rxjs';
@@ -70,7 +72,7 @@ export function CDK_DRAG_CONFIG_FACTORY(): DragRefConfig {
   },
   providers: [{provide: CDK_DRAG_PARENT, useExisting: CdkDrag}]
 })
-export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
+export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   /** Subscription to the stream that initializes the root element. */
   private _rootElementInitSubscription = Subscription.EMPTY;
 
@@ -214,14 +216,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     this._rootElementInitSubscription = this._ngZone.onStable.asObservable()
       .pipe(take(1))
       .subscribe(() => {
-        const rootElement = this._getRootElement();
-
-        if (rootElement.nodeType !== this._document.ELEMENT_NODE) {
-          throw Error(`cdkDrag must be attached to an element node. ` +
-                      `Currently attached to "${rootElement.nodeName}".`);
-        }
-
-        this._dragRef.withRootElement(rootElement);
+        this._updateRootElement();
         this._handles.changes
           .pipe(startWith(this._handles))
           .subscribe((handleList: QueryList<CdkDragHandle>) => {
@@ -230,18 +225,33 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
       });
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    const rootSelectorChange = changes.rootElementSelector;
+
+    // We don't have to react to the first change since it's being
+    // handled in `ngAfterViewInit` where it needs to be deferred.
+    if (rootSelectorChange && !rootSelectorChange.firstChange) {
+      this._updateRootElement();
+    }
+  }
+
   ngOnDestroy() {
     this._rootElementInitSubscription.unsubscribe();
     this._dragRef.dispose();
   }
 
-  /** Gets the root draggable element, based on the `rootElementSelector`. */
-  private _getRootElement(): HTMLElement {
+  /** Syncs the root element with the `DragRef`. */
+  private _updateRootElement() {
     const element = this.element.nativeElement;
     const rootElement = this.rootElementSelector ?
-        getClosestMatchingAncestor(element, this.rootElementSelector) : null;
+        getClosestMatchingAncestor(element, this.rootElementSelector) : element;
 
-    return rootElement || element;
+    if (rootElement && rootElement.nodeType !== this._document.ELEMENT_NODE) {
+      throw Error(`cdkDrag must be attached to an element node. ` +
+                  `Currently attached to "${rootElement.nodeName}".`);
+    }
+
+    this._dragRef.withRootElement(rootElement || element);
   }
 
   /** Gets the boundary element, based on the `boundaryElementSelector`. */
