@@ -9,7 +9,7 @@
 import {StaticSymbol} from '../../aot/static_symbol';
 import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileQueryMetadata, CompileTokenMetadata, identifierName, sanitizeIdentifier} from '../../compile_metadata';
 import {CompileReflector} from '../../compile_reflector';
-import {BindingForm, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
+import {BindingForm, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
@@ -22,14 +22,15 @@ import {ShadowCss} from '../../shadow_css';
 import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {OutputContext, error} from '../../util';
+import {BoundEvent} from '../r3_ast';
 import {compileFactoryFunction, dependenciesFromGlobalMetadata} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
-import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
+import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
-import {BindingScope, TemplateDefinitionBuilder, ValueConverter, renderFlagCheckIfStmt} from './template';
+import {BindingScope, TemplateDefinitionBuilder, ValueConverter, prepareEventListenerParameters, renderFlagCheckIfStmt} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
 const EMPTY_ARRAY: any[] = [];
@@ -809,21 +810,15 @@ function createHostListeners(
     bindingContext: o.Expression, eventBindings: ParsedEvent[],
     meta: R3DirectiveMetadata): o.Statement[] {
   return eventBindings.map(binding => {
-    const bindingExpr = convertActionBinding(
-        null, bindingContext, binding.handler, 'b', () => error('Unexpected interpolation'));
     let bindingName = binding.name && sanitizeIdentifier(binding.name);
-    let bindingFnName = bindingName;
-    if (binding.type === ParsedEventType.Animation) {
-      bindingFnName = prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase);
-      bindingName = prepareSyntheticListenerName(bindingName, binding.targetOrPhase);
-    }
-    const typeName = meta.name;
-    const functionName =
-        typeName && bindingName ? `${typeName}_${bindingFnName}_HostBindingHandler` : null;
-    const handler = o.fn(
-        [new o.FnParam('$event', o.DYNAMIC_TYPE)], [...bindingExpr.render3Stmts], o.INFERRED_TYPE,
-        null, functionName);
-    return o.importExpr(R3.listener).callFn([o.literal(bindingName), handler]).toStmt();
+    const bindingFnName = binding.type === ParsedEventType.Animation ?
+        prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase) :
+        bindingName;
+    const handlerName =
+        meta.name && bindingName ? `${meta.name}_${bindingFnName}_HostBindingHandler` : null;
+    const params = prepareEventListenerParameters(
+        BoundEvent.fromParsedEvent(binding), bindingContext, handlerName);
+    return o.importExpr(R3.listener).callFn(params).toStmt();
   });
 }
 

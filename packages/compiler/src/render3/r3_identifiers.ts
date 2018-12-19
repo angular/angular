@@ -131,6 +131,10 @@ export class Identifiers {
   static templateRefExtractor:
       o.ExternalReference = {name: 'ɵtemplateRefExtractor', moduleName: CORE};
 
+  static resolveWindow: o.ExternalReference = {name: 'ɵresolveWindow', moduleName: CORE};
+  static resolveDocument: o.ExternalReference = {name: 'ɵresolveDocument', moduleName: CORE};
+  static resolveBody: o.ExternalReference = {name: 'ɵresolveBody', moduleName: CORE};
+
   static defineBase: o.ExternalReference = {name: 'ɵdefineBase', moduleName: CORE};
 
   static BaseDef: o.ExternalReference = {

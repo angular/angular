@@ -39,6 +39,16 @@ import {I18N_ICU_MAPPING_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoun
 import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
+// Default selector used by `<ng-content>` if none specified
+const DEFAULT_NG_CONTENT_SELECTOR = '*';
+
+// Selector attribute name of `<ng-content>`
+const NG_CONTENT_SELECT_ATTR = 'select';
+
+// List of supported global targets for event listeners
+const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>(
+    [['window', R3.resolveWindow], ['document', R3.resolveDocument], ['body', R3.resolveBody]]);
+
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
   switch (type) {
     case BindingType.Property:
@@ -59,11 +69,39 @@ export function renderFlagCheckIfStmt(
   return o.ifStmt(o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(flags), null, false), statements);
 }
 
-// Default selector used by `<ng-content>` if none specified
-const DEFAULT_NG_CONTENT_SELECTOR = '*';
+export function prepareEventListenerParameters(
+    eventAst: t.BoundEvent, bindingContext: o.Expression, handlerName: string | null = null,
+    scope: BindingScope | null = null): o.Expression[] {
+  const {type, name, target, phase, handler} = eventAst;
+  if (target && !GLOBAL_TARGET_RESOLVERS.has(target)) {
+    throw new Error(`Unexpected global target '${target}' defined for '${name}' event.
+        Supported list of global targets: ${Array.from(GLOBAL_TARGET_RESOLVERS.keys())}.`);
+  }
 
-// Selector attribute name of `<ng-content>`
-const NG_CONTENT_SELECT_ATTR = 'select';
+  const bindingExpr = convertActionBinding(
+      scope, bindingContext, handler, 'b', () => error('Unexpected interpolation'));
+
+  const statements = [];
+  if (scope) {
+    statements.push(...scope.restoreViewStatement());
+    statements.push(...scope.variableDeclarations());
+  }
+  statements.push(...bindingExpr.render3Stmts);
+
+  const eventName: string =
+      type === ParsedEventType.Animation ? prepareSyntheticListenerName(name, phase !) : name;
+  const fnName = handlerName && sanitizeIdentifier(handlerName);
+  const fnArgs = [new o.FnParam('$event', o.DYNAMIC_TYPE)];
+  const handlerFn = o.fn(fnArgs, statements, o.INFERRED_TYPE, null, fnName);
+
+  const params: o.Expression[] = [o.literal(eventName), handlerFn];
+  if (target) {
+    params.push(
+        o.literal(false),  // `useCapture` flag, defaults to `false`
+        o.importExpr(GLOBAL_TARGET_RESOLVERS.get(target) !));
+  }
+  return params;
+}
 
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
   private _dataIndex = 0;
@@ -1069,37 +1107,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private prepareListenerParameter(tagName: string, outputAst: t.BoundEvent, index: number):
       () => o.Expression[] {
-    let eventName: string = outputAst.name;
-
-    let bindingFnName;
-    if (outputAst.type === ParsedEventType.Animation) {
-      // synthetic @listener.foo values are treated the exact same as are standard listeners
-      bindingFnName = prepareSyntheticListenerFunctionName(eventName, outputAst.phase !);
-      eventName = prepareSyntheticListenerName(eventName, outputAst.phase !);
-    } else {
-      bindingFnName = sanitizeIdentifier(eventName);
-    }
-
-    const tagNameSanitized = sanitizeIdentifier(tagName);
-    const functionName =
-        `${this.templateName}_${tagNameSanitized}_${bindingFnName}_${index}_listener`;
     return () => {
-
-      const listenerScope = this._bindingScope.nestedScope(this._bindingScope.bindingLevel);
-
-      const bindingExpr = convertActionBinding(
-          listenerScope, o.variable(CONTEXT_NAME), outputAst.handler, 'b',
-          () => error('Unexpected interpolation'));
-
-      const statements = [
-        ...listenerScope.restoreViewStatement(), ...listenerScope.variableDeclarations(),
-        ...bindingExpr.render3Stmts
-      ];
-
-      const handler = o.fn(
-          [new o.FnParam('$event', o.DYNAMIC_TYPE)], statements, o.INFERRED_TYPE, null,
-          functionName);
-      return [o.literal(eventName), handler];
+      const eventName: string = outputAst.name;
+      const bindingFnName = outputAst.type === ParsedEventType.Animation ?
+          // synthetic @listener.foo values are treated the exact same as are standard listeners
+          prepareSyntheticListenerFunctionName(eventName, outputAst.phase !) :
+          sanitizeIdentifier(eventName);
+      const handlerName = `${this.templateName}_${tagName}_${bindingFnName}_${index}_listener`;
+      const scope = this._bindingScope.nestedScope(this._bindingScope.bindingLevel);
+      const context = o.variable(CONTEXT_NAME);
+      return prepareEventListenerParameters(outputAst, context, handlerName, scope);
     };
   }
 }

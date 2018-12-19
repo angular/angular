@@ -29,7 +29,7 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {PlayerFactory} from './interfaces/player';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {GlobalTargetResolver, ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
@@ -822,10 +822,13 @@ export function locateHostElement(
  *
  * @param eventName Name of the event
  * @param listenerFn The function to be called when event emits
- * @param useCapture Whether or not to use capture in event listener.
+ * @param useCapture Whether or not to use capture in event listener
+ * @param eventTargetResolver Function that returns global target information in case this listener
+ * should be attached to a global object like window, document or body
  */
 export function listener(
-    eventName: string, listenerFn: (e?: any) => any, useCapture = false): void {
+    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
+    eventTargetResolver?: GlobalTargetResolver): void {
   const lView = getLView();
   const tNode = getPreviousOrParentTNode();
   const tView = lView[TVIEW];
@@ -837,6 +840,8 @@ export function listener(
   // add native event listener - applicable to elements only
   if (tNode.type === TNodeType.Element) {
     const native = getNativeByTNode(tNode, lView) as RElement;
+    const resolved = eventTargetResolver ? eventTargetResolver(native) : {} as any;
+    const target = resolved.target || native;
     ngDevMode && ngDevMode.rendererAddEventListener++;
     const renderer = lView[RENDERER];
     const lCleanup = getCleanup(lView);
@@ -846,15 +851,22 @@ export function listener(
     // In order to match current behavior, native DOM event listeners must be added for all
     // events (including outputs).
     if (isProceduralRenderer(renderer)) {
-      const cleanupFn = renderer.listen(native, eventName, listenerFn);
+      // The first argument of `listen` function in Procedural Renderer is:
+      // - either a target name (as a string) in case of global target (window, document, body)
+      // - or element reference (in all other cases)
+      const cleanupFn = renderer.listen(resolved.name || target, eventName, listenerFn);
       lCleanup.push(listenerFn, cleanupFn);
       useCaptureOrSubIdx = lCleanupIndex + 1;
     } else {
       const wrappedListener = wrapListenerWithPreventDefault(listenerFn);
-      native.addEventListener(eventName, wrappedListener, useCapture);
+      target.addEventListener(eventName, wrappedListener, useCapture);
       lCleanup.push(wrappedListener);
     }
-    tCleanup && tCleanup.push(eventName, tNode.index, lCleanupIndex, useCaptureOrSubIdx);
+
+    const idxOrTargetGetter = eventTargetResolver ?
+        (_lView: LView) => eventTargetResolver(readElementValue(_lView[tNode.index])).target :
+        tNode.index;
+    tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, useCaptureOrSubIdx);
   }
 
   // subscribe to directive outputs

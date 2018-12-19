@@ -31,6 +31,8 @@ import {DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTyp
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, LView} from '../../src/render3/interfaces/view';
+import {destroyLView} from '../../src/render3/node_manipulation';
+import {getRootView} from '../../src/render3/util';
 import {Sanitizer} from '../../src/sanitization/security';
 import {Type} from '../../src/type';
 
@@ -130,6 +132,11 @@ export class TemplateFixture extends BaseFixture {
         this.hostElement, updateBlock || this.updateBlock, 0, this.vars, null !,
         this._rendererFactory, this.hostView, this._directiveDefs, this._pipeDefs, this._sanitizer);
   }
+
+  destroy(): void {
+    this.containerElement.removeChild(this.hostElement);
+    destroyLView(this.hostView);
+  }
 }
 
 
@@ -170,6 +177,11 @@ export class ComponentFixture<T> extends BaseFixture {
   update(): void {
     tick(this.component);
     this.requestAnimationFrame.flush();
+  }
+
+  destroy(): void {
+    this.containerElement.removeChild(this.hostElement);
+    destroyLView(getRootView(this.component));
   }
 }
 

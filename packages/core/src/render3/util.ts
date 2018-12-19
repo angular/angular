@@ -14,7 +14,7 @@ import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
 import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {RComment, RElement, RText} from './interfaces/renderer';
+import {GlobalTargetName, GlobalTargetResolver, RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
 
@@ -275,4 +275,16 @@ export function findComponentView(lView: LView): LView {
   }
 
   return lView;
+}
+
+export function resolveWindow(element: RElement & {ownerDocument: Document}) {
+  return {name: 'window', target: element.ownerDocument.defaultView};
+}
+
+export function resolveDocument(element: RElement & {ownerDocument: Document}) {
+  return {name: 'document', target: element.ownerDocument};
+}
+
+export function resolveBody(element: RElement & {ownerDocument: Document}) {
+  return {name: 'body', target: element.ownerDocument.body};
 }
