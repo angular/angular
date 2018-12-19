@@ -114,6 +114,33 @@ describe('MatMenu', () => {
     expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBeFalsy();
   }));
 
+  it('should be able to remove the backdrop on repeat openings', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    // Start off with a backdrop.
+    expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBeTruthy();
+
+    fixture.componentInstance.trigger.closeMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    // Change `hasBackdrop` after the first open.
+    fixture.componentInstance.menu.hasBackdrop = false;
+    fixture.detectChanges();
+
+    // Reopen the menu.
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    expect(overlayContainerElement.querySelector('.cdk-overlay-backdrop')).toBeFalsy();
+  }));
+
   it('should restore focus to the trigger when the menu was opened by keyboard', fakeAsync(() => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
     fixture.detectChanges();

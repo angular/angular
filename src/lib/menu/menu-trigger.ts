@@ -226,7 +226,11 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     this._checkMenu();
 
     const overlayRef = this._createOverlay();
-    this._setPosition(overlayRef.getConfig().positionStrategy as FlexibleConnectedPositionStrategy);
+    const overlayConfig = overlayRef.getConfig();
+
+    this._setPosition(overlayConfig.positionStrategy as FlexibleConnectedPositionStrategy);
+    overlayConfig.hasBackdrop = this.menu.hasBackdrop == null ? !this.triggersSubmenu() :
+        this.menu.hasBackdrop;
     overlayRef.attach(this._getPortal());
 
     if (this.menu.lazyContent) {
@@ -394,7 +398,6 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
           .flexibleConnectedTo(this._element)
           .withLockedPosition()
           .withTransformOriginOn('.mat-menu-panel'),
-      hasBackdrop: this.menu.hasBackdrop == null ? !this.triggersSubmenu() : this.menu.hasBackdrop,
       backdropClass: this.menu.backdropClass || 'cdk-overlay-transparent-backdrop',
       scrollStrategy: this._scrollStrategy(),
       direction: this._dir
