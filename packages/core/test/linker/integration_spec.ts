@@ -542,7 +542,8 @@ function declareTests(config?: {useJit: boolean}) {
           expect(value.tagName.toLowerCase()).toEqual('div');
         });
 
-        fixmeIvy('FW-709: Context discovery does not support templates (comment nodes)')
+        fixmeIvy(
+            'FW-870: DebugNode.references gets comment node instead of TemplateRef for template nodes')
             .it('should assign the TemplateRef to a user-defined variable', () => {
               const fixture =
                   TestBed.configureTestingModule({declarations: [MyComp]})
