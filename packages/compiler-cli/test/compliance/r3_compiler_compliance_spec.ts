@@ -767,7 +767,7 @@ describe('compiler compliance', () => {
       const MyComponentDefinition = `
         const $c1$ = ["foo", ""];
         const $c2$ = ["if", ""];
-        function MyComponent_li_Template_2(rf, ctx) {
+        function MyComponent_li_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "li");
             $r3$.ɵtext(1);
@@ -789,7 +789,7 @@ describe('compiler compliance', () => {
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "ul", null, $c1$);
-              $r3$.ɵtemplate(2, MyComponent_li_Template_2, 2, 2, "li", $c2$);
+              $r3$.ɵtemplate(2, MyComponent_li_2_Template, 2, 2, "li", $c2$);
               $r3$.ɵelementEnd();
             }
           },
@@ -1093,10 +1093,10 @@ describe('compiler compliance', () => {
           app: {
             'spec.ts': `
               import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
-  
+
               @Component({selector: 'simple', template: '<div><ng-content></ng-content></div>'})
               export class SimpleComponent {}
-  
+
               @Component({
                 selector: 'complex',
                 template: \`
@@ -1104,10 +1104,10 @@ describe('compiler compliance', () => {
                   <div id="second"><ng-content SELECT="span[title=toSecond]"></ng-content></div>\`
                 })
               export class ComplexComponent { }
-  
+
               @NgModule({declarations: [SimpleComponent, ComplexComponent]})
               export class MyModule {}
-  
+
               @Component({
                 selector: 'my-app',
                 template: '<simple>content</simple> <complex></complex>'
@@ -1176,7 +1176,7 @@ describe('compiler compliance', () => {
           app: {
             'spec.ts': `
               import {Component, NgModule} from '@angular/core';
-  
+
               @Component({
                 template: \`
                   <div id="second" *ngIf="visible">
@@ -1191,7 +1191,7 @@ describe('compiler compliance', () => {
                 \`,
               })
               class Cmp {}
-  
+
               @NgModule({ declarations: [Cmp] })
               class Module {}
             `
@@ -1200,20 +1200,20 @@ describe('compiler compliance', () => {
         const output = `
           const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
           const $_c1$ = ["id", "second"];
-          function Cmp_div_Template_0(rf, ctx) { if (rf & 1) {
+          function Cmp_div_0_Template(rf, ctx) { if (rf & 1) {
               $r3$.ɵelementStart(0, "div", $_c1$);
               $r3$.ɵprojection(1, 1);
               $r3$.ɵelementEnd();
           } }
           const $_c4$ = ["id", "third"];
-          function Cmp_div_Template_1(rf, ctx) {
+          function Cmp_div_1_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "div", $_c4$);
               $r3$.ɵtext(1, " No ng-content, no instructions generated. ");
               $r3$.ɵelementEnd();
             }
           }
-          function Cmp_ng_template_Template_2(rf, ctx) {
+          function Cmp_ng_template_2_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵtext(0, " '*' selector: ");
               $r3$.ɵprojection(1);
@@ -1225,9 +1225,9 @@ describe('compiler compliance', () => {
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵprojectionDef($_c2$, $_c3$);
-              $r3$.ɵtemplate(0, Cmp_div_Template_0, 2, 0, "div", $_c0$);
-              $r3$.ɵtemplate(1, Cmp_div_Template_1, 2, 0, "div", $_c0$);
-              $r3$.ɵtemplate(2, Cmp_ng_template_Template_2, 2, 0, "ng-template");
+              $r3$.ɵtemplate(0, Cmp_div_0_Template, 2, 0, "div", $_c0$);
+              $r3$.ɵtemplate(1, Cmp_div_1_Template, 2, 0, "div", $_c0$);
+              $r3$.ɵtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
             }
             if (rf & 2) {
               $r3$.ɵelementProperty(0, "ngIf", $r3$.ɵbind(ctx.visible));
@@ -1245,7 +1245,7 @@ describe('compiler compliance', () => {
           app: {
             'spec.ts': `
               import {Component, NgModule} from '@angular/core';
-  
+
               @Component({
                 template: \`
                   <ng-content select="[id=toMainBefore]"></ng-content>
@@ -1254,7 +1254,7 @@ describe('compiler compliance', () => {
                     <ng-template>
                       <ng-content select="[id=toNestedTemplate]"></ng-content>
                     </ng-template>
-                  </ng-template>                    
+                  </ng-template>
                   <ng-template>
                     '*' selector in a template: <ng-content></ng-content>
                   </ng-template>
@@ -1262,7 +1262,7 @@ describe('compiler compliance', () => {
                 \`,
               })
               class Cmp {}
-  
+
               @NgModule({ declarations: [Cmp] })
               class Module {}
             `
@@ -1270,18 +1270,18 @@ describe('compiler compliance', () => {
         };
 
         const output = `
-          function Cmp_ng_template_ng_template_Template_1(rf, ctx) {
+          function Cmp_ng_template_1_ng_template_1_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵprojection(0, 4);
-            } 
+            }
           }
-          function Cmp_ng_template_Template_1(rf, ctx) { 
+          function Cmp_ng_template_1_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵprojection(0, 3);
-              $r3$.ɵtemplate(1, Cmp_ng_template_ng_template_Template_1, 1, 0, "ng-template");
-            } 
+              $r3$.ɵtemplate(1, Cmp_ng_template_1_ng_template_1_Template, 1, 0, "ng-template");
+            }
           }
-          function Cmp_ng_template_Template_2(rf, ctx) { 
+          function Cmp_ng_template_2_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵtext(0, " '*' selector in a template: ");
               $r3$.ɵprojection(1);
@@ -1294,10 +1294,10 @@ describe('compiler compliance', () => {
             if (rf & 1) {
               $r3$.ɵprojectionDef($_c2$, $_c3$);
               $r3$.ɵprojection(0, 1);
-              $r3$.ɵtemplate(1, Cmp_ng_template_Template_1, 2, 0, "ng-template");
-              $r3$.ɵtemplate(2, Cmp_ng_template_Template_2, 2, 0, "ng-template");
+              $r3$.ɵtemplate(1, Cmp_ng_template_1_Template, 2, 0, "ng-template");
+              $r3$.ɵtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
               $r3$.ɵprojection(3, 2);
-            }            
+            }
           }
         `;
 
@@ -1911,7 +1911,7 @@ describe('compiler compliance', () => {
         const $c2$ = ["if", ""];
         const $c3$ = ["baz", ""];
         const $c4$ = ["bar", ""];
-        function MyComponent_div_span_Template_2(rf, ctx) {
+        function MyComponent_div_3_span_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "span");
             $r3$.ɵtext(1);
@@ -1926,11 +1926,11 @@ describe('compiler compliance', () => {
             $r3$.ɵtextBinding(1, $r3$.ɵinterpolation3("", $foo$, "-", $bar$, "-", $baz$, ""));
           }
         }
-        function MyComponent_div_Template_3(rf, ctx) {
+        function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵtext(1);
-            $r3$.ɵtemplate(2, MyComponent_div_span_Template_2, 2, 3, "span", $c2$);
+            $r3$.ɵtemplate(2, MyComponent_div_3_span_2_Template, 2, 3, "span", $c2$);
             $r3$.ɵelement(3, "span", null, $c4$);
             $r3$.ɵelementEnd();
           }
@@ -1952,7 +1952,7 @@ describe('compiler compliance', () => {
             if (rf & 1) {
               $r3$.ɵelement(0, "div", null, $c1$);
               $r3$.ɵtext(2);
-              $r3$.ɵtemplate(3, MyComponent_div_Template_3, 5, 2, "div", $c2$);
+              $r3$.ɵtemplate(3, MyComponent_div_3_Template, 5, 2, "div", $c2$);
               $r3$.ɵelement(4, "div", null, $c3$);
             }
             if (rf & 2) {
@@ -2000,7 +2000,7 @@ describe('compiler compliance', () => {
       const $c1$ = ["foo", ""];
       const $c2$ = [${AttributeMarker.SelectOnly}, "ngIf"];
 
-      function MyComponent_div_span_Template_3(rf, ctx) {
+      function MyComponent_div_0_span_3_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "span");
           $i0$.ɵtext(1);
@@ -2013,11 +2013,11 @@ describe('compiler compliance', () => {
         }
       }
 
-      function MyComponent_div_Template_0(rf, ctx) {
+      function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
           $i0$.ɵelement(1, "div", null, $c1$);
-          $i0$.ɵtemplate(3, MyComponent_div_span_Template_3, 2, 2, "span", $c2$);
+          $i0$.ɵtemplate(3, MyComponent_div_0_span_3_Template, 2, 2, "span", $c2$);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -2029,7 +2029,7 @@ describe('compiler compliance', () => {
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_div_Template_0, 4, 1, "div", $c0$);
+          $i0$.ɵtemplate(0, MyComponent_div_0_Template, 4, 1, "div", $c0$);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
@@ -2224,7 +2224,7 @@ describe('compiler compliance', () => {
 
         const MyComponentDefinition = `
               const $t1_attrs$ = ["for", "", ${AttributeMarker.SelectOnly}, "forOf"];
-              function MyComponent__svg_g_Template_1(rf, ctx) {
+              function MyComponent__svg_g_1_Template(rf, ctx) {
                 if (rf & 1) {
                   $r3$.ɵnamespaceSVG();
                   $r3$.ɵelementStart(0,"g");
@@ -2243,7 +2243,7 @@ describe('compiler compliance', () => {
                   if (rf & 1) {
                     $r3$.ɵnamespaceSVG();
                     $r3$.ɵelementStart(0,"svg");
-                    $r3$.ɵtemplate(1, MyComponent__svg_g_Template_1, 2, 0, ":svg:g", $t1_attrs$);
+                    $r3$.ɵtemplate(1, MyComponent__svg_g_1_Template, 2, 0, ":svg:g", $t1_attrs$);
                     $r3$.ɵelementEnd();
                   }
                   if (rf & 2) { $r3$.ɵelementProperty(1,"forOf",$r3$.ɵbind(ctx.items)); }
@@ -2300,7 +2300,7 @@ describe('compiler compliance', () => {
 
         const MyComponentDefinition = `
           const $t1_attrs$ = ["for", "", ${AttributeMarker.SelectOnly}, "forOf"];
-          function MyComponent_li_Template_1(rf, ctx) {
+          function MyComponent_li_1_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "li");
               $r3$.ɵtext(1);
@@ -2321,7 +2321,7 @@ describe('compiler compliance', () => {
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "ul");
-                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 2, 1, "li", $t1_attrs$);
+                $r3$.ɵtemplate(1, MyComponent_li_1_Template, 2, 1, "li", $t1_attrs$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
@@ -2380,7 +2380,7 @@ describe('compiler compliance', () => {
 
         const MyComponentDefinition = `
           const $t4_attrs$ = ["for", "", ${AttributeMarker.SelectOnly}, "forOf"];
-          function MyComponent_li_li_Template_4(rf, ctx) {
+          function MyComponent_li_1_li_4_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "li");
               $r3$.ɵtext(1);
@@ -2393,14 +2393,14 @@ describe('compiler compliance', () => {
             }
           }
 
-          function MyComponent_li_Template_1(rf, ctx) {
+          function MyComponent_li_1_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "li");
               $r3$.ɵelementStart(1, "div");
               $r3$.ɵtext(2);
               $r3$.ɵelementEnd();
               $r3$.ɵelementStart(3, "ul");
-              $r3$.ɵtemplate(4, MyComponent_li_li_Template_4, 2, 2, "li", $t4_attrs$);
+              $r3$.ɵtemplate(4, MyComponent_li_1_li_4_Template, 2, 2, "li", $t4_attrs$);
               $r3$.ɵelementEnd();
               $r3$.ɵelementEnd();
             }
@@ -2421,7 +2421,7 @@ describe('compiler compliance', () => {
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "ul");
-                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 5, 2, "li", $c1$);
+                $r3$.ɵtemplate(1, MyComponent_li_1_Template, 5, 2, "li", $c1$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {

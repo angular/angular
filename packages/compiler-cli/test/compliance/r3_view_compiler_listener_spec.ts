@@ -46,7 +46,7 @@ describe('compiler compliance: listen()', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $e0_attrs$);
-            $r3$.ɵlistener("click", function MyComponent_Template_div_click_listener($event) {
+            $r3$.ɵlistener("click", function MyComponent_Template_div_click_0_listener($event) {
               ctx.onClick($event);
               return (1 == 2);
             });
@@ -92,7 +92,7 @@ describe('compiler compliance: listen()', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "my-app", $e0_attrs$);
-            $r3$.ɵlistener("click", function MyComponent_Template_my_app_click_listener($event) {
+            $r3$.ɵlistener("click", function MyComponent_Template_my_app_click_0_listener($event) {
               return ctx.onClick($event);
             });
             $r3$.ɵelementEnd();
@@ -136,19 +136,19 @@ describe('compiler compliance: listen()', () => {
         const $t0_attrs$ = [${AttributeMarker.SelectOnly}, "ngIf"];
         const $e_attrs$ = [${AttributeMarker.SelectOnly}, "click"];
 
-        function MyComponent_div_Template_0(rf, ctx) {
+        function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
             const $s$ = $r3$.ɵgetCurrentView();
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵelementStart(1, "div", $e_attrs$);
-            $r3$.ɵlistener("click", function MyComponent_div_Template_0_div_click_listener($event) {
+            $r3$.ɵlistener("click", function MyComponent_div_0_Template_div_click_1_listener($event) {
               $r3$.ɵrestoreView($s$);
               const $comp$ = $r3$.ɵnextContext();
               return $comp$.onClick($comp$.foo);
             });
             $r3$.ɵelementEnd();
             $r3$.ɵelementStart(2, "button", $e_attrs$);
-            $r3$.ɵlistener("click", function MyComponent_div_Template_0_button_click_listener($event) {
+            $r3$.ɵlistener("click", function MyComponent_div_0_Template_button_click_2_listener($event) {
               $r3$.ɵrestoreView($s$);
               const $comp2$ = $r3$.ɵnextContext();
               return $comp2$.onClick2($comp2$.bar);
@@ -160,7 +160,7 @@ describe('compiler compliance: listen()', () => {
         // ...
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_div_Template_0, 3, 0, "div", $c0$);
+            $r3$.ɵtemplate(0, MyComponent_div_0_Template, 3, 0, "div", $c0$);
           }
           if (rf & 2) {
             $i0$.ɵelementProperty(0, "ngIf", $i0$.ɵbind(ctx.showing));
@@ -208,7 +208,7 @@ describe('compiler compliance: listen()', () => {
             if (rf & 1) {
               const $s$ = $r3$.ɵgetCurrentView();
               $r3$.ɵelementStart(0, "button", $e0_attrs$);
-                $r3$.ɵlistener("click", function MyComponent_Template_button_click_listener($event) {
+                $r3$.ɵlistener("click", function MyComponent_Template_button_click_0_listener($event) {
                    $r3$.ɵrestoreView($s$);
                    const $user$ = $r3$.ɵreference(3);
                    return ctx.onClick($user$.value);
