@@ -52,5 +52,16 @@ export class GitClient {
   createNewCommit(message: string): boolean {
     return spawnSync('git', ['commit', '-m', message], {cwd: this.projectDir}).status === 0;
   }
+
+  /** Gets the title of a specified commit reference. */
+  getCommitTitle(commitRef: string): string {
+    return spawnSync('git', ['log', '-n1', '--format', '%s', commitRef], {cwd: this.projectDir})
+      .stdout.toString().trim();
+  }
+
+  /** Creates a tag for the specified commit reference. */
+  createTag(commitRef: string, tagName: string, message: string): boolean {
+    return spawnSync('git', ['tag', tagName, '-m', message], {cwd: this.projectDir}).status === 0;
+  }
 }
 
