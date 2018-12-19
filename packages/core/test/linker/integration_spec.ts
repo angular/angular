@@ -412,8 +412,9 @@ function declareTests(config?: {useJit: boolean}) {
         const ngIfEl = fixture.debugElement.children[0];
         const someViewport: SomeViewport =
             ngIfEl.childNodes
-                .find(debugElement => debugElement.nativeNode.nodeType === Node.COMMENT_NODE)!
-                .injector.get(SomeViewport);
+                .find(
+                    debugElement => debugElement.nativeNode.nodeType ===
+                        Node.COMMENT_NODE) !.injector.get(SomeViewport);
         expect(someViewport.container.length).toBe(2);
         expect(ngIfEl.children.length).toBe(2);
 
@@ -812,7 +813,7 @@ function declareTests(config?: {useJit: boolean}) {
                    })
                    .createComponent(MyComp);
            const tc = fixture.debugElement.childNodes.find(
-               debugElement => debugElement.nativeNode.nodeType === Node.COMMENT_NODE)!;
+               debugElement => debugElement.nativeNode.nodeType === Node.COMMENT_NODE) !;
 
            const emitter = tc.injector.get(DirectiveEmittingEvent);
            const myComp = fixture.debugElement.injector.get(MyComp);
