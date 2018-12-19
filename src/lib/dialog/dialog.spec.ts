@@ -651,6 +651,23 @@ describe('MatDialog', () => {
     expect(overlayContainerElement.querySelectorAll('mat-dialog-container').length).toBe(0);
   }));
 
+  it('should complete open and close streams when the injectable is destroyed', fakeAsync(() => {
+    const afterOpenedSpy = jasmine.createSpy('after opened spy');
+    const afterAllClosedSpy = jasmine.createSpy('after all closed spy');
+    const afterOpenedSubscription = dialog.afterOpened.subscribe({complete: afterOpenedSpy});
+    const afterAllClosedSubscription = dialog.afterAllClosed.subscribe({
+      complete: afterAllClosedSpy
+    });
+
+    dialog.ngOnDestroy();
+
+    expect(afterOpenedSpy).toHaveBeenCalled();
+    expect(afterAllClosedSpy).toHaveBeenCalled();
+
+    afterOpenedSubscription.unsubscribe();
+    afterAllClosedSubscription.unsubscribe();
+  }));
+
   it('should allow the consumer to disable closing a dialog on navigation', fakeAsync(() => {
     dialog.open(PizzaMsg);
     dialog.open(PizzaMsg, {closeOnNavigation: false});
