@@ -281,8 +281,8 @@ describe('compiler compliance: styling', () => {
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "div", _c0);
-              $r3$.ɵlistener("@myAnimation.start", function MyComponent_Template_div__myAnimation_start_listener($event) { return ctx.onStart($event); });
-              $r3$.ɵlistener("@myAnimation.done", function MyComponent_Template_div__myAnimation_done_listener($event) { return ctx.onDone($event); });
+              $r3$.ɵlistener("@myAnimation.start", function MyComponent_Template_div__myAnimation_start_0_listener($event) { return ctx.onStart($event); });
+              $r3$.ɵlistener("@myAnimation.done", function MyComponent_Template_div__myAnimation_done_0_listener($event) { return ctx.onDone($event); });
               $r3$.ɵelementEnd();
             } if (rf & 2) {
               $r3$.ɵelementProperty(0, "@myAnimation", $r3$.ɵbind(ctx.exp));
