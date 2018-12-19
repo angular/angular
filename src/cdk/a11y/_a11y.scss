@@ -26,7 +26,7 @@
  *    `white-on-black` or `black-on-white`.
  */
 @mixin cdk-high-contrast($target: active) {
-  @media screen and (-ms-high-contrast: $target) {
+  @media (-ms-high-contrast: $target) {
     @content;
   }
 }

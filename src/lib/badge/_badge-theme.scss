@@ -18,11 +18,6 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
     width: $size;
     height: $size;
     line-height: $size;
-
-    @include cdk-high-contrast {
-      outline: solid 1px;
-      border-radius: 0;
-    }
   }
 
   &.mat-badge-above {
@@ -102,6 +97,11 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
   .mat-badge-content {
     color: mat-color($primary, default-contrast);
     background: mat-color($primary);
+
+    @include cdk-high-contrast {
+      outline: solid 1px;
+      border-radius: 0;
+    }
   }
 
   .mat-badge-accent {
