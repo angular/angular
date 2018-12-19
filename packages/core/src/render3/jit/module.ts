@@ -281,7 +281,6 @@ let verifiedNgModule = new Map<NgModuleType<any>, boolean>();
 export function resetCompiledComponents(): void {
   ownerNgModule = new Map<Type<any>, NgModuleType<any>>();
   verifiedNgModule = new Map<NgModuleType<any>, boolean>();
-  moduleQueue.length = 0;
 }
 
 /**
