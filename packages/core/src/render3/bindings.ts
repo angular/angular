@@ -11,7 +11,7 @@ import {devModeEqual} from '../change_detection/change_detection_util';
 import {assertDataInRange, assertLessThan, assertNotEqual} from './assert';
 import {throwErrorIfNoChangesMode} from './errors';
 import {BINDING_INDEX, LView} from './interfaces/view';
-import {getCheckNoChangesMode, getCreationMode} from './state';
+import {getCheckNoChangesMode, isCreationMode} from './state';
 import {NO_CHANGE} from './tokens';
 import {isDifferent} from './util';
 
@@ -44,7 +44,7 @@ export function bindingUpdated(lView: LView, bindingIndex: number, value: any): 
   } else if (isDifferent(lView[bindingIndex], value)) {
     if (ngDevMode && getCheckNoChangesMode()) {
       if (!devModeEqual(lView[bindingIndex], value)) {
-        throwErrorIfNoChangesMode(getCreationMode(), lView[bindingIndex], value);
+        throwErrorIfNoChangesMode(isCreationMode(lView), lView[bindingIndex], value);
       }
     }
     lView[bindingIndex] = value;

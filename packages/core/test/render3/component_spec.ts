@@ -498,6 +498,8 @@ describe('recursive components', () => {
   class NgIfTree {
     data: TreeNode = _buildTree(0);
 
+    ngDoCheck() { events.push('check' + this.data.value); }
+
     ngOnDestroy() { events.push('destroy' + this.data.value); }
 
     static ngComponentDef = defineComponent({
@@ -628,6 +630,7 @@ describe('recursive components', () => {
 
     const fixture = new ComponentFixture(App);
     expect(getRenderedText(fixture.component)).toEqual('6201534');
+    expect(events).toEqual(['check6', 'check2', 'check0', 'check1', 'check5', 'check3', 'check4']);
 
     events = [];
     fixture.component.skipContent = true;

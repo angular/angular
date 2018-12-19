@@ -115,9 +115,7 @@ describe('render3 integration test', () => {
       function Template(rf: RenderFlags, value: string) {
         if (rf & RenderFlags.Create) {
           text(0);
-        }
-        if (rf & RenderFlags.Update) {
-          textBinding(0, rf & RenderFlags.Create ? value : NO_CHANGE);
+          textBinding(0, value);
         }
       }
       expect(renderToHtml(Template, 'once', 1, 1)).toEqual('once');
