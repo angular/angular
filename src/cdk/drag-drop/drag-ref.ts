@@ -177,6 +177,9 @@ export class DragRef<T = any> {
   /** Cached reference to the boundary element. */
   private _boundaryElement: HTMLElement | null = null;
 
+  /** Whether the native dragging interactions have been enabled on the root element. */
+  private _nativeInteractionsEnabled = true;
+
   /** Cached dimensions of the preview element. */
   private _previewRect?: ClientRect;
 
@@ -192,9 +195,6 @@ export class DragRef<T = any> {
   /** Elements that can be used to drag the draggable item. */
   private _handles: DragHandle[] = [];
 
-  /** Whether the native interactions on the element are enabled. */
-  private _nativeInteractionsEnabled = true;
-
   /** Axis along which dragging is locked. */
   lockAxis: 'x' | 'y';
 
@@ -203,7 +203,12 @@ export class DragRef<T = any> {
     return this._disabled || !!(this.dropContainer && this.dropContainer.disabled);
   }
   set disabled(value: boolean) {
-    this._disabled = coerceBooleanProperty(value);
+    const newValue = coerceBooleanProperty(value);
+
+    if (newValue !== this._disabled) {
+      this._disabled = newValue;
+      this._toggleNativeDragInteractions();
+    }
   }
   private _disabled = false;
 
@@ -911,10 +916,12 @@ export class DragRef<T = any> {
 
   /** Toggles the native drag interactions, based on how many handles are registered. */
   private _toggleNativeDragInteractions() {
-    const shouldEnable = this._handles.length > 0;
+    if (!this._rootElement || !this._handles) {
+      return;
+    }
 
-    // We go through the trouble of keeping track of whether the interactions are enabled,
-    // because we want to avoid triggering style recalculations unless we really have to.
+    const shouldEnable = this.disabled || this._handles.length > 0;
+
     if (shouldEnable !== this._nativeInteractionsEnabled) {
       this._nativeInteractionsEnabled = shouldEnable;
       toggleNativeDragInteractions(this._rootElement, shouldEnable);

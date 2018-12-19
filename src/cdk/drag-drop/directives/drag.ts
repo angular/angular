@@ -115,6 +115,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   }
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
+    this._dragRef.disabled = this._disabled;
   }
   private _disabled = false;
 
