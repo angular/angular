@@ -133,6 +133,7 @@ export function extendsDirectlyFromObject(type: Type<any>): boolean {
 function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMetadataFacade {
   // Reflect inputs and outputs.
   const propMetadata = getReflect().propMetadata(type);
+
   return {
     name: type.name,
     type: type,
