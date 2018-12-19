@@ -22,7 +22,7 @@ import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition'
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
 import {defaultScheduler, getRootView, readPatchedLView, stringify} from './util';
 
@@ -133,7 +133,9 @@ export function renderComponent<T>(
     component = createRootComponent(
         componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
-    refreshDescendantViews(rootView, null);
+    refreshDescendantViews(rootView);  // creation mode pass
+    rootView[FLAGS] &= ~LViewFlags.CreationMode;
+    refreshDescendantViews(rootView);  // update mode pass
   } finally {
     leaveView(oldView);
     if (rendererFactory.end) rendererFactory.end();

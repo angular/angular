@@ -438,6 +438,9 @@
     "name": "checkNoChangesMode"
   },
   {
+    "name": "checkView"
+  },
+  {
     "name": "cleanUpView"
   },
   {
@@ -658,9 +661,6 @@
   },
   {
     "name": "getContextLView"
-  },
-  {
-    "name": "getCreationMode"
   },
   {
     "name": "getCurrentView"
@@ -895,6 +895,9 @@
   },
   {
     "name": "isContextDirty"
+  },
+  {
+    "name": "isCreationMode"
   },
   {
     "name": "isCssClassMatching"

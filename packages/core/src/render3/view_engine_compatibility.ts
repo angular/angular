@@ -112,7 +112,7 @@ export function createTemplateRef<T>(
         if (container) {
           insertView(lView, container, hostView !, index !, hostTNode !.index);
         }
-        renderEmbeddedTemplate(lView, this._tView, context, RenderFlags.Create);
+        renderEmbeddedTemplate(lView, this._tView, context);
         const viewRef = new ViewRef(lView, context, -1);
         viewRef._tViewNode = lView[HOST_NODE] as TViewNode;
         return viewRef;

@@ -38,8 +38,8 @@ describe('JS control flow', () => {
             embeddedViewEnd();
           }
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }, 2);
 
     const fixture = new ComponentFixture(App);

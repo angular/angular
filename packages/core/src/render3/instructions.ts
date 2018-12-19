@@ -35,7 +35,7 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLA
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, findComponentView, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCreationMode, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
+import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
 import {createStylingContextTemplate, renderStyleAndClassBindings, setStyle, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {getStylingContext, isAnimationProp} from './styling/util';
@@ -60,36 +60,30 @@ const enum BindingDirection {
  * bindings, refreshes child components.
  * Note: view hooks are triggered later when leaving the view.
  */
-export function refreshDescendantViews(lView: LView, rf: RenderFlags | null) {
+export function refreshDescendantViews(lView: LView) {
   const tView = lView[TVIEW];
   // This needs to be set before children are processed to support recursive components
   tView.firstTemplatePass = false;
   setFirstTemplatePass(false);
 
-  // Dynamically created views must run first only in creation mode. If this is a
-  // creation-only pass, we should not call lifecycle hooks or evaluate bindings.
-  // This will be done in the update-only pass.
-  if (rf !== RenderFlags.Create) {
-    const creationMode = getCreationMode();
+  // If this is a creation pass, we should not call lifecycle hooks or evaluate bindings.
+  // This will be done in the update pass.
+  if (!isCreationMode(lView)) {
     const checkNoChangesMode = getCheckNoChangesMode();
 
-    if (!checkNoChangesMode) {
-      executeInitHooks(lView, tView, creationMode);
-    }
+    executeInitHooks(lView, tView, checkNoChangesMode);
 
     refreshDynamicEmbeddedViews(lView);
 
     // Content query results must be refreshed before content hooks are called.
     refreshContentQueries(tView);
 
-    if (!checkNoChangesMode) {
-      executeHooks(lView, tView.contentHooks, tView.contentCheckHooks, creationMode);
-    }
+    executeHooks(lView, tView.contentHooks, tView.contentCheckHooks, checkNoChangesMode);
 
     setHostBindings(tView, lView);
   }
 
-  refreshChildComponents(tView.components, rf);
+  refreshChildComponents(tView.components);
 }
 
 
@@ -147,10 +141,10 @@ function refreshContentQueries(tView: TView): void {
 }
 
 /** Refreshes child components in the current view. */
-function refreshChildComponents(components: number[] | null, rf: RenderFlags | null): void {
+function refreshChildComponents(components: number[] | null): void {
   if (components != null) {
     for (let i = 0; i < components.length; i++) {
-      componentRefresh(components[i], rf);
+      componentRefresh(components[i]);
     }
   }
 }
@@ -160,7 +154,8 @@ export function createLView<T>(
     rendererFactory?: RendererFactory3 | null, renderer?: Renderer3 | null,
     sanitizer?: Sanitizer | null, injector?: Injector | null): LView {
   const lView = tView.blueprint.slice() as LView;
-  lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit;
+  lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit |
+      LViewFlags.FirstLViewPass;
   lView[PARENT] = lView[DECLARATION_VIEW] = parentLView;
   lView[CONTEXT] = context;
   lView[RENDERER_FACTORY] = (rendererFactory || parentLView && parentLView[RENDERER_FACTORY]) !;
@@ -303,8 +298,7 @@ export function renderTemplate<T>(
         renderer, sanitizer);
     hostView[HOST_NODE] = createNodeAtIndex(0, TNodeType.Element, hostNode, null, null);
   }
-  renderComponentOrTemplate(hostView, context, null, templateFn);
-
+  renderComponentOrTemplate(hostView, context, templateFn);
   return hostView;
 }
 
@@ -348,8 +342,7 @@ export function createEmbeddedViewAndNode<T>(
  * can't store TViews in the template function itself (as we do for comps). Instead, we store the
  * TView for dynamically created views on their host TNode, which only has one instance.
  */
-export function renderEmbeddedTemplate<T>(
-    viewToRender: LView, tView: TView, context: T, rf: RenderFlags) {
+export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, context: T) {
   const _isParent = getIsParent();
   const _previousOrParentTNode = getPreviousOrParentTNode();
   setIsParent(true);
@@ -365,22 +358,17 @@ export function renderEmbeddedTemplate<T>(
 
       oldView = enterView(viewToRender, viewToRender[HOST_NODE]);
       namespaceHTML();
-      tView.template !(rf, context);
-      if (rf & RenderFlags.Update) {
-        refreshDescendantViews(viewToRender, null);
-      } else {
-        // This must be set to false immediately after the first creation run because in an
-        // ngFor loop, all the views will be created together before update mode runs and turns
-        // off firstTemplatePass. If we don't set it here, instances will perform directive
-        // matching, etc again and again.
-        viewToRender[TVIEW].firstTemplatePass = false;
-        setFirstTemplatePass(false);
-      }
+      tView.template !(getRenderFlags(viewToRender), context);
+      // This must be set to false immediately after the first creation run because in an
+      // ngFor loop, all the views will be created together before update mode runs and turns
+      // off firstTemplatePass. If we don't set it here, instances will perform directive
+      // matching, etc again and again.
+      viewToRender[TVIEW].firstTemplatePass = false;
+      setFirstTemplatePass(false);
+
+      refreshDescendantViews(viewToRender);
     } finally {
-      // renderEmbeddedTemplate() is called twice, once for creation only and then once for
-      // update. When for creation only, leaveView() must not trigger view hooks, nor clean flags.
-      const isCreationOnly = (rf & RenderFlags.Create) === RenderFlags.Create;
-      leaveView(oldView !, isCreationOnly);
+      leaveView(oldView !);
       setIsParent(_isParent);
       setPreviousOrParentTNode(_previousOrParentTNode);
     }
@@ -402,19 +390,28 @@ export function nextContext<T = any>(level: number = 1): T {
 }
 
 function renderComponentOrTemplate<T>(
-    hostView: LView, componentOrContext: T, rf: RenderFlags | null,
-    templateFn?: ComponentTemplate<T>) {
+    hostView: LView, context: T, templateFn?: ComponentTemplate<T>) {
   const rendererFactory = hostView[RENDERER_FACTORY];
   const oldView = enterView(hostView, hostView[HOST_NODE]);
   try {
     if (rendererFactory.begin) {
       rendererFactory.begin();
     }
-    if (templateFn) {
-      namespaceHTML();
-      templateFn(rf || getRenderFlags(hostView), componentOrContext !);
+
+    if (isCreationMode(hostView)) {
+      // creation mode pass
+      if (templateFn) {
+        namespaceHTML();
+        templateFn(RenderFlags.Create, context !);
+      }
+
+      refreshDescendantViews(hostView);
+      hostView[FLAGS] &= ~LViewFlags.CreationMode;
     }
-    refreshDescendantViews(hostView, rf);
+
+    // update mode pass
+    templateFn && templateFn(RenderFlags.Update, context !);
+    refreshDescendantViews(hostView);
   } finally {
     if (rendererFactory.end) {
       rendererFactory.end();
@@ -425,16 +422,11 @@ function renderComponentOrTemplate<T>(
 
 /**
  * This function returns the default configuration of rendering flags depending on when the
- * template is in creation mode or update mode. By default, the update block is run with the
- * creation block when the view is in creation mode. Otherwise, the update block is run
- * alone.
- *
- * Dynamically created views do NOT use this configuration (update block and create block are
- * always run separately).
+ * template is in creation mode or update mode. Update block and create block are
+ * always run separately.
  */
 function getRenderFlags(view: LView): RenderFlags {
-  return view[FLAGS] & LViewFlags.CreationMode ? RenderFlags.Create | RenderFlags.Update :
-                                                 RenderFlags.Update;
+  return isCreationMode(view) ? RenderFlags.Create : RenderFlags.Update;
 }
 
 //////////////////////////
@@ -1160,7 +1152,7 @@ export function elementStyling(
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer?: StyleSanitizeFn | null, directive?: {}): void {
   if (directive != undefined) {
-    getCreationMode() &&
+    isCreationMode() &&
         hackImplementationOfElementStyling(
             classDeclarations || null, styleDeclarations || null, styleSanitizer || null,
             directive);  // supported in next PR
@@ -1214,7 +1206,7 @@ export function elementStylingApply(index: number, directive?: {}): void {
     return hackImplementationOfElementStylingApply(index, directive);  // supported in next PR
   }
   const lView = getLView();
-  const isFirstRender = (lView[FLAGS] & LViewFlags.CreationMode) !== 0;
+  const isFirstRender = (lView[FLAGS] & LViewFlags.FirstLViewPass) !== 0;
   const totalPlayersQueued = renderStyleAndClassBindings(
       getStylingContext(index + HEADER_OFFSET, lView), lView[RENDERER], lView, isFirstRender);
   if (totalPlayersQueued > 0) {
@@ -1992,11 +1984,9 @@ export function containerRefreshStart(index: number): void {
 
   lView[index + HEADER_OFFSET][ACTIVE_INDEX] = 0;
 
-  if (!getCheckNoChangesMode()) {
-    // We need to execute init hooks here so ngOnInit hooks are called in top level views
-    // before they are called in embedded views (for backwards compatibility).
-    executeInitHooks(lView, tView, getCreationMode());
-  }
+  // We need to execute init hooks here so ngOnInit hooks are called in top level views
+  // before they are called in embedded views (for backwards compatibility).
+  executeInitHooks(lView, tView, getCheckNoChangesMode());
 }
 
 /**
@@ -2041,9 +2031,7 @@ function refreshDynamicEmbeddedViews(lView: LView) {
         const dynamicViewData = container[VIEWS][i];
         // The directives and pipes are not needed here as an existing view is only being refreshed.
         ngDevMode && assertDefined(dynamicViewData[TVIEW], 'TView must be allocated');
-        renderEmbeddedTemplate(
-            dynamicViewData, dynamicViewData[TVIEW], dynamicViewData[CONTEXT] !,
-            RenderFlags.Update);
+        renderEmbeddedTemplate(dynamicViewData, dynamicViewData[TVIEW], dynamicViewData[CONTEXT] !);
       }
     }
   }
@@ -2118,13 +2106,14 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
     enterView(viewToRender, viewToRender[TVIEW].node);
   }
   if (lContainer) {
-    if (getCreationMode()) {
+    if (isCreationMode(viewToRender)) {
       // it is a new view, insert it into collection of views for a given container
       insertView(viewToRender, lContainer, lView, lContainer[ACTIVE_INDEX] !, -1);
     }
     lContainer[ACTIVE_INDEX] !++;
   }
-  return getRenderFlags(viewToRender);
+  return isCreationMode(viewToRender) ? RenderFlags.Create | RenderFlags.Update :
+                                        RenderFlags.Update;
 }
 
 /**
@@ -2158,7 +2147,12 @@ function getOrCreateEmbeddedTView(
 export function embeddedViewEnd(): void {
   const lView = getLView();
   const viewHost = lView[HOST_NODE];
-  refreshDescendantViews(lView, null);
+
+  if (isCreationMode(lView)) {
+    refreshDescendantViews(lView);  // creation mode pass
+    lView[FLAGS] &= ~LViewFlags.CreationMode;
+  }
+  refreshDescendantViews(lView);  // update mode pass
   leaveView(lView[PARENT] !);
   setPreviousOrParentTNode(viewHost !);
   setIsParent(false);
@@ -2170,9 +2164,8 @@ export function embeddedViewEnd(): void {
  * Refreshes components by entering the component view and processing its bindings, queries, etc.
  *
  * @param adjustedElementIndex  Element index in LView[] (adjusted for HEADER_OFFSET)
- * @param rf  The render flags that should be used to process this template
  */
-export function componentRefresh<T>(adjustedElementIndex: number, rf: RenderFlags | null): void {
+export function componentRefresh<T>(adjustedElementIndex: number): void {
   const lView = getLView();
   ngDevMode && assertDataInRange(lView, adjustedElementIndex);
   const hostView = getComponentViewByIndex(adjustedElementIndex, lView);
@@ -2181,7 +2174,7 @@ export function componentRefresh<T>(adjustedElementIndex: number, rf: RenderFlag
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
     syncViewWithBlueprint(hostView);
-    detectChangesInternal(hostView, hostView[CONTEXT], rf);
+    checkView(hostView, hostView[CONTEXT]);
   }
 }
 
@@ -2461,7 +2454,7 @@ export function tick<T>(component: T): void {
 function tickRootContext(rootContext: RootContext) {
   for (let i = 0; i < rootContext.components.length; i++) {
     const rootComponent = rootContext.components[i];
-    renderComponentOrTemplate(readPatchedLView(rootComponent) !, rootComponent, RenderFlags.Update);
+    renderComponentOrTemplate(readPatchedLView(rootComponent) !, rootComponent);
   }
 }
 
@@ -2479,7 +2472,21 @@ function tickRootContext(rootContext: RootContext) {
  * @param component The component which the change detection should be performed on.
  */
 export function detectChanges<T>(component: T): void {
-  detectChangesInternal(getComponentViewByInstance(component) !, component, null);
+  const view = getComponentViewByInstance(component) !;
+  detectChangesInternal<T>(view, component);
+}
+
+export function detectChangesInternal<T>(view: LView, context: T) {
+  const rendererFactory = view[RENDERER_FACTORY];
+
+  if (rendererFactory.begin) rendererFactory.begin();
+
+  if (isCreationMode(view)) {
+    checkView(view, context);  // creation mode pass
+  }
+  checkView(view, context);  // update mode pass
+
+  if (rendererFactory.end) rendererFactory.end();
 }
 
 /**
@@ -2526,7 +2533,7 @@ export function checkNoChangesInRootView(lView: LView): void {
 }
 
 /** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck. */
-export function detectChangesInternal<T>(hostView: LView, component: T, rf: RenderFlags | null) {
+export function checkView<T>(hostView: LView, component: T) {
   const hostTView = hostView[TVIEW];
   const oldView = enterView(hostView, hostView[HOST_NODE]);
   const templateFn = hostTView.template !;
@@ -2534,27 +2541,23 @@ export function detectChangesInternal<T>(hostView: LView, component: T, rf: Rend
 
   try {
     namespaceHTML();
-    createViewQuery(viewQuery, rf, hostView[FLAGS], component);
-    templateFn(rf || getRenderFlags(hostView), component);
-    refreshDescendantViews(hostView, rf);
-    updateViewQuery(viewQuery, hostView[FLAGS], component);
+    createViewQuery(viewQuery, hostView, component);
+    templateFn(getRenderFlags(hostView), component);
+    refreshDescendantViews(hostView);
+    updateViewQuery(viewQuery, hostView, component);
   } finally {
-    leaveView(oldView, rf === RenderFlags.Create);
+    leaveView(oldView);
   }
 }
 
-function createViewQuery<T>(
-    viewQuery: ComponentQuery<{}>| null, renderFlags: RenderFlags | null, viewFlags: LViewFlags,
-    component: T): void {
-  if (viewQuery && (renderFlags === RenderFlags.Create ||
-                    (renderFlags === null && (viewFlags & LViewFlags.CreationMode)))) {
+function createViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
+  if (viewQuery && isCreationMode(view)) {
     viewQuery(RenderFlags.Create, component);
   }
 }
 
-function updateViewQuery<T>(
-    viewQuery: ComponentQuery<{}>| null, flags: LViewFlags, component: T): void {
-  if (viewQuery && flags & RenderFlags.Update) {
+function updateViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
+  if (viewQuery && !isCreationMode(view)) {
     viewQuery(RenderFlags.Update, component);
   }
 }
