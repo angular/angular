@@ -5,7 +5,7 @@
     (keydown)="_handleKeydown($event)"
     (click)="closed.emit('click')"
     [@transformMenu]="_panelAnimationState"
-    (@transformMenu.start)="_isAnimating = true"
+    (@transformMenu.start)="_onAnimationStart($event)"
     (@transformMenu.done)="_onAnimationDone($event)"
     tabindex="-1"
     role="menu">
