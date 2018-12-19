@@ -132,7 +132,7 @@ export function compileNgModuleDefs(moduleType: NgModuleType, ngModule: NgModule
           name: moduleType.name,
           type: moduleType,
           deps: reflectDependencies(moduleType),
-          providers: (ngModule.providers || EMPTY_ARRAY).map(resolveForwardRef),
+          providers: ngModule.providers || EMPTY_ARRAY,
           imports: [
             (ngModule.imports || EMPTY_ARRAY).map(resolveForwardRef),
             (ngModule.exports || EMPTY_ARRAY).map(resolveForwardRef),

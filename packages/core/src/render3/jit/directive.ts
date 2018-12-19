@@ -66,8 +66,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           pipes: new Map(),
           encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
           interpolation: metadata.interpolation,
-          viewProviders: metadata.viewProviders ? metadata.viewProviders.map(resolveForwardRef) :
-                                                  null,
+          viewProviders: metadata.viewProviders || null,
         };
         ngComponentDef = compiler.compileComponent(
             angularCoreEnv, `ng://${stringify(type)}/template.html`, meta);
@@ -151,7 +150,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     typeSourceSpan: null !,
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: metadata.exportAs || null,
-    providers: metadata.providers ? metadata.providers.map(resolveForwardRef) : null,
+    providers: metadata.providers || null,
   };
 }
 
