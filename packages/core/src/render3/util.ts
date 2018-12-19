@@ -272,8 +272,7 @@ export function addAllToArray(items: any[], arr: any[]) {
 export function findComponentView(lView: LView, declarationMode?: boolean): LView {
   let rootTNode = lView[HOST_NODE];
 
-  while (rootTNode && (!declarationMode && rootTNode.type === TNodeType.View ||
-                       declarationMode && rootTNode.type !== TNodeType.Element)) {
+  while (rootTNode && rootTNode.type === TNodeType.View) {
     ngDevMode && assertDefined(
                      lView[declarationMode ? DECLARATION_VIEW : PARENT],
                      declarationMode ? 'lView.declarationView' : 'lView.parent');
