@@ -127,21 +127,21 @@ const appModule =
         .component('exampleApp', {template: '<ng2-a></ng2-a> | <ng2-b></ng2-b> | <ng2-c></ng2-c>'})
         .directive('ng2A', downgradeComponent({
                      component: Ng2AComponent,
-                     // Since there are more than one downgraded Angular module,
+                     // Since there is more than one downgraded Angular module,
                      // specify which module this component belongs to.
                      downgradedModule: downgradedNg2AModule,
                      propagateDigest: false,
                    }))
         .directive('ng2B', downgradeComponent({
                      component: Ng2BComponent,
-                     // Since there are more than one downgraded Angular module,
+                     // Since there is more than one downgraded Angular module,
                      // specify which module this component belongs to.
                      downgradedModule: downgradedNg2BModule,
                      propagateDigest: false,
                    }))
         .directive('ng2C', downgradeComponent({
                      component: Ng2CComponent,
-                     // Since there are more than one downgraded Angular module,
+                     // Since there is more than one downgraded Angular module,
                      // specify which module this component belongs to.
                      downgradedModule: downgradedNg2CModule,
                      propagateDigest: false,
