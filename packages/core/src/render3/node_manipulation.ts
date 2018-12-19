@@ -14,7 +14,7 @@ import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection'
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {findComponentView, getNativeByTNode, isLContainer, isRootView, readElementValue, stringify} from './util';
+import {extractEventListenerDetails, findComponentView, getNativeByTNode, isLContainer, isRootView, readElementValue, stringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -447,12 +447,13 @@ function removeListeners(lView: LView): void {
       if (typeof tCleanup[i] === 'string') {
         // This is a listener with the native renderer
         const idx = tCleanup[i + 1];
-        const listener = lCleanup[tCleanup[i + 2]];
         const native = readElementValue(lView[idx]);
+        const {eventName, target} = extractEventListenerDetails(tCleanup[i], native);
+        const listener = lCleanup[tCleanup[i + 2]];
         const useCaptureOrSubIdx = tCleanup[i + 3];
         if (typeof useCaptureOrSubIdx === 'boolean') {
           // DOM listener
-          native.removeEventListener(tCleanup[i], listener, useCaptureOrSubIdx);
+          target !.removeEventListener(eventName, listener, useCaptureOrSubIdx);
         } else {
           if (useCaptureOrSubIdx >= 0) {
             // unregister

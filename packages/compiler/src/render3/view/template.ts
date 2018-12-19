@@ -65,6 +65,9 @@ const DEFAULT_NG_CONTENT_SELECTOR = '*';
 // Selector attribute name of `<ng-content>`
 const NG_CONTENT_SELECT_ATTR = 'select';
 
+// List of supported global targets for event listeners
+export const SUPPORTED_GLOBAL_TARGETS = ['window', 'document', 'body'];
+
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
   private _dataIndex = 0;
   private _bindingContext = 0;
@@ -1077,6 +1080,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       bindingFnName = prepareSyntheticListenerFunctionName(eventName, outputAst.phase !);
       eventName = prepareSyntheticListenerName(eventName, outputAst.phase !);
     } else {
+      if (outputAst.target) {
+        if (SUPPORTED_GLOBAL_TARGETS.indexOf(outputAst.target) < 0) {
+          throw new Error(
+              `Unexpected global target '${outputAst.target}' defined for '${outputAst.name}' event.
+            Supported list of global targets: ${SUPPORTED_GLOBAL_TARGETS}.`);
+        }
+        eventName = `${outputAst.target}:${outputAst.name}`;
+      }
       bindingFnName = sanitizeIdentifier(eventName);
     }
 

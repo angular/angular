@@ -26,6 +26,8 @@ export enum RendererStyleFlags3 {
 
 export type Renderer3 = ObjectOrientedRenderer3 | ProceduralRenderer3;
 
+export type GlobalTargetSelector = 'document' | 'window' | 'body';
+
 /**
  * Object Oriented style of API needed to create elements and text nodes.
  *
@@ -86,7 +88,9 @@ export interface ProceduralRenderer3 {
   setValue(node: RText|RComment, value: string): void;
 
   // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
-  listen(target: RNode, eventName: string, callback: (event: any) => boolean | void): () => void;
+  listen(
+      target: GlobalTargetSelector|RNode, eventName: string,
+      callback: (event: any) => boolean | void): () => void;
 }
 
 export interface RendererFactory3 {

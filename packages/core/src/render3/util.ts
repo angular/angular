@@ -99,6 +99,30 @@ export function getNativeByTNode(tNode: TNode, hostView: LView): RElement|RText|
   return readElementValue(hostView[tNode.index]);
 }
 
+export function extractEventListenerDetails(eventName: string, element: RElement):
+    {eventName: string, target: Window | Document | HTMLElement | null, targetName?: string} {
+  if (eventName.indexOf(':') > -1) {
+    const [targetName, evName] = eventName.split(':');
+    const target = getGlobalEventTarget(targetName, element);
+    return {eventName: evName, target: target as HTMLElement, targetName};
+  }
+  return {eventName, target: element as HTMLElement};
+}
+
+export function getGlobalEventTarget(name: string, element: any): EventTarget|null {
+  const doc = element.ownerDocument;
+  if (name === 'document') {
+    return doc;
+  }
+  if (name === 'body') {
+    return doc.body;
+  }
+  if (name === 'window') {
+    return doc.defaultView;
+  }
+  return null;
+}
+
 export function getTNode(index: number, view: LView): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
   ngDevMode && assertLessThan(index, view[TVIEW].data.length, 'wrong index for TNode');

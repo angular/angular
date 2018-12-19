@@ -809,6 +809,11 @@ function createHostListeners(
     bindingContext: o.Expression, eventBindings: ParsedEvent[],
     meta: R3DirectiveMetadata): o.Statement[] {
   return eventBindings.map(binding => {
+    const target: string = binding.type === ParsedEventType.Regular ? binding.targetOrPhase : '';
+    if (target && SUPPORTED_GLOBAL_TARGETS.indexOf(target) < 0) {
+      throw new Error(`Unexpected global target '${target}' defined for '${binding.name}' event.
+          Supported list of global targets: ${SUPPORTED_GLOBAL_TARGETS}.`);
+    }
     const bindingExpr = convertActionBinding(
         null, bindingContext, binding.handler, 'b', () => error('Unexpected interpolation'));
     let bindingName = binding.name && sanitizeIdentifier(binding.name);

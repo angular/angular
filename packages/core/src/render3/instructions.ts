@@ -40,7 +40,7 @@ import {getInitialClassNameValue, initializeStaticContext as initializeStaticSty
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
-import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
+import {extractEventListenerDetails, findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
 
 
 
@@ -838,7 +838,9 @@ export function listener(
   // add native event listener - applicable to elements only
   if (tNode.type === TNodeType.Element) {
     const native = getNativeByTNode(tNode, lView) as RElement;
-    ngDevMode && ngDevMode.rendererAddEventListener++;
+    const {eventName: evName, target, targetName} = extractEventListenerDetails(eventName, native);
+    ngDevMode && assertDefined(target, 'expecting target to be defined') &&
+        ngDevMode.rendererAddEventListener++;
     const renderer = lView[RENDERER];
     const lCleanup = getCleanup(lView);
     const lCleanupIndex = lCleanup.length;
@@ -847,14 +849,19 @@ export function listener(
     // In order to match current behavior, native DOM event listeners must be added for all
     // events (including outputs).
     if (isProceduralRenderer(renderer)) {
-      const cleanupFn = renderer.listen(native, eventName, listenerFn);
+      // The first argument of `listen` function in Procedural Renderer is:
+      // - either a target name (as a string) in case of global target (window, document, body)
+      // - or element reference (in all other cases)
+      const cleanupFn = renderer.listen((targetName || target) as any, evName, listenerFn);
       lCleanup.push(listenerFn, cleanupFn);
       useCaptureOrSubIdx = lCleanupIndex + 1;
     } else {
       const wrappedListener = wrapListenerWithPreventDefault(listenerFn);
-      native.addEventListener(eventName, wrappedListener, useCapture);
+      target !.addEventListener(evName, wrappedListener, useCapture);
       lCleanup.push(wrappedListener);
     }
+    // Keep full event name in case we have global object listeners, like `window:scroll`,
+    // so that we can reference global object at cleanup phase for non-procedural rendering
     tCleanup && tCleanup.push(eventName, tNode.index, lCleanupIndex, useCaptureOrSubIdx);
   }
 

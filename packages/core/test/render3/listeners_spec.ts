@@ -12,7 +12,7 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {restoreView} from '../../src/render3/state';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, containerEl, createComponent, getDirectiveOnNode, renderToHtml, requestAnimationFrame} from './render_util';
+import {ComponentFixture, TemplateFixture, containerEl, createComponent, getDirectiveOnNode, renderToHtml, requestAnimationFrame} from './render_util';
 
 
 describe('event listeners', () => {
@@ -455,6 +455,9 @@ describe('event listeners', () => {
       /* @HostListener('click') */
       onClick() { events.push('click!'); }
 
+      /* @HostListener('body:click') */
+      onBodyClick() { events.push('body click!'); }
+
       static ngComponentDef = defineComponent({
         type: MyComp,
         selectors: [['comp']],
@@ -470,6 +473,7 @@ describe('event listeners', () => {
             rf: RenderFlags, ctx: any, elIndex: number) {
           if (rf & RenderFlags.Create) {
             listener('click', function() { return ctx.onClick(); });
+            listener('body:click', function() { return ctx.onBodyClick(); });
           }
         }
       });
@@ -477,11 +481,16 @@ describe('event listeners', () => {
 
     const fixture = new ComponentFixture(MyComp);
     const host = fixture.hostElement;
+    const body = host.ownerDocument !.body;
+
     host.click();
     expect(events).toEqual(['click!']);
 
+    body.click();
+    expect(events).toEqual(['click!', 'body click!']);
+
     host.click();
-    expect(events).toEqual(['click!', 'click!']);
+    expect(events).toEqual(['click!', 'body click!', 'click!']);
   });
 
   it('should support host listeners on directives', () => {
@@ -491,6 +500,9 @@ describe('event listeners', () => {
       /* @HostListener('click') */
       onClick() { events.push('click!'); }
 
+      /* @HostListener('body:click') */
+      onBodyClick() { events.push('body click!'); }
+
       static ngDirectiveDef = defineDirective({
         type: HostListenerDir,
         selectors: [['', 'hostListenerDir', '']],
@@ -499,26 +511,29 @@ describe('event listeners', () => {
             rf: RenderFlags, ctx: any, elIndex: number) {
           if (rf & RenderFlags.Create) {
             listener('click', function() { return ctx.onClick(); });
+            listener('body:click', function() { return ctx.onBodyClick(); });
           }
         }
       });
     }
 
-    function Template(rf: RenderFlags, ctx: any) {
-      if (rf & RenderFlags.Create) {
-        elementStart(0, 'button', ['hostListenerDir', '']);
-        text(1, 'Click');
-        elementEnd();
-      }
-    }
+    const fixture = new TemplateFixture(() => {
+      elementStart(0, 'button', ['hostListenerDir', '']);
+      text(1, 'Click');
+      elementEnd();
+    }, () => {}, 2, 0, [HostListenerDir]);
 
-    renderToHtml(Template, {}, 2, 0, [HostListenerDir]);
-    const button = containerEl.querySelector('button') !;
+    const button = fixture.hostElement.querySelector('button') !;
+    const body = containerEl.ownerDocument !.body;
+
     button.click();
     expect(events).toEqual(['click!']);
 
+    body.click();
+    expect(events).toEqual(['click!', 'body click!']);
+
     button.click();
-    expect(events).toEqual(['click!', 'click!']);
+    expect(events).toEqual(['click!', 'body click!', 'click!']);
   });
 
   it('should support listeners with specified set of args', () => {
