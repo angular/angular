@@ -204,10 +204,6 @@ $mat-card-header-size: 40px !default;
   margin-right: 0;
 }
 
-.mat-card-title {
-  margin-bottom: 8px;
-}
-
 // should be 12px space between titles and subtitles generally
 // default margin-bottom is 16px, so need to move lower title up 4px
 .mat-card-title:not(:first-child), .mat-card-subtitle:not(:first-child) {
