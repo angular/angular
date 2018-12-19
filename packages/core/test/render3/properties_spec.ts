@@ -49,9 +49,7 @@ describe('elementProperty', () => {
     function Template(rf: RenderFlags, ctx: string) {
       if (rf & RenderFlags.Create) {
         element(0, 'span');
-      }
-      if (rf & RenderFlags.Update) {
-        elementProperty(0, 'id', rf & RenderFlags.Create ? expensive(ctx) : NO_CHANGE);
+        elementProperty(0, 'id', expensive(ctx));
       }
     }
 

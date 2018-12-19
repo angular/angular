@@ -13,7 +13,7 @@ import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {ANIMATION_MODULE_TYPE, BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {fixmeIvy} from '@angular/private/testing';
+import {fixmeIvy, ivyEnabled} from '@angular/private/testing';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 const DEFAULT_COMPONENT_ID = '1';
@@ -3109,6 +3109,10 @@ const DEFAULT_COMPONENT_ID = '1';
           function assertHeight(element: any, height: string) {
             expect(element.style['height']).toEqual(height);
           }
+
+          // In Ivy, change detection needs to run before the ViewQuery for cmp.element will
+          // resolve. Keeping this test enabled since we still want to test the animation logic.
+          if (ivyEnabled) fixture.detectChanges();
 
           const cmp = fixture.componentInstance;
           const element = cmp.element.nativeElement;

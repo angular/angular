@@ -221,16 +221,25 @@ export const enum LViewFlags {
    * back into the parent view, `data` will be defined and `creationMode` will be
    * improperly reported as false.
    */
-  CreationMode = 0b0000001,
+  CreationMode = 0b000000001,
+
+  /**
+   * Whether or not this LView instance is on its first processing pass.
+   *
+   * An LView instance is considered to be on its "first pass" until it
+   * has completed one creation mode run and one update mode run. At this
+   * time, the flag is turned off.
+   */
+  FirstLViewPass = 0b000000010,
 
   /** Whether this view has default change detection strategy (checks always) or onPush */
-  CheckAlways = 0b0000010,
+  CheckAlways = 0b000000100,
 
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b0000100,
+  Dirty = 0b000001000,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b0001000,
+  Attached = 0b000010000,
 
   /**
    *  Whether or not the init hooks have run.
@@ -239,13 +248,13 @@ export const enum LViewFlags {
    * runs OR the first cR() instruction that runs (so inits are run for the top level view before
    * any embedded views).
    */
-  RunInit = 0b0010000,
+  RunInit = 0b000100000,
 
   /** Whether or not this view is destroyed. */
-  Destroyed = 0b0100000,
+  Destroyed = 0b001000000,
 
   /** Whether or not this view is the root view */
-  IsRoot = 0b1000000,
+  IsRoot = 0b010000000,
 }
 
 /**

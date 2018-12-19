@@ -186,14 +186,9 @@ export function getOrCreateCurrentQueries(
   return currentQueries || (lView[QUERIES] = new QueryType(null, null, null));
 }
 
-/**
- * This property gets set before entering a template.
- */
-let creationMode: boolean;
-
-export function getCreationMode(): boolean {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return creationMode;
+/** Checks whether a given view is in creation mode */
+export function isCreationMode(view: LView = lView): boolean {
+  return (view[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
 }
 
 /**
@@ -276,8 +271,6 @@ export function enterView(newView: LView, hostTNode: TElementNode | TViewNode | 
   const oldView = lView;
   if (newView) {
     const tView = newView[TVIEW];
-
-    creationMode = (newView[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
     firstTemplatePass = tView.firstTemplatePass;
     bindingRootIndex = tView.bindingStartIndex;
   }
@@ -320,19 +313,17 @@ export function resetComponentState() {
  * the direction of traversal (up or down the view tree) a bit clearer.
  *
  * @param newView New state to become active
- * @param creationOnly An optional boolean to indicate that the view was processed in creation mode
- * only, i.e. the first update will be done later. Only possible for dynamically created views.
  */
-export function leaveView(newView: LView, creationOnly?: boolean): void {
+export function leaveView(newView: LView): void {
   const tView = lView[TVIEW];
-  if (!creationOnly) {
-    if (!checkNoChangesMode) {
-      executeHooks(lView, tView.viewHooks, tView.viewCheckHooks, creationMode);
-    }
+  if (isCreationMode(lView)) {
+    lView[FLAGS] &= ~LViewFlags.CreationMode;
+  } else {
+    executeHooks(lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode);
     // Views are clean and in update mode after being checked, so these bits are cleared
-    lView[FLAGS] &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
+    lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
+    lView[FLAGS] |= LViewFlags.RunInit;
+    lView[BINDING_INDEX] = tView.bindingStartIndex;
   }
-  lView[FLAGS] |= LViewFlags.RunInit;
-  lView[BINDING_INDEX] = tView.bindingStartIndex;
   enterView(newView, null);
 }

@@ -15,7 +15,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
+import {fixmeIvy, ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
@@ -421,6 +421,11 @@ class SomeComponent {
       it('should detach attached embedded views if they are destroyed', () => {
         const comp = TestBed.createComponent(EmbeddedViewComp);
         const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+
+        // In Ivy, change detection needs to run before the ViewQuery for tplRef will resolve.
+        // Keeping this test enabled since we still want to test this destroy logic in Ivy.
+        if (ivyEnabled) comp.detectChanges();
+
         const embeddedViewRef = comp.componentInstance.tplRef.createEmbeddedView({});
 
         appRef.attachView(embeddedViewRef);

@@ -87,73 +87,6 @@ describe('change detection', () => {
          await whenRendered(myComp);
          expect(getRenderedText(myComp)).toEqual('updated');
        }));
-
-    it('should support detectChanges on components that have LContainers', () => {
-      let structuralComp !: StructuralComp;
-
-      function FooTemplate(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          text(0);
-        }
-        if (rf & RenderFlags.Update) {
-          textBinding(0, bind(ctx.value));
-        }
-      }
-
-      class StructuralComp {
-        tmp !: TemplateRef<any>;
-        value = 'one';
-
-        constructor(public vcr: ViewContainerRef) {}
-
-        create() { return this.vcr.createEmbeddedView(this.tmp, this); }
-
-        static ngComponentDef = defineComponent({
-          type: StructuralComp,
-          selectors: [['structural-comp']],
-          factory: () => structuralComp =
-                       new StructuralComp(directiveInject(ViewContainerRef as any)),
-          inputs: {tmp: 'tmp'},
-          consts: 1,
-          vars: 1,
-          template: FooTemplate
-        });
-      }
-
-      /**
-       * <ng-template #foo>{{ value }}</ng-template>
-       * <structural-comp [tmp]="foo"></structural-comp>
-       */
-      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          template(0, FooTemplate, 2, 1, 'ng-template', null, ['foo', ''], templateRefExtractor);
-          element(2, 'structural-comp');
-        }
-        if (rf & RenderFlags.Update) {
-          const foo = reference(1) as any;
-          elementProperty(2, 'tmp', bind(foo));
-        }
-      }, 3, 1, [StructuralComp]);
-
-      const fixture = new ComponentFixture(App);
-      fixture.update();
-      expect(fixture.html).toEqual('<structural-comp>one</structural-comp>');
-
-      const viewRef: EmbeddedViewRef<any> = structuralComp.create();
-      fixture.update();
-      expect(fixture.html).toEqual('<structural-comp>one</structural-comp>one');
-
-      // check embedded view update
-      structuralComp.value = 'two';
-      viewRef.detectChanges();
-      expect(fixture.html).toEqual('<structural-comp>one</structural-comp>two');
-
-      // check root view update
-      structuralComp.value = 'three';
-      fixture.update();
-      expect(fixture.html).toEqual('<structural-comp>three</structural-comp>three');
-    });
-
   });
 
   describe('onPush', () => {
@@ -660,6 +593,117 @@ describe('change detection', () => {
 
         const comp = renderComponent(DetectChangesComp, {hostFeatures: [LifecycleHooksFeature]});
         expect(getRenderedText(comp)).toEqual('1');
+      });
+
+      describe('dynamic views', () => {
+        let structuralComp: StructuralComp|null = null;
+
+        beforeEach(() => structuralComp = null);
+
+        class StructuralComp {
+          tmp !: TemplateRef<any>;
+          value = 'one';
+
+          constructor(public vcr: ViewContainerRef) {}
+
+          create() { return this.vcr.createEmbeddedView(this.tmp, this); }
+
+          static ngComponentDef = defineComponent({
+            type: StructuralComp,
+            selectors: [['structural-comp']],
+            factory: () => structuralComp =
+                         new StructuralComp(directiveInject(ViewContainerRef as any)),
+            inputs: {tmp: 'tmp'},
+            consts: 1,
+            vars: 1,
+            template: function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                text(0);
+              }
+              if (rf & RenderFlags.Update) {
+                textBinding(0, bind(ctx.value));
+              }
+            }
+          });
+        }
+
+        it('should support ViewRef.detectChanges()', () => {
+          function FooTemplate(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              text(0);
+            }
+            if (rf & RenderFlags.Update) {
+              textBinding(0, bind(ctx.value));
+            }
+          }
+
+          /**
+           * <ng-template #foo>{{ value }}</ng-template>
+           * <structural-comp [tmp]="foo"></structural-comp>
+           */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              template(
+                  0, FooTemplate, 1, 1, 'ng-template', null, ['foo', ''], templateRefExtractor);
+              element(2, 'structural-comp');
+            }
+            if (rf & RenderFlags.Update) {
+              const foo = reference(1) as any;
+              elementProperty(2, 'tmp', bind(foo));
+            }
+          }, 3, 1, [StructuralComp]);
+
+          const fixture = new ComponentFixture(App);
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>');
+
+          const viewRef: EmbeddedViewRef<any> = structuralComp !.create();
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>one');
+
+          // check embedded view update
+          structuralComp !.value = 'two';
+          viewRef.detectChanges();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>two');
+
+          // check root view update
+          structuralComp !.value = 'three';
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>three</structural-comp>three');
+        });
+
+        it('should support ViewRef.detectChanges() directly after creation', () => {
+          function FooTemplate(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              text(0, 'Template text');
+            }
+          }
+
+          /**
+           * <ng-template #foo>Template text</ng-template>
+           * <structural-comp [tmp]="foo"></structural-comp>
+           */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              template(
+                  0, FooTemplate, 1, 0, 'ng-template', null, ['foo', ''], templateRefExtractor);
+              element(2, 'structural-comp');
+            }
+            if (rf & RenderFlags.Update) {
+              const foo = reference(1) as any;
+              elementProperty(2, 'tmp', bind(foo));
+            }
+          }, 3, 1, [StructuralComp]);
+
+          const fixture = new ComponentFixture(App);
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>');
+
+          const viewRef: EmbeddedViewRef<any> = structuralComp !.create();
+          viewRef.detectChanges();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>Template text');
+        });
+
       });
 
     });

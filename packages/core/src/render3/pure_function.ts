@@ -7,7 +7,7 @@
  */
 
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, getBinding, updateBinding} from './bindings';
-import {getBindingRoot, getCreationMode, getLView} from './state';
+import {getBindingRoot, getLView, isCreationMode} from './state';
 
 
 
@@ -42,7 +42,7 @@ export function pureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: 
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
-  return getCreationMode() ?
+  return isCreationMode() ?
       updateBinding(lView, bindingIndex, thisArg ? pureFn.call(thisArg) : pureFn()) :
       getBinding(lView, bindingIndex);
 }

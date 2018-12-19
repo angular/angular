@@ -208,10 +208,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
           componentView, this.componentDef, rootLView, rootContext, [LifecycleHooksFeature]);
 
       addToViewTree(rootLView, HEADER_OFFSET, componentView);
-
-      refreshDescendantViews(rootLView, RenderFlags.Create);
+      refreshDescendantViews(rootLView);
     } finally {
-      leaveView(oldLView, true);
+      leaveView(oldLView);
       if (rendererFactory.end) rendererFactory.end();
     }
 
