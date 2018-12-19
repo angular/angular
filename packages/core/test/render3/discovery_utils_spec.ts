@@ -315,7 +315,7 @@ describe('discovery utils', () => {
 
     it('should work on templates', () => {
       const templateComment = Array.from(fixture.hostElement.childNodes)
-                                  .find((node: ChildNode) => node.nodeType === Node.COMMENT_NODE)!;
+                                  .find((node: ChildNode) => node.nodeType === Node.COMMENT_NODE) !;
       const lContext = loadLContext(templateComment);
       expect(lContext).toBeDefined();
       expect(lContext.native as any).toBe(templateComment);
@@ -323,7 +323,7 @@ describe('discovery utils', () => {
 
     it('should work on ICU expressions', () => {
       const icuComment = Array.from(fixture.hostElement.querySelector('i18n') !.childNodes)
-                             .find((node: ChildNode) => node.nodeType === Node.COMMENT_NODE)!;
+                             .find((node: ChildNode) => node.nodeType === Node.COMMENT_NODE) !;
       const lContext = loadLContext(icuComment);
       expect(lContext).toBeDefined();
       expect(lContext.native as any).toBe(icuComment);
@@ -333,7 +333,7 @@ describe('discovery utils', () => {
       const ngContainerComment = Array.from(fixture.hostElement.childNodes)
                                      .find(
                                          (node: ChildNode) => node.nodeType === Node.COMMENT_NODE &&
-                                             node.textContent === `ng-container`)!;
+                                             node.textContent === `ng-container`) !;
       const lContext = loadLContext(ngContainerComment);
       expect(lContext).toBeDefined();
       expect(lContext.native as any).toBe(ngContainerComment);
