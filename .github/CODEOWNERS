@@ -81,11 +81,11 @@
 #  @angular/animations
 # ================================================
 
-/packages/animations/**                                         @IgorMinar @jenniferfell @kara @matsko @mhevery
-/packages/platform-browser/animations/**                        @IgorMinar @jenniferfell @kara @matsko @mhevery
-/aio/content/guide/animations.md                                @IgorMinar @jenniferfell @kara @matsko @mhevery
-/aio/content/examples/animations/**                             @IgorMinar @jenniferfell @kara @matsko @mhevery
-/aio/content/images/guide/animations/**                         @IgorMinar @jenniferfell @kara @matsko @mhevery
+/packages/animations/**                                         @angular/framework/animations @angular/framework/global-approvers @angular/framework/global-approvers-for-docs-only-changes
+/packages/platform-browser/animations/**                        @angular/framework/animations @angular/framework/global-approvers @angular/framework/global-approvers-for-docs-only-changes
+/aio/content/guide/animations.md                                @angular/framework/animations @angular/framework/global-approvers @angular/framework/global-approvers-for-docs-only-changes
+/aio/content/examples/animations/**                             @angular/framework/animations @angular/framework/global-approvers @angular/framework/global-approvers-for-docs-only-changes
+/aio/content/images/guide/animations/**                         @angular/framework/animations @angular/framework/global-approvers @angular/framework/global-approvers-for-docs-only-changes
 
 
 
