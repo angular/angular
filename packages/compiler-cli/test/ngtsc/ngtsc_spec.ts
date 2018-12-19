@@ -588,11 +588,14 @@ describe('ngtsc behavioral tests', () => {
           template: 'Test'
         })
         class FooCmp {
+          @HostListener('click')
+          onClick(event: any): void {}
+
           @HostListener('document:click', ['$event.target'])
-          onClick(eventTarget: HTMLElement): void {}
+          onDocumentClick(eventTarget: HTMLElement): void {}
 
           @HostListener('window:scroll')
-          onScroll(event: any): void {}
+          onWindowScroll(event: any): void {}
         }
     `);
 
@@ -601,12 +604,33 @@ describe('ngtsc behavioral tests', () => {
     const hostBindingsFn = `
       hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
-          i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event.target); });
-          i0.ɵlistener("scroll", function FooCmp_scroll_HostBindingHandler($event) { return ctx.onScroll(); });
+          i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick(); });
+          i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onDocumentClick($event.target); }, false, i0.ɵresolveDocument);
+          i0.ɵlistener("scroll", function FooCmp_scroll_HostBindingHandler($event) { return ctx.onWindowScroll(); }, false, i0.ɵresolveWindow);
         }
       }
     `;
     expect(trim(jsContents)).toContain(trim(hostBindingsFn));
+  });
+
+  it('should throw in case unknown global target is provided', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+        import {Component, HostListener} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: 'Test'
+        })
+        class FooCmp {
+          @HostListener('UnknownTarget:click')
+          onClick(event: any): void {}
+        }
+    `);
+    const errors = env.driveDiagnostics();
+    expect(trim(errors[0].messageText as string))
+        .toContain(
+            `Unexpected global target 'UnknownTarget' defined for 'click' event. Supported list of global targets: window,document,body.`);
   });
 
   it('should generate host bindings for directives', () => {
@@ -620,6 +644,7 @@ describe('ngtsc behavioral tests', () => {
           host: {
             '[attr.hello]': 'foo',
             '(click)': 'onClick($event)',
+            '(body:click)': 'onBodyClick($event)',
             '[prop]': 'bar',
           },
         })
@@ -641,6 +666,7 @@ describe('ngtsc behavioral tests', () => {
         if (rf & 1) {
           i0.ɵallocHostVars(2);
           i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); });
+          i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵresolveBody);
           i0.ɵlistener("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
           i0.ɵelementStyling(_c0, null, null, ctx);
         }

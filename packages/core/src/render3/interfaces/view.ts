@@ -446,7 +446,11 @@ export interface TView {
    *
    * If it's a native DOM listener or output subscription being stored:
    * 1st index is: event name  `name = tView.cleanup[i+0]`
-   * 2nd index is: index of native element `element = lView[tView.cleanup[i+1]]`
+   * 2nd index is: index of native element or a function that retrieves global target (window,
+   *               document or body) reference based on the native element:
+   *    `typeof idxOrTargetGetter === 'function'`: global target getter function
+   *    `typeof idxOrTargetGetter === 'number'`: index of native element
+   *
    * 3rd index is: index of listener function `listener = lView[CLEANUP][tView.cleanup[i+2]]`
    * 4th index is: `useCaptureOrIndx = tView.cleanup[i+3]`
    *    `typeof useCaptureOrIndx == 'boolean' : useCapture boolean

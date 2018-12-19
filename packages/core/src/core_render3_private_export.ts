@@ -120,6 +120,9 @@ export {
   i18nApply as ɵi18nApply,
   i18nPostprocess as ɵi18nPostprocess,
   setClassMetadata as ɵsetClassMetadata,
+  resolveWindow as ɵresolveWindow,
+  resolveDocument as ɵresolveDocument,
+  resolveBody as ɵresolveBody,
 } from './render3/index';
 
 

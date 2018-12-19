@@ -445,13 +445,15 @@ function removeListeners(lView: LView): void {
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
       if (typeof tCleanup[i] === 'string') {
         // This is a listener with the native renderer
-        const idx = tCleanup[i + 1];
+        const idxOrTargetGetter = tCleanup[i + 1];
+        const target = typeof idxOrTargetGetter === 'function' ?
+            idxOrTargetGetter(lView) :
+            readElementValue(lView[idxOrTargetGetter]);
         const listener = lCleanup[tCleanup[i + 2]];
-        const native = readElementValue(lView[idx]);
         const useCaptureOrSubIdx = tCleanup[i + 3];
         if (typeof useCaptureOrSubIdx === 'boolean') {
           // DOM listener
-          native.removeEventListener(tCleanup[i], listener, useCaptureOrSubIdx);
+          target.removeEventListener(tCleanup[i], listener, useCaptureOrSubIdx);
         } else {
           if (useCaptureOrSubIdx >= 0) {
             // unregister

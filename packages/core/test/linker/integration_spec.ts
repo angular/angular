@@ -845,52 +845,48 @@ function declareTests(config?: {useJit: boolean}) {
            dir.triggerChange('two');
          }));
 
-      fixmeIvy(
-          'FW-743: Registering events on global objects (document, window, body) is not supported')
-          .it('should support render events', () => {
-            TestBed.configureTestingModule({declarations: [MyComp, DirectiveListeningDomEvent]});
-            const template = '<div listener></div>';
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp);
+      it('should support render events', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, DirectiveListeningDomEvent]});
+        const template = '<div listener></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
 
-            const tc = fixture.debugElement.children[0];
-            const listener = tc.injector.get(DirectiveListeningDomEvent);
+        const tc = fixture.debugElement.children[0];
+        const listener = tc.injector.get(DirectiveListeningDomEvent);
 
-            dispatchEvent(tc.nativeElement, 'domEvent');
+        dispatchEvent(tc.nativeElement, 'domEvent');
 
-            expect(listener.eventTypes).toEqual([
-              'domEvent', 'body_domEvent', 'document_domEvent', 'window_domEvent'
-            ]);
+        expect(listener.eventTypes).toEqual([
+          'domEvent', 'body_domEvent', 'document_domEvent', 'window_domEvent'
+        ]);
 
-            fixture.destroy();
-            listener.eventTypes = [];
-            dispatchEvent(tc.nativeElement, 'domEvent');
-            expect(listener.eventTypes).toEqual([]);
-          });
+        fixture.destroy();
+        listener.eventTypes = [];
+        dispatchEvent(tc.nativeElement, 'domEvent');
+        expect(listener.eventTypes).toEqual([]);
+      });
 
-      fixmeIvy(
-          'FW-743: Registering events on global objects (document, window, body) is not supported')
-          .it('should support render global events', () => {
-            TestBed.configureTestingModule({declarations: [MyComp, DirectiveListeningDomEvent]});
-            const template = '<div listener></div>';
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp);
-            const doc = TestBed.get(DOCUMENT);
+      it('should support render global events', () => {
+        TestBed.configureTestingModule({declarations: [MyComp, DirectiveListeningDomEvent]});
+        const template = '<div listener></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
+        const doc = TestBed.get(DOCUMENT);
 
-            const tc = fixture.debugElement.children[0];
-            const listener = tc.injector.get(DirectiveListeningDomEvent);
-            dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
-            expect(listener.eventTypes).toEqual(['window_domEvent']);
+        const tc = fixture.debugElement.children[0];
+        const listener = tc.injector.get(DirectiveListeningDomEvent);
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
+        expect(listener.eventTypes).toEqual(['window_domEvent']);
 
-            listener.eventTypes = [];
-            dispatchEvent(getDOM().getGlobalEventTarget(doc, 'document'), 'domEvent');
-            expect(listener.eventTypes).toEqual(['document_domEvent', 'window_domEvent']);
+        listener.eventTypes = [];
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'document'), 'domEvent');
+        expect(listener.eventTypes).toEqual(['document_domEvent', 'window_domEvent']);
 
-            fixture.destroy();
-            listener.eventTypes = [];
-            dispatchEvent(getDOM().getGlobalEventTarget(doc, 'body'), 'domEvent');
-            expect(listener.eventTypes).toEqual([]);
-          });
+        fixture.destroy();
+        listener.eventTypes = [];
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'body'), 'domEvent');
+        expect(listener.eventTypes).toEqual([]);
+      });
 
       it('should support updating host element via hostAttributes on root elements', () => {
         @Component({host: {'role': 'button'}, template: ''})
@@ -1027,44 +1023,41 @@ function declareTests(config?: {useJit: boolean}) {
         });
       }
 
-      fixmeIvy(
-          'FW-743: Registering events on global objects (document, window, body) is not supported')
-          .it('should support render global events from multiple directives', () => {
-            TestBed.configureTestingModule({
-              declarations: [MyComp, DirectiveListeningDomEvent, DirectiveListeningDomEventOther]
-            });
-            const template = '<div *ngIf="ctxBoolProp" listener listenerother></div>';
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp);
-            const doc = TestBed.get(DOCUMENT);
+      it('should support render global events from multiple directives', () => {
+        TestBed.configureTestingModule(
+            {declarations: [MyComp, DirectiveListeningDomEvent, DirectiveListeningDomEventOther]});
+        const template = '<div *ngIf="ctxBoolProp" listener listenerother></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp);
+        const doc = TestBed.get(DOCUMENT);
 
-            globalCounter = 0;
-            fixture.componentInstance.ctxBoolProp = true;
-            fixture.detectChanges();
+        globalCounter = 0;
+        fixture.componentInstance.ctxBoolProp = true;
+        fixture.detectChanges();
 
-            const tc = fixture.debugElement.children[0];
+        const tc = fixture.debugElement.children[0];
 
-            const listener = tc.injector.get(DirectiveListeningDomEvent);
-            const listenerother = tc.injector.get(DirectiveListeningDomEventOther);
-            dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
-            expect(listener.eventTypes).toEqual(['window_domEvent']);
-            expect(listenerother.eventType).toEqual('other_domEvent');
-            expect(globalCounter).toEqual(1);
+        const listener = tc.injector.get(DirectiveListeningDomEvent);
+        const listenerother = tc.injector.get(DirectiveListeningDomEventOther);
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
+        expect(listener.eventTypes).toEqual(['window_domEvent']);
+        expect(listenerother.eventType).toEqual('other_domEvent');
+        expect(globalCounter).toEqual(1);
 
 
-            fixture.componentInstance.ctxBoolProp = false;
-            fixture.detectChanges();
-            dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
-            expect(globalCounter).toEqual(1);
+        fixture.componentInstance.ctxBoolProp = false;
+        fixture.detectChanges();
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
+        expect(globalCounter).toEqual(1);
 
-            fixture.componentInstance.ctxBoolProp = true;
-            fixture.detectChanges();
-            dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
-            expect(globalCounter).toEqual(2);
+        fixture.componentInstance.ctxBoolProp = true;
+        fixture.detectChanges();
+        dispatchEvent(getDOM().getGlobalEventTarget(doc, 'window'), 'domEvent');
+        expect(globalCounter).toEqual(2);
 
-            // need to destroy to release all remaining global event listeners
-            fixture.destroy();
-          });
+        // need to destroy to release all remaining global event listeners
+        fixture.destroy();
+      });
 
       describe('ViewContainerRef', () => {
         beforeEach(() => {

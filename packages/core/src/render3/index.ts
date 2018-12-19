@@ -144,6 +144,7 @@ export {
 
 export {templateRefExtractor} from './view_engine_compatibility_prebound';
 
+export {resolveWindow, resolveDocument, resolveBody} from './util';
 
 // clang-format on
 
