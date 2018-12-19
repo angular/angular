@@ -18,11 +18,17 @@ import {
   Input,
   OnDestroy,
   ViewEncapsulation,
+  Optional,
+  Inject,
 } from '@angular/core';
 import {merge, Subscription, EMPTY} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {matExpansionAnimations} from './expansion-animations';
-import {MatExpansionPanel} from './expansion-panel';
+import {
+  MatExpansionPanel,
+  MatExpansionPanelDefaultOptions,
+  MAT_EXPANSION_PANEL_DEFAULT_OPTIONS,
+} from './expansion-panel';
 
 
 /**
@@ -68,7 +74,9 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
       @Host() public panel: MatExpansionPanel,
       private _element: ElementRef,
       private _focusMonitor: FocusMonitor,
-      private _changeDetectorRef: ChangeDetectorRef) {
+      private _changeDetectorRef: ChangeDetectorRef,
+      @Inject(MAT_EXPANSION_PANEL_DEFAULT_OPTIONS) @Optional()
+          defaultOptions?: MatExpansionPanelDefaultOptions) {
 
     const accordionHideToggleChange = panel.accordion ?
       panel.accordion._stateChanges.pipe(filter(changes => !!changes.hideToggle)) : EMPTY;
@@ -93,6 +101,11 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
         panel.accordion._handleHeaderFocus(this);
       }
     });
+
+    if (defaultOptions) {
+      this.expandedHeight = defaultOptions.expandedHeight;
+      this.collapsedHeight = defaultOptions.collapsedHeight;
+    }
   }
 
   /** Height of the header while the panel is expanded. */
