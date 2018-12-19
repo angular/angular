@@ -632,7 +632,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       element.outputs.forEach((outputAst: t.BoundEvent) => {
         this.creationInstruction(
             outputAst.sourceSpan, R3.listener,
-            this.prepareListenerParameter(element.name, outputAst));
+            this.prepareListenerParameter(element.name, outputAst, elementIndex));
       });
     }
 
@@ -707,9 +707,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     const tagName = sanitizeIdentifier(template.tagName || '');
-    const contextName = tagName ? `${this.contextName}_${tagName}` : '';
-    const templateName =
-        contextName ? `${contextName}_Template_${templateIndex}` : `Template_${templateIndex}`;
+    const contextName = `${tagName ? this.contextName + '_' + tagName : ''}_${templateIndex}`;
+    const templateName = `${contextName}_Template`;
 
     const parameters: o.Expression[] = [
       o.literal(templateIndex),
@@ -780,7 +779,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     template.outputs.forEach((outputAst: t.BoundEvent) => {
       this.creationInstruction(
           outputAst.sourceSpan, R3.listener,
-          this.prepareListenerParameter('ng_template', outputAst));
+          this.prepareListenerParameter('ng_template', outputAst, templateIndex));
     });
   }
 
@@ -1062,14 +1061,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return this.constantPool.getConstLiteral(asLiteral(refsParam), true);
   }
 
-  private prepareListenerParameter(tagName: string, outputAst: t.BoundEvent): () => o.Expression[] {
+  private prepareListenerParameter(tagName: string, outputAst: t.BoundEvent, index: number):
+      () => o.Expression[] {
     let eventName: string = outputAst.name;
     if (outputAst.type === ParsedEventType.Animation) {
       eventName = prepareSyntheticAttributeName(`${outputAst.name}.${outputAst.phase}`);
     }
     const evNameSanitized = sanitizeIdentifier(eventName);
     const tagNameSanitized = sanitizeIdentifier(tagName);
-    const functionName = `${this.templateName}_${tagNameSanitized}_${evNameSanitized}_listener`;
+    const functionName =
+        `${this.templateName}_${tagNameSanitized}_${evNameSanitized}_${index}_listener`;
 
     return () => {
 
