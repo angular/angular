@@ -535,16 +535,15 @@ export class TestBedRender3 implements Injector, TestBed {
 
     // Compile transitive modules, components, directives and pipes
     const transitiveScope = this._transitiveScopesFor(moduleType, resolvers);
-    const getScopeFor = (cmp: Type<any>): NgModuleTransitiveScopes => {
-      return this._templateOverrides.has(cmp) ?
+    compiledComponents.forEach(cmp => {
+      const scope = this._templateOverrides.has(cmp) ?
           // if we have template override via `TestBed.overrideTemplateUsingTestingModule` -
           // define Component scope as TestingModule scope, instead of the scope of NgModule
           // where this Component was declared
           this._transitiveScopesFor(this._testModuleType, resolvers) :
           transitiveScope;
-    };
-    compiledComponents.forEach(
-        cmp => patchComponentDefWithScope((cmp as any).ngComponentDef, getScopeFor(cmp)));
+      patchComponentDefWithScope((cmp as any).ngComponentDef, scope);
+    });
   }
 
   /**
