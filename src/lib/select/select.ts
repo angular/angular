@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
+import {ActiveDescendantKeyManager, LiveAnnouncer} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
@@ -485,7 +485,12 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     @Optional() private _parentFormField: MatFormField,
     @Self() @Optional() public ngControl: NgControl,
     @Attribute('tabindex') tabIndex: string,
-    @Inject(MAT_SELECT_SCROLL_STRATEGY) scrollStrategyFactory: any) {
+    @Inject(MAT_SELECT_SCROLL_STRATEGY) scrollStrategyFactory: any,
+    /**
+     * @deprecated _liveAnnouncer to be turned into a required parameter.
+     * @breaking-change 8.0.0
+     */
+    private _liveAnnouncer?: LiveAnnouncer) {
     super(elementRef, _defaultErrorStateMatcher, _parentForm,
           _parentFormGroup, ngControl);
 
@@ -700,11 +705,19 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       event.preventDefault(); // prevents the page from scrolling down when pressing space
       this.open();
     } else if (!this.multiple) {
+      const selectedOption = this.selected;
+
       if (keyCode === HOME || keyCode === END) {
         keyCode === HOME ? manager.setFirstItemActive() : manager.setLastItemActive();
         event.preventDefault();
       } else {
         manager.onKeydown(event);
+      }
+
+      // Since the value has changed, we need to announce it ourselves.
+      // @breaking-change 8.0.0 remove null check for _liveAnnouncer.
+      if (this._liveAnnouncer && selectedOption !== this.selected) {
+        this._liveAnnouncer.announce((this.selected as MatOption).viewValue);
       }
     }
   }

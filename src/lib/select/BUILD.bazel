@@ -52,6 +52,7 @@ ng_test_library(
     "@angular//packages/platform-browser/animations",
     "@rxjs",
     "@rxjs//operators",
+    "//src/cdk/a11y",
     "//src/cdk/bidi",
     "//src/cdk/keycodes",
     "//src/cdk/overlay",
