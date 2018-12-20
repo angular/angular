@@ -21,7 +21,7 @@ import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TN
 import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LView, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
-import {getHostTElementNode, getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, isComponentDef, stringify} from './util';
+import {findComponentView, getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, isComponentDef, stringify} from './util';
 
 
 /**
@@ -320,7 +320,8 @@ export function getOrCreateInjectable<T>(
     let previousTView: TView|null = null;
     let injectorIndex = getInjectorIndex(tNode, lView);
     let parentLocation: RelativeInjectorLocation = NO_PARENT_INJECTOR;
-    let hostTElementNode: TNode|null = flags & InjectFlags.Host ? getHostTElementNode(lView) : null;
+    let hostTElementNode: TNode|null =
+        flags & InjectFlags.Host ? findComponentView(lView)[HOST_NODE] : null;
 
     // If we should skip this injector, or if there is no injector on this node, start by searching
     // the parent injector.
