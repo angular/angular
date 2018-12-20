@@ -125,8 +125,7 @@ export function isComponentDef<T>(def: DirectiveDef<T>): def is ComponentDef<T> 
 
 export function isLContainer(value: RElement | RComment | LContainer | StylingContext): boolean {
   // Styling contexts are also arrays, but their first index contains an element node
-  return Array.isArray(value) && typeof value[ACTIVE_INDEX] === 'number' &&
-      value.length === LCONTAINER_LENGTH;
+  return Array.isArray(value) && value.length === LCONTAINER_LENGTH;
 }
 
 export function isRootView(target: LView): boolean {

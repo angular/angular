@@ -1674,10 +1674,10 @@ describe('render3 integration test', () => {
            expect(mockClassDirective !.classesVal).toEqual('apple orange banana');
          });
 
-      it('shuold update `[class]` and bindings in the provided directive if the input is matched',
+      it('should update `[class]` and bindings in the provided directive if the input is matched',
          () => {
            /**
-            * <my-comp DirWithClass></my-comp>
+            * <div DirWithClass></div>
            */
            const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {

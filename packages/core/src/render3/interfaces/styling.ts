@@ -405,7 +405,7 @@ export const enum DirectiveRegistryValuesIndex {
  *      directive-with-foo-bar-classes>
  *
  * We have two directive and template-binding sources,
- * 2 + 1 styles and 1 + 1 clases. When the bindings are
+ * 2 + 1 styles and 1 + 1 classes. When the bindings are
  * registered the SinglePropOffsets array will look like so:
  *
  * s_0/c_0 = template directive value

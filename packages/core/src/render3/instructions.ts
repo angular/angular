@@ -553,10 +553,8 @@ export function elementStart(
   const tNode = createNodeAtIndex(index, TNodeType.Element, native !, name, attrs || null);
 
   if (attrs) {
-    if (tView.firstTemplatePass && !tNode.stylingTemplate) {
-      if (hasStyling(attrs)) {
-        tNode.stylingTemplate = initializeStaticStylingContext(attrs);
-      }
+    if (tView.firstTemplatePass && !tNode.stylingTemplate && hasStyling(attrs)) {
+      tNode.stylingTemplate = initializeStaticStylingContext(attrs);
     }
     setUpAttributes(native, attrs);
   }
@@ -574,13 +572,18 @@ export function elementStart(
 
   // if a class-level directive is present then all class-based data will flow through
   // that (except for [class.prop] bindings). This also includes initial static class
-  // values as well (no point in rendering them when the directive can do that for us).
-  // Note that this will be fixed once map-based [style] and [class] bindings work for
-  // multiple directives.
-  const inputData = initializeTNodeInputs(tNode);
-  if (inputData && inputData.hasOwnProperty('class')) {
-    tNode.flags |= TNodeFlags.hasClassInput;
-  } else if (tNode.stylingTemplate) {
+  // values as well. Note that this will be fixed once map-based [style] and [class]
+  // bindings work for multiple directives.
+  if (tView.firstTemplatePass) {
+    const inputData = initializeTNodeInputs(tNode);
+    if (inputData && inputData.hasOwnProperty('class')) {
+      tNode.flags |= TNodeFlags.hasClassInput;
+    }
+  }
+
+  // There is no point in rendering styles when a class directive is present since
+  // it will take that over for us (this will be removed once #FW-882 is in).
+  if (tNode.stylingTemplate && (tNode.flags & TNodeFlags.hasClassInput) === 0) {
     renderInitialStyles(native, tNode.stylingTemplate, lView[RENDERER]);
   }
 }
@@ -1132,7 +1135,7 @@ function generatePropertyAliases(tNode: TNode, direction: BindingDirection): Pro
  *
  * This instruction is meant to be called during creation mode to register all
  * dynamic style and class bindings on the element. Note for static values (no binding)
- * use see `elementStart` and `elementHostAttrs`.
+ * see `elementStart` and `elementHostAttrs`.
  *
  * @param classBindingNames An array containing bindable class names.
  *        The `elementClassProp` refers to the class name by index in this array.
@@ -1179,7 +1182,9 @@ export function elementStyling(
  */
 export function elementHostAttrs(directive: any, attrs: TAttributes) {
   const tNode = getPreviousOrParentTNode();
-  tNode.stylingTemplate = tNode.stylingTemplate || initializeStaticStylingContext(attrs);
+  if (!tNode.stylingTemplate) {
+    tNode.stylingTemplate = initializeStaticStylingContext(attrs);
+  }
   patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, directive);
 }
 
@@ -1192,7 +1197,7 @@ export function elementHostAttrs(directive: any, attrs: TAttributes) {
  *
  * @param index Index of the element's with which styling is associated.
  * @param directive Directive instance that is attempting to change styling. (Defaults to the
- *        component of thu current view).
+ *        component of the current view).
 components
  *
  * @publicApi
@@ -1230,7 +1235,7 @@ export function elementStylingApply(index: number, directive?: any): void {
  *        Note that when a suffix is provided then the underlying sanitizer will
  *        be ignored.
  * @param directive Directive instance that is attempting to change styling. (Defaults to the
- *        component of thu current view).
+ *        component of the current view).
 components
  *
  * @publicApi
@@ -1301,7 +1306,7 @@ export function elementClassProp(
  *        Any missing styles (that have already been applied to the element beforehand) will be
  *        removed (unset) from the element's styling.
  * @param directive Directive instance that is attempting to change styling. (Defaults to the
- *        component of thu current view).
+ *        component of the current view).
  *
  * @publicApi
  */
