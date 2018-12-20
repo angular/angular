@@ -1644,6 +1644,29 @@ describe('MatAutocomplete', () => {
           .toContain('mat-active', 'Expected first option to be highlighted.');
     }));
 
+    it('should remove aria-activedescendant when panel is closed with autoActiveFirstOption',
+      fakeAsync(() => {
+        const input: HTMLElement = fixture.nativeElement.querySelector('input');
+
+        expect(input.hasAttribute('aria-activedescendant'))
+            .toBe(false, 'Expected no active descendant on init.');
+
+        fixture.componentInstance.trigger.autocomplete.autoActiveFirstOption = true;
+        fixture.componentInstance.trigger.openPanel();
+        fixture.detectChanges();
+        zone.simulateZoneExit();
+        fixture.detectChanges();
+
+        expect(input.getAttribute('aria-activedescendant'))
+            .toBeTruthy('Expected active descendant while open.');
+
+        fixture.componentInstance.trigger.closePanel();
+        fixture.detectChanges();
+
+        expect(input.hasAttribute('aria-activedescendant'))
+            .toBe(false, 'Expected no active descendant when closed.');
+      }));
+
     it('should be able to configure preselecting the first option globally', fakeAsync(() => {
       overlayContainer.ngOnDestroy();
       fixture.destroy();
