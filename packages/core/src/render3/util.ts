@@ -263,28 +263,16 @@ export function addAllToArray(items: any[], arr: any[]) {
  * Given a current view, finds the nearest component's host (LElement).
  *
  * @param lView LView for which we want a host element node
- * @param declarationMode indicates whether DECLARATION_VIEW or PARENT should be used to climb the
- * tree.
  * @returns The host node
  */
-export function findComponentView(lView: LView, declarationMode?: boolean): LView {
+export function findComponentView(lView: LView): LView {
   let rootTNode = lView[HOST_NODE];
 
   while (rootTNode && rootTNode.type === TNodeType.View) {
-    ngDevMode && assertDefined(
-                     lView[declarationMode ? DECLARATION_VIEW : PARENT],
-                     declarationMode ? 'lView.declarationView' : 'lView.parent');
-    lView = lView[declarationMode ? DECLARATION_VIEW : PARENT] !;
+    ngDevMode && assertDefined(lView[DECLARATION_VIEW], 'lView[DECLARATION_VIEW]');
+    lView = lView[DECLARATION_VIEW] !;
     rootTNode = lView[HOST_NODE];
   }
 
   return lView;
-}
-
-/**
- * Return the host TElementNode of the starting LView
- * @param lView the starting LView.
- */
-export function getHostTElementNode(lView: LView): TElementNode|null {
-  return findComponentView(lView, true)[HOST_NODE] as TElementNode;
 }

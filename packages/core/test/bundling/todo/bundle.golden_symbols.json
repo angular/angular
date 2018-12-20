@@ -690,9 +690,6 @@
     "name": "getHostNative"
   },
   {
-    "name": "getHostTElementNode"
-  },
-  {
     "name": "getInitialClassNameValue"
   },
   {
