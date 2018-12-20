@@ -106,7 +106,8 @@ export function downgradeComponent(info: {
         // been compiled.
 
         const ngModel: angular.INgModelController = required[1];
-        let parentInjector: Injector|Thenable<Injector>|undefined = required[0];
+        const parentInjector: Injector|Thenable<Injector>|undefined = required[0];
+        let moduleInjector: Injector|Thenable<Injector>|undefined = undefined;
         let ranAsync = false;
 
         if (!parentInjector || hasMultipleDowngradedModules) {
@@ -117,12 +118,55 @@ export function downgradeComponent(info: {
           validateInjectionKey($injector, downgradedModule, lazyModuleRefKey, attemptedAction);
 
           const lazyModuleRef = $injector.get(lazyModuleRefKey) as LazyModuleRef;
-          parentInjector = lazyModuleRef.injector || lazyModuleRef.promise as Promise<Injector>;
+          moduleInjector = lazyModuleRef.injector || lazyModuleRef.promise as Promise<Injector>;
         }
 
-        const doDowngrade = (injector: Injector) => {
+        // Notes:
+        //
+        // There are two injectors: `finalModuleInjector` and `finalParentInjector` (they might be
+        // the same instance, but that is irrelevant):
+        // - `finalModuleInjector` is used to retrieve `ComponentFactoryResolver`, thus it must be
+        //   on the same tree as the `NgModule` that declares this downgraded component.
+        // - `finalParentInjector` is used for all other injection purposes.
+        //   (Note that Angular knows to only traverse the component-tree part of that injector,
+        //   when looking for an injectable and then switch to the module injector.)
+        //
+        // There are basically three cases:
+        // - If there is no parent component (thus no `parentInjector`), we bootstrap the downgraded
+        //   `NgModule` and use its injector as both `finalModuleInjector` and
+        //   `finalParentInjector`.
+        // - If there is a parent component (and thus a `parentInjector`) and we are sure that it
+        //   belongs to the same `NgModule` as this downgraded component (e.g. because there is only
+        //   one downgraded module, we use that `parentInjector` as both `finalModuleInjector` and
+        //   `finalParentInjector`.
+        // - If there is a parent component, but it may belong to a different `NgModule`, then we
+        //   use the `parentInjector` as `finalParentInjector` and this downgraded component's
+        //   declaring `NgModule`'s injector as `finalModuleInjector`.
+        //   Note 1: If the `NgModule` is already bootstrapped, we just get its injector (we don't
+        //           bootstrap again).
+        //   Note 2: It is possible that (while there are multiple downgraded modules) this
+        //           downgraded component and its parent component both belong to the same NgModule.
+        //           In that case, we could have used the `parentInjector` as both
+        //           `finalModuleInjector` and `finalParentInjector`, but (for simplicity) we are
+        //           treating this case as if they belong to different `NgModule`s. That doesn't
+        //           really affect anything, since `parentInjector` has `moduleInjector` as ancestor
+        //           and trying to resolve `ComponentFactoryResolver` from either one will return
+        //           the same instance.
+
+        // If there is a parent component, use its injector as parent injector.
+        // If this is a "top-level" Angular component, use the module injector.
+        const finalParentInjector = parentInjector || moduleInjector !;
+
+        // If this is a "top-level" Angular component or the parent component may belong to a
+        // different `NgModule`, use the module injector for module-specific dependencies.
+        // If there is a parent component that belongs to the same `NgModule`, use its injector.
+        const finalModuleInjector = moduleInjector || parentInjector !;
+
+        const doDowngrade = (injector: Injector, moduleInjector: Injector) => {
+          // Retrieve `ComponentFactoryResolver` from the injector tied to the `NgModule` this
+          // component belongs to.
           const componentFactoryResolver: ComponentFactoryResolver =
-              injector.get(ComponentFactoryResolver);
+              moduleInjector.get(ComponentFactoryResolver);
           const componentFactory: ComponentFactory<any> =
               componentFactoryResolver.resolveComponentFactory(info.component) !;
 
@@ -150,18 +194,20 @@ export function downgradeComponent(info: {
           }
         };
 
-        const downgradeFn = !isNgUpgradeLite ? doDowngrade : (injector: Injector) => {
-          if (!ngZone) {
-            ngZone = injector.get(NgZone);
-          }
+        const downgradeFn =
+            !isNgUpgradeLite ? doDowngrade : (pInjector: Injector, mInjector: Injector) => {
+              if (!ngZone) {
+                ngZone = pInjector.get(NgZone);
+              }
 
-          wrapCallback(() => doDowngrade(injector))();
-        };
+              wrapCallback(() => doDowngrade(pInjector, mInjector))();
+            };
 
-        if (isThenable<Injector>(parentInjector)) {
-          parentInjector.then(downgradeFn);
+        if (isThenable(finalParentInjector) || isThenable(finalModuleInjector)) {
+          Promise.all([finalParentInjector, finalModuleInjector])
+              .then(([pInjector, mInjector]) => downgradeFn(pInjector, mInjector));
         } else {
-          downgradeFn(parentInjector);
+          downgradeFn(finalParentInjector, finalModuleInjector);
         }
 
         ranAsync = true;
