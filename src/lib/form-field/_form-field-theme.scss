@@ -70,6 +70,20 @@
     }
   }
 
+  .mat-form-field-type-mat-native-select.mat-focused:not(.mat-form-field-invalid) {
+    .mat-form-field-infix::after {
+      color: $underline-focused-color;
+    }
+
+    &.mat-accent .mat-form-field-infix::after {
+      color: $underline-color-accent;
+    }
+
+    &.mat-warn .mat-form-field-infix::after {
+      color: $underline-color-warn;
+    }
+  }
+
   // Styling for the error state of the form field. Note that while the same can be
   // achieved with the ng-* classes, we use this approach in order to ensure that the same
   // logic is used to style the error state and to show the error messages.
