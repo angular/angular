@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
-# Load helpers and make them available everywhere (through `$BASH_ENV`).
+# Variables
 readonly envHelpersPath="`dirname $0`/env-helpers.inc.sh";
+readonly getCommitRangePath="`dirname $0`/get-commit-range.js";
+
+# Load helpers and make them available everywhere (through `$BASH_ENV`).
 source $envHelpersPath;
 echo "source $envHelpersPath;" >> $BASH_ENV;
 
@@ -16,9 +19,10 @@ setPublicVar CI_AIO_MIN_PWA_SCORE "95";
 # This is the branch being built; e.g. `pull/12345` for PR builds.
 setPublicVar CI_BRANCH "$CIRCLE_BRANCH";
 setPublicVar CI_COMMIT "$CIRCLE_SHA1";
-# `CI_COMMIT_RANGE` will only be available when `CIRCLE_COMPARE_URL` is also available,
-# i.e. on push builds (a.k.a. non-PR builds). That is fine, since we only need it in push builds.
-setPublicVar CI_COMMIT_RANGE "$(sed -r 's|^.*/([0-9a-f]+\.\.\.[0-9a-f]+)$|\1|i' <<< ${CIRCLE_COMPARE_URL:-})";
+# `CI_COMMIT_RANGE` will only be available when `CIRCLE_COMPARE_URL` is also available (or can be
+# retrieved via `get-compare-url.js`), i.e. on push builds (a.k.a. non-PR, non-scheduled builds and
+# rerun workflows of such builds). That is fine, since we only need it in push builds.
+setPublicVar CI_COMMIT_RANGE "`[[ ${CIRCLE_PR_NUMBER:-false} != false ]] && echo "" || node $getCommitRangePath "$CIRCLE_BUILD_NUM" "$CIRCLE_COMPARE_URL"`";
 setPublicVar CI_PULL_REQUEST "${CIRCLE_PR_NUMBER:-false}";
 setPublicVar CI_REPO_NAME "$CIRCLE_PROJECT_REPONAME";
 setPublicVar CI_REPO_OWNER "$CIRCLE_PROJECT_USERNAME";
