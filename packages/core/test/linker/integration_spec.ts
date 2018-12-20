@@ -699,29 +699,28 @@ function declareTests(config?: {useJit: boolean}) {
         });
 
         it('should be checked when an async pipe requests a check', fakeAsync(() => {
-          TestBed.configureTestingModule(
-              {declarations: [MyComp, PushCmpWithAsyncPipe], imports: [CommonModule]});
-          const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
-          TestBed.overrideComponent(MyComp, {set: {template}});
-          const fixture = TestBed.createComponent(MyComp);
+             TestBed.configureTestingModule(
+                 {declarations: [MyComp, PushCmpWithAsyncPipe], imports: [CommonModule]});
+             const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
+             TestBed.overrideComponent(MyComp, {set: {template}});
+             const fixture = TestBed.createComponent(MyComp);
 
-          tick();
+             tick();
 
-          const cmp: PushCmpWithAsyncPipe =
-              fixture.debugElement.children[0].references !['cmp'];
-          fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(1);
+             const cmp: PushCmpWithAsyncPipe = fixture.debugElement.children[0].references !['cmp'];
+             fixture.detectChanges();
+             expect(cmp.numberOfChecks).toEqual(1);
 
-          fixture.detectChanges();
-          fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(1);
+             fixture.detectChanges();
+             fixture.detectChanges();
+             expect(cmp.numberOfChecks).toEqual(1);
 
-          cmp.resolve(2);
-          tick();
+             cmp.resolve(2);
+             tick();
 
-          fixture.detectChanges();
-          expect(cmp.numberOfChecks).toEqual(2);
-        }));
+             fixture.detectChanges();
+             expect(cmp.numberOfChecks).toEqual(2);
+           }));
       });
 
       it('should create a component that injects an @Host', () => {

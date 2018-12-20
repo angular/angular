@@ -1298,21 +1298,21 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
          }));
 
       it('Reattaches in the original cd mode', fakeAsync(() => {
-        const ctx = createCompFixture('<push-cmp></push-cmp>');
-        const cmp: PushComp = queryDirs(ctx.debugElement, PushComp)[0];
-        cmp.changeDetectorRef.detach();
-        cmp.changeDetectorRef.reattach();
+           const ctx = createCompFixture('<push-cmp></push-cmp>');
+           const cmp: PushComp = queryDirs(ctx.debugElement, PushComp)[0];
+           cmp.changeDetectorRef.detach();
+           cmp.changeDetectorRef.reattach();
 
-        // renderCount should NOT be incremented with each CD as CD mode
-        // should be resetted to
-        // on-push
-        ctx.detectChanges();
-        expect(cmp.renderCount).toBeGreaterThan(0);
-        const count = cmp.renderCount;
+           // renderCount should NOT be incremented with each CD as CD mode
+           // should be resetted to
+           // on-push
+           ctx.detectChanges();
+           expect(cmp.renderCount).toBeGreaterThan(0);
+           const count = cmp.renderCount;
 
-        ctx.detectChanges();
-        expect(cmp.renderCount).toBe(count);
-      }));
+           ctx.detectChanges();
+           expect(cmp.renderCount).toBe(count);
+         }));
 
     });
 
