@@ -28,7 +28,3 @@ import './tasks/lint';
 import './tasks/material-release';
 import './tasks/unit-test';
 import './tasks/universal';
-
-import './tasks/publish/publish-task';
-import './tasks/publish/sanity-checks';
-import './tasks/publish/validate-release';
