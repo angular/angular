@@ -184,6 +184,7 @@ export class TestBedRender3 implements Injector, TestBed {
   private _pipeOverrides: [Type<any>, MetadataOverride<Pipe>][] = [];
   private _providerOverrides: Provider[] = [];
   private _rootProviderOverrides: Provider[] = [];
+  private _providerOverridesByToken: Map<any, Provider[]> = new Map();
 
   // test module configuration
   private _providers: Provider[] = [];
@@ -239,6 +240,7 @@ export class TestBedRender3 implements Injector, TestBed {
     this._pipeOverrides = [];
     this._providerOverrides = [];
     this._rootProviderOverrides = [];
+    this._providerOverridesByToken.clear();
 
     // reset test module config
     this._providers = [];
@@ -332,12 +334,21 @@ export class TestBedRender3 implements Injector, TestBed {
    */
   overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
       void {
-    const overrides = this._getProviderOverridesBucket(token);
-    if (provider.useFactory) {
-      overrides.push({provide: token, useFactory: provider.useFactory, deps: provider.deps || []});
-    } else {
-      overrides.push({provide: token, useValue: provider.useValue});
-    }
+    const providerDef = provider.useFactory ?
+        {provide: token, useFactory: provider.useFactory, deps: provider.deps || []} :
+        {provide: token, useValue: provider.useValue};
+
+    let injectableDef: InjectableDef<any>|null;
+    const isRoot =
+        (typeof token !== 'string' && (injectableDef = getInjectableDef(token)) &&
+         injectableDef.providedIn === 'root');
+    const overridesBucket = isRoot ? this._rootProviderOverrides : this._providerOverrides;
+    overridesBucket.push(providerDef);
+
+    // keep all overrides grouped by token as well for fast lookups using token
+    const overridesForToken = this._providerOverridesByToken.get(token) || [];
+    overridesForToken.push(providerDef);
+    this._providerOverridesByToken.set(token, overridesForToken);
   }
 
   /**
@@ -403,21 +414,12 @@ export class TestBedRender3 implements Injector, TestBed {
     this._instantiated = true;
   }
 
-  private _getProviderOverridesBucket(token: any): Provider[] {
-    let injectableDef: InjectableDef<any>|null;
-    const isRoot =
-        (typeof token !== 'string' && (injectableDef = getInjectableDef(token)) &&
-         injectableDef.providedIn === 'root');
-    return isRoot ? this._rootProviderOverrides : this._providerOverrides;
-  }
-
   // get overrides for a specific provider (if any)
-  private _getProviderOverride(provider: any) {
+  private _getProviderOverrides(provider: any) {
     const token = typeof provider === 'object' && provider.hasOwnProperty('provide') ?
         provider.provide :
         provider;
-    const overrides = this._getProviderOverridesBucket(token);
-    return overrides.find((override: any) => override.provide === token);
+    return this._providerOverridesByToken.get(token) || [];
   }
 
   // creates resolvers taking overrides into account
@@ -472,12 +474,10 @@ export class TestBedRender3 implements Injector, TestBed {
 
   private _getMetaWithOverrides(meta: Component|Directive|NgModule) {
     if (meta.providers && meta.providers.length) {
-      const hasOverrides =
-          meta.providers.some((provider: any) => !!this._getProviderOverride(provider));
-      if (hasOverrides) {
-        const providers =
-            meta.providers.map((provider: any) => this._getProviderOverride(provider) || provider);
-        return {...meta, providers};
+      const overrides =
+          flatten(meta.providers, (provider: any) => this._getProviderOverrides(provider));
+      if (overrides.length) {
+        return {...meta, providers: [...meta.providers, ...overrides]};
       }
     }
     return meta;
@@ -531,10 +531,8 @@ export class TestBedRender3 implements Injector, TestBed {
    * module.
    *
    * This operation is memoized and the result is cached on the module's definition. It can be
-   * called
-   * on modules with components that have not fully compiled yet, but the result should not be
-   * used
-   * until they have.
+   * called on modules with components that have not fully compiled yet, but the result should not
+   * be used until they have.
    */
   private _transitiveScopesFor<T>(moduleType: Type<T>, resolvers: Resolvers):
       NgModuleTransitiveScopes {
@@ -628,10 +626,9 @@ export function _getTestBedRender3(): TestBedRender3 {
 const OWNER_MODULE = '__NG_MODULE__';
 /**
  * This function clears the OWNER_MODULE property from the Types. This is set in
- * r3/jit/modules.ts.
- * It is common for the same Type to be compiled in different tests. If we don't clear this we
- * will
- * get errors which will complain that the same Component/Directive is in more than one NgModule.
+ * r3/jit/modules.ts. It is common for the same Type to be compiled in different tests. If we don't
+ * clear this we will get errors which will complain that the same Component/Directive is in more
+ * than one NgModule.
  */
 function clearNgModules(type: Type<any>) {
   if (type.hasOwnProperty(OWNER_MODULE)) {
@@ -639,13 +636,13 @@ function clearNgModules(type: Type<any>) {
   }
 }
 
-function flatten<T>(values: any[]): T[] {
+function flatten<T>(values: any[], mapFn?: (value: T) => any): T[] {
   const out: T[] = [];
   values.forEach(value => {
     if (Array.isArray(value)) {
-      out.push(...flatten<T>(value));
+      out.push(...flatten<T>(value, mapFn));
     } else {
-      out.push(value);
+      out.push(mapFn ? mapFn(value) : value);
     }
   });
   return out;
