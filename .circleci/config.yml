@@ -65,6 +65,29 @@ var_10: &attach_release_output
   attach_workspace:
     at: dist/releases
 
+
+# Branch filter that we can specify for jobs that should only run on publish branches. This filter
+# is used to ensure that not all upstream branches will be published as Github builds
+# (e.g. revert branches, feature branches)
+var_11: &publish_branches_filter
+  branches:
+    only:
+      - master
+      # 6.0.x, 7.1.x, etc.
+      - /\d+\.\d+\.x/
+      # 6.x, 7.x, 8.x etc
+      - /\d+\.x/
+
+# Branch filter that is usually applied to all jobs. Since there is no way within CircleCI to
+# exclude a branch for all defined jobs, we need to manually specify the filters for each job.
+# In order to reduce duplication we use a YAML anchor that just always excludes the "_presubmit"
+# branch. We don't want to run Circle for the temporary "_presubmit" branch which is reserved
+# for the caretaker.
+var_12: &ignore_presubmit_branch_filter
+  branches:
+    ignore:
+      - "_presubmit"
+
 # -----------------------------
 # Container version of CircleCI
 # -----------------------------
@@ -308,34 +331,44 @@ workflows:
   # that build and test source code should be part of this workflow
   build_and_test:
     jobs:
-      - bazel_build_test
-      - api_golden_checks
+      - bazel_build_test:
+          filters: *ignore_presubmit_branch_filter
+      - api_golden_checks:
+          filters: *ignore_presubmit_branch_filter
 
   unit_tests:
     jobs:
-      - tests_local_browsers
-      - tests_browserstack
-      - tests_saucelabs
+      - tests_local_browsers:
+          filters: *ignore_presubmit_branch_filter
+      - tests_browserstack:
+          filters: *ignore_presubmit_branch_filter
+      - tests_saucelabs:
+          filters: *ignore_presubmit_branch_filter
 
   integration_tests:
     jobs:
-      - e2e_tests
-      - prerender_build
+      - e2e_tests:
+          filters: *ignore_presubmit_branch_filter
+      - prerender_build:
+          filters: *ignore_presubmit_branch_filter
 
   release_output:
     jobs:
       - build_release_packages
       - build_devapp_aot:
+          filters: *ignore_presubmit_branch_filter
           requires:
             - build_release_packages
       - publish_snapshots:
+          filters: *publish_branches_filter
           requires:
             - build_release_packages
 
   # Lint workflow. As we want to lint in one job, this is a workflow with just one job.
   lint:
     jobs:
-      - lint
+      - lint:
+          filters: *ignore_presubmit_branch_filter
 
   # Snapshot tests workflow that is scheduled to run all specified jobs at midnight everyday.
   # This workflow runs various jobs against the Angular snapshot builds from Github.
@@ -355,15 +388,3 @@ workflows:
                 # it's not guaranteed that older versions of Angular Material always work
                 # with the latest Angular version.
                 - master
-
-# ---------------------------
-# General setup for CircleCI
-# ---------------------------
-general:
-  branches:
-    only:
-      - master
-      # 5.2.x, 6.0.x, etc
-      - /\d+\.\d+\.x/
-      # 5.x, 6.x, etc
-      - /\d+\.x/
