@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bind, defineComponent, defineDirective, markDirty, reference, textBinding} from '../../src/render3/index';
+import {bind, createGlobalTargetGetter, defineComponent, defineDirective, markDirty, reference, textBinding} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, getCurrentView, listener, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {restoreView} from '../../src/render3/state';
@@ -473,7 +473,9 @@ describe('event listeners', () => {
             rf: RenderFlags, ctx: any, elIndex: number) {
           if (rf & RenderFlags.Create) {
             listener('click', function() { return ctx.onClick(); });
-            listener('body:click', function() { return ctx.onBodyClick(); });
+            listener('click', function() {
+              return ctx.onBodyClick();
+            }, false, createGlobalTargetGetter('body'));
           }
         }
       });
@@ -511,7 +513,9 @@ describe('event listeners', () => {
             rf: RenderFlags, ctx: any, elIndex: number) {
           if (rf & RenderFlags.Create) {
             listener('click', function() { return ctx.onClick(); });
-            listener('body:click', function() { return ctx.onBodyClick(); });
+            listener('click', function() {
+              return ctx.onBodyClick();
+            }, false, createGlobalTargetGetter('body'));
           }
         }
       });

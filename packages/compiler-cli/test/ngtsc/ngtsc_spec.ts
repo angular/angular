@@ -595,7 +595,7 @@ describe('ngtsc behavioral tests', () => {
           onDocumentClick(eventTarget: HTMLElement): void {}
 
           @HostListener('window:scroll')
-          onScroll(event: any): void {}
+          onWindowScroll(event: any): void {}
         }
     `);
 
@@ -605,8 +605,8 @@ describe('ngtsc behavioral tests', () => {
       hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
           i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick(); });
-          i0.ɵlistener("document:click", function FooCmp_document_click_HostBindingHandler($event) { return ctx.onDocumentClick($event.target); });
-          i0.ɵlistener("window:scroll", function FooCmp_window_scroll_HostBindingHandler($event) { return ctx.onScroll(); });
+          i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onDocumentClick($event.target); }, false, i0.ɵcreateGlobalTargetGetter("document"));
+          i0.ɵlistener("scroll", function FooCmp_scroll_HostBindingHandler($event) { return ctx.onWindowScroll(); }, false, i0.ɵcreateGlobalTargetGetter("window"));
         }
       }
     `;
@@ -666,7 +666,7 @@ describe('ngtsc behavioral tests', () => {
         if (rf & 1) {
           i0.ɵallocHostVars(2);
           i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); });
-          i0.ɵlistener("body:click", function FooCmp_body_click_HostBindingHandler($event) { return ctx.onBodyClick($event); });
+          i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵcreateGlobalTargetGetter("body"));
           i0.ɵlistener("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
           i0.ɵelementStyling(_c0, null, null, ctx);
         }

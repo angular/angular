@@ -14,7 +14,7 @@ import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection'
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {extractEventListenerDetails, findComponentView, getNativeByTNode, isLContainer, isRootView, readElementValue, stringify} from './util';
+import {findComponentView, getNativeByTNode, isLContainer, isRootView, readElementValue, stringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -446,14 +446,15 @@ function removeListeners(lView: LView): void {
     for (let i = 0; i < tCleanup.length - 1; i += 2) {
       if (typeof tCleanup[i] === 'string') {
         // This is a listener with the native renderer
-        const idx = tCleanup[i + 1];
-        const native = readElementValue(lView[idx]);
-        const {eventName, target} = extractEventListenerDetails(tCleanup[i], native);
+        const idxOrTargetGetter = tCleanup[i + 1];
+        const target = typeof idxOrTargetGetter === 'function' ?
+            idxOrTargetGetter(lView) :
+            readElementValue(lView[idxOrTargetGetter]);
         const listener = lCleanup[tCleanup[i + 2]];
         const useCaptureOrSubIdx = tCleanup[i + 3];
         if (typeof useCaptureOrSubIdx === 'boolean') {
           // DOM listener
-          target !.removeEventListener(eventName, listener, useCaptureOrSubIdx);
+          target.removeEventListener(tCleanup[i], listener, useCaptureOrSubIdx);
         } else {
           if (useCaptureOrSubIdx >= 0) {
             // unregister

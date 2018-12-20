@@ -14,7 +14,7 @@ import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
 import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {RComment, RElement, RText} from './interfaces/renderer';
+import {GlobalTargetSelector, RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
 
@@ -99,28 +99,22 @@ export function getNativeByTNode(tNode: TNode, hostView: LView): RElement|RText|
   return readElementValue(hostView[tNode.index]);
 }
 
-export function extractEventListenerDetails(eventName: string, element: RElement):
-    {eventName: string, target: Window | Document | HTMLElement | null, targetName?: string} {
-  if (eventName.indexOf(':') > -1) {
-    const [targetName, evName] = eventName.split(':');
-    const target = getGlobalEventTarget(targetName, element);
-    return {eventName: evName, target: target as HTMLElement, targetName};
-  }
-  return {eventName, target: element as HTMLElement};
-}
-
-export function getGlobalEventTarget(name: string, element: any): EventTarget|null {
-  const doc = element.ownerDocument;
-  if (name === 'document') {
-    return doc;
-  }
-  if (name === 'body') {
-    return doc.body;
-  }
-  if (name === 'window') {
-    return doc.defaultView;
-  }
-  return null;
+export function createGlobalTargetGetter(selector: GlobalTargetSelector): (element: any) => {
+  selector: GlobalTargetSelector, target: EventTarget
+} {
+  const wrap = (target: EventTarget) => ({selector, target});
+  return (element: any) => {
+    if (selector === 'document') {
+      return wrap(element.ownerDocument);
+    }
+    if (selector === 'body') {
+      return wrap(element.ownerDocument.body);
+    }
+    if (selector === 'window') {
+      return wrap(element.ownerDocument.defaultView);
+    }
+    throw new Error(`Unsupported global event target name '${name}' specified`);
+  };
 }
 
 export function getTNode(index: number, view: LView): TNode {

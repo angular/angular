@@ -107,6 +107,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵi18nEnd': r3.i18nEnd,
   'ɵi18nApply': r3.i18nApply,
   'ɵi18nPostprocess': r3.i18nPostprocess,
+  'ɵcreateGlobalTargetGetter': r3.createGlobalTargetGetter,
 
   'ɵsanitizeHtml': sanitization.sanitizeHtml,
   'ɵsanitizeStyle': sanitization.sanitizeStyle,

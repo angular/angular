@@ -828,7 +828,13 @@ function createHostListeners(
     const handler = o.fn(
         [new o.FnParam('$event', o.DYNAMIC_TYPE)], [...bindingExpr.render3Stmts], o.INFERRED_TYPE,
         null, functionName);
-    return o.importExpr(R3.listener).callFn([o.literal(bindingName), handler]).toStmt();
+    const params: o.Expression[] = [o.literal(bindingName), handler];
+    if (target) {
+      params.push(
+          o.literal(false),  // `useCapture` flag, defaults to `false`
+          o.importExpr(R3.createGlobalTargetGetter).callFn([o.literal(target)]));
+    }
+    return o.importExpr(R3.listener).callFn(params).toStmt();
   });
 }
 

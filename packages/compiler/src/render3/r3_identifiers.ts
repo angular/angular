@@ -131,6 +131,9 @@ export class Identifiers {
   static templateRefExtractor:
       o.ExternalReference = {name: 'ɵtemplateRefExtractor', moduleName: CORE};
 
+  static createGlobalTargetGetter:
+      o.ExternalReference = {name: 'ɵcreateGlobalTargetGetter', moduleName: CORE};
+
   static defineBase: o.ExternalReference = {name: 'ɵdefineBase', moduleName: CORE};
 
   static BaseDef: o.ExternalReference = {

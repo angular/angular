@@ -120,6 +120,7 @@ export {
   i18nApply as ɵi18nApply,
   i18nPostprocess as ɵi18nPostprocess,
   setClassMetadata as ɵsetClassMetadata,
+  createGlobalTargetGetter as ɵcreateGlobalTargetGetter,
 } from './render3/index';
 
 

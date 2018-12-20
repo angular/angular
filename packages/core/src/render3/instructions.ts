@@ -29,7 +29,7 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {PlayerFactory} from './interfaces/player';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {GlobalTargetSelector, ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
@@ -40,7 +40,7 @@ import {getInitialClassNameValue, initializeStaticContext as initializeStaticSty
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
-import {extractEventListenerDetails, findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
+import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
 
 
 
@@ -826,7 +826,11 @@ export function locateHostElement(
  * @param useCapture Whether or not to use capture in event listener.
  */
 export function listener(
-    eventName: string, listenerFn: (e?: any) => any, useCapture = false): void {
+    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
+    globalTargetGetter?: (element: any) => {
+      selector: GlobalTargetSelector,
+      target: EventTarget
+    }): void {
   const lView = getLView();
   const tNode = getPreviousOrParentTNode();
   const tView = lView[TVIEW];
@@ -838,9 +842,9 @@ export function listener(
   // add native event listener - applicable to elements only
   if (tNode.type === TNodeType.Element) {
     const native = getNativeByTNode(tNode, lView) as RElement;
-    const {eventName: evName, target, targetName} = extractEventListenerDetails(eventName, native);
-    ngDevMode && assertDefined(target, 'expecting target to be defined') &&
-        ngDevMode.rendererAddEventListener++;
+    const glob = globalTargetGetter ? globalTargetGetter(native) : {} as any;
+    const target = glob.target || native;
+    ngDevMode && ngDevMode.rendererAddEventListener++;
     const renderer = lView[RENDERER];
     const lCleanup = getCleanup(lView);
     const lCleanupIndex = lCleanup.length;
@@ -852,17 +856,19 @@ export function listener(
       // The first argument of `listen` function in Procedural Renderer is:
       // - either a target name (as a string) in case of global target (window, document, body)
       // - or element reference (in all other cases)
-      const cleanupFn = renderer.listen((targetName || target) as any, evName, listenerFn);
+      const cleanupFn = renderer.listen(glob.selector || target, eventName, listenerFn);
       lCleanup.push(listenerFn, cleanupFn);
       useCaptureOrSubIdx = lCleanupIndex + 1;
     } else {
       const wrappedListener = wrapListenerWithPreventDefault(listenerFn);
-      target !.addEventListener(evName, wrappedListener, useCapture);
+      target.addEventListener(eventName, wrappedListener, useCapture);
       lCleanup.push(wrappedListener);
     }
-    // Keep full event name in case we have global object listeners, like `window:scroll`,
-    // so that we can reference global object at cleanup phase for non-procedural rendering
-    tCleanup && tCleanup.push(eventName, tNode.index, lCleanupIndex, useCaptureOrSubIdx);
+
+    const idxOrTargetGetter = globalTargetGetter ?
+        (_lView: LView) => globalTargetGetter(_lView[tNode.index]).target :
+        tNode.index;
+    tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, useCaptureOrSubIdx);
   }
 
   // subscribe to directive outputs

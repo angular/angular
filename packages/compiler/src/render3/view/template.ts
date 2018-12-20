@@ -1107,10 +1107,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         ...bindingExpr.render3Stmts
       ];
 
-      const handler = o.fn(
+      const handlerFn = o.fn(
           [new o.FnParam('$event', o.DYNAMIC_TYPE)], statements, o.INFERRED_TYPE, null,
           functionName);
-      return [o.literal(eventName), handler];
+
+      const params: o.Expression[] = [o.literal(eventName), handlerFn];
+      if (outputAst.target) {
+        params.push(
+            o.literal(false),  // `useCapture` flag, defaults to `false`
+            o.importExpr(R3.createGlobalTargetGetter).callFn([o.literal(outputAst.target)]));
+      }
+      return params;
     };
   }
 }
