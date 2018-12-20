@@ -3,12 +3,14 @@ import {execSync} from 'child_process';
 import {readFileSync} from 'fs';
 import {join} from 'path';
 import {BaseReleaseTask} from './base-release-task';
+import {extractReleaseNotes} from './extract-release-notes';
 import {GitClient} from './git/git-client';
 import {getGithubReleasesUrl} from './git/github-urls';
 import {isNpmAuthenticated, runInteractiveNpmLogin, runNpmPublish} from './npm/npm-client';
 import {promptForNpmDistTag} from './prompt/npm-dist-tag-prompt';
 import {checkReleasePackage} from './release-output/check-packages';
 import {releasePackages} from './release-output/release-packages';
+import {CHANGELOG_FILE_NAME} from './stage-release';
 import {parseVersionName, Version} from './version-name/parse-version';
 
 /** Maximum allowed tries to authenticate NPM. */
@@ -88,8 +90,17 @@ class PublishReleaseTask extends BaseReleaseTask {
     this.checkReleaseOutput();
     console.info(green(`  ✓   Release output passed validation checks.`));
 
+    // Extract the release notes for the new version from the changelog file.
+    const releaseNotes = extractReleaseNotes(
+      join(this.projectDir, CHANGELOG_FILE_NAME), newVersionName);
+
+    if (!releaseNotes) {
+      console.error(red(`  ✘   Could not find release notes in the changelog.`));
+      process.exit(1);
+    }
+
     // Create and push the release tag before publishing to NPM.
-    this.createAndPushReleaseTag(newVersionName);
+    this.createAndPushReleaseTag(newVersionName, releaseNotes);
 
     // Ensure that we are authenticated before running "npm publish" for each package.
     this.checkNpmAuthentication();
@@ -230,9 +241,9 @@ class PublishReleaseTask extends BaseReleaseTask {
   }
 
   /** Creates a specified tag and pushes it to the remote repository */
-  private createAndPushReleaseTag(tagName: string) {
+  private createAndPushReleaseTag(tagName: string, releaseNotes: string) {
     // TODO(devversion): find a way to extract the changelog part just for this version.
-    if (!this.git.createTag('HEAD', tagName, '')) {
+    if (!this.git.createTag('HEAD', tagName, releaseNotes)) {
       console.error(red(`  ✘   Could not create the "${tagName}" tag.`));
       console.error(red(`      Please make sure there is no existing tag with the same name.`));
       process.exit(1);
