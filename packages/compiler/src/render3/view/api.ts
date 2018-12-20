@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation, ChangeDetectionStrategy} from '../../core';
+import {ChangeDetectionStrategy, ViewEncapsulation} from '../../core';
 import {InterpolationConfig} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
+
 
 /**
  * Information needed to compile a directive for the render3 runtime.
