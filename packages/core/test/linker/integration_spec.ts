@@ -585,47 +585,43 @@ function declareTests(config?: {useJit: boolean}) {
 
       describe('OnPush components', () => {
 
-        fixmeIvy(
-            'FW-764: fixture.detectChanges() is not respecting OnPush flag on components in the root template')
-            .it('should use ChangeDetectorRef to manually request a check', () => {
-              TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithRef]]]});
-              const template = '<push-cmp-with-ref #cmp></push-cmp-with-ref>';
-              TestBed.overrideComponent(MyComp, {set: {template}});
-              const fixture = TestBed.createComponent(MyComp);
+        it('should use ChangeDetectorRef to manually request a check', () => {
+          TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithRef]]]});
+          const template = '<push-cmp-with-ref #cmp></push-cmp-with-ref>';
+          TestBed.overrideComponent(MyComp, {set: {template}});
+          const fixture = TestBed.createComponent(MyComp);
 
-              const cmp = fixture.debugElement.children[0].references !['cmp'];
+          const cmp = fixture.debugElement.children[0].references !['cmp'];
 
-              fixture.detectChanges();
-              expect(cmp.numberOfChecks).toEqual(1);
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(1);
 
-              fixture.detectChanges();
-              expect(cmp.numberOfChecks).toEqual(1);
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(1);
 
-              cmp.propagate();
+          cmp.propagate();
 
-              fixture.detectChanges();
-              expect(cmp.numberOfChecks).toEqual(2);
-            });
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(2);
+        });
 
-        fixmeIvy(
-            'FW-764: fixture.detectChanges() is not respecting OnPush flag on components in the root template')
-            .it('should be checked when its bindings got updated', () => {
-              TestBed.configureTestingModule(
-                  {declarations: [MyComp, PushCmp, EventCmp], imports: [CommonModule]});
-              const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
-              TestBed.overrideComponent(MyComp, {set: {template}});
-              const fixture = TestBed.createComponent(MyComp);
+        it('should be checked when its bindings got updated', () => {
+          TestBed.configureTestingModule(
+              {declarations: [MyComp, PushCmp, EventCmp], imports: [CommonModule]});
+          const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
+          TestBed.overrideComponent(MyComp, {set: {template}});
+          const fixture = TestBed.createComponent(MyComp);
 
-              const cmp = fixture.debugElement.children[0].references !['cmp'];
+          const cmp = fixture.debugElement.children[0].references !['cmp'];
 
-              fixture.componentInstance.ctxProp = 'one';
-              fixture.detectChanges();
-              expect(cmp.numberOfChecks).toEqual(1);
+          fixture.componentInstance.ctxProp = 'one';
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(1);
 
-              fixture.componentInstance.ctxProp = 'two';
-              fixture.detectChanges();
-              expect(cmp.numberOfChecks).toEqual(2);
-            });
+          fixture.componentInstance.ctxProp = 'two';
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(2);
+        });
 
         if (getDOM().supportsDOMEvents()) {
           it('should allow to destroy a component from within a host event handler',
@@ -702,32 +698,30 @@ function declareTests(config?: {useJit: boolean}) {
           expect(cmp.prop).toEqual('two');
         });
 
-        fixmeIvy(
-            'FW-764: fixture.detectChanges() is not respecting OnPush flag on components in the root template')
-            .it('should be checked when an async pipe requests a check', fakeAsync(() => {
-                  TestBed.configureTestingModule(
-                      {declarations: [MyComp, PushCmpWithAsyncPipe], imports: [CommonModule]});
-                  const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
-                  TestBed.overrideComponent(MyComp, {set: {template}});
-                  const fixture = TestBed.createComponent(MyComp);
+        it('should be checked when an async pipe requests a check', fakeAsync(() => {
+          TestBed.configureTestingModule(
+              {declarations: [MyComp, PushCmpWithAsyncPipe], imports: [CommonModule]});
+          const template = '<push-cmp-with-async #cmp></push-cmp-with-async>';
+          TestBed.overrideComponent(MyComp, {set: {template}});
+          const fixture = TestBed.createComponent(MyComp);
 
-                  tick();
+          tick();
 
-                  const cmp: PushCmpWithAsyncPipe =
-                      fixture.debugElement.children[0].references !['cmp'];
-                  fixture.detectChanges();
-                  expect(cmp.numberOfChecks).toEqual(1);
+          const cmp: PushCmpWithAsyncPipe =
+              fixture.debugElement.children[0].references !['cmp'];
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(1);
 
-                  fixture.detectChanges();
-                  fixture.detectChanges();
-                  expect(cmp.numberOfChecks).toEqual(1);
+          fixture.detectChanges();
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(1);
 
-                  cmp.resolve(2);
-                  tick();
+          cmp.resolve(2);
+          tick();
 
-                  fixture.detectChanges();
-                  expect(cmp.numberOfChecks).toEqual(2);
-                }));
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(2);
+        }));
       });
 
       it('should create a component that injects an @Host', () => {
