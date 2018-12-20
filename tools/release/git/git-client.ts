@@ -63,5 +63,12 @@ export class GitClient {
   createTag(commitRef: string, tagName: string, message: string): boolean {
     return spawnSync('git', ['tag', tagName, '-m', message], {cwd: this.projectDir}).status === 0;
   }
+
+  /** Pushes the specified tag to the remote git repository. */
+  pushTagToRemote(tagName: string): boolean {
+    return spawnSync('git', ['push', this.remoteGitUrl, `refs/tags/${tagName}`], {
+      cwd: this.projectDir
+    }).status === 0;
+  }
 }
 

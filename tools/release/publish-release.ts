@@ -88,9 +88,8 @@ class PublishReleaseTask extends BaseReleaseTask {
     this.checkReleaseOutput();
     console.info(green(`  ✓   Release output passed validation checks.`));
 
-    // TODO(devversion): find a way to extract the changelog part just for this version.
-    this.git.createTag('HEAD', newVersionName, '');
-    console.info(green(`  ✓   Created release tag: "${italic(newVersionName)}"`));
+    // Create and push the release tag before publishing to NPM.
+    this.createAndPushReleaseTag(newVersionName);
 
     // Ensure that we are authenticated before running "npm publish" for each package.
     this.checkNpmAuthentication();
@@ -105,8 +104,7 @@ class PublishReleaseTask extends BaseReleaseTask {
 
     console.log();
     console.info(green(bold(`  ✓   Published all packages successfully`)));
-    console.info(yellow(`  ⚠   Please push the newly created tag to Github and draft a new ` +
-      `release.`));
+    console.info(yellow(`  ⚠   Please draft a new release of the version on Github.`));
     console.info(yellow(
       `      ${getGithubReleasesUrl(this.repositoryOwner, this.repositoryName)}`));
   }
@@ -229,6 +227,27 @@ class PublishReleaseTask extends BaseReleaseTask {
     }
 
     console.info(green(`  ✓   Successfully published "${packageName}"`));
+  }
+
+  /** Creates a specified tag and pushes it to the remote repository */
+  private createAndPushReleaseTag(tagName: string) {
+    // TODO(devversion): find a way to extract the changelog part just for this version.
+    if (!this.git.createTag('HEAD', tagName, '')) {
+      console.error(red(`  ✘   Could not create the "${tagName}" tag.`));
+      console.error(red(`      Please make sure there is no existing tag with the same name.`));
+      process.exit(1);
+    }
+
+    console.info(green(`  ✓   Created release tag: "${italic(tagName)}"`));
+
+    if (!this.git.pushTagToRemote(tagName)) {
+      console.error(red(`  ✘   Could not push the "${tagName} "tag upstream.`));
+      console.error(red(`      Please make sure you have permission to push to the ` +
+        `"${this.git.remoteGitUrl}" remote.`));
+      process.exit(1);
+    }
+
+    console.info(green(`  ✓   Pushed release tag upstream.`));
   }
 }
 
