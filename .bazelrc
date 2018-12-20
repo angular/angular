@@ -22,12 +22,18 @@ test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test
 # Filesystem interactions     #
 ###############################
 
-# Don't create symlinks like bazel-out in the project.
-# These cause VSCode to traverse a massive tree, opening file handles and
+# Create symlinks in the project:
+# - dist/bin for outputs
+# - dist/testlogs, dist/genfiles
+# - bazel-out
+# NB: bazel-out should be excluded from the editor configuration.
+# The checked-in /.vscode/settings.json does this for VSCode.
+# Other editors may require manual config to ignore this directory.
+# In the past, we say a problem where VSCode traversed a massive tree, opening file handles and
 # eventually a surprising failure with auto-discovery of the C++ toolchain in
 # MacOS High Sierra.
 # See https://github.com/bazelbuild/bazel/issues/4603
-build --symlink_prefix=/
+build --symlink_prefix=dist/
 
 # Performance: avoid stat'ing input files
 build --watchfs
