@@ -360,12 +360,6 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
     opacity: 1;
     transform: scaleX(1) rotate(0deg);
   }
-
-  &.mat-checkbox-disabled {
-    .mat-checkbox-inner-container {
-      opacity: 0.5;
-    }
-  }
 }
 
 

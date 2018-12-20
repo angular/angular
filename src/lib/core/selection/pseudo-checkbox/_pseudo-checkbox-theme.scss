@@ -43,7 +43,8 @@
     background: mat-color(map-get($theme, warn));
   }
 
-  .mat-pseudo-checkbox-checked {
+  .mat-pseudo-checkbox-checked,
+  .mat-pseudo-checkbox-indeterminate {
     &.mat-pseudo-checkbox-disabled {
       background: $disabled-color;
     }

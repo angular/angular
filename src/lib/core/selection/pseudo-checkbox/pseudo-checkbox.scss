@@ -45,10 +45,6 @@ $_mat-pseudo-checkmark-size: $mat-checkbox-size - (2 * $_mat-pseudo-checkbox-pad
 
 .mat-pseudo-checkbox-disabled {
   cursor: default;
-
-  &.mat-pseudo-checkbox-indeterminate {
-    opacity: 0.5;
-  }
 }
 
 .mat-pseudo-checkbox-indeterminate::after {

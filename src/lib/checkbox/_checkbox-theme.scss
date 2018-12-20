@@ -61,7 +61,8 @@
   }
 
   .mat-checkbox-disabled {
-    &.mat-checkbox-checked:not(.mat-checkbox-indeterminate) {
+    &.mat-checkbox-checked,
+    &.mat-checkbox-indeterminate {
       .mat-checkbox-background {
         background-color: $disabled-color;
       }
