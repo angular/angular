@@ -1,7 +1,7 @@
 .DS_STORE
 
 /dist/
-/bazel-*
+/bazel-out/
 /integration/bazel/bazel-*
 e2e_test.*
 node_modules
@@ -15,7 +15,6 @@ pubspec.lock
 .settings/
 *.swo
 modules/.settings
-.vscode
 modules/.vscode
 
 # Don't check in secret files
