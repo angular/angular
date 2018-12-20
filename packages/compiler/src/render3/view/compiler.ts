@@ -251,6 +251,7 @@ export function compileComponentFromMetadata(
 
   const directivesUsed = new Set<o.Expression>();
   const pipesUsed = new Set<o.Expression>();
+  const changeDetection = meta.changeDetection;
 
   const template = meta.template;
   const templateBuilder = new TemplateDefinitionBuilder(
@@ -311,6 +312,11 @@ export function compileComponentFromMetadata(
   if (meta.animations !== null) {
     definitionMap.set(
         'data', o.literalMap([{key: 'animation', value: meta.animations, quoted: false}]));
+  }
+
+  // Only set the change detection flag if it's defined and it's not the default.
+  if (changeDetection != null && changeDetection !== core.ChangeDetectionStrategy.Default) {
+    definitionMap.set('changeDetection', o.literal(changeDetection));
   }
 
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
