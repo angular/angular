@@ -13,7 +13,7 @@ Angular가 제공하는 **라우터(`Router)`**를 사용하면 사용자의 동
 This guide covers the router's primary features, illustrating them through the evolution
 of a small application that you can <live-example>run live in the browser</live-example>.
 -->
-이 문서는 라우터의 작은 애플리케이션을 확장해 가면서 라우터의 사용방법에 대해 알아봅니다.
+이 문서는 작은 애플리케이션을 점점 확장해 가면서 라우터의 사용방법에 대해 알아봅니다.
 이 문서에서 다루는 예제는 <live-example></live-example>에서 직접 확인하거나 다운받아 실행할 수 있습니다.
 
 <!-- style for all tables on this page -->
@@ -36,8 +36,8 @@ The browser is a familiar model of application navigation:
 -->
 브라우저가 제공하는 네비게이션 모델은 이렇습니다.
 
-* 주소표시줄에 URL을 입력하면 특정 페이지로 이동할 수 있습니다.
-* 페이지에 있는 링크를 클릭하면 새로운 페이지로 이동할 수 있습니다.
+* 주소표시줄에 URL을 입력하면 특정 페이지로 이동합니다.
+* 페이지에 있는 링크를 클릭하면 새로운 페이지로 이동합니다.
 * 브라우저의 뒤로 가기/앞으로 가기 버튼을 누르면 사용자가 방문한 페이지 히스토리에 따라 뒤로/앞으로 페이지를 이동합니다.
 
 <!--
@@ -51,10 +51,10 @@ or in response to some other stimulus from any source. And the router logs activ
 in the browser's history journal so the back and forward buttons work as well.
 -->
 Angular가 제공하는 `Router`도 이 모델을 따릅니다.
-브라우저가 접근한 URL에 해당하는 뷰를 생성해서 사용자가 볼 수 있도록 표시할 수 있으며, 이 때 표시되는 뷰 컴포넌트에 추가 정보를 제공하기 위해 라우팅 변수를 사용할 수도 있습니다.
-그리고 라우터를 사용해서 페이지를 이동하는 것을 사용자가 링크를 클릭했을 때 페이지를 이동하는 것과 동일하게 처리합니다.
-그래서 이 특징을 활용하면 사용자가 버튼을 클릭했을 때, 드롭 박스에서 항목을 선택했을 때, 비동기 소스로부터 어떤 이벤트를 받았을 때 등 다양한 방식으로 활용할 수 있습니다.
-라우터는 브라우저의 히스토리 기록도 지원하기 때문에, 라우터로 이동한 기록은 브라우저의 뒤로 가기/앞으로 가기 버튼으로 이동할 수도 있습니다.
+브라우저에서 접근하는 URL에 해당하는 뷰를 생성해서 사용자가 볼 수 있도록 화면에 표시하며, 이 때 컴포넌트에 추가 정보를 제공하기 위해 라우팅 변수를 사용할 수도 있습니다.
+그리고 라우터를 직접 사용해서 페이지를 이동해도 사용자가 링크를 클릭했을 때 페이지를 이동하는 것과 동일하게 처리합니다.
+이 특징을 활용하면 사용자가 버튼을 클릭했을 때, 드롭 박스에서 항목을 선택했을 때, 비동기 소스로부터 어떤 이벤트를 받았을 때 등 다양한 경우에 페이지를 전환할 수 있습니다.
+라우터는 브라우저의 히스토리 기록도 지원하기 때문에, 라우터로 이동한 페이지는 브라우저의 뒤로 가기/앞으로 가기 버튼으로 이동할 수도 있습니다.
 
 {@a basics}
 
@@ -70,9 +70,9 @@ and building toward a modular, multi-view design with child routes.
 
 An introduction to a few core router concepts will help orient you to the details that follow.
 -->
-이 문서에서는 단순하게 페이지를 전환하는 라우터부터, 모듈로 구성하는 라우터, 자식 라우터를 활용한 멀티 뷰 디자인 구현 방법에 대해 차례로 알아봅니다.
+이 문서에서는 단순하게 페이지를 전환하는 라우터부터 모듈로 구성하는 라우터, 자식 라우터를 활용한 멀티 뷰 디자인 구현 방법에 대해 차례로 알아봅니다.
 
-먼저, 라우터의 기본 개념부터 알아봅시다.
+먼저 라우터의 기본 개념부터 알아봅시다.
 
 {@a basics-base-href}
 
@@ -86,9 +86,9 @@ to tell the router how to compose navigation URLs.
 If the `app` folder is the application root, as it is for the sample application,
 set the `href` value *exactly* as shown here.
 -->
-라우터를 사용하는 애플리케이션은 `index.html`파일의 `<head>` 태그 가장 처음에 라우터가 이동하는 URL의 기준점을 지정해야 하며, 이 때 `<base>` 엘리먼트를 사용합니다.
+라우터를 사용하는 애플리케이션은 `index.html`파일의 `<head>` 태그 가장 처음에 라우터가 이동하는 URL의 기준점을 지정해야 하는데, 이 때 `<base>` 엘리먼트를 사용합니다.
 
-만약 Angular CLI로 생성한 프로젝트이고, `app` 폴더가 애플리케이션 최상위 폴더라면 이 엘리먼트는 다음과 같이 지정되어 있을 것입니다.
+만약 Angular CLI로 생성한 프로젝트이고, `app` 폴더가 애플리케이션 최상위 폴더라면 다음과 같이 지정되어 있을 것입니다.
 
 <code-example path="router/src/index.html" linenums="false" header="src/index.html (base-href)" region="base-href">
 
@@ -108,8 +108,8 @@ The Angular Router is an optional service that presents a particular component v
 It is not part of the Angular core. It is in its own library package, `@angular/router`.
 Import what you need from it as you would from any other Angular package.
 -->
-라우터는 URL과 컴포넌트를 연결하는 서비스이며, Angular 애플리케이션을 구현하면서 꼭 사용해야하는 서비스는 아닙니다.
-그래서 라우터는 Angular 코어에서는 제외되었으며, `@angular/router`라는 라이브러리 패키지로 따로 제공됩니다.
+라우터는 URL과 컴포넌트를 연결하는 서비스지만, Angular 애플리케이션을 구현하면서 꼭 사용해야 하는 서비스는 아닙니다.
+그래서 라우터는 Angular 코어에서 제외되었으며, `@angular/router` 라이브러리 패키지로 제공됩니다.
 라우터를 사용하려면 다른 Angular 패키지와 마찬가지로 다음과 같이 로드합니다.
 
 <code-example path="router/src/app/app.module.1.ts" linenums="false" header="src/app/app.module.ts (import)" region="import-router">
@@ -147,10 +147,11 @@ The following example creates five route definitions, configures the router via 
 and adds the result to the `AppModule`'s `imports` array.
 -->
 라우터를 사용하는 Angular 애플리케이션이라면 *`Router`* 서비스 인스턴스가 싱글턴으로 존재합니다.
-브라우저의 URL이 변경되면 라우터가 이 변경사항과 관련된 라우팅 규칙(routes)을 찾아서 어떤 컴포넌트를 표시해야 하는지 판단합니다.
+그래서 브라우저의 URL이 변경되면 이 라우터가 이 변경사항과 관련된 라우팅 규칙(routes)을 찾아서 어떤 컴포넌트를 표시해야 하는지 판단합니다.
 
-라우팅 규칙은 개발자가 설정하기 전까지는 아무것도 없습니다.
-다음 예제는 라우팅 규칙을 각각 다른 4가지 방식으로 정의한 예제 코드이며, 이 라우팅 규칙은 라우터 모듈의 `RouterModule.forRoot` 메소드를 사용해서 `AppModule`의 `imports` 배열에 등록되었습니다.
+개발자가 설정하기 전에는 아무 라우팅 규칙도 없습니다.
+다음 예제는 라우팅 규칙을 각각 다른 4가지 방식으로 정의한 예제 코드입니다.
+이 라우팅 규칙들은 라우터 모듈의 `RouterModule.forRoot` 메소드를 사용해서 `AppModule`의 `imports` 배열에 등록되었습니다.
 
 <!--
 <code-example path="router/src/app/app.module.0.ts" linenums="false" header="src/app/app.module.ts (excerpt)">
@@ -168,7 +169,7 @@ The `appRoutes` array of *routes* describes how to navigate.
 Pass it to the `RouterModule.forRoot` method in the module `imports` to configure the router.
 -->
 `appRoutes` 배열에는 네비게이션을 수행하는 *라우팅 규칙(routes)*을 정의합니다.
-이렇게 지정하는 라우팅 규칙은 `RouterModule.forRoot` 메소드의 인자로 지정되어 모듈의 `imports` 항목에 등록됩니다.
+그러면 라우팅 규칙들이 모듈의 `imports` 항목에 사용된 `RouterModule.forRoot` 메소드의 인자로 전달되어 애플리케이션에 등록됩니다.
 
 <!--
 Each `Route` maps a URL `path` to a component.
@@ -177,7 +178,7 @@ The router parses and builds the final URL for you,
 allowing you to use both relative and absolute paths when navigating between application views.
 -->
 각각의 라우팅 규칙은 URL `path`와 컴포넌트를 맵핑합니다.
-이 때 _path_ 가 _슬래시(`/`)_ 로 시작하면 안되며, 이렇게 지정된 경로는 상대주소와 절대주소 모두 동작할 수 있도록 라우터가 파싱해서 등록합니다.
+이 때 _path_ 가 _슬래시(`/`)_ 로 시작하면 안되며, 이렇게 지정된 경로는 상대주소와 절대주소 방식으로 모두 동작할 수 있도록 라우터가 파싱해서 등록합니다.
 
 <!--
 The `:id` in the second route is a token for a route parameter. In a URL such as `/hero/42`, "42"
@@ -185,8 +186,8 @@ is the value of the `id` parameter. The corresponding `HeroDetailComponent`
 will use that value to find and present the hero whose `id` is 42.
 You'll learn more about route parameters later in this guide.
 -->
-두 번째 라우팅 규칙에 사용된 `:id`는 라우팅 변수에 사용하는 토큰이며, 이 코드의 경우에는 `/hero/42` 경로로 접속했을 때 "42"가 `id` 변수의 값에 할당됩니다.
-그러면 이 경로와 연결된 `HeroDetailComponent`에서 `id`가 42인 히어로를 찾고 화면에 표시하는 용도로 사용할 수 있습니다.
+두 번째 라우팅 규칙에 사용된 `:id`는 라우팅 변수에 사용하는 토큰인데, 이 코드의 경우에는 `/hero/42` 경로로 접속했을 때 "42"가 `id` 변수의 값에 할당됩니다.
+그러면 이 경로와 연결된 `HeroDetailComponent`에서 `id`가 42인 히어로를 찾아 화면에 표시하는 용도로 사용할 수 있습니다.
 라우팅 변수에 대한 내용은 이 문서의 후반부에 자세하게 알아봅니다.
 
 <!--
@@ -196,15 +197,15 @@ items such as page titles, breadcrumb text, and other read-only, _static_ data.
 You'll use the [resolve guard](#resolve-guard) to retrieve _dynamic_ data later in the guide.
 -->
 세 번째 라우팅 규칙에 사용된 `data` 프로퍼티는 라우팅 규칙에 데이터를 전달할 때 사용하는 프로퍼티입니다.
-이렇게 전달한 데이터 프로퍼티는 라우터를 통해 참조할 수 있으며, 페이지 제목이나 breadcrumb 텍스트, 읽기 전용 데이터, 정적 데이터를 저장하는 용도로 활용할 수 있습니다.
-그리고 [라우터 가드(resolve guard)](#resolve-guard)를 사용해서 _동적_ 데이터를 전달하는 방법은 이 문서의 후반부에 다룹니다.
+이렇게 전달한 데이터 프로퍼티는 라우터를 통해 참조할 수 있으며, 페이지 제목이나 간단한 텍스트, 읽기 전용 데이터, 정적 데이터를 저장하는 용도로 활용할 수 있습니다.
+[라우터 가드(resolve guard)](#resolve-guard)를 사용해서 _동적_ 데이터를 전달하는 방법은 이 문서의 후반부에 다룹니다.
 
 <!--
 The **empty path** in the fourth route represents the default path for the application,
 the place to go when the path in the URL is empty, as it typically is at the start.
 This default route redirects to the route for the `/heroes` URL and, therefore, will display the `HeroesListComponent`.
 -->
-네 번째 라우팅 규칙에 사용된 **빈 경로**는 하위 URL 주소가 없을 떄 사용되는 애플리케이션의 기본 주소이며, 보통 애플리케이션의 시작 주소로 사용합니다.
+네 번째 라우팅 규칙에 사용된 **빈 주소**는 하위 URL 주소가 없을 떄 사용되는 애플리케이션의 기본 주소인데, 보통 애플리케이션의 시작 주소로 사용합니다.
 이 예제에서는 빈 주소로 접속했을 때 `/heroes` URL로 리다이렉트 하며, 이 동작으로 인해 `HeroesListComponent`가 화면에 표시될 것입니다.
 
 <!--
@@ -213,7 +214,7 @@ if the requested URL doesn't match any paths for routes defined earlier in the c
 This is useful for displaying a "404 - Not Found" page or redirecting to another route.
 -->
 마지막 라우팅 규칙에 사용된 `**`는 **와일드카드(wildcard)**입니다.
-이 라우팅 규칙은 사용자가 요청한 URL에 해당하는 규칙이 없을 때 적용되며, 이 방식을 사용하면 "404 - Not Found" 페이지를 표시하거나 다른 주소로 라우팅하는 용도로 활용할 수 있습니다.
+이 라우팅 규칙은 사용자가 요청한 URL에 해당하는 규칙이 없을 때 적용되며, 이 규칙을 사용하면 "404 - Not Found" 페이지를 표시하거나 다른 주소로 라우팅하는 용도로 활용할 수 있습니다.
 
 <!--
 **The order of the routes in the configuration matters** and this is by design. The router uses a **first-match wins**
@@ -222,17 +223,17 @@ In the configuration above, routes with a static path are listed first, followed
 that matches the default route.
 The wildcard route comes last because it matches _every URL_ and should be selected _only_ if no other routes are matched first.
 -->
-Angular 라우터의 **라우팅 규칙은 선언된 순서대로 적용되도록** 설계되었습니다.
-그래서 사용자가 요청한 URL이 라우팅 규칙 여러개와 매칭되더라도 **첫번째 매칭된 항목이 우선**되기 때문에, 일반적인 라우팅 규칙보다 세부적인 라우팅 규칙이 먼저 정의되어야 합니다.
+Angular 라우터는 **라우팅 규칙이 선언된 순서대로 적용되도록** 설계되었습니다.
+그래서 사용자가 요청한 URL이 라우팅 규칙 여러개와 매칭되더라도 **제일 먼저 매칭된 항목이 동작**하기 때문에, 일반적인 라우팅 규칙보다 세부적인 라우팅 규칙이 먼저 정의되어야 합니다.
 이 코드에서 설정한 것을 보면, 고정된 주소로 지정된 URL이 처음 매칭되며, 라우팅 변수를 사용한 라우팅 규칙이 그 다음으로 매칭되고, 빈 주소에 해당하는 라우팅 규칙, 기본 라우팅 규칙이 순서대로 매칭됩니다.
 와일드카드 라우팅 규칙은 _모든 URL_ 에 매칭되기 때문에 이 규칙은 가장 마지막에 정의되어야 합니다.
 
 <!--
 If you need to see what events are happening during the navigation lifecycle, there is the **enableTracing** option as part of the router's default configuration. This outputs each router event that took place during each navigation lifecycle to the browser console. This should only be used for _debugging_ purposes. You set the `enableTracing: true` option in the object passed as the second argument to the `RouterModule.forRoot()` method.
 -->
-네비게이션 라이프싸이클이 실행되는 동안 어떤 이벤트가 발생하는지 확인하려면, 라우터를 설정할 떄 **enableTracing** 옵션을 사용할 수도 있습니다.
+네비게이션 라이프싸이클이 실행되는 동안 어떤 이벤트가 발생하는지 확인하려면, 라우터를 설정할 떄 **enableTracing** 옵션을 사용하면 됩니다.
 이 옵션이 설정되면 각 네비게이션 라이프싸이클이 실행될 때마다 브라우저에 로그가 출력됩니다.
-이 옵션은 _디버깅_ 하는 용도로만 사용해야 하며, `RouterModule.forRoot()` 메소드의 두 번째 인자로 `enableTracing: true` 를 지정하면 됩니다.
+이 옵션은 `RouterModule.forRoot()` 메소드의 두 번째 인자로 `enableTracing: true` 를 지정하면 되며,  _디버깅_ 용도로만 사용하는 것이 좋습니다.
 
 {@a basics-router-outlet}
 
@@ -246,8 +247,8 @@ The `RouterOutlet` is a directive from the router library that is used like a co
 It acts as a placeholder that marks the spot in the template where the router should 
 display the components for that outlet.
 -->
-`RouterOutlet`은 라우터가 제공하는 디렉티브이며, 이 디렉티브는 컴포넌트처럼 사용합니다.
-이 디렉티브는 라우터에 의해 컴포넌트가 화면에 표시될 때 이 컴포넌트가 표시될 위치를 지정하는 용도로 사용합니다.
+`RouterOutlet`은 라우터가 제공하는 디렉티브이며, 일반 컴포넌트처럼 사용합니다.
+이 디렉티브는 라우터에 의해 표시되는 컴포넌트가 화면의 어느 위치에 표시될지 지정하는 용도로 사용합니다.
 
 <!--
 <code-example language="html">
@@ -283,9 +284,9 @@ how do you navigate? The URL could arrive directly from the browser address bar.
 But most of the time you navigate as a result of some user action such as the click of
 an anchor tag.
 -->
-이제 라우터도 설정했고 주소에 연결된 컴포넌트가 어디에 표시되는지도 알았습니다. 그런데 이 주소들을 어떻게 이동할 수 있을까요?
+이제 라우터도 설정했고 주소에 연결된 컴포넌트가 어디에 표시되는지도 알았습니다. 그런데 이 주소로 어떻게 이동할 수 있을까요?
 물론 브라우저 주소 표시줄에 원하는 주소를 바로 입력해서 이동할 수도 있습니다.
-하지만 대부분의 경우는 사용자가 앵커 태그를 클릭하는 것과 같은 사용자 동작에 의해 네비게이션이 이루어지는 것이 더 자연스럽습니다.
+하지만 대부분의 경우는 사용자가 앵커 태그를 클릭하는 것과 같은 사용자 동작에 의해 네비게이션이 이루어집니다.
 
 <!--
 Consider the following template:
@@ -301,7 +302,7 @@ Consider the following template:
 The `RouterLink` directives on the anchor tags give the router control over those elements.
 The navigation paths are fixed, so you can assign a string to the `routerLink` (a "one-time" binding).
 -->
-앵커 태그에 사용된 `RouterLink` 디렉티브는 이 앵커 태그의 동작을 라우터에게 위임합니다.
+앵커 태그에 사용된 `RouterLink` 디렉티브는 이 앵커 태그의 동작을 라우터에게 위임하는 디렉티브입니다.
 그래서 고정된 주소로 이동하는 경우라면 `routerLink`에 문자열을 할당해도 됩니다. (한 번만 바인딩하는 문법입니다.)
 
 <!--
@@ -309,7 +310,7 @@ Had the navigation path been more dynamic, you could have bound to a template ex
 returned an array of route link parameters (the _link parameters array_).
 The router resolves that array into a complete URL.
 -->
-그리고 네비게이션 경로가 동적으로 할당되는 경우라면, 라우터 링크 변수를 템플릿 표현식으로 바인딩할 수도 있습니다.
+네비게이션 경로가 동적으로 할당되는 경우라면, 라우터 링크 변수를 템플릿 표현식으로 바인딩할 수도 있습니다.
 이 때 라우터 링크 변수는 배열로 지정하며, 이 배열은 라우터가 완전한 URL로 변환해서 적용합니다.
 
 
@@ -337,7 +338,7 @@ directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` 
 property that returns such a string. 
 -->
 이 템플릿 표현식의 등호(=) 오른쪽에는 공백으로 구분하는 CSS 클래스를 지정하는데, 이 링크가 활성화되면 해당 클래스가 지정되고 링크가 비활성화되면 해당 클래스가 제거됩니다.
-그래서 `RouterLinkActive` 디렉티브에는 `[routerLinkActive]="'active fluffy'"`와 같은 문자열을 지정하거나 컴포넌트에서 문자열을 반환하는 프로퍼티를 지정할 수 있습니다.
+그래서 `RouterLinkActive` 디렉티브에는 `[routerLinkActive]="'active fluffy'"`와 같은 문자열을 지정하거나 컴포넌트 클래스에서 문자열을 반환하는 프로퍼티나 메소드를 지정할 수 있습니다.
 
 <!--
 Active route links cascade down through each level of the route tree, so parent and child router links can be active at the same time. To override this behavior, you can bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression. By using `{ exact: true }`, a given `RouterLink` will only be active if its URL is an exact match to the current URL.
@@ -362,7 +363,7 @@ application using the `Router` service and the `routerState` property.
 Each `ActivatedRoute` in the `RouterState` provides methods to traverse up and down the route tree
 to get information from parent, child and sibling routes.
 -->
-`RouteState`에서 제공하는 `ActivatedRoute`는 라우트 트리에 따라 구성되며, 부모 라우터와 자식 라우터, 이웃 라우터에 대한 정보도 참조할 수 있습니다.
+`RouteState`에서 제공하는 `ActivatedRoute`는 라우트 트리에 따라 구성되기 때문에, 부모 라우터와 자식 라우터, 이웃 라우터에 대한 정보도 참조할 수 있습니다.
 
 {@a activated-route}
 
@@ -377,7 +378,7 @@ The route path and parameters are available through an injected router service c
 It has a great deal of useful information including:
 -->
 라우팅 주소와 라우팅 인자는 [ActivatedRoute](api/router/ActivatedRoute)라는 라우터 서비스 내부 객체를 사용해서 참조할 수 있습니다.
-이 객체에서는 다음과 같은 프로퍼티를 많이 활용하게 될 것입니다:
+이 객체는 다음 프로퍼티들을 자주 활용합니다:
 
 <table>
   <tr>
@@ -432,7 +433,7 @@ It has a great deal of useful information including:
     <!--
     An `Observable` that contains a [map](api/router/ParamMap) of the required and [optional parameters](#optional-route-parameters) specific to the route. The map supports retrieving single and multiple values from the same parameter.
     -->
-    라우팅 규칙에 정의된 [라우팅 변수](#optional-route-parameters)를 [map](api/router/ParamMap) 타입의 `Observable`로 표현합니다. 맵을 사용하면 라우팅 규칙에 포함된 라우팅 인자를 한 번에 여러개 가져올 수도 있습니다.
+    라우팅 규칙에 정의된 [라우팅 변수](#optional-route-parameters)를 [map](api/router/ParamMap) 타입의 `Observable`로 표현합니다. 맵을 사용하면 라우팅 규칙에 포함된 라우팅 인자를 한 번에 모두 가져올 수도 있습니다.
 
     </td>
   </tr>
@@ -448,7 +449,7 @@ It has a great deal of useful information including:
     The map supports retrieving single and multiple values from the query parameter.
     -->
     라우팅 규칙에서 접근할 수 있는 모든 [쿼리 변수](#query-parameters)를 [map](api/router/ParamMap) 타입의 `Observable`로 표현합니다.
-    맵을 사용하면 라우팅 규칙에 포함된 쿼리 변수를 한 번에 여러개 가져올 수도 있습니다.
+    맵을 사용하면 라우팅 규칙에 포함된 쿼리 변수를 한 번에 모두 가져올 수도 있습니다.
 
     </td>
   </tr>
@@ -504,7 +505,7 @@ It has a great deal of useful information including:
     <!--
     The route's parent `ActivatedRoute` when this route is a [child route](#child-routing-component).
     -->
-    현재 라우팅된 것이 [자식 라우팅 규칙](#child-routing-component)에 해당하면, 이 라우팅 규칙의 부모 `ActivatedRoute`를 표현합니다.
+    현재 라우팅된 것이 [자식 라우팅 규칙](#child-routing-component)이라면, 이 라우팅 규칙의 부모 `ActivatedRoute`를 표현합니다.
 
     </td>
   </tr>
@@ -548,7 +549,7 @@ Two older properties are still available. They are less capable than their repla
 <!--
 **`params`**&mdash;An `Observable` that contains the required and [optional parameters](#optional-route-parameters) specific to the route. Use `paramMap` instead.
 -->
-**`params`**&mdash;라우팅 규칙에 [라우팅 변수](#optional-route-parameters)가 있는 경우에, 이 라우팅 변수의 값을 `Observable`로 표현합니다. 이 프로퍼티는 `paramMap`으로 대체되었습니다.
+**`params`**&mdash;라우팅 규칙에 [라우팅 변수](#optional-route-parameters)가 있는 경우에 이 라우팅 변수의 값을 `Observable`로 표현합니다. 이 프로퍼티는 `paramMap`으로 대체되었습니다.
 
 <!--
 **`queryParams`**&mdash;An `Observable` that contains the [query parameters](#query-parameters) available to all routes.
@@ -746,7 +747,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/ActivationStart) triggered when the Router finishes activating a route.
+      -->
+      라우터가 라우팅 규칙을 활성화한 후에 발생하는 [이벤트](api/router/ActivationStart)입니다.
 
     </td>
   </tr>
@@ -813,7 +817,7 @@ During each navigation, the `Router` emits navigation events through the `Router
 <!--
 These events are logged to the console when the `enableTracing` option is enabled also. For an example of filtering router navigation events, visit the [router section](guide/observables-in-angular#router) of the [Observables in Angular](guide/observables-in-angular) guide.
 -->
-라우팅 규칙을 설정할 때 `enableTracing` 옵션을 활성화하면 이 이벤트들이 발생하는 것을 콘솔로 확인할 수 있습니다. 이 중에서 원하는 네비게이션 이벤트만 확인하려면 [Angular에서 옵저버블 활용하기](guide/observables-in-angular) 문서의 [Router](guide/observables-in-angular#router) 섹션을 참고하세요.
+라우팅 규칙을 설정할 때 `enableTracing` 옵션을 활성화하면 이 이벤트들이 발생하는 것을 콘솔로 확인할 수 있습니다. 원하는 네비게이션 이벤트만 확인하려면 [Angular에서 옵저버블 활용하기](guide/observables-in-angular) 문서의 [Router](guide/observables-in-angular#router) 섹션을 참고하세요.
 
 {@a basics-summary}
 
@@ -827,8 +831,8 @@ The application has a configured router.
 The shell component has a `RouterOutlet` where it can display views produced by the router.
 It has `RouterLink`s that users can click to navigate via the router.
 -->
-애플리케이션은 라우터를 설정해서 사용할 수 있으며, 라우터가 뷰를 표시하는 영역은 컴포넌트에 `RouterOutlet`을 추가해서 지정할 수 있습니다.
-그리고 사용자가 라우터를 통해 네비게이션을 시작하려면 `RouterLink`를 사용하면 됩니다.
+애플리케이션에서 라우터를 활용할 때 뷰를 표시하는 영역은 `RouterOutlet`으로 지정할 수 있습니다.
+그리고 사용자가 링크를 클릭했을 때 네비게이션을 시작하려면 `RouterLink`를 사용하면 됩니다.
 
 <!--
 Here are the key `Router` terms and their meanings:
@@ -932,7 +936,7 @@ Here are the key `Router` terms and their meanings:
       <!--
       The directive (<code>&lt;router-outlet></code>) that marks where the router displays a view.
       -->
-      라우터가 표시하는 뷰 영역의 위치를 지정하는 디렉티브입니다. <code>&lt;router-outlet></code>와 같이 사용합니다.
+      라우터가 표시하는 뷰 영역의 위치를 지정하는 디렉티브입니다. <code>&lt;router-outlet></code>과 같이 사용합니다.
     </td>
 
   </tr>
@@ -949,7 +953,7 @@ Here are the key `Router` terms and their meanings:
       a route. Clicking an element with a <code>routerLink</code> directive
       that is bound to a <i>string</i> or a <i>link parameters array</i> triggers a navigation.
       -->
-      클릭할 수 있는 HTML 엘리먼트를 라우터와 연결하는 디렉티브입니다. <code>routerLink</code>가 사용된 엘리먼트를 클릭하면, 이 디렉티브에 바인딩된 <i>문자열</i>이나 <i>링크 변수 배열</i>을 사용해서 네비게이션을 시작합니다.
+      클릭에 반응하는 HTML 엘리먼트를 라우터와 연결하는 디렉티브입니다. <code>routerLink</code>가 사용된 엘리먼트를 클릭하면, 이 디렉티브에 바인딩된 <i>문자열</i>이나 <i>링크 변수 배열</i>을 사용해서 네비게이션을 시작합니다.
     </td>
 
   </tr>
@@ -1008,7 +1012,7 @@ Here are the key `Router` terms and their meanings:
       <!--
       <b><i>Link parameters array</i></b>
       -->
-      <b><i>링크 변수 배열</i></b>
+      <b><i>링크 변수 배열 (Link parameters array)</i></b>
     </td>
 
     <td>
@@ -1058,7 +1062,7 @@ This guide describes development of a multi-page routed sample application.
 Along the way, it highlights design decisions and describes key features of the router such as:
 -->
 이 문서에서는 라우터로 페이지를 전환하는 애플리케이션을 예제로 만들어 봅니다.
-그리고 이 애플리케이션을 만드는 동안 다음과 같은 내용에 대해 알아볼 것입니다:
+이 애플리케이션을 만드는 동안 다음과 같은 내용에 대해 알아볼 것입니다:
 
 <!--
 * Organizing the application features into modules.
@@ -1081,7 +1085,7 @@ Along the way, it highlights design decisions and describes key features of the 
 * `CanDeactivate` 가드 (저장되지 않은 변경사항을 폐기할지 사용자에게 물어봅니다.)
 * `Resolve` 가드 (라우팅 데이터를 미리 받아옵니다.)
 * 기능모듈 지연로딩하기
-* `CanLoad` 가드 (기능모듈이 로딩되었는지 확인합니다.)
+* `CanLoad` 가드 (기능모듈을 로드할지 확인합니다.)
 
 <!--
 The guide proceeds as a sequence of milestones as if you were building the app step-by-step.
@@ -1089,7 +1093,7 @@ But, it is not a tutorial and it glosses over details of Angular application con
 that are more thoroughly covered elsewhere in the documentation.
 -->
 이 문서는 실제 애플리케이션을 구현하는 것처럼 한 단계씩 순서대로 진행합니다.
-하지만 이 문서에서 설명하는 내용은 이 문서에만 한정된 것이 아니고, 애플리케이션의 기본 구조부터 다른 문서에서 언급하는 Angular의 기능들도 함께 살펴봅니다.
+하지만 이 문서에 해당하는 내용 외에도 애플리케이션의 기본 구조 등 다른 문서에서 언급하는 Angular의 기능들도 함께 살펴봅니다.
 
 <!--
 The full source for the final version of the app can be seen and downloaded from the <live-example></live-example>.
@@ -1105,8 +1109,8 @@ The full source for the final version of the app can be seen and downloaded from
 Imagine an application that helps the _Hero Employment Agency_ run its business.
 Heroes need work and the agency finds crises for them to solve.
 -->
-이 문서에서 만드는 예제 애플리케이션은 _히어로 관리 회사_ 에서 업무용으로 사용한다고 생각해 봅시다.
-히어로는 일자리가 필요하기 때문에 회사에서는 히어로가 해결해야 할 문제를 찾아야 합니다.
+_히어로 관리 회사_ 에서 업무용으로 사용하는 애플리케이션을 만든다고 합시다.
+히어로는 일자리가 필요하기 때문에 회사에서는 히어로가 해결해야 할 위기를 찾아야 합니다.
 
 <!--
 The application has three main feature areas:
@@ -1116,9 +1120,9 @@ The application has three main feature areas:
 1. An *Admin* area to manage the list of crises and heroes.
 -->
 그래서 이 애플리케이션은 3가지 기능을 중심으로 개발합니다:
-1. 히어로에게 할당하는 문제들을 관리하는 *문제 관리 센터* 기능
-1. 회사가 고용하는 히어로를 관리하는 *히어로 목록* 기능
-1. 히어로와 문제를 관리하는 *관리자* 기능
+1. 히어로에게 할당하는 위기를 관리하는 *위기대응센터* 기능
+1. 회사가 고용하는 히어로를 관리하는 *히어로 관리* 기능
+1. 히어로와 위기를 관리하는 *관리자* 기능
 
 <!--
 Try it by clicking on this <live-example title="Hero Employment Agency Live Example">live example link</live-example>.
@@ -1129,7 +1133,7 @@ Try it by clicking on this <live-example title="Hero Employment Agency Live Exam
 Once the app warms up, you'll see a row of navigation buttons
 and the *Heroes* view with its list of heroes.
 -->
-애플리케이션을 실행하고 나면 내비게이션에 사용되는 버튼들을 확인할 수 있으며, 히어로의 목록을 표시하는 뷰가 화면에 표시됩니다.
+애플리케이션을 실행하고 나면 내비게이션에 사용되는 버튼들과 히어로의 목록을 화면에서 확인할 수 있습니다.
 
 <figure>
   <img src='generated/images/guide/router/hero-list.png' alt="Hero List">
@@ -1166,7 +1170,7 @@ Angular app navigation updates the browser history as normal web navigation does
 <!--
 Now click the *Crisis Center* link for a list of ongoing crises.
 -->
-그리고 *재난 관리 센터* 링크를 클릭하면 재난 목록이 화면에 표시됩니다.
+그리고 *위기대응센터* 링크를 클릭하면 위기 목록이 화면에 표시됩니다.
 
 <figure>
   <img src='generated/images/guide/router/crisis-center-list.png' alt="Crisis Center List">
@@ -1177,15 +1181,15 @@ Now click the *Crisis Center* link for a list of ongoing crises.
 Select a crisis and the application takes you to a crisis editing screen.
 The _Crisis Detail_ appears in a child component on the same page, beneath the list.
 -->
-이 화면에서 재난 목록 중 하나를 선택하면 재난 정보를 수정할 수 있는 화면으로 이동합니다.
-이 때 _재난 상세정보_ 화면은 같은 페이지에 자식 컴포넌트로 표시됩니다.
+이 화면에서 위기 목록 중 하나를 선택하면 위기 정보를 수정할 수 있는 화면으로 이동합니다.
+이 때 _위기 상세정보_ 화면은 같은 페이지에 자식 컴포넌트로 표시됩니다.
 
 <!--
 Alter the name of a crisis.
 Notice that the corresponding name in the crisis list does _not_ change.
 -->
-재난의 이름을 수정해 봅시다.
-이 떄 목록에 표시된 재난의 이름이 바로 변경되지는 _않습니다._
+위기의 이름을 수정해 봅시다.
+이 떄 목록에 표시된 위기의 이름은 바로 변경되지 _않습니다._
 
 <figure>
   <img src='generated/images/guide/router/crisis-center-detail.png' alt="Crisis Center Detail">
@@ -1197,15 +1201,15 @@ Unlike *Hero Detail*, which updates as you type,
 *Crisis Detail* changes are temporary until you either save or discard them by pressing the "Save" or "Cancel" buttons.
 Both buttons navigate back to the *Crisis Center* and its list of crises.
 -->
-*히어로 상세정보* 화면에서는 사용자가 입력한 내용이 바로 반영되었지만, *재난 상세정보* 화면에서는 "Save" 버튼을 눌러서 저장하거나 "Cancel" 버튼을 눌러서 수정사항을 반영하지 않는 방식으로 동작합니다.
-두 버튼은 모두 *재난 관리 센터* 화면으로 이동합니다.
+*히어로 상세정보* 화면에서는 사용자가 입력한 내용이 바로 반영되지만, *위기 상세정보* 화면에서는 "Save" 버튼을 눌러서 저장하거나 "Cancel" 버튼을 눌러서 수정사항을 반영하지 않는 방식으로 동작합니다.
+두 버튼은 모두 *위기대응센터* 화면으로 이동합니다.
 
 <!--
 ***Do not click either button yet***.
 Click the browser back button or the "Heroes" link instead.
 -->
 ***하지만 이 버튼은 아직 클릭하지 마세요***.
-지금은 브라우저의 뒤로가기 버튼이나 "Heroes" 링크를 클릭해야 합니다.
+지금은 브라우저의 뒤로가기 버튼이나 "Heroes" 링크를 클릭해 봅시다.
 
 <!--
 Up pops a dialog box.
