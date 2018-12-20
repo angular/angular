@@ -134,9 +134,12 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   encapsulation: ViewEncapsulation;
   viewProviders: Provider[]|null;
   interpolation?: [string, string];
+  changeDetection?: ChangeDetectionStrategy;
 }
 
 export type ViewEncapsulation = number;
+
+export type ChangeDetectionStrategy = number;
 
 export interface R3QueryMetadataFacade {
   propertyName: string;

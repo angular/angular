@@ -61,6 +61,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           animations: metadata.animations,
           viewQueries: extractQueriesMetadata(type, getReflect().propMetadata(type), isViewQuery),
           directives: [],
+          changeDetection: metadata.changeDetection,
           pipes: new Map(),
           encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
           interpolation: metadata.interpolation,
