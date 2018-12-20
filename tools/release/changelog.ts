@@ -25,7 +25,7 @@ export async function prependChangelogFromLatestTag(changelogPath: string, relea
     /* context options */ {title: releaseName},
     /* raw-commits options */ null,
     /* commit parser options */ null,
-    /* writer options */ createDedupeWriterOptions(changelogPath));
+    /* writer options */ createChangelogWriterOptions(changelogPath));
 
   // Stream for reading the existing changelog. This is necessary because we want to
   // actually prepend the new changelog to the existing one.
@@ -57,15 +57,16 @@ export async function promptChangelogReleaseName(): Promise<string> {
 }
 
 /**
- * Creates changelog writer options which ensure that commits are not showing up multiple times.
- * Commits can show up multiple times if a changelog has been generated on a publish branch
- * and has been cherry-picked into "master". In that case, the changelog will already contain
- * commits from master which might be added to the changelog again. This is because usually
- * patch and minor releases are tagged from the publish branches and therefore
- * conventional-changelog tries to build the changelog from last major version to master's
- * HEAD when a new major version is being published from the "master" branch.
+ * Creates changelog writer options which ensure that commits which are duplicated, or for
+ * experimental packages do not showing up multiple times. Commits can show up multiple times
+ * if a changelog has been generated on a publish branch and has been cherry-picked into "master".
+ * In that case, the changelog will already contain cherry-picked commits from master which might
+ * be added to future changelog's on "master" again. This is because usually patch and minor
+ * releases are tagged from the publish branches and therefore conventional-changelog tries to
+ * build the changelog from last major version to master's HEAD when a new major version is being
+ * published from the "master" branch.
  */
-function createDedupeWriterOptions(changelogPath: string) {
+function createChangelogWriterOptions(changelogPath: string) {
   const existingChangelogContent = readFileSync(changelogPath, 'utf8');
 
   return {
@@ -74,8 +75,16 @@ function createDedupeWriterOptions(changelogPath: string) {
     finalizeContext: (context: any) => {
       context.commitGroups = context.commitGroups.filter((group: any) => {
         group.commits = group.commits.filter((commit: any) => {
-          // NOTE: We cannot compare the SHA's because the commits will have a different SHA
-          // if they are being cherry-picked into a different branch.
+
+          // Commits that change things for "cdk-experimental" or "material-experimental" will also
+          // show up in the changelog by default. We don't want to show these in the changelog.
+          if (commit.scope && commit.scope.includes('experimental')) {
+            console.log(yellow(`  ↺   Skipping experimental: "${bold(commit.header)}"`));
+            return false;
+          }
+
+          // Filter out duplicate commits. Note that we cannot compare the SHA because the commits
+          // will have a different SHA if they are being cherry-picked into a different branch.
           if (existingChangelogContent.includes(commit.subject)) {
             console.log(yellow(`  ↺   Skipping duplicate: "${bold(commit.header)}"`));
             return false;
