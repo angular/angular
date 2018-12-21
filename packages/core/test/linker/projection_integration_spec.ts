@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NO_ERRORS_SCHEMA, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy} from '@angular/private/testing';
 
 describe('projection', () => {
   beforeEach(() => TestBed.configureTestingModule({declarations: [MainComp, OtherComp, Simple]}));
@@ -110,6 +110,40 @@ describe('projection', () => {
 
     expect(main.nativeElement).toHaveText('(A, BC)');
   });
+
+  modifiedInIvy(
+      'FW-886: `projectableNodes` passed to a componentFactory should be in the order of declaration')
+      .it('should support passing projectable nodes via factory function', () => {
+
+        @Component({
+          selector: 'multiple-content-tags',
+          template: '(<ng-content SELECT="h1"></ng-content>, <ng-content></ng-content>)',
+        })
+        class MultipleContentTagsComponent {
+        }
+
+        @NgModule({
+          declarations: [MultipleContentTagsComponent],
+          entryComponents: [MultipleContentTagsComponent],
+          schemas: [NO_ERRORS_SCHEMA],
+        })
+        class MyModule {
+        }
+
+        TestBed.configureTestingModule({imports: [MyModule]});
+        const injector: Injector = TestBed.get(Injector);
+
+        const componentFactoryResolver: ComponentFactoryResolver =
+            injector.get(ComponentFactoryResolver);
+        const componentFactory =
+            componentFactoryResolver.resolveComponentFactory(MultipleContentTagsComponent);
+        expect(componentFactory.ngContentSelectors).toEqual(['h1', '*']);
+
+        const nodeOne = getDOM().createTextNode('one');
+        const nodeTwo = getDOM().createTextNode('two');
+        const component = componentFactory.create(injector, [[nodeOne], [nodeTwo]]);
+        expect(component.location.nativeElement).toHaveText('(one, two)');
+      });
 
   it('should redistribute only direct children', () => {
     TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
