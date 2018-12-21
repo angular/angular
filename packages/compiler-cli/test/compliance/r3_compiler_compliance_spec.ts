@@ -1099,10 +1099,10 @@ describe('compiler compliance', () => {
           app: {
             'spec.ts': `
               import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
-  
+
               @Component({selector: 'simple', template: '<div><ng-content></ng-content></div>'})
               export class SimpleComponent {}
-  
+
               @Component({
                 selector: 'complex',
                 template: \`
@@ -1110,10 +1110,10 @@ describe('compiler compliance', () => {
                   <div id="second"><ng-content SELECT="span[title=toSecond]"></ng-content></div>\`
                 })
               export class ComplexComponent { }
-  
+
               @NgModule({declarations: [SimpleComponent, ComplexComponent]})
               export class MyModule {}
-  
+
               @Component({
                 selector: 'my-app',
                 template: '<simple>content</simple> <complex></complex>'
@@ -1128,6 +1128,7 @@ describe('compiler compliance', () => {
             type: SimpleComponent,
             selectors: [["simple"]],
             factory: function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); },
+            ngContentSelectors: _c0,
             consts: 2,
             vars: 0,
             template:  function SimpleComponent_Template(rf, ctx) {
@@ -1151,6 +1152,7 @@ describe('compiler compliance', () => {
             type: ComplexComponent,
             selectors: [["complex"]],
             factory: function ComplexComponent_Factory(t) { return new (t || ComplexComponent)(); },
+            ngContentSelectors: _c4,
             consts: 4,
             vars: 0,
             template:  function ComplexComponent_Template(rf, ctx) {
@@ -1182,7 +1184,7 @@ describe('compiler compliance', () => {
           app: {
             'spec.ts': `
               import {Component, NgModule} from '@angular/core';
-  
+
               @Component({
                 template: \`
                   <div id="second" *ngIf="visible">
@@ -1197,7 +1199,7 @@ describe('compiler compliance', () => {
                 \`,
               })
               class Cmp {}
-  
+
               @NgModule({ declarations: [Cmp] })
               class Module {}
             `
@@ -1251,7 +1253,7 @@ describe('compiler compliance', () => {
           app: {
             'spec.ts': `
               import {Component, NgModule} from '@angular/core';
-  
+
               @Component({
                 template: \`
                   <ng-content select="[id=toMainBefore]"></ng-content>
@@ -1260,7 +1262,7 @@ describe('compiler compliance', () => {
                     <ng-template>
                       <ng-content select="[id=toNestedTemplate]"></ng-content>
                     </ng-template>
-                  </ng-template>                    
+                  </ng-template>
                   <ng-template>
                     '*' selector in a template: <ng-content></ng-content>
                   </ng-template>
@@ -1268,7 +1270,7 @@ describe('compiler compliance', () => {
                 \`,
               })
               class Cmp {}
-  
+
               @NgModule({ declarations: [Cmp] })
               class Module {}
             `
@@ -1279,15 +1281,15 @@ describe('compiler compliance', () => {
           function Cmp_ng_template_ng_template_Template_1(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵprojection(0, 4);
-            } 
+            }
           }
-          function Cmp_ng_template_Template_1(rf, ctx) { 
+          function Cmp_ng_template_Template_1(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵprojection(0, 3);
               $r3$.ɵtemplate(1, Cmp_ng_template_ng_template_Template_1, 1, 0, "ng-template");
-            } 
+            }
           }
-          function Cmp_ng_template_Template_2(rf, ctx) { 
+          function Cmp_ng_template_Template_2(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵtext(0, " '*' selector in a template: ");
               $r3$.ɵprojection(1);
@@ -1303,7 +1305,7 @@ describe('compiler compliance', () => {
               $r3$.ɵtemplate(1, Cmp_ng_template_Template_1, 2, 0, "ng-template");
               $r3$.ɵtemplate(2, Cmp_ng_template_Template_2, 2, 0, "ng-template");
               $r3$.ɵprojection(3, 2);
-            }            
+            }
           }
         `;
 
@@ -1546,6 +1548,7 @@ describe('compiler compliance', () => {
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && ($instance$.someDir = $tmp$.first));
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && ($instance$.someDirList = $tmp$));
             },
+            ngContentSelectors: _c0,
             consts: 2,
             vars: 0,
             template:  function ContentQueryComponent_Template(rf, ctx) {

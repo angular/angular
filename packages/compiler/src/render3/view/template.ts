@@ -111,6 +111,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // Whether the template includes <ng-content> tags.
   private _hasNgContent: boolean = false;
 
+  // All selector slots found in the templates (including '*')
+  // This is used by libraries such as `@angular/upgrade` to find out what
+  // slots are expected in the `projectedNodes` argument of `ComponentRef.create()`.
+  private _ngContentSelectorSlots: string[] = [];
+
   // Selectors found in the <ng-content> tags in the template.
   private _ngContentSelectors: string[] = [];
 
@@ -427,6 +432,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   visitContent(ngContent: t.Content) {
     this._hasNgContent = true;
     const slot = this.allocateDataSlot();
+    this._ngContentSelectorSlots.push(ngContent.selector);
     let selectorIndex = ngContent.selector === DEFAULT_NG_CONTENT_SELECTOR ?
         0 :
         this._ngContentSelectors.push(ngContent.selector) + this._ngContentSelectorsOffset;
@@ -753,6 +759,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(templateName, null));
       if (templateVisitor._hasNgContent) {
         this._hasNgContent = true;
+        this._ngContentSelectorSlots.push(...templateVisitor._ngContentSelectors);
         this._ngContentSelectors.push(...templateVisitor._ngContentSelectors);
       }
     });
@@ -854,6 +861,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   getConstCount() { return this._dataIndex; }
 
   getVarCount() { return this._pureFunctionSlots; }
+
+  getNgContentSelectorSlots(): o.Expression|null {
+    return this._hasNgContent ?
+        this.constantPool.getConstLiteral(asLiteral(this._ngContentSelectorSlots), true) :
+        null;
+  }
 
   private bindingContext() { return `${this._bindingContext++}`; }
 

@@ -190,6 +190,11 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   readonly template: ComponentTemplate<T>;
 
   /**
+   * An array of `ngContent[selector]` values that were found in the template.
+   */
+  readonly ngContentSelectors?: string[];
+
+  /**
    * A set of styles that the component needs to be present for component to render correctly.
    */
   readonly styles: string[];

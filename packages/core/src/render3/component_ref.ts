@@ -119,7 +119,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     super();
     this.componentType = componentDef.type;
     this.selector = componentDef.selectors[0][0] as string;
-    this.ngContentSelectors = [];
+    this.ngContentSelectors = componentDef.ngContentSelectors || [];
   }
 
   create(
