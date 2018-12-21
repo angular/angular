@@ -609,6 +609,9 @@
     "name": "findDirectiveMatches"
   },
   {
+    "name": "findOrPatchDirectiveIntoRegistry"
+  },
+  {
     "name": "findViaComponent"
   },
   {
@@ -1095,7 +1098,7 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderInitialStyles"
+    "name": "renderInitialStylesAndClasses"
   },
   {
     "name": "renderInitialStylingValues"

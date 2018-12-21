@@ -213,7 +213,8 @@ export class StylingBuilder {
     if (this._initialStyleValues.length) {
       attrs.push(o.literal(AttributeMarker.Styles));
       for (let i = 0; i < this._initialStyleValues.length; i += 2) {
-        attrs.push(o.literal(this._initialStyleValues[i]), o.literal(this._initialStyleValues[i + 1]));
+        attrs.push(
+            o.literal(this._initialStyleValues[i]), o.literal(this._initialStyleValues[i + 1]));
       }
     }
   }
@@ -225,8 +226,8 @@ export class StylingBuilder {
    * responsible for registering initial styles (within a directive hostBindings' creation block)
    * to the directive host element.
    */
-  buildDirectiveHostAttrsInstruction(
-      sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool): StylingInstruction|null {
+  buildDirectiveHostAttrsInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool):
+      StylingInstruction|null {
     if (this._hasInitialValues && this._directiveExpr) {
       return {
         sourceSpan,
@@ -449,7 +450,8 @@ function getConstantLiteralFromArray(
   return values.length ? constantPool.getConstLiteral(o.literalArr(values), true) : o.NULL_EXPR;
 }
 
-/** Simple helper function that adds a parameter or does nothing at all depending on the provided predicate and totalExpectedArgs values */
+/** Simple helper function that adds a parameter or does nothing at all depending on the provided
+ * predicate and totalExpectedArgs values */
 function addParam(
     params: o.Expression[], predicate: boolean, value: o.Expression, argNumber: number,
     totalExpectedArgs: number) {
