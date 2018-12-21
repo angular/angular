@@ -163,6 +163,17 @@ export {
 } from './render3/context_discovery';
 
 export {
+  NG_ELEMENT_ID as ɵNG_ELEMENT_ID,
+  NG_COMPONENT_DEF as ɵNG_COMPONENT_DEF,
+  NG_DIRECTIVE_DEF as ɵNG_DIRECTIVE_DEF,
+  NG_INJECTABLE_DEF as ɵNG_INJECTABLE_DEF,
+  NG_INJECTOR_DEF as ɵNG_INJECTOR_DEF,
+  NG_PIPE_DEF as ɵNG_PIPE_DEF,
+  NG_MODULE_DEF as ɵNG_MODULE_DEF,
+  NG_BASE_DEF as ɵNG_BASE_DEF
+} from './render3/fields';
+
+export {
   Player as ɵPlayer,
   PlayerFactory as ɵPlayerFactory,
   PlayState as ɵPlayState,

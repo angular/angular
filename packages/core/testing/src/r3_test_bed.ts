@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, Component, Directive, Injector, NgModule, NgZone, Pipe, PlatformRef, Provider, SchemaMetadata, Type, resolveForwardRef, ɵInjectableDef as InjectableDef, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵresetCompiledComponents as resetCompiledComponents, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, Component, Directive, Injector, NgModule, NgZone, Pipe, PlatformRef, Provider, SchemaMetadata, Type, resolveForwardRef, ɵInjectableDef as InjectableDef, ɵNG_COMPONENT_DEF as NG_COMPONENT_DEF, ɵNG_DIRECTIVE_DEF as NG_DIRECTIVE_DEF, ɵNG_INJECTOR_DEF as NG_INJECTOR_DEF, ɵNG_MODULE_DEF as NG_MODULE_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleDef as NgModuleDef, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵresetCompiledComponents as resetCompiledComponents, ɵstringify as stringify} from '@angular/core';
 
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
@@ -204,6 +204,11 @@ export class TestBedRender3 implements Injector, TestBed {
 
   private _instantiated: boolean = false;
 
+  // Map that keeps initial version of component/directive/pipe defs in case
+  // we compile a Type again, thus overriding respective static fields. This is
+  // required to make sure we restore defs to their initial states between test runs
+  private _initiaNgDefs: Map<Type<any>, [string, PropertyDescriptor|undefined]> = new Map();
+
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
    * angular module. These are common to every test in the suite.
@@ -269,6 +274,12 @@ export class TestBedRender3 implements Injector, TestBed {
       }
     });
     this._activeFixtures = [];
+
+    // restore initial component/directive/pipe defs
+    this._initiaNgDefs.forEach((value: [string, PropertyDescriptor], type: Type<any>) => {
+      Object.defineProperty(type, value[0], value[1]);
+    });
+    this._initiaNgDefs.clear();
   }
 
   configureCompiler(config: {providers?: any[]; useJit?: boolean;}): void {
@@ -422,6 +433,13 @@ export class TestBedRender3 implements Injector, TestBed {
     this._instantiated = true;
   }
 
+  private _storeNgDef(prop: string, type: Type<any>) {
+    if (!this._initiaNgDefs.has(type)) {
+      const currentDef = Object.getOwnPropertyDescriptor(type, prop);
+      this._initiaNgDefs.set(type, [prop, currentDef]);
+    }
+  }
+
   // get overrides for a specific provider (if any)
   private _getProviderOverrides(provider: any) {
     const token = typeof provider === 'object' && provider.hasOwnProperty('provide') ?
@@ -503,6 +521,8 @@ export class TestBedRender3 implements Injector, TestBed {
       throw new Error(`${stringify(moduleType)} has not @NgModule annotation`);
     }
 
+    this._storeNgDef(NG_MODULE_DEF, moduleType);
+    this._storeNgDef(NG_INJECTOR_DEF, moduleType);
     const metadata = this._getMetaWithOverrides(ngModule);
     compileNgModuleDefs(moduleType, metadata);
 
@@ -514,6 +534,7 @@ export class TestBedRender3 implements Injector, TestBed {
     declarations.forEach(declaration => {
       const component = resolvers.component.resolve(declaration);
       if (component) {
+        this._storeNgDef(NG_COMPONENT_DEF, declaration);
         const metadata = this._getMetaWithOverrides(component, declaration);
         compileComponent(declaration, metadata);
         compiledComponents.push(declaration);
@@ -522,6 +543,7 @@ export class TestBedRender3 implements Injector, TestBed {
 
       const directive = resolvers.directive.resolve(declaration);
       if (directive) {
+        this._storeNgDef(NG_DIRECTIVE_DEF, declaration);
         const metadata = this._getMetaWithOverrides(directive);
         compileDirective(declaration, metadata);
         return;
@@ -529,6 +551,7 @@ export class TestBedRender3 implements Injector, TestBed {
 
       const pipe = resolvers.pipe.resolve(declaration);
       if (pipe) {
+        this._storeNgDef(NG_PIPE_DEF, declaration);
         compilePipe(declaration, pipe);
         return;
       }

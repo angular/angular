@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Inject, InjectionToken, NgModule, Optional} from '@angular/core';
+import {Component, Directive, Inject, InjectionToken, NgModule, Optional, Pipe} from '@angular/core';
 import {TestBed, getTestBed} from '@angular/core/testing/src/test_bed';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {onlyInIvy} from '@angular/private/testing';
 
 const NAME = new InjectionToken<string>('name');
 
@@ -172,4 +173,44 @@ describe('TestBed', () => {
     hello.detectChanges();
     expect(hello.nativeElement).toHaveText('Hello injected World !');
   });
+
+  onlyInIvy('patched ng defs should be removed after resetting TestingModule')
+      .it('make sure we restore ng defs to their initial states', () => {
+        @Pipe({name: 'somePipe', pure: true})
+        class SomePipe {
+          transform(value: string): string { return `transformed ${value}`; }
+        }
+
+        @Directive({selector: 'someDirective'})
+        class SomeDirective {
+          someProp = 'hello';
+        }
+
+        @Component({selector: 'comp', template: 'someText'})
+        class SomeComponent {
+        }
+
+        @NgModule({declarations: [SomeComponent]})
+        class SomeModule {
+        }
+
+        TestBed.configureTestingModule({imports: [SomeModule]});
+
+        // adding Pipe and Directive via metadata override
+        TestBed.overrideModule(
+            SomeModule, {set: {declarations: [SomeComponent, SomePipe, SomeDirective]}});
+        TestBed.overrideComponent(
+            SomeComponent, {set: {template: `<span someDirective>{{'hello' | somePipe}}</span>`}});
+        TestBed.createComponent(SomeComponent);
+
+        const defBeforeReset = (SomeComponent as any).ngComponentDef;
+        expect(defBeforeReset.pipeDefs().length).toEqual(1);
+        expect(defBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
+
+        TestBed.resetTestingModule();
+
+        const defAfterReset = (SomeComponent as any).ngComponentDef;
+        expect(defAfterReset.pipeDefs().length).toEqual(0);
+        expect(defAfterReset.directiveDefs().length).toEqual(1);  // component
+      });
 });
