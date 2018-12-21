@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bind, defineComponent, defineDirective, markDirty, reference, resolveBody, textBinding} from '../../src/render3/index';
+import {bind, defineComponent, defineDirective, markDirty, reference, resolveBody, resolveDocument, textBinding} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, getCurrentView, listener, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {GlobalTargetResolver} from '../../src/render3/interfaces/renderer';
@@ -456,9 +456,6 @@ describe('event listeners', () => {
       /* @HostListener('click') */
       onClick() { events.push('click!'); }
 
-      /* @HostListener('body:click') */
-      onBodyClick() { events.push('body click!'); }
-
       static ngComponentDef = defineComponent({
         type: MyComp,
         selectors: [['comp']],
@@ -474,6 +471,47 @@ describe('event listeners', () => {
             rf: RenderFlags, ctx: any, elIndex: number) {
           if (rf & RenderFlags.Create) {
             listener('click', function() { return ctx.onClick(); });
+          }
+        }
+      });
+    }
+
+    const fixture = new ComponentFixture(MyComp);
+    const host = fixture.hostElement;
+
+    host.click();
+    expect(events).toEqual(['click!']);
+
+    host.click();
+    expect(events).toEqual(['click!', 'click!']);
+  });
+
+  it('should support global host listeners on components', () => {
+    let events: string[] = [];
+    class MyComp {
+      /* @HostListener('document:custom') */
+      onDocumentCustomEvent() { events.push('document custom'); }
+
+      /* @HostListener('body:click') */
+      onBodyClick() { events.push('body click'); }
+
+      static ngComponentDef = defineComponent({
+        type: MyComp,
+        selectors: [['comp']],
+        consts: 1,
+        vars: 0,
+        template: function CompTemplate(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            text(0, 'Some text');
+          }
+        },
+        factory: () => { return new MyComp(); },
+        hostBindings: function HostListenerDir_HostBindings(
+            rf: RenderFlags, ctx: any, elIndex: number) {
+          if (rf & RenderFlags.Create) {
+            listener('custom', function() {
+              return ctx.onDocumentCustomEvent();
+            }, false, resolveDocument as GlobalTargetResolver);
             listener('click', function() {
               return ctx.onBodyClick();
             }, false, resolveBody as GlobalTargetResolver);
@@ -483,17 +521,13 @@ describe('event listeners', () => {
     }
 
     const fixture = new ComponentFixture(MyComp);
-    const host = fixture.hostElement;
-    const body = host.ownerDocument !.body;
+    const doc = fixture.hostElement.ownerDocument !;
 
-    host.click();
-    expect(events).toEqual(['click!']);
+    doc.dispatchEvent(new CustomEvent('custom'));
+    expect(events).toEqual(['document custom']);
 
-    body.click();
-    expect(events).toEqual(['click!', 'body click!']);
-
-    host.click();
-    expect(events).toEqual(['click!', 'body click!', 'click!']);
+    doc.body.click();
+    expect(events).toEqual(['document custom', 'body click']);
   });
 
   it('should support host listeners on directives', () => {
@@ -539,6 +573,49 @@ describe('event listeners', () => {
 
     button.click();
     expect(events).toEqual(['click!', 'body click!', 'click!']);
+  });
+
+  it('should support global host listeners on directives', () => {
+    let events: string[] = [];
+
+    class HostListenerDir {
+      /* @HostListener('document:custom') */
+      onDocumentCustomEvent() { events.push('document custom'); }
+
+      /* @HostListener('body:click') */
+      onBodyClick() { events.push('body click'); }
+
+      static ngDirectiveDef = defineDirective({
+        type: HostListenerDir,
+        selectors: [['', 'hostListenerDir', '']],
+        factory: function HostListenerDir_Factory() { return new HostListenerDir(); },
+        hostBindings: function HostListenerDir_HostBindings(
+            rf: RenderFlags, ctx: any, elIndex: number) {
+          if (rf & RenderFlags.Create) {
+            listener('custom', function() {
+              return ctx.onDocumentCustomEvent();
+            }, false, resolveDocument as GlobalTargetResolver);
+            listener('click', function() {
+              return ctx.onBodyClick();
+            }, false, resolveBody as GlobalTargetResolver);
+          }
+        }
+      });
+    }
+
+    const fixture = new TemplateFixture(() => {
+      elementStart(0, 'button', ['hostListenerDir', '']);
+      text(1, 'Click');
+      elementEnd();
+    }, () => {}, 2, 0, [HostListenerDir]);
+
+    const doc = fixture.hostElement.ownerDocument !;
+
+    doc.dispatchEvent(new CustomEvent('custom'));
+    expect(events).toEqual(['document custom']);
+
+    doc.body.click();
+    expect(events).toEqual(['document custom', 'body click']);
   });
 
   it('should support listeners with specified set of args', () => {
