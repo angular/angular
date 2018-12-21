@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '../../core';
+import {ViewEncapsulation, SimpleChanges} from '../../core';
 import {Type} from '../../type';
 import {CssSelectorList} from './projection';
 
@@ -150,6 +150,7 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   /* The following are lifecycle hooks for this component */
   onInit: (() => void)|null;
   doCheck: (() => void)|null;
+  onChanges: ((changes: SimpleChanges) => void)|null;
   afterContentInit: (() => void)|null;
   afterContentChecked: (() => void)|null;
   afterViewInit: (() => void)|null;

@@ -257,7 +257,10 @@ function findViaDirective(lView: LView, directiveInstance: {}): number {
     const directiveIndexStart = tNode.directiveStart;
     const directiveIndexEnd = tNode.directiveEnd;
     for (let i = directiveIndexStart; i < directiveIndexEnd; i++) {
-      if (lView[i] === directiveInstance) {
+      const record = lView[i];
+      // If the record is an Array, that's because it has implemented onChanges, and
+      // we're storing a SimpleChanges object next to it like `[instance, SimpleChanges|null]`.
+      if (record === directiveInstance || (Array.isArray(record) && record[0] === directiveInstance)) {
         return tNode.index;
       }
     }

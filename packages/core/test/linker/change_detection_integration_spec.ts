@@ -775,7 +775,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
       describe('ngOnInit', () => {
         it('should be called after ngOnChanges', fakeAsync(() => {
-             const ctx = createCompFixture('<div testDirective="dir"></div>');
+             const ctx = createCompFixture('<div testDirective="dir" [a]="\'test\'" [b]="\'test\'"></div>');
              expect(directiveLog.filter(['ngOnInit', 'ngOnChanges'])).toEqual([]);
 
              ctx.detectChanges(false);

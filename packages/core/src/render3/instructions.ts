@@ -21,7 +21,7 @@ import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from 
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
 import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreateNodeInjectorForNode, injectAttributeImpl} from './di';
 import {throwMultipleComponentError} from './errors';
-import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
+import {executeHooks, setupHooksDirectiveStart, setupHooksDirectiveEnd, executeInitHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from './interfaces/injector';
@@ -40,7 +40,8 @@ import {getInitialClassNameValue, initializeStaticContext as initializeStaticSty
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
-import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
+import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readPatchedLView, stringify, isOnChangesDirectiveWrapper, OnChangesDirectiveWrapper, recordChange} from './util';
+
 
 
 
@@ -118,9 +119,12 @@ export function setHostBindings(tView: TView, viewData: LView): void {
         // If it's not a number, it's a host binding function that needs to be executed.
         if (instruction !== null) {
           viewData[BINDING_INDEX] = bindingRootIndex;
-          instruction(
-              RenderFlags.Update, readElementValue(viewData[currentDirectiveIndex]),
-              currentElementIndex);
+
+          const record = viewData[currentDirectiveIndex];
+
+          const instance = isOnChangesDirectiveWrapper(record) ? record.instance : record;
+
+          instruction(RenderFlags.Update, instance, currentElementIndex);
         }
         currentDirectiveIndex++;
       }
@@ -520,7 +524,7 @@ export function elementContainerEnd(): void {
     lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TElementContainerNode);
   }
 
-  queueLifecycleHooks(tView, previousOrParentTNode);
+  setupHooksDirectiveEnd(tView, previousOrParentTNode);
 }
 
 /**
@@ -649,10 +653,18 @@ function saveResolvedLocalsInData(
     let localIndex = tNode.index + 1;
     for (let i = 0; i < localNames.length; i += 2) {
       const index = localNames[i + 1] as number;
-      const value = index === -1 ?
-          localRefExtractor(
-              tNode as TElementNode | TContainerNode | TElementContainerNode, viewData) :
-          viewData[index];
+      let value: any;
+      if (index === -1) {
+        value = localRefExtractor(
+          tNode as TElementNode | TContainerNode | TElementContainerNode, viewData)
+      } else {
+        value = viewData[index];
+        // The stored value may be a component or directive with onChanges,
+        // which means it will be stored in an array next to a SimpleChanges ref
+        if (Array.isArray(value) && value[0].ngOnChanges) {
+          value = value[0];
+        }
+      }
       viewData[localIndex++] = value;
     }
   }
@@ -717,6 +729,7 @@ export function createTView(
     expandoStartIndex: initialViewLength,
     expandoInstructions: null,
     firstTemplatePass: true,
+    changesHooks: null,
     initHooks: null,
     checkHooks: null,
     contentHooks: null,
@@ -872,7 +885,9 @@ export function listener(
       const lCleanup = getCleanup(lView);
       for (let i = 0; i < propsLength; i += 2) {
         ngDevMode && assertDataInRange(lView, props[i] as number);
-        const subscription = lView[props[i] as number][props[i + 1]].subscribe(listenerFn);
+        const record = lView[props[i] as number];
+        const inst = isOnChangesDirectiveWrapper(record) ? record.instance : record;
+        const subscription = inst[props[i + 1]].subscribe(listenerFn);
         const idx = lCleanup.length;
         lCleanup.push(listenerFn, subscription);
         tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
@@ -930,7 +945,7 @@ export function elementEnd(): void {
     lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TElementNode);
   }
 
-  queueLifecycleHooks(getLView()[TVIEW], previousOrParentTNode);
+  setupHooksDirectiveEnd(getLView()[TVIEW], previousOrParentTNode);
   decreaseElementDepthCount();
 
   // this is fired at the end of elementEnd because ALL of the stylingBindings code
@@ -998,7 +1013,7 @@ export function elementProperty<T>(
   let dataValue: PropertyAliasValue|undefined;
   if (!nativeOnly && (inputData = initializeTNodeInputs(tNode)) &&
       (dataValue = inputData[propName])) {
-    setInputsForProperty(lView, dataValue, value);
+    setInputsForProperty(lView, inputData, propName, value);
     if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
     if (ngDevMode) {
       if (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container) {
@@ -1071,10 +1086,21 @@ export function createTNode(
  * Given a list of directive indices and minified input names, sets the
  * input properties on the corresponding directives.
  */
-function setInputsForProperty(lView: LView, inputs: PropertyAliasValue, value: any): void {
+function setInputsForProperty(lView: LView, inputData: PropertyAliases, publicName: string, value: any): void {
+  const inputs = inputData[publicName];
   for (let i = 0; i < inputs.length; i += 2) {
-    ngDevMode && assertDataInRange(lView, inputs[i] as number);
-    lView[inputs[i] as number][inputs[i + 1]] = value;
+    const directiveIndex = inputs[i] as number;
+    const privateName = inputs[i + 1] as string;
+    ngDevMode && assertDataInRange(lView, directiveIndex);
+
+    const record = lView[inputs[i] as number];
+    let instance = record;
+    if (isOnChangesDirectiveWrapper(record)) {
+      debugger;
+      instance = record.instance;
+      recordChange(record, publicName, value);
+    }
+    instance[privateName] = value;
   }
 }
 
@@ -1440,7 +1466,7 @@ function resolveDirectives(
 
       // Init hooks are queued now so ngOnInit is called in host components before
       // any projected components.
-      queueInitHooks(directiveDefIdx, def.onInit, def.doCheck, tView);
+      setupHooksDirectiveStart(directiveDefIdx, def, tView);
     }
   }
   if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
@@ -1458,11 +1484,21 @@ function instantiateAllDirectives(tView: TView, lView: LView, tNode: TNode) {
   }
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
+
     if (isComponentDef(def)) {
       addComponentLogic(lView, tNode, def as ComponentDef<any>);
     }
+
     const directive = getNodeInjectable(tView.data, lView !, i, tNode as TElementNode);
+
+    // If we have onChanges, we'll need to wrap it so that we can track changes
+    if (def.onChanges) {
+      const inst = lView[i];
+      lView[i] = new OnChangesDirectiveWrapper(inst, def);
+    }
+
     postProcessDirective(lView, directive, def, i);
+
   }
 }
 
@@ -1473,11 +1509,12 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
   const firstTemplatePass = getFirstTemplatePass();
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
-    const directive = viewData[i];
+    const record = viewData[i];
+    const instance = isOnChangesDirectiveWrapper(record) ? record.instance : record;
     if (def.hostBindings) {
       const previousExpandoLength = expando.length;
       setCurrentDirectiveDef(def);
-      def.hostBindings !(RenderFlags.Create, directive, tNode.index - HEADER_OFFSET);
+      def.hostBindings !(RenderFlags.Create, instance, tNode.index - HEADER_OFFSET);
       setCurrentDirectiveDef(null);
       // `hostBindings` function may or may not contain `allocHostVars` call
       // (e.g. it may not if it only contains host listeners), so we need to check whether
@@ -1535,7 +1572,7 @@ function postProcessDirective<T>(
   postProcessBaseDirective(viewData, previousOrParentTNode, directive, def);
   ngDevMode && assertDefined(previousOrParentTNode, 'previousOrParentTNode');
   if (previousOrParentTNode && previousOrParentTNode.attrs) {
-    setInputsFromAttrs(directiveDefIdx, directive, def.inputs, previousOrParentTNode);
+    setInputsFromAttrs(viewData, directiveDefIdx, def.inputs, previousOrParentTNode);
   }
 
   if (def.contentQueries) {
@@ -1736,7 +1773,9 @@ function addComponentLogic<T>(
  * @param tNode The static data for this node
  */
 function setInputsFromAttrs<T>(
-    directiveIndex: number, instance: T, inputs: {[P in keyof T]: string;}, tNode: TNode): void {
+  lView: LView,
+  directiveIndex: number,
+  inputs: {[P in keyof T]: string;}, tNode: TNode): void {
   let initialInputData = tNode.initialInputs as InitialInputData | undefined;
   if (initialInputData === undefined || directiveIndex >= initialInputData.length) {
     initialInputData = generateInitialInputs(directiveIndex, inputs, tNode);
@@ -1744,8 +1783,18 @@ function setInputsFromAttrs<T>(
 
   const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
   if (initialInputs) {
-    for (let i = 0; i < initialInputs.length; i += 2) {
-      (instance as any)[initialInputs[i]] = initialInputs[i + 1];
+    const record = lView[directiveIndex];
+    const hasOnChanges = isOnChangesDirectiveWrapper(record);
+    const instance = hasOnChanges ? record.instance : record;
+
+    for (let i = 0; i < initialInputs.length; i += 3) {
+      const privateName = initialInputs[i];
+      const value = initialInputs[i + 2]
+      if (hasOnChanges) {
+        const publicName = initialInputs[i + 1];
+        recordChange(record, publicName, value);
+      }
+      instance[privateName] = value;
     }
   }
 }
@@ -1786,7 +1835,7 @@ function generateInitialInputs(
     if (minifiedInputName !== undefined) {
       const inputsToStore: InitialInputs =
           initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);
-      inputsToStore.push(minifiedInputName, attrValue as string);
+      inputsToStore.push(minifiedInputName, attrName, attrValue as string);
     }
 
     i += 2;
@@ -1863,7 +1912,7 @@ export function template(
   if (currentQueries) {
     lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TContainerNode);
   }
-  queueLifecycleHooks(tView, tNode);
+  setupHooksDirectiveEnd(tView, tNode);
   setIsParent(false);
 }
 

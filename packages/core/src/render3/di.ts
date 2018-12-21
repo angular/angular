@@ -21,7 +21,7 @@ import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TN
 import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LView, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
-import {getHostTElementNode, getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, isComponentDef, stringify} from './util';
+import {getHostTElementNode, getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, isComponentDef, stringify, isOnChangesDirectiveWrapper} from './util';
 
 
 /**
@@ -482,6 +482,7 @@ export function locateDirectiveOrProvider<T>(
 export function getNodeInjectable(
     tData: TData, lData: LView, index: number, tNode: TElementNode): any {
   let value = lData[index];
+
   if (isFactory(value)) {
     const factory: NodeInjectorFactory = value;
     if (factory.resolving) {
@@ -504,6 +505,10 @@ export function getNodeInjectable(
       factory.resolving = false;
       setTNodeAndViewData(savePreviousOrParentTNode, saveLView);
     }
+  }
+
+  if (isOnChangesDirectiveWrapper(value)) {
+    value = value.instance;
   }
   return value;
 }
