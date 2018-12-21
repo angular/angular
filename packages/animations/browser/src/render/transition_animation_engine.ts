@@ -1359,9 +1359,13 @@ function isTriggerEventValid(eventName: string): boolean {
 }
 
 function cloakElement(element: any, value?: string) {
-  const oldValue = element.style.display;
-  element.style.display = value != null ? value : 'none';
-  return oldValue;
+  if ( typeof element.style !== 'undefined' ) {
+    const oldValue = element.style.display;
+    element.style.display = value != null ? value : 'none';
+    return oldValue;
+  }
+  
+  return 'none';
 }
 
 function cloakAndComputeStyles(
