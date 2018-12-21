@@ -56,3 +56,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":radio.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

@@ -53,3 +53,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":icon.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

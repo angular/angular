@@ -49,3 +49,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":progress-spinner.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

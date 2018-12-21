@@ -51,7 +51,8 @@ package_docs_content(
     "//src/lib:overviews": "overviews/material",
     "//src/cdk:overviews": "overviews/cdk",
 
-    # TODO(devversion): we need to also package the API html files here
+    # Package the API docs for the Material and CDK package into the docs-content
+    "//src:api-docs": "api-docs",
   }
 )
 

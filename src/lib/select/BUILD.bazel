@@ -74,3 +74,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":select.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

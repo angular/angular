@@ -70,3 +70,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":tooltip.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

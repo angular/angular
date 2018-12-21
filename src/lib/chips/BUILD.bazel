@@ -69,3 +69,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":chips.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

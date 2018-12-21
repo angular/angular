@@ -46,3 +46,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":divider.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

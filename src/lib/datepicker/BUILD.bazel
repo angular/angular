@@ -94,3 +94,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":datepicker.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

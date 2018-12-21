@@ -64,3 +64,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":bottom-sheet.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

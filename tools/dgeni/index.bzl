@@ -7,7 +7,8 @@ def _dgeni_api_docs(ctx):
   args = ctx.actions.args()
   expected_outputs = [];
 
-  output_directory = ctx.actions.declare_directory(ctx.attr.name)
+  output_dir_name = ctx.attr.name;
+  output_dir_path = "%s/%s/%s" % (ctx.bin_dir.path, ctx.label.package, output_dir_name)
 
   # Do nothing if there are no input files. Bazel will throw if we schedule an action
   # that returns no outputs.
@@ -26,13 +27,29 @@ def _dgeni_api_docs(ctx):
 
   # Pass the path to the output directory. This will be used to instruct Dgeni where the docs
   # output should be written to. (e.g. bazel-out/bin/src/docs-content)
-  args.add(output_directory.path)
+  args.add(output_dir_path)
 
   # Pass each specified entry point and it's corresponding entry points to Dgeni. This will then
   # be used to resolve the files that need to be parsed by Dgeni.
   for package_name, entry_points in ctx.attr.entry_points.items():
     args.add(package_name)
     args.add_joined(entry_points, join_with = ",")
+
+    for entry_point in entry_points:
+      expected_outputs += [
+        # Declare the output for the current entry-point. The output file will always follow the
+        # same format: "{output_folder}/{package_name}-{entry_point_name}.html"
+        # (e.g. "api-docs/material-slider.html")
+        ctx.actions.declare_file("%s/%s-%s.html" % (output_dir_name, package_name, entry_point))
+      ]
+
+    # Small workaround that ensures that the "ripple" API doc is properly exposed as an output
+    # of the packaging rule. Technically Dgeni should not output the "ripple" directory as
+    # it's own entry-point. TODO(devversion): Support sub API docs for entry-points
+    if package_name == "material":
+      expected_outputs += [
+        ctx.actions.declare_file("%s/%s-%s.html" % (output_dir_name, package_name, "ripple"))
+      ]
 
   # Run the Dgeni bazel executable which builds the documentation output based on the
   # configured rule attributes.
@@ -41,13 +58,11 @@ def _dgeni_api_docs(ctx):
     # templates are available in the sandbox execution and can be read by Dgeni.
     inputs = input_files + ctx.files._dgeni_templates,
     executable = ctx.executable._dgeni_bin,
-    outputs = [output_directory],
+    outputs = expected_outputs,
     arguments = [args],
   )
 
-  # TODO(devversion): We can construct a list of output files that will be generated. This would
-  # improve hermeticity and Bazel's caching mechanism for this rule.
-  return DefaultInfo(files = depset([output_directory]))
+  return DefaultInfo(files = depset(expected_outputs))
 
 """
   Rule definition for the "dgeni_api_docs" rule that can generate API documentation

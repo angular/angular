@@ -45,3 +45,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":badge.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

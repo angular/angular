@@ -54,3 +54,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":paginator.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

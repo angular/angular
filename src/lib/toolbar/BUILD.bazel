@@ -51,6 +51,11 @@ markdown_to_html(
   srcs = [":toolbar.md"],
 )
 
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)
+
 
 
 

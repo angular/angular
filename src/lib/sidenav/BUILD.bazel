@@ -66,3 +66,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":sidenav.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

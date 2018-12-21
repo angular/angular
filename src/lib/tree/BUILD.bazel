@@ -50,3 +50,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":tree.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

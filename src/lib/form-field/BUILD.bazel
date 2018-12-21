@@ -89,3 +89,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":form-field.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

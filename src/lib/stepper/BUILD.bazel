@@ -75,3 +75,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":stepper.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

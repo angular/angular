@@ -68,3 +68,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":menu.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

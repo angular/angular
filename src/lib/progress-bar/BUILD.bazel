@@ -54,3 +54,8 @@ markdown_to_html(
   name = "overview",
   srcs = [":progress-bar.md"],
 )
+
+filegroup(
+  name = "source-files",
+  srcs = glob(["**/*.ts"]),
+)

@@ -1,8 +1,12 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//:packages.bzl", "CDK_PACKAGES")
+load("//:packages.bzl", "CDK_PACKAGES", "MATERIAL_PACKAGES")
 load("//tools:defaults.bzl", "ts_library")
 load("//tools/dgeni:index.bzl", "dgeni_api_docs")
+
+# List that contains all source files that need to be processed by Dgeni.
+apiSourceFiles = ["//src/cdk/%s:source-files" % name for name in CDK_PACKAGES] + [
+  "//src/lib/%s:source-files" % name for name in MATERIAL_PACKAGES]
 
 exports_files([
   "bazel-tsconfig-build.json",
@@ -17,7 +21,7 @@ ts_library(
 
 dgeni_api_docs(
   name = "api-docs",
-  srcs = ["//src/cdk/%s:source-files" % name for name in CDK_PACKAGES] + [
+  srcs = apiSourceFiles + [
     # Add all Angular packages to the sources because some Material exports use
     # Angular exports and these should not cause any warnings when Dgeni uses the
     # type checker to parse our TypeScript sources.
@@ -25,5 +29,6 @@ dgeni_api_docs(
   ],
   entry_points = {
     "cdk": CDK_PACKAGES,
+    "material": MATERIAL_PACKAGES,
   },
 )
