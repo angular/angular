@@ -617,15 +617,15 @@ class HiddenModule {
            });
          }));
 
-      fixmeIvy('unknown').it(
-          'should handle false values on attributes', async(() => {
-            renderModule(FalseAttributesModule, {document: doc}).then(output => {
-              expect(output).toBe(
-                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                  '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>');
-              called = true;
-            });
-          }));
+      fixmeIvy('FW-887: JIT: compilation of NgModule')
+          .it('should handle false values on attributes', async(() => {
+                renderModule(FalseAttributesModule, {document: doc}).then(output => {
+                  expect(output).toBe(
+                      '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                      '<my-child ng-reflect-attr="false">Works!</my-child></app></body></html>');
+                  called = true;
+                });
+              }));
 
       it('should handle element property "name"', async(() => {
            renderModule(NameModule, {document: doc}).then(output => {
