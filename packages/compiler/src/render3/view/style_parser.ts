@@ -28,7 +28,7 @@ const enum Char {
  */
 export function parse(value: string): string[] {
   // we use a string array here instead of a string map
-  // because a string-map is not gauranteed to retain the
+  // because a string-map is not guaranteed to retain the
   // order of the entries whereas a string array can be
   // construted in a [key, value, key, value] format.
   const styles: string[] = [];

@@ -1655,7 +1655,7 @@ describe('render3 integration test', () => {
       it('should delegate initial classes to a [class] input binding if present on a directive on the same element',
          () => {
            /**
-            * <my-comp class="apple orange banana" DirWithClass></my-comp>
+            * <div class="apple orange banana" DirWithClass></div>
             */
            const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
@@ -1717,8 +1717,9 @@ describe('render3 integration test', () => {
            }
 
            /**
-            * <my-comp DirWithInitialStyling class="big" style="color:black;
-            * font-size:200px"></my-comp>
+            * <div DirWithInitialStyling
+            *   class="big"
+            *   style="color:black; * font-size:200px"></div>
            */
            const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
@@ -1774,8 +1775,8 @@ describe('render3 integration test', () => {
            }
 
            /**
-            * <my-comp DirWithInitialStyling class="abc" style="width:100px;
-            * height:200px"></my-comp>
+            * <div DirWithInitialStyling class="abc" style="width:100px;
+            * height:200px"></div>
            */
            const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {

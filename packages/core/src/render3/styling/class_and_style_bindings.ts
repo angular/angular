@@ -411,9 +411,13 @@ function findOrPatchDirectiveIntoRegistry(
     directiveIndex = directiveRefs.length / DirectiveRegistryValuesIndex.Size;
     directiveRefs.push(directiveRef, nextOffsetInsertionIndex, false, styleSanitizer || null);
   } else {
-    if (directiveRefs[detectedIndex + DirectiveRegistryValuesIndex.SinglePropValuesIndexOffset] ! >=
-        0)
+    const singlePropStartPosition =
+        detectedIndex + DirectiveRegistryValuesIndex.SinglePropValuesIndexOffset;
+    if (directiveRefs[singlePropStartPosition] ! >= 0) {
+      // the directive has already been patched into the context
       return -1;
+    }
+
     directiveIndex = detectedIndex / DirectiveRegistryValuesIndex.Size;
 
     // because the directive already existed this means that it was set during elementHostAttrs or

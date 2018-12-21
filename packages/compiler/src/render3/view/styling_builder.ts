@@ -69,8 +69,10 @@ interface BoundStylingEntry {
 export class StylingBuilder {
   /** Whether or not there are any static styling values present */
   private _hasInitialValues = false;
-  /** Whether or not there are any styling bindings present (e.g. `[style]`, `[class]`,
-   * `[style.prop]` or `[class.name]`) */
+  /**
+   *  Whether or not there are any styling bindings present
+   *  (i.e. `[style]`, `[class]`, `[style.prop]` or `[class.name]`)
+   */
   private _hasBindings = false;
 
   /** the input for [class] (if it exists) */
@@ -443,15 +445,19 @@ function isStyleSanitizable(prop: string): boolean {
       prop === 'filter' || prop === 'list-style' || prop === 'list-style-image';
 }
 
-/** Simple helper function to either provide the constant literal that will house the value
- *  here or a null value if the provided values are empty. */
+/**
+ * Simple helper function to either provide the constant literal that will house the value
+ * here or a null value if the provided values are empty.
+ */
 function getConstantLiteralFromArray(
     constantPool: ConstantPool, values: o.Expression[]): o.Expression {
   return values.length ? constantPool.getConstLiteral(o.literalArr(values), true) : o.NULL_EXPR;
 }
 
-/** Simple helper function that adds a parameter or does nothing at all depending on the provided
- * predicate and totalExpectedArgs values */
+/**
+ * Simple helper function that adds a parameter or does nothing at all depending on the provided
+ * predicate and totalExpectedArgs values
+ */
 function addParam(
     params: o.Expression[], predicate: boolean, value: o.Expression, argNumber: number,
     totalExpectedArgs: number) {
