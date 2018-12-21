@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {Component, ComponentFactoryResolver, Directive, ElementRef, Injector, NO_ERRORS_SCHEMA, NgModule, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -97,6 +97,84 @@ describe('projection', () => {
 
         expect(main.nativeElement).toHaveText('(A, BC)');
       });
+
+  describe('creation via a factory function', () => {
+    it('should support passing projectable nodes', () => {
+
+      @Component({
+        selector: 'multiple-content-tags',
+        template: '(<ng-content SELECT="h1"></ng-content>, <ng-content></ng-content>)',
+      })
+      class MyComponent {
+      }
+
+      @NgModule({
+        declarations: [MyComponent],
+        entryComponents: [MyComponent],
+        schemas: [NO_ERRORS_SCHEMA],
+      })
+      class MyModule {
+      }
+
+      TestBed.configureTestingModule({imports: [MyModule]});
+      const injector: Injector = TestBed.get(Injector);
+      const resolver: ComponentFactoryResolver = injector.get(ComponentFactoryResolver);
+
+      const factory = resolver.resolveComponentFactory(MyComponent);
+      expect(factory.ngContentSelectors).toEqual(['h1', '*']);
+
+      const node1 = getDOM().createTextNode('one');
+      const node2 = getDOM().createTextNode('two');
+      const component = factory.create(injector, [[node1], [node2]]);
+      expect(component.location.nativeElement).toHaveText('(one, two)');
+    });
+
+    fixmeIvy('FW-895: ivy parses templates in a different order to view engine')
+        .it('should support passing projectable nodes, when there are ng-template wrapped ng-content tags',
+            () => {
+
+              @Component({
+                selector: 'multiple-content-tags',
+                template: '(' +
+                    '1: <ng-content SELECT="h1"></ng-content>, ' +
+                    '2: <ng-content></ng-content>, ' +
+                    '3: <ng-content SELECT="h2"></ng-content>, ' +
+                    '4: <ng-template><ng-content SELECT="h3"></ng-content></ng-template>, ' +
+                    '5: <ng-content></ng-content>' +
+                    ')',
+              })
+              class MyComponent {
+              }
+
+              @NgModule({
+                declarations: [MyComponent],
+                entryComponents: [MyComponent],
+                schemas: [NO_ERRORS_SCHEMA],
+              })
+              class MyModule {
+              }
+
+              TestBed.configureTestingModule({imports: [MyModule]});
+              const injector: Injector = TestBed.get(Injector);
+              const resolver: ComponentFactoryResolver = injector.get(ComponentFactoryResolver);
+
+              const factory = resolver.resolveComponentFactory(MyComponent);
+              expect(factory.ngContentSelectors).toEqual(['h1', '*', 'h2', 'h3', '*']);
+
+              const node1 = getDOM().createTextNode('one');
+              const node2 = getDOM().createTextNode('two');
+              const node3 = getDOM().createTextNode('three');
+              const node4 = getDOM().createTextNode('four');
+              const node5 = getDOM().createTextNode('five');
+              const component =
+                  factory.create(injector, [[node1], [node2], [node3], [node4], [node5]]);
+              // The h1 and h2 will match and render node1 and node3 accordingly
+              // The h3 will match but will not be rendered as it is in a template
+              // The two catch-all blocks will only be rendered in the last ng-content block
+              expect(component.location.nativeElement)
+                  .toHaveText('(1: one, 2: two, 3: three, 4: , 5: five)');
+            });
+  });
 
   it('should redistribute only direct children', () => {
     TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});

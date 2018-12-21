@@ -422,7 +422,12 @@ describe('compiler (unbundled Angular)', () => {
 
                 @Component({
                   selector: 'my-comp',
-                  template: '<ng-content></ng-content><ng-content select="child"></ng-content>'
+                  template:
+                  '<ng-content select="child1"></ng-content>' +
+                  '<ng-content></ng-content>' +
+                  '<ng-template><ng-content select="child2"></ng-content></ng-template>' +
+                  '<ng-content select="child3"></ng-content>' +
+                  '<ng-content select="child1"></ng-content>'
                 })
                 export class MyComp {
                   @Input('aInputName')
@@ -449,8 +454,8 @@ describe('compiler (unbundled Angular)', () => {
       expect(createComponentFactoryCall).toContain(`{aInputProp:'aInputName'}`);
       // outputs
       expect(createComponentFactoryCall).toContain(`{aOutputProp:'aOutputName'}`);
-      // ngContentSelectors
-      expect(createComponentFactoryCall).toContain(`['*','child']`);
+      // ngContentSelectors - note that the catch-all doesn't have to appear at the start
+      expect(createComponentFactoryCall).toContain(`['child1','*','child2','child3','child1']`);
     });
   });
 

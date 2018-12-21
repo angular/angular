@@ -1139,7 +1139,8 @@ describe('ViewContainerRef', () => {
               element(1, 'hr');
               projection(2, 1);
             }
-          }
+          },
+          ngContentSelectors: ['*'],
         });
       }
 
@@ -1180,6 +1181,7 @@ describe('ViewContainerRef', () => {
                 elementEnd();
               }
             },
+            ngContentSelectors: ['*'],
             directives: [EmbeddedComponentWithNgContent]
           });
         }

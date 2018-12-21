@@ -176,9 +176,12 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       if (projectableNodes) {
         let index = 0;
         const tView = rootLView[TVIEW];
-        const projection: TNode[] = tElementNode.projection = [];
+        const projection: typeof tElementNode.projection = tElementNode.projection = [
+          null  // index 0 is always the catch-all ('*') bucket
+        ];
         for (let i = 0; i < projectableNodes.length; i++) {
           const nodeList = projectableNodes[i];
+          const isCatchAll = this.ngContentSelectors[i] === '*';
           let firstTNode: TNode|null = null;
           let previousTNode: TNode|null = null;
           for (let j = 0; j < nodeList.length; j++) {
@@ -197,7 +200,11 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
             previousTNode ? (previousTNode.next = tNode) : (firstTNode = tNode);
             previousTNode = tNode;
           }
-          projection.push(firstTNode !);
+          if (isCatchAll) {
+            projection[0] = firstTNode !;
+          } else {
+            projection.push(firstTNode !);
+          }
         }
       }
 
