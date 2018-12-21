@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SimpleChanges} from '../../change_detection/simple_change';
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {Type} from '../../interface/type';
 import {QueryList} from '../../linker';
 import {Sanitizer} from '../../sanitization/security';
-
 import {LContainer} from './container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList} from './definition';
 import {I18nUpdateOpCodes, TI18n} from './i18n';
@@ -20,7 +20,6 @@ import {PlayerHandler} from './player';
 import {LQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
 import {StylingContext} from './styling';
-
 
 
 // Below are constants for LView indices to help us look up LView members
@@ -533,7 +532,7 @@ export interface RootContext {
  * Even indices: Directive index
  * Odd indices: Hook function
  */
-export type HookData = (number | (() => void))[];
+export type HookData = (number | (() => void) | ((changes: SimpleChanges) => void))[];
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.

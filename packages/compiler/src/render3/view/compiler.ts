@@ -128,7 +128,6 @@ function baseDirectiveFields(
  */
 function addFeatures(
     definitionMap: DefinitionMap, meta: R3DirectiveMetadata | R3ComponentMetadata) {
-  // e.g. `features: [NgOnChangesFeature]`
   const features: o.Expression[] = [];
 
   const providers = meta.providers;
@@ -144,9 +143,7 @@ function addFeatures(
   if (meta.usesInheritance) {
     features.push(o.importExpr(R3.InheritDefinitionFeature));
   }
-  if (meta.lifecycle.usesOnChanges) {
-    features.push(o.importExpr(R3.NgOnChangesFeature));
-  }
+
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
   }
@@ -427,10 +424,6 @@ function directiveMetadataFromGlobalMetadata(
     selector: directive.selector,
     deps: dependenciesFromGlobalMetadata(directive.type, outputCtx, reflector),
     queries: queriesFromGlobalMetadata(directive.queries, outputCtx),
-    lifecycle: {
-      usesOnChanges:
-          directive.type.lifecycleHooks.some(lifecycle => lifecycle == LifecycleHooks.OnChanges),
-    },
     host: {
       attributes: directive.hostAttributes,
       listeners: summary.hostListeners,

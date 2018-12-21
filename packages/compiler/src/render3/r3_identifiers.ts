@@ -185,8 +185,6 @@ export class Identifiers {
   static registerContentQuery:
       o.ExternalReference = {name: 'ɵregisterContentQuery', moduleName: CORE};
 
-  static NgOnChangesFeature: o.ExternalReference = {name: 'ɵNgOnChangesFeature', moduleName: CORE};
-
   static InheritDefinitionFeature:
       o.ExternalReference = {name: 'ɵInheritDefinitionFeature', moduleName: CORE};
 

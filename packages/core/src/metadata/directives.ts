@@ -9,13 +9,12 @@
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
 import {Type} from '../interface/type';
-import {NG_BASE_DEF} from '../render3/fields';
+import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../render3/fields';
 import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '../render3/jit/directive';
 import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
 import {noop} from '../util/noop';
 import {fillProperties} from '../util/property';
-
 import {ViewEncapsulation} from './view';
 
 
@@ -715,21 +714,46 @@ const initializeBaseDef = (target: any): void => {
 };
 
 /**
- * Does the work of creating the `ngBaseDef` property for the @Input and @Output decorators.
- * @param key "inputs" or "outputs"
+ * Returns a function that will update the static definition on a class to have the
+ * appropriate input or output mapping.
+ *
+ * Will also add an {@link ngBaseDef} property to a directive if no `ngDirectiveDef`
+ * or `ngComponentDef` is present. This is done because a class may have {@link InputDecorator}s and
+ * {@link OutputDecorator}s without having a {@link ComponentDecorator} or {@link DirectiveDecorator},
+ * and those inputs and outputs should still be inheritable, we need to add an
+ * `ngBaseDef` property if there are no existing `ngComponentDef` or `ngDirectiveDef`
+ * properties, so that we can track the inputs and outputs for inheritance purposes.
+ *
+ * @param getPropertyToUpdate A function that maps to either the `inputs` property or the
+ * `outputs` property of a definition.
+ * @returns A function that, the called, will add a `ngBaseDef` if no other definition is present,
+ * then update the `inputs` or `outputs` on it, depending on what was selected by `getPropertyToUpdate`
+ *
+ *
+ * @see InputDecorator
+ * @see OutputDecorator
+ * @see InheritenceFeature
  */
-const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any}) => any) =>
-    (target: any, name: string, ...args: any[]) => {
-      const constructor = target.constructor;
+function getOrCreateDefinitionAndUpdateMappingFor(
+    getPropertyToUpdate: (baseDef: {inputs?: any, outputs?: any}) => any) {
+  return function updateIOProp(target: any, name: string, ...args: any[]) {
+    const constructor = target.constructor;
 
-      if (!constructor.hasOwnProperty(NG_BASE_DEF)) {
-        initializeBaseDef(target);
-      }
+    let def: any =
+        constructor[NG_COMPONENT_DEF] || constructor[NG_DIRECTIVE_DEF] || constructor[NG_BASE_DEF];
 
-      const baseDef = constructor.ngBaseDef;
-      const defProp = getProp(baseDef);
+    if (!def) {
+      initializeBaseDef(target);
+      def = constructor[NG_BASE_DEF];
+    }
+
+    const defProp = getPropertyToUpdate(def);
+    // Use of `in` because we *do* want to check the prototype chain here.
+    if (!(name in defProp)) {
       defProp[name] = args[0];
-    };
+    }
+  };
+}
 
 /**
  * @Annotation
@@ -737,7 +761,7 @@ const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any
  */
 export const Input: InputDecorator = makePropDecorator(
     'Input', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
-    updateBaseDefFromIOProp(baseDef => baseDef.inputs || {}));
+    getOrCreateDefinitionAndUpdateMappingFor(def => def.inputs || {}));
 
 /**
  * Type of the Output decorator / constructor function.
@@ -777,7 +801,7 @@ export interface Output { bindingPropertyName?: string; }
  */
 export const Output: OutputDecorator = makePropDecorator(
     'Output', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
-    updateBaseDefFromIOProp(baseDef => baseDef.outputs || {}));
+    getOrCreateDefinitionAndUpdateMappingFor(def => def.outputs || {}));
 
 
 
