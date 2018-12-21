@@ -10,7 +10,7 @@ import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, Compon
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 @Directive({selector: '[simpleDirective]'})
 class SimpleDirective {
@@ -292,19 +292,21 @@ class TestComp {
         expect(el.children[0].injector.get('injectable2')).toEqual('injectable1-injectable2');
       });
 
-      fixmeIvy('unknown').it('should instantiate viewProviders that have dependencies', () => {
-        TestBed.configureTestingModule({declarations: [SimpleComponent]});
-        const viewProviders = [
-          {provide: 'injectable1', useValue: 'injectable1'}, {
-            provide: 'injectable2',
-            useFactory: (val: any) => `${val}-injectable2`,
-            deps: ['injectable1']
-          }
-        ];
-        TestBed.overrideComponent(SimpleComponent, {set: {viewProviders}});
-        const el = createComponent('<div simpleComponent></div>');
-        expect(el.children[0].injector.get('injectable2')).toEqual('injectable1-injectable2');
-      });
+      fixmeIvy(
+          'FW-889: Element injector cannot access the viewProviders of the component to which it belongs')
+          .it('should instantiate viewProviders that have dependencies', () => {
+            TestBed.configureTestingModule({declarations: [SimpleComponent]});
+            const viewProviders = [
+              {provide: 'injectable1', useValue: 'injectable1'}, {
+                provide: 'injectable2',
+                useFactory: (val: any) => `${val}-injectable2`,
+                deps: ['injectable1']
+              }
+            ];
+            TestBed.overrideComponent(SimpleComponent, {set: {viewProviders}});
+            const el = createComponent('<div simpleComponent></div>');
+            expect(el.children[0].injector.get('injectable2')).toEqual('injectable1-injectable2');
+          });
 
       it('should instantiate components that depend on viewProviders providers', () => {
         TestBed.configureTestingModule({declarations: [NeedsServiceComponent]});
@@ -429,7 +431,7 @@ class TestComp {
           expect(ctx.debugElement.injector.get('eager2')).toBe('v2: v1');
         });
 
-        fixmeIvy('unknown').it('should inject providers that were declared after it', () => {
+        it('should inject providers that were declared after it', () => {
           @Component({
             template: '',
             providers: [
@@ -465,52 +467,55 @@ class TestComp {
            expect(comp.componentInstance.a).toBe('aValue');
          });
 
-      fixmeIvy('unknown').it('should support ngOnDestroy for lazy providers', () => {
-        let created = false;
-        let destroyed = false;
+      fixmeIvy('FW-848: ngOnDestroy hooks are not called on providers')
+          .it('should support ngOnDestroy for lazy providers', () => {
+            let created = false;
+            let destroyed = false;
 
-        class SomeInjectable {
-          constructor() { created = true; }
-          ngOnDestroy() { destroyed = true; }
-        }
+            class SomeInjectable {
+              constructor() { created = true; }
+              ngOnDestroy() { destroyed = true; }
+            }
 
-        @Component({providers: [SomeInjectable], template: ''})
-        class SomeComp {
-        }
+            @Component({providers: [SomeInjectable], template: ''})
+            class SomeComp {
+            }
 
-        TestBed.configureTestingModule({declarations: [SomeComp]});
+            TestBed.configureTestingModule({declarations: [SomeComp]});
 
 
-        let compRef = TestBed.createComponent(SomeComp).componentRef;
-        expect(created).toBe(false);
-        expect(destroyed).toBe(false);
+            let compRef = TestBed.createComponent(SomeComp).componentRef;
+            expect(created).toBe(false);
+            expect(destroyed).toBe(false);
 
-        // no error if the provider was not yet created
-        compRef.destroy();
-        expect(created).toBe(false);
-        expect(destroyed).toBe(false);
+            // no error if the provider was not yet created
+            compRef.destroy();
+            expect(created).toBe(false);
+            expect(destroyed).toBe(false);
 
-        compRef = TestBed.createComponent(SomeComp).componentRef;
-        compRef.injector.get(SomeInjectable);
-        expect(created).toBe(true);
-        compRef.destroy();
-        expect(destroyed).toBe(true);
-      });
+            compRef = TestBed.createComponent(SomeComp).componentRef;
+            compRef.injector.get(SomeInjectable);
+            expect(created).toBe(true);
+            compRef.destroy();
+            expect(destroyed).toBe(true);
+          });
 
-      fixmeIvy('unknown').it('should instantiate view providers lazily', () => {
-        let created = false;
-        TestBed.configureTestingModule({declarations: [SimpleComponent]});
-        TestBed.overrideComponent(
-            SimpleComponent,
-            {set: {viewProviders: [{provide: 'service', useFactory: () => created = true}]}});
-        const el = createComponent('<div simpleComponent></div>');
+      fixmeIvy(
+          'FW-889: Element injector cannot access the viewProviders of the component to which it belongs')
+          .it('should instantiate view providers lazily', () => {
+            let created = false;
+            TestBed.configureTestingModule({declarations: [SimpleComponent]});
+            TestBed.overrideComponent(
+                SimpleComponent,
+                {set: {viewProviders: [{provide: 'service', useFactory: () => created = true}]}});
+            const el = createComponent('<div simpleComponent></div>');
 
-        expect(created).toBe(false);
+            expect(created).toBe(false);
 
-        el.children[0].injector.get('service');
+            el.children[0].injector.get('service');
 
-        expect(created).toBe(true);
-      });
+            expect(created).toBe(true);
+          });
 
       it('should not instantiate other directives that depend on viewProviders providers (same element)',
          () => {
@@ -552,8 +557,8 @@ class TestComp {
             .toEqual('parentService');
       });
 
-      fixmeIvy('unknown').it(
-          'should instantiate directives that depend on providers of a component', () => {
+      fixmeIvy('FW-890: Overridden providers are not found during dependency resolution')
+          .it('should instantiate directives that depend on providers of a component', () => {
             TestBed.configureTestingModule({declarations: [SimpleComponent, NeedsService]});
             TestBed.overrideComponent(
                 SimpleComponent,
@@ -565,8 +570,8 @@ class TestComp {
                 .toEqual('hostService');
           });
 
-      fixmeIvy('unknown').it(
-          'should instantiate directives that depend on view providers of a component', () => {
+      fixmeIvy('FW-890: Overridden providers are not found during dependency resolution')
+          .it('should instantiate directives that depend on view providers of a component', () => {
             TestBed.configureTestingModule({declarations: [SimpleComponent, NeedsService]});
             TestBed.overrideComponent(
                 SimpleComponent,
@@ -578,19 +583,19 @@ class TestComp {
                 .toEqual('hostService');
           });
 
-      fixmeIvy('unknown').it(
-          'should instantiate directives in a root embedded view that depend on view providers of a component',
-          () => {
-            TestBed.configureTestingModule({declarations: [SimpleComponent, NeedsService]});
-            TestBed.overrideComponent(
-                SimpleComponent,
-                {set: {providers: [{provide: 'service', useValue: 'hostService'}]}});
-            TestBed.overrideComponent(
-                SimpleComponent, {set: {template: '<div *ngIf="true" needsService></div>'}});
-            const el = createComponent('<div simpleComponent></div>');
-            expect(el.children[0].children[0].injector.get(NeedsService).service)
-                .toEqual('hostService');
-          });
+      fixmeIvy('FW-890: Overridden providers are not found during dependency resolution')
+          .it('should instantiate directives in a root embedded view that depend on view providers of a component',
+              () => {
+                TestBed.configureTestingModule({declarations: [SimpleComponent, NeedsService]});
+                TestBed.overrideComponent(
+                    SimpleComponent,
+                    {set: {providers: [{provide: 'service', useValue: 'hostService'}]}});
+                TestBed.overrideComponent(
+                    SimpleComponent, {set: {template: '<div *ngIf="true" needsService></div>'}});
+                const el = createComponent('<div simpleComponent></div>');
+                expect(el.children[0].children[0].injector.get(NeedsService).service)
+                    .toEqual('hostService');
+              });
 
       it('should instantiate directives that depend on instances in the app injector', () => {
         TestBed.configureTestingModule({declarations: [NeedsAppService]});
@@ -734,8 +739,8 @@ class TestComp {
         expect(d.dependency).toBeAnInstanceOf(SimpleComponent);
       });
 
-      fixmeIvy('unknown').it(
-          'should instantiate host views for components that have a @Host dependency ', () => {
+      obsoleteInIvy('@Host() / @Self() no longer looks in module injector')
+          .it('should instantiate host views for components that have a @Host dependency ', () => {
             TestBed.configureTestingModule({declarations: [NeedsHostAppService]});
             const el = createComponent('', [], NeedsHostAppService);
             expect(el.componentInstance.service).toEqual('appService');
@@ -764,24 +769,25 @@ class TestComp {
                     .toThrowError('NodeInjector: NOT_FOUND [SimpleDirective]');
               });
 
-      fixmeIvy('unknown').it(
-          'should allow to use the NgModule injector from a root ViewContainerRef.parentInjector',
-          () => {
-            @Component({template: ''})
-            class MyComp {
-              constructor(public vc: ViewContainerRef) {}
-            }
+      fixmeIvy('FW-638: Exception thrown when getting VCRef.parentInjector on the root view')
+          .it('should allow to use the NgModule injector from a root ViewContainerRef.parentInjector',
+              () => {
+                @Component({template: ''})
+                class MyComp {
+                  constructor(public vc: ViewContainerRef) {}
+                }
 
-            const compFixture = TestBed
-                                    .configureTestingModule({
-                                      declarations: [MyComp],
-                                      providers: [{provide: 'someToken', useValue: 'someValue'}]
-                                    })
-                                    .createComponent(MyComp);
+                const compFixture =
+                    TestBed
+                        .configureTestingModule({
+                          declarations: [MyComp],
+                          providers: [{provide: 'someToken', useValue: 'someValue'}]
+                        })
+                        .createComponent(MyComp);
 
-            expect(compFixture.componentInstance.vc.parentInjector.get('someToken'))
-                .toBe('someValue');
-          });
+                expect(compFixture.componentInstance.vc.parentInjector.get('someToken'))
+                    .toBe('someValue');
+              });
     });
 
     describe('static attributes', () => {
@@ -812,23 +818,23 @@ class TestComp {
             .toBe(el.children[0].nativeElement);
       });
 
-      fixmeIvy('unknown').it(
-          'should inject ChangeDetectorRef of the component\'s view into the component', () => {
-            TestBed.configureTestingModule({declarations: [PushComponentNeedsChangeDetectorRef]});
-            const cf = createComponentFixture('<div componentNeedsChangeDetectorRef></div>');
-            cf.detectChanges();
-            const compEl = cf.debugElement.children[0];
-            const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
-            comp.counter = 1;
-            cf.detectChanges();
-            expect(compEl.nativeElement).toHaveText('0');
-            comp.changeDetectorRef.markForCheck();
-            cf.detectChanges();
-            expect(compEl.nativeElement).toHaveText('1');
-          });
+      it('should inject ChangeDetectorRef of the component\'s view into the component', () => {
+        TestBed.configureTestingModule({declarations: [PushComponentNeedsChangeDetectorRef]});
+        const cf = createComponentFixture('<div componentNeedsChangeDetectorRef></div>');
+        cf.detectChanges();
+        const compEl = cf.debugElement.children[0];
+        const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
+        comp.counter = 1;
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
+        comp.changeDetectorRef.markForCheck();
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('1');
+      });
 
-      fixmeIvy('unknown').it(
-          'should inject ChangeDetectorRef of the containing component into directives', () => {
+      fixmeIvy(
+          'FW-893: expect(changeDetectorRef).toEqual(otherChangeDetectorRef) creates an infinite loop')
+          .it('should inject ChangeDetectorRef of the containing component into directives', () => {
             TestBed.configureTestingModule({
               declarations:
                   [PushComponentNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]
@@ -858,51 +864,45 @@ class TestComp {
             expect(compEl.nativeElement).toHaveText('1');
           });
 
-      fixmeIvy('unknown').it(
-          'should inject ChangeDetectorRef of a same element component into a directive', () => {
-            TestBed.configureTestingModule({
-              declarations:
-                  [PushComponentNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]
-            });
-            const cf = createComponentFixture(
-                '<div componentNeedsChangeDetectorRef directiveNeedsChangeDetectorRef></div>');
-            cf.detectChanges();
-            const compEl = cf.debugElement.children[0];
-            const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
-            const dir = compEl.injector.get(DirectiveNeedsChangeDetectorRef);
-            comp.counter = 1;
-            cf.detectChanges();
-            expect(compEl.nativeElement).toHaveText('0');
-            dir.changeDetectorRef.markForCheck();
-            cf.detectChanges();
-            expect(compEl.nativeElement).toHaveText('1');
-          });
+      it('should inject ChangeDetectorRef of a same element component into a directive', () => {
+        TestBed.configureTestingModule(
+            {declarations: [PushComponentNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]});
+        const cf = createComponentFixture(
+            '<div componentNeedsChangeDetectorRef directiveNeedsChangeDetectorRef></div>');
+        cf.detectChanges();
+        const compEl = cf.debugElement.children[0];
+        const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
+        const dir = compEl.injector.get(DirectiveNeedsChangeDetectorRef);
+        comp.counter = 1;
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
+        dir.changeDetectorRef.markForCheck();
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('1');
+      });
 
-      fixmeIvy('unknown').it(
-          `should not inject ChangeDetectorRef of a parent element's component into a directive`,
-          () => {
-            TestBed
-                .configureTestingModule({
-                  declarations:
-                      [PushComponentNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]
-                })
-                .overrideComponent(
-                    PushComponentNeedsChangeDetectorRef,
-                    {set: {template: '<ng-content></ng-content>{{counter}}'}});
-            const cf = createComponentFixture(
-                '<div componentNeedsChangeDetectorRef><div directiveNeedsChangeDetectorRef></div></div>');
-            cf.detectChanges();
-            const compEl = cf.debugElement.children[0];
-            const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
-            const dirEl = compEl.children[0];
-            const dir = dirEl.injector.get(DirectiveNeedsChangeDetectorRef);
-            comp.counter = 1;
-            cf.detectChanges();
-            expect(compEl.nativeElement).toHaveText('0');
-            dir.changeDetectorRef.markForCheck();
-            cf.detectChanges();
-            expect(compEl.nativeElement).toHaveText('0');
-          });
+      it(`should not inject ChangeDetectorRef of a parent element's component into a directive`, () => {
+        TestBed
+            .configureTestingModule({
+              declarations: [PushComponentNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]
+            })
+            .overrideComponent(
+                PushComponentNeedsChangeDetectorRef,
+                {set: {template: '<ng-content></ng-content>{{counter}}'}});
+        const cf = createComponentFixture(
+            '<div componentNeedsChangeDetectorRef><div directiveNeedsChangeDetectorRef></div></div>');
+        cf.detectChanges();
+        const compEl = cf.debugElement.children[0];
+        const comp = compEl.injector.get(PushComponentNeedsChangeDetectorRef);
+        const dirEl = compEl.children[0];
+        const dir = dirEl.injector.get(DirectiveNeedsChangeDetectorRef);
+        comp.counter = 1;
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
+        dir.changeDetectorRef.markForCheck();
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
+      });
 
       it('should inject ViewContainerRef', () => {
         TestBed.configureTestingModule({declarations: [NeedsViewContainerRef]});
@@ -912,32 +912,33 @@ class TestComp {
             .toBe(el.children[0].nativeElement);
       });
 
-      fixmeIvy('unknown').it('should inject ViewContainerRef', () => {
-        @Component({template: ''})
-        class TestComp {
-          constructor(public vcr: ViewContainerRef) {}
-        }
+      fixmeIvy('FW-638: Exception thrown when getting VCRef.parentInjector on the root view')
+          .it('should inject ViewContainerRef', () => {
+            @Component({template: ''})
+            class TestComp {
+              constructor(public vcr: ViewContainerRef) {}
+            }
 
-        @NgModule({
-          declarations: [TestComp],
-          entryComponents: [TestComp],
-        })
-        class TestModule {
-        }
+            @NgModule({
+              declarations: [TestComp],
+              entryComponents: [TestComp],
+            })
+            class TestModule {
+            }
 
-        const testInjector = <Injector>{
-          get: (token: any, notFoundValue: any) =>
-                   token === 'someToken' ? 'someNewValue' : notFoundValue
-        };
+            const testInjector = <Injector>{
+              get: (token: any, notFoundValue: any) =>
+                       token === 'someToken' ? 'someNewValue' : notFoundValue
+            };
 
-        const compFactory = TestBed.configureTestingModule({imports: [TestModule]})
-                                .get(ComponentFactoryResolver)
-                                .resolveComponentFactory(TestComp);
-        const component = compFactory.create(testInjector);
-        expect(component.instance.vcr.parentInjector.get('someToken')).toBe('someNewValue');
-      });
+            const compFactory = TestBed.configureTestingModule({imports: [TestModule]})
+                                    .get(ComponentFactoryResolver)
+                                    .resolveComponentFactory(TestComp);
+            const component = compFactory.create(testInjector);
+            expect(component.instance.vcr.parentInjector.get('someToken')).toBe('someNewValue');
+          });
 
-      fixmeIvy('unknown').it('should inject TemplateRef', () => {
+      it('should inject TemplateRef', () => {
         TestBed.configureTestingModule({declarations: [NeedsViewContainerRef, NeedsTemplateRef]});
         const el =
             createComponent('<ng-template needsViewContainerRef needsTemplateRef></ng-template>');
@@ -960,21 +961,25 @@ class TestComp {
     });
 
     describe('pipes', () => {
-      fixmeIvy('unknown').it('should instantiate pipes that have dependencies', () => {
-        TestBed.configureTestingModule({declarations: [SimpleDirective, PipeNeedsService]});
+      fixmeIvy('FW-890: Overridden providers are not found during dependency resolution')
+          .it('should instantiate pipes that have dependencies', () => {
+            TestBed.configureTestingModule({declarations: [SimpleDirective, PipeNeedsService]});
 
-        const el = createComponent(
-            '<div [simpleDirective]="true | pipeNeedsService"></div>',
-            [{provide: 'service', useValue: 'pipeService'}]);
-        expect(el.children[0].injector.get(SimpleDirective).value.service).toEqual('pipeService');
-      });
+            const el = createComponent(
+                '<div [simpleDirective]="true | pipeNeedsService"></div>',
+                [{provide: 'service', useValue: 'pipeService'}]);
+            expect(el.children[0].injector.get(SimpleDirective).value.service)
+                .toEqual('pipeService');
+          });
 
-      fixmeIvy('unknown').it('should overwrite pipes with later entry in the pipes array', () => {
-        TestBed.configureTestingModule(
-            {declarations: [SimpleDirective, DuplicatePipe1, DuplicatePipe2]});
-        const el = createComponent('<div [simpleDirective]="true | duplicatePipe"></div>');
-        expect(el.children[0].injector.get(SimpleDirective).value).toBeAnInstanceOf(DuplicatePipe2);
-      });
+      fixmeIvy('FW-894: Pipes don\'t overwrite pipes with later entry in the pipes array')
+          .it('should overwrite pipes with later entry in the pipes array', () => {
+            TestBed.configureTestingModule(
+                {declarations: [SimpleDirective, DuplicatePipe1, DuplicatePipe2]});
+            const el = createComponent('<div [simpleDirective]="true | duplicatePipe"></div>');
+            expect(el.children[0].injector.get(SimpleDirective).value)
+                .toBeAnInstanceOf(DuplicatePipe2);
+          });
 
       it('should inject ChangeDetectorRef into pipes', () => {
         TestBed.configureTestingModule({
@@ -988,20 +993,21 @@ class TestComp {
         expect(el.children[0].injector.get(SimpleDirective).value.changeDetectorRef).toEqual(cdRef);
       });
 
-      fixmeIvy('unknown').it('should cache pure pipes', () => {
-        TestBed.configureTestingModule({declarations: [SimpleDirective, PurePipe]});
-        const el = createComponent(
-            '<div [simpleDirective]="true | purePipe"></div><div [simpleDirective]="true | purePipe"></div>' +
-            '<div *ngFor="let x of [1,2]" [simpleDirective]="true | purePipe"></div>');
-        const purePipe1 = el.children[0].injector.get(SimpleDirective).value;
-        const purePipe2 = el.children[1].injector.get(SimpleDirective).value;
-        const purePipe3 = el.children[2].injector.get(SimpleDirective).value;
-        const purePipe4 = el.children[3].injector.get(SimpleDirective).value;
-        expect(purePipe1).toBeAnInstanceOf(PurePipe);
-        expect(purePipe2).toBe(purePipe1);
-        expect(purePipe3).toBe(purePipe1);
-        expect(purePipe4).toBe(purePipe1);
-      });
+      modifiedInIvy('Pure pipes are instantiated differently in view engine and ivy')
+          .it('should cache pure pipes', () => {
+            TestBed.configureTestingModule({declarations: [SimpleDirective, PurePipe]});
+            const el = createComponent(
+                '<div [simpleDirective]="true | purePipe"></div><div [simpleDirective]="true | purePipe"></div>' +
+                '<div *ngFor="let x of [1,2]" [simpleDirective]="true | purePipe"></div>');
+            const purePipe1 = el.children[0].injector.get(SimpleDirective).value;
+            const purePipe2 = el.children[1].injector.get(SimpleDirective).value;
+            const purePipe3 = el.children[2].injector.get(SimpleDirective).value;
+            const purePipe4 = el.children[3].injector.get(SimpleDirective).value;
+            expect(purePipe1).toBeAnInstanceOf(PurePipe);
+            expect(purePipe2).toBe(purePipe1);
+            expect(purePipe3).toBe(purePipe1);
+            expect(purePipe4).toBe(purePipe1);
+          });
 
       it('should not cache impure pipes', () => {
         TestBed.configureTestingModule({declarations: [SimpleDirective, ImpurePipe]});
