@@ -193,9 +193,6 @@ export function extractDirectiveMetadata(
   const metadata: R3DirectiveMetadata = {
     name: clazz.name !.text,
     deps: getConstructorDependencies(clazz, reflector, isCore), host,
-    lifecycle: {
-        usesOnChanges,
-    },
     inputs: {...inputsFromMeta, ...inputsFromFields},
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, selector,
     type: new WrappedNodeExpr(clazz.name !),

@@ -19,6 +19,7 @@ import {PlayerHandler} from './player';
 import {LQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
 import {StylingContext} from './styling';
+import { SimpleChanges } from '../../metadata/lifecycle_hooks';
 
 
 // Below are constants for LView indices to help us look up LView members
@@ -538,7 +539,7 @@ export interface RootContext {
  * Even indices: Directive index
  * Odd indices: Hook function
  */
-export type HookData = (number | (() => void))[];
+export type HookData = (number | (() => void) | ((changes: SimpleChanges) => void))[];
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.

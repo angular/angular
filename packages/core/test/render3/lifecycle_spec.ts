@@ -7,7 +7,7 @@
  */
 
 import {ComponentFactoryResolver, OnDestroy, SimpleChanges, ViewContainerRef} from '../../src/core';
-import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, injectComponentFactoryResolver} from '../../src/render3/index';
+import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, defineComponent, defineDirective, injectComponentFactoryResolver} from '../../src/render3/index';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -1986,7 +1986,6 @@ describe('lifecycles', () => {
           type: Component,
           selectors: [[name]],
           factory: () => new Component(),
-          features: [NgOnChangesFeature],
           consts: consts,
           vars: vars,
           inputs: {a: 'val1', b: ['publicName', 'val2']}, template,
@@ -2009,7 +2008,6 @@ describe('lifecycles', () => {
         type: Directive,
         selectors: [['', 'dir', '']],
         factory: () => new Directive(),
-        features: [NgOnChangesFeature],
         inputs: {a: 'val1', b: ['publicName', 'val2']}
       });
     }
@@ -2091,6 +2089,7 @@ describe('lifecycles', () => {
       }, 2, 4, defs);
 
       const fixture = new ComponentFixture(App);
+
       expect(events).toEqual([
         'comp=parent val1=1 val2=1 - changed=[val1,val2]',
         'comp=parent val1=2 val2=2 - changed=[val1,val2]',
@@ -2394,7 +2393,6 @@ describe('lifecycles', () => {
           consts: consts,
           vars: vars,
           inputs: {val: 'val'}, template,
-          features: [NgOnChangesFeature],
           directives: directives
         });
       };
@@ -2412,6 +2410,11 @@ describe('lifecycles', () => {
           element(0, 'comp');
           element(1, 'comp');
         }
+        // This template function is a little weird in that the `elementProperty` calls
+        // below are directly setting values `1` and `2`, where normally there would be
+        // a call to `bind()` that would do the work of seeing if something changed.
+        // This means when `fixture.update()` is called below, ngOnChanges should fire,
+        // even though the *value* itself never changed.
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
           elementProperty(1, 'val', 2);
@@ -2426,7 +2429,7 @@ describe('lifecycles', () => {
       ]);
 
       events = [];
-      fixture.update();
+      fixture.update(); // Changes are made due to lack of `bind()` call in template fn.
       expect(events).toEqual([
         'changes comp1', 'check comp1', 'changes comp2', 'check comp2', 'contentCheck comp1',
         'contentCheck comp2', 'viewCheck comp1', 'viewCheck comp2'

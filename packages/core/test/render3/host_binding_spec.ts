@@ -8,7 +8,7 @@
 
 import {ElementRef} from '@angular/core';
 
-import {AttributeMarker, defineComponent, template, defineDirective, InheritDefinitionFeature, ProvidersFeature, NgOnChangesFeature, QueryList} from '../../src/render3/index';
+import {AttributeMarker, defineComponent, template, defineDirective, InheritDefinitionFeature, ProvidersFeature, QueryList} from '../../src/render3/index';
 import {allocHostVars, bind, directiveInject, element, elementEnd, elementProperty, elementStyleProp, elementStyling, elementStylingApply, elementStart, listener, load, text, textBinding, loadQueryList, registerContentQuery, elementHostAttrs} from '../../src/render3/instructions';
 import {query, queryRefresh} from '../../src/render3/query';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -355,7 +355,6 @@ describe('host bindings', () => {
         template: (rf: RenderFlags, ctx: InitHookComp) => {},
         consts: 0,
         vars: 0,
-        features: [NgOnChangesFeature],
         hostBindings: (rf: RenderFlags, ctx: InitHookComp, elIndex: number) => {
           if (rf & RenderFlags.Create) {
             allocHostVars(1);

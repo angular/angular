@@ -271,7 +271,11 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   }
 
   private _lookUpContext(): T {
-    return this._context = this._lView[PARENT] ![this._componentIndex] as T;
+    const record = this._lView[PARENT] ![this._componentIndex];
+
+    // If the component/directive implements onChanges, its instance is stored
+    // in an array next to SimpleChanges
+    return Array.isArray(record) ? record[0] : record;
   }
 }
 

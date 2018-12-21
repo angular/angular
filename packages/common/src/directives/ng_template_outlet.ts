@@ -34,14 +34,11 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChange
  */
 @Directive({selector: '[ngTemplateOutlet]'})
 export class NgTemplateOutlet implements OnChanges {
-  // TODO(issue/24571): remove '!'.
-  private _viewRef !: EmbeddedViewRef<any>;
+  private _viewRef: EmbeddedViewRef<any>|null = null;
 
-  // TODO(issue/24571): remove '!'.
-  @Input() public ngTemplateOutletContext !: Object;
+  @Input() public ngTemplateOutletContext: Object|null = null;
 
-  // TODO(issue/24571): remove '!'.
-  @Input() public ngTemplateOutlet !: TemplateRef<any>;
+  @Input() public ngTemplateOutlet: TemplateRef<any>|null = null;
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
@@ -97,7 +94,7 @@ export class NgTemplateOutlet implements OnChanges {
 
   private _updateExistingContext(ctx: Object): void {
     for (let propName of Object.keys(ctx)) {
-      (<any>this._viewRef.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
+      (<any>this._viewRef!.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
     }
   }
 }

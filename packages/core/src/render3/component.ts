@@ -16,7 +16,7 @@ import {assertComponentType, assertDefined} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {publishDefaultGlobalUtils} from './global_utils';
-import {queueInitHooks, queueLifecycleHooks} from './hooks';
+import {setupHooksDirectiveStart, setupHooksDirectiveEnd} from './hooks';
 import {CLEAN_PROMISE, createLView, createNodeAtIndex, createTNode, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
@@ -236,10 +236,10 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
   const rootTView = readPatchedLView(component) ![TVIEW];
   const dirIndex = rootTView.data.length - 1;
 
-  queueInitHooks(dirIndex, def.onInit, def.doCheck, rootTView);
+  setupHooksDirectiveStart(dirIndex, def, rootTView);
   // TODO(misko): replace `as TNode` with createTNode call. (needs refactoring to lose dep on
   // LNode).
-  queueLifecycleHooks(rootTView, { directiveStart: dirIndex, directiveEnd: dirIndex + 1 } as TNode);
+  setupHooksDirectiveEnd(rootTView, { directiveStart: dirIndex, directiveEnd: dirIndex + 1 } as TNode);
 }
 
 /**
