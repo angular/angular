@@ -242,10 +242,9 @@ import {fixmeIvy} from '@angular/private/testing';
       ]);
     });
 
-    fixmeIvy('unknown').it(
-        'should treat * styles as ! for queried items that are collected in a container that is being removed',
-        () => {
-          @Component({
+    it('should treat * styles as ! for queried items that are collected in a container that is being removed',
+       () => {
+         @Component({
             selector: 'my-app',
             styles: [`
               .list .outer {
@@ -286,58 +285,58 @@ import {fixmeIvy} from '@angular/private/testing';
             ]
         })
         class Cmp {
-            items: any[] = [];
+           items: any[] = [];
 
-            get exp() { return this.items.length ? 'full' : 'empty'; }
+           get exp() { return this.items.length ? 'full' : 'empty'; }
 
-            empty() { this.items = []; }
+           empty() { this.items = []; }
 
-            full() { this.items = [0, 1, 2, 3, 4]; }
-          }
+           full() { this.items = [0, 1, 2, 3, 4]; }
+         }
 
-          TestBed.configureTestingModule({declarations: [Cmp]});
+         TestBed.configureTestingModule({declarations: [Cmp]});
 
-          const engine = TestBed.get(ɵAnimationEngine);
-          const fixture = TestBed.createComponent(Cmp);
-          const cmp = fixture.componentInstance;
+         const engine = TestBed.get(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
 
-          cmp.empty();
-          fixture.detectChanges();
-          let player = engine.players[0] !as TransitionAnimationPlayer;
-          player.finish();
+         cmp.empty();
+         fixture.detectChanges();
+         let player = engine.players[0] !as TransitionAnimationPlayer;
+         player.finish();
 
-          cmp.full();
-          fixture.detectChanges();
+         cmp.full();
+         fixture.detectChanges();
 
-          player = engine.players[0] !as TransitionAnimationPlayer;
-          let queriedPlayers = (player.getRealPlayer() as AnimationGroupPlayer).players;
-          expect(queriedPlayers.length).toEqual(5);
+         player = engine.players[0] !as TransitionAnimationPlayer;
+         let queriedPlayers = (player.getRealPlayer() as AnimationGroupPlayer).players;
+         expect(queriedPlayers.length).toEqual(5);
 
-          let i = 0;
-          for (i = 0; i < queriedPlayers.length; i++) {
-            let player = queriedPlayers[i] as ɵWebAnimationsPlayer;
-            expect(player.keyframes).toEqual([
-              {height: '0px', offset: 0},
-              {height: '50px', offset: 1},
-            ]);
-            player.finish();
-          }
+         let i = 0;
+         for (i = 0; i < queriedPlayers.length; i++) {
+           let player = queriedPlayers[i] as ɵWebAnimationsPlayer;
+           expect(player.keyframes).toEqual([
+             {height: '0px', offset: 0},
+             {height: '50px', offset: 1},
+           ]);
+           player.finish();
+         }
 
-          cmp.empty();
-          fixture.detectChanges();
+         cmp.empty();
+         fixture.detectChanges();
 
-          player = engine.players[0] !as TransitionAnimationPlayer;
-          queriedPlayers = (player.getRealPlayer() as AnimationGroupPlayer).players;
-          expect(queriedPlayers.length).toEqual(5);
+         player = engine.players[0] !as TransitionAnimationPlayer;
+         queriedPlayers = (player.getRealPlayer() as AnimationGroupPlayer).players;
+         expect(queriedPlayers.length).toEqual(5);
 
-          for (i = 0; i < queriedPlayers.length; i++) {
-            let player = queriedPlayers[i] as ɵWebAnimationsPlayer;
-            expect(player.keyframes).toEqual([
-              {height: '50px', offset: 0},
-              {height: '0px', offset: 1},
-            ]);
-          }
-        });
+         for (i = 0; i < queriedPlayers.length; i++) {
+           let player = queriedPlayers[i] as ɵWebAnimationsPlayer;
+           expect(player.keyframes).toEqual([
+             {height: '50px', offset: 0},
+             {height: '0px', offset: 1},
+           ]);
+         }
+       });
 
     it('should compute intermediate styles properly when an animation is cancelled', () => {
       @Component({

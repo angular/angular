@@ -120,4 +120,70 @@ describe('r3_view_compiler', () => {
       expectEmit(result.source, bV_call, 'Incorrect bV call');
     });
   });
+
+  describe('animations', () => {
+    it('should keep @attr but suppress [@attr]', () => {
+      const files: MockDirectory = {
+        app: {
+          'example.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-app',
+            template: '<div @attrOnly [@myAnimation]="exp"></div>'
+          })
+          export class MyApp {
+          }
+
+          @NgModule({declarations: [MyApp]})
+          export class MyModule {}`
+        }
+      };
+
+      const template = `
+      const _c0 = ["@attrOnly", ""];
+      // ...
+      template: function MyApp_Template(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵelement(0, "div", _c0);
+          // ...
+        }
+        // ...
+      }`;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect initialization attributes');
+    });
+
+    it('should dedup multiple [@event] listeners', () => {
+      const files: MockDirectory = {
+        app: {
+          'example.ts': `
+          import {Component, NgModule} from '@angular/core';
+
+          @Component({
+            selector: 'my-app',
+            template: '<div (@mySelector.start)="false" (@mySelector.done)="false" [@mySelector]="0"></div>'
+          })
+          export class MyApp {
+          }
+
+          @NgModule({declarations: [MyApp]})
+          export class MyModule {}`
+        }
+      };
+
+      const template = `
+      const _c0 = [1, "mySelector"];
+      // ...
+      template: function MyApp_Template(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵelementStart(0, "div", _c0);
+          // ...
+        }
+        // ...
+      }`;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect initialization attributes');
+    });
+  });
 });
