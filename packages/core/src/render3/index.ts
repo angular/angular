@@ -145,7 +145,7 @@ export {
 
 export {templateRefExtractor} from './view_engine_compatibility_prebound';
 
-export {createGlobalTargetGetter} from './util';
+export {resolveWindow, resolveDocument, resolveBody} from './util';
 
 // clang-format on
 

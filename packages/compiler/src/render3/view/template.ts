@@ -46,7 +46,8 @@ const DEFAULT_NG_CONTENT_SELECTOR = '*';
 const NG_CONTENT_SELECT_ATTR = 'select';
 
 // List of supported global targets for event listeners
-const SUPPORTED_GLOBAL_TARGETS = ['window', 'document', 'body'];
+const GLOBAL_TARGET_RESOLVERS = new Map<string, o.ExternalReference>(
+    [['window', R3.resolveWindow], ['document', R3.resolveDocument], ['body', R3.resolveBody]]);
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
   switch (type) {
@@ -72,9 +73,9 @@ export function prepareEventListenerParameters(
     eventAst: t.BoundEvent, bindingContext: o.Expression, handlerName: string | null = null,
     scope: BindingScope | null = null): o.Expression[] {
   const {type, name, target, phase, handler} = eventAst;
-  if (target && SUPPORTED_GLOBAL_TARGETS.indexOf(target) < 0) {
-    throw new Error(
-        `Unexpected global target '${target}' defined for '${name}' event. Supported list of global targets: ${SUPPORTED_GLOBAL_TARGETS}.`);
+  if (target && !GLOBAL_TARGET_RESOLVERS.has(target)) {
+    throw new Error(`Unexpected global target '${target}' defined for '${name}' event.
+        Supported list of global targets: ${Array.from(GLOBAL_TARGET_RESOLVERS.keys())}.`);
   }
 
   const bindingExpr = convertActionBinding(
@@ -97,7 +98,7 @@ export function prepareEventListenerParameters(
   if (target) {
     params.push(
         o.literal(false),  // `useCapture` flag, defaults to `false`
-        o.importExpr(R3.createGlobalTargetGetter).callFn([o.literal(target)]));
+        o.importExpr(GLOBAL_TARGET_RESOLVERS.get(target) !));
   }
   return params;
 }

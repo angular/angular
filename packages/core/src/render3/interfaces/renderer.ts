@@ -26,7 +26,11 @@ export enum RendererStyleFlags3 {
 
 export type Renderer3 = ObjectOrientedRenderer3 | ProceduralRenderer3;
 
-export type GlobalTargetSelector = 'document' | 'window' | 'body';
+export type GlobalTargetName = 'document' | 'window' | 'body';
+
+export type GlobalTargetResolver = (element: any) => {
+  name: GlobalTargetName, target: EventTarget
+};
 
 /**
  * Object Oriented style of API needed to create elements and text nodes.
@@ -89,7 +93,7 @@ export interface ProceduralRenderer3 {
 
   // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
   listen(
-      target: GlobalTargetSelector|RNode, eventName: string,
+      target: GlobalTargetName|RNode, eventName: string,
       callback: (event: any) => boolean | void): () => void;
 }
 

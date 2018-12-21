@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bind, createGlobalTargetGetter, defineComponent, defineDirective, markDirty, reference, textBinding} from '../../src/render3/index';
+import {bind, defineComponent, defineDirective, markDirty, reference, resolveBody, textBinding} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, getCurrentView, listener, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {GlobalTargetResolver} from '../../src/render3/interfaces/renderer';
 import {restoreView} from '../../src/render3/state';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -475,7 +476,7 @@ describe('event listeners', () => {
             listener('click', function() { return ctx.onClick(); });
             listener('click', function() {
               return ctx.onBodyClick();
-            }, false, createGlobalTargetGetter('body'));
+            }, false, resolveBody as GlobalTargetResolver);
           }
         }
       });
@@ -515,7 +516,7 @@ describe('event listeners', () => {
             listener('click', function() { return ctx.onClick(); });
             listener('click', function() {
               return ctx.onBodyClick();
-            }, false, createGlobalTargetGetter('body'));
+            }, false, resolveBody as GlobalTargetResolver);
           }
         }
       });
