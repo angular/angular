@@ -8,7 +8,7 @@
 
 import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
-import {AttributeMarker, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, load, query, queryRefresh} from '../../src/render3/index';
+import {AttributeMarker, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, load, query, queryRefresh} from '../../src/render3/index';
 
 import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -1631,7 +1631,6 @@ describe('ViewContainerRef', () => {
             textBinding(0, interpolation1('', cmp.name, ''));
           }
         },
-        features: [NgOnChangesFeature],
         inputs: {name: 'name'}
       });
     }
@@ -1796,12 +1795,13 @@ describe('ViewContainerRef', () => {
       expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks></hooks><hooks>B</hooks>');
       expect(log).toEqual([]);
 
+      // Below will *NOT* cause onChanges to fire, because only bindings trigger onChanges
       componentRef.instance.name = 'D';
       log.length = 0;
       fixture.update();
       expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks>D</hooks><hooks>B</hooks>');
       expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'onChanges-D', 'onInit-D', 'doCheck-D', 'afterContentInit-D',
+        'doCheck-A', 'doCheck-B', 'onInit-D', 'doCheck-D', 'afterContentInit-D',
         'afterContentChecked-D', 'afterViewInit-D', 'afterViewChecked-D', 'afterContentChecked-A',
         'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
       ]);

@@ -35,8 +35,6 @@ function getSuperType(type: Type<any>): Type<any>&
 export function InheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
 
-  debugger;
-
   while (superType) {
     let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
     if (isComponentDef(definition)) {
@@ -62,7 +60,6 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
     }
 
     if (baseDef) {
-      // Merge inputs and outputs
       fillProperties(definition.inputs, baseDef.inputs);
       fillProperties(definition.declaredInputs, baseDef.declaredInputs);
       fillProperties(definition.outputs, baseDef.outputs);
@@ -127,7 +124,6 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
         }
       }
 
-
       // Merge inputs and outputs
       fillProperties(definition.inputs, superDef.inputs);
       fillProperties(definition.declaredInputs, superDef.declaredInputs);
@@ -143,6 +139,7 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
       definition.doCheck = definition.doCheck || superDef.doCheck;
       definition.onDestroy = definition.onDestroy || superDef.onDestroy;
       definition.onInit = definition.onInit || superDef.onInit;
+      definition.onChanges = definition.onChanges || superDef.onChanges;
 
       // Run parent features
       const features = superDef.features;

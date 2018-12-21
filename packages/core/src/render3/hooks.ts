@@ -10,25 +10,38 @@ import {assertEqual} from '../util/assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {FLAGS, HookData, LView, LViewFlags, TView} from './interfaces/view';
+import {OnChangesDirectiveWrapper, unwrapOnChangesDirectiveWrapper} from './onchanges_util';
 
 
 
 /**
- * If this is the first template pass, any ngOnInit or ngDoCheck hooks will be queued into
- * TView.initHooks during directiveCreate.
+ * Run on first template pass.
  *
- * The directive index and hook type are encoded into one number (1st bit: type, remaining bits:
- * directive index), then saved in the even indices of the initHooks array. The odd indices
- * hold the hook functions themselves.
+ * This will update `tView` with all of the appropriate hook information found
+ * in the `def` provided.
+ *
+ * The hooks arrays this sets up are in the sets of directiveIndex and hook functions,
+ * such that it looks like `[index, hook, index, hook, index, hook]`. However,
+ * if the hook happens to be an OnChanges hook, then the `index` will be _negative_,
+ * this signals {@link callHooks} that it's dealing with an OnChanges hook, and needs
+ * to pass the {@link SimpleChanges} object.
  *
  * @param index The index of the directive in LView
- * @param hooks The static hooks map on the directive def
+ * @param def The definition containing the hooks to setup in tView
  * @param tView The current TView
  */
-export function queueInitHooks(
-    index: number, onInit: (() => void) | null, doCheck: (() => void) | null, tView: TView): void {
+export function setupHooksDirectiveStart(
+    index: number, def: DirectiveDef<any>, tView: TView): void {
   ngDevMode &&
       assertEqual(tView.firstTemplatePass, true, 'Should only be called on first template pass');
+
+  const {onChanges, onInit, doCheck} = def;
+
+  if (onChanges) {
+    (tView.initHooks || (tView.initHooks = [])).push(-index, onChanges);
+    (tView.checkHooks || (tView.checkHooks = [])).push(-index, onChanges);
+  }
+
   if (onInit) {
     (tView.initHooks || (tView.initHooks = [])).push(index, onInit);
   }
@@ -40,58 +53,63 @@ export function queueInitHooks(
 }
 
 /**
- * Loops through the directives on a node and queues all their hooks except ngOnInit
- * and ngDoCheck, which are queued separately in directiveCreate.
+ * To be run during `elementEnd()` and similar.
+ *
+ * Loops through the directives on the provided `tNode` and queues hooks to be
+ * run that are not initialization hooks. This is to be done at `elementEnd()` to
+ * preserve hook execution order. Content, view, and destroy hooks for projected
+ * components and directives must be called *before* their hosts.
+ *
+ * Sets up the content, view, and destroy hooks on the provided `tView`.
+ *
+ * NOTE: This does not set up onChanges, onInit or doCheck, those are set up
+ * separately at elementStart.
  */
-export function queueLifecycleHooks(tView: TView, tNode: TNode): void {
+export function setupHooksDirectiveEnd(tView: TView, tNode: TNode): void {
   if (tView.firstTemplatePass) {
     // It's necessary to loop through the directives at elementEnd() (rather than processing in
     // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
     // hooks for projected components and directives must be called *before* their hosts.
     for (let i = tNode.directiveStart, end = tNode.directiveEnd; i < end; i++) {
       const def = tView.data[i] as DirectiveDef<any>;
-      queueContentHooks(def, tView, i);
-      queueViewHooks(def, tView, i);
-      queueDestroyHooks(def, tView, i);
+      if (def.afterContentInit) {
+        (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentInit);
+      }
+
+      if (def.afterContentChecked) {
+        (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentChecked);
+        (tView.contentCheckHooks || (tView.contentCheckHooks = [
+         ])).push(i, def.afterContentChecked);
+      }
+
+      if (def.afterViewInit) {
+        (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewInit);
+      }
+
+      if (def.afterViewChecked) {
+        (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewChecked);
+        (tView.viewCheckHooks || (tView.viewCheckHooks = [])).push(i, def.afterViewChecked);
+      }
+
+      if (def.onDestroy != null) {
+        (tView.destroyHooks || (tView.destroyHooks = [])).push(i, def.onDestroy);
+      }
     }
   }
 }
 
-/** Queues afterContentInit and afterContentChecked hooks on TView */
-function queueContentHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
-  if (def.afterContentInit) {
-    (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentInit);
-  }
-
-  if (def.afterContentChecked) {
-    (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentChecked);
-    (tView.contentCheckHooks || (tView.contentCheckHooks = [])).push(i, def.afterContentChecked);
-  }
-}
-
-/** Queues afterViewInit and afterViewChecked hooks on TView */
-function queueViewHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
-  if (def.afterViewInit) {
-    (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewInit);
-  }
-
-  if (def.afterViewChecked) {
-    (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewChecked);
-    (tView.viewCheckHooks || (tView.viewCheckHooks = [])).push(i, def.afterViewChecked);
-  }
-}
-
-/** Queues onDestroy hooks on TView */
-function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
-  if (def.onDestroy != null) {
-    (tView.destroyHooks || (tView.destroyHooks = [])).push(i, def.onDestroy);
-  }
-}
-
 /**
- * Calls onInit and doCheck calls if they haven't already been called.
+ * Executes necessary hooks at the start of executing a template.
  *
- * @param currentView The current view
+ * Executes hooks that are to be run during the initialization of a directive such
+ * as `onChanges`, `onInit`, and `doCheck`.
+ *
+ * Has the side effect of updating the RunInit flag in `lView` to be `0`, so that
+ * this isn't run a second time.
+ *
+ * @param lView The current view
+ * @param tView Static data for the view containing the hooks to be executed
+ * @param creationMode Whether or not we're in creation mode.
  */
 export function executeInitHooks(
     currentView: LView, tView: TView, checkNoChangesMode: boolean): void {
@@ -102,16 +120,20 @@ export function executeInitHooks(
 }
 
 /**
- * Iterates over afterViewInit and afterViewChecked functions and calls them.
+ * Executes hooks against the given `LView` based off of whether or not
+ * This is the first pass.
  *
- * @param currentView The current view
+ * @param lView The view instance data to run the hooks against
+ * @param firstPassHooks An array of hooks to run if we're in the first view pass
+ * @param checkHooks An Array of hooks to run if we're not in the first view pass.
+ * @param checkNoChangesMode Whether or not we're in no changes mode.
  */
 export function executeHooks(
-    currentView: LView, allHooks: HookData | null, checkHooks: HookData | null,
+    currentView: LView, firstPassHooks: HookData | null, checkHooks: HookData | null,
     checkNoChangesMode: boolean): void {
   if (checkNoChangesMode) return;
 
-  const hooksToCall = currentView[FLAGS] & LViewFlags.FirstLViewPass ? allHooks : checkHooks;
+  const hooksToCall = currentView[FLAGS] & LViewFlags.FirstLViewPass ? firstPassHooks : checkHooks;
   if (hooksToCall) {
     callHooks(currentView, hooksToCall);
   }
@@ -119,13 +141,29 @@ export function executeHooks(
 
 /**
  * Calls lifecycle hooks with their contexts, skipping init hooks if it's not
- * the first LView pass.
+ * the first LView pass, and skipping onChanges hooks if there are no changes present.
  *
  * @param currentView The current view
  * @param arr The array in which the hooks are found
  */
 export function callHooks(currentView: any[], arr: HookData): void {
   for (let i = 0; i < arr.length; i += 2) {
-    (arr[i + 1] as() => void).call(currentView[arr[i] as number]);
+    const index = arr[i] as number;
+    const hook = arr[i + 1] as any;
+    const isOnChangesHook = index < 0;
+    const record = currentView[isOnChangesHook ? -index : index];
+    const directive = unwrapOnChangesDirectiveWrapper(record);
+
+    if (isOnChangesHook) {
+      const onChanges: OnChangesDirectiveWrapper = record;
+      const changes = onChanges.changes;
+      if (changes) {
+        onChanges.previous = changes;
+        onChanges.changes = null;
+        hook.call(onChanges.instance, changes);
+      }
+    } else {
+      hook.call(directive);
+    }
   }
 }

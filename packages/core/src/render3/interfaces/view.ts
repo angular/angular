@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SimpleChanges} from '../../change_detection/simple_change';
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {Type} from '../../interface/type';
@@ -533,7 +534,7 @@ export interface RootContext {
  * Even indices: Directive index
  * Odd indices: Hook function
  */
-export type HookData = (number | (() => void))[];
+export type HookData = (number | (() => void) | ((changes: SimpleChanges) => void))[];
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.
