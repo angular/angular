@@ -12,6 +12,7 @@ import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, TVIEW} from './interfaces/view';
+import {unwrapOnChangesDirectiveWrapper} from './onchanges_util';
 import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData} from './util';
 
 
@@ -257,7 +258,7 @@ function findViaDirective(lView: LView, directiveInstance: {}): number {
     const directiveIndexStart = tNode.directiveStart;
     const directiveIndexEnd = tNode.directiveEnd;
     for (let i = directiveIndexStart; i < directiveIndexEnd; i++) {
-      if (lView[i] === directiveInstance) {
+      if (unwrapOnChangesDirectiveWrapper(lView[i]) === directiveInstance) {
         return tNode.index;
       }
     }

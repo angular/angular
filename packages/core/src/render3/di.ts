@@ -20,6 +20,7 @@ import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInject
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LView, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
+import {unwrapOnChangesDirectiveWrapper} from './onchanges_util';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
 import {findComponentView, getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, isComponentDef, stringify} from './util';
 
@@ -514,6 +515,8 @@ export function getNodeInjectable(
       factory.resolving = false;
       setTNodeAndViewData(savePreviousOrParentTNode, saveLView);
     }
+  } else {
+    value = unwrapOnChangesDirectiveWrapper(value);
   }
   return value;
 }

@@ -2117,7 +2117,6 @@ describe('compiler compliance', () => {
             selectors: [["lifecycle-comp"]],
             factory: function LifecycleComp_Factory(t) { return new (t || LifecycleComp)(); },
             inputs: {nameMin: ["name", "nameMin"]},
-            features: [$r3$.ɵNgOnChangesFeature],
             consts: 0,
             vars: 0,
             template:  function LifecycleComp_Template(rf, ctx) {},
@@ -2242,7 +2241,6 @@ describe('compiler compliance', () => {
                 factory: function ForOfDirective_Factory(t) {
                   return new (t || ForOfDirective)($r3$.ɵdirectiveInject(ViewContainerRef), $r3$.ɵdirectiveInject(TemplateRef));
                 },
-                features: [$r3$.ɵNgOnChangesFeature],
                 inputs: {forOf: "forOf"}
               });
             `;
@@ -2318,7 +2316,6 @@ describe('compiler compliance', () => {
             factory: function ForOfDirective_Factory(t) {
               return new (t || ForOfDirective)($r3$.ɵdirectiveInject(ViewContainerRef), $r3$.ɵdirectiveInject(TemplateRef));
             },
-            features: [$r3$.ɵNgOnChangesFeature],
             inputs: {forOf: "forOf"}
           });
         `;
