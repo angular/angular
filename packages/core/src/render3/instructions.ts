@@ -36,7 +36,7 @@ import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
-import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStyles, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
+import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
@@ -553,6 +553,11 @@ export function elementStart(
   const tNode = createNodeAtIndex(index, TNodeType.Element, native !, name, attrs || null);
 
   if (attrs) {
+    // it's important to only prepare styling-related datastructures once for a given
+    // tNode and not each time an element is created. Also, the styling code is designed
+    // to be patched and constructed at various points, but only up until the first element
+    // is created. Then the styling context is locked and can only be instantiated for each
+    // successive element that is created.
     if (tView.firstTemplatePass && !tNode.stylingTemplate && hasStyling(attrs)) {
       tNode.stylingTemplate = initializeStaticStylingContext(attrs);
     }
@@ -570,10 +575,10 @@ export function elementStart(
   }
   increaseElementDepthCount();
 
-  // if a class-level directive is present then all class-based data will flow through
-  // that (except for [class.prop] bindings). This also includes initial static class
-  // values as well. Note that this will be fixed once map-based [style] and [class]
-  // bindings work for multiple directives.
+  // if a directive contains a host binding for "class" then all class-based data will
+  // flow through that (except for `[class.prop]` bindings). This also includes initial
+  // static class values as well. (Note that this will be fixed once map-based `[style]`
+  // and `[class]` bindings work for multiple directives.)
   if (tView.firstTemplatePass) {
     const inputData = initializeTNodeInputs(tNode);
     if (inputData && inputData.hasOwnProperty('class')) {
@@ -584,7 +589,7 @@ export function elementStart(
   // There is no point in rendering styles when a class directive is present since
   // it will take that over for us (this will be removed once #FW-882 is in).
   if (tNode.stylingTemplate && (tNode.flags & TNodeFlags.hasClassInput) === 0) {
-    renderInitialStyles(native, tNode.stylingTemplate, lView[RENDERER]);
+    renderInitialStylesAndClasses(native, tNode.stylingTemplate, lView[RENDERER]);
   }
 }
 
@@ -1282,10 +1287,11 @@ components
  */
 export function elementClassProp(
     index: number, classIndex: number, value: boolean | PlayerFactory, directive?: {}): void {
-  const val =
+  const onOrOffClassValue =
       (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
   updateElementClassProp(
-      getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, val, directive);
+      getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, onOrOffClassValue,
+      directive);
 }
 
 /**

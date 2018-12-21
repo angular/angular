@@ -66,7 +66,7 @@ export const enum AttributeMarker {
   NamespaceURI = 0,
 
   /**
-    * Demarcates class declaration.
+    * Signals class declaration.
     *
     * Each value following `Classes` designates a class name to include on the element.
     * ## Example:
@@ -84,7 +84,7 @@ export const enum AttributeMarker {
   Classes = 1,
 
   /**
-   * Demarcates style declaration.
+   * Signals style declaration.
    *
    * Each pair of values following `Styles` designates a style name and value to include on the
    * element.

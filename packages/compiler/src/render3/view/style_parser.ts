@@ -23,9 +23,14 @@ const enum Char {
  *
  * @param value string representation of style as used in the `style` attribute in HTML.
  *   Example: `color: red; height: auto`.
- * @returns a key/value array ... [key, value, key2, value2]
+ * @returns An array of style property name and value pairs, e.g. `['color', 'red', 'height',
+ * 'auto']`
  */
 export function parse(value: string): string[] {
+  // we use a string array here instead of a string map
+  // because a string-map is not gauranteed to retain the
+  // order of the entries whereas a string array can be
+  // construted in a [key, value, key, value] format.
   const styles: string[] = [];
 
   let i = 0;

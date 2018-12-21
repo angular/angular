@@ -24,7 +24,19 @@ import {PlayerContext} from './player';
  * 5. An animation player is added to an element via `addPlayer`
  *
  * Note that even if an element contains static styling then this context will be created and
- * attached to it.
+ * attached to it. The reason why this happens (instead of treating styles/classes as regular
+ * HTML attributes) is because the style/class bindings must be able to default themselves back
+ * to their respective static values when they are set to null.
+ *
+ * Say for example we have this:
+ * ```
+ * <!-- when myWidthExp=null then a width of "100px"
+ *      will be used a default value for width -->
+ * <div style="width:100px" [style.width]="myWidthExp"></div>
+ * ```
+ *
+ * Even in the situation where there are no bindings, the static styling is still placed into the
+ * context because there may be another directive on the same element that has styling.
  *
  * When Angular initializes styling data for an element then it will first register the static
  * styling values on the element using one of these two instructions:

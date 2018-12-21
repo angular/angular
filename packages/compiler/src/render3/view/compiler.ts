@@ -709,24 +709,35 @@ function createHostBindingsFunction(
       }
     }
 
-    if (styleBuilder.hasBindingsOrInitialValues) {
-      const patchInstruction =
-          styleBuilder.buildDirectivePatchStylingInstruction(null, constantPool);
-      if (patchInstruction) {
-        const createStmt = createStylingStmt(patchInstruction, bindingContext, bindingFn);
-        createStatements.push(createStmt);
+    if (styleBuilder.hasBindingsOrInitialValues()) {
+      // since we're dealing with directives here and directives have a hostBinding
+      // function, we need to generate special instructions that deal with styling
+      // (both bindings and initial values). The instruction below will instruct
+      // all initial styling (styling that is inside of a host binding within a
+      // directive) to be attached to the host element of the directive.
+      const hostAttrsInstruction =
+          styleBuilder.buildDirectiveHostAttrsInstruction(null, constantPool);
+      if (hostAttrsInstruction) {
+        createStatements.push(createStylingStmt(hostAttrsInstruction, bindingContext, bindingFn));
       }
 
-      const stylingBindingInstruction =
-          styleBuilder.buildelementStylingInstruction(null, constantPool);
-      if (stylingBindingInstruction) {
-        const createStmt = createStylingStmt(stylingBindingInstruction, bindingContext, bindingFn);
-        createStatements.push(createStmt);
+      // singular style/class bindings (things like `[style.prop]` and `[class.name]`)
+      // MUST be registered on a given element within the component/directive
+      // templateFn/hostBindingsFn functions. The instruction below will figure out
+      // what all the bindings are and then generate the statements required to register
+      // those bindings to the element via `elementStyling`.
+      const elementStylingInstruction =
+          styleBuilder.buildElementStylingInstruction(null, constantPool);
+      if (elementStylingInstruction) {
+        createStatements.push(
+            createStylingStmt(elementStylingInstruction, bindingContext, bindingFn));
       }
 
+      // finally each binding that was registered in the statement above will need to be added to
+      // the update block of a component/directive templateFn/hostBindingsFn so that the bindings
+      // are evaluated and updated for the element.
       styleBuilder.buildUpdateLevelInstructions(valueConverter).forEach(instruction => {
-        const updateStmt = createStylingStmt(instruction, bindingContext, bindingFn);
-        updateStatements.push(updateStmt);
+        updateStatements.push(createStylingStmt(instruction, bindingContext, bindingFn));
       });
     }
   }
