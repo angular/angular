@@ -22,7 +22,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent, el} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, modifiedInIvy} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy, obsoleteInIvy} from '@angular/private/testing';
 
 import {stringify} from '../../src/util';
 
@@ -1500,7 +1500,7 @@ function declareTests(config?: {useJit: boolean}) {
         }
       });
 
-      fixmeIvy('FW-722: getDebugContext needs to be replaced / re-implemented')
+      obsoleteInIvy('DebugContext is not patched on exceptions in ivy')
           .it('should provide an error context when an error happens in DI', () => {
             TestBed.configureTestingModule({
               declarations: [MyComp, DirectiveThrowingAnError],
@@ -1519,7 +1519,7 @@ function declareTests(config?: {useJit: boolean}) {
             }
           });
 
-      fixmeIvy('FW-722: getDebugContext needs to be replaced / re-implemented')
+      obsoleteInIvy('DebugContext is not patched on exceptions in ivy')
           .it('should provide an error context when an error happens in change detection', () => {
             TestBed.configureTestingModule({declarations: [MyComp, DirectiveThrowingAnError]});
             const template = `<input [value]="one.two.three" #local>`;
@@ -1538,7 +1538,7 @@ function declareTests(config?: {useJit: boolean}) {
             }
           });
 
-      fixmeIvy('FW-722: getDebugContext needs to be replaced / re-implemented')
+      obsoleteInIvy('DebugContext is not patched on exceptions in ivy')
           .it('should provide an error context when an error happens in change detection (text node)',
               () => {
                 TestBed.configureTestingModule({declarations: [MyComp]});
@@ -1554,35 +1554,33 @@ function declareTests(config?: {useJit: boolean}) {
                 }
               });
 
-      if (getDOM().supportsDOMEvents()) {  // this is required to use fakeAsync
-        fixmeIvy('FW-722: getDebugContext needs to be replaced / re-implemented')
-            .it('should provide an error context when an error happens in an event handler',
-                fakeAsync(() => {
-                  TestBed.configureTestingModule({
-                    declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent],
-                    schemas: [NO_ERRORS_SCHEMA],
-                  });
-                  const template = `<span emitter listener (event)="throwError()" #local></span>`;
-                  TestBed.overrideComponent(MyComp, {set: {template}});
-                  const fixture = TestBed.createComponent(MyComp);
-                  tick();
+      obsoleteInIvy('DebugContext is not patched on exceptions in ivy')
+          .it('should provide an error context when an error happens in an event handler',
+              fakeAsync(() => {
+                TestBed.configureTestingModule({
+                  declarations: [MyComp, DirectiveEmittingEvent, DirectiveListeningEvent],
+                  schemas: [NO_ERRORS_SCHEMA],
+                });
+                const template = `<span emitter listener (event)="throwError()" #local></span>`;
+                TestBed.overrideComponent(MyComp, {set: {template}});
+                const fixture = TestBed.createComponent(MyComp);
+                tick();
 
-                  const tc = fixture.debugElement.children[0];
+                const tc = fixture.debugElement.children[0];
 
-                  const errorHandler = tc.injector.get(ErrorHandler);
-                  let err: any;
-                  spyOn(errorHandler, 'handleError').and.callFake((e: any) => err = e);
-                  tc.injector.get(DirectiveEmittingEvent).fireEvent('boom');
+                const errorHandler = tc.injector.get(ErrorHandler);
+                let err: any;
+                spyOn(errorHandler, 'handleError').and.callFake((e: any) => err = e);
+                tc.injector.get(DirectiveEmittingEvent).fireEvent('boom');
 
-                  expect(err).toBeTruthy();
-                  const c = getDebugContext(err);
-                  expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('SPAN');
-                  expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
-                  expect((<Injector>c.injector).get).toBeTruthy();
-                  expect(c.context).toBe(fixture.componentInstance);
-                  expect(c.references['local']).toBeDefined();
-                }));
-      }
+                expect(err).toBeTruthy();
+                const c = getDebugContext(err);
+                expect(getDOM().nodeName(c.renderNode).toUpperCase()).toEqual('SPAN');
+                expect(getDOM().nodeName(c.componentRenderElement).toUpperCase()).toEqual('DIV');
+                expect((<Injector>c.injector).get).toBeTruthy();
+                expect(c.context).toBe(fixture.componentInstance);
+                expect(c.references['local']).toBeDefined();
+              }));
     });
 
     it('should support imperative views', () => {
