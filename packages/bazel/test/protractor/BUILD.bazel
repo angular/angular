@@ -1,5 +1,4 @@
-load("//packages/bazel:index.bzl", "protractor_web_test_suite")
-load("//tools:defaults.bzl", "ts_library")
+load("//tools:defaults.bzl", "protractor_web_test_suite", "ts_library")
 
 ts_library(
     name = "ts_spec",
@@ -26,9 +25,7 @@ ts_library(
 protractor_web_test_suite(
     name = "test",
     configuration = ":ts_conf",
-    data = ["//packages/bazel/src/protractor/utils"],
     deps = [
         ":ts_spec",
-        "@ngdeps//protractor",
     ],
 )

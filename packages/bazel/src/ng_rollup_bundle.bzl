@@ -93,6 +93,8 @@ def _plain_rollup_bundle(ctx):
     _run_tsc(ctx, ctx.outputs.build_es6, ctx.outputs.build_es5)
     source_map = run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min)
     run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min_debug, debug = True)
+    cjs_rollup_config = write_rollup_config(ctx, filename = "_%s_cjs.rollup.conf.js", output_format = "cjs")
+    run_rollup(ctx, collect_es2015_sources(ctx), cjs_rollup_config, ctx.outputs.build_cjs)
     umd_rollup_config = write_rollup_config(ctx, filename = "_%s_umd.rollup.conf.js", output_format = "umd")
     run_rollup(ctx, collect_es2015_sources(ctx), umd_rollup_config, ctx.outputs.build_umd)
     cjs_rollup_config = write_rollup_config(ctx, filename = "_%s_cjs.rollup.conf.js", output_format = "cjs")
@@ -133,6 +135,9 @@ def _ng_rollup_bundle(ctx):
         debug = True,
         comments = False,
     )
+
+    cjs_rollup_config = write_rollup_config(ctx, filename = "_%s_cjs.rollup.conf.js", output_format = "cjs")
+    run_rollup(ctx, collect_es2015_sources(ctx), cjs_rollup_config, ctx.outputs.build_cjs)
 
     umd_rollup_config = write_rollup_config(ctx, filename = "_%s_umd.rollup.conf.js", output_format = "umd")
     run_rollup(ctx, collect_es2015_sources(ctx), umd_rollup_config, ctx.outputs.build_umd)

@@ -8,6 +8,7 @@ npm_package(
         "protractor-utils.js",
         "//packages/bazel/src:package_assets",
         "//packages/bazel/src/builders:package_assets",
+        "//packages/bazel/src/protractor:package_assets",
         "//packages/bazel/src/schematics:package_assets",
     ],
     packages = [

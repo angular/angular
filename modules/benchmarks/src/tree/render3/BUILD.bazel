@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
-load("//packages/bazel:index.bzl", "protractor_web_test_suite")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "protractor_web_test_suite")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 
 ng_module(
@@ -51,10 +50,6 @@ ts_devserver(
 protractor_web_test_suite(
     name = "perf",
     configuration = "//:protractor-perf.conf.js",
-    data = [
-        "//packages/bazel/src/protractor/utils",
-        "//packages/benchpress",
-    ],
     on_prepare = ":protractor.on_prepare.js",
     server = ":devserver",
     tags = [
@@ -62,8 +57,12 @@ protractor_web_test_suite(
     ],
     deps = [
         "//modules/benchmarks/src/tree:perf_lib",
+        "//packages/benchpress",
+        "@ngdeps//fs-extra",
         "@ngdeps//node-uuid",
-        "@ngdeps//protractor",
+        "@ngdeps//reflect-metadata",
+        "@ngdeps//selenium-webdriver",
+        "@ngdeps//tslib",
         "@ngdeps//yargs",
     ],
 )

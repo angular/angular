@@ -4,16 +4,62 @@
 # found in the LICENSE file at https://angular.io/license
 "Run end-to-end tests with Protractor"
 
-load(
-    "@build_bazel_rules_nodejs//internal:node.bzl",
-    "expand_path_into_runfiles",
-    "sources_aspect",
-)
+load("@build_bazel_rules_nodejs//internal/common:sources_aspect.bzl", "sources_aspect")
+load("@build_bazel_rules_nodejs//internal/common:module_mappings.bzl", "module_mappings_runtime_aspect")
+load("@build_bazel_rules_nodejs//internal/common:expand_into_runfiles.bzl", "expand_path_into_runfiles")
 load("@io_bazel_rules_webtesting//web:web.bzl", "web_test_suite")
 load("@io_bazel_rules_webtesting//web/internal:constants.bzl", "DEFAULT_WRAPPED_TEST_TAGS")
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 _CONF_TMPL = "//packages/bazel/src/protractor:protractor.conf.js"
+_DEFAULT_PROTRACTOR_BIN = "@npm//@angular/bazel/bin:protractor"
+
+# Attributes for protractor_web_test
+PROTRACTOR_WEB_TEST_ATTRS = {
+    "srcs": attr.label_list(
+        doc = "A list of JavaScript test files",
+        allow_files = [".js"],
+    ),
+    "deps": attr.label_list(
+        doc = "Other targets which produce JavaScript such as `ts_library`",
+        allow_files = True,
+        aspects = [sources_aspect, module_mappings_runtime_aspect],
+    ),
+    "data": attr.label_list(
+        doc = "Runtime dependencies",
+        allow_files = True,
+    ),
+    "configuration": attr.label(
+        doc = "Protractor configuration file",
+        allow_single_file = True,
+        aspects = [sources_aspect],
+    ),
+    "on_prepare": attr.label(
+        doc = """A file with a node.js script to run once before all tests run.
+        If the script exports a function which returns a promise, protractor
+        will wait for the promise to resolve before beginning tests.""",
+        allow_single_file = True,
+        aspects = [sources_aspect],
+    ),
+    "server": attr.label(
+        doc = "Optional server executable target",
+        executable = True,
+        cfg = "target",
+        single_file = False,
+        allow_files = True,
+    ),
+    "protractor": attr.label(
+        doc = "Protractor binary label",
+        default = Label(_DEFAULT_PROTRACTOR_BIN),
+        executable = True,
+        cfg = "target",
+        allow_files = True,
+    ),
+    "_conf_tmpl": attr.label(
+        default = Label(_CONF_TMPL),
+        allow_single_file = True,
+    ),
+}
 
 def _short_path_to_manifest_path(ctx, short_path):
     if short_path.startswith("../"):
@@ -71,7 +117,23 @@ def _protractor_web_test_impl(ctx):
         },
     )
 
-    runfiles = [configuration] + configuration_sources + on_prepare_sources
+    runfiles = [configuration]
+    runfiles += ctx.files.srcs
+    runfiles += ctx.files.deps
+    runfiles += configuration_sources
+    runfiles += on_prepare_sources
+
+    # Generates the stringified JSON array snippet of module roots mappings, with each entry
+    # in the form `{"module_name": "^mod_name\b", "module_root": "path/to/mod_name"}`
+    # where module_name value is a RegExp. In command line format this object is
+    # formatted as such: `{\"module_name\":\"^rxjs\\\\/ajax\\\\/\\\\b\",\"module_root\":\"rxjs/ajax/\"}`
+    module_mappings = []
+    for d in ctx.attr.deps:
+        if hasattr(d, "runfiles_module_mappings"):
+            for [mn, mr] in d.runfiles_module_mappings.items():
+                escaped = mn.replace("/", "\\\\\\\\/").replace(".", "\\.")
+                mapping = "{\\\"module_name\\\": \\\"^%s\\\\\\\\b\\\", \\\"module_root\\\": \\\"%s\\\"}" % (escaped, mr)
+                module_mappings.append(mapping)
 
     ctx.actions.write(
         output = ctx.outputs.executable,
@@ -98,21 +160,25 @@ PROTRACTOR_VERSION=$($PROTRACTOR --version)
 echo "Protractor $PROTRACTOR_VERSION"
 
 # Run the protractor binary
-$PROTRACTOR $CONF
+$PROTRACTOR $CONF --additional_module_roots "[{TMPL_module_roots}]"
 """.format(
             TMPL_protractor = _short_path_to_manifest_path(ctx, ctx.executable.protractor.short_path),
             TMPL_conf = _short_path_to_manifest_path(ctx, configuration.short_path),
+            TMPL_module_roots = ",".join(module_mappings),
         ),
     )
+
+    ctx_runfiles = ctx.runfiles(
+        files = runfiles,
+        transitive_files = files,
+    )
+    ctx_runfiles = ctx_runfiles.merge(ctx.attr.protractor[DefaultInfo].data_runfiles)
+    if ctx.attr.server:
+        ctx_runfiles = ctx_runfiles.merge(ctx.attr.server[DefaultInfo].data_runfiles)
+
     return [DefaultInfo(
         files = depset([ctx.outputs.executable]),
-        runfiles = ctx.runfiles(
-            files = runfiles,
-            transitive_files = files,
-            # Propagate protractor_bin and its runfiles
-            collect_data = True,
-            collect_default = True,
-        ),
+        runfiles = ctx_runfiles,
         executable = ctx.outputs.executable,
     )]
 
@@ -120,103 +186,40 @@ _protractor_web_test = rule(
     implementation = _protractor_web_test_impl,
     test = True,
     executable = True,
-    attrs = {
-        "configuration": attr.label(
-            doc = "Protractor configuration file",
-            allow_single_file = True,
-            aspects = [sources_aspect],
-        ),
-        "srcs": attr.label_list(
-            doc = "A list of JavaScript test files",
-            allow_files = [".js"],
-        ),
-        "on_prepare": attr.label(
-            doc = """A file with a node.js script to run once before all tests run.
-            If the script exports a function which returns a promise, protractor
-            will wait for the promise to resolve before beginning tests.""",
-            allow_single_file = True,
-            aspects = [sources_aspect],
-        ),
-        "deps": attr.label_list(
-            doc = "Other targets which produce JavaScript such as `ts_library`",
-            allow_files = True,
-            aspects = [sources_aspect],
-        ),
-        "data": attr.label_list(
-            doc = "Runtime dependencies",
-        ),
-        "server": attr.label(
-            doc = "Optional server executable target",
-            executable = True,
-            cfg = "target",
-            single_file = False,
-            allow_files = True,
-        ),
-        "protractor": attr.label(
-            doc = "Protractor executable target (set by protractor_web_test macro)",
-            executable = True,
-            cfg = "target",
-            single_file = False,
-            allow_files = True,
-        ),
-        "_conf_tmpl": attr.label(
-            default = Label(_CONF_TMPL),
-            allow_single_file = True,
-        ),
-    },
+    attrs = PROTRACTOR_WEB_TEST_ATTRS,
 )
 
 def protractor_web_test(
-        name,
-        configuration = None,
-        on_prepare = None,
         srcs = [],
         deps = [],
         data = [],
+        configuration = None,
+        on_prepare = None,
         server = None,
         tags = [],
         **kwargs):
     """Runs a protractor test in a browser.
 
     Args:
-      name: The name of the test
+      srcs: JavaScript source files
+      deps: Other targets which produce JavaScript such as `ts_library`
+      data: Runtime dependencies
       configuration: Protractor configuration file.
       on_prepare: A file with a node.js script to run once before all tests run.
           If the script exports a function which returns a promise, protractor
           will wait for the promise to resolve before beginning tests.
-      srcs: JavaScript source files
-      deps: Other targets which produce JavaScript such as `ts_library`
-      data: Runtime dependencies
       server: Optional server executable target
-      tags: Standard Bazel tags, this macro adds one for ibazel
+      tags: Standard Bazel tags, this macro adds tags for ibazel support
       **kwargs: passed through to `_protractor_web_test`
     """
 
-    protractor_bin_name = name + "_protractor_bin"
-
-    nodejs_binary(
-        name = protractor_bin_name,
-        entry_point = "protractor/bin/protractor",
-        data = srcs + deps + data,
-        testonly = 1,
-        visibility = ["//visibility:private"],
-    )
-
-    # Our binary dependency must be in data[] for collect_data to pick it up
-    # FIXME: maybe we can just ask :protractor_bin_name for its runfiles attr
-    web_test_data = data + [":" + protractor_bin_name]
-    if server:
-        web_test_data += [server]
-
     _protractor_web_test(
-        name = name,
-        configuration = configuration,
-        on_prepare = on_prepare,
         srcs = srcs,
         deps = deps,
-        data = web_test_data,
+        data = data,
+        configuration = configuration,
+        on_prepare = on_prepare,
         server = server,
-        protractor = protractor_bin_name,
         tags = tags + [
             # Users don't need to know that this tag is required to run under ibazel
             "ibazel_notify_changes",
@@ -226,12 +229,7 @@ def protractor_web_test(
 
 def protractor_web_test_suite(
         name,
-        configuration = None,
-        on_prepare = None,
-        srcs = [],
-        deps = [],
         data = [],
-        server = None,
         browsers = ["@io_bazel_rules_webtesting//browsers:chromium-local"],
         args = None,
         browser_overrides = None,
@@ -249,16 +247,11 @@ def protractor_web_test_suite(
         **remaining_keyword_args):
     """Defines a test_suite of web_test targets that wrap a protractor_web_test target.
 
+    This macro also accepts all parameters in protractor_web_test. See protractor_web_test
+    docs for details.
+
     Args:
       name: The base name of the test.
-      configuration: Protractor configuration file.
-      on_prepare: A file with a node.js script to run once before all tests run.
-          If the script exports a function which returns a promise, protractor
-          will wait for the promise to resolve before beginning tests.
-      srcs: JavaScript source files
-      deps: Other targets which produce JavaScript such as `ts_library`
-      data: Runtime dependencies
-      server: Optional server executable target
       browsers: A sequence of labels specifying the browsers to use.
       args: Args for web_test targets generated by this extension.
       browser_overrides: Dictionary; optional; default is an empty dictionary. A
@@ -289,34 +282,10 @@ def protractor_web_test_suite(
     size = size or "large"
 
     wrapped_test_name = name + "_wrapped_test"
-    protractor_bin_name = name + "_protractor_bin"
-
-    # Users don't need to know that this tag is required to run under ibazel
-    tags = tags + ["ibazel_notify_changes"]
-
-    nodejs_binary(
-        name = protractor_bin_name,
-        entry_point = "protractor/bin/protractor",
-        data = srcs + deps + data,
-        testonly = 1,
-        visibility = ["//visibility:private"],
-    )
-
-    # Our binary dependency must be in data[] for collect_data to pick it up
-    # FIXME: maybe we can just ask the :protractor_bin_name for its runfiles attr
-    web_test_data = web_test_data + [":" + protractor_bin_name]
-    if server:
-        web_test_data += [server]
 
     _protractor_web_test(
         name = wrapped_test_name,
-        configuration = configuration,
-        on_prepare = on_prepare,
-        srcs = srcs,
-        deps = deps,
-        data = web_test_data,
-        server = server,
-        protractor = protractor_bin_name,
+        data = data,
         args = args,
         flaky = flaky,
         local = local,
@@ -335,12 +304,15 @@ def protractor_web_test_suite(
         browsers = browsers,
         browser_overrides = browser_overrides,
         config = config,
-        data = web_test_data,
+        data = web_test_data + data,
         flaky = flaky,
         local = local,
         shard_count = shard_count,
         size = size,
-        tags = tags,
+        tags = tags + [
+            # Users don't need to know that this tag is required to run under ibazel
+            "ibazel_notify_changes",
+        ],
         test = wrapped_test_name,
         test_suite_tags = test_suite_tags,
         timeout = timeout,
