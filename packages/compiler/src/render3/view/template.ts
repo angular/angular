@@ -490,9 +490,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const {name, value} = attr;
       if (name === NON_BINDABLE_ATTR) {
         isNonBindableMode = true;
-      } else if (name == 'style') {
+      } else if (name === 'style') {
         stylingBuilder.registerStyleAttr(value);
-      } else if (name == 'class') {
+      } else if (name === 'class') {
         stylingBuilder.registerClassAttr(value);
       } else if (attr.i18n) {
         i18nAttrs.push(attr);
@@ -516,7 +516,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     element.inputs.forEach((input: t.BoundAttribute) => {
       if (!stylingBuilder.registerBoundInput(input)) {
-        if (input.type == BindingType.Property) {
+        if (input.type === BindingType.Property) {
           if (input.i18n) {
             i18nAttrs.push(input);
           } else {
@@ -733,7 +733,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       parameters.push(o.importExpr(R3.templateRefExtractor));
     }
 
-    // handle property bindings e.g. p(1, 'forOf', ɵbind(ctx.items));
+    // handle property bindings e.g. p(1, 'ngForOf', ɵbind(ctx.items));
     const context = o.variable(CONTEXT_NAME);
     template.inputs.forEach(input => {
       const value = input.value.visit(this._valueConverter);
@@ -756,7 +756,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
     // be able to support bindings in nested templates to local refs that occur after the
-    // template definition. e.g. <div *ngIf="showing"> {{ foo }} </div>  <div #foo></div>
+    // template definition. e.g. <div *ngIf="showing">{{ foo }}</div>  <div #foo></div>
     this._nestedTemplateFns.push(() => {
       const templateFunctionExpr = templateVisitor.buildTemplateFunction(
           template.children, template.variables,
@@ -1453,7 +1453,7 @@ function createCssSelector(tag: string, attributes: {[name: string]: string}): C
 
     cssSelector.addAttribute(name, value);
     if (name.toLowerCase() === 'class') {
-      const classes = value.trim().split(/\s+/g);
+      const classes = value.trim().split(/\s+/);
       classes.forEach(className => cssSelector.addClassName(className));
     }
   });
@@ -1570,8 +1570,10 @@ function isSingleElementTemplate(children: t.Node[]): children is[t.Element] {
   return children.length === 1 && children[0] instanceof t.Element;
 }
 
+function isTextNode(node: t.Node): boolean {
+  return node instanceof t.Text || node instanceof t.BoundText || node instanceof t.Icu;
+}
+
 function hasTextChildrenOnly(children: t.Node[]): boolean {
-  return !children.find(
-      child =>
-          !(child instanceof t.Text || child instanceof t.BoundText || child instanceof t.Icu));
+  return children.every(isTextNode);
 }
