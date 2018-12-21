@@ -214,7 +214,6 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-        const $e0_attrs$ = ["@foo", ""];
         const $e1_attrs$ = ["@bar", ""];
         const $e2_attrs$ = ["@baz", ""];
         …
@@ -224,7 +223,7 @@ describe('compiler compliance: styling', () => {
           vars: 1,
           template:  function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
-              $r3$.ɵelement(0, "div", $e0_attrs$);
+              $r3$.ɵelement(0, "div");
               $r3$.ɵelement(1, "div", $e1_attrs$);
               $r3$.ɵelement(2, "div", $e2_attrs$);
             }

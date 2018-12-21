@@ -394,8 +394,9 @@ function renderComponentOrTemplate<T>(
     hostView: LView, context: T, templateFn?: ComponentTemplate<T>) {
   const rendererFactory = hostView[RENDERER_FACTORY];
   const oldView = enterView(hostView, hostView[HOST_NODE]);
+  const normalExecutionPath = !getCheckNoChangesMode();
   try {
-    if (rendererFactory.begin) {
+    if (normalExecutionPath && rendererFactory.begin) {
       rendererFactory.begin();
     }
 
@@ -414,7 +415,7 @@ function renderComponentOrTemplate<T>(
     templateFn && templateFn(RenderFlags.Update, context !);
     refreshDescendantViews(hostView);
   } finally {
-    if (rendererFactory.end) {
+    if (normalExecutionPath && rendererFactory.end) {
       rendererFactory.end();
     }
     leaveView(oldView);

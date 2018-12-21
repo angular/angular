@@ -10,7 +10,7 @@ import {flatten, sanitizeIdentifier} from '../../compile_metadata';
 import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
+import {AST, ASTWithSource, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
 import {Parser} from '../../expression_parser/parser';
 import * as i18n from '../../i18n/i18n_ast';
@@ -967,6 +967,29 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       styles?: StylingBuilder): o.Expression[] {
     const attrExprs: o.Expression[] = [];
     const nonSyntheticInputs: t.BoundAttribute[] = [];
+    const alreadySeen = new Set<string>();
+
+    function isASTWithSource(ast: AST): ast is ASTWithSource {
+      return ast instanceof ASTWithSource;
+    }
+
+    function isLiteralPrimitive(ast: AST): ast is LiteralPrimitive {
+      return ast instanceof LiteralPrimitive;
+    }
+
+    function addAttrExpr(key: string | number, value?: o.Expression): void {
+      if (typeof key === 'string') {
+        if (!alreadySeen.has(key)) {
+          attrExprs.push(o.literal(key));
+          if (value !== undefined) {
+            attrExprs.push(value);
+          }
+          alreadySeen.add(key);
+        }
+      } else {
+        attrExprs.push(o.literal(key));
+      }
+    }
 
     if (inputs.length) {
       const EMPTY_STRING_EXPR = asLiteral('');
@@ -976,7 +999,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           // may be supported differently in future versions of angular. However,
           // @triggers should always just be treated as regular attributes (it's up
           // to the renderer to detect and use them in a special way).
-          attrExprs.push(asLiteral(prepareSyntheticAttributeName(input.name)), EMPTY_STRING_EXPR);
+          const valueExp = input.value;
+          if (isASTWithSource(valueExp)) {
+            const literal = valueExp.ast;
+            if (isLiteralPrimitive(literal) && literal.value === undefined) {
+              addAttrExpr(prepareSyntheticAttributeName(input.name), EMPTY_STRING_EXPR);
+            }
+          }
         } else {
           nonSyntheticInputs.push(input);
         }
@@ -991,9 +1020,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     if (nonSyntheticInputs.length || outputs.length) {
-      attrExprs.push(o.literal(core.AttributeMarker.SelectOnly));
-      nonSyntheticInputs.forEach((i: t.BoundAttribute) => attrExprs.push(asLiteral(i.name)));
-      outputs.forEach((o: t.BoundEvent) => attrExprs.push(asLiteral(o.name)));
+      addAttrExpr(core.AttributeMarker.SelectOnly);
+      nonSyntheticInputs.forEach((i: t.BoundAttribute) => addAttrExpr(i.name));
+      outputs.forEach((o: t.BoundEvent) => addAttrExpr(o.name));
     }
 
     return attrExprs;
