@@ -1253,7 +1253,7 @@ Proceed to the first application milestone.
 <!--
 Begin with a simple version of the app that navigates between two empty views.
 -->
-처음에는 두 화면을 전환하도록 간단한 네비게이션을 구현해 봅시다.
+처음에는 간단하게 두 화면을 전환하는 네비게이션을 구현해 봅시다.
 
 
 <figure>
@@ -1286,31 +1286,31 @@ Each definition translates to a [Route](api/router/Route) object which has two t
 `path`, the URL path segment for this route; and a
 `component`, the component associated with this route.
 -->
-라우팅 규칙에는 URL 경로를 지정하는 `path`와 이 경로에 매칭될 컴포넌트를 지정하는 `component` 프로퍼티가 정의되며, 각 라우팅 규칙은 [Route](api/router/Route) 객체로 변환됩니다.
+라우팅 규칙에는 URL 경로를 지정하는 `path`와 이 경로에 매칭될 컴포넌트를 지정하는 `component` 프로퍼티가 지정되며, 각 라우팅 규칙은 [Route](api/router/Route) 객체로 변환됩니다.
 
 <!--
 The router draws upon its registry of definitions when the browser URL changes
 or when application code tells the router to navigate along a route path.
 -->
-이 라우팅 규칙은 라우터 안에 등록되며, 이후에 브라우저 URL이 변경되거나 애플리케이션 코드가 네비게이션을 시작할 때 이렇게 등록된 라우팅 규칙을 참조합니다.
+이 라우팅 규칙은 라우터 안에 등록된 이후에 브라우저 URL이 변경되거나 애플리케이션 코드가 네비게이션을 시작할 때 사용됩니다.
 
 <!--
 In simpler terms, you might say this of the first route:
 -->
-이 내용을 좀 더 간단하게 알아봅시다:
+라우팅 규칙의 역할을 간단하게 설명하면 다음과 같습니다.
 
 <!--
 * When the browser's location URL changes to match the path segment `/crisis-center`, then
 the router activates an instance of the `CrisisListComponent` and displays its view.
 -->
-* 브라우저 URL이 `/crisis-center`로 변경되면, 라우터가 `CrisisListComponent` 인스턴스를 활성화하고 화면에 표시합니다.
+* 브라우저 URL이 `/crisis-center`로 변경되면 라우터가 `CrisisListComponent` 인스턴스를 활성화하고 화면에 표시합니다.
 
 <!--
 * When the application requests navigation to the path `/crisis-center`, the router
 activates an instance of `CrisisListComponent`, displays its view, and updates the
 browser's address location and history with the URL for that path.
 -->
-* 애플리케이션에서 `/crisis-center`로 네비게이션하는 코드가 실행되면, 라우터가 `CrisisListComponent` 인스턴스를 활성화하고 화면에 표시하며, 브라우저의 주소 표시줄을 새로운 주소로 변경하고, 히스토리 방문 기록에도 추가합니다.
+* 애플리케이션에서 `/crisis-center`로 네비게이션하는 코드가 실행되면 라우터가 `CrisisListComponent` 인스턴스를 활성화하고 화면에 표시하며, 브라우저의 주소 표시줄을 새로운 주소로 변경하고, 히스토리 방문 기록에도 추가합니다.
 
 <!--
 The first configuration defines an array of two routes with simple paths leading to the
@@ -1358,7 +1358,7 @@ In order to use the Router, you must first register the `RouterModule` from the 
   <!--
   **Note:** The `RouterModule.forRoot` method is a pattern used to register application-wide providers. Read more about application-wide providers in the [Singleton services](guide/singleton-services#forroot) guide.
   -->
-  **참고:** `RouterModule.forRoot()` 메소드는 애플리케이션 전역에 사용하는 프로바이더를 등록하는 패턴 중 하나입니다. 애플리케이션 전역 프로바이더에 대해서 더 알아보려면 [싱글턴 서비스](guide/singleton-services#forroot) 문서를 참고하세요.
+  **참고:** `RouterModule.forRoot()` 메소드는 애플리케이션 전역에 사용하는 프로바이더를 등록하는 함수입니다. 애플리케이션 전역 프로바이더에 대해서 더 알아보려면 [싱글턴 서비스](guide/singleton-services#forroot) 문서를 참고하세요.
 
 </div>
 
@@ -1374,7 +1374,7 @@ In order to use the Router, you must first register the `RouterModule` from the 
 <!--
 Adding the configured `RouterModule` to the `AppModule` is sufficient for simple route configurations. As the application grows, you'll want to [refactor the routing configuration](#refactor-the-routing-configuration-into-a-routing-module) into a separate file and create a **[Routing Module](#routing-module)**, a special type of `Service Module` dedicated to the purpose of routing in feature modules.
 -->
-이렇게 설정된 `RouterModule`을 `AppModule`에 로드하면 간단한 네비게이션 설정은 끝납니다. 애플리케이션이 점점 복잡해질수록 라우팅 규칙은 **[라우팅 모듈 (Routing module)](#routing-module)**로 [리팩토링](#라우터-설정을-라우팅-모듈-로-옮기기)해야 할 수도 있습니다. 라우팅 모듈은 기능 모듈에서 라우팅을 담당하는 코드를 따로 모아 만든 서비스 모듈을 의미합니다.
+이렇게 설정된 `RouterModule`을 `AppModule`에 로드하면 간단한 네비게이션 설정은 끝납니다. 애플리케이션이 점점 복잡해질수록 라우팅 규칙이 많아지기 때문에 이 규칙들은 **[라우팅 모듈 (Routing module)](#routing-module)**로 [리팩토링](#라우터-설정을-라우팅-모듈-로-옮기기)해야 할 수도 있습니다. 라우팅 모듈은 기능 모듈에서 라우팅을 담당하는 코드를 따로 모아 만든 서비스 모듈을 의미합니다.
 
 </div>
 
@@ -1409,7 +1409,7 @@ The router outlet serves as a placeholder when the routed components will be ren
 <!--
 The corresponding component template looks like this:
 -->
-지금까지 설명한 대로 템플릿을 구성하면 다음과 같이 구성할 수 있습니다:
+지금까지 설명한 대로 템플릿을 구성하면 다음과 같이 구현할 수 있습니다:
 
 <code-example path="router/src/app/app.component.1.html" linenums="false" header="src/app/app.component.html">
 
@@ -1435,9 +1435,9 @@ The router will select _this_ route if it can't match a route earlier in the con
 A wildcard route can navigate to a custom "404 Not Found" component or [redirect](#redirect) to an existing route.
 -->
 이 에러를 방지하기 위해 잘못된 URL을 매칭하는 **와일드카드** 라우팅 규칙을 추가해 봅시다.
-_와일드카드_ 라우팅 규칙은 아스테리스크 2개(`**`)를 주소로 지정하며, 이 규칙은 _모든_ URL과 매칭됩니다.
-라우터는 이 라우팅 규칙을 만나기 전까지 URL에 매칭되는 라우팅 규칙을 찾지 못하면 _이_ 라우팅 규칙을 매칭시킵니다.
-그래서 와일드카드 라우팅 규칙은 "404 Not Found" 컴포넌트를 표시하거나 다른 페이지로 [리다이렉트](#redirect)하는 로직을 구현할 때 사용합니다.
+_와일드카드_ 라우팅 규칙은 아스테리스크 2개(`**`)를 주소로 지정하는데, 이 규칙은 _모든_ URL과 매칭됩니다.
+그래서 라우터가 이 라우팅 규칙을 만나기 전까지 URL에 매칭되는 라우팅 규칙을 찾지 못하면 _이_ 라우팅 규칙을 매칭시킵니다.
+와일드카드 라우팅 규칙은 "404 Not Found" 컴포넌트를 표시하거나 다른 페이지로 [리다이렉트](#redirect)하는 로직을 구현할 때 사용합니다.
 
 <div class="alert is-helpful">
 
@@ -1447,14 +1447,14 @@ Wildcard routes are the least specific routes in the route configuration.
 Be sure it is the _last_ route in the configuration.
 -->
 라우터는 앱에 등록된 라우팅 규칙 중 [첫 번째 매칭되는](#example-config) 라우팅 규칙을 처리합니다.
-이 때 와일드카드 라우팅 규칙은 구체적인 것과는 가장 거리가 먼 규칙이며, 반드시 _마지막_ 라우팅 규칙으로 등록되어야 합니다.
+와일드카드 라우팅 규칙은 모든 URL고가 매칭되기 때문에 반드시 _마지막_ 라우팅 규칙으로 등록되어야 합니다.
 
 </div>
 
 <!--
 To test this feature, add a button with a `RouterLink` to the `HeroListComponent` template and set the link to `"/sidekicks"`.
 -->
-이 동작을 테스트하기 위해 `HeroListComponent` 템플릿에 `RouterLink`를 사용하는 버튼을 하나 추가하고, 이 버튼의 링크를 `"/sidekicks"`로 지정합니다.
+동작을 테스트하기 위해 `HeroListComponent` 템플릿에 `RouterLink`를 사용하는 버튼을 하나 추가하고, 이 버튼의 링크를 `"/sidekicks"`로 지정합니다.
 
 <!--
 <code-example path="router/src/app/hero-list/hero-list.component.html" linenums="false" header="src/app/hero-list/hero-list.component.html (excerpt)">
@@ -1471,7 +1471,7 @@ The application will fail if the user clicks that button because you haven't def
 <!--
 Instead of adding the `"/sidekicks"` route, define a `wildcard` route instead and have it navigate to a simple `PageNotFoundComponent`.
 -->
-그러면 `"/sidekicks"` 라우팅 규칙을 추가하는 대신 와일드카드 라우팅 규칙을 추가하고, 이 라우팅 규칙은 `PageNotFoundComponent`를 표시하도록 합시다.
+그러면 `"/sidekicks"` 라우팅 규칙을 추가하는 대신 와일드카드 라우팅 규칙을 추가하고, 이 라우팅 규칙을 `PageNotFoundComponent`와 연결합시다.
 
 <code-example path="router/src/app/app.module.1.ts" linenums="false" header="src/app/app.module.ts (wildcard)" region="wildcard">
 
@@ -1494,8 +1494,8 @@ Create the `PageNotFoundComponent` to display when users visit invalid URLs.
 Now when the user visits `/sidekicks`, or any other invalid URL, the browser displays "Page not found".
 The browser address bar continues to point to the invalid URL.
 -->
-이제 사용자가 `/sidekicks`와 같이 규칙으로 등록되지 않은 주소에 접근하게 되면, 브라우저에 "Page not found"가 표시됩니다.
-이 때 브라우저의 주소표시줄에는 변경되지 않은 URL이 그대로 표시됩니다.
+이제 사용자가 `/sidekicks`와 같이 등록되지 않은 주소에 접근하면 "Page not found" 화면이 표시됩니다.
+이 때 브라우저 주소표시줄의 URL은 변경되지 않고 그대로 표시됩니다.
 
 {@a redirect}
 
@@ -1524,15 +1524,15 @@ The application needs a **default route** to a valid page.
 The default page for this app is the list of heroes.
 The app should navigate there as if the user clicked the "Heroes" link or pasted `localhost:4200/heroes` into the address bar.
 -->
-하지만 이 동작 대신 애플리케이션에 **기본 페이지로 가는** 라우팅 규칙을 추가하려고 합니다.
+이 동작 대신 애플리케이션에 **기본 페이지로 가는** 라우팅 규칙을 추가하려고 합니다.
 그리고 애플리케이션의 기본 페이지는 히어로의 목록을 표시하는 화면으로 하려고 합니다.
-기본 라우팅 규칙이 추가되면 사용자가 화면에서 "Heroes" 링크를 클릭하거나 주소표시줄에 `localhost:4200/heroes`를 입력한 것과 같은 페이지로 이동할 것입니다.
+기본 라우팅 규칙은 사용자가 화면에서 "Heroes" 링크를 클릭하거나 주소표시줄에 `localhost:4200/heroes`를 입력한 것과 같은 동작을 합니다.
 
 <!--
 The preferred solution is to add a `redirect` route that translates the initial relative URL (`''`)
 to the desired default path (`/heroes`). The browser address bar shows `.../heroes` as if you'd navigated there directly.
 -->
-가장 좋은 방법은 애플리케이션의 최상위 URL(`''`)로 접속할 때 기본 주소(`/heroes`)로 이동하도록 `redirect` 라우팅 규칙을 추가하는 것입니다. 이 라우팅 규칙을 적용하면 사용자가 직접 `.../heroes`로 이동한 것과 같은 효과를 냅니다.
+가장 좋은 방법은 애플리케이션의 최상위 URL(`''`)로 접속할 때 기본 주소(`/heroes`)로 이동하도록 `redirect` 라우팅 규칙을 추가하는 것입니다. 이 라우팅 규칙을 적용하면 사용자가 직접 `.../heroes`로 이동한 것과 같은 동작을 합니다.
 
 <!--
 Add the default route somewhere _above_ the wildcard route.
@@ -1550,8 +1550,7 @@ The router throws an error if you don't.
 In this app, the router should select the route to the `HeroListComponent` only when the *entire URL* matches `''`,
 so set the `pathMatch` value to `'full'`.
 -->
-리다이렉트 라우팅 규칙을 사용하려면 브라우저의 URL이 라우팅 규칙과 매칭되는 방법을 지정하기 위해 `pathMatch` 프로퍼티를 함께 사용해야 합니다.
-이 프로퍼티가 지정되지 않는다면 에러가 발생할 것입니다.
+리다이렉트 라우팅 규칙을 사용하려면 브라우저의 URL이 라우팅 규칙과 매칭되는 방법을 지정하기 위해 `pathMatch` 프로퍼티를 함께 사용해야 하는데, 이 프로퍼티가 지정되지 않으면 에러가 발생합니다.
 이 예제에서는 *전체 URL*이 정확하게 `''`일 때만 `HeroListComponent`로 라우팅하기 위해 `pathMatch`의 값을 `'full'`로 지정했습니다.
 
 <div class="alert is-helpful">
