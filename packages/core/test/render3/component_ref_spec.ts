@@ -18,7 +18,28 @@ describe('ComponentFactory', () => {
   const cfr = injectComponentFactoryResolver();
 
   describe('constructor()', () => {
-    it('should correctly populate public properties', () => {
+    it('should correctly populate default properties', () => {
+      class TestComponent {
+        static ngComponentDef = defineComponent({
+          type: TestComponent,
+          selectors: [['test', 'foo'], ['bar']],
+          consts: 0,
+          vars: 0,
+          template: () => undefined,
+          factory: () => new TestComponent(),
+        });
+      }
+
+      const cf = cfr.resolveComponentFactory(TestComponent);
+
+      expect(cf.selector).toBe('test');
+      expect(cf.componentType).toBe(TestComponent);
+      expect(cf.ngContentSelectors).toEqual([]);
+      expect(cf.inputs).toEqual([]);
+      expect(cf.outputs).toEqual([]);
+    });
+
+    it('should correctly populate defined properties', () => {
       class TestComponent {
         static ngComponentDef = defineComponent({
           type: TestComponent,
@@ -27,6 +48,7 @@ describe('ComponentFactory', () => {
           consts: 0,
           vars: 0,
           template: () => undefined,
+          ngContentSelectors: ['a', 'b'],
           factory: () => new TestComponent(),
           inputs: {
             in1: 'in1',
@@ -42,7 +64,7 @@ describe('ComponentFactory', () => {
       const cf = cfr.resolveComponentFactory(TestComponent);
 
       expect(cf.componentType).toBe(TestComponent);
-      expect(cf.ngContentSelectors).toEqual([]);
+      expect(cf.ngContentSelectors).toEqual(['*', 'a', 'b']);
       expect(cf.selector).toBe('test');
 
       expect(cf.inputs).toEqual([

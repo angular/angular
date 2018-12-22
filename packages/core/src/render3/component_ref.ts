@@ -119,7 +119,10 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     super();
     this.componentType = componentDef.type;
     this.selector = componentDef.selectors[0][0] as string;
-    this.ngContentSelectors = [];
+    // The component definition does not include the wildcard ('*') selector in its list.
+    // It is implicitly expected as the first item in the projectable nodes array.
+    this.ngContentSelectors =
+        componentDef.ngContentSelectors ? ['*', ...componentDef.ngContentSelectors] : [];
   }
 
   create(

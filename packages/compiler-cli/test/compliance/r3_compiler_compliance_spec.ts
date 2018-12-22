@@ -1122,6 +1122,7 @@ describe('compiler compliance', () => {
             type: SimpleComponent,
             selectors: [["simple"]],
             factory: function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); },
+            ngContentSelectors: _c0,
             consts: 2,
             vars: 0,
             template:  function SimpleComponent_Template(rf, ctx) {
@@ -1145,6 +1146,7 @@ describe('compiler compliance', () => {
             type: ComplexComponent,
             selectors: [["complex"]],
             factory: function ComplexComponent_Factory(t) { return new (t || ComplexComponent)(); },
+            ngContentSelectors: _c4,
             consts: 4,
             vars: 0,
             template:  function ComplexComponent_Template(rf, ctx) {
@@ -1539,6 +1541,7 @@ describe('compiler compliance', () => {
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && ($instance$.someDir = $tmp$.first));
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && ($instance$.someDirList = $tmp$));
             },
+            ngContentSelectors: _c0,
             consts: 2,
             vars: 0,
             template:  function ContentQueryComponent_Template(rf, ctx) {
