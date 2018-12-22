@@ -188,11 +188,12 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
   }
 
   /**
-   * Given a `FunctionDeclaration` or `MethodDeclaration`, check if it is typed as a
-   * `ModuleWithProviders` and return an expression referencing the module if available.
+   * Given a `FunctionDeclaration`, `MethodDeclaration` or `FunctionExpression`, check if it is
+   * typed as a `ModuleWithProviders` and return an expression referencing the module if available.
    */
   private _extractModuleFromModuleWithProvidersFn(node: ts.FunctionDeclaration|
-                                                  ts.MethodDeclaration): ts.Expression|null {
+                                                  ts.MethodDeclaration|
+                                                  ts.FunctionExpression): ts.Expression|null {
     const type = node.type || null;
     return type &&
         (this._reflectModuleFromTypeParam(type) || this._reflectModuleFromLiteralType(type));
