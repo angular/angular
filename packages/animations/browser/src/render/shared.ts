@@ -172,7 +172,10 @@ if (_isNode || typeof Element !== 'undefined') {
   _query = (element: any, selector: string, multi: boolean): any[] => {
     let results: any[] = [];
     if (multi) {
-      results.push(...element.querySelectorAll(selector));
+      const nodeList = element.querySelectorAll(selector);
+      for (let i = 0; i < nodeList.length; i++) {
+        results.push(nodeList[i]);
+      }
     } else {
       const elm = element.querySelector(selector);
       if (elm) {
