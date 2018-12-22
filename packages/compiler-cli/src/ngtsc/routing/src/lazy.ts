@@ -9,8 +9,7 @@
 import * as ts from 'typescript';
 
 import {AbsoluteReference, NodeReference, Reference} from '../../imports';
-import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
-import {ReflectionHost} from '../../reflection';
+import {ForeignFunctionResolver, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 
 import {NgModuleRawRouteData} from './analyzer';
 import {RouterEntryPoint, RouterEntryPointManager} from './route';
@@ -123,32 +122,35 @@ function scanForLazyRoutes(routes: ResolvedValue[]): string[] {
 }
 
 /**
- * A foreign function declaration that converts `RouterModule.forRoot/forChild(X)` to a special
- * object of the form `{__ngRoutesMarker__: true, routes: X}`.
+ * A foreign function resolver that converts `RouterModule.forRoot/forChild(X)` to a special object
+ * of the form `{__ngRoutesMarker__: true, routes: X}`.
  *
  * These objects are then recognizable inside the larger set of imports/exports.
  */
-function routerModuleFFR(
-    ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-    args: ReadonlyArray<ts.Expression>): ts.Expression|null {
-  if (!isMethodNodeReference(ref) || !ts.isClassDeclaration(ref.node.parent)) {
-    return null;
-  } else if (ref.moduleName !== '@angular/router') {
-    return null;
-  } else if (ref.node.parent.name === undefined || ref.node.parent.name.text !== 'RouterModule') {
-    return null;
-  } else if (
-      !ts.isIdentifier(ref.node.name) ||
-      (ref.node.name.text !== 'forRoot' && ref.node.name.text !== 'forChild')) {
-    return null;
-  }
+const routerModuleFFR: ForeignFunctionResolver =
+    function routerModuleFFR(
+        ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
+        args: ReadonlyArray<ts.Expression>): ts.Expression |
+    null {
+      if (!isMethodNodeReference(ref) || !ts.isClassDeclaration(ref.node.parent)) {
+        return null;
+      } else if (ref.moduleName !== '@angular/router') {
+        return null;
+      } else if (
+          ref.node.parent.name === undefined || ref.node.parent.name.text !== 'RouterModule') {
+        return null;
+      } else if (
+          !ts.isIdentifier(ref.node.name) ||
+          (ref.node.name.text !== 'forRoot' && ref.node.name.text !== 'forChild')) {
+        return null;
+      }
 
-  const routes = args[0];
-  return ts.createObjectLiteral([
-    ts.createPropertyAssignment(ROUTES_MARKER, ts.createTrue()),
-    ts.createPropertyAssignment('routes', routes),
-  ]);
-}
+      const routes = args[0];
+      return ts.createObjectLiteral([
+        ts.createPropertyAssignment(ROUTES_MARKER, ts.createTrue()),
+        ts.createPropertyAssignment('routes', routes),
+      ]);
+    };
 
 function isMethodNodeReference(
     ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>):

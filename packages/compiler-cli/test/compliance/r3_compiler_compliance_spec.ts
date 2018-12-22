@@ -2543,7 +2543,7 @@ describe('compiler compliance', () => {
             @Directive({selector: '[some-directive]', exportAs: 'someDir, otherDir'})
             export class SomeDirective {}
 
-            @NgModule({declarations: [SomeDirective, MyComponent]})
+            @NgModule({declarations: [SomeDirective]})
             export class MyModule{}
           `
         }

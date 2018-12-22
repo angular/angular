@@ -10,7 +10,6 @@ import * as ts from 'typescript';
 
 import {ModuleResolver} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {ReflectionHost} from '../../reflection';
 
 import {scanForRouteEntryPoints} from './lazy';
 import {RouterEntryPointManager} from './route';

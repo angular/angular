@@ -13,7 +13,6 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
-        "//packages/compiler-cli/src/ngtsc/reflection",
         "@ngdeps//@types/node",
         "@ngdeps//typescript",
     ],
