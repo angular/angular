@@ -15,8 +15,8 @@ import {StaticInterpreter} from './interpreter';
 import {ResolvedValue} from './result';
 
 export type ForeignFunctionResolver =
-    (node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration>, args: ts.Expression[]) =>
-        ts.Expression | null;
+    (node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
+     args: ReadonlyArray<ts.Expression>) => ts.Expression | null;
 
 export class PartialEvaluator {
   constructor(

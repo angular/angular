@@ -13,6 +13,7 @@ import {Declaration, ReflectionHost} from '../../reflection';
 
 import {ArraySliceBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
+import {ForeignFunctionResolver} from './interface';
 import {BuiltinFn, EnumValue, ResolvedValue, ResolvedValueArray, ResolvedValueMap} from './result';
 
 
@@ -73,9 +74,7 @@ interface Context {
    */
   resolutionContext: string;
   scope: Scope;
-  foreignFunctionResolver?
-      (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
-       args: ReadonlyArray<ts.Expression>): ts.Expression|null;
+  foreignFunctionResolver?: ForeignFunctionResolver;
 }
 
 export class StaticInterpreter {
