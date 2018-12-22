@@ -183,6 +183,11 @@ export function defineComponent<T>(componentDefinition: {
   template: ComponentTemplate<T>;
 
   /**
+   * An array of `ngContent[selector]` values that were found in the template.
+   */
+  ngContentSelectors?: string[];
+
+  /**
    * Additional set of instructions specific to view query processing. This could be seen as a
    * set of instruction to be inserted into the template function.
    *
@@ -249,6 +254,7 @@ export function defineComponent<T>(componentDefinition: {
     vars: componentDefinition.vars,
     factory: componentDefinition.factory,
     template: componentDefinition.template || null !,
+    ngContentSelectors: componentDefinition.ngContentSelectors,
     hostBindings: componentDefinition.hostBindings || null,
     contentQueries: componentDefinition.contentQueries || null,
     contentQueriesRefresh: componentDefinition.contentQueriesRefresh || null,

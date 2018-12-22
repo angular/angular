@@ -915,6 +915,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   getVarCount() { return this._pureFunctionSlots; }
 
+  getNgContentSelectors(): o.Expression|null {
+    return this._hasNgContent ?
+        this.constantPool.getConstLiteral(asLiteral(this._ngContentSelectors), true) :
+        null;
+  }
+
   private bindingContext() { return `${this._bindingContext++}`; }
 
   // Bindings must only be resolved after all local refs have been visited, so all

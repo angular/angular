@@ -264,6 +264,13 @@ export function compileComponentFromMetadata(
 
   const templateFunctionExpression = templateBuilder.buildTemplateFunction(template.nodes, []);
 
+  // We need to provide this so that dynamically generated components know what
+  // projected content blocks to pass through to the component when it is instantiated.
+  const ngContentSelectors = templateBuilder.getNgContentSelectors();
+  if (ngContentSelectors) {
+    definitionMap.set('ngContentSelectors', ngContentSelectors);
+  }
+
   // e.g. `consts: 2`
   definitionMap.set('consts', o.literal(templateBuilder.getConstCount()));
 

@@ -952,7 +952,6 @@ withEachNg1Version(() => {
               }));
 
       fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly')
-          .fixmeIvy('FW-714: ng1 projected content is not being rendered')
           .it('should run the lifecycle hooks in the correct order', async(() => {
                 const logs: string[] = [];
                 let rootScope: angular.IRootScopeService;

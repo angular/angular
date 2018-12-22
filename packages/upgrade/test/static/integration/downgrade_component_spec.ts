@@ -709,7 +709,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    fixmeIvy('FW-714: ng1 projected content is not being rendered')
+    fixmeIvy('FW-873: projected component injector hierarchy not wired up correctly')
         .it('should respect hierarchical dependency injection for ng2', async(() => {
               @Component({selector: 'parent', template: 'parent(<ng-content></ng-content>)'})
               class ParentComponent {
