@@ -48,7 +48,7 @@ describe('Bazel-workspace Schematic', () => {
     const {files} = host;
     expect(files).toContain('/demo-app/src/BUILD.bazel');
     const content = host.readContent('/demo-app/src/BUILD.bazel');
-    expect(content).toContain('entry_module = "demo_app/src/main.dev"');
+    expect(content).toContain('entry_module = "demo_app/src/main"');
   });
 
   describe('WORKSPACE', () => {
