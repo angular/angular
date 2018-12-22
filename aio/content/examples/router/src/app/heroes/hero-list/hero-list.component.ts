@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion
-// TODO: Feature Componetized like CrisisCenter
+// TODO: CrisisCenter와 비슷하게 수정
 // #docregion rxjs-imports
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -31,7 +31,7 @@ export class HeroListComponent implements OnInit {
   ngOnInit() {
     this.heroes$ = this.route.paramMap.pipe(
       switchMap(params => {
-        // `param.sget()` 앞에 붙은 (+)는 문자열을 숫자로 변환합니다.
+        // `param.get()` 앞에 붙은 (+)는 문자열을 숫자로 변환합니다.
         this.selectedId = +params.get('id');
         return this.service.getHeroes();
       })

@@ -205,7 +205,7 @@ The **empty path** in the fourth route represents the default path for the appli
 the place to go when the path in the URL is empty, as it typically is at the start.
 This default route redirects to the route for the `/heroes` URL and, therefore, will display the `HeroesListComponent`.
 -->
-네 번째 라우팅 규칙에 사용된 **빈 주소**는 하위 URL 주소가 없을 떄 사용되는 애플리케이션의 기본 주소인데, 보통 애플리케이션의 시작 주소로 사용합니다.
+네 번째 라우팅 규칙에 사용된 **빈 주소**는 하위 URL 주소가 없을 때 사용되는 애플리케이션의 기본 주소인데, 보통 애플리케이션의 시작 주소로 사용합니다.
 이 예제에서는 빈 주소로 접속했을 때 `/heroes` URL로 리다이렉트 하며, 이 동작으로 인해 `HeroesListComponent`가 화면에 표시될 것입니다.
 
 <!--
@@ -231,7 +231,7 @@ Angular 라우터는 **라우팅 규칙이 선언된 순서대로 적용되도�
 <!--
 If you need to see what events are happening during the navigation lifecycle, there is the **enableTracing** option as part of the router's default configuration. This outputs each router event that took place during each navigation lifecycle to the browser console. This should only be used for _debugging_ purposes. You set the `enableTracing: true` option in the object passed as the second argument to the `RouterModule.forRoot()` method.
 -->
-네비게이션 라이프싸이클이 실행되는 동안 어떤 이벤트가 발생하는지 확인하려면, 라우터를 설정할 떄 **enableTracing** 옵션을 사용하면 됩니다.
+네비게이션 라이프싸이클이 실행되는 동안 어떤 이벤트가 발생하는지 확인하려면, 라우터를 설정할 때 **enableTracing** 옵션을 사용하면 됩니다.
 이 옵션이 설정되면 각 네비게이션 라이프싸이클이 실행될 때마다 브라우저에 로그가 출력됩니다.
 이 옵션은 `RouterModule.forRoot()` 메소드의 두 번째 인자로 `enableTracing: true` 를 지정하면 되며,  _디버깅_ 용도로만 사용하는 것이 좋습니다.
 
@@ -343,7 +343,7 @@ property that returns such a string.
 <!--
 Active route links cascade down through each level of the route tree, so parent and child router links can be active at the same time. To override this behavior, you can bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression. By using `{ exact: true }`, a given `RouterLink` will only be active if its URL is an exact match to the current URL.
 -->
-라우팅 규칙은 트리 구조로 구성되기 떄문에 부모 컴포넌트의 라우터 링크와 자식 컴포넌트의 라우터 링크가 동시에 활성화될 수도 있습니다. 이 동작을 변경하려면 `[routerLinkActiveOptions]`에 `{ exact: true }`를 바인딩하면 됩니다. 그러면 현재 URL과 정확히 매칭되는 `RouterLink`만 활성화 됩니다.
+라우팅 규칙은 트리 구조로 구성되기 때문에 부모 컴포넌트의 라우터 링크와 자식 컴포넌트의 라우터 링크가 동시에 활성화될 수도 있습니다. 이 동작을 변경하려면 `[routerLinkActiveOptions]`에 `{ exact: true }`를 바인딩하면 됩니다. 그러면 현재 URL과 정확히 매칭되는 `RouterLink`만 활성화 됩니다.
 
 {@a basics-router-state}
 
@@ -1189,7 +1189,7 @@ Alter the name of a crisis.
 Notice that the corresponding name in the crisis list does _not_ change.
 -->
 위기의 이름을 수정해 봅시다.
-이 떄 목록에 표시된 위기의 이름은 바로 변경되지 _않습니다._
+이 때 목록에 표시된 위기의 이름은 바로 변경되지 _않습니다._
 
 <figure>
   <img src='generated/images/guide/router/crisis-center-detail.png' alt="Crisis Center Detail">
@@ -1839,7 +1839,7 @@ resolvers, and child routing, you'll naturally want to refactor the routing conf
 We recommend moving the routing information into a special-purpose module called a *Routing Module*.
 -->
 초기 버전의 라우터 설정에는 간단한 라우팅 규칙 2개가 정의되어 있습니다. 라우팅 규칙이 간단하다면 이런 방식으로 정의해도 아무 문제 없습니다. 하지만 애플리케이션이 점점 커지면 `Router`의 기능을 좀 더 많이 사용하게 되고, 가드나 리졸버, 자식 라우팅과 같은 기능을 도입하게 되면 라우팅 설정을 개별 파일로 리팩토링하는 것이 더 편할 수 있습니다.
-Angular 코어 팀은 라우팅과 관련된 설정을 따로 모아 특별한 용도의 모듈인 *라우팅 모듈* 로 정의하는 것을 권장합니다.
+Angular 코어 팀은 라우팅과 관련된 설정을 따로 모아 *라우팅 모듈* 로 정의하는 것을 권장합니다.
 
 <!--
 The **Routing Module** has several characteristics:
@@ -1854,7 +1854,7 @@ The **Routing Module** has several characteristics:
 * 애플리케이션 로직과 라우팅 로직을 분리하기 위해 존재합니다.
 * 애플리케이션을 테스트할 때 라우팅 모듈을 다른 설정으로 대체하거나 제거한 채로 실행할 수 있습니다.
 * 라우터 가드나 리졸버에 대한 프로바이더를 제공합니다.
-* 라우팅 모듈에는 컴포넌트를 정의하지 **않습니다**.
+* 라우팅 모듈에는 컴포넌트를 등록하지 **않습니다**.
 
 {@a integrate-routing}
 
@@ -1869,9 +1869,9 @@ When you use the [Angular CLI](cli) to create a project that will use routing, s
 When you create or initialize a new project (using the CLI [`ng new`](cli/new) command) or a new app (using the [`ng generate app`](cli/generate) command), specify the `--routing` option.  This tells the CLI to include the `@angular/router` npm package and create a file named `app-routing.module.ts`.
 You can then use routing in any NgModule that you add to the project or app.
 -->
-애플리케이션을 새로 만들면 라우팅 설정이 존재하지 않는 것이 기본 값입니다.
+애플리케이션을 새로 만들면 라우팅 설정이 존재하지 않습니다.
 그런데 애플리케이션을 [Angular CLI](cli)로 생성하면서 `--routing` 옵션을 사용하면 라우팅 모듈을 함께 생성할 수 있습니다.
-이 옵션은 [`ng new`](cli/new) 명령으로 새로운 프로젝트를 생성하거나 [`ng generate app`](cli/generate)로 새로운 애플리케이션을 생성할 떄 사용할 수 있습니다. 그러면 Angular CLI가 `@angular/router` npm 패키지를 로드하는 `app-routing.module.ts` 파일을 생성합니다.
+이 옵션은 [`ng new`](cli/new) 명령으로 새로운 프로젝트를 생성하거나 [`ng generate app`](cli/generate)로 새로운 애플리케이션을 생성할 때 사용할 수 있습니다. 그러면 Angular CLI가 `@angular/router` npm 패키지를 로드하는 `app-routing.module.ts` 파일을 자동으로 생성합니다.
 라우팅 모듈은 프로젝트와 애플리케이션에 존재하는 모든 NgModule에 적용할 수 있습니다.
 
 <!--
@@ -1891,7 +1891,7 @@ ng generate module my-module --routing
 ```
 
 그러면 NgModule이 생성되면서 이 모듈의 라우팅 설정을 담당하는 `my-module-routing.module.ts` 파일이 생성됩니다.
-이 파일에는 비어있는 `Routes` 객체가 정의되어 있으며, 이 객체로 라우팅 규칙을 설정할 수 있습니다.
+이 파일에는 비어있는 `Routes` 객체가 정의되어 있기 때문에, 이 객체에 라우팅 규칙을 등록하면 됩니다.
 
 {@a routing-refactor}
 
@@ -1921,8 +1921,8 @@ After these steps, the file should look like this.
 -->
 그리고 나면 `app.module.ts` 파일에 작성했던 것처럼 `CrisisListComponent`, `HeroListComponent`, `PageNotFoundComponent` 심볼을 로드해서 라우팅 규칙을 등록하면 됩니다. `app.module.ts` 파일에 설정했던 `Router` 설정이 라우팅 모듈로 옮겨가기 때문에 `RouterModule.forRoot` 메소드를 사용하는 부분도 라우팅 모듈로 옮기면 됩니다.
 
-라우팅 모듈에서는 Angular에서 제공하는 `RouterModule`을 모듈의 `exports` 배열에 등록해서 모듈 외부로 공개해야 합니다.
-그러면 `AppModule` 범위에서도 `RouterLink`나 `RouterOutlet`과 같은 라우터 관련 디렉티브를 사용할 수 있습니다.
+라우팅 모듈은 Angular에서 제공하는 `RouterModule`을 모듈의 `exports` 배열에 등록해서 모듈 외부로 공개해야 합니다.
+그래야 `AppModule` 범위에서도 `RouterLink`나 `RouterOutlet`과 같은 라우터 관련 디렉티브를 사용할 수 있습니다.
 
 이 과정을 마치고 나면 라우팅 모듈이 다음과 같이 구성될 것입니다.
 
@@ -1934,7 +1934,7 @@ After these steps, the file should look like this.
 Next, update the `app.module.ts` file, removing `RouterModule.forRoot` in 
 the `imports` array.
 -->
-그 다음에는 `app.module.ts` 파일을 숮성합니다. 이전에 `imports` 배열에 등록했던 `RouterModule.forRoot`를 제거하고 라우팅 모듈을 로드합니다.
+그 다음에는 `app.module.ts` 파일에서 이전에 `imports` 배열에 등록했던 `RouterModule.forRoot`를 제거하고 라우팅 모듈을 로드합니다.
 
 <code-example path="router/src/app/app.module.2.ts" header="src/app/app.module.ts">
 
@@ -1949,7 +1949,7 @@ the `imports` array.
 Later in this guide you will create [multiple routing modules](#heroes-functionality) and discover that
 you must import those routing modules [in the correct order](#routing-module-order).
 -->
-이 가이드 문서를 따라가다보면 [라우팅 모듈을 여러개](#heroes-functionality) 만들게 될 것입니다. 이 때 라우팅 모듈은 [올바른 순서로](#routing-module-order) 로드되어야 합니다.
+이 가이드 문서를 따라가다보면 [라우팅 모듈을 여러개](#heroes-functionality) 만들게 될 것입니다. 라우팅 모듈은 모두 [올바른 순서로](#routing-module-order) 로드되어야 합니다.
 
 </div>
 
@@ -1958,7 +1958,7 @@ you must import those routing modules [in the correct order](#routing-module-ord
 The application continues to work just the same, and you can use `AppRoutingModule` as
 the central place to maintain future routing configuration.
 -->
-이렇게 수정해도 애플리케이션은 이전과 똑같이 동작합니다. `AppRoutingModule`은 애플리케이션 전체 라우팅 설정 중에서도 가장 기초적인 부분을 담당할 것입니다.
+이렇게 수정해도 애플리케이션은 이전과 똑같이 동작하며, 이렇게 만든 `AppRoutingModule`은 애플리케이션 전체 라우팅 설정 중에서도 가장 기초적인 부분을 담당할 것입니다.
 
 
 {@a why-routing-module}
@@ -1973,14 +1973,14 @@ The _Routing Module_ *replaces* the routing configuration in the root or feature
 _Either_ configure routes in the Routing Module _or_ within the module itself but not in both.
 -->
 _라우팅 모듈_ 은 애플리케이션 최상위 모듈이나 기능 모듈에 있는 라우팅 설정을 *대체하는* 용도로 사용합니다.
-사실 라우팅 규칙은 라우팅 모듈에 있거나 기능 모듈 안에 있어도 상관없지만, 양쪽 모두에 있는 경우는 피하는 것이 좋습니다.
+사실 라우팅 규칙은 라우팅 모듈에 있거나 기능 모듈 안에 있어도 상관없으며, 양쪽 모두에 있는 경우만 피하는 것이 좋습니다.
 
 <!--
 The Routing Module is a design choice whose value is most obvious when the configuration is complex
 and includes specialized guard and resolver services.
 It can seem like overkill when the actual configuration is dead simple.
 -->
-라우팅 규칙에 가드와 리졸버를 사용해서 규칙 전체가 복잡해졌을 때 이 로직을 따로 분리해서 모듈을 단순하게 유지하는 것이 라우팅 모듈을 사용하는 이유입니다.
+라우팅 규칙에 가드와 리졸버와 같은 기능이 추가되면서 규칙 전체가 복잡해졌을 때 라우터 구성을 따로 분리해서 모듈을 단순하게 유지하는 것이 라우팅 모듈을 사용하는 이유입니다.
 그래서 라우팅 규칙이 복잡하지 않다면 굳이 라우팅 모듈을 사용할 필요는 없습니다.
 
 <!--
@@ -2058,7 +2058,7 @@ Most developers prefer to put each feature area in its own folder.
 You are about to break up the app into different *feature modules*, each with its own concerns.
 Then you'll import into the main module and navigate among them.
 -->
-일반적으로 애플리케이션에는 여러 *기능 단위*가 존재하며, 각각은 특정 업무용으로 사용딥니다.
+일반적으로 애플리케이션에는 여러 *기능 단위*가 존재하며, 각각은 용도에 맞게 사용됩니다.
 
 그런데 단순하게 `src/app/` 폴더에 파일을 하나씩 추가하는 것은 실제 운영할 애플리케이션에 어울리지 않는 방식이고, 유지보수를 어렵게 만드는 일이기도 합니다.
 그래서 대다수의 개발자들은 새로 추가되는 기능이 그 기능과 관련된 것들과 함께 있는 것을 선호합니다.
@@ -2097,7 +2097,7 @@ Follow these steps:
 -->
 * `app` 폴더에 있는 `hero-list` 폴더를 `heroes` 폴더 안으로 옮깁니다.
 * <live-example name="toh-pt4" title="Tour of Heroes: Services example code">"Services" 튜토리얼</live-example>의 `heroes/heroes.component.html` 파일에 있는 내용을 `hero-list.component.html` 템플릿 안으로 복사합니다.
-  * `<h2>` 태그의 내용을 `<h2>HEROES</tj2>`로 수정합니다.
+  * `<h2>` 태그의 내용을 `<h2>HEROES</h2>`로 수정합니다.
   * 템플릿 아래쪽에 있는 `<app-hero-detail>` 컴포넌트를 제거합니다.
 
 <!--
@@ -2149,7 +2149,7 @@ Next, you'll update the `HeroesModule` metadata.
 <!--
 When you're done, you'll have these *hero management* files:
 -->
-여기까지 하고나면 이 모듈은 다음과 같은 파일들로 구성됩니다.
+여기까지 하고 나면 이 모듈은 다음과 같이 구성됩니다.
 
 
 <div class='filetree'>
@@ -2259,13 +2259,13 @@ In the `AppRoutingModule`, you used the static **`RouterModule.forRoot`** method
 In a feature module you use the static **`forChild`** method.
 -->
 히어로 모듈은 히어로의 목록을 표시하는 컴포넌트와 히어로의 상세 정보를 표시하는 컴포넌트로 구성됩니다.
-그리고 리스트를 표시하는 컴포넌트는 스스로 동작합니다. 사용자가 이 컴포넌트에 해당하는 주소로 이동하면 컴포넌트가 히어로의 목록을 가져와서 화면에 표시할 것입니다.
+리스트를 표시하는 컴포넌트는 별다른 것이 없습니다. 사용자가 이 컴포넌트에 해당하는 주소로 이동하면 컴포넌트가 히어로의 목록을 가져와서 화면에 표시할 것입니다.
 
 하지만 상세정보를 표시하는 컴포넌트는 좀 다릅니다. 이 컴포넌트는 히어로 한 명의 정보를 화면에 표시하는데, 이 컴포넌트는 어떤 히어로를 표시해야 하는지 스스로 알지 못합니다.
 그래서 이 정보는 외부에서 전달해야 합니다.
 
 사용자가 히어로 목록에서 히어로를 한 명 선택하면 애플리케이션은 상세정보 화면으로 이동하면서 이 히어로의 정보를 표시해야 합니다.
-이 때 히어로의 ID를 라우팅 URL에 포함시키면 네비게이션할 때 이 정보를 활용할 수 있습니다.
+이 때 히어로의 id를 라우팅 URL에 포함시키면 네비게이션할 때 이 정보를 활용할 수 있습니다.
 
 새로 만든 `src/app/heroes/` 폴더로 옮긴 컴포넌트를 대상으로 라우팅 규칙을 정의해 봅시다.
 
@@ -2307,9 +2307,8 @@ Consider giving each feature module its own route configuration file.
 It may seem like overkill early when the feature routes are simple.
 But routes have a tendency to grow more complex and consistency in patterns pays off over time.
 -->
-기능모듈마다 각각 라우팅 설정 파일을 두는 것을 고려해 보세요.
-기능모듈에서 관리하는 라우팅 규칙이 복잡하지 않은 개발 초기에는 이 방식이 번거로워 보일 수도 있습니다.
-하지만 애플리케이션이 점점 복잡해질수록 이렇게 관리하는 방식이 더 편합니다.
+기능모듈마다 각각 라우팅 설정 파일을 두는 것을 권장합니다.
+기능모듈에서 관리하는 라우팅 규칙이 복잡하지 않은 개발 초기에는 이 방식이 번거로워 보일 수도 있지만, 애플리케이션이 점점 복잡해질수록 이렇게 관리하는 방식이 더 편합니다.
 
 </div>
 
@@ -2361,7 +2360,7 @@ Remove the `HeroListComponent` from the `AppModule`'s `declarations` because it'
 
 After these steps, the `AppModule` should look like this:
 -->
-이제 `AppModule`의 `declarations`에서 `HeroListComponent`를 제거합니다. 이 컴포넌트는 `HeroesModule`에 등록하는 방식으로 사용할 것입니다. 그리고 히어로와 관련된 컴포넌트나 라우팅 규칙이 추가되는 것도 모두 히어로 모듈에 추가할 것입니다. 기능 모듈을 각각 나눠서 정의하는 것은 Angular 구성요소를 효율적으로 관리하기 위한 것입니다.
+이제 `AppModule`의 `declarations` 목록에서 `HeroListComponent`를 제거합니다. 이 컴포넌트는 `HeroesModule`에 등록하는 방식으로 사용할 것입니다. 그리고 히어로와 관련된 컴포넌트나 라우팅 규칙이 추가되는 것도 모두 히어로 모듈에 추가할 것입니다. 기능 모듈을 각각 나눠서 정의하는 것은 Angular 구성요소를 효율적으로 관리하기 위한 것입니다.
 
 여기까지 수정하고 나면 `AppModule`은 다음과 같습니다:
 
@@ -2383,7 +2382,7 @@ After these steps, the `AppModule` should look like this:
 Look at the module `imports` array. Notice that the `AppRoutingModule` is _last_.
 Most importantly, it comes _after_ the `HeroesModule`.
 -->
-모듈에 선언한 `imports` 배열을 봅시다. 이 모듈 설정을 보면 `AppRoutingModule`이 _가장 마지막에_ 로드되는 것을 확인할 수 있습니다. `AppRoutingModule`은 `HeroesModule`보다 반드시 _뒤에_ 로드되어야 합니다.
+모듈에 선언한 `imports` 배열을 봅시다. 이 모듈 설정을 보면 `AppRoutingModule`이 _가장 마지막에_ 로드되는 것을 확인할 수 있습니다. `AppRoutingModule`은 반드시 `HeroesModule`보다 _나중에_ 로드되어야 합니다.
 
 <code-example path="router/src/app/app.module.3.ts" region="module-imports" header="src/app/app.module.ts (module-imports)" linenums="false">
 
@@ -2410,12 +2409,12 @@ The wildcard route&mdash;which matches _every_ URL&mdash;will intercept the atte
 라우팅 규칙은 올바른 순서로 등록되어야 합니다.
 라우터는 라우팅 규칙 중 가장 먼저 매칭된 규칙에 따라 네비게이션 동작을 실행합니다.
 
-그래서 모든 라우팅 규칙을 `AppRoutingModule`에 정의했을 때 "Page not found"로 라우팅하는 와일드카드 라우팅 규칙이 적용되기 _전에_ `/heroes` 라우팅이 적용되어야 하기 때문에 `/heroes` 라우팅 규칙 뒤에 [와일드카드](#wildcard) 라우팅 규칙을 등록했습니다.
+그래서 모든 라우팅 규칙을 `AppRoutingModule`에 정의했을 처럼 "Page not found"로 라우팅하는 와일드카드 라우팅 규칙이 적용되기 _전에_ `/heroes` 라우팅이 적용되어야 하기 때문에 `/heroes` 라우팅 규칙 뒤에 [와일드카드](#wildcard) 라우팅 규칙을 등록했습니다.
 
 지금 수정한 예제에서 라우팅 규칙은 한 파일에만 정의되어 있지 않습니다.
-라우팅 규칙은 `AppRoutingModule`과 `HeroesRoutingModule`에 각각 정의되어 있습니다.
+라우팅 규칙은 `AppRoutingModule`과 `HeroesRoutingModule`에 나뉘어 정의되어 있습니다.
 
-이 때 애플리케이션 전체 라우팅 규칙은 _라우팅 모듈을 로드하는 순서에 따라_ 조합됩니다.
+애플리케이션 전체 라우팅 규칙이 조합되는 것은 _라우팅 모듈을 로드하는 순서에 영향을 받습니다_ .
 그래서 `AppRoutingModule`을 먼저 로드하면 와일드카드 라우팅 규칙이 히어로 모듈의 라우팅 규칙보다 _먼저_ 등록됩니다.
 그리고 와일드카드 라우팅 규칙은 _모든_ URL과 매칭되기 때문에 히어로 모듈에 정의한 라우팅 규칙은 동작하지 않습니다.
 
@@ -2503,7 +2502,7 @@ because the `id` is *required* by the `HeroDetailComponent` and because
 the value `15` in the path clearly distinguishes the route to "Magneta" from
 a route for some other hero.
 -->
-이 예제에서 라우팅 변수의 값이 `15`이면 `HeroDetailComponent`는 "Magneta"의 상세 정보를 화면에 표시합니다. 따라서 라우팅 변수 토큰 `:id`는 사용자가 선택한 히어로를 다른 히어로와 구분해야 하기 때문에 *필수 항목*입니다.
+이 예제에서 라우팅 변수의 값이 `15`이면 `HeroDetailComponent`는 "Magneta"의 상세 정보를 화면에 표시합니다. 따라서 라우팅 변수 토큰 `:id`는 사용자가 선택한 히어로를 정확하게 지정해야 하기 때문에 *필수 항목*입니다.
 
 </div>
 
@@ -2513,7 +2512,7 @@ a route for some other hero.
 <!--
 #### Setting the route parameters in the list view
 -->
-#### 리스트 화면에 라우팅 변수 설정하기
+#### 리스트 화면에서 라우팅 변수 설정하기
 
 <!--
 After navigating to the `HeroDetailComponent`, you expect to see the details of the selected hero.
@@ -2634,7 +2633,7 @@ The observable `Subscription` will be handled by the `AsyncPipe` and the compone
 
 그러면 이렇게 참조한 `id`를 `HeroService`에 전달해서 이 `id`에 해당되는 히어로의 정보를 서버에서 받아옵니다.
 
-이 과정에 RxJS `map` 연산자를 사용하는 것이 맞지 않을까 생각이 들 수도 있습니다.
+이 과정에 RxJS `map` 연산자를 사용하는 것이 맞지 않을까 하는 생각이 들 수도 있습니다.
 하지만 `HeroService`가 반환하는 것은 `Observable<Hero>`이기 때문에 이 `Observable`을 처리하려면 `switchMap` 연산자를 사용해야 합니다.
 
 `switchMap` 연산자는 이전에 발생한 요청을 취소하는 역할도 합니다. 서버의 응답을 받기 전에 사용자가 다른 히어로를 선택해서 새로운 `id`가 `HeroService`에 전달되면, `switchMap` 연산자는 이전에 발생한 요청을 취소하고 새로운 `id`에 해당하는 요청을 생성합니다.
@@ -2758,7 +2757,7 @@ Unfortunately, `ngOnInit` is only called once per component instantiation.
 You need a way to detect when the route parameters change from _within the same instance_.
 The observable `paramMap` property handles that beautifully.
 -->
-이 예제에서 라우팅 변수 맵은 `Observable` 타입으로 참조할 수 있습니다.
+이 예제에서 라우팅 변수 맵은 `Observable` 타입으입니다.
 그래서 이 맵은 컴포넌트가 동작하는 동안 현재 상태에 따라 계속 갱신됩니다.
 
 그래서 라우터는 이 컴포넌트 인스턴스를 사용하는 동안 변경되는 라우팅 변수를 추적하면서 재사용할 수 있습니다. 브라우저가 접근하는 URL이 변경되면 라우팅 변수도 상황에 맞게 변경됩니다.
@@ -2806,7 +2805,7 @@ Feel free to unsubscribe anyway. It is harmless and never a bad practice.
 <!--
 #### _Snapshot_: the _no-observable_ alternative
 -->
-#### _스냅샷_: 옵저버블을 사용하지 않는 방법
+#### _스냅샷_: 옵저버블 대신 사용하기
 
 <!--
 _This_ application won't re-use the `HeroDetailComponent`.
@@ -2822,16 +2821,16 @@ The `route.snapshot` provides the initial value of the route parameter map.
 You can access the parameters directly without subscribing or adding observable operators.
 It's much simpler to write and read:
 -->
-지금까지 작성한 _이_ 애플리케이션은 `HeroDetailComponent` 인스턴스를 재사용하지 않습니다.
+지금까지 작성한 애플리케이션은 `HeroDetailComponent` 인스턴스를 재사용하지 않습니다.
 사용자는 히어로 목록에서 히어로를 한 명 선택해서 상세 정보를 확인하고, 다시 목록 화면으로 돌아가는 것을 반복할 뿐입니다.
 지금까지 구현된 시나리오에서 어떤 히어로의 상세정보를 보다가 다른 히어로의 상세정보로 바로 넘어가는 경우는 없습니다.
 그래서 `HeroDetailComponent`의 인스턴스는 해당 주소에 접근할 때마다 새로 생성됩니다.
 
-`HeroDetailComponent`의 인스턴스가 *절대로, 확실하게* 재사용되지 않는다면 *스냅샷(snapshot)*을 사용하는 것이 더 간단합니다.
+`HeroDetailComponent`의 인스턴스가 *절대로* 재사용되지 않는다면 *스냅샷(snapshot)*을 사용하는 것이 더 간단합니다.
 
 
 `route.snapshot`은 라우팅 변수 맵의 초기 값을 제공합니다.
-그래서 이 변수를 참조하면 옵저버블을 구독하거나 연산자를 사용하지 않아도 라우팅 변수를 확인할 수 있습니다.
+그래서 이 변수를 참조하면 옵저버블을 구독하거나 옵저버블 연산자를 사용하지 않아도 라우팅 변수를 확인할 수 있습니다.
 코드는 이 방식이 더 간단합니다.
 
 <!--
@@ -2949,7 +2948,7 @@ prefer an *optional parameter* when the value is optional, complex, and/or multi
 
 하지만 이런 형태가 되면 기존에 라우팅 규칙으로 정의했던 URL *경로* 와는 매칭되지 않을 수 있습니다. 이런 형식의 URL과 매칭되는 라우팅 규칙을 정의하려면 아주 복잡한 패턴 매칭 방법을 구현해야 할 수도 있습니다.
 
-옵션 라우팅 변수는 애플리케이션을 네비게이션하는 과정에 필요한 복잡한 정보를 전달하기 위해 사용합니다.
+옵션 라우팅 변수는 애플리케이션을 네비게이션하는 과정에 필요한 정보를 전달하기 위해 사용합니다.
 그리고 이 과정에 라우팅 규칙의 패턴 매칭과 긴밀하게 연결될 필요는 없습니다.
 
 그래서 라우터는 옵션 라우팅 변수를 일반 라우팅 변수를 사용하는 것처럼 쉽게 사용할 수 있는 문법을 제공합니다.
@@ -3014,14 +3013,14 @@ Send the `id` with an object that contains an _optional_ `id` parameter.
 For demonstration purposes, there's an extra junk parameter (`foo`) in the object that the `HeroListComponent` should ignore.
 Here's the revised navigation statement:
 -->
-하지만 지금까지 `HeroDetailComponent`는 `HeroListComponent`로 정보를 전달할 필요가 없기 때문에 라우팅 변수를 사용하지 않았습니다.
+지금까지는 `HeroDetailComponent`는 `HeroListComponent`로 정보를 전달할 필요가 없기 때문에 라우팅 변수를 사용하지 않았습니다.
 
 이제 정보를 전달해 봅시다. 이제부터는 `HeroDetailComponent`에 표시하던 히어로의 `id`를 `HeroListComponent`로 전달하고, `HeroListComponent`는 이 `id`에 해당하는 히어로를 목록에서 찾아 다른 배경색으로 표시하려고 합니다.
 이 기능은 _있으면 좋은_ 기능일 뿐입니다. 이 기능이 없어도 히어로의 목록을 표시하는 기능에는 문제가 없습니다.
 
 `HeroDetailComponent`는 `id` 프로퍼티가 있는 _옵션_ 라우팅 변수를 사용합니다.
 그리고 지금 예제에서는 설명을 위해 실제로 사용하지 않는 라우팅 변수(`foo`)도 객체에 선언했습니다. `HeroListComponent`는 이 변수를 사용하지 않습니다.
-그러면 히어로의 목록을 표시하는 화면으로 이동하는 로직이 다음과 같이 구현됩니다:
+그러면 히어로의 목록을 표시하는 화면으로 이동하는 로직을 다음과 같이 구현할 수 있습니다:
 
 <!--
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" linenums="false" header="src/app/heroes/hero-detail/hero-detail.component.ts (go to heroes)" region="gotoHeroes">
@@ -3133,14 +3132,14 @@ This time you'll be navigating in the opposite direction, from the `HeroDetailCo
 
 First you extend the router import statement to include the `ActivatedRoute` service symbol:
 -->
-`HeroListComponent`는 아직 라우팅 변수를 받을 준비가 되어있지 않으며 변수를 받아도 어떤 동작을 해야할지도 모릅니다.
+`HeroListComponent`는 아직 라우팅 변수를 받을 준비가 되어있지 않으며 변수를 받아도 어떤 동작을 해야할지 모릅니다.
 이 내용을 구현해 봅시다.
 
 이전에는 `HeroListComponent`에서 `HeroDetailComponent`로 네비게이션할 때 이 컴포넌트에 주입된 `ActivatedRoute` 서비스에서 제공하는 라우팅 변수 맵 `Observable`을 구독했었습니다.
 
 그리고 이번에는 `HeroDetailComponent`에서 `HeroListComponent`로 네비게이션하는 경우를 생각해 봅시다.
 
-먼저, `@angular/router` 패키지에서 `ActivatedRoute` 서비스 심볼을 로드합니다:
+먼저 `@angular/router` 패키지에서 `ActivatedRoute` 서비스 심볼을 로드합니다:
 
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.ts" linenums="false" header="src/app/heroes/hero-list/hero-list.component.ts (import)" region="import-router">
 
@@ -3187,7 +3186,7 @@ Update the template with a [class binding](guide/template-syntax#class-binding).
 The binding adds the `selected` CSS class when the comparison returns `true` and removes it when `false`.
 Look for it within the repeated `<li>` tag as shown here:
 -->
-템플릿에 [CSS 클래스 바인딩](guide/template-syntax#클래스-바인딩)을 활용하도록 수정해 봅시다.
+템플릿에 [CSS 클래스 바인딩](guide/template-syntax#클래스-바인딩)을 적용해 봅시다.
 라우팅 변수로 받아온 히어로의 `id`에 해당하는 엘리먼트에는 `selected` CSS 클래스를 지정하고, 이 `id`에 해당하지 않는 엘리먼트에는 `selected` CSS 클래스를 제거하려고 합니다.
 이 로직은 템플릿에서 반복되는 `<li>` 태그에 사용되었습니다:
 
@@ -3304,7 +3303,7 @@ Add an `animations` array to the `@Component` metadata's that contains the `slid
 
 물론 라우팅 규칙에는 더 많은 트랜지션을 정의할 수도 있습니다. 이 예제에서는 이정도 트리거만 적용해 봅시다.
 
-`AppComponent`로 돌아가서 `@angular/router` 패키지에 잇는 `RouterOutlet` 토큰과 `./animations.ts` 파일에 정의한 `slideInDownAnimation`을 로드합니다.
+`AppComponent`로 돌아가서 `@angular/router` 패키지에 있는 `RouterOutlet` 토큰과 `./animations.ts` 파일에 정의한 `slideInDownAnimation`을 로드합니다.
 
 그리고 `@Component` 메타데이터의 `animations` 배열에 다음과 같이 `slideInDownAnimation`을 적용합니다.
 
@@ -3318,7 +3317,7 @@ use the `@routeAnimation` trigger and bind it to the element.
 
 For the `@routeAnimation` transitions to key off states, you'll need to provide it with the `data` from the `ActivatedRoute`. The `RouterOutlet` is exposed as an `outlet` template variable, so you bind a reference to the router outlet. A variable of `routerOutlet` is an ideal choice.
 -->
-컴포넌트를 라우팅 할 때 애니메이션을 적용하려면 `RouterOutlet`을 엘리먼트로 한 번 감싸고 이 엘리먼트에 `@routeAnimation` 트리거를 바인딩하면 됩니다.
+컴포넌트를 라우팅 할 때 애니메이션을 적용하려면 `RouterOutlet`을 `<div>` 엘리먼트로 한 번 감싸고 이 엘리먼트에 `@routeAnimation` 트리거를 바인딩하면 됩니다.
 
 `@routeAnimation` 트랜지션을 특정 상태로 설정하려면 `ActivatedRoute`를 사용해서 `data`를 전달하면 됩니다. `RouterOutlet`은 컴포넌트 클래스의 메소드에서 참조하기 위해 `outlet`이라는 템플릿 변수로 지정했습니다.
 
@@ -3665,7 +3664,7 @@ You'll use mock crises instead of mock heroes:
 * 복사한 파일에서 "hero" 키워드를 "crisis"로, "heroes" 키워드를 "crises"로 변경합니다.
 * NgModule이 정의된 파일들의 이름을 `crisis-center.module.ts`와 `crisis-center-routing.module.ts`로 변경합니다.
 
-그리고 히어로 모킹 로직 대신 다음과 같이 위기 대응 모킹 로직을 사용합니다:
+그리고 히어로 모킹 목록 대신 다음과 같은 모킹 목록을 사용합니다:
 
 <code-example path="router/src/app/crisis-center/mock-crises.ts" header="src/app/crisis-center/mock-crises.ts">
 
@@ -3676,7 +3675,7 @@ The resulting crisis center is a foundation for introducing a new concept&mdash;
 You can leave *Heroes* in its current state as a contrast with the *Crisis Center*
 and decide later if the differences are worthwhile.
 -->
-이렇게 만든 위기대응센터를 통해 **자식 라우팅** 컨셉을 알아봅시다.
+이제부터 위기대응센터를 만들면서 **자식 라우팅**에 대한 컨셉을 알아봅시다.
 이전에 구현했던 *히어로* 기능 모듈은 새로 만드는 *위기대응센터* 기능 모듈과 비교해보기 위해 그대로 둔 채 작업합니다.
 
 <div class="alert is-helpful">
@@ -3715,8 +3714,8 @@ If your app had many feature areas, the app component trees might look like this
 -->
 이번 섹션에서는 Angular가 권장하는 방식으로 위기관리센터 기능모듈을 개발해 봅시다:
 
-* 특정 기능과 관련된 항목들은 모두 한 폴더에 둡니다.
-* 특정 기능은 Angular 기능 모듈로 표현합니다.
+* 특정 업무 도메인과 관련된 항목들은 모두 한 폴더에 둡니다.
+* 특정 업무 도메인은 Angular 기능 모듈로 표현합니다.
 * 각 기능 모듈에는 최상위 컴포넌트가 존재합니다.
 * 각 기능 모듈의 최상위 컴포넌트에는 라우팅 영역이 존재하며, 자식 라우팅 규칙도 존재합니다.
 * 특정 기능 모듈의 라우팅 규칙은 다른 기능 모듈로 이동하는 라우팅 규칙을 최대한 사용하지 않는 것이 좋습니다.
@@ -3767,10 +3766,10 @@ it has no business logic, and its template has no links, just a title and
 -->
 `CrisisCenterComponent`는 다음과 같은 점에서 `AppComponent`와 비슷합니다:
 
-* 애플리케이션 전체 영역에서 `AppComponent`가 최상위 컴포넌트인것처럼, 이 컴포넌트는 위기대응센터와 관련된 기능모듈의 *최상위* 컴포넌트입니다.
+* 애플리케이션 전체 영역에서 `AppComponent`가 최상위 컴포넌트인 것처럼, 이 컴포넌트는 위기대응센터와 관련된 기능모듈의 *최상위* 컴포넌트입니다.
 * 애플리케이션이 동작하는 영역이 `AppComponent`인 것처럼, 이 컴포넌트는 위기대응센터와 관련된 기능이 동작하는 영역입니다.
 
-영역만 정의하는 컴포넌트가 그렇듯, `CrisisCenterComponent` 클래스는 아주 간단하게 작성합니다. 이 클래스에는 비즈니스 로직이 없고 템플릿에는 링크도 없으며, 단지 이 기능의 이름과 자식 컴포넌트가 표시될 `<router-outlet>`만 존재합니다. `AppComponent`보다도 간단합니다.
+영역만 정의하는 컴포넌트의 역할에 맞게, `CrisisCenterComponent` 클래스는 아주 간단하게 작성합니다. 이 클래스에는 비즈니스 로직이 없고 템플릿에 링크도 없으며, 단지 이 기능의 이름과 자식 컴포넌트가 표시될 `<router-outlet>`만 존재합니다. `AppComponent`보다도 간단합니다.
 
 {@a child-route-config}
 
@@ -3856,9 +3855,9 @@ Apply that logic to navigation within the crisis center for which the parent pat
 
 The absolute URL for the latter example, including the `localhost` origin, is
 -->
-애플리케이션 최상위 계층에서는 URL이 `/`에서부터 시작합니다.
+애플리케이션 최상위 계층의 URL은 `/`로 시작합니다.
 하지만 자식 라우팅 규칙은 부모 라우팅 규칙을 *확장*하는 개념이기 때문에 `/`로 시작하지 않습니다.
-자식 라우팅 규칙의 단계를 따라가면서 지정된 주소가 _비어있다고 해도_ 이 경로들은 슬래시(`/`)로 조합됩니다.
+자식 라우팅 규칙의 단계를 따라가면서 _빈 주소가 지정되어도_ 이 경로들은 슬래시(`/`)로 조합됩니다.
 
 이 개념을 적용하면 위기대응센터 기능모듈이 시작되는 주소를 `/crisis-center`로 지정할 수 있습니다.
 
@@ -3960,7 +3959,7 @@ Here's an example:
 
 이렇게 구현하면 라우터는 애플리케이션 최상위 URL부터 시작하는 _절대_ 주소를 연결합니다.
 
-물론 *위기대응센터* 모듈 안에서 네비게이션할 때도 절대주소를 사용할 수 있지만, 이 방식은 `/crisis-center` 주소부터 시작되는 라우팅되는 구조를 이 모듈이 알아야 합니다.
+물론 *위기대응센터* 모듈 안에서 네비게이션할 때도 절대주소를 사용할 수 있지만, 이 방식은 `/crisis-center` 주소부터 시작되는 라우팅 전체 구조를 이 모듈이 알아야 합니다.
 그리고 `/crisis-center` 주소를 다른 주소로 변경하면 이 주소와 관련된 모든 주소를 변경해야 합니다.
 
 그래서 특정 모듈에서 정의하는 라우팅 규칙이 상위 라우팅 규칙과 의존성을 갖는 것을 피하려면 **상대** 주소로 지정하는 것이 좋습니다.
@@ -4037,7 +4036,7 @@ Update the `gotoCrises` method of the `CrisisDetailComponent` to navigate back t
 이전 코드에서는 상대주소로 이동하기 위해 `ActivatedRoute`를 컴포넌트에 의존성으로 주입했습니다.
 
 그리고 `Router` 서비스 대신 `RouterLink`를 사용해도 이전과 _같은_ 링크 인자 배열을 전달하는데, 이번에는 이전에 사용하지 않았던 `relativeTo` 프로퍼티를 함께 사용합니다.
-이 때 `ActivatedRoute`는 `RouterLink` 디렉티브의 동작에 영향을 미칩니다.
+이 시점에 존재하는 `ActivatedRoute`는 `RouterLink` 디렉티브의 동작에 영향을 미칩니다.
 
 `CrisisDetailComponent`에 정의된 `gotoCrises` 메소드를 수정해서 상대주소를 사용하는 방법으로 *위기대응센터* 화면으로 이동해 봅시다.
 
@@ -4052,8 +4051,8 @@ Update the `gotoCrises` method of the `CrisisDetailComponent` to navigate back t
 Notice that the path goes up a level using the `../` syntax.
 If the current crisis `id` is `3`, the resulting path back to the crisis list is  `/crisis-center/;id=3;foo=foo`.
 -->
-이 때 `../`을 사용했기 때문에 한단계 위 계층부터 주소가 시작한다는 것을 잊지 마세요.
-그래서 `id`가 `3`이라면 최종 경로는 `/crisis-center/;id=3;foo=foo`가 됩니다.
+이`../`을 사용했기 때문에 주소는 한단계 위 계층부터 시작된다는 것을 잊지 마세요.
+`id`가 `3`이라면 최종 경로는 `/crisis-center/;id=3;foo=foo`가 됩니다.
 
 {@a named-outlets}
 
@@ -4090,8 +4089,8 @@ Add an outlet named "popup" in the `AppComponent`, directly below the unnamed ou
 하지만 지금까지는 라우팅 영역을 하나만 두는 방법이나, 이 라우팅 영역 아래 자식 라우팅 규칙을 적용하는 방법만 다뤘습니다.
 기본적으로 라우팅 영역에 _이름을 지정하지 않으면_ 템플릿에 있는 라우팅 영역 중 하나만 동작합니다.
 
-하지만 라우팅 영역에 _이름을 지정하면_ 템플릿에 있는 여러 라우팅 영역을 동시에 조작할 수 있습니다.
-이 방식을 사용하면 각각의 라우팅 영역에 서로 다른 라우팅 규칙을 적용해서 여러 컴포넌트를 동시에 표시할 수 있습니다.
+라우팅 영역에 _이름을 지정하면_ 템플릿에 있는 여러 라우팅 영역을 동시에 조작할 수 있습니다.
+이 방식을 활용하면 각각의 라우팅 영역에 서로 다른 라우팅 규칙을 적용해서 여러 컴포넌트를 동시에 표시할 수 있습니다.
 
 `AppComponent`에 있는 이름없는 라우팅 영역 바로 아래 "popup"이라는 이름으로 라우팅 영역을 추가해 봅시다.
 
@@ -4128,9 +4127,9 @@ Generate a new component to compose the message.
 방금 이름을 지정해서 만든 라우팅 영역은 _서브 라우팅 규칙_ 의 타겟이 될 것입니다.
 
 서브 라우팅 규칙은 기본 라우팅 규칙을 사용하는 것과 거의 비슷합니다.
-그러나 이런 점에서는 조금 다릅니다.
+그러나 다른 점도 있습니다.
 
-* 서브 라우팅 규칙끼리 독립적으로 동작합니다.
+* 서브 라우팅 규칙은 다른 라우팅 규칙과 독립적으로 동작합니다.
 * 다른 라우팅 규칙과 조합할 수 있습니다.
 * 서브 라우팅 규칙에 연결된 컴포넌트는 이름을 지정한 라우팅 영역에 표시됩니다.
 
@@ -4154,7 +4153,7 @@ and two buttons, "Send" and "Cancel".
 <!--
 Here's the component, its template and styles:
 -->
-그래서 이 컴포넌트 템플릿과 스타일은 다음과 같이 작성합니다.
+이 컴포넌트 템플릿과 스타일은 다음과 같이 작성합니다.
 
 <code-tabs>
 
@@ -4186,8 +4185,8 @@ That's a peculiarity covered [below](#clear-secondary-routes).
 
 `send()` 메소드는 서버와 통신하는 것을 흉내내기 위해 시간을 약간 지연한 후에 팝업을 닫습니다.
 
-그리고 `closePopup()` 메소드는 팝업 라우팅 영역의 값을 `null`로 할당하면서 팝업을 닫습니다.
-약간은 이상해보이는 이 내용은 [아래](#clear-secondary-routes)에서 자세하게 다룹니다.
+`closePopup()` 메소드는 팝업 라우팅 영역의 값을 `null`로 할당하면서 팝업을 닫습니다.
+이 내용은 약간 이상해 보이지만 [아래](#clear-secondary-routes)에서 자세하게 다룹니다.
 
 {@a add-secondary-route}
 
@@ -4221,8 +4220,8 @@ Open the `AppComponent` and add a "Contact" link.
 그런데 이 라우팅 규칙에는 `outlet` 프로퍼티에 `'popup'`이 할당되어 있습니다.
 이제 이 라우팅 규칙은 팝업 라우팅 영역을 대상으로 동작하며 `ComposeMessageComponent`도 팝업 라우팅 영역에 표시됩니다.
 
-사용자가 팝업을 열 방법도 필요합니다.
-`AppComponent`를 열고 "Contact" 링크를 추가합니다.
+사용자가 팝업을 열 방법이 필요합니다.
+`AppComponent`를 열고 다음과 같이 "Contact" 링크를 추가합니다.
 
 <!--
 <code-example path="router/src/app/app.component.4.html" linenums="false" header="src/app/app.component.html (contact-link)" region="contact-link">
@@ -4268,13 +4267,13 @@ But to target a named outlet, you must use the richer, more verbose syntax.
 -->
 만약 템플릿에 라우팅 영역이 하나만 있고 이 라우팅 영역에 _이름이 지정되지 않았다면_ `outlets` 객체는 필요없습니다.
 
-왜냐하면 라우터는 기본적으로 _이름이 지정되지 않은_ 기본 라우팅 영역을 대상으로 동작하기 때문에 이 객체는 라우터 내부적으로 생성되기 때문입니다.
+왜냐하면 라우터는 기본적으로 _이름이 지정되지 않은_ 기본 라우팅 영역을 대상으로 동작하기 때문에 `outlets` 객체가 라우터 내부적으로 생성되기 때문입니다.
 
 라우팅 영역에 이름을 지정하는 것을 활용하면 라우터를 다른 방식으로 활용할 수도 있습니다:
 이 방식을 활용하면 `RouterLink` 디렉티브 하나로 여러 라우팅 영역에 서로 다른 라우팅 규칙을 적용할 수 있습니다.
 
 물론 당장 이렇게 구현할 필요는 없습니다.
-하지만 라우팅 영역에 이름을 지정하는 방식을 활용하면 Angular 라우터를 좀 더 효율적으로 활용할 수 있습니다.
+하지만 라우팅 영역에 이름을 지정하는 방식을 활용하면 Angular 라우터 문법을 좀 더 다양하게 활용할 수 있습니다.
 
 </div>
 
@@ -4339,7 +4338,7 @@ Experiment with these possibilities at your leisure.
 
 이 때 라우터는 네비게이션 트리를 이중으로 관리하면서 기본 라우팅 규칙과 서브 라우팅 규칙에 해당하는 URL을 자동으로 조합해서 표현합니다.
 
-원한다면 좀 더 많은 라우팅 영역에 각각 라우팅 규칙을 적용할 수 있는데, 이 때 라우팅 규칙의 어떤 계층에 이 내용이 정의되는 것은 중요하지 않습니다. 라우팅 규칙은 자유롭게 구성할 수 있으며, 라우터는 이 관계를 모두 조합해서 URL을 구성할 것입니다.
+원한다면 좀 더 많은 라우팅 영역에 각각 라우팅 규칙을 적용할 수 있는데, 이 때 라우팅 규칙의 어떤 계층에 이 내용이 정의되는지는 중요하지 않습니다. 라우팅 규칙은 자유롭게 구성할 수 있으며, 라우터는 이 관계를 모두 조합해서 URL을 구성할 것입니다.
 
 그리고 위에서 언급한 것처럼 `outlets` 객체를 활용하면 모든 라우팅 영역을 한 번에 바꿀 수도 있습니다.
 이 내용에 해당되는 _링크 인자 배열_ 을 `router.navigate` 메소드에 전달하면 됩니다.
@@ -4368,7 +4367,7 @@ To see how, look at the `closePopup()` method again:
 지금까지 알아본 것처럼 라우팅 영역에 표시되는 컴포넌트는 다른 주소로 이동하지 않는 이상 계속 남아있습니다.
 이 점은 서브 라우팅 영역도 마찬가지입니다.
 
-서브 라우팅 영역은 기본 라우팅 영역과도 독립적인 네비게이션 로직이 동작합니다.
+서브 라우팅 영역은 기본 라우팅 영역과도 독립적인 네비게이션 로직으로 동작합니다.
 그래서 기본 라우팅 영역의 주소를 변경해도 팝업 라우팅 영역은 영향을 받지 않습니다.
 결국 위기대응센터 페이지와 히어로 페이지를 왔다갔다 해도 팝업은 계속 화면에 표시될 것입니다.
 
@@ -4395,8 +4394,8 @@ the secondary popup route from the current URL.
 `Router.navigate()` 메소드를 사용하려면 반드시 [링크 변수 배열](#link-parameters-array)을 전달해야 합니다.
 
 그리고 `AppComponent`에 있는 _Contact_ `RouterLink`에 바인딩했던 것처럼, 링크 변수 배열에 `outlets` 프로퍼티가 있는 객체를 전달해야 합니다.
-`outlets` 프로퍼티는 라우팅 영역의 이름이 키인 객체를 갖습니다.
-지금까지 작성한 예제에는 `'popup'`이라는 라우팅 영역 하나만 존재합니다.
+`outlets` 프로퍼티는 라우팅 영역의 이름이 키인 객체입니다.
+그리고 지금까지 작성한 예제에는 `'popup'`이라는 라우팅 영역 하나만 존재합니다.
 
 위 코드에서 `'popup'`에 할당된 값은 `null`입니다. 이 값이 라우팅 규칙은 아니지만 라우팅 영역을 설정할 때는 유효한 값입니다.
 팝업 `RouterOutlet`의 값을 `null`로 할당하면 이 라우팅 영역을 비우기 때문에 브라우저 주소표시줄의 URL에서 서브 라우팅 규칙도 제거됩니다.
@@ -4425,7 +4424,7 @@ A guard's return value controls the router's behavior:
 * If it returns `true`, the navigation process continues.
 * If it returns `false`, the navigation process stops and the user stays put.
 -->
-지금까지 작성한 애플리케이션은 *아무* 사용자가 애플리케이션의 *어느 페이지든* *아무때나* 접근할 수 있습니다.
+지금까지 작성한 애플리케이션은 *아무* 사용자가 애플리케이션의 *모든 페이지에* *아무때나* 접근할 수 있습니다.
 하지만 이 방법이 언제나 괜찮은 것은 아닙니다.
 
 * 어떤 컴포넌트는 인증받지 않은 사용자가 접근할 수 없어야 합니다.
@@ -4459,9 +4458,9 @@ These are all asynchronous operations.
 Accordingly, a routing guard can return an `Observable<boolean>` or a `Promise<boolean>` and the
 router will wait for the observable to resolve to `true` or `false`.
 -->
-라우팅 가드는 *보통* 불리언 값을 동기 방식으로 반환합니다.
+라우팅 가드는 불리언 값을 동기 방식(synchronously)으로 반환할 수도 있습니다.
 하지만 라우팅 가드는 동기 방식으로 값을 반환할 수 없는 경우가 더 많습니다.
-사용자에게 어떤 것을 물어봐야 하거나, 서버에 변경사항을 저장하는 경우, 새로운 데이터를 가져와야 하는 경우가 이런 경우에 해당됩니다.
+사용자에게 어떤 것을 물어봐야 하거나, 서버에 변경사항을 저장하는 경우, 새로운 데이터를 가져와야 하는 경우가 그렇습니다.
 이런 동작은 모두 비동기로 실행됩니다.
 
 그래서 라우팅 가드는 `Observable<boolean>` 타입이나 `Promise<boolean>` 타입을 반환할 수 있으며, 이 타입을 사용하면 라우팅 가드의 내부 로직이 완료될 때까지 라우터의 동작이 중단됩니다.
@@ -4533,8 +4532,8 @@ You might block or limit access until the user's account is activated.
 The `CanActivate` guard is the tool to manage these navigation business rules.
 -->
 애플리케이션은 보통 특정 기능에 접근할 수 있는 사용자를 제한하는 경우가 많습니다.
-그러면 애플리케이션 사용자가 로그인을 하거나 특정 권한이 있어야 한다고 정의할 수 있습니다.
-그리고 사용자의 계정이 활성화되지 않으면 접근을 제한할 수 있습니다.
+그래서 사용자가 로그인을 하거나 특정 권한이 있어야 접근할 수 있도록 설정할 수 있습니다.
+조건에 맞지 않으면 접근을 제한할 것입니다.
 
 이런 네비게이션 동작은 `CanActivate` 가드를 사용해서 제어할 수 있습니다.
 
@@ -4550,7 +4549,7 @@ But you can start by adding a new feature module named `AdminModule`.
 
 Generate an `admin` folder with a feature module file and a routing configuration file.
 -->
-이번 섹션에서는 위기대응센터에 새로운 *관리자* 기능을 추가해 봅시다.
+이번 섹션에서는 위기대응센터에 *관리자* 기능을 추가해 봅시다.
 관리자 기능 모듈은 아직 정의되지 않았습니다.
 그래서 `AdminModule`이라는 기능모듈을 생성하는 것부터 시작합니다.
 
@@ -4767,9 +4766,9 @@ Next, import the `AdminModule` into `app.module.ts` and add it to the `imports` 
 to register the admin routes.
 -->
 `AdminComponent`의 자식 라우팅 규칙 중에는 `path`와 `children` 프로퍼티가 있지만 `component`가 없는 라우팅 규칙이 있습니다.
-이 라우팅 규칙은 잘못 작성한 것이 아니라 _컴포넌트가 없는_ 라우팅 규칙을 구현한 것입니다.
+이 라우팅 규칙은 잘못 작성한 것이 아니라 _컴포넌트가 없는_ 라우팅 규칙을 정의한 것입니다.
 
-이 라우팅 규칙을 사용한 목적은 `위기대응센터`과 간리하는 모든 라우팅 규칙을 `admin` 주소 안으로 묶기 위한 것입니다.
+이 라우팅 규칙을 사용한 목적은 `위기대응센터`과 관리하는 모든 라우팅 규칙을 `admin` 주소 안으로 묶기 위한 것입니다.
 이런 용도로 사용할 때 이 라우팅 규칙에  컴포넌트를 지정할 필요는 없습니다.
 _컴포넌트가 없는_ 라우팅 규칙은 [자식 라우팅 규칙에 적용하는 라우팅 가드](#can-activate-child-guard)를 좀 더 편하게 지정하기 위해 사용합니다.
 
@@ -4818,9 +4817,9 @@ that require authenticated users&mdash;so you generate an
 지금까지 작성한 애플리케이션은 모든 사용자가 "위기대응센터"에 접근할 수 있습니다.
 하지만 새로 추가한 *관리자* 모듈은 미리 인증된 사용자만 접근할 수 있도록 하려고 합니다.
 
-이 때 사용자가 로그인하지 않으면 링크를 감출 수도 있습니다. 하지만 이 방법은 간단한 트릭일 뿐이며 완벽한 방법이 아닙니다.
+사용자가 로그인하지 않으면 링크를 감출 수도 있지만 이 방법은 간단한 트릭일 뿐 완벽한 방법이 아닙니다.
 
-이 방법 대신 로그인하지 않은 사용자가 관리자 페이지에 접근할 때 `canActivate()` 가드를 사용해서 로그인 페이지로 대신 이동하게 하는 것이 더 좋습니다.
+이 방법보다는 로그인하지 않은 사용자가 관리자 페이지에 접근할 때 `canActivate()` 가드를 사용해서 로그인 페이지로 대신 이동하게 하는 것이 더 좋습니다.
 
 라우팅 가드는 보통 페이지에 접근하는 권한을 제어하는 용도로 사용합니다.
 다음 명령을 실행해서 `auth` 폴더에 `AuthGuard`를 생성합니다.
@@ -4833,8 +4832,8 @@ that require authenticated users&mdash;so you generate an
 At the moment you're interested in seeing how guards work so the first version does nothing useful.
 It simply logs to console and `returns` true immediately, allowing navigation to proceed:
 -->
-이렇게 만든 라우팅 가드는 아직 의미있는 동작을 하지 않습니다.
-이 가드는 단순하게 콘솔에 로그를 출력하며 `true`를 바로 반환합니다. 따라서 네비게이션 동작도 그대로 진행됩니다:
+이렇게 만든 라우팅 가드는 아직 별다른 동작을 하지 않습니다.
+이 가드는 단순하게 콘솔에 로그를 출력하고 `true`를 바로 반환합니다. 따라서 네비게이션 동작도 그대로 진행됩니다:
 
 <!--
 <code-example path="router/src/app/auth/auth.guard.1.ts" linenums="false" header="src/app/auth/auth.guard.ts (excerpt)">
@@ -4861,7 +4860,7 @@ update the admin route with a `canActivate` guard property that references it:
  <!--
 The admin feature is now protected by the guard, albeit protected poorly.
 -->
-아직 라우팅 가드가 실제로 동작하는 로직은 작성되지 않았지만, 관리자 모듈은 라우팅 가드로 보호되었습니다.
+아직 라우팅 가드가 실제로 동작하지는 않지만 관리자 모듈이 라우팅 가드로 보호되었습니다.
 
 {@a teach-auth}
 
@@ -4933,14 +4932,14 @@ This secondary navigation automatically cancels the current navigation; `checkLo
 `false` just to be clear about that.
 -->
 생성자로 `AuthService`와 `Router`가 *의존성으로 주입*되는 것을 확인해 보세요.
-아직 `AuthService`는 구현하지 않았지만, 라우팅 가드를 사용하면서 필요한 로직을 활용하기 위해 서비스를 이런 방식으로 주입할 수 있습니다.
+아직 `AuthService`는 구현하지 않았지만, 라우팅 가드에 필요한 서비스는 이런 방식으로 주입할 수 있습니다.
 
-이 라우팅 가드는 불리언 값을 동기적으로 반환합니다.
+이 라우팅 가드는 불리언 값을 동기 방식으로 반환합니다.
 그리고 사용자가 로그인했다면 `true`를 반환하기 때문에 원래 실행하던 네비게이션 로직을 그대로 실행합니다.
 
-`ActivatedRouteSnapshot`에는 로그인 상태를 확인한 _이후에_ 사용될 라우팅 규칙을 담고 있으며, `RouterStateSnapshot`에는 이 시점에 사용될 `RouterState`를 담고 있습니다. 그래서 라우팅 가드가 제대로 동작하려면 이 정보들이 전달되어야 합니다.
+`ActivatedRouteSnapshot`에는 로그인 상태를 확인한 _이후에_ 활성화될 라우팅 규칙이 전달되며, `RouterStateSnapshot`에는 이 시점에 사용될 `RouterState`이 전달됩니다. 그래서 라우팅 가드가 제대로 동작하려면 이 정보들이 전달되어야 합니다.
 
-사용자가 로그인하지 않았으면 원래 네비게이션 하려던 URL을 `RouterStateSnapshot.url`에서 참조해서 프로퍼티로 저장한 후에 로그인 페이지로 이동합니다. 아직 로그인 페이지는 구현되지 않았습니다.
+사용자가 로그인하지 않았으면 원래 네비게이션 하려던 URL을 `RouterStateSnapshot.url`에서 참조해서 프로퍼티로 저장한 후에 로그인 페이지로 이동합니다. (아직 로그인 페이지는 구현되지 않았습니다.)
 그리고 `checkLogin()` 메소드가 `false`를 반환하기 때문에 현재 실행되고 있는 네비게이션 동작을 중단합니다.
 
 {@a add-login-component}
@@ -6287,7 +6286,7 @@ So instead, you'll update the empty path route in `app-routing.module.ts` to red
 <!--
 Update the `goToHeroes()` method in the `hero-detail.component.ts` to navigate back to `/superheroes` with the optional route parameters.
 -->
-그리고 `hero-detail.component.ts` 파일에 잇는 `goToHeroes()` 메소드에서도 `/superheroes`로 이동하도록 수정합니다.
+그리고 `hero-detail.component.ts` 파일에 있는 `goToHeroes()` 메소드에서도 `/superheroes`로 이동하도록 수정합니다.
 
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.ts" linenums="false" region="redirect" header="src/app/heroes/hero-detail/hero-detail.component.ts (goToHeroes)">
 

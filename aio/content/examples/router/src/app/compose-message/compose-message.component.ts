@@ -30,8 +30,7 @@ export class ComposeMessageComponent {
 
   // #docregion closePopup
   closePopup() {
-    // 이름을 지정한 라우팅 영역에 `null` 값을 지정하면
-    // 라우팅 영역의 내용을 모두 비웁니다.
+    // 이름을 지정한 라우팅 영역에 `null` 값을 지정하면 라우팅 영역의 내용을 모두 비웁니다.
     this.router.navigate([{ outlets: { popup: null }}]);
   }
   // #enddocregion closePopup
