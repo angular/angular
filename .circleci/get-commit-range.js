@@ -70,6 +70,10 @@
  * The `circleToken` will be used for CircleCI API requests if provided, but it is not needed for
  * accessing the read-only endpoints that we need (as long as the current project is FOSS and the
  * corresponding setting is turned on in "Advanced Settings" in the project dashboard).
+ *
+ * ---
+ * Inspired by https://circleci.com/orbs/registry/orb/iynere/compare-url
+ * (source code: https://github.com/iynere/compare-url-orb).
  */
 
 // Imports
@@ -90,7 +94,6 @@ async function _main([buildNumber, compareUrl = '', circleToken = '']) {
           'Missing or invalid arguments.\n' +
           'Expected: buildNumber (number), compareUrl? (string), circleToken? (string)');
     }
-
 
     if (!compareUrl) {
       compareUrl = await getCompareUrl(buildNumber, circleToken);
