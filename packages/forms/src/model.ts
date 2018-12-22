@@ -671,7 +671,7 @@ export abstract class AbstractControl {
    * @returns error data for that particular error. If the control or error is not present,
    * null is returned.
    */
-  getError(errorCode: string, path?: string[]): any {
+  getError(errorCode: string, path?: Array<string|number>|string): any {
     const control = path ? this.get(path) : this;
     return control && control.errors ? control.errors[errorCode] : null;
   }
@@ -706,7 +706,9 @@ export abstract class AbstractControl {
    *
    * If the control is not present, false is returned.
    */
-  hasError(errorCode: string, path?: string[]): boolean { return !!this.getError(errorCode, path); }
+  hasError(errorCode: string, path?: Array<string|number>|string): boolean {
+    return !!this.getError(errorCode, path);
+  }
 
   /**
    * Retrieves the top-level ancestor of this control.
