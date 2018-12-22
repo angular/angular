@@ -789,6 +789,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     };
   }
 
+  // test test test
+
   /**
    * Find the declarations of the constructor parameters of a class identified by its symbol.
    * @param classSymbol the class whose parameters we want to find.
