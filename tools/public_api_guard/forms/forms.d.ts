@@ -30,8 +30,8 @@ export declare abstract class AbstractControl {
         emitEvent?: boolean;
     }): void;
     get(path: Array<string | number> | string): AbstractControl | null;
-    getError(errorCode: string, path?: string[]): any;
-    hasError(errorCode: string, path?: string[]): boolean;
+    getError(errorCode: string, path?: Array<string | number> | string): any;
+    hasError(errorCode: string, path?: Array<string | number> | string): boolean;
     markAsDirty(opts?: {
         onlySelf?: boolean;
     }): void;
@@ -80,8 +80,8 @@ export declare abstract class AbstractControlDirective {
     readonly valid: boolean | null;
     readonly value: any;
     readonly valueChanges: Observable<any> | null;
-    getError(errorCode: string, path?: string[]): any;
-    hasError(errorCode: string, path?: string[]): boolean;
+    getError(errorCode: string, path?: Array<string | number> | string): any;
+    hasError(errorCode: string, path?: Array<string | number> | string): boolean;
     reset(value?: any): void;
 }
 

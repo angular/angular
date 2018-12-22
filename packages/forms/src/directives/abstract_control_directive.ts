@@ -153,7 +153,7 @@ export abstract class AbstractControlDirective {
    * If no path is given, it checks for the error on the present control.
    * If the control is not present, false is returned.
    */
-  hasError(errorCode: string, path?: string[]): boolean {
+  hasError(errorCode: string, path?: Array<string|number>|string): boolean {
     return this.control ? this.control.hasError(errorCode, path) : false;
   }
 
@@ -162,7 +162,7 @@ export abstract class AbstractControlDirective {
    * Reports error data for the control with the given path.
    * If the control is not present, null is returned.
    */
-  getError(errorCode: string, path?: string[]): any {
+  getError(errorCode: string, path?: Array<string|number>|string): any {
     return this.control ? this.control.getError(errorCode, path) : null;
   }
 }
