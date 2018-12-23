@@ -5016,15 +5016,15 @@ This one returns a `boolean`:
 `CanActivateChild` 라우팅 가드를 사용하면 자식 라우팅을 제어할 수 있습니다.
 `CanActivateChild`는 자식 라우팅 규칙이 활성화되기 _전에_ 실행된다는 점만 빼면 `CanActivate` 가드와 비슷합니다.
 
-지금까지는 로그인하지 않은 사용자가 관리자 기능 모듈에 접근하는 것을 제한했었습니다.
+지금까지는 허가받지 않은 사용자가 관리자 기능 모듈에 접근하는 것을 제한했었습니다.
 그런데 이 로직이 제대로 동작하려면 기능 모듈 _안쪽에서_ 자식 라우팅 규칙이 활성화되는 것도 검사해야 합니다.
 
-이번에는 `AuthGuard`를 수정해서 `admin` 주소 안에서 페이지가 전환되는 것도 제어해 봅시다.
+이번에는 `AuthGuard`를 수정해서 `admin` 주소 안쪽에서 페이지가 전환되는 것을 제어해 봅시다.
 `auth.guard.ts` 파일을 열고 라우터 패키지에서 `CanActivateChild` 인터페이스를 로드합니다.
 
-그리고 `canActivate()` 메소드를 구현했던 것처럼 `canActivateChild()` 메소드를 구현합니다. 이 때 `ActivatedRouteSnapshot`과 `RouterStateSnapshot`도 의존성으로 주입합니다.
-`canActivateChild()` 메소드를 비동기로 실행하려면 `Observable<boolean>`이나 `Promise<boolean>`을 반환하고, 동기로 실행하려면 `boolean` 타입을 반환하면 됩니다.
-이 예제에서는 `boolean` 타입을 반환하도록 해봅시다:
+그리고 `canActivate()` 메소드를 구현했던 것처럼 `canActivateChild()` 메소드를 구현합니다. 이 때 이 함수에는 `ActivatedRouteSnapshot`과 `RouterStateSnapshot`이 인자로 전달됩니다.
+`canActivateChild()` 메소드를 비동기로 실행하려면 `Observable<boolean>`이나 `Promise<boolean>`을 반환하고, 동기 방식으로 실행하려면 `boolean` 타입을 반환하면 됩니다.
+이 예제에서는 `boolean` 타입을 반환합니다:
 
 <!--
 <code-example path="router/src/app/auth/auth.guard.3.ts" linenums="false" header="src/app/auth/auth.guard.ts (excerpt)" region="can-activate-child">
@@ -5038,7 +5038,7 @@ This one returns a `boolean`:
 Add the same `AuthGuard` to the `component-less` admin route to protect all other child routes at one time
 instead of adding the `AuthGuard` to each route individually.
 -->
-이제 컴포넌트 없이 선언한 관리자 라우팅 규칙의 자식 라우팅 규칙에 `AuthGuard`를 다음과 같이 적용합니다. 이제 이 컴포넌트의 자식 라우팅 규칙은 모두 라우팅 가드로 보호됩니다.
+이제 컴포넌트 없이 선언한 관리자 라우팅 규칙의 자식 라우팅 규칙에 다음과 같이 `AuthGuard`를 적용합니다. 이제 이 컴포넌트의 자식 라우팅 규칙은 모두 라우팅 가드로 보호됩니다.
 
 <!--
 <code-example path="router/src/app/admin/admin-routing.module.3.ts" linenums="false" header="src/app/admin/admin-routing.module.ts (excerpt)" region="can-activate-child">
@@ -5092,7 +5092,7 @@ If you let the user move to the next screen immediately and
 the save were to fail (perhaps the data are ruled invalid), you would lose the context of the error.
 -->
 그리고 사용자가 변경사항을 저장하기로 하면 서버로 보낸 요청이 완료될 때까지 잠시 네비게이션을 미룰 수도 있습니다.
-만약 서버로 보낸 데이터나 형식이 잘못된 것을 무시하고 다음 화면으로 바로 넘어가면, 데이터를 저장하면서 발생한 에러를 처리할 수 있습니다.
+서버로 보낸 데이터나 형식이 잘못된 것을 무시하고 다음 화면으로 바로 넘어가면, 데이터를 저장하면서 발생한 에러를 처리할 수 없습니다.
 
 <!--
 You can't block while waiting for the server&mdash;that's not possible in a browser.
@@ -5130,8 +5130,8 @@ Both buttons navigate back to the crisis list after save or cancel.
 하지만 라우터 후킹 함수를 사용하면 이 시나리오를 흉내낼 수 있습니다.
 
 사용자가 `CrisisDetailComponent`에서 위기사항에 대한 정보를 수정했다고 합시다.
-이 때 `HeroDetailComponent`와는 다르게, 사용자가 변경한 내용은 바로 저장하지 않으려고 합니다.
-이 컴포넌트에서는 사용자가 *Save* 버튼을 클릭했을 때 변경내용을 저장하고, 사용자가 *Cancel* 버튼을 클릭하면 변경사항을 폐지하려고 합니다.
+이 때 `HeroDetailComponent`와는 다르게, 사용자가 변경한 내용을 바로 저장하지 않으려고 합니다.
+이 컴포넌트에서는 사용자가 *Save* 버튼을 클릭했을 때 변경내용을 저장하고, 사용자가 *Cancel* 버튼을 클릭하면 변경사항을 폐기합니다.
 
 그리고 두 버튼을 클릭하면 모두 이전 페이지인 위기 목록 페이지로 이동합니다.
 
@@ -5155,7 +5155,7 @@ in a confirmation dialog box that *waits asynchronously for the user's
 answer*.
 -->
 사용자가 변경사항을 저장하거나 취소하지 않고 다른 페이지로 이동하려고 하는 상황은 어떤 상황일까요?
-이런 경우는 브라우저의 뒤로 가기 버튼을 클릭하거나 목록으로 이동하는 링크를 클릭했을 때 발생할 수 있습니다.
+이런 상황은 브라우저의 뒤로 가기 버튼을 클릭하거나 목록으로 이동하는 링크를 클릭했을 때 발생할 수 있습니다.
 두가지 경우 모두 네비게이션이 실행됩니다.
 그러면 앱에서 자동으로 변경사항을 저장하거나 취소해야 할까요?
 
@@ -5222,7 +5222,7 @@ This approach makes the guard reusable.
 -->
 `CrisisDetailComponent`에는 이미 `canDeactivate()` 메소드가 구현되어 있습니다.
 하지만 이 라우팅 가드가 컴포넌트의 `canDeactivate()` 메소드의 로직을 알아야 할 필요는 없습니다.
-이 라우팅 가드는 단순하게 컴포넌트에 `canDeactivate()` 메소드가 정의되어 있는지 확인하고, 정의되어 있다면 이 메소드를 단순하게 실행하기만 합니다.
+이 라우팅 가드는 단순하게 컴포넌트에 `canDeactivate()` 메소드가 정의되어 있는지 확인하고, 정의되어 있다면 이 메소드를 실행하기만 할 뿐입니다.
 이렇게 구현하면 이 라우팅 가드를 다른 컴포넌트를 대상으로도 재사용할 수 있습니다.
 
 <code-example path="router/src/app/can-deactivate.guard.ts" header="src/app/can-deactivate.guard.ts">
@@ -5241,7 +5241,7 @@ the component's properties or confirm whether the router should allow navigation
 -->
 이 방식 대신 `CrisisDetailComponent`에만 적용되는 `CanDeactivate` 가드를 구현할 수도 있습니다.
 그러면 이 라우팅 가드의 `canDeactivate()` 메소드는 현재 컴포넌트의 인스턴스와 현재 `ActivatedRoute`, `RouterStateSnapshot`, 필요하다면 더 많은 정보에 접근해야 합니다.
-이 라우팅 가드가 딱 이 함수에만 사용된다면 이렇게 구현할 수도 있습니다.
+이 라우팅 가드가 딱 이 컴포넌트에만 사용된다면 이렇게 구현할 수도 있습니다.
 
 <!--
 <code-example path="router/src/app/can-deactivate.guard.1.ts" linenums="false" header="src/app/can-deactivate.guard.ts (component-specific)">
@@ -5320,8 +5320,8 @@ In summary, you want to delay rendering the routed component until all necessary
 
 You need a *resolver*.
 -->
-컴포넌트를 전환하면서 라우팅 규칙이 활성화되기 전에 서버에서 데이터를 먼저 받아오는 방법이 있습니다. 이 방법을 사용하면 서버와 통신할 때 발생할 수 있는 에러를 컴포넌트가 전환되기 전에 처리할 수 있습니다.
-마찬가지로, 이 방법은 위기 상세정보 화면으로 이동했지만 `id`에 해당하는 데이터가 없을 때에도 활용할 수 있습니다.
+컴포넌트를 전환하면서 라우팅 규칙이 활성화되기 전에 서버에서 데이터를 먼저 받아올 수 있는데, 이 방법을 사용하면 서버와 통신할 때 발생할 수 있는 에러를 컴포넌트가 전환되기 전에 처리할 수 있습니다.
+그리고 좀 더 사용방법을 고민해 보면 위기 상세정보 화면으로 이동했지만 `id`에 해당하는 데이터가 없을 때에도 활용할 수 있습니다.
 해당하는 데이터가 없다면 다시 위기목록 화면으로 전환할 수도 있습니다.
 
 요약하자면, 컴포넌트에 필요한 데이터가 모두 준비될 때까지 라우팅 동작을 지연시킬 수 있습니다.
@@ -5379,10 +5379,10 @@ Be explicit. Implement the `Resolve` interface with a type of `Crisis`.
 Inject the `CrisisService` and `Router` and implement the `resolve()` method.
 That method could return a `Promise`, an `Observable`, or a synchronous return value.
 -->
-타입은 명확하게 지정합니다. 이 클래스는 `Resolve` 인터페이스를 바탕으로 구현하며 이 때 처리하는 객체의 타입은 `Crisis`입니다.
+타입은 명확하게 지정합니다. 이 클래스는 `Resolve` 인터페이스를 바탕으로 구현하며, 처리하는 객체의 타입은 `Crisis`입니다.
 
 `CrisisService`와 `Router` 객체는 `resolve()` 메소드에 주입합니다.
-그리고 이 메소드는 `Promise`나 `observable`, 동기방식으로 결과를 반환할 수 있습니다.
+이 메소드는 `Promise`나 `observable`, 동기방식으로 결과를 반환할 수 있습니다.
 
 <!--
 The `CrisisService.getCrisis` method returns an observable, in order to prevent the route from loading until the data is fetched.
@@ -5454,7 +5454,7 @@ That's the router's job. Write this class and let the router take it from there.
 
 The relevant *Crisis Center* code for this milestone follows.
 -->
-1. 리졸버를 실행하는 것은 라우터입니다.
+2. 리졸버를 실행하는 것은 라우터입니다.
 더이상 사용자가 다른 페이지로 마음대로 이동하는 것을 걱정하지 않아도 됩니다.
 구현한 클래스를 라우터에 전달하기만 하면 이 동작을 라우터가 직접 관리합니다.
 
@@ -5532,7 +5532,7 @@ The relevant *Crisis Center* code for this milestone follows.
 <!--
 ### Query parameters and fragments
 -->
-### 쿼리 파라미터와 프래그먼트 활용하기
+### 쿼리 파라미터(Query parameters)와 프래그먼트(Fragments) 활용하기
 
 <!--
 In the [route parameters](#optional-route-parameters) example, you only dealt with parameters specific to
@@ -5574,7 +5574,7 @@ and provide the `queryParamsHandling` and `preserveFragment` to pass along the c
 and fragment to the next route.
 -->
 쿼리 파라미터와 프래그먼트는 보통 네비게이션 과정 중에 활용하지만, 네비게이션이 실행된 이후에 사용할 수 있도록 보관해 둘 수도 있습니다.
-이 동작은 `LoginComponent`에서 `router.navigate` 함수에 `NavigationExtras` 객체를 전달할 때 객체에 `queryParamsHandling` 프로퍼티와 `preserveFragment` 프로퍼티를 지정하면 됩니다.
+`LoginComponent`에서 `router.navigate` 함수에 `NavigationExtras` 객체를 전달할 때 객체에 `queryParamsHandling` 프로퍼티와 `preserveFragment` 프로퍼티를 지정하면 됩니다.
 그러면 다음에 적용될 라우팅 규칙에 이 데이터를 활용할 수 있습니다.
 
 <code-example path="router/src/app/auth/login/login.component.ts" linenums="false" header="src/app/auth/login/login.component.ts (preserve)" region="preserve">
@@ -5609,7 +5609,7 @@ query parameters and fragment.
 Just like *route parameters*, the query parameters and fragments are provided as an `Observable`.
 The updated *Crisis Admin* component feeds the `Observable` directly into the template using the `AsyncPipe`.
 -->
-*쿼리 파라미터*와 *프래그먼트*는 `ActivatedRoute` 서비스를 사용하는 방식으로도 참조할 수 있습니다.
+*쿼리 파라미터*와 *프래그먼트*는 `ActivatedRoute` 서비스를 참조하는 방식으로 사용할 수도 있습니다.
 이 때 일반적인 *라우팅 변수*와 마찬가지로, 쿼리 파라미터와 프래그먼트도 `Observable` 타입으로 제공됩니다.
 그리고 컴포넌트에서는 `Observable` 타입의 데이터를 템플릿에서 `AsyncPipe`로 참조합니다.
 
@@ -5651,8 +5651,8 @@ As you continue to build out feature areas, the overall application size will co
 At some point you'll reach a tipping point where the application takes a long time to load.
 -->
 지금까지 진행하는 동안 애플리케이션은 점점 복잡해졌습니다.
-그리고 새로운 기능을 추가할 때마다 애플리케이션의 용량도 점점 커질 것입니다.
-그래서 언젠가는 애플리케이션이 시작되는 것이 느리다고 느껴지는 때가 찾아옵니다.
+게다가 앞으로 새로운 기능을 추가할 때마다 애플리케이션의 용량도 점점 커질 것입니다.
+그러면 언젠가 애플리케이션이 시작되는 것이 느리다고 느껴지는 때가 찾아옵니다.
 
 <!--
 How do you combat this problem?  With asynchronous routing, which loads feature modules _lazily_, on request.
@@ -5684,7 +5684,7 @@ you should only load it when requested by the right people.
 
 `AppModule`은 애플리케이션이 실행되기 전에 반드시 로드되어야 합니다.
 하지만 다른 모듈은 모두 지연로딩할 수 있습니다.
-`AdminModule`을 생각해 본다면 이 모듈은 아주 일부의 사용자만 사용하기 때문에, 이 모듈은 해당 기능이 필요한 사용자만 로드하도록 하는 것이 좋습니다.
+`AdminModule`을 생각해 보면, 이 모듈은 아주 일부의 사용자만 사용하기 때문에 해당 기능이 필요한 사용자만 이 모듈을 로드하는 것이 좋습니다.
 
 {@a lazy-loading-route-config}
 
@@ -5704,7 +5704,7 @@ The `Router` supports  *empty path* routes;
 use them to group routes together without adding any additional path segments to the URL.
 Users will still visit `/admin` and the `AdminComponent` still serves as the *Routing Component* containing child routes.
 -->
-`Router`는 *빈 경로* 의 라우팅 규칙을 지원합니다. 이 방식을 사용하면 현재 URL을 변경하지 않으면서 여러 라우팅 경로를 그룹으로 묶을 수 있습니다.
+`Router`는 *빈 주소* 를 사용하는 라우팅 규칙을 지원합니다. 이 방식을 사용하면 현재 URL을 변경하지 않으면서 여러 라우팅 경로를 그룹으로 묶을 수 있습니다.
 이 기능을 사용하는 사용자는 여전히 `/admin`으로 접속할 것이며 자식 라우팅 규칙에 해당하는 *라우팅 컴포넌트* 도 여전히 `AdminComponent`로 제공됩니다.
 
 <!--
@@ -5744,12 +5744,12 @@ Finally, it loads the requested route to the destination admin component.
 The lazy loading and re-configuration happen just once, when the route is _first_ requested;
 the module and routes are available immediately for subsequent requests.
 -->
-이제 라우터가 이 라우팅 규칙을 만나면 `loadChildren` 문자열에 설정된 값으로 `AdminModule`을 동적으로 로드합니다.
-그리고 `AdminModule`에 정의된 라우팅 규칙은 애플리케이션 전체 라우팅 규칙과 합쳐집니다.
+이제 라우터가 이 라우팅 규칙을 만나면 `loadChildren` 문자열에 설정된 값으로 `AdminModule`을 로드합니다.
+그리고 `AdminModule`에 정의된 라우팅 규칙은 애플리케이션 전체 라우팅 규칙과 조합됩니다.
 결국 기존에 사용하던 대로 `admin` 주소로 접근하면 `AdminComponent`가 화면에 표시됩니다.
 
 모듈 지연로딩은 이 라우팅 규칙이 _처음_ 요청받았을 때 한 번만 실행됩니다.
-이후에 이 주소로 라우팅하면 이미 조합된 전체 라우팅 규칙을 그대로 사용합니다.
+이후에 이 주소로 라우팅하면 이미 로드된 모듈과 조합된 라우팅 규칙을 그대로 사용합니다.
 
 <div class="alert is-helpful">
 
@@ -5759,7 +5759,7 @@ Angular provides a built-in module loader that supports SystemJS to load modules
 using another bundling tool, such as Webpack, you would use the Webpack mechanism for asynchronously loading modules.
 -->
 Angular는 모듈을 지연로딩 할 때 SystemJS 모듈 로더를 사용합니다.
-Webpack과 같은 다른 번들링 툴을 직접 사용한다면 Webpack에서 제공하는 미동기 모듈 로딩 메커니즘을 사용해야 합니다.
+Webpack과 같은 다른 번들링 툴을 직접 사용한다면 Webpack에서 제공하는 비동기 모듈 로딩 메커니즘을 사용해야 합니다.
 
 </div>
 
@@ -5795,7 +5795,7 @@ Ideally, you'd only load the `AdminModule` if the user is logged in.
 지금도 `AdminModule`은 `CanActivate` 라우팅 가드에 의해 보호받고 있기 때문에 로그인하지 않은 사용자가 이 모듈에 접근하는 것은 제한할 수 있습니다.
 로그인하지 않은 사용자가 이 모듈에 접근하면 로그인 페이지로 리다이렉트 됩니다.
 
-하지만 이 경우에 사용자가 `AdminModule`의 컴포넌트 중 아무것도 화면에서 확인하지 못했지만 `AdminModule`은 로딩됩니다.
+하지만 이 경우에 사용자가 `AdminModule`의 컴포넌트 중 아무것도 화면에서 확인하지 못했지만 `AdminModule` 자체는 로딩이 완료됩니다.
 이 모듈은 사용자가 로그인한 후에 실제로 활용할 때만 로딩하는 것이 이상적입니다.
 
 <!--
@@ -5879,8 +5879,8 @@ By default, the _Heroes_ are the first view.
 For the smallest initial payload and fastest launch time,
 you should eagerly load the `AppModule` and the `HeroesModule`.
 -->
-_사전로딩(preloading)_ 은 두 방식의 중간 개념입니다.
-_위기 관리 센터_ 를 생각해 봅시다.
+_사전로딩(preloading)_ 은 두 방식의 중간 정도 되는 개념입니다.
+_위기대응센터_ 를 생각해 봅시다.
 이 모듈은 사용자가 처음 애플리케이션을 실행했을 때 보는 화면이 아닙니다.
 기본적으로 이 애플리케이션의 첫 화면은 _히어로_ 화면입니다.
 그래서 애플리케이션의 실행 속도를 빠르게 하려면 `AppModule`과 `HeroesModule`은 즉시 로딩하는 것이 좋습니다.
@@ -5897,7 +5897,7 @@ That's _preloading_.
 _위기대응센터_ 는 물론 지연로딩 할 수도 있습니다.
 하지만 대부분의 사용자가 _위기대응센터_ 에 접속한다고 합시다.
 이 경우에 이상적인 경우를 생각해보면, 애플리케이션이 실행될 때는 `AppModule`과 `HeroesModule`을 즉시 로드한 채로 실행하지만, 그 이후에 바로 `CrisisCenterModule`을 백그라운드에서 로드하는 것이 좋을 것입니다.
-이렇게 구현하면 사용자가 _위기대응센터_ 로 이동했을 때 모듈은 이미 로드되었기 때문에 바로 사용할 수 있습니다.
+이렇게 구현하면 사용자가 _위기대응센터_ 로 이동했을 때 이미 로드된 모듈을 바로 사용할 수 있습니다.
 
 이것이 _사전로딩_ 입니다.
 
@@ -5914,7 +5914,7 @@ After each _successful_ navigation, the router looks in its configuration for an
 Whether it preloads a module, and which modules it preloads, depends upon the *preload strategy*.
 -->
 네비게이션이 _성공적으로_ 실행되고 나면 라우터는 라우터 설정에서 사전로딩할 수 있는 모듈 중에 로드되지 않은 것을 찾습니다.
-이 때 모듈을 사전로딩 할지 판단하는데, 이 과정은 *사전로딩 정책(preload strategy)*에 따라 달라집니다.
+이 때 모듈을 사전로딩 할지 판단하는데, 이 동작은 *사전로딩 정책(preload strategy)*에 따라 달라집니다.
 
 <!--
 The `Router` offers two preloading strategies out of the box:
@@ -5924,7 +5924,7 @@ The `Router` offers two preloading strategies out of the box:
 -->
 `Router`는 두 가지 방식의 사전로딩 정책을 제공합니다:
 
-* 기본값은 모듈을 사전로딩하지 않는 것입니다. 지연로딩은 그대로 사용할 수 있습니다.
+* 기본값은 모듈을 사전로딩하지 않는 것입니다. 지연로딩은 원래 의도대로 지연 로딩 됩니다.
 * 지연로딩되는 모든 모듈을 사전로딩합니다.
 
 <!--
@@ -6035,19 +6035,31 @@ Surprisingly, the `AdminModule` does _not_ preload. Something is blocking it.
 
 {@a preload-canload}
 
-
+<!--
 #### CanLoad blocks preload
+-->
+#### CanLoad는 사전로딩을 막습니다.
 
+<!--
 The `PreloadAllModules` strategy does not load feature areas protected by a [CanLoad](#can-load-guard) guard.
 This is by design.
+-->
+`PreloadAllModules` 정책을 사용해도 [CanLoad](#can-load-guard)로 보호되는 기능 모듈은 로드되지 않습니다.
+이것은 Angular가 의도한 디자인입니다.
 
+<!--
 You added a `CanLoad` guard to the route in the `AdminModule` a few steps back
 to block loading of that module until the user is authorized.
 That `CanLoad` guard takes precedence over the preload strategy.
+-->
+이전 단계에서 `AdminModule`에 해당하는 라우팅 규칙에 `CanLoad` 라우팅 가드를 적용했습니다. 이 라우팅 가드는 허용되지 않은 사용자가 모듈을 로드하는 것을 방지합니다.
+그래서 `CanLoad` 가드는 사전로딩 정책보다 우선 순위가 높습니다.
 
+<!--
 If you want to preload a module _and_ guard against unauthorized access,
 drop the `canLoad()` guard method and rely on the [canActivate()](#can-activate-guard) guard alone.
-
+-->
+만약 모듈을 사전로딩하면서 허용되지 않은 사용자가 모듈에 접근하는 것 동시에 제한하려고 한다면 `canLoad()` 가드를 제거하고 [canActivate()](#can-activate-guard)만 단독으로 사용해야 합니다.
 
 {@a custom-preloading}
 
@@ -6061,7 +6073,7 @@ Preloading every lazy loaded modules works well in many situations,
 but it isn't always the right choice, especially on mobile devices and over low bandwidth connections.
 You may choose to preload only certain feature modules, based on user metrics and other business and technical factors.
 -->
-지연로딩되는 모듈을 사전로딩하는 것은 대부분의 경우에 활용할 수 있지만 이 방식이 항상 최선인 것은 아닙니다. 대역폭이 상대적으로 작은 모바일 장치의 경우가 특히 그렇습니다.
+지연로딩되는 모듈을 사전로딩하는 것은 대부분의 경우에 문제없이 활용할 수 있지만 이 방식이 항상 최선인 것은 아닙니다. 대역폭이 상대적으로 작은 모바일 장치의 경우가 특히 그렇습니다.
 이런 경우에는 개발자의 의도나 애플리케이션의 필요에 따라, 기술적인 이슈를 고려하며 특정 기능모듈만 선택적으로 사전로딩하는 것이 나을 수 있습니다.
 
 <!--
@@ -6072,7 +6084,7 @@ Recall that you can add anything to the `data` property of a route.
 
 Set the `data.preload` flag in the `crisis-center` route in the `AppRoutingModule`.
 -->
-커스텀 사전로딩 정책을 작성하면 라우터의 사전로딩 동작을 제어할 수 있습니다.
+커스텀 사전로딩 정책을 작성하면 라우터의 사전로딩 동작을 더 구체적으로 제어할 수 있습니다.
 
 이번 섹션에서는 커스텀 사전로딩 정책을 작성해서 라우팅 규칙의 `data.preload` 플래그가 `true`인 모듈만 사전로딩하도록 구현해 봅시다.
 이전에 살펴봤던 것처럼 라우팅 규칙에는 `data` 프로퍼티를 사용해서 인자를 전달할 수 있습니다.
@@ -6112,7 +6124,7 @@ The router calls the `preload` method with two arguments:
 1. The route to consider.
 1. A loader function that can load the routed module asynchronously.
 -->
-`SelectivePreloadingStrategyService`는 `PreloadingStrategy` 인터페이스를 기반으로 구현하며, `preload` 메소드를 작성해야 합니다.
+`SelectivePreloadingStrategyService`는 `PreloadingStrategy` 인터페이스를 기반으로 구현하기 때문에 `preload` 메소드를 작성해야 합니다.
 
 그러면 라우터가 이 `preload` 메소드를 실행할 때 두 개의 인자를 함께 전달합니다:
 
@@ -6125,8 +6137,8 @@ If the route should preload, it returns the observable returned by calling the l
 If the route should _not_ preload, it returns an `Observable` of `null`.
 -->
 `preload` 메소드는 반드시 `Observable`을 반환해야 합니다.
-이 때 라우팅 규칙을 사전로딩하려면 로더 함수를 실행한 결과를 반환하면 됩니다.
-그리고 라우팅 규칙을 사전로딩하지 _않으려면_ `null`을 `Observable` 타입으로 반환하면 됩니다.
+그리고 라우팅 규칙을 사전로딩하려면 로더 함수를 실행한 결과를 반환하면 됩니다.
+라우팅 규칙을 사전로딩하지 _않으려면_ `null`을 `Observable` 타입으로 반환하면 됩니다.
 
 <!--
 In this sample, the  `preload` method loads the route if the route's `data.preload` flag is truthy.
@@ -6202,7 +6214,7 @@ It's also logged to the browser's console.
 You've setup the routes for navigating around your application. You've used navigation imperatively and declaratively to many different routes. But like any application, requirements change over time. You've setup links and navigation to `/heroes` and `/hero/:id` from the `HeroListComponent` and `HeroDetailComponent` components. If there was a requirement that links to `heroes` become `superheroes`, you still want the previous URLs to navigate correctly. You also don't want to go and update every link in your application, so redirects makes refactoring routes trivial.
 -->
 라우팅 규칙은 애플리케이션에서 네비게이션 동작을 실행하기 위해 작성합니다.
-그리고 이 때 명시적으로 네비게이션을 실행하기 위해 여러가지 라우팅 규칙을 작성해보기도 했습니다.
+이 때 명시적으로 네비게이션을 실행하기 위해 여러가지 라우팅 규칙을 작성해보기도 했습니다.
 하지만 애플리케이션을 개발하면서 요구사항은 언제나 바뀔 수 있습니다.
 지금까지는 `HeroListComponent`와 `HeroDetailComponent`로 네비게이션하기 위해 `/heroes`와 `/hero/:id` 라우팅 규칙을 정의했습니다.
 그런데 요구사항이 변경되어 `heroes` 주소가 `superheroes`로 변경해야 하지만, 이전에 제공하던 URL도 그대로 제공해야 한다고 합시다.
@@ -6219,7 +6231,7 @@ You've setup the routes for navigating around your application. You've used navi
 Let's take the `Hero` routes and migrate them to new URLs. The `Router` checks for redirects in your configuration before navigating, so each redirect is triggered when needed. To support this change, you'll add redirects from the old routes to the new routes in the `heroes-routing.module`.
 -->
 `Hero`와 관련된 라우팅 규칙을 모두 새로운 URL로 마이그레이션 해봅시다.
-`Router`는 네비게이션 동작을 실행하기 전에 해당 라우팅 규칙에 리다이렉트 설정이 있는지 확인하며, 리다이렉트 설정이 있으면 이 주소로 이동합니다.
+`Router`는 네비게이션 동작을 실행하기 전에 해당 라우팅 규칙에 리다이렉트 설정이 있는지 확인하며, 리다이렉트 설정이 있으면 해당 주소로 이동합니다.
 그래서 `heroes-routing.module`에서 원래 사용하던 주소는 새로운 주소로 리다이렉트하는 설정을 추가해야 합니다.
 
 <!--
@@ -6260,8 +6272,8 @@ So instead, you'll update the empty path route in `app-routing.module.ts` to red
 -->
 그런데 `app-routing.module.ts` 파일을 수정하기 전에 중요하게 짚고 넘어가야 할 것이 있습니다.
 애플리케이션이 처음 실행되면 빈 문자열 라우팅 규칙이 적용되기 때문에 `/heroes`로 리다이렉트하는데, `/heroes` 주소는 `/superheroes`로 다시 리다이렉트 될것이라 생각할 수 있습니다.
-하지만 라우터는 한 번에 하나씩 라우팅 규칙을 처리하기 때문에 이런 리다이렉션은 동작하지 않습니다.
-그리고 이 방식은 리다이렉션 체이닝 때문에 발생할 수 있는 무한루프를 방지하기 위한 것이기도 합니다.
+하지만 라우터는 한 번에 라우팅 규칙 하나만 처리하기 때문에 이런 리다이렉션은 동작하지 않습니다.
+이 방식은 리다이렉션 체이닝 때문에 발생할 수 있는 무한루프를 방지하기 위한 것이기도 합니다.
 
 <!--
 <code-example path="router/src/app/app-routing.module.ts" linenums="false" header="src/app/app-routing.module.ts (superheroes redirect)">
@@ -6322,7 +6334,7 @@ to see the finished route configuration.
 라우터는 실제로 어떻게 설정되었을까요?
 
 라우터의 설정값은 `config` 프로퍼티를 참조하면 확인할 수 있습니다.
-간단하게 `AppModule`을 다음과 같이 수정하고 브라우저 콘솔을 확인하면, 브라우저 콘솔로 이 라우터가 어떻게 설정되었는지 확인할 수 있습니다.
+간단하게 `AppModule`을 다음과 같이 수정하고 브라우저 콘솔을 확인하면, 브라우저 콘솔로 라우터 설정을 확인할 수 있습니다.
 
 <code-example path="router/src/app/app.module.7.ts" linenums="false" header="src/app/app.module.ts (inspect the router config)" region="inspect-config">
 
@@ -6394,7 +6406,7 @@ You can bind the `RouterLink` directive to such an array like this:
 <!--
 You've written a two element array when specifying a route parameter like this:
 -->
-그리고 라우팅 변수를 지정하려면 다음과 같이 엘리먼트가 2개인 배열을 사용할 수 있습니다:
+라우팅 변수를 지정하려면 다음과 같이 엘리먼트가 2개인 배열을 사용할 수 있습니다:
 
 <code-example path="router/src/app/heroes/hero-list/hero-list.component.1.html" linenums="false" header="src/app/heroes/hero-list/hero-list.component.html (nav-to-detail)" region="nav-to-detail">
 
@@ -6444,7 +6456,7 @@ navigates from the root of the application down to the *Dragon Crisis*:
 * 배열의 첫번째 항목은 새로 적용될 부모 라우팅 규칙(`/crisis-center`)을 의미합니다.
 * 부모 라우팅 규칙에 사용되는 라우팅 변수는 없습니다.
 * 자식 라우터의 기본 라우팅 규칙은 지정되지 않았기 때문에 하나를 골라야 합니다.
-* 이동하려는 컴포넌트는 `CrisisListComponent`이며 이 라우팅 규칙의 주소는 '/'로 지정되어 있지만, 슬래시를 직접 추가할 필요는 없습니다.
+* 이동하려는 컴포넌트는 `CrisisListComponent`이며 이 라우팅 규칙의 주소는 '/'로 지정되어 있지만, 슬래시는 생략해도 됩니다.
 * 배열의 최종 형태는 `['/crisis-center']`가 됩니다.
 
 <code-example path="router/src/app/app.component.3.ts" linenums="false" header="src/app/app.component.ts (Dragon-anchor)" region="Dragon-anchor">
@@ -6483,8 +6495,8 @@ In sum, you can write applications with one, two or more levels of routing.
 The link parameters array affords the flexibility to represent any routing depth and
 any legal sequence of route paths, (required) router parameters, and (optional) route parameter objects.
 -->
-정리하자면, 라우팅 규칙은 한 단계 이상을 한 번에 적용할 수 있습니다.
-그래서 링크 파라미터 배열은 자유로운 라우팅을 위해 유연하게 설계되었으며, 필수 라우팅 변수나 옵션 라우팅 변수도, 객체 형태의 라우팅 변수도 모두 처리할 수 있습니다.
+라우팅 규칙은 여러개를 한 번에 적용할 수 있습니다.
+링크 파라미터 배열은 자유로운 라우팅을 위해 유연하게 설계되었으며, 필수 라우팅 변수나 옵션 라우팅 변수도, 객체 형태의 라우팅 변수도 모두 처리할 수 있습니다.
 
 {@a browser-url-styles}
 
@@ -6688,9 +6700,9 @@ The preferred way to configure the strategy is to add a
 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a>
 tag in the `<head>` of the `index.html`.
 -->
-라우터가 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a> 스타일을 기본 옵션으로 사용하지만 **base href**는 *반드시* 설정해야 합니다.
+라우터가 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="Browser history push-state">HTML5 pushState</a> 스타일을 기본 옵션으로 사용한다고 해도 **base href**는 *반드시* 설정해야 합니다.
 
-그리고 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a> 엘리먼트를 설정하는 방법 중 가장 편한 방법은 `index.html` 파일의 `<head>` 태그 안에 이 엘리먼트를 추가하는 것입니다.
+그리고 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; 엘리먼트</a>를 가장 간단하게 설정하는 방법은 `index.html` 파일의 `<head>` 태그 안에 이 엘리먼트를 추가하는 것입니다.
 
 <code-example path="router/src/index.html" linenums="false" header="src/index.html (base-href)" region="base-href">
 
