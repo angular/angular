@@ -81,7 +81,7 @@ Other JavaScript modules use *import statements* to access public objects from o
 
 <img src="generated/images/guide/architecture/library-module.png" alt="Component" class="left">
 
-Angular loads as a collection of JavaScript modules. You can think of them as library modules. Each Angular library name begins with the `@angular` prefix. Install them with the `npm` package manager and import parts of them with JavaScript `import` statements.
+Angular loads as a collection of JavaScript modules. You can think of them as library modules. Each Angular library name begins with the `@angular` prefix. Install them with the node package manager `npm` and import parts of them with JavaScript `import` statements.
 
 <br class="clear">
 
