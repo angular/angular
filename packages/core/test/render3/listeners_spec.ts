@@ -17,7 +17,8 @@ import {ComponentFixture, TemplateFixture, containerEl, createComponent, getDire
 
 
 describe('event listeners', () => {
-  let comps: MyComp[] = [];
+  let comps: any[] = [];
+  let events: any[] = [];
 
   class MyComp {
     showing = true;
@@ -45,6 +46,67 @@ describe('event listeners', () => {
         let comp = new MyComp();
         comps.push(comp);
         return comp;
+      }
+    });
+  }
+
+  class MyCompWithGlobalListeners {
+    /* @HostListener('document:custom') */
+    onDocumentCustomEvent() { events.push('component - document:custom'); }
+
+    /* @HostListener('body:click') */
+    onBodyClick() { events.push('component - body:click'); }
+
+    static ngComponentDef = defineComponent({
+      type: MyCompWithGlobalListeners,
+      selectors: [['comp']],
+      consts: 1,
+      vars: 0,
+      template: function CompTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          text(0, 'Some text');
+        }
+      },
+      factory: () => {
+        let comp = new MyCompWithGlobalListeners();
+        comps.push(comp);
+        return comp;
+      },
+      hostBindings: function HostListenerDir_HostBindings(
+          rf: RenderFlags, ctx: any, elIndex: number) {
+        if (rf & RenderFlags.Create) {
+          listener('custom', function() {
+            return ctx.onDocumentCustomEvent();
+          }, false, resolveDocument as GlobalTargetResolver);
+          listener('click', function() {
+            return ctx.onBodyClick();
+          }, false, resolveBody as GlobalTargetResolver);
+        }
+      }
+    });
+  }
+
+  class GlobalHostListenerDir {
+    /* @HostListener('document:custom') */
+    onDocumentCustomEvent() { events.push('directive - document:custom'); }
+
+    /* @HostListener('body:click') */
+    onBodyClick() { events.push('directive - body:click'); }
+
+    static ngDirectiveDef = defineDirective({
+      type: GlobalHostListenerDir,
+      selectors: [['', 'hostListenerDir', '']],
+      factory: function HostListenerDir_Factory() { return new GlobalHostListenerDir(); },
+      hostBindings: function HostListenerDir_HostBindings(
+          rf: RenderFlags, ctx: any, elIndex: number) {
+        if (rf & RenderFlags.Create) {
+          listener('custom', function() {
+            return ctx.onDocumentCustomEvent();
+          }, false, resolveDocument as GlobalTargetResolver);
+          listener('click', function() {
+            return ctx.onBodyClick();
+          }, false, resolveBody as GlobalTargetResolver);
+        }
       }
     });
   }
@@ -85,7 +147,10 @@ describe('event listeners', () => {
     });
   }
 
-  beforeEach(() => { comps = []; });
+  beforeEach(() => {
+    comps = [];
+    events = [];
+  });
 
   it('should call function on event emit', () => {
     const fixture = new ComponentFixture(MyComp);
@@ -487,47 +552,17 @@ describe('event listeners', () => {
   });
 
   it('should support global host listeners on components', () => {
-    let events: string[] = [];
-    class MyComp {
-      /* @HostListener('document:custom') */
-      onDocumentCustomEvent() { events.push('document custom'); }
-
-      /* @HostListener('body:click') */
-      onBodyClick() { events.push('body click'); }
-
-      static ngComponentDef = defineComponent({
-        type: MyComp,
-        selectors: [['comp']],
-        consts: 1,
-        vars: 0,
-        template: function CompTemplate(rf: RenderFlags, ctx: any) {
-          if (rf & RenderFlags.Create) {
-            text(0, 'Some text');
-          }
-        },
-        factory: () => { return new MyComp(); },
-        hostBindings: function HostListenerDir_HostBindings(
-            rf: RenderFlags, ctx: any, elIndex: number) {
-          if (rf & RenderFlags.Create) {
-            listener('custom', function() {
-              return ctx.onDocumentCustomEvent();
-            }, false, resolveDocument as GlobalTargetResolver);
-            listener('click', function() {
-              return ctx.onBodyClick();
-            }, false, resolveBody as GlobalTargetResolver);
-          }
-        }
-      });
-    }
-
-    const fixture = new ComponentFixture(MyComp);
+    const fixture = new ComponentFixture(MyCompWithGlobalListeners);
     const doc = fixture.hostElement.ownerDocument !;
 
     doc.dispatchEvent(new CustomEvent('custom'));
-    expect(events).toEqual(['document custom']);
+    expect(events).toEqual(['component - document:custom']);
 
     doc.body.click();
-    expect(events).toEqual(['document custom', 'body click']);
+    expect(events).toEqual(['component - document:custom', 'component - body:click']);
+
+    // invoke destroy for this fixture to cleanup all listeners setup for global objects
+    fixture.destroy();
   });
 
   it('should support host listeners on directives', () => {
@@ -537,9 +572,6 @@ describe('event listeners', () => {
       /* @HostListener('click') */
       onClick() { events.push('click!'); }
 
-      /* @HostListener('body:click') */
-      onBodyClick() { events.push('body click!'); }
-
       static ngDirectiveDef = defineDirective({
         type: HostListenerDir,
         selectors: [['', 'hostListenerDir', '']],
@@ -548,9 +580,6 @@ describe('event listeners', () => {
             rf: RenderFlags, ctx: any, elIndex: number) {
           if (rf & RenderFlags.Create) {
             listener('click', function() { return ctx.onClick(); });
-            listener('click', function() {
-              return ctx.onBodyClick();
-            }, false, resolveBody as GlobalTargetResolver);
           }
         }
       });
@@ -563,59 +592,29 @@ describe('event listeners', () => {
     }, () => {}, 2, 0, [HostListenerDir]);
 
     const button = fixture.hostElement.querySelector('button') !;
-    const body = containerEl.ownerDocument !.body;
 
     button.click();
     expect(events).toEqual(['click!']);
 
-    body.click();
-    expect(events).toEqual(['click!', 'body click!']);
-
     button.click();
-    expect(events).toEqual(['click!', 'body click!', 'click!']);
+    expect(events).toEqual(['click!', 'click!']);
   });
 
   it('should support global host listeners on directives', () => {
-    let events: string[] = [];
-
-    class HostListenerDir {
-      /* @HostListener('document:custom') */
-      onDocumentCustomEvent() { events.push('document custom'); }
-
-      /* @HostListener('body:click') */
-      onBodyClick() { events.push('body click'); }
-
-      static ngDirectiveDef = defineDirective({
-        type: HostListenerDir,
-        selectors: [['', 'hostListenerDir', '']],
-        factory: function HostListenerDir_Factory() { return new HostListenerDir(); },
-        hostBindings: function HostListenerDir_HostBindings(
-            rf: RenderFlags, ctx: any, elIndex: number) {
-          if (rf & RenderFlags.Create) {
-            listener('custom', function() {
-              return ctx.onDocumentCustomEvent();
-            }, false, resolveDocument as GlobalTargetResolver);
-            listener('click', function() {
-              return ctx.onBodyClick();
-            }, false, resolveBody as GlobalTargetResolver);
-          }
-        }
-      });
-    }
-
     const fixture = new TemplateFixture(() => {
-      elementStart(0, 'button', ['hostListenerDir', '']);
-      text(1, 'Click');
-      elementEnd();
-    }, () => {}, 2, 0, [HostListenerDir]);
+      element(0, 'div', ['hostListenerDir', '']);
+    }, () => {}, 1, 0, [GlobalHostListenerDir]);
 
     const doc = fixture.hostElement.ownerDocument !;
 
     doc.dispatchEvent(new CustomEvent('custom'));
-    expect(events).toEqual(['document custom']);
+    expect(events).toEqual(['directive - document:custom']);
 
     doc.body.click();
-    expect(events).toEqual(['document custom', 'body click']);
+    expect(events).toEqual(['directive - document:custom', 'directive - body:click']);
+
+    // invoke destroy for this fixture to cleanup all listeners setup for global objects
+    fixture.destroy();
   });
 
   it('should support listeners with specified set of args', () => {
@@ -768,6 +767,40 @@ describe('event listeners', () => {
     buttons[1].click();
     expect(comps[0] !.counter).toEqual(1);
     expect(comps[1] !.counter).toEqual(1);
+  });
+
+  it('should destroy global listeners in component views', () => {
+    const ctx = {showing: true};
+
+    const fixture = new TemplateFixture(
+        () => { container(0); },
+        () => {
+          containerRefreshStart(0);
+          {
+            if (ctx.showing) {
+              let rf1 = embeddedViewStart(0, 1, 0);
+              if (rf1 & RenderFlags.Create) {
+                element(0, 'comp');
+              }
+              embeddedViewEnd();
+            }
+          }
+          containerRefreshEnd();
+        },
+        1, 0, [MyCompWithGlobalListeners]);
+
+    const body = fixture.hostElement.ownerDocument !.body;
+
+    body.click();
+    expect(events).toEqual(['component - body:click']);
+
+    // the child view listener should be removed when the parent view is removed
+    ctx.showing = false;
+    fixture.update();
+
+    body.click();
+    // expecting no changes in events array
+    expect(events).toEqual(['component - body:click']);
   });
 
   it('should support listeners with sibling nested containers', () => {
