@@ -100,7 +100,7 @@ The subscribe callback above requires bracket notation to extract the data value
 
 You can't write `data.heroesUrl` because TypeScript correctly complains that the `data` object from the service does not have a `heroesUrl` property. 
 
-The `HttpClient.get()` method parsed the JSON server response into the anonymous `Object` type. It doesn't know what the shape of that object is.
+The [`HttpClient.get()`](https://angular.io/api/common/http/HttpClient#get) method parsed the JSON server response into the anonymous `Object` type. It doesn't know what the shape of that object is.
 
 You can tell `HttpClient` the type of the response to make consuming the output easier and more obvious.
 
@@ -111,7 +111,7 @@ First, define an interface with the correct shape:
   region="config-interface" linenums="false">
 </code-example>
 
-Then, specify that interface as the `HttpClient.get()` call's type parameter in the service:
+Then, specify that interface as the [`HttpClient.get()`](https://angular.io/api/common/http/HttpClient#get) call's type parameter in the service:
 
 <code-example 
   path="http/src/app/config/config.service.ts"
@@ -139,7 +139,7 @@ Tell `HttpClient` that you want the full response with the `observe` option:
   region="getConfigResponse" linenums="false">
 </code-example>
 
-Now `HttpClient.get()` returns an `Observable` of typed `HttpResponse` rather than just the JSON data.
+Now [`HttpClient.get()`](https://angular.io/api/common/http/HttpClient#get) returns an `Observable` of typed `HttpResponse` rather than just the JSON data.
 
 The component's `showConfigResponse()` method displays the response headers as well as the configuration:
 
@@ -255,7 +255,7 @@ as an `Observable<string>`.
   header="app/downloader/downloader.service.ts (getTextFile)" linenums="false">
 </code-example>
 
-`HttpClient.get()` returns a string rather than the default JSON because of the `responseType` option.
+[`HttpClient.get()`](https://angular.io/api/common/http/HttpClient#get) returns a string rather than the default JSON because of the `responseType` option.
 
 The RxJS `tap` operator (as in "wiretap") lets the code inspect good and error values passing through the observable without disturbing them. 
 
@@ -807,7 +807,7 @@ some of their `HttpClient` requests actually return cached responses.
 {@a cache-refresh}
 #### Return a multi-valued _Observable_
 
-The `HttpClient.get()` method normally returns an _observable_ 
+The [`HttpClient.get()`](https://angular.io/api/common/http/HttpClient#get) method normally returns an _observable_ 
 that either emits the data or an error. 
 Some folks describe it as a "_one and done_" observable.
 
@@ -829,7 +829,7 @@ The _cache-then-refresh_ option is triggered by the presence of a **custom `x-re
 A checkbox on the `PackageSearchComponent` toggles a `withRefresh` flag,
 which is one of the arguments to `PackageSearchService.search()`.
 That `search()` method creates the custom `x-refresh` header
-and adds it to the request before calling `HttpClient.get()`.
+and adds it to the request before calling [`HttpClient.get()`](https://angular.io/api/common/http/HttpClient#get).
 
 </div>
 
