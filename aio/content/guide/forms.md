@@ -662,7 +662,7 @@ Now, use that variable to access the form with the Submit button.
 
 You'll bind the form's overall validity via
 the `heroForm` variable to the button's `disabled` property
-using an event binding. Here's the code:
+using property binding. Here's the code:
 
 <code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" header="src/app/hero-form/hero-form.component.html (submit-button)" region="submit-button">
 
