@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
+
 import {bind, defineComponent, defineDirective, markDirty, reference, resolveBody, resolveDocument, textBinding} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, getCurrentView, listener, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -555,10 +557,10 @@ describe('event listeners', () => {
     const fixture = new ComponentFixture(MyCompWithGlobalListeners);
     const doc = fixture.hostElement.ownerDocument !;
 
-    doc.dispatchEvent(new CustomEvent('custom'));
+    dispatchEvent(doc, 'custom');
     expect(events).toEqual(['component - document:custom']);
 
-    doc.body.click();
+    dispatchEvent(doc.body, 'click');
     expect(events).toEqual(['component - document:custom', 'component - body:click']);
 
     // invoke destroy for this fixture to cleanup all listeners setup for global objects
@@ -607,10 +609,10 @@ describe('event listeners', () => {
 
     const doc = fixture.hostElement.ownerDocument !;
 
-    doc.dispatchEvent(new CustomEvent('custom'));
+    dispatchEvent(doc, 'custom');
     expect(events).toEqual(['directive - document:custom']);
 
-    doc.body.click();
+    dispatchEvent(doc.body, 'click');
     expect(events).toEqual(['directive - document:custom', 'directive - body:click']);
 
     // invoke destroy for this fixture to cleanup all listeners setup for global objects
