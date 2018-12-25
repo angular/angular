@@ -33,6 +33,7 @@ ts_library(
     srcs = ["common_package.spec.ts"],
     deps = [
         "//packages:types",
+        "//packages/private/testing",
         "@ngdeps//@types/shelljs",
     ],
 )
@@ -63,9 +64,10 @@ jasmine_node_test(
         "example_package.golden",
         "//packages/bazel/test/ng_package/example:npm_package",
     ],
-    # TODO(alexeagle): re-enable this test
-    # see https://github.com/angular/angular/pull/22933
-    tags = ["manual"],
+    # We don't want to run the example_package golden test with Ivy yet. Currently the golden
+    # file is based on non-ivy output and therefore won't work for ngc and Ivy at the same time.
+    # TODO: We should be able to have another golden for ivy-aot as well.
+    tags = ["no-ivy-aot"],
     deps = ["@ngdeps//diff"],
 )
 
@@ -73,10 +75,10 @@ nodejs_binary(
     name = "example_package.accept",
     testonly = True,
     data = [
+        "example_package.golden",
+        ":example_spec_lib",
         "//packages/bazel/test/ng_package/example:npm_package",
         "@ngdeps//diff",
-        ":example_spec_lib",
-        "example_package.golden",
     ],
     entry_point = "angular/packages/bazel/test/ng_package/example_package.spec.js",
     templated_args = ["--accept"],
