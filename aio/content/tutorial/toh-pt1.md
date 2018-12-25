@@ -1,15 +1,15 @@
 <!--
 # The Hero Editor
 -->
-# 히어로 편집기
+# 히어로 에디터
 
 <!--
 The application now has a basic title.
 Next you will create a new component to display hero information
 and place that component in the application shell.
 -->
-이전 튜토리얼에서는 애플리케이션의 제목을 수정해봤습니다.
-이번 튜토리얼에서는 히어로의 정보를 표시하는 컴포넌트를 생성하고 이를 애플리케이션 쉘에 추가해보겠습니다.
+이전 튜토리얼에서는 애플리케이션의 제목을 수정해 봤습니다.
+이번 튜토리얼에서는 히어로의 정보를 표시하는 컴포넌트를 생성하고 이 컴포넌트를 애플리케이션 셸에 추가해 봅시다.
 
 <!--
 ## Create the heroes component
@@ -19,7 +19,7 @@ and place that component in the application shell.
 <!--
 Using the Angular CLI, generate a new component named `heroes`.
 -->
-아래의 명령어를 Angular CLI에서 실행해서 `heroes` 컴포넌트를 생성합니다.
+다음 명령을 실행해서 Angular CLI로 `heroes` 컴포넌트를 생성합니다.
 
 <code-example language="sh" class="code-shell">
   ng generate component heroes
@@ -29,28 +29,33 @@ Using the Angular CLI, generate a new component named `heroes`.
 The CLI creates a new folder, `src/app/heroes/`, and generates
 the three files of the  `HeroesComponent`.
 -->
-CLI는 `src/app/heroes/`폴더를 생성하고 `HeroesComponent`를 위한 3개의 파일을 생성합니다.
+그러면 CLI가 `src/app/heroes/`폴더를 생성하고 `HeroesComponent`를 위한 3개의 파일을 생성합니다.
 
 <!--
 The `HeroesComponent` class file is as follows:
 -->
 `HeroesComponent` 클래스 파일은 아래와 같습니다.
 
+<!--
 <code-example 
   path="toh-pt1/src/app/heroes/heroes.component.ts" region="v1" 
   header="app/heroes/heroes.component.ts (initial version)" linenums="false">
+-->
+<code-example 
+  path="toh-pt1/src/app/heroes/heroes.component.ts" region="v1" 
+  header="app/heroes/heroes.component.ts (초기 버전)" linenums="false">
 </code-example>
 
 <!--
 You always import the `Component` symbol from the Angular core library
 and annotate the component class with `@Component`.
 -->
-Angular core 라이브러리에서 `Component`를 가져와 `@Component` 어노테이션 붙여 컴포넌트 클래스를 선언합니다.
+Angular 코어 라이브러리에서 `Component`를 로드해서 컴포넌트 클래스에 `@Component` 와 같이 지정합니다.
 
 <!--
 `@Component` is a decorator function that specifies the Angular metadata for the component.
 -->
-`@Component`는 컴포넌트를 위해 Angular 메타데이터를 명시하는 데코레이터 함수입니다.
+`@Component`는 클래스에 메타데이터를 지정해서 Angular 컴포넌트로 선언하는 데코레이터 함수입니다.
 
 <!--
 The CLI generated three metadata properties:
@@ -125,7 +130,7 @@ Angular CLI가 만든 코드를 삭제하고 새로운 `hero` 프로퍼티를 �
 <!--
 To display the `HeroesComponent`, you must add it to the template of the shell `AppComponent`.
 -->
-`HeroesComponent`를 표시하기 위해서는, 해당 컴포넌트를 `AppComponent` 쉘의 템플릿에 추가해야 합니다.
+`HeroesComponent`를 표시하기 위해서는, 해당 컴포넌트를 `AppComponent` 셸의 템플릿에 추가해야 합니다.
 
 <!--
 Remember that `app-heroes` is the [element selector](#selector) for the `HeroesComponent`. 
@@ -472,7 +477,7 @@ Your app should look like this <live-example></live-example>. Here are the code 
 and appreciated that the CLI declared it for you.
 -->
 * CLI를 사용하여 두번째 `HerosComponent`를 생성하였습니다.
-* `AppComponent` 쉘에 추가하여 `HeroesComponent`를 표시했습니다.
+* `AppComponent` 셸에 추가하여 `HeroesComponent`를 표시했습니다.
 * 표시되는 이름의 형식을 지정하기 위하여 `UppercasePipe`를 적용했습니다.
 * `ngModel` 디렉티브를 통해 양방향 데이터 바인딩을 사용했습니다.
 * `AppModule`에 대해서 배웠습니다.

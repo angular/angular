@@ -104,8 +104,10 @@
         },
         {
           "url": "tutorial/toh-pt1",
-          "title": "1. The Hero Editor",
-          "tooltip": "Part 1: Build a simple hero editor"
+          "!title": "1. The Hero Editor",
+          "title": "1. 히어로 에디터",
+          "!tooltip": "Part 1: Build a simple hero editor",
+          "tooltip": "1단계: 간단한 히어로 에디터 만들기"
         },
         {
           "url": "tutorial/toh-pt2",
