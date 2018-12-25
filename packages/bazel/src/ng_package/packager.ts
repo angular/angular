@@ -158,7 +158,7 @@ function main(args: string[]): number {
   typeDefinitions.forEach((f: string) => {
     const content = fs.readFileSync(f, 'utf-8')
                         // Strip the named AMD module for compatibility with non-bazel users
-                        .replace(/^\/\/\/ <amd-module name=.*\/>\n/gm, '');
+                        .replace(/^\/\/\/ <amd-module name=.*\/>[\r\n]+/gm, '');
     writeFileFromInputPath(f, content);
   });
 
