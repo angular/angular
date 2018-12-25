@@ -10,7 +10,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as shx from 'shelljs';
 
-shx.cd(path.join(process.env['TEST_SRCDIR'] !, 'angular', 'packages', 'common', 'npm_package'));
+// Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
+// resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
+// file, which is not necessarily at the root of the "npm_package".
+shx.cd(path.dirname(require.resolve('angular/packages/common/npm_package/package.json')));
 
 describe('@angular/common ng_package', () => {
   describe('should have the locales files', () => {

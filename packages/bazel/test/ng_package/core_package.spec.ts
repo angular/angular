@@ -10,9 +10,10 @@ import {fixmeIvy, ivyEnabled, obsoleteInIvy} from '@angular/private/testing';
 import * as path from 'path';
 import * as shx from 'shelljs';
 
-const corePackagePath =
-    path.join(process.env['TEST_SRCDIR'] !, 'angular', 'packages', 'core', 'npm_package');
-shx.cd(corePackagePath);
+// Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
+// resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
+// file, which is not necessarily at the root of the "npm_package".
+shx.cd(path.dirname(require.resolve('angular/packages/core/npm_package/package.json')));
 
 /**
  * Utility functions that allows me to create fs paths
