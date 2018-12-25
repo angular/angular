@@ -407,7 +407,6 @@ if [[ ${BUILD_ALL} == true && ${TYPECHECK_ALL} == true ]]; then
       ln -s ../../../../node_modules/reflect-metadata/Reflect.js .
       ln -s ../../../../node_modules/rxjs .
       ln -s ../../../../node_modules/angular/angular.js .
-      ln -s ../../../../bower_components/polymer .
       ln -s ../../../../node_modules/incremental-dom/dist/incremental-dom-cjs.js
     )
   travisFoldEnd "copy e2e files"

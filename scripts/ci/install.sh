@@ -41,11 +41,6 @@ travisFoldStart "yarn-install"
 travisFoldEnd "yarn-install"
 
 
-# Install bower packages
-travisFoldStart "bower-install"
-  $(npm bin)/bower install
-travisFoldEnd "bower-install"
-
 
 # Install Chromium
 if [[ ${TRAVIS} &&

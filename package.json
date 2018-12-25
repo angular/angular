@@ -96,7 +96,6 @@
     "@types/jasminewd2": "^2.0.4",
     "@types/minimist": "^1.2.0",
     "@types/systemjs": "0.19.32",
-    "bower": "1.8.2",
     "browserstacktunnel-wrapper": "2.0.1",
     "clang-format": "1.0.41",
     "cldr": "4.10.0",
