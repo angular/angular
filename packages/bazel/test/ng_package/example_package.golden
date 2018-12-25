@@ -1,3 +1,4 @@
+README.md
 arbitrary-npm-package-main.js
 arbitrary_bin.txt
 arbitrary_genfiles.txt
@@ -44,7 +45,6 @@ fesm5
 index.d.ts
 mymodule.d.ts
 package.json
-README.md
 secondary
   secondary/index.d.ts
   secondary/package.json
@@ -54,6 +54,16 @@ secondary
 secondary.d.ts
 secondary.metadata.json
 some-file.txt
+--- README.md ---
+
+Angular
+=======
+
+The sources for this package are in the main [Angular](https://github.com/angular/angular) repo. Please file issues and pull requests against that repo.
+
+License: MIT
+
+
 --- arbitrary-npm-package-main.js ---
 
 /**
@@ -682,16 +692,6 @@ export declare class MyModule {
   "module": "./fesm5/example.js",
   "es2015": "./fesm2015/example.js"
 }
-
---- README.md ---
-
-Angular
-=======
-
-The sources for this package are in the main [Angular](https://github.com/angular/angular) repo. Please file issues and pull requests against that repo.
-
-License: MIT
-
 
 --- secondary/index.d.ts ---
 

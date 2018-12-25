@@ -224,12 +224,13 @@ describe('@angular/core ng_package', () => {
     describe('typings', () => {
       const typingsFile = p `testing/index.d.ts`;
       it('should have a typings file',
-         () => { expect(shx.cat(typingsFile)).toContain('export * from \'./public_api\';'); });
+         () => { expect(shx.cat(typingsFile)).toContain(`export * from './public_api';`); });
 
       obsoleteInIvy(
           'now that we don\'t need metadata files, we don\'t need these redirects to help resolve paths to them')
-          .it('should have an \'redirect\' d.ts file in the parent dir',
-              () => { expect(shx.cat('testing.d.ts')).toContain(`export *`); });
+          .it('should have an \'redirect\' d.ts file in the parent dir', () => {
+            expect(shx.cat('testing.d.ts')).toContain(`export * from './testing/testing';`);
+          });
     });
 
     obsoleteInIvy('metadata files are no longer needed or produced in Ivy')
