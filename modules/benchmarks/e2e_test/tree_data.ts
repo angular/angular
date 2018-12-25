@@ -74,18 +74,6 @@ export const Benchmarks: Benchmark[] = [
     ignoreBrowserSynchronization: true,
   },
   {
-    id: `deepTree.polymer`,
-    url: 'all/benchmarks/src/tree/polymer/index.html',
-    buttons: CreateDestroyButtons,
-    ignoreBrowserSynchronization: true,
-  },
-  {
-    id: `deepTree.polymer_leaves`,
-    url: 'all/benchmarks/src/tree/polymer_leaves/index.html',
-    buttons: CreateDestroyButtons,
-    ignoreBrowserSynchronization: true,
-  },
-  {
     id: `deepTree.ng1`,
     url: 'all/benchmarks/src/tree/ng1/index.html',
     buttons: CreateDestroyDetectChangesButtons,
