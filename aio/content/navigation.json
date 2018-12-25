@@ -90,13 +90,17 @@
       "children": [
         {
           "url": "tutorial",
-          "title": "Introduction",
-          "tooltip": "Introduction to the Tour of Heroes tutorial"
+          "!title": "Introduction",
+          "title": "소개",
+          "!tooltip": "Introduction to the Tour of Heroes tutorial",
+          "tooltip": "히어로들의 여행 튜토리얼에 대해 소개합니다."
         },
         {
           "url": "tutorial/toh-pt0",
-          "title": "The Application Shell",
-          "tooltip": "Creating the application shell"
+          "!title": "The Application Shell",
+          "title": "애플리케이션 셸",
+          "!tooltip": "Creating the application shell",
+          "tooltip": "애플리케이션 셸을 구성해 봅시다."
         },
         {
           "url": "tutorial/toh-pt1",

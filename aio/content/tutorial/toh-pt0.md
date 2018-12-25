@@ -1,35 +1,67 @@
 <!--
 # The Application Shell
 -->
-# 애플리케이션 쉘
+# 애플리케이션 셸
 
+<!--
 You begin by creating an initial application using the Angular CLI. Throughout this tutorial, you’ll modify and extend that starter application to create the Tour of Heroes app.
+-->
+ Angular CLI를 사용하면 애플리케이션의 기본 틀을 구성할 수 있습니다. 그리고 이 튜토리얼을 진행하면서 기본 틀을 히어로들의 여행 앱으로 확장해 봅시다.
 
+<!--
 In this part of the tutorial, you'll do the following:
 
 1. Set up your environment.
 2. Create a new workspace and initial app project.
 3. Serve the application.
 4. Make changes to the application.
+-->
+이 문서에서는 다음 내용에 대해 다룹니다.
+
+1. 개발환경 설정하기
+2. 애플리케이션 프로젝트 생성하기
+3. 애플리케이션 실행해보기
+4. 애플리케이션 개발 시작하기
 
 
+<!--
 ## Set up your environment
+-->
+## 개발환경 설정하기
 
+<!--
 To set up your development environment, follow these instructions in [Getting Started](guide/quickstart):
 
 * [Prerequisites](guide/quickstart#prerequisites)
 * [Install the Angular CLI](guide/quickstart#install-cli)
+-->
+애플리케이션의 개발 환경을 구성하려면 [시작하기](guide/quickstart) 문서에 있는 다음 내용을 확인하는 것이 좋습니다.
+
+* [사전지식](guide/quickstart#prerequisites)
+* [Angular CLI 설치하기](guide/quickstart#install-cli)
 
 <div class="alert is-helpful">
 
+<!--
 **Note:**: You do not need to complete the entire Getting Started. After you complete the above two sections of Getting Started, your environment is set up. Continue below to create the Tour of Heroes workspace and an initial app project.
+-->
+**참고:** 시작하기 문서에 있는 내용을 모두 완료할 필요없이 위에서 언급한 두 섹션만 참고하면 개발환경 설정은 모두 끝납니다. 이렇게 설정한 환경에서 히어로들의 여행 앱 개발을 시작하면 됩니다.
+
 </div>
 
-
+<!--
 ## Create a new workspace and an initial application
+-->
+## 워크스페이스와 애플리케이션 기본 틀 생성하기
 
+<!--
 You develop apps in the context of an Angular [workspace](guide/glossary#workspace). A workspace contains the files for one or more [projects](guide/glossary#project). A project is the set of files that comprise an app, a library, or end-to-end (e2e) tests. For this tutorial, you will create a new workspace.
+-->
+애플리케이션은 Angular [워크스페이스](guide/glossary#workspace) 안에서 개발합니다.
+워크스페이스는 여러 개의 [프로젝트](guide/glossary#project)로 구성되는 단위이며, 프로젝트는 애플리케이션이나 라이브러리, 엔드-투-엔드(e2e) 테스트를 구성하는 파일들의 집합을 의미합니다.
+이 튜토리얼에서는 새로운 워크스페이스를 만드는 것부터 시작합니다.
 
+<!--
 To create a new workspace and an initial app project:
 
   1. Ensure that you are not already in an Angular workspace folder. For example, if you have previously created the Getting Started workspace, change to the parent of that folder.
@@ -40,7 +72,20 @@ To create a new workspace and an initial app project:
   </code-example>
 
   3. The `ng new` command prompts you for information about features to include in the initial app project. Accept the defaults by pressing the Enter or Return key.
+-->
+워크스페이스를 새로 만들고 애플리케이션을 구성하려면 다음 순서대로 진행합니다:
 
+  1. 아직 Angular 워크스페이스 폴더 안에 있지 않은 것을 전제로 합니다. 이전에 시작하기 문서를 진행하면서 이미 만든 워크스페이스가 있다면, 이 폴더 밖에서 작업하세요.
+
+  2. Angular CLI 명령 `ng new`를 사용해서 `angular-tour-of-heroes` 라는 이름으로 워크스페이스를 생성합니다:
+
+  <code-example language="sh" class="code-shell">
+     ng new angular-tour-of-heroes
+  </code-example>
+
+  3. 커맨드 창에서 `ng new` 명령을 실행하면 프로젝트에 어떤 설정을 추가할지 물어봅니다. 엔터키를 눌러서 기본값으로 진행합시다.
+
+<!--
 The Angular CLI installs the necessary Angular `npm` packages and other dependencies. This can take a few minutes.
 
 It also creates the following workspace and starter project files:
@@ -51,11 +96,22 @@ It also creates the following workspace and starter project files:
   * Related configuration files.
 
 The initial app project contains a simple Welcome app, ready to run.
+-->
+이 과정을 진행하면서 Angular CLI가 Angular `npm` 패키지와 서드파티 패키지를 모두 설치하기 때문에 시간이 약간 걸릴 수 있습니다.
+
+그리고 이 명령은 다음과 같은 프로젝트 파일을 준비하기도 합니다:
+
+  * `angular-tour-of-heroes`라는 폴더 이름으로 새로운 워크스페이스를 생성합니다.
+  * 서브 폴더 `src`를 생성하고 이 폴더에 애플리케이션 초기 코드를 생성합니다.
+  * 서브 폴더 `e2e`를 생성하고 엔드-투-엔드 테스트 프로젝트를 생성합니다.
+  * 환경설정파일을 생성합니다.
+
+이제 간단한 Welcome 앱이 완성되었습니다.
 
 <!--
 ## Serve the application
 -->
-## 애플리케이션 실행
+## 애플리케이션 실행하기
 
 Go to the workspace directory and launch the application.
 
