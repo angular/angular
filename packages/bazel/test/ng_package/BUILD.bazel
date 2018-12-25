@@ -64,11 +64,11 @@ jasmine_node_test(
         "example_package.golden",
         "//packages/bazel/test/ng_package/example:npm_package",
     ],
-    deps = ["@ngdeps//diff"],
     # We don't want to run the example_package golden test with Ivy yet. Currently the golden
     # file is based on non-ivy output and therefore won't work for ngc and Ivy at the same time.
     # TODO: We should be able to have another golden for ivy-aot as well.
-    tags = ["no-ivy-aot"]
+    tags = ["no-ivy-aot"],
+    deps = ["@ngdeps//diff"],
 )
 
 nodejs_binary(
