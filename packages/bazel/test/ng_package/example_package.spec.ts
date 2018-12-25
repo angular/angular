@@ -37,7 +37,9 @@ const packagesToTest: TestPackage[] = [
 function getIndentedDirectoryStructure(directoryPath: string, depth = 0): string[] {
   const result: string[] = [];
   if (fs.statSync(directoryPath).isDirectory()) {
-    fs.readdirSync(directoryPath).forEach(f => {
+    // We need to sort the directories because on Windows "readdirsync" is not sorted. Since we
+    // compare these in a golden file, the order needs to be consistent across different platforms.
+    fs.readdirSync(directoryPath).sort().forEach(f => {
       const filePath = path.posix.join(directoryPath, f);
       result.push(
           '  '.repeat(depth) + filePath, ...getIndentedDirectoryStructure(filePath, depth + 1));
@@ -56,14 +58,16 @@ function getIndentedDirectoryStructure(directoryPath: string, depth = 0): string
 function getDescendantFilesContents(directoryPath: string): string[] {
   const result: string[] = [];
   if (fs.statSync(directoryPath).isDirectory()) {
-    fs.readdirSync(directoryPath).forEach(dir => {
+    // We need to sort the directories because on Windows "readdirsync" is not sorted. Since we
+    // compare these in a golden file, the order needs to be consistent across different platforms.
+    fs.readdirSync(directoryPath).sort().forEach(dir => {
       result.push(...getDescendantFilesContents(path.posix.join(directoryPath, dir)));
     });
   }
   // Note that we don't want to include ".map" files in the golden file since these are not
   // consistent across different environments (e.g. path delimiters)
   else if (path.extname(directoryPath) !== '.map') {
-    result.push(`--- ${directoryPath} ---`, '', fs.readFileSync(directoryPath, 'utf-8'), '');
+    result.push(`--- ${directoryPath} ---`, '', readFileContents(directoryPath), '');
   }
   return result;
 }
@@ -113,6 +117,15 @@ function runPackageGoldTest(testPackage: TestPackage) {
       fail(failureMessage);
     }
   });
+}
+
+/**
+ * Reads the contents of the specified file. Additionally it strips all carriage return (CR)
+ * characters from the given content. We do this since the content that will be pulled into the
+ * golden file needs to be consistent across all platforms.
+ */
+function readFileContents(filePath: string): string {
+  return fs.readFileSync(filePath, 'utf8').replace(/\r/g, '');
 }
 
 if (require.main === module) {

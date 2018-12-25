@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {obsoleteInIvy} from '@angular/private/testing';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as shx from 'shelljs';
@@ -90,6 +91,14 @@ describe('@angular/common ng_package', () => {
         .toMatch('//# sourceMappingURL=testing.js.map');
     expect(shx.grep('sourceMappingURL', 'fesm2015/testing.js'))
         .toMatch('//# sourceMappingURL=testing.js.map');
+  });
+
+  describe('secondary entry-point', () => {
+    obsoleteInIvy(
+        `now that we don't need metadata files, we don't need these redirects to help resolve paths to them`)
+        .it('should contain a root type definition re-export', () => {
+          expect(shx.cat('./testing.d.ts')).toContain(`export * from './testing/testing';`);
+        });
   });
 
 
