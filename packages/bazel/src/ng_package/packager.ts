@@ -235,8 +235,8 @@ function main(args: string[]): number {
    * @param file path to a file under the binDir, like bazel-bin/core/testing/generated.js
    */
   function srcDirRelative(from: string, file: string) {
-    const result =
-        path.relative(path.dirname(from), path.join(srcDir, path.relative(binDir, file)));
+    const result = normalizeSeparators(
+        path.relative(path.dirname(from), path.join(srcDir, path.relative(binDir, file))));
     if (result.startsWith('..')) return result;
     return `./${result}`;
   }
@@ -346,8 +346,8 @@ function main(args: string[]): number {
   function createTypingsReexportFile(entryPointName: string, license: string, typingsFile: string) {
     const inputPath = path.join(srcDir, `${entryPointName}.d.ts`);
     const content = `${license}
-  export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, ''))}';
-  `;
+export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, ''))}';
+`;
     writeFileFromInputPath(inputPath, content);
   }
 
@@ -362,6 +362,12 @@ function main(args: string[]): number {
     const content = amendPackageJson(pkgJson, {name: entryPointPackageName});
     writeFileFromInputPath(pkgJson, content);
   }
+
+  /**
+   * Normalizes the specified path by replacing backslash separators with Posix
+   * forward slash separators.
+   */
+  function normalizeSeparators(path: string): string { return path.replace(/\\/g, '/'); }
 }
 
 if (require.main === module) {
