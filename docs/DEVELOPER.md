@@ -185,7 +185,6 @@ and create it if it doesn't exist.
   "files.exclude": {
     "bazel-out": true,
     ".idea": true,
-    ".bowerrc": true,
     ".circleci": true,
     ".github": true,
     "dist/**": true,
