@@ -35,6 +35,8 @@ function getSuperType(type: Type<any>): Type<any>&
 export function InheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
 
+  debugger;
+
   while (superType) {
     let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
     if (isComponentDef(definition)) {
@@ -156,18 +158,18 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
     } else {
       // Even if we don't have a definition, check the type for the hooks and use those if need be
       const superPrototype = superType.prototype;
-
       if (superPrototype) {
         definition.afterContentChecked =
-            definition.afterContentChecked || superPrototype.afterContentChecked;
+            definition.afterContentChecked || superPrototype.ngAfterContentChecked;
         definition.afterContentInit =
-            definition.afterContentInit || superPrototype.afterContentInit;
+            definition.afterContentInit || superPrototype.ngAfterContentInit;
         definition.afterViewChecked =
-            definition.afterViewChecked || superPrototype.afterViewChecked;
-        definition.afterViewInit = definition.afterViewInit || superPrototype.afterViewInit;
-        definition.doCheck = definition.doCheck || superPrototype.doCheck;
-        definition.onDestroy = definition.onDestroy || superPrototype.onDestroy;
-        definition.onInit = definition.onInit || superPrototype.onInit;
+            definition.afterViewChecked || superPrototype.ngAfterViewChecked;
+        definition.afterViewInit = definition.afterViewInit || superPrototype.ngAfterViewInit;
+        definition.doCheck = definition.doCheck || superPrototype.ngDoCheck;
+        definition.onDestroy = definition.onDestroy || superPrototype.ngOnDestroy;
+        definition.onInit = definition.onInit || superPrototype.ngOnInit;
+        definition.onChanges = definition.onChanges || superPrototype.ngOnChanges;
       }
     }
 
