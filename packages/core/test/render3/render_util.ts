@@ -134,7 +134,7 @@ export class TemplateFixture extends BaseFixture {
   }
 
   destroy(): void {
-    this.hostElement.remove();
+    this.containerElement.removeChild(this.hostElement);
     destroyLView(this.hostView);
   }
 }
@@ -180,7 +180,7 @@ export class ComponentFixture<T> extends BaseFixture {
   }
 
   destroy(): void {
-    this.hostElement.remove();
+    this.containerElement.removeChild(this.hostElement);
     destroyLView(getRootView(this.component));
   }
 }
