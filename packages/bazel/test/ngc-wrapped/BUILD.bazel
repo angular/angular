@@ -35,3 +35,19 @@ jasmine_node_test(
         "@build_bazel_rules_typescript//third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
     ],
 )
+
+ts_library(
+    name = "flat_module_test_lib",
+    testonly = True,
+    srcs = ["flat_module_test.ts"],
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "flat_module_test",
+    srcs = [":flat_module_test_lib"],
+    data = ["//packages/bazel/test/ngc-wrapped/flat_module"],
+)
