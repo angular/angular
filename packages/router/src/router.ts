@@ -291,7 +291,6 @@ function defaultRouterHook(snapshot: RouterStateSnapshot, runExtras: {
 export class Router {
   private currentUrlTree: UrlTree;
   private rawUrlTree: UrlTree;
-  private browserUrlTree: UrlTree;
   private readonly transitions: BehaviorSubject<NavigationTransition>;
   private navigations: Observable<NavigationTransition>;
   private lastSuccessfulNavigation: Navigation|null = null;
@@ -401,7 +400,6 @@ export class Router {
     this.resetConfig(config);
     this.currentUrlTree = createEmptyUrlTree();
     this.rawUrlTree = this.currentUrlTree;
-    this.browserUrlTree = this.parseUrl(this.location.path());
 
     this.configLoader = new RouterConfigLoader(loader, compiler, onLoadStart, onLoadEnd);
     this.routerState = createEmptyState(this.currentUrlTree, this.rootComponentType);
@@ -463,7 +461,7 @@ export class Router {
           return of (t).pipe(
               switchMap(t => {
                 const urlTransition =
-                    !this.navigated || t.extractedUrl.toString() !== this.browserUrlTree.toString();
+                    !this.navigated || t.extractedUrl.toString() !== this.currentUrlTree.toString();
                 const processCurrentUrl =
                     (this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
                     this.urlHandlingStrategy.shouldProcessUrl(t.rawUrl);
@@ -504,12 +502,8 @@ export class Router {
                           this.paramsInheritanceStrategy, this.relativeLinkResolution),
 
                       // Update URL if in `eager` update mode
-                      tap(t => {
-                        if (this.urlUpdateStrategy === 'eager' && !t.extras.skipLocationChange) {
-                          this.setBrowserUrl(t.urlAfterRedirects, !!t.extras.replaceUrl, t.id);
-                          this.browserUrlTree = t.urlAfterRedirects;
-                        }
-                      }),
+                      tap(t => this.urlUpdateStrategy === 'eager' && !t.extras.skipLocationChange &&
+                              this.setBrowserUrl(t.urlAfterRedirects, !!t.extras.replaceUrl, t.id)),
 
                       // Fire RoutesRecognized
                       tap(t => {
@@ -671,7 +665,6 @@ export class Router {
 
                 if (this.urlUpdateStrategy === 'deferred' && !t.extras.skipLocationChange) {
                   this.setBrowserUrl(this.rawUrlTree, !!t.extras.replaceUrl, t.id, t.extras.state);
-                  this.browserUrlTree = t.urlAfterRedirects;
                 }
               }),
 
