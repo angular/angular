@@ -235,31 +235,31 @@ Each budget entry is a JSON object with the following properties:
   </tr>
   <tr>
     <td>baseline</td>
-    <td>An absolute baseline size for percentage values. </td>
+    <td>The baseline size for comparison.</td>
   </tr>
   <tr>
     <td>maximumWarning</td>
-    <td>Warns when a size exceeds this threshold percentage of the baseline.</td>
+    <td>The maximum threshold for warning relative to the baseline.</td>
   </tr>
   <tr>
     <td>maximumError</td>
-    <td>Reports an error when the size exceeds this threshold percentage of the baseline.</td>
+    <td>The maximum threshold for error relative to the baseline.</td>
   </tr>
   <tr>
     <td>minimumWarning</td>
-    <td>Warns when the size reaches this threshold percentage of the baseline.</td>
+    <td>The minimum threshold for warning relative to the baseline.</td>
   </tr>
   <tr>
     <td>minimumError</td>
-    <td>Reports an error when the size reaches this threshold percentage of the baseline.</td>
+    <td>The minimum threshold for error relative to the baseline.</td>
   </tr>
   <tr>
     <td>warning</td>
-    <td>Warns when the size ??reaches or exceeds?? this threshold percentage of the baseline.</td>
+    <td>The threshold for warning relative to the baseline (min & max).</td>
   </tr>
   <tr>
     <td>error</td>
-    <td>Reports an error when the size ??reaches or exceeds?? this threshold percentage of the baseline.</td>
+    <td>The threshold for error relative to the baseline (min & max).</td>
   </tr>
 
  </table>
