@@ -199,25 +199,27 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
   };
   const origBazelHostShouldNameModule = bazelHost.shouldNameModule.bind(bazelHost);
   bazelHost.shouldNameModule = (fileName: string) => {
+    const flatModuleOutPath =
+        path.posix.join(bazelOpts.package, compilerOpts.flatModuleOutFile + '.ts');
+
     // The bundle index file is synthesized in bundle_index_host so it's not in the
     // compilationTargetSrc.
     // However we still want to give it an AMD module name for devmode.
     // We can't easily tell which file is the synthetic one, so we build up the path we expect
     // it to have and compare against that.
-    if (fileName ===
-        path.join(compilerOpts.baseUrl, bazelOpts.package, compilerOpts.flatModuleOutFile + '.ts'))
-      return true;
+    if (fileName === path.posix.join(compilerOpts.baseUrl, flatModuleOutPath)) return true;
+
     // Also handle the case the target is in an external repository.
     // Pull the workspace name from the target which is formatted as `@wksp//package:target`
     // if it the target is from an external workspace. If the target is from the local
     // workspace then it will be formatted as `//package:target`.
     const targetWorkspace = bazelOpts.target.split('/')[0].replace(/^@/, '');
+
     if (targetWorkspace &&
         fileName ===
-            path.join(
-                compilerOpts.baseUrl, 'external', targetWorkspace, bazelOpts.package,
-                compilerOpts.flatModuleOutFile + '.ts'))
+            path.posix.join(compilerOpts.baseUrl, 'external', targetWorkspace, flatModuleOutPath))
       return true;
+
     return origBazelHostShouldNameModule(fileName) || NGC_GEN_FILES.test(fileName);
   };
 
