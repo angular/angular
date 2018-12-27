@@ -389,7 +389,7 @@ describe('i18n support in the view compiler', () => {
     it('should correctly bind to context in nested template', () => {
       const input = `
         <div *ngFor="let outer of items">
-          <div i18n-title="m|d" title="different scope {{ outer | uppercase }}">
+          <div i18n-title="m|d" title="different scope {{ outer | uppercase }}"></div>
         </div>
       `;
 
@@ -518,7 +518,7 @@ describe('i18n support in the view compiler', () => {
     it('should correctly bind to context in nested template', () => {
       const input = `
         <div *ngFor="let outer of items">
-          <div i18n-title="m|d" title="different scope {{ outer | uppercase }}">
+          <div i18n-title="m|d" title="different scope {{ outer | uppercase }}"></div>
         </div>
       `;
 
