@@ -77,7 +77,10 @@ def _protractor_web_test_impl(ctx):
         output = ctx.outputs.executable,
         is_executable = True,
         content = """#!/usr/bin/env bash
-if [ -e "$RUNFILE_MANIFEST_FILE" ]; then
+# Immediately exit if any command fails.
+set -e
+
+if [ -e "$RUNFILES_MANIFEST_FILE" ]; then
   while read line; do
     declare -a PARTS=($line)
     if [ "${{PARTS[0]}}" == "{TMPL_protractor}" ]; then
@@ -85,7 +88,7 @@ if [ -e "$RUNFILE_MANIFEST_FILE" ]; then
     elif [ "${{PARTS[0]}}" == "{TMPL_conf}" ]; then
       readonly CONF=${{PARTS[1]}}
     fi
-  done < $RUNFILE_MANIFEST_FILE
+  done < $RUNFILES_MANIFEST_FILE
 else
   readonly PROTRACTOR=../{TMPL_protractor}
   readonly CONF=../{TMPL_conf}
