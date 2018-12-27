@@ -304,6 +304,27 @@ describe('Esm5ReflectionHost [import helper style]', () => {
         });
       });
 
+      describe('findDecoratedClasses', () => {
+        it('should return an array of all decorated classes in the given source file', () => {
+          const program = makeTestProgram(...fileSystem.files);
+          const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+
+          const ngModuleFile = program.getSourceFile('/ngmodule.js') !;
+          const ngModuleClasses = host.findDecoratedClasses(ngModuleFile);
+          expect(ngModuleClasses.length).toEqual(1);
+          const ngModuleClass = ngModuleClasses.find(c => c.name === 'HttpClientXsrfModule') !;
+          expect(ngModuleClass.decorators.map(decorator => decorator.name)).toEqual(['NgModule']);
+
+          const someDirectiveFile = program.getSourceFile('/some_directive.js') !;
+          const someDirectiveClasses = host.findDecoratedClasses(someDirectiveFile);
+          expect(someDirectiveClasses.length).toEqual(1);
+          const someDirectiveClass = someDirectiveClasses.find(c => c.name === 'SomeDirective') !;
+          expect(someDirectiveClass.decorators.map(decorator => decorator.name)).toEqual([
+            'Directive'
+          ]);
+        });
+      });
+
       describe('getDeclarationOfIdentifier', () => {
         it('should return the declaration of a locally defined identifier', () => {
           const program = makeTestProgram(fileSystem.files[0]);
