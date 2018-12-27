@@ -661,8 +661,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected getHelperCall(statement: ts.Statement, helperName: string): ts.CallExpression|null {
     if (ts.isExpressionStatement(statement)) {
-      const expression =
-          isAssignmentStatement(statement) ? statement.expression.right : statement.expression;
+      let expression = statement.expression;
+      while (isAssignment(expression)) {
+        expression = expression.right;
+      }
       if (ts.isCallExpression(expression) && getCalleeName(expression) === helperName) {
         return expression;
       }
