@@ -46,9 +46,9 @@ Make a note of the user name and project name in GitHub.
 
 You can see your deployed page at `https://<user_name>.github.io/<project_name>/`.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
- Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
+Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
 
 </div>
 
