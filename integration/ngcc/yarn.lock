@@ -3,7 +3,7 @@
 
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "7.1.0"
+  version "7.2.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
@@ -17,12 +17,12 @@
     parse5 "^5.0.0"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "7.1.0"
+  version "0.0.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "7.1.0"
+  version "0.0.0"
   dependencies:
     canonical-path "1.0.0"
     chokidar "^1.4.2"
@@ -37,22 +37,22 @@
     yargs "9.0.1"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "7.1.0"
+  version "7.2.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "7.1.0"
+  version "0.0.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/forms@file:../../dist/packages-dist/forms":
-  version "7.1.0"
+  version "0.0.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/http@file:../../dist/packages-dist/http":
-  version "7.1.0"
+  version "7.2.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
@@ -66,17 +66,17 @@
     parse5 "^5.0.0"
 
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "7.1.0"
+  version "7.2.0-rc.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "7.1.0"
+  version "0.0.0"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/router@file:../../dist/packages-dist/router":
-  version "7.1.0"
+  version "0.0.0"
   dependencies:
     tslib "^1.9.0"
 
@@ -3278,7 +3278,7 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   integrity sha1-WuaBd/GS1EViadEIr6k/+HQ/T2Q=
 
 "typescript@file:../../node_modules/typescript":
-  version "3.1.1"
+  version "3.2.2"
 
 ua-parser-js@0.7.17:
   version "0.7.17"
