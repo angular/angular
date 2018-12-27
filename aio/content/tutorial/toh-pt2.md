@@ -8,7 +8,7 @@ In this page, you'll expand the Tour of Heroes app to display a list of heroes, 
 allow users to select a hero and display the hero's details.
 -->
 
-이번 튜토리얼에서는 히어로의 목록을 표시하며, 히어로를 선택해서 상세화면을 표시하도록 히어로들의 여행 앱을 수정해보겠습니다.
+이번 튜토리얼에서는 히어로의 목록을 화면에 표시하고, 이 중에서 히어로 하나를 선택해서 상세 정보를  표시하도록 히어로들의 여행 앱을 수정해 봅시다.
 
 <!--
 ## Create mock heroes
@@ -18,14 +18,14 @@ allow users to select a hero and display the hero's details.
 <!--
 You'll need some heroes to display.
 -->
-화면에 표시하기 위해서는 히어로 데이터들이 필요합니다.
+먼저, 히어로의 목록을 화면에 표시할 때 사용할 히어로 데이터가 필요합니다.
 
 <!--
 Eventually you'll get them from a remote data server.
 For now, you'll create some _mock heroes_ and pretend they came from the server.
 -->
-최종적으로는 리모트 데이터 서버로부터 데이터를 받아올 것입니다.
-하지만 지금은 _히어로 목_ 을 생성해서 그 데이터들이 서버로부터 받아오는 것으로 간주하겠습니다.
+최종적으로는 리모트 데이터 서버에서 데이터를 받아올 것입니다.
+하지만 지금은 _히어로 목_ 을 생성하고 이 데이터들을 서버에서 받아온 것으로 간주합시다.
 
 <!--
 Create a file called `mock-heroes.ts` in the `src/app/` folder.
@@ -33,8 +33,8 @@ Define a `HEROES` constant as an array of ten heroes and export it.
 The file should look like this.
 -->
 `src/app/`에 `mock-heroes.ts`파일을 생성합니다.
-10명의 히어로를 위한 `HEROES` 배열을 상수로 선언해서 다른 파일에서 참조할 수 있도록 내보냅니다.
-작성한 파일은 아래의 모습과 같습니다.
+이 파일에 `HEROES` 배열을 상수로 선언하고 다른 파일에서 참조할 수 있도록 파일 외부로 공개할 것입니다.
+파일의 내용은 다음과 같이 작성합니다.
 
 <code-example path="toh-pt2/src/app/mock-heroes.ts" linenums="false"
 header="src/app/mock-heroes.ts">
@@ -48,17 +48,23 @@ header="src/app/mock-heroes.ts">
 <!--
 You're about to display the list of heroes at the top of the `HeroesComponent`.
 -->
-이제 `HeroesComponent`의 위쪽에 히어로의 목록을 표시하고자 합니다.
+이제 `HeroesComponent` 위쪽에 히어로의 목록을 표시해 봅시다.
 
 <!--
 Open the `HeroesComponent` class file and import the mock `HEROES`.
 -->
-`HeroesComponent` 클래스 파일을 열어서 `HEROES` 목을 가져옵니다.
+`HeroesComponent` 클래스 파일을 열고 `HEROES` 목 데이터를 로드합니다.
 
+<!--
 <code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="import-heroes" header="src/app/heroes/heroes.component.ts (import HEROES)">
+-->
+<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="import-heroes" header="src/app/heroes/heroes.component.ts (HEROES 로드)">
 </code-example>
 
+<!--
 In the same file (`HeroesComponent` class), define a component property called `heroes` to expose `HEROES` array for binding.
+-->
+그리고 클래스에 `heroes` 프로퍼티를 선언하고 위에서 로드한 `HEROES` 배열을 바인딩합니다.
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="component">
 </code-example>
@@ -66,12 +72,12 @@ In the same file (`HeroesComponent` class), define a component property called `
 <!--
 ### List heroes with _*ngFor_
 -->
-### _*ngFor_ 를 활용하여 히어로 목록 표시하기
+### _*ngFor_ 로 히어로 목록 표시하기
 
 <!--
 Open the `HeroesComponent` template file and make the following changes:
 -->
-`HeroesComponent` 템플릿 파일을 열어 아래와 같이 수정하세요:
+`HeroesComponent` 템플릿 파일을 열고 다음과 같이 수정합니다:
 
 <!--
 * Add an `<h2>` at the top, 
@@ -80,23 +86,26 @@ Open the `HeroesComponent` template file and make the following changes:
 * Sprinkle some CSS classes for styling (you'll add the CSS styles shortly).
 -->
 
-* 제일 위에 `<h2>`를 추가하세요.
-* 그 밑에 순서 없는 목록 HTML 태그(`<ul>`)를 추가하세요.
-* `<ul>`태그 사이에 `<li>`를 추가해서 `hero`의 프로퍼티를 표시하세요.
-* 스타일링을 위해서 몇몇의 CSS 클래스들을 꾸며보세요.(CSS 스타일은 곧 추가할 예정입니다.)
+* 제일 위에 `<h2>`를 추가합니다.
+* 그 밑에 순서 없는 목록 HTML 태그(`<ul>`)를 추가합니다.
+* `<ul>`태그 사이에 `<li>`를 추가해서 `hero`의 프로퍼티를 표시합니다.
+* 스타일을 지정하기 위해 CSS 클래스를 추가합니다.(CSS 스타일은 조금 뒤에 추가합니다.)
 
 <!--
 Make it look like this:
 -->
-아래처럼 작성하세요:
+그러면 다음과 같은 템플릿이 구성됩니다:
 
+<!--
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" header="heroes.component.html (heroes template)" linenums="false">
+-->
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" header="heroes.component.html (heroes 템플릿)" linenums="false">
 </code-example>
 
 <!--
 Now change the `<li>` to this:
 -->
-다음은 `<li>`태그를 아래처럼 수정하세요.
+그리고 `<li>`태그를 다음 코드처럼 수정합니다.
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="li">
 </code-example>
@@ -105,8 +114,8 @@ Now change the `<li>` to this:
 The [`*ngFor`](guide/template-syntax#ngFor) is Angular's _repeater_ directive. 
 It repeats the host element for each element in a list.
 -->
-[`*ngFor`](guide/template-syntax#ngFor)는 Angular의 _repeater_ 디렉티브입니다.
-이 디렉티브는 목록에서 각 엘리먼트에 대해 호스트 엘리먼트를 반복해서 표시합니다.
+[`*ngFor`](guide/template-syntax#ngFor)는 _항목을 반복하는_ Angular 디렉티브입니다.
+이 디렉티브는 목록에 있는 항목마다 호스트 엘리먼트를 반복합니다.
 
 <!--
 In this example
@@ -118,21 +127,21 @@ In this example
 
 이 예제에서
  
-* `<li>`는 호스트 엘리먼트입니다.
-* `heroes`는 `HeroesComponent` 클래스에서의 목록을 위한 변수입니다.
-* `hero`는 목록 전체에 걸쳐 반복되는 각각의 히어로 객체입니다.
+* 호스트 엘리먼트는 `<li>`입니다.
+* `heroes`는 `HeroesComponent` 클래스에 선언된 목록입니다.
+* `hero`는 목록을 순회할 때마다 할당되는 히어로 객체입니다.
 
 <div class="alert is-important">
 <!--
 Don't forget the asterisk (*) in front of `ngFor`. It's a critical part of the syntax.
 -->
-`ngFor`앞에 별표(*)가 있다는 걸 명심하세요. 이 표기방식은 템플릿 문법에서 특히 중요합니다.
+`ngFor`앞에 별표(*)가 붙는 것에 주의하세요. 이 문법은 아주 중요합니다.
 </div>
 
 <!--
 After the browser refreshes, the list of heroes appears.
 -->
-브라우저 갱신 후 히어로 목록이 표시됩니다.
+이제 브라우저가 갱신되면 히어로의 목록이 화면에 표시됩니다.
 
 {@a styles}
 
@@ -145,49 +154,43 @@ After the browser refreshes, the list of heroes appears.
 The heroes list should be attractive and should respond visually when users 
 hover over and select a hero from the list.
 -->
-
-히어로 목록은 매력적인 모습이어야하며 목록에서 한 히어로에 마우스를 올리거나 선택하면 시각적으로 반응하는 것이 중요합니다.
+히어로 목록은 보기 좋게 표시하는 것이 좋으며, 사용자가 어떤 항목에 마우스를 올리거나 선택하면 시각적인 반응을 보여주는 것도 좋습니다.
 
 <!--
 In the [first tutorial](tutorial/toh-pt0#app-wide-styles), you set the basic styles for the entire application in `styles.css`.
 That stylesheet didn't include styles for this list of heroes.
 -->
-
-[첫번째 튜토리얼](tutorial/toh-pt0#app-wide-styles)에서 `styles.css`에 애플리케이션 전체의 기본적인 스타일을 설정했습니다.
-그 스타일시트는 히어로 목록을 위한 스타일을 포함하고 있지는 않습니다.
+[첫번째 튜토리얼](tutorial/toh-pt0#app-wide-styles)에서는 `styles.css` 파일에 애플리케이션 전역 스타일을 지정했습니다.
+하지만 이 스타일시트에는 히어로의 목록을 꾸미는 스타일이 존재하지 않습니다.
 
 <!--
 You could add more styles to `styles.css` and keep growing that stylesheet as you add components.
 -->
-`styles.css`에 더 많은 스타일을 추가할 수 있으며 컴포넌트를 추가할때마다 스타일시트는 더 커집니다.
+이 때 `styles.css`에 더 많은 스타일을 추가할 수도 있지만, 이렇게 작성하면 컴포넌트를 추가할때마다 스타일시트의 내용이 점점 많아집니다.
 
 <!--
 You may prefer instead to define private styles for a specific component and keep everything a component needs&mdash; the code, the HTML,
 and the CSS &mdash;together in one place.
 -->
-
-특정 컴포넌트만을 위해 스타일을 정의하고 컴포넌트가 필요로하는&mdash; 코드, HTML, CSS &mdash;모두 한 곳에 함께 보관하는 것을 더 선호할수도 있습니다.
+이 방식보다는 컴포넌트와 관련된 파일&mdash; 클래스 코드, HTML, CSS &mdash;을 한 곳에서 관리하면서 특정 컴포넌트에만 해당하는 스타일을 따로 정의하는 것이 더 좋습니다.
 
 <!--
 This approach makes it easier to re-use the component somewhere else
 and deliver the component's intended appearance even if the global styles are different.
 -->
-
-이와 같은 접근방식은 컴포넌트를 다른 곳에서 재활용을 쉽게 하고 전역 스타일은 다르게 정의되어 있을지라도 원하는 컴포넌트의 모습을 표시합니다.
+이렇게 구현하면 컴포넌트를 재사용하기 편해지며 전역 스타일이 변경되더라도 컴포넌트 스타일은 영향을 받지 않습니다.
 
 <!--
 You define private styles either inline in the `@Component.styles` array or
 as stylesheet file(s) identified in the `@Component.styleUrls` array.
 -->
-
-비공개 스타일은 `@Component.styles` 배열에서 인라인으로 정의하거나 `@Component.styleUrls` 배열에 정의한 스타일시트 파일을 통해 정의합니다.
+컴포넌트에 적용되는 스타일은 `@Component.styles` 배열에서 인라인으로 정의하거나, 여러 파일에 작성하고 `@Component.styleUrls` 배열로 지정할 수 있습니다.
 
 <!--
 When the CLI generated the `HeroesComponent`, it created an empty `heroes.component.css` stylesheet for the `HeroesComponent`
 and pointed to it in `@Component.styleUrls` like this.
 -->
-
-CLI는 `HeroesComponent`를 생성할 때 `HeroesComponent`을 위한 `heroes.component.css` 스타일을 생성하고 아래와 같이 `@Component.styleUrls`에 추가합니다.
+Angular CLI로 `HeroesComponent`를 생성하면 이 컴포넌트에 스타일을 지정하는 `heroes.component.css` 파일을 자동으로 생성하고 `@Component.styleUrls` 목록에 추가합니다.
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="metadata"
  header="src/app/heroes/heroes.component.ts (@Component)">
@@ -197,9 +200,8 @@ CLI는 `HeroesComponent`를 생성할 때 `HeroesComponent`을 위한 `heroes.co
 Open the `heroes.component.css` file and paste in the private CSS styles for the `HeroesComponent`.
 You'll find them in the [final code review](#final-code-review) at the bottom of this guide.
 -->
-
-`heroes.component.css`파일을 열어 `HeroesComponent`를 위한 비공개 CSS 스타일을 붙여넣습니다.
-해당 CSS 스타일 부분은 이 튜토리얼의 아래에 [final code review](#final-code-review)에서 찾을 수 있습니다.
+그러면 `heroes.component.css` 파일을 열어서 `HeroesComponent`에 적용되는 CSS 스타일을 작성할 수 있습니다.
+지금은 이 코드를 생략합니다. 이 파일의 내용은 이 문서의 아래쪽 [최종-코드-리뷰](#final-code-review)에서 확인할 수 있습니다.
 
 <div class="alert is-important">
 
@@ -207,9 +209,8 @@ You'll find them in the [final code review](#final-code-review) at the bottom of
 Styles and stylesheets identified in `@Component` metadata are scoped to that specific component.
 The `heroes.component.css` styles apply only to the `HeroesComponent` and don't affect the outer HTML or the HTML in any other component.
 -->
-
-`@Component` 메타데이터에 정의되어 있는 스타일과 스타일시트는 해당 컴포넌트에 제한되어 적용됩니다.
-`heroes.component.css` 스타일은 `HeroesComponent`에만 적용되며 컴포넌트 외부의 HTML이나 다른 컴포넌트의 HTML에는 영향을 주지 않습니다.
+`@Component` 메타데이터에 지정된 스타일과 스타일시트 파일은 이 컴포넌트에만 적용됩니다.
+그래서 `heroes.component.css`에 정의된 스타일은 `HeroesComponent`에만 적용되며 이 컴포넌트 밖에 있는 HTML 이나 다른 컴포넌트에 영향을 주지 않습니다.
 </div>
 
 <!--

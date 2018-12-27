@@ -3,7 +3,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 // #docregion formsmodule-js-import
-import { FormsModule } from '@angular/forms'; // <-- NgModel lives here
+import { FormsModule } from '@angular/forms'; // <-- NgModel은 이 패키지가 제공합니다.
 // #enddocregion formsmodule-js-import
 
 import { AppComponent } from './app.component';

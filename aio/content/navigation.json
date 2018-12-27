@@ -3,7 +3,7 @@
     {
       "url": "features",
       "title!": "Features",
-      "title": "기능"
+      "title": "개요"
     },
     {
       "url": "docs",
@@ -107,12 +107,14 @@
           "!title": "1. The Hero Editor",
           "title": "1. 히어로 에디터",
           "!tooltip": "Part 1: Build a simple hero editor",
-          "tooltip": "1단계: 간단한 히어로 에디터 만들기"
+          "tooltip": "1단계: 간단한 히어로 에디터를 만들어 봅시다."
         },
         {
           "url": "tutorial/toh-pt2",
-          "title": "2. Displaying a List",
-          "tooltip": "Part 2: Build a master/detail page with a list of heroes."
+          "!title": "2. Displaying a List",
+          "title": "2. 목록 표시하기",
+          "!tooltip": "Part 2: Build a master/detail page with a list of heroes.",
+          "tooltip": "2단계: 히어로의 목록을 표시하는 페이지를 구성해 봅시다."
         },
         {
           "url": "tutorial/toh-pt3",
@@ -139,9 +141,9 @@
 
     {
       "title!": "Fundamentals",
-      "title": "가이드",
+      "title": "기초 지식",
       "tooltip!": "The fundamentals of Angular",
-      "tooltip": "Angular 가이드",
+      "tooltip": "Angular 기초 지식",
       "children": [
         {
           "title!": "Architecture",
@@ -554,9 +556,9 @@
 
     {
       "title!": "Techniques",
-      "title": "테크닉",
+      "title": "고급",
       "tooltip!": "Techniques for putting Angular to work in your environment",
-      "tooltip": "Angular에 실제 프로젝트에 활용하는 테크닉",
+      "tooltip": "Angular를 실제 프로젝트에 더 활용할 수 있는 방법에 대해 안내합니다.",
       "children": [
 
         {
@@ -805,7 +807,7 @@
     },
     {
       "!title": "CLI Commands",
-      "title": "CLI 명령",
+      "title": "Angular CLI",
       "!tooltip": "Angular CLI command reference.",
       "tooltip": "Angular CLI 명령에 대해 안내합니다.",
       "children": [
