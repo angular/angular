@@ -504,7 +504,7 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
  * @publicAPI
  */
 export function i18nPostprocess(
-    message: string, replacements: {[key: string]: (string | string[])}): string {
+    message: string, replacements: {[key: string]: (string | string[])} = {}): string {
   //
   // Step 1: resolve all multi-value cases (like [�*1:1��#2:1�|�#4:1�|�5�])
   //

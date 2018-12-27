@@ -16,13 +16,12 @@
 export function polyfillGoogGetMsg(translations: {[key: string]: string} = {}): void {
   const glob = (global as any);
   glob.goog = glob.goog || {};
-  glob.goog.getMsg =
-      glob.goog.getMsg || function(input: string, placeholders: {[key: string]: string} = {}) {
-        if (typeof translations[input] !== 'undefined') {  // to account for empty string
-          input = translations[input];
-        }
-        return Object.keys(placeholders).length ?
-            input.replace(/\{\$(.*?)\}/g, (match, key) => placeholders[key] || '') :
-            input;
-      };
+  glob.goog.getMsg = function(input: string, placeholders: {[key: string]: string} = {}) {
+    if (typeof translations[input] !== 'undefined') {  // to account for empty string
+      input = translations[input];
+    }
+    return Object.keys(placeholders).length ?
+        input.replace(/\{\$(.*?)\}/g, (match, key) => placeholders[key] || '') :
+        input;
+  };
 }
