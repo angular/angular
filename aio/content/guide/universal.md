@@ -145,7 +145,7 @@ If your server handles HTTP requests, you'll have to add your own security plumb
 Install `@angular/platform-server` into your project. Use the same version as the other `@angular` packages in your project. You also need `ts-loader` for your webpack build and `@nguniversal/module-map-ngfactory-loader` to handle lazy-loading in the context of a server-render.
 
 ```
-$ npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader
+$ npm install --save @angular/http @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader 
 ```
 
 ## Step 2: Prepare your app
@@ -252,14 +252,19 @@ Open the Angular configuration file, `angular.json`, for your project, and add a
 <code-example format="." language="none" linenums="false">
 "architect": {
   "build": { ... }
-  "server": {
-    "builder": "@angular-devkit/build-angular:server",
+}
+</code-example>
+
+<code-example format="." language="none" linenums="false">
+"architect": {
+  "build": {
+    "builder": "@angular-devkit/build-angular:browser",
     "options": {
-      "outputPath": "dist/my-project-server",
-      "main": "src/main.server.ts",
-      "tsConfig": "src/tsconfig.server.json"
+        "outputPath": "dist/browser",
+        ...
+        }
     }
-  }
+    ...
 }
 </code-example>
 
@@ -343,7 +348,7 @@ const DIST_FOLDER = join(process.cwd(), 'dist');
 const template = readFileSync(join(DIST_FOLDER, 'browser', 'index.html')).toString();
 
 // * NOTE :: leave this as require() since this file is built Dynamically from webpack
-const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main');
+const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main.bundle');
 
 const { provideModuleMap } = require('@nguniversal/module-map-ngfactory-loader');
 
@@ -389,22 +394,24 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-  entry: { server: './server.ts' },
+  entry: {  server: './server.ts' },
   resolve: { extensions: ['.js', '.ts'] },
   target: 'node',
-  mode: 'none',
   // this makes sure we include node_modules and other 3rd party libraries
-  externals: [/node_modules/],
+  externals: [/(node_modules|main\..*\.js)/],
+  mode: 'none',
   output: {
     path: path.join(__dirname, 'dist'),
     filename: '[name].js'
   },
   module: {
-    rules: [{ test: /\.ts$/, loader: 'ts-loader' }]
+    rules: [
+      { test: /\.ts$/, loader: 'ts-loader' }
+    ]
   },
   plugins: [
     // Temporary Fix for issue: https://github.com/angular/angular/issues/11580
-    // for 'WARNING Critical dependency: the request of a dependency is an expression'
+    // for "WARNING Critical dependency: the request of a dependency is an expression"
     new webpack.ContextReplacementPlugin(
       /(.+)?angular(\\|\/)core(.+)?/,
       path.join(__dirname, 'src'), // location of your src
@@ -416,7 +423,7 @@ module.exports = {
       {}
     )
   ]
-};
+}
 </code-example>
 
 The  project's `dist/` folder now contains both browser and server folders.
@@ -436,21 +443,23 @@ node dist/server.js
 ### Creating scripts
 
 Now let's create a few handy scripts to help us do all of this in the future.
-You can add these in the `"scripts"` section of the Angular configuration file, `package.json`.
+You can add these in the `"server"` section of the Angular configuration file, `angular.json`.
 
 <code-example format="." language="none" linenums="false">
-{
-  "name": "my-app",
-  ...
-  "scripts": {
+"architect": {
+  "build": { ... }
+  "server": {
+    ...
+     "scripts": {
+      // Common scripts
+      "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
+      "serve:ssr": "node dist/server.js",
+
+      // Helpers for the scripts
+      "build:client-and-server-bundles": "ng build --prod && ng run my-app:server",
+      "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
+    }
    ...
-   "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
-   "serve:ssr": "node dist/server.js",
-   "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
-   "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
-  }
-  ...
-}
 </code-example>
 
 To run a production build of your app with Universal on your local system, use the following command.
