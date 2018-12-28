@@ -648,10 +648,11 @@ export abstract class AbstractControl {
    * @description
    * Reports error data for the control with the given path.
    *
-   * @param errorCode The name of the error to check
+   * @param errorCode The code of the error to check
    * @param path A list of control names that designates how to move from the current control
    * to the control that should be queried for errors.
    *
+   * @usageNotes
    * For example, for the following `FormGroup`:
    *
    * ```
@@ -664,9 +665,8 @@ export abstract class AbstractControl {
    *
    * It can be provided to this method in one of two formats:
    *
-   * 1) An array of string control names, e.g. `['address', 'street']`
-   *
-   * 2) A period-delimited list of control names in one string, e.g. `'address.street'`
+   * 1. An array of string control names, e.g. `['address', 'street']`
+   * 1. A period-delimited list of control names in one string, e.g. `'address.street'`
    *
    * @returns error data for that particular error. If the control or error is not present,
    * null is returned.
@@ -680,10 +680,11 @@ export abstract class AbstractControl {
    * @description
    * Reports whether the control with the given path has the error specified.
    *
-   * @param errorCode The name of the error to check
+   * @param errorCode The code of the error to check
    * @param path A list of control names that designates how to move from the current control
    * to the control that should be queried for errors.
    *
+   * @usageNotes
    * For example, for the following `FormGroup`:
    *
    * ```
@@ -696,9 +697,8 @@ export abstract class AbstractControl {
    *
    * It can be provided to this method in one of two formats:
    *
-   *  1) An array of string control names, e.g. `['address', 'street']`
-   *
-   * 2) A period-delimited list of control names in one string, e.g. `'address.street'`
+   * 1. An array of string control names, e.g. `['address', 'street']`
+   * 1. A period-delimited list of control names in one string, e.g. `'address.street'`
    *
    * If no path is given, this method checks for the error on the current control.
    *
