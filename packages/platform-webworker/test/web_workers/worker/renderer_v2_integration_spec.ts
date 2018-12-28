@@ -95,7 +95,7 @@ let lastCreatedRenderer: Renderer2;
       expect(renderEl).toHaveText('Hello World!');
     });
 
-    fixmeIvy('FW-750: fixture.debugElement.children is null')
+    fixmeIvy('FW-750: DebugElement doesn\'t work with objects that aren\'t a Node')
         .it('should update any element property/attributes/class/style(s) independent of the compilation on the root element and other elements',
             () => {
               const fixture =
@@ -160,7 +160,7 @@ let lastCreatedRenderer: Renderer2;
     });
 
     if (getDOM().supportsDOMEvents()) {
-      fixmeIvy('FW-750: fixture.debugElement.children is null')
+      fixmeIvy('FW-750: DebugElement doesn\'t work with objects that aren\'t a Node')
           .it('should listen to events', () => {
             const fixture = TestBed.overrideTemplate(MyComp2, '<input (change)="ctxNumProp = 1">')
                                 .createComponent(MyComp2);
