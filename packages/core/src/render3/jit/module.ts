@@ -350,7 +350,9 @@ export function patchComponentDefWithScope<C>(
  * on modules with components that have not fully compiled yet, but the result should not be used
  * until they have.
  */
-export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveScopes {
+export function transitiveScopesFor<T>(
+    moduleType: Type<T>,
+    processNgModuleFn?: (ngModule: NgModuleType) => void): NgModuleTransitiveScopes {
   if (!isNgModule(moduleType)) {
     throw new Error(`${moduleType.name} does not have an ngModuleDef`);
   }
@@ -385,24 +387,28 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
   });
 
   def.imports.forEach(<I>(imported: Type<I>) => {
-    const importedTyped = imported as Type<I>& {
+    const importedType = imported as Type<I>& {
       // If imported is an @NgModule:
       ngModuleDef?: NgModuleDef<I>;
     };
 
-    if (!isNgModule<I>(importedTyped)) {
-      throw new Error(`Importing ${importedTyped.name} which does not have an ngModuleDef`);
+    if (!isNgModule<I>(importedType)) {
+      throw new Error(`Importing ${importedType.name} which does not have an ngModuleDef`);
+    }
+
+    if (processNgModuleFn) {
+      processNgModuleFn(importedType as NgModuleType);
     }
 
     // When this module imports another, the imported module's exported directives and pipes are
     // added to the compilation scope of this module.
-    const importedScope = transitiveScopesFor(importedTyped);
+    const importedScope = transitiveScopesFor(importedType, processNgModuleFn);
     importedScope.exported.directives.forEach(entry => scopes.compilation.directives.add(entry));
     importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
   });
 
   def.exports.forEach(<E>(exported: Type<E>) => {
-    const exportedTyped = exported as Type<E>& {
+    const exportedType = exported as Type<E>& {
       // Components, Directives, NgModules, and Pipes can all be exported.
       ngComponentDef?: any;
       ngDirectiveDef?: any;
@@ -412,10 +418,10 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
 
     // Either the type is a module, a pipe, or a component/directive (which may not have an
     // ngComponentDef as it might be compiled asynchronously).
-    if (isNgModule(exportedTyped)) {
+    if (isNgModule(exportedType)) {
       // When this module exports another, the exported module's exported directives and pipes are
       // added to both the compilation and exported scopes of this module.
-      const exportedScope = transitiveScopesFor(exportedTyped);
+      const exportedScope = transitiveScopesFor(exportedType, processNgModuleFn);
       exportedScope.exported.directives.forEach(entry => {
         scopes.compilation.directives.add(entry);
         scopes.exported.directives.add(entry);
@@ -424,10 +430,10 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
         scopes.compilation.pipes.add(entry);
         scopes.exported.pipes.add(entry);
       });
-    } else if (getPipeDef(exportedTyped)) {
-      scopes.exported.pipes.add(exportedTyped);
+    } else if (getPipeDef(exportedType)) {
+      scopes.exported.pipes.add(exportedType);
     } else {
-      scopes.exported.directives.add(exportedTyped);
+      scopes.exported.directives.add(exportedType);
     }
   });
 
