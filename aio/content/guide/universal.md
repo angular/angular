@@ -436,23 +436,21 @@ node dist/server.js
 ### Creating scripts
 
 Now let's create a few handy scripts to help us do all of this in the future.
-You can add these in the `"server"` section of the Angular configuration file, `angular.json`.
+You can add these in the `"scripts"` section of the Angular configuration file, `package.json`.
 
 <code-example format="." language="none" linenums="false">
-"architect": {
-  "build": { ... }
-  "server": {
-    ...
-     "scripts": {
-      // Common scripts
-      "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
-      "serve:ssr": "node dist/server.js",
-
-      // Helpers for the scripts
-      "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
-      "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
-    }
+{
+  "name": "my-app",
+  ...
+  "scripts": {
    ...
+   "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
+   "serve:ssr": "node dist/server.js",
+   "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
+   "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
+  }
+  ...
+}
 </code-example>
 
 To run a production build of your app with Universal on your local system, use the following command.
