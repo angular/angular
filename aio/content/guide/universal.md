@@ -252,6 +252,14 @@ Open the Angular configuration file, `angular.json`, for your project, and add a
 <code-example format="." language="none" linenums="false">
 "architect": {
   "build": { ... }
+  "server": {
+          "builder": "@angular-devkit/build-angular:server",
+          "options": {
+            "outputPath": "dist/server",
+            "main": "src/main.server.ts",
+            "tsConfig": "src/tsconfig.server.json"
+        }
+    },
 }
 </code-example>
 
@@ -348,7 +356,7 @@ const DIST_FOLDER = join(process.cwd(), 'dist');
 const template = readFileSync(join(DIST_FOLDER, 'browser', 'index.html')).toString();
 
 // * NOTE :: leave this as require() since this file is built Dynamically from webpack
-const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main.bundle');
+const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./dist/server/main');
 
 const { provideModuleMap } = require('@nguniversal/module-map-ngfactory-loader');
 
@@ -398,7 +406,7 @@ module.exports = {
   resolve: { extensions: ['.js', '.ts'] },
   target: 'node',
   // this makes sure we include node_modules and other 3rd party libraries
-  externals: [/(node_modules|main\..*\.js)/],
+  externals: [/node_modules/],
   mode: 'none',
   output: {
     path: path.join(__dirname, 'dist'),
@@ -443,22 +451,19 @@ node dist/server.js
 ### Creating scripts
 
 Now let's create a few handy scripts to help us do all of this in the future.
-You can add these in the `"server"` section of the Angular configuration file, `angular.json`.
+You can add these in the `"scripts"` section of the Angular configuration file, `package.json`.
 
 <code-example format="." language="none" linenums="false">
-"architect": {
-  "build": { ... }
-  "server": {
+{
+  "name": "my-app",
+  ...
+  "scripts": {
     ...
-     "scripts": {
-      // Common scripts
-      "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
-      "serve:ssr": "node dist/server.js",
-
-      // Helpers for the scripts
-      "build:client-and-server-bundles": "ng build --prod && ng run my-app:server",
-      "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
-    }
+    "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
+    "serve:ssr": "node dist/server.js",
+    "build:client-and-server-bundles": "ng build --prod && ng run my-app:server",
+    "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
+  },
    ...
 </code-example>
 
