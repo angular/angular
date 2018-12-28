@@ -1347,7 +1347,7 @@ describe('i18n support in the view compiler', () => {
       verify(input, output);
     });
 
-    it('should be able to be child elements inside i18n block', () => {
+    it('should be able to act as child elements inside i18n block', () => {
       const input = `
         <div i18n>
           <ng-template>Template content: {{ valueA | uppercase }}</ng-template>
