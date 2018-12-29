@@ -172,19 +172,19 @@ You could add more styles to `styles.css` and keep growing that stylesheet as yo
 You may prefer instead to define private styles for a specific component and keep everything a component needs&mdash; the code, the HTML,
 and the CSS &mdash;together in one place.
 -->
-이 방식보다는 컴포넌트와 관련된 파일&mdash; 클래스 코드, HTML, CSS &mdash;을 한 곳에서 관리하면서 특정 컴포넌트에만 해당하는 스타일을 따로 정의하는 것이 더 좋습니다.
+이 방식보다는 컴포넌트와 관련된 파일&mdash; 클래스 코드, HTML, CSS &mdash;을 한 곳에서 관리하면서 특정 컴포넌트에 해당하는 스타일만 따로 정의하는 것이 더 좋습니다.
 
 <!--
 This approach makes it easier to re-use the component somewhere else
 and deliver the component's intended appearance even if the global styles are different.
 -->
-이렇게 구현하면 컴포넌트를 재사용하기 편해지며 전역 스타일이 변경되더라도 컴포넌트 스타일은 영향을 받지 않습니다.
+이렇게 구현하면 컴포넌트를 재사용하기 편해지며 전역 스타일이 변경되더라도 컴포넌트 스타일에 영향을 주지 않습니다.
 
 <!--
 You define private styles either inline in the `@Component.styles` array or
 as stylesheet file(s) identified in the `@Component.styleUrls` array.
 -->
-컴포넌트에 적용되는 스타일은 `@Component.styles` 배열에서 인라인으로 정의하거나, 여러 파일에 작성하고 `@Component.styleUrls` 배열로 지정할 수 있습니다.
+컴포넌트에 적용되는 스타일은 `@Component.styles` 배열에서 인라인으로 정의할 수 있고, 여러 파일에 작성하고 `@Component.styleUrls` 배열로 지정할 수도 있습니다.
 
 <!--
 When the CLI generated the `HeroesComponent`, it created an empty `heroes.component.css` stylesheet for the `HeroesComponent`
@@ -201,7 +201,7 @@ Open the `heroes.component.css` file and paste in the private CSS styles for the
 You'll find them in the [final code review](#final-code-review) at the bottom of this guide.
 -->
 그러면 `heroes.component.css` 파일을 열어서 `HeroesComponent`에 적용되는 CSS 스타일을 작성할 수 있습니다.
-지금은 이 코드를 생략합니다. 이 파일의 내용은 이 문서의 아래쪽 [최종-코드-리뷰](#final-code-review)에서 확인할 수 있습니다.
+지금은 이 코드를 생략합니다. 이 파일의 내용은 이 문서의 아래쪽 [최종코드 리뷰](#final-code-review)에서 확인할 수 있습니다.
 
 <div class="alert is-important">
 
@@ -216,20 +216,19 @@ The `heroes.component.css` styles apply only to the `HeroesComponent` and don't 
 <!--
 ## Master/Detail
 -->
-## 마스터/디테일
+## 마스터/디테일 구조
 
 <!--
 When the user clicks a hero in the **master** list, 
 the component should display the selected hero's **details** at the bottom of the page.
 -->
-
-**마스터**목록에서 히어로를 클릭할 경우, 컴포넌트는 선택된 히어로의 **상세화면**을 화면 하단에 표시합니다.
+사용자가 목록(**마스터**)에서 히어로를 클릭하면 이 히어로에 대한 상세 정보가 상세정보 화면(**디테일**)에 표시되어야 합니다.
 
 <!--
 In this section, you'll listen for the hero item click event
 and update the hero detail.
 -->
-이번 섹션에서는 히어로 항목에서 클릭 이벤트를 수신하여 히어로 상세화면을 업데이트하는 것을 배워보겠습니다.
+이번 섹션에서는 히어로 아이템이 클릭되는 이벤트를 감지하고, 클릭 이벤트가 발생했을 때 상세화면을 업데이트하는 방법을 알아봅시다.
 
 <!--
 ### Add a click event binding
@@ -239,7 +238,7 @@ and update the hero detail.
 <!--
 Add a click event binding to the `<li>` like this:
 -->
-`<li>`태그에 아래와 같이 클릭 이벤트 바인딩을 추가합니다.
+`<li>`태그에 다음과 같이 클릭 이벤트를 바인딩합니다.
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="selectedHero-click" header="heroes.component.html (template excerpt)" linenums="false">
 </code-example>
@@ -253,18 +252,17 @@ This is an example of Angular's [event binding](guide/template-syntax#event-bind
 The parentheses around `click` tell Angular to listen for the `<li>` element's  `click` event.
 When the user clicks in the `<li>`, Angular executes the `onSelect(hero)` expression.
 -->
-`click`주변의 괄호들은 Angular에게 `<li>`엘리먼트의 `click`이벤트를 수신하라고 알려줍니다.
-`<li>`을 클릭하면 Angular는 `onSelect(hero)`표현식을 실행합니다.
+이렇게 이벤트를 바인딩하면 Angular가 `<li>` 엘리먼트에서 발생하는 `click` 이벤트를 감지할 수 있습니다.
+그래서 사용자가 `<li>` 엘리먼트를 클릭하면 Angular는 `onSelect(hero)` 표현식을 실행합니다.
 
 <!--
 `onSelect()` is a `HeroesComponent` method that you're about to write.
 Angular calls it with the `hero` object displayed in the clicked `<li>`,
 the same `hero` defined previously in the `*ngFor` expression.
 -->
-
-`onSelect()`는 앞으로 작성하게 될 `HeroesComponent`의 메소드입니다.
-Angular는 선택된 `<li>`에 표시된 `hero` 객체를 파라미터로 하여 이 함수를 호출합니다. 
-여기서 `hero`객체는 `*ngFor` 표현식에서 정의되어 있는 것과 같은 객체입니다.
+`onSelect()`는 앞으로 `HeroesComponent`에 작성할 메소드입니다.
+Angular는 이 함수를 실행하면서 사용자가 클릭한 `<li>` 엘리먼트에 해당하는 `hero` 객체를 인자로 전달합니다.
+이 때 `hero` 객체는 `*ngFor` 표현식이 히어로의 목록을 순회할 때마다 할당되는 객체입니다.
 
 <!--
 ### Add the click event handler
@@ -276,16 +274,14 @@ Angular는 선택된 `<li>`에 표시된 `hero` 객체를 파라미터로 하여
 Rename the component's `hero` property to `selectedHero` but don't assign it.
 There is no _selected hero_ when the application starts.
 -->
-
-컴포넌트의 `hero`의 프로퍼티의 이름을 `selectedHero`로 변경하고 할당하지 마세요.
-애플리케이션이 실행될 때는 _선택된 히어로_ 는 없습니다.
+컴포넌트의 `hero` 프로퍼티를 `selectedHero`로 변경하지만 이 프로퍼티에 값을 직접 할당하지는 않습니다.
+왜냐하면 애플리케이션이 실행되는 시점에 _선택된 히어로_ 는 없기 때문입니다.
 
 <!--
 Add the following `onSelect()` method, which assigns the clicked hero from the template
 to the component's `selectedHero`.
 -->
-
-그 다음 `onSelect()`메소드를 추가합니다. 이 메소드는 템플릿에서 선택된 히어로를 컴포넌트의 `selectedHero` 변수에 할당합니다.
+그 다음에는 `onSelect()`메소드를 추가합니다. 이 메소드는 템플릿에서 선택된 히어로를 컴포넌트의 `selectedHero` 변수에 할당합니다.
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="on-select" header="src/app/heroes/heroes.component.ts (onSelect)" linenums="false">
 </code-example>
@@ -293,33 +289,35 @@ to the component's `selectedHero`.
 <!--
 ### Update the details template
 -->
-### 상세화면 템플릿 업데이트 하기
+### 상세정보 화면 템플릿 업데이트 하기
 
 <!--
 The template still refers to the component's old `hero` property which no longer exists. 
 Rename `hero` to `selectedHero`.
 -->
-
-템플릿에서는 더이상 존재하지 않는 컴포넌트의 이전 `hero`프로퍼티를 여전히 참조하고 있습니다.
+템플릿에서는 컴포넌트에 존재하지 않는 `hero` 프로퍼티를 아직 참조하고 있습니다.
 `hero`를 `selectedHero`로 변경합니다.
 
+<!--
 <code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" header="heroes.component.html (selected hero details)" linenums="false">
+-->
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" header="heroes.component.html (히어로 상세정보 화면)" linenums="false">
 </code-example>
 
 <!--
 ### Hide empty details with _*ngIf_
 -->
-### _*ngIf_ 를 활용하여 비어있는 상세화면 가리기
+### _*ngIf_ 로 빈 화면 감추기
 
 <!--
 After the browser refreshes, the application is broken.
 -->
-브라우저가 갱신되면 애플리케이션은 더이상 동작하지 않습니다.
+이제 브라우저가 갱신되면 애플리케이션이 더이상 동작하지 않습니다.
 
 <!--
 Open the browser developer tools and look in the console for an error message like this:
 -->
-브라우저의 개발자 도구를 열어 콘솔창에서 아래와 같은 에러 메세지를 확인하세요.
+이 때 브라우저의 개발자 도구를 열어서 콘솔창을 보면 다음과 같은 에러 메시지를 확인할 수 있습니다:
 
 <code-example language="sh" class="code-shell">
   HeroesComponent.html:3 ERROR TypeError: Cannot read property 'name' of undefined
@@ -330,25 +328,24 @@ Now click one of the list items.
 The app seems to be working again.
 The heroes appear in a list and details about the clicked hero appear at the bottom of the page.
 -->
-
-자 이제 목록의 아이템 중 하나를 선택하세요.
+목록에 있는 히어로 중 하나를 선택해 보세요.
 앱이 다시 정상적으로 동작하는 것을 확인할 수 있습니다.
-히어로들이 목록에 표시되며 선택한 히어로의 상세화면은 페이지의 하단에 표시됩니다.
+그리고 선택한 히어로의 상세정보가 히어로들의 목록을 표시하는 부분 아래에 표시되는 것도 확인할 수 있습니다.
 
 <!--
 #### What happened?
 -->
-#### 무슨 일이 일어난걸까요?
+#### 무슨 일이 일어난 걸까요?
 
 <!--
 When the app starts, the `selectedHero` is `undefined` _by design_.
 -->
-앱이 시작되고나면 `selectedHero`는 _설계에 따라_ `undefined`입니다.
+앱이 시작되고 나면 `selectedHero`를 선언하면서 _의도한 대로_ `selectedHero` 값이 `undefined`입니다.
 
 <!--
 Binding expressions in the template that refer to properties of `selectedHero` &mdash; expressions like `{{selectedHero.name}}` &mdash; _must fail_ because there is no selected hero.
 -->
-&mdash; `{{selectedHero.name}}` 와 같이 &mdash; 템플릿에서 `selectedHero`의 프로퍼티들을 참고하고 있는 바인딩 표현식은 선택된 히어로가 존재하지 않기 때문에 _절대 동작하지 않습니다._
+그래서 템플릿에서 &mdash; `{{selectedHero.name}}` 와 같이 &mdash; `selectedHero`의 프로퍼티를 참조하는 바인딩 표현식은 선택된 히어로가 존재하지 않기 때문에 _동작하지 않습니다._
 
 <!--
 #### The fix
@@ -358,21 +355,20 @@ Binding expressions in the template that refer to properties of `selectedHero` &
 <!--
 The component should only display the selected hero details if the `selectedHero` exists.
 -->
-컴포넌트는 `selectedHero`가 존재할때만 선택된 히어로의 상세화면을 보여줘야 합니다.
+컴포넌트는 `selectedHero` 프로퍼티의 값이 존재할 때만 선택된 히어로의 상세화면을 보여줘야 합니다.
 
 <!--
 Wrap the hero detail HTML in a `<div>`.
 Add Angular's `*ngIf` directive to the `<div>` and set it to `selectedHero`.
 -->
-
-히어로 디테일 HTML을 `<div>`로 감쌉니다.
-Angular의  `*ㅜngif`디렉티브를 `<div>`에 추가하고 `selectedHero`를 설정합니다. 
+히어로의 상세정보를 표현하는 HTML을 `<div>`로 감쌉니다.
+그리고 Angular가 제공하는 `*ngif` 디렉티브를 `<div>`에 추가하고 이 디렉티브의 표현식으로 `selectedHero`를 지정합니다. 
 
 <div class="alert is-important">
 <!--
 Don't forget the asterisk (*) in front of `ngIf`. It's a critical part of the syntax.
 -->
-`ngIf`앞에 별표(*)를 추가하는 것을 잊지마세요. 이는 문법에서 중요한 요소입니다.
+`ngIf`앞에 별표(*)가 있다는 것을 잊지마세요. Angular에서 아주 중요한 문법입니다.
 </div>
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="ng-if" header="src/app/heroes/heroes.component.html (*ngIf)" linenums="false">
@@ -383,10 +379,9 @@ After the browser refreshes, the list of names reappears.
 The details area is blank.
 Click a hero and its details appear.
 -->
-
-브라우저가 갱신되고 나면, 히어로의 이름 목록이 다시 표시됩니다.
-상세화면 영역은 비어있습니다.
-히어로 한명을 선택하면 상세화면이 나타납니다.
+이제 브라우저가 갱신되고 나면 히어로의 목록이 다시 화면에 표시됩니다.
+이 때 상세화면 영역은 비어있습니다.
+그리고 히어로 목록에서 한 명을 선택하면 상세화면이 표시됩니다.
 
 <!--
 #### Why it works
@@ -396,31 +391,29 @@ Click a hero and its details appear.
 <!--
 When `selectedHero` is undefined, the `ngIf` removes the hero detail from the DOM. There are no `selectedHero` bindings to worry about.
 -->
-
-`selectedHero`가 undefined일때, `ngIf`는 히어로의 상세화면을 DOM에서 삭제합니다. 그래서 `selectedHero` 바인딩으로 인한 오류는 더이상 걱정할 필요는 없습니다.
+`selectedHero`의 값이 `undefined`이면 `ngIf`는 히어로의 상세정보를 표현하는 부분을 DOM에서 제거합니다.
+그래서 `selectedHero`를 바인딩하지 못하는 에러는 발생하지 않습니다.
 
 <!--
 When the user picks a hero, `selectedHero` has a value and
 `ngIf` puts the hero detail into the DOM.
 -->
-
-히어로를 선택하면 `selectedHero`변수는 값을 가지고 되고 `ngIf`는 히어로 상세화면을 DOM에 추가합니다.
+그리고 사용자가 히어로를 선택하면 `selectedHero`의 값이 비어있지 않기 때문에 `ngIf`가 히어로의 상세정보를 표현하는 부분을 DOM에 추가합니다.
 
 <!--
 ### Style the selected hero
 -->
-### 선택된 히어로 디자인하기
+### 선택된 항목 스타일 지정하기
 
 <!--
 It's difficult to identify the _selected hero_ in the list when all `<li>` elements look alike.
 -->
-
-모든 `<li>`엘리먼트들이 똑같이 생겼다면 _선택된 히어로_ 를 목록에서 구분하기는 힘듭니다.
+히어로 목록에 있는 `<li>` 엘리먼트는 모두 똑같이 표시되기 때문에 이 중에서 _선택된_ 히어로를 구분하기 어렵습니다.
 
 <!--
 If the user clicks "Magneta", that hero should render with a distinctive but subtle background color like this:
 -->
-만약 "Magenta"를 선택하면, 선택된 히어로는 다음과 같은 독특하지만 미묘한 배경색으로 표시됩니다.
+이것보다는 사용자가 "Magneta"와 같은 히어로를 클릭했을 때 이 항목의 배경색이 다음과 같이 변경되어 다른 항목과 구별되는 것이 더 좋습니다:
 
 <figure>
 
@@ -432,38 +425,42 @@ If the user clicks "Magneta", that hero should render with a distinctive but sub
 That _selected hero_ coloring is the work of the `.selected` CSS class in the [styles you added earlier](#styles).
 You just have to apply the `.selected` class to the `<li>` when the user clicks it.
 -->
-
-_선택된 히어로_ 의 색은 [이전에 추가한 스타일](#styles)에 선언된 `.selected` CSS 클래스가 적용된 결과입니다.
-`<li>`를 선택하면 `.selected` 클래스가 적용됩니다.
+이 스타일은 [이전에 추가한 스타일](#styles)에 있는 `.selected` CSS 클래스가 적용된 것입니다.
+사용자가 선택한 항목에 이 클래스를 적용하려면 사용자가 클릭한 `<li>` 엘리먼트에 `.selected` 클래스를 적용하기만 하면 됩니다.
 
 <!--
 The Angular [class binding](guide/template-syntax#class-binding) makes it easy to add and remove a CSS class conditionally. 
 Just add `[class.some-css-class]="some-condition"` to the element you want to style.
 -->
-
-Angular의 [클래스 바인딩](guide/template-syntax#클래스-바인딩)은 CSS 클래스를 조건에 따라 추가하거나 제거하는 것을 도와줍니다.
-디자인하고 싶은 엘리먼트에 `[class.some-css-class]="some-condition"`만 추가하면 됩니다.
+Angular가 제공하는 [클래스 바인딩](guide/template-syntax#클래스-바인딩) 문법을 사용하면 특정 조건에 따라 CSS 클래스를 추가하거나 제거할 수 있습니다.
+스타일을 지정하려는 엘리먼트에 `[class.some-css-class]="some-condition"`와 같은 문법을 추가하면 됩니다.
 
 <!--
 Add the following `[class.selected]` binding to  the `<li>` in the `HeroesComponent` template:
 -->
-아래의 `[class.selected]` 바인딩을 `HeroesComponent` 템플릿에 있는 `<li>`에 추가합니다:
+이 예제에서는 `HeroesComponent` 템플릿의 `<li>` 엘리먼트에 `[class.selected]`와 같은 문법으로 클래스를 바인딩합니다:
 
+<!--
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html (toggle the 'selected' CSS class)" linenums="false">
+-->
+<code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="class-selected" header="heroes.component.html ('selected' CSS 클래스 토글하기)" linenums="false">
 </code-example>
 
 <!--
 When the current row hero is the same as the `selectedHero`, Angular adds the `selected` CSS class. When the two heroes are different, Angular removes the class.
 -->
-
-현재 열의 히어로와 `selectedHero`가 같다면, Angular는 `selected` CSS 클래스를 추가합니다. 만약 서로 다르다면 Angular는 해당 클래스를 삭제합니다.
+그러면 `selectedHero`와 같은 히어로가 있는 줄에 `selected` CSS 클래스가 추가됩니다.
+그리고 컴포넌트 프로퍼티에 있는 값과 다르다면 이 클래스가 제거됩니다.
 
 <!--
 The finished `<li>` looks like this:
 -->
-완성된 `<li>`의 모습은 아래와 같습니다.
+이렇게 수정된 `<li>` 코드는 다음과 같습니다.
 
+<!--
 <code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="li" header="heroes.component.html (list item hero)" linenums="false">
+-->
+<code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="li" header="heroes.component.html (히어로 목록)" linenums="false">
 
 </code-example>
 
@@ -472,17 +469,17 @@ The finished `<li>` looks like this:
 <!--
 ## Final code review
 -->
-## 마지막 코드리뷰
+## 최종코드 리뷰
 
 <!--
 Your app should look like this <live-example></live-example>. 
 -->
-완성된 앱의 모습은  <live-example></live-example>와 같습니다.
+여기까지 수정한 앱은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 <!--
 Here are the code files discussed on this page, including the `HeroesComponent` styles.
 -->
-`HeroesComponent` 스타일을 포함하여 이번 페이지에서 다룬 코드는 아래와 같습니다.
+그리고 이번 문서에서 다룬 파일의 내용은 다음과 같습니다.
 
 <code-tabs>
   <code-pane header="src/app/heroes/heroes.component.ts" path="toh-pt2/src/app/heroes/heroes.component.ts">
@@ -499,7 +496,7 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 <!--
 ## Summary
 -->
-## 요약
+## 정리
 
 <!--
 * The Tour of Heroes app displays a list of heroes in a Master/Detail view.
@@ -509,8 +506,8 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 * You can toggle a CSS style class with a `class` binding.
 -->
 
-* 히어로들의 여행앱은 마스터/상세 화면에서 히어로의 목록을 표시합니다.
-* 한명의 히어로를 선택할 수 있으며 히어로의 상세화면을 볼 수 있습니다.
-* 목록을 표시하기 위해서 `*ngFor`를 사용합니다.
-* 조건에 따라 HTML 코드 블락을 추가하거나 제외하기 위해서 `*ngIf`를 사용합니다.
-* `class` 바인딩을 통해서 CSS 스타일 클래스를 적용하거나 안할 수 있습니다.
+* 히어로들의 여행 앱은 마스터/상세 화면에서 히어로의 목록을 표시합니다.
+* 사용자는 히어로를 한 명 선택할 수 있으며, 히어로를 선택하면 이 히어로의 상세정보를 확인할 수 있습니다.
+* 목록을 표시할 때는 `*ngFor`를 사용합니다.
+* 특정 조건에 따라 DOM에 HTML 템플릿을 추가하거나 제거하려면 `*ngIf`를 사용합니다.
+* `class` 바인딩을 사용하면 CSS 스타일 클래스를 적용하거나 적용하지 않을 수 있습니다.
