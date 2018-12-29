@@ -2722,10 +2722,10 @@ devtools-timeline-model@1.1.6:
     chrome-devtools-frontend "1.0.401423"
     resolve "1.1.7"
 
-dgeni-packages@^0.27.0:
-  version "0.27.0"
-  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.27.0.tgz#99ddf4c97f75bb1f8deb5658ed7d60f6894e9b9d"
-  integrity sha512-BFWJGZTpLb1xAc/iHq7SOcbkyEoxD57NqVG84azfNu63wAVLxoez/9n8VISWNJkrOIT1ITQS7nacgcGxfl0MIw==
+dgeni-packages@^0.27.1:
+  version "0.27.1"
+  resolved "https://registry.yarnpkg.com/dgeni-packages/-/dgeni-packages-0.27.1.tgz#f23d78fd3e222910106e45186e1c2e64649464fc"
+  integrity sha512-zM2HgMni9FvfBFHv2uhWrWRUV0CpaWl4ggoajbGLMT+TEqxkSPKRkCkCQMHek7ZYSXbPdpVb8DuoEKEem74X4g==
   dependencies:
     canonical-path "^1.0.0"
     catharsis "^0.8.1"
