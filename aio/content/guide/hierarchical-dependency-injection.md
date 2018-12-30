@@ -1,7 +1,7 @@
 # Hierarchical Dependency Injectors
 
 The Angular dependency injection system is _hierarchical_.
-There is a tree of injectors that parallel an app's component tree.
+There is a tree of injectors that parallels an app's component tree.
 You can reconfigure the injectors at any level of that component tree.
 
 This guide explores this system and how to use it to your advantage.
