@@ -118,8 +118,10 @@
         },
         {
           "url": "tutorial/toh-pt3",
-          "title": "3. Master/Detail Components",
-          "tooltip": "Part 3: Refactor the master/detail view into separate components."
+          "!title": "3. Master/Detail Components",
+          "title": "3. 컴포넌트 구조",
+          "!tooltip": "Part 3: Refactor the master/detail view into separate components.",
+          "tooltip": "3단계: 목록/상세정보 화면을 개별 컴포넌트로 리팩토링해 봅시다."
         },
         {
           "url": "tutorial/toh-pt4",

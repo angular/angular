@@ -216,13 +216,13 @@ The `heroes.component.css` styles apply only to the `HeroesComponent` and don't 
 <!--
 ## Master/Detail
 -->
-## 마스터/디테일 구조
+## 목록/상세정보
 
 <!--
 When the user clicks a hero in the **master** list, 
 the component should display the selected hero's **details** at the bottom of the page.
 -->
-사용자가 목록(**마스터**)에서 히어로를 클릭하면 이 히어로에 대한 상세 정보가 상세정보 화면(**디테일**)에 표시되어야 합니다.
+사용자가 목록에서 히어로를 클릭하면 이 히어로에 대한 상세 정보가 상세정보 화면에 표시되어야 합니다.
 
 <!--
 In this section, you'll listen for the hero item click event
@@ -506,7 +506,7 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 * You can toggle a CSS style class with a `class` binding.
 -->
 
-* 히어로들의 여행 앱은 마스터/상세 화면에서 히어로의 목록을 표시합니다.
+* 히어로들의 여행 앱은 화면에 히어로의 목록을 표시합니다.
 * 사용자는 히어로를 한 명 선택할 수 있으며, 히어로를 선택하면 이 히어로의 상세정보를 확인할 수 있습니다.
 * 목록을 표시할 때는 `*ngFor`를 사용합니다.
 * 특정 조건에 따라 DOM에 HTML 템플릿을 추가하거나 제거하려면 `*ngIf`를 사용합니다.
