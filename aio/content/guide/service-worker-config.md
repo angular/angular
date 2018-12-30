@@ -98,6 +98,8 @@ For resources already in the cache, the `updateMode` determines the caching beha
 
 * `lazy` tells the service worker to not cache those resources. Instead, it treats them as unrequested and waits until they're requested again before updating them. An `updateMode` of `lazy` is only valid if the `installMode` is also `lazy`.
 
+Defaults to the same as `installMode`.
+
 ### `resources`
 
 This section describes the resources to cache, broken up into three groups.
@@ -141,7 +143,7 @@ Occasionally APIs change formats in a way that is not backward-compatible. A new
 
 `version` provides a mechanism to indicate that the resources being cached have been updated in a backwards-incompatible way, and that the old cache entries&mdash;those from previous versions&mdash;should be discarded.
 
-`version` is an integer field and defaults to `0`.
+`version` is an integer field and defaults to `1`.
 
 ### `cacheConfig`
 This section defines the policy by which matching requests will be cached.
