@@ -26,7 +26,7 @@ export class HeroService {
   // #docregion getHeroes, getHeroes-1
   getHeroes(): Observable<Hero[]> {
     // #enddocregion getHeroes-1
-    // TODO: send the message _after_ fetching the heroes
+    // TODO: 메시지는 히어로 데이터를 가져온 _후에_ 보내야 합니다.
     this.messageService.add('HeroService: fetched heroes');
     // #docregion getHeroes-1
     return of(HEROES);

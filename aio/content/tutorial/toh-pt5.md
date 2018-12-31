@@ -462,7 +462,15 @@ define a JavaScript
 [_template literal_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) for embedding the `id`.
 </div>
 
+<!--
 Like [`getHeroes()`](tutorial/toh-pt4#observable-heroservice),
+`getHero()` has an asynchronous signature.
+It returns a _mock hero_ as an `Observable`, using the RxJS `of()` function.
+
+You'll be able to re-implement `getHero()` as a real `Http` request
+without having to change the `HeroDetailComponent` that calls it.
+-->
+Like [`getHeroes()`](tutorial/toh-pt4#옵저버블-heroservice),
 `getHero()` has an asynchronous signature.
 It returns a _mock hero_ as an `Observable`, using the RxJS `of()` function.
 
