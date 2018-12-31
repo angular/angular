@@ -80,6 +80,15 @@ describe('Ng-new Schematic', () => {
     expect(content).toMatch('<script src="/bundle.min.js"></script>');
   });
 
+  it('should overwrite .gitignore for bazel-out directory', () => {
+    const options = {...defaultOptions};
+    const host = schematicRunner.runSchematic('ng-new', options);
+    const {files} = host;
+    expect(files).toContain('/demo/.gitignore');
+    const content = host.readContent('/demo/.gitignore');
+    expect(content).toMatch('/bazel-out');
+  });
+
   it('should update angular.json to use Bazel builder', () => {
     const options = {...defaultOptions};
     const host = schematicRunner.runSchematic('ng-new', options);

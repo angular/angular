@@ -77,6 +77,30 @@ function overwriteMainAndIndex(options: Schema) {
   };
 }
 
+function overwriteGitignore(options: Schema) {
+  return (host: Tree) => {
+    const gitignore = `${options.name}/.gitignore`;
+    if (!host.exists(gitignore)) {
+      return host;
+    }
+    const gitIgnoreContent = host.read(gitignore);
+    if (!gitIgnoreContent) {
+      throw new Error('Failed to read .gitignore content');
+    }
+
+    if (gitIgnoreContent.includes('/bazel-out\n')) {
+      return host;
+    }
+    const lines = gitIgnoreContent.toString().split(/\n/g);
+    const recorder = host.beginUpdate(gitignore);
+    const compileOutput = lines.findIndex((line: string) => line === '# compiled output');
+    recorder.insertRight(compileOutput, '\n/bazel-out');
+    host.commitUpdate(recorder);
+
+    return host;
+  };
+}
+
 function replacePropertyInAstObject(
     recorder: UpdateRecorder, node: JsonAstObject, propertyName: string, value: JsonValue,
     indent: number) {
@@ -176,6 +200,7 @@ export default function(options: Schema): Rule {
       addDevDependenciesToPackageJson(options),
       schematic('bazel-workspace', options),
       overwriteMainAndIndex(options),
+      overwriteGitignore(options),
       updateWorkspaceFileToUseBazelBuilder(options),
     ]);
   };
