@@ -125,8 +125,10 @@
         },
         {
           "url": "tutorial/toh-pt4",
-          "title": "4. Services",
-          "tooltip": "Part 4: Create a reusable service to manage hero data."
+          "!title": "4. Services",
+          "title": "4. 서비스",
+          "!tooltip": "Part 4: Create a reusable service to manage hero data.",
+          "tooltip": "4단계: 히어로의 데이터를 관리하는 서비스를 만들어 봅시다."
         },
         {
           "url": "tutorial/toh-pt5",
