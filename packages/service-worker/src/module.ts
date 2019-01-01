@@ -17,17 +17,28 @@ import {SwUpdate} from './update';
 export abstract class RegistrationOptions {
   scope?: string;
   enabled?: boolean;
+  unSupportedAgent?: Array<string>;
 }
 
 export const SCRIPT = new InjectionToken<string>('NGSW_REGISTER_SCRIPT');
+
+function canEnableServiceWorker(opts: RegistrationOptions): boolean {
+  if (!('serviceWorker' in navigator) || opts.enabled === false) {
+    return false;
+  }
+  if (!opts.unSupportedAgent || opts.unSupportedAgent.length < 1) {
+    return true;
+  }
+  return !opts.unSupportedAgent.some(
+      (agent) => new RegExp(agent.toLowerCase()).test(navigator.userAgent.toLowerCase()));
+}
 
 export function ngswAppInitializer(
     injector: Injector, script: string, options: RegistrationOptions,
     platformId: string): Function {
   const initializer = () => {
     const app = injector.get<ApplicationRef>(ApplicationRef);
-    if (!(isPlatformBrowser(platformId) && ('serviceWorker' in navigator) &&
-          options.enabled !== false)) {
+    if (!(isPlatformBrowser(platformId) && canEnableServiceWorker(options))) {
       return;
     }
     const whenStable =
@@ -52,10 +63,9 @@ export function ngswAppInitializer(
 export function ngswCommChannelFactory(
     opts: RegistrationOptions, platformId: string): NgswCommChannel {
   return new NgswCommChannel(
-      isPlatformBrowser(platformId) && opts.enabled !== false ? navigator.serviceWorker :
-                                                                undefined);
+      isPlatformBrowser(platformId) && canEnableServiceWorker(opts) ? navigator.serviceWorker :
+                                                                      undefined);
 }
-
 /**
  * @experimental
  */
@@ -69,8 +79,9 @@ export class ServiceWorkerModule {
    * If `enabled` is set to `false` in the given options, the module will behave as if service
    * workers are not supported by the browser, and the service worker will not be registered.
    */
-  static register(script: string, opts: {scope?: string; enabled?: boolean;} = {}):
-      ModuleWithProviders<ServiceWorkerModule> {
+  static register(script: string, opts: {
+    scope?: string; enabled?: boolean; unSupportedAgent?: Array<string>
+  } = {}): ModuleWithProviders<ServiceWorkerModule> {
     return {
       ngModule: ServiceWorkerModule,
       providers: [
