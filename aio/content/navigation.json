@@ -132,8 +132,10 @@
         },
         {
           "url": "tutorial/toh-pt5",
-          "title": "5. Routing",
-          "tooltip": "Part 5: Add the Angular router and navigate among the views."
+          "!title": "5. Routing",
+          "title": "5. 라우팅",
+          "!tooltip": "Part 5: Add the Angular router and navigate among the views.",
+          "tooltip": "5단계: Angular 라우터를 추가하고 화면을 전환해 봅시다."
         },
         {
           "url": "tutorial/toh-pt6",

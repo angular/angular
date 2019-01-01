@@ -1,5 +1,9 @@
+<!--
 # Routing
+-->
+# 라우팅 (Routing)
 
+<!--
 There are new requirements for the Tour of Heroes app:
 
 * Add a *Dashboard* view.
@@ -8,6 +12,15 @@ There are new requirements for the Tour of Heroes app:
 * When users click a *deep link* in an email, open the detail view for a particular hero.
 
 When you’re done, users will be able to navigate the app like this:
+-->
+히어로들의 여행 앱에 새로운 요구사항이 생겼습니다:
+
+* *대시보드* 화면을 추가해야 합니다.
+* *히어로 목록* 화면과 *대시보드* 화면을 전환하는 기능이 필요합니다.
+* 사용자가 화면에서 히어로 이름을 클릭하면 선택된 히어로의 상세정보 화면으로 이동해야 합니다.
+* 사용자가 이베일로 받은 *딥 링크(deep link)*를 클릭하면 해당 히어로의 상세정보 화면을 바로 표시해야 합니다.
+
+그래서 최종 결과물은 다음과 같이 3개의 화면을 이동하면서 동작해야 합니다:
 
 <figure>
 
@@ -15,14 +28,25 @@ When you’re done, users will be able to navigate the app like this:
 
 </figure>
 
+<!--
 ## Add the `AppRoutingModule`
+-->
+## `AppRoutingModule` 생성하기
 
+<!--
 An Angular best practice is to load and configure the router in a separate, top-level module
 that is dedicated to routing and imported by the root `AppModule`.
 
 By convention, the module class name is `AppRoutingModule` and it belongs in the `app-routing.module.ts` in the `src/app` folder.
 
 Use the CLI to generate it.
+-->
+Angular에서 라우터설정은 모듈과 같은 계층에 별개의 모듈을 두고, 이 모듈에 정의하는 방법이 가장 좋습니다.
+`AppModule`은 이렇게 정의한 라우터 설정을 로드해서 사용하기만 하면 됩니다.
+
+일반적으로 라우팅을 담당하는 모듈의 클래스 이름은 `AppRoutingModule`이라고 하며 `src/app` 폴더에 `app-routing.module.ts` 파일로 생성합니다.
+
+Angular CLI로 다음 명령을 실행해서 라우팅 모듈을 만들어 봅시다.
 
 <code-example language="sh" class="code-shell">
   ng generate module app-routing --flat --module=app
@@ -30,16 +54,29 @@ Use the CLI to generate it.
 
 <div class="alert is-helpful">
 
+<!--
 `--flat` puts the file in `src/app` instead of its own folder.<br>
 `--module=app` tells the CLI to register it in the `imports` array of the `AppModule`.
+-->
+`--flat` 옵션을 사용하면 새로운 폴더를 만들지 않고 `src/app` 폴더에 파일을 생헝합니다.<br>
+`--module=app` 옵션을 사용하면 Angular CLI가 이 라우팅 모듈을 `AppModule`의 `imports` 배열에 추가합니다.
+
 </div>
 
+<!--
 The generated file looks like this:
+-->
+이렇게 만든 파일의 내용은 다음과 같습니다:
 
+<!--
 <code-example path="toh-pt5/src/app/app-routing.module.0.ts" 
   header="src/app/app-routing.module.ts (generated)">
+-->
+<code-example path="toh-pt5/src/app/app-routing.module.0.ts" 
+  header="src/app/app-routing.module.ts (Angular CLI가 생성한 라우팅 모듈)">
 </code-example>
 
+<!--
 You generally don't declare components in a routing module so you can delete the
 `@NgModule.declarations` array and delete `CommonModule` references too.
 
@@ -51,14 +88,29 @@ Exporting `RouterModule` makes router directives available for use
 in the `AppModule` components that will need them.
 
 `AppRoutingModule` looks like this now:
+-->
+일반적으로 라우팅 모듈에는 컴포넌트를 등록하지 않기 때문에 `@NgModule.declarations` 배열은 제거해도 됩니다.
+그리고 `CommonModule`도 사용하지 않기 때문에 제거해도 됩니다.
+
+라우터는 `RouterModule`과 `Routes` 타입의 객체로 설정합니다.
+그래서 `@angular/router` 라이브러리에서 두 심볼을 로드해야 합니다.
+
+그리고 `@NgModule.expors` 배열을 추가하고 이 배열에 `RouterModule`을 등록합니다.
+이 배열에 `RouterModule`을 추가하면 `AppModule` 범위에 있는 컴포넌트에서 라우터와 관련된 디렉티브를 사용할 수 있습니다.
+
+이 내용으로 수정하면 `AppRoutingModule`이 다음과 같이 정의될 것입니다:
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" 
   region="v1"
   header="src/app/app-routing.module.ts (v1)">
 </code-example>
 
+<!--
 ### Add routes
+-->
+### 라우팅 규칙 추가하기
 
+<!--
 *Routes* tell the router which view to display when a user clicks a link or
 pastes a URL into the browser address bar.
 
@@ -66,26 +118,47 @@ A typical Angular `Route` has two properties:
 
 1. `path`: a string that matches the URL in the browser address bar.
 1. `component`: the component that the router should create when navigating to this route.
+-->
+사용자가 링크를 클릭하거나 브라우저 주소표시줄에 URL을 입력했을 때 어떤 화면을 표시할지는 *라우팅 규칙 (Route)*으로 정의합니다.
 
+일반적으로 Angular `Route`에는 프로퍼티가 2개 존재합니다:
+
+1. `path`: 브라우저 주소표시줄의 URL과 매칭될 문자열을 지정합니다.
+1. `component`: 이 라우팅 규칙이 적용될 때 표시할 컴포넌트를 지정합니다.
+
+<!--
 You intend to navigate to the `HeroesComponent` when the URL is something like `localhost:4200/heroes`.
 
 Import the `HeroesComponent` so you can reference it in a `Route`.
 Then define an array of routes with a single `route` to that component.
+-->
+지금은 `localhost:4200/heroes`라는 URL로 접속했을 때 `HeroesComponent`가 표시되게 하려고 합니다.
+
+이렇게 구현하기 위해 `HeroesComponent`를 로드하고 이 컴포넌트를 `Route`의 `component`에 지정합니다.
+그리고 `Route`를 배열로 구성하면 모듈에 적용될 라우팅 규칙을 정의할 수 있습니다.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" 
   region="heroes-route">
 </code-example>
 
+<!--
 Once you've finished setting up, the router will match that URL to `path: 'heroes'` 
 and display the `HeroesComponent`.
+-->
+라우팅 규칙을 이렇게 등록하면 `path: 'heroes'`에 해당하는 URL이 있을 때 `HeroesComponent`가 표시될 것입니다.
 
 ### _RouterModule.forRoot()_
 
+<!--
 You first must initialize the router and start it listening for browser location changes.
 
 Add `RouterModule` to the `@NgModule.imports` array and 
 configure it with the `routes` in one step by calling 
 `RouterModule.forRoot()` _within_ the `imports` array, like this:
+-->
+라우팅 규칙을 적용하려면 브라우저에서 주소가 변경되는 것을 감지하기 위해 라우터를 초기화해야 합니다.
+
+라우터를 초기화하기 위해 `@NgModule.imports` 배열에 `RouterModule`을 추가하는데, 이 때 `RouterModule.forRoot()` 함수를 사용하면서 이전에 정의한 `routes`를 인자로 전달합니다:
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" 
   region="ngmodule-imports">
@@ -93,40 +166,66 @@ configure it with the `routes` in one step by calling
 
 <div class="alert is-helpful">
 
+  <!--
   The method is called `forRoot()` because you configure the router at the application's root level.
   The `forRoot()` method supplies the service providers and directives needed for routing, 
   and performs the initial navigation based on the current browser URL.
+  -->
+  애플리케이션 최상위 계층에 존재하는 라우터를 설정할 때는 `forRoot()` 메소드를 사용합니다.
+  `forRoot()` 메소드를 사용하면 라우팅과 관련된 서비스 프로바이더와 디렉티브를 애플리케이션에 제공하며, 브라우저에서 변경되는 URL을 감지할 수 있습니다.
 
 </div>
 
+<!--
 ## Add _RouterOutlet_
+-->
+## 라우팅 영역 추가하기
 
+<!--
 Open the `AppComponent` template replace the `<app-heroes>` element with a `<router-outlet>` element.
+-->
+`AppComponent` 템플릿을 열어서 `<app-heroes>` 엘리먼트를 `<router-outlet>` 엘리먼트로 변경합니다.
 
 <code-example path="toh-pt5/src/app/app.component.html" 
   region="outlet"
   header="src/app/app.component.html (router-outlet)">
 </code-example>
 
+<!--
 You removed `<app-heroes>` because you will only display the `HeroesComponent` when the user navigates to it.
 
 The `<router-outlet>` tells the router where to display routed views.
+-->
+이제는 사용자가 해당 주소로 이동했을 때만 `HeroesComponent`가 표시되어야 하기 때문에 템플릿에서 `<app-heroes>`를 제거했습니다.
+
+라우터가 표시하는 화면은 `<router-outlet>`이 지정된 곳에 표시됩니다.
 
 <div class="alert is-helpful">
 
+<!--
 The `RouterOutlet` is one of the router directives that became available to the `AppComponent`
 because `AppModule` imports `AppRoutingModule` which exported `RouterModule`.
+-->
+`RouterOutlet`은 라우터 모듈이 제공하는 디렉티브 중 하나입니다.
+`AppModule`은 `AppRoutingModule`을 로드하는데, 이 때 `AppRoutingModule`에 `RouterModule`이 `exports` 배열에 추가되었기 때문에 `AppModule` 안에 있는 `AppComponent`에서도 이 디렉티브를 자유롭게 사용할 수 있습니다.
 
 </div>
 
+<!--
 #### Try it
+-->
+#### 동작 확인하기
 
+<!--
 You should still be running with this CLI command.
+-->
+Angular CLI로 다음 명령을 실행해서 애플리케이션을 실행합니다.
 
 <code-example language="sh" class="code-shell">
   ng serve
 </code-example>
 
+<!--
 The browser should refresh and display the app title but not the list of heroes.
 
 Look at the browser's address bar. 
@@ -135,17 +234,36 @@ The route path to `HeroesComponent` is `/heroes`.
 
 Append `/heroes` to the URL in the browser address bar.
 You should see the familiar heroes master/detail view.
+-->
+브라우저가 갱신되면 애플리케이션 제목은 표시되지만 히어로의 목록은 표시되지 않습니다.
+
+이 때 브라우저의 주소표시줄을 확인해 보세요.
+URL은 `/`로 끝납니다.
+`HeroesComponent`는 라우팅 경로 `/heroes`에 연결되어 있기 때문에 이 주소에서 히어로 목록이 표시되지 않는 것입니다.
+
+브라우저 주소표시줄의 URL을 `/heroes`로 변경해 보세요.
+그러면 이전과 같이 히어로의 목록이 표시될 것입니다.
 
 {@a routerlink}
 
+<!--
 ## Add a navigation link (`routerLink`)
+-->
+## 네비게이션 링크 (`routerLink`) 추가하기
 
+<!--
 Users shouldn't have to paste a route URL into the address bar. 
 They should be able to click a link to navigate.
 
 Add a `<nav>` element and, within that, an anchor element that, when clicked, 
 triggers navigation to the `HeroesComponent`.
 The revised `AppComponent` template looks like this:
+-->
+사용자가 브라우저 주소표시줄에 원하는 URL을 입력해야만 하는 것은 좋은 방법이 아닙니다.
+이 방법보다는 네비게이션을 실행하는 링크를 클릭하는 방법이 더 편할 것입니다.
+
+이번에는 앵커(`<a>`) 엘리먼트를 추가하고, 사용자가 이 엘리먼트를 클릭했을 때 `HeroesComponent`로 이동하도록 해봅시다.
+`AppComponent`의 템플릿을 다음과 같이 수정합니다.
 
 <code-example 
   path="toh-pt5/src/app/app.component.html" 
@@ -153,6 +271,7 @@ The revised `AppComponent` template looks like this:
   header="src/app/app.component.html (heroes RouterLink)">
 </code-example>
 
+<!--
 A [`routerLink` attribute](#routerlink) is set to `"/heroes"`,
 the string that the router matches to the route to `HeroesComponent`.
 The `routerLink` is the selector for the [`RouterLink` directive](#routerlink)
@@ -164,29 +283,55 @@ but not the heroes list.
 
 Click the link. 
 The address bar updates to `/heroes` and the list of heroes appears.
+-->
+[`routerLink` 어트리뷰트](#routerlink)의 값은 `"/heroes"`로 할당되었는데, 이 문자열은 `HeroesComponent`에 해당하는 라우팅 경로를 의미합니다.
+그리고 `routerLink`는 `RouterModule`이 제공하는 [`RouterLink` 디렉티브](#routerlink)이며, 사용자가 이 디렉티브가 적용된 엘리먼트를 클릭하면 네비게이션을 실행합니다.
+
+이제 브라우저가 갱신되면 애플리케이션 제목과 히어로 목록으로 가는 링크가 표시되지만 히어로의 목록은 여전히 표시되지 않습니다.
+
+링크를 클릭해 보세요.
+주소표시줄의 URL이 `/heroes`로 바뀌면서 히어로 목록이 표시될 것입니다.
 
 <div class="alert is-helpful">
 
+<!--
 Make this and future navigation links look better by adding private CSS styles to `app.component.css`
 as listed in the [final code review](#appcomponent) below.
+-->
+`app.component.css` 파일에 CSS 스타일을 작성하면 네비게이션 링크를 더 보기 좋게 표시할 수 있습니다.
+이 내용은 [최종코드 리뷰](#appcomponent)에서 확인할 수 있습니다.
 
 </div>
 
 
+<!--
 ## Add a dashboard view
+-->
+## 대시보드 화면 추가하기
 
+<!--
 Routing makes more sense when there are multiple views.
 So far there's only the heroes view. 
 
 Add a `DashboardComponent` using the CLI:
+-->
+라우터를 사용하면 여러 화면을 전환하기도 쉽습니다.
+아직까지는 히어로 목록을 표시하는 화면만 있지만 이제 다른 화면을 추가해 봅시다.
+
+Angular CLI로 다음 명령을 실행해서 `DashboardComponent`를 생성합니다.
 
 <code-example language="sh" class="code-shell">
   ng generate component dashboard
 </code-example>
 
+<!--
 The CLI generates the files for the `DashboardComponent` and declares it in `AppModule`.
 
 Replace the default file content in these three files as follows and then return for a little discussion:
+-->
+그러면 `DashboardComponent`를 구성하는 파일이 생성되면서 이 컴포넌트가 `AppModule`에 자동으로 등록됩니다.
+
+이 컴포넌트의 내용을 다음과 같이 수정합니다:
 
 <code-tabs>
   <code-pane 
@@ -202,6 +347,7 @@ Replace the default file content in these three files as follows and then return
   </code-pane>
 </code-tabs>
 
+<!--
 The  _template_ presents a grid of hero name links.
 
 * The `*ngFor` repeater creates as many links as are in the component's `heroes` array.
@@ -214,58 +360,114 @@ The _class_ is similar to the `HeroesComponent` class.
 * The `ngOnInit()` lifecycle hook calls `getHeroes`.
 
 This `getHeroes` returns the sliced list of heroes at positions 1 and 5, returning only four of the Top Heroes (2nd, 3rd, 4th, and 5th).
+-->
+이 _템플릿_ 에는 네비게이션 링크로 구성된 히어로의 이름이 그리드 형태로 배열되어 있습니다.
+
+* 컴포넌트의 `heroes` 배열에 있는 항목을 모두 링크로 만들기 위해 `*ngFor`를 사용했습니다.
+* 링크 항목의 스타일은 `dashboard.component.css`에 작성합니다.
+* 아직 링크 항목들은 화면을 전환하지 않습니다. 이 내용은 [곧](#hero-details) 작성할 예정입니다.
+
+대시보드 화면의 _클래스_ 는 `HeroesComponent` 클래스와 비슷합니다.
+* `heroes` 프로퍼티를 배열로 선언합니다.
+* 생성자를 통해 `HeroService`를 의존성으로 주입받고 이 객체를 `private heroService` 프로퍼티에 할당합니다.
+* `HeroService`의 `getHeroes` 함수는 `ngOnInit()` 라이프싸이클 후킹 함수에서 호출합니다.
+
+이 때 대시보드 화면의 컴포넌트 클래스에서는 `HeroService`의 `getHeroes()`로 받은 배열 데이터 중에 4개만 추출해서 `heroes` 프로퍼티에 할당합니다.
 
 <code-example path="toh-pt5/src/app/dashboard/dashboard.component.ts" region="getHeroes">
 </code-example>
 
+<!--
 ### Add the dashboard route
+-->
+### 대시보드 라우팅 규칙 추가하기
 
+<!--
 To navigate to the dashboard, the router needs an appropriate route.
 
 Import the `DashboardComponent` in the `AppRoutingModule`.
+-->
+대시보드로 화면을 전환하려면 이 컴포넌트를 연결하는 라우팅 규칙이 필요합니다.
 
+먼저, `AppRoutingModule`에 `DashboardComponent`를 로드합니다.
+
+<!--
 <code-example 
   path="toh-pt5/src/app/app-routing.module.ts" 
   region="import-dashboard" 
   header="src/app/app-routing.module.ts (import DashboardComponent)">
+-->
+<code-example 
+  path="toh-pt5/src/app/app-routing.module.ts" 
+  region="import-dashboard" 
+  header="src/app/app-routing.module.ts (DashboardComponent 로드하기)">
 </code-example>
 
+<!--
 Add a route to the `AppRoutingModule.routes` array that matches a path to the `DashboardComponent`.
+-->
+그리고 `DashboardComponent`에 해당하는 경로를 지정해서 `AppRoutingModule.routes` 배열에 추가합니다.
 
 <code-example 
   path="toh-pt5/src/app/app-routing.module.ts" 
   region="dashboard-route">
 </code-example>
 
+<!--
 ### Add a default route
+-->
+### 기본 라우팅 규칙 추가하기
 
+<!--
 When the app starts, the browsers address bar points to the web site's root.
 That doesn't match any existing route so the router doesn't navigate anywhere.
 The space below the `<router-outlet>` is blank.
 
 To make the app navigate to the dashboard automatically, add the following
 route to the `AppRoutingModule.Routes` array.
+-->
+애플리케이션이 시작되면 브라우저의 주소표시줄은 웹 사이트의 최상위 주소를 가리킵니다.
+하지만 이 주소에 매칭되는 라우팅 규칙이 없기 때문에 라우터는 페이지를 이동하지 않습니다.
+그래서 `<router-outlet>` 아래쪽은 빈 공간으로 남게 됩니다.
+
+애플리케이션이 실행되면서 대시보드 화면을 자동으로 표시하려면 `AppRoutingModule.Routes` 배열에 다음과 같이 기본 라우팅 규칙을 추가하면 됩니다.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" region="redirect-route">
 </code-example>
 
+<!--
 This route redirects a URL that fully matches the empty path to the route whose path is `'/dashboard'`.
 
 After the browser refreshes, the router loads the `DashboardComponent`
 and the browser address bar shows the `/dashboard` URL.
+-->
+이 라우팅 규칙은 브라우저의 URL이 빈 문자열일 때 `'/dashboard'` 주소로 이동하도록 설정한 것입니다.
 
+이제 브라우저가 갱신되고 나면 라우터는 브라우저 주소를 `/dashboard`로 변경하면서 `DashboardComponent`를 바로 표시합니다.
+
+<!--
 ### Add dashboard link to the shell
+-->
+### 애플리케이션 셸에 대시보드 링크 추가하기
 
+<!--
 The user should be able to navigate back and forth between the
 `DashboardComponent` and the `HeroesComponent` by clicking links in the
 navigation area near the top of the page.
 
 Add a dashboard navigation link to the `AppComponent` shell template, just above the *Heroes* link.
+-->
+사용자는 페이지 위쪽 네비게이션 영역에 있는 링크를 클릭해서 `DashboardComponent`나 `HeroesComponent`로 이동할 수 있어야 합니다.
+
+이 기능을 위해 `AppComponent` 셸의 템플릿에 대시보드로 이동할 수 있는 링크를 추가합시다.
 
 <code-example path="toh-pt5/src/app/app.component.html" header="src/app/app.component.html">
 </code-example>
 
+<!--
 After the browser refreshes you can navigate freely between the two views by clicking the links.
+-->
+브라우저가 갱신되고 나면 링크를 클릭해서 대시보드 화면과 히어로 목록 화면으로 자유롭게 이동할 수 있습니다.
 
 {@a hero-details}
 ## Navigating to hero details
