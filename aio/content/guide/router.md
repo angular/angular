@@ -3392,10 +3392,10 @@ The admin feature is now protected by the guard, albeit protected poorly.
 
 Make the `AuthGuard` at least pretend to authenticate.
 
-The `AuthGuard` should call an application service that can login a user and retain information about the current user. Generate a new `AuthService` in the `admin` folder:
+The `AuthGuard` should call an application service that can login a user and retain information about the current user. Generate a new `AuthService` in the `auth` folder:
 
 <code-example language="none" class="code-shell">
-  ng generate service admin/auth
+  ng generate service auth/auth
 </code-example>
 
 Update the `AuthService` to log in the user:
