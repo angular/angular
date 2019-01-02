@@ -91,7 +91,7 @@ export interface LQuery<T> {
 export class LQueries_ implements LQueries {
   constructor(
       public parent: LQueries_|null, private shallow: LQuery<any>|null,
-      private deep: LQuery<any>|null) {}
+      private deep: LQuery<any>|null, public owner: TNode) {}
 
   track<T>(queryList: QueryList<T>, predicate: Type<T>|string[], descend?: boolean, read?: Type<T>):
       void {
@@ -102,20 +102,24 @@ export class LQueries_ implements LQueries {
     }
   }
 
-  clone(): LQueries { return new LQueries_(this, null, this.deep); }
+  clone(owner: TNode): LQueries { return new LQueries_(this, null, this.deep, owner); }
 
   container(): LQueries|null {
     const shallowResults = copyQueriesToContainer(this.shallow);
     const deepResults = copyQueriesToContainer(this.deep);
 
-    return shallowResults || deepResults ? new LQueries_(this, shallowResults, deepResults) : null;
+    return shallowResults || deepResults ?
+        new LQueries_(this, shallowResults, deepResults, this.owner) :
+        null;
   }
 
   createView(): LQueries|null {
     const shallowResults = copyQueriesToView(this.shallow);
     const deepResults = copyQueriesToView(this.deep);
 
-    return shallowResults || deepResults ? new LQueries_(this, shallowResults, deepResults) : null;
+    return shallowResults || deepResults ?
+        new LQueries_(this, shallowResults, deepResults, this.owner) :
+        null;
   }
 
   insertView(index: number): void {
