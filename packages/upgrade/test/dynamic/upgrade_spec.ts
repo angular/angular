@@ -170,109 +170,103 @@ withEachNg1Version(() => {
     });
 
     describe('scope/component change-detection', () => {
-      it('should interleave scope and component expressions', async(() => {
-           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-           const ng1Module = angular.module('ng1', []);
-           const log: string[] = [];
-           const l = (value: string) => {
-             log.push(value);
-             return value + ';';
-           };
-
-           ng1Module.directive('ng1a', () => ({template: '{{ l(\'ng1a\') }}'}));
-           ng1Module.directive('ng1b', () => ({template: '{{ l(\'ng1b\') }}'}));
-           ng1Module.run(($rootScope: any) => {
-             $rootScope.l = l;
-             $rootScope.reset = () => log.length = 0;
-           });
-
-           @Component({
-             selector: 'ng2',
-             template: `{{l('2A')}}<ng1a></ng1a>{{l('2B')}}<ng1b></ng1b>{{l('2C')}}`
-           })
-           class Ng2 {
-             l: any;
-             constructor() { this.l = l; }
-           }
-
-           @NgModule({
-             declarations:
-                 [adapter.upgradeNg1Component('ng1a'), adapter.upgradeNg1Component('ng1b'), Ng2],
-             imports: [BrowserModule],
-           })
-           class Ng2Module {
-           }
-
-           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
-
-           const element =
-               html('<div>{{reset(); l(\'1A\');}}<ng2>{{l(\'1B\')}}</ng2>{{l(\'1C\')}}</div>');
-           adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
-             // https://github.com/angular/angular.js/issues/12983
-             expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
-             ref.dispose();
-           });
-         }));
-
-
       fixmeIvy(
-          'FW-712: Rendering is being run on next "animation frame" rather than "Zone.microTaskEmpty" trigger')
-          .it('should propagate changes to a downgraded component inside the ngZone', async(() => {
-                let appComponent: AppComponent;
-                let upgradeRef: UpgradeAdapterRef;
+          'FW-918: Create API and mental model to work with Host Element; and ChangeDetections')
+          .it('should interleave scope and component expressions', async(() => {
+                const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+                const ng1Module = angular.module('ng1', []);
+                const log: string[] = [];
+                const l = (value: string) => {
+                  log.push(value);
+                  return value + ';';
+                };
 
-                @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
-                class AppComponent {
-                  value?: number;
-                  constructor() { appComponent = this; }
-                }
+                ng1Module.directive('ng1a', () => ({template: '{{ l(\'ng1a\') }}'}));
+                ng1Module.directive('ng1b', () => ({template: '{{ l(\'ng1b\') }}'}));
+                ng1Module.run(($rootScope: any) => {
+                  $rootScope.l = l;
+                  $rootScope.reset = () => log.length = 0;
+                });
 
                 @Component({
-                  selector: 'my-child',
-                  template: '<div>{{valueFromPromise}}',
+                  selector: 'ng2',
+                  template: `{{l('2A')}}<ng1a></ng1a>{{l('2B')}}<ng1b></ng1b>{{l('2C')}}`
                 })
-                class ChildComponent {
-                  valueFromPromise?: number;
-                  @Input()
-                  set value(v: number) { expect(NgZone.isInAngularZone()).toBe(true); }
-
-                  constructor(private zone: NgZone) {}
-
-                  ngOnChanges(changes: SimpleChanges) {
-                    if (changes['value'].isFirstChange()) return;
-
-                    // HACK(ivy): Using setTimeout allows this test to pass but hides the ivy
-                    // renderer timing BC.
-                    //  setTimeout(() => {
-                    //    expect(element.textContent).toEqual('5');
-                    //    upgradeRef.dispose();
-                    //  }, 0);
-                    this.zone.onMicrotaskEmpty.subscribe(() => {
-                      expect(element.textContent).toEqual('5');
-                      upgradeRef.dispose();
-                    });
-
-                    Promise.resolve().then(
-                        () => this.valueFromPromise = changes['value'].currentValue);
-                  }
+                class Ng2 {
+                  l: any;
+                  constructor() { this.l = l; }
                 }
 
-                @NgModule({declarations: [AppComponent, ChildComponent], imports: [BrowserModule]})
+                @NgModule({
+                  declarations: [
+                    adapter.upgradeNg1Component('ng1a'), adapter.upgradeNg1Component('ng1b'), Ng2
+                  ],
+                  imports: [BrowserModule],
+                })
                 class Ng2Module {
                 }
 
-                const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-                const ng1Module = angular.module('ng1', []).directive(
-                    'myApp', adapter.downgradeNg2Component(AppComponent));
+                ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
 
-                const element = html('<my-app></my-app>');
-
+                const element =
+                    html('<div>{{reset(); l(\'1A\');}}<ng2>{{l(\'1B\')}}</ng2>{{l(\'1C\')}}</div>');
                 adapter.bootstrap(element, ['ng1']).ready((ref) => {
-                  upgradeRef = ref;
-                  appComponent.value = 5;
+                  expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
+                  // https://github.com/angular/angular.js/issues/12983
+                  expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
+                  ref.dispose();
                 });
               }));
+
+
+      it('should propagate changes to a downgraded component inside the ngZone', async(() => {
+           let appComponent: AppComponent;
+           let upgradeRef: UpgradeAdapterRef;
+
+           @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
+           class AppComponent {
+             value?: number;
+             constructor() { appComponent = this; }
+           }
+
+           @Component({
+             selector: 'my-child',
+             template: '<div>{{valueFromPromise}}',
+           })
+           class ChildComponent {
+             valueFromPromise?: number;
+             @Input()
+             set value(v: number) { expect(NgZone.isInAngularZone()).toBe(true); }
+
+             constructor(private zone: NgZone) {}
+
+             ngOnChanges(changes: SimpleChanges) {
+               if (changes['value'].isFirstChange()) return;
+
+               this.zone.onMicrotaskEmpty.subscribe(() => {
+                 expect(element.textContent).toEqual('5');
+                 upgradeRef.dispose();
+               });
+
+               Promise.resolve().then(() => this.valueFromPromise = changes['value'].currentValue);
+             }
+           }
+
+           @NgModule({declarations: [AppComponent, ChildComponent], imports: [BrowserModule]})
+           class Ng2Module {
+           }
+
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []).directive(
+               'myApp', adapter.downgradeNg2Component(AppComponent));
+
+           const element = html('<my-app></my-app>');
+
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             upgradeRef = ref;
+             appComponent.value = 5;
+           });
+         }));
 
       // This test demonstrates https://github.com/angular/angular/issues/6385
       // which was invalidly fixed by https://github.com/angular/angular/pull/6386

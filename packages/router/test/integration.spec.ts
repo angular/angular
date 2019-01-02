@@ -451,21 +451,22 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
      })));
 
-  it('should work when an outlet is in an ngIf',
-     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-       const fixture = createRoot(router, RootCmp);
+  fixmeIvy('unknown/maybe FW-918')
+      .it('should work when an outlet is in an ngIf',
+          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+            const fixture = createRoot(router, RootCmp);
 
-       router.resetConfig([{
-         path: 'child',
-         component: OutletInNgIf,
-         children: [{path: 'simple', component: SimpleCmp}]
-       }]);
+            router.resetConfig([{
+              path: 'child',
+              component: OutletInNgIf,
+              children: [{path: 'simple', component: SimpleCmp}]
+            }]);
 
-       router.navigateByUrl('/child/simple');
-       advance(fixture);
+            router.navigateByUrl('/child/simple');
+            advance(fixture);
 
-       expect(location.path()).toEqual('/child/simple');
-     })));
+            expect(location.path()).toEqual('/child/simple');
+          })));
 
   it('should work when an outlet is added/removed', fakeAsync(() => {
        @Component({
@@ -634,46 +635,49 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
      })));
 
-  it('should navigate back and forward',
-     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-       const fixture = createRoot(router, RootCmp);
+  fixmeIvy('unknown/maybe FW-918')
+      .it('should navigate back and forward',
+          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+            const fixture = createRoot(router, RootCmp);
 
-       router.resetConfig([{
-         path: 'team/:id',
-         component: TeamCmp,
-         children:
-             [{path: 'simple', component: SimpleCmp}, {path: 'user/:name', component: UserCmp}]
-       }]);
+            router.resetConfig([{
+              path: 'team/:id',
+              component: TeamCmp,
+              children: [
+                {path: 'simple', component: SimpleCmp},
+                {path: 'user/:name', component: UserCmp}
+              ]
+            }]);
 
-       let event: NavigationStart;
-       router.events.subscribe(e => {
-         if (e instanceof NavigationStart) {
-           event = e;
-         }
-       });
+            let event: NavigationStart;
+            router.events.subscribe(e => {
+              if (e instanceof NavigationStart) {
+                event = e;
+              }
+            });
 
-       router.navigateByUrl('/team/33/simple');
-       advance(fixture);
-       expect(location.path()).toEqual('/team/33/simple');
-       const simpleNavStart = event !;
+            router.navigateByUrl('/team/33/simple');
+            advance(fixture);
+            expect(location.path()).toEqual('/team/33/simple');
+            const simpleNavStart = event !;
 
-       router.navigateByUrl('/team/22/user/victor');
-       advance(fixture);
-       const userVictorNavStart = event !;
+            router.navigateByUrl('/team/22/user/victor');
+            advance(fixture);
+            const userVictorNavStart = event !;
 
 
-       location.back();
-       advance(fixture);
-       expect(location.path()).toEqual('/team/33/simple');
-       expect(event !.navigationTrigger).toEqual('hashchange');
-       expect(event !.restoredState !.navigationId).toEqual(simpleNavStart.id);
+            location.back();
+            advance(fixture);
+            expect(location.path()).toEqual('/team/33/simple');
+            expect(event !.navigationTrigger).toEqual('hashchange');
+            expect(event !.restoredState !.navigationId).toEqual(simpleNavStart.id);
 
-       location.forward();
-       advance(fixture);
-       expect(location.path()).toEqual('/team/22/user/victor');
-       expect(event !.navigationTrigger).toEqual('hashchange');
-       expect(event !.restoredState !.navigationId).toEqual(userVictorNavStart.id);
-     })));
+            location.forward();
+            advance(fixture);
+            expect(location.path()).toEqual('/team/22/user/victor');
+            expect(event !.navigationTrigger).toEqual('hashchange');
+            expect(event !.restoredState !.navigationId).toEqual(userVictorNavStart.id);
+          })));
 
   it('should navigate to the same url when config changes',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -1004,34 +1008,36 @@ describe('Integration', () => {
        ]);
      })));
 
-  it('should handle failed navigations gracefully', fakeAsync(inject([Router], (router: Router) => {
-       const fixture = createRoot(router, RootCmp);
+  fixmeIvy('unknown/maybe FW-918')
+      .it('should handle failed navigations gracefully',
+          fakeAsync(inject([Router], (router: Router) => {
+            const fixture = createRoot(router, RootCmp);
 
-       router.resetConfig([{path: 'user/:name', component: UserCmp}]);
+            router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
-       const recordedEvents: any[] = [];
-       router.events.forEach(e => recordedEvents.push(e));
+            const recordedEvents: any[] = [];
+            router.events.forEach(e => recordedEvents.push(e));
 
-       let e: any;
-       router.navigateByUrl('/invalid') !.catch(_ => e = _);
-       advance(fixture);
-       expect(e.message).toContain('Cannot match any routes');
+            let e: any;
+            router.navigateByUrl('/invalid') !.catch(_ => e = _);
+            advance(fixture);
+            expect(e.message).toContain('Cannot match any routes');
 
-       router.navigateByUrl('/user/fedor');
-       advance(fixture);
+            router.navigateByUrl('/user/fedor');
+            advance(fixture);
 
-       expect(fixture.nativeElement).toHaveText('user fedor');
+            expect(fixture.nativeElement).toHaveText('user fedor');
 
-       expectEvents(recordedEvents, [
-         [NavigationStart, '/invalid'], [NavigationError, '/invalid'],
+            expectEvents(recordedEvents, [
+              [NavigationStart, '/invalid'], [NavigationError, '/invalid'],
 
-         [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
-         [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [ActivationStart],
-         [GuardsCheckEnd, '/user/fedor'], [ResolveStart, '/user/fedor'],
-         [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
-         [NavigationEnd, '/user/fedor']
-       ]);
-     })));
+              [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
+              [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [ActivationStart],
+              [GuardsCheckEnd, '/user/fedor'], [ResolveStart, '/user/fedor'],
+              [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
+              [NavigationEnd, '/user/fedor']
+            ]);
+          })));
 
   // Errors should behave the same for both deferred and eager URL update strategies
   ['deferred', 'eager'].forEach((strat: any) => {
@@ -1879,45 +1885,50 @@ describe('Integration', () => {
   });
 
   describe('redirects', () => {
-    it('should work', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-         const fixture = createRoot(router, RootCmp);
+    fixmeIvy('unkwnown/maybe FW-918')
+        .it('should work',
+            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+              const fixture = createRoot(router, RootCmp);
 
-         router.resetConfig([
-           {path: 'old/team/:id', redirectTo: 'team/:id'}, {path: 'team/:id', component: TeamCmp}
-         ]);
+              router.resetConfig([
+                {path: 'old/team/:id', redirectTo: 'team/:id'},
+                {path: 'team/:id', component: TeamCmp}
+              ]);
 
-         router.navigateByUrl('old/team/22');
-         advance(fixture);
+              router.navigateByUrl('old/team/22');
+              advance(fixture);
 
-         expect(location.path()).toEqual('/team/22');
-       })));
+              expect(location.path()).toEqual('/team/22');
+            })));
 
-    it('should update Navigation object after redirects are applied',
-       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-         const fixture = createRoot(router, RootCmp);
-         let initialUrl, afterRedirectUrl;
+    fixmeIvy('unkwnown/maybe FW-918')
+        .it('should update Navigation object after redirects are applied',
+            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+              const fixture = createRoot(router, RootCmp);
+              let initialUrl, afterRedirectUrl;
 
-         router.resetConfig([
-           {path: 'old/team/:id', redirectTo: 'team/:id'}, {path: 'team/:id', component: TeamCmp}
-         ]);
+              router.resetConfig([
+                {path: 'old/team/:id', redirectTo: 'team/:id'},
+                {path: 'team/:id', component: TeamCmp}
+              ]);
 
-         router.events.subscribe(e => {
-           if (e instanceof NavigationStart) {
-             const navigation = router.getCurrentNavigation();
-             initialUrl = navigation && navigation.finalUrl;
-           }
-           if (e instanceof RoutesRecognized) {
-             const navigation = router.getCurrentNavigation();
-             afterRedirectUrl = navigation && navigation.finalUrl;
-           }
-         });
+              router.events.subscribe(e => {
+                if (e instanceof NavigationStart) {
+                  const navigation = router.getCurrentNavigation();
+                  initialUrl = navigation && navigation.finalUrl;
+                }
+                if (e instanceof RoutesRecognized) {
+                  const navigation = router.getCurrentNavigation();
+                  afterRedirectUrl = navigation && navigation.finalUrl;
+                }
+              });
 
-         router.navigateByUrl('old/team/22');
-         advance(fixture);
+              router.navigateByUrl('old/team/22');
+              advance(fixture);
 
-         expect(initialUrl).toBeUndefined();
-         expect(router.serializeUrl(afterRedirectUrl as any)).toBe('/team/22');
-       })));
+              expect(initialUrl).toBeUndefined();
+              expect(router.serializeUrl(afterRedirectUrl as any)).toBe('/team/22');
+            })));
 
     it('should not break the back button when trigger by location change',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -2022,17 +2033,18 @@ describe('Integration', () => {
           });
         });
 
-        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-             const fixture = createRoot(router, RootCmp);
+        fixmeIvy('unknown/maybe FW-918')
+            .it('works',
+                fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+                  const fixture = createRoot(router, RootCmp);
 
-             router.resetConfig(
-                 [{path: 'team/:id', component: TeamCmp, canActivate: ['alwaysTrue']}]);
+                  router.resetConfig(
+                      [{path: 'team/:id', component: TeamCmp, canActivate: ['alwaysTrue']}]);
 
-             router.navigateByUrl('/team/22');
-             advance(fixture);
-
-             expect(location.path()).toEqual('/team/22');
-           })));
+                  router.navigateByUrl('/team/22');
+                  advance(fixture);
+                  expect(location.path()).toEqual('/team/22');
+                })));
       });
 
       describe('should work when given a class', () => {
@@ -2044,17 +2056,19 @@ describe('Integration', () => {
 
         beforeEach(() => { TestBed.configureTestingModule({providers: [AlwaysTrue]}); });
 
-        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-             const fixture = createRoot(router, RootCmp);
+        fixmeIvy('unknown/maybe FW-918')
+            .it('works',
+                fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+                  const fixture = createRoot(router, RootCmp);
 
-             router.resetConfig(
-                 [{path: 'team/:id', component: TeamCmp, canActivate: [AlwaysTrue]}]);
+                  router.resetConfig(
+                      [{path: 'team/:id', component: TeamCmp, canActivate: [AlwaysTrue]}]);
 
-             router.navigateByUrl('/team/22');
-             advance(fixture);
+                  router.navigateByUrl('/team/22');
+                  advance(fixture);
 
-             expect(location.path()).toEqual('/team/22');
-           })));
+                  expect(location.path()).toEqual('/team/22');
+                })));
       });
 
       describe('should work when returns an observable', () => {
@@ -3343,37 +3357,38 @@ describe('Integration', () => {
   });
 
   describe('route events', () => {
-    it('should fire matching (Child)ActivationStart/End events',
-       fakeAsync(inject([Router], (router: Router) => {
-         const fixture = createRoot(router, RootCmp);
+    fixmeIvy('unknown/maybe FW-918')
+        .it('should fire matching (Child)ActivationStart/End events',
+            fakeAsync(inject([Router], (router: Router) => {
+              const fixture = createRoot(router, RootCmp);
 
-         router.resetConfig([{path: 'user/:name', component: UserCmp}]);
+              router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
-         const recordedEvents: any[] = [];
-         router.events.forEach(e => recordedEvents.push(e));
+              const recordedEvents: any[] = [];
+              router.events.forEach(e => recordedEvents.push(e));
 
-         router.navigateByUrl('/user/fedor');
-         advance(fixture);
+              router.navigateByUrl('/user/fedor');
+              advance(fixture);
 
-         expect(fixture.nativeElement).toHaveText('user fedor');
-         expect(recordedEvents[3] instanceof ChildActivationStart).toBe(true);
-         expect(recordedEvents[3].snapshot).toBe(recordedEvents[9].snapshot.root);
-         expect(recordedEvents[9] instanceof ChildActivationEnd).toBe(true);
-         expect(recordedEvents[9].snapshot).toBe(recordedEvents[9].snapshot.root);
+              expect(fixture.nativeElement).toHaveText('user fedor');
+              expect(recordedEvents[3] instanceof ChildActivationStart).toBe(true);
+              expect(recordedEvents[3].snapshot).toBe(recordedEvents[9].snapshot.root);
+              expect(recordedEvents[9] instanceof ChildActivationEnd).toBe(true);
+              expect(recordedEvents[9].snapshot).toBe(recordedEvents[9].snapshot.root);
 
-         expect(recordedEvents[4] instanceof ActivationStart).toBe(true);
-         expect(recordedEvents[4].snapshot.routeConfig.path).toBe('user/:name');
-         expect(recordedEvents[8] instanceof ActivationEnd).toBe(true);
-         expect(recordedEvents[8].snapshot.routeConfig.path).toBe('user/:name');
+              expect(recordedEvents[4] instanceof ActivationStart).toBe(true);
+              expect(recordedEvents[4].snapshot.routeConfig.path).toBe('user/:name');
+              expect(recordedEvents[8] instanceof ActivationEnd).toBe(true);
+              expect(recordedEvents[8].snapshot.routeConfig.path).toBe('user/:name');
 
-         expectEvents(recordedEvents, [
-           [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
-           [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [ActivationStart],
-           [GuardsCheckEnd, '/user/fedor'], [ResolveStart, '/user/fedor'],
-           [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
-           [NavigationEnd, '/user/fedor']
-         ]);
-       })));
+              expectEvents(recordedEvents, [
+                [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
+                [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [ActivationStart],
+                [GuardsCheckEnd, '/user/fedor'], [ResolveStart, '/user/fedor'],
+                [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
+                [NavigationEnd, '/user/fedor']
+              ]);
+            })));
 
     it('should allow redirection in NavigationStart',
        fakeAsync(inject([Router], (router: Router) => {
