@@ -216,9 +216,7 @@ withEachNg1Version(() => {
          }));
 
 
-      fixmeIvy(
-          'FW-712: Rendering is being run on next "animation frame" rather than "Zone.microTaskEmpty" trigger')
-          .it('should propagate changes to a downgraded component inside the ngZone', async(() => {
+          it('should propagate changes to a downgraded component inside the ngZone', async(() => {
                 let appComponent: AppComponent;
                 let upgradeRef: UpgradeAdapterRef;
 
@@ -242,12 +240,6 @@ withEachNg1Version(() => {
                   ngOnChanges(changes: SimpleChanges) {
                     if (changes['value'].isFirstChange()) return;
 
-                    // HACK(ivy): Using setTimeout allows this test to pass but hides the ivy
-                    // renderer timing BC.
-                    //  setTimeout(() => {
-                    //    expect(element.textContent).toEqual('5');
-                    //    upgradeRef.dispose();
-                    //  }, 0);
                     this.zone.onMicrotaskEmpty.subscribe(() => {
                       expect(element.textContent).toEqual('5');
                       upgradeRef.dispose();
