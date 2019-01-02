@@ -467,7 +467,7 @@ class TestComp {
            expect(comp.componentInstance.a).toBe('aValue');
          });
 
-      fixmeIvy('FW-888: Destroy on providers is not being called')
+      fixmeIvy('FW-848: ngOnDestroy hooks are not called on providers')
           .it('should support ngOnDestroy for lazy providers', () => {
             let created = false;
             let destroyed = false;
@@ -769,7 +769,7 @@ class TestComp {
                     .toThrowError('NodeInjector: NOT_FOUND [SimpleDirective]');
               });
 
-      fixmeIvy('FW-892: Exception thrown when getting VCRef.parentInjector on the root view')
+      fixmeIvy('FW-638: Exception thrown when getting VCRef.parentInjector on the root view')
           .it('should allow to use the NgModule injector from a root ViewContainerRef.parentInjector',
               () => {
                 @Component({template: ''})
@@ -912,7 +912,7 @@ class TestComp {
             .toBe(el.children[0].nativeElement);
       });
 
-      fixmeIvy('FW-892: Exception thrown when getting VCRef.parentInjector on the root view')
+      fixmeIvy('FW-638: Exception thrown when getting VCRef.parentInjector on the root view')
           .it('should inject ViewContainerRef', () => {
             @Component({template: ''})
             class TestComp {
@@ -993,20 +993,21 @@ class TestComp {
         expect(el.children[0].injector.get(SimpleDirective).value.changeDetectorRef).toEqual(cdRef);
       });
 
-      fixmeIvy('FW-896: Pure pipes are not properly cached').it('should cache pure pipes', () => {
-        TestBed.configureTestingModule({declarations: [SimpleDirective, PurePipe]});
-        const el = createComponent(
-            '<div [simpleDirective]="true | purePipe"></div><div [simpleDirective]="true | purePipe"></div>' +
-            '<div *ngFor="let x of [1,2]" [simpleDirective]="true | purePipe"></div>');
-        const purePipe1 = el.children[0].injector.get(SimpleDirective).value;
-        const purePipe2 = el.children[1].injector.get(SimpleDirective).value;
-        const purePipe3 = el.children[2].injector.get(SimpleDirective).value;
-        const purePipe4 = el.children[3].injector.get(SimpleDirective).value;
-        expect(purePipe1).toBeAnInstanceOf(PurePipe);
-        expect(purePipe2).toBe(purePipe1);
-        expect(purePipe3).toBe(purePipe1);
-        expect(purePipe4).toBe(purePipe1);
-      });
+      fixmeIvy('FW-821: Pure pipes are instantiated differently in view engine and ivy')
+          .it('should cache pure pipes', () => {
+            TestBed.configureTestingModule({declarations: [SimpleDirective, PurePipe]});
+            const el = createComponent(
+                '<div [simpleDirective]="true | purePipe"></div><div [simpleDirective]="true | purePipe"></div>' +
+                '<div *ngFor="let x of [1,2]" [simpleDirective]="true | purePipe"></div>');
+            const purePipe1 = el.children[0].injector.get(SimpleDirective).value;
+            const purePipe2 = el.children[1].injector.get(SimpleDirective).value;
+            const purePipe3 = el.children[2].injector.get(SimpleDirective).value;
+            const purePipe4 = el.children[3].injector.get(SimpleDirective).value;
+            expect(purePipe1).toBeAnInstanceOf(PurePipe);
+            expect(purePipe2).toBe(purePipe1);
+            expect(purePipe3).toBe(purePipe1);
+            expect(purePipe4).toBe(purePipe1);
+          });
 
       it('should not cache impure pipes', () => {
         TestBed.configureTestingModule({declarations: [SimpleDirective, ImpurePipe]});
