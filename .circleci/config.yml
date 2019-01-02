@@ -283,13 +283,6 @@ jobs:
   publish_snapshots:
     <<: *job_defaults
     steps:
-      # Since CircleCI currently does not have any way to easily restrict jobs to only run
-      # for push builds, we need to manually skip publishing if the jobs runs for a PR.
-      # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/11
-      - run:
-          name: Check whether this job should be skipped.
-          command: '[[ -n ${CIRCLE_PR_NUMBER} ]] && circleci step halt || true'
-
       - *checkout_code
       - *restore_cache
       - *yarn_install
