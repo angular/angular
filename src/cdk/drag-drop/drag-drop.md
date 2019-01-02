@@ -147,7 +147,7 @@ also be used when `cdkDrag` is placed inside a `cdkDropList`.
 
 ### Restricting movement along an axis
 By default, `cdkDrag` allows free movement in all directions. To restrict dragging to a
-specific axis, you can set `cdkDragLockAxis` on `cdkDrag` or `lockAxis` on `cdkDropList`
+specific axis, you can set `cdkDragLockAxis` on `cdkDrag` or `cdkDropListLockAxis` on `cdkDropList`
 to either `"x"` or `"y"`.
 
 <!-- example(cdk-drag-drop-axis-lock) -->
