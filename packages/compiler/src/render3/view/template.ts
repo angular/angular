@@ -955,7 +955,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           // may be supported differently in future versions of angular. However,
           // @triggers should always just be treated as regular attributes (it's up
           // to the renderer to detect and use them in a special way).
-          const valueExp = input.value
+          const valueExp = input.value;
           if (isASTWithSource(valueExp)) {
             const literal = valueExp.ast;
             if (isLiteralPrimitive(literal) && literal.value === undefined) {
