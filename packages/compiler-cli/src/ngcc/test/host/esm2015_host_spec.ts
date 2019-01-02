@@ -980,6 +980,70 @@ describe('Fesm2015ReflectionHost', () => {
       }));
     });
 
+    describe('synthesized constructors', () => {
+      function getConstructorParameters(constructor: string) {
+        const file = {
+          name: '/synthesized_constructors.js',
+          contents: `
+            class BaseClass {}
+            class TestClass extends BaseClass {
+              ${constructor}
+            }
+          `,
+        };
+
+        const program = makeTestProgram(file);
+        const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+        const classNode = getDeclaration(program, file.name, 'TestClass', ts.isClassDeclaration);
+        return host.getConstructorParameters(classNode);
+      }
+
+      it('recognizes super call as first statement', () => {
+        const parameters = getConstructorParameters(`
+          constructor() {
+            super(...arguments);
+            this.synthesizedProperty = null;
+          }`);
+
+        expect(parameters).toBeNull();
+      });
+
+      it('does not consider super call without spread element as synthesized', () => {
+        const parameters = getConstructorParameters(`
+          constructor() {
+            super(arguments);
+          }`);
+
+        expect(parameters !.length).toBe(0);
+      });
+
+      it('does not consider constructors with parameters as synthesized', () => {
+        const parameters = getConstructorParameters(`
+          constructor(arg) {
+            super(...arguments);
+          }`);
+
+        expect(parameters !.length).toBe(1);
+      });
+
+      it('does not consider manual super calls as synthesized', () => {
+        const parameters = getConstructorParameters(`
+          constructor() {
+            super();
+          }`);
+
+        expect(parameters !.length).toBe(0);
+      });
+
+      it('does not consider empty constructors as synthesized', () => {
+        const parameters = getConstructorParameters(`
+          constructor() {
+          }`);
+
+        expect(parameters !.length).toBe(0);
+      });
+    });
+
     describe('(returned parameters `decorators`)', () => {
       it('should ignore param decorator elements that are not object literals', () => {
         const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
