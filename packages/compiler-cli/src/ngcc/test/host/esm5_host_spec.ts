@@ -946,6 +946,84 @@ describe('Esm5ReflectionHost', () => {
       });
     });
 
+    describe('synthesized constructors', () => {
+      function getConstructorParameters(constructor: string) {
+        const file = {
+          name: '/synthesized_constructors.js',
+          contents: `
+            var TestClass = /** @class */ (function (_super) {
+              __extends(TestClass, _super);
+              ${constructor}
+              return TestClass;
+            }(null));
+          `,
+        };
+
+        const program = makeTestProgram(file);
+        const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+        const classNode = getDeclaration(program, file.name, 'TestClass', ts.isVariableDeclaration);
+        return host.getConstructorParameters(classNode);
+      }
+
+      it('recognizes _this assignment from super call', () => {
+        const parameters = getConstructorParameters(`
+          function TestClass() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.synthesizedProperty = null;
+            return _this;
+          }`);
+
+        expect(parameters).toBeNull();
+      });
+
+      it('recognizes super call as return statement', () => {
+        const parameters = getConstructorParameters(`
+          function TestClass() {
+            return _super !== null && _super.apply(this, arguments) || this;
+          }`);
+
+        expect(parameters).toBeNull();
+      });
+
+      it('handles the case where a unique name was generated for _super or _this', () => {
+        const parameters = getConstructorParameters(`
+          function TestClass() {
+            var _this_1 = _super_1 !== null && _super_1.apply(this, arguments) || this;
+            _this_1._this = null;
+            _this_1._super = null;
+            return _this_1;
+          }`);
+
+        expect(parameters).toBeNull();
+      });
+
+      it('does not consider constructors with parameters as synthesized', () => {
+        const parameters = getConstructorParameters(`
+          function TestClass(arg) {
+            return _super !== null && _super.apply(this, arguments) || this;
+          }`);
+
+        expect(parameters !.length).toBe(1);
+      });
+
+      it('does not consider manual super calls as synthesized', () => {
+        const parameters = getConstructorParameters(`
+          function TestClass() {
+            return _super.call(this) || this;
+          }`);
+
+        expect(parameters !.length).toBe(0);
+      });
+
+      it('does not consider empty constructors as synthesized', () => {
+        const parameters = getConstructorParameters(`
+          function TestClass() {
+          }`);
+
+        expect(parameters !.length).toBe(0);
+      });
+    });
+
     describe('(returned parameters `decorators.args`)', () => {
       it('should be an empty array if param decorator has no `args` property', () => {
         const program = makeTestProgram(INVALID_CTOR_DECORATOR_ARGS_FILE);
@@ -1249,6 +1327,51 @@ describe('Esm5ReflectionHost', () => {
       expect(host.isClass(mockNode)).toBe(false);
       expect(superIsClassSpy).toHaveBeenCalledWith(mockNode);
       expect(getClassSymbolSpy).toHaveBeenCalledWith(mockNode);
+    });
+  });
+
+  describe('hasBaseClass()', () => {
+    function hasBaseClass(source: string) {
+      const file = {
+        name: '/synthesized_constructors.js',
+        contents: source,
+      };
+
+      const program = makeTestProgram(file);
+      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const classNode = getDeclaration(program, file.name, 'TestClass', ts.isVariableDeclaration);
+      return host.hasBaseClass(classNode);
+    }
+
+    it('should consider an IIFE with _super parameter as having a base class', () => {
+      const result = hasBaseClass(`
+        var TestClass = /** @class */ (function (_super) {
+          __extends(TestClass, _super);
+          function TestClass() {}
+          return TestClass;
+        }(null));`);
+      expect(result).toBe(true);
+    });
+
+    it('should consider an IIFE with a unique name generated for the _super parameter as having a base class',
+       () => {
+         const result = hasBaseClass(`
+        var TestClass = /** @class */ (function (_super_1) {
+          __extends(TestClass, _super_1);
+          function TestClass() {}
+          return TestClass;
+        }(null));`);
+         expect(result).toBe(true);
+       });
+
+    it('should not consider an IIFE without parameter as having a base class', () => {
+      const result = hasBaseClass(`
+        var TestClass = /** @class */ (function () {
+          __extends(TestClass, _super);
+          function TestClass() {}
+          return TestClass;
+        }(null));`);
+      expect(result).toBe(false);
     });
   });
 
