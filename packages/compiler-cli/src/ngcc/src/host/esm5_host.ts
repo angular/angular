@@ -137,10 +137,14 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
    * the class's constructor or null if there is no constructor.
    */
-  protected getConstructorParameterDeclarations(classSymbol: ts.Symbol): ts.ParameterDeclaration[] {
+  protected getConstructorParameterDeclarations(classSymbol: ts.Symbol):
+      ts.ParameterDeclaration[]|null {
     const constructor = classSymbol.valueDeclaration as ts.FunctionDeclaration;
-    if (constructor && constructor.parameters) {
+    if (constructor.parameters.length > 0) {
       return Array.from(constructor.parameters);
+    }
+    if (isSynthesizedConstructor(constructor)) {
+      return null;
     }
     return [];
   }
@@ -251,6 +255,109 @@ function getReturnStatement(declaration: ts.Expression | undefined): ts.ReturnSt
 
 function reflectArrayElement(element: ts.Expression) {
   return ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null;
+}
+
+function isSynthesizedConstructor(constructor: ts.FunctionDeclaration): boolean {
+  if (!constructor.body) return false;
+
+  const firstStatement = constructor.body.statements[0];
+  if (!firstStatement) return false;
+
+  return isSynthesizedSuperThisAssignment(firstStatement) ||
+      isSynthesizedSuperReturnStatement(firstStatement);
+}
+
+/**
+ * Identifies a synthesized super call of the form:
+ *
+ * ```
+ * var _this = _super !== null && _super.apply(this, arguments) || this;
+ * ```
+ *
+ * @param statement a statement that may be a synthesized super call
+ * @returns true if the statement looks like a synthesized super call
+ */
+function isSynthesizedSuperThisAssignment(statement: ts.Statement): boolean {
+  if (!ts.isVariableStatement(statement)) return false;
+
+  const variableDeclarations = statement.declarationList.declarations;
+  if (variableDeclarations.length !== 1) return false;
+
+  const variableDeclaration = variableDeclarations[0];
+  if (!ts.isIdentifier(variableDeclaration.name) ||
+      !variableDeclaration.name.text.startsWith('_this'))
+    return false;
+
+  const initializer = variableDeclaration.initializer;
+  if (!initializer) return false;
+
+  return isSynthesizedDefaultSuperCall(initializer);
+}
+/**
+ * Identifies a synthesized super call of the form:
+ *
+ * ```
+ * return _super !== null && _super.apply(this, arguments) || this;
+ * ```
+ *
+ * @param statement a statement that may be a synthesized super call
+ * @returns true if the statement looks like a synthesized super call
+ */
+function isSynthesizedSuperReturnStatement(statement: ts.Statement): boolean {
+  if (!ts.isReturnStatement(statement)) return false;
+
+  const initializer = statement.expression;
+  if (!initializer) return false;
+
+  return isSynthesizedDefaultSuperCall(initializer);
+}
+
+/**
+ * Tests whether the expression is of form:
+ *
+ * ```
+ * _super !== null && _super.apply(this, arguments) || this;
+ * ```
+ *
+ * @param expression an expression that may represent a default super call
+ * @returns true if the expression corresponds with the above form
+ */
+function isSynthesizedDefaultSuperCall(expression: ts.Expression): boolean {
+  if (!ts.isBinaryExpression(expression) ||
+      expression.operatorToken.kind !== ts.SyntaxKind.BarBarToken)
+    return false;
+  if (expression.right.kind !== ts.SyntaxKind.ThisKeyword) return false;
+  if (!ts.isBinaryExpression(expression.left) ||
+      expression.left.operatorToken.kind !== ts.SyntaxKind.AmpersandAmpersandToken)
+    return false;
+
+  // verify `_super !== null`
+  const superNotNull = expression.left.left;
+  if (!ts.isBinaryExpression(superNotNull) ||
+      superNotNull.operatorToken.kind !== ts.SyntaxKind.ExclamationEqualsEqualsToken)
+    return false;
+  if (!isSuperIdentifier(superNotNull.left)) return false;
+
+  // verify `_super.apply(this, arguments)`
+  const superCall = expression.left.right;
+  if (!ts.isCallExpression(superCall) || superCall.arguments.length !== 2) return false;
+
+  const superApply = superCall.expression;
+  if (!ts.isPropertyAccessExpression(superApply)) return false;
+  if (!isSuperIdentifier(superApply.expression)) return false;
+  if (superApply.name.text !== 'apply') return false;
+
+  const thisArgument = superCall.arguments[0];
+  if (thisArgument.kind !== ts.SyntaxKind.ThisKeyword) return false;
+
+  const argumentsArgument = superCall.arguments[1];
+  if (!ts.isIdentifier(argumentsArgument) || argumentsArgument.text !== 'arguments') return false;
+
+  return true;
+}
+
+function isSuperIdentifier(expression: ts.Expression): boolean {
+  return ts.isIdentifier(expression) && expression.text.startsWith('_super');
 }
 
 /**
