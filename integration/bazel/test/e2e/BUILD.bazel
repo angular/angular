@@ -31,7 +31,6 @@ protractor_web_test_suite(
     server = "//src:devserver",
     deps = [
         ":e2e",
-        "@npm//protractor",
     ],
 )
 
@@ -42,6 +41,5 @@ protractor_web_test_suite(
     server = "//src:prodserver",
     deps = [
         ":e2e",
-        "@npm//protractor",
     ],
 )
