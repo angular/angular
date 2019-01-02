@@ -2,10 +2,17 @@ import {bold, red, yellow} from 'chalk';
 import {existsSync} from 'fs';
 import {sync as glob} from 'glob';
 import {join} from 'path';
-import {checkMaterialPackage, checkReleaseBundle} from './output-validations';
+import {
+  checkMaterialPackage,
+  checkReleaseBundle,
+  checkTypeDefinitionFile
+} from './output-validations';
 
 /** Glob that matches all JavaScript bundle files within a release package. */
 const releaseBundlesGlob = '+(esm5|esm2015|bundles)/*.js';
+
+/** Glob that matches all TypeScript definition files within a release package. */
+const releaseTypeDefinitionsGlob = '**/*.d.ts';
 
 /**
  * Type that describes a map of package failures. The keys are failure messages and
@@ -21,17 +28,25 @@ type PackageFailures = Map<string, string[]>;
  */
 export function checkReleasePackage(releasesPath: string, packageName: string): boolean {
   const packagePath = join(releasesPath, packageName);
-  const bundlePaths = glob(releaseBundlesGlob, {cwd: packagePath, absolute: true});
   const failures = new Map() as PackageFailures;
   const addFailure = (message, filePath?) => {
     failures.set(message, (failures.get(message) || []).concat(filePath));
   };
+
+  const bundlePaths = glob(releaseBundlesGlob, {cwd: packagePath, absolute: true});
+  const typeDefinitions = glob(releaseTypeDefinitionsGlob, {cwd: packagePath, absolute: true});
 
   // We want to walk through each bundle within the current package and run
   // release validations that ensure that the bundles are not invalid.
   bundlePaths.forEach(bundlePath => {
     checkReleaseBundle(bundlePath)
       .forEach(message => addFailure(message, bundlePath));
+  });
+
+  // Run output validations for all TypeScript definition files within the release output.
+  typeDefinitions.forEach(filePath => {
+    checkTypeDefinitionFile(filePath)
+      .forEach(message => addFailure(message, filePath));
   });
 
   // Special release validation checks for the "material" release package.
