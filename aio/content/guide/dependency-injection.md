@@ -182,8 +182,7 @@ Child modules and component injectors are independent of each other, and create 
 
 Thanks to [injector inheritance](guide/hierarchical-dependency-injection),
 you can still inject application-wide services into these components.
-A component's injector is a child of its parent component's injector,
-and a descendent of its parent's parent's injector, and so on all the way back to the application's _root_ injector. Angular can inject a service provided by any injector in that lineage.
+A component's injector is a child of its parent component's injector, and inherits from all ancestor injectors all the way back to the application's _root_ injector. Angular can inject a service provided by any injector in that lineage.
 
 For example, Angular can inject `HeroListComponent` with both the `HeroService` provided in `HeroComponent` and the `UserService` provided in `AppModule`.
 
