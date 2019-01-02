@@ -244,4 +244,18 @@ describe('RouterPreloader', () => {
              expect(c[0]._loadedConfig !.routes[0].component).toBe(configs[0].component);
            })));
   });
+
+  describe('should not throw if setUpPreloading is not called', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule(
+          {imports: [RouterTestingModule.withRoutes([{path: 'lazy', loadChildren: 'expected'}])]});
+    });
+
+    it('should work',
+       fakeAsync(inject(
+           [NgModuleFactoryLoader, RouterPreloader, Router],
+           (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader, router: Router) => {
+             expect(() => preloader.ngOnDestroy()).not.toThrow();
+           })));
+  });
 });
