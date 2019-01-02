@@ -76,7 +76,7 @@ export function zoneSchedulerFactory(ngZone: NgZone): (fn: () => void) => void {
       subscription.unsubscribe();
       fn();
     });
-  }
+  };
 }
 
 /**
