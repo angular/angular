@@ -20,7 +20,7 @@ import {Serializer} from '@angular/platform-webworker/src/web_workers/shared/ser
 import {ServiceMessageBrokerFactory} from '@angular/platform-webworker/src/web_workers/shared/service_message_broker';
 import {MessageBasedRenderer2} from '@angular/platform-webworker/src/web_workers/ui/renderer';
 import {WebWorkerRendererFactory2} from '@angular/platform-webworker/src/web_workers/worker/renderer';
-import {fixmeIvy} from '@angular/private/testing';
+import {modifiedInIvy} from '@angular/private/testing';
 
 import {PairedMessageBuses, createPairedMessageBuses} from '../shared/web_worker_test_util';
 
@@ -95,7 +95,7 @@ let lastCreatedRenderer: Renderer2;
       expect(renderEl).toHaveText('Hello World!');
     });
 
-    fixmeIvy('FW-750: DebugElement doesn\'t work with objects that aren\'t a Node')
+    modifiedInIvy('DebugElements are not supported on web-worker')
         .it('should update any element property/attributes/class/style(s) independent of the compilation on the root element and other elements',
             () => {
               const fixture =
@@ -160,7 +160,7 @@ let lastCreatedRenderer: Renderer2;
     });
 
     if (getDOM().supportsDOMEvents()) {
-      fixmeIvy('FW-750: DebugElement doesn\'t work with objects that aren\'t a Node')
+      modifiedInIvy('DebugElements are not supported on web-worker')
           .it('should listen to events', () => {
             const fixture = TestBed.overrideTemplate(MyComp2, '<input (change)="ctxNumProp = 1">')
                                 .createComponent(MyComp2);
