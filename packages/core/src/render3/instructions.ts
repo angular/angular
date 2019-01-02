@@ -407,7 +407,6 @@ function renderComponentOrTemplate<T>(
   const rendererFactory = hostView[RENDERER_FACTORY];
   const oldView = enterView(hostView, hostView[HOST_NODE]);
   const normalExecutionPath = !getCheckNoChangesMode();
-  debugger;
   try {
     if (normalExecutionPath && rendererFactory.begin) {
       rendererFactory.begin();
