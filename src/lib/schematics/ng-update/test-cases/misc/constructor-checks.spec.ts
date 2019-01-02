@@ -8,9 +8,9 @@ describe('constructor checks', () => {
       'constructor-checks': require.resolve('./constructor-checks_input.ts')
     });
 
-    expect(logOutput).toMatch(/\[22.*Found "NativeDateAdapter"/,
+    expect(logOutput).toMatch(/:22.*Found "NativeDateAdapter"/,
       'Expected the constructor checks to report if an argument is not assignable.');
-    expect(logOutput).not.toMatch(/\[26.*Found "NativeDateAdapter".*/,
+    expect(logOutput).not.toMatch(/:26.*Found "NativeDateAdapter".*/,
       'Expected the constructor to not report if an argument is assignable.');
 
     expect(logOutput).not.toMatch(/Found "NonMaterialClass".*: new NonMaterialClass\(\)/);

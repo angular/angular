@@ -9,9 +9,9 @@ describe('v6 method call checks', () => {
     });
 
     expect(logOutput)
-      .toMatch(/\[15,.*Found call to "FocusMonitor\.monitor".*renderer.*has been removed/);
+      .toMatch(/:15.*Found call to "FocusMonitor\.monitor".*renderer.*has been removed/);
     expect(logOutput)
-      .toMatch(/\[16,.*Found call to "FocusMonitor\.monitor".*renderer.*has been removed/);
+      .toMatch(/:16.*Found call to "FocusMonitor\.monitor".*renderer.*has been removed/);
 
     removeTempDir();
   });
