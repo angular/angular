@@ -138,7 +138,10 @@ task(':watch:devapp', () => {
   // CDK package watchers.
   watchFilesAndReload(join(cdkPackage.sourceDir, '**/*'), ['cdk:build-no-bundles']);
 
-  const materialCoreThemingGlob = join(materialPackage.sourceDir, '**/core/theming/**/*.scss');
+  const materialCoreThemingGlob = join(
+    materialPackage.sourceDir,
+    '**/core/+(theming|typography)/**/*.scss'
+  );
 
   // Material package watchers.
   watchFilesAndReload([
