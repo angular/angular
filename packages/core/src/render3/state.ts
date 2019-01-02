@@ -175,8 +175,9 @@ export function getOrCreateCurrentQueries(
     QueryType: {new (parent: null, shallow: null, deep: null): LQueries}): LQueries {
   const lView = getLView();
   let currentQueries = lView[QUERIES];
-  // if this is the first content query on a node, any existing LQueries needs to be cloned
-  // in subsequent template passes, the cloning occurs before directive instantiation.
+  // If this is the first content query on a node, any existing LQueries needs to be cloned.
+  // In subsequent template passes, the cloning occurs before directive instantiation
+  // in `createDirectivesAndLocals`.
   if (previousOrParentTNode && previousOrParentTNode !== lView[HOST_NODE] &&
       !isContentQueryHost(previousOrParentTNode)) {
     currentQueries && (currentQueries = lView[QUERIES] = currentQueries.clone());
