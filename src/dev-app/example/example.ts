@@ -9,6 +9,7 @@
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Component, ElementRef, Injector, Input, OnInit} from '@angular/core';
 import {EXAMPLE_COMPONENTS} from '@angular/material-examples';
+import {createCustomElement} from '@angular/elements';
 
 @Component({
   selector: 'material-example',
@@ -54,14 +55,20 @@ export class Example implements OnInit {
 
   title: string;
 
-  constructor(private elementRef: ElementRef, private injector: Injector) { }
+  constructor(private _elementRef: ElementRef<HTMLElement>, private _injector: Injector) { }
 
   ngOnInit() {
-    // Should be created with this component's injector to capture the whole injector which may
-    // include provided things like Directionality.
-    const exampleElementCtor = customElements.get(this.id);
-    this.elementRef.nativeElement.appendChild(new exampleElementCtor(this.injector));
+    let exampleElementCtor = customElements.get(this.id);
 
+    if (!exampleElementCtor) {
+      exampleElementCtor = createCustomElement(EXAMPLE_COMPONENTS[this.id].component, {
+        injector: this._injector
+      });
+
+      customElements.define(this.id, exampleElementCtor);
+    }
+
+    this._elementRef.nativeElement.appendChild(new exampleElementCtor(this._injector));
     this.title = EXAMPLE_COMPONENTS[this.id] ? EXAMPLE_COMPONENTS[this.id].title : '';
   }
 }
