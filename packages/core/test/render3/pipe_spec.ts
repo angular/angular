@@ -10,9 +10,9 @@ import {Directive as _Directive, InjectionToken, OnChanges, OnDestroy, Pipe as _
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {defineDirective, definePipe} from '../../src/render3/definition';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, load, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {pipe, pipeBind1, pipeBind3, pipeBind4, pipeBindV} from '../../src/render3/pipe';
+import {pipe, pipeBind1, pipeBind2, pipeBind3, pipeBind4, pipeBindV} from '../../src/render3/pipe';
 
 import {RenderLog, getRendererFactory2, patchLoggingRenderer2} from './imported_renderer2';
 import {ComponentFixture, TemplateFixture, createComponent, getDirectiveOnNode, renderToHtml} from './render_util';
@@ -453,8 +453,47 @@ describe('pipe', () => {
       fixture.update();
       expect(fixture.html).toEqual('Bar');
     });
-  });
 
+    it('should not accidentally overwrite other binding values when unwrapping', () => {
+      @Pipe({name: 'pureAddPipe'})
+      class PureAddPipe implements PipeTransform {
+        counter = 0;
+        transform(value: any, addValue: number) {
+          // this is a pure pipe and we've got only const as input values so the value of the
+          // counter should always be 0 in the returned value
+          return value + addValue + this.counter++;
+        }
+
+        static ngPipeDef = definePipe({
+          name: 'pureAddPipe',
+          type: PureAddPipe,
+          factory: function PurePipe_Factory() { return new PureAddPipe(); },
+          pure: true
+        });
+      }
+
+      // {{2 | pureAddPipe:3}} {{null | wrappingPipe}}
+      const fixture = new TemplateFixture(
+          () => {
+            text(0);
+            pipe(1, 'pureAddPipe');
+            pipe(2, 'wrappingPipe');
+          },
+          () => {
+            textBinding(
+                0, interpolation2('', pipeBind2(1, 2, 2, 3), ' ', pipeBind1(2, 5, null), ''));
+          },
+          3, 6, null, [PureAddPipe, WrappingPipe]);
+
+      expect(fixture.html).toEqual('5 Bar');
+
+      fixture.update();
+      expect(fixture.html).toEqual('5 Bar');
+
+      fixture.update();
+      expect(fixture.html).toEqual('5 Bar');
+    });
+  });
 });
 
 @Pipe({name: 'countingPipe'})
