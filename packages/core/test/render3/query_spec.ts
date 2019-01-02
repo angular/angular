@@ -2604,6 +2604,64 @@ describe('query', () => {
       expect(inInstance !.fooBars.length).toBe(2);
     });
 
+    it('should support nested shallow content queries across multiple component instances', () => {
+      let outInstance: QueryDirective;
+      let inInstance: QueryDirective;
+
+      class QueryDirective {
+        fooBars: any;
+        static ngDirectiveDef = defineDirective({
+          type: QueryDirective,
+          selectors: [['', 'query', '']],
+          exportAs: ['query'],
+          factory: () => new QueryDirective(),
+          contentQueries: (dirIndex) => {
+            // @ContentChildren('foo', {descendants: true}) fooBars:
+            // QueryList<ElementRef>;
+            registerContentQuery(query(null, ['foo'], false), dirIndex);
+          },
+          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+            let tmp: any;
+            const instance = load<QueryDirective>(dirIndex);
+            queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
+                (instance.fooBars = tmp);
+          },
+        });
+      }
+
+      const AppComponent = createComponent(
+          'app-component',
+          /**
+           * <div query #out="query">
+           *   <div query #in="query" #foo>
+           *     <span #foo></span>
+           *   </div>
+           * </div>
+           */
+          function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div', ['query', ''], ['out', 'query']);
+              { element(2, 'div', ['query', ''], ['in', 'query', 'foo', '']); }
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              outInstance = load<QueryDirective>(1);
+              inInstance = load<QueryDirective>(3);
+            }
+          },
+          5, 0, [QueryDirective]);
+
+      const fixture1 = new ComponentFixture(AppComponent);
+      expect(outInstance !.fooBars.length).toBe(1);
+      expect(inInstance !.fooBars.length).toBe(1);
+
+      outInstance = inInstance = null !;
+
+      const fixture2 = new ComponentFixture(AppComponent);
+      expect(outInstance !.fooBars.length).toBe(1);
+      expect(inInstance !.fooBars.length).toBe(1);
+    });
+
     it('should respect shallow flag on content queries when mixing deep and shallow queries',
        () => {
          class ShallowQueryDirective {

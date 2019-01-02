@@ -41,7 +41,7 @@ import {getInitialClassNameValue, initializeStaticContext as initializeStaticSty
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
-import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, renderStringify} from './util';
+import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isContentQueryHost, loadInternal, readElementValue, readPatchedLView, renderStringify} from './util';
 
 
 
@@ -624,7 +624,7 @@ export function elementCreate(name: string, overriddenRenderer?: Renderer3): REl
  * @param localRefExtractor mapping function that extracts local ref value from TNode
  */
 function createDirectivesAndLocals(
-    tView: TView, viewData: LView, localRefs: string[] | null | undefined,
+    tView: TView, lView: LView, localRefs: string[] | null | undefined,
     localRefExtractor: LocalRefExtractor = getNativeByTNode) {
   if (!getBindingsEnabled()) return;
   const previousOrParentTNode = getPreviousOrParentTNode();
@@ -632,12 +632,19 @@ function createDirectivesAndLocals(
     ngDevMode && ngDevMode.firstTemplatePass++;
 
     resolveDirectives(
-        tView, viewData, findDirectiveMatches(tView, viewData, previousOrParentTNode),
+        tView, lView, findDirectiveMatches(tView, lView, previousOrParentTNode),
         previousOrParentTNode, localRefs || null);
+  } else {
+    // During first template pass, queries are created or cloned when first requested
+    // using `getOrCreateCurrentQueries`. For subsequent template passes, we clone
+    // any current LQueries here up-front if the current node hosts a content query.
+    if (isContentQueryHost(getPreviousOrParentTNode()) && lView[QUERIES]) {
+      lView[QUERIES] = lView[QUERIES] !.clone();
+    }
   }
-  instantiateAllDirectives(tView, viewData, previousOrParentTNode);
-  invokeDirectivesHostBindings(tView, viewData, previousOrParentTNode);
-  saveResolvedLocalsInData(viewData, previousOrParentTNode, localRefExtractor);
+  instantiateAllDirectives(tView, lView, previousOrParentTNode);
+  invokeDirectivesHostBindings(tView, lView, previousOrParentTNode);
+  saveResolvedLocalsInData(lView, previousOrParentTNode, localRefExtractor);
 }
 
 /**
