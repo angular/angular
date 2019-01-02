@@ -279,36 +279,35 @@ import {el} from '../../testing/src/browser_util';
       });
     });
 
-    fixmeIvy(`FW-802: Animation 'start' and 'end' hooks are invoked twice`)
-        .it('should provide hooks at the start and end of change detection', () => {
-          @Component({
-            selector: 'my-cmp',
-            template: `
+    it('should provide hooks at the start and end of change detection', () => {
+      @Component({
+        selector: 'my-cmp',
+        template: `
           <div [@myAnimation]="exp"></div>
         `,
-            animations: [trigger('myAnimation', [])]
-          })
-          class Cmp {
-            public exp: any;
-          }
+        animations: [trigger('myAnimation', [])]
+      })
+      class Cmp {
+        public exp: any;
+      }
 
-          TestBed.configureTestingModule({
-            providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
-            declarations: [Cmp]
-          });
+      TestBed.configureTestingModule({
+        providers: [{provide: AnimationEngine, useClass: InjectableAnimationEngine}],
+        declarations: [Cmp]
+      });
 
-          const renderer = TestBed.get(RendererFactory2) as ExtendedAnimationRendererFactory;
-          const fixture = TestBed.createComponent(Cmp);
-          const cmp = fixture.componentInstance;
+      const renderer = TestBed.get(RendererFactory2) as ExtendedAnimationRendererFactory;
+      const fixture = TestBed.createComponent(Cmp);
+      const cmp = fixture.componentInstance;
 
-          renderer.log = [];
-          fixture.detectChanges();
-          expect(renderer.log).toEqual(['begin', 'end']);
+      renderer.log = [];
+      fixture.detectChanges();
+      expect(renderer.log).toEqual(['begin', 'end']);
 
-          renderer.log = [];
-          fixture.detectChanges();
-          expect(renderer.log).toEqual(['begin', 'end']);
-        });
+      renderer.log = [];
+      fixture.detectChanges();
+      expect(renderer.log).toEqual(['begin', 'end']);
+    });
   });
 })();
 

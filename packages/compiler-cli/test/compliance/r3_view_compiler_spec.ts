@@ -122,7 +122,7 @@ describe('r3_view_compiler', () => {
   });
 
   describe('animations', () => {
-    it('should keep @attr but supress [@attr]', () => {
+    it('should keep @attr but suppress [@attr]', () => {
       const files: MockDirectory = {
         app: {
           'example.ts': `
