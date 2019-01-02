@@ -406,9 +406,10 @@ function renderComponentOrTemplate<T>(
     templateFn?: ComponentTemplate<T>) {
   const rendererFactory = hostView[RENDERER_FACTORY];
   const oldView = enterView(hostView, hostView[HOST_NODE]);
-  const checkNoChangesMode = getCheckNoChangesMode();
+  const normalExecutionPath = !getCheckNoChangesMode();
+  debugger;
   try {
-    if (checkNoChangesMode && rendererFactory.begin) {
+    if (normalExecutionPath && rendererFactory.begin) {
       rendererFactory.begin();
     }
     if (templateFn) {
@@ -417,7 +418,7 @@ function renderComponentOrTemplate<T>(
     }
     refreshDescendantViews(hostView, rf);
   } finally {
-    if (checkNoChangesMode && rendererFactory.end) {
+    if (normalExecutionPath && rendererFactory.end) {
       rendererFactory.end();
     }
     leaveView(oldView);
