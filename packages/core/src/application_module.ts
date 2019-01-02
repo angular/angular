@@ -11,13 +11,14 @@ import {ApplicationRef} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
 import {Console} from './console';
-import {InjectionToken, Injector, StaticProvider} from './di';
+import {Injector, StaticProvider} from './di';
 import {Inject, Optional, SkipSelf} from './di/metadata';
 import {ErrorHandler} from './error_handler';
 import {LOCALE_ID} from './i18n/tokens';
 import {ComponentFactoryResolver} from './linker';
 import {Compiler} from './linker/compiler';
 import {NgModule} from './metadata';
+import {SCHEDULER} from './render3/component_ref';
 import {NgZone} from './zone';
 
 export function _iterableDiffersFactory() {
@@ -43,6 +44,7 @@ export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
     deps:
         [NgZone, Console, Injector, ErrorHandler, ComponentFactoryResolver, ApplicationInitStatus]
   },
+  {provide: SCHEDULER, deps: [NgZone], useFactory: zoneSchedulerFactory},
   {
     provide: ApplicationInitStatus,
     useClass: ApplicationInitStatus,
@@ -58,6 +60,25 @@ export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
     deps: [[new Inject(LOCALE_ID), new Optional(), new SkipSelf()]]
   },
 ];
+
+/**
+ * Schedule work at next available slot.
+ *
+ * In Ivy this is just `requestAnimationFrame`. For compatibility reasons when bootstrapped
+ * using `platformRef.bootstrap` we need to use `NgZone.onStable` as the scheduling mechanism.
+ * This overrides the scheduling mechanism in Ivy to `NgZone.onStable`.
+ *
+ * @param ngZone NgZone to use for scheduling.
+ */
+export function zoneSchedulerFactory(ngZone: NgZone): (fn: () => void) => void {
+  let queue: (() => void)[] = [];
+  ngZone.onStable.subscribe(() => {
+    while (queue.length) {
+      queue.pop() !();
+    }
+  });
+  return function(fn: () => void) { queue.push(fn); };
+}
 
 /**
  * Configures the root injector for an app with
