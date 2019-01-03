@@ -71,24 +71,31 @@ export interface ServerSpec {
   port: number;
 }
 
-export function runServer(
-    workspace: string, binary: string, portFlag: string, args: string[],
+/**
+ * Runs the specified server binary from a given workspace and waits for the server
+ * being ready. The server binary will be resolved from the Bazel runfiles. Note that
+ * the server will be launched with a random free port in order to support test concurrency
+ * with Bazel.
+ */
+export async function runServer(
+    workspace: string, serverTarget: string, portFlag: string, serverArgs: string[],
     timeout = 5000): Promise<ServerSpec> {
-  return findFreeTcpPort().then(function(port) {
-    const runfiles_path = process.env.TEST_SRCDIR;
-    const cmd = path.join(runfiles_path, workspace, binary);
+  const serverPath = require.resolve(`${workspace}/${serverTarget}`);
+  const port = await findFreeTcpPort();
 
-    args = args.concat([portFlag, port.toString()]);
+  // Start the Bazel server binary with a random free TCP port.
+  const serverProcess = child_process.spawn(
+      serverPath, serverArgs.concat([portFlag, port.toString()]), {stdio: 'inherit'});
 
-    const child = child_process.spawn(
-        cmd, args, {cwd: path.join(runfiles_path, workspace), stdio: 'inherit'});
-
-    child.on('exit', function(code) {
-      if (code != 0) {
-        throw new Error(`non-zero exit code ${code} from server`);
-      }
-    });
-
-    return waitForServer(port, timeout).then(() => { return {port}; });
+  // In case the process exited with an error, we want to propagate the error.
+  serverProcess.on('exit', exitCode => {
+    if (exitCode !== 0) {
+      throw new Error(`Server exited with error code: ${exitCode}`);
+    }
   });
+
+  // Wait for the server to be bound to the given port.
+  await waitForServer(port, timeout);
+
+  return {port};
 }
