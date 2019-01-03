@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SimpleChange} from '../change_detection';
+import {SimpleChanges} from '../metadata/lifecycle_hooks';
 import {global} from '../util';
 
 import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from './assert';
-import {ACTIVE_INDEX, LCONTAINER_LENGTH, LContainer} from './interfaces/container';
+import {LCONTAINER_LENGTH, LContainer} from './interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
@@ -17,8 +19,6 @@ import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './inte
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
-import { SimpleChanges } from '../metadata/lifecycle_hooks';
-import { SimpleChange } from '../change_detection';
 
 /**
  * Returns whether the values are different from a change detection stand point.
@@ -77,7 +77,7 @@ export function loadInternal<T>(view: LView | TData, index: number): T {
 
 /**
  * Checks an object to see if it's an exact instance of a particular type
- * without traversing the inheritence hierarchy like `instanceof` does.
+ * without traversing the inheritance hierarchy like `instanceof` does.
  * @param obj The object to check
  * @param type The type to check the object against
  */
@@ -94,35 +94,45 @@ export function isOnChangesDirectiveWrapper(obj: any): obj is OnChangesDirective
 }
 
 /**
+ * Removes the `OnChangesDirectiveWrapper` if present.
+ *
+ * @param obj to unwrap.
+ */
+export function unwrapOnChangesDirectiveWrapper<T>(obj: T | OnChangesDirectiveWrapper<T>): T {
+  return isOnChangesDirectiveWrapper(obj) ? obj.instance : obj;
+}
+
+/**
  * A class that wraps directive instances for storage in LView when directives
  * have onChanges hooks to deal with.
  */
-export class OnChangesDirectiveWrapper<T=any> {
-  hasChanged = new Set<string>();
-  simpleChanges: SimpleChanges|null = null;
+export class OnChangesDirectiveWrapper<T = any> {
+  seenProps = new Set<string>();
+  previous: SimpleChanges = {};
+  changes: SimpleChanges|null = null;
 
-  constructor(public instance: T, public def: DirectiveDef<T>) {}
+  constructor(public instance: T) {}
 }
 
 /**
  * Updates the `simpleChanges` property on the `wrapper` instance, such that when it's
  * checked in {@link callHooks} it will fire the related `onChanges` hook.
  * @param wrapper the wrapper for the directive instance
- * @param previousValue The previous value of the property
+ * @param declaredName the declared name to be used in `SimpleChange`
  * @param value The new value for the property
  */
-export function recordChange(wrapper: OnChangesDirectiveWrapper, publicName: string, value: any) {
-  const simpleChanges = wrapper.simpleChanges || (wrapper.simpleChanges = {});
-  const privateName = wrapper.def.inputs[publicName];
+export function recordChange(wrapper: OnChangesDirectiveWrapper, declaredName: string, value: any) {
+  const simpleChanges = wrapper.changes || (wrapper.changes = {});
 
-  const firstChange = !wrapper.hasChanged.has(privateName);
+  const firstChange = !wrapper.seenProps.has(declaredName);
   if (firstChange) {
-    wrapper.hasChanged.add(privateName);
+    wrapper.seenProps.add(declaredName);
   }
 
-  const declaredName = wrapper.def.declaredInputs[publicName];
-  const previousValue = wrapper.instance[privateName];
-  simpleChanges[declaredName] = new SimpleChange(firstChange ? undefined : previousValue, value, firstChange);
+  const previous = wrapper.previous;
+  const previousValue: SimpleChange|undefined = previous[declaredName];
+  simpleChanges[declaredName] = new SimpleChange(
+      firstChange ? undefined : previousValue && previousValue.currentValue, value, firstChange);
 }
 
 /**

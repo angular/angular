@@ -2089,7 +2089,6 @@ describe('lifecycles', () => {
       }, 2, 4, defs);
 
       const fixture = new ComponentFixture(App);
-
       expect(events).toEqual([
         'comp=parent val1=1 val2=1 - changed=[val1,val2]',
         'comp=parent val1=2 val2=2 - changed=[val1,val2]',
@@ -2429,7 +2428,7 @@ describe('lifecycles', () => {
       ]);
 
       events = [];
-      fixture.update(); // Changes are made due to lack of `bind()` call in template fn.
+      fixture.update();  // Changes are made due to lack of `bind()` call in template fn.
       expect(events).toEqual([
         'changes comp1', 'check comp1', 'changes comp2', 'check comp2', 'contentCheck comp1',
         'contentCheck comp2', 'viewCheck comp1', 'viewCheck comp2'

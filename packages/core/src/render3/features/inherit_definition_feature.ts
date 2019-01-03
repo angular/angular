@@ -35,8 +35,6 @@ function getSuperType(type: Type<any>): Type<any>&
 export function InheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
 
-  debugger;
-
   while (superType) {
     let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
     if (isComponentDef(definition)) {

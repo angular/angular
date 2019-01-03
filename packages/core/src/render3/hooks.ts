@@ -9,8 +9,9 @@
 import {assertEqual} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
-import {FLAGS, HookData, LView, LViewFlags, TView } from './interfaces/view';
-import { isOnChangesDirectiveWrapper } from './util';
+import {FLAGS, HookData, LView, LViewFlags, TView} from './interfaces/view';
+import {OnChangesDirectiveWrapper, isOnChangesDirectiveWrapper, unwrapOnChangesDirectiveWrapper} from './util';
+
 
 /**
  * Run on first template pass.
@@ -22,7 +23,7 @@ import { isOnChangesDirectiveWrapper } from './util';
  * such that it looks like `[index, hook, index, hook, index, hook]`. However,
  * if the hook happens to be an OnChanges hook, then the `index` will be _negative_,
  * this signals {@link callHooks} that it's dealing with an OnChanges hook, and needs
- * to approprately pass the {@link SimpleChanges} object.
+ * to pass the {@link SimpleChanges} object.
  *
  * @param index The index of the directive in LView
  * @param def The definition containing the hooks to setup in tView
@@ -33,11 +34,11 @@ export function setupHooksDirectiveStart(
   ngDevMode &&
       assertEqual(tView.firstTemplatePass, true, 'Should only be called on first template pass');
 
-  const { onChanges, onInit, doCheck } = def;
+  const {onChanges, onInit, doCheck} = def;
 
   if (onChanges) {
-    (tView.initHooks || (tView.initHooks = [])).push(-1 * index, onChanges);
-    (tView.checkHooks || (tView.checkHooks = [])).push(-1 * index, onChanges);
+    (tView.initHooks || (tView.initHooks = [])).push(-index, onChanges);
+    (tView.checkHooks || (tView.checkHooks = [])).push(-index, onChanges);
   }
 
   if (onInit) {
@@ -54,7 +55,7 @@ export function setupHooksDirectiveStart(
  * To be run during `elementEnd()` and similar.
  *
  * Loops through the directives on the provided `tNode` and queues hooks to be
- * run that are not intialization hooks. This is to be done at `elementEnd()` to
+ * run that are not initialization hooks. This is to be done at `elementEnd()` to
  * preserve hook execution order. Content, view, and destroy hooks for projected
  * components and directives must be called *before* their hosts.
  *
@@ -76,7 +77,8 @@ export function setupHooksDirectiveEnd(tView: TView, tNode: TNode): void {
 
       if (def.afterContentChecked) {
         (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentChecked);
-        (tView.contentCheckHooks || (tView.contentCheckHooks = [])).push(i, def.afterContentChecked);
+        (tView.contentCheckHooks || (tView.contentCheckHooks = [
+         ])).push(i, def.afterContentChecked);
       }
 
       if (def.afterViewInit) {
@@ -145,22 +147,22 @@ export function executeHooks(
  */
 export function callHooks(currentView: any[], arr: HookData): void {
   for (let i = 0; i < arr.length; i += 2) {
-    let index = arr[i] as number;
+    const index = arr[i] as number;
     const hook = arr[i + 1] as any;
     const isOnChangesHook = index < 0;
-    index = isOnChangesHook ? -index : index;
-    const record = currentView[index];
-    const instance = isOnChangesDirectiveWrapper(record) ? record.instance : record;
+    const record = currentView[isOnChangesHook ? -index : index];
+    const directive = unwrapOnChangesDirectiveWrapper(record);
 
-    debugger;
     if (isOnChangesHook) {
-      const simpleChanges = record.simpleChanges;
-      if (simpleChanges) {
-        record.simpleChanges = null;
-        hook.call(instance, simpleChanges);
+      const onChanges: OnChangesDirectiveWrapper = record;
+      const changes = onChanges.changes;
+      if (changes) {
+        onChanges.previous = changes;
+        onChanges.changes = null;
+        hook.call(onChanges.instance, changes);
       }
     } else {
-      hook.call(instance);
+      hook.call(directive);
     }
   }
 }

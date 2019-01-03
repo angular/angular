@@ -15,7 +15,7 @@ import {checkNoChanges, checkNoChangesInRootView, checkView, detectChangesInRoot
 import {TNode, TNodeType, TViewNode} from './interfaces/node';
 import {FLAGS, HOST, HOST_NODE, LView, LViewFlags, PARENT, RENDERER_FACTORY} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
-import {getNativeByTNode} from './util';
+import {getNativeByTNode, unwrapOnChangesDirectiveWrapper} from './util';
 
 
 
@@ -271,11 +271,8 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   }
 
   private _lookUpContext(): T {
-    const record = this._lView[PARENT] ![this._componentIndex];
-
-    // If the component/directive implements onChanges, its instance is stored
-    // in an array next to SimpleChanges
-    return Array.isArray(record) ? record[0] : record;
+    return this._context =
+               unwrapOnChangesDirectiveWrapper(this._lView[PARENT] ![this._componentIndex] as T);
   }
 }
 

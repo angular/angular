@@ -16,7 +16,7 @@ import {assertComponentType, assertDefined} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {publishDefaultGlobalUtils} from './global_utils';
-import {setupHooksDirectiveStart, setupHooksDirectiveEnd} from './hooks';
+import {setupHooksDirectiveEnd, setupHooksDirectiveStart} from './hooks';
 import {CLEAN_PROMISE, createLView, createNodeAtIndex, createTNode, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
@@ -239,7 +239,8 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
   setupHooksDirectiveStart(dirIndex, def, rootTView);
   // TODO(misko): replace `as TNode` with createTNode call. (needs refactoring to lose dep on
   // LNode).
-  setupHooksDirectiveEnd(rootTView, { directiveStart: dirIndex, directiveEnd: dirIndex + 1 } as TNode);
+  setupHooksDirectiveEnd(
+      rootTView, { directiveStart: dirIndex, directiveEnd: dirIndex + 1 } as TNode);
 }
 
 /**

@@ -798,10 +798,10 @@
     "name": "getRenderParent"
   },
   {
-    "name": "getRootContext"
+    "name": "getRootContext$2"
   },
   {
-    "name": "getRootView"
+    "name": "getRootView$1"
   },
   {
     "name": "getSinglePropIndexValue"
@@ -903,7 +903,7 @@
     "name": "isComponent"
   },
   {
-    "name": "isComponentDef"
+    "name": "isComponentDef$1"
   },
   {
     "name": "isContextDirty"
@@ -1231,6 +1231,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "unwrapOnChangesDirectiveWrapper"
   },
   {
     "name": "updateClassProp"

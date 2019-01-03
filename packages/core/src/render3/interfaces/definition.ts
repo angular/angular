@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation, SimpleChanges} from '../../core';
+import {SimpleChanges, ViewEncapsulation} from '../../core';
 import {Type} from '../../type';
+
 import {CssSelectorList} from './projection';
+
 
 
 /**

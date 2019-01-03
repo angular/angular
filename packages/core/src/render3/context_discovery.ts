@@ -12,7 +12,7 @@ import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, TVIEW} from './interfaces/view';
-import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData} from './util';
+import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData, unwrapOnChangesDirectiveWrapper} from './util';
 
 
 
@@ -257,10 +257,7 @@ function findViaDirective(lView: LView, directiveInstance: {}): number {
     const directiveIndexStart = tNode.directiveStart;
     const directiveIndexEnd = tNode.directiveEnd;
     for (let i = directiveIndexStart; i < directiveIndexEnd; i++) {
-      const record = lView[i];
-      // If the record is an Array, that's because it has implemented onChanges, and
-      // we're storing a SimpleChanges object next to it like `[instance, SimpleChanges|null]`.
-      if (record === directiveInstance || (Array.isArray(record) && record[0] === directiveInstance)) {
+      if (unwrapOnChangesDirectiveWrapper(lView[i]) === directiveInstance) {
         return tNode.index;
       }
     }
