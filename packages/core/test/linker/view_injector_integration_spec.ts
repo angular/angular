@@ -557,45 +557,38 @@ class TestComp {
             .toEqual('parentService');
       });
 
-      fixmeIvy('FW-890: Overridden providers are not found during dependency resolution')
-          .it('should instantiate directives that depend on providers of a component', () => {
-            TestBed.configureTestingModule({declarations: [SimpleComponent, NeedsService]});
-            TestBed.overrideComponent(
-                SimpleComponent,
-                {set: {providers: [{provide: 'service', useValue: 'hostService'}]}});
-            TestBed.overrideComponent(
-                SimpleComponent, {set: {template: '<div needsService></div>'}});
-            const el = createComponent('<div simpleComponent></div>');
-            expect(el.children[0].children[0].injector.get(NeedsService).service)
-                .toEqual('hostService');
-          });
+      it('should instantiate directives that depend on providers of a component', () => {
+        TestBed.configureTestingModule({declarations: [SimpleComponent, NeedsService]});
+        TestBed.overrideComponent(
+            SimpleComponent, {set: {providers: [{provide: 'service', useValue: 'hostService'}]}});
+        TestBed.overrideComponent(SimpleComponent, {set: {template: '<div needsService></div>'}});
+        const el = createComponent('<div simpleComponent></div>');
+        expect(el.children[0].children[0].injector.get(NeedsService).service)
+            .toEqual('hostService');
+      });
 
-      fixmeIvy('FW-890: Overridden providers are not found during dependency resolution')
-          .it('should instantiate directives that depend on view providers of a component', () => {
-            TestBed.configureTestingModule({declarations: [SimpleComponent, NeedsService]});
-            TestBed.overrideComponent(
-                SimpleComponent,
-                {set: {providers: [{provide: 'service', useValue: 'hostService'}]}});
-            TestBed.overrideComponent(
-                SimpleComponent, {set: {template: '<div needsService></div>'}});
-            const el = createComponent('<div simpleComponent></div>');
-            expect(el.children[0].children[0].injector.get(NeedsService).service)
-                .toEqual('hostService');
-          });
+      it('should instantiate directives that depend on view providers of a component', () => {
+        TestBed.configureTestingModule({declarations: [SimpleComponent, NeedsService]});
+        TestBed.overrideComponent(
+            SimpleComponent, {set: {providers: [{provide: 'service', useValue: 'hostService'}]}});
+        TestBed.overrideComponent(SimpleComponent, {set: {template: '<div needsService></div>'}});
+        const el = createComponent('<div simpleComponent></div>');
+        expect(el.children[0].children[0].injector.get(NeedsService).service)
+            .toEqual('hostService');
+      });
 
-      fixmeIvy('FW-890: Overridden providers are not found during dependency resolution')
-          .it('should instantiate directives in a root embedded view that depend on view providers of a component',
-              () => {
-                TestBed.configureTestingModule({declarations: [SimpleComponent, NeedsService]});
-                TestBed.overrideComponent(
-                    SimpleComponent,
-                    {set: {providers: [{provide: 'service', useValue: 'hostService'}]}});
-                TestBed.overrideComponent(
-                    SimpleComponent, {set: {template: '<div *ngIf="true" needsService></div>'}});
-                const el = createComponent('<div simpleComponent></div>');
-                expect(el.children[0].children[0].injector.get(NeedsService).service)
-                    .toEqual('hostService');
-              });
+      it('should instantiate directives in a root embedded view that depend on view providers of a component',
+         () => {
+           TestBed.configureTestingModule({declarations: [SimpleComponent, NeedsService]});
+           TestBed.overrideComponent(
+               SimpleComponent,
+               {set: {providers: [{provide: 'service', useValue: 'hostService'}]}});
+           TestBed.overrideComponent(
+               SimpleComponent, {set: {template: '<div *ngIf="true" needsService></div>'}});
+           const el = createComponent('<div simpleComponent></div>');
+           expect(el.children[0].children[0].injector.get(NeedsService).service)
+               .toEqual('hostService');
+         });
 
       it('should instantiate directives that depend on instances in the app injector', () => {
         TestBed.configureTestingModule({declarations: [NeedsAppService]});
@@ -961,16 +954,14 @@ class TestComp {
     });
 
     describe('pipes', () => {
-      fixmeIvy('FW-890: Overridden providers are not found during dependency resolution')
-          .it('should instantiate pipes that have dependencies', () => {
-            TestBed.configureTestingModule({declarations: [SimpleDirective, PipeNeedsService]});
+      it('should instantiate pipes that have dependencies', () => {
+        TestBed.configureTestingModule({declarations: [SimpleDirective, PipeNeedsService]});
 
-            const el = createComponent(
-                '<div [simpleDirective]="true | pipeNeedsService"></div>',
-                [{provide: 'service', useValue: 'pipeService'}]);
-            expect(el.children[0].injector.get(SimpleDirective).value.service)
-                .toEqual('pipeService');
-          });
+        const el = createComponent(
+            '<div [simpleDirective]="true | pipeNeedsService"></div>',
+            [{provide: 'service', useValue: 'pipeService'}]);
+        expect(el.children[0].injector.get(SimpleDirective).value.service).toEqual('pipeService');
+      });
 
       fixmeIvy('FW-894: Pipes don\'t overwrite pipes with later entry in the pipes array')
           .it('should overwrite pipes with later entry in the pipes array', () => {
