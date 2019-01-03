@@ -1227,4 +1227,32 @@ describe('ngtsc behavioral tests', () => {
       expect(dtsContents).toContain('/// <amd-module name="@mymodule" />');
     });
   });
+
+  it('should execute custom transformers', () => {
+    let beforeCount = 0;
+    let afterCount = 0;
+
+    env.tsconfig();
+    env.write('test.ts', `
+      import {NgModule} from '@angular/core';
+
+      @NgModule({})
+      class Module {}
+    `);
+
+    env.driveMain({
+      beforeTs: [() => sourceFile => {
+        beforeCount++;
+        return sourceFile;
+      }],
+      afterTs: [() => sourceFile => {
+        afterCount++;
+        return sourceFile;
+      }],
+    });
+
+    expect(beforeCount).toBe(1);
+    expect(afterCount).toBe(1);
+  });
+
 });
