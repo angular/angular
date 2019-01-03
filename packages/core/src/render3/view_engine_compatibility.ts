@@ -190,7 +190,7 @@ export function createContainerRef(
         const parentTNode = getParentInjectorTNode(parentLocation, this._hostView, this._hostTNode);
 
         return !hasParentInjector(parentLocation) || parentTNode == null ?
-            new NullInjector() :
+            new NodeInjector(null, this._hostView) :
             new NodeInjector(parentTNode, parentView);
       }
 
