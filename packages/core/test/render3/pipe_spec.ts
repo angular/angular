@@ -39,7 +39,8 @@ describe('pipe', () => {
     person = new Person();
   });
 
-  const pipes = () => [CountingPipe, MultiArgPipe, CountingImpurePipe];
+  const pipes =
+      () => [CountingPipe, MultiArgPipe, CountingImpurePipe, DuplicatePipe1, DuplicatePipe2];
 
   it('should support interpolation', () => {
     function Template(rf: RenderFlags, person: Person) {
@@ -178,6 +179,21 @@ describe('pipe', () => {
     renderLog.clear();
     renderToHtml(Template, person, 2, 3, null, pipes, rendererFactory2);
     expect(renderLog.log).toEqual([]);
+  });
+
+  it('should support duplicates by using the later entry', () => {
+    function Template(rf: RenderFlags, person: Person) {
+      if (rf & RenderFlags.Create) {
+        text(0);
+        pipe(1, 'duplicatePipe');
+      }
+      if (rf & RenderFlags.Update) {
+        textBinding(0, interpolation1('', pipeBind1(1, 1, person.name), ''));
+      }
+    }
+
+    person.init('bob', null);
+    expect(renderToHtml(Template, person, 2, 3, null, pipes)).toEqual('bob from duplicate 2');
   });
 
   describe('pure', () => {
@@ -494,6 +510,28 @@ class MultiArgPipe implements PipeTransform {
     name: 'multiArgPipe',
     type: MultiArgPipe,
     factory: function MultiArgPipe_Factory() { return new MultiArgPipe(); },
+  });
+}
+
+@Pipe({name: 'duplicatePipe'})
+class DuplicatePipe1 implements PipeTransform {
+  transform(value: any) { return `${value} from duplicate 1`; }
+
+  static ngPipeDef = definePipe({
+    name: 'duplicatePipe',
+    type: DuplicatePipe1,
+    factory: function DuplicatePipe1_Factory() { return new DuplicatePipe1(); },
+  });
+}
+
+@Pipe({name: 'duplicatePipe'})
+class DuplicatePipe2 implements PipeTransform {
+  transform(value: any) { return `${value} from duplicate 2`; }
+
+  static ngPipeDef = definePipe({
+    name: 'duplicatePipe',
+    type: DuplicatePipe2,
+    factory: function DuplicatePipe2_Factory() { return new DuplicatePipe2(); },
   });
 }
 
