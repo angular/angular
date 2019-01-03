@@ -25,12 +25,12 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     afterEach(() => {
-      const link = getDOM().querySelector(this._doc, 'link[rel*=\'icon\']') ||
-          document.createElement('link');
+      const link =
+          getDOM().querySelector(doc, 'link[rel*=\'icon\']') || document.createElement('link');
       link.type = 'image/x-icon';
       link.rel = 'shortcut icon';
       link.href = initialFavicon.href;
-      getDOM().getElementsByTagName(this._doc, 'head')[0].appendChild(link);
+      getDOM().getElementsByTagName(doc, 'head')[0].appendChild(link);
     });
 
     it('should allow reading initial favicon', () => {
@@ -43,8 +43,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
     it('should set a favicon on the injected document', () => {
       faviconService.setFavicon('test favicon url');
-      expect(getDOM().querySelector(doc, 'link[rel*=\'icon\']').href).toEqual('test favicon url');
-      expect(faviconService.getFavicon().href).toEqual('test favicon url');
+      expect(getDOM().querySelector(doc, 'link[rel*=\'icon\']').href).toEqual('/test favicon url');
+      expect(faviconService.getFavicon().href).toEqual('/test favicon url');
     });
   });
 
