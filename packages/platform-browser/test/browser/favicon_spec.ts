@@ -34,7 +34,12 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     it('should allow reading initial favicon',
-       () => { expect(faviconService.getFavicon().href).toEqual(initialFavicon.href); });
+       () => {
+        if (initialFavicon === null) {
+          expect(faviconService.getFavicon()).toBeNull();
+        } else {
+          expect(faviconService.getFavicon().href).toEqual(initialFavicon.href);
+        } });
 
     it('should set a favicon on the injected document', () => {
       faviconService.setFavicon('test favicon url');
@@ -58,6 +63,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     it('should inject Favicon service when using BrowserModule',
-       () => { expect(TestBed.get(DependsOnFavicon).title).toBeAnInstanceOf(Favicon); });
+       () => { expect(TestBed.get(DependsOnFavicon).favicon).toBeAnInstanceOf(Favicon); });
   });
 }
