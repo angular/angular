@@ -8,8 +8,8 @@
 
 import {wrappedError} from '../error_handler';
 import {ERROR_ORIGINAL_ERROR, getOriginalError} from '../errors';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {Type} from '../interfaces/type';
+import {stringify} from '../utils/stringify';
 
 import {ReflectiveInjector} from './reflective_injector';
 import {ReflectiveKey} from './reflective_key';

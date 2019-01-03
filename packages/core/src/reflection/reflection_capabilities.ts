@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isType} from '../type';
-import {global, stringify} from '../util';
+import {Type, isType} from '../interfaces/type';
 import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
+import {global} from '../utils/global';
+import {stringify} from '../utils/stringify';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
+
 
 
 /**

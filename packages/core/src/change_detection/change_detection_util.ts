@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getSymbolIterator, looseIdentical} from '../util';
+import {looseIdentical} from '../utils/comparison';
+import {getSymbolIterator} from '../utils/symbol';
 
 export function devModeEqual(a: any, b: any): boolean {
   const isListLikeIterableA = isListLikeIterable(a);

@@ -26,8 +26,10 @@ export {DirectRenderer as ɵDirectRenderer, RenderDebugInfo as ɵRenderDebugInfo
 export {_sanitizeHtml as ɵ_sanitizeHtml} from './sanitization/html_sanitizer';
 export {_sanitizeStyle as ɵ_sanitizeStyle} from './sanitization/style_sanitizer';
 export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';
-export {global as ɵglobal, looseIdentical as ɵlooseIdentical, stringify as ɵstringify} from './util';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
 export {isObservable as ɵisObservable, isPromise as ɵisPromise} from './util/lang';
+export {looseIdentical as ɵlooseIdentical} from './utils/comparison';
+export {global as ɵglobal} from './utils/global';
+export {stringify as ɵstringify} from './utils/stringify';
 export {clearOverrides as ɵclearOverrides, initServicesIfNeeded as ɵinitServicesIfNeeded, overrideComponentView as ɵoverrideComponentView, overrideProvider as ɵoverrideProvider} from './view/index';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider';

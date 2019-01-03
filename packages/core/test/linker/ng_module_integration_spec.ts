@@ -18,7 +18,7 @@ import {fixmeIvy, modifiedInIvy, obsoleteInIvy} from '@angular/private/testing';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
-import {stringify} from '../../src/util';
+import {stringify} from '../../src/utils/microtask';
 
 class Engine {}
 

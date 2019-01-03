@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {looseIdentical, stringify} from '../../util';
+import {looseIdentical} from '../../utils/comparison';
+import {stringify} from '../../utils/stringify';
 import {isJsObject} from '../change_detection_util';
 import {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory} from './keyvalue_differs';
 

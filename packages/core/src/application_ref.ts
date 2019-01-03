@@ -14,6 +14,7 @@ import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens
 import {Console} from './console';
 import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
 import {ErrorHandler} from './error_handler';
+import {Type} from './interfaces/type';
 import {isDevMode} from './is_dev_mode';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
@@ -24,9 +25,9 @@ import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {assertNgModuleType} from './render3/assert';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {Testability, TestabilityRegistry} from './testability/testability';
-import {Type} from './type';
-import {scheduleMicroTask, stringify} from './util';
 import {isPromise} from './util/lang';
+import {scheduleMicroTask} from './utils/microtask';
+import {stringify} from './utils/stringify';
 import {NgZone, NoopNgZone} from './zone/ng_zone';
 
 let _platform: PlatformRef;

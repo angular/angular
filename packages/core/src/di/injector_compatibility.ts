@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
-import {stringify} from '../util';
+import {Type} from '../interfaces/type';
+import {stringify} from '../utils/stringify';
 
 import {InjectableDef, getInjectableDef} from './defs';
 import {InjectionToken} from './injection_token';

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * Function used to sanitize the value before writing it into the renderer.
- */
-export type SanitizerFn = (value: any, tagName?: string, propName?: string) => string;
+// JS has NaN !== NaN
+export function looseIdentical(a: any, b: any): boolean {
+  return a === b || typeof a === 'number' && typeof b === 'number' && isNaN(a) && isNaN(b);
+}

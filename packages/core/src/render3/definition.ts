@@ -9,10 +9,12 @@
 import './ng_dev_mode';
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
+import {Mutable, Type} from '../interfaces/type';
 import {NgModuleDef} from '../metadata/ng_module';
 import {ViewEncapsulation} from '../metadata/view';
-import {Mutable, Type} from '../type';
-import {noSideEffects, stringify} from '../util';
+import {noSideEffects} from '../utils/closure';
+import {stringify} from '../utils/stringify';
+
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';

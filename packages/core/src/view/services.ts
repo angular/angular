@@ -11,13 +11,14 @@ import {Injector} from '../di';
 import {InjectableDef, getInjectableDef} from '../di/defs';
 import {InjectableType} from '../di/injectable';
 import {ErrorHandler} from '../error_handler';
+import {Type} from '../interfaces/type';
 import {isDevMode} from '../is_dev_mode';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
 import {Sanitizer} from '../sanitization/security';
-import {Type} from '../type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
+
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';

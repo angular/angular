@@ -10,7 +10,7 @@ import {getInjectableDef, getInjectorDef} from '../di/defs';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {InjectFlags, injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
-import {Type} from '../type';
+import {Type} from '../interfaces/type';
 
 import {assertDefined, assertEqual} from './assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';

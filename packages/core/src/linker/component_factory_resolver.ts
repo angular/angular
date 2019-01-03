@@ -7,8 +7,8 @@
  */
 
 import {Injector} from '../di/injector';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {Type} from '../interfaces/type';
+import {stringify} from '../utils/stringify';
 
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {NgModuleRef} from './ng_module_factory';

@@ -171,39 +171,37 @@ function declareTests(config?: {useJit: boolean}) {
         checkEscapeOfHrefProperty(fixture, true);
       });
 
-      fixmeIvy('FW-785: Host bindings are not sanitised')
-          .it('should escape unsafe properties if they are used in host bindings', () => {
-            @Directive({selector: '[dirHref]'})
-            class HrefDirective {
-              // TODO(issue/24571): remove '!'.
-              @HostBinding('href') @Input()
-              dirHref !: string;
-            }
+      it('should escape unsafe properties if they are used in host bindings', () => {
+        @Directive({selector: '[dirHref]'})
+        class HrefDirective {
+          // TODO(issue/24571): remove '!'.
+          @HostBinding('href') @Input()
+          dirHref !: string;
+        }
 
-            const template = `<a [dirHref]="ctxProp">Link Title</a>`;
-            TestBed.configureTestingModule({declarations: [HrefDirective]});
-            TestBed.overrideComponent(SecuredComponent, {set: {template}});
-            const fixture = TestBed.createComponent(SecuredComponent);
+        const template = `<a [dirHref]="ctxProp">Link Title</a>`;
+        TestBed.configureTestingModule({declarations: [HrefDirective]});
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+        const fixture = TestBed.createComponent(SecuredComponent);
 
-            checkEscapeOfHrefProperty(fixture, false);
-          });
+        checkEscapeOfHrefProperty(fixture, false);
+      });
 
-      fixmeIvy('FW-785: Host bindings are not sanitised')
-          .it('should escape unsafe attributes if they are used in host bindings', () => {
-            @Directive({selector: '[dirHref]'})
-            class HrefDirective {
-              // TODO(issue/24571): remove '!'.
-              @HostBinding('attr.href') @Input()
-              dirHref !: string;
-            }
+      it('should escape unsafe attributes if they are used in host bindings', () => {
+        @Directive({selector: '[dirHref]'})
+        class HrefDirective {
+          // TODO(issue/24571): remove '!'.
+          @HostBinding('attr.href') @Input()
+          dirHref !: string;
+        }
 
-            const template = `<a [dirHref]="ctxProp">Link Title</a>`;
-            TestBed.configureTestingModule({declarations: [HrefDirective]});
-            TestBed.overrideComponent(SecuredComponent, {set: {template}});
-            const fixture = TestBed.createComponent(SecuredComponent);
+        const template = `<a [dirHref]="ctxProp">Link Title</a>`;
+        TestBed.configureTestingModule({declarations: [HrefDirective]});
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+        const fixture = TestBed.createComponent(SecuredComponent);
 
-            checkEscapeOfHrefProperty(fixture, true);
-          });
+        checkEscapeOfHrefProperty(fixture, true);
+      });
 
       it('should escape unsafe style values', () => {
         const template = `<div [style.background]="ctxProp">Text</div>`;

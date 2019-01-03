@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global} from '../util';
+import {global} from '../utils/global';
 
 import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from './assert';
 import {ACTIVE_INDEX, LCONTAINER_LENGTH, LContainer} from './interfaces/container';

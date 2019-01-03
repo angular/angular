@@ -701,7 +701,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         }
       } else if (instruction) {
         const params: any[] = [];
-        const sanitizationRef = resolveSanitizationFn(input, input.securityContext);
+        const isAttributeBinding = input.type === BindingType.Attribute;
+        const sanitizationRef = resolveSanitizationFn(input.securityContext, isAttributeBinding);
         if (sanitizationRef) params.push(sanitizationRef);
 
         // TODO(chuckj): runtime: security context
@@ -1571,7 +1572,7 @@ export function makeBindingParser(
       new Parser(new Lexer()), interpolationConfig, new DomElementSchemaRegistry(), null, []);
 }
 
-function resolveSanitizationFn(input: t.BoundAttribute, context: core.SecurityContext) {
+export function resolveSanitizationFn(context: core.SecurityContext, isAttribute?: boolean) {
   switch (context) {
     case core.SecurityContext.HTML:
       return o.importExpr(R3.sanitizeHtml);
@@ -1581,7 +1582,7 @@ function resolveSanitizationFn(input: t.BoundAttribute, context: core.SecurityCo
       // the compiler does not fill in an instruction for [style.prop?] binding
       // values because the style algorithm knows internally what props are subject
       // to sanitization (only [attr.style] values are explicitly sanitized)
-      return input.type === BindingType.Attribute ? o.importExpr(R3.sanitizeStyle) : null;
+      return isAttribute ? o.importExpr(R3.sanitizeStyle) : null;
     case core.SecurityContext.URL:
       return o.importExpr(R3.sanitizeUrl);
     case core.SecurityContext.RESOURCE_URL:

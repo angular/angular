@@ -7,7 +7,7 @@
  */
 
 import {InjectionToken} from '../di/injection_token';
-import {Type} from '../type';
+import {Type} from '../interfaces/type';
 import {makeParamDecorator, makePropDecorator} from '../util/decorators';
 
 /**

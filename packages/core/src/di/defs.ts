@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interfaces/type';
 import {NG_INJECTABLE_DEF, NG_INJECTOR_DEF} from '../render3/fields';
-import {Type} from '../type';
 
 import {ClassProvider, ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
+
 
 /**
  * Information about how a type or `InjectionToken` interfaces with the DI system.

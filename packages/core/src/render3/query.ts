@@ -8,14 +8,10 @@
 
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
-import {Observable} from 'rxjs';
-
-import {EventEmitter} from '../event_emitter';
+import {Type} from '../interfaces/type';
 import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
-import {Type} from '../type';
-import {getSymbolIterator} from '../util';
 
 import {assertDefined, assertEqual, assertPreviousIsParent} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';

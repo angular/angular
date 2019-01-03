@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interfaces/type';
 import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
-import {Type} from '../type';
 import {getClosureSafeProperty} from '../util/property';
 
 import {inject, injectArgs} from './injector_compatibility';

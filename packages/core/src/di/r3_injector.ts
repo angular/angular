@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interfaces/type';
 import {OnDestroy} from '../metadata/lifecycle_hooks';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {stringify} from '../utils/stringify';
 
 import {InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef} from './defs';
 import {resolveForwardRef} from './forward_ref';

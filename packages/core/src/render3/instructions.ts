@@ -10,10 +10,10 @@ import {resolveForwardRef} from '../di/forward_ref';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/injector_compatibility';
+import {Type} from '../interfaces/type';
 import {QueryList} from '../linker';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
-import {Type} from '../type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
 
 import {assertDataInRange, assertDefined, assertEqual, assertHasParent, assertLessThan, assertNotEqual, assertPreviousIsParent} from './assert';
@@ -976,7 +976,9 @@ export function elementAttribute(
                                        element.removeAttribute(name);
     } else {
       ngDevMode && ngDevMode.rendererSetAttribute++;
-      const strValue = sanitizer == null ? stringify(value) : sanitizer(value);
+      const tNode = getTNode(index, lView);
+      const strValue =
+          sanitizer == null ? stringify(value) : sanitizer(value, tNode.tagName || '', name);
       isProceduralRenderer(renderer) ? renderer.setAttribute(element, name, strValue) :
                                        element.setAttribute(name, strValue);
     }
@@ -1059,7 +1061,7 @@ function elementPropertyInternal<T>(
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     // It is assumed that the sanitizer is only added when the compiler determines that the property
     // is risky, so sanitization can be done without further checks.
-    value = sanitizer != null ? (sanitizer(value) as any) : value;
+    value = sanitizer != null ? (sanitizer(value, tNode.tagName || '', propName) as any) : value;
     ngDevMode && ngDevMode.rendererSetProperty++;
     if (isProceduralRenderer(renderer)) {
       renderer.setProperty(element as RElement, propName, value);

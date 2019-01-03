@@ -12,7 +12,7 @@ import {INJECTOR, Injector} from '../di/injector';
 import {setCurrentInjector} from '../di/injector_compatibility';
 import {APP_ROOT} from '../di/scope';
 import {NgModuleRef} from '../linker/ng_module_factory';
-import {stringify} from '../util';
+import {stringify} from '../utils/stringify';
 
 import {DepDef, DepFlags, NgModuleData, NgModuleDefinition, NgModuleProviderDef, NodeFlags} from './types';
 import {splitDepsDsl, tokenKey} from './util';

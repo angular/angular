@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interfaces/type';
 import {NgModuleFactory as R3NgModuleFactory, NgModuleType} from '../render3/ng_module_ref';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {stringify} from '../utils/stringify';
+
 import {NgModuleFactory} from './ng_module_factory';
+
 
 /**
  * Used to load ng module factories.

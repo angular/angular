@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interfaces/type';
 import {injectInjector} from '../render3/di';
-import {Type} from '../type';
-import {stringify} from '../util';
 import {noop} from '../util/noop';
 import {getClosureSafeProperty} from '../util/property';
+import {stringify} from '../utils/stringify';
 
 import {defineInjectable} from './defs';
 import {resolveForwardRef} from './forward_ref';

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {global} from '../util';
+import {global} from '../utils/global';
 
 import {assertDefined} from './assert';
 import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getPlayers, getRootComponents, getViewComponent, markDirty} from './global_utils_api';

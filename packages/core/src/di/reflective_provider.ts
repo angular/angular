@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interfaces/type';
 import {reflector} from '../reflection/reflection';
-import {Type} from '../type';
 
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';

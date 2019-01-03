@@ -10,9 +10,9 @@ import {Injectable} from '../di/injectable';
 import {InjectionToken} from '../di/injection_token';
 import {StaticProvider} from '../di/provider';
 import {MissingTranslationStrategy} from '../i18n/tokens';
+import {Type} from '../interfaces/type';
 import {ViewEncapsulation} from '../metadata';
 import {NgModuleFactory as NgModuleFactoryR3} from '../render3/ng_module_ref';
-import {Type} from '../type';
 
 import {ComponentFactory} from './component_factory';
 import {NgModuleFactory} from './ng_module_factory';
