@@ -55,7 +55,7 @@ export function pipe(index: number, pipeName: string): any {
  */
 function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
   if (registry) {
-    for (let i = 0; i < registry.length; i++) {
+    for (let i = registry.length - 1; i >= 0; i--) {
       const pipeDef = registry[i];
       if (name === pipeDef.name) {
         return pipeDef;
