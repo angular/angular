@@ -954,7 +954,7 @@ export function elementEnd(): void {
   if (hasClassInput(previousOrParentTNode)) {
     const stylingContext = getStylingContext(previousOrParentTNode.index, lView);
     setInputsForProperty(
-        lView, previousOrParentTNode.inputs !['class'] !, getInitialClassNameValue(stylingContext));
+        lView, previousOrParentTNode.inputs!, 'class', getInitialClassNameValue(stylingContext));
   }
 }
 
@@ -1355,7 +1355,7 @@ export function elementStylingMap<T>(
     const initialClasses = getInitialClassNameValue(stylingContext);
     const classInputVal =
         (initialClasses.length ? (initialClasses + ' ') : '') + (classes as string);
-    setInputsForProperty(lView, tNode.inputs !['class'] !, classInputVal);
+    setInputsForProperty(lView, tNode.inputs!, 'class', classInputVal);
   } else {
     updateStylingMap(stylingContext, classes, styles);
   }
@@ -1823,12 +1823,14 @@ function generateInitialInputs(
   let i = 0;
   while (i < attrs.length) {
     const attrName = attrs[i];
-    if (attrName === AttributeMarker.SelectOnly) break;
+    // If we hit Select-Only, Classes or Styles, we're done anyway. None of those are valid inputs.
+    if (attrName === AttributeMarker.SelectOnly || attrName === AttributeMarker.Classes || attrName === AttributeMarker.Styles) break;
     if (attrName === AttributeMarker.NamespaceURI) {
       // We do not allow inputs on namespaced attributes.
       i += 4;
       continue;
     }
+
     const minifiedInputName = inputs[attrName];
     const attrValue = attrs[i + 1];
 

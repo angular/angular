@@ -315,10 +315,10 @@
     "name": "getRenderParent"
   },
   {
-    "name": "getRootContext"
+    "name": "getRootContext$2"
   },
   {
-    "name": "getRootView"
+    "name": "getRootView$1"
   },
   {
     "name": "hasParentInjector"
@@ -342,7 +342,7 @@
     "name": "isAnimationProp"
   },
   {
-    "name": "isComponentDef"
+    "name": "isComponentDef$1"
   },
   {
     "name": "isCreationMode"

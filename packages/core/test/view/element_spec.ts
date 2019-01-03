@@ -13,6 +13,7 @@ import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDynamic, compViewDef, createAndGetRootNodes, isBrowser, recordNodeToRemove} from './helper';
+import { fixmeIvy } from '@angular/private/testing';
 
 
 
@@ -184,26 +185,28 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
           return result;
         }
 
-        it('should listen to DOM events', () => {
-          const handleEventSpy = jasmine.createSpy('handleEvent');
-          const removeListenerSpy =
-              spyOn(HTMLElement.prototype, removeEventListener).and.callThrough();
-          const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              0, NodeFlags.None, null, null, 0, 'button', null, null, [[null !, 'click']],
-              handleEventSpy)]));
 
-          rootNodes[0].click();
+        fixmeIvy('FW-665: Discovery util fails with "Unable to find context associated with ..."')
+          .it('should listen to DOM events', () => {
+            const handleEventSpy = jasmine.createSpy('handleEvent');
+            const removeListenerSpy =
+                spyOn(HTMLElement.prototype, removeEventListener).and.callThrough();
+            const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
+                0, NodeFlags.None, null, null, 0, 'button', null, null, [[null !, 'click']],
+                handleEventSpy)]));
 
-          expect(handleEventSpy).toHaveBeenCalled();
-          let handleEventArgs = handleEventSpy.calls.mostRecent().args;
-          expect(handleEventArgs[0]).toBe(view);
-          expect(handleEventArgs[1]).toBe('click');
-          expect(handleEventArgs[2]).toBeTruthy();
+            rootNodes[0].click();
 
-          Services.destroyView(view);
+            expect(handleEventSpy).toHaveBeenCalled();
+            let handleEventArgs = handleEventSpy.calls.mostRecent().args;
+            expect(handleEventArgs[0]).toBe(view);
+            expect(handleEventArgs[1]).toBe('click');
+            expect(handleEventArgs[2]).toBeTruthy();
 
-          expect(removeListenerSpy).toHaveBeenCalled();
-        });
+            Services.destroyView(view);
+
+            expect(removeListenerSpy).toHaveBeenCalled();
+          });
 
         it('should listen to window events', () => {
           const handleEventSpy = jasmine.createSpy('handleEvent');
@@ -251,35 +254,39 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
           expect(removeListenerSpy).toHaveBeenCalled();
         });
 
-        it('should preventDefault only if the handler returns false', () => {
-          let eventHandlerResult: any;
-          let preventDefaultSpy: jasmine.Spy = undefined !;
 
-          const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
-              0, NodeFlags.None, null, null, 0, 'button', null, null, [[null !, 'click']],
-              (view, eventName, event) => {
-                preventDefaultSpy = spyOn(event, 'preventDefault').and.callThrough();
-                return eventHandlerResult;
-              })]));
+        fixmeIvy('FW-665: Discovery util fails with "Unable to find context associated with ..."')
+          .it('should preventDefault only if the handler returns false', () => {
+            let eventHandlerResult: any;
+            let preventDefaultSpy: jasmine.Spy = undefined !;
 
-          eventHandlerResult = undefined;
-          rootNodes[0].click();
-          expect(preventDefaultSpy).not.toHaveBeenCalled();
+            const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(
+                0, NodeFlags.None, null, null, 0, 'button', null, null, [[null !, 'click']],
+                (view, eventName, event) => {
+                  preventDefaultSpy = spyOn(event, 'preventDefault').and.callThrough();
+                  return eventHandlerResult;
+                })]));
 
-          eventHandlerResult = true;
-          rootNodes[0].click();
-          expect(preventDefaultSpy).not.toHaveBeenCalled();
+            eventHandlerResult = undefined;
+            rootNodes[0].click();
+            expect(preventDefaultSpy).not.toHaveBeenCalled();
 
-          eventHandlerResult = 'someString';
-          rootNodes[0].click();
-          expect(preventDefaultSpy).not.toHaveBeenCalled();
+            eventHandlerResult = true;
+            rootNodes[0].click();
+            expect(preventDefaultSpy).not.toHaveBeenCalled();
 
-          eventHandlerResult = false;
-          rootNodes[0].click();
-          expect(preventDefaultSpy).toHaveBeenCalled();
-        });
+            eventHandlerResult = 'someString';
+            rootNodes[0].click();
+            expect(preventDefaultSpy).not.toHaveBeenCalled();
 
-        it('should report debug info on event errors', () => {
+            eventHandlerResult = false;
+            rootNodes[0].click();
+            expect(preventDefaultSpy).toHaveBeenCalled();
+          });
+
+
+        fixmeIvy('FW-665: Discovery util fails with "Unable to find context associated with ..."')
+          .it('should report debug info on event errors', () => {
           const handleErrorSpy = spyOn(TestBed.get(ErrorHandler), 'handleError');
           const addListenerSpy = spyOn(HTMLElement.prototype, addEventListener).and.callThrough();
           const {view, rootNodes} = createAndAttachAndGetRootNodes(compViewDef([elementDef(

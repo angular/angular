@@ -11,6 +11,7 @@ import {ArgumentType, BindingFlags, NodeCheckFn, NodeFlags, Services, ViewData, 
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {callMostRecentEventListenerHandler, compViewDef, createAndGetRootNodes, createRootView, isBrowser, recordNodeToRemove} from './helper';
+import { fixmeIvy } from '@angular/private/testing';
 
 
 
@@ -199,62 +200,63 @@ const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener'
       });
 
       if (isBrowser()) {
-        it('should support OnPush components', () => {
-          let compInputValue: any;
-          class AComp {
-            a: any;
-          }
+        fixmeIvy('FW-665: Discovery util fails with "Unable to find context associated with ..."')
+          .it('should support OnPush components', () => {
+            let compInputValue: any;
+            class AComp {
+              a: any;
+            }
 
-          const update = jasmine.createSpy('updater');
+            const update = jasmine.createSpy('updater');
 
-          const addListenerSpy = spyOn(HTMLElement.prototype, addEventListener).and.callThrough();
+            const addListenerSpy = spyOn(HTMLElement.prototype, addEventListener).and.callThrough();
 
-          const {view} = createAndGetRootNodes(compViewDef(
-              [
-                elementDef(
-                    0, NodeFlags.None, null, null, 1, 'div', null, null, null, null,
-                    () => {
-                      return compViewDef(
-                          [
-                            elementDef(
-                                0, NodeFlags.None, null, null, 0, 'span', null, null,
-                                [[null !, 'click']]),
-                          ],
-                          update, null, ViewFlags.OnPush);
-                    }),
-                directiveDef(1, NodeFlags.Component, null, 0, AComp, [], {a: [0, 'a']}),
-              ],
-              (check, view) => { check(view, 1, ArgumentType.Inline, compInputValue); }));
+            const {view} = createAndGetRootNodes(compViewDef(
+                [
+                  elementDef(
+                      0, NodeFlags.None, null, null, 1, 'div', null, null, null, null,
+                      () => {
+                        return compViewDef(
+                            [
+                              elementDef(
+                                  0, NodeFlags.None, null, null, 0, 'span', null, null,
+                                  [[null !, 'click']]),
+                            ],
+                            update, null, ViewFlags.OnPush);
+                      }),
+                  directiveDef(1, NodeFlags.Component, null, 0, AComp, [], {a: [0, 'a']}),
+                ],
+                (check, view) => { check(view, 1, ArgumentType.Inline, compInputValue); }));
 
-          Services.checkAndUpdateView(view);
+            Services.checkAndUpdateView(view);
 
-          // auto detach
-          update.calls.reset();
-          Services.checkAndUpdateView(view);
-          expect(update).not.toHaveBeenCalled();
+            // auto detach
+            update.calls.reset();
+            Services.checkAndUpdateView(view);
+            expect(update).not.toHaveBeenCalled();
 
-          // auto attach on input changes
-          update.calls.reset();
-          compInputValue = 'v1';
-          Services.checkAndUpdateView(view);
-          expect(update).toHaveBeenCalled();
+            // auto attach on input changes
+            update.calls.reset();
+            compInputValue = 'v1';
+            Services.checkAndUpdateView(view);
+            expect(update).toHaveBeenCalled();
 
-          // auto detach
-          update.calls.reset();
-          Services.checkAndUpdateView(view);
-          expect(update).not.toHaveBeenCalled();
+            // auto detach
+            update.calls.reset();
+            Services.checkAndUpdateView(view);
+            expect(update).not.toHaveBeenCalled();
 
-          // auto attach on events
-          callMostRecentEventListenerHandler(addListenerSpy, 'SomeEvent');
-          update.calls.reset();
-          Services.checkAndUpdateView(view);
-          expect(update).toHaveBeenCalled();
+            // auto attach on events
+            callMostRecentEventListenerHandler(addListenerSpy, 'SomeEvent');
+            update.calls.reset();
+            Services.checkAndUpdateView(view);
+            expect(update).toHaveBeenCalled();
 
-          // auto detach
-          update.calls.reset();
-          Services.checkAndUpdateView(view);
-          expect(update).not.toHaveBeenCalled();
-        });
+            // auto detach
+            update.calls.reset();
+            Services.checkAndUpdateView(view);
+            expect(update).not.toHaveBeenCalled();
+          });
       }
 
       it('should not stop dirty checking views that threw errors in change detection', () => {
