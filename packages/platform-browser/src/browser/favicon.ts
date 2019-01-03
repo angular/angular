@@ -34,7 +34,7 @@ export class Favicon {
   /**
    * Get the favicon of the current HTML document.
    */
-  getFavicon() { return getDOM().querySelector(this._doc, 'link[rel*=\'icon\']') }
+  getFavicon() { return getDOM().querySelector(this._doc, 'link[rel*=\'icon\']'); }
 
   /**
    * Set the favicon of the current HTML document.
