@@ -2089,7 +2089,6 @@ describe('lifecycles', () => {
       }, 2, 4, defs);
 
       const fixture = new ComponentFixture(App);
-
       expect(events).toEqual([
         'comp=parent val1=1 val2=1 - changed=[val1,val2]',
         'comp=parent val1=2 val2=2 - changed=[val1,val2]',
