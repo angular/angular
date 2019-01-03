@@ -200,7 +200,7 @@ export function performWatchCompilation(host: PerformWatchHost):
       rootNames: cachedOptions.rootNames,
       options: cachedOptions.options,
       host: cachedCompilerHost,
-      oldProgram: oldProgram,
+      oldProgram,
       emitCallback: host.createEmitCallback(cachedOptions.options)
     });
 
