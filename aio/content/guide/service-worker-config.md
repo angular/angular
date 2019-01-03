@@ -90,6 +90,8 @@ The `installMode` determines how these resources are initially cached. The `inst
 
 * `lazy` does not cache any of the resources up front. Instead, the Angular service worker only caches resources for which it receives requests. This is an on-demand caching mode. Resources that are never requested will not be cached. This is useful for things like images at different resolutions, so the service worker only caches the correct assets for the particular screen and orientation.
 
+Defaults to `prefetch`.
+
 ### `updateMode`
 
 For resources already in the cache, the `updateMode` determines the caching behavior when a new version of the app is discovered. Any resources in the group that have changed since the previous version are updated in accordance with `updateMode`.
@@ -98,7 +100,7 @@ For resources already in the cache, the `updateMode` determines the caching beha
 
 * `lazy` tells the service worker to not cache those resources. Instead, it treats them as unrequested and waits until they're requested again before updating them. An `updateMode` of `lazy` is only valid if the `installMode` is also `lazy`.
 
-Defaults to the same as `installMode`.
+Defaults to the value `installMode` is set to.
 
 ### `resources`
 
