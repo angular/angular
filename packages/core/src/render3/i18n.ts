@@ -834,9 +834,6 @@ export function i18n(index: number, message: string, subTemplateIndex?: number):
 export function i18nAttributes(index: number, values: string[]): void {
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
-  ngDevMode &&
-      assertEqual(
-          tView.firstTemplatePass, true, `You should only call i18nEnd on first template pass`);
   if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
     i18nAttributesFirstPass(tView, index, values);
   }

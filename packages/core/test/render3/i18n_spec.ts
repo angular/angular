@@ -1359,6 +1359,23 @@ describe('Runtime i18n', () => {
         expect(fixture.html)
             .toEqual(
                 '<div><child><p><any></any><b title="Enfant de Parent">Je suis projeté depuis Parent</b><any></any></p></child></div>');
+
+        // it should be able to render a new component with the same template code
+        const fixture2 = new ComponentFixture(Parent);
+        expect(fixture2.html).toEqual(fixture.html);
+
+        // Updating the fixture should work
+        fixture2.component.name = 'Parent 2';
+        fixture.update();
+        fixture2.update();
+        expect(fixture2.html)
+            .toEqual(
+                '<div><child><p><any></any><b title="Enfant de Parent 2">Je suis projeté depuis Parent 2</b><any></any></p></child></div>');
+
+        // The first fixture should not have changed
+        expect(fixture.html)
+            .toEqual(
+                '<div><child><p><any></any><b title="Enfant de Parent">Je suis projeté depuis Parent</b><any></any></p></child></div>');
       });
 
       it('should re-project translations when multiple projections', () => {
