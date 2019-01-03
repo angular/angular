@@ -31,7 +31,7 @@
               "prefetch",
               "lazy"
             ],
-            "description": "For resources already in the cache, determines the caching behavior when a new version of the app is discovered. Any resources in the group that have changed since the previous version are updated in accordance with 'updateMode'. 'prefetch' tells the service worker to download and cache the changed resources immediately. 'lazy' tells the service worker to not cache those resources. Instead, it treats them as unrequested and waits until they're requested again before updating them. An 'updateMode' of lazy is only valid if the 'installMode' is also lazy. Defaults to the same value as 'installMode'."
+            "description": "For resources already in the cache, determines the caching behavior when a new version of the app is discovered. Any resources in the group that have changed since the previous version are updated in accordance with 'updateMode'. 'prefetch' tells the service worker to download and cache the changed resources immediately. 'lazy' tells the service worker to not cache those resources. Instead, it treats them as unrequested and waits until they're requested again before updating them. An 'updateMode' of lazy is only valid if the 'installMode' is also lazy. Defaults to the value `installMode` is set to."
           },
           "resources": {
             "type": "object",
