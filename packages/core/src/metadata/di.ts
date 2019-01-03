@@ -338,7 +338,7 @@ export interface ViewChildDecorator {
    *
    * Supported selectors include:
    *   * any class with the `@Component` or `@Directive` decorator
-   *   * a template reference variable as a string (e.g. query `<my-component #cmp></my-component>
+   *   * a template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
    * with `@ViewChild('cmp')`)
    *   * any provider defined in the child component tree of the current component (e.g.
    * `@ViewChild(SomeService) someService: SomeService`)
