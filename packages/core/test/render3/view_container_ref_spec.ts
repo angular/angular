@@ -1926,6 +1926,8 @@ describe('ViewContainerRef', () => {
       }
 
       clear() { this._vcRef.clear(); }
+
+      getVCRefParentInjector() { return this._vcRef.parentInjector; }
     }
 
     // https://stackblitz.com/edit/angular-xxpffd?file=src%2Findex.html
@@ -1951,6 +1953,21 @@ describe('ViewContainerRef', () => {
       fixture.update();
       expect(fixture.outerHtml).toBe('<div host="mark"></div>');
     });
+
+    it('should allow getting the parentInjector of the VCRef which was injected into the root (bootstrapped) component',
+       () => {
+         const fixture = new ComponentFixture(AppCmpt, {
+           injector: {
+             get: (token: any) => {
+               if (token === 'foo') return 'bar';
+             }
+           }
+         });
+         expect(fixture.outerHtml).toBe('<div host="mark"></div>');
+
+         const parentInjector = fixture.component.getVCRefParentInjector();
+         expect(parentInjector.get('foo')).toEqual('bar');
+       });
 
     it('should check bindings for components dynamically created by root component', () => {
       class DynamicCompWithBindings {

@@ -758,25 +758,23 @@ class TestComp {
                     .toThrowError('NodeInjector: NOT_FOUND [SimpleDirective]');
               });
 
-      fixmeIvy('FW-638: Exception thrown when getting VCRef.parentInjector on the root view')
-          .it('should allow to use the NgModule injector from a root ViewContainerRef.parentInjector',
-              () => {
-                @Component({template: ''})
-                class MyComp {
-                  constructor(public vc: ViewContainerRef) {}
-                }
+      it('should allow to use the NgModule injector from a root ViewContainerRef.parentInjector',
+         () => {
+           @Component({template: ''})
+           class MyComp {
+             constructor(public vc: ViewContainerRef) {}
+           }
 
-                const compFixture =
-                    TestBed
-                        .configureTestingModule({
-                          declarations: [MyComp],
-                          providers: [{provide: 'someToken', useValue: 'someValue'}]
-                        })
-                        .createComponent(MyComp);
+           const compFixture = TestBed
+                                   .configureTestingModule({
+                                     declarations: [MyComp],
+                                     providers: [{provide: 'someToken', useValue: 'someValue'}]
+                                   })
+                                   .createComponent(MyComp);
 
-                expect(compFixture.componentInstance.vc.parentInjector.get('someToken'))
-                    .toBe('someValue');
-              });
+           expect(compFixture.componentInstance.vc.parentInjector.get('someToken'))
+               .toBe('someValue');
+         });
     });
 
     describe('static attributes', () => {
@@ -901,31 +899,30 @@ class TestComp {
             .toBe(el.children[0].nativeElement);
       });
 
-      fixmeIvy('FW-638: Exception thrown when getting VCRef.parentInjector on the root view')
-          .it('should inject ViewContainerRef', () => {
-            @Component({template: ''})
-            class TestComp {
-              constructor(public vcr: ViewContainerRef) {}
-            }
+      it('should inject ViewContainerRef', () => {
+        @Component({template: ''})
+        class TestComp {
+          constructor(public vcr: ViewContainerRef) {}
+        }
 
-            @NgModule({
-              declarations: [TestComp],
-              entryComponents: [TestComp],
-            })
-            class TestModule {
-            }
+        @NgModule({
+          declarations: [TestComp],
+          entryComponents: [TestComp],
+        })
+        class TestModule {
+        }
 
-            const testInjector = <Injector>{
-              get: (token: any, notFoundValue: any) =>
-                       token === 'someToken' ? 'someNewValue' : notFoundValue
-            };
+        const testInjector = <Injector>{
+          get: (token: any, notFoundValue: any) =>
+                   token === 'someToken' ? 'someNewValue' : notFoundValue
+        };
 
-            const compFactory = TestBed.configureTestingModule({imports: [TestModule]})
-                                    .get(ComponentFactoryResolver)
-                                    .resolveComponentFactory(TestComp);
-            const component = compFactory.create(testInjector);
-            expect(component.instance.vcr.parentInjector.get('someToken')).toBe('someNewValue');
-          });
+        const compFactory = TestBed.configureTestingModule({imports: [TestModule]})
+                                .get(ComponentFactoryResolver)
+                                .resolveComponentFactory(TestComp);
+        const component = compFactory.create(testInjector);
+        expect(component.instance.vcr.parentInjector.get('someToken')).toBe('someNewValue');
+      });
 
       it('should inject TemplateRef', () => {
         TestBed.configureTestingModule({declarations: [NeedsViewContainerRef, NeedsTemplateRef]});
