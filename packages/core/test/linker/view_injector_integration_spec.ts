@@ -10,7 +10,7 @@ import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, Compon
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 @Directive({selector: '[simpleDirective]'})
 class SimpleDirective {
@@ -993,7 +993,7 @@ class TestComp {
         expect(el.children[0].injector.get(SimpleDirective).value.changeDetectorRef).toEqual(cdRef);
       });
 
-      fixmeIvy('FW-821: Pure pipes are instantiated differently in view engine and ivy')
+      modifiedInIvy('Pure pipes are instantiated differently in view engine and ivy')
           .it('should cache pure pipes', () => {
             TestBed.configureTestingModule({declarations: [SimpleDirective, PurePipe]});
             const el = createComponent(

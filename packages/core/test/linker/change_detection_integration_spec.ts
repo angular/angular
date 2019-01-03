@@ -589,7 +589,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
 
            }));
 
-        modifiedInIvy('FW-821: Pure pipes are instantiated differently in view engine and ivy')
+        modifiedInIvy('Pure pipes are instantiated differently in view engine and ivy')
             .it('should call pure pipes that are used multiple times only when the arguments change and share state between pipe instances',
                 fakeAsync(() => {
                   const ctx = createCompFixture(
