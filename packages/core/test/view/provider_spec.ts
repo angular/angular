@@ -185,7 +185,6 @@ import { fixmeIvy } from '@angular/private/testing';
         fixmeIvy('FW-875: The source of the error is missing in the `StaticInjectorError` message')
           .it('should throw for missing dependencies', () => {
             expect(() => {
-              debugger;
               createAndGetRootNodes(compViewDef([
                     elementDef(0, NodeFlags.None, null, null, 1, 'span'),
                     directiveDef(1, NodeFlags.None, null, 0, SomeService, ['nonExistingDep'])

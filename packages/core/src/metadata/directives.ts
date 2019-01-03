@@ -8,16 +8,14 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
-import {NG_BASE_DEF, NG_DIRECTIVE_DEF, NG_COMPONENT_DEF} from '../render3/fields';
+import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../render3/fields';
 import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '../render3/jit/directive';
 import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
 import {noop} from '../util/noop';
 import {fillProperties} from '../util/property';
-
 import {ViewEncapsulation} from './view';
-import { defaultStyleSanitizer } from '../sanitization/sanitization';
 
 
 
@@ -723,7 +721,8 @@ function updateDefFromIOProp(getProp: (baseDef: {inputs?: any, outputs?: any}) =
   return function updateIOProp(target: any, name: string, ...args: any[]) {
     const constructor = target.constructor;
 
-    let def: any = constructor[NG_COMPONENT_DEF] || constructor[NG_DIRECTIVE_DEF] || constructor[NG_BASE_DEF];
+    let def: any =
+        constructor[NG_COMPONENT_DEF] || constructor[NG_DIRECTIVE_DEF] || constructor[NG_BASE_DEF];
 
     if (!def) {
       initializeBaseDef(target);
