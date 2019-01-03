@@ -150,10 +150,11 @@ export function callHooks(currentView: any[], arr: HookData): void {
     const index = arr[i] as number;
     const hook = arr[i + 1] as any;
     const isOnChangesHook = index < 0;
-    const directive = currentView[isOnChangesHook ? -index : index];
+    const record = currentView[isOnChangesHook ? -index : index];
+    const directive = unwrapOnChangesDirectiveWrapper(record);
 
     if (isOnChangesHook) {
-      const onChanges: OnChangesDirectiveWrapper = directive;
+      const onChanges: OnChangesDirectiveWrapper = record;
       const changes = onChanges.changes;
       if (changes) {
         onChanges.previous = changes;

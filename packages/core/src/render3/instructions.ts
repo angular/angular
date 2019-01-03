@@ -119,7 +119,7 @@ export function setHostBindings(tView: TView, viewData: LView): void {
         if (instruction !== null) {
           viewData[BINDING_INDEX] = bindingRootIndex;
           instruction(
-              RenderFlags.Update, readElementValue(viewData[currentDirectiveIndex]),
+              RenderFlags.Update, unwrapOnChangesDirectiveWrapper(viewData[currentDirectiveIndex]),
               currentElementIndex);
         }
         currentDirectiveIndex++;
@@ -1779,9 +1779,9 @@ function setInputsFromAttrs<T>(
 
   const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
   if (initialInputs) {
-    const record = unwrapOnChangesDirectiveWrapper(lView[directiveIndex]);
+    const record = lView[directiveIndex];
     const hasOnChanges = isOnChangesDirectiveWrapper(record);
-    const instance = hasOnChanges ? record.instance : record;
+    const instance = hasOnChanges ? unwrapOnChangesDirectiveWrapper(record) : record;
 
     for (let i = 0; i < initialInputs.length;) {
       const minifiedKey = initialInputs[i++];
