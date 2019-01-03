@@ -1,0 +1,16 @@
+{
+  "name": "service-worker-schema",
+  "version": "0.0.0",
+  "scripts": {
+    "//test": "Ensure that `config/schema.json` is published to npm.",
+    "test": "node --eval \"require('@angular/service-worker/config/schema.json')\""
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/service-worker": "file:../../dist/packages-dist/service-worker",
+    "rxjs": "file:../../node_modules/rxjs",
+    "zone.js": "file:../../node_modules/zone.js"
+  }
+}
