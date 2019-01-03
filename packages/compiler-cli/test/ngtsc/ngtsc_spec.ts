@@ -1475,6 +1475,157 @@ describe('ngtsc behavioral tests', () => {
     expect(afterCount).toBe(1);
   });
 
+  describe('sanitization', () => {
+    it('should generate sanitizers for unsafe attributes in hostBindings fn in Directives', () => {
+      env.tsconfig();
+      env.write(`test.ts`, `
+        import {Component, Directive, HostBinding} from '@angular/core';
+
+        @Directive({
+          selector: '[unsafeAttrs]'
+        })
+        class UnsafeAttrsDirective {
+          @HostBinding('attr.href')
+          attrHref: string;
+
+          @HostBinding('attr.src')
+          attrSrc: string;
+
+          @HostBinding('attr.action')
+          attrAction: string;
+
+          @HostBinding('attr.profile')
+          attrProfile: string;
+
+          @HostBinding('attr.innerHTML')
+          attrInnerHTML: string;
+
+          @HostBinding('attr.title')
+          attrSafeTitle: string;
+        }
+
+        @Component({
+          selector: 'foo',
+          template: '<a [unsafeAttrs]="ctxProp">Link Title</a>'
+        })
+        class FooCmp {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const hostBindingsFn = `
+        hostBindings: function UnsafeAttrsDirective_HostBindings(rf, ctx, elIndex) {
+          if (rf & 1) {
+            i0.ɵallocHostVars(6);
+          }
+          if (rf & 2) {
+            i0.ɵelementAttribute(elIndex, "href", i0.ɵbind(ctx.attrHref), i0.ɵsanitizeUrlOrResourceUrl);
+            i0.ɵelementAttribute(elIndex, "src", i0.ɵbind(ctx.attrSrc), i0.ɵsanitizeUrlOrResourceUrl);
+            i0.ɵelementAttribute(elIndex, "action", i0.ɵbind(ctx.attrAction), i0.ɵsanitizeUrl);
+            i0.ɵelementAttribute(elIndex, "profile", i0.ɵbind(ctx.attrProfile), i0.ɵsanitizeResourceUrl);
+            i0.ɵelementAttribute(elIndex, "innerHTML", i0.ɵbind(ctx.attrInnerHTML), i0.ɵsanitizeHtml);
+            i0.ɵelementAttribute(elIndex, "title", i0.ɵbind(ctx.attrSafeTitle));
+          }
+        }
+      `;
+      expect(trim(jsContents)).toContain(trim(hostBindingsFn));
+    });
+
+    it('should generate sanitizers for unsafe properties in hostBindings fn in Directives', () => {
+      env.tsconfig();
+      env.write(`test.ts`, `
+        import {Component, Directive, HostBinding} from '@angular/core';
+
+        @Directive({
+          selector: '[unsafeProps]'
+        })
+        class UnsafePropsDirective {
+          @HostBinding('href')
+          propHref: string;
+
+          @HostBinding('src')
+          propSrc: string;
+
+          @HostBinding('action')
+          propAction: string;
+
+          @HostBinding('profile')
+          propProfile: string;
+
+          @HostBinding('innerHTML')
+          propInnerHTML: string;
+
+          @HostBinding('title')
+          propSafeTitle: string;
+        }
+
+        @Component({
+          selector: 'foo',
+          template: '<a [unsafeProps]="ctxProp">Link Title</a>'
+        })
+        class FooCmp {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const hostBindingsFn = `
+        hostBindings: function UnsafePropsDirective_HostBindings(rf, ctx, elIndex) {
+          if (rf & 1) {
+            i0.ɵallocHostVars(6);
+          }
+          if (rf & 2) {
+            i0.ɵelementProperty(elIndex, "href", i0.ɵbind(ctx.propHref), i0.ɵsanitizeUrlOrResourceUrl, true);
+            i0.ɵelementProperty(elIndex, "src", i0.ɵbind(ctx.propSrc), i0.ɵsanitizeUrlOrResourceUrl, true);
+            i0.ɵelementProperty(elIndex, "action", i0.ɵbind(ctx.propAction), i0.ɵsanitizeUrl, true);
+            i0.ɵelementProperty(elIndex, "profile", i0.ɵbind(ctx.propProfile), i0.ɵsanitizeResourceUrl, true);
+            i0.ɵelementProperty(elIndex, "innerHTML", i0.ɵbind(ctx.propInnerHTML), i0.ɵsanitizeHtml, true);
+            i0.ɵelementProperty(elIndex, "title", i0.ɵbind(ctx.propSafeTitle), null, true);
+          }
+        }
+      `;
+      expect(trim(jsContents)).toContain(trim(hostBindingsFn));
+    });
+
+    it('should not generate sanitizers for URL properties in hostBindings fn in Component', () => {
+      env.tsconfig();
+      env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'foo',
+          template: '<a href="example.com">Link Title</a>',
+          host: {
+            '[src]': 'srcProp',
+            '[href]': 'hrefProp',
+            '[title]': 'titleProp',
+            '[attr.src]': 'srcAttr',
+            '[attr.href]': 'hrefAttr',
+            '[attr.title]': 'titleAttr',
+          }
+        })
+        class FooCmp {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const hostBindingsFn = `
+        hostBindings: function FooCmp_HostBindings(rf, ctx, elIndex) {
+          if (rf & 1) {
+            i0.ɵallocHostVars(6);
+          }
+          if (rf & 2) {
+            i0.ɵelementProperty(elIndex, "src", i0.ɵbind(ctx.srcProp), null, true);
+            i0.ɵelementProperty(elIndex, "href", i0.ɵbind(ctx.hrefProp), null, true);
+            i0.ɵelementProperty(elIndex, "title", i0.ɵbind(ctx.titleProp), null, true);
+            i0.ɵelementAttribute(elIndex, "src", i0.ɵbind(ctx.srcAttr));
+            i0.ɵelementAttribute(elIndex, "href", i0.ɵbind(ctx.hrefAttr));
+            i0.ɵelementAttribute(elIndex, "title", i0.ɵbind(ctx.titleAttr));
+          }
+        }
+      `;
+      expect(trim(jsContents)).toContain(trim(hostBindingsFn));
+    });
+  });
 });
 
 function expectTokenAtPosition<T extends ts.Node>(

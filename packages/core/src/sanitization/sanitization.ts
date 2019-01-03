@@ -133,6 +133,39 @@ export function sanitizeScript(unsafeScript: any): string {
 }
 
 /**
+ * Detects which sanitizer to use for URL property, based on tag name and prop name.
+ *
+ * The rules are based on the RESOURCE_URL context config from
+ * `packages/compiler/src/schema/dom_security_schema.ts`.
+ * If tag and prop names don't match Resource URL schema, use URL sanitizer.
+ */
+export function getUrlSanitizer(tag: string, prop: string) {
+  if ((prop === 'src' && (tag === 'embed' || tag === 'frame' || tag === 'iframe' ||
+                          tag === 'media' || tag === 'script')) ||
+      (prop === 'href' && (tag === 'base' || tag === 'link'))) {
+    return sanitizeResourceUrl;
+  }
+  return sanitizeUrl;
+}
+
+/**
+ * Sanitizes URL, selecting sanitizer function based on tag and property names.
+ *
+ * This function is used in case we can't define security context at compile time, when only prop
+ * name is available. This happens when we generate host bindings for Directives/Components. The
+ * host element is unknown at compile time, so we defer calculation of specific sanitizer to
+ * runtime.
+ *
+ * @param unsafeUrl untrusted `url`, typically from the user.
+ * @param tag target element tag name.
+ * @param prop name of the property that contains the value.
+ * @returns `url` string which is safe to bind.
+ */
+export function sanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any {
+  return getUrlSanitizer(tag, prop)(unsafeUrl);
+}
+
+/**
  * The default style sanitizer will handle sanitization for style properties by
  * sanitizing any CSS property that can include a `url` value (usually image-based properties)
  */

@@ -151,6 +151,7 @@ export {
   sanitizeStyle as ɵsanitizeStyle,
   sanitizeUrl as ɵsanitizeUrl,
   sanitizeResourceUrl as ɵsanitizeResourceUrl,
+  sanitizeUrlOrResourceUrl as ɵsanitizeUrlOrResourceUrl,
 } from './sanitization/sanitization';
 
 export {

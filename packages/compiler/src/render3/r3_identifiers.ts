@@ -213,4 +213,6 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵsanitizeResourceUrl', moduleName: CORE};
   static sanitizeScript: o.ExternalReference = {name: 'ɵsanitizeScript', moduleName: CORE};
   static sanitizeUrl: o.ExternalReference = {name: 'ɵsanitizeUrl', moduleName: CORE};
+  static sanitizeUrlOrResourceUrl:
+      o.ExternalReference = {name: 'ɵsanitizeUrlOrResourceUrl', moduleName: CORE};
 }
