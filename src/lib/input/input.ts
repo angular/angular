@@ -310,11 +310,13 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
   }
 
   /** Focuses the input. */
-  focus(): void { this._elementRef.nativeElement.focus(); }
+  focus(): void {
+    this._elementRef.nativeElement.focus();
+  }
 
   /** Callback for the cases where the focused state of the input changes. */
   _focusChanged(isFocused: boolean) {
-    if (isFocused !== this.focused && !this.readonly) {
+    if (isFocused !== this.focused && (!this.readonly || !isFocused)) {
       this.focused = isFocused;
       this.stateChanges.next();
     }
