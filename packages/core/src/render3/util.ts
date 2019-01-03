@@ -9,16 +9,14 @@
 import {global} from '../util';
 
 import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from './assert';
-import {ACTIVE_INDEX, LContainer} from './interfaces/container';
+import {ACTIVE_INDEX, LCONTAINER_LENGTH, LContainer} from './interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
-import {TContainerNode, TElementNode, TNode, TNodeFlags} from './interfaces/node';
+import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
-
-
 
 /**
  * Returns whether the values are different from a change detection stand point.
@@ -35,6 +33,8 @@ export function stringify(value: any): string {
   if (typeof value == 'function') return value.name || value;
   if (typeof value == 'string') return value;
   if (value == null) return '';
+  if (typeof value == 'object' && typeof value.type == 'function')
+    return value.type.name || value.type;
   return '' + value;
 }
 
@@ -125,7 +125,7 @@ export function isComponentDef<T>(def: DirectiveDef<T>): def is ComponentDef<T> 
 
 export function isLContainer(value: RElement | RComment | LContainer | StylingContext): boolean {
   // Styling contexts are also arrays, but their first index contains an element node
-  return Array.isArray(value) && typeof value[ACTIVE_INDEX] === 'number';
+  return Array.isArray(value) && value.length === LCONTAINER_LENGTH;
 }
 
 export function isRootView(target: LView): boolean {
@@ -257,4 +257,34 @@ export function addAllToArray(items: any[], arr: any[]) {
   for (let i = 0; i < items.length; i++) {
     arr.push(items[i]);
   }
+}
+
+/**
+ * Given a current view, finds the nearest component's host (LElement).
+ *
+ * @param lView LView for which we want a host element node
+ * @param declarationMode indicates whether DECLARATION_VIEW or PARENT should be used to climb the
+ * tree.
+ * @returns The host node
+ */
+export function findComponentView(lView: LView, declarationMode?: boolean): LView {
+  let rootTNode = lView[HOST_NODE];
+
+  while (rootTNode && rootTNode.type === TNodeType.View) {
+    ngDevMode && assertDefined(
+                     lView[declarationMode ? DECLARATION_VIEW : PARENT],
+                     declarationMode ? 'lView.declarationView' : 'lView.parent');
+    lView = lView[declarationMode ? DECLARATION_VIEW : PARENT] !;
+    rootTNode = lView[HOST_NODE];
+  }
+
+  return lView;
+}
+
+/**
+ * Return the host TElementNode of the starting LView
+ * @param lView the starting LView.
+ */
+export function getHostTElementNode(lView: LView): TElementNode|null {
+  return findComponentView(lView, true)[HOST_NODE] as TElementNode;
 }

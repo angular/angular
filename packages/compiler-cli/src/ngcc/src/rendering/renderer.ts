@@ -15,9 +15,10 @@ import * as ts from 'typescript';
 
 import {Decorator} from '../../../ngtsc/host';
 import {CompileResult} from '@angular/compiler-cli/src/ngtsc/transform';
-import {translateStatement, translateType} from '../../../ngtsc/translator';
+import {translateStatement, translateType, ImportManager} from '../../../ngtsc/translator';
 import {NgccImportManager} from './ngcc_import_manager';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
+import {ModuleWithProvidersInfo, ModuleWithProvidersAnalyses} from '../analysis/module_with_providers_analyzer';
 import {PrivateDeclarationsAnalyses, ExportInfo} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../constants';
@@ -50,6 +51,28 @@ interface DtsClassInfo {
 }
 
 /**
+ * A structure that captures information about what needs to be rendered
+ * in a typings file.
+ *
+ * It is created as a result of processing the analysis passed to the renderer.
+ *
+ * The `renderDtsFile()` method consumes it when rendering a typings file.
+ */
+class DtsRenderInfo {
+  classInfo: DtsClassInfo[] = [];
+  moduleWithProviders: ModuleWithProvidersInfo[] = [];
+  privateExports: ExportInfo[] = [];
+}
+
+/**
+ * The collected decorators that have become redundant after the compilation
+ * of Ivy static fields. The map is keyed by the container node, such that we
+ * can tell if we should remove the entire decorator property
+ */
+export type RedundantDecoratorMap = Map<ts.Node, ts.Node[]>;
+export const RedundantDecoratorMap = Map;
+
+/**
  * A base-class for rendering an `AnalyzedFile`.
  *
  * Package formats have output files that must be rendered differently. Concrete sub-classes must
@@ -63,7 +86,8 @@ export abstract class Renderer {
 
   renderProgram(
       decorationAnalyses: DecorationAnalyses, switchMarkerAnalyses: SwitchMarkerAnalyses,
-      privateDeclarationsAnalyses: PrivateDeclarationsAnalyses): FileInfo[] {
+      privateDeclarationsAnalyses: PrivateDeclarationsAnalyses,
+      moduleWithProvidersAnalyses: ModuleWithProvidersAnalyses|null): FileInfo[] {
     const renderedFiles: FileInfo[] = [];
 
     // Transform the source files.
@@ -79,16 +103,16 @@ export abstract class Renderer {
 
     // Transform the .d.ts files
     if (this.bundle.dts) {
-      const dtsFiles = this.getTypingsFilesToRender(decorationAnalyses);
+      const dtsFiles = this.getTypingsFilesToRender(
+          decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
 
       // If the dts entry-point is not already there (it did not have compiled classes)
       // then add it now, to ensure it gets its extra exports rendered.
       if (!dtsFiles.has(this.bundle.dts.file)) {
-        dtsFiles.set(this.bundle.dts.file, []);
+        dtsFiles.set(this.bundle.dts.file, new DtsRenderInfo());
       }
       dtsFiles.forEach(
-          (classes, file) => renderedFiles.push(
-              ...this.renderDtsFile(file, classes, privateDeclarationsAnalyses)));
+          (renderInfo, file) => renderedFiles.push(...this.renderDtsFile(file, renderInfo)));
     }
 
     return renderedFiles;
@@ -113,12 +137,15 @@ export abstract class Renderer {
 
     if (compiledFile) {
       const importManager = new NgccImportManager(this.bundle.isFlat, this.isCore, IMPORT_PREFIX);
-      const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
+
+      // TODO: remove constructor param metadata and property decorators (we need info from the
+      // handlers to do this)
+      const decoratorsToRemove = this.computeDecoratorsToRemove(compiledFile.compiledClasses);
+      this.removeDecorators(outputText, decoratorsToRemove);
 
       compiledFile.compiledClasses.forEach(clazz => {
         const renderedDefinition = renderDefinitions(compiledFile.sourceFile, clazz, importManager);
         this.addDefinitions(outputText, clazz, renderedDefinition);
-        this.trackDecorators(clazz.decorators, decoratorsToRemove);
       });
 
       this.addConstants(
@@ -129,10 +156,6 @@ export abstract class Renderer {
       this.addImports(
           outputText, importManager.getAllImports(
                           compiledFile.sourceFile.fileName, this.bundle.src.r3SymbolsFile));
-
-      // TODO: remove constructor param metadata and property decorators (we need info from the
-      // handlers to do this)
-      this.removeDecorators(outputText, decoratorsToRemove);
     }
 
     // Add exports to the entry-point file
@@ -144,14 +167,12 @@ export abstract class Renderer {
     return this.renderSourceAndMap(sourceFile, input, outputText);
   }
 
-  renderDtsFile(
-      dtsFile: ts.SourceFile, dtsClasses: DtsClassInfo[],
-      privateDeclarationsAnalyses: PrivateDeclarationsAnalyses): FileInfo[] {
+  renderDtsFile(dtsFile: ts.SourceFile, renderInfo: DtsRenderInfo): FileInfo[] {
     const input = this.extractSourceMap(dtsFile);
     const outputText = new MagicString(input.source);
     const importManager = new NgccImportManager(false, this.isCore, IMPORT_PREFIX);
 
-    dtsClasses.forEach(dtsClass => {
+    renderInfo.classInfo.forEach(dtsClass => {
       const endOfClass = dtsClass.dtsDeclaration.getEnd();
       dtsClass.compilation.forEach(declaration => {
         const type = translateType(declaration.type, importManager);
@@ -160,24 +181,65 @@ export abstract class Renderer {
       });
     });
 
+    this.addModuleWithProvidersParams(outputText, renderInfo.moduleWithProviders, importManager);
     this.addImports(
         outputText, importManager.getAllImports(dtsFile.fileName, this.bundle.dts !.r3SymbolsFile));
 
-    if (dtsFile === this.bundle.dts !.file) {
-      const dtsExports = privateDeclarationsAnalyses.map(e => {
-        if (!e.dtsFrom) {
-          throw new Error(
-              `There is no typings path for ${e.identifier} in ${e.from}.\n` +
-              `We need to add an export for this class to a .d.ts typings file because ` +
-              `Angular compiler needs to be able to reference this class in compiled code, such as templates.\n` +
-              `The simplest fix for this is to ensure that this class is exported from the package's entry-point.`);
-        }
-        return {identifier: e.identifier, from: e.dtsFrom};
-      });
-      this.addExports(outputText, dtsFile.fileName, dtsExports);
-    }
+    this.addExports(outputText, dtsFile.fileName, renderInfo.privateExports);
+
 
     return this.renderSourceAndMap(dtsFile, input, outputText);
+  }
+
+  /**
+   * Add the type parameters to the appropriate functions that return `ModuleWithProviders`
+   * structures.
+   *
+   * This function only gets called on typings files, so it doesn't need different implementations
+   * for each bundle format.
+   */
+  protected addModuleWithProvidersParams(
+      outputText: MagicString, moduleWithProviders: ModuleWithProvidersInfo[],
+      importManager: NgccImportManager): void {
+    moduleWithProviders.forEach(info => {
+      const ngModuleName = (info.ngModule.node as ts.ClassDeclaration).name !.text;
+      const declarationFile = info.declaration.getSourceFile().fileName;
+      const ngModuleFile = info.ngModule.node.getSourceFile().fileName;
+      const importPath = info.ngModule.viaModule ||
+          (declarationFile !== ngModuleFile ?
+               stripExtension(`./${relative(dirname(declarationFile), ngModuleFile)}`) :
+               null);
+      const ngModule = getImportString(importManager, importPath, ngModuleName);
+
+      if (info.declaration.type) {
+        const typeName = info.declaration.type && ts.isTypeReferenceNode(info.declaration.type) ?
+            info.declaration.type.typeName :
+            null;
+        if (this.isCoreModuleWithProvidersType(typeName)) {
+          // The declaration already returns `ModuleWithProvider` but it needs the `NgModule` type
+          // parameter adding.
+          outputText.overwrite(
+              info.declaration.type.getStart(), info.declaration.type.getEnd(),
+              `ModuleWithProviders<${ngModule}>`);
+        } else {
+          // The declaration returns an unknown type so we need to convert it to a union that
+          // includes the ngModule property.
+          const originalTypeString = info.declaration.type.getText();
+          outputText.overwrite(
+              info.declaration.type.getStart(), info.declaration.type.getEnd(),
+              `(${originalTypeString})&{ngModule:${ngModule}}`);
+        }
+      } else {
+        // The declaration has no return type so provide one.
+        const lastToken = info.declaration.getLastToken();
+        const insertPoint = lastToken && lastToken.kind === ts.SyntaxKind.SemicolonToken ?
+            lastToken.getStart() :
+            info.declaration.getEnd();
+        outputText.appendLeft(
+            insertPoint,
+            `: ${getImportString(importManager, '@angular/core', 'ModuleWithProviders')}<${ngModule}>`);
+      }
+    });
   }
 
   protected abstract addConstants(output: MagicString, constants: string, file: ts.SourceFile):
@@ -190,25 +252,31 @@ export abstract class Renderer {
   protected abstract addDefinitions(
       output: MagicString, compiledClass: CompiledClass, definitions: string): void;
   protected abstract removeDecorators(
-      output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>): void;
+      output: MagicString, decoratorsToRemove: RedundantDecoratorMap): void;
   protected abstract rewriteSwitchableDeclarations(
       outputText: MagicString, sourceFile: ts.SourceFile,
       declarations: SwitchableVariableDeclaration[]): void;
 
   /**
-   * Add the decorator nodes that are to be removed to a map
-   * So that we can tell if we should remove the entire decorator property
+   * From the given list of classes, computes a map of decorators that should be removed.
+   * The decorators to remove are keyed by their container node, such that we can tell if
+   * we should remove the entire decorator property.
+   * @param classes The list of classes that may have decorators to remove.
+   * @returns A map of decorators to remove, keyed by their container node.
    */
-  protected trackDecorators(decorators: Decorator[], decoratorsToRemove: Map<ts.Node, ts.Node[]>):
-      void {
-    decorators.forEach(dec => {
-      const decoratorArray = dec.node.parent !;
-      if (!decoratorsToRemove.has(decoratorArray)) {
-        decoratorsToRemove.set(decoratorArray, [dec.node]);
-      } else {
-        decoratorsToRemove.get(decoratorArray) !.push(dec.node);
-      }
+  protected computeDecoratorsToRemove(classes: CompiledClass[]): RedundantDecoratorMap {
+    const decoratorsToRemove = new RedundantDecoratorMap();
+    classes.forEach(clazz => {
+      clazz.decorators.forEach(dec => {
+        const decoratorArray = dec.node.parent !;
+        if (!decoratorsToRemove.has(decoratorArray)) {
+          decoratorsToRemove.set(decoratorArray, [dec.node]);
+        } else {
+          decoratorsToRemove.get(decoratorArray) !.push(dec.node);
+        }
+      });
     });
+    return decoratorsToRemove;
   }
 
   /**
@@ -289,21 +357,66 @@ export abstract class Renderer {
     return result;
   }
 
-  protected getTypingsFilesToRender(analyses: DecorationAnalyses):
-      Map<ts.SourceFile, DtsClassInfo[]> {
-    const dtsMap = new Map<ts.SourceFile, DtsClassInfo[]>();
-    analyses.forEach(compiledFile => {
+  protected getTypingsFilesToRender(
+      decorationAnalyses: DecorationAnalyses,
+      privateDeclarationsAnalyses: PrivateDeclarationsAnalyses,
+      moduleWithProvidersAnalyses: ModuleWithProvidersAnalyses|
+      null): Map<ts.SourceFile, DtsRenderInfo> {
+    const dtsMap = new Map<ts.SourceFile, DtsRenderInfo>();
+
+    // Capture the rendering info from the decoration analyses
+    decorationAnalyses.forEach(compiledFile => {
       compiledFile.compiledClasses.forEach(compiledClass => {
-        const dtsDeclaration = this.host.getDtsDeclarationOfClass(compiledClass.declaration);
+        const dtsDeclaration = this.host.getDtsDeclaration(compiledClass.declaration);
         if (dtsDeclaration) {
           const dtsFile = dtsDeclaration.getSourceFile();
-          const classes = dtsMap.get(dtsFile) || [];
-          classes.push({dtsDeclaration, compilation: compiledClass.compilation});
-          dtsMap.set(dtsFile, classes);
+          const renderInfo = dtsMap.get(dtsFile) || new DtsRenderInfo();
+          renderInfo.classInfo.push({dtsDeclaration, compilation: compiledClass.compilation});
+          dtsMap.set(dtsFile, renderInfo);
         }
       });
     });
+
+    // Capture the ModuleWithProviders functions/methods that need updating
+    if (moduleWithProvidersAnalyses !== null) {
+      moduleWithProvidersAnalyses.forEach((moduleWithProvidersToFix, dtsFile) => {
+        const renderInfo = dtsMap.get(dtsFile) || new DtsRenderInfo();
+        renderInfo.moduleWithProviders = moduleWithProvidersToFix;
+        dtsMap.set(dtsFile, renderInfo);
+      });
+    }
+
+    // Capture the private declarations that need to be re-exported
+    if (privateDeclarationsAnalyses.length) {
+      const dtsExports = privateDeclarationsAnalyses.map(e => {
+        if (!e.dtsFrom) {
+          throw new Error(
+              `There is no typings path for ${e.identifier} in ${e.from}.\n` +
+              `We need to add an export for this class to a .d.ts typings file because ` +
+              `Angular compiler needs to be able to reference this class in compiled code, such as templates.\n` +
+              `The simplest fix for this is to ensure that this class is exported from the package's entry-point.`);
+        }
+        return {identifier: e.identifier, from: e.dtsFrom};
+      });
+      const dtsEntryPoint = this.bundle.dts !.file;
+      const renderInfo = dtsMap.get(dtsEntryPoint) || new DtsRenderInfo();
+      renderInfo.privateExports = dtsExports;
+      dtsMap.set(dtsEntryPoint, renderInfo);
+    }
+
     return dtsMap;
+  }
+
+  /**
+   * Check whether the given type is the core Angular `ModuleWithProviders` interface.
+   * @param typeName The type to check.
+   * @returns true if the type is the core Angular `ModuleWithProviders` interface.
+   */
+  private isCoreModuleWithProvidersType(typeName: ts.EntityName|null) {
+    const id =
+        typeName && ts.isIdentifier(typeName) ? this.host.getImportOfIdentifier(typeName) : null;
+    return (
+        id && id.name === 'ModuleWithProviders' && (this.isCore || id.from === '@angular/core'));
   }
 }
 
@@ -373,7 +486,7 @@ export function renderDefinitions(
 }
 
 export function stripExtension(filePath: string): string {
-  return filePath.replace(/\.(js|d\.ts$)/, '');
+  return filePath.replace(/\.(js|d\.ts)$/, '');
 }
 
 /**
@@ -385,4 +498,10 @@ function createAssignmentStatement(
     receiverName: ts.DeclarationName, propName: string, initializer: Expression): Statement {
   const receiver = new WrappedNodeExpr(receiverName);
   return new WritePropExpr(receiver, propName, initializer).toStmt();
+}
+
+function getImportString(
+    importManager: ImportManager, importPath: string | null, importName: string) {
+  const importAs = importPath ? importManager.generateNamedImport(importPath, importName) : null;
+  return importAs ? `${importAs.moduleImport}.${importAs.symbol}` : `${importName}`;
 }

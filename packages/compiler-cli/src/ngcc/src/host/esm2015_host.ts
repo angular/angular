@@ -14,7 +14,7 @@ import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, isDefined} from '../utils';
 
 import {DecoratedClass} from './decorated_class';
-import {NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
+import {ModuleWithProvidersFunction, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
 export const PROP_DECORATORS = 'propDecorators' as ts.__String;
@@ -49,10 +49,10 @@ export const CONSTRUCTOR_PARAMS = 'ctorParameters' as ts.__String;
  *   a static method called `ctorParameters`.
  */
 export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements NgccReflectionHost {
-  protected dtsClassMap: Map<string, ts.ClassDeclaration>|null;
+  protected dtsDeclarationMap: Map<string, ts.Declaration>|null;
   constructor(protected isCore: boolean, checker: ts.TypeChecker, dts?: BundleProgram|null) {
     super(checker);
-    this.dtsClassMap = dts && this.computeDtsClassMap(dts.path, dts.program) || null;
+    this.dtsDeclarationMap = dts && this.computeDtsDeclarationMap(dts.path, dts.program) || null;
   }
 
   /**
@@ -327,15 +327,15 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * is not a class or has an unknown number of type parameters.
    */
   getGenericArityOfClass(clazz: ts.Declaration): number|null {
-    const dtsClass = this.getDtsDeclarationOfClass(clazz);
-    if (dtsClass) {
-      return dtsClass.typeParameters ? dtsClass.typeParameters.length : 0;
+    const dtsDeclaration = this.getDtsDeclaration(clazz);
+    if (dtsDeclaration && ts.isClassDeclaration(dtsDeclaration)) {
+      return dtsDeclaration.typeParameters ? dtsDeclaration.typeParameters.length : 0;
     }
     return null;
   }
 
   /**
-   * Take an exported declaration of a class (maybe downleveled to a variable) and look up the
+   * Take an exported declaration of a class (maybe down-leveled to a variable) and look up the
    * declaration of its type in a separate .d.ts tree.
    *
    * This function is allowed to return `null` if the current compilation unit does not have a
@@ -346,19 +346,47 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Note that the `ts.ClassDeclaration` returned from this function may not be from the same
    * `ts.Program` as the input declaration.
    */
-  getDtsDeclarationOfClass(declaration: ts.Declaration): ts.ClassDeclaration|null {
-    if (this.dtsClassMap) {
-      if (ts.isClassDeclaration(declaration)) {
-        if (!declaration.name || !ts.isIdentifier(declaration.name)) {
-          throw new Error(
-              `Cannot get the dts file for a class declaration that has no indetifier: ${declaration.getText()} in ${declaration.getSourceFile().fileName}`);
-        }
-        return this.dtsClassMap.get(declaration.name.text) || null;
-      }
+  getDtsDeclaration(declaration: ts.Declaration): ts.Declaration|null {
+    if (!this.dtsDeclarationMap) {
+      return null;
     }
-    return null;
+    if (!isNamedDeclaration(declaration)) {
+      throw new Error(
+          `Cannot get the dts file for a declaration that has no name: ${declaration.getText()} in ${declaration.getSourceFile().fileName}`);
+    }
+    return this.dtsDeclarationMap.get(declaration.name.text) || null;
   }
 
+  /**
+   * Search the given source file for exported functions and static class methods that return
+   * ModuleWithProviders objects.
+   * @param f The source file to search for these functions
+   * @returns An array of function declarations that look like they return ModuleWithProviders
+   * objects.
+   */
+  getModuleWithProvidersFunctions(f: ts.SourceFile): ModuleWithProvidersFunction[] {
+    const exports = this.getExportsOfModule(f);
+    if (!exports) return [];
+    const infos: ModuleWithProvidersFunction[] = [];
+    exports.forEach((declaration, name) => {
+      if (this.isClass(declaration.node)) {
+        this.getMembersOfClass(declaration.node).forEach(member => {
+          if (member.isStatic) {
+            const info = this.parseForModuleWithProviders(member.node);
+            if (info) {
+              infos.push(info);
+            }
+          }
+        });
+      } else {
+        const info = this.parseForModuleWithProviders(declaration.node);
+        if (info) {
+          infos.push(info);
+        }
+      }
+    });
+    return infos;
+  }
 
   ///////////// Protected Helpers /////////////
 
@@ -738,7 +766,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     if (!name) {
-      if (isNamedDeclaration(node) && node.name && ts.isIdentifier(node.name)) {
+      if (isNamedDeclaration(node)) {
         name = node.name.text;
         nameNode = node.name;
       } else {
@@ -797,10 +825,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         this.getParamInfoFromHelperCall(classSymbol, parameterNodes);
 
     return parameterNodes.map((node, index) => {
-      const {decorators, type} =
-          paramInfo && paramInfo[index] ? paramInfo[index] : {decorators: null, type: null};
+      const {decorators, typeExpression} = paramInfo && paramInfo[index] ?
+          paramInfo[index] :
+          {decorators: null, typeExpression: null};
       const nameNode = node.name;
-      return {name: getNameText(nameNode), nameNode, type, decorators};
+      return {name: getNameText(nameNode), nameNode, typeExpression, typeNode: null, decorators};
     });
   }
 
@@ -832,12 +861,12 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
                 element =>
                     ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null)
             .map(paramInfo => {
-              const type = paramInfo && paramInfo.get('type') || null;
+              const typeExpression = paramInfo && paramInfo.get('type') || null;
               const decoratorInfo = paramInfo && paramInfo.get('decorators') || null;
               const decorators = decoratorInfo &&
                   this.reflectDecorators(decoratorInfo)
                       .filter(decorator => this.isFromCore(decorator));
-              return {type, decorators};
+              return {typeExpression, decorators};
             });
       }
     }
@@ -845,8 +874,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
-   * Get the parameter type and decorators for a class where the information is stored on
-   * in calls to `__decorate` helpers.
+   * Get the parameter type and decorators for a class where the information is stored via
+   * calls to `__decorate` helpers.
    *
    * Reflect over the helpers to find the decorators and types about each of
    * the class's constructor parameters.
@@ -857,7 +886,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected getParamInfoFromHelperCall(
       classSymbol: ts.Symbol, parameterNodes: ts.ParameterDeclaration[]): ParamInfo[] {
-    const parameters: ParamInfo[] = parameterNodes.map(() => ({type: null, decorators: null}));
+    const parameters: ParamInfo[] =
+        parameterNodes.map(() => ({typeExpression: null, decorators: null}));
     const helperCalls = this.getHelperCallsForClass(classSymbol, '__decorate');
     helperCalls.forEach(helperCall => {
       const {classDecorators} =
@@ -871,7 +901,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
                 metadataArg.text === 'design:paramtypes';
             const types = typesArg && ts.isArrayLiteralExpression(typesArg) && typesArg.elements;
             if (isParamTypeDecorator && types) {
-              types.forEach((type, index) => parameters[index].type = type);
+              types.forEach((type, index) => parameters[index].typeExpression = type);
             }
             break;
           case '__param':
@@ -1000,9 +1030,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param dtsProgram The program containing all the typings files.
    * @returns a map of class names to class declarations.
    */
-  protected computeDtsClassMap(dtsRootFileName: string, dtsProgram: ts.Program):
-      Map<string, ts.ClassDeclaration> {
-    const dtsClassMap = new Map<string, ts.ClassDeclaration>();
+  protected computeDtsDeclarationMap(dtsRootFileName: string, dtsProgram: ts.Program):
+      Map<string, ts.Declaration> {
+    const dtsDeclarationMap = new Map<string, ts.Declaration>();
     const checker = dtsProgram.getTypeChecker();
 
     // First add all the classes that are publicly exported from the entry-point
@@ -1010,13 +1040,38 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (!rootFile) {
       throw new Error(`The given file ${dtsRootFileName} is not part of the typings program.`);
     }
-    collectExportedClasses(checker, dtsClassMap, rootFile);
+    collectExportedDeclarations(checker, dtsDeclarationMap, rootFile);
 
     // Now add any additional classes that are exported from individual  dts files,
     // but are not publicly exported from the entry-point.
     dtsProgram.getSourceFiles().forEach(
-        sourceFile => { collectExportedClasses(checker, dtsClassMap, sourceFile); });
-    return dtsClassMap;
+        sourceFile => { collectExportedDeclarations(checker, dtsDeclarationMap, sourceFile); });
+    return dtsDeclarationMap;
+  }
+
+  /**
+   * Parse the given node, to see if it is a function that returns a `ModuleWithProviders` object.
+   * @param node a node to check to see if it is a function that returns a `ModuleWithProviders`
+   * object.
+   * @returns info about the function if it does return a `ModuleWithProviders` object; `null`
+   * otherwise.
+   */
+  protected parseForModuleWithProviders(node: ts.Node|null): ModuleWithProvidersFunction|null {
+    const declaration =
+        node && (ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node)) ? node : null;
+    const body = declaration ? this.getDefinitionOfFunction(declaration).body : null;
+    const lastStatement = body && body[body.length - 1];
+    const returnExpression =
+        lastStatement && ts.isReturnStatement(lastStatement) && lastStatement.expression || null;
+    const ngModuleProperty = returnExpression && ts.isObjectLiteralExpression(returnExpression) &&
+            returnExpression.properties.find(
+                prop =>
+                    !!prop.name && ts.isIdentifier(prop.name) && prop.name.text === 'ngModule') ||
+        null;
+    const ngModule = ngModuleProperty && ts.isPropertyAssignment(ngModuleProperty) &&
+            ts.isIdentifier(ngModuleProperty.initializer) && ngModuleProperty.initializer ||
+        null;
+    return ngModule && declaration && {ngModule, declaration};
   }
 }
 
@@ -1024,7 +1079,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
 export type ParamInfo = {
   decorators: Decorator[] | null,
-  type: ts.Expression | null
+  typeExpression: ts.Expression | null
 };
 
 /**
@@ -1127,8 +1182,10 @@ function isThisAssignment(node: ts.Declaration): node is ts.BinaryExpression&
       node.left.expression.kind === ts.SyntaxKind.ThisKeyword;
 }
 
-function isNamedDeclaration(node: ts.Declaration): node is ts.NamedDeclaration {
-  return !!(node as any).name;
+function isNamedDeclaration(node: ts.Declaration): node is ts.NamedDeclaration&
+    {name: ts.Identifier} {
+  const anyNode: any = node;
+  return !!anyNode.name && ts.isIdentifier(anyNode.name);
 }
 
 
@@ -1151,13 +1208,11 @@ function getFarLeftIdentifier(propertyAccess: ts.PropertyAccessExpression): ts.I
 }
 
 /**
- * Search a source file for exported classes, storing them in the provided `dtsClassMap`.
- * @param checker The typechecker for the source program.
- * @param dtsClassMap The map in which to store the collected exported classes.
- * @param srcFile The source file to search for exported classes.
+ * Collect mappings between exported declarations in a source file and its associated
+ * declaration in the typings program.
  */
-function collectExportedClasses(
-    checker: ts.TypeChecker, dtsClassMap: Map<string, ts.ClassDeclaration>,
+function collectExportedDeclarations(
+    checker: ts.TypeChecker, dtsDeclarationMap: Map<string, ts.Declaration>,
     srcFile: ts.SourceFile): void {
   const srcModule = srcFile && checker.getSymbolAtLocation(srcFile);
   const moduleExports = srcModule && checker.getExportsOfModule(srcModule);
@@ -1168,8 +1223,8 @@ function collectExportedClasses(
       }
       const declaration = exportedSymbol.valueDeclaration;
       const name = exportedSymbol.name;
-      if (declaration && ts.isClassDeclaration(declaration) && !dtsClassMap.has(name)) {
-        dtsClassMap.set(name, declaration);
+      if (declaration && !dtsDeclarationMap.has(name)) {
+        dtsDeclarationMap.set(name, declaration);
       }
     });
   }

@@ -14,7 +14,7 @@ import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition
 
 import {NgIf} from './common_with_def';
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
+import {ComponentFixture, MockRendererFactory, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
 
 describe('component', () => {
   class CounterComponent {
@@ -150,6 +150,65 @@ describe('component', () => {
     expect(fixture.html).toEqual('<comp>some name</comp>');
   });
 
+});
+
+it('should not invoke renderer destroy method for embedded views', () => {
+  let comp: Comp;
+
+  function MyComponent_div_Template_2(rf: any, ctx: any) {
+    if (rf & RenderFlags.Create) {
+      elementStart(0, 'div');
+      text(1, 'Child view');
+      elementEnd();
+    }
+  }
+
+  class Comp {
+    visible = true;
+
+    static ngComponentDef = defineComponent({
+      type: Comp,
+      selectors: [['comp']],
+      consts: 3,
+      vars: 1,
+      factory: () => {
+        comp = new Comp();
+        return comp;
+      },
+      directives: [NgIf],
+      /**
+       *  <div>Root view</div>
+       *  <div *ngIf="visible">Child view</div>
+       */
+      template: function(rf: RenderFlags, ctx: Comp) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div');
+          text(1, 'Root view');
+          elementEnd();
+          template(2, MyComponent_div_Template_2, 2, 0, null, [AttributeMarker.SelectOnly, 'ngIf']);
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(2, 'ngIf', bind(ctx.visible));
+        }
+      }
+    });
+  }
+
+  const rendererFactory = new MockRendererFactory(['destroy']);
+  const fixture = new ComponentFixture(Comp, {rendererFactory});
+
+  comp !.visible = false;
+  fixture.update();
+
+  comp !.visible = true;
+  fixture.update();
+
+  const renderer = rendererFactory.lastRenderer !;
+  const destroySpy = renderer.spies['destroy'];
+
+  // we should never see `destroy` method being called
+  // in case child views are created/removed
+  expect(destroySpy.calls.count()).toBe(0);
 });
 
 describe('component with a container', () => {
@@ -439,6 +498,8 @@ describe('recursive components', () => {
   class NgIfTree {
     data: TreeNode = _buildTree(0);
 
+    ngDoCheck() { events.push('check' + this.data.value); }
+
     ngOnDestroy() { events.push('destroy' + this.data.value); }
 
     static ngComponentDef = defineComponent({
@@ -452,8 +513,8 @@ describe('recursive components', () => {
 
         if (rf & RenderFlags.Create) {
           text(0);
-          template(1, IfTemplate, 1, 1, '', [AttributeMarker.SelectOnly, 'ngIf']);
-          template(2, IfTemplate2, 1, 1, '', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(1, IfTemplate, 1, 1, 'ng-if-tree', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(2, IfTemplate2, 1, 1, 'ng-if-tree', [AttributeMarker.SelectOnly, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           textBinding(0, bind(ctx.data.value));
@@ -569,6 +630,7 @@ describe('recursive components', () => {
 
     const fixture = new ComponentFixture(App);
     expect(getRenderedText(fixture.component)).toEqual('6201534');
+    expect(events).toEqual(['check6', 'check2', 'check0', 'check1', 'check5', 'check3', 'check4']);
 
     events = [];
     fixture.component.skipContent = true;

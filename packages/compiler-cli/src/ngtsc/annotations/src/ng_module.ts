@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Decorator, ReflectionHost} from '../../host';
-import {Reference, ResolvedReference, ResolvedValue, reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {Reference, ResolvedReference, ResolvedValue, reflectObjectLiteral, staticallyResolve, typeNodeToValueExpr} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
@@ -109,7 +109,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const valueContext = node.getSourceFile();
 
     let typeContext = valueContext;
-    const typeNode = this.reflector.getDtsDeclarationOfClass(node);
+    const typeNode = this.reflector.getDtsDeclaration(node);
     if (typeNode !== null) {
       typeContext = typeNode.getSourceFile();
     }
@@ -183,8 +183,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       return toR3Reference(valueRef, valueRef, valueContext, valueContext);
     } else {
       let typeRef = valueRef;
-      let typeNode = this.reflector.getDtsDeclarationOfClass(typeRef.node);
-      if (typeNode !== null) {
+      let typeNode = this.reflector.getDtsDeclaration(typeRef.node);
+      if (typeNode !== null && ts.isClassDeclaration(typeNode)) {
         typeRef = new ResolvedReference(typeNode, typeNode.name !);
       }
       return toR3Reference(valueRef, typeRef, valueContext, typeContext);
@@ -197,9 +197,20 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
    */
   private _extractModuleFromModuleWithProvidersFn(node: ts.FunctionDeclaration|
                                                   ts.MethodDeclaration): ts.Expression|null {
-    const type = node.type;
+    const type = node.type || null;
+    return type &&
+        (this._reflectModuleFromTypeParam(type) || this._reflectModuleFromLiteralType(type));
+  }
+
+  /**
+   * Retrieve an `NgModule` identifier (T) from the specified `type`, if it is of the form:
+   * `ModuleWithProviders<T>`
+   * @param type The type to reflect on.
+   * @returns the identifier of the NgModule type if found, or null otherwise.
+   */
+  private _reflectModuleFromTypeParam(type: ts.TypeNode): ts.Expression|null {
     // Examine the type of the function to see if it's a ModuleWithProviders reference.
-    if (type === undefined || !ts.isTypeReferenceNode(type) || !ts.isIdentifier(type.typeName)) {
+    if (!ts.isTypeReferenceNode(type) || !ts.isIdentifier(type.typeName)) {
       return null;
     }
 
@@ -223,12 +234,33 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     const arg = type.typeArguments[0];
 
-    // If the argument isn't an Identifier, bail.
-    if (!ts.isTypeReferenceNode(arg) || !ts.isIdentifier(arg.typeName)) {
+    return typeNodeToValueExpr(arg);
+  }
+
+  /**
+   * Retrieve an `NgModule` identifier (T) from the specified `type`, if it is of the form:
+   * `A|B|{ngModule: T}|C`.
+   * @param type The type to reflect on.
+   * @returns the identifier of the NgModule type if found, or null otherwise.
+   */
+  private _reflectModuleFromLiteralType(type: ts.TypeNode): ts.Expression|null {
+    if (!ts.isIntersectionTypeNode(type)) {
       return null;
     }
-
-    return arg.typeName;
+    for (const t of type.types) {
+      if (ts.isTypeLiteralNode(t)) {
+        for (const m of t.members) {
+          const ngModuleType = ts.isPropertySignature(m) && ts.isIdentifier(m.name) &&
+                  m.name.text === 'ngModule' && m.type ||
+              null;
+          const ngModuleExpression = ngModuleType && typeNodeToValueExpr(ngModuleType);
+          if (ngModuleExpression) {
+            return ngModuleExpression;
+          }
+        }
+      }
+    }
+    return null;
   }
 
   /**

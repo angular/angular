@@ -82,7 +82,7 @@ describe('compiler compliance: template', () => {
       function MyComponent_ul_li_Template_1(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "li");
-          $i0$.ɵtemplate(1, MyComponent_ul_li_div_Template_1, 2, 2, null, _c0);
+          $i0$.ɵtemplate(1, MyComponent_ul_li_div_Template_1, 2, 2, "div", _c0);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -94,7 +94,7 @@ describe('compiler compliance: template', () => {
       function MyComponent_ul_Template_0(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "ul");
-          $i0$.ɵtemplate(1, MyComponent_ul_li_Template_1, 2, 1, null, _c0);
+          $i0$.ɵtemplate(1, MyComponent_ul_li_Template_1, 2, 1, "li", _c0);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -105,7 +105,7 @@ describe('compiler compliance: template', () => {
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_ul_Template_0, 2, 1, null, _c0);
+          $i0$.ɵtemplate(0, MyComponent_ul_Template_0, 2, 1, "ul", _c0);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
@@ -156,7 +156,7 @@ describe('compiler compliance: template', () => {
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_span_Template_0, 2, 2, null, _c0);
+          $i0$.ɵtemplate(0, MyComponent_span_Template_0, 2, 2, "span", _c0);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
@@ -212,7 +212,7 @@ describe('compiler compliance: template', () => {
       function MyComponent_div_Template_0(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
-          $i0$.ɵtemplate(1, MyComponent_div_span_Template_1, 2, 2, null, $c1$);
+          $i0$.ɵtemplate(1, MyComponent_div_span_Template_1, 2, 2, "span", $c1$);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -224,7 +224,7 @@ describe('compiler compliance: template', () => {
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_div_Template_0, 2, 1, null, $c0$);
+          $i0$.ɵtemplate(0, MyComponent_div_Template_0, 2, 1, "div", $c0$);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
@@ -280,7 +280,7 @@ describe('compiler compliance: template', () => {
       function MyComponent_div_div_Template_1(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
-          $i0$.ɵtemplate(1, MyComponent_div_div_div_Template_1, 2, 2, null, _c0);
+          $i0$.ɵtemplate(1, MyComponent_div_div_div_Template_1, 2, 2, "div", _c0);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -292,7 +292,7 @@ describe('compiler compliance: template', () => {
       function MyComponent_div_Template_0(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
-          $i0$.ɵtemplate(1, MyComponent_div_div_Template_1, 2, 1, null, _c0);
+          $i0$.ɵtemplate(1, MyComponent_div_div_Template_1, 2, 1, "div", _c0);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -303,7 +303,7 @@ describe('compiler compliance: template', () => {
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_div_Template_0, 2, 1, null, _c0);
+          $i0$.ɵtemplate(0, MyComponent_div_Template_0, 2, 1, "div", _c0);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
@@ -339,7 +339,7 @@ describe('compiler compliance: template', () => {
     const template = `
       const $c0$ = ["attr", "l", ${AttributeMarker.SelectOnly}, "boundAttr"];
 
-      function Template_0(rf, ctx) {
+      function MyComponent_ng_template_Template_0(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵtext(0, " some-content ");
         }
@@ -349,7 +349,7 @@ describe('compiler compliance: template', () => {
 
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵtemplate(0, Template_0, 1, 0, null, $c0$);
+          $i0$.ɵtemplate(0, MyComponent_ng_template_Template_0, 1, 0, "ng-template", $c0$);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "boundAttr", $i0$.ɵbind(ctx.b));
@@ -383,7 +383,7 @@ describe('compiler compliance: template', () => {
     const template = `
       const $t0_refs$ = ["foo", ""];
 
-      function Template_0(rf, ctx) {
+      function MyComponent_ng_template_Template_0(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵtext(0, "some-content");
         }
@@ -393,7 +393,7 @@ describe('compiler compliance: template', () => {
 
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵtemplate(0, Template_0, 1, 0, null, null, $t0_refs$, $i0$.ɵtemplateRefExtractor);
+          $i0$.ɵtemplate(0, MyComponent_ng_template_Template_0, 1, 0, "ng-template", null, $t0_refs$, $i0$.ɵtemplateRefExtractor);
         }
       }`;
 
@@ -424,13 +424,13 @@ describe('compiler compliance: template', () => {
     const template = `
       const $t0_attrs$ = [${AttributeMarker.SelectOnly}, "outDirective"];
 
-      function Template_0(rf, ctx) { }
+      function MyComponent_ng_template_Template_0(rf, ctx) { }
 
       // ...
 
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵtemplate(0, Template_0, 0, 0, null, $t0_attrs$);
+          $i0$.ɵtemplate(0, MyComponent_ng_template_Template_0, 0, 0, "ng-template", $t0_attrs$);
           $i0$.ɵlistener("outDirective", function MyComponent_Template_ng_template_outDirective_listener($event) { return $event.doSth(); });
         }
       }`;

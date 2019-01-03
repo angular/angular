@@ -79,7 +79,7 @@ const MIN_TS_VERSION = '3.1.1';
  * ∀ supported typescript version v, v < MAX_TS_VERSION
  * MAX_TS_VERSION is not considered as a supported TypeScript version
  */
-const MAX_TS_VERSION = '3.2.0';
+const MAX_TS_VERSION = '3.3.0';
 
 class AngularCompilerProgram implements Program {
   private rootNames: string[];

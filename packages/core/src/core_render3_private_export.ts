@@ -15,6 +15,7 @@ export {
   defineNgModule as ɵdefineNgModule,
   detectChanges as ɵdetectChanges,
   renderComponent as ɵrenderComponent,
+  AttributeMarker as ɵAttributeMarker,
   ComponentType as ɵComponentType,
   ComponentFactory as ɵRender3ComponentFactory,
   ComponentRef as ɵRender3ComponentRef,
@@ -74,6 +75,7 @@ export {
   pureFunction8 as ɵpureFunction8,
   pureFunctionV as ɵpureFunctionV,
   getCurrentView as ɵgetCurrentView,
+  getHostElement as ɵgetHostElement,
   restoreView as ɵrestoreView,
   containerRefreshStart as ɵcontainerRefreshStart,
   containerRefreshEnd as ɵcontainerRefreshEnd,
@@ -90,6 +92,7 @@ export {
   elementContainerStart as ɵelementContainerStart,
   elementContainerEnd as ɵelementContainerEnd,
   elementStyling as ɵelementStyling,
+  elementHostAttrs as ɵelementHostAttrs,
   elementStylingMap as ɵelementStylingMap,
   elementStyleProp as ɵelementStyleProp,
   elementStylingApply as ɵelementStylingApply,
@@ -127,6 +130,7 @@ export {
   compileNgModule as ɵcompileNgModule,
   compileNgModuleDefs as ɵcompileNgModuleDefs,
   patchComponentDefWithScope as ɵpatchComponentDefWithScope,
+  resetCompiledComponents as ɵresetCompiledComponents,
 } from './render3/jit/module';
 export {
   compilePipe as ɵcompilePipe,
@@ -193,6 +197,9 @@ export {
   SWITCH_COMPILE_NGMODULE__POST_R3__ as ɵSWITCH_COMPILE_NGMODULE__POST_R3__,
 } from './metadata/ng_module';
 export {
+  getDebugNode__POST_R3__ as ɵgetDebugNode__POST_R3__,
+} from './debug/debug_node';
+export {
   SWITCH_COMPILE_INJECTABLE__POST_R3__ as ɵSWITCH_COMPILE_INJECTABLE__POST_R3__,
 } from './di/injectable';
 export {
@@ -201,6 +208,12 @@ export {
 export {
   SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as ɵSWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__,
 } from './change_detection/change_detector_ref';
+export {
+  Compiler_compileModuleSync__POST_R3__ as ɵCompiler_compileModuleSync__POST_R3__,
+  Compiler_compileModuleAsync__POST_R3__ as ɵCompiler_compileModuleAsync__POST_R3__,
+  Compiler_compileModuleAndAllComponentsSync__POST_R3__ as ɵCompiler_compileModuleAndAllComponentsSync__POST_R3__,
+  Compiler_compileModuleAndAllComponentsAsync__POST_R3__ as ɵCompiler_compileModuleAndAllComponentsAsync__POST_R3__,
+} from './linker/compiler';
 export {
   SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as ɵSWITCH_ELEMENT_REF_FACTORY__POST_R3__,
 } from './linker/element_ref';
@@ -213,6 +226,8 @@ export {
 export {
   SWITCH_RENDERER2_FACTORY__POST_R3__ as ɵSWITCH_RENDERER2_FACTORY__POST_R3__,
 } from './render/api';
+
+export {getModuleFactory__POST_R3__ as ɵgetModuleFactory__POST_R3__} from './linker/ng_module_factory_loader';
 
 export {
   publishGlobalUtil as ɵpublishGlobalUtil,

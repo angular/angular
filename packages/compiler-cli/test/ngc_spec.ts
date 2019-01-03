@@ -145,9 +145,7 @@ describe('ngc transformer command-line', () => {
 
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledWith(
-          `test.ts(1,9): error TS2305: Module '"` + path.join(basePath, 'empty-deps') +
-          `"' has no exported member 'MyClass'.` +
-          '\n');
+          `test.ts(1,9): error TS2305: Module '"./empty-deps"' has no exported member 'MyClass'.\n`);
       expect(exitCode).toEqual(1);
     });
 
@@ -874,7 +872,7 @@ describe('ngc transformer command-line', () => {
         write('mymodule.ts', `
           import {Component, NgModule} from '@angular/core';
           import {RouterModule} from '@angular/router';
-          
+
           export function foo(): string {
             console.log('side-effect');
             return 'test';

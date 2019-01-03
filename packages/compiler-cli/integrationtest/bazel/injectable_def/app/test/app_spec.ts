@@ -168,7 +168,7 @@ describe('ngInjectableDef Bazel Integration', () => {
     expect(TestBed.get(INJECTOR).get('foo')).toEqual('bar');
   });
 
-  fixmeIvy('FW-646: Directive providers don\'t support primitive types')
+  fixmeIvy('FW-854: NodeInjector does not know how to get itself (INJECTOR)')
       .it('Component injector understands requests for INJECTABLE', () => {
         @Component({
           selector: 'test-cmp',

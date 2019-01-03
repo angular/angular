@@ -20,10 +20,7 @@ import {CtorParameter, Decorator, ReflectionHost} from '../../host';
  */
 export function generateSetClassMetadataCall(
     clazz: ts.Declaration, reflection: ReflectionHost, isCore: boolean): Statement|null {
-  // Classes come in two flavors, class declarations (ES2015) and variable declarations (ES5).
-  // Both must have a declared name to have metadata set on them.
-  if ((!ts.isClassDeclaration(clazz) && !ts.isVariableDeclaration(clazz)) ||
-      clazz.name === undefined || !ts.isIdentifier(clazz.name)) {
+  if (!reflection.isClass(clazz) || clazz.name === undefined || !ts.isIdentifier(clazz.name)) {
     return null;
   }
   const id = ts.updateIdentifier(clazz.name);
@@ -45,8 +42,15 @@ export function generateSetClassMetadataCall(
   let metaCtorParameters: ts.Expression = ts.createNull();
   const classCtorParameters = reflection.getConstructorParameters(clazz);
   if (classCtorParameters !== null) {
-    metaCtorParameters = ts.createArrayLiteral(
+    const ctorParameters = ts.createArrayLiteral(
         classCtorParameters.map(param => ctorParameterToMetadata(param, isCore)));
+    metaCtorParameters = ts.createFunctionExpression(
+        /* modifiers */ undefined,
+        /* asteriskToken */ undefined,
+        /* name */ undefined,
+        /* typeParameters */ undefined,
+        /* parameters */ undefined,
+        /* type */ undefined, ts.createBlock([ts.createReturn(ctorParameters)]));
   }
 
   // Do the same for property decorators.
@@ -82,7 +86,8 @@ export function generateSetClassMetadataCall(
 function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): ts.Expression {
   // Parameters sometimes have a type that can be referenced. If so, then use it, otherwise
   // its type is undefined.
-  const type = param.type !== null ? param.type : ts.createIdentifier('undefined');
+  const type =
+      param.typeExpression !== null ? param.typeExpression : ts.createIdentifier('undefined');
   const properties: ts.ObjectLiteralElementLike[] = [
     ts.createPropertyAssignment('type', type),
   ];

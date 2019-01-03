@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 import {resolveForwardRef} from '../di/forward_ref';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
@@ -16,6 +15,7 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {Type} from '../type';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
+
 import {assertDataInRange, assertDefined, assertEqual, assertHasParent, assertLessThan, assertNotEqual, assertPreviousIsParent} from './assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from './bindings';
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
@@ -23,7 +23,7 @@ import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreat
 import {throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
-import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
+import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from './interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
 import {PlayerFactory} from './interfaces/player';
@@ -31,17 +31,16 @@ import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection'
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
-import {StylingIndex} from './interfaces/styling';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {appendChild, appendProjectedNode, createTextNode, findComponentView, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
+import {appendChild, appendProjectedNode, createTextNode, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCreationMode, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
-import {createStylingContextTemplate, renderStyleAndClassBindings, setStyle, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
+import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
+import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
-import {getStylingContext} from './styling/util';
+import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
-import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
+import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
 
 
 
@@ -62,36 +61,30 @@ const enum BindingDirection {
  * bindings, refreshes child components.
  * Note: view hooks are triggered later when leaving the view.
  */
-export function refreshDescendantViews(lView: LView, rf: RenderFlags | null) {
+export function refreshDescendantViews(lView: LView) {
   const tView = lView[TVIEW];
   // This needs to be set before children are processed to support recursive components
   tView.firstTemplatePass = false;
   setFirstTemplatePass(false);
 
-  // Dynamically created views must run first only in creation mode. If this is a
-  // creation-only pass, we should not call lifecycle hooks or evaluate bindings.
-  // This will be done in the update-only pass.
-  if (rf !== RenderFlags.Create) {
-    const creationMode = getCreationMode();
+  // If this is a creation pass, we should not call lifecycle hooks or evaluate bindings.
+  // This will be done in the update pass.
+  if (!isCreationMode(lView)) {
     const checkNoChangesMode = getCheckNoChangesMode();
 
-    if (!checkNoChangesMode) {
-      executeInitHooks(lView, tView, creationMode);
-    }
+    executeInitHooks(lView, tView, checkNoChangesMode);
 
     refreshDynamicEmbeddedViews(lView);
 
     // Content query results must be refreshed before content hooks are called.
     refreshContentQueries(tView);
 
-    if (!checkNoChangesMode) {
-      executeHooks(lView, tView.contentHooks, tView.contentCheckHooks, creationMode);
-    }
+    executeHooks(lView, tView.contentHooks, tView.contentCheckHooks, checkNoChangesMode);
 
     setHostBindings(tView, lView);
   }
 
-  refreshChildComponents(tView.components, rf);
+  refreshChildComponents(tView.components);
 }
 
 
@@ -149,10 +142,10 @@ function refreshContentQueries(tView: TView): void {
 }
 
 /** Refreshes child components in the current view. */
-function refreshChildComponents(components: number[] | null, rf: RenderFlags | null): void {
+function refreshChildComponents(components: number[] | null): void {
   if (components != null) {
     for (let i = 0; i < components.length; i++) {
-      componentRefresh(components[i], rf);
+      componentRefresh(components[i]);
     }
   }
 }
@@ -162,7 +155,8 @@ export function createLView<T>(
     rendererFactory?: RendererFactory3 | null, renderer?: Renderer3 | null,
     sanitizer?: Sanitizer | null, injector?: Injector | null): LView {
   const lView = tView.blueprint.slice() as LView;
-  lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit;
+  lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit |
+      LViewFlags.FirstLViewPass;
   lView[PARENT] = lView[DECLARATION_VIEW] = parentLView;
   lView[CONTEXT] = context;
   lView[RENDERER_FACTORY] = (rendererFactory || parentLView && parentLView[RENDERER_FACTORY]) !;
@@ -194,7 +188,7 @@ export function createNodeAtIndex(
     index: number, type: TNodeType.Projection, native: null, name: null,
     attrs: TAttributes | null): TProjectionNode;
 export function createNodeAtIndex(
-    index: number, type: TNodeType.ElementContainer, native: RComment, name: null,
+    index: number, type: TNodeType.ElementContainer, native: RComment, name: string | null,
     attrs: TAttributes | null): TElementContainerNode;
 export function createNodeAtIndex(
     index: number, type: TNodeType.IcuContainer, native: RComment, name: null,
@@ -212,24 +206,26 @@ export function createNodeAtIndex(
 
   let tNode = tView.data[adjustedIndex] as TNode;
   if (tNode == null) {
-    const previousOrParentTNode = getPreviousOrParentTNode();
-    const isParent = getIsParent();
     // TODO(misko): Refactor createTNode so that it does not depend on LView.
     tNode = tView.data[adjustedIndex] = createTNode(lView, type, adjustedIndex, name, attrs, null);
+  }
 
-    // Now link ourselves into the tree.
-    if (previousOrParentTNode) {
-      if (isParent && previousOrParentTNode.child == null &&
-          (tNode.parent !== null || previousOrParentTNode.type === TNodeType.View)) {
-        // We are in the same view, which means we are adding content node to the parent view.
-        previousOrParentTNode.child = tNode;
-      } else if (!isParent) {
-        previousOrParentTNode.next = tNode;
-      }
+  // Now link ourselves into the tree.
+  // We need this even if tNode exists, otherwise we might end up pointing to unexisting tNodes when
+  // we use i18n (especially with ICU expressions that update the DOM during the update phase).
+  const previousOrParentTNode = getPreviousOrParentTNode();
+  const isParent = getIsParent();
+  if (previousOrParentTNode) {
+    if (isParent && previousOrParentTNode.child == null &&
+        (tNode.parent !== null || previousOrParentTNode.type === TNodeType.View)) {
+      // We are in the same view, which means we are adding content node to the parent view.
+      previousOrParentTNode.child = tNode;
+    } else if (!isParent) {
+      previousOrParentTNode.next = tNode;
     }
   }
 
-  if (tView.firstChild == null && type === TNodeType.Element) {
+  if (tView.firstChild == null) {
     tView.firstChild = tNode;
   }
 
@@ -303,8 +299,7 @@ export function renderTemplate<T>(
         renderer, sanitizer);
     hostView[HOST_NODE] = createNodeAtIndex(0, TNodeType.Element, hostNode, null, null);
   }
-  renderComponentOrTemplate(hostView, context, null, templateFn);
-
+  renderComponentOrTemplate(hostView, context, templateFn);
   return hostView;
 }
 
@@ -348,8 +343,7 @@ export function createEmbeddedViewAndNode<T>(
  * can't store TViews in the template function itself (as we do for comps). Instead, we store the
  * TView for dynamically created views on their host TNode, which only has one instance.
  */
-export function renderEmbeddedTemplate<T>(
-    viewToRender: LView, tView: TView, context: T, rf: RenderFlags) {
+export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, context: T) {
   const _isParent = getIsParent();
   const _previousOrParentTNode = getPreviousOrParentTNode();
   setIsParent(true);
@@ -365,22 +359,17 @@ export function renderEmbeddedTemplate<T>(
 
       oldView = enterView(viewToRender, viewToRender[HOST_NODE]);
       namespaceHTML();
-      tView.template !(rf, context);
-      if (rf & RenderFlags.Update) {
-        refreshDescendantViews(viewToRender, null);
-      } else {
-        // This must be set to false immediately after the first creation run because in an
-        // ngFor loop, all the views will be created together before update mode runs and turns
-        // off firstTemplatePass. If we don't set it here, instances will perform directive
-        // matching, etc again and again.
-        viewToRender[TVIEW].firstTemplatePass = false;
-        setFirstTemplatePass(false);
-      }
+      tView.template !(getRenderFlags(viewToRender), context);
+      // This must be set to false immediately after the first creation run because in an
+      // ngFor loop, all the views will be created together before update mode runs and turns
+      // off firstTemplatePass. If we don't set it here, instances will perform directive
+      // matching, etc again and again.
+      viewToRender[TVIEW].firstTemplatePass = false;
+      setFirstTemplatePass(false);
+
+      refreshDescendantViews(viewToRender);
     } finally {
-      // renderEmbeddedTemplate() is called twice, once for creation only and then once for
-      // update. When for creation only, leaveView() must not trigger view hooks, nor clean flags.
-      const isCreationOnly = (rf & RenderFlags.Create) === RenderFlags.Create;
-      leaveView(oldView !, isCreationOnly);
+      leaveView(oldView !);
       setIsParent(_isParent);
       setPreviousOrParentTNode(_previousOrParentTNode);
     }
@@ -402,19 +391,28 @@ export function nextContext<T = any>(level: number = 1): T {
 }
 
 function renderComponentOrTemplate<T>(
-    hostView: LView, componentOrContext: T, rf: RenderFlags | null,
-    templateFn?: ComponentTemplate<T>) {
+    hostView: LView, context: T, templateFn?: ComponentTemplate<T>) {
   const rendererFactory = hostView[RENDERER_FACTORY];
   const oldView = enterView(hostView, hostView[HOST_NODE]);
   try {
     if (rendererFactory.begin) {
       rendererFactory.begin();
     }
-    if (templateFn) {
-      namespaceHTML();
-      templateFn(rf || getRenderFlags(hostView), componentOrContext !);
+
+    if (isCreationMode(hostView)) {
+      // creation mode pass
+      if (templateFn) {
+        namespaceHTML();
+        templateFn(RenderFlags.Create, context !);
+      }
+
+      refreshDescendantViews(hostView);
+      hostView[FLAGS] &= ~LViewFlags.CreationMode;
     }
-    refreshDescendantViews(hostView, rf);
+
+    // update mode pass
+    templateFn && templateFn(RenderFlags.Update, context !);
+    refreshDescendantViews(hostView);
   } finally {
     if (rendererFactory.end) {
       rendererFactory.end();
@@ -425,16 +423,11 @@ function renderComponentOrTemplate<T>(
 
 /**
  * This function returns the default configuration of rendering flags depending on when the
- * template is in creation mode or update mode. By default, the update block is run with the
- * creation block when the view is in creation mode. Otherwise, the update block is run
- * alone.
- *
- * Dynamically created views do NOT use this configuration (update block and create block are
- * always run separately).
+ * template is in creation mode or update mode. Update block and create block are
+ * always run separately.
  */
 function getRenderFlags(view: LView): RenderFlags {
-  return view[FLAGS] & LViewFlags.CreationMode ? RenderFlags.Create | RenderFlags.Update :
-                                                 RenderFlags.Update;
+  return isCreationMode(view) ? RenderFlags.Create : RenderFlags.Update;
 }
 
 //////////////////////////
@@ -444,7 +437,7 @@ function getRenderFlags(view: LView): RenderFlags {
 let _currentNamespace: string|null = null;
 
 export function namespaceSVG() {
-  _currentNamespace = 'http://www.w3.org/2000/svg/';
+  _currentNamespace = 'http://www.w3.org/2000/svg';
 }
 
 export function namespaceMathML() {
@@ -464,7 +457,8 @@ export function namespaceHTML() {
  *
  * @param index Index of the element in the data array
  * @param name Name of the DOM Node
- * @param attrs Statically bound set of attributes to be written into the DOM element on creation.
+ * @param attrs Statically bound set of attributes, classes, and styles to be written into the DOM
+ *              element on creation. Use [AttributeMarker] to denote the meaning of this array.
  * @param localRefs A set of local reference bindings on the element.
  */
 export function element(
@@ -490,18 +484,21 @@ export function elementContainerStart(
   const lView = getLView();
   const tView = lView[TVIEW];
   const renderer = lView[RENDERER];
+  const tagName = 'ng-container';
   ngDevMode && assertEqual(
                    lView[BINDING_INDEX], tView.bindingStartIndex,
                    'element containers should be created before any bindings');
 
   ngDevMode && ngDevMode.rendererCreateComment++;
-  const native = renderer.createComment(ngDevMode ? 'ng-container' : '');
+  const native = renderer.createComment(ngDevMode ? tagName : '');
 
   ngDevMode && assertDataInRange(lView, index - 1);
-  const tNode = createNodeAtIndex(index, TNodeType.ElementContainer, native, null, attrs || null);
+  const tNode =
+      createNodeAtIndex(index, TNodeType.ElementContainer, native, tagName, attrs || null);
 
   appendChild(native, tNode, lView);
   createDirectivesAndLocals(tView, lView, localRefs);
+  attachPatchData(native, lView);
 }
 
 /** Mark the end of the <ng-container>. */
@@ -531,7 +528,8 @@ export function elementContainerEnd(): void {
  *
  * @param index Index of the element in the LView array
  * @param name Name of the DOM Node
- * @param attrs Statically bound set of attributes to be written into the DOM element on creation.
+ * @param attrs Statically bound set of attributes, classes, and styles to be written into the DOM
+ *              element on creation. Use [AttributeMarker] to denote the meaning of this array.
  * @param localRefs A set of local reference bindings on the element.
  *
  * Attributes and localRefs are passed as an array of strings where elements with an even index
@@ -555,6 +553,14 @@ export function elementStart(
   const tNode = createNodeAtIndex(index, TNodeType.Element, native !, name, attrs || null);
 
   if (attrs) {
+    // it's important to only prepare styling-related datastructures once for a given
+    // tNode and not each time an element is created. Also, the styling code is designed
+    // to be patched and constructed at various points, but only up until the first element
+    // is created. Then the styling context is locked and can only be instantiated for each
+    // successive element that is created.
+    if (tView.firstTemplatePass && !tNode.stylingTemplate && hasStyling(attrs)) {
+      tNode.stylingTemplate = initializeStaticStylingContext(attrs);
+    }
     setUpAttributes(native, attrs);
   }
 
@@ -568,6 +574,23 @@ export function elementStart(
     attachPatchData(native, lView);
   }
   increaseElementDepthCount();
+
+  // if a directive contains a host binding for "class" then all class-based data will
+  // flow through that (except for `[class.prop]` bindings). This also includes initial
+  // static class values as well. (Note that this will be fixed once map-based `[style]`
+  // and `[class]` bindings work for multiple directives.)
+  if (tView.firstTemplatePass) {
+    const inputData = initializeTNodeInputs(tNode);
+    if (inputData && inputData.hasOwnProperty('class')) {
+      tNode.flags |= TNodeFlags.hasClassInput;
+    }
+  }
+
+  // There is no point in rendering styles when a class directive is present since
+  // it will take that over for us (this will be removed once #FW-882 is in).
+  if (tNode.stylingTemplate && (tNode.flags & TNodeFlags.hasClassInput) === 0) {
+    renderInitialStylesAndClasses(native, tNode.stylingTemplate, lView[RENDERER]);
+  }
 }
 
 /**
@@ -726,30 +749,38 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
   let i = 0;
 
   while (i < attrs.length) {
-    const attrName = attrs[i];
-    if (attrName === AttributeMarker.SelectOnly) break;
-    if (attrName === NG_PROJECT_AS_ATTR_NAME) {
-      i += 2;
-    } else {
-      ngDevMode && ngDevMode.rendererSetAttribute++;
+    const attrName = attrs[i++];
+    if (typeof attrName == 'number') {
       if (attrName === AttributeMarker.NamespaceURI) {
         // Namespaced attributes
-        const namespaceURI = attrs[i + 1] as string;
-        const attrName = attrs[i + 2] as string;
-        const attrVal = attrs[i + 3] as string;
+        const namespaceURI = attrs[i++] as string;
+        const attrName = attrs[i++] as string;
+        const attrVal = attrs[i++] as string;
+        ngDevMode && ngDevMode.rendererSetAttribute++;
         isProc ?
             (renderer as ProceduralRenderer3)
                 .setAttribute(native, attrName, attrVal, namespaceURI) :
             native.setAttributeNS(namespaceURI, attrName, attrVal);
-        i += 4;
       } else {
+        // All other `AttributeMarker`s are ignored here.
+        break;
+      }
+    } else {
+      /// attrName is string;
+      const attrVal = attrs[i++];
+      if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
         // Standard attributes
-        const attrVal = attrs[i + 1];
-        isProc ?
-            (renderer as ProceduralRenderer3)
-                .setAttribute(native, attrName as string, attrVal as string) :
-            native.setAttribute(attrName as string, attrVal as string);
-        i += 2;
+        ngDevMode && ngDevMode.rendererSetAttribute++;
+        if (isAnimationProp(attrName)) {
+          if (isProc) {
+            (renderer as ProceduralRenderer3).setProperty(native, attrName, attrVal);
+          }
+        } else {
+          isProc ?
+              (renderer as ProceduralRenderer3)
+                  .setAttribute(native, attrName as string, attrVal as string) :
+              native.setAttribute(attrName as string, attrVal as string);
+        }
       }
     }
   }
@@ -901,6 +932,15 @@ export function elementEnd(): void {
 
   queueLifecycleHooks(getLView()[TVIEW], previousOrParentTNode);
   decreaseElementDepthCount();
+
+  // this is fired at the end of elementEnd because ALL of the stylingBindings code
+  // (for directives and the template) have now executed which means the styling
+  // context can be instantiated properly.
+  if (hasClassInput(previousOrParentTNode)) {
+    const stylingContext = getStylingContext(previousOrParentTNode.index, lView);
+    setInputsForProperty(
+        lView, previousOrParentTNode.inputs !['class'] !, getInitialClassNameValue(stylingContext));
+  }
 }
 
 /**
@@ -932,7 +972,7 @@ export function elementAttribute(
 }
 
 /**
- * Update a property on an Element.
+ * Update a property on an element.
  *
  * If the property name also exists as an input property on one of the element's directives,
  * the component property will be set instead of the element property. This check must
@@ -943,17 +983,21 @@ export function elementAttribute(
  *        renaming as part of minification.
  * @param value New value to write.
  * @param sanitizer An optional function used to sanitize the value.
+ * @param nativeOnly Whether or not we should only set native properties and skip input check
+ * (this is necessary for host property bindings)
  */
 
 export function elementProperty<T>(
-    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null): void {
+    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
+    nativeOnly?: boolean): void {
   if (value === NO_CHANGE) return;
   const lView = getLView();
   const element = getNativeByIndex(index, lView) as RElement | RComment;
   const tNode = getTNode(index, lView);
-  const inputData = initializeTNodeInputs(tNode);
+  let inputData: PropertyAliases|null|undefined;
   let dataValue: PropertyAliasValue|undefined;
-  if (inputData && (dataValue = inputData[propName])) {
+  if (!nativeOnly && (inputData = initializeTNodeInputs(tNode)) &&
+      (dataValue = inputData[propName])) {
     setInputsForProperty(lView, dataValue, value);
     if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
     if (ngDevMode) {
@@ -967,10 +1011,12 @@ export function elementProperty<T>(
     // is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value) as any) : value;
     ngDevMode && ngDevMode.rendererSetProperty++;
-    isProceduralRenderer(renderer) ?
-        renderer.setProperty(element as RElement, propName, value) :
-        ((element as RElement).setProperty ? (element as any).setProperty(propName, value) :
-                                             (element as any)[propName] = value);
+    if (isProceduralRenderer(renderer)) {
+      renderer.setProperty(element as RElement, propName, value);
+    } else if (!isAnimationProp(propName)) {
+      (element as RElement).setProperty ? (element as any).setProperty(propName, value) :
+                                          (element as any)[propName] = value;
+    }
   }
 }
 
@@ -1090,118 +1136,83 @@ function generatePropertyAliases(tNode: TNode, direction: BindingDirection): Pro
 }
 
 /**
- * Add or remove a class in a `classList` on a DOM element.
- *
- * This instruction is meant to handle the [class.foo]="exp" case
- *
- * @param index The index of the element to update in the data array
- * @param classIndex Index of class to toggle. Because it is going to DOM, this is not subject to
- *        renaming as part of minification.
- * @param value A value indicating if a given class should be added or removed.
- * @param directive the ref to the directive that is attempting to change styling.
- */
-export function elementClassProp(
-    index: number, classIndex: number, value: boolean | PlayerFactory, directive?: {}): void {
-  if (directive != undefined) {
-    return hackImplementationOfElementClassProp(
-        index, classIndex, value, directive);  // proper supported in next PR
-  }
-  const val =
-      (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
-  updateElementClassProp(getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, val);
-}
-
-/**
  * Assign any inline style values to the element during creation mode.
  *
- * This instruction is meant to be called during creation mode to apply all styling
- * (e.g. `style="..."`) values to the element. This is also where the provided index
- * value is allocated for the styling details for its corresponding element (the element
- * index is the previous index value from this one).
+ * This instruction is meant to be called during creation mode to register all
+ * dynamic style and class bindings on the element. Note for static values (no binding)
+ * see `elementStart` and `elementHostAttrs`.
  *
- * (Note this function calls `elementStylingApply` immediately when called.)
+ * @param classBindingNames An array containing bindable class names.
+ *        The `elementClassProp` refers to the class name by index in this array.
+ *        (i.e. `['foo', 'bar']` means `foo=0` and `bar=1`).
+ * @param styleBindingNames An array containing bindable style properties.
+ *        The `elementStyleProp` refers to the class name by index in this array.
+ *        (i.e. `['width', 'height']` means `width=0` and `height=1`).
+ * @param styleSanitizer An optional sanitizer function that will be used to sanitize any CSS
+ *        property values that are applied to the element (during rendering).
+ *        Note that the sanitizer instance itself is tied to the `directive` (if  provided).
+ * @param directive A directive instance the styling is associated with. If not provided
+ *        current view's controller instance is assumed.
  *
- *
- * @param index Index value which will be allocated to store styling data for the element.
- *        (Note that this is not the element index, but rather an index value allocated
- *        specifically for element styling--the index must be the next index after the element
- *        index.)
- * @param classDeclarations A key/value array of CSS classes that will be registered on the element.
- *   Each individual style will be used on the element as long as it is not overridden
- *   by any classes placed on the element by multiple (`[class]`) or singular (`[class.named]`)
- *   bindings. If a class binding changes its value to a falsy value then the matching initial
- *   class value that are passed in here will be applied to the element (if matched).
- * @param styleDeclarations A key/value array of CSS styles that will be registered on the element.
- *   Each individual style will be used on the element as long as it is not overridden
- *   by any styles placed on the element by multiple (`[style]`) or singular (`[style.prop]`)
- *   bindings. If a style binding changes its value to null then the initial styling
- *   values that are passed in here will be applied to the element (if matched).
- * @param styleSanitizer An optional sanitizer function that will be used (if provided)
- *   to sanitize the any CSS property values that are applied to the element (during rendering).
- * @param directive the ref to the directive that is attempting to change styling.
+ * @publicApi
  */
 export function elementStyling(
-    classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
-    styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
+    classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
     styleSanitizer?: StyleSanitizeFn | null, directive?: {}): void {
-  if (directive != undefined) {
-    getCreationMode() &&
-        hackImplementationOfElementStyling(
-            classDeclarations || null, styleDeclarations || null, styleSanitizer || null,
-            directive);  // supported in next PR
-    return;
-  }
   const tNode = getPreviousOrParentTNode();
-  const inputData = initializeTNodeInputs(tNode);
-
   if (!tNode.stylingTemplate) {
-    const hasClassInput = inputData && inputData.hasOwnProperty('class') ? true : false;
-    if (hasClassInput) {
-      tNode.flags |= TNodeFlags.hasClassInput;
-    }
-
-    // initialize the styling template.
-    tNode.stylingTemplate = createStylingContextTemplate(
-        classDeclarations, styleDeclarations, styleSanitizer, hasClassInput);
+    tNode.stylingTemplate = createEmptyStylingContext();
   }
-
-  if (styleDeclarations && styleDeclarations.length ||
-      classDeclarations && classDeclarations.length) {
-    const index = tNode.index;
-    if (delegateToClassInput(tNode)) {
-      const lView = getLView();
-      const stylingContext = getStylingContext(index, lView);
-      const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue] as string;
-      setInputsForProperty(lView, tNode.inputs !['class'] !, initialClasses);
-    }
-    elementStylingApply(index - HEADER_OFFSET);
-  }
+  updateContextWithBindings(
+      tNode.stylingTemplate !, directive || null, classBindingNames, styleBindingNames,
+      styleSanitizer, hasClassInput(tNode));
 }
 
+/**
+ * Assign static styling values to a host element.
+ *
+ * NOTE: This instruction is meant to used from `hostBindings` function only.
+ *
+ * @param directive A directive instance the styling is associated with.
+ * @param attrs An array containing class and styling information. The values must be marked with
+ *              `AttributeMarker`.
+ *
+ *        ```
+ *        var attrs = [AttributeMarker.Classes, 'foo', 'bar',
+ *                     AttributeMarker.Styles, 'width', '100px', 'height, '200px']
+ *        elementHostAttrs(directive, attrs);
+ *        ```
+ *
+ * @publicApi
+ */
+export function elementHostAttrs(directive: any, attrs: TAttributes) {
+  const tNode = getPreviousOrParentTNode();
+  if (!tNode.stylingTemplate) {
+    tNode.stylingTemplate = initializeStaticStylingContext(attrs);
+  }
+  patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, directive);
+}
 
 /**
- * Apply all styling values to the element which have been queued by any styling instructions.
+ * Apply styling binding to the element.
  *
- * This instruction is meant to be run once one or more `elementStyle` and/or `elementStyleProp`
- * have been issued against the element. This function will also determine if any styles have
- * changed and will then skip the operation if there is nothing new to render.
+ * This instruction is meant to be run after `elementStyle` and/or `elementStyleProp`.
+ * if any styling bindings have changed then the changes are flushed to the element.
  *
- * Once called then all queued styles will be flushed.
  *
- * @param index Index of the element's styling storage that will be rendered.
- *        (Note that this is not the element index, but rather an index value allocated
- *        specifically for element styling--the index must be the next index after the element
- *        index.)
- * @param directive the ref to the directive that is attempting to change styling.
+ * @param index Index of the element's with which styling is associated.
+ * @param directive Directive instance that is attempting to change styling. (Defaults to the
+ *        component of the current view).
+components
+ *
+ * @publicApi
  */
-export function elementStylingApply(index: number, directive?: {}): void {
-  if (directive != undefined) {
-    return hackImplementationOfElementStylingApply(index, directive);  // supported in next PR
-  }
+export function elementStylingApply(index: number, directive?: any): void {
   const lView = getLView();
-  const isFirstRender = (lView[FLAGS] & LViewFlags.CreationMode) !== 0;
-  const totalPlayersQueued = renderStyleAndClassBindings(
-      getStylingContext(index + HEADER_OFFSET, lView), lView[RENDERER], lView, isFirstRender);
+  const isFirstRender = (lView[FLAGS] & LViewFlags.FirstLViewPass) !== 0;
+  const totalPlayersQueued = renderStyling(
+      getStylingContext(index + HEADER_OFFSET, lView), lView[RENDERER], lView, isFirstRender, null,
+      null, directive);
   if (totalPlayersQueued > 0) {
     const rootContext = getRootContext(lView);
     scheduleTick(rootContext, RootContextFlags.FlushPlayers);
@@ -1209,29 +1220,34 @@ export function elementStylingApply(index: number, directive?: {}): void {
 }
 
 /**
- * Queue a given style to be rendered on an Element.
+ * Update a style bindings value on an element.
  *
  * If the style value is `null` then it will be removed from the element
  * (or assigned a different value depending if there are any styles placed
  * on the element with `elementStyle` or any styles that are present
  * from when the element was created (with `elementStyling`).
  *
- * (Note that the styling instruction will not be applied until `elementStylingApply` is called.)
+ * (Note that the styling element is updated as part of `elementStylingApply`.)
  *
- * @param index Index of the element's styling storage to change in the data array.
- *        (Note that this is not the element index, but rather an index value allocated
- *        specifically for element styling--the index must be the next index after the element
- *        index.)
- * @param styleIndex Index of the style property on this element. (Monotonically increasing.)
- * @param value New value to write (null to remove).
+ * @param index Index of the element's with which styling is associated.
+ * @param styleIndex Index of style to update. This index value refers to the
+ *        index of the style in the style bindings array that was passed into
+ *        `elementStlyingBindings`.
+ * @param value New value to write (null to remove). Note that if a directive also
+ *        attempts to write to the same binding value then it will only be able to
+ *        do so if the template binding value is `null` (or doesn't exist at all).
  * @param suffix Optional suffix. Used with scalar values to add unit such as `px`.
  *        Note that when a suffix is provided then the underlying sanitizer will
  *        be ignored.
- * @param directive the ref to the directive that is attempting to change styling.
+ * @param directive Directive instance that is attempting to change styling. (Defaults to the
+ *        component of the current view).
+components
+ *
+ * @publicApi
  */
 export function elementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
-    suffix?: string, directive?: {}): void {
+    suffix?: string | null, directive?: {}): void {
   let valueToAdd: string|null = null;
   if (value !== null) {
     if (suffix) {
@@ -1246,35 +1262,59 @@ export function elementStyleProp(
       valueToAdd = value as any as string;
     }
   }
-  if (directive != undefined) {
-    hackImplementationOfElementStyleProp(index, styleIndex, valueToAdd, suffix, directive);
-  } else {
-    updateElementStyleProp(
-        getStylingContext(index + HEADER_OFFSET, getLView()), styleIndex, valueToAdd);
-  }
+  updateElementStyleProp(
+      getStylingContext(index + HEADER_OFFSET, getLView()), styleIndex, valueToAdd, directive);
 }
 
 /**
- * Queue a key/value map of styles to be rendered on an Element.
+ * Add or remove a class via a class binding on a DOM element.
  *
- * This instruction is meant to handle the `[style]="exp"` usage. When styles are applied to
- * the Element they will then be placed with respect to any styles set with `elementStyleProp`.
- * If any styles are set to `null` then they will be removed from the element (unless the same
- * style properties have been assigned to the element during creation using `elementStyling`).
+ * This instruction is meant to handle the [class.foo]="exp" case and, therefore,
+ * the class itself must already be applied using `elementStyling` within
+ * the creation block.
+ *
+ * @param index Index of the element's with which styling is associated.
+ * @param classIndex Index of class to toggle. This index value refers to the
+ *        index of the class in the class bindings array that was passed into
+ *        `elementStlyingBindings` (which is meant to be called before this
+ *        function is).
+ * @param value A true/false value which will turn the class on or off.
+ * @param directive Directive instance that is attempting to change styling. (Defaults to the
+ *        component of the current view).
+components
+ *
+ * @publicApi
+ */
+export function elementClassProp(
+    index: number, classIndex: number, value: boolean | PlayerFactory, directive?: {}): void {
+  const onOrOffClassValue =
+      (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
+  updateElementClassProp(
+      getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, onOrOffClassValue,
+      directive);
+}
+
+/**
+ * Update style and/or class bindings using object literal.
+ *
+ * This instruction is meant apply styling via the `[style]="exp"` and `[class]="exp"` template
+ * bindings. When styles are applied to the Element they will then be placed with respect to
+ * any styles set with `elementStyleProp`. If any styles are set to `null` then they will be
+ * removed from the element.
  *
  * (Note that the styling instruction will not be applied until `elementStylingApply` is called.)
  *
- * @param index Index of the element's styling storage to change in the data array.
- *        (Note that this is not the element index, but rather an index value allocated
- *        specifically for element styling--the index must be the next index after the element
- *        index.)
+ * @param index Index of the element's with which styling is associated.
  * @param classes A key/value style map of CSS classes that will be added to the given element.
  *        Any missing classes (that have already been applied to the element beforehand) will be
  *        removed (unset) from the element's list of CSS classes.
  * @param styles A key/value style map of the styles that will be applied to the given element.
  *        Any missing styles (that have already been applied to the element beforehand) will be
  *        removed (unset) from the element's styling.
- * @param directive the ref to the directive that is attempting to change styling.
+ * @param directive Directive instance that is attempting to change styling. (Defaults to the
+ *        component of the current view).
+ *
+ * @publicApi
  */
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
@@ -1285,113 +1325,24 @@ export function elementStylingMap<T>(
   const lView = getLView();
   const tNode = getTNode(index, lView);
   const stylingContext = getStylingContext(index + HEADER_OFFSET, lView);
-  if (delegateToClassInput(tNode) && classes !== NO_CHANGE) {
-    const initialClasses = stylingContext[StylingIndex.PreviousOrCachedMultiClassValue] as string;
+  if (hasClassInput(tNode) && classes !== NO_CHANGE) {
+    const initialClasses = getInitialClassNameValue(stylingContext);
     const classInputVal =
         (initialClasses.length ? (initialClasses + ' ') : '') + (classes as string);
     setInputsForProperty(lView, tNode.inputs !['class'] !, classInputVal);
+  } else {
+    updateStylingMap(stylingContext, classes, styles);
   }
-  updateStylingMap(stylingContext, classes, styles);
 }
 
 /* START OF HACK BLOCK */
-/*
- * HACK
- * The code below is a quick and dirty implementation of the host style binding so that we can make
- * progress on TestBed. Once the correct implementation is created this code should be removed.
- */
-interface HostStylingHack {
-  classDeclarations: string[];
-  styleDeclarations: string[];
-  styleSanitizer: StyleSanitizeFn|null;
-}
-type HostStylingHackMap = Map<{}, HostStylingHack>;
-
-function hackImplementationOfElementStyling(
-    classDeclarations: (string | boolean | InitialStylingFlags)[] | null,
-    styleDeclarations: (string | boolean | InitialStylingFlags)[] | null,
-    styleSanitizer: StyleSanitizeFn | null, directive: {}): void {
-  const node = getNativeByTNode(getPreviousOrParentTNode(), getLView()) as RElement;
-  ngDevMode && assertDefined(node, 'expecting parent DOM node');
-  const hostStylingHackMap: HostStylingHackMap =
-      ((node as any).hostStylingHack || ((node as any).hostStylingHack = new Map()));
-  const squashedClassDeclarations = hackSquashDeclaration(classDeclarations);
-  hostStylingHackMap.set(directive, {
-    classDeclarations: squashedClassDeclarations,
-    styleDeclarations: hackSquashDeclaration(styleDeclarations), styleSanitizer
-  });
-  hackSetStaticClasses(node, squashedClassDeclarations);
-}
-
-function hackSetStaticClasses(node: RElement, classDeclarations: (string | boolean)[]) {
-  // Static classes need to be set here because static classes don't generate
-  // elementClassProp instructions.
-  const lView = getLView();
-  const staticClassStartIndex =
-      classDeclarations.indexOf(InitialStylingFlags.VALUES_MODE as any) + 1;
-  const renderer = lView[RENDERER];
-
-  for (let i = staticClassStartIndex; i < classDeclarations.length; i += 2) {
-    const className = classDeclarations[i] as string;
-    const value = classDeclarations[i + 1];
-    // if value is true, then this is a static class and we should set it now.
-    // class bindings are set separately in elementClassProp.
-    if (value === true) {
-      if (isProceduralRenderer(renderer)) {
-        renderer.addClass(node, className);
-      } else {
-        const classList = (node as HTMLElement).classList;
-        classList.add(className);
-      }
-    }
-  }
-}
-
-function hackSquashDeclaration(declarations: (string | boolean | InitialStylingFlags)[] | null):
-    string[] {
-  // assume the array is correct. This should be fine for View Engine compatibility.
-  return declarations || [] as any;
-}
-
-function hackImplementationOfElementClassProp(
-    index: number, classIndex: number, value: boolean | PlayerFactory, directive: {}): void {
-  const lView = getLView();
-  const node = getNativeByIndex(index, lView);
-  ngDevMode && assertDefined(node, 'could not locate node');
-  const hostStylingHack: HostStylingHack = (node as any).hostStylingHack.get(directive);
-  const className = hostStylingHack.classDeclarations[classIndex];
-  const renderer = lView[RENDERER];
-  if (isProceduralRenderer(renderer)) {
-    value ? renderer.addClass(node, className) : renderer.removeClass(node, className);
-  } else {
-    const classList = (node as HTMLElement).classList;
-    value ? classList.add(className) : classList.remove(className);
-  }
-}
-
-function hackImplementationOfElementStylingApply(index: number, directive?: {}): void {
-  // Do nothing because the hack implementation is eager.
-}
-
-function hackImplementationOfElementStyleProp(
-    index: number, styleIndex: number, value: string | null, suffix?: string,
-    directive?: {}): void {
-  const lView = getLView();
-  const node = getNativeByIndex(index, lView);
-  ngDevMode && assertDefined(node, 'could not locate node');
-  const hostStylingHack: HostStylingHack = (node as any).hostStylingHack.get(directive);
-  const styleName = hostStylingHack.styleDeclarations[styleIndex];
-  const renderer = lView[RENDERER];
-  setStyle(node, styleName, value as string, renderer, null);
-}
-
 function hackImplementationOfElementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: {}): void {
   throw new Error('unimplemented. Should not be needed by ViewEngine compatibility');
 }
-
 /* END OF HACK BLOCK */
+
 //////////////////////////
 //// Text
 //////////////////////////
@@ -1526,7 +1477,7 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
     if (def.hostBindings) {
       const previousExpandoLength = expando.length;
       setCurrentDirectiveDef(def);
-      def.hostBindings !(RenderFlags.Create, directive, tNode.index);
+      def.hostBindings !(RenderFlags.Create, directive, tNode.index - HEADER_OFFSET);
       setCurrentDirectiveDef(null);
       // `hostBindings` function may or may not contain `allocHostVars` call
       // (e.g. it may not if it only contains host listeners), so we need to check whether
@@ -1634,7 +1585,7 @@ function findDirectiveMatches(tView: TView, viewData: LView, tNode: TNode): Dire
   if (registry) {
     for (let i = 0; i < registry.length; i++) {
       const def = registry[i] as ComponentDef<any>| DirectiveDef<any>;
-      if (isNodeMatchingSelectorList(tNode, def.selectors !)) {
+      if (isNodeMatchingSelectorList(tNode, def.selectors !, /* isProjectionMode */ false)) {
         matches || (matches = []);
         diPublicInInjector(
             getOrCreateNodeInjectorForNode(
@@ -1907,6 +1858,8 @@ export function template(
   createDirectivesAndLocals(tView, lView, localRefs, localRefExtractor);
   const currentQueries = lView[QUERIES];
   const previousOrParentTNode = getPreviousOrParentTNode();
+  const native = getNativeByTNode(previousOrParentTNode, lView);
+  attachPatchData(native, lView);
   if (currentQueries) {
     lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TContainerNode);
   }
@@ -1975,11 +1928,9 @@ export function containerRefreshStart(index: number): void {
 
   lView[index + HEADER_OFFSET][ACTIVE_INDEX] = 0;
 
-  if (!getCheckNoChangesMode()) {
-    // We need to execute init hooks here so ngOnInit hooks are called in top level views
-    // before they are called in embedded views (for backwards compatibility).
-    executeInitHooks(lView, tView, getCreationMode());
-  }
+  // We need to execute init hooks here so ngOnInit hooks are called in top level views
+  // before they are called in embedded views (for backwards compatibility).
+  executeInitHooks(lView, tView, getCheckNoChangesMode());
 }
 
 /**
@@ -2024,9 +1975,7 @@ function refreshDynamicEmbeddedViews(lView: LView) {
         const dynamicViewData = container[VIEWS][i];
         // The directives and pipes are not needed here as an existing view is only being refreshed.
         ngDevMode && assertDefined(dynamicViewData[TVIEW], 'TView must be allocated');
-        renderEmbeddedTemplate(
-            dynamicViewData, dynamicViewData[TVIEW], dynamicViewData[CONTEXT] !,
-            RenderFlags.Update);
+        renderEmbeddedTemplate(dynamicViewData, dynamicViewData[TVIEW], dynamicViewData[CONTEXT] !);
       }
     }
   }
@@ -2101,13 +2050,14 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
     enterView(viewToRender, viewToRender[TVIEW].node);
   }
   if (lContainer) {
-    if (getCreationMode()) {
+    if (isCreationMode(viewToRender)) {
       // it is a new view, insert it into collection of views for a given container
       insertView(viewToRender, lContainer, lView, lContainer[ACTIVE_INDEX] !, -1);
     }
     lContainer[ACTIVE_INDEX] !++;
   }
-  return getRenderFlags(viewToRender);
+  return isCreationMode(viewToRender) ? RenderFlags.Create | RenderFlags.Update :
+                                        RenderFlags.Update;
 }
 
 /**
@@ -2141,7 +2091,12 @@ function getOrCreateEmbeddedTView(
 export function embeddedViewEnd(): void {
   const lView = getLView();
   const viewHost = lView[HOST_NODE];
-  refreshDescendantViews(lView, null);
+
+  if (isCreationMode(lView)) {
+    refreshDescendantViews(lView);  // creation mode pass
+    lView[FLAGS] &= ~LViewFlags.CreationMode;
+  }
+  refreshDescendantViews(lView);  // update mode pass
   leaveView(lView[PARENT] !);
   setPreviousOrParentTNode(viewHost !);
   setIsParent(false);
@@ -2153,9 +2108,8 @@ export function embeddedViewEnd(): void {
  * Refreshes components by entering the component view and processing its bindings, queries, etc.
  *
  * @param adjustedElementIndex  Element index in LView[] (adjusted for HEADER_OFFSET)
- * @param rf  The render flags that should be used to process this template
  */
-export function componentRefresh<T>(adjustedElementIndex: number, rf: RenderFlags | null): void {
+export function componentRefresh<T>(adjustedElementIndex: number): void {
   const lView = getLView();
   ngDevMode && assertDataInRange(lView, adjustedElementIndex);
   const hostView = getComponentViewByIndex(adjustedElementIndex, lView);
@@ -2164,7 +2118,7 @@ export function componentRefresh<T>(adjustedElementIndex: number, rf: RenderFlag
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
     syncViewWithBlueprint(hostView);
-    detectChangesInternal(hostView, hostView[CONTEXT], rf);
+    checkView(hostView, hostView[CONTEXT]);
   }
 }
 
@@ -2444,7 +2398,7 @@ export function tick<T>(component: T): void {
 function tickRootContext(rootContext: RootContext) {
   for (let i = 0; i < rootContext.components.length; i++) {
     const rootComponent = rootContext.components[i];
-    renderComponentOrTemplate(readPatchedLView(rootComponent) !, rootComponent, RenderFlags.Update);
+    renderComponentOrTemplate(readPatchedLView(rootComponent) !, rootComponent);
   }
 }
 
@@ -2462,7 +2416,21 @@ function tickRootContext(rootContext: RootContext) {
  * @param component The component which the change detection should be performed on.
  */
 export function detectChanges<T>(component: T): void {
-  detectChangesInternal(getComponentViewByInstance(component) !, component, null);
+  const view = getComponentViewByInstance(component) !;
+  detectChangesInternal<T>(view, component);
+}
+
+export function detectChangesInternal<T>(view: LView, context: T) {
+  const rendererFactory = view[RENDERER_FACTORY];
+
+  if (rendererFactory.begin) rendererFactory.begin();
+
+  if (isCreationMode(view)) {
+    checkView(view, context);  // creation mode pass
+  }
+  checkView(view, context);  // update mode pass
+
+  if (rendererFactory.end) rendererFactory.end();
 }
 
 /**
@@ -2509,7 +2477,7 @@ export function checkNoChangesInRootView(lView: LView): void {
 }
 
 /** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck. */
-function detectChangesInternal<T>(hostView: LView, component: T, rf: RenderFlags | null) {
+export function checkView<T>(hostView: LView, component: T) {
   const hostTView = hostView[TVIEW];
   const oldView = enterView(hostView, hostView[HOST_NODE]);
   const templateFn = hostTView.template !;
@@ -2517,27 +2485,23 @@ function detectChangesInternal<T>(hostView: LView, component: T, rf: RenderFlags
 
   try {
     namespaceHTML();
-    createViewQuery(viewQuery, rf, hostView[FLAGS], component);
-    templateFn(rf || getRenderFlags(hostView), component);
-    refreshDescendantViews(hostView, rf);
-    updateViewQuery(viewQuery, hostView[FLAGS], component);
+    createViewQuery(viewQuery, hostView, component);
+    templateFn(getRenderFlags(hostView), component);
+    refreshDescendantViews(hostView);
+    updateViewQuery(viewQuery, hostView, component);
   } finally {
-    leaveView(oldView, rf === RenderFlags.Create);
+    leaveView(oldView);
   }
 }
 
-function createViewQuery<T>(
-    viewQuery: ComponentQuery<{}>| null, renderFlags: RenderFlags | null, viewFlags: LViewFlags,
-    component: T): void {
-  if (viewQuery && (renderFlags === RenderFlags.Create ||
-                    (renderFlags === null && (viewFlags & LViewFlags.CreationMode)))) {
+function createViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
+  if (viewQuery && isCreationMode(view)) {
     viewQuery(RenderFlags.Create, component);
   }
 }
 
-function updateViewQuery<T>(
-    viewQuery: ComponentQuery<{}>| null, flags: LViewFlags, component: T): void {
-  if (viewQuery && flags & RenderFlags.Update) {
+function updateViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
+  if (viewQuery && !isCreationMode(view)) {
     viewQuery(RenderFlags.Update, component);
   }
 }
@@ -2863,10 +2827,6 @@ function initializeTNodeInputs(tNode: TNode | null) {
     return tNode.inputs;
   }
   return null;
-}
-
-export function delegateToClassInput(tNode: TNode) {
-  return tNode.flags & TNodeFlags.hasClassInput;
 }
 
 

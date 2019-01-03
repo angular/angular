@@ -23,10 +23,15 @@ const enum Char {
  *
  * @param value string representation of style as used in the `style` attribute in HTML.
  *   Example: `color: red; height: auto`.
- * @returns an object literal. `{ color: 'red', height: 'auto'}`.
+ * @returns An array of style property name and value pairs, e.g. `['color', 'red', 'height',
+ * 'auto']`
  */
-export function parse(value: string): {[key: string]: any} {
-  const styles: {[key: string]: any} = {};
+export function parse(value: string): string[] {
+  // we use a string array here instead of a string map
+  // because a string-map is not guaranteed to retain the
+  // order of the entries whereas a string array can be
+  // construted in a [key, value, key, value] format.
+  const styles: string[] = [];
 
   let i = 0;
   let parenDepth = 0;
@@ -72,7 +77,7 @@ export function parse(value: string): {[key: string]: any} {
       case Char.Semicolon:
         if (currentProp && valueStart > 0 && parenDepth === 0 && quote === Char.QuoteNone) {
           const styleVal = value.substring(valueStart, i - 1).trim();
-          styles[currentProp] = valueHasQuotes ? stripUnnecessaryQuotes(styleVal) : styleVal;
+          styles.push(currentProp, valueHasQuotes ? stripUnnecessaryQuotes(styleVal) : styleVal);
           propStart = i;
           valueStart = 0;
           currentProp = null;
@@ -84,7 +89,7 @@ export function parse(value: string): {[key: string]: any} {
 
   if (currentProp && valueStart) {
     const styleVal = value.substr(valueStart).trim();
-    styles[currentProp] = valueHasQuotes ? stripUnnecessaryQuotes(styleVal) : styleVal;
+    styles.push(currentProp, valueHasQuotes ? stripUnnecessaryQuotes(styleVal) : styleVal);
   }
 
   return styles;

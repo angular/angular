@@ -12,6 +12,8 @@ import {extractSourceMap, originalPositionFor} from '@angular/compiler/testing/s
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
 import {Attribute, Component, Directive, ErrorHandler, ɵglobal} from '@angular/core';
 import {getErrorLogger} from '@angular/core/src/errors';
+import {ivyEnabled} from '@angular/core/src/ivy_switch';
+import {resolveComponentResources} from '@angular/core/src/metadata/resource_loading';
 import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {fixmeIvy} from '@angular/private/testing';
 
@@ -102,24 +104,30 @@ import {fixmeIvy} from '@angular/private/testing';
     function declareTests(
         {ngUrl, templateDecorator}:
             {ngUrl: string, templateDecorator: (template: string) => { [key: string]: any }}) {
-      fixmeIvy('FW-682: Compiler error handling')
+      fixmeIvy('FW-223: Generate source maps during template compilation')
           .it('should use the right source url in html parse errors', fakeAsync(() => {
                 @Component({...templateDecorator('<div>\n  </error>')})
                 class MyComp {
                 }
 
-                expect(() => compileAndCreateComponent(MyComp))
+                expect(() => {
+                  ivyEnabled && resolveComponentResources(null !);
+                  compileAndCreateComponent(MyComp);
+                })
                     .toThrowError(new RegExp(
                         `Template parse errors[\\s\\S]*${ngUrl.replace('$', '\\$')}@1:2`));
               }));
 
-      fixmeIvy('FW-682: Compiler error handling')
+      fixmeIvy('FW-223: Generate source maps during template compilation')
           .it('should use the right source url in template parse errors', fakeAsync(() => {
                 @Component({...templateDecorator('<div>\n  <div unknown="{{ctxProp}}"></div>')})
                 class MyComp {
                 }
 
-                expect(() => compileAndCreateComponent(MyComp))
+                expect(() => {
+                  ivyEnabled && resolveComponentResources(null !);
+                  compileAndCreateComponent(MyComp);
+                })
                     .toThrowError(new RegExp(
                         `Template parse errors[\\s\\S]*${ngUrl.replace('$', '\\$')}@1:7`));
               }));

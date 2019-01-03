@@ -8,6 +8,7 @@
 import * as path from 'canonical-path';
 import * as yargs from 'yargs';
 
+import {checkMarkerFile, writeMarkerFile} from './packages/build_marker';
 import {DependencyHost} from './packages/dependency_host';
 import {DependencyResolver} from './packages/dependency_resolver';
 import {EntryPointFormat} from './packages/entry_point';
@@ -59,6 +60,11 @@ export function mainNgcc(args: string[]): number {
       const dtsTransformFormat: EntryPointFormat = entryPoint.fesm2015 ? 'fesm2015' : 'esm2015';
 
       formats.forEach(format => {
+        if (checkMarkerFile(entryPoint, format)) {
+          console.warn(`Skipping ${entryPoint.name} : ${format} (already built).`);
+          return;
+        }
+
         const bundle =
             makeEntryPointBundle(entryPoint, isCore, format, format === dtsTransformFormat);
         if (bundle === null) {
@@ -67,6 +73,9 @@ export function mainNgcc(args: string[]): number {
         } else {
           transformer.transform(entryPoint, isCore, bundle);
         }
+
+        // Write the built-with-ngcc marker
+        writeMarkerFile(entryPoint, format);
       });
     });
   } catch (e) {

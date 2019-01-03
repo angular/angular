@@ -22,11 +22,10 @@ import {assertComponentType, assertDefined} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
-import {createLView, createNodeAtIndex, createTView, createViewNode, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
+import {addToViewTree, createLView, createNodeAtIndex, createTView, createViewNode, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
 import {ComponentDef, RenderFlags} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
-import {SanitizerFn} from './interfaces/sanitization';
 import {HEADER_OFFSET, LView, LViewFlags, RootContext, TVIEW} from './interfaces/view';
 import {enterView, leaveView} from './state';
 import {defaultScheduler, getTNode} from './util';
@@ -34,10 +33,15 @@ import {createElementRef} from './view_engine_compatibility';
 import {RootViewRef, ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
+  /**
+   * @param ngModule The NgModuleRef to which all resolved factories are bound.
+   */
+  constructor(private ngModule?: viewEngine_NgModuleRef<any>) { super(); }
+
   resolveComponentFactory<T>(component: Type<T>): viewEngine_ComponentFactory<T> {
     ngDevMode && assertComponentType(component);
     const componentDef = getComponentDef(component) !;
-    return new ComponentFactory(componentDef);
+    return new ComponentFactory(componentDef, this.ngModule);
   }
 }
 
@@ -75,10 +79,13 @@ function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injec
     get: <T>(token: Type<T>| InjectionToken<T>, notFoundValue?: T): T => {
       const value = rootViewInjector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR);
 
-      if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
+      if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||
+          notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) {
         // Return the value from the root element injector when
         // - it provides it
         //   (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
+        // - the module injector should not be checked
+        //   (notFoundValue === NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR)
         return value;
       }
 
@@ -103,7 +110,12 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     return toRefArray(this.componentDef.outputs);
   }
 
-  constructor(private componentDef: ComponentDef<any>) {
+  /**
+   * @param componentDef The component definition.
+   * @param ngModule The NgModuleRef to which the factory is bound.
+   */
+  constructor(
+      private componentDef: ComponentDef<any>, private ngModule?: viewEngine_NgModuleRef<any>) {
     super();
     this.componentType = componentDef.type;
     this.selector = componentDef.selectors[0][0] as string;
@@ -114,6 +126,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
       ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<T> {
     const isInternalRootView = rootSelectorOrNode === undefined;
+    ngModule = ngModule || this.ngModule;
 
     const rootViewInjector =
         ngModule ? createChainedInjector(injector, ngModule.injector) : injector;
@@ -155,6 +168,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
       const componentView = createRootComponentView(
           hostRNode, this.componentDef, rootLView, rendererFactory, renderer);
+
       tElementNode = getTNode(0, rootLView) as TElementNode;
 
       // Transform the arrays of native nodes into a structure that can be consumed by the
@@ -193,9 +207,10 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       component = createRootComponent(
           componentView, this.componentDef, rootLView, rootContext, [LifecycleHooksFeature]);
 
-      refreshDescendantViews(rootLView, RenderFlags.Create);
+      addToViewTree(rootLView, HEADER_OFFSET, componentView);
+      refreshDescendantViews(rootLView);
     } finally {
-      leaveView(oldLView, true);
+      leaveView(oldLView);
       if (rendererFactory.end) rendererFactory.end();
     }
 

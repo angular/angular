@@ -22,7 +22,7 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    fixmeIvy('FW-716: Error: [$rootScope:inprog] $digest already in progress')
+    fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly')
         .it('should bind properties, events', async(() => {
               const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
                 $rootScope['name'] = 'world';

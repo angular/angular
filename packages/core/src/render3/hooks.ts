@@ -93,9 +93,10 @@ function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
  *
  * @param currentView The current view
  */
-export function executeInitHooks(currentView: LView, tView: TView, creationMode: boolean): void {
-  if (currentView[FLAGS] & LViewFlags.RunInit) {
-    executeHooks(currentView, tView.initHooks, tView.checkHooks, creationMode);
+export function executeInitHooks(
+    currentView: LView, tView: TView, checkNoChangesMode: boolean): void {
+  if (!checkNoChangesMode && currentView[FLAGS] & LViewFlags.RunInit) {
+    executeHooks(currentView, tView.initHooks, tView.checkHooks, checkNoChangesMode);
     currentView[FLAGS] &= ~LViewFlags.RunInit;
   }
 }
@@ -106,17 +107,19 @@ export function executeInitHooks(currentView: LView, tView: TView, creationMode:
  * @param currentView The current view
  */
 export function executeHooks(
-    data: LView, allHooks: HookData | null, checkHooks: HookData | null,
-    creationMode: boolean): void {
-  const hooksToCall = creationMode ? allHooks : checkHooks;
+    currentView: LView, allHooks: HookData | null, checkHooks: HookData | null,
+    checkNoChangesMode: boolean): void {
+  if (checkNoChangesMode) return;
+
+  const hooksToCall = currentView[FLAGS] & LViewFlags.FirstLViewPass ? allHooks : checkHooks;
   if (hooksToCall) {
-    callHooks(data, hooksToCall);
+    callHooks(currentView, hooksToCall);
   }
 }
 
 /**
  * Calls lifecycle hooks with their contexts, skipping init hooks if it's not
- * creation mode.
+ * the first LView pass.
  *
  * @param currentView The current view
  * @param arr The array in which the hooks are found

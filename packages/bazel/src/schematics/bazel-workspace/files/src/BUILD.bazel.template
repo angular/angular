@@ -58,7 +58,7 @@ ts_devserver(
         "npm/node_modules/zone.js/dist",
         "npm/node_modules/tslib",
     ],
-    entry_module = "<%= name %>/src/main.dev",
+    entry_module = "<%= utils.underscore(name) %>/src/main.dev",
     serving_path = "/bundle.min.js",
     static_files = [
         "@npm//node_modules/zone.js:dist/zone.min.js",
@@ -88,6 +88,7 @@ ts_library(
     deps = [
         "@angular//packages/core/testing",
         "@angular//packages/platform-browser-dynamic/testing",
+        "@npm//@types",
     ],
 )
 

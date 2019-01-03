@@ -6,8 +6,11 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages:types",
+        "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser/testing",
     ],
 )
 

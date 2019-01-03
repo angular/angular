@@ -38,7 +38,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   /**
    * Check whether the given node actually represents a class.
    */
-  isClass(node: ts.Node): boolean { return super.isClass(node) || !!this.getClassSymbol(node); }
+  isClass(node: ts.Node): node is ts.NamedDeclaration {
+    return super.isClass(node) || !!this.getClassSymbol(node);
+  }
 
   /**
    * Find a symbol for a node that we think is a class.
@@ -173,10 +175,10 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     if (expression && ts.isArrayLiteralExpression(expression)) {
       const elements = expression.elements;
       return elements.map(reflectArrayElement).map(paramInfo => {
-        const type = paramInfo && paramInfo.get('type') || null;
+        const typeExpression = paramInfo && paramInfo.get('type') || null;
         const decoratorInfo = paramInfo && paramInfo.get('decorators') || null;
         const decorators = decoratorInfo && this.reflectDecorators(decoratorInfo);
-        return {type, decorators};
+        return {typeExpression, decorators};
       });
     }
     return null;

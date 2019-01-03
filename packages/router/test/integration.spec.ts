@@ -467,38 +467,40 @@ describe('Integration', () => {
        expect(location.path()).toEqual('/child/simple');
      })));
 
-  fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-      .it('should work when an outlet is added/removed', fakeAsync(() => {
-            @Component({
-              selector: 'someRoot',
-              template: `[<div *ngIf="cond"><router-outlet></router-outlet></div>]`
-            })
-            class RootCmpWithLink {
-              cond: boolean = true;
-            }
-            TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+  it('should work when an outlet is added/removed', fakeAsync(() => {
+       @Component({
+         selector: 'someRoot',
+         template: `[<div *ngIf="cond"><router-outlet></router-outlet></div>]`
+       })
+       class RootCmpWithLink {
+         cond: boolean = true;
+       }
+       TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
 
-            const router: Router = TestBed.get(Router);
+       const router: Router = TestBed.get(Router);
 
-            const fixture = createRoot(router, RootCmpWithLink);
+       const fixture = createRoot(router, RootCmpWithLink);
 
-            router.resetConfig([
-              {path: 'simple', component: SimpleCmp},
-              {path: 'blank', component: BlankCmp},
-            ]);
+       router.resetConfig([
+         {path: 'simple', component: SimpleCmp},
+         {path: 'blank', component: BlankCmp},
+       ]);
 
-            router.navigateByUrl('/simple');
-            advance(fixture);
-            expect(fixture.nativeElement).toHaveText('[simple]');
+       router.navigateByUrl('/simple');
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('[simple]');
 
-            fixture.componentInstance.cond = false;
-            advance(fixture);
-            expect(fixture.nativeElement).toHaveText('[]');
+       fixture.componentInstance.cond = false;
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('[]');
 
-            fixture.componentInstance.cond = true;
-            advance(fixture);
-            expect(fixture.nativeElement).toHaveText('[simple]');
-          }));
+       fixture.componentInstance.cond = true;
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('[simple]');
+
+       // TODO: remove extra tick for Ivy?
+       tick();
+     }));
 
   it('should update location when navigating', fakeAsync(() => {
        @Component({template: `record`})
@@ -2485,6 +2487,43 @@ describe('Integration', () => {
              expect(guardRunCount).toEqual(3);
              expect(recordedData).toEqual([{data: 0}, {data: 1}, {data: 2}]);
            })));
+
+        it('should allow a predicate function to determine when to run guards and resolvers',
+           fakeAsync(inject([Router], (router: Router) => {
+             const fixture = configureRouter(router, (from, to) => to.paramMap.get('p') === '2');
+
+             const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
+             const recordedData: any[] = [];
+             cmp.route.data.subscribe((data: any) => recordedData.push(data));
+
+             // First navigation has already run
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
+
+             // Adding `p` param shouldn't cause re-run
+             router.navigateByUrl('/a;p=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(1);
+             expect(recordedData).toEqual([{data: 0}]);
+
+             // Re-run should trigger on p=2
+             router.navigateByUrl('/a;p=2');
+             advance(fixture);
+             expect(guardRunCount).toEqual(2);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}]);
+
+             // Any other changes don't pass the predicate
+             router.navigateByUrl('/a;p=3?q=1');
+             advance(fixture);
+             expect(guardRunCount).toEqual(2);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}]);
+
+             // Changing query params will re-run guards/resolvers
+             router.navigateByUrl('/a;p=3?q=2');
+             advance(fixture);
+             expect(guardRunCount).toEqual(2);
+             expect(recordedData).toEqual([{data: 0}, {data: 1}]);
+           })));
       });
 
       describe('should wait for parent to complete', () => {
@@ -2632,46 +2671,48 @@ describe('Integration', () => {
              expect(canceledStatus).toEqual(false);
            })));
 
-        fixmeIvy('FW-766: One router test is wrong')
-            .it('works with componentless routes',
-                fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-                  const fixture = createRoot(router, RootCmp);
+        it('works with componentless routes',
+           fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
 
-                  router.resetConfig([
-                    {
-                      path: 'grandparent',
-                      canDeactivate: ['RecordingDeactivate'],
-                      children: [{
-                        path: 'parent',
-                        canDeactivate: ['RecordingDeactivate'],
-                        children: [{
-                          path: 'child',
-                          canDeactivate: ['RecordingDeactivate'],
-                          children: [{
-                            path: 'simple',
-                            component: SimpleCmp,
-                            canDeactivate: ['RecordingDeactivate']
-                          }]
-                        }]
-                      }]
-                    },
-                    {path: 'simple', component: SimpleCmp}
-                  ]);
+             router.resetConfig([
+               {
+                 path: 'grandparent',
+                 canDeactivate: ['RecordingDeactivate'],
+                 children: [{
+                   path: 'parent',
+                   canDeactivate: ['RecordingDeactivate'],
+                   children: [{
+                     path: 'child',
+                     canDeactivate: ['RecordingDeactivate'],
+                     children: [{
+                       path: 'simple',
+                       component: SimpleCmp,
+                       canDeactivate: ['RecordingDeactivate']
+                     }]
+                   }]
+                 }]
+               },
+               {path: 'simple', component: SimpleCmp}
+             ]);
 
-                  router.navigateByUrl('/grandparent/parent/child/simple');
-                  advance(fixture);
-                  expect(location.path()).toEqual('/grandparent/parent/child/simple');
+             router.navigateByUrl('/grandparent/parent/child/simple');
+             advance(fixture);
+             expect(location.path()).toEqual('/grandparent/parent/child/simple');
 
-                  router.navigateByUrl('/simple');
-                  advance(fixture);
+             router.navigateByUrl('/simple');
+             advance(fixture);
 
-                  const child = fixture.debugElement.children[1].componentInstance;
+             const child = fixture.debugElement.children[1].componentInstance;
 
-                  expect(log.map((a: any) => a.path)).toEqual([
-                    'simple', 'child', 'parent', 'grandparent'
-                  ]);
-                  expect(log.map((a: any) => a.component)).toEqual([child, null, null, null]);
-                })));
+             expect(log.map((a: any) => a.path)).toEqual([
+               'simple', 'child', 'parent', 'grandparent'
+             ]);
+             expect(log[0].component instanceof SimpleCmp).toBeTruthy();
+             [1, 2, 3].forEach(i => expect(log[i].component).toBeNull());
+             expect(child instanceof SimpleCmp).toBeTruthy();
+             expect(child).not.toBe(log[0].component);
+           })));
 
         it('works with aux routes',
            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -3561,94 +3602,93 @@ describe('Integration', () => {
              expect(fixture.nativeElement).toHaveText('lazy-loaded-parent [lazy-loaded-child]');
            })));
 
-    fixmeIvy('FW-646: Directive providers don\'t support primitive types as DI tokens')
-        .it('should have 2 injector trees: module and element',
-            fakeAsync(inject(
-                [Router, Location, NgModuleFactoryLoader],
-                (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-                  @Component({
-                    selector: 'lazy',
-                    template: 'parent[<router-outlet></router-outlet>]',
-                    viewProviders: [
-                      {provide: 'shadow', useValue: 'from parent component'},
-                    ],
-                  })
-                  class Parent {
-                  }
+    it('should have 2 injector trees: module and element',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             @Component({
+               selector: 'lazy',
+               template: 'parent[<router-outlet></router-outlet>]',
+               viewProviders: [
+                 {provide: 'shadow', useValue: 'from parent component'},
+               ],
+             })
+             class Parent {
+             }
 
-                  @Component({selector: 'lazy', template: 'child'})
-                  class Child {
-                  }
+             @Component({selector: 'lazy', template: 'child'})
+             class Child {
+             }
 
-                  @NgModule({
-                    declarations: [Parent],
-                    imports: [RouterModule.forChild([{
-                      path: 'parent',
-                      component: Parent,
-                      children: [
-                        {path: 'child', loadChildren: 'child'},
-                      ]
-                    }])],
-                    providers: [
-                      {provide: 'moduleName', useValue: 'parent'},
-                      {provide: 'fromParent', useValue: 'from parent'},
-                    ],
-                  })
-                  class ParentModule {
-                  }
+             @NgModule({
+               declarations: [Parent],
+               imports: [RouterModule.forChild([{
+                 path: 'parent',
+                 component: Parent,
+                 children: [
+                   {path: 'child', loadChildren: 'child'},
+                 ]
+               }])],
+               providers: [
+                 {provide: 'moduleName', useValue: 'parent'},
+                 {provide: 'fromParent', useValue: 'from parent'},
+               ],
+             })
+             class ParentModule {
+             }
 
-                  @NgModule({
-                    declarations: [Child],
-                    imports: [RouterModule.forChild([{path: '', component: Child}])],
-                    providers: [
-                      {provide: 'moduleName', useValue: 'child'},
-                      {provide: 'fromChild', useValue: 'from child'},
-                      {provide: 'shadow', useValue: 'from child module'},
-                    ],
-                  })
-                  class ChildModule {
-                  }
+             @NgModule({
+               declarations: [Child],
+               imports: [RouterModule.forChild([{path: '', component: Child}])],
+               providers: [
+                 {provide: 'moduleName', useValue: 'child'},
+                 {provide: 'fromChild', useValue: 'from child'},
+                 {provide: 'shadow', useValue: 'from child module'},
+               ],
+             })
+             class ChildModule {
+             }
 
-                  loader.stubbedModules = {
-                    parent: ParentModule,
-                    child: ChildModule,
-                  };
+             loader.stubbedModules = {
+               parent: ParentModule,
+               child: ChildModule,
+             };
 
-                  const fixture = createRoot(router, RootCmp);
-                  router.resetConfig([{path: 'lazy', loadChildren: 'parent'}]);
-                  router.navigateByUrl('/lazy/parent/child');
-                  advance(fixture);
-                  expect(location.path()).toEqual('/lazy/parent/child');
-                  expect(fixture.nativeElement).toHaveText('parent[child]');
+             const fixture = createRoot(router, RootCmp);
+             router.resetConfig([{path: 'lazy', loadChildren: 'parent'}]);
+             router.navigateByUrl('/lazy/parent/child');
+             advance(fixture);
+             expect(location.path()).toEqual('/lazy/parent/child');
+             expect(fixture.nativeElement).toHaveText('parent[child]');
 
-                  const pInj = fixture.debugElement.query(By.directive(Parent)).injector !;
-                  const cInj = fixture.debugElement.query(By.directive(Child)).injector !;
+             const pInj = fixture.debugElement.query(By.directive(Parent)).injector !;
+             const cInj = fixture.debugElement.query(By.directive(Child)).injector !;
 
-                  expect(pInj.get('moduleName')).toEqual('parent');
-                  expect(pInj.get('fromParent')).toEqual('from parent');
-                  expect(pInj.get(Parent)).toBeAnInstanceOf(Parent);
-                  expect(pInj.get('fromChild', null)).toEqual(null);
-                  expect(pInj.get(Child, null)).toEqual(null);
+             expect(pInj.get('moduleName')).toEqual('parent');
+             expect(pInj.get('fromParent')).toEqual('from parent');
+             expect(pInj.get(Parent)).toBeAnInstanceOf(Parent);
+             expect(pInj.get('fromChild', null)).toEqual(null);
+             expect(pInj.get(Child, null)).toEqual(null);
 
-                  expect(cInj.get('moduleName')).toEqual('child');
-                  expect(cInj.get('fromParent')).toEqual('from parent');
-                  expect(cInj.get('fromChild')).toEqual('from child');
-                  expect(cInj.get(Parent)).toBeAnInstanceOf(Parent);
-                  expect(cInj.get(Child)).toBeAnInstanceOf(Child);
-                  // The child module can not shadow the parent component
-                  expect(cInj.get('shadow')).toEqual('from parent component');
+             expect(cInj.get('moduleName')).toEqual('child');
+             expect(cInj.get('fromParent')).toEqual('from parent');
+             expect(cInj.get('fromChild')).toEqual('from child');
+             expect(cInj.get(Parent)).toBeAnInstanceOf(Parent);
+             expect(cInj.get(Child)).toBeAnInstanceOf(Child);
+             // The child module can not shadow the parent component
+             expect(cInj.get('shadow')).toEqual('from parent component');
 
-                  const pmInj = pInj.get(NgModuleRef).injector;
-                  const cmInj = cInj.get(NgModuleRef).injector;
+             const pmInj = pInj.get(NgModuleRef).injector;
+             const cmInj = cInj.get(NgModuleRef).injector;
 
-                  expect(pmInj.get('moduleName')).toEqual('parent');
-                  expect(cmInj.get('moduleName')).toEqual('child');
+             expect(pmInj.get('moduleName')).toEqual('parent');
+             expect(cmInj.get('moduleName')).toEqual('child');
 
-                  expect(pmInj.get(Parent, '-')).toEqual('-');
-                  expect(cmInj.get(Parent, '-')).toEqual('-');
-                  expect(pmInj.get(Child, '-')).toEqual('-');
-                  expect(cmInj.get(Child, '-')).toEqual('-');
-                })));
+             expect(pmInj.get(Parent, '-')).toEqual('-');
+             expect(cmInj.get(Parent, '-')).toEqual('-');
+             expect(pmInj.get(Child, '-')).toEqual('-');
+             expect(cmInj.get(Child, '-')).toEqual('-');
+           })));
 
     // https://github.com/angular/angular/issues/12889
     it('should create a single instance of lazy-loaded modules',
@@ -3689,57 +3729,55 @@ describe('Integration', () => {
            })));
 
     // https://github.com/angular/angular/issues/13870
-    fixmeIvy(
-        'FW-767: Lazy loaded modules are not used when resolving dependencies in one of their components')
-        .it('should create a single instance of guards for lazy-loaded modules',
-            fakeAsync(inject(
-                [Router, Location, NgModuleFactoryLoader],
-                (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-                  @Injectable()
-                  class Service {
-                  }
+    it('should create a single instance of guards for lazy-loaded modules',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             @Injectable()
+             class Service {
+             }
 
-                  @Injectable()
-                  class Resolver implements Resolve<Service> {
-                    constructor(public service: Service) {}
-                    resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-                      return this.service;
-                    }
-                  }
+             @Injectable()
+             class Resolver implements Resolve<Service> {
+               constructor(public service: Service) {}
+               resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+                 return this.service;
+               }
+             }
 
-                  @Component({selector: 'lazy', template: 'lazy'})
-                  class LazyLoadedComponent {
-                    resolvedService: Service;
-                    constructor(public injectedService: Service, route: ActivatedRoute) {
-                      this.resolvedService = route.snapshot.data['service'];
-                    }
-                  }
+             @Component({selector: 'lazy', template: 'lazy'})
+             class LazyLoadedComponent {
+               resolvedService: Service;
+               constructor(public injectedService: Service, route: ActivatedRoute) {
+                 this.resolvedService = route.snapshot.data['service'];
+               }
+             }
 
-                  @NgModule({
-                    declarations: [LazyLoadedComponent],
-                    providers: [Service, Resolver],
-                    imports: [
-                      RouterModule.forChild([{
-                        path: 'loaded',
-                        component: LazyLoadedComponent,
-                        resolve: {'service': Resolver},
-                      }]),
-                    ]
-                  })
-                  class LoadedModule {
-                  }
+             @NgModule({
+               declarations: [LazyLoadedComponent],
+               providers: [Service, Resolver],
+               imports: [
+                 RouterModule.forChild([{
+                   path: 'loaded',
+                   component: LazyLoadedComponent,
+                   resolve: {'service': Resolver},
+                 }]),
+               ]
+             })
+             class LoadedModule {
+             }
 
-                  loader.stubbedModules = {expected: LoadedModule};
-                  const fixture = createRoot(router, RootCmp);
-                  router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
-                  router.navigateByUrl('/lazy/loaded');
-                  advance(fixture);
+             loader.stubbedModules = {expected: LoadedModule};
+             const fixture = createRoot(router, RootCmp);
+             router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+             router.navigateByUrl('/lazy/loaded');
+             advance(fixture);
 
-                  expect(fixture.nativeElement).toHaveText('lazy');
-                  const lzc = fixture.debugElement.query(By.directive(LazyLoadedComponent))
-                                  .componentInstance;
-                  expect(lzc.injectedService).toBe(lzc.resolvedService);
-                })));
+             expect(fixture.nativeElement).toHaveText('lazy');
+             const lzc =
+                 fixture.debugElement.query(By.directive(LazyLoadedComponent)).componentInstance;
+             expect(lzc.injectedService).toBe(lzc.resolvedService);
+           })));
 
 
     it('should emit RouteConfigLoadStart and RouteConfigLoadEnd event when route is lazy loaded',
@@ -3990,8 +4028,7 @@ describe('Integration', () => {
         });
       });
 
-      fixmeIvy(
-          'FW-767: Lazy loaded modules are not used when resolving dependencies in one of their components')
+      fixmeIvy('FW-887: JIT: compilation of NgModule')
           .it('should use the injector of the lazily-loaded configuration',
               fakeAsync(inject(
                   [Router, Location, NgModuleFactoryLoader],
@@ -4334,41 +4371,43 @@ describe('Integration', () => {
       class LazyLoadedModule {
       }
 
-      it('should not ignore empty path when in legacy mode',
-         fakeAsync(inject(
-             [Router, NgModuleFactoryLoader],
-             (router: Router, loader: SpyNgModuleFactoryLoader) => {
-               router.relativeLinkResolution = 'legacy';
-               loader.stubbedModules = {expected: LazyLoadedModule};
+      fixmeIvy('FW-887: JIT: compilation of NgModule')
+          .it('should not ignore empty path when in legacy mode',
+              fakeAsync(inject(
+                  [Router, NgModuleFactoryLoader],
+                  (router: Router, loader: SpyNgModuleFactoryLoader) => {
+                    router.relativeLinkResolution = 'legacy';
+                    loader.stubbedModules = {expected: LazyLoadedModule};
 
-               const fixture = createRoot(router, RootCmp);
+                    const fixture = createRoot(router, RootCmp);
 
-               router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+                    router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
 
-               router.navigateByUrl('/lazy/foo/bar');
-               advance(fixture);
+                    router.navigateByUrl('/lazy/foo/bar');
+                    advance(fixture);
 
-               const link = fixture.nativeElement.querySelector('a');
-               expect(link.getAttribute('href')).toEqual('/lazy/foo/bar/simple');
-             })));
+                    const link = fixture.nativeElement.querySelector('a');
+                    expect(link.getAttribute('href')).toEqual('/lazy/foo/bar/simple');
+                  })));
 
-      it('should ignore empty path when in corrected mode',
-         fakeAsync(inject(
-             [Router, NgModuleFactoryLoader],
-             (router: Router, loader: SpyNgModuleFactoryLoader) => {
-               router.relativeLinkResolution = 'corrected';
-               loader.stubbedModules = {expected: LazyLoadedModule};
+      fixmeIvy('FW-887: JIT: compilation of NgModule')
+          .it('should ignore empty path when in corrected mode',
+              fakeAsync(inject(
+                  [Router, NgModuleFactoryLoader],
+                  (router: Router, loader: SpyNgModuleFactoryLoader) => {
+                    router.relativeLinkResolution = 'corrected';
+                    loader.stubbedModules = {expected: LazyLoadedModule};
 
-               const fixture = createRoot(router, RootCmp);
+                    const fixture = createRoot(router, RootCmp);
 
-               router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+                    router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
 
-               router.navigateByUrl('/lazy/foo/bar');
-               advance(fixture);
+                    router.navigateByUrl('/lazy/foo/bar');
+                    advance(fixture);
 
-               const link = fixture.nativeElement.querySelector('a');
-               expect(link.getAttribute('href')).toEqual('/lazy/foo/simple');
-             })));
+                    const link = fixture.nativeElement.querySelector('a');
+                    expect(link.getAttribute('href')).toEqual('/lazy/foo/simple');
+                  })));
     });
   });
 
@@ -4476,82 +4515,84 @@ describe('Integration', () => {
          expect(simpleCmp1).not.toBe(simpleCmp2);
        })));
 
-    fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-        .it('should not mount the component of the previously reused route when the outlet was not instantiated at the time of route activation',
-            fakeAsync(() => {
-              @Component({
-                selector: 'root-cmp',
-                template:
-                    '<div *ngIf="isToolpanelShowing"><router-outlet name="toolpanel"></router-outlet></div>'
-              })
-              class RootCmpWithCondOutlet implements OnDestroy {
-                private subscription: Subscription;
-                public isToolpanelShowing: boolean = false;
+    it('should not mount the component of the previously reused route when the outlet was not instantiated at the time of route activation',
+       fakeAsync(() => {
+         @Component({
+           selector: 'root-cmp',
+           template:
+               '<div *ngIf="isToolpanelShowing"><router-outlet name="toolpanel"></router-outlet></div>'
+         })
+         class RootCmpWithCondOutlet implements OnDestroy {
+           private subscription: Subscription;
+           public isToolpanelShowing: boolean = false;
 
-                constructor(router: Router) {
-                  this.subscription =
-                      router.events.pipe(filter(event => event instanceof NavigationEnd))
-                          .subscribe(
-                              () => this.isToolpanelShowing =
-                                  !!router.parseUrl(router.url).root.children['toolpanel']);
-                }
+           constructor(router: Router) {
+             this.subscription =
+                 router.events.pipe(filter(event => event instanceof NavigationEnd))
+                     .subscribe(
+                         () => this.isToolpanelShowing =
+                             !!router.parseUrl(router.url).root.children['toolpanel']);
+           }
 
-                public ngOnDestroy(): void { this.subscription.unsubscribe(); }
-              }
+           public ngOnDestroy(): void { this.subscription.unsubscribe(); }
+         }
 
-              @Component({selector: 'tool-1-cmp', template: 'Tool 1 showing'})
-              class Tool1Component {
-              }
+         @Component({selector: 'tool-1-cmp', template: 'Tool 1 showing'})
+         class Tool1Component {
+         }
 
-              @Component({selector: 'tool-2-cmp', template: 'Tool 2 showing'})
-              class Tool2Component {
-              }
+         @Component({selector: 'tool-2-cmp', template: 'Tool 2 showing'})
+         class Tool2Component {
+         }
 
-              @NgModule({
-                declarations: [RootCmpWithCondOutlet, Tool1Component, Tool2Component],
-                imports: [
-                  CommonModule,
-                  RouterTestingModule.withRoutes([
-                    {path: 'a', outlet: 'toolpanel', component: Tool1Component},
-                    {path: 'b', outlet: 'toolpanel', component: Tool2Component},
-                  ]),
-                ],
-              })
-              class TestModule {
-              }
+         @NgModule({
+           declarations: [RootCmpWithCondOutlet, Tool1Component, Tool2Component],
+           imports: [
+             CommonModule,
+             RouterTestingModule.withRoutes([
+               {path: 'a', outlet: 'toolpanel', component: Tool1Component},
+               {path: 'b', outlet: 'toolpanel', component: Tool2Component},
+             ]),
+           ],
+         })
+         class TestModule {
+         }
 
-              TestBed.configureTestingModule({imports: [TestModule]});
+         TestBed.configureTestingModule({imports: [TestModule]});
 
-              const router: Router = TestBed.get(Router);
-              router.routeReuseStrategy = new AttachDetachReuseStrategy();
+         const router: Router = TestBed.get(Router);
+         router.routeReuseStrategy = new AttachDetachReuseStrategy();
 
-              const fixture = createRoot(router, RootCmpWithCondOutlet);
+         const fixture = createRoot(router, RootCmpWithCondOutlet);
 
-              // Activate 'tool-1'
-              router.navigate([{outlets: {toolpanel: 'a'}}]);
-              advance(fixture);
-              expect(fixture).toContainComponent(Tool1Component, '(a)');
+         // Activate 'tool-1'
+         router.navigate([{outlets: {toolpanel: 'a'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool1Component, '(a)');
 
-              // Deactivate 'tool-1'
-              router.navigate([{outlets: {toolpanel: null}}]);
-              advance(fixture);
-              expect(fixture).not.toContainComponent(Tool1Component, '(b)');
+         // Deactivate 'tool-1'
+         router.navigate([{outlets: {toolpanel: null}}]);
+         advance(fixture);
+         expect(fixture).not.toContainComponent(Tool1Component, '(b)');
 
-              // Activate 'tool-1'
-              router.navigate([{outlets: {toolpanel: 'a'}}]);
-              advance(fixture);
-              expect(fixture).toContainComponent(Tool1Component, '(c)');
+         // Activate 'tool-1'
+         router.navigate([{outlets: {toolpanel: 'a'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool1Component, '(c)');
 
-              // Deactivate 'tool-1'
-              router.navigate([{outlets: {toolpanel: null}}]);
-              advance(fixture);
-              expect(fixture).not.toContainComponent(Tool1Component, '(d)');
+         // Deactivate 'tool-1'
+         router.navigate([{outlets: {toolpanel: null}}]);
+         advance(fixture);
+         expect(fixture).not.toContainComponent(Tool1Component, '(d)');
 
-              // Activate 'tool-2'
-              router.navigate([{outlets: {toolpanel: 'b'}}]);
-              advance(fixture);
-              expect(fixture).toContainComponent(Tool2Component, '(e)');
-            }));
+         // Activate 'tool-2'
+         router.navigate([{outlets: {toolpanel: 'b'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool2Component, '(e)');
+
+         // TODO: remove extra tick for Ivy?
+         tick();
+       }));
   });
 });
 

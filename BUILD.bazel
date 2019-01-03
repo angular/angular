@@ -23,9 +23,14 @@ filegroup(
 filegroup(
     name = "angularjs_scripts",
     srcs = [
+        # We also declare the unminfied AngularJS files since these can be used for
+        # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
         "@ngdeps//node_modules/angular:angular.js",
+        "@ngdeps//node_modules/angular:angular.min.js",
         "@ngdeps//node_modules/angular-1.5:angular.js",
+        "@ngdeps//node_modules/angular-1.5:angular.min.js",
         "@ngdeps//node_modules/angular-1.6:angular.js",
+        "@ngdeps//node_modules/angular-1.6:angular.min.js",
         "@ngdeps//node_modules/angular-mocks:angular-mocks.js",
         "@ngdeps//node_modules/angular-mocks-1.5:angular-mocks.js",
         "@ngdeps//node_modules/angular-mocks-1.6:angular-mocks.js",

@@ -14,7 +14,12 @@ import * as o from '../../../output/output_ast';
 
 
 /* Closure variables holding messages must be named `MSG_[A-Z0-9]+` */
-const TRANSLATION_PREFIX = 'MSG_';
+const CLOSURE_TRANSLATION_PREFIX = 'MSG_';
+const CLOSURE_TRANSLATION_MATCHER_REGEXP = new RegExp(`^${CLOSURE_TRANSLATION_PREFIX}`);
+
+/* Prefix for non-`goog.getMsg` i18n-related vars */
+const TRANSLATION_PREFIX = 'I18N_';
+
 
 /** Closure uses `goog.getMsg(message)` to lookup translations */
 const GOOG_GET_MSG = 'goog.getMsg';
@@ -219,7 +224,7 @@ export function formatI18nPlaceholderName(name: string): string {
  * @returns Complete translation const prefix
  */
 export function getTranslationConstPrefix(extra: string): string {
-  return `${TRANSLATION_PREFIX}${extra}`.toUpperCase();
+  return `${CLOSURE_TRANSLATION_PREFIX}${extra}`.toUpperCase();
 }
 
 /**
@@ -242,8 +247,14 @@ export function getTranslationDeclStmts(
     statements.push(docStatements);
   }
   if (transformFn) {
-    const raw = o.variable(`${variable.name}$$RAW`);
-    statements.push(i18nTranslationToDeclStmt(raw, message, params));
+    statements.push(i18nTranslationToDeclStmt(variable, message, params));
+
+    // Closure Compiler doesn't allow non-goo.getMsg const names to start with `MSG_`,
+    // so we update variable name prefix in case post processing is required, so we can
+    // assign the result of post-processing function to the var that starts with `I18N_`
+    const raw = o.variable(variable.name !);
+    variable.name = variable.name !.replace(CLOSURE_TRANSLATION_MATCHER_REGEXP, TRANSLATION_PREFIX);
+
     statements.push(
         variable.set(transformFn(raw)).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
   } else {

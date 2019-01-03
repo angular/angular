@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation} from '../../core';
+import {ChangeDetectionStrategy, ViewEncapsulation} from '../../core';
 import {InterpolationConfig} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
 import {R3DependencyMetadata} from '../r3_factory';
+
 
 /**
  * Information needed to compile a directive for the render3 runtime.
@@ -184,14 +185,19 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
 
   /**
    * Whether translation variable name should contain external message id
-   * (used by Closure Compiler's output of `goog.getMsg` for transition period)
+   * (used by Closure Compiler's output of `goog.getMsg` for transition period).
    */
   i18nUseExternalIds: boolean;
 
   /**
-   * Overrides the default interpolation start and end delimiters ({{ and }})
+   * Overrides the default interpolation start and end delimiters ({{ and }}).
    */
   interpolation: InterpolationConfig;
+
+  /**
+   * Strategy used for detecting changes in the component.
+   */
+  changeDetection?: ChangeDetectionStrategy;
 }
 
 /**

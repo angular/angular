@@ -90,6 +90,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵregisterContentQuery': r3.registerContentQuery,
   'ɵreference': r3.reference,
   'ɵelementStyling': r3.elementStyling,
+  'ɵelementHostAttrs': r3.elementHostAttrs,
   'ɵelementStylingMap': r3.elementStylingMap,
   'ɵelementStyleProp': r3.elementStyleProp,
   'ɵelementStylingApply': r3.elementStylingApply,

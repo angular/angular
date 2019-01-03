@@ -3,6 +3,9 @@
     "name": "ACTIVE_INDEX"
   },
   {
+    "name": "ANIMATION_PROP_PREFIX"
+  },
+  {
     "name": "BINDING_INDEX"
   },
   {
@@ -24,10 +27,10 @@
     "name": "DECLARATION_VIEW"
   },
   {
-    "name": "EMPTY"
+    "name": "EMPTY_ARRAY"
   },
   {
-    "name": "EMPTY_ARRAY"
+    "name": "EMPTY_OBJ"
   },
   {
     "name": "EmptyErrorImpl"
@@ -168,6 +171,9 @@
     "name": "checkNoChangesMode"
   },
   {
+    "name": "checkView"
+  },
+  {
     "name": "componentRefresh"
   },
   {
@@ -205,9 +211,6 @@
   },
   {
     "name": "defineComponent"
-  },
-  {
-    "name": "detectChangesInternal"
   },
   {
     "name": "diPublicInInjector"
@@ -250,9 +253,6 @@
   },
   {
     "name": "getContainerRenderParent"
-  },
-  {
-    "name": "getCreationMode"
   },
   {
     "name": "getDirectiveDef"
@@ -345,7 +345,13 @@
     "name": "invertObject"
   },
   {
+    "name": "isAnimationProp"
+  },
+  {
     "name": "isComponentDef"
+  },
+  {
+    "name": "isCreationMode"
   },
   {
     "name": "isFactory"

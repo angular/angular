@@ -8,7 +8,6 @@
 
 import {Location} from '@angular/common';
 import {TestBed} from '@angular/core/testing';
-import {fixmeIvy} from '@angular/private/testing';
 import {Router} from '@angular/router';
 import {setUpLocationSync} from '@angular/router/upgrade';
 import {UpgradeModule} from '@angular/upgrade/static';

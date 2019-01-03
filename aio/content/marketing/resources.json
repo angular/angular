@@ -447,6 +447,12 @@
             "rev": true,
             "title": "Simple Quality UI",
             "url": "https://sq-ui.github.io/ng-sq-ui/#/"
+          },
+          "smart": {
+            "desc": "Web Components for Angular. Dependency-free Angular components for building modern and mobile-friendly web apps",
+            "rev": true,
+            "title": "Smart Web Components",
+            "url": "https://www.htmlelements.com/angular/"
           }
         }
       }
@@ -694,6 +700,12 @@
       "Workshops & Onsite Training": {
         "order": 2,
         "resources": {
+          "webucator": {
+            "desc": "Customized in-person instructor-led Angular training for private groups and public online instructor-led Angular classes.",
+            "rev": true,
+            "title": "Webucator",
+            "url": "https://www.webucator.com/webdev-training/angular-training"
+          },
           "-acceleb": {
             "desc": "Customized, Instructor-Led Angular Training",
             "rev": true,
@@ -781,6 +793,12 @@
             "rev": true,
             "title": "SFEIR School (French)",
             "url": "https://school.sfeir.com/project/sa200/"
+          },
+          "zenika-angular": {
+            "desc": "Angular trainings delivered by Zenika (FRANCE)",
+            "rev": true,
+            "title": "Angular Trainings (French)",
+            "url": "https://training.zenika.com/fr/training/angular2/description"
           },
           "formationjs": {
             "desc": "Angular onsite training in Paris (France). Monthly Angular workshops and custom onsite classes. We are focused on Angular, so we are always up to date.",

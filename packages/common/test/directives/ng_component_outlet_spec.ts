@@ -11,7 +11,7 @@ import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_out
 import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, Optional, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
+import {modifiedInIvy} from '@angular/private/testing';
 
 describe('insert/remove', () => {
 
@@ -107,17 +107,20 @@ describe('insert/remove', () => {
 
      }));
 
-  it('should resolve a with injector', async(() => {
-       let fixture = TestBed.createComponent(TestComponent);
 
-       fixture.componentInstance.cmpRef = null;
-       fixture.componentInstance.currentComponent = InjectedComponent;
-       fixture.detectChanges();
-       let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
-       expect(cmpRef).toBeAnInstanceOf(ComponentRef);
-       expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
-       expect(cmpRef.instance.testToken).toBeNull();
-     }));
+  modifiedInIvy('Static ViewChild and ContentChild queries are resolved in update mode')
+      .it('should resolve with an injector', async(() => {
+            let fixture = TestBed.createComponent(TestComponent);
+
+            // We are accessing a ViewChild (ngComponentOutlet) before change detection has run
+            fixture.componentInstance.cmpRef = null;
+            fixture.componentInstance.currentComponent = InjectedComponent;
+            fixture.detectChanges();
+            let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
+            expect(cmpRef).toBeAnInstanceOf(ComponentRef);
+            expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
+            expect(cmpRef.instance.testToken).toBeNull();
+          }));
 
   it('should render projectable nodes, if supplied', async(() => {
        const template = `<ng-template>projected foo</ng-template>${TEST_CMP_TEMPLATE}`;
@@ -157,22 +160,21 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('baz');
      }));
 
-  fixmeIvy('FW-739: destroy on NgModuleRef is not being called')
-      .it('should clean up moduleRef, if supplied', async(() => {
-            let destroyed = false;
-            const compiler = TestBed.get(Compiler) as Compiler;
-            const fixture = TestBed.createComponent(TestComponent);
-            fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
-            fixture.componentInstance.currentComponent = Module2InjectedComponent;
-            fixture.detectChanges();
+  it('should clean up moduleRef, if supplied', async(() => {
+       let destroyed = false;
+       const compiler = TestBed.get(Compiler) as Compiler;
+       const fixture = TestBed.createComponent(TestComponent);
+       fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
+       fixture.componentInstance.currentComponent = Module2InjectedComponent;
+       fixture.detectChanges();
 
-            const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'] !;
-            spyOn(moduleRef, 'destroy').and.callThrough();
+       const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'] !;
+       spyOn(moduleRef, 'destroy').and.callThrough();
 
-            expect(moduleRef.destroy).not.toHaveBeenCalled();
-            fixture.destroy();
-            expect(moduleRef.destroy).toHaveBeenCalled();
-          }));
+       expect(moduleRef.destroy).not.toHaveBeenCalled();
+       fixture.destroy();
+       expect(moduleRef.destroy).toHaveBeenCalled();
+     }));
 
   it('should not re-create moduleRef when it didn\'t actually change', async(() => {
        const compiler = TestBed.get(Compiler) as Compiler;

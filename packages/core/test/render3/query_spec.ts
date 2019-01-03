@@ -661,7 +661,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(1, null, 0, 0, null, null, ['foo', '']);
+                template(1, null, 0, 0, 'ng-template', null, ['foo', '']);
               }
             },
             3, 0, [], [],
@@ -693,7 +693,7 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   template(1, null, 0, 0, null, null, ['foo', '']);
+                   template(1, null, 0, 0, 'ng-template', null, ['foo', '']);
                  }
                },
                3, 0, [], [],
@@ -728,7 +728,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(1, null, 0, 0, null, null, ['foo', '']);
+                template(1, null, 0, 0, 'ng-template', null, ['foo', '']);
               }
             },
             3, 0, [], [],
@@ -760,7 +760,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(1, null, 0, 0, null, null, ['foo', '']);
+                template(1, null, 0, 0, 'ng-template', null, ['foo', '']);
               }
             },
             3, 0, [], [],
@@ -1276,9 +1276,15 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(2, Cmpt_Template_1, 2, 0, null, null, ['foo', ''], templateRefExtractor);
-                template(3, Cmpt_Template_1, 2, 0, null, null, ['bar', ''], templateRefExtractor);
-                template(4, Cmpt_Template_1, 2, 0, null, null, ['baz', ''], templateRefExtractor);
+                template(
+                    2, Cmpt_Template_1, 2, 0, 'ng-template', null, ['foo', ''],
+                    templateRefExtractor);
+                template(
+                    3, Cmpt_Template_1, 2, 0, 'ng-template', null, ['bar', ''],
+                    templateRefExtractor);
+                template(
+                    4, Cmpt_Template_1, 2, 0, 'ng-template', null, ['baz', ''],
+                    templateRefExtractor);
               }
             },
             5, 0, [], [],
@@ -1361,7 +1367,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(1, Cmpt_Template_1, 2, 0, null, ['ngIf', '']);
+                template(1, Cmpt_Template_1, 2, 0, 'ng-template', ['ngIf', '']);
               }
               if (rf & RenderFlags.Update) {
                 elementProperty(1, 'ngIf', bind(ctx.value));
@@ -1422,7 +1428,7 @@ describe('query', () => {
             vars: 1,
             template: function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(1, Cmpt_Template_1, 2, 1, null, ['ngForOf', '']);
+                template(1, Cmpt_Template_1, 2, 1, 'ng-template', ['ngForOf', '']);
               }
               if (rf & RenderFlags.Update) {
                 elementProperty(1, 'ngForOf', bind(ctx.value));
@@ -1501,11 +1507,13 @@ describe('query', () => {
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    template(
-                       1, Cmpt_Template_1, 2, 1, null, null, ['tpl1', ''], templateRefExtractor);
+                       1, Cmpt_Template_1, 2, 1, 'ng-template', null, ['tpl1', ''],
+                       templateRefExtractor);
                    element(3, 'div', ['id', 'middle'], ['foo', '']);
                    template(
-                       5, Cmpt_Template_5, 2, 1, null, null, ['tpl2', ''], templateRefExtractor);
-                   template(7, null, 0, 0, null, [AttributeMarker.SelectOnly, 'vc']);
+                       5, Cmpt_Template_5, 2, 1, 'ng-template', null, ['tpl2', ''],
+                       templateRefExtractor);
+                   template(7, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
@@ -1599,9 +1607,11 @@ describe('query', () => {
                template: function(rf: RenderFlags, ctx: any) {
                  let tmp: any;
                  if (rf & RenderFlags.Create) {
-                   template(1, Cmpt_Template_1, 2, 1, null, [], ['tpl', ''], templateRefExtractor);
-                   template(3, null, 0, 0, null, [AttributeMarker.SelectOnly, 'vc']);
-                   template(4, null, 0, 0, null, [AttributeMarker.SelectOnly, 'vc']);
+                   template(
+                       1, Cmpt_Template_1, 2, 1, 'ng-template', [], ['tpl', ''],
+                       templateRefExtractor);
+                   template(3, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'vc']);
+                   template(4, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
@@ -1671,9 +1681,10 @@ describe('query', () => {
             template: (rf: RenderFlags, myApp: MyApp) => {
               if (rf & RenderFlags.Create) {
                 template(
-                    1, MyApp_Template_1, 2, 0, undefined, undefined, ['tpl', ''],
+                    1, MyApp_Template_1, 2, 0, 'ng-template', undefined, ['tpl', ''],
                     templateRefExtractor);
-                template(3, null, 0, 0, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+                template(
+                    3, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
               }
               if (rf & RenderFlags.Update) {
                 const tplRef = reference(2);
@@ -2195,7 +2206,7 @@ describe('query', () => {
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             template(
-                1, AppComponent_Template_1, 1, 0, null, [AttributeMarker.SelectOnly, 'someDir']);
+                1, AppComponent_Template_1, 1, 0, 'div', [AttributeMarker.SelectOnly, 'someDir']);
             element(2, 'div', null, ['foo', '']);
           }
         },
@@ -2377,7 +2388,7 @@ describe('query', () => {
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'shallow-comp');
-          { template(1, IfTemplate, 2, 0, null, [AttributeMarker.SelectOnly, 'ngIf', '']); }
+          { template(1, IfTemplate, 2, 0, 'div', [AttributeMarker.SelectOnly, 'ngIf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {

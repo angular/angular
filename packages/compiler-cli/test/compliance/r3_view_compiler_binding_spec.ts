@@ -150,7 +150,7 @@ describe('compiler compliance: bindings', () => {
               $r3$.ɵallocHostVars(1);
             }
             if (rf & 2) {
-              $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.dirId));
+              $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.dirId), null, true);
             }
           }
         });
@@ -197,7 +197,7 @@ describe('compiler compliance: bindings', () => {
               $r3$.ɵallocHostVars(3);
             }
             if (rf & 2) {
-              $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵpureFunction1(1, $ff$, ctx.id)));
+              $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵpureFunction1(1, $ff$, ctx.id)), null, true);
             }
           },
           consts: 0,

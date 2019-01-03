@@ -8,7 +8,7 @@
  * @fileoverview Schematics for ng-new project that builds with Bazel.
  */
 
-import {apply, applyTemplates, chain, externalSchematic, MergeStrategy, mergeWith, move, Rule, schematic, Tree, url, SchematicsException, UpdateRecorder,} from '@angular-devkit/schematics';
+import {SchematicContext, apply, applyTemplates, chain, externalSchematic, MergeStrategy, mergeWith, move, Rule, schematic, Tree, url, SchematicsException, UpdateRecorder,} from '@angular-devkit/schematics';
 import {parseJsonAst, JsonAstObject, strings, JsonValue} from '@angular-devkit/core';
 import {findPropertyInAstObject, insertPropertyInAstObjectInOrder} from '@schematics/angular/utility/json-utils';
 import {validateProjectName} from '@schematics/angular/utility/validation';
@@ -35,8 +35,9 @@ function addDevDependenciesToPackageJson(options: Schema) {
 
     const devDependencies: {[k: string]: string} = {
       '@angular/bazel': angularCoreVersion,
-      '@bazel/karma': '0.21.0',
-      '@bazel/typescript': '0.21.0',
+      // TODO(kyliau): Consider moving this to latest-versions.ts
+      '@bazel/karma': '^0.22.0',
+      '@bazel/typescript': '^0.22.0',
     };
 
     const recorder = host.beginUpdate(packageJson);

@@ -12,12 +12,11 @@ import {ENTER_CLASSNAME, LEAVE_CLASSNAME} from '@angular/animations/browser/src/
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {CommonModule} from '@angular/common';
 import {Component, HostBinding, ViewChild} from '@angular/core';
+import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {fixmeIvy, ivyEnabled} from '@angular/private/testing';
 
 import {HostListener} from '../../src/metadata/directives';
-import {TestBed} from '../../testing';
-import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
-
 
 (function() {
   // these tests are only mean't to be run within the DOM (for now)
@@ -296,71 +295,72 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
         expect(p6.element.classList.contains('b3')).toBeTruthy();
       });
 
-      it('should be able to query all active animations using :animating in a query', () => {
-        @Component({
-          selector: 'ani-cmp',
-          template: `
+      fixmeIvy('unknown').it(
+          'should be able to query all active animations using :animating in a query', () => {
+            @Component({
+              selector: 'ani-cmp',
+              template: `
             <div [@myAnimation]="exp" #parent>
               <div *ngFor="let item of items" class="item e-{{ item }}">
               </div>
             </div>
           `,
-          animations: [
-            trigger(
-                'myAnimation',
-                [
-                  transition(
-                      '* => a',
-                      [
-                        query(
-                            '.item:nth-child(odd)',
-                            [
-                              style({opacity: 0}),
-                              animate(1000, style({opacity: 1})),
-                            ]),
-                      ]),
-                  transition(
-                      '* => b',
-                      [
-                        query(
-                            '.item:animating',
-                            [
-                              style({opacity: 1}),
-                              animate(1000, style({opacity: 0})),
-                            ]),
-                      ]),
-                ]),
-          ]
-        })
-        class Cmp {
-          public exp: any;
-          public items: number[] = [0, 1, 2, 3, 4];
-        }
+              animations: [
+                trigger(
+                    'myAnimation',
+                    [
+                      transition(
+                          '* => a',
+                          [
+                            query(
+                                '.item:nth-child(odd)',
+                                [
+                                  style({opacity: 0}),
+                                  animate(1000, style({opacity: 1})),
+                                ]),
+                          ]),
+                      transition(
+                          '* => b',
+                          [
+                            query(
+                                '.item:animating',
+                                [
+                                  style({opacity: 1}),
+                                  animate(1000, style({opacity: 0})),
+                                ]),
+                          ]),
+                    ]),
+              ]
+            })
+            class Cmp {
+              public exp: any;
+              public items: number[] = [0, 1, 2, 3, 4];
+            }
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-        const engine = TestBed.get(ɵAnimationEngine);
-        const fixture = TestBed.createComponent(Cmp);
-        const cmp = fixture.componentInstance;
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-        cmp.exp = 'a';
-        fixture.detectChanges();
-        engine.flush();
+            cmp.exp = 'a';
+            fixture.detectChanges();
+            engine.flush();
 
-        let players = getLog();
-        expect(players.length).toEqual(3);
-        resetLog();
+            let players = getLog();
+            expect(players.length).toEqual(3);
+            resetLog();
 
-        cmp.exp = 'b';
-        fixture.detectChanges();
-        engine.flush();
+            cmp.exp = 'b';
+            fixture.detectChanges();
+            engine.flush();
 
-        players = getLog();
-        expect(players.length).toEqual(3);
-        expect(players[0].element.classList.contains('e-0')).toBeTruthy();
-        expect(players[1].element.classList.contains('e-2')).toBeTruthy();
-        expect(players[2].element.classList.contains('e-4')).toBeTruthy();
-      });
+            players = getLog();
+            expect(players.length).toEqual(3);
+            expect(players[0].element.classList.contains('e-0')).toBeTruthy();
+            expect(players[1].element.classList.contains('e-2')).toBeTruthy();
+            expect(players[2].element.classList.contains('e-4')).toBeTruthy();
+          });
 
       it('should be able to query all actively queued animation triggers via `@*:animating`',
          () => {
@@ -802,7 +802,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
         expect(player.element.style.height).toEqual('444px');
       });
 
-      it('should find newly inserted items in the component via :enter', () => {
+      fixmeIvy('unknown').it('should find newly inserted items in the component via :enter', () => {
         @Component({
           selector: 'ani-cmp',
           template: `
@@ -853,11 +853,12 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
         });
       });
 
-      it('should cleanup :enter and :leave artifacts from nodes when any animation sequences fail to be built',
-         () => {
-           @Component({
-             selector: 'ani-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should cleanup :enter and :leave artifacts from nodes when any animation sequences fail to be built',
+          () => {
+            @Component({
+              selector: 'ani-cmp',
+              template: `
             <div [@myAnimation]="items.length" class="parent" #container>
               <div *ngFor="let item of items" class="child">
                 {{ item }}
@@ -865,56 +866,56 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
               <div *ngIf="items.length == 0" class="child">Leave!</div>
             </div>
           `,
-             animations: [
-               trigger(
-                   'myAnimation',
-                   [
-                     transition('* => 0', []),
-                     transition(
-                         '* => *',
-                         [
-                           query(
-                               '.child:enter',
-                               [
-                                 style({opacity: 0}),
-                                 animate(1000, style({opacity: 1})),
-                               ]),
-                           query(
-                               '.incorrect-child:leave',
-                               [
-                                 animate(1000, style({opacity: 0})),
-                               ]),
-                         ]),
-                   ]),
-             ]
-           })
-           class Cmp {
-             @ViewChild('container') public container: any;
-             public items: any[] = [];
-           }
+              animations: [
+                trigger(
+                    'myAnimation',
+                    [
+                      transition('* => 0', []),
+                      transition(
+                          '* => *',
+                          [
+                            query(
+                                '.child:enter',
+                                [
+                                  style({opacity: 0}),
+                                  animate(1000, style({opacity: 1})),
+                                ]),
+                            query(
+                                '.incorrect-child:leave',
+                                [
+                                  animate(1000, style({opacity: 0})),
+                                ]),
+                          ]),
+                    ]),
+              ]
+            })
+            class Cmp {
+              @ViewChild('container') public container: any;
+              public items: any[] = [];
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
 
-           cmp.items = [];
-           fixture.detectChanges();
+            cmp.items = [];
+            fixture.detectChanges();
 
-           cmp.items = [0, 1, 2, 3, 4];
+            cmp.items = [0, 1, 2, 3, 4];
 
-           expect(() => { fixture.detectChanges(); }).toThrow();
+            expect(() => { fixture.detectChanges(); }).toThrow();
 
-           const children = cmp.container.nativeElement.querySelectorAll('.child');
-           expect(children.length).toEqual(5);
+            const children = cmp.container.nativeElement.querySelectorAll('.child');
+            expect(children.length).toEqual(5);
 
-           for (let i = 0; i < children.length; i++) {
-             let child = children[i];
-             expect(child.classList.contains(ENTER_CLASSNAME)).toBe(false);
-             expect(child.classList.contains(LEAVE_CLASSNAME)).toBe(false);
-           }
-         });
+            for (let i = 0; i < children.length; i++) {
+              let child = children[i];
+              expect(child.classList.contains(ENTER_CLASSNAME)).toBe(false);
+              expect(child.classList.contains(LEAVE_CLASSNAME)).toBe(false);
+            }
+          });
 
       it('should find elements that have been removed via :leave', () => {
         @Component({
@@ -1705,6 +1706,11 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
            TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
            const fixture = TestBed.createComponent(ParentCmp);
            const cmp = fixture.componentInstance;
+
+           // In Ivy, change detection needs to run before the ViewQuery for cmp.child will resolve.
+           // Keeping this test enabled since we still want to test the animation logic in Ivy.
+           if (ivyEnabled) fixture.detectChanges();
+
            cmp.child.items = [4, 5, 6];
            fixture.detectChanges();
 
@@ -2234,82 +2240,83 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
         expect(p3.element.classList.contains('parent1')).toBeTruthy();
       });
 
-      it('should emulate a leave animation on the nearest sub host elements when a parent is removed',
-         fakeAsync(() => {
-           @Component({
-             selector: 'ani-cmp',
-             template: `
+      fixmeIvy('unknown').it(
+          'should emulate a leave animation on the nearest sub host elements when a parent is removed',
+          fakeAsync(() => {
+            @Component({
+              selector: 'ani-cmp',
+              template: `
             <div @parent *ngIf="exp" class="parent1" #parent>
               <child-cmp #child @leave (@leave.start)="animateStart($event)"></child-cmp>
             </div>
           `,
-             animations: [
-               trigger(
-                   'leave',
-                   [
-                     transition(':leave', [animate(1000, style({color: 'gold'}))]),
-                   ]),
-               trigger(
-                   'parent',
-                   [
-                     transition(':leave', [query(':leave', animateChild())]),
-                   ]),
-             ]
-           })
-           class ParentCmp {
-             public exp: boolean = true;
-             @ViewChild('child') public childElm: any;
+              animations: [
+                trigger(
+                    'leave',
+                    [
+                      transition(':leave', [animate(1000, style({color: 'gold'}))]),
+                    ]),
+                trigger(
+                    'parent',
+                    [
+                      transition(':leave', [query(':leave', animateChild())]),
+                    ]),
+              ]
+            })
+            class ParentCmp {
+              public exp: boolean = true;
+              @ViewChild('child') public childElm: any;
 
-             public childEvent: any;
+              public childEvent: any;
 
-             animateStart(event: any) {
-               if (event.toState == 'void') {
-                 this.childEvent = event;
-               }
-             }
-           }
+              animateStart(event: any) {
+                if (event.toState == 'void') {
+                  this.childEvent = event;
+                }
+              }
+            }
 
-           @Component({
-             selector: 'child-cmp',
-             template: '...',
-             animations: [
-               trigger(
-                   'child',
-                   [
-                     transition(':leave', [animate(1000, style({color: 'gold'}))]),
-                   ]),
-             ]
-           })
-           class ChildCmp {
-             public childEvent: any;
+            @Component({
+              selector: 'child-cmp',
+              template: '...',
+              animations: [
+                trigger(
+                    'child',
+                    [
+                      transition(':leave', [animate(1000, style({color: 'gold'}))]),
+                    ]),
+              ]
+            })
+            class ChildCmp {
+              public childEvent: any;
 
-             @HostBinding('@child') public animate = true;
+              @HostBinding('@child') public animate = true;
 
-             @HostListener('@child.start', ['$event'])
-             animateStart(event: any) {
-               if (event.toState == 'void') {
-                 this.childEvent = event;
-               }
-             }
-           }
+              @HostListener('@child.start', ['$event'])
+              animateStart(event: any) {
+                if (event.toState == 'void') {
+                  this.childEvent = event;
+                }
+              }
+            }
 
-           TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
-           const fixture = TestBed.createComponent(ParentCmp);
-           const cmp = fixture.componentInstance;
+            TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+            const fixture = TestBed.createComponent(ParentCmp);
+            const cmp = fixture.componentInstance;
 
-           fixture.detectChanges();
+            fixture.detectChanges();
 
-           const childCmp = cmp.childElm;
+            const childCmp = cmp.childElm;
 
-           cmp.exp = false;
-           fixture.detectChanges();
-           flushMicrotasks();
+            cmp.exp = false;
+            fixture.detectChanges();
+            flushMicrotasks();
 
-           expect(cmp.childEvent.toState).toEqual('void');
-           expect(cmp.childEvent.totalTime).toEqual(1000);
-           expect(childCmp.childEvent.toState).toEqual('void');
-           expect(childCmp.childEvent.totalTime).toEqual(1000);
-         }));
+            expect(cmp.childEvent.toState).toEqual('void');
+            expect(cmp.childEvent.totalTime).toEqual(1000);
+            expect(childCmp.childEvent.toState).toEqual('void');
+            expect(childCmp.childEvent.totalTime).toEqual(1000);
+          }));
 
       it('should emulate a leave animation on a sub component\'s inner elements when a parent leave animation occurs with animateChild',
          () => {
@@ -2438,27 +2445,28 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
            expect(element.innerText.trim()).toMatch(/this\s+child/mg);
          }));
 
-      it('should only mark outermost *directive nodes :enter and :leave when inserts and removals occur',
-         () => {
-           @Component({
-             selector: 'ani-cmp',
-             animations: [
-               trigger(
-                   'anim',
-                   [
-                     transition(
-                         '* => enter',
-                         [
-                           query(':enter', [animate(1000, style({color: 'red'}))]),
-                         ]),
-                     transition(
-                         '* => leave',
-                         [
-                           query(':leave', [animate(1000, style({color: 'blue'}))]),
-                         ]),
-                   ]),
-             ],
-             template: `
+      fixmeIvy('unknown').it(
+          'should only mark outermost *directive nodes :enter and :leave when inserts and removals occur',
+          () => {
+            @Component({
+              selector: 'ani-cmp',
+              animations: [
+                trigger(
+                    'anim',
+                    [
+                      transition(
+                          '* => enter',
+                          [
+                            query(':enter', [animate(1000, style({color: 'red'}))]),
+                          ]),
+                      transition(
+                          '* => leave',
+                          [
+                            query(':leave', [animate(1000, style({color: 'blue'}))]),
+                          ]),
+                    ]),
+              ],
+              template: `
             <section class="container" [@anim]="exp ? 'enter' : 'leave'">
               <div class="a" *ngIf="exp">
                 <div class="b" *ngIf="exp">
@@ -2474,46 +2482,47 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
               </div>
             </section>
           `
-           })
-           class Cmp {
-             // TODO(issue/24571): remove '!'.
-             public exp !: boolean;
-           }
+            })
+            class Cmp {
+              // TODO(issue/24571): remove '!'.
+              public exp !: boolean;
+            }
 
-           TestBed.configureTestingModule({declarations: [Cmp]});
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-           const engine = TestBed.get(ɵAnimationEngine);
-           const fixture = TestBed.createComponent(Cmp);
-           const cmp = fixture.componentInstance;
-           const container = fixture.elementRef.nativeElement;
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            const container = fixture.elementRef.nativeElement;
 
-           cmp.exp = true;
-           fixture.detectChanges();
-           engine.flush();
+            cmp.exp = true;
+            fixture.detectChanges();
+            engine.flush();
 
-           let players = getLog();
-           resetLog();
-           expect(players.length).toEqual(2);
-           const [p1, p2] = players;
+            let players = getLog();
+            resetLog();
+            expect(players.length).toEqual(2);
+            const [p1, p2] = players;
 
-           expect(p1.element.classList.contains('a'));
-           expect(p2.element.classList.contains('d'));
+            expect(p1.element.classList.contains('a'));
+            expect(p2.element.classList.contains('d'));
 
-           cmp.exp = false;
-           fixture.detectChanges();
-           engine.flush();
+            cmp.exp = false;
+            fixture.detectChanges();
+            engine.flush();
 
-           players = getLog();
-           resetLog();
-           expect(players.length).toEqual(2);
-           const [p3, p4] = players;
+            players = getLog();
+            resetLog();
+            expect(players.length).toEqual(2);
+            const [p3, p4] = players;
 
-           expect(p3.element.classList.contains('a'));
-           expect(p4.element.classList.contains('d'));
-         });
+            expect(p3.element.classList.contains('a'));
+            expect(p4.element.classList.contains('d'));
+          });
 
-      it('should collect multiple root levels of :enter and :leave nodes', () => {
-        @Component({
+      fixmeIvy('unknown').it(
+          'should collect multiple root levels of :enter and :leave nodes', () => {
+            @Component({
           selector: 'ani-cmp',
           animations: [
             trigger('pageAnimation', [
@@ -2548,88 +2557,88 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
           `
         })
         class Cmp {
-          get title() {
-            if (this.page1) {
-              return 'hello from page1';
+              get title() {
+                if (this.page1) {
+                  return 'hello from page1';
+                }
+                return 'greetings from page2';
+              }
+
+              page1 = false;
+              page2 = false;
+              loading = false;
+
+              get status() {
+                if (this.loading) return 'loading';
+                if (this.page1) return 'page1';
+                if (this.page2) return 'page2';
+                return '';
+              }
             }
-            return 'greetings from page2';
-          }
 
-          page1 = false;
-          page2 = false;
-          loading = false;
+            TestBed.configureTestingModule({declarations: [Cmp]});
 
-          get status() {
-            if (this.loading) return 'loading';
-            if (this.page1) return 'page1';
-            if (this.page2) return 'page2';
-            return '';
-          }
-        }
+            const engine = TestBed.get(ɵAnimationEngine);
+            const fixture = TestBed.createComponent(Cmp);
+            const cmp = fixture.componentInstance;
+            cmp.loading = true;
+            fixture.detectChanges();
+            engine.flush();
 
-        TestBed.configureTestingModule({declarations: [Cmp]});
+            let players = getLog();
+            resetLog();
+            cancelAllPlayers(players);
 
-        const engine = TestBed.get(ɵAnimationEngine);
-        const fixture = TestBed.createComponent(Cmp);
-        const cmp = fixture.componentInstance;
-        cmp.loading = true;
-        fixture.detectChanges();
-        engine.flush();
+            cmp.page1 = true;
+            cmp.loading = false;
+            fixture.detectChanges();
+            engine.flush();
 
-        let players = getLog();
-        resetLog();
-        cancelAllPlayers(players);
+            let p1: MockAnimationPlayer;
+            let p2: MockAnimationPlayer;
+            let p3: MockAnimationPlayer;
 
-        cmp.page1 = true;
-        cmp.loading = false;
-        fixture.detectChanges();
-        engine.flush();
+            players = getLog();
+            expect(players.length).toEqual(3);
+            [p1, p2, p3] = players;
 
-        let p1: MockAnimationPlayer;
-        let p2: MockAnimationPlayer;
-        let p3: MockAnimationPlayer;
+            expect(p1.element.classList.contains('loading')).toBe(true);
+            expect(p2.element.classList.contains('title')).toBe(true);
+            expect(p3.element.classList.contains('page1')).toBe(true);
 
-        players = getLog();
-        expect(players.length).toEqual(3);
-        [p1, p2, p3] = players;
+            resetLog();
+            cancelAllPlayers(players);
 
-        expect(p1.element.classList.contains('loading')).toBe(true);
-        expect(p2.element.classList.contains('title')).toBe(true);
-        expect(p3.element.classList.contains('page1')).toBe(true);
+            cmp.page1 = false;
+            cmp.loading = true;
+            fixture.detectChanges();
 
-        resetLog();
-        cancelAllPlayers(players);
+            players = getLog();
+            cancelAllPlayers(players);
 
-        cmp.page1 = false;
-        cmp.loading = true;
-        fixture.detectChanges();
+            expect(players.length).toEqual(3);
+            [p1, p2, p3] = players;
 
-        players = getLog();
-        cancelAllPlayers(players);
+            expect(p1.element.classList.contains('title')).toBe(true);
+            expect(p2.element.classList.contains('page1')).toBe(true);
+            expect(p3.element.classList.contains('loading')).toBe(true);
 
-        expect(players.length).toEqual(3);
-        [p1, p2, p3] = players;
+            resetLog();
+            cancelAllPlayers(players);
 
-        expect(p1.element.classList.contains('title')).toBe(true);
-        expect(p2.element.classList.contains('page1')).toBe(true);
-        expect(p3.element.classList.contains('loading')).toBe(true);
+            cmp.page2 = true;
+            cmp.loading = false;
+            fixture.detectChanges();
+            engine.flush();
 
-        resetLog();
-        cancelAllPlayers(players);
+            players = getLog();
+            expect(players.length).toEqual(3);
+            [p1, p2, p3] = players;
 
-        cmp.page2 = true;
-        cmp.loading = false;
-        fixture.detectChanges();
-        engine.flush();
-
-        players = getLog();
-        expect(players.length).toEqual(3);
-        [p1, p2, p3] = players;
-
-        expect(p1.element.classList.contains('loading')).toBe(true);
-        expect(p2.element.classList.contains('title')).toBe(true);
-        expect(p3.element.classList.contains('page2')).toBe(true);
-      });
+            expect(p1.element.classList.contains('loading')).toBe(true);
+            expect(p2.element.classList.contains('title')).toBe(true);
+            expect(p3.element.classList.contains('page2')).toBe(true);
+          });
 
       it('should emulate leave animation callbacks for all sub elements that have leave triggers within the component',
          fakeAsync(() => {

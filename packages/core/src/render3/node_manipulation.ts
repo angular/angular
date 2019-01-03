@@ -15,7 +15,7 @@ import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection'
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {getNativeByTNode, isLContainer, isRootView, readElementValue, stringify} from './util';
+import {findComponentView, getNativeByTNode, isLContainer, isRootView, readElementValue, stringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -193,24 +193,6 @@ function walkTNodeTree(
     }
     tNode = nextTNode;
   }
-}
-
-/**
- * Given a current view, finds the nearest component's host (LElement).
- *
- * @param lView LView for which we want a host element node
- * @returns The host node
- */
-export function findComponentView(lView: LView): LView {
-  let rootTNode = lView[HOST_NODE];
-
-  while (rootTNode && rootTNode.type === TNodeType.View) {
-    ngDevMode && assertDefined(lView[PARENT], 'lView.parent');
-    lView = lView[PARENT] !;
-    rootTNode = lView[HOST_NODE];
-  }
-
-  return lView;
 }
 
 /**
@@ -455,18 +437,21 @@ export function getParentState(state: LView | LContainer, rootView: LView): LVie
 }
 
 /**
- * Removes all listeners and call all onDestroys in a given view.
+ * Calls onDestroys hooks for all directives and pipes in a given view and then removes all
+ * listeners. Listeners are removed as the last step so events delivered in the onDestroys hooks
+ * can be propagated to @Output listeners.
  *
  * @param view The LView to clean up
  */
 function cleanUpView(viewOrContainer: LView | LContainer): void {
   if ((viewOrContainer as LView).length >= HEADER_OFFSET) {
     const view = viewOrContainer as LView;
-    removeListeners(view);
     executeOnDestroys(view);
     executePipeOnDestroys(view);
+    removeListeners(view);
+    const hostTNode = view[HOST_NODE];
     // For component views only, the local renderer is destroyed as clean up time.
-    if (view[TVIEW].id === -1 && isProceduralRenderer(view[RENDERER])) {
+    if (hostTNode && hostTNode.type === TNodeType.Element && isProceduralRenderer(view[RENDERER])) {
       ngDevMode && ngDevMode.rendererDestroy++;
       (view[RENDERER] as ProceduralRenderer3).destroy();
     }

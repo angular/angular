@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
+import {HostTree} from '@angular-devkit/schematics';
+import {SchematicTestRunner, UnitTestTree} from '@angular-devkit/schematics/testing';
+import {clean} from './index';
 
 describe('Bazel-workspace Schematic', () => {
   const schematicRunner =
@@ -27,6 +29,28 @@ describe('Bazel-workspace Schematic', () => {
     expect(files).toContain('/demo/yarn.lock');
   });
 
+  it('should find existing Angular version', () => {
+    let host = new UnitTestTree(new HostTree);
+    host.create('/demo/node_modules/@angular/core/package.json', JSON.stringify({
+      name: '@angular/core',
+      version: '6.6.6',
+    }));
+    const options = {...defaultOptions};
+    host = schematicRunner.runSchematic('bazel-workspace', options, host);
+    expect(host.files).toContain('/demo/WORKSPACE');
+    const workspace = host.readContent('/demo/WORKSPACE');
+    expect(workspace).toMatch('ANGULAR_VERSION = "6.6.6"');
+  });
+
+  it('should have the correct entry_module for devserver', () => {
+    const options = {...defaultOptions, name: 'demo-app'};
+    const host = schematicRunner.runSchematic('bazel-workspace', options);
+    const {files} = host;
+    expect(files).toContain('/demo-app/src/BUILD.bazel');
+    const content = host.readContent('/demo-app/src/BUILD.bazel');
+    expect(content).toContain('entry_module = "demo_app/src/main.dev"');
+  });
+
   describe('WORKSPACE', () => {
     it('should contain project name', () => {
       const options = {...defaultOptions};
@@ -42,6 +66,17 @@ describe('Bazel-workspace Schematic', () => {
       expect(host.files).toContain('/demo-project/WORKSPACE');
       const content = host.readContent('/demo-project/WORKSPACE');
       expect(content).toContain('workspace(name = "demo_project"');
+    });
+  });
+});
+
+describe('clean', () => {
+  [['1.2.3', '1.2.3'], ['  1.2.3', '1.2.3'], ['1.2.3  ', '1.2.3'], ['~1.2.3', '1.2.3'],
+   ['^1.2.3', '1.2.3'], ['v1.2.3', '1.2.3'], ['1.2', null], ['a.b.c', null],
+  ].forEach(([version, want]: [string, string]) => {
+    it(`should match ${version} with ${want}`, () => {
+      const got = clean(version);
+      expect(got).toBe(want);
     });
   });
 });

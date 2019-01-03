@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMarker, InitialStylingFlags} from '@angular/compiler/src/core';
+import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 
-/* These tests are codified version of the tests in compiler_canonical_spec.ts. Every
-  * test in compiler_canonical_spec.ts should have a corresponding test here.
-  */
+/**
+ * These tests are codified version of the tests in compiler_canonical_spec.ts. Every
+ * test in compiler_canonical_spec.ts should have a corresponding test here.
+ */
 describe('compiler compliance', () => {
 
   const angularFiles = setup({
@@ -47,17 +48,15 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello"];
-        const $c2$ = ["my-app", ${InitialStylingFlags.VALUES_MODE}, "my-app", true];
-        const $c3$ = ["cx", "20", "cy", "30", "r", "50"];
+        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
+        const $c2$ = ["cx", "20", "cy", "30", "r", "50"];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $c1$);
-            $r3$.ɵelementStyling($c2$);
             $r3$.ɵnamespaceSVG();
             $r3$.ɵelementStart(1, "svg");
-            $r3$.ɵelement(2, "circle", $c3$);
+            $r3$.ɵelement(2, "circle", $c2$);
             $r3$.ɵelementEnd();
             $r3$.ɵnamespaceHTML();
             $r3$.ɵelementStart(3, "p");
@@ -99,13 +98,11 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello"];
-        const $c2$ = ["my-app", ${InitialStylingFlags.VALUES_MODE}, "my-app", true];
+        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $c1$);
-            $r3$.ɵelementStyling($c2$);
             $r3$.ɵnamespaceMathML();
             $r3$.ɵelementStart(1, "math");
             $r3$.ɵelement(2, "infinity");
@@ -149,13 +146,11 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello"];
-        const $c2$ = ["my-app", ${InitialStylingFlags.VALUES_MODE}, "my-app", true];
+        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $c1$);
-            $r3$.ɵelementStyling($c2$);
             $r3$.ɵtext(1, "Hello ");
             $r3$.ɵelementStart(2, "b");
             $r3$.ɵtext(3, "World");
@@ -383,6 +378,84 @@ describe('compiler compliance', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
+    it('should reserve slots for pure functions in host binding function', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Input} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: '...',
+              host: {
+                '[@expansionHeight]': \`{
+                    value: getExpandedState(),
+                    params: {
+                      collapsedHeight: collapsedHeight,
+                      expandedHeight: expandedHeight
+                    }
+                }\`,
+                '[@expansionWidth]': \`{
+                  value: getExpandedState(),
+                  params: {
+                    collapsedWidth: collapsedWidth,
+                    expandedWidth: expandedWidth
+                  }
+                }\`
+              }
+            })
+            export class MyComponent {
+              @Input() expandedHeight: string;
+              @Input() collapsedHeight: string;
+
+              @Input() expandedWidth: string;
+              @Input() collapsedWidth: string;
+
+              getExpandedState() {
+                return 'expanded';
+              }
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+
+      const hostBindingsDef = `
+        const $_c0$ = function (a0, a1) { return { collapsedHeight: a0, expandedHeight: a1 }; };
+        const $_c1$ = function (a0, a1) { return { value: a0, params: a1 }; };
+        const $_c2$ = function (a0, a1) { return { collapsedWidth: a0, expandedWidth: a1 }; };
+        …
+        hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+          if (rf & 1) {
+            $r3$.ɵallocHostVars(14);
+          }
+          if (rf & 2) {
+            $r3$.ɵelementProperty(elIndex, "expansionHeight",
+              $r3$.ɵbind(
+                $r3$.ɵpureFunction2(5, $_c1$, ctx.getExpandedState(),
+                  $r3$.ɵpureFunction2(2, $_c0$, ctx.collapsedHeight, ctx.expandedHeight)
+                )
+              ), null, true
+            );
+            $r3$.ɵelementProperty(elIndex, "expansionWidth",
+              $r3$.ɵbind(
+                $r3$.ɵpureFunction2(11, $_c1$, ctx.getExpandedState(),
+                  $r3$.ɵpureFunction2(8, $_c2$, ctx.collapsedWidth, ctx.expandedWidth)
+                )
+              ), null, true
+            );
+          }
+        },
+        …
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, hostBindingsDef, 'Incorrect "hostBindings" function');
+    });
+
     it('should bind to class and style names', () => {
       const files = {
         app: {
@@ -407,8 +480,8 @@ describe('compiler compliance', () => {
       const factory =
           'factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
-        const _c0 = ["error"];
-        const _c1 = ["background-color"];
+        const $e0_classBindings$ = ["error"];
+        const $e0_styleBindings$ = ["background-color"];
         …
         MyComponent.ngComponentDef = i0.ɵdefineComponent({type:MyComponent,selectors:[["my-component"]],
             factory: function MyComponent_Factory(t){
@@ -419,7 +492,7 @@ describe('compiler compliance', () => {
             template: function MyComponent_Template(rf,ctx){
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "div");
-                $r3$.ɵelementStyling(_c0, _c1);
+                $r3$.ɵelementStyling($e0_classBindings$, $e0_styleBindings$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
@@ -716,7 +789,7 @@ describe('compiler compliance', () => {
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "ul", null, $c1$);
-              $r3$.ɵtemplate(2, MyComponent_li_Template_2, 2, 2, null, $c2$);
+              $r3$.ɵtemplate(2, MyComponent_li_Template_2, 2, 2, "li", $c2$);
               $r3$.ɵelementEnd();
             }
           },
@@ -1013,156 +1086,224 @@ describe('compiler compliance', () => {
       });
     });
 
-    it('should support content projection in root template', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
+    describe('content projection', () => {
 
-            @Component({selector: 'simple', template: '<div><ng-content></ng-content></div>'})
-            export class SimpleComponent {}
-
-            @Component({
-              selector: 'complex',
-              template: \`
-                <div id="first"><ng-content select="span[title=toFirst]"></ng-content></div>
-                <div id="second"><ng-content select="span[title=toSecond]"></ng-content></div>\`
+      it('should support content projection in root template', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
+  
+              @Component({selector: 'simple', template: '<div><ng-content></ng-content></div>'})
+              export class SimpleComponent {}
+  
+              @Component({
+                selector: 'complex',
+                template: \`
+                  <div id="first"><ng-content select="span[title=toFirst]"></ng-content></div>
+                  <div id="second"><ng-content SELECT="span[title=toSecond]"></ng-content></div>\`
+                })
+              export class ComplexComponent { }
+  
+              @NgModule({declarations: [SimpleComponent, ComplexComponent]})
+              export class MyModule {}
+  
+              @Component({
+                selector: 'my-app',
+                template: '<simple>content</simple> <complex></complex>'
               })
-            export class ComplexComponent { }
+              export class MyApp {}
+            `
+          }
+        };
 
-            @NgModule({declarations: [SimpleComponent, ComplexComponent]})
-            export class MyModule {}
+        const SimpleComponentDefinition = `
+          SimpleComponent.ngComponentDef = $r3$.ɵdefineComponent({
+            type: SimpleComponent,
+            selectors: [["simple"]],
+            factory: function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); },
+            consts: 2,
+            vars: 0,
+            template:  function SimpleComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵprojectionDef();
+                $r3$.ɵelementStart(0, "div");
+                $r3$.ɵprojection(1);
+                $r3$.ɵelementEnd();
+              }
+            },
+            encapsulation: 2
+          });`;
 
-            @Component({
-              selector: 'my-app',
-              template: '<simple>content</simple> <complex></complex>'
-            })
-            export class MyApp {}
-          `
-        }
-      };
+        const ComplexComponentDefinition = `
+          const $c3$ = ["id","first"];
+          const $c4$ = ["id","second"];
+          const $c1$ = [[["span", "title", "tofirst"]], [["span", "title", "tosecond"]]];
+          const $c2$ = ["span[title=toFirst]", "span[title=toSecond]"];
+          …
+          ComplexComponent.ngComponentDef = $r3$.ɵdefineComponent({
+            type: ComplexComponent,
+            selectors: [["complex"]],
+            factory: function ComplexComponent_Factory(t) { return new (t || ComplexComponent)(); },
+            consts: 4,
+            vars: 0,
+            template:  function ComplexComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵprojectionDef($c1$, $c2$);
+                $r3$.ɵelementStart(0, "div", $c3$);
+                $r3$.ɵprojection(1, 1);
+                $r3$.ɵelementEnd();
+                $r3$.ɵelementStart(2, "div", $c4$);
+                $r3$.ɵprojection(3, 2);
+                $r3$.ɵelementEnd();
+              }
+            },
+            encapsulation: 2
+          });
+        `;
 
-      const SimpleComponentDefinition = `
-        SimpleComponent.ngComponentDef = $r3$.ɵdefineComponent({
-          type: SimpleComponent,
-          selectors: [["simple"]],
-          factory: function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); },
-          consts: 2,
-          vars: 0,
-          template:  function SimpleComponent_Template(rf, ctx) {
-            if (rf & 1) {
-              $r3$.ɵprojectionDef();
-              $r3$.ɵelementStart(0, "div");
-              $r3$.ɵprojection(1);
-              $r3$.ɵelementEnd();
-            }
-          },
-          encapsulation: 2
-        });`;
+        const result = compile(files, angularFiles);
+        const source = result.source;
 
-      const ComplexComponentDefinition = `
-        const $c3$ = ["id","first"];
-        const $c4$ = ["id","second"];
-        const $c1$ = [[["span", "title", "tofirst"]], [["span", "title", "tosecond"]]];
-        const $c2$ = ["span[title=toFirst]", "span[title=toSecond]"];
-        …
-        ComplexComponent.ngComponentDef = $r3$.ɵdefineComponent({
-          type: ComplexComponent,
-          selectors: [["complex"]],
-          factory: function ComplexComponent_Factory(t) { return new (t || ComplexComponent)(); },
-          consts: 4,
-          vars: 0,
-          template:  function ComplexComponent_Template(rf, ctx) {
-            if (rf & 1) {
-              $r3$.ɵprojectionDef($c1$, $c2$);
-              $r3$.ɵelementStart(0, "div", $c3$);
+        expectEmit(
+            result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
+        expectEmit(
+            result.source, ComplexComponentDefinition, 'Incorrect ComplexComponent definition');
+      });
+
+      it('should support content projection in nested templates', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+  
+              @Component({
+                template: \`
+                  <div id="second" *ngIf="visible">
+                    <ng-content SELECT="span[title=toFirst]"></ng-content>
+                  </div>
+                  <div id="third" *ngIf="visible">
+                    No ng-content, no instructions generated.
+                  </div>
+                  <ng-template>
+                    '*' selector: <ng-content></ng-content>
+                  </ng-template>
+                \`,
+              })
+              class Cmp {}
+  
+              @NgModule({ declarations: [Cmp] })
+              class Module {}
+            `
+          }
+        };
+        const output = `
+          const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+          const $_c1$ = ["id", "second"];
+          function Cmp_div_Template_0(rf, ctx) { if (rf & 1) {
+              $r3$.ɵelementStart(0, "div", $_c1$);
               $r3$.ɵprojection(1, 1);
               $r3$.ɵelementEnd();
-              $r3$.ɵelementStart(2, "div", $c4$);
-              $r3$.ɵprojection(3, 2);
+          } }
+          const $_c4$ = ["id", "third"];
+          function Cmp_div_Template_1(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div", $_c4$);
+              $r3$.ɵtext(1, " No ng-content, no instructions generated. ");
               $r3$.ɵelementEnd();
             }
-          },
-          encapsulation: 2
-        });
-      `;
-
-      const result = compile(files, angularFiles);
-      const source = result.source;
-
-      expectEmit(result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
-      expectEmit(
-          result.source, ComplexComponentDefinition, 'Incorrect ComplexComponent definition');
-    });
-
-    it('should support content projection in nested templates', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, NgModule} from '@angular/core';
-
-            @Component({
-              template: \`
-                <div id="second" *ngIf="visible">
-                  <ng-content select="span[title=toFirst]"></ng-content>
-                </div>
-                <div id="third" *ngIf="visible">
-                  No ng-content, no instructions generated.
-                </div>
-                <ng-template>
-                  '*' selector: <ng-content></ng-content>
-                </ng-template>
-              \`,
-            })
-            class Cmp {}
-
-            @NgModule({ declarations: [Cmp] })
-            class Module {}
-          `
-        }
-      };
-      const output = `
-        const $_c0$ = [1, "ngIf"];
-        const $_c1$ = ["id", "second"];
-        const $_c2$ = [[["span", "title", "tofirst"]]];
-        const $_c3$ = ["span[title=toFirst]"];
-        function Cmp_div_Template_0(rf, ctx) { if (rf & 1) {
-            $r3$.ɵprojectionDef($_c2$, $_c3$);
-            $r3$.ɵelementStart(0, "div", $_c1$);
-            $r3$.ɵprojection(1, 1);
-            $r3$.ɵelementEnd();
-        } }
-        const $_c4$ = ["id", "third"];
-        function Cmp_div_Template_1(rf, ctx) {
-          if (rf & 1) {
-            $r3$.ɵelementStart(0, "div", $_c4$);
-            $r3$.ɵtext(1, " No ng-content, no instructions generated. ");
-            $r3$.ɵelementEnd();
           }
-        }
-        function Template_2(rf, ctx) {
-          if (rf & 1) {
-            $r3$.ɵprojectionDef();
-            $r3$.ɵtext(0, " '*' selector: ");
-            $r3$.ɵprojection(1);
+          function Cmp_ng_template_Template_2(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵtext(0, " '*' selector: ");
+              $r3$.ɵprojection(1);
+            }
           }
-        }
-        …
-        template: function Cmp_Template(rf, ctx) {
-          if (rf & 1) {
-            $r3$.ɵtemplate(0, Cmp_div_Template_0, 2, 0, null, $_c0$);
-            $r3$.ɵtemplate(1, Cmp_div_Template_1, 2, 0, null, $_c0$);
-            $r3$.ɵtemplate(2, Template_2, 2, 0);
+          const $_c2$ = [[["span", "title", "tofirst"]]];
+          const $_c3$ = ["span[title=toFirst]"];
+          …
+          template: function Cmp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵprojectionDef($_c2$, $_c3$);
+              $r3$.ɵtemplate(0, Cmp_div_Template_0, 2, 0, "div", $_c0$);
+              $r3$.ɵtemplate(1, Cmp_div_Template_1, 2, 0, "div", $_c0$);
+              $r3$.ɵtemplate(2, Cmp_ng_template_Template_2, 2, 0, "ng-template");
+            }
+            if (rf & 2) {
+              $r3$.ɵelementProperty(0, "ngIf", $r3$.ɵbind(ctx.visible));
+              $r3$.ɵelementProperty(1, "ngIf", $r3$.ɵbind(ctx.visible));
+            }
           }
-          if (rf & 2) {
-            $r3$.ɵelementProperty(0, "ngIf", $r3$.ɵbind(ctx.visible));
-            $r3$.ɵelementProperty(1, "ngIf", $r3$.ɵbind(ctx.visible));
-          }
-        }
-      `;
+        `;
 
-      const {source} = compile(files, angularFiles);
-      expectEmit(source, output, 'Invalid content projection instructions generated');
+        const {source} = compile(files, angularFiles);
+        expectEmit(source, output, 'Invalid content projection instructions generated');
+      });
+
+      it('should support content projection in both the root and nested templates', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+  
+              @Component({
+                template: \`
+                  <ng-content select="[id=toMainBefore]"></ng-content>
+                  <ng-template>
+                    <ng-content select="[id=toTemplate]"></ng-content>
+                    <ng-template>
+                      <ng-content select="[id=toNestedTemplate]"></ng-content>
+                    </ng-template>
+                  </ng-template>                    
+                  <ng-template>
+                    '*' selector in a template: <ng-content></ng-content>
+                  </ng-template>
+                  <ng-content select="[id=toMainAfter]"></ng-content>
+                \`,
+              })
+              class Cmp {}
+  
+              @NgModule({ declarations: [Cmp] })
+              class Module {}
+            `
+          }
+        };
+
+        const output = `
+          function Cmp_ng_template_ng_template_Template_1(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵprojection(0, 4);
+            } 
+          }
+          function Cmp_ng_template_Template_1(rf, ctx) { 
+            if (rf & 1) {
+              $r3$.ɵprojection(0, 3);
+              $r3$.ɵtemplate(1, Cmp_ng_template_ng_template_Template_1, 1, 0, "ng-template");
+            } 
+          }
+          function Cmp_ng_template_Template_2(rf, ctx) { 
+            if (rf & 1) {
+              $r3$.ɵtext(0, " '*' selector in a template: ");
+              $r3$.ɵprojection(1);
+            }
+          }
+          const $_c0$ = [[["", "id", "tomainbefore"]], [["", "id", "tomainafter"]], [["", "id", "totemplate"]], [["", "id", "tonestedtemplate"]]];
+          const $_c1$ = ["[id=toMainBefore]", "[id=toMainAfter]", "[id=toTemplate]", "[id=toNestedTemplate]"];
+          …
+          template: function Cmp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵprojectionDef($_c2$, $_c3$);
+              $r3$.ɵprojection(0, 1);
+              $r3$.ɵtemplate(1, Cmp_ng_template_Template_1, 2, 0, "ng-template");
+              $r3$.ɵtemplate(2, Cmp_ng_template_Template_2, 2, 0, "ng-template");
+              $r3$.ɵprojection(3, 2);
+            }            
+          }
+        `;
+
+        const {source} = compile(files, angularFiles);
+        expectEmit(source, output, 'Invalid content projection instructions generated');
+      });
     });
 
     describe('queries', () => {
@@ -1182,7 +1323,7 @@ describe('compiler compliance', () => {
           app: {
             ...directive,
             'view_query.component.ts': `
-            import {Component, NgModule, ViewChild} from '@angular/core';
+            import {Component, NgModule, ViewChild, ViewChildren} from '@angular/core';
             import {SomeDirective} from './some.directive';
 
             @Component({
@@ -1212,17 +1353,19 @@ describe('compiler compliance', () => {
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵquery(0, SomeDirective, true);
+                $r3$.ɵquery(1, SomeDirective, true);
               }
               if (rf & 2) {
                 var $tmp$;
                 ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(0))) && (ctx.someDir = $tmp$.first));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(1))) && (ctx.someDirs = $tmp$));
               }
             },
-            consts: 2,
+            consts: 3,
             vars: 0,
             template:  function ViewQueryComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵelement(1, "div", $e0_attrs$);
+                $r3$.ɵelement(2, "div", $e0_attrs$);
               }
             },
             directives: function () { return [SomeDirective]; },
@@ -1787,7 +1930,7 @@ describe('compiler compliance', () => {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵtext(1);
-            $r3$.ɵtemplate(2, MyComponent_div_span_Template_2, 2, 3, null, $c2$);
+            $r3$.ɵtemplate(2, MyComponent_div_span_Template_2, 2, 3, "span", $c2$);
             $r3$.ɵelement(3, "span", null, $c4$);
             $r3$.ɵelementEnd();
           }
@@ -1809,7 +1952,7 @@ describe('compiler compliance', () => {
             if (rf & 1) {
               $r3$.ɵelement(0, "div", null, $c1$);
               $r3$.ɵtext(2);
-              $r3$.ɵtemplate(3, MyComponent_div_Template_3, 5, 2, null, $c2$);
+              $r3$.ɵtemplate(3, MyComponent_div_Template_3, 5, 2, "div", $c2$);
               $r3$.ɵelement(4, "div", null, $c3$);
             }
             if (rf & 2) {
@@ -1874,7 +2017,7 @@ describe('compiler compliance', () => {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
           $i0$.ɵelement(1, "div", null, $c1$);
-          $i0$.ɵtemplate(3, MyComponent_div_span_Template_3, 2, 2, null, $c2$);
+          $i0$.ɵtemplate(3, MyComponent_div_span_Template_3, 2, 2, "span", $c2$);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -1886,7 +2029,7 @@ describe('compiler compliance', () => {
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_div_Template_0, 4, 1, null, $c0$);
+          $i0$.ɵtemplate(0, MyComponent_div_Template_0, 4, 1, "div", $c0$);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
@@ -2039,6 +2182,9 @@ describe('compiler compliance', () => {
         }
       };
 
+      // TODO(akushnir): tag name generated for <g> element inside <svg> is incorrect.
+      // It's generated as ":svg:g", when it should be just "g". Potentially related to
+      // the issue described in FW-672.
       it('should support embedded views in the SVG namespace', () => {
         const files = {
           app: {
@@ -2097,7 +2243,7 @@ describe('compiler compliance', () => {
                   if (rf & 1) {
                     $r3$.ɵnamespaceSVG();
                     $r3$.ɵelementStart(0,"svg");
-                    $r3$.ɵtemplate(1, MyComponent__svg_g_Template_1, 2, 0, null, $t1_attrs$);
+                    $r3$.ɵtemplate(1, MyComponent__svg_g_Template_1, 2, 0, ":svg:g", $t1_attrs$);
                     $r3$.ɵelementEnd();
                   }
                   if (rf & 2) { $r3$.ɵelementProperty(1,"forOf",$r3$.ɵbind(ctx.items)); }
@@ -2175,7 +2321,7 @@ describe('compiler compliance', () => {
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "ul");
-                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 2, 1, null, $t1_attrs$);
+                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 2, 1, "li", $t1_attrs$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
@@ -2254,7 +2400,7 @@ describe('compiler compliance', () => {
               $r3$.ɵtext(2);
               $r3$.ɵelementEnd();
               $r3$.ɵelementStart(3, "ul");
-              $r3$.ɵtemplate(4, MyComponent_li_li_Template_4, 2, 2, null, $t4_attrs$);
+              $r3$.ɵtemplate(4, MyComponent_li_li_Template_4, 2, 2, "li", $t4_attrs$);
               $r3$.ɵelementEnd();
               $r3$.ɵelementEnd();
             }
@@ -2275,7 +2421,7 @@ describe('compiler compliance', () => {
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "ul");
-                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 5, 2, null, $c1$);
+                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 5, 2, "li", $c1$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {

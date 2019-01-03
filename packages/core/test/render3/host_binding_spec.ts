@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef, EventEmitter} from '@angular/core';
+import {ElementRef} from '@angular/core';
 
 import {AttributeMarker, defineComponent, template, defineDirective, InheritDefinitionFeature, ProvidersFeature, NgOnChangesFeature, QueryList} from '../../src/render3/index';
-import {allocHostVars, bind, directiveInject, element, elementEnd, elementProperty, elementStyleProp, elementStyling, elementStylingApply, elementStart, listener, load, text, textBinding, loadQueryList, registerContentQuery} from '../../src/render3/instructions';
+import {allocHostVars, bind, directiveInject, element, elementEnd, elementProperty, elementStyleProp, elementStyling, elementStylingApply, elementStart, listener, load, text, textBinding, loadQueryList, registerContentQuery, elementHostAttrs} from '../../src/render3/instructions';
 import {query, queryRefresh} from '../../src/render3/query';
-import {RenderFlags, InitialStylingFlags} from '../../src/render3/interfaces/definition';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2} from '../../src/render3/pure_function';
 
 import {ComponentFixture, TemplateFixture, createComponent, createDirective} from './render_util';
@@ -54,7 +54,7 @@ describe('host bindings', () => {
           allocHostVars(1);
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(elementIndex, 'id', bind(ctx.id));
+          elementProperty(elementIndex, 'id', bind(ctx.id), null, true);
         }
       }
     });
@@ -75,7 +75,7 @@ describe('host bindings', () => {
           allocHostVars(1);
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(elIndex, 'id', bind(ctx.id));
+          elementProperty(elIndex, 'id', bind(ctx.id), null, true);
         }
       },
       template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -84,7 +84,7 @@ describe('host bindings', () => {
 
   it('should support host bindings in directives', () => {
     let directiveInstance: Directive|undefined;
-
+    const elementIndices: number[] = [];
     class Directive {
       // @HostBinding('className')
       klass = 'foo';
@@ -94,11 +94,12 @@ describe('host bindings', () => {
         selectors: [['', 'dir', '']],
         factory: () => directiveInstance = new Directive,
         hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
+          elementIndices.push(elementIndex);
           if (rf & RenderFlags.Create) {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elementIndex, 'className', bind(ctx.klass));
+            elementProperty(elementIndex, 'className', bind(ctx.klass), null, true);
           }
         }
       });
@@ -112,15 +113,46 @@ describe('host bindings', () => {
     directiveInstance !.klass = 'bar';
     fixture.update();
     expect(fixture.html).toEqual('<span class="bar"></span>');
+
+    // verify that we always call `hostBindings` function with the same element index
+    expect(elementIndices.every(id => id === elementIndices[0])).toBeTruthy();
   });
 
   it('should support host bindings on root component', () => {
+    const elementIndices: number[] = [];
+
+    class HostBindingComp {
+      // @HostBinding()
+      id = 'my-id';
+
+      static ngComponentDef = defineComponent({
+        type: HostBindingComp,
+        selectors: [['host-binding-comp']],
+        factory: () => new HostBindingComp(),
+        consts: 0,
+        vars: 0,
+        hostBindings: (rf: RenderFlags, ctx: HostBindingComp, elIndex: number) => {
+          elementIndices.push(elIndex);
+          if (rf & RenderFlags.Create) {
+            allocHostVars(1);
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'id', bind(ctx.id), null, true);
+          }
+        },
+        template: (rf: RenderFlags, ctx: HostBindingComp) => {}
+      });
+    }
+
     const fixture = new ComponentFixture(HostBindingComp);
     expect(fixture.hostElement.id).toBe('my-id');
 
     fixture.component.id = 'other-id';
     fixture.update();
     expect(fixture.hostElement.id).toBe('other-id');
+
+    // verify that we always call `hostBindings` function with the same element index
+    expect(elementIndices.every(id => id === elementIndices[0])).toBeTruthy();
   });
 
   it('should support host bindings on nodes with providers', () => {
@@ -150,7 +182,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.id));
+            elementProperty(elIndex, 'id', bind(ctx.id), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: CompWithProviders) => {},
@@ -186,7 +218,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(ctx.title));
+            elementProperty(elIndex, 'title', bind(ctx.title), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostTitleComp) => {}
@@ -239,7 +271,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.id));
+            elementProperty(elIndex, 'id', bind(ctx.id), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -329,7 +361,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(ctx.value));
+            elementProperty(elIndex, 'title', bind(ctx.value), null, true);
           }
         },
         inputs: {inputValue: 'inputValue'}
@@ -365,6 +397,70 @@ describe('host bindings', () => {
     fixture.component.value = 'input2';
     fixture.update();
     expect(initHookComp.title).toEqual('input2-changes-init-check');
+  });
+
+  it('should support host bindings with the same name as inputs', () => {
+    let hostBindingInputDir !: HostBindingInputDir;
+
+    class HostBindingInputDir {
+      // @Input()
+      disabled = false;
+
+      // @HostBinding('disabled')
+      hostDisabled = false;
+
+      static ngDirectiveDef = defineDirective({
+        type: HostBindingInputDir,
+        selectors: [['', 'hostBindingDir', '']],
+        factory: () => hostBindingInputDir = new HostBindingInputDir(),
+        hostBindings: (rf: RenderFlags, ctx: HostBindingInputDir, elIndex: number) => {
+          if (rf & RenderFlags.Create) {
+            allocHostVars(1);
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(elIndex, 'disabled', bind(ctx.hostDisabled), null, true);
+          }
+        },
+        inputs: {disabled: 'disabled'}
+      });
+    }
+
+    /** <input hostBindingDir [disabled]="isDisabled"> */
+    class App {
+      isDisabled = true;
+
+      static ngComponentDef = defineComponent({
+        type: App,
+        selectors: [['app']],
+        factory: () => new App(),
+        template: (rf: RenderFlags, ctx: App) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'input', ['hostBindingDir', '']);
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(0, 'disabled', bind(ctx.isDisabled));
+          }
+        },
+        consts: 1,
+        vars: 1,
+        directives: [HostBindingInputDir]
+      });
+    }
+
+    const fixture = new ComponentFixture(App);
+    const hostBindingEl = fixture.hostElement.querySelector('input') as HTMLInputElement;
+    expect(hostBindingInputDir.disabled).toBe(true);
+    expect(hostBindingEl.disabled).toBe(false);
+
+    fixture.component.isDisabled = false;
+    fixture.update();
+    expect(hostBindingInputDir.disabled).toBe(false);
+    expect(hostBindingEl.disabled).toBe(false);
+
+    hostBindingInputDir.hostDisabled = true;
+    fixture.update();
+    expect(hostBindingInputDir.disabled).toBe(false);
+    expect(hostBindingEl.disabled).toBe(true);
   });
 
   it('should support host bindings on second template pass', () => {
@@ -408,7 +504,7 @@ describe('host bindings', () => {
      */
     const App = createComponent('parent', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        template(0, NgForTemplate, 2, 0, null, ['ngForOf', '']);
+        template(0, NgForTemplate, 2, 0, 'div', ['ngForOf', '']);
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'ngForOf', bind(ctx.rows));
@@ -498,10 +594,11 @@ describe('host bindings', () => {
             allocHostVars(8);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(pureFunction1(3, ff, ctx.id)));
-            elementProperty(elIndex, 'dir', bind(ctx.dir));
+            elementProperty(elIndex, 'id', bind(pureFunction1(3, ff, ctx.id)), null, true);
+            elementProperty(elIndex, 'dir', bind(ctx.dir), null, true);
             elementProperty(
-                elIndex, 'title', bind(pureFunction2(5, ff2, ctx.title, ctx.otherTitle)));
+                elIndex, 'title', bind(pureFunction2(5, ff2, ctx.title, ctx.otherTitle)), null,
+                true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -576,7 +673,7 @@ describe('host bindings', () => {
             allocHostVars(3);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(pureFunction1(1, ff, ctx.id)));
+            elementProperty(elIndex, 'id', bind(pureFunction1(1, ff, ctx.id)), null, true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -607,7 +704,7 @@ describe('host bindings', () => {
             allocHostVars(3);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)));
+            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)), null, true);
           }
         }
       });
@@ -664,7 +761,7 @@ describe('host bindings', () => {
             allocHostVars(3);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)));
+            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)), null, true);
           }
         }
       });
@@ -735,10 +832,12 @@ describe('host bindings', () => {
           }
           if (rf & RenderFlags.Update) {
             elementProperty(
-                elIndex, 'id', bind(ctx.condition ? pureFunction1(2, ff, ctx.id) : 'green'));
+                elIndex, 'id', bind(ctx.condition ? pureFunction1(2, ff, ctx.id) : 'green'), null,
+                true);
             elementProperty(
                 elIndex, 'title',
-                bind(ctx.otherCondition ? pureFunction1(4, ff1, ctx.title) : 'other title'));
+                bind(ctx.otherCondition ? pureFunction1(4, ff1, ctx.title) : 'other title'), null,
+                true);
           }
         },
         template: (rf: RenderFlags, ctx: HostBindingComp) => {}
@@ -795,7 +894,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elementIndex, 'id', bind(ctx.id));
+            elementProperty(elementIndex, 'id', bind(ctx.id), null, true);
           }
         },
         factory: () => superDir = new SuperDirective(),
@@ -813,7 +912,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elementIndex, 'title', bind(ctx.title));
+            elementProperty(elementIndex, 'title', bind(ctx.title), null, true);
           }
         },
         factory: () => subDir = new SubDirective(),
@@ -901,7 +1000,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.foos.length));
+            elementProperty(elIndex, 'id', bind(ctx.foos.length), null, true);
           }
         },
         contentQueries: (dirIndex) => { registerContentQuery(query(null, ['foo']), dirIndex); },
@@ -960,7 +1059,7 @@ describe('host bindings', () => {
             allocHostVars(1);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(elIndex, 'id', bind(ctx.myValue));
+            elementProperty(elIndex, 'id', bind(ctx.myValue), null, true);
           }
         },
         template: (rf: RenderFlags, cmp: HostBindingWithContentHooks) => {}
@@ -1042,9 +1141,8 @@ describe('host bindings', () => {
           vars: 0,
           hostBindings: (rf: RenderFlags, ctx: StaticHostClass, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              elementStyling(
-                  ['mat-toolbar', InitialStylingFlags.VALUES_MODE, 'mat-toolbar', true], null, null,
-                  ctx);
+              elementHostAttrs(ctx, [AttributeMarker.Classes, 'mat-toolbar']);
+              elementStyling(['mat-toolbar'], null, null, ctx);
             }
             if (rf & RenderFlags.Update) {
               elementStylingApply(0, ctx);
@@ -1065,6 +1163,5 @@ describe('host bindings', () => {
       const hostBindingEl = fixture.hostElement.querySelector('static-host-class') as HTMLElement;
       expect(hostBindingEl.className).toEqual('mat-toolbar');
     });
-
   });
 });

@@ -334,7 +334,7 @@ export interface ForwardRefFn {
 
 export declare const getDebugNode: (nativeNode: any) => DebugNode | null;
 
-export declare function getModuleFactory(id: string): NgModuleFactory<any>;
+export declare const getModuleFactory: (id: string) => NgModuleFactory<any>;
 
 export declare function getPlatform(): PlatformRef | null;
 

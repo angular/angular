@@ -302,7 +302,7 @@ After asynchronous validation begins, the form control enters a `pending` state.
 A common UI pattern is to show a spinner while the async validation is being performed. The following example presents how to achieve this with template-driven forms:
 
 ```html
-<input [(ngModel)}="name" #model="ngModel" appSomeAsyncValidator>
+<input [(ngModel)]="name" #model="ngModel" appSomeAsyncValidator>
 <app-spinner *ngIf="model.pending"></app-spinner>
 ```
 

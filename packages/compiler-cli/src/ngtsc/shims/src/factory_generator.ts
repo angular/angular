@@ -26,9 +26,16 @@ export class FactoryGenerator implements ShimGenerator {
 
   get factoryFileMap(): Map<string, string> { return this.map; }
 
-  getOriginalSourceOfShim(fileName: string): string|null { return this.map.get(fileName) || null; }
+  recognize(fileName: string): boolean { return this.map.has(fileName); }
 
-  generate(original: ts.SourceFile, genFilePath: string): ts.SourceFile {
+  generate(genFilePath: string, readFile: (fileName: string) => ts.SourceFile | null): ts.SourceFile
+      |null {
+    const originalPath = this.map.get(genFilePath) !;
+    const original = readFile(originalPath);
+    if (original === null) {
+      return null;
+    }
+
     const relativePathToSource =
         './' + path.posix.basename(original.fileName).replace(TS_DTS_SUFFIX, '');
     // Collect a list of classes that need to have factory types emitted for them. This list is

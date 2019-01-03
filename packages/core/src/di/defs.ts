@@ -168,7 +168,7 @@ export function defineInjector(options: {factory: () => any, providers?: any[], 
  * @param type type which may have `ngInjectableDef`
  */
 export function getInjectableDef<T>(type: any): InjectableDef<T>|null {
-  return type.hasOwnProperty(NG_INJECTABLE_DEF) ? (type as any)[NG_INJECTABLE_DEF] : null;
+  return type && type.hasOwnProperty(NG_INJECTABLE_DEF) ? (type as any)[NG_INJECTABLE_DEF] : null;
 }
 
 /**
@@ -177,5 +177,5 @@ export function getInjectableDef<T>(type: any): InjectableDef<T>|null {
  * @param type type which may have `ngInjectorDef`
  */
 export function getInjectorDef<T>(type: any): InjectorDef<T>|null {
-  return type.hasOwnProperty(NG_INJECTOR_DEF) ? (type as any)[NG_INJECTOR_DEF] : null;
+  return type && type.hasOwnProperty(NG_INJECTOR_DEF) ? (type as any)[NG_INJECTOR_DEF] : null;
 }

@@ -28,7 +28,7 @@ import {Render3ParseResult} from '../r3_template_transform';
 import {typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
-import {StylingBuilder, StylingInstruction} from './styling';
+import {StylingBuilder, StylingInstruction} from './styling_builder';
 import {BindingScope, TemplateDefinitionBuilder, ValueConverter, renderFlagCheckIfStmt} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
@@ -110,7 +110,7 @@ function baseDirectiveFields(
           meta, elVarExp, contextVarExp, styleBuilder, bindingParser, constantPool, hostVarsCount));
 
   // e.g 'inputs: {a: 'a'}`
-  definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs));
+  definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs, true));
 
   // e.g 'outputs: {a: 'a'}`
   definitionMap.set('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
@@ -251,6 +251,7 @@ export function compileComponentFromMetadata(
 
   const directivesUsed = new Set<o.Expression>();
   const pipesUsed = new Set<o.Expression>();
+  const changeDetection = meta.changeDetection;
 
   const template = meta.template;
   const templateBuilder = new TemplateDefinitionBuilder(
@@ -307,10 +308,15 @@ export function compileComponentFromMetadata(
     definitionMap.set('encapsulation', o.literal(meta.encapsulation));
   }
 
-  // e.g. `animations: [trigger('123', [])]`
+  // e.g. `animation: [trigger('123', [])]`
   if (meta.animations !== null) {
     definitionMap.set(
-        'data', o.literalMap([{key: 'animations', value: meta.animations, quoted: false}]));
+        'data', o.literalMap([{key: 'animation', value: meta.animations, quoted: false}]));
+  }
+
+  // Only set the change detection flag if it's defined and it's not the default.
+  if (changeDetection != null && changeDetection !== core.ChangeDetectionStrategy.Default) {
+    definitionMap.set('changeDetection', o.literal(changeDetection));
   }
 
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
@@ -666,11 +672,11 @@ function createHostBindingsFunction(
     return convertPropertyBinding(
         null, implicit, value, 'b', BindingForm.TrySimple, () => error('Unexpected interpolation'));
   };
-
   if (bindings) {
     const hostVarsCountFn = (numSlots: number): number => {
+      const originalVarsCount = totalHostVarsCount;
       totalHostVarsCount += numSlots;
-      return hostVarsCount;
+      return originalVarsCount;
     };
     const valueConverter = new ValueConverter(
         constantPool,
@@ -691,29 +697,47 @@ function createHostBindingsFunction(
         const value = binding.expression.visit(valueConverter);
         const bindingExpr = bindingFn(bindingContext, value);
 
-        const {bindingName, instruction} = getBindingNameAndInstruction(name);
+        const {bindingName, instruction, extraParams} = getBindingNameAndInstruction(name);
+
+        const instructionParams: o.Expression[] = [
+          elVarExp, o.literal(bindingName), o.importExpr(R3.bind).callFn([bindingExpr.currValExpr])
+        ];
 
         updateStatements.push(...bindingExpr.stmts);
-        updateStatements.push(o.importExpr(instruction)
-                                  .callFn([
-                                    elVarExp,
-                                    o.literal(bindingName),
-                                    o.importExpr(R3.bind).callFn([bindingExpr.currValExpr]),
-                                  ])
-                                  .toStmt());
+        updateStatements.push(
+            o.importExpr(instruction).callFn(instructionParams.concat(extraParams)).toStmt());
       }
     }
 
-    if (styleBuilder.hasBindingsOrInitialValues) {
-      const createInstruction = styleBuilder.buildCreateLevelInstruction(null, constantPool);
-      if (createInstruction) {
-        const createStmt = createStylingStmt(createInstruction, bindingContext, bindingFn);
-        createStatements.push(createStmt);
+    if (styleBuilder.hasBindingsOrInitialValues()) {
+      // since we're dealing with directives here and directives have a hostBinding
+      // function, we need to generate special instructions that deal with styling
+      // (both bindings and initial values). The instruction below will instruct
+      // all initial styling (styling that is inside of a host binding within a
+      // directive) to be attached to the host element of the directive.
+      const hostAttrsInstruction =
+          styleBuilder.buildDirectiveHostAttrsInstruction(null, constantPool);
+      if (hostAttrsInstruction) {
+        createStatements.push(createStylingStmt(hostAttrsInstruction, bindingContext, bindingFn));
       }
 
+      // singular style/class bindings (things like `[style.prop]` and `[class.name]`)
+      // MUST be registered on a given element within the component/directive
+      // templateFn/hostBindingsFn functions. The instruction below will figure out
+      // what all the bindings are and then generate the statements required to register
+      // those bindings to the element via `elementStyling`.
+      const elementStylingInstruction =
+          styleBuilder.buildElementStylingInstruction(null, constantPool);
+      if (elementStylingInstruction) {
+        createStatements.push(
+            createStylingStmt(elementStylingInstruction, bindingContext, bindingFn));
+      }
+
+      // finally each binding that was registered in the statement above will need to be added to
+      // the update block of a component/directive templateFn/hostBindingsFn so that the bindings
+      // are evaluated and updated for the element.
       styleBuilder.buildUpdateLevelInstructions(valueConverter).forEach(instruction => {
-        const updateStmt = createStylingStmt(instruction, bindingContext, bindingFn);
-        updateStatements.push(updateStmt);
+        updateStatements.push(createStylingStmt(instruction, bindingContext, bindingFn));
       });
     }
   }
@@ -752,8 +776,9 @@ function createStylingStmt(
 }
 
 function getBindingNameAndInstruction(bindingName: string):
-    {bindingName: string, instruction: o.ExternalReference} {
+    {bindingName: string, instruction: o.ExternalReference, extraParams: o.Expression[]} {
   let instruction !: o.ExternalReference;
+  const extraParams: o.Expression[] = [];
 
   // Check to see if this is an attr binding or a property binding
   const attrMatches = bindingName.match(ATTR_REGEX);
@@ -762,9 +787,13 @@ function getBindingNameAndInstruction(bindingName: string):
     instruction = R3.elementAttribute;
   } else {
     instruction = R3.elementProperty;
+    extraParams.push(
+        o.literal(null),  // TODO: This should be a sanitizer fn (FW-785)
+        o.literal(true)   // host bindings must have nativeOnly prop set to true
+        );
   }
 
-  return {bindingName, instruction};
+  return {bindingName, instruction, extraParams};
 }
 
 function createHostListeners(

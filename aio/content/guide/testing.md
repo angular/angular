@@ -126,8 +126,8 @@ jobs:
           key: my-project-{{ .Branch }}-{{ checksum "package-lock.json" }}
           paths:
             - "node_modules"
-      - run: npm run test -- --single-run --no-progress --browser=ChromeHeadlessCI
-      - run: npm run e2e -- --no-progress --config=protractor-ci.conf.js
+      - run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+      - run: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
 This configuration caches `node_modules/` and uses [`npm run`](https://docs.npmjs.com/cli/run-script) to run CLI commands, because `@angular/cli` is not installed globally. 
@@ -167,8 +167,8 @@ install:
   - npm install
 
 script:
-  - npm run test -- --single-run --no-progress --browser=ChromeHeadlessCI
-  - npm run e2e -- --no-progress --config=protractor-ci.conf.js
+  - npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+  - npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
 This does the same things as the Circle CI configuration, except that Travis doesn't come with Chrome, so we use Chromium instead.
@@ -201,7 +201,7 @@ customLaunchers: {
 },
 ```
 
-* Create a new file, `protractor-ci.conf.js`, in the root folder of your project, which extends the original `protractor.conf.js`:
+* In the root folder of your e2e tests project, create a new file named `protractor-ci.conf.js`. This new file extends the original `protractor.conf.js`.
 ```
 const config = require('./protractor.conf').config;
 
@@ -218,8 +218,8 @@ exports.config = config;
 Now you can run the following commands to use the `--no-sandbox` flag:
 
 <code-example language="sh" class="code-shell">
-  ng test --single-run --no-progress --browser=ChromeHeadlessCI
-  ng e2e --no-progress --config=protractor-ci.conf.js
+  ng test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+  ng e2e -- --protractor-config=e2e/protractor-ci.conf.js
 </code-example>
 
 <div class="alert is-helpful">
@@ -238,7 +238,7 @@ Code coverage reports show you  any parts of our code base that may not be prope
 To generate a coverage report run the following command in the root of your project.
 
 <code-example language="sh" class="code-shell">
-  ng test --watch=false --code-coverage
+  ng test --no-watch --code-coverage
 </code-example>
 
 When  the tests are complete, the command creates a new `/coverage` folder in the project. Open the `index.html` file to see a report with your source code and code coverage values.

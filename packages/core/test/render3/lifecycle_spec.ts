@@ -196,7 +196,7 @@ describe('lifecycles', () => {
       /** <comp *ngIf="showing"></comp> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          template(0, IfTemplate, 1, 0, '', ['ngIf', '']);
+          template(0, IfTemplate, 1, 0, 'comp', ['ngIf', '']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'ngIf', bind(ctx.showing));
@@ -2586,7 +2586,8 @@ describe('lifecycles', () => {
 
       function conditionTpl(rf: RenderFlags, ctx: Cmpt) {
         if (rf & RenderFlags.Create) {
-          template(0, null, 0, 1, null, [AttributeMarker.SelectOnly, 'onDestroyDirective']);
+          template(
+              0, null, 0, 1, 'ng-template', [AttributeMarker.SelectOnly, 'onDestroyDirective']);
         }
       }
 
@@ -2597,7 +2598,7 @@ describe('lifecycles', () => {
        */
       function cmptTpl(rf: RenderFlags, cmpt: Cmpt) {
         if (rf & RenderFlags.Create) {
-          template(0, conditionTpl, 1, 1, null, [AttributeMarker.SelectOnly, 'ngIf']);
+          template(0, conditionTpl, 1, 1, 'ng-template', [AttributeMarker.SelectOnly, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'ngIf', bind(cmpt.showing));

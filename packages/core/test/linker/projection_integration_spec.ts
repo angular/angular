@@ -81,7 +81,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('');
   });
 
-  fixmeIvy('FW-789: select attribute on <ng-content> should not be case-sensitive')
+  fixmeIvy('FW-833: Directive / projected node matching against class name')
       .it('should support multiple content tags', () => {
         TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
         TestBed.overrideComponent(MainComp, {
@@ -182,7 +182,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
   });
 
-  fixmeIvy('FW-796: Content projection logic is incorrect for <ng-content> in nested templates')
+  fixmeIvy('FW-833: Directive / projected node matching against class name')
       .it('should redistribute when the shadow dom changes', () => {
         TestBed.configureTestingModule(
             {declarations: [ConditionalContentComponent, ManualViewportDirective]});
@@ -290,7 +290,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('SIMPLE()START(A)END');
   });
 
-  fixmeIvy('FW-796: Content projection logic is incorrect for <ng-content> in nested templates')
+  fixmeIvy('FW-833: Directive / projected node matching against class name')
       .it('should support moving ng-content around', () => {
         TestBed.configureTestingModule({
           declarations: [ConditionalContentComponent, ProjectDirective, ManualViewportDirective]
@@ -371,21 +371,22 @@ describe('projection', () => {
   });
 
   if (getDOM().supportsNativeShadowDOM()) {
-    it('should support native content projection and isolate styles per component', () => {
-      TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
-      TestBed.overrideComponent(MainComp, {
-        set: {
-          template: '<simple-native1><div>A</div></simple-native1>' +
-              '<simple-native2><div>B</div></simple-native2>'
-        }
-      });
-      const main = TestBed.createComponent(MainComp);
+    fixmeIvy('FW-841: Content projection with ShadovDom v0 doesn\'t work')
+        .it('should support native content projection and isolate styles per component', () => {
+          TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
+          TestBed.overrideComponent(MainComp, {
+            set: {
+              template: '<simple-native1><div>A</div></simple-native1>' +
+                  '<simple-native2><div>B</div></simple-native2>'
+            }
+          });
+          const main = TestBed.createComponent(MainComp);
 
-      const childNodes = getDOM().childNodes(main.nativeElement);
-      expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
-      expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
-      main.destroy();
-    });
+          const childNodes = getDOM().childNodes(main.nativeElement);
+          expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
+          expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
+          main.destroy();
+        });
   }
 
   if (getDOM().supportsDOMEvents()) {
@@ -429,7 +430,7 @@ describe('projection', () => {
     });
   }
 
-  fixmeIvy('FW-796: Content projection logic is incorrect for <ng-content> in nested templates')
+  fixmeIvy('FW-869: debugElement.queryAllNodes returns nodes in the wrong order')
       .it('should support nested conditionals that contain ng-contents', () => {
         TestBed.configureTestingModule(
             {declarations: [ConditionalTextComponent, ManualViewportDirective]});
@@ -473,7 +474,66 @@ describe('projection', () => {
             '<cmp-a2>a2<cmp-b21>b21</cmp-b21><cmp-b22>b22</cmp-b22></cmp-a2>');
   });
 
-  fixmeIvy('FW-796: Content projection logic is incorrect for <ng-content> in nested templates')
+  it('should project nodes into nested templates when the main template doesn\'t have <ng-content>',
+     () => {
+
+       @Component({
+         selector: 'content-in-template',
+         template:
+             `(<ng-template manual><ng-content select="[id=left]"></ng-content></ng-template>)`
+       })
+       class ContentInATemplateComponent {
+       }
+
+
+       TestBed.configureTestingModule(
+           {declarations: [ContentInATemplateComponent, ManualViewportDirective]});
+       TestBed.overrideComponent(
+           MainComp,
+           {set: {template: `<content-in-template><div id="left">A</div></content-in-template>`}});
+
+       const main = TestBed.createComponent(MainComp);
+
+       main.detectChanges();
+       expect(main.nativeElement).toHaveText('()');
+
+       let viewportElement =
+           main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0];
+       viewportElement.injector.get(ManualViewportDirective).show();
+       expect(main.nativeElement).toHaveText('(A)');
+     });
+
+  it('should project nodes into nested templates and the main template', () => {
+
+    @Component({
+      selector: 'content-in-main-and-template',
+      template:
+          `<ng-content></ng-content>(<ng-template manual><ng-content select="[id=left]"></ng-content></ng-template>)`
+    })
+    class ContentInMainAndTemplateComponent {
+    }
+
+
+    TestBed.configureTestingModule(
+        {declarations: [ContentInMainAndTemplateComponent, ManualViewportDirective]});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template:
+            `<content-in-main-and-template><div id="left">A</div>B</content-in-main-and-template>`
+      }
+    });
+
+    const main = TestBed.createComponent(MainComp);
+
+    main.detectChanges();
+    expect(main.nativeElement).toHaveText('B()');
+
+    let viewportElement = main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0];
+    viewportElement.injector.get(ManualViewportDirective).show();
+    expect(main.nativeElement).toHaveText('B(A)');
+  });
+
+  fixmeIvy('FW-833: Directive / projected node matching against class name')
       .it('should project filled view containers into a view container', () => {
         TestBed.configureTestingModule(
             {declarations: [ConditionalContentComponent, ManualViewportDirective]});

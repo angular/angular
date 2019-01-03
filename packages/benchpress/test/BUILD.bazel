@@ -4,6 +4,13 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/benchpress",
+        "//packages/core",
+        "//packages/core/testing",
+        "@ngdeps//protractor",
+    ],
 )
 
 jasmine_node_test(

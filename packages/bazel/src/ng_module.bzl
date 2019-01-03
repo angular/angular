@@ -201,13 +201,14 @@ def _expected_outs(ctx):
             metadata_files += [ctx.actions.declare_file(basename + ext) for ext in metadata]
 
     # We do this just when producing a flat module index for a publishable ng_module
-    if is_legacy_ngc and _should_produce_flat_module_outs(ctx):
+    if _should_produce_flat_module_outs(ctx):
         flat_module_out = _flat_module_out_file(ctx)
         devmode_js_files.append(ctx.actions.declare_file("%s.js" % flat_module_out))
         closure_js_files.append(ctx.actions.declare_file("%s.closure.js" % flat_module_out))
         bundle_index_typings = ctx.actions.declare_file("%s.d.ts" % flat_module_out)
         declaration_files.append(bundle_index_typings)
-        metadata_files.append(ctx.actions.declare_file("%s.metadata.json" % flat_module_out))
+        if is_legacy_ngc:
+            metadata_files.append(ctx.actions.declare_file("%s.metadata.json" % flat_module_out))
     else:
         bundle_index_typings = None
 
@@ -282,6 +283,8 @@ _collect_summaries_aspect = aspect(
 _EXTRA_NODE_OPTIONS_FLAGS = [
     # Expose the v8 garbage collection API to JS.
     "--node_options=--expose-gc",
+    # Show ~full stack traces, instead of cutting off after 10 items.
+    "--node_options=--stack-trace-limit=100",
 ]
 
 def ngc_compile_action(

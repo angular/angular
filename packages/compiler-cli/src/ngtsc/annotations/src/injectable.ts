@@ -74,6 +74,7 @@ function extractInjectableMetadata(
   const name = clazz.name.text;
   const type = new WrappedNodeExpr(clazz.name);
   const ctorDeps = getConstructorDependencies(clazz, reflector, isCore);
+  const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
         ErrorCode.DECORATOR_NOT_CALLED, decorator.node, '@Injectable must be called');
@@ -82,6 +83,7 @@ function extractInjectableMetadata(
     return {
       name,
       type,
+      typeArgumentCount,
       providedIn: new LiteralExpr(null), ctorDeps,
     };
   } else if (decorator.args.length === 1) {
@@ -118,6 +120,7 @@ function extractInjectableMetadata(
       return {
         name,
         type,
+        typeArgumentCount,
         ctorDeps,
         providedIn,
         useValue: new WrappedNodeExpr(meta.get('useValue') !)
@@ -126,6 +129,7 @@ function extractInjectableMetadata(
       return {
         name,
         type,
+        typeArgumentCount,
         ctorDeps,
         providedIn,
         useExisting: new WrappedNodeExpr(meta.get('useExisting') !)
@@ -134,6 +138,7 @@ function extractInjectableMetadata(
       return {
         name,
         type,
+        typeArgumentCount,
         ctorDeps,
         providedIn,
         useClass: new WrappedNodeExpr(meta.get('useClass') !), userDeps
@@ -141,9 +146,9 @@ function extractInjectableMetadata(
     } else if (meta.has('useFactory')) {
       // useFactory is special - the 'deps' property must be analyzed.
       const factory = new WrappedNodeExpr(meta.get('useFactory') !);
-      return {name, type, providedIn, useFactory: factory, ctorDeps, userDeps};
+      return {name, type, typeArgumentCount, providedIn, useFactory: factory, ctorDeps, userDeps};
     } else {
-      return {name, type, providedIn, ctorDeps};
+      return {name, type, typeArgumentCount, providedIn, ctorDeps};
     }
   } else {
     throw new FatalDiagnosticError(

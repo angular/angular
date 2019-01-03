@@ -205,7 +205,7 @@ export declare class FormBuilder {
     control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
     group(controlsConfig: {
         [key: string]: any;
-    }, legacyOrOpts?: {
+    }, options?: AbstractControlOptions | {
         [key: string]: any;
     } | null): FormGroup;
 }

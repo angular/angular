@@ -11,7 +11,7 @@ import {AfterContentInit, AfterViewInit, Component, ContentChildren, Directive, 
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, polyfillGoogGetMsg} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
 
 if (ivyEnabled) {
   describe('ivy', () => { declareTests(); });
@@ -52,7 +52,7 @@ function declareTests(config?: {useJit: boolean}) {
       expect(el).toHaveText('foo');
     });
 
-    fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>')
+    modifiedInIvy('FW-678: ivy generates different DOM structure for <ng-container>')
         .it('should be rendered as comment with children as siblings', () => {
           const template = '<ng-container><p></p></ng-container>';
           TestBed.overrideComponent(MyComp, {set: {template}});
@@ -67,7 +67,7 @@ function declareTests(config?: {useJit: boolean}) {
           expect(getDOM().tagName(children[1]).toUpperCase()).toEqual('P');
         });
 
-    fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>')
+    modifiedInIvy('FW-678: ivy generates different DOM structure for <ng-container>')
         .it('should support nesting', () => {
           const template =
               '<ng-container>1</ng-container><ng-container><ng-container>2</ng-container></ng-container>';
@@ -86,7 +86,7 @@ function declareTests(config?: {useJit: boolean}) {
           expect(children[4]).toHaveText('2');
         });
 
-    fixmeIvy('FW-678: ivy generates different DOM structure for <ng-container>')
+    modifiedInIvy('FW-678: ivy generates different DOM structure for <ng-container>')
         .it('should group inner nodes', () => {
           const template = '<ng-container *ngIf="ctxBoolProp"><p></p><b></b></ng-container>';
           TestBed.overrideComponent(MyComp, {set: {template}});

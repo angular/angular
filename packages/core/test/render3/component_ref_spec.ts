@@ -187,5 +187,87 @@ describe('ComponentFactory', () => {
            expect(mSanitizerFactorySpy).toHaveBeenCalled();
          });
     });
+
+    describe('(when the factory is bound to a `ngModuleRef`)', () => {
+      it('should retrieve `RendererFactory2` from the specified injector first', () => {
+        const injector = Injector.create([
+          {provide: RendererFactory2, useValue: {createRenderer: createRenderer2Spy}},
+        ]);
+        (cf as any).ngModule = {
+          injector: Injector.create([
+            {provide: RendererFactory2, useValue: {createRenderer: createRenderer3Spy}},
+          ])
+        };
+
+        cf.create(injector);
+
+        expect(createRenderer2Spy).toHaveBeenCalled();
+        expect(createRenderer3Spy).not.toHaveBeenCalled();
+      });
+
+      it('should retrieve `RendererFactory2` from the `ngModuleRef` if not provided by the injector',
+         () => {
+           const injector = Injector.create([]);
+           (cf as any).ngModule = {
+             injector: Injector.create([
+               {provide: RendererFactory2, useValue: {createRenderer: createRenderer2Spy}},
+             ])
+           };
+
+           cf.create(injector);
+
+           expect(createRenderer2Spy).toHaveBeenCalled();
+           expect(createRenderer3Spy).not.toHaveBeenCalled();
+         });
+
+      it('should fall back to `domRendererFactory3` if `RendererFactory2` is not provided', () => {
+        const injector = Injector.create([]);
+        (cf as any).ngModule = {injector: Injector.create([])};
+
+        cf.create(injector);
+
+        expect(createRenderer2Spy).not.toHaveBeenCalled();
+        expect(createRenderer3Spy).toHaveBeenCalled();
+      });
+
+      it('should retrieve `Sanitizer` from the specified injector first', () => {
+        const iSanitizerFactorySpy =
+            jasmine.createSpy('Injector#sanitizerFactory').and.returnValue({});
+        const injector = Injector.create([
+          {provide: Sanitizer, useFactory: iSanitizerFactorySpy, deps: []},
+        ]);
+
+        const mSanitizerFactorySpy =
+            jasmine.createSpy('NgModuleRef#sanitizerFactory').and.returnValue({});
+        (cf as any).ngModule = {
+          injector: Injector.create([
+            {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
+          ])
+        };
+
+        cf.create(injector);
+
+        expect(iSanitizerFactorySpy).toHaveBeenCalled();
+        expect(mSanitizerFactorySpy).not.toHaveBeenCalled();
+      });
+
+      it('should retrieve `Sanitizer` from the `ngModuleRef` if not provided by the injector',
+         () => {
+           const injector = Injector.create([]);
+
+           const mSanitizerFactorySpy =
+               jasmine.createSpy('NgModuleRef#sanitizerFactory').and.returnValue({});
+           (cf as any).ngModule = {
+             injector: Injector.create([
+               {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
+             ])
+           };
+
+
+           cf.create(injector);
+
+           expect(mSanitizerFactorySpy).toHaveBeenCalled();
+         });
+    });
   });
 });

@@ -80,6 +80,24 @@ export function obsoleteInIvy(reason: string): JasmineMethods {
 }
 
 /**
+ * A function to conditionally skip the execution of tests that are not relevant when
+ * not running against Ivy.
+ *
+ * ```
+ * onlyInIvy('some reason').describe(...);
+ * ```
+ *
+ * or
+ *
+ * ```
+ * onlyInIvy('some reason').it(...);
+ * ```
+ */
+export function onlyInIvy(reason: string): JasmineMethods {
+  return ivyEnabled ? PASSTHROUGH : IGNORE;
+}
+
+/**
  * A function to conditionally skip the execution of tests that have intentionally
  * been broken when running against Ivy.
  *

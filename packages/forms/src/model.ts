@@ -97,14 +97,17 @@ export type FormHooks = 'change' | 'blur' | 'submit';
  */
 export interface AbstractControlOptions {
   /**
-   * List of validators applied to control.
+   * @description
+   * The list of validators applied to a control.
    */
   validators?: ValidatorFn|ValidatorFn[]|null;
   /**
-   * List of async validators applied to control.
+   * @description
+   * The list of async validators applied to control.
    */
   asyncValidators?: AsyncValidatorFn|AsyncValidatorFn[]|null;
   /**
+   * @description
    * The event name for control to update upon.
    */
   updateOn?: 'change'|'blur'|'submit';

@@ -37,8 +37,12 @@ env:
     - CI_MODE=saucelabs_required
     # deactivated, see #19768
     # - CI_MODE=browserstack_required
-    - CI_MODE=saucelabs_optional
-    - CI_MODE=browserstack_optional
+
+    # We disable these optional jobs because those acquire tunnel and browser instances which
+    # could lead to rate limit excess while those are failing most of the time and nobody pays
+    # attention anyway.
+    # - CI_MODE=saucelabs_optional
+    # - CI_MODE=browserstack_optional
 
 matrix:
   fast_finish: true

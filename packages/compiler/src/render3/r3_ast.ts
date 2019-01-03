@@ -49,14 +49,14 @@ export class BoundAttribute implements Node {
 
 export class BoundEvent implements Node {
   constructor(
-      public name: string, public handler: AST, public target: string|null,
-      public phase: string|null, public sourceSpan: ParseSourceSpan) {}
+      public name: string, public type: ParsedEventType, public handler: AST,
+      public target: string|null, public phase: string|null, public sourceSpan: ParseSourceSpan) {}
 
   static fromParsedEvent(event: ParsedEvent) {
     const target: string|null = event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
     const phase: string|null =
         event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
-    return new BoundEvent(event.name, event.handler, target, phase, event.sourceSpan);
+    return new BoundEvent(event.name, event.type, event.handler, target, phase, event.sourceSpan);
   }
 
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundEvent(this); }
@@ -73,7 +73,7 @@ export class Element implements Node {
 
 export class Template implements Node {
   constructor(
-      public attributes: TextAttribute[], public inputs: BoundAttribute[],
+      public tagName: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
       public outputs: BoundEvent[], public children: Node[], public references: Reference[],
       public variables: Variable[], public sourceSpan: ParseSourceSpan,
       public startSourceSpan: ParseSourceSpan|null, public endSourceSpan: ParseSourceSpan|null,
@@ -189,8 +189,8 @@ export class TransformVisitor implements Visitor<Node> {
         newChildren != template.children || newVariables != template.variables ||
         newReferences != template.references) {
       return new Template(
-          newAttributes, newInputs, newOutputs, newChildren, newReferences, newVariables,
-          template.sourceSpan, template.startSourceSpan, template.endSourceSpan);
+          template.tagName, newAttributes, newInputs, newOutputs, newChildren, newReferences,
+          newVariables, template.sourceSpan, template.startSourceSpan, template.endSourceSpan);
     }
     return template;
   }

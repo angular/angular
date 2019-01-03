@@ -67,20 +67,36 @@ export function asLiteral(value: any): o.Expression {
   return o.literal(value, o.INFERRED_TYPE);
 }
 
-export function conditionallyCreateMapObjectLiteral(keys: {[key: string]: string | string[]}):
-    o.Expression|null {
+export function conditionallyCreateMapObjectLiteral(
+    keys: {[key: string]: string | string[]}, keepDeclared?: boolean): o.Expression|null {
   if (Object.getOwnPropertyNames(keys).length > 0) {
-    return mapToExpression(keys);
+    return mapToExpression(keys, keepDeclared);
   }
   return null;
 }
 
-function mapToExpression(map: {[key: string]: any}): o.Expression {
+function mapToExpression(
+    map: {[key: string]: string | string[]}, keepDeclared?: boolean): o.Expression {
   return o.literalMap(Object.getOwnPropertyNames(map).map(key => {
-    // canonical syntax: `dirProp: elProp`
+    // canonical syntax: `dirProp: publicProp`
     // if there is no `:`, use dirProp = elProp
-    const parts = splitAtColon(key, [key, map[key]]);
-    return {key: parts[0], quoted: false, value: asLiteral(parts[1])};
+    const value = map[key];
+    let declaredName: string;
+    let publicName: string;
+    let minifiedName: string;
+    if (Array.isArray(value)) {
+      [publicName, declaredName] = value;
+    } else {
+      [declaredName, publicName] = splitAtColon(key, [key, value]);
+    }
+    minifiedName = declaredName;
+    return {
+      key: minifiedName,
+      quoted: false,
+      value: (keepDeclared && publicName !== declaredName) ?
+          o.literalArr([asLiteral(publicName), asLiteral(declaredName)]) :
+          asLiteral(publicName)
+    };
   }));
 }
 

@@ -112,23 +112,21 @@ describe('Query API', () => {
               expect(directive.child.text).toEqual('foo');
             });
 
-    fixmeIvy('FW-782 - View queries are executed twice in some cases')
-        .it('should contain the first view child', () => {
-          const template = '<needs-view-child #q></needs-view-child>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should contain the first view child', () => {
+      const template = '<needs-view-child #q></needs-view-child>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const q: NeedsViewChild = view.debugElement.children[0].references !['q'];
-          expect(q.logs).toEqual([['setter', 'foo'], ['init', 'foo'], ['check', 'foo']]);
+      const q: NeedsViewChild = view.debugElement.children[0].references !['q'];
+      expect(q.logs).toEqual([['setter', 'foo'], ['init', 'foo'], ['check', 'foo']]);
 
-          q.shouldShow = false;
-          view.detectChanges();
-          expect(q.logs).toEqual([
-            ['setter', 'foo'], ['init', 'foo'], ['check', 'foo'], ['setter', null],
-            ['check', null]
-          ]);
-        });
+      q.shouldShow = false;
+      view.detectChanges();
+      expect(q.logs).toEqual([
+        ['setter', 'foo'], ['init', 'foo'], ['check', 'foo'], ['setter', null], ['check', null]
+      ]);
+    });
 
-    fixmeIvy('FW-782 - View queries are executed twice in some cases')
+    modifiedInIvy('Static ViewChild and ContentChild queries are resolved in update mode')
         .it('should set static view and content children already after the constructor call', () => {
           const template =
               '<needs-static-content-view-child #q><div text="contentFoo"></div></needs-static-content-view-child>';
@@ -142,34 +140,33 @@ describe('Query API', () => {
           expect(q.viewChild.text).toEqual('viewFoo');
         });
 
-    fixmeIvy('FW-782 - View queries are executed twice in some cases')
-        .it('should contain the first view child across embedded views', () => {
-          TestBed.overrideComponent(
-              MyComp0, {set: {template: '<needs-view-child #q></needs-view-child>'}});
-          TestBed.overrideComponent(NeedsViewChild, {
-            set: {
-              template:
-                  '<div *ngIf="true"><div *ngIf="shouldShow" text="foo"></div></div><div *ngIf="shouldShow2" text="bar"></div>'
-            }
-          });
-          const view = TestBed.createComponent(MyComp0);
+    it('should contain the first view child across embedded views', () => {
+      TestBed.overrideComponent(
+          MyComp0, {set: {template: '<needs-view-child #q></needs-view-child>'}});
+      TestBed.overrideComponent(NeedsViewChild, {
+        set: {
+          template:
+              '<div *ngIf="true"><div *ngIf="shouldShow" text="foo"></div></div><div *ngIf="shouldShow2" text="bar"></div>'
+        }
+      });
+      const view = TestBed.createComponent(MyComp0);
 
-          view.detectChanges();
-          const q: NeedsViewChild = view.debugElement.children[0].references !['q'];
-          expect(q.logs).toEqual([['setter', 'foo'], ['init', 'foo'], ['check', 'foo']]);
+      view.detectChanges();
+      const q: NeedsViewChild = view.debugElement.children[0].references !['q'];
+      expect(q.logs).toEqual([['setter', 'foo'], ['init', 'foo'], ['check', 'foo']]);
 
-          q.shouldShow = false;
-          q.shouldShow2 = true;
-          q.logs = [];
-          view.detectChanges();
-          expect(q.logs).toEqual([['setter', 'bar'], ['check', 'bar']]);
+      q.shouldShow = false;
+      q.shouldShow2 = true;
+      q.logs = [];
+      view.detectChanges();
+      expect(q.logs).toEqual([['setter', 'bar'], ['check', 'bar']]);
 
-          q.shouldShow = false;
-          q.shouldShow2 = false;
-          q.logs = [];
-          view.detectChanges();
-          expect(q.logs).toEqual([['setter', null], ['check', null]]);
-        });
+      q.shouldShow = false;
+      q.shouldShow2 = false;
+      q.logs = [];
+      view.detectChanges();
+      expect(q.logs).toEqual([['setter', null], ['check', null]]);
+    });
 
     fixmeIvy(
         'FW-781 - Directives invocation sequence on root and nested elements is different in Ivy')
@@ -234,15 +231,14 @@ describe('Query API', () => {
           expect(asNativeElements(view.debugElement.children)).toHaveText('2|3d|2d|');
         });
 
-    fixmeIvy('FW-682 - TestBed: tests assert that compilation produces specific error')
-        .it('should throw with descriptive error when query selectors are not present', () => {
-          TestBed.configureTestingModule({declarations: [MyCompBroken0, HasNullQueryCondition]});
-          const template = '<has-null-query-condition></has-null-query-condition>';
-          TestBed.overrideComponent(MyCompBroken0, {set: {template}});
-          expect(() => TestBed.createComponent(MyCompBroken0))
-              .toThrowError(
-                  `Can't construct a query for the property "errorTrigger" of "${stringify(HasNullQueryCondition)}" since the query selector wasn't defined.`);
-        });
+    it('should throw with descriptive error when query selectors are not present', () => {
+      TestBed.configureTestingModule({declarations: [MyCompBroken0, HasNullQueryCondition]});
+      const template = '<has-null-query-condition></has-null-query-condition>';
+      TestBed.overrideComponent(MyCompBroken0, {set: {template}});
+      expect(() => TestBed.createComponent(MyCompBroken0))
+          .toThrowError(
+              `Can't construct a query for the property "errorTrigger" of "${stringify(HasNullQueryCondition)}" since the query selector wasn't defined.`);
+    });
   });
 
   describe('query for TemplateRef', () => {
@@ -590,35 +586,38 @@ describe('Query API', () => {
     });
 
     // Note: this test is just document our current behavior, which we do for performance reasons.
-    fixmeIvy('FW-782 - View queries are executed twice in some cases')
-        .it('should not affected queries for projected templates if views are detached or moved', () => {
-          const template =
-              '<manual-projecting #q><ng-template let-x="x"><div [text]="x"></div></ng-template></manual-projecting>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
-          const q = view.debugElement.children[0].references !['q'] as ManualProjecting;
-          expect(q.query.length).toBe(0);
+    fixmeIvy('FW-853: Query results are cleared if embedded views are detached / moved')
+        .it('should not affect queries for projected templates if views are detached or moved',
+            () => {
+              const template = `<manual-projecting #q>
+              <ng-template let-x="x">
+                 <div [text]="x"></div>
+              </ng-template>
+          </manual-projecting>`;
+              const view = createTestCmpAndDetectChanges(MyComp0, template);
+              const q = view.debugElement.children[0].references !['q'] as ManualProjecting;
+              expect(q.query.length).toBe(0);
 
-          const view1 = q.vc.createEmbeddedView(q.template, {'x': '1'});
-          const view2 = q.vc.createEmbeddedView(q.template, {'x': '2'});
-          view.detectChanges();
-          expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
+              const view1 = q.vc.createEmbeddedView(q.template, {'x': '1'});
+              const view2 = q.vc.createEmbeddedView(q.template, {'x': '2'});
+              view.detectChanges();
+              expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
 
-          q.vc.detach(1);
-          q.vc.detach(0);
+              q.vc.detach(1);
+              q.vc.detach(0);
 
-          view.detectChanges();
-          expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
+              view.detectChanges();
+              expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
 
-          q.vc.insert(view2);
-          q.vc.insert(view1);
+              q.vc.insert(view2);
+              q.vc.insert(view1);
 
-          view.detectChanges();
-          expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
-        });
+              view.detectChanges();
+              expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
+            });
 
-    fixmeIvy(
-        'FW-763 - LView tree not properly constructed / destroyed for dynamically inserted components')
-        .it('should remove manually projected templates if their parent view is destroyed', () => {
+    fixmeIvy('unknown').it(
+        'should remove manually projected templates if their parent view is destroyed', () => {
           const template = `
           <manual-projecting #q><ng-template #tpl><div text="1"></div></ng-template></manual-projecting>
           <div *ngIf="shouldShow">

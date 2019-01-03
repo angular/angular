@@ -453,6 +453,7 @@ const TYPINGS_SRC_FILES = [
   },
   {name: '/src/class1.js', contents: 'export class Class1 {}\nexport class MissingClass1 {}'},
   {name: '/src/class2.js', contents: 'export class Class2 {}'},
+  {name: '/src/func1.js', contents: 'export function mooFn() {}'},
   {name: '/src/internal.js', contents: 'export class InternalClass {}\nexport class Class2 {}'},
   {name: '/src/missing-class.js', contents: 'export class MissingClass2 {}'}, {
     name: '/src/flat-file.js',
@@ -476,11 +477,60 @@ const TYPINGS_DTS_FILES = [
     contents:
         `export declare class Class2 {}\nexport declare interface SomeInterface {}\nexport {Class3 as xClass3} from './class3';`
   },
+  {name: '/typings/func1.d.ts', contents: 'export declare function mooFn(): void;'},
   {
     name: '/typings/internal.d.ts',
     contents: `export declare class InternalClass {}\nexport declare class Class2 {}`
   },
   {name: '/typings/class3.d.ts', contents: `export declare class Class3 {}`},
+];
+
+const MODULE_WITH_PROVIDERS_PROGRAM = [
+  {
+    name: '/src/functions.js',
+    contents: `
+    import {ExternalModule} from './module';
+    export class SomeService {}
+    export class InternalModule {}
+    export function aNumber() { return 42; }
+    export function aString() { return 'foo'; }
+    export function emptyObject() { return {}; }
+    export function ngModuleIdentifier() { return { ngModule: InternalModule }; }
+    export function ngModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
+    export function ngModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
+    export function onlyProviders() { return { providers: [SomeService] }; }
+    export function ngModuleNumber() { return { ngModule: 42 }; }
+    export function ngModuleString() { return { ngModule: 'foo' }; }
+    export function ngModuleObject() { return { ngModule: { foo: 42 } }; }
+    export function externalNgModule() { return { ngModule: ExternalModule }; }
+    `
+  },
+  {
+    name: '/src/methods.js',
+    contents: `
+    import {ExternalModule} from './module';
+    export class SomeService {}
+    export class InternalModule {
+      static aNumber() { return 42; }
+      static aString() { return 'foo'; }
+      static emptyObject() { return {}; }
+      static ngModuleIdentifier() { return { ngModule: InternalModule }; }
+      static ngModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
+      static ngModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
+      static onlyProviders() { return { providers: [SomeService] }; }
+      static ngModuleNumber() { return { ngModule: 42 }; }
+      static ngModuleString() { return { ngModule: 'foo' }; }
+      static ngModuleObject() { return { ngModule: { foo: 42 } }; }
+      static externalNgModule() { return { ngModule: ExternalModule }; }
+
+      instanceNgModuleIdentifier() { return { ngModule: InternalModule }; }
+      instanceNgModuleWithEmptyProviders() { return { ngModule: InternalModule, providers: [] }; }
+      instanceNgModuleWithProviders() { return { ngModule: InternalModule, providers: [SomeService] }; }
+      instanceExternalNgModule() { return { ngModule: ExternalModule }; }
+    }
+    `
+  },
+  {name: '/src/module', contents: 'export class ExternalModule {}'},
 ];
 
 describe('Fesm2015ReflectionHost', () => {
@@ -841,7 +891,7 @@ describe('Fesm2015ReflectionHost', () => {
       expect(parameters.map(parameter => parameter.name)).toEqual([
         '_viewContainer', '_template', 'injected'
       ]);
-      expect(parameters.map(parameter => parameter.type !.getText())).toEqual([
+      expect(parameters.map(parameter => parameter.typeExpression !.getText())).toEqual([
         'ViewContainerRef', 'TemplateRef', 'undefined'
       ]);
     });
@@ -1140,7 +1190,7 @@ describe('Fesm2015ReflectionHost', () => {
       const classNode =
           getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
       const ctrDecorators = host.getConstructorParameters(classNode) !;
-      const identifierOfViewContainerRef = ctrDecorators[0].type !as ts.Identifier;
+      const identifierOfViewContainerRef = ctrDecorators[0].typeExpression !as ts.Identifier;
 
       const expectedDeclarationNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'ViewContainerRef', ts.isVariableDeclaration);
@@ -1286,8 +1336,18 @@ describe('Fesm2015ReflectionHost', () => {
       const class1 = getDeclaration(srcProgram, '/src/class1.js', 'Class1', ts.isClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-      const dtsDeclaration = host.getDtsDeclarationOfClass(class1);
+      const dtsDeclaration = host.getDtsDeclaration(class1);
       expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
+    });
+
+    it('should find the dts declaration for exported functions', () => {
+      const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
+      const dtsProgram = makeTestBundleProgram(TYPINGS_DTS_FILES);
+      const mooFn = getDeclaration(srcProgram, '/src/func1.js', 'mooFn', ts.isFunctionDeclaration);
+      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dtsProgram);
+
+      const dtsDeclaration = host.getDtsDeclaration(mooFn);
+      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/func1.d.ts');
     });
 
     it('should return null if there is no matching class in the matching dts file', () => {
@@ -1297,7 +1357,7 @@ describe('Fesm2015ReflectionHost', () => {
           getDeclaration(srcProgram, '/src/class1.js', 'MissingClass1', ts.isClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-      expect(host.getDtsDeclarationOfClass(missingClass)).toBe(null);
+      expect(host.getDtsDeclaration(missingClass)).toBe(null);
     });
 
     it('should return null if there is no matching dts file', () => {
@@ -1307,7 +1367,7 @@ describe('Fesm2015ReflectionHost', () => {
           srcProgram, '/src/missing-class.js', 'MissingClass2', ts.isClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-      expect(host.getDtsDeclarationOfClass(missingClass)).toBe(null);
+      expect(host.getDtsDeclaration(missingClass)).toBe(null);
     });
 
     it('should find the dts file that contains a matching class declaration, even if the source files do not match',
@@ -1318,7 +1378,7 @@ describe('Fesm2015ReflectionHost', () => {
              getDeclaration(srcProgram, '/src/flat-file.js', 'Class1', ts.isClassDeclaration);
          const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-         const dtsDeclaration = host.getDtsDeclarationOfClass(class1);
+         const dtsDeclaration = host.getDtsDeclaration(class1);
          expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
        });
 
@@ -1329,7 +1389,7 @@ describe('Fesm2015ReflectionHost', () => {
           getDeclaration(srcProgram, '/src/flat-file.js', 'Class3', ts.isClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-      const dtsDeclaration = host.getDtsDeclarationOfClass(class3);
+      const dtsDeclaration = host.getDtsDeclaration(class3);
       expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class3.d.ts');
     });
 
@@ -1341,7 +1401,7 @@ describe('Fesm2015ReflectionHost', () => {
              getDeclaration(srcProgram, '/src/internal.js', 'InternalClass', ts.isClassDeclaration);
          const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-         const dtsDeclaration = host.getDtsDeclarationOfClass(internalClass);
+         const dtsDeclaration = host.getDtsDeclaration(internalClass);
          expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/internal.d.ts');
        });
 
@@ -1355,12 +1415,42 @@ describe('Fesm2015ReflectionHost', () => {
              getDeclaration(srcProgram, '/src/internal.js', 'Class2', ts.isClassDeclaration);
          const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
-         const class2DtsDeclaration = host.getDtsDeclarationOfClass(class2);
+         const class2DtsDeclaration = host.getDtsDeclaration(class2);
          expect(class2DtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class2.d.ts');
 
-         const internalClass2DtsDeclaration = host.getDtsDeclarationOfClass(internalClass2);
+         const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
          expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
              .toEqual('/typings/class2.d.ts');
+       });
+  });
+
+  describe('getModuleWithProvidersFunctions', () => {
+    it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
+       () => {
+         const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
+         const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker());
+         const file = srcProgram.getSourceFile('/src/functions.js') !;
+         const fns = host.getModuleWithProvidersFunctions(file);
+         expect(fns.map(info => [info.declaration.name !.getText(), info.ngModule.text])).toEqual([
+           ['ngModuleIdentifier', 'InternalModule'],
+           ['ngModuleWithEmptyProviders', 'InternalModule'],
+           ['ngModuleWithProviders', 'InternalModule'],
+           ['externalNgModule', 'ExternalModule'],
+         ]);
+       });
+
+    it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
+       () => {
+         const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
+         const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker());
+         const file = srcProgram.getSourceFile('/src/methods.js') !;
+         const fn = host.getModuleWithProvidersFunctions(file);
+         expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.text])).toEqual([
+           ['ngModuleIdentifier', 'InternalModule'],
+           ['ngModuleWithEmptyProviders', 'InternalModule'],
+           ['ngModuleWithProviders', 'InternalModule'],
+           ['externalNgModule', 'ExternalModule'],
+         ]);
        });
   });
 });

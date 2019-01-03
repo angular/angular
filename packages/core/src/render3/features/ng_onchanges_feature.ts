@@ -39,11 +39,13 @@ type OnChangesExpando = OnChanges & {
  * ```
  */
 export function NgOnChangesFeature<T>(definition: DirectiveDef<T>): void {
-  const declaredToMinifiedInputs = definition.declaredInputs;
+  const publicToDeclaredInputs = definition.declaredInputs;
+  const publicToMinifiedInputs = definition.inputs;
   const proto = definition.type.prototype;
-  for (const declaredName in declaredToMinifiedInputs) {
-    if (declaredToMinifiedInputs.hasOwnProperty(declaredName)) {
-      const minifiedKey = declaredToMinifiedInputs[declaredName];
+  for (const publicName in publicToDeclaredInputs) {
+    if (publicToDeclaredInputs.hasOwnProperty(publicName)) {
+      const minifiedKey = publicToMinifiedInputs[publicName];
+      const declaredKey = publicToDeclaredInputs[publicName];
       const privateMinKey = PRIVATE_PREFIX + minifiedKey;
 
       // Walk the prototype chain to see if we find a property descriptor
@@ -72,12 +74,12 @@ export function NgOnChangesFeature<T>(definition: DirectiveDef<T>): void {
           }
 
           const isFirstChange = !this.hasOwnProperty(privateMinKey);
-          const currentChange = simpleChanges[declaredName];
+          const currentChange = simpleChanges[declaredKey];
 
           if (currentChange) {
             currentChange.currentValue = value;
           } else {
-            simpleChanges[declaredName] =
+            simpleChanges[declaredKey] =
                 new SimpleChange(this[privateMinKey], value, isFirstChange);
           }
 

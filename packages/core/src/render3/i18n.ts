@@ -9,8 +9,8 @@
 import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent} from '../sanitization/html_sanitizer';
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
-
 import {assertDefined, assertEqual, assertGreaterThan} from './assert';
+import {attachPatchData} from './context_discovery';
 import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions';
 import {LContainer, NATIVE, RENDER_PARENT} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
@@ -337,9 +337,7 @@ const parentIndexStack: number[] = [];
 export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
-  ngDevMode &&
-      assertEqual(
-          tView.firstTemplatePass, true, `You should only call i18nEnd on first template pass`);
+  i18nIndexStack[++i18nIndexStackPointer] = index;
   if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
     i18nStartFirstPass(tView, index, message, subTemplateIndex);
   }
@@ -350,7 +348,6 @@ export function i18nStart(index: number, message: string, subTemplateIndex?: num
  */
 function i18nStartFirstPass(
     tView: TView, index: number, message: string, subTemplateIndex?: number) {
-  i18nIndexStack[++i18nIndexStackPointer] = index;
   const viewData = getLView();
   const expandoStartIndex = tView.blueprint.length - HEADER_OFFSET;
   const previousOrParentTNode = getPreviousOrParentTNode();
@@ -484,7 +481,6 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
     // Nodes that inject ViewContainerRef also have a comment node that should be moved
     appendChild(slotValue[NATIVE], tNode, viewData);
   }
-
   return tNode;
 }
 
@@ -566,12 +562,7 @@ export function i18nPostprocess(
 export function i18nEnd(): void {
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
-  ngDevMode &&
-      assertEqual(
-          tView.firstTemplatePass, true, `You should only call i18nEnd on first template pass`);
-  if (tView.firstTemplatePass) {
-    i18nEndFirstPass(tView);
-  }
+  i18nEndFirstPass(tView);
 }
 
 /**
@@ -675,6 +666,7 @@ function readCreateOpCodes(
           previousTNode = currentTNode;
           currentTNode = createNodeAtIndex(
               expandoStartIndex++, TNodeType.IcuContainer, commentRNode, null, null);
+          attachPatchData(commentRNode, viewData);
           (currentTNode as TIcuContainerNode).activeCaseIndex = null;
           // We will add the case nodes later, during the update phase
           setIsParent(false);

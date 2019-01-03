@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMarker, InitialStylingFlags, ViewEncapsulation} from '@angular/compiler/src/core';
+import {AttributeMarker, ViewEncapsulation} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
@@ -140,7 +140,7 @@ describe('compiler compliance: styling', () => {
           },
           encapsulation: 2,
           data: {
-            animations: [{name: 'foo123'}, {name: 'trigger123'}]
+            animation: [{name: 'foo123'}, {name: 'trigger123'}]
           }
         });
       `;
@@ -182,7 +182,7 @@ describe('compiler compliance: styling', () => {
           },
           encapsulation: 2,
           data: {
-            animations: []
+            animation: []
           }
         });
       `;
@@ -220,6 +220,8 @@ describe('compiler compliance: styling', () => {
         …
         MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
           …
+          consts: 3,
+          vars: 1,
           template:  function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵelement(0, "div", $e0_attrs$);
@@ -227,10 +229,68 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵelement(2, "div", $e2_attrs$);
             }
             if (rf & 2) {
-              $r3$.ɵelementAttribute(0, "@foo", $r3$.ɵbind(ctx.exp));
+              $r3$.ɵelementProperty(0, "@foo", $r3$.ɵbind(ctx.exp));
             }
           },
           encapsulation: 2
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should generate animation listeners', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-cmp',
+              template: \`
+                <div [@myAnimation]="exp"
+                  (@myAnimation.start)="onStart($event)"
+                  (@myAnimation.done)="onDone($event)"></div>
+              \`,
+              animations: [trigger(
+                   'myAnimation',
+                   [transition(
+                       '* => state',
+                       [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+            })
+            class MyComponent {
+              exp: any;
+              startEvent: any;
+              doneEvent: any;
+              onStart(event: any) { this.startEvent = event; }
+              onDone(event: any) { this.doneEvent = event; }
+            }
+
+            @NgModule({declarations: [MyComponent]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const template = `
+        …
+        MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
+          …
+          consts: 1,
+          vars: 1,
+          template: function MyComponent_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div", _c0);
+              $r3$.ɵlistener("@myAnimation.start", function MyComponent_Template_div__myAnimation_start_listener($event) { return ctx.onStart($event); });
+              $r3$.ɵlistener("@myAnimation.done", function MyComponent_Template_div__myAnimation_done_listener($event) { return ctx.onDone($event); });
+              $r3$.ɵelementEnd();
+            } if (rf & 2) {
+              $r3$.ɵelementProperty(0, "@myAnimation", $r3$.ɵbind(ctx.exp));
+            }
+          },
+          encapsulation: 2,
+          …
         });
       `;
 
@@ -306,8 +366,8 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const $e0_attrs$ = [${AttributeMarker.SelectOnly}, "style"];
-          const $e0_styling$ = ["opacity","width","height",${InitialStylingFlags.VALUES_MODE},"opacity","1"];
+          const $_c0$ = [${AttributeMarker.Styles}, "opacity", "1", ${AttributeMarker.SelectOnly}, "style"];
+          const $_c1$ = ["width", "height"];
           …
           MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
               type: MyComponent,
@@ -319,14 +379,14 @@ describe('compiler compliance: styling', () => {
               vars: 1,
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
-                  $r3$.ɵelementStart(0, "div", $e0_attrs$);
-                  $r3$.ɵelementStyling(null, $e0_styling$, $r3$.ɵdefaultStyleSanitizer);
+                  $r3$.ɵelementStart(0, "div", $_c0$);
+                  $r3$.ɵelementStyling(null, $_c1$, $r3$.ɵdefaultStyleSanitizer);
                   $r3$.ɵelementEnd();
                 }
                 if (rf & 2) {
                   $r3$.ɵelementStylingMap(0, null, $ctx$.myStyleExp);
-                  $r3$.ɵelementStyleProp(0, 1, $ctx$.myWidth);
-                  $r3$.ɵelementStyleProp(0, 2, $ctx$.myHeight);
+                  $r3$.ɵelementStyleProp(0, 0, $ctx$.myWidth);
+                  $r3$.ɵelementStyleProp(0, 1, $ctx$.myHeight);
                   $r3$.ɵelementStylingApply(0);
                   $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("border-width: 10px"), $r3$.ɵsanitizeStyle);
                 }
@@ -361,7 +421,7 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const _c0 = ["background-image"];
+          const $_c0$ = ["background-image"];
           export class MyComponent {
               constructor() {
                   this.myImage = 'url(foo.jpg)';
@@ -396,7 +456,6 @@ describe('compiler compliance: styling', () => {
        });
 
     it('should support [style.foo.suffix] style bindings with a suffix', () => {
-
       const files = {
         app: {
           'spec.ts': `
@@ -416,7 +475,7 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-          const $e0_styles$= ["font-size"];
+          const $e0_styles$ = ["font-size"];
           …
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
@@ -504,8 +563,8 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const $e0_attrs$ = [${AttributeMarker.SelectOnly}, "class"];
-          const $e0_cd$ = ["grape","apple","orange",${InitialStylingFlags.VALUES_MODE},"grape",true];
+          const $e0_attrs$ = [${AttributeMarker.Classes}, "grape", ${AttributeMarker.SelectOnly}, "class"];
+          const $e0_bindings$ = ["apple", "orange"];
           …
           MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
               type: MyComponent,
@@ -518,13 +577,13 @@ describe('compiler compliance: styling', () => {
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵelementStart(0, "div", $e0_attrs$);
-                  $r3$.ɵelementStyling($e0_cd$);
+                  $r3$.ɵelementStyling($e0_bindings$);
                   $r3$.ɵelementEnd();
                 }
                 if (rf & 2) {
                   $r3$.ɵelementStylingMap(0, $ctx$.myClassExp);
-                  $r3$.ɵelementClassProp(0, 1, $ctx$.yesToApple);
-                  $r3$.ɵelementClassProp(0, 2, $ctx$.yesToOrange);
+                  $r3$.ɵelementClassProp(0, 0, $ctx$.yesToApple);
+                  $r3$.ɵelementClassProp(0, 1, $ctx$.yesToOrange);
                   $r3$.ɵelementStylingApply(0);
                   $r3$.ɵelementAttribute(0, "class", $r3$.ɵbind("banana"));
                 }
@@ -546,7 +605,7 @@ describe('compiler compliance: styling', () => {
 
                 @Component({
                   selector: 'my-component',
-                  template: \`<div class="foo"
+                  template: \`<div class="    foo  "
                                    style="width:100px"
                                    [attr.class]="'round'"
                                    [attr.style]="'height:100px'"></div>\`
@@ -560,9 +619,7 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const $e0_attrs$ = [${AttributeMarker.SelectOnly}, "class", "style"];
-          const $e0_cd$ = ["foo",${InitialStylingFlags.VALUES_MODE},"foo",true];
-          const $e0_sd$ = ["width",${InitialStylingFlags.VALUES_MODE},"width","100px"];
+          const $e0_attrs$ = [${AttributeMarker.Classes}, "foo", ${AttributeMarker.Styles}, "width", "100px", ${AttributeMarker.SelectOnly}, "class", "style"];
           …
           MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
               type: MyComponent,
@@ -575,7 +632,6 @@ describe('compiler compliance: styling', () => {
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵelementStart(0, "div", $e0_attrs$);
-                  $r3$.ɵelementStyling($e0_cd$, $e0_sd$);
                   $r3$.ɵelementEnd();
                 }
                 if (rf & 2) {
@@ -705,10 +761,13 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
+          const $e0_classBindings$ = ["foo"];
+          const $e0_styleBindings$ = ["bar", "baz"];
+          …
           template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "div");
-              $r3$.ɵelementStyling($e0_styling$, $e1_styling$, $r3$.ɵdefaultStyleSanitizer);
+              $r3$.ɵelementStyling($e0_classBindings$, $e0_styleBindings$, $r3$.ɵdefaultStyleSanitizer);
               $r3$.ɵpipe(1, "pipe");
               $r3$.ɵpipe(2, "pipe");
               $r3$.ɵpipe(3, "pipe");
@@ -768,16 +827,18 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-          const _c0 = ["foo", "baz", ${InitialStylingFlags.VALUES_MODE}, "foo", true, "baz", true];
-          const _c1 = ["width", "height", "color", ${InitialStylingFlags.VALUES_MODE}, "width", "200px", "height", "500px"];
+          const $e0_attrs$ = [${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"];
+          const $e0_classBindings$ = ["foo"];
+          const $e0_styleBindings$ = ["color"];
           …
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
+              $r3$.ɵelementHostAttrs(ctx, $e0_attrs$);
+              $r3$.ɵelementStyling($e0_classBindings$, $e0_styleBindings$, $r3$.ɵdefaultStyleSanitizer, ctx);
             }
             if (rf & 2) {
               $r3$.ɵelementStylingMap(elIndex, ctx.myClass, ctx.myStyle, ctx);
-              $r3$.ɵelementStyleProp(elIndex, 2, ctx.myColorProp, null, ctx);
+              $r3$.ɵelementStyleProp(elIndex, 0, ctx.myColorProp, null, ctx);
               $r3$.ɵelementClassProp(elIndex, 0, ctx.myFooClass, ctx);
               $r3$.ɵelementStylingApply(elIndex, ctx);
             }
@@ -899,10 +960,10 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const _c0 = ["foo"];
-          const _c1 = ["width"];
-          const _c2 = ["bar"];
-          const _c3 = ["height"];
+          const $widthDir_classes$ = ["foo"];
+          const $widthDir_styles$ = ["width"];
+          const $heightDir_classes$ = ["bar"];
+          const $heightDir_styles$ = ["height"];
           …
           function ClassDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
@@ -916,7 +977,7 @@ describe('compiler compliance: styling', () => {
           …
           function WidthDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵelementStyling(_c0, _c1, null, ctx);
+              $r3$.ɵelementStyling($widthDir_classes$, $widthDir_styles$, null, ctx);
             }
             if (rf & 2) {
               $r3$.ɵelementStyleProp(elIndex, 0, ctx.myWidth, null, ctx);
@@ -927,7 +988,7 @@ describe('compiler compliance: styling', () => {
           …
           function HeightDirective_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵelementStyling(_c2, _c3, null, ctx);
+              $r3$.ɵelementStyling($heightDir_classes$, $heightDir_styles$, null, ctx);
             }
             if (rf & 2) {
               $r3$.ɵelementStyleProp(elIndex, 0, ctx.myHeight, null, ctx);
@@ -954,7 +1015,8 @@ describe('compiler compliance: styling', () => {
             template: '',
             host: {
               'style': 'width:200px; height:500px',
-              'class': 'foo baz'
+              'class': 'foo baz',
+              'title': 'foo title'
             }
           })
           export class MyComponent {
@@ -969,6 +1031,9 @@ describe('compiler compliance: styling', () => {
 
             @HostBinding('title')
             title = 'some title';
+
+            @Input('name')
+            name = '';
           }
 
           @NgModule({declarations: [MyComponent]})
@@ -978,17 +1043,17 @@ describe('compiler compliance: styling', () => {
     };
 
     const template = `
-      const $_c0$ = ["foo", "baz", ${InitialStylingFlags.VALUES_MODE}, "foo", true, "baz", true];
-      const $_c1$ = ["width", "height", ${InitialStylingFlags.VALUES_MODE}, "width", "200px", "height", "500px"];
+      const $_c0$ = [${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"];
       …
       hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
           $r3$.ɵallocHostVars(2);
-          $r3$.ɵelementStyling($_c0$, $_c1$, $r3$.ɵdefaultStyleSanitizer, ctx);
+          $r3$.ɵelementHostAttrs(ctx, $_c0$);
+          $r3$.ɵelementStyling(null, null, $r3$.ɵdefaultStyleSanitizer, ctx);
         }
         if (rf & 2) {
-          $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.id));
-          $r3$.ɵelementProperty(elIndex, "title", $r3$.ɵbind(ctx.title));
+          $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.id), null, true);
+          $r3$.ɵelementProperty(elIndex, "title", $r3$.ɵbind(ctx.title), null, true);
           $r3$.ɵelementStylingMap(elIndex, ctx.myClass, ctx.myStyle, ctx);
           $r3$.ɵelementStylingApply(elIndex, ctx);
         }
@@ -1035,8 +1100,8 @@ describe('compiler compliance: styling', () => {
           $r3$.ɵelementStyling($_c0$, $_c1$, null, ctx);
         }
         if (rf & 2) {
-          $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.id));
-          $r3$.ɵelementProperty(elIndex, "title", $r3$.ɵbind(ctx.title));
+          $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind(ctx.id), null, true);
+          $r3$.ɵelementProperty(elIndex, "title", $r3$.ɵbind(ctx.title), null, true);
           $r3$.ɵelementStyleProp(elIndex, 0, ctx.myWidth, null, ctx);
           $r3$.ɵelementClassProp(elIndex, 0, ctx.myFooClass, ctx);
           $r3$.ɵelementStylingApply(elIndex, ctx);

@@ -21,7 +21,8 @@ import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TN
 import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LView, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
-import {getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, stringify} from './util';
+import {getHostTElementNode, getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, isComponentDef, stringify} from './util';
+
 
 /**
  * Defines if the call to `inject` should include `viewProviders` in its resolution.
@@ -197,7 +198,7 @@ export function getInjectorIndex(tNode: TNode, hostView: LView): number {
  */
 export function getParentInjectorLocation(tNode: TNode, view: LView): RelativeInjectorLocation {
   if (tNode.parent && tNode.parent.injectorIndex !== -1) {
-    return tNode.parent.injectorIndex as any;  // ViewOffset is 0, AcrossHostBoundary is 0
+    return tNode.parent.injectorIndex as any;  // ViewOffset is 0
   }
 
   // For most cases, the parent injector index can be found on the host node (e.g. for component
@@ -210,13 +211,9 @@ export function getParentInjectorLocation(tNode: TNode, view: LView): RelativeIn
     hostTNode = view[HOST_NODE] !;
     viewOffset++;
   }
-  const acrossHostBoundary = hostTNode && hostTNode.type === TNodeType.Element ?
-      RelativeInjectorLocationFlags.AcrossHostBoundary :
-      0;
 
   return hostTNode ?
-      hostTNode.injectorIndex | (viewOffset << RelativeInjectorLocationFlags.ViewOffsetShift) |
-          acrossHostBoundary :
+      hostTNode.injectorIndex | (viewOffset << RelativeInjectorLocationFlags.ViewOffsetShift) :
       -1 as any;
 }
 
@@ -287,10 +284,12 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
  * Look for the injector providing the token by walking up the node injector tree and then
  * the module injector tree.
  *
- * @param nodeInjector Node injector where the search should start
+ * @param tNode The Node where the search for the injector should start
+ * @param lView The `LView` that contains the `tNode`
  * @param token The token to look for
  * @param flags Injection flags
- * @returns the value from the injector or `null` when not found
+ * @param notFoundValue The value to return when the injection flags is `InjectFlags.Optional`
+ * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 export function getOrCreateInjectable<T>(
     tNode: TElementNode | TContainerNode | TElementContainerNode, lView: LView,
@@ -306,7 +305,7 @@ export function getOrCreateInjectable<T>(
     try {
       const value = bloomHash();
       if (value == null && !(flags & InjectFlags.Optional)) {
-        throw new Error(`No provider for ${stringify(token)}`);
+        throw new Error(`No provider for ${stringify(token)}!`);
       } else {
         return value;
       }
@@ -321,6 +320,7 @@ export function getOrCreateInjectable<T>(
     let previousTView: TView|null = null;
     let injectorIndex = getInjectorIndex(tNode, lView);
     let parentLocation: RelativeInjectorLocation = NO_PARENT_INJECTOR;
+    let hostTElementNode: TNode|null = flags & InjectFlags.Host ? getHostTElementNode(lView) : null;
 
     // If we should skip this injector, or if there is no injector on this node, start by searching
     // the parent injector.
@@ -328,7 +328,7 @@ export function getOrCreateInjectable<T>(
       parentLocation = injectorIndex === -1 ? getParentInjectorLocation(tNode, lView) :
                                               lView[injectorIndex + PARENT_INJECTOR];
 
-      if (!shouldSearchParent(flags, parentLocation)) {
+      if (!shouldSearchParent(flags, false)) {
         injectorIndex = -1;
       } else {
         previousTView = lView[TVIEW];
@@ -348,13 +348,14 @@ export function getOrCreateInjectable<T>(
         // At this point, we have an injector which *may* contain the token, so we step through
         // the providers and directives associated with the injector's corresponding node to get
         // the instance.
-        const instance: T|null =
-            searchTokensOnInjector<T>(injectorIndex, lView, token, previousTView);
+        const instance: T|null = searchTokensOnInjector<T>(
+            injectorIndex, lView, token, previousTView, flags, hostTElementNode);
         if (instance !== NOT_FOUND) {
           return instance;
         }
       }
-      if (shouldSearchParent(flags, parentLocation) &&
+      if (shouldSearchParent(
+              flags, lView[TVIEW].data[injectorIndex + TNODE] === hostTElementNode) &&
           bloomHasToken(bloomHash, injectorIndex, lView)) {
         // The def wasn't found anywhere on this node, so it was a false positive.
         // Traverse up the tree and continue searching.
@@ -394,7 +395,7 @@ const NOT_FOUND = {};
 
 function searchTokensOnInjector<T>(
     injectorIndex: number, lView: LView, token: Type<T>| InjectionToken<T>,
-    previousTView: TView | null) {
+    previousTView: TView | null, flags: InjectFlags, hostTElementNode: TNode | null) {
   const currentTView = lView[TVIEW];
   const tNode = currentTView.data[injectorIndex + TNODE] as TNode;
   // First, we need to determine if view providers can be accessed by the starting element.
@@ -416,7 +417,12 @@ function searchTokensOnInjector<T>(
       // into the ViewProviders.
       (previousTView != currentTView && (tNode.type === TNodeType.Element));
 
-  const injectableIdx = locateDirectiveOrProvider(tNode, lView, token, canAccessViewProviders);
+  // This special case happens when there is a @host on the inject and when we are searching
+  // on the host element node.
+  const isHostSpecialCase = (flags & InjectFlags.Host) && hostTElementNode === tNode;
+
+  const injectableIdx =
+      locateDirectiveOrProvider(tNode, lView, token, canAccessViewProviders, isHostSpecialCase);
   if (injectableIdx !== null) {
     return getNodeInjectable(currentTView.data, lView, injectableIdx, tNode as TElementNode);
   } else {
@@ -431,13 +437,13 @@ function searchTokensOnInjector<T>(
  * @param lView The view we are currently processing
  * @param token Provider token or type of a directive to look for.
  * @param canAccessViewProviders Whether view providers should be considered.
+ * @param isHostSpecialCase Whether the host special case applies.
  * @returns Index of a found directive or provider, or null when none found.
  */
 export function locateDirectiveOrProvider<T>(
-    tNode: TNode, lView: LView, token: Type<T>| InjectionToken<T>,
-    canAccessViewProviders: boolean): number|null {
+    tNode: TNode, lView: LView, token: Type<T>| InjectionToken<T>, canAccessViewProviders: boolean,
+    isHostSpecialCase: boolean | number): number|null {
   const tView = lView[TVIEW];
-  const nodeFlags = tNode.flags;
   const nodeProviderIndexes = tNode.providerIndexes;
   const tInjectables = tView.data;
 
@@ -448,11 +454,19 @@ export function locateDirectiveOrProvider<T>(
       nodeProviderIndexes >> TNodeProviderIndexes.CptViewProvidersCountShift;
   const startingIndex =
       canAccessViewProviders ? injectablesStart : injectablesStart + cptViewProvidersCount;
-  for (let i = startingIndex; i < directiveEnd; i++) {
+  // When the host special case applies, only the viewProviders and the component are visible
+  const endIndex = isHostSpecialCase ? injectablesStart + cptViewProvidersCount : directiveEnd;
+  for (let i = startingIndex; i < endIndex; i++) {
     const providerTokenOrDef = tInjectables[i] as InjectionToken<any>| Type<any>| DirectiveDef<any>;
     if (i < directivesStart && token === providerTokenOrDef ||
         i >= directivesStart && (providerTokenOrDef as DirectiveDef<any>).type === token) {
       return i;
+    }
+  }
+  if (isHostSpecialCase) {
+    const dirDef = tInjectables[directivesStart] as DirectiveDef<any>;
+    if (dirDef && isComponentDef(dirDef) && dirDef.type === token) {
+      return directivesStart;
     }
   }
   return null;
@@ -544,12 +558,8 @@ export function bloomHasToken(
 }
 
 /** Returns true if flags prevent parent injector from being searched for tokens */
-function shouldSearchParent(flags: InjectFlags, parentLocation: RelativeInjectorLocation): boolean|
-    number {
-  return !(
-      flags & InjectFlags.Self ||
-      (flags & InjectFlags.Host &&
-       ((parentLocation as any as number) & RelativeInjectorLocationFlags.AcrossHostBoundary)));
+function shouldSearchParent(flags: InjectFlags, isFirstHostTNode: boolean): boolean|number {
+  return !(flags & InjectFlags.Self) && !(flags & InjectFlags.Host && isFirstHostTNode);
 }
 
 export function injectInjector() {
@@ -558,22 +568,11 @@ export function injectInjector() {
 }
 
 export class NodeInjector implements Injector {
-  private _injectorIndex: number;
-
   constructor(
-      private _tNode: TElementNode|TContainerNode|TElementContainerNode, private _lView: LView) {
-    this._injectorIndex = getOrCreateNodeInjectorForNode(_tNode, _lView);
-  }
+      private _tNode: TElementNode|TContainerNode|TElementContainerNode, private _lView: LView) {}
 
-  get(token: any): any {
-    const previousTNode = getPreviousOrParentTNode();
-    const previousLView = getLView();
-    setTNodeAndViewData(this._tNode, this._lView);
-    try {
-      return getOrCreateInjectable(this._tNode, this._lView, token);
-    } finally {
-      setTNodeAndViewData(previousTNode, previousLView);
-    }
+  get(token: any, notFoundValue?: any): any {
+    return getOrCreateInjectable(this._tNode, this._lView, token, undefined, notFoundValue);
   }
 }
 

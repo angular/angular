@@ -24,6 +24,11 @@ ng_package(
     tags = [
         "release-with-framework",
     ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//packages/language-service/test:__pkg__",
+    ],
     deps = [
         ":compiler",
         "//packages/compiler/testing",

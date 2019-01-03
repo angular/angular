@@ -7,20 +7,20 @@
  */
 
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
-import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
+
+import {RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective, templateRefExtractor} from '../../src/render3/index';
 
-import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, projection, projectionDef, reference, text, textBinding, template, elementStylingMap, directiveInject} from '../../src/render3/instructions';
-import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3, RText, RComment, RNode, RendererStyleFlags3, ProceduralRenderer3} from '../../src/render3/interfaces/renderer';
-import {NO_CHANGE} from '../../src/render3/tokens';
+import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, elementStart, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, element, elementStyling, elementStylingApply, elementStyleProp, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, projection, projectionDef, reference, text, textBinding, template, elementStylingMap, directiveInject, elementHostAttrs} from '../../src/render3/instructions';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, CONTEXT} from '../../src/render3/interfaces/view';
 import {enableBindings, disableBindings} from '../../src/render3/state';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
 import {NgIf} from './common_with_def';
-import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
+import {ComponentFixture, MockRendererFactory, TemplateFixture, createComponent, renderToHtml} from './render_util';
 import {getLContext} from '../../src/render3/context_discovery';
 import {StylingIndex} from '../../src/render3/interfaces/styling';
 import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
@@ -115,9 +115,7 @@ describe('render3 integration test', () => {
       function Template(rf: RenderFlags, value: string) {
         if (rf & RenderFlags.Create) {
           text(0);
-        }
-        if (rf & RenderFlags.Update) {
-          textBinding(0, rf & RenderFlags.Create ? value : NO_CHANGE);
+          textBinding(0, value);
         }
       }
       expect(renderToHtml(Template, 'once', 1, 1)).toEqual('once');
@@ -719,7 +717,8 @@ describe('render3 integration test', () => {
          const TestCmpt =
              createComponent('test-cmpt', function(rf: RenderFlags, ctx: {value: any}) {
                if (rf & RenderFlags.Create) {
-                 template(0, ngIfTemplate, 2, 0, null, [AttributeMarker.SelectOnly, 'ngIf']);
+                 template(
+                     0, ngIfTemplate, 2, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngIf']);
                }
                if (rf & RenderFlags.Update) {
                  elementProperty(0, 'ngIf', bind(ctx.value));
@@ -778,7 +777,8 @@ describe('render3 integration test', () => {
          const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
            if (rf & RenderFlags.Create) {
              template(
-                 0, embeddedTemplate, 2, 0, null, [AttributeMarker.SelectOnly, 'testDirective']);
+                 0, embeddedTemplate, 2, 0, 'ng-template',
+                 [AttributeMarker.SelectOnly, 'testDirective']);
            }
          }, 1, 0, [TestDirective]);
 
@@ -893,7 +893,9 @@ describe('render3 integration test', () => {
        */
       const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
-          template(0, embeddedTemplate, 4, 0, null, [AttributeMarker.SelectOnly, 'testDirective']);
+          template(
+              0, embeddedTemplate, 4, 0, 'ng-template',
+              [AttributeMarker.SelectOnly, 'testDirective']);
         }
       }, 1, 0, [TestDirective]);
 
@@ -981,7 +983,8 @@ describe('render3 integration test', () => {
       const App = createComponent('app', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
           elementContainerStart(0, [AttributeMarker.SelectOnly, 'dir']);
-          template(1, ContentTemplate, 1, 0, '', null, ['content', ''], templateRefExtractor);
+          template(
+              1, ContentTemplate, 1, 0, 'ng-template', null, ['content', ''], templateRefExtractor);
           elementContainerEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -1037,7 +1040,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Create) {
           elementContainerStart(0);
           template(
-              1, ContentTemplate, 1, 0, '', [AttributeMarker.SelectOnly, 'dir'], [],
+              1, ContentTemplate, 1, 0, 'ng-template', [AttributeMarker.SelectOnly, 'dir'], [],
               templateRefExtractor);
           elementContainerEnd();
         }
@@ -1409,7 +1412,6 @@ describe('render3 integration test', () => {
     });
 
     describe('elementStyle', () => {
-
       it('should support binding to styles', () => {
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
@@ -1469,8 +1471,7 @@ describe('render3 integration test', () => {
       });
     });
 
-    describe('elementClass', () => {
-
+    describe('class-based styling', () => {
       it('should support CSS class toggle', () => {
         /** <span [class.active]="class"></span> */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
@@ -1516,9 +1517,8 @@ describe('render3 integration test', () => {
       it('should work correctly with existing static classes', () => {
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'span');
-            elementStyling(
-                ['existing', 'active', InitialStylingFlags.VALUES_MODE, 'existing', true]);
+            elementStart(0, 'span', [AttributeMarker.Classes, 'existing']);
+            elementStyling(['existing', 'active']);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
@@ -1550,7 +1550,7 @@ describe('render3 integration test', () => {
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'my-comp');
-            { elementStyling(['active']); }
+            elementStyling(['active']);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
@@ -1568,7 +1568,6 @@ describe('render3 integration test', () => {
         fixture.update();
         expect(fixture.html).toEqual('<my-comp class="">Comp Content</my-comp>');
       });
-
 
       it('should apply classes properly when nodes have LContainers', () => {
         let structuralComp !: StructuralComp;
@@ -1610,7 +1609,7 @@ describe('render3 integration test', () => {
          */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            template(0, FooTemplate, 1, 0, '', null, ['foo', ''], templateRefExtractor);
+            template(0, FooTemplate, 1, 0, 'ng-template', null, ['foo', ''], templateRefExtractor);
             elementStart(2, 'structural-comp');
             elementStyling(['active']);
             elementEnd();
@@ -1653,17 +1652,17 @@ describe('render3 integration test', () => {
         set klass(value: string) { this.classesVal = value; }
       }
 
-      it('should delegate all initial classes to a [class] input binding if present on a directive on the same element',
+      it('should delegate initial classes to a [class] input binding if present on a directive on the same element',
          () => {
            /**
-            * <my-comp class="apple orange banana" DirWithClass></my-comp>
+            * <div class="apple orange banana" DirWithClass></div>
             */
            const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
-               elementStart(0, 'div', ['DirWithClass']);
-               elementStyling([
-                 InitialStylingFlags.VALUES_MODE, 'apple', true, 'orange', true, 'banana', true
-               ]);
+               elementStart(
+                   0, 'div',
+                   ['DirWithClass', AttributeMarker.Classes, 'apple', 'orange', 'banana']);
+               elementStyling();
                elementEnd();
              }
              if (rf & RenderFlags.Update) {
@@ -1678,7 +1677,7 @@ describe('render3 integration test', () => {
       it('should update `[class]` and bindings in the provided directive if the input is matched',
          () => {
            /**
-            * <my-comp DirWithClass></my-comp>
+            * <div DirWithClass></div>
            */
            const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
@@ -1694,6 +1693,223 @@ describe('render3 integration test', () => {
 
            const fixture = new ComponentFixture(App);
            expect(mockClassDirective !.classesVal).toEqual('cucumber grape');
+         });
+
+      it('should apply initial styling to the element that contains the directive with host styling',
+         () => {
+           class DirWithInitialStyling {
+             static ngDirectiveDef = defineDirective({
+               type: DirWithInitialStyling,
+               selectors: [['', 'DirWithInitialStyling', '']],
+               factory: () => new DirWithInitialStyling(),
+               hostBindings: function(
+                   rf: RenderFlags, ctx: DirWithInitialStyling, elementIndex: number) {
+                 if (rf & RenderFlags.Create) {
+                   elementHostAttrs(ctx, [
+                     AttributeMarker.Classes, 'heavy', 'golden', AttributeMarker.Styles, 'color',
+                     'purple', 'font-weight', 'bold'
+                   ]);
+                 }
+               }
+             });
+
+             public classesVal: string = '';
+           }
+
+           /**
+            * <div DirWithInitialStyling
+            *   class="big"
+            *   style="color:black; * font-size:200px"></div>
+           */
+           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+             if (rf & RenderFlags.Create) {
+               element(0, 'div', [
+                 'DirWithInitialStyling', '', AttributeMarker.Classes, 'big',
+                 AttributeMarker.Styles, 'color', 'black', 'font-size', '200px'
+               ]);
+             }
+           }, 1, 0, [DirWithInitialStyling]);
+
+           const fixture = new ComponentFixture(App);
+           const target = fixture.hostElement.querySelector('div') !;
+           const classes = target.getAttribute('class') !.split(/\s+/).sort();
+           expect(classes).toEqual(['big', 'golden', 'heavy']);
+
+           expect(target.style.getPropertyValue('color')).toEqual('black');
+           expect(target.style.getPropertyValue('font-size')).toEqual('200px');
+           expect(target.style.getPropertyValue('font-weight')).toEqual('bold');
+         });
+
+      it('should apply single styling bindings present within a directive onto the same element and defer the element\'s initial styling values when missing',
+         () => {
+           let dirInstance: DirWithSingleStylingBindings;
+           /**
+            * <DirWithInitialStyling class="def" [class.xyz] style="width:555px;" [style.width]
+            * [style.height]></my-comp>
+           */
+           class DirWithSingleStylingBindings {
+             static ngDirectiveDef = defineDirective({
+               type: DirWithSingleStylingBindings,
+               selectors: [['', 'DirWithSingleStylingBindings', '']],
+               factory: () => dirInstance = new DirWithSingleStylingBindings(),
+               hostBindings: function(
+                   rf: RenderFlags, ctx: DirWithSingleStylingBindings, elementIndex: number) {
+                 if (rf & RenderFlags.Create) {
+                   elementHostAttrs(
+                       ctx,
+                       [AttributeMarker.Classes, 'def', AttributeMarker.Styles, 'width', '555px']);
+                   elementStyling(['xyz'], ['width', 'height'], null, ctx);
+                 }
+                 if (rf & RenderFlags.Update) {
+                   elementStyleProp(elementIndex, 0, ctx.width, null, ctx);
+                   elementStyleProp(elementIndex, 1, ctx.height, null, ctx);
+                   elementClassProp(elementIndex, 0, ctx.activateXYZClass, ctx);
+                   elementStylingApply(elementIndex, ctx);
+                 }
+               }
+             });
+
+             width: null|string = null;
+             height: null|string = null;
+             activateXYZClass: boolean = false;
+           }
+
+           /**
+            * <div DirWithInitialStyling class="abc" style="width:100px;
+            * height:200px"></div>
+           */
+           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+             if (rf & RenderFlags.Create) {
+               element(0, 'div', [
+                 'DirWithSingleStylingBindings', '', AttributeMarker.Classes, 'abc',
+                 AttributeMarker.Styles, 'width', '100px', 'height', '200px'
+               ]);
+             }
+           }, 1, 0, [DirWithSingleStylingBindings]);
+
+           const fixture = new ComponentFixture(App);
+           const target = fixture.hostElement.querySelector('div') !;
+           expect(target.style.getPropertyValue('width')).toEqual('100px');
+           expect(target.style.getPropertyValue('height')).toEqual('200px');
+           expect(target.classList.contains('abc')).toBeTruthy();
+           expect(target.classList.contains('def')).toBeTruthy();
+           expect(target.classList.contains('xyz')).toBeFalsy();
+
+           dirInstance !.width = '444px';
+           dirInstance !.height = '999px';
+           dirInstance !.activateXYZClass = true;
+           fixture.update();
+
+           expect(target.style.getPropertyValue('width')).toEqual('444px');
+           expect(target.style.getPropertyValue('height')).toEqual('999px');
+           expect(target.classList.contains('abc')).toBeTruthy();
+           expect(target.classList.contains('def')).toBeTruthy();
+           expect(target.classList.contains('xyz')).toBeTruthy();
+
+           dirInstance !.width = null;
+           dirInstance !.height = null;
+           fixture.update();
+
+           expect(target.style.getPropertyValue('width')).toEqual('100px');
+           expect(target.style.getPropertyValue('height')).toEqual('200px');
+           expect(target.classList.contains('abc')).toBeTruthy();
+           expect(target.classList.contains('def')).toBeTruthy();
+           expect(target.classList.contains('xyz')).toBeTruthy();
+         });
+
+      it('should properly prioritize style binding collision when they exist on multiple directives',
+         () => {
+           let dir1Instance: Dir1WithStyle;
+           /**
+            * Directive with host props:
+            *   [style.width]
+           */
+           class Dir1WithStyle {
+             static ngDirectiveDef = defineDirective({
+               type: Dir1WithStyle,
+               selectors: [['', 'Dir1WithStyle', '']],
+               factory: () => dir1Instance = new Dir1WithStyle(),
+               hostBindings: function(rf: RenderFlags, ctx: Dir1WithStyle, elementIndex: number) {
+                 if (rf & RenderFlags.Create) {
+                   elementStyling(null, ['width'], null, ctx);
+                 }
+                 if (rf & RenderFlags.Update) {
+                   elementStyleProp(elementIndex, 0, ctx.width, null, ctx);
+                   elementStylingApply(elementIndex, ctx);
+                 }
+               }
+             });
+             width: null|string = null;
+           }
+
+           let dir2Instance: Dir2WithStyle;
+           /**
+            * Directive with host props:
+            *   [style.width]
+            *   style="width:111px"
+           */
+           class Dir2WithStyle {
+             static ngDirectiveDef = defineDirective({
+               type: Dir2WithStyle,
+               selectors: [['', 'Dir2WithStyle', '']],
+               factory: () => dir2Instance = new Dir2WithStyle(),
+               hostBindings: function(rf: RenderFlags, ctx: Dir2WithStyle, elementIndex: number) {
+                 if (rf & RenderFlags.Create) {
+                   elementHostAttrs(ctx, [AttributeMarker.Styles, 'width', '111px']);
+                   elementStyling(null, ['width'], null, ctx);
+                 }
+                 if (rf & RenderFlags.Update) {
+                   elementStyleProp(elementIndex, 0, ctx.width, null, ctx);
+                   elementStylingApply(elementIndex, ctx);
+                 }
+               }
+             });
+             width: null|string = null;
+           }
+
+           /**
+            * <div Dir1WithStyle Dir2WithStyle [style.width]></div>
+           */
+           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+             if (rf & RenderFlags.Create) {
+               element(0, 'div', ['Dir1WithStyle', '', 'Dir2WithStyle', '']);
+               elementStyling(null, ['width']);
+             }
+             if (rf & RenderFlags.Update) {
+               elementStyleProp(0, 0, ctx.width);
+               elementStylingApply(0);
+             }
+           }, 1, 0, [Dir1WithStyle, Dir2WithStyle]);
+
+           const fixture = new ComponentFixture(App);
+           const target = fixture.hostElement.querySelector('div') !;
+           expect(target.style.getPropertyValue('width')).toEqual('111px');
+
+           fixture.component.width = '999px';
+           dir1Instance !.width = '222px';
+           dir2Instance !.width = '333px';
+           fixture.update();
+           expect(target.style.getPropertyValue('width')).toEqual('999px');
+
+           fixture.component.width = null;
+           fixture.update();
+           expect(target.style.getPropertyValue('width')).toEqual('222px');
+
+           dir1Instance !.width = null;
+           fixture.update();
+           expect(target.style.getPropertyValue('width')).toEqual('333px');
+
+           dir2Instance !.width = null;
+           fixture.update();
+           expect(target.style.getPropertyValue('width')).toEqual('111px');
+
+           dir1Instance !.width = '666px';
+           fixture.update();
+           expect(target.style.getPropertyValue('width')).toEqual('666px');
+
+           fixture.component.width = '777px';
+           fixture.update();
+           expect(target.style.getPropertyValue('width')).toEqual('777px');
          });
     });
   });
@@ -1784,7 +2000,7 @@ describe('render3 integration test', () => {
           consts: 0,
           vars: 0,
           data: {
-            animations: [
+            animation: [
               animA,
               animB,
             ],
@@ -1797,7 +2013,7 @@ describe('render3 integration test', () => {
       const rendererFactory = new ProxyRenderer3Factory();
       new ComponentFixture(AnimComp, {rendererFactory});
 
-      const capturedAnimations = rendererFactory.lastCapturedType !.data !['animations'];
+      const capturedAnimations = rendererFactory.lastCapturedType !.data !['animation'];
       expect(Array.isArray(capturedAnimations)).toBeTruthy();
       expect(capturedAnimations.length).toEqual(2);
       expect(capturedAnimations).toContain(animA);
@@ -1811,7 +2027,7 @@ describe('render3 integration test', () => {
           consts: 0,
           vars: 0,
           data: {
-            animations: [],
+            animation: [],
           },
           selectors: [['foo']],
           factory: () => new AnimComp(),
@@ -1821,7 +2037,7 @@ describe('render3 integration test', () => {
       const rendererFactory = new ProxyRenderer3Factory();
       new ComponentFixture(AnimComp, {rendererFactory});
       const data = rendererFactory.lastCapturedType !.data;
-      expect(data.animations).toEqual([]);
+      expect(data.animation).toEqual([]);
     });
 
     it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {
@@ -1876,13 +2092,13 @@ describe('render3 integration test', () => {
            });
          }
 
-         const rendererFactory = new MockRendererFactory(['setAttribute']);
+         const rendererFactory = new MockRendererFactory(['setProperty']);
          const fixture = new ComponentFixture(AnimComp, {rendererFactory});
 
          const renderer = rendererFactory.lastRenderer !;
          fixture.update();
 
-         const spy = renderer.spies['setAttribute'];
+         const spy = renderer.spies['setProperty'];
          const [elm, attr, value] = spy.calls.mostRecent().args;
          expect(attr).toEqual('@fooAnimation');
        });
@@ -1990,7 +2206,7 @@ describe('render3 integration test', () => {
                   elementEnd();
                   element(2, 'div');
                 }
-              }, 3, 0, null, ['ngIf', '']);
+              }, 3, 0, 'ng-template', ['ngIf', '']);
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
@@ -2651,59 +2867,5 @@ class ProxyRenderer3Factory implements RendererFactory3 {
   createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 {
     this.lastCapturedType = rendererType;
     return domRendererFactory3.createRenderer(hostElement, rendererType);
-  }
-}
-
-class MockRendererFactory implements RendererFactory3 {
-  lastRenderer: any;
-  private _spyOnMethods: string[];
-
-  constructor(spyOnMethods?: string[]) { this._spyOnMethods = spyOnMethods || []; }
-
-  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 {
-    const renderer = this.lastRenderer = new MockRenderer(this._spyOnMethods);
-    return renderer;
-  }
-}
-
-class MockRenderer implements ProceduralRenderer3 {
-  public spies: {[methodName: string]: any} = {};
-
-  constructor(spyOnMethods: string[]) {
-    spyOnMethods.forEach(methodName => {
-      this.spies[methodName] = spyOn(this as any, methodName).and.callThrough();
-    });
-  }
-
-  destroy(): void {}
-  createComment(value: string): RComment { return document.createComment(value); }
-  createElement(name: string, namespace?: string|null): RElement {
-    return document.createElement(name);
-  }
-  createText(value: string): RText { return document.createTextNode(value); }
-  appendChild(parent: RElement, newChild: RNode): void { parent.appendChild(newChild); }
-  insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void {
-    parent.insertBefore(newChild, refChild, false);
-  }
-  removeChild(parent: RElement, oldChild: RNode): void { parent.removeChild(oldChild); }
-  selectRootElement(selectorOrNode: string|any): RElement {
-    return ({} as any);
-  }
-  parentNode(node: RNode): RElement|null { return node.parentNode as RElement; }
-  nextSibling(node: RNode): RNode|null { return node.nextSibling; }
-  setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {}
-  removeAttribute(el: RElement, name: string, namespace?: string|null): void {}
-  addClass(el: RElement, name: string): void {}
-  removeClass(el: RElement, name: string): void {}
-  setStyle(
-      el: RElement, style: string, value: any,
-      flags?: RendererStyleFlags2|RendererStyleFlags3): void {}
-  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|RendererStyleFlags3): void {}
-  setProperty(el: RElement, name: string, value: any): void {}
-  setValue(node: RText, value: string): void {}
-
-  // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
-  listen(target: RNode, eventName: string, callback: (event: any) => boolean | void): () => void {
-    return () => {};
   }
 }

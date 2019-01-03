@@ -69,7 +69,7 @@ describe('pipe', () => {
 
     expect(() => {
       const fixture = new ComponentFixture(App);
-    }).toThrowError(/Pipe with name 'randomPipeName' not found!/);
+    }).toThrowError(/The pipe 'randomPipeName' could not be found!/);
   });
 
   it('should support bindings', () => {

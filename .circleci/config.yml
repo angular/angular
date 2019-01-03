@@ -25,7 +25,10 @@ var_4: &define_env_vars
 var_5: &setup_bazel_remote_execution
   run:
     name: "Setup bazel RBE remote execution"
-    command: openssl aes-256-cbc -d -in .circleci/gcp_token -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials && echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV && sudo bash -c "cat .circleci/rbe-bazel.rc >> /etc/bazel.bazelrc"
+    command: |
+      openssl aes-256-cbc -d -in .circleci/gcp_token -k "$CI_REPO_NAME" -out /home/circleci/.gcp_credentials
+      echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV
+      sudo bash -c "echo 'build --config=remote' >> /etc/bazel.bazelrc"
 
 # Settings common to each job
 var_6: &job_defaults
@@ -53,21 +56,19 @@ version: 2
 jobs:
   lint:
     <<: *job_defaults
-    resource_class: xlarge
     steps:
       - checkout:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
       - *define_env_vars
-      - *setup_circleci_bazel_config
       - *yarn_install
 
-      - run: 'yarn buildifier -mode=check ||
-              (echo "BUILD files not formatted. Please run ''yarn buildifier''" ; exit 1)'
+      - run: 'yarn bazel:format -mode=check ||
+              (echo "BUILD files not formatted. Please run ''yarn bazel:format''" ; exit 1)'
       # Run the skylark linter to check our Bazel rules
-      - run: 'yarn skylint ||
-              (echo -e "\n.bzl files have lint errors. Please run ''yarn skylint''"; exit 1)'
+      - run: 'yarn bazel:lint ||
+              (echo -e "\n.bzl files have lint errors. Please run ''yarn bazel:lint-fix''"; exit 1)'
 
       - run: ./node_modules/.bin/gulp lint
 

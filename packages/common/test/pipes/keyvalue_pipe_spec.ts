@@ -25,6 +25,10 @@ describe('KeyValuePipe', () => {
     expect(pipe.transform(fn as any)).toEqual(null);
   });
   describe('object dictionary', () => {
+    it('should return empty array of an empty dictionary', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform({})).toEqual([]);
+    });
     it('should transform a basic dictionary', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       expect(pipe.transform({1: 2})).toEqual([{key: '1', value: 2}]);
@@ -62,6 +66,10 @@ describe('KeyValuePipe', () => {
   });
 
   describe('Map', () => {
+    it('should return an empty array for an empty Map', () => {
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(new Map())).toEqual([]);
+    });
     it('should transform a basic Map', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       expect(pipe.transform(new Map([[1, 2]]))).toEqual([{key: 1, value: 2}]);

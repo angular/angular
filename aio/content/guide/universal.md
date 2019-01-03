@@ -385,7 +385,6 @@ Set up a webpack configuration to handle the Node Express `server.ts` file and s
 In your app root directory, create a webpack configuration file (`webpack.server.config.js`) that compiles the `server.ts` file and its dependencies into `dist/server.js`.
 
 <code-example format="." language="typescript" linenums="false">
-@NgModule({
 const path = require('path');
 const webpack = require('webpack');
 

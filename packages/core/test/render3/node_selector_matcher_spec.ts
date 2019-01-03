@@ -20,7 +20,7 @@ function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
 describe('css selector matching', () => {
   function isMatching(tagName: string, attrs: TAttributes | null, selector: CssSelector): boolean {
     return isNodeMatchingSelector(
-        createTNode(getLView(), TNodeType.Element, 0, tagName, attrs, null), selector);
+        createTNode(getLView(), TNodeType.Element, 0, tagName, attrs, null), selector, false);
   }
 
   describe('isNodeMatchingSimpleSelector', () => {
@@ -417,7 +417,7 @@ describe('css selector matching', () => {
 
     function isAnyMatching(
         tagName: string, attrs: string[] | null, selector: CssSelectorList): boolean {
-      return isNodeMatchingSelectorList(testLStaticData(tagName, attrs), selector);
+      return isNodeMatchingSelectorList(testLStaticData(tagName, attrs), selector, false);
     }
 
     it('should match when there is only one simple selector without negations', () => {

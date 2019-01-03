@@ -73,10 +73,8 @@ describe('@angular/core ng_package', () => {
 
 
     describe('typescript support', () => {
-
-      fixmeIvy('FW-738: ngtsc doesn\'t generate flat index files')
-          .it('should have an index d.ts file',
-              () => { expect(shx.cat('core.d.ts')).toContain(`export *`); });
+      it('should have an index d.ts file',
+         () => { expect(shx.cat('core.d.ts')).toContain(`export *`); });
 
       it('should not have amd module names',
          () => { expect(shx.cat('public_api.d.ts')).not.toContain('<amd-module name'); });

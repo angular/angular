@@ -78,6 +78,7 @@ export interface R3PipeMetadataFacade {
 export interface R3InjectableMetadataFacade {
   name: string;
   type: any;
+  typeArgumentCount: number;
   ctorDeps: R3DependencyMetadataFacade[]|null;
   providedIn: any;
   useClass?: any;
@@ -100,8 +101,8 @@ export interface R3InjectorMetadataFacade {
   name: string;
   type: any;
   deps: R3DependencyMetadataFacade[]|null;
-  providers: any;
-  imports: any;
+  providers: any[];
+  imports: any[];
 }
 
 export interface R3DirectiveMetadataFacade {
@@ -133,9 +134,12 @@ export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   encapsulation: ViewEncapsulation;
   viewProviders: Provider[]|null;
   interpolation?: [string, string];
+  changeDetection?: ChangeDetectionStrategy;
 }
 
 export type ViewEncapsulation = number;
+
+export type ChangeDetectionStrategy = number;
 
 export interface R3QueryMetadataFacade {
   propertyName: string;

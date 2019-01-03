@@ -13,7 +13,6 @@ import {TestBed, withModule} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
 import {ARG_TYPE_VALUES, checkNodeInlineOrDynamic, createRootView, createAndGetRootNodes, compViewDef, compViewDefFactory} from './helper';
-import {fixmeIvy} from '@angular/private/testing';
 
 {
   describe(`View Providers`, () => {
@@ -138,7 +137,7 @@ import {fixmeIvy} from '@angular/private/testing';
           expect(instance.dep instanceof Dep).toBeTruthy();
         });
 
-        fixmeIvy('unknown').it('should not inject deps from sibling root elements', () => {
+        it('should not inject deps from sibling root elements', () => {
           const rootElNodes = [
             elementDef(0, NodeFlags.None, null, null, 1, 'span'),
             directiveDef(1, NodeFlags.None, null, 0, Dep, []),
@@ -181,7 +180,7 @@ import {fixmeIvy} from '@angular/private/testing';
           expect(instance.dep instanceof Dep).toBeTruthy();
         });
 
-        fixmeIvy('unknown').it('should throw for missing dependencies', () => {
+        it('should throw for missing dependencies', () => {
           expect(() => createAndGetRootNodes(compViewDef([
                    elementDef(0, NodeFlags.None, null, null, 1, 'span'),
                    directiveDef(1, NodeFlags.None, null, 0, SomeService, ['nonExistingDep'])

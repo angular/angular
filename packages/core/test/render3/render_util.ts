@@ -7,6 +7,7 @@
  */
 
 import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detector_ref';
+import {Provider} from '@angular/core/src/di/provider';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
@@ -19,16 +20,16 @@ import {Injector, SWITCH_INJECTOR_FACTORY__POST_R3__ as R3_INJECTOR_FACTORY} fro
 import {SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as R3_ELEMENT_REF_FACTORY} from '../../src/linker/element_ref';
 import {SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as R3_TEMPLATE_REF_FACTORY} from '../../src/linker/template_ref';
 import {SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ as R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/linker/view_container_ref';
-import {SWITCH_RENDERER2_FACTORY__POST_R3__ as R3_RENDERER2_FACTORY} from '../../src/render/api';
+import {RendererStyleFlags2, RendererType2, SWITCH_RENDERER2_FACTORY__POST_R3__ as R3_RENDERER2_FACTORY} from '../../src/render/api';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {NG_ELEMENT_ID} from '../../src/render3/fields';
-import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
+import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, ProvidersFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
-import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
+import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, LView} from '../../src/render3/interfaces/view';
 import {Sanitizer} from '../../src/sanitization/security';
 import {Type} from '../../src/type';
@@ -295,7 +296,8 @@ export function toHtml<T>(componentOrElement: T | RElement, keepNgReflect = fals
 export function createComponent(
     name: string, template: ComponentTemplate<any>, consts: number = 0, vars: number = 0,
     directives: DirectiveTypesOrFactory = [], pipes: PipeTypesOrFactory = [],
-    viewQuery: ComponentTemplate<any>| null = null): ComponentType<any> {
+    viewQuery: ComponentTemplate<any>| null = null, providers: Provider[] = [],
+    viewProviders: Provider[] = []): ComponentType<any> {
   return class Component {
     value: any;
     static ngComponentDef = defineComponent({
@@ -307,7 +309,9 @@ export function createComponent(
       template: template,
       viewQuery: viewQuery,
       directives: directives,
-      pipes: pipes
+      pipes: pipes,
+      features: (providers.length > 0 || viewProviders.length > 0)?
+      [ProvidersFeature(providers || [], viewProviders || [])]: []
     });
   };
 }
@@ -353,4 +357,65 @@ export function enableIvyInjectableFactories() {
   (ChangeDetectorRef as any)[NG_ELEMENT_ID] = () => R3_CHANGE_DETECTOR_REF_FACTORY();
   (Renderer2 as any)[NG_ELEMENT_ID] = () => R3_RENDERER2_FACTORY();
   (Injector as any)[NG_ELEMENT_ID] = () => R3_INJECTOR_FACTORY();
+}
+
+export class MockRendererFactory implements RendererFactory3 {
+  lastRenderer: any;
+  private _spyOnMethods: string[];
+
+  constructor(spyOnMethods?: string[]) { this._spyOnMethods = spyOnMethods || []; }
+
+  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 {
+    const renderer = this.lastRenderer = new MockRenderer(this._spyOnMethods);
+    return renderer;
+  }
+}
+
+class MockRenderer implements ProceduralRenderer3 {
+  public spies: {[methodName: string]: any} = {};
+
+  constructor(spyOnMethods: string[]) {
+    spyOnMethods.forEach(methodName => {
+      this.spies[methodName] = spyOn(this as any, methodName).and.callThrough();
+    });
+  }
+
+  destroy(): void {}
+  createComment(value: string): RComment { return document.createComment(value); }
+  createElement(name: string, namespace?: string|null): RElement {
+    return document.createElement(name);
+  }
+  createText(value: string): RText { return document.createTextNode(value); }
+  appendChild(parent: RElement, newChild: RNode): void { parent.appendChild(newChild); }
+  insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void {
+    parent.insertBefore(newChild, refChild, false);
+  }
+  removeChild(parent: RElement, oldChild: RNode): void { parent.removeChild(oldChild); }
+  selectRootElement(selectorOrNode: string|any): RElement {
+    return ({} as any);
+  }
+  parentNode(node: RNode): RElement|null { return node.parentNode as RElement; }
+  nextSibling(node: RNode): RNode|null { return node.nextSibling; }
+  setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {
+    // set all synthetic attributes as properties
+    if (name[0] === '@') {
+      this.setProperty(el, name, value);
+    } else {
+      el.setAttribute(name, value);
+    }
+  }
+  removeAttribute(el: RElement, name: string, namespace?: string|null): void {}
+  addClass(el: RElement, name: string): void {}
+  removeClass(el: RElement, name: string): void {}
+  setStyle(
+      el: RElement, style: string, value: any,
+      flags?: RendererStyleFlags2|RendererStyleFlags3): void {}
+  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|RendererStyleFlags3): void {}
+  setProperty(el: RElement, name: string, value: any): void { (el as any)[name] = value; }
+  setValue(node: RText, value: string): void { node.textContent = value; }
+
+  // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
+  listen(target: RNode, eventName: string, callback: (event: any) => boolean | void): () => void {
+    return () => {};
+  }
 }

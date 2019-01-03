@@ -75,46 +75,43 @@ function declareTests(config?: {useJit: boolean}) {
         expect(CountingPipe.calls).toBe(1);
       });
 
-      fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
-          .it('should only update the bound property when using asyncPipe - #15205',
-              fakeAsync(() => {
-                @Component({template: '<div myDir [a]="p | async" [b]="2"></div>'})
-                class MyComp {
-                  p = Promise.resolve(1);
-                }
+      it('should only update the bound property when using asyncPipe - #15205', fakeAsync(() => {
+           @Component({template: '<div myDir [a]="p | async" [b]="2"></div>'})
+           class MyComp {
+             p = Promise.resolve(1);
+           }
 
-                @Directive({selector: '[myDir]'})
-                class MyDir {
-                  setterCalls: {[key: string]: any} = {};
-                  // TODO(issue/24571): remove '!'.
-                  changes !: SimpleChanges;
+           @Directive({selector: '[myDir]'})
+           class MyDir {
+             setterCalls: {[key: string]: any} = {};
+             // TODO(issue/24571): remove '!'.
+             changes !: SimpleChanges;
 
-                  @Input()
-                  set a(v: number) { this.setterCalls['a'] = v; }
-                  @Input()
-                  set b(v: number) { this.setterCalls['b'] = v; }
+             @Input()
+             set a(v: number) { this.setterCalls['a'] = v; }
+             @Input()
+             set b(v: number) { this.setterCalls['b'] = v; }
 
-                  ngOnChanges(changes: SimpleChanges) { this.changes = changes; }
-                }
+             ngOnChanges(changes: SimpleChanges) { this.changes = changes; }
+           }
 
-                TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
-                const fixture = TestBed.createComponent(MyComp);
-                const dir =
-                    fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir) as MyDir;
+           TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+           const fixture = TestBed.createComponent(MyComp);
+           const dir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir) as MyDir;
 
-                fixture.detectChanges();
-                expect(dir.setterCalls).toEqual({'a': null, 'b': 2});
-                expect(Object.keys(dir.changes)).toEqual(['a', 'b']);
+           fixture.detectChanges();
+           expect(dir.setterCalls).toEqual({'a': null, 'b': 2});
+           expect(Object.keys(dir.changes)).toEqual(['a', 'b']);
 
-                dir.setterCalls = {};
-                dir.changes = {};
+           dir.setterCalls = {};
+           dir.changes = {};
 
-                tick();
-                fixture.detectChanges();
+           tick();
+           fixture.detectChanges();
 
-                expect(dir.setterCalls).toEqual({'a': 1});
-                expect(Object.keys(dir.changes)).toEqual(['a']);
-              }));
+           expect(dir.setterCalls).toEqual({'a': 1});
+           expect(Object.keys(dir.changes)).toEqual(['a']);
+         }));
 
       it('should only evaluate methods once - #10639', () => {
         TestBed.configureTestingModule({declarations: [MyCountingComp]});
@@ -431,83 +428,84 @@ function declareTestsUsingBootstrap() {
     if (getDOM().supportsDOMEvents()) {
       // This test needs a real DOM....
 
-      it('should keep change detecting if there was an error', (done) => {
-        @Component({
-          selector: COMP_SELECTOR,
-          template:
-              '<button (click)="next()"></button><button (click)="nextAndThrow()"></button><button (dirClick)="nextAndThrow()"></button><span>Value:{{value}}</span><span>{{throwIfNeeded()}}</span>'
-        })
-        class ErrorComp {
-          value = 0;
-          thrownValue = 0;
-          next() { this.value++; }
-          nextAndThrow() {
-            this.value++;
-            this.throwIfNeeded();
-          }
-          throwIfNeeded() {
-            NgZone.assertInAngularZone();
-            if (this.thrownValue !== this.value) {
-              this.thrownValue = this.value;
-              throw new Error(`Error: ${this.value}`);
+      fixmeIvy('FW-840: Exceptions thrown in event handlers are not reported to ErrorHandler')
+          .it('should keep change detecting if there was an error', (done) => {
+            @Component({
+              selector: COMP_SELECTOR,
+              template:
+                  '<button (click)="next()"></button><button (click)="nextAndThrow()"></button><button (dirClick)="nextAndThrow()"></button><span>Value:{{value}}</span><span>{{throwIfNeeded()}}</span>'
+            })
+            class ErrorComp {
+              value = 0;
+              thrownValue = 0;
+              next() { this.value++; }
+              nextAndThrow() {
+                this.value++;
+                this.throwIfNeeded();
+              }
+              throwIfNeeded() {
+                NgZone.assertInAngularZone();
+                if (this.thrownValue !== this.value) {
+                  this.thrownValue = this.value;
+                  throw new Error(`Error: ${this.value}`);
+                }
+              }
             }
-          }
-        }
 
-        @Directive({selector: '[dirClick]'})
-        class EventDir {
-          @Output()
-          dirClick = new EventEmitter();
+            @Directive({selector: '[dirClick]'})
+            class EventDir {
+              @Output()
+              dirClick = new EventEmitter();
 
-          @HostListener('click', ['$event'])
-          onClick(event: any) { this.dirClick.next(event); }
-        }
+              @HostListener('click', ['$event'])
+              onClick(event: any) { this.dirClick.next(event); }
+            }
 
-        @NgModule({
-          imports: [BrowserModule],
-          declarations: [ErrorComp, EventDir],
-          bootstrap: [ErrorComp],
-          providers: [{provide: ErrorHandler, useValue: errorHandler}],
-        })
-        class TestModule {
-        }
+            @NgModule({
+              imports: [BrowserModule],
+              declarations: [ErrorComp, EventDir],
+              bootstrap: [ErrorComp],
+              providers: [{provide: ErrorHandler, useValue: errorHandler}],
+            })
+            class TestModule {
+            }
 
-        platformBrowserDynamic().bootstrapModule(TestModule).then((ref) => {
-          NgZone.assertNotInAngularZone();
-          const appRef = ref.injector.get(ApplicationRef) as ApplicationRef;
-          const compRef = appRef.components[0] as ComponentRef<ErrorComp>;
-          const compEl = compRef.location.nativeElement;
-          const nextBtn = compEl.children[0];
-          const nextAndThrowBtn = compEl.children[1];
-          const nextAndThrowDirBtn = compEl.children[2];
+            platformBrowserDynamic().bootstrapModule(TestModule).then((ref) => {
+              NgZone.assertNotInAngularZone();
+              const appRef = ref.injector.get(ApplicationRef) as ApplicationRef;
+              const compRef = appRef.components[0] as ComponentRef<ErrorComp>;
+              const compEl = compRef.location.nativeElement;
+              const nextBtn = compEl.children[0];
+              const nextAndThrowBtn = compEl.children[1];
+              const nextAndThrowDirBtn = compEl.children[2];
 
-          nextBtn.click();
-          assertValueAndErrors(compEl, 1, 0);
-          nextBtn.click();
-          assertValueAndErrors(compEl, 2, 2);
+              nextBtn.click();
+              assertValueAndErrors(compEl, 1, 0);
+              nextBtn.click();
+              assertValueAndErrors(compEl, 2, 2);
 
-          nextAndThrowBtn.click();
-          assertValueAndErrors(compEl, 3, 4);
-          nextAndThrowBtn.click();
-          assertValueAndErrors(compEl, 4, 6);
+              nextAndThrowBtn.click();
+              assertValueAndErrors(compEl, 3, 4);
+              nextAndThrowBtn.click();
+              assertValueAndErrors(compEl, 4, 6);
 
-          nextAndThrowDirBtn.click();
-          assertValueAndErrors(compEl, 5, 8);
-          nextAndThrowDirBtn.click();
-          assertValueAndErrors(compEl, 6, 10);
+              nextAndThrowDirBtn.click();
+              assertValueAndErrors(compEl, 5, 8);
+              nextAndThrowDirBtn.click();
+              assertValueAndErrors(compEl, 6, 10);
 
-          // Assert that there were no more errors
-          expect(logger.errors.length).toBe(12);
-          done();
-        });
+              // Assert that there were no more errors
+              expect(logger.errors.length).toBe(12);
+              done();
+            });
 
-        function assertValueAndErrors(compEl: any, value: number, errorIndex: number) {
-          expect(compEl).toHaveText(`Value:${value}`);
-          expect(logger.errors[errorIndex][0]).toBe('ERROR');
-          expect(logger.errors[errorIndex][1].message).toBe(`Error: ${value}`);
-          expect(logger.errors[errorIndex + 1][0]).toBe('ERROR CONTEXT');
-        }
-      });
+            function assertValueAndErrors(compEl: any, value: number, errorIndex: number) {
+              expect(compEl).toHaveText(`Value:${value}`);
+              expect(logger.errors[errorIndex][0]).toBe('ERROR');
+              expect(logger.errors[errorIndex][1].message).toBe(`Error: ${value}`);
+              expect(logger.errors[errorIndex + 1][0]).toBe('ERROR CONTEXT');
+            }
+          });
     }
   });
 }

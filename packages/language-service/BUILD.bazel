@@ -27,6 +27,9 @@ npm_package(
     tags = [
         "release-with-framework",
     ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":language-service",
         "//packages/language-service/bundles:language-service",

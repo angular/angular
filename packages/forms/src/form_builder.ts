@@ -11,6 +11,13 @@ import {Injectable} from '@angular/core';
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
 import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup, FormHooks} from './model';
 
+function isAbstractControlOptions(options: AbstractControlOptions | {[key: string]: any}):
+    options is AbstractControlOptions {
+  return (<AbstractControlOptions>options).asyncValidators !== undefined ||
+      (<AbstractControlOptions>options).validators !== undefined ||
+      (<AbstractControlOptions>options).updateOn !== undefined;
+}
+
 /**
  * @description
  * Creates an `AbstractControl` from a user-specified configuration.
@@ -32,7 +39,7 @@ export class FormBuilder {
    * @param controlsConfig A collection of child controls. The key for each child is the name
    * under which it is registered.
    *
-   * @param legacyOrOpts Configuration options object for the `FormGroup`. The object can
+   * @param options Configuration options object for the `FormGroup`. The object can
    * have two shapes:
    *
    * 1) `AbstractControlOptions` object (preferred), which consists of:
@@ -46,24 +53,26 @@ export class FormBuilder {
    * * `asyncValidator`: A single async validator or array of async validator functions
    *
    */
-  group(controlsConfig: {[key: string]: any}, legacyOrOpts: {[key: string]: any}|null = null):
-      FormGroup {
+  group(
+      controlsConfig: {[key: string]: any},
+      options: AbstractControlOptions|{[key: string]: any}|null = null): FormGroup {
     const controls = this._reduceControls(controlsConfig);
 
     let validators: ValidatorFn|ValidatorFn[]|null = null;
     let asyncValidators: AsyncValidatorFn|AsyncValidatorFn[]|null = null;
     let updateOn: FormHooks|undefined = undefined;
 
-    if (legacyOrOpts != null &&
-        (legacyOrOpts.asyncValidator !== undefined || legacyOrOpts.validator !== undefined)) {
-      // `legacyOrOpts` are legacy form group options
-      validators = legacyOrOpts.validator != null ? legacyOrOpts.validator : null;
-      asyncValidators = legacyOrOpts.asyncValidator != null ? legacyOrOpts.asyncValidator : null;
-    } else if (legacyOrOpts != null) {
-      // `legacyOrOpts` are `AbstractControlOptions`
-      validators = legacyOrOpts.validators != null ? legacyOrOpts.validators : null;
-      asyncValidators = legacyOrOpts.asyncValidators != null ? legacyOrOpts.asyncValidators : null;
-      updateOn = legacyOrOpts.updateOn != null ? legacyOrOpts.updateOn : undefined;
+    if (options != null) {
+      if (isAbstractControlOptions(options)) {
+        // `options` are `AbstractControlOptions`
+        validators = options.validators != null ? options.validators : null;
+        asyncValidators = options.asyncValidators != null ? options.asyncValidators : null;
+        updateOn = options.updateOn != null ? options.updateOn : undefined;
+      } else {
+        // `options` are legacy form group options
+        validators = options.validator != null ? options.validator : null;
+        asyncValidators = options.asyncValidator != null ? options.asyncValidator : null;
+      }
     }
 
     return new FormGroup(controls, {asyncValidators, updateOn, validators});
