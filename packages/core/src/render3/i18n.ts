@@ -25,11 +25,11 @@ import {NO_CHANGE} from './tokens';
 import {addAllToArray, getNativeByIndex, getNativeByTNode, getTNode, isLContainer, stringify} from './util';
 
 const MARKER = `�`;
-const ICU_BLOCK_REGEX = /^\s*(�\d+�)\s*,\s*(select|plural)\s*,/;
+const ICU_BLOCK_REGEX = /^\s*(�\d+:?\d*�)\s*,\s*(select|plural)\s*,/;
 const SUBTEMPLATE_REGEXP = /�\/?\*(\d+:\d+)�/gi;
 const PH_REGEXP = /�(\/?[#*]\d+):?\d*�/gi;
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
-const ICU_REGEXP = /({\s*�\d+�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
+const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
 
 // i18nPostproocess regexps
 const PP_PLACEHOLDERS = /\[(�.+?�?)\]/g;
