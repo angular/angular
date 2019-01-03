@@ -24,15 +24,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       faviconService = new Favicon(doc);
     });
 
-    afterEach(() => {
-      const link =
-          getDOM().querySelector(doc, 'link[rel*=\'icon\']') || document.createElement('link');
-      link.type = 'image/x-icon';
-      link.rel = 'shortcut icon';
-      link.href = initialFavicon.href;
-      getDOM().getElementsByTagName(doc, 'head')[0].appendChild(link);
-    });
-
     it('should allow reading initial favicon', () => {
       if (initialFavicon === null) {
         expect(faviconService.getFavicon()).toBeNull();
