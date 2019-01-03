@@ -15,7 +15,7 @@ import {getNativeByIndex} from '../../src/render3/util';
 
 import {NgIf} from './common_with_def';
 
-import {element, elementEnd, elementStart, template, text, bind, elementProperty, projectionDef, projection} from '../../src/render3/instructions';
+import {element, elementEnd, elementStart, template, text, nextContext, bind, elementProperty, projectionDef, projection} from '../../src/render3/instructions';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {ComponentFixture, TemplateFixture} from './render_util';
@@ -654,6 +654,65 @@ describe('Runtime i18n', () => {
 
       // Template should be empty because there is no update template function
       expect(fixture.html).toEqual('<div><!--ICU 2--></div>');
+    });
+
+    it('for ICU expressions inside templates', () => {
+      const MSG_DIV = `�*2:1��#1:1�{�0:1�, plural,
+        =0 {no <b title="none">emails</b>!}
+        =1 {one <i>email</i>}
+        other {�0:1� <span title="�1:1�">emails</span>}
+      }�/#1:1��/*2:1�`;
+
+      function subTemplate_1(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          i18nStart(0, MSG_DIV, 1);
+          element(1, 'span');
+          i18nEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          const ctx = nextContext();
+          i18nExp(bind(ctx.value0));
+          i18nExp(bind(ctx.value1));
+          i18nApply(0);
+        }
+      }
+
+      class MyApp {
+        value0 = 0;
+        value1 = 'emails label';
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          selectors: [['my-app']],
+          directives: [NgIf],
+          factory: () => new MyApp(),
+          consts: 3,
+          vars: 1,
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div');
+              i18nStart(1, MSG_DIV);
+              template(2, subTemplate_1, 2, 2, 'span', [3, 'ngIf']);
+              i18nEnd();
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(2, 'ngIf', true);
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html)
+          .toEqual('<div><span>no <b title="none">emails</b>!<!--ICU 4--></span></div>');
+
+      // Update the value
+      fixture.component.value0 = 3;
+      fixture.update();
+      expect(fixture.html)
+          .toEqual(
+              '<div><span>3 <span title="emails label">emails</span><!--ICU 4--></span></div>');
     });
 
     it('for nested ICU expressions', () => {
