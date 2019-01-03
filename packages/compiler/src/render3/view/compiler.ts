@@ -30,7 +30,7 @@ import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, type
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
-import {BindingScope, TemplateDefinitionBuilder, ValueConverter, prepareEventListenerParameters, renderFlagCheckIfStmt} from './template';
+import {BindingScope, TemplateDefinitionBuilder, ValueConverter, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
 const EMPTY_ARRAY: any[] = [];
@@ -698,15 +698,45 @@ function createHostBindingsFunction(
         const value = binding.expression.visit(valueConverter);
         const bindingExpr = bindingFn(bindingContext, value);
 
-        const {bindingName, instruction, extraParams} = getBindingNameAndInstruction(binding);
+        const {bindingName, instruction, isAttribute} = getBindingNameAndInstruction(binding);
+
+        const securityContexts =
+            bindingParser
+                .calcPossibleSecurityContexts(meta.selector || '', bindingName, isAttribute)
+                .filter(context => context !== core.SecurityContext.NONE);
+
+        let sanitizerFn: o.ExternalExpr|null = null;
+        if (securityContexts.length) {
+          if (securityContexts.length === 2 &&
+              securityContexts.indexOf(core.SecurityContext.URL) > -1 &&
+              securityContexts.indexOf(core.SecurityContext.RESOURCE_URL) > -1) {
+            // Special case for some URL attributes (such as "src" and "href") that may be a part of
+            // different security contexts. In this case we use special santitization function and
+            // select the actual sanitizer at runtime based on a tag name that is provided while
+            // invoking sanitization function.
+            sanitizerFn = o.importExpr(R3.sanitizeUrlOrResourceUrl);
+          } else {
+            sanitizerFn = resolveSanitizationFn(securityContexts[0], isAttribute);
+          }
+        }
 
         const instructionParams: o.Expression[] = [
           elVarExp, o.literal(bindingName), o.importExpr(R3.bind).callFn([bindingExpr.currValExpr])
         ];
+        if (sanitizerFn) {
+          instructionParams.push(sanitizerFn);
+        }
+        if (!isAttribute) {
+          if (!sanitizerFn) {
+            // append `null` in front of `nativeOnly` flag if no sanitizer fn defined
+            instructionParams.push(o.literal(null));
+          }
+          // host bindings must have nativeOnly prop set to true
+          instructionParams.push(o.literal(true));
+        }
 
         updateStatements.push(...bindingExpr.stmts);
-        updateStatements.push(
-            o.importExpr(instruction).callFn(instructionParams.concat(extraParams)).toStmt());
+        updateStatements.push(o.importExpr(instruction).callFn(instructionParams).toStmt());
       }
     }
 
@@ -777,10 +807,9 @@ function createStylingStmt(
 }
 
 function getBindingNameAndInstruction(binding: ParsedProperty):
-    {bindingName: string, instruction: o.ExternalReference, extraParams: o.Expression[]} {
+    {bindingName: string, instruction: o.ExternalReference, isAttribute: boolean} {
   let bindingName = binding.name;
   let instruction !: o.ExternalReference;
-  const extraParams: o.Expression[] = [];
 
   // Check to see if this is an attr binding or a property binding
   const attrMatches = bindingName.match(ATTR_REGEX);
@@ -797,13 +826,9 @@ function getBindingNameAndInstruction(binding: ParsedProperty):
     } else {
       instruction = R3.elementProperty;
     }
-    extraParams.push(
-        o.literal(null),  // TODO: This should be a sanitizer fn (FW-785)
-        o.literal(true)   // host bindings must have nativeOnly prop set to true
-        );
   }
 
-  return {bindingName, instruction, extraParams};
+  return {bindingName, instruction, isAttribute: !!attrMatches};
 }
 
 function createHostListeners(

@@ -2878,6 +2878,58 @@ describe('render3 integration test', () => {
 
       expect(anchor.getAttribute('href')).toEqual('http://foo');
     });
+
+    it('should sanitize HostBindings data using provided sanitization interface', () => {
+      let hostBindingDir: UnsafeUrlHostBindingDir;
+      class UnsafeUrlHostBindingDir {
+        // @HostBinding()
+        cite: any = 'http://cite-dir-value';
+
+        static ngDirectiveDef = defineDirective({
+          type: UnsafeUrlHostBindingDir,
+          selectors: [['', 'unsafeUrlHostBindingDir', '']],
+          factory: () => hostBindingDir = new UnsafeUrlHostBindingDir(),
+          hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
+            if (rf & RenderFlags.Create) {
+              allocHostVars(1);
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(elementIndex, 'cite', bind(ctx.cite), sanitizeUrl, true);
+            }
+          }
+        });
+      }
+
+      class SimpleComp {
+        static ngComponentDef = defineComponent({
+          type: SimpleComp,
+          selectors: [['sanitize-this']],
+          factory: () => new SimpleComp(),
+          consts: 1,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: SimpleComp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'blockquote', ['unsafeUrlHostBindingDir', '']);
+            }
+          },
+          directives: [UnsafeUrlHostBindingDir]
+        });
+      }
+
+      const sanitizer = new LocalSanitizer((value) => 'http://bar');
+
+      const fixture = new ComponentFixture(SimpleComp, {sanitizer});
+      hostBindingDir !.cite = 'http://foo';
+      fixture.update();
+
+      const anchor = fixture.hostElement.querySelector('blockquote') !;
+      expect(anchor.getAttribute('cite')).toEqual('http://bar');
+
+      hostBindingDir !.cite = sanitizer.bypassSecurityTrustUrl('http://foo');
+      fixture.update();
+
+      expect(anchor.getAttribute('cite')).toEqual('http://foo');
+    });
   });
 });
 
