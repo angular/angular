@@ -305,6 +305,12 @@ export class BindingParser {
     }
   }
 
+  calcPossibleSecurityContexts(selector: string, propName: string, isAttribute: boolean):
+      SecurityContext[] {
+    const prop = this._schemaRegistry.getMappedPropName(propName);
+    return calcPossibleSecurityContexts(this._schemaRegistry, selector, prop, isAttribute);
+  }
+
   private _parseAnimationEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan, targetEvents: ParsedEvent[]) {
     const matches = splitAtPeriod(name, [name, '']);

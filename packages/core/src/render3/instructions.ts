@@ -976,7 +976,9 @@ export function elementAttribute(
                                        element.removeAttribute(name);
     } else {
       ngDevMode && ngDevMode.rendererSetAttribute++;
-      const strValue = sanitizer == null ? stringify(value) : sanitizer(value);
+      const tNode = getTNode(index, lView);
+      const strValue =
+          sanitizer == null ? stringify(value) : sanitizer(value, tNode.tagName || '', name);
       isProceduralRenderer(renderer) ? renderer.setAttribute(element, name, strValue) :
                                        element.setAttribute(name, strValue);
     }
@@ -1059,7 +1061,7 @@ function elementPropertyInternal<T>(
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     // It is assumed that the sanitizer is only added when the compiler determines that the property
     // is risky, so sanitization can be done without further checks.
-    value = sanitizer != null ? (sanitizer(value) as any) : value;
+    value = sanitizer != null ? (sanitizer(value, tNode.tagName || '', propName) as any) : value;
     ngDevMode && ngDevMode.rendererSetProperty++;
     if (isProceduralRenderer(renderer)) {
       renderer.setProperty(element as RElement, propName, value);
