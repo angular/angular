@@ -800,9 +800,15 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (constructorSymbol) {
       // For some reason the constructor does not have a `valueDeclaration` ?!?
       const constructor = constructorSymbol.declarations &&
-          constructorSymbol.declarations[0] as ts.ConstructorDeclaration;
-      if (constructor && constructor.parameters) {
+          constructorSymbol.declarations[0] as ts.ConstructorDeclaration | undefined;
+      if (!constructor) {
+        return [];
+      }
+      if (constructor.parameters.length > 0) {
         return Array.from(constructor.parameters);
+      }
+      if (isSynthesizedConstructor(constructor)) {
+        return null;
       }
       return [];
     }
@@ -1227,4 +1233,53 @@ function collectExportedDeclarations(
       }
     });
   }
+}
+
+
+/**
+ * A constructor function may have been "synthesized" by TypeScript during JavaScript emit,
+ * in the case no user-defined constructor exists and e.g. property initializers are used.
+ * Those initializers need to be emitted into a constructor in JavaScript, so the TypeScript
+ * compiler generates a synthetic constructor.
+ *
+ * We need to identify such constructors as ngcc needs to be able to tell if a class did
+ * originally have a constructor in the TypeScript source. When a class has a superclass,
+ * a synthesized constructor must not be considered as a user-defined constructor as that
+ * prevents a base factory call from being created by ngtsc, resulting in a factory function
+ * that does not inject the dependencies of the superclass. Hence, we identify a default
+ * synthesized super call in the constructor body, according to the structure that TypeScript
+ * emits during JavaScript emit:
+ * https://github.com/Microsoft/TypeScript/blob/v3.2.2/src/compiler/transformers/ts.ts#L1068-L1082
+ *
+ * @param constructor a constructor function to test
+ * @returns true if the constructor appears to have been synthesized
+ */
+function isSynthesizedConstructor(constructor: ts.ConstructorDeclaration): boolean {
+  if (!constructor.body) return false;
+
+  const firstStatement = constructor.body.statements[0];
+  if (!firstStatement || !ts.isExpressionStatement(firstStatement)) return false;
+
+  return isSynthesizedSuperCall(firstStatement.expression);
+}
+
+/**
+ * Tests whether the expression appears to have been synthesized by TypeScript, i.e. whether
+ * it is of the following form:
+ *
+ * ```
+ * super(...arguments);
+ * ```
+ *
+ * @param expression the expression that is to be tested
+ * @returns true if the expression appears to be a synthesized super call
+ */
+function isSynthesizedSuperCall(expression: ts.Expression): boolean {
+  if (!ts.isCallExpression(expression)) return false;
+  if (expression.expression.kind !== ts.SyntaxKind.SuperKeyword) return false;
+  if (expression.arguments.length !== 1) return false;
+
+  const argument = expression.arguments[0];
+  return ts.isSpreadElement(argument) && ts.isIdentifier(argument.expression) &&
+      argument.expression.text === 'arguments';
 }
