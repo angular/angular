@@ -27,14 +27,16 @@ describe(browser.baseUrl, () => {
 
   describe('(with legacy URLs)', () => {
     page.legacyUrls.forEach(([fromUrl, toUrl], i) => {
+      const isExternalUrl = /^https?:/.test(toUrl);
+
       it(`should redirect '${fromUrl}' to '${toUrl}' (${i + 1}/${page.legacyUrls.length})`, async () => {
         await page.goTo(fromUrl);
 
-        const expectedUrl = stripTrailingSlash(/^http/.test(toUrl) ? toUrl : page.baseUrl + toUrl);
+        const expectedUrl = stripTrailingSlash(isExternalUrl ? toUrl : page.baseUrl + toUrl);
         const actualUrl = await getCurrentUrl();
 
         expect(actualUrl).toBe(expectedUrl);
-      });
+      }, isExternalUrl ? 60000 : undefined);
     });
   });
 
