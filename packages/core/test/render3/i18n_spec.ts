@@ -657,8 +657,7 @@ describe('Runtime i18n', () => {
     });
 
     it('for ICU expressions inside templates', () => {
-      const MSG_DIV =
-        `�*2:1��#1:1�{�0:1�, plural,
+      const MSG_DIV = `�*2:1��#1:1�{�0:1�, plural,
         =0 {no <b title="none">emails</b>!}
         =1 {one <i>email</i>}
         other {�0:1� <span title="�1:1�">emails</span>}
@@ -706,13 +705,14 @@ describe('Runtime i18n', () => {
 
       const fixture = new ComponentFixture(MyApp);
       expect(fixture.html)
-        .toEqual('<div><span>no <b title="none">emails</b>!<!--ICU 4--></span></div>');
+          .toEqual('<div><span>no <b title="none">emails</b>!<!--ICU 4--></span></div>');
 
       // Update the value
       fixture.component.value0 = 3;
       fixture.update();
       expect(fixture.html)
-        .toEqual('<div><span>3 <span title="emails label">emails</span><!--ICU 4--></span></div>');
+          .toEqual(
+              '<div><span>3 <span title="emails label">emails</span><!--ICU 4--></span></div>');
     });
 
     it('for nested ICU expressions', () => {
