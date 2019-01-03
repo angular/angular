@@ -333,6 +333,19 @@ describe('MomentDateAdapter', () => {
     assertValidDate(adapter.deserialize(moment.invalid()), false);
   });
 
+  it('should clone the date when deserializing a Moment date', () => {
+    let date = moment([2017, JAN, 1]);
+    expect(adapter.deserialize(date)!.format()).toEqual(date.format());
+    expect(adapter.deserialize(date)).not.toBe(date);
+  });
+
+  it('should deserialize dates with the correct locale', () => {
+    adapter.setLocale('ja');
+    expect(adapter.deserialize('1985-04-12T23:20:50.52Z')!.locale()).toBe('ja');
+    expect(adapter.deserialize(new Date())!.locale()).toBe('ja');
+    expect(adapter.deserialize(moment())!.locale()).toBe('ja');
+  });
+
   it('setLocale should not modify global moment locale', () => {
     expect(moment.locale()).toBe('en');
     adapter.setLocale('ja-JP');
