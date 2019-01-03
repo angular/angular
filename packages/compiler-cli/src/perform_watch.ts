@@ -210,7 +210,6 @@ export function performWatchCompilation(host: PerformWatchHost):
 
     const endTime = Date.now();
     if (cachedOptions.options.diagnostics) {
-      const totalTime = (endTime - startTime) / 1000;
       host.reportDiagnostics([totalCompilationTimeDiagnostic(endTime - startTime)]);
     }
     const exitCode = exitCodeFromResult(compileResult.diagnostics);
