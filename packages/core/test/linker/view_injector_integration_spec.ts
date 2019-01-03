@@ -963,14 +963,12 @@ class TestComp {
         expect(el.children[0].injector.get(SimpleDirective).value.service).toEqual('pipeService');
       });
 
-      fixmeIvy('FW-894: Pipes don\'t overwrite pipes with later entry in the pipes array')
-          .it('should overwrite pipes with later entry in the pipes array', () => {
-            TestBed.configureTestingModule(
-                {declarations: [SimpleDirective, DuplicatePipe1, DuplicatePipe2]});
-            const el = createComponent('<div [simpleDirective]="true | duplicatePipe"></div>');
-            expect(el.children[0].injector.get(SimpleDirective).value)
-                .toBeAnInstanceOf(DuplicatePipe2);
-          });
+      it('should overwrite pipes with later entry in the pipes array', () => {
+        TestBed.configureTestingModule(
+            {declarations: [SimpleDirective, DuplicatePipe1, DuplicatePipe2]});
+        const el = createComponent('<div [simpleDirective]="true | duplicatePipe"></div>');
+        expect(el.children[0].injector.get(SimpleDirective).value).toBeAnInstanceOf(DuplicatePipe2);
+      });
 
       it('should inject ChangeDetectorRef into pipes', () => {
         TestBed.configureTestingModule({
