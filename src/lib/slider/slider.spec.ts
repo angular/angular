@@ -16,6 +16,7 @@ import {
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
+  createKeyboardEvent,
 } from '@angular/cdk/testing';
 import {Component, DebugElement, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
@@ -995,7 +996,7 @@ describe('MatSlider', () => {
       expect(sliderInstance.value).toBe(0);
     });
 
-    it(`should take not action for presses of keys it doesn't care about`, () => {
+    it(`should take no action for presses of keys it doesn't care about`, () => {
       sliderInstance.value = 50;
 
       expect(testComponent.onChange).not.toHaveBeenCalled();
@@ -1008,6 +1009,26 @@ describe('MatSlider', () => {
       expect(testComponent.onChange).not.toHaveBeenCalled();
       expect(sliderInstance.value).toBe(50);
     });
+
+    it('should ignore events modifier keys', () => {
+      sliderInstance.value = 0;
+
+      [
+        UP_ARROW, DOWN_ARROW, RIGHT_ARROW,
+        LEFT_ARROW, PAGE_DOWN, PAGE_UP, HOME, END
+      ].forEach(key => {
+        const event = createKeyboardEvent('keydown', key);
+        Object.defineProperty(event, 'altKey', {get: () => true});
+        dispatchEvent(sliderNativeElement, event);
+        fixture.detectChanges();
+        expect(event.defaultPrevented).toBe(false);
+      });
+
+      expect(testComponent.onInput).not.toHaveBeenCalled();
+      expect(testComponent.onChange).not.toHaveBeenCalled();
+      expect(sliderInstance.value).toBe(0);
+    });
+
   });
 
   describe('slider with direction and invert', () => {
