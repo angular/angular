@@ -60,5 +60,5 @@ export interface TreeControl<T> {
   readonly isExpandable: (dataNode: T) => boolean;
 
   /** Gets a stream that emits whenever the given data node's children change. */
-  readonly getChildren: (dataNode: T) => Observable<T[]> | T[];
+  readonly getChildren: (dataNode: T) => Observable<T[]> | T[] | undefined | null;
 }

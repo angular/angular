@@ -13,7 +13,7 @@ import {BaseTreeControl} from './base-tree-control';
 export class NestedTreeControl<T> extends BaseTreeControl<T> {
 
   /** Construct with nested tree function getChildren. */
-  constructor(public getChildren: (dataNode: T) => (Observable<T[]> | T[])) {
+  constructor(public getChildren: (dataNode: T) => (Observable<T[]> | T[] | undefined | null)) {
     super();
   }
 

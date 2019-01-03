@@ -237,6 +237,26 @@ describe('MatTree', () => {
     });
   });
 
+  describe('nested tree with undefined or null children', () => {
+    describe('should initialize', () => {
+      let fixture: ComponentFixture<MatNestedTreeWithNullOrUndefinedChild >;
+
+      beforeEach(() => {
+        configureMatTreeTestingModule([MatNestedTreeWithNullOrUndefinedChild]);
+        fixture = TestBed.createComponent(MatNestedTreeWithNullOrUndefinedChild);
+        treeElement = fixture.nativeElement.querySelector('mat-tree');
+
+        fixture.detectChanges();
+      });
+
+      it('with rendered dataNodes', () => {
+        const nodes = getNodes(treeElement);
+
+        expect(nodes).toBeDefined('Expect nodes to be defined');
+        expect(nodes[0].classList).toContain('customNodeClass');
+      });
+    });
+  });
   describe('nested tree', () => {
     describe('should initialize', () => {
       let fixture: ComponentFixture<NestedMatTreeApp>;
@@ -708,6 +728,29 @@ class MatTreeWithNullOrUndefinedChild {
   }
 
   hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
+}
+
+@Component({
+  template: `
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <mat-nested-tree-node *matTreeNodeDef="let node" class="customNodeClass">
+        {{node.name}}
+        <ng-template matTreeNodeOutlet></ng-template>
+      </mat-nested-tree-node>
+    </mat-tree>
+  `
+})
+class MatNestedTreeWithNullOrUndefinedChild {
+  treeControl: NestedTreeControl<FoodNode>;
+  dataSource: MatTreeNestedDataSource<FoodNode>;
+
+  constructor() {
+    this.treeControl = new NestedTreeControl<FoodNode>(this.getChildren);
+    this.dataSource = new MatTreeNestedDataSource();
+    this.dataSource.data = TREE_DATA;
+  }
+
+  private getChildren = (node: FoodNode) => node.children;
 }
 
 @Component({
