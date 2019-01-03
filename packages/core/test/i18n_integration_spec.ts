@@ -450,7 +450,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const element = fixture.nativeElement.firstChild;
       const spans = element.getElementsByTagName('span');
       expect(spans.length).toBe(1);
-      expect(spans[0].innerHTML).toBe(translate('twenty'));
+      expect(spans[0]).toHaveText(translate('twenty'));
     });
 
     it('should handle nested icus', () => {
