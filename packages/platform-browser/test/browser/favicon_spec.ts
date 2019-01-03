@@ -33,13 +33,13 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       getDOM().getElementsByTagName(this._doc, 'head')[0].appendChild(link);
     });
 
-    it('should allow reading initial favicon',
-       () => {
-        if (initialFavicon === null) {
-          expect(faviconService.getFavicon()).toBeNull();
-        } else {
-          expect(faviconService.getFavicon().href).toEqual(initialFavicon.href);
-        } });
+    it('should allow reading initial favicon', () => {
+      if (initialFavicon === null) {
+        expect(faviconService.getFavicon()).toBeNull();
+      } else {
+        expect(faviconService.getFavicon().href).toEqual(initialFavicon.href);
+      }
+    });
 
     it('should set a favicon on the injected document', () => {
       faviconService.setFavicon('test favicon url');
