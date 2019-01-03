@@ -2428,7 +2428,7 @@ describe('lifecycles', () => {
       ]);
 
       events = [];
-      fixture.update(); // Changes are made due to lack of `bind()` call in template fn.
+      fixture.update();  // Changes are made due to lack of `bind()` call in template fn.
       expect(events).toEqual([
         'changes comp1', 'check comp1', 'changes comp2', 'check comp2', 'contentCheck comp1',
         'contentCheck comp2', 'viewCheck comp1', 'viewCheck comp2'
