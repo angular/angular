@@ -257,7 +257,7 @@ export function defineComponent<T>(componentDefinition: {
     inputs: null !,   // assigned in noSideEffects
     outputs: null !,  // assigned in noSideEffects
     exportAs: componentDefinition.exportAs || null,
-    onChanges: typePrototype.ngOnChanges,
+    onChanges: typePrototype.ngOnChanges || null,
     onInit: typePrototype.ngOnInit || null,
     doCheck: typePrototype.ngDoCheck || null,
     afterContentInit: typePrototype.ngAfterContentInit || null,
