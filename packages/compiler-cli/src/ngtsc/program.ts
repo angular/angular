@@ -208,14 +208,21 @@ export class NgtscProgram implements api.Program {
           this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
         };
 
-    const transforms =
+    const customTransforms = opts && opts.customTransformers;
+    const beforeTransforms =
         [ivyTransformFactory(this.compilation !, this.reflector, this.coreImportsFrom)];
+
     if (this.factoryToSourceInfo !== null) {
-      transforms.push(generatedFactoryTransform(this.factoryToSourceInfo, this.coreImportsFrom));
+      beforeTransforms.push(
+          generatedFactoryTransform(this.factoryToSourceInfo, this.coreImportsFrom));
     }
     if (this.isCore) {
-      transforms.push(ivySwitchTransform);
+      beforeTransforms.push(ivySwitchTransform);
     }
+    if (customTransforms && customTransforms.beforeTs) {
+      beforeTransforms.push(...customTransforms.beforeTs);
+    }
+
     // Run the emit, including a custom transformer that will downlevel the Ivy decorators in code.
     const emitResult = emitCallback({
       program: this.tsProgram,
@@ -223,7 +230,8 @@ export class NgtscProgram implements api.Program {
       options: this.options,
       emitOnlyDtsFiles: false, writeFile,
       customTransformers: {
-        before: transforms,
+        before: beforeTransforms,
+        after: customTransforms && customTransforms.afterTs,
       },
     });
     return emitResult;

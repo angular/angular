@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CustomTransformers} from '@angular/compiler-cli';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -111,9 +112,9 @@ export class NgtscTestEnvironment {
   /**
    * Run the compiler to completion, and assert that no errors occurred.
    */
-  driveMain(): void {
+  driveMain(customTransformers?: CustomTransformers): void {
     const errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    const exitCode = main(['-p', this.basePath], errorSpy);
+    const exitCode = main(['-p', this.basePath], errorSpy, undefined, customTransformers);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
   }
