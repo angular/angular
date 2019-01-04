@@ -611,7 +611,7 @@ You're using Angular [interpolation binding](guide/template-syntax#interpolation
 to insert the current iteration's `hero.id` into each 
 [`routerLink`](#routerlink).
 -->
-이 때 `*ngFor`로 순회하는 각각의 링크에 [`routerLink`](#routelink)의 값으로 `hero.id`를 지정하기 위해 Angular가 제공하는 [문자열 바인딩(interpolation binding)](guide/template-syntax#interpolation) 문법을 사용했습니다.
+이 때 `*ngFor`로 순회하는 각각의 링크에 [`routerLink`](#routerlink)의 값으로 `hero.id`를 지정하기 위해 Angular가 제공하는 [문자열 바인딩(interpolation binding)](guide/template-syntax#interpolation) 문법을 사용했습니다.
 
 {@a heroes-component-links}
 <!--
@@ -766,15 +766,22 @@ You'll use it [later](#goback) to navigate back to the view that navigated here.
 [`location`](api/common/Location)은 브라우저를 제어하기 위해 Angular가 제공하는 서비스입니다.
 이 서비스는 [이전 페이지로 전환하는 예제를 다룰 때](#goback) 다시 살펴봅니다.
 
+<!--
 ### Extract the _id_ route parameter
+-->
+### 라우팅 변수 _id_ 추축하기
 
+<!--
 In the `ngOnInit()` [lifecycle hook](guide/lifecycle-hooks#oninit)
 call `getHero()` and define it as follows.
+-->
+지금까지 작성한 예제에서는 `ngOnInit()` [라이프싸이클 후킹 함수](guide/lifecycle-hooks#oninit)에서 `HeroService`의 `getHero()` 메소드를 호출합니다.
 
 <code-example 
   path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" region="ngOnInit">
 </code-example>
 
+<!--
 The `route.snapshot` is a static image of the route information shortly after the component was created.
 
 The `paramMap` is a dictionary of route parameter values extracted from the URL.
@@ -787,10 +794,28 @@ which is what a hero `id` should be.
 The browser refreshes and the app crashes with a compiler error.
 `HeroService` doesn't have a `getHero()` method.
 Add it now.
+-->
+`route.snapshot`은 컴포넌트가 생성된 직후에 존재하는 라우팅 규칙에 대한 정보를 담고 있는 객체입니다.
 
+그리고 이 객체가 제공하는 `paramMap`을 사용하면 URL에 존재하는 라우팅 변수를 참조할 수 있습니다.
+그래서 서버로부터 받아올 히어로의 `id`에 해당하는 값을 URL에 있는 `"id"` 키로 참조할 수 있습니다.
+
+라우팅 변수는 언제나 문자열 타입입니다.
+그래서 라우팅 변수로 전달된 값이 원래 숫자였다면 문자열로 받아온 라우팅 변수에 JavaScript (+) 연산자를 사용해서 숫자로 변환할 수 있습니다.
+
+하지만 브라우저가 갱신되고 난 후에 이 코드는 동작하지 않습니다.
+왜냐하면 `HeroService`에 아직 `getHero()` 메소드가 없기 때문입니다.
+이 메소드를 추가해 봅시다.
+
+<!--
 ### Add `HeroService.getHero()`
+-->
+### `HeroService.getHero()` 추가하기
 
+<!--
 Open `HeroService` and add this `getHero()` method
+-->
+`HeroService` 파일을 열고 `getHero()` 메소드를 다음과 같이 구현합니다.
 
 <code-example 
   path="toh-pt5/src/app/hero.service.ts" 
@@ -800,9 +825,13 @@ Open `HeroService` and add this `getHero()` method
 
 <div class="alert is-important">
 
+<!--
 Note the backticks ( &#96; ) that 
 define a JavaScript 
 [_template literal_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals) for embedding the `id`.
+-->
+`id`에 사용된 역따옴표( &#96; )는 [_템플릿 리터럴 (template literal)_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals)을 표현하는 JavaScript 문법입니다.
+
 </div>
 
 <!--
@@ -813,25 +842,41 @@ It returns a _mock hero_ as an `Observable`, using the RxJS `of()` function.
 You'll be able to re-implement `getHero()` as a real `Http` request
 without having to change the `HeroDetailComponent` that calls it.
 -->
-Like [`getHeroes()`](tutorial/toh-pt4#옵저버블-heroservice),
-`getHero()` has an asynchronous signature.
-It returns a _mock hero_ as an `Observable`, using the RxJS `of()` function.
+[`getHeroes()`](tutorial/toh-pt4#옵저버블-heroservice) 함수와 비슷하게,
+`getHero()` 함수도 비동기로 동작합니다.
+그리고 이 때 _히어로의 목 데이터_ 하나를 `Observable`로 반환하기 위해 RxJs가 제공하는 `of()` 함수를 사용했습니다.
 
+<!--
 You'll be able to re-implement `getHero()` as a real `Http` request
 without having to change the `HeroDetailComponent` that calls it.
+-->
+이렇게 구현함녀 나중에 `getHero()`가 실제 `Http` 요청을 보내도록 수정하더라도 이 함수를 호출하는 `HeroDetailComponent`는 영향을 받지 않습니다.
 
+<!--
 #### Try it
+-->
+### 동작 확인하기
 
+<!--
 The browser refreshes and the app is working again.
 You can click a hero in the dashboard or in the heroes list and navigate to that hero's detail view.
 
 If you paste `localhost:4200/detail/11` in the browser address bar,
 the router navigates to the detail view for the hero with `id: 11`,  "Mr. Nice".
+-->
+브라우저가 갱신되고 나면 앱이 다시 동작합니다.
+그리고 대시보드나 히어로 목록 화면에서 히어로를 한 명 선택하면 이 히어로의 상세정보를 표시하는 화면으로 이동합니다.
+
+만약 브라우저 주소표시줄에 `localhost:4200/detail/11`라는 값을 붙여넣으면 이 때도 마찬가지로 `id: 11`에 해당하는 "Mr. Nice" 히어로의 정보를 표시하는 화면으로 이동할 것입니다.
 
 {@a goback}
 
+<!--
 ### Find the way back
+-->
+### 이전 화면으로 돌아가기
 
+<!--
 By clicking the browser's back button, 
 you can go back to the hero list or dashboard view,
 depending upon which sent you to the detail view.
@@ -840,35 +885,65 @@ It would be nice to have a button on the `HeroDetail` view that can do that.
 
 Add a *go back* button to the bottom of the component template and bind it
 to the component's `goBack()` method.
+-->
+히어로 목록이나 대시보드 화면에서 히어로를 선택해서 히어로 상세정보 화면으로 이동했다면, 브라우저의 뒤로 가기 버튼을 눌렀을 때 이전 화면으로 돌아갈 수 있습니다.
 
+그리고 이 기능은 `HeroDetail` 화면에 버튼으로 추가하는 것이 더 좋을 수 있습니다.
+
+컴포넌트 템플릿 맨 아래에 *뒤로 가기* 버튼을 추가하고 이 버튼을 컴포넌트의 `goBack()` 메소드와 바인딩 합니다.
+
+<!--
 <code-example 
   path="toh-pt5/src/app/hero-detail/hero-detail.component.html" 
   region="back-button"
   header="src/app/hero-detail/hero-detail.component.html (back button)">
 </code-example>
+-->
+<code-example 
+  path="toh-pt5/src/app/hero-detail/hero-detail.component.html" 
+  region="back-button"
+  header="src/app/hero-detail/hero-detail.component.html (뒤로 가기 버튼)">
+</code-example>
 
+<!--
 Add a `goBack()` _method_ to the component class that navigates backward one step 
 in the browser's history stack
 using the `Location` service that you [injected previously](#hero-detail-ctor).
+-->
+그리고 컴포넌트 클래스에 `gBack()` _메소드_ 를 추가하는데, 브라우저의 히스토리 스택을 활용할 수 있도록 [이전에 주입받은](#hero-detail-ctor) `Location` 서비스를 사용합니다.
 
 <code-example path="toh-pt5/src/app/hero-detail/hero-detail.component.ts" region="goBack" header="src/app/hero-detail/hero-detail.component.ts (goBack)">
 
 </code-example>
 
-
+<!--
 Refresh the browser and start clicking.
 Users can navigate around the app, from the dashboard to hero details and back,
 from heroes list to the mini detail to the hero details and back to the heroes again.
 
 You've met all of the navigational requirements that propelled this page.
+-->
+브라우저가 다시 시작되면 이것 저것 클릭해 보세요.
+사용자는 화면에 있는 버튼으로 히어로 목록이나 대시보드 화면을 이동할 수 있으며, 이전 화면으로 돌아갈 수도 있습니다.
 
+이 문서에서 구현하려고 했던 모든 네비게이션을 구현했습니다.
+
+<!--
 ## Final code review
+-->
+## 최종코드 리뷰
 
+<!--
 Here are the code files discussed on this page and your app should look like this <live-example></live-example>.
+-->
+이 문서에서 다룬 코드를 확인해 보세요. 이 코드는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 {@a approutingmodule}
 {@a appmodule}
+<!--
 #### _AppRoutingModule_, _AppModule_, and _HeroService_
+-->
+#### _AppRoutingModule_, _AppModule_, _HeroService_
 
 <code-tabs>
   <code-pane 
@@ -953,8 +1028,12 @@ Here are the code files discussed on this page and your app should look like thi
   </code-pane>
 </code-tabs>
 
+<!--
 ## Summary
+-->
+## 정리
 
+<!--
 * You added the Angular router to navigate among different components.
 * You turned the `AppComponent` into a navigation shell with `<a>` links and a `<router-outlet>`.
 * You configured the router in an `AppRoutingModule` 
@@ -963,3 +1042,12 @@ Here are the code files discussed on this page and your app should look like thi
 * You refactored a tightly-coupled master/detail view into a routed detail view.
 * You used router link parameters to navigate to the detail view of a user-selected hero.
 * You shared the `HeroService` among multiple components.
+-->
+* 화면에 표시되는 컴포넌트를 전환하기 위해 Angular 라우터를 추가했습니다.
+* `AppComponent`에 `<a>` 링크와 `<router-outlet>`을 추가하면 네비게이션이 동작하는 컴포넌트로 확장할 수 있습니다.
+* 라우터 설정은 `AppRoutingModule`에 정의합니다.
+* 간단한 라우팅 규칙부터 리다이렉트 라우팅 규칙, 라우팅 변수가 있는 라우팅 규칙을 정의했습니다.
+* 앵커 엘리먼트에 `routerLink` 디렉티브를 적용했습니다.
+* 히어로 목록/상세정보 화면은 원래 결합도가 높았지만, 라우터를 활용해서 결합도를 낮추도록 리팩토링했습니다.
+* 히어로 목록 화면에서 사용자가 선택한 히어로의 정보를 히어로 상세정보 화면으로 전달하기 위해 라우터 링크 배열을 활용했습니다.
+* 여러 컴포넌트에 사용하는 로직을 중복해서 구현하지 않고 `HeroService`로 옮겨서 재사용할 수 있도록 변경했습니다.
