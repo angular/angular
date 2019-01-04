@@ -144,20 +144,19 @@ module.exports = function(config) {
     browserNoActivityTimeout: 300000,
   });
 
-  if (process.env.TRAVIS) {
-    var buildId =
-        'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
-    if (process.env.CI_MODE.startsWith('saucelabs')) {
-      config.sauceLabs.build = buildId;
-      config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+  if (process.env.CIRCLECI) {
+    const tunnelIdentifier = process.env['SAUCE_TUNNEL_IDENTIFIER'];
 
-      // Try "websocket" for a faster transmission first. Fallback to "polling" if necessary.
-      config.transports = ['websocket', 'polling'];
-    }
+    // Setup the Saucelabs plugin so that it can launch browsers using the proper tunnel.
+    config.sauceLabs.build = tunnelIdentifier;
+    config.sauceLabs.tunnelIdentifier = tunnelIdentifier;
 
-    if (process.env.CI_MODE.startsWith('browserstack')) {
-      config.browserStack.build = buildId;
-      config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
-    }
+    // Setup the Browserstack plugin so that it can launch browsers using the proper tunnel.
+    // TODO: This is currently not used because BS doesn't run on the CI. Consider removing.
+    config.browserStack.build = tunnelIdentifier;
+    config.browserStack.tunnelIdentifier = tunnelIdentifier;
+
+    // Try "websocket" for a faster transmission first. Fallback to "polling" if necessary.
+    config.transports = ['websocket', 'polling'];
   }
 };
