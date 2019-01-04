@@ -31,7 +31,8 @@
     $font-family: _mat-get-type-value($config, $level, font-family);
   }
 
-  @return if($font-family == null, $font-family, unquote($font-family));
+  // Guard against unquoting non-string values, because it's deprecated.
+  @return if(type-of($font-family) == string, unquote($font-family), $font-family);
 }
 
 // Outputs the shorthand `font` CSS property, based on a set of typography values. Falls back to
