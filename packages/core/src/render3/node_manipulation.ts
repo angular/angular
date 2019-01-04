@@ -19,31 +19,16 @@ import {findComponentView, getNativeByTNode, isLContainer, isRootView, readEleme
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
 /** Retrieves the native node (element or a comment) for the parent of a given node. */
-export function getParentNative(tNode: TNode, currentView: LView): RElement|RComment|null {
-  if (tNode.parent == null) {
-    return getHostNative(currentView);
-  } else {
-    const parentTNode = getFirstNonICUParent(tNode);
-    return getNativeByTNode(parentTNode, currentView);
-  }
-}
-
-/**
- * Get the first parent of a node that isn't an IcuContainer TNode
- */
-function getFirstNonICUParent(tNode: TNode): TNode {
-  let parent = tNode.parent;
-  while (parent && parent.type === TNodeType.IcuContainer) {
-    parent = parent.parent;
-  }
-  return parent !;
+function getParentNative(tNode: TNode, currentView: LView): RElement|RComment|null {
+  return tNode.parent == null ? getHostNative(currentView) :
+                                getNativeByTNode(tNode.parent, currentView);
 }
 
 /**
  * Gets the host element given a view. Will return null if the current view is an embedded view,
  * which does not have a host element.
  */
-export function getHostNative(currentView: LView): RElement|null {
+function getHostNative(currentView: LView): RElement|null {
   const hostTNode = currentView[HOST_NODE] as TElementNode;
   return hostTNode && hostTNode.type !== TNodeType.View ?
       (getNativeByTNode(hostTNode, currentView[PARENT] !) as RElement) :
@@ -518,10 +503,9 @@ export function getRenderParent(tNode: TNode, currentView: LView): RElement|null
       return nativeParentNode(currentView[RENDERER], getNativeByTNode(tNode, currentView));
     }
 
-    const tNodeParent = getFirstNonICUParent(tNode);
-    if (tNodeParent != null && tNodeParent.type === TNodeType.ElementContainer) {
-      tNode = getHighestElementContainer(tNodeParent);
-    }
+    // skip over element and ICU containers as those are represented by a comment node and
+    // can't be used as a render parent
+    tNode = getHighestElementOrICUContainer(tNode);
 
     const hostTNode = currentView[HOST_NODE];
     return tNode.parent == null && hostTNode !.type === TNodeType.View ?
@@ -593,17 +577,11 @@ function canInsertNativeChildOfView(viewTNode: TViewNode, view: LView): boolean 
  */
 export function canInsertNativeNode(tNode: TNode, currentView: LView): boolean {
   let currentNode = tNode;
-  let parent: TNode|null = tNode.parent;
+  let parent: TNode|null;
 
-  if (tNode.parent) {
-    if (tNode.parent.type === TNodeType.ElementContainer) {
-      currentNode = getHighestElementContainer(tNode);
-      parent = currentNode.parent;
-    } else if (tNode.parent.type === TNodeType.IcuContainer) {
-      currentNode = getFirstNonICUParent(currentNode);
-      parent = currentNode.parent;
-    }
-  }
+  currentNode = getHighestElementOrICUContainer(currentNode);
+  parent = currentNode.parent;
+
   if (parent === null) parent = currentView[HOST_NODE];
 
   if (parent && parent.type === TNodeType.View) {
@@ -633,7 +611,7 @@ export function nativeInsertBefore(
  */
 export function nativeRemoveChild(renderer: Renderer3, parent: RElement, child: RNode): void {
   isProceduralRenderer(renderer) ? renderer.removeChild(parent as RElement, child) :
-                                   parent !.removeChild(child);
+                                   parent.removeChild(child);
 }
 
 /**
@@ -664,27 +642,23 @@ export function appendChild(
     childEl: RNode | null = null, childTNode: TNode, currentView: LView): boolean {
   if (childEl !== null && canInsertNativeNode(childTNode, currentView)) {
     const renderer = currentView[RENDERER];
-    const parentEl = getParentNative(childTNode, currentView);
+    const renderParent = getRenderParent(childTNode, currentView) !;
     const parentTNode: TNode = childTNode.parent || currentView[HOST_NODE] !;
 
     if (parentTNode.type === TNodeType.View) {
-      const lContainer = getLContainer(parentTNode as TViewNode, currentView) as LContainer;
+      const lContainer = getLContainer(parentTNode as TViewNode, currentView) !;
       const views = lContainer[VIEWS];
       const index = views.indexOf(currentView);
       nativeInsertBefore(
-          renderer, lContainer[RENDER_PARENT] !, childEl,
-          getBeforeNodeForView(index, views, lContainer[NATIVE]));
-    } else if (parentTNode.type === TNodeType.ElementContainer) {
-      const renderParent = getRenderParent(childTNode, currentView) !;
-      const ngContainerAnchorNode = getNativeByTNode(parentTNode, currentView);
-      nativeInsertBefore(renderer, renderParent, childEl, ngContainerAnchorNode);
-    } else if (parentTNode.type === TNodeType.IcuContainer) {
-      const renderParent = getRenderParent(childTNode, currentView) !;
-      const icuAnchorNode = getNativeByTNode(parentTNode, currentView);
-      nativeInsertBefore(renderer, renderParent, childEl, icuAnchorNode);
+          renderer, renderParent, childEl, getBeforeNodeForView(index, views, lContainer[NATIVE]));
+    } else if (
+        parentTNode.type === TNodeType.ElementContainer ||
+        parentTNode.type === TNodeType.IcuContainer) {
+      const anchorNode = getNativeByTNode(parentTNode, currentView);
+      nativeInsertBefore(renderer, renderParent, childEl, anchorNode);
     } else {
-      isProceduralRenderer(renderer) ? renderer.appendChild(parentEl !as RElement, childEl) :
-                                       parentEl !.appendChild(childEl);
+      isProceduralRenderer(renderer) ? renderer.appendChild(renderParent, childEl) :
+                                       renderParent.appendChild(childEl);
     }
     return true;
   }
@@ -692,16 +666,17 @@ export function appendChild(
 }
 
 /**
- * Gets the top-level ng-container if ng-containers are nested.
+ * Gets the top-level element or an ICU container if those containers are nested.
  *
- * @param ngContainer The TNode of the starting ng-container
- * @returns tNode The TNode of the highest level ng-container
+ * @param tNode The starting TNode for which we should skip element and ICU containers
+ * @returns The TNode of the highest level ICU container or element container
  */
-function getHighestElementContainer(ngContainer: TNode): TNode {
-  while (ngContainer.parent != null && ngContainer.parent.type === TNodeType.ElementContainer) {
-    ngContainer = ngContainer.parent;
+function getHighestElementOrICUContainer(tNode: TNode): TNode {
+  while (tNode.parent != null && (tNode.parent.type === TNodeType.ElementContainer ||
+                                  tNode.parent.type === TNodeType.IcuContainer)) {
+    tNode = tNode.parent;
   }
-  return ngContainer;
+  return tNode;
 }
 
 export function getBeforeNodeForView(index: number, views: LView[], containerNative: RComment) {
@@ -725,7 +700,7 @@ export function getBeforeNodeForView(index: number, views: LView[], containerNat
 export function removeChild(childTNode: TNode, childEl: RNode | null, currentView: LView): boolean {
   // We only remove the element if not in View or not projected.
   if (childEl !== null && canInsertNativeNode(childTNode, currentView)) {
-    const parentNative = getParentNative(childTNode, currentView) !as RElement;
+    const parentNative = getRenderParent(childTNode, currentView) !;
     nativeRemoveChild(currentView[RENDERER], parentNative, childEl);
     return true;
   }

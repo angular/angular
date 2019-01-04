@@ -675,13 +675,10 @@
     "name": "getElementDepthCount"
   },
   {
-    "name": "getFirstNonICUParent"
-  },
-  {
     "name": "getFirstTemplatePass"
   },
   {
-    "name": "getHighestElementContainer"
+    "name": "getHighestElementOrICUContainer"
   },
   {
     "name": "getHostNative"

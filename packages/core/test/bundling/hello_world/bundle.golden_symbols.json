@@ -258,10 +258,7 @@
     "name": "getDirectiveDef"
   },
   {
-    "name": "getFirstNonICUParent"
-  },
-  {
-    "name": "getHighestElementContainer"
+    "name": "getHighestElementOrICUContainer"
   },
   {
     "name": "getHostNative"
