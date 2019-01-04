@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChange} from '../../change_detection/change_detection_util';
-import {OnChanges, SimpleChanges} from '../../metadata/lifecycle_hooks';
+import {SimpleChange, SimpleChanges} from '../../change_detection/simple_change';
+import {OnChanges} from '../../metadata/lifecycle_hooks';
 import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
 
 const PRIVATE_PREFIX = '__ngOnChanges_';

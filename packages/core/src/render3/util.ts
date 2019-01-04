@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChange} from '../change_detection';
-import {SimpleChanges} from '../metadata/lifecycle_hooks';
 import {global} from '../util';
 
 import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from './assert';
@@ -19,6 +17,7 @@ import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './inte
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
+import {isOnChangesDirectiveWrapper} from './onchanges_util';
 
 /**
  * Returns whether the values are different from a change detection stand point.
@@ -75,65 +74,6 @@ export function loadInternal<T>(view: LView | TData, index: number): T {
 }
 
 
-/**
- * Checks an object to see if it's an exact instance of a particular type
- * without traversing the inheritance hierarchy like `instanceof` does.
- * @param obj The object to check
- * @param type The type to check the object against
- */
-export function isExactInstanceOf(obj: any, type: any): boolean {
-  return obj != null && typeof obj == 'object' && Object.getPrototypeOf(obj) == type.prototype;
-}
-
-/**
- * Checks to see if an object is an instance of {@link OnChangesDirectiveWrapper}
- * @param obj the object to check (generally from `LView`)
- */
-export function isOnChangesDirectiveWrapper(obj: any): obj is OnChangesDirectiveWrapper<any> {
-  return isExactInstanceOf(obj, OnChangesDirectiveWrapper);
-}
-
-/**
- * Removes the `OnChangesDirectiveWrapper` if present.
- *
- * @param obj to unwrap.
- */
-export function unwrapOnChangesDirectiveWrapper<T>(obj: T | OnChangesDirectiveWrapper<T>): T {
-  return isOnChangesDirectiveWrapper(obj) ? obj.instance : obj;
-}
-
-/**
- * A class that wraps directive instances for storage in LView when directives
- * have onChanges hooks to deal with.
- */
-export class OnChangesDirectiveWrapper<T = any> {
-  seenProps = new Set<string>();
-  previous: SimpleChanges = {};
-  changes: SimpleChanges|null = null;
-
-  constructor(public instance: T) {}
-}
-
-/**
- * Updates the `simpleChanges` property on the `wrapper` instance, such that when it's
- * checked in {@link callHooks} it will fire the related `onChanges` hook.
- * @param wrapper the wrapper for the directive instance
- * @param declaredName the declared name to be used in `SimpleChange`
- * @param value The new value for the property
- */
-export function recordChange(wrapper: OnChangesDirectiveWrapper, declaredName: string, value: any) {
-  const simpleChanges = wrapper.changes || (wrapper.changes = {});
-
-  const firstChange = !wrapper.seenProps.has(declaredName);
-  if (firstChange) {
-    wrapper.seenProps.add(declaredName);
-  }
-
-  const previous = wrapper.previous;
-  const previousValue: SimpleChange|undefined = previous[declaredName];
-  simpleChanges[declaredName] = new SimpleChange(
-      firstChange ? undefined : previousValue && previousValue.currentValue, value, firstChange);
-}
 
 /**
  * Takes the value of a slot in `LView` and returns the element node.

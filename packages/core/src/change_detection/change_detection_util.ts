@@ -7,6 +7,7 @@
  */
 
 import {getSymbolIterator, looseIdentical} from '../util';
+import {SimpleChange} from './simple_change';
 
 export function devModeEqual(a: any, b: any): boolean {
   const isListLikeIterableA = isListLikeIterable(a);
@@ -61,20 +62,6 @@ export class WrappedValue {
 
   /** Returns true if `value` is a wrapped value. */
   static isWrapped(value: any): value is WrappedValue { return value instanceof WrappedValue; }
-}
-
-/**
- * Represents a basic change from a previous to a new value.
- *
- * @publicApi
- */
-export class SimpleChange {
-  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
-
-  /**
-   * Check whether the new value is the first value assigned.
-   */
-  isFirstChange(): boolean { return this.firstChange; }
 }
 
 export function isListLikeIterable(obj: any): boolean {

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SimpleChanges} from '../../change_detection/simple_change';
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {QueryList} from '../../linker';
-import {SimpleChanges} from '../../metadata/lifecycle_hooks';
 import {Sanitizer} from '../../sanitization/security';
 import {Type} from '../../type';
 
