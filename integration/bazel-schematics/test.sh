@@ -28,9 +28,9 @@ function testNonBazel() {
   rm -rf dist src/main.dev.ts src/main.prod.ts
   # Just make a symlink instead of full yarn install to expose node_modules
   ln -s $(bazel info output_base)/external/npm/node_modules node_modules
-  ng build
-  ng test --watch=false
-  ng e2e
+  ng build --progress=false
+  ng test --progress=false --watch=false
+  ng e2e --configuration=ci
 }
 
 testBazel
