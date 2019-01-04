@@ -1077,12 +1077,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       bindingFnName = prepareSyntheticListenerFunctionName(eventName, outputAst.phase !);
       eventName = prepareSyntheticListenerName(eventName, outputAst.phase !);
     } else {
-      const evNameSanitized = sanitizeIdentifier(eventName);
-      const tagNameSanitized = sanitizeIdentifier(tagName);
-      bindingFnName = `${tagNameSanitized}_${evNameSanitized}`;
+      bindingFnName = sanitizeIdentifier(eventName);
     }
 
-    const functionName = `${this.templateName}_${bindingFnName}_${index}_listener`;
+    const tagNameSanitized = sanitizeIdentifier(tagName);
+    const functionName =
+        `${this.templateName}_${tagNameSanitized}_${bindingFnName}_${index}_listener`;
     return () => {
 
       const listenerScope = this._bindingScope.nestedScope(this._bindingScope.bindingLevel);
