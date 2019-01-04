@@ -9,7 +9,7 @@
 import {Component, Directive, TemplateRef, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
+import {fixmeIvy, onlyInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
 
 @Directive({
   selector: '[tplRef]',
@@ -114,36 +114,37 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       expect(element.title).toBe(translate(title, [fixture.componentInstance.name]));
     });
 
-    // FW-903: i18n attributes in nested templates throws at runtime
-    xit('should correctly bind to context in nested template', () => {
-      const title = 'Item {{ id }}';
-      const template = `
-        <div *ngFor='let id of items'>
-          <div i18n-title='m|d' title='${title}'></div>
-        </div>
-      `;
-      const fixture = getFixtureWithOverrides({template});
+    fixmeIvy('FW-903: i18n attributes in nested templates throws at runtime')
+        .it('should correctly bind to context in nested template', () => {
+          const title = 'Item {{ id }}';
+          const template = `
+            <div *ngFor='let id of items'>
+              <div i18n-title='m|d' title='${title}'></div>
+            </div>
+          `;
+          const fixture = getFixtureWithOverrides({template});
 
-      const element = fixture.nativeElement;
-      for (let i = 0; i < element.children.length; i++) {
-        const child = element.children[i];
-        expect((child as any).innerHTML).toBe(`<div title="${translate(title, [i + 1])}"></div>`);
-      }
-    });
+          const element = fixture.nativeElement;
+          for (let i = 0; i < element.children.length; i++) {
+            const child = element.children[i];
+            expect((child as any).innerHTML)
+                .toBe(`<div title="${translate(title, [i + 1])}"></div>`);
+          }
+        });
 
-    // FW-904: i18n attributes placed on i18n root node don't work
-    xit('should work correctly when placed on i18n root node', () => {
-      const title = 'Hello {{ name }}';
-      const content = 'Hello';
-      const template = `
-        <div i18n i18n-title="m|d" title="${title}">${content}</div>
-      `;
-      const fixture = getFixtureWithOverrides({template});
+    fixmeIvy('FW-904: i18n attributes placed on i18n root node don\'t work')
+        .it('should work correctly when placed on i18n root node', () => {
+          const title = 'Hello {{ name }}';
+          const content = 'Hello';
+          const template = `
+            <div i18n i18n-title="m|d" title="${title}">${content}</div>
+          `;
+          const fixture = getFixtureWithOverrides({template});
 
-      const element = fixture.nativeElement.firstChild;
-      expect(element.title).toBe(translate(title, [fixture.componentInstance.name]));
-      expect(element).toHaveText(translate(content));
-    });
+          const element = fixture.nativeElement.firstChild;
+          expect(element.title).toBe(translate(title, [fixture.componentInstance.name]));
+          expect(element).toHaveText(translate(content));
+        });
 
     it('should add i18n attributes on self-closing tags', () => {
       const title = 'Hello {{ name }}';
@@ -299,29 +300,29 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           .toBe(`${translate(hello)} ${translate(bye)}`);
     });
 
-    // FW-910: Invalid placeholder structure generated when using <ng-template> with content that
-    // contains tags
-    xit('should be able to act as child elements inside i18n block (text + tags)', () => {
-      const content = 'Hello';
-      const template = `
-        <div i18n>
-          <ng-template tplRef>
-            <span>${content}</span>
-          </ng-template>
-          <ng-container>
-            <span>${content}</span>
-          </ng-container>
-        </div>
-       `;
-      const fixture = getFixtureWithOverrides({template});
+    fixmeIvy(
+        'FW-910: Invalid placeholder structure generated when using <ng-template> with content that contains tags')
+        .it('should be able to act as child elements inside i18n block (text + tags)', () => {
+          const content = 'Hello';
+          const template = `
+            <div i18n>
+              <ng-template tplRef>
+                <span>${content}</span>
+              </ng-template>
+              <ng-container>
+                <span>${content}</span>
+              </ng-container>
+            </div>
+          `;
+          const fixture = getFixtureWithOverrides({template});
 
-      const element = fixture.nativeElement;
-      const spans = element.getElementsByTagName('span');
-      for (let i = 0; i < spans.length; i++) {
-        const child = spans[i];
-        expect((child as any).innerHTML).toBe(translate(content));
-      }
-    });
+          const element = fixture.nativeElement;
+          const spans = element.getElementsByTagName('span');
+          for (let i = 0; i < spans.length; i++) {
+            const child = spans[i];
+            expect((child as any).innerHTML).toBe(translate(content));
+          }
+        });
 
     it('should handle self-closing tags as content', () => {
       const label = 'My logo';
@@ -401,57 +402,57 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       expect(italicTags[0].innerHTML).toBe(translate('twenty'));
     });
 
-    // FW-905: Multiple ICUs in one i18n block are not processed
-    xit('should handle multiple ICUs in one block', () => {
-      const template = `
-        <div i18n>
-          {age, select, 10 {ten} 20 {twenty} other {other}} - 
-          {count, select, 1 {one} 2 {two} other {more than two}}
-        </div>
-      `;
-      const fixture = getFixtureWithOverrides({template});
+    fixmeIvy('FW-905: Multiple ICUs in one i18n block are not processed')
+        .it('should handle multiple ICUs in one block', () => {
+          const template = `
+            <div i18n>
+              {age, select, 10 {ten} 20 {twenty} other {other}} - 
+              {count, select, 1 {one} 2 {two} other {more than two}}
+            </div>
+          `;
+          const fixture = getFixtureWithOverrides({template});
 
-      const element = fixture.nativeElement.firstChild;
-      expect(element).toHaveText(`${translate('twenty')} - ${translate('two')}`);
-    });
+          const element = fixture.nativeElement.firstChild;
+          expect(element).toHaveText(`${translate('twenty')} - ${translate('two')}`);
+        });
 
-    // FW-906: Multiple ICUs wrapped in HTML tags in one i18n block throw an error
-    xit('should handle multiple ICUs in one i18n block wrapped in HTML elements', () => {
-      const template = `
-        <div i18n>
-          <span>
-            {age, select, 10 {ten} 20 {twenty} other {other}}
-          </span>
-          <span>
-            {count, select, 1 {one} 2 {two} other {more than two}}
-          </span>
-        </div>
-      `;
-      const fixture = getFixtureWithOverrides({template});
+    fixmeIvy('FW-906: Multiple ICUs wrapped in HTML tags in one i18n block throw an error')
+        .it('should handle multiple ICUs in one i18n block wrapped in HTML elements', () => {
+          const template = `
+            <div i18n>
+              <span>
+                {age, select, 10 {ten} 20 {twenty} other {other}}
+              </span>
+              <span>
+                {count, select, 1 {one} 2 {two} other {more than two}}
+              </span>
+            </div>
+          `;
+          const fixture = getFixtureWithOverrides({template});
 
-      const element = fixture.nativeElement.firstChild;
-      const spans = element.getElementsByTagName('span');
-      expect(spans.length).toBe(2);
-      expect(spans[0].innerHTML).toBe(translate('twenty'));
-      expect(spans[1].innerHTML).toBe(translate('two'));
-    });
+          const element = fixture.nativeElement.firstChild;
+          const spans = element.getElementsByTagName('span');
+          expect(spans.length).toBe(2);
+          expect(spans[0].innerHTML).toBe(translate('twenty'));
+          expect(spans[1].innerHTML).toBe(translate('two'));
+        });
 
-    // FW-907: ICUs in templates are not processed (treated as text)
-    xit('should handle ICUs inside a template in i18n block', () => {
-      const template = `
-        <div i18n>
-          <span *ngIf="visible">
-            {age, select, 10 {ten} 20 {twenty} other {other}}
-          </span>
-        </div>
-      `;
-      const fixture = getFixtureWithOverrides({template});
+    fixmeIvy('FW-907: ICUs in templates are not processed (treated as text)')
+        .it('should handle ICUs inside a template in i18n block', () => {
+          const template = `
+            <div i18n>
+              <span *ngIf="visible">
+                {age, select, 10 {ten} 20 {twenty} other {other}}
+              </span>
+            </div>
+          `;
+          const fixture = getFixtureWithOverrides({template});
 
-      const element = fixture.nativeElement.firstChild;
-      const spans = element.getElementsByTagName('span');
-      expect(spans.length).toBe(1);
-      expect(spans[0]).toHaveText(translate('twenty'));
-    });
+          const element = fixture.nativeElement.firstChild;
+          const spans = element.getElementsByTagName('span');
+          expect(spans.length).toBe(1);
+          expect(spans[0]).toHaveText(translate('twenty'));
+        });
 
     it('should handle nested icus', () => {
       const template = `
@@ -468,30 +469,30 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       expect(element).toHaveText(`${translate('twenty')} - ${translate('two')}`);
     });
 
-    // FW-908: ICUs inside <ng-container>s throw an error at runtime
-    xit('should handle ICUs inside <ng-container>', () => {
-      const template = `
-        <ng-container i18n>
-          {age, select, 10 {ten} 20 {twenty} other {other}}
-        </ng-container>
-      `;
-      const fixture = getFixtureWithOverrides({template});
+    fixmeIvy('FW-908: ICUs inside <ng-container>s throw an error at runtime')
+        .it('should handle ICUs inside <ng-container>', () => {
+          const template = `
+            <ng-container i18n>
+              {age, select, 10 {ten} 20 {twenty} other {other}}
+            </ng-container>
+          `;
+          const fixture = getFixtureWithOverrides({template});
 
-      const element = fixture.nativeElement;
-      expect(element.innerHTML).toBe(translate('twenty'));
-    });
+          const element = fixture.nativeElement;
+          expect(element.innerHTML).toBe(translate('twenty'));
+        });
 
-    // FW-909: ICUs inside <ng-template>s throw errors at runtime
-    xit('should handle ICUs inside <ng-template>', () => {
-      const template = `
-        <ng-template i18n tplRef>
-          {age, select, 10 {ten} 20 {twenty} other {other}}
-        </ng-template>
-      `;
-      const fixture = getFixtureWithOverrides({template});
+    fixmeIvy('FW-909: ICUs inside <ng-template>s throw errors at runtime')
+        .it('should handle ICUs inside <ng-template>', () => {
+          const template = `
+            <ng-template i18n tplRef>
+              {age, select, 10 {ten} 20 {twenty} other {other}}
+            </ng-template>
+          `;
+          const fixture = getFixtureWithOverrides({template});
 
-      const element = fixture.nativeElement;
-      expect(element.innerHTML).toBe(translate('twenty'));
-    });
+          const element = fixture.nativeElement;
+          expect(element.innerHTML).toBe(translate('twenty'));
+        });
   });
 });
