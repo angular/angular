@@ -425,6 +425,9 @@ export interface ReflectionHost {
    */
   isClass(node: ts.Node): node is ts.NamedDeclaration;
 
+  /**
+   * Determines whether the given declaration has a base class.
+   */
   hasBaseClass(node: ts.Declaration): boolean;
 
   /**

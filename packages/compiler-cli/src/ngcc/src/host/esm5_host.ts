@@ -42,6 +42,24 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   }
 
   /**
+   * Determines whether the given declaration has a base class.
+   *
+   * In ES5, we need to determine if the IIFE wrapper takes a `_super` parameter .
+   */
+  hasBaseClass(node: ts.Declaration): boolean {
+    const classSymbol = this.getClassSymbol(node);
+    if (!classSymbol) return false;
+
+    const iifeBody = classSymbol.valueDeclaration.parent;
+    if (!iifeBody || !ts.isBlock(iifeBody)) return false;
+
+    const iife = iifeBody.parent;
+    if (!iife || !ts.isFunctionExpression(iife)) return false;
+
+    return iife.parameters.length === 1 && isSuperIdentifier(iife.parameters[0].name);
+  }
+
+  /**
    * Find a symbol for a node that we think is a class.
    *
    * In ES5, the implementation of a class is a function expression that is hidden inside an IIFE.
@@ -391,11 +409,11 @@ function isBinaryExpr(
   return ts.isBinaryExpression(expression) && expression.operatorToken.kind === operator;
 }
 
-function isSuperIdentifier(expression: ts.Expression): boolean {
+function isSuperIdentifier(node: ts.Node): boolean {
   // Verify that the identifier is prefixed with `_super`. We don't test for equivalence
   // as TypeScript may have suffixed the name, e.g. `_super_1` to avoid name conflicts.
   // Requiring only a prefix should be sufficiently accurate.
-  return ts.isIdentifier(expression) && expression.text.startsWith('_super');
+  return ts.isIdentifier(node) && node.text.startsWith('_super');
 }
 
 /**

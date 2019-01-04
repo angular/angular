@@ -961,8 +961,7 @@ describe('Esm5ReflectionHost', () => {
 
         const program = makeTestProgram(file);
         const host = new Esm5ReflectionHost(false, program.getTypeChecker());
-        const classNode =
-          getDeclaration(program, file.name, 'TestClass', ts.isVariableDeclaration);
+        const classNode = getDeclaration(program, file.name, 'TestClass', ts.isVariableDeclaration);
         return host.getConstructorParameters(classNode);
       }
 
@@ -1328,6 +1327,51 @@ describe('Esm5ReflectionHost', () => {
       expect(host.isClass(mockNode)).toBe(false);
       expect(superIsClassSpy).toHaveBeenCalledWith(mockNode);
       expect(getClassSymbolSpy).toHaveBeenCalledWith(mockNode);
+    });
+  });
+
+  describe('hasBaseClass()', () => {
+    function hasBaseClass(source: string) {
+      const file = {
+        name: '/synthesized_constructors.js',
+        contents: source,
+      };
+
+      const program = makeTestProgram(file);
+      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const classNode = getDeclaration(program, file.name, 'TestClass', ts.isVariableDeclaration);
+      return host.hasBaseClass(classNode);
+    }
+
+    it('should consider an IIFE with _super parameter as having a base class', () => {
+      const result = hasBaseClass(`
+        var TestClass = /** @class */ (function (_super) {
+          __extends(TestClass, _super);
+          function TestClass() {}
+          return TestClass;
+        }(null));`);
+      expect(result).toBe(true);
+    });
+
+    it('should consider an IIFE with a unique name generated for the _super parameter as having a base class',
+       () => {
+         const result = hasBaseClass(`
+        var TestClass = /** @class */ (function (_super_1) {
+          __extends(TestClass, _super_1);
+          function TestClass() {}
+          return TestClass;
+        }(null));`);
+         expect(result).toBe(true);
+       });
+
+    it('should not consider an IIFE without parameter as having a base class', () => {
+      const result = hasBaseClass(`
+        var TestClass = /** @class */ (function () {
+          __extends(TestClass, _super);
+          function TestClass() {}
+          return TestClass;
+        }(null));`);
+      expect(result).toBe(false);
     });
   });
 
