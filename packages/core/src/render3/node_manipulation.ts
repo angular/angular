@@ -518,13 +518,12 @@ export function getRenderParent(tNode: TNode, currentView: LView): RElement|null
       return nativeParentNode(currentView[RENDERER], getNativeByTNode(tNode, currentView));
     }
 
-    const hostTNode = currentView[HOST_NODE];
-
-    const tNodeParent = tNode.parent;
+    const tNodeParent = getFirstNonICUParent(tNode);
     if (tNodeParent != null && tNodeParent.type === TNodeType.ElementContainer) {
       tNode = getHighestElementContainer(tNodeParent);
     }
 
+    const hostTNode = currentView[HOST_NODE];
     return tNode.parent == null && hostTNode !.type === TNodeType.View ?
         getContainerRenderParent(hostTNode as TViewNode, currentView) :
         getParentNative(tNode, currentView) as RElement;
@@ -677,10 +676,12 @@ export function appendChild(
           getBeforeNodeForView(index, views, lContainer[NATIVE]));
     } else if (parentTNode.type === TNodeType.ElementContainer) {
       const renderParent = getRenderParent(childTNode, currentView) !;
-      nativeInsertBefore(renderer, renderParent, childEl, parentEl);
+      const ngContainerAnchorNode = getNativeByTNode(parentTNode, currentView);
+      nativeInsertBefore(renderer, renderParent, childEl, ngContainerAnchorNode);
     } else if (parentTNode.type === TNodeType.IcuContainer) {
-      const icuAnchorNode = getNativeByTNode(childTNode.parent !, currentView) !as RElement;
-      nativeInsertBefore(renderer, parentEl as RElement, childEl, icuAnchorNode);
+      const renderParent = getRenderParent(childTNode, currentView) !;
+      const icuAnchorNode = getNativeByTNode(parentTNode, currentView);
+      nativeInsertBefore(renderer, renderParent, childEl, icuAnchorNode);
     } else {
       isProceduralRenderer(renderer) ? renderer.appendChild(parentEl !as RElement, childEl) :
                                        parentEl !.appendChild(childEl);
