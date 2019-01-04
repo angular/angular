@@ -947,14 +947,14 @@ describe('Esm5ReflectionHost', () => {
     });
 
     describe('synthesized constructors', () => {
-      function getConstructorParameters(source: string) {
+      function getConstructorParameters(constructor: string) {
         const file = {
           name: '/synthesized_constructors.js',
           contents: `
-            var TestConstructor = /** @class */ (function (_super) {
-              __extends(TestConstructor, _super);
-              ${source}
-              return TestConstructor;
+            var TestClass = /** @class */ (function (_super) {
+              __extends(TestClass, _super);
+              ${constructor}
+              return TestClass;
             }(null));
           `,
         };
@@ -962,13 +962,13 @@ describe('Esm5ReflectionHost', () => {
         const program = makeTestProgram(file);
         const host = new Esm5ReflectionHost(false, program.getTypeChecker());
         const classNode =
-          getDeclaration(program, file.name, 'TestConstructor', ts.isVariableDeclaration);
+          getDeclaration(program, file.name, 'TestClass', ts.isVariableDeclaration);
         return host.getConstructorParameters(classNode);
       }
 
       it('recognizes _this assignment from super call', () => {
         const parameters = getConstructorParameters(`
-          function TestConstructor() {
+          function TestClass() {
             var _this = _super !== null && _super.apply(this, arguments) || this;
             _this.synthesizedProperty = null;
             return _this;
@@ -979,7 +979,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('recognizes super call as return statement', () => {
         const parameters = getConstructorParameters(`
-          function TestConstructor() {
+          function TestClass() {
             return _super !== null && _super.apply(this, arguments) || this;
           }`);
 
@@ -988,7 +988,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('handles the case where a unique name was generated for _super or _this', () => {
         const parameters = getConstructorParameters(`
-          function TestConstructor() {
+          function TestClass() {
             var _this_1 = _super_1 !== null && _super_1.apply(this, arguments) || this;
             _this_1._this = null;
             _this_1._super = null;
@@ -1000,7 +1000,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('does not consider constructors with parameters as synthesized', () => {
         const parameters = getConstructorParameters(`
-          function TestConstructor(arg) {
+          function TestClass(arg) {
             return _super !== null && _super.apply(this, arguments) || this;
           }`);
 
@@ -1009,7 +1009,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('does not consider manual super calls as synthesized', () => {
         const parameters = getConstructorParameters(`
-          function TestConstructor() {
+          function TestClass() {
             return _super.call(this) || this;
           }`);
 
@@ -1018,7 +1018,7 @@ describe('Esm5ReflectionHost', () => {
 
       it('does not consider empty constructors as synthesized', () => {
         const parameters = getConstructorParameters(`
-          function TestConstructor() {
+          function TestClass() {
           }`);
 
         expect(parameters !.length).toBe(0);
