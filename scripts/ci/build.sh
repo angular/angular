@@ -20,6 +20,8 @@ if [[ ${CI_MODE:-} == "bazel" ]]; then
 fi
 
 travisFoldStart "tsc tools"
+  # TODO: I think these three can be deleted... but I'm not sure
+  #       let's delete them one at a time and test on CI
   $(npm bin)/tsc -p tools
   $(npm bin)/tsc -p packages/compiler/tsconfig-tools.json
   $(npm bin)/tsc -p packages/compiler-cli/tsconfig-tools.json

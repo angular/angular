@@ -399,6 +399,54 @@ jobs:
           command: 'curl --request POST --header "Content-Type: application/json" --data "{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}" $CI_SECRET_SLACK_CARETAKER_WEBHOOK_URL'
           when: on_fail
 
+  legacy-unit-tests-local:
+    <<: *job_defaults
+    docker:
+      - image: *browsers_docker_image
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - *define_env_vars
+      - *yarn_install
+      - run: yarn tsc -p packages
+      - run: yarn tsc -p packages/examples
+      - run: yarn tsc -p modules
+      - run: yarn karma start ./karma-js.conf.js --single-run --browsers=ChromeNoSandbox
+
+  legacy-unit-tests-saucelabs:
+    <<: *job_defaults
+    # In order to avoid the bottleneck of having a slow host machine, we acquire a better
+    # container for this job. This is necessary because we launch a lot of browsers concurrently
+    # and therefore the tunnel and Karma need to process a lot of file requests and tests.
+    resource_class: xlarge
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - *define_env_vars
+      - *yarn_install
+      - run:
+          name: Preparing environment for running tests on Saucelabs.
+          command: |
+            setPublicVar KARMA_JS_BROWSERS $(node -e 'console.log(require("./browser-providers.conf").sauceAliases.CI_REQUIRED.join(","))')
+            setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
+      - run:
+          name: Starting Saucelabs tunnel
+          command: ./scripts/saucelabs/start-tunnel.sh
+          background: true
+      - run: yarn tsc -p packages
+      - run: yarn tsc -p packages/examples
+      - run: yarn tsc -p modules
+        # Waits for the Saucelabs tunnel to be ready. This ensures that we don't run tests
+        # too early without Saucelabs not being ready.
+      - run: ./scripts/saucelabs/wait-for-tunnel.sh
+      - run: yarn karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
+      - run: ./scripts/saucelabs/stop-tunnel.sh
+
+
 workflows:
   version: 2
   default_workflow:
@@ -408,6 +456,8 @@ workflows:
       - test_ivy_aot
       - build-packages-dist
       - test_aio
+      - legacy-unit-tests-local
+      - legacy-unit-tests-saucelabs
       - deploy_aio:
           requires:
             - test_aio
@@ -451,6 +501,9 @@ workflows:
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-packages-dist
+            - legacy-unit-tests-local
+            - legacy-unit-tests-saucelabs
+
 
   aio_monitoring:
     jobs:
@@ -462,3 +515,9 @@ workflows:
             branches:
               only:
                 - master
+
+# TODO:
+# - don't build the g3 branch
+# - verify that we are bootstrapping with the right yarn version coming from the docker image
+# - check local chrome version pulled from docker image
+# - remove /tools/ngcontainer

@@ -1,58 +1,11 @@
-language: node_js
-sudo: false
-dist: trusty
-node_js:
-  - '10.9.0'
-
-addons:
-#  firefox: "38.0"
-  apt:
-    sources:
-      # needed to install g++ that is used by npms's native modules
-      - ubuntu-toolchain-r-test
-    packages:
-      # needed to install g++ that is used by npms's native modules
-      - g++-4.8
-
-branches:
-  except:
-    - g3
-
-cache:
-  yarn: true
-  directories:
-     - ./node_modules
-     - ./.chrome/chromium
-     - ./aio/node_modules
 
 env:
-  global:
-    # GITHUB_TOKEN_ANGULAR=<github token, a personal access token of the angular-builds account, account access in valentine>
-    # This is needed for the e2e Travis matrix task to publish packages to github for continuous packages delivery.
-    - secure: "aCdHveZuY8AT4Jr1JoJB4LxZsnGWRe/KseZh1YXYe5UtufFCtTVHvUcLn0j2aLBF0KpdyS+hWf0i4np9jthKu2xPKriefoPgCMpisYeC0MFkwbmv+XlgkUbgkgVZMGiVyX7DCYXVahxIoOUjVMEDCbNiHTIrfEuyq24U3ok2tHc="
   matrix:
-    # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
     - CI_MODE=e2e
     - CI_MODE=js
     - CI_MODE=saucelabs_required
-    # deactivated, see #19768
-    # - CI_MODE=browserstack_required
 
-    # We disable these optional jobs because those acquire tunnel and browser instances which
-    # could lead to rate limit excess while those are failing most of the time and nobody pays
-    # attention anyway.
-    # - CI_MODE=saucelabs_optional
-    # - CI_MODE=browserstack_optional
 
-matrix:
-  fast_finish: true
-  allow_failures:
-    - env: "CI_MODE=saucelabs_optional"
-    - env: "CI_MODE=browserstack_optional"
-
-before_install:
-  # source the env.sh script so that the exported variables are available to other scripts later on
-  - source ./scripts/ci/env.sh print
 
 install:
   - ./scripts/ci/install.sh
