@@ -27,7 +27,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
     it('should allow reading initial favicon', () => {
       if (!initialFavicon) {
-        expect(faviconService.getFavicon()).toBeNull();
+        expect(faviconService.getFavicon()).toBeUndefined();
       } else {
         expect(faviconService.getFavicon().href).toEqual(initialFavicon.href);
       }
