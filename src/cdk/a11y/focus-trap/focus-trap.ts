@@ -36,6 +36,10 @@ export class FocusTrap {
   private _endAnchor: HTMLElement | null;
   private _hasAttached = false;
 
+  // Event listeners for the anchors. Need to be regular functions so that we can unbind them later.
+  private _startAnchorListener = () => this.focusLastTabbableElement();
+  private _endAnchorListener = () => this.focusFirstTabbableElement();
+
   /** Whether the focus trap is active. */
   get enabled(): boolean { return this._enabled; }
   set enabled(value: boolean) {
@@ -62,12 +66,23 @@ export class FocusTrap {
 
   /** Destroys the focus trap by cleaning up the anchors. */
   destroy() {
-    if (this._startAnchor && this._startAnchor.parentNode) {
-      this._startAnchor.parentNode.removeChild(this._startAnchor);
+    const startAnchor = this._startAnchor;
+    const endAnchor = this._endAnchor;
+
+    if (startAnchor) {
+      startAnchor.removeEventListener('focus', this._startAnchorListener);
+
+      if (startAnchor.parentNode) {
+        startAnchor.parentNode.removeChild(startAnchor);
+      }
     }
 
-    if (this._endAnchor && this._endAnchor.parentNode) {
-      this._endAnchor.parentNode.removeChild(this._endAnchor);
+    if (endAnchor) {
+      endAnchor.removeEventListener('focus', this._endAnchorListener);
+
+      if (endAnchor.parentNode) {
+        endAnchor.parentNode.removeChild(endAnchor);
+      }
     }
 
     this._startAnchor = this._endAnchor = null;
@@ -88,12 +103,12 @@ export class FocusTrap {
     this._ngZone.runOutsideAngular(() => {
       if (!this._startAnchor) {
         this._startAnchor = this._createAnchor();
-        this._startAnchor!.addEventListener('focus', () => this.focusLastTabbableElement());
+        this._startAnchor!.addEventListener('focus', this._startAnchorListener);
       }
 
       if (!this._endAnchor) {
         this._endAnchor = this._createAnchor();
-        this._endAnchor!.addEventListener('focus', () => this.focusFirstTabbableElement());
+        this._endAnchor!.addEventListener('focus', this._endAnchorListener);
       }
     });
 
