@@ -258,7 +258,7 @@
     "name": "getDirectiveDef"
   },
   {
-    "name": "getFirstParentNative"
+    "name": "getFirstNonICUParent"
   },
   {
     "name": "getHighestElementContainer"

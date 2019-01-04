@@ -675,7 +675,7 @@
     "name": "getElementDepthCount"
   },
   {
-    "name": "getFirstParentNative"
+    "name": "getFirstNonICUParent"
   },
   {
     "name": "getFirstTemplatePass"
@@ -1003,6 +1003,9 @@
   },
   {
     "name": "nativeParentNode"
+  },
+  {
+    "name": "nativeRemoveChild"
   },
   {
     "name": "nextContext"
