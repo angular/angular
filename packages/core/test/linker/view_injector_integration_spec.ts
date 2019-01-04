@@ -292,21 +292,19 @@ class TestComp {
         expect(el.children[0].injector.get('injectable2')).toEqual('injectable1-injectable2');
       });
 
-      fixmeIvy(
-          'FW-889: Element injector cannot access the viewProviders of the component to which it belongs')
-          .it('should instantiate viewProviders that have dependencies', () => {
-            TestBed.configureTestingModule({declarations: [SimpleComponent]});
-            const viewProviders = [
-              {provide: 'injectable1', useValue: 'injectable1'}, {
-                provide: 'injectable2',
-                useFactory: (val: any) => `${val}-injectable2`,
-                deps: ['injectable1']
-              }
-            ];
-            TestBed.overrideComponent(SimpleComponent, {set: {viewProviders}});
-            const el = createComponent('<div simpleComponent></div>');
-            expect(el.children[0].injector.get('injectable2')).toEqual('injectable1-injectable2');
-          });
+      it('should instantiate viewProviders that have dependencies', () => {
+        TestBed.configureTestingModule({declarations: [SimpleComponent]});
+        const viewProviders = [
+          {provide: 'injectable1', useValue: 'injectable1'}, {
+            provide: 'injectable2',
+            useFactory: (val: any) => `${val}-injectable2`,
+            deps: ['injectable1']
+          }
+        ];
+        TestBed.overrideComponent(SimpleComponent, {set: {viewProviders}});
+        const el = createComponent('<div simpleComponent></div>');
+        expect(el.children[0].injector.get('injectable2')).toEqual('injectable1-injectable2');
+      });
 
       it('should instantiate components that depend on viewProviders providers', () => {
         TestBed.configureTestingModule({declarations: [NeedsServiceComponent]});
@@ -500,22 +498,20 @@ class TestComp {
             expect(destroyed).toBe(true);
           });
 
-      fixmeIvy(
-          'FW-889: Element injector cannot access the viewProviders of the component to which it belongs')
-          .it('should instantiate view providers lazily', () => {
-            let created = false;
-            TestBed.configureTestingModule({declarations: [SimpleComponent]});
-            TestBed.overrideComponent(
-                SimpleComponent,
-                {set: {viewProviders: [{provide: 'service', useFactory: () => created = true}]}});
-            const el = createComponent('<div simpleComponent></div>');
+      it('should instantiate view providers lazily', () => {
+        let created = false;
+        TestBed.configureTestingModule({declarations: [SimpleComponent]});
+        TestBed.overrideComponent(
+            SimpleComponent,
+            {set: {viewProviders: [{provide: 'service', useFactory: () => created = true}]}});
+        const el = createComponent('<div simpleComponent></div>');
 
-            expect(created).toBe(false);
+        expect(created).toBe(false);
 
-            el.children[0].injector.get('service');
+        el.children[0].injector.get('service');
 
-            expect(created).toBe(true);
-          });
+        expect(created).toBe(true);
+      });
 
       it('should not instantiate other directives that depend on viewProviders providers (same element)',
          () => {
