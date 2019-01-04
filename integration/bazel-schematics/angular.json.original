@@ -62,6 +62,9 @@
           "configurations": {
             "production": {
               "browserTarget": "demo:build:production"
+            },
+            "ci": {
+              "progress": false
             }
           }
         },
@@ -116,6 +119,9 @@
           "configurations": {
             "production": {
               "devServerTarget": "demo:serve:production"
+            },
+            "ci": {
+              "devServerTarget": "demo:serve:ci"
             }
           }
         },
