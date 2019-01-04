@@ -10,7 +10,7 @@ import {assertEqual} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {FLAGS, HookData, LView, LViewFlags, TView} from './interfaces/view';
-import {OnChangesDirectiveWrapper, isOnChangesDirectiveWrapper, unwrapOnChangesDirectiveWrapper} from './util';
+import { unwrapOnChangesDirectiveWrapper, OnChangesDirectiveWrapper } from './onchanges_util';
 
 
 /**

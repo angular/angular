@@ -40,7 +40,8 @@ import {getInitialClassNameValue, initializeStaticContext as initializeStaticSty
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
-import {OnChangesDirectiveWrapper, findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isOnChangesDirectiveWrapper, loadInternal, readElementValue, readPatchedLView, recordChange, stringify, unwrapOnChangesDirectiveWrapper} from './util';
+import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readPatchedLView, stringify} from './util';
+import { unwrapOnChangesDirectiveWrapper, isOnChangesDirectiveWrapper, recordChange, OnChangesDirectiveWrapper } from './onchanges_util';
 
 
 
