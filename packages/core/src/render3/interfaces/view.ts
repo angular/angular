@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SimpleChanges} from '../../change_detection/simple_change';
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {QueryList} from '../../linker';
@@ -20,7 +21,6 @@ import {PlayerHandler} from './player';
 import {LQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
 import {StylingContext} from './styling';
-import { SimpleChanges } from '../../change_detection/simple_change';
 
 
 

@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { setInjectImplementation } from '../di/injector_compatibility';
-import { NodeInjectorFactory, isFactory } from './interfaces/injector';
-import { TElementNode } from './interfaces/node';
-import { LView, TData } from './interfaces/view';
-import { getLView, getPreviousOrParentTNode, setTNodeAndViewData } from './state';
-import { stringify } from './util';
-import { unwrapOnChangesDirectiveWrapper } from './onchanges_util';
+import {setInjectImplementation} from '../di/injector_compatibility';
+
+import {NodeInjectorFactory, isFactory} from './interfaces/injector';
+import {TElementNode} from './interfaces/node';
+import {LView, TData} from './interfaces/view';
+import {unwrapOnChangesDirectiveWrapper} from './onchanges_util';
+import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
+import {stringify} from './util';
 
 
 
@@ -25,7 +26,8 @@ function setIncludeViewProviders(v: boolean): boolean {
 }
 
 /**
- * Returns a boolean that defines if the call to `inject` should include `viewProviders` in its resolution.
+ * Returns a boolean that defines if the call to `inject` should include `viewProviders` in its
+ * resolution.
  *
  * This is set to true when we try to instantiate a component. This value is reset in
  * `getNodeInjectable` to a value which matches the declaration location of the token about to be
@@ -71,7 +73,8 @@ export function shouldIncludeViewProviders(): boolean {
 * cached `injectable`. Otherwise if it detects that the value is still a factory it
 * instantiates the `injectable` and caches the value.
 */
-export function getNodeInjectable(tData: TData, lData: LView, index: number, tNode: TElementNode): any {
+export function getNodeInjectable(
+    tData: TData, lData: LView, index: number, tNode: TElementNode): any {
   let value = lData[index];
   if (isFactory(value)) {
     const factory: NodeInjectorFactory = value;
@@ -89,10 +92,8 @@ export function getNodeInjectable(tData: TData, lData: LView, index: number, tNo
     setTNodeAndViewData(tNode, lData);
     try {
       value = lData[index] = factory.factory(null, tData, lData, tNode);
-    }
-    finally {
-      if (factory.injectImpl)
-        setInjectImplementation(previousInjectImplementation);
+    } finally {
+      if (factory.injectImpl) setInjectImplementation(previousInjectImplementation);
       setIncludeViewProviders(previousIncludeViewProviders);
       factory.resolving = false;
       setTNodeAndViewData(savePreviousOrParentTNode, saveLView);

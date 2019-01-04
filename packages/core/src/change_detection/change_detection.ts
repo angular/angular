@@ -11,7 +11,6 @@ import {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
 import {IterableDifferFactory, IterableDiffers} from './differs/iterable_differs';
 import {KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs';
 
-export {SimpleChange, SimpleChanges} from './simple_change';
 export {WrappedValue, devModeEqual} from './change_detection_util';
 export {ChangeDetectorRef} from './change_detector_ref';
 export {ChangeDetectionStrategy, ChangeDetectorStatus, isDefaultChangeDetectionStrategy} from './constants';
@@ -21,6 +20,8 @@ export {DefaultKeyValueDifferFactory} from './differs/default_keyvalue_differ';
 export {CollectionChangeRecord, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, IterableDiffers, NgIterable, TrackByFunction} from './differs/iterable_differs';
 export {KeyValueChangeRecord, KeyValueChanges, KeyValueDiffer, KeyValueDifferFactory, KeyValueDiffers} from './differs/keyvalue_differs';
 export {PipeTransform} from './pipe_transform';
+export {SimpleChange, SimpleChanges} from './simple_change';
+
 
 
 /**

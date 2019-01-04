@@ -17,7 +17,7 @@ import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './inte
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
-import { isOnChangesDirectiveWrapper } from './onchanges_util';
+import {isOnChangesDirectiveWrapper} from './onchanges_util';
 
 /**
  * Returns whether the values are different from a change detection stand point.

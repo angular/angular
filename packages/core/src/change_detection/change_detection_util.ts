@@ -7,7 +7,7 @@
  */
 
 import {getSymbolIterator, looseIdentical} from '../util';
-import { SimpleChange } from './simple_change';
+import {SimpleChange} from './simple_change';
 
 export function devModeEqual(a: any, b: any): boolean {
   const isListLikeIterableA = isListLikeIterable(a);

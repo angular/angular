@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { SimpleChange, SimpleChanges } from "../../change_detection/simple_change";
+import {SimpleChange, SimpleChanges} from '../../change_detection/simple_change';
 import {OnChanges} from '../../metadata/lifecycle_hooks';
 import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
 

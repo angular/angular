@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { assertDataInRange } from './assert';
-import { HEADER_OFFSET, LView, TData } from './interfaces/view';
-import { isOnChangesDirectiveWrapper } from './onchanges_util';
+import {assertDataInRange} from './assert';
+import {HEADER_OFFSET, LView, TData} from './interfaces/view';
+import {isOnChangesDirectiveWrapper} from './onchanges_util';
 
 /** Retrieves a value from any `LView` or `TData`. */
 export function loadInternal<T>(view: LView | TData, index: number): T {
