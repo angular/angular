@@ -465,6 +465,9 @@
     "name": "tickRootContext"
   },
   {
+    "name": "unwrapOnChangesDirectiveWrapper"
+  },
+  {
     "name": "updateViewQuery"
   },
   {

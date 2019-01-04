@@ -1233,6 +1233,9 @@
     "name": "trackByIdentity"
   },
   {
+    "name": "unwrapOnChangesDirectiveWrapper"
+  },
+  {
     "name": "updateClassProp"
   },
   {
