@@ -34,14 +34,11 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanColor,
   CanColorCtor,
-  CanDisable,
-  CanDisableCtor,
   CanDisableRipple,
   CanDisableRippleCtor,
   HasTabIndex,
   HasTabIndexCtor,
   mixinColor,
-  mixinDisabled,
   mixinDisableRipple,
   mixinTabIndex,
 } from '@angular/material/core';
@@ -71,13 +68,6 @@ export class MatRadioChange {
     public value: any) {}
 }
 
-
-// Boilerplate for applying mixins to MatRadioGroup.
-/** @docs-private */
-export class MatRadioGroupBase { }
-export const _MatRadioGroupMixinBase: CanDisableCtor & typeof MatRadioGroupBase =
-    mixinDisabled(MatRadioGroupBase);
-
 /**
  * A group of radio buttons. May contain one or more `<mat-radio-button>` elements.
  */
@@ -89,11 +79,8 @@ export const _MatRadioGroupMixinBase: CanDisableCtor & typeof MatRadioGroupBase 
     'role': 'radiogroup',
     'class': 'mat-radio-group',
   },
-  inputs: ['disabled'],
 })
-export class MatRadioGroup extends _MatRadioGroupMixinBase
-    implements AfterContentInit, ControlValueAccessor, CanDisable {
-
+export class MatRadioGroup implements AfterContentInit, ControlValueAccessor {
   /** Selected value for the radio group. */
   private _value: any = null;
 
@@ -205,9 +192,7 @@ export class MatRadioGroup extends _MatRadioGroupMixinBase
     this._markRadiosForCheck();
   }
 
-  constructor(private _changeDetector: ChangeDetectorRef) {
-    super();
-  }
+  constructor(private _changeDetector: ChangeDetectorRef) { }
 
   /**
    * Initialize properties once content children are available.
