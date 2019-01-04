@@ -250,11 +250,7 @@ function extractHostBindings(host: {[key: string]: string}, propMetadata: {[key:
   properties: StringMap,
 } {
   // First parse the declarations from the metadata.
-  const {attributes, listeners, properties, animations} = parseHostBindings(host || {});
-
-  if (Object.keys(animations).length > 0) {
-    throw new Error(`Animation bindings are as-of-yet unsupported in Ivy`);
-  }
+  const {attributes, listeners, properties} = parseHostBindings(host || {});
 
   // Next, loop over the properties of the object, looking for @HostBinding and @HostListener.
   for (const field in propMetadata) {

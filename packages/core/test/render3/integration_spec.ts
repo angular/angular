@@ -2102,6 +2102,49 @@ describe('render3 integration test', () => {
          const [elm, attr, value] = spy.calls.mostRecent().args;
          expect(attr).toEqual('@fooAnimation');
        });
+
+    it('should allow host binding animations to be picked up and rendered', () => {
+      class ChildCompWithAnim {
+        static ngDirectiveDef = defineDirective({
+          type: ChildCompWithAnim,
+          factory: () => new ChildCompWithAnim(),
+          selectors: [['child-comp-with-anim']],
+          hostBindings: function(rf: RenderFlags, ctx: any, elementIndex: number): void {
+            if (rf & RenderFlags.Update) {
+              elementProperty(0, '@fooAnim', ctx.exp);
+            }
+          },
+        });
+
+        exp = 'go';
+      }
+
+      class ParentComp {
+        static ngComponentDef = defineComponent({
+          type: ParentComp,
+          consts: 1,
+          vars: 1,
+          selectors: [['foo']],
+          factory: () => new ParentComp(),
+          template: (rf: RenderFlags, ctx: ParentComp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'child-comp-with-anim');
+            }
+          },
+          directives: [ChildCompWithAnim]
+        });
+      }
+
+      const rendererFactory = new MockRendererFactory(['setProperty']);
+      const fixture = new ComponentFixture(ParentComp, {rendererFactory});
+
+      const renderer = rendererFactory.lastRenderer !;
+      fixture.update();
+
+      const spy = renderer.spies['setProperty'];
+      const [elm, attr, value] = spy.calls.mostRecent().args;
+      expect(attr).toEqual('@fooAnim');
+    });
   });
 
   describe('element discovery', () => {

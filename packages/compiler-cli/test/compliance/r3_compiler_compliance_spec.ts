@@ -434,14 +434,14 @@ describe('compiler compliance', () => {
             $r3$.ɵallocHostVars(14);
           }
           if (rf & 2) {
-            $r3$.ɵelementProperty(elIndex, "expansionHeight",
+            $r3$.ɵcomponentHostSyntheticProperty(elIndex, "@expansionHeight",
               $r3$.ɵbind(
                 $r3$.ɵpureFunction2(5, $_c1$, ctx.getExpandedState(),
                   $r3$.ɵpureFunction2(2, $_c0$, ctx.collapsedHeight, ctx.expandedHeight)
                 )
               ), null, true
             );
-            $r3$.ɵelementProperty(elIndex, "expansionWidth",
+            $r3$.ɵcomponentHostSyntheticProperty(elIndex, "@expansionWidth",
               $r3$.ɵbind(
                 $r3$.ɵpureFunction2(11, $_c1$, ctx.getExpandedState(),
                   $r3$.ɵpureFunction2(8, $_c2$, ctx.collapsedWidth, ctx.expandedWidth)

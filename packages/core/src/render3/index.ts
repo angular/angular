@@ -44,6 +44,7 @@ export {
   elementClassProp,
   elementEnd,
   elementProperty,
+  componentHostSyntheticProperty,
   elementStart,
 
   elementContainerStart,
