@@ -42,7 +42,7 @@ ivy-ngcc
 # Did it generate a base factory call for synthesized constructors correctly?
   grep "const ɵMatTable_BaseFactory = ɵngcc0.ɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm2015/table.js
   if [[ $? != 0 ]]; then exit 1; fi
-  grep "var ɵMatTable_BaseFactory = ɵngcc0.ɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm5/table.es5.js
+  grep "const ɵMatTable_BaseFactory = ɵngcc0.ɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm5/table.es5.js
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Can it be safely run again (as a noop)?
