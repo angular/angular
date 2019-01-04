@@ -2453,6 +2453,22 @@ describe('MatSelect', () => {
       expect(component.select.errorState).toBe(true);
       expect(errorStateMatcher.isErrorState).toHaveBeenCalled();
     }));
+
+    it('should notify that the state changed when the options have changed', fakeAsync(() => {
+      testComponent.formControl.setValue('pizza-1');
+      fixture.detectChanges();
+
+      const spy = jasmine.createSpy('stateChanges spy');
+      const subscription = testComponent.select.stateChanges.subscribe(spy);
+
+      testComponent.options = [];
+      fixture.detectChanges();
+      tick();
+
+      expect(spy).toHaveBeenCalled();
+      subscription.unsubscribe();
+    }));
+
   });
 
   describe('with custom error behavior', () => {
@@ -4640,8 +4656,9 @@ class InvalidSelectInForm {
     <form [formGroup]="formGroup">
       <mat-form-field>
         <mat-select placeholder="Food" formControlName="food">
-          <mat-option value="steak-0">Steak</mat-option>
-          <mat-option value="pizza-1">Pizza</mat-option>
+          <mat-option *ngFor="let option of options" [value]="option.value">
+            {{option.viewValue}}
+          </mat-option>
         </mat-select>
 
         <mat-error>This field is required</mat-error>
@@ -4652,6 +4669,10 @@ class InvalidSelectInForm {
 class SelectInsideFormGroup {
   @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
   @ViewChild(MatSelect) select: MatSelect;
+  options = [
+    {value: 'steak-0', viewValue: 'Steak'},
+    {value: 'pizza-1', viewValue: 'Pizza'},
+  ];
   formControl = new FormControl('', Validators.required);
   formGroup = new FormGroup({
     food: this.formControl
