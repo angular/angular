@@ -120,16 +120,19 @@ def npm_package(name, replacements = {}, **kwargs):
         **kwargs
     )
 
-def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
+def ts_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
     """Default values for ts_web_test_suite"""
     if not bootstrap:
         bootstrap = ["//:web_test_bootstrap_scripts"]
     local_deps = [
         "@ngdeps//node_modules/tslib:tslib.js",
-        "//tools/testing:browser",
     ] + deps
+    local_runtime_deps = [
+        "//tools/testing:browser",
+    ] + runtime_deps
 
     _ts_web_test_suite(
+        runtime_deps = local_runtime_deps,
         bootstrap = bootstrap,
         deps = local_deps,
         karma = _DEFAULT_KARMA_BIN,
