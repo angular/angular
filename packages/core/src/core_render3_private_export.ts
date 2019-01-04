@@ -83,6 +83,7 @@ export {
   loadQueryList as ɵloadQueryList,
   elementEnd as ɵelementEnd,
   elementProperty as ɵelementProperty,
+  componentHostSyntheticProperty as ɵcomponentHostSyntheticProperty,
   projectionDef as ɵprojectionDef,
   reference as ɵreference,
   enableBindings as ɵenableBindings,

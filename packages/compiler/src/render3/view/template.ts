@@ -10,7 +10,7 @@ import {flatten, sanitizeIdentifier} from '../../compile_metadata';
 import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, ASTWithSource, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
+import {AST, ASTWithSource, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEvent, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
 import {Parser} from '../../expression_parser/parser';
 import * as i18n from '../../i18n/i18n_ast';
@@ -29,6 +29,7 @@ import {error} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
+import {getSyntheticPropertyName, prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
 
 import {R3QueryMetadata} from './api';
 import {I18nContext} from './i18n/context';
@@ -651,11 +652,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         const value = input.value.visit(this._valueConverter);
         // setProperty without a value doesn't make any sense
         if (value.name || value.value) {
+          const bindingName = prepareSyntheticPropertyName(input.name);
           this.allocateBindingSlots(value);
-          const name = prepareSyntheticAttributeName(input.name);
           this.updateInstruction(input.sourceSpan, R3.elementProperty, () => {
             return [
-              o.literal(elementIndex), o.literal(name), this.convertPropertyBinding(implicit, value)
+              o.literal(elementIndex), o.literal(bindingName),
+              this.convertPropertyBinding(implicit, value)
             ];
           });
         }
@@ -1002,7 +1004,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           if (isASTWithSource(valueExp)) {
             const literal = valueExp.ast;
             if (isLiteralPrimitive(literal) && literal.value === undefined) {
-              addAttrExpr(prepareSyntheticAttributeName(input.name), EMPTY_STRING_EXPR);
+              addAttrExpr(prepareSyntheticPropertyName(input.name), EMPTY_STRING_EXPR);
             }
           }
         } else {
@@ -1021,7 +1023,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (nonSyntheticInputs.length || outputs.length) {
       addAttrExpr(core.AttributeMarker.SelectOnly);
       nonSyntheticInputs.forEach((i: t.BoundAttribute) => addAttrExpr(i.name));
-      outputs.forEach((o: t.BoundEvent) => addAttrExpr(o.name));
+      outputs.forEach((o: t.BoundEvent) => {
+        const name =
+            o.type === ParsedEventType.Animation ? getSyntheticPropertyName(o.name) : o.name;
+        addAttrExpr(name);
+      });
     }
 
     return attrExprs;
@@ -1064,14 +1070,19 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private prepareListenerParameter(tagName: string, outputAst: t.BoundEvent, index: number):
       () => o.Expression[] {
     let eventName: string = outputAst.name;
+
+    let bindingFnName;
     if (outputAst.type === ParsedEventType.Animation) {
-      eventName = prepareSyntheticAttributeName(`${outputAst.name}.${outputAst.phase}`);
+      // synthetic @listener.foo values are treated the exact same as are standard listeners
+      bindingFnName = prepareSyntheticListenerFunctionName(eventName, outputAst.phase !);
+      eventName = prepareSyntheticListenerName(eventName, outputAst.phase !);
+    } else {
+      bindingFnName = sanitizeIdentifier(eventName);
     }
-    const evNameSanitized = sanitizeIdentifier(eventName);
+
     const tagNameSanitized = sanitizeIdentifier(tagName);
     const functionName =
-        `${this.templateName}_${tagNameSanitized}_${evNameSanitized}_${index}_listener`;
-
+        `${this.templateName}_${tagNameSanitized}_${bindingFnName}_${index}_listener`;
     return () => {
 
       const listenerScope = this._bindingScope.nestedScope(this._bindingScope.bindingLevel);
@@ -1561,10 +1572,6 @@ function resolveSanitizationFn(input: t.BoundAttribute, context: core.SecurityCo
     default:
       return null;
   }
-}
-
-function prepareSyntheticAttributeName(name: string) {
-  return '@' + name;
 }
 
 function isSingleElementTemplate(children: t.Node[]): children is[t.Element] {

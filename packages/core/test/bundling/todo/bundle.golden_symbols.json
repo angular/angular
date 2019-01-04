@@ -564,6 +564,9 @@
     "name": "elementProperty"
   },
   {
+    "name": "elementPropertyInternal"
+  },
+  {
     "name": "elementStart"
   },
   {

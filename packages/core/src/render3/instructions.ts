@@ -987,10 +987,48 @@ export function elementAttribute(
  * @param nativeOnly Whether or not we should only set native properties and skip input check
  * (this is necessary for host property bindings)
  */
-
 export function elementProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean): void {
+  elementPropertyInternal(index, propName, value, sanitizer, nativeOnly);
+}
+
+/**
+ * Updates a synthetic host binding (e.g. `[@foo]`) on a component.
+ *
+ * This instruction is for compatibility purposes and is designed to ensure that a
+ * synthetic host binding (e.g. `@HostBinding('@foo')`) properly gets rendered in
+ * the component's renderer. Normally all host bindings are evaluated with the parent
+ * component's renderer, but, in the case of animation @triggers, they need to be
+ * evaluated with the sub components renderer (because that's where the animation
+ * triggers are defined).
+ *
+ * Do not use this instruction as a replacement for `elementProperty`. This instruction
+ * only exists to ensure compatibility with the ViewEngine's host binding behavior.
+ *
+ * @param index The index of the element to update in the data array
+ * @param propName Name of property. Because it is going to DOM, this is not subject to
+ *        renaming as part of minification.
+ * @param value New value to write.
+ * @param sanitizer An optional function used to sanitize the value.
+ * @param nativeOnly Whether or not we should only set native properties and skip input check
+ * (this is necessary for host property bindings)
+ */
+export function componentHostSyntheticProperty<T>(
+    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
+    nativeOnly?: boolean) {
+  elementPropertyInternal(index, propName, value, sanitizer, nativeOnly, loadComponentRenderer);
+}
+
+function loadComponentRenderer(tNode: TNode, lView: LView): Renderer3 {
+  const componentLView = lView[tNode.index] as LView;
+  return componentLView[RENDERER];
+}
+
+function elementPropertyInternal<T>(
+    index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
+    nativeOnly?: boolean,
+    loadRendererFn?: ((tNode: TNode, lView: LView) => Renderer3) | null): void {
   if (value === NO_CHANGE) return;
   const lView = getLView();
   const element = getNativeByIndex(index, lView) as RElement | RComment;
@@ -1007,7 +1045,7 @@ export function elementProperty<T>(
       }
     }
   } else if (tNode.type === TNodeType.Element) {
-    const renderer = lView[RENDERER];
+    const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     // It is assumed that the sanitizer is only added when the compiler determines that the property
     // is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value) as any) : value;
