@@ -202,13 +202,9 @@ function executeNodeAction(
     action: WalkTNodeTreeAction, renderer: Renderer3, parent: RElement | null,
     node: RComment | RElement | RText, beforeNode?: RNode | null) {
   if (action === WalkTNodeTreeAction.Insert) {
-    isProceduralRenderer(renderer !) ?
-        (renderer as ProceduralRenderer3).insertBefore(parent !, node, beforeNode as RNode | null) :
-        parent !.insertBefore(node, beforeNode as RNode | null, true);
+    nativeInsertBefore(renderer, parent !, node, beforeNode || null);
   } else if (action === WalkTNodeTreeAction.Detach) {
-    isProceduralRenderer(renderer !) ?
-        (renderer as ProceduralRenderer3).removeChild(parent !, node) :
-        parent !.removeChild(node);
+    nativeRemoveChild(renderer, parent !, node);
   } else if (action === WalkTNodeTreeAction.Destroy) {
     ngDevMode && ngDevMode.rendererDestroyNode++;
     (renderer as ProceduralRenderer3).destroyNode !(node);
@@ -634,6 +630,14 @@ export function nativeInsertBefore(
 }
 
 /**
+ * Removes a native child node from a given native parent node.
+ */
+export function nativeRemoveChild(renderer: Renderer3, parent: RElement, child: RNode): void {
+  isProceduralRenderer(renderer) ? renderer.removeChild(parent as RElement, child) :
+                                   parent !.removeChild(child);
+}
+
+/**
  * Returns a native parent of a given native node.
  */
 export function nativeParentNode(renderer: Renderer3, node: RNode): RElement|null {
@@ -721,9 +725,7 @@ export function removeChild(childTNode: TNode, childEl: RNode | null, currentVie
   // We only remove the element if not in View or not projected.
   if (childEl !== null && canInsertNativeNode(childTNode, currentView)) {
     const parentNative = getParentNative(childTNode, currentView) !as RElement;
-    const renderer = currentView[RENDERER];
-    isProceduralRenderer(renderer) ? renderer.removeChild(parentNative as RElement, childEl) :
-                                     parentNative !.removeChild(childEl);
+    nativeRemoveChild(currentView[RENDERER], parentNative, childEl);
     return true;
   }
   return false;
