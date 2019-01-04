@@ -58,7 +58,7 @@ export function prepareSyntheticPropertyName(name: string) {
   return `${ANIMATE_SYMBOL_PREFIX}${name}`;
 }
 
-export function prepareSyntheicListenerName(name: string, phase: string) {
+export function prepareSyntheticListenerName(name: string, phase: string) {
   return `${ANIMATE_SYMBOL_PREFIX}${name}.${phase}`;
 }
 

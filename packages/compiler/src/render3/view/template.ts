@@ -29,7 +29,7 @@ import {error} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
-import {getSyntheticPropertyName, prepareSyntheicListenerName, prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName} from '../util';
+import {getSyntheticPropertyName, prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
 
 import {R3QueryMetadata} from './api';
 import {I18nContext} from './i18n/context';
@@ -1075,7 +1075,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (outputAst.type === ParsedEventType.Animation) {
       // synthetic @listener.foo values are treated the exact same as are standard listeners
       bindingFnName = prepareSyntheticListenerFunctionName(eventName, outputAst.phase !);
-      eventName = prepareSyntheicListenerName(eventName, outputAst.phase !);
+      eventName = prepareSyntheticListenerName(eventName, outputAst.phase !);
     } else {
       const evNameSanitized = sanitizeIdentifier(eventName);
       const tagNameSanitized = sanitizeIdentifier(tagName);

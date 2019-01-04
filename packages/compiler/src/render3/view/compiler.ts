@@ -25,7 +25,7 @@ import {OutputContext, error} from '../../util';
 import {compileFactoryFunction, dependenciesFromGlobalMetadata} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
-import {prepareSyntheicListenerName, prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
+import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
@@ -815,7 +815,7 @@ function createHostListeners(
     let bindingFnName = bindingName;
     if (binding.type === ParsedEventType.Animation) {
       bindingFnName = prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase);
-      bindingName = prepareSyntheicListenerName(bindingName, binding.targetOrPhase);
+      bindingName = prepareSyntheticListenerName(bindingName, binding.targetOrPhase);
     }
     const typeName = meta.name;
     const functionName =
