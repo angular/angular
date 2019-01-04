@@ -2,6 +2,7 @@
 @import '../core/style/list-common';
 @import '../core/style/layout-common';
 @import '../divider/divider-offset';
+@import '../../cdk/a11y/a11y';
 
 
 $mat-list-side-padding: 16px;
@@ -269,7 +270,7 @@ $mat-list-item-inset-divider-offset: 72px;
 }
 
 mat-action-list {
-  //remove the native button look and make it look like a list item
+  // Remove the native button look and make it look like a list item
   button {
     background: none;
     color: inherit;
@@ -287,6 +288,20 @@ mat-action-list {
 .mat-list-option:not(.mat-list-item-disabled) {
   cursor: pointer;
   outline: none;
+}
+
+@include cdk-high-contrast {
+  .mat-selection-list:focus {
+    outline-style: dotted;
+  }
+
+  .mat-list-option,
+  .mat-nav-list .mat-list-item,
+  mat-action-list .mat-list-item {
+    &:hover, &:focus {
+      outline: dotted 1px;
+    }
+  }
 }
 
 

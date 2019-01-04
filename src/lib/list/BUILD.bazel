@@ -33,6 +33,7 @@ sass_binary(
   name = "list_scss",
   src = "list.scss",
   deps = [
+    "//src/cdk/a11y:a11y_scss_lib",
     "//src/lib/core:core_scss_lib",
     "//src/lib/divider:divider_scss_lib"
   ],
