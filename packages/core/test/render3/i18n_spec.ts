@@ -713,7 +713,7 @@ describe('Runtime i18n', () => {
       expect(fixture.html)
           .toEqual(
               '<div><span>3 <span title="emails label">emails</span><!--ICU 4--></span></div>');
-            });
+    });
 
     it('for ICU expressions inside <ng-container>', () => {
       const MSG_DIV = `{�0�, plural, 
@@ -721,20 +721,24 @@ describe('Runtime i18n', () => {
         =1 {one <i>email</i>} 
         other {�0� <span title="�1�">emails</span>}
       }`;
-      const fixture = prepareFixture(() => {
-        elementStart(0, 'div'); {
-          elementContainerStart(1); {
-            i18n(2, MSG_DIV);
-          }
-          elementContainerEnd();
-        }
-        elementEnd();
-      }, () => {
-        i18nExp(bind(0));
-        i18nApply(2);
-      }, 3, 1);
+      const fixture = prepareFixture(
+          () => {
+            elementStart(0, 'div');
+            {
+              elementContainerStart(1);
+              { i18n(2, MSG_DIV); }
+              elementContainerEnd();
+            }
+            elementEnd();
+          },
+          () => {
+            i18nExp(bind(0));
+            i18nExp(bind('more than one'));
+            i18nApply(2);
+          },
+          3, 2);
 
-      expect(fixture.html).toEqual('<div>no <b title="none">emails</b>!<!--ICU 4--></div>');
+      expect(fixture.html).toEqual('<div>no <b title="none">emails</b>!<!--ICU 5--></div>');
     });
 
     it('for nested ICU expressions', () => {
