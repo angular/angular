@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from './assert';
 import {attachPatchData} from './context_discovery';
 import {callHooks} from './hooks';
 import {LContainer, NATIVE, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
@@ -19,12 +18,12 @@ import {findComponentView, getNativeByTNode, isLContainer, isRootView, readEleme
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
-/** Retrieves the parent element of a given node. */
+/** Retrieves the native node (element or a comment) for the parent of a given node. */
 export function getParentNative(tNode: TNode, currentView: LView): RElement|RComment|null {
   if (tNode.parent == null) {
     return getHostNative(currentView);
   } else {
-    const parentTNode = getFirstParentNative(tNode);
+    const parentTNode = getFirstNonICUParent(tNode);
     return getNativeByTNode(parentTNode, currentView);
   }
 }
@@ -32,7 +31,7 @@ export function getParentNative(tNode: TNode, currentView: LView): RElement|RCom
 /**
  * Get the first parent of a node that isn't an IcuContainer TNode
  */
-function getFirstParentNative(tNode: TNode): TNode {
+function getFirstNonICUParent(tNode: TNode): TNode {
   let parent = tNode.parent;
   while (parent && parent.type === TNodeType.IcuContainer) {
     parent = parent.parent;
@@ -606,7 +605,7 @@ export function canInsertNativeNode(tNode: TNode, currentView: LView): boolean {
       currentNode = getHighestElementContainer(tNode);
       parent = currentNode.parent;
     } else if (tNode.parent.type === TNodeType.IcuContainer) {
-      currentNode = getFirstParentNative(currentNode);
+      currentNode = getFirstNonICUParent(currentNode);
       parent = currentNode.parent;
     }
   }
