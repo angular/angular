@@ -1188,7 +1188,11 @@ describe('providers', () => {
       static ngInjectableDef = defineInjectable({factory: () => new SomeInj(inject(String))});
     }
 
-    @Component({template: `<p></p>`, providers: [{provide: String, useValue: 'From my component'}]})
+    @Component({
+      template: `<p></p>`,
+      providers: [{provide: String, useValue: 'From my component'}],
+      viewProviders: [{provide: Number, useValue: 123}]
+    })
     class MyComponent {
       constructor() {}
 
@@ -1204,7 +1208,9 @@ describe('providers', () => {
           }
         },
         features: [
-          ProvidersFeature([{provide: String, useValue: 'From my component'}]),
+          ProvidersFeature(
+              [{provide: String, useValue: 'From my component'}],
+              [{provide: Number, useValue: 123}]),
         ],
       });
     }
@@ -1237,12 +1243,24 @@ describe('providers', () => {
       });
     }
 
-    it('should work', () => {
+    it('should work from within the template', () => {
       const fixture = new ComponentFixture(AppComponent);
       expect(fixture.html).toEqual('<my-cmp><p></p></my-cmp>');
 
       const p = fixture.hostElement.querySelector('p');
       const injector = getInjector(p as any);
+      expect(injector.get(Number)).toEqual(123);
+      expect(injector.get(String)).toEqual('From my component');
+      expect(injector.get(Some).location).toEqual('From app component');
+    });
+
+    it('should work from the host of the component', () => {
+      const fixture = new ComponentFixture(AppComponent);
+      expect(fixture.html).toEqual('<my-cmp><p></p></my-cmp>');
+
+      const myCmp = fixture.hostElement.querySelector('my-cmp');
+      const injector = getInjector(myCmp as any);
+      expect(injector.get(Number)).toEqual(123);
       expect(injector.get(String)).toEqual('From my component');
       expect(injector.get(Some).location).toEqual('From app component');
     });

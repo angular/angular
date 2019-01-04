@@ -60,7 +60,7 @@ import {getHostTElementNode, getParentInjectorIndex, getParentInjectorView, hasP
  *
  * ```
  */
-let includeViewProviders = false;
+let includeViewProviders = true;
 
 function setIncludeViewProviders(v: boolean): boolean {
   const oldValue = includeViewProviders;
