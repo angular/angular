@@ -121,6 +121,7 @@ export const MAT_FORM_FIELD_DEFAULT_OPTIONS =
     '[class.mat-form-field-invalid]': '_control.errorState',
     '[class.mat-form-field-can-float]': '_canLabelFloat',
     '[class.mat-form-field-should-float]': '_shouldLabelFloat()',
+    '[class.mat-form-field-has-label]': '_hasFloatingLabel()',
     '[class.mat-form-field-hide-placeholder]': '_hideControlPlaceholder()',
     '[class.mat-form-field-disabled]': '_control.disabled',
     '[class.mat-form-field-autofilled]': '_control.autofilled',
