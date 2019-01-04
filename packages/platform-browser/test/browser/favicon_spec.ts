@@ -26,9 +26,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
     });
 
     it('should allow reading initial favicon', () => {
-      // tslint:disable-next-line:no-console
-      console.log('initialFavicon', initialFavicon);
-      if (initialFavicon === null) {
+      if (!initialFavicon) {
         expect(faviconService.getFavicon()).toBeNull();
       } else {
         expect(faviconService.getFavicon().href).toEqual(initialFavicon.href);
