@@ -7,6 +7,7 @@
  */
 
 export {BrowserModule, platformBrowser} from './browser';
+export {Favicon} from './browser/favicon';
 export {Meta, MetaDefinition} from './browser/meta';
 export {Title} from './browser/title';
 export {disableDebugTools, enableDebugTools} from './browser/tools/tools';
