@@ -115,7 +115,6 @@ export interface R3DirectiveMetadataFacade {
   queries: R3QueryMetadataFacade[];
   host: {[key: string]: string};
   propMetadata: {[key: string]: any[]};
-  lifecycle: {usesOnChanges: boolean;};
   inputs: string[];
   outputs: string[];
   usesInheritance: boolean;
