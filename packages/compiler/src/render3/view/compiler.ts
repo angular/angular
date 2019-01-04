@@ -12,7 +12,7 @@ import {CompileReflector} from '../../compile_reflector';
 import {BindingForm, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool, DefinitionKind} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, ParsedEvent} from '../../expression_parser/ast';
+import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
 import {LifecycleHooks} from '../../lifecycle_reflector';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
@@ -25,7 +25,7 @@ import {OutputContext, error} from '../../util';
 import {compileFactoryFunction, dependenciesFromGlobalMetadata} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
-import {typeWithParameters} from '../util';
+import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {StylingBuilder, StylingInstruction} from './styling_builder';
@@ -697,7 +697,7 @@ function createHostBindingsFunction(
         const value = binding.expression.visit(valueConverter);
         const bindingExpr = bindingFn(bindingContext, value);
 
-        const {bindingName, instruction, extraParams} = getBindingNameAndInstruction(name);
+        const {bindingName, instruction, extraParams} = getBindingNameAndInstruction(binding);
 
         const instructionParams: o.Expression[] = [
           elVarExp, o.literal(bindingName), o.importExpr(R3.bind).callFn([bindingExpr.currValExpr])
@@ -775,8 +775,9 @@ function createStylingStmt(
       .toStmt();
 }
 
-function getBindingNameAndInstruction(bindingName: string):
+function getBindingNameAndInstruction(binding: ParsedProperty):
     {bindingName: string, instruction: o.ExternalReference, extraParams: o.Expression[]} {
+  let bindingName = binding.name;
   let instruction !: o.ExternalReference;
   const extraParams: o.Expression[] = [];
 
@@ -786,7 +787,15 @@ function getBindingNameAndInstruction(bindingName: string):
     bindingName = attrMatches[1];
     instruction = R3.elementAttribute;
   } else {
-    instruction = R3.elementProperty;
+    if (binding.isAnimation) {
+      bindingName = prepareSyntheticPropertyName(bindingName);
+      // host bindings that have a synthetic property (e.g. @foo) should always be rendered
+      // in the context of the component and not the parent. Therefore there is a special
+      // compatibility instruction available for this purpose.
+      instruction = R3.componentHostSyntheticProperty;
+    } else {
+      instruction = R3.elementProperty;
+    }
     extraParams.push(
         o.literal(null),  // TODO: This should be a sanitizer fn (FW-785)
         o.literal(true)   // host bindings must have nativeOnly prop set to true
@@ -802,14 +811,19 @@ function createHostListeners(
   return eventBindings.map(binding => {
     const bindingExpr = convertActionBinding(
         null, bindingContext, binding.handler, 'b', () => error('Unexpected interpolation'));
-    const bindingName = binding.name && sanitizeIdentifier(binding.name);
+    let bindingName = binding.name && sanitizeIdentifier(binding.name);
+    let bindingFnName = bindingName;
+    if (binding.type === ParsedEventType.Animation) {
+      bindingFnName = prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase);
+      bindingName = prepareSyntheticListenerName(bindingName, binding.targetOrPhase);
+    }
     const typeName = meta.name;
     const functionName =
-        typeName && bindingName ? `${typeName}_${bindingName}_HostBindingHandler` : null;
+        typeName && bindingName ? `${typeName}_${bindingFnName}_HostBindingHandler` : null;
     const handler = o.fn(
         [new o.FnParam('$event', o.DYNAMIC_TYPE)], [...bindingExpr.render3Stmts], o.INFERRED_TYPE,
         null, functionName);
-    return o.importExpr(R3.listener).callFn([o.literal(binding.name), handler]).toStmt();
+    return o.importExpr(R3.listener).callFn([o.literal(bindingName), handler]).toStmt();
   });
 }
 
@@ -832,30 +846,24 @@ function typeMapToExpressionMap(
   return new Map(entries);
 }
 
-const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
-
+const HOST_REG_EXP = /^(?:\[([^\]]+)\])|(?:\(([^\)]+)\))$/;
 // Represents the groups in the above regex.
 const enum HostBindingGroup {
-  // group 1: "prop" from "[prop]", or "attr.role" from "[attr.role]"
+  // group 1: "prop" from "[prop]", or "attr.role" from "[attr.role]", or @anim from [@anim]
   Binding = 1,
 
   // group 2: "event" from "(event)"
   Event = 2,
-
-  // group 3: "@trigger" from "@trigger"
-  Animation = 3,
 }
 
 export function parseHostBindings(host: {[key: string]: string}): {
   attributes: {[key: string]: string},
   listeners: {[key: string]: string},
   properties: {[key: string]: string},
-  animations: {[key: string]: string},
 } {
   const attributes: {[key: string]: string} = {};
   const listeners: {[key: string]: string} = {};
   const properties: {[key: string]: string} = {};
-  const animations: {[key: string]: string} = {};
 
   Object.keys(host).forEach(key => {
     const value = host[key];
@@ -863,15 +871,16 @@ export function parseHostBindings(host: {[key: string]: string}): {
     if (matches === null) {
       attributes[key] = value;
     } else if (matches[HostBindingGroup.Binding] != null) {
+      // synthetic properties (the ones that have a `@` as a prefix)
+      // are still treated the same as regular properties. Therefore
+      // there is no point in storing them in a separate map.
       properties[matches[HostBindingGroup.Binding]] = value;
     } else if (matches[HostBindingGroup.Event] != null) {
       listeners[matches[HostBindingGroup.Event]] = value;
-    } else if (matches[HostBindingGroup.Animation] != null) {
-      animations[matches[HostBindingGroup.Animation]] = value;
     }
   });
 
-  return {attributes, listeners, properties, animations};
+  return {attributes, listeners, properties};
 }
 
 function compileStyles(styles: string[], selector: string, hostSelector: string): string[] {

@@ -173,7 +173,7 @@ describe('r3_view_compiler', () => {
       };
 
       const template = `
-      const _c0 = [3, "mySelector"];
+      const _c0 = [3, "@mySelector"];
       // ...
       template: function MyApp_Template(rf, ctx) {
         if (rf & 1) {

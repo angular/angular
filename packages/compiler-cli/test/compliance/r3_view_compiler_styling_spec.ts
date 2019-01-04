@@ -281,14 +281,72 @@ describe('compiler compliance: styling', () => {
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "div", _c0);
-              $r3$.ɵlistener("@myAnimation.start", function MyComponent_Template_div__myAnimation_start_0_listener($event) { return ctx.onStart($event); });
-              $r3$.ɵlistener("@myAnimation.done", function MyComponent_Template_div__myAnimation_done_0_listener($event) { return ctx.onDone($event); });
+              $r3$.ɵlistener("@myAnimation.start", function MyComponent_Template_div_animation_myAnimation_start_0_listener($event) { return ctx.onStart($event); });
+              $r3$.ɵlistener("@myAnimation.done", function MyComponent_Template_div_animation_myAnimation_done_0_listener($event) { return ctx.onDone($event); });
               $r3$.ɵelementEnd();
             } if (rf & 2) {
               $r3$.ɵelementProperty(0, "@myAnimation", $r3$.ɵbind(ctx.exp));
             }
           },
           encapsulation: 2,
+          …
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should generate animation host binding and listener code for directives', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Directive, Component, NgModule} from '@angular/core';
+
+            @Directive({
+              selector: '[my-anim-dir]',
+              animations: [
+                {name: 'myAnim'}
+              ],
+              host: {
+                '[@myAnim]': 'myAnimState',
+                '(@myAnim.start)': 'onStart()',
+                '(@myAnim.done)': 'onDone()'
+              }
+            })
+            class MyAnimDir {
+              onStart() {}
+              onDone() {}
+              myAnimState = '123';
+            }
+
+            @Component({
+              selector: 'my-cmp',
+              template: \`
+                <div my-anim-dir></div>
+              \`
+            })
+            class MyComponent {
+            }
+
+            @NgModule({declarations: [MyComponent, MyAnimDir]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const template = `
+        MyAnimDir.ngDirectiveDef = $r3$.ɵdefineDirective({
+          …
+          hostBindings: function MyAnimDir_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵallocHostVars(1);
+              $r3$.ɵlistener("@myAnim.start", function MyAnimDir_animation_myAnim_start_HostBindingHandler($event) { return ctx.onStart(); });
+              $r3$.ɵlistener("@myAnim.done", function MyAnimDir_animation_myAnim_done_HostBindingHandler($event) { return ctx.onDone(); });
+            } if (rf & 2) {
+              $r3$.ɵcomponentHostSyntheticProperty(elIndex, "@myAnim", $r3$.ɵbind(ctx.myAnimState), null, true);
+            }
+          }
           …
         });
       `;

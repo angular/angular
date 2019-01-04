@@ -434,7 +434,7 @@ function extractHostBindings(
     });
   }
 
-  const {attributes, listeners, properties, animations} = parseHostBindings(hostMetadata);
+  const {attributes, listeners, properties} = parseHostBindings(hostMetadata);
 
   filterToMembersWithDecorator(members, 'HostBinding', coreModule)
       .forEach(({member, decorators}) => {
