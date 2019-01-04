@@ -61,7 +61,10 @@ local_repository(
 #
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-check_bazel_version("0.20.0", """
+# Bazel version must be at least v0.21.0 because:
+#   - 0.21.0 --experimental_strict_action_env flag turned on by default which fixes cache when
+#            running `yarn bazel` (see https://github.com/angular/angular/issues/27514#issuecomment-451438271)
+check_bazel_version("0.21.0", """
 You no longer need to install Bazel on your machine.
 Angular has a dependency on the @bazel/bazel package which supplies it.
 Try running `yarn bazel` instead.
