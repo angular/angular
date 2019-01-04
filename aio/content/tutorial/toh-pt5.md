@@ -18,7 +18,7 @@ When you’re done, users will be able to navigate the app like this:
 * *대시보드* 화면을 추가해야 합니다.
 * *히어로 목록* 화면과 *대시보드* 화면을 전환하는 기능이 필요합니다.
 * 사용자가 화면에서 히어로 이름을 클릭하면 선택된 히어로의 상세정보 화면으로 이동해야 합니다.
-* 사용자가 이베일로 받은 *딥 링크(deep link)*를 클릭하면 해당 히어로의 상세정보 화면을 바로 표시해야 합니다.
+* 사용자가 이메일로 받은 *딥 링크(deep link)*를 클릭하면 해당 히어로의 상세정보 화면을 바로 표시해야 합니다.
 
 그래서 최종 결과물은 다음과 같이 3개의 화면을 이동하면서 동작해야 합니다:
 
@@ -41,10 +41,10 @@ By convention, the module class name is `AppRoutingModule` and it belongs in the
 
 Use the CLI to generate it.
 -->
-Angular에서 라우터설정은 모듈과 같은 계층에 별개의 모듈을 두고, 이 모듈에 정의하는 방법이 가장 좋습니다.
-`AppModule`은 이렇게 정의한 라우터 설정을 로드해서 사용하기만 하면 됩니다.
+Angular에서는 최상위 모듈과 같은 계층에 별개의 모듈을 두고 이 모듈에 애플리케이션 최상위 라우팅 모듈을 정의하는 방법을 권장합니다.
+`AppModule`은 이렇게 정의한 라우팅 설정을 로드해서 사용하기만 하면 됩니다.
 
-일반적으로 라우팅을 담당하는 모듈의 클래스 이름은 `AppRoutingModule`이라고 하며 `src/app` 폴더에 `app-routing.module.ts` 파일로 생성합니다.
+일반적으로 애플리케이션 최상위 라우팅을 담당하는 모듈의 클래스 이름은 `AppRoutingModule`이라고 정의하며 `src/app` 폴더에 `app-routing.module.ts` 파일로 생성합니다.
 
 Angular CLI로 다음 명령을 실행해서 라우팅 모듈을 만들어 봅시다.
 
@@ -58,15 +58,15 @@ Angular CLI로 다음 명령을 실행해서 라우팅 모듈을 만들어 봅�
 `--flat` puts the file in `src/app` instead of its own folder.<br>
 `--module=app` tells the CLI to register it in the `imports` array of the `AppModule`.
 -->
-`--flat` 옵션을 사용하면 새로운 폴더를 만들지 않고 `src/app` 폴더에 파일을 생헝합니다.<br>
-`--module=app` 옵션을 사용하면 Angular CLI가 이 라우팅 모듈을 `AppModule`의 `imports` 배열에 추가합니다.
+`--flat` 옵션을 사용하면 새로운 폴더를 만들지 않고 `src/app` 폴더에 파일을 생성합니다.<br>
+`--module=app` 옵션을 사용하면 Angular CLI가 이 라우팅 모듈을 `AppModule`의 `imports` 배열에 자동으로 추가합니다.
 
 </div>
 
 <!--
 The generated file looks like this:
 -->
-이렇게 만든 파일의 내용은 다음과 같습니다:
+이 명령을 실행해서 만든 파일의 내용은 다음과 같습니다:
 
 <!--
 <code-example path="toh-pt5/src/app/app-routing.module.0.ts" 
@@ -95,8 +95,7 @@ in the `AppModule` components that will need them.
 라우터는 `RouterModule`과 `Routes` 타입의 객체로 설정합니다.
 그래서 `@angular/router` 라이브러리에서 두 심볼을 로드해야 합니다.
 
-그리고 `@NgModule.expors` 배열을 추가하고 이 배열에 `RouterModule`을 등록합니다.
-이 배열에 `RouterModule`을 추가하면 `AppModule` 범위에 있는 컴포넌트에서 라우터와 관련된 디렉티브를 사용할 수 있습니다.
+그리고 `@NgModule.expors` 배열을 추가하고 이 배열에 `RouterModule`을 등록하면 `AppModule` 범위에 있는 모든 컴포넌트에 라우터와 관련된 디렉티브를 사용할 수 있습니다.
 
 이 내용으로 수정하면 `AppRoutingModule`이 다음과 같이 정의될 것입니다:
 
@@ -121,7 +120,7 @@ A typical Angular `Route` has two properties:
 -->
 사용자가 링크를 클릭하거나 브라우저 주소표시줄에 URL을 입력했을 때 어떤 화면을 표시할지는 *라우팅 규칙 (Route)*으로 정의합니다.
 
-일반적으로 Angular `Route`에는 프로퍼티가 2개 존재합니다:
+일반적으로 `Route`에는 프로퍼티가 2개 존재합니다:
 
 1. `path`: 브라우저 주소표시줄의 URL과 매칭될 문자열을 지정합니다.
 1. `component`: 이 라우팅 규칙이 적용될 때 표시할 컴포넌트를 지정합니다.
@@ -145,7 +144,7 @@ Then define an array of routes with a single `route` to that component.
 Once you've finished setting up, the router will match that URL to `path: 'heroes'` 
 and display the `HeroesComponent`.
 -->
-라우팅 규칙을 이렇게 등록하면 `path: 'heroes'`에 해당하는 URL이 있을 때 `HeroesComponent`가 표시될 것입니다.
+라우팅 규칙을 이렇게 등록하면 URL이 `path: 'heroes'`에 해당될 때 화면에 `HeroesComponent`가 표시될 것입니다.
 
 ### _RouterModule.forRoot()_
 
@@ -172,7 +171,7 @@ configure it with the `routes` in one step by calling
   and performs the initial navigation based on the current browser URL.
   -->
   애플리케이션 최상위 계층에 존재하는 라우터를 설정할 때는 `forRoot()` 메소드를 사용합니다.
-  `forRoot()` 메소드를 사용하면 라우팅과 관련된 서비스 프로바이더와 디렉티브를 애플리케이션에 제공하며, 브라우저에서 변경되는 URL을 감지할 수 있습니다.
+  `forRoot()` 메소드를 사용하면 라우팅과 관련된 서비스 프로바이더와 디렉티브를 애플리케이션에 제공할 수 있으며, 브라우저에서 변경되는 URL을 감지할 수 있습니다.
 
 </div>
 
@@ -207,7 +206,7 @@ The `RouterOutlet` is one of the router directives that became available to the 
 because `AppModule` imports `AppRoutingModule` which exported `RouterModule`.
 -->
 `RouterOutlet`은 라우터 모듈이 제공하는 디렉티브 중 하나입니다.
-`AppModule`은 `AppRoutingModule`을 로드하는데, 이 때 `AppRoutingModule`에 `RouterModule`이 `exports` 배열에 추가되었기 때문에 `AppModule` 안에 있는 `AppComponent`에서도 이 디렉티브를 자유롭게 사용할 수 있습니다.
+`AppModule`은 `AppRoutingModule`을 로드하는데, 이 때 `AppRoutingModule`의 `exports` 배열에 `RouterModule`이 추가되었기 때문에 `AppModule` 안에 있는 `AppComponent`에서도 이 디렉티브를 사용할 수 있습니다.
 
 </div>
 
@@ -284,8 +283,8 @@ but not the heroes list.
 Click the link. 
 The address bar updates to `/heroes` and the list of heroes appears.
 -->
-[`routerLink` 어트리뷰트](#routerlink)의 값은 `"/heroes"`로 할당되었는데, 이 문자열은 `HeroesComponent`에 해당하는 라우팅 경로를 의미합니다.
-그리고 `routerLink`는 `RouterModule`이 제공하는 [`RouterLink` 디렉티브](#routerlink)이며, 사용자가 이 디렉티브가 적용된 엘리먼트를 클릭하면 네비게이션을 실행합니다.
+`routerLink`는 `RouterModule`이 제공하는 [`RouterLink` 디렉티브](#routerlink)이며, 사용자가 이 디렉티브가 적용된 엘리먼트를 클릭하면 네비게이션을 실행합니다.
+그리고 [`routerLink` 어트리뷰트](#routerlink)의 값은 `"/heroes"`로 할당되었는데, 이 문자열은 `HeroesComponent`에 해당하는 라우팅 경로를 의미합니다.
 
 이제 브라우저가 갱신되면 애플리케이션 제목과 히어로 목록으로 가는 링크가 표시되지만 히어로의 목록은 여전히 표시되지 않습니다.
 
@@ -406,7 +405,7 @@ Import the `DashboardComponent` in the `AppRoutingModule`.
 <!--
 Add a route to the `AppRoutingModule.routes` array that matches a path to the `DashboardComponent`.
 -->
-그리고 `DashboardComponent`에 해당하는 경로를 지정해서 `AppRoutingModule.routes` 배열에 추가합니다.
+그리고 `AppRoutingModule.routes` 배열에 `DashboardComponent`에 해당하는 라우팅 규칙을 추가합니다.
 
 <code-example 
   path="toh-pt5/src/app/app-routing.module.ts" 
@@ -495,7 +494,7 @@ and liberate it from the `HeroesComponent`.
 
 1. 대시보드에서 히어로를 클릭했을 때
 1. 히어로 목록에서 히어로를 클릭했을 때
-1. 특정 히어로에 해당하는 "딥 링크" URL을 브라우저 주소표시줄에 입력했을 때
+1. 특정 히어로에 해당하는 "딥 링크 (deep link)" URL을 브라우저 주소표시줄에 입력했을 때
 
 이번 섹션에서는 `HeroesComponent`와 별개로 `HeroDetailsComponent`로 직접 네비게이션할 수 있는 방법에 대해 알아봅시다.
 
@@ -516,7 +515,7 @@ delete the `<app-hero-detail>` element from the bottom.
 Clicking a hero item now does nothing. 
 You'll [fix that shortly](#heroes-component-links) after you enable routing to the `HeroDetailComponent`.
 -->
-사용자가 `HeroesComponent`에 있는 히어로 아이템을 클릭하면 애플리케이션은 `HeroDetailComponent`에 해당하는 주소로 이동하면서 화면에 표시된 컴포넌트를 변경해야 합니다.
+사용자가 `HeroesComponent`에 있는 히어로 아이템을 클릭하면 `HeroDetailComponent`에 해당하는 주소로 이동하면서 화면에 표시된 컴포넌트를 변경해야 합니다.
 그리고 이 경우에 히어로 목록은 더이상 화면에 표시되지 않아야 합니다.
 
 `HeroesComponent` 템플릿 파일(`heroes/heroes.component.html`)을 열고 템플릿 아래쪽에 사용된 `<app-hero-detail>` 엘리먼트를 제거합니다.
@@ -534,7 +533,7 @@ A URL like `~/detail/11` would be a good URL for navigating to the *Hero Detail*
 
 Open `AppRoutingModule` and import `HeroDetailComponent`.
 -->
-`~/detail/11`과 같은 URL이 주어진다면 *히어로 상세정보* 화면으로 이동해서 `id`가 `11`에 해당하는 히어로의 상세정보를 표시해야 한다고 이해할 수 있습니다.
+URL이 `~/detail/11`라면 이 URL은 *히어로 상세정보* 화면에서 `id`가 `11`에 해당하는 히어로의 상세정보를 표시한다는 것으로 이해할 수 있습니다.
 
 이렇게 구현하기 위해 `AppRoutingModule`을 열어서 `HeroDetailComponent`를 로드합니다.
 
@@ -611,7 +610,7 @@ You're using Angular [interpolation binding](guide/template-syntax#interpolation
 to insert the current iteration's `hero.id` into each 
 [`routerLink`](#routerlink).
 -->
-이 때 `*ngFor`로 순회하는 각각의 링크에 [`routerLink`](#routerlink)의 값으로 `hero.id`를 지정하기 위해 Angular가 제공하는 [문자열 바인딩(interpolation binding)](guide/template-syntax#interpolation) 문법을 사용했습니다.
+이 때 `*ngFor`로 순회하는 각 링크의 [`routerLink`](#routerlink)의 값으로 `hero.id`를 지정하기 위해 Angular가 제공하는 [문자열 바인딩(interpolation binding)](guide/template-syntax#interpolation) 문법을 사용했습니다.
 
 {@a heroes-component-links}
 <!--
@@ -623,7 +622,7 @@ to insert the current iteration's `hero.id` into each
 The hero items in the `HeroesComponent` are `<li>` elements whose click events
 are bound to the component's `onSelect()` method.
 -->
-`HeroesComponent`에 있는 히어로 아이템은 `<li>` 엘리먼트로 구성되었기 때문에, 이 엘리먼트의 클릭 이벤트를 바인딩하면 컴포넌트의 `onSelect()` 메소드를 실행할 수 있습니다.
+`HeroesComponent`에 있는 히어로 아이템은 `<li>` 엘리먼트로 구성되었기 때문에, 이 엘리먼트에 클릭 이벤트를 바인딩하면 컴포넌트의 `onSelect()` 메소드를 실행할 수 있었습니다.
 
 <!--
 <code-example 
@@ -663,7 +662,7 @@ You'll have to fix the private stylesheet (`heroes.component.css`) to make
 the list look as it did before.
 Revised styles are in the [final code review](#heroescomponent) at the bottom of this guide.
 -->
-화면에 표시되는 모습을 조정하려면 컴포넌트의 스타일시트 파일(`heroes.component.css`)을 수정하면 됩니다.
+화면에 표시되는 모습을 변경하려면 컴포넌트의 스타일시트 파일(`heroes.component.css`)을 수정하면 됩니다.
 이 문서 마지막에 있는 [최종코드 리뷰](#heroescomponent)를 확인해 보세요.
 
 <!--
@@ -797,8 +796,8 @@ Add it now.
 -->
 `route.snapshot`은 컴포넌트가 생성된 직후에 존재하는 라우팅 규칙에 대한 정보를 담고 있는 객체입니다.
 
-그리고 이 객체가 제공하는 `paramMap`을 사용하면 URL에 존재하는 라우팅 변수를 참조할 수 있습니다.
-그래서 서버로부터 받아올 히어로의 `id`에 해당하는 값을 URL에 있는 `"id"` 키로 참조할 수 있습니다.
+그래서 이 객체가 제공하는 `paramMap`을 사용하면 URL에 존재하는 라우팅 변수를 참조할 수 있습니다.
+지금 작성하고 있는 예제에서는 서버로부터 받아올 히어로의 `id`에 해당하는 값을 URL에 있는 `"id"` 키로 참조합니다.
 
 라우팅 변수는 언제나 문자열 타입입니다.
 그래서 라우팅 변수로 전달된 값이 원래 숫자였다면 문자열로 받아온 라우팅 변수에 JavaScript (+) 연산자를 사용해서 숫자로 변환할 수 있습니다.
@@ -842,15 +841,14 @@ It returns a _mock hero_ as an `Observable`, using the RxJS `of()` function.
 You'll be able to re-implement `getHero()` as a real `Http` request
 without having to change the `HeroDetailComponent` that calls it.
 -->
-[`getHeroes()`](tutorial/toh-pt4#옵저버블-heroservice) 함수와 비슷하게,
-`getHero()` 함수도 비동기로 동작합니다.
-그리고 이 때 _히어로의 목 데이터_ 하나를 `Observable`로 반환하기 위해 RxJs가 제공하는 `of()` 함수를 사용했습니다.
+`getHero()` 함수도 [`getHeroes()`](tutorial/toh-pt4#옵저버블-heroservice) 함수와 비슷하게 비동기로 동작합니다.
+그리고 _히어로의 목 데이터_ 하나를 `Observable`로 반환하기 위해 RxJs가 제공하는 `of()` 함수를 사용했습니다.
 
 <!--
 You'll be able to re-implement `getHero()` as a real `Http` request
 without having to change the `HeroDetailComponent` that calls it.
 -->
-이렇게 구현함녀 나중에 `getHero()`가 실제 `Http` 요청을 보내도록 수정하더라도 이 함수를 호출하는 `HeroDetailComponent`는 영향을 받지 않습니다.
+이렇게 구현하면 나중에 `getHero()`가 실제 `Http` 요청을 보내도록 수정하더라도 이 함수를 호출하는 `HeroDetailComponent`는 영향을 받지 않습니다.
 
 <!--
 #### Try it
@@ -867,7 +865,7 @@ the router navigates to the detail view for the hero with `id: 11`,  "Mr. Nice".
 브라우저가 갱신되고 나면 앱이 다시 동작합니다.
 그리고 대시보드나 히어로 목록 화면에서 히어로를 한 명 선택하면 이 히어로의 상세정보를 표시하는 화면으로 이동합니다.
 
-만약 브라우저 주소표시줄에 `localhost:4200/detail/11`라는 값을 붙여넣으면 이 때도 마찬가지로 `id: 11`에 해당하는 "Mr. Nice" 히어로의 정보를 표시하는 화면으로 이동할 것입니다.
+브라우저 주소표시줄에 `localhost:4200/detail/11`라는 값을 붙여넣으면 이 때도 마찬가지로 `id: 11`에 해당하는 "Mr. Nice" 히어로의 정보를 표시하는 화면으로 이동할 것입니다.
 
 {@a goback}
 
@@ -888,7 +886,7 @@ to the component's `goBack()` method.
 -->
 히어로 목록이나 대시보드 화면에서 히어로를 선택해서 히어로 상세정보 화면으로 이동했다면, 브라우저의 뒤로 가기 버튼을 눌렀을 때 이전 화면으로 돌아갈 수 있습니다.
 
-그리고 이 기능은 `HeroDetail` 화면에 버튼으로 추가하는 것이 더 좋을 수 있습니다.
+이 기능을 실행하는 버튼이 `HeroDetail` 화면에 있다면 사용자가 애플리케이션을 사용하기 더 편할 것입니다.
 
 컴포넌트 템플릿 맨 아래에 *뒤로 가기* 버튼을 추가하고 이 버튼을 컴포넌트의 `goBack()` 메소드와 바인딩 합니다.
 
@@ -1043,11 +1041,11 @@ Here are the code files discussed on this page and your app should look like thi
 * You used router link parameters to navigate to the detail view of a user-selected hero.
 * You shared the `HeroService` among multiple components.
 -->
-* 화면에 표시되는 컴포넌트를 전환하기 위해 Angular 라우터를 추가했습니다.
-* `AppComponent`에 `<a>` 링크와 `<router-outlet>`을 추가하면 네비게이션이 동작하는 컴포넌트로 확장할 수 있습니다.
+* 화면에 표시하는 컴포넌트를 전환하기 위해 Angular 라우터를 추가했습니다.
+* `AppComponent`에 `<a>` 링크와 `<router-outlet>`을 추가하면 네비게이션 동작을 실행할 수 있습니다.
 * 라우터 설정은 `AppRoutingModule`에 정의합니다.
-* 간단한 라우팅 규칙부터 리다이렉트 라우팅 규칙, 라우팅 변수가 있는 라우팅 규칙을 정의했습니다.
+* 간단한 라우팅 규칙부터 리다이렉트 라우팅 규칙, 라우팅 변수가 있는 라우팅 규칙을 정의해 봤습니다.
 * 앵커 엘리먼트에 `routerLink` 디렉티브를 적용했습니다.
-* 히어로 목록/상세정보 화면은 원래 결합도가 높았지만, 라우터를 활용해서 결합도를 낮추도록 리팩토링했습니다.
+* 히어로 목록/상세정보 화면은 원래 결합도가 높았지만 라우터를 활용해서 결합도를 낮추도록 리팩토링했습니다.
 * 히어로 목록 화면에서 사용자가 선택한 히어로의 정보를 히어로 상세정보 화면으로 전달하기 위해 라우터 링크 배열을 활용했습니다.
 * 여러 컴포넌트에 사용하는 로직을 중복해서 구현하지 않고 `HeroService`로 옮겨서 재사용할 수 있도록 변경했습니다.
