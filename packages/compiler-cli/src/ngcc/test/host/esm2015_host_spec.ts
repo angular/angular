@@ -985,7 +985,8 @@ describe('Fesm2015ReflectionHost', () => {
         const file = {
           name: '/synthesized_constructors.js',
           contents: `
-            class TestClass {
+            class BaseClass {}
+            class TestClass extends BaseClass {
               ${constructor}
             }
           `,

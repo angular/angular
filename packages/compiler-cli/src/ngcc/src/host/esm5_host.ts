@@ -383,9 +383,7 @@ function isSuperApplyCall(expression: ts.Expression): boolean {
   if (thisArgument.kind !== ts.SyntaxKind.ThisKeyword) return false;
 
   const argumentsArgument = expression.arguments[1];
-  if (!ts.isIdentifier(argumentsArgument) || argumentsArgument.text !== 'arguments') return false;
-
-  return true;
+  return ts.isIdentifier(argumentsArgument) && argumentsArgument.text === 'arguments';
 }
 
 function isBinaryExpr(
@@ -394,6 +392,9 @@ function isBinaryExpr(
 }
 
 function isSuperIdentifier(expression: ts.Expression): boolean {
+  // Verify that the identifier is prefixed with `_super`. We don't test for equivalence
+  // as TypeScript may have suffixed the name, e.g. `_super_1` to avoid name conflicts.
+  // Requiring only a prefix should be sufficiently accurate.
   return ts.isIdentifier(expression) && expression.text.startsWith('_super');
 }
 
