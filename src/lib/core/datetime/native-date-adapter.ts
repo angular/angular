@@ -146,7 +146,7 @@ export class NativeDateAdapter extends DateAdapter<Date> {
   }
 
   clone(date: Date): Date {
-    return this.createDate(this.getYear(date), this.getMonth(date), this.getDate(date));
+    return new Date(date.getTime());
   }
 
   createDate(year: number, month: number, date: number): Date {

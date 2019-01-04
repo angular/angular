@@ -290,6 +290,12 @@ describe('NativeDateAdapter', () => {
     expect(adapter.clone(date)).not.toBe(date);
   });
 
+  it('should preserve time when cloning', () => {
+    let date = new Date(2017, JAN, 1, 4, 5, 6);
+    expect(adapter.clone(date)).toEqual(date);
+    expect(adapter.clone(date)).not.toBe(date);
+  });
+
   it('should compare dates', () => {
     expect(adapter.compareDate(new Date(2017, JAN, 1), new Date(2017, JAN, 2))).toBeLessThan(0);
     expect(adapter.compareDate(new Date(2017, JAN, 1), new Date(2017, FEB, 1))).toBeLessThan(0);
