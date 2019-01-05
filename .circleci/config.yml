@@ -446,6 +446,47 @@ jobs:
       - run: yarn karma start ./karma-js.conf.js --single-run --browsers=${KARMA_JS_BROWSERS}
       - run: ./scripts/saucelabs/stop-tunnel.sh
 
+  legacy-e2e-tests:
+    <<: *job_defaults
+    docker:
+      - image: *browsers_docker_image
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - *define_env_vars
+      - *setup_circleci_bazel_config
+      - *yarn_install
+      - *setup_bazel_remote_execution
+      - attach_workspace:
+          at: dist
+        # Build the e2e tests using the existing Bazel "packages-dist" output that has been
+        # attached to this job. This avoids multiple rebuilds across various CI jobs.
+      - run: ./scripts/build-e2e-tests.sh --use-existing-packages-dist
+      - run:
+          name: Starting servers for e2e tests
+          command: yarn gulp serve serve-examples
+          background: true
+      - run: NODE_PATH=$NODE_PATH:./dist/all yarn protractor ./protractor-e2e.conf.js --bundles=true
+      - run: NODE_PATH=$NODE_PATH:./dist/all yarn protractor ./protractor-examples-e2e.conf.js --bundles=true
+      - run: NODE_PATH=$NODE_PATH:./dist/all yarn protractor ./protractor-perf.conf.js --bundles=true --dryrun
+
+  legacy-misc-tests:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - *define_env_vars
+      - *yarn_install
+      - attach_workspace:
+          at: dist
+      - run: yarn gulp check-cycle
+      # TODO: disabled because the Bazel packages-dist does not seem to have map files for
+      # the ESM5/ES2015 output. See: https://github.com/angular/angular/issues/27966
+      # - run: yarn gulp source-map-test
 
 workflows:
   version: 2
@@ -461,6 +502,12 @@ workflows:
       - deploy_aio:
           requires:
             - test_aio
+      - legacy-e2e-tests:
+          requires:
+            - build-packages-dist
+      - legacy-misc-tests:
+          requires:
+            - build-packages-dist
       - test_aio_local:
           requires:
             - build-packages-dist
@@ -501,6 +548,8 @@ workflows:
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-packages-dist
+            - legacy-e2e-tests
+            - legacy-misc-tests
             - legacy-unit-tests-local
             - legacy-unit-tests-saucelabs
 
