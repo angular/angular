@@ -12,6 +12,7 @@ ts_library(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
 )
 
@@ -29,9 +30,6 @@ ts_web_test_suite(
     static_files = [
         "//packages/platform-browser/test:static_assets/test.html",
         "//packages/platform-browser/test:browser/static_assets/200.html",
-    ],
-    tags = [
-        "fixme-ivy-aot",
     ],
     deps = [
         ":test_lib",
