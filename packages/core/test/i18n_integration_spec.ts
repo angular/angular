@@ -21,20 +21,13 @@ class DirectiveWithTplRef {
 
 @Component({selector: 'my-comp', template: ''})
 class MyComp {
-  name = 'John Doe';
+  name = 'John';
   items = ['1', '2', '3'];
   visible = true;
   age = 20;
   count = 2;
   otherLabel = 'other label';
 }
-
-// transform template string into i18n string
-const TRANSFORMS: any = {
-  'Hello {{ name }}': 'Hello {$interpolation}',
-  'Hello {% name %}': 'Hello {$interpolation}',
-  'Item {{ id }}': 'Item {$interpolation}'
-};
 
 const TRANSLATIONS: any = {
   'one': 'un',
@@ -63,14 +56,6 @@ const TRANSLATIONS: any = {
       '{VAR_SELECT_2, select, 10 {dix - {VAR_SELECT, select, 1 {un} 2 {deux} other {plus que deux}}} 20 {vingt - {VAR_SELECT_1, select, 1 {un} 2 {deux} other {plus que deux}}} other {autres}}'
 };
 
-const translate = (label: string, interpolations: any[] = []): string => {
-  const placeholders = interpolations.reduce((acc: any, value: any, idx: number): any => {
-    acc[`interpolation${idx > 0 ? idx : ''}`] = value;
-    return acc;
-  }, {});
-  return goog.getMsg(TRANSFORMS[label] || label, placeholders);
-};
-
 const getFixtureWithOverrides = (overrides = {}) => {
   TestBed.overrideComponent(MyComp, {set: overrides});
   const fixture = TestBed.createComponent(MyComp);
@@ -92,7 +77,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element.title).toBe(translate(title));
+      expect(element.title).toBe('Bonjour');
     });
 
     it('should support interpolation', () => {
@@ -101,7 +86,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element.title).toBe(translate(title, [fixture.componentInstance.name]));
+      expect(element.title).toBe('Bonjour John');
     });
 
     it('should support interpolation with custom interpolation config', () => {
@@ -111,7 +96,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template, interpolation});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element.title).toBe(translate(title, [fixture.componentInstance.name]));
+      expect(element.title).toBe('Bonjour John');
     });
 
     fixmeIvy('FW-903: i18n attributes in nested templates throws at runtime')
@@ -127,8 +112,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           const element = fixture.nativeElement;
           for (let i = 0; i < element.children.length; i++) {
             const child = element.children[i];
-            expect((child as any).innerHTML)
-                .toBe(`<div title="${translate(title, [i + 1])}"></div>`);
+            expect((child as any).innerHTML).toBe(`<div title="Article ${i + 1}"></div>`);
           }
         });
 
@@ -142,8 +126,8 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           const fixture = getFixtureWithOverrides({template});
 
           const element = fixture.nativeElement.firstChild;
-          expect(element.title).toBe(translate(title, [fixture.componentInstance.name]));
-          expect(element).toHaveText(translate(content));
+          expect(element.title).toBe('Bonjour John');
+          expect(element).toHaveText('Bonjour');
         });
 
     it('should add i18n attributes on self-closing tags', () => {
@@ -152,7 +136,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element.title).toBe(translate(title, [fixture.componentInstance.name]));
+      expect(element.title).toBe('Bonjour John');
     });
   });
 
@@ -163,7 +147,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element).toHaveText(translate(content));
+      expect(element).toHaveText('Bonjour');
     });
 
     it('should support interpolation', () => {
@@ -172,7 +156,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element).toHaveText(translate(content, [fixture.componentInstance.name]));
+      expect(element).toHaveText('Bonjour John');
     });
 
     it('should support interpolation with custom interpolation config', () => {
@@ -182,7 +166,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template, interpolation});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element).toHaveText(translate(content, [fixture.componentInstance.name]));
+      expect(element).toHaveText('Bonjour John');
     });
 
     it('should properly escape quotes in content', () => {
@@ -191,7 +175,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element).toHaveText(translate(content));
+      expect(element).toHaveText('\'Guillemets simples\' et "Guillemets doubles"');
     });
 
     it('should correctly bind to context in nested template', () => {
@@ -206,7 +190,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const element = fixture.nativeElement;
       for (let i = 0; i < element.children.length; i++) {
         const child = element.children[i];
-        expect(child).toHaveText(translate(content, [i + 1]));
+        expect(child).toHaveText(`Article ${i + 1}`);
       }
     });
 
@@ -220,7 +204,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      const content = `<div title="${translate(title, [fixture.componentInstance.name])}"></div>`;
+      const content = `<div title="Bonjour John"></div>`;
       expect(element.innerHTML).toBe(content);
     });
 
@@ -234,7 +218,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element.children[0]).toHaveText(translate(content, [fixture.componentInstance.name]));
+      expect(element.children[0]).toHaveText('Bonjour John');
     });
 
     it('should ignore i18n attributes on self-closing tags', () => {
@@ -253,7 +237,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element).toHaveText(translate(content, [fixture.componentInstance.name]));
+      expect(element).toHaveText('Bonjour John');
     });
   });
 
@@ -266,7 +250,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element).toHaveText(translate(content, [fixture.componentInstance.name]));
+      expect(element).toHaveText('Bonjour John');
     });
 
     it('should handle single translation message within ng-template', () => {
@@ -277,7 +261,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement;
-      expect(element).toHaveText(translate(content, [fixture.componentInstance.name]));
+      expect(element).toHaveText('Bonjour John');
     });
 
     it('should be able to act as child elements inside i18n block (plain text content)', () => {
@@ -296,8 +280,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element.textContent.replace(/\s+/g, ' ').trim())
-          .toBe(`${translate(hello)} ${translate(bye)}`);
+      expect(element.textContent.replace(/\s+/g, ' ').trim()).toBe('Bonjour Au revoir');
     });
 
     fixmeIvy(
@@ -320,7 +303,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           const spans = element.getElementsByTagName('span');
           for (let i = 0; i < spans.length; i++) {
             const child = spans[i];
-            expect((child as any).innerHTML).toBe(translate(content));
+            expect((child as any).innerHTML).toBe('Bonjour');
           }
         });
 
@@ -341,7 +324,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const spans = element.getElementsByTagName('span');
       for (let i = 0; i < spans.length; i++) {
         const child = spans[i];
-        expect(child).toHaveText(translate(label));
+        expect(child).toHaveText('Mon logo');
       }
     });
   });
@@ -354,7 +337,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement;
-      expect(element).toHaveText(translate('twenty'));
+      expect(element).toHaveText('vingt');
     });
 
     it('should support ICUs generated outside of i18n blocks', () => {
@@ -364,7 +347,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement;
-      expect(element).toHaveText(translate('twenty'));
+      expect(element).toHaveText('vingt');
     });
 
     it('should support interpolation', () => {
@@ -399,7 +382,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const element = fixture.nativeElement.firstChild;
       const italicTags = element.getElementsByTagName('i');
       expect(italicTags.length).toBe(1);
-      expect(italicTags[0].innerHTML).toBe(translate('twenty'));
+      expect(italicTags[0].innerHTML).toBe('vingt');
     });
 
     fixmeIvy('FW-905: Multiple ICUs in one i18n block are not processed')
@@ -413,7 +396,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           const fixture = getFixtureWithOverrides({template});
 
           const element = fixture.nativeElement.firstChild;
-          expect(element).toHaveText(`${translate('twenty')} - ${translate('two')}`);
+          expect(element).toHaveText('vingt - deux');
         });
 
     fixmeIvy('FW-906: Multiple ICUs wrapped in HTML tags in one i18n block throw an error')
@@ -433,8 +416,8 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           const element = fixture.nativeElement.firstChild;
           const spans = element.getElementsByTagName('span');
           expect(spans.length).toBe(2);
-          expect(spans[0].innerHTML).toBe(translate('twenty'));
-          expect(spans[1].innerHTML).toBe(translate('two'));
+          expect(spans[0].innerHTML).toBe('vingt');
+          expect(spans[1].innerHTML).toBe('deux');
         });
 
     fixmeIvy('FW-907: ICUs in templates are not processed (treated as text)')
@@ -451,7 +434,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           const element = fixture.nativeElement.firstChild;
           const spans = element.getElementsByTagName('span');
           expect(spans.length).toBe(1);
-          expect(spans[0]).toHaveText(translate('twenty'));
+          expect(spans[0]).toHaveText('vingt');
         });
 
     it('should handle nested icus', () => {
@@ -466,7 +449,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const fixture = getFixtureWithOverrides({template});
 
       const element = fixture.nativeElement.firstChild;
-      expect(element).toHaveText(`${translate('twenty')} - ${translate('two')}`);
+      expect(element).toHaveText('vingt - deux');
     });
 
     fixmeIvy('FW-908: ICUs inside <ng-container>s throw an error at runtime')
@@ -479,7 +462,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           const fixture = getFixtureWithOverrides({template});
 
           const element = fixture.nativeElement;
-          expect(element.innerHTML).toBe(translate('twenty'));
+          expect(element.innerHTML).toBe('vingt');
         });
 
     fixmeIvy('FW-909: ICUs inside <ng-template>s throw errors at runtime')
@@ -492,7 +475,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           const fixture = getFixtureWithOverrides({template});
 
           const element = fixture.nativeElement;
-          expect(element.innerHTML).toBe(translate('twenty'));
+          expect(element.innerHTML).toBe('vingt');
         });
   });
 });
