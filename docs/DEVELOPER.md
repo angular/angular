@@ -82,33 +82,22 @@ Before submitting a PR, do not forget to remove them:
 To build Angular run:
 
 ```shell
-./build.sh
+./scripts/build-packages-dist.sh
 ```
 
-* Results are put in the dist folder.
+* Results are put in the `dist/packages-dist` folder.
 
 ## Running Tests Locally
 
-To run tests:
+Bazel is used as the primary tool for building and testing Angular. Building and testing is
+incremental with Bazel, and it's possible to only run tests for an individual package instead
+of for all packages.
 
-```shell
-$ ./test.sh node             # Run all angular tests on node
+Read more about this in the [BAZEL.md](./BAZEL.md) document. You should execute all test suites
+before submitting a PR to Github.
 
-$ ./test.sh browser          # Run all angular tests in browser
-
-$ ./test.sh browserNoRouter  # Optionally run all angular tests without router in browser
-
-$ ./test.sh router           # Optionally run only the router tests in browser
-```
-
-You should execute the 3 test suites before submitting a PR to github.
-
-See [DEBUG.md](DEBUG.md) for information on debugging the code while running the unit tests.
-
-All the tests are executed on our Continuous Integration infrastructure and a PR could only be merged once the tests pass.
-
-- CircleCI fails if your code is not formatted properly,
-- Travis CI fails if any of the test suites described above fails.
+All the tests are executed on our Continuous Integration infrastructure and a PR could only be
+merged if the code is formatted properly and all tests are passing.
 
 ## <a name="clang-format"></a> Formatting your source code
 
