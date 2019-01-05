@@ -13,6 +13,10 @@ require('./dist/all/e2e_util/e2e_util').readCommandLine();
 var BROWSER_OPTIONS = {
   LocalChrome: {
     'browserName': 'chrome',
+
+    // Enables concurrent testing. Currently runs four e2e files in parallel.
+    shardTestFiles: true,
+    maxInstances: 4,
   },
   ChromeOnTravis: {
     browserName: 'chrome',
