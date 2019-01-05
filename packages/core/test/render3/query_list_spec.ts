@@ -6,12 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {QueryList as viewEngine_QueryList} from '../../src/linker/query_list';
 import {QueryList} from '../../src/render3/query';
 
 describe('QueryList', () => {
   let q: QueryList<number>;
 
   beforeEach(() => { q = new QueryList<number>(); });
+
+  it('should be an instance of the exported QueryList',
+     () => { expect(q instanceof viewEngine_QueryList).toBe(true); });
 
   describe('dirty and reset', () => {
 

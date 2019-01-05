@@ -355,24 +355,18 @@ function createQuery<T>(
   };
 }
 
-class QueryList_<T>/* implements viewEngine_QueryList<T> */ {
+class QueryList_<T> extends viewEngine_QueryList<T> {
   readonly dirty = true;
   readonly changes: Observable<T> = new EventEmitter();
   private _values: T[] = [];
   /** @internal */
   _valuesTree: any[] = [];
 
-  get length(): number { return this._values.length; }
-
-  get first(): T|null {
-    let values = this._values;
-    return values.length ? values[0] : null;
-  }
-
-  get last(): T|null {
-    let values = this._values;
-    return values.length ? values[values.length - 1] : null;
-  }
+  readonly length: number = 0;
+  // TODO(issue/24571): remove '!'.
+  readonly first !: T;
+  // TODO(issue/24571): remove '!'.
+  readonly last !: T;
 
   /**
    * See
@@ -425,8 +419,12 @@ class QueryList_<T>/* implements viewEngine_QueryList<T> */ {
   toString(): string { return this._values.toString(); }
 
   reset(res: (any[]|T)[]): void {
-    this._values = flatten(res);
+    const values = flatten(res);
+    this._values = values;
     (this as{dirty: boolean}).dirty = false;
+    (this as{length: number}).length = values.length;
+    (this as{last: T}).last = values[this.length - 1];
+    (this as{first: T}).first = values[0];
   }
 
   notifyOnChanges(): void { (this.changes as EventEmitter<any>).emit(this); }
