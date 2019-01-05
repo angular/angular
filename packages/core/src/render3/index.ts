@@ -121,7 +121,6 @@ export {
 } from './pipe';
 
 export {
-  QueryList,
   query,
   queryRefresh,
 } from './query';

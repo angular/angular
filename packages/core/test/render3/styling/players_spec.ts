@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {QueryList} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {defineComponent, getHostElement} from '../../../src/render3/index';
@@ -12,7 +13,7 @@ import {element, elementEnd, elementStart, elementStyling, elementStylingApply, 
 import {PlayState, Player, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
-import {QueryList, query, queryRefresh} from '../../../src/render3/query';
+import {query, queryRefresh} from '../../../src/render3/query';
 import {getOrCreatePlayerContext} from '../../../src/render3/styling/util';
 import {ComponentFixture} from '../render_util';
 
