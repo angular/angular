@@ -420,22 +420,21 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           expect(spans[1].innerHTML).toBe('deux');
         });
 
-    fixmeIvy('FW-907: ICUs in templates are not processed (treated as text)')
-        .it('should handle ICUs inside a template in i18n block', () => {
-          const template = `
+    it('should handle ICUs inside a template in i18n block', () => {
+      const template = `
             <div i18n>
               <span *ngIf="visible">
                 {age, select, 10 {ten} 20 {twenty} other {other}}
               </span>
             </div>
           `;
-          const fixture = getFixtureWithOverrides({template});
+      const fixture = getFixtureWithOverrides({template});
 
-          const element = fixture.nativeElement.firstChild;
-          const spans = element.getElementsByTagName('span');
-          expect(spans.length).toBe(1);
-          expect(spans[0]).toHaveText('vingt');
-        });
+      const element = fixture.nativeElement.firstChild;
+      const spans = element.getElementsByTagName('span');
+      expect(spans.length).toBe(1);
+      expect(spans[0]).toHaveText('vingt');
+    });
 
     it('should handle nested icus', () => {
       const template = `
