@@ -1,7 +1,9 @@
 
 # Legacy docs for @angular/compiler-cli Developers
 
-*Note from Igor: This doc is likely outdated now but I'm keeping it around because offline_compiler_test.sh need to be converted to bazel/circleci (or deleted) and these docs seem relevant to anyone who needs to understand those tests. Once that's done this file can be deleted.*
+*Note from Igor: This doc is likely outdated now but I'm keeping it around because
+offline_compiler_test.sh need to be converted to bazel/circleci (or deleted) and these docs seem
+relevant to anyone who needs to understand those tests. Once that's done this file can be deleted.*
 
 
 ```
