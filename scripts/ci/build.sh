@@ -19,13 +19,6 @@ if [[ ${CI_MODE:-} == "bazel" ]]; then
   exit 0;
 fi
 
-travisFoldStart "tsc tools"
-  $(npm bin)/tsc -p tools
-  $(npm bin)/tsc -p packages/compiler/tsconfig-tools.json
-  $(npm bin)/tsc -p packages/compiler-cli/tsconfig-tools.json
-travisFoldEnd "tsc tools"
-
-
 travisFoldStart "tsc all"
   $(npm bin)/tsc -p packages
   $(npm bin)/tsc -p packages/examples
