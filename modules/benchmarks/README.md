@@ -1,11 +1,23 @@
 # How to run the benchmarks locally
 
 ## Run in the browser
-$ build.sh (only needed 1x to copy over third party resources)
-$ cp -r ./modules/benchmarks ./dist/all/
-$ ./node_modules/.bin/tsc -p modules --emitDecoratorMetadata -w
-$ gulp serve
-$ open http://localhost:8000/all/benchmarks/src/tree/ng2/index.html?bundles=false
+
+```bash
+# Build the Angular packages.
+yarn tsc -p packages/
+
+# Build the e2e tests which are part of the "modules/"
+./modules/build.sh
+
+# Start server that serves all benchmark e2e apps.
+yarn gulp serve
+```
+
+Now you can open benchmark e2e apps using their appropriate URLs. For example:
+
+```
+http://localhost:8000/all/benchmarks/src/tree/ng2/index.html
+```
 
 ## Run e2e tests
 $ export NODE_PATH=$(pwd)/dist/all:$(pwd)/dist/tools
