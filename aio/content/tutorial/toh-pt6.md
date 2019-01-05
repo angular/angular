@@ -1,5 +1,6 @@
 # HTTP
 
+<!--
 In this tutorial, you'll add the following data persistence features with help from
 Angular's `HttpClient`.
 
@@ -8,26 +9,59 @@ Angular's `HttpClient`.
 * Users can search for heroes by name.
 
 When you're done with this page, the app should look like this <live-example></live-example>.
+-->
+이번 튜토리얼에서는 Angular가 제공하는 `HttpClient`를 사용해서 데이터를 처리하는 기능에 대해 알아봅니다.
 
+* `HeroService`가 HTTP 요청을 보내서 히어로 데이터를 가져올 것입니다.
+* 사용자가 추가, 변경, 삭제한 히어로 데이터는 HTTP 요청을 보내서 서버에 저장할 것입니다.
+* 사용자가 히어로의 이름으로 검색할 수 있는 기능을 만들어 봅니다.
+
+이번 튜토리얼에서 만들 앱은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+
+<!--
 ## Enable HTTP services
+-->
+## HTTP 서비스 추가하기
 
+<!--
 `HttpClient` is Angular's mechanism for communicating with a remote server over HTTP. 
 
 To make `HttpClient` available everywhere in the app:
 
 * open the root `AppModule` 
 * import the `HttpClientModule` symbol from `@angular/common/http`
+-->
+`HttpClient`는 리모트 서버와 HTTP 통신을 하기 위해 Angular가 제공하는 서비스입니다.
 
+애플리케이션 전역 범위에서 `HttpClient`를 사용하려면 다음과 같이 설정합니다:
+
+* 최상위 모듈인 `AppModule`을 엽니다.
+* `@angular/common/http` 패키지에서 `HttpClientModule` 심볼을 로드합니다.
+
+<!--
 <code-example
   path="toh-pt6/src/app/app.module.ts"
   region="import-http-client"
   header="src/app/app.module.ts (Http Client import)">
 </code-example>
+-->
+<code-example
+  path="toh-pt6/src/app/app.module.ts"
+  region="import-http-client"
+  header="src/app/app.module.ts (Http Client 로드하기)">
+</code-example>
 
+<!--
 * add it to the `@NgModule.imports` array
+-->
+* 이 심볼을 `@NgModule.imports` 배열에 추가합니다.
 
+<!--
 ## Simulate a data server
+-->
+## 데이터 서버 흉내내기
 
+<!--
 This tutorial sample _mimics_ communication with a remote data server by using the
 [_In-memory Web API_](https://github.com/angular/in-memory-web-api "In-memory Web API") module.
 
@@ -40,115 +74,210 @@ You won't have to set up a server to learn about `HttpClient`.
 
 It may also be convenient in the early stages of your own app development when
 the server's web api is ill-defined or not yet implemented.
+-->
+이 튜토리얼에서는 [_인-메모리 Web API_](https://github.com/angular/in-memory-web-api "In-memory Web API") 모듈을 사용해서 리모트 데이터 서버의 동작을 흉내내는 방식으로 진행합니다.
+
+이 모듈을 사용해도 애플리케이션이 `HttpClient`를 사용해서 요청을 보내고 받는 것은 동일하지만, 이 요청을 *인-메모리 Web API*가 가로채서 실제 HTTP 요청을 보내지 않고 인-메모리 데이터 스토어로 이 내용을 처리합니다.
+
+이 모듈을 사용하면 이번 튜토리얼에 필요한 로직을 굉장히 편하게 구현할 수 있습니다.
+실제 HTTP 요청으로 동작하는 서버를 준비하지 않아도 됩니다.
+
+개발 초기에 서버가 준비되지 않았을 때 이 모듈을 사용하는 것도 좋습니다.
 
 <div class="alert is-important">
 
+<!--
 **Important:** the *In-memory Web API* module has nothing to do with HTTP in Angular.
 
 If you're just _reading_ this tutorial to learn about `HttpClient`, you can [skip over](#import-heroes) this step.
 If you're _coding along_ with this tutorial, stay here and add the *In-memory Web API* now.
+-->
+**중요:** *인-메모리 Web API* 모듈은 사실 Angular가 제공하는 HTTP와 큰 관련이 없습니다.
+
+그래서 이 튜토리얼의 핵심 내용인 `HttpClient`에 대해 알아보려면 이 단계를 건너뛰고 [여기로](#import-heroes) 넘어가는 것이 좋습니다.
+이 튜토리얼을 단계별로 따라가면서 직접 _코딩하고 있는 경우에만_ *인-메모리 웹 API* 설정을 진행하세요.
 
 </div>
 
+<!--
 Install the *In-memory Web API* package from _npm_
+-->
+_npm_ 으로 *인-메모리 웹 API* 패키지를 설치합니다.
 
 <code-example language="sh" class="code-shell">
   npm install angular-in-memory-web-api --save
 </code-example>
 
+<!--
 Import the `HttpClientInMemoryWebApiModule` and the `InMemoryDataService` class, 
 which you will create in a moment.
+-->
+그리고 이 패키지에서 `HttpClientInMemoryWebApiModule`을 로드하고, 앞으로 만들 서비스에서 제공할 `InMemoryDataService` 클래스를 로드합니다.
 
+<!--
 <code-example 
   path="toh-pt6/src/app/app.module.ts" 
   region="import-in-mem-stuff" 
   header="src/app/app.module.ts (In-memory Web API imports)">
 </code-example>
+-->
+<code-example 
+  path="toh-pt6/src/app/app.module.ts" 
+  region="import-in-mem-stuff" 
+  header="src/app/app.module.ts (In-memory Web API 로드하기)">
+</code-example>
 
+<!--
 Add the `HttpClientInMemoryWebApiModule` to the `@NgModule.imports` array&mdash;
 _after importing the `HttpClientModule`_,
 &mdash;while configuring it with the `InMemoryDataService`.
+-->
+그 다음에는 `HttpClientInMemoryWebApiModule`을 `@NgModule.imports` 배열에 추가하는데, _`HttpClientModule` 뒤에_ 추가합니다.
+이 때 `InMemoryDataService`를 인자로 전달합니다.
 
 <code-example   
   path="toh-pt6/src/app/app.module.ts" 
   region="in-mem-web-api-imports">
 </code-example>
 
+<!--
 The `forRoot()` configuration method takes an `InMemoryDataService` class
 that primes the in-memory database.
 
 The _Tour of Heroes_ sample creates such a class 
 `src/app/in-memory-data.service.ts` which has the following content:
+-->
+그러면 `forRoot()` 메소드가 `InMemoryDataService` 클래스를 사용해서 인-메모리 데이터베이스를 구성합니다.
+
+`InMemoDataService` 클래스는 `src/ap/in-memory-data.service.ts` 파일에 다음과 같이 구현합니다:
 
 <code-example path="toh-pt6/src/app/in-memory-data.service.ts" region="init" header="src/app/in-memory-data.service.ts" linenums="false"></code-example>
 
+<!--
 This file replaces `mock-heroes.ts`, which is now safe to delete.
 
 When your server is ready, detach the *In-memory Web API*, and the app's requests will go through to the server.
 
 Now back to the `HttpClient` story.
+-->
+이 파일을 사용하면 이제 `mock-heroes.ts` 파일을 사용하지 않기 때문데 삭제해도 돕니다.
+
+그리고 서버가 준비되면 *인-메모리 Web API* 를 제거해서 애플리케이션이 보내는 요청을 실제 서버로 전달하면 됩니다.
+
+다시 `HttpClient`에 대해 이야기해 봅시다.
 
 {@a import-heroes}
+<!--
 ## Heroes and HTTP
+-->
+## 히어로 데이터와 HTTP
 
+<!--
 Import some HTTP symbols that you'll need:
+-->
+먼저 HTTP 요청을 보내기 위해 필요한 심볼을 로드합니다:
 
+<!--
 <code-example
   path="toh-pt6/src/app/hero.service.ts" 
   region="import-httpclient" 
   header="src/app/hero.service.ts (import HTTP symbols)">
 </code-example>
+-->
+<code-example
+  path="toh-pt6/src/app/hero.service.ts" 
+  region="import-httpclient" 
+  header="src/app/hero.service.ts (HTTP 심볼 로드하기)">
+</code-example>
 
+<!--
 Inject `HttpClient` into the constructor in a private property called `http`.
+-->
+그리고 `HttpClient`를 `HeroService`의 생성자에 의존성으로 주입하면서 이 인스턴스를 `private http` 프로퍼티에 할당합니다.
 
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
   region="ctor" >
 </code-example>
 
+<!--
 Keep injecting the `MessageService`. You'll call it so frequently that
 you'll wrap it in private `log` method.
+-->
+이 서비스에는 `MessageService`도 주입합니다.
+`MessageService`는 자주 사용하기 때문에 `MessageService.add()` 메소드는 `private log` 메소드로 한 번 랩핑합니다.
 
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
   region="log" >
 </code-example>
 
+<!--
 Define the `heroesUrl` of the form `:base/:collectionName` with the address of the heroes resource on the server.
  Here `base` is the resource to which requests are made,
  and `collectionName` is the heroes data object in the `in-memory-data-service.ts`.
+-->
+서버에 요청할 `heroesUrl`을 `:base/:collectionName`와 같이 정의합니다.
+이 문자열에서 `base`는 요청으로 보내는 주소의 기본 위치를 의미하며, `collectionName`은 `in-memory-data-service.ts`에 있는 히어로 데이터가 저장되는 위치를 가리킵니다.
 
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
   region="heroesUrl" >
 </code-example>
 
+<!--
 ### Get heroes with _HttpClient_
+-->
+### _HttpClient_ 로 히어로 목록 가져오기
 
+<!--
 The current `HeroService.getHeroes()` 
 uses the RxJS `of()` function to return an array of mock heroes
 as an `Observable<Hero[]>`.
+-->
+지금까지 작성한 `HeroService.getHeroes()` 함수는 RxJS `of()` 함수를 사용해서 `Observable<Hero[]>` 타입의 목 히어로 데이터를 반환합니다.
 
+<!--
 <code-example 
   path="toh-pt4/src/app/hero.service.ts" 
   region="getHeroes-1" 
   header="src/app/hero.service.ts (getHeroes with RxJs 'of()')">
 </code-example>
+-->
+<code-example 
+  path="toh-pt4/src/app/hero.service.ts" 
+  region="getHeroes-1" 
+  header="src/app/hero.service.ts (RxJs 'of()'를 사용하는 getHeroes)">
+</code-example>
 
+<!--
 Convert that method to use `HttpClient`
+-->
+이 함수가 `HttpClient`를 사용하도록 변경합니다.
+
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
   region="getHeroes-1">
 </code-example>
 
+<!--
 Refresh the browser. The hero data should successfully load from the
 mock server.
 
 You've swapped `of` for `http.get` and the app keeps working without any other changes
 because both functions return an `Observable<Hero[]>`.
+-->
+브라우저가 갱신되면 이제 히어로 데이터는 목 서버에서 받아옵니다.
 
+`of` 함수를 `http.get`으로 변경했지만 이 서비스 외의 다른 부분은 변경하지 않아도 됩니다.
+두 함수는 모두 `Observable<Hero[]>` 타입을 반환합니다.
+
+<!--
 ### Http methods return one value
+-->
+### Http 메소드는 데이터를 하나만 반환합니다.
 
+<!--
 All `HttpClient` methods return an RxJS `Observable` of something.
 
 HTTP is a request/response protocol. 
@@ -158,53 +287,102 @@ In general, an observable _can_ return multiple values over time.
 An observable from `HttpClient` always emits a single value and then completes, never to emit again.
 
 This particular `HttpClient.get` call returns an `Observable<Hero[]>`, literally "_an observable of hero arrays_". In practice, it will only return a single hero array.
+-->
+`HttpClient`가 제공하는 모든 메소드는 RxJS `Observable` 타입으로 무언가를 반환합니다.
 
+HTTP는 요청을 보내고 응답을 받는 프로토콜입니다.
+이 때 요청이 한 번 있었다면 응답도 한 번입니다.
+
+일반적으로 옵저버블은 여러 번에 걸쳐 데이터를 여러개 반환합니다.
+하지만 `HttpClient`가 반환하는 옵저버블은 데이터를 하나만 반환하고 종료되며, 데이터를 추가로 보내지 않습니다.
+
+그래서 `HttpClient.get` 함수는 히어로 데이터를 배열로 묶어서 `Observable<Hero[]>` 타입으로 반환합니다.
+
+
+<!--
 ### _HttpClient.get_ returns response data
+-->
+### _HttpClient.get_ 함수는 응답으로 받은 데이터를 반환합니다.
 
+<!--
 `HttpClient.get` returns the _body_ of the response as an untyped JSON object by default.
 Applying the optional type specifier, `<Hero[]>` , gives you a typed result object.
 
 The shape of the JSON data is determined by the server's data API.
 The _Tour of Heroes_ data API returns the hero data as an array.
+-->
+`HttpClient.get` 함수는 HTTP 응답으로 받은 _몸체(body)_ 를 반환하는데, 이 객체는 타입이 지정되지 않은 JSON 객체로 처리됩니다.
+그래서 이 객체에 타입을 지정하려면 `<Hero[]>`와 같이 제네릭을 지정하면 됩니다.
+
+JSON 데이터의 형식은 서버에 정의된 데이터 API에 따라 달라집니다.
+_히어로들의 여행_ 에서 사용하는 데이터 API는 모두 히어로 데이터를 배열로 반환합니다.
 
 <div class="alert is-helpful">
 
+<!--
 Other APIs may bury the data that you want within an object.
 You might have to dig that data out by processing the `Observable` result
 with the RxJS `map` operator.
 
 Although not discussed here, there's an example of `map` in the `getHeroNo404()`
 method included in the sample source code.
+-->
+데이터는 어떤 객체 안에 깊숙히 들어있을 수도 있습니다.
+그러면 이 객체에서 원하는 데이터를 추출하기 위해 RxJS `map` 연산자를 사용해야 할 수도 있습니다.
+
+이 내용은 이 문서에서 다루지 않지만 예제 코드에 구현된 `getHeroNo404()` 메소드를 보면 `map` 연산자를 사용하는 코드를 확인할 수 있습니다.
 
 </div>
 
+<!--
 ### Error handling
+-->
+### 에러 처리하기
 
+<!--
 Things go wrong, especially when you're getting data from a remote server.
 The `HeroService.getHeroes()` method should catch errors and do something appropriate.
 
 To catch errors, you **"pipe" the observable** result from `http.get()` through an RxJS `catchError()` operator.
 
 Import the `catchError` symbol from `rxjs/operators`, along with some other operators you'll need later.
+-->
+리모트 서버에서 데이터를 가져오는 과정은 얼마든지 잘못될 수 있습니다.
+그래서 `HeroService.getHeroes()` 메소드에는 에러가 발생했을 때 처리하는 로직이 필요합니다.
+
+에러를 처리하려면 `http.get()`으로 받은 옵저버블에 **"pipe"를 사용해서** `catchError()` 연산자를 연결하면 됩니다.
+
+`rxjs/operators`에서 `catchError` 심볼을 로드합니다.
+이 때 앞으로 사용할 연산자 몇 개도 함께 로드했습니다.
 
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
   region="import-rxjs-operators">
 </code-example>
 
+<!--
 Now extend the observable result with the `.pipe()` method and
 give it a `catchError()` operator.
+-->
+이제 옵저버블로 받은 데이터를 `.pipe()` 메소드로 확장하고 이 파이프에 `catchError()` 연산자를 연결합니다.
 
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
   region="getHeroes-2" >
 </code-example>
 
+<!--
 The `catchError()` operator intercepts an **`Observable` that failed**.
 It passes the error an _error handler_ that can do what it wants with the error.
 
 The following `handleError()` method reports the error and then returns an
 innocuous result so that the application keeps working.
+-->
+`catchError()` 연산자는 **`Observable`이 실패했을 때** 실행되는 연산자입니다.
+이 연산자에는 에러가 발생했을 때 실행할 _에러 핸들러 함수_ 를 인자로 전달합니다.
+
+아래에서 구현할 `handleError()` 메소드는 에러를 콘솔에 출력한 뒤에 빈 배열을 반환합니다.
+그래서 서버에 보낸 요청이 실패하는 에러가 발생하더라도 애플리케이션은 계속 동작할 수 있습니다.
 
 #### _handleError_
 
