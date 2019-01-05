@@ -14,7 +14,13 @@ require('reflect-metadata');
 Error.stackTraceLimit = 9999;
 
 var BROWSER_OPTIONS = {
-  LocalChrome: {'browserName': 'chrome'},
+  LocalChrome: {
+    'browserName': 'chrome',
+
+    // Enables concurrent testing. Currently runs four e2e files in parallel.
+    shardTestFiles: true,
+    maxInstances: 4,
+  },
   ChromeOnTravis: {
     browserName: 'chrome',
     chromeOptions: {
