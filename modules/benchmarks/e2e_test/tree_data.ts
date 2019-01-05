@@ -36,8 +36,6 @@ export const Benchmarks: Benchmark[] = [
     url: 'all/benchmarks/src/tree/ng2_next/index.html',
     buttons: CreateDestroyDetectChangesButtons,
     ignoreBrowserSynchronization: true,
-    // Can't use bundles as we use non exported code
-    extraParams: [{name: 'bundles', value: false}]
   },
   {
     id: `deepTree.ng2.static`,
