@@ -218,11 +218,12 @@ jobs:
       - run: yarn --cwd aio tools-test
       - run: ./aio/aio-builds-setup/scripts/test.sh
 
-  test_docs_examples_0:
+  test_docs_examples:
     <<: *job_defaults
     docker:
       # Needed because the example e2e tests depend on Chrome.
       - image: *browsers_docker_image
+    parallelism: 2
     steps:
       - checkout:
           <<: *post_checkout
@@ -235,28 +236,10 @@ jobs:
       - *yarn_install
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
-        # Run examples tests
-      - run: yarn --cwd aio example-e2e --setup --local --shard=0/2
-
-  test_docs_examples_1:
-    <<: *job_defaults
-    docker:
-      # Needed because the example e2e tests depend on Chrome.
-      - image: *browsers_docker_image
-    steps:
-      - checkout:
-          <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
-      - attach_workspace:
-          at: dist
-      - *define_env_vars
-        # Install root
-      - *yarn_install
-        # Install aio
-      - run: yarn --cwd aio install --frozen-lockfile --non-interactive
-        # Run examples tests
-      - run: yarn --cwd aio example-e2e --setup --local --shard=1/2
+        # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
+        # Since the parallelism is set to "2", there will be two parallel CircleCI containers
+        # with either "0" or "1" as node index. This can be passed to the "--shard" argument.
+      - run: yarn --cwd aio example-e2e --setup --local --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
@@ -517,10 +500,7 @@ workflows:
       - test_aio_tools:
           requires:
             - build-packages-dist
-      - test_docs_examples_0:
-          requires:
-            - build-packages-dist
-      - test_docs_examples_1:
+      - test_docs_examples:
           requires:
             - build-packages-dist
       - aio_preview:
@@ -546,8 +526,7 @@ workflows:
             - integration_test
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
-            - test_docs_examples_0
-            - test_docs_examples_1
+            - test_docs_examples
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-packages-dist
