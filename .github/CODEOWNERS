@@ -16,7 +16,7 @@
 #
 #  - we trust that people do the right thing and not approve changes they don't feel confident reviewing
 #  - we use github teams so that we funnel code reviews to the most appropriate reviewer, this is why the team structure is fine-grained
-#  - we enforce that only approved PRs get merged to ensure that unreviewed code doesn't get accidentaly merged
+#  - we enforce that only approved PRs get merged to ensure that unreviewed code doesn't get accidentally merged
 #  - we delegate approval rights as much as possible so that we can scale better
 #  - each group must have at least one person, but several people are preferable to avoid a single point of failure issues
 #  - most file groups have one or two global approvers groups as fallbacks:
@@ -28,7 +28,7 @@
 #
 #  - This configuration works in conjunction with the protected branch settings that require all changes to be made via pull requests with at least one approval.
 #  - This approval can come from an appropriate codeowner, or any repo collaborator (person with write access) if the PR is authored by a codeowner.
-#  - Each codeowners team must have write access to the repo, otherwise their reviewes won't count.
+#  - Each codeowners team must have write access to the repo, otherwise their reviews won't count.
 #
 #  In the case of emergency, the repo administrators which include angular-caretaker can bypass this requirement.
 
