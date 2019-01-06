@@ -5,7 +5,7 @@
   <label>Hero name:
     <input #heroName />
   </label>
-  <!-- (click) passes input value to add() and then clears the input -->
+  <!-- (click) 이벤트를 감지하면 현재값을 인자로 전달하면서 add() 함수를 실행하고, 입력 필드를 비웁니다. -->
   <button (click)="add(heroName.value); heroName.value=''">
     add
   </button>
