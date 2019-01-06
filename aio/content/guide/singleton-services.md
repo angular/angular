@@ -17,7 +17,7 @@ There are two ways to make a service a singleton in Angular:
 * Declare that the service should be provided in the application root.
 * Include the service in the `AppModule` or in a module that is only imported by the `AppModule`.
 
-Beginning with Angular 6.0, the preferred way to create a singleton services is to specify on the service that it should be provided in the application root. This is done by setting `providedIn` to `root` on the service's `@Injectable` decorator:
+Beginning with Angular 6.0, the preferred way to create a singleton service is to specify on the service that it should be provided in the application root. This is done by setting `providedIn` to `root` on the service's `@Injectable` decorator:
 
 <code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.0.ts" linenums="false"> </code-example>
 
