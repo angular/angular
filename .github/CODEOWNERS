@@ -93,6 +93,7 @@
 #  Used for approving minor documentation-only changes that don't require engineering review.
 #  (secret team to avoid review requests, it also doesn't inherit from @angular/framework because nested teams can't be secret)
 #
+#   - brandonroberts
 #   - gkalpak
 #   - jenniferfell
 #   - petebacondarwin
