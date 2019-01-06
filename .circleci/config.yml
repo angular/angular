@@ -333,6 +333,7 @@ jobs:
   # See comments inside the integration/run_tests.sh script.
   integration_test:
     <<: *job_defaults
+    parallelism: 4
     docker:
       # Needed because the integration tests expect Chrome to be installed (e.g cli-hello-world)
       - image: *browsers_docker_image
@@ -348,7 +349,9 @@ jobs:
       - attach_workspace:
           at: dist
       - *define_env_vars
-      - run: ./integration/run_tests.sh
+      # Runs the integration tests in parallel across multiple CircleCI container instances. The
+      # amount of container nodes for this job is controlled by the "parallelism" option.
+      - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}
 
   # This job updates the content of repos like github.com/angular/core-builds
   # for every green build on angular/angular.
