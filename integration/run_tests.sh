@@ -10,7 +10,10 @@ cd "$(dirname "$0")"
 # basedir is the workspace root
 readonly basedir=$(pwd)/..
 
-# Track payload size functions
+# When running on the CI, we track the payload size of various integration output files. Also
+# we shard tests across multiple CI job instances. The script needs to be run with a shard index
+# and the maximum amount of shards available for the integration tests on the CI.
+# For example: "./run_tests.sh {SHARD_INDEX} {MAX_SHARDS}".
 if $CI; then
   # We don't install this by default because it contains some broken Bazel setup
   # and also it's a very big dependency that we never use except when publishing
@@ -18,12 +21,22 @@ if $CI; then
   yarn add --silent -D firebase-tools@5.1.1
   source ${basedir}/scripts/ci/payload-size.sh
 
+  SHARD_INDEX=${1:?"No shard index has been specified."}
+  MAX_SHARDS=${2:?"The maximum amount of shards has not been specified."}
+
+  # Determines the tests that need to be run for this shard index.
+  TEST_DIRS=$(node ./get-sharded-tests.js --shardIndex ${SHARD_INDEX} --maxShards ${MAX_SHARDS})
+
   # NB: we don't run build-packages-dist.sh because we expect that it was done
   # by an earlier job in the CircleCI workflow.
 else
   # Not on CircleCI so let's build the packages-dist directory.
   # This should be fast on incremental re-build.
   ${basedir}/scripts/build-packages-dist.sh
+
+  # If we aren't running on CircleCI, we do not shard tests because this would be the job of
+  # Bazel eventually. For now, we just run all tests sequentially when running locally.
+  TEST_DIRS=$(ls | grep -v node_modules)
 fi
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
@@ -36,7 +49,7 @@ rm_cache
 mkdir $cache
 trap rm_cache EXIT
 
-for testDir in $(ls | grep -v node_modules) ; do
+for testDir in ${TEST_DIRS}; do
   [[ -d "$testDir" ]] || continue
   echo "#################################"
   echo "Running integration test $testDir"
