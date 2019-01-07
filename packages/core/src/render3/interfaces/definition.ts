@@ -12,7 +12,6 @@ import {Type} from '../../interface/type';
 import {CssSelectorList} from './projection';
 
 
-
 /**
  * Definition of what a template rendering function should look like for a component.
  */

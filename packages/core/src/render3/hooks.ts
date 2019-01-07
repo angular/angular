@@ -24,7 +24,8 @@ import {OnChangesDirectiveWrapper, unwrapOnChangesDirectiveWrapper} from './onch
  * such that it looks like `[index, hook, index, hook, index, hook]`. However,
  * if the hook happens to be an OnChanges hook, then the `index` will be _negative_,
  * this signals {@link callHooks} that it's dealing with an OnChanges hook, and needs
- * to pass the {@link SimpleChanges} object.
+ * to pass the {@link SimpleChanges} object. The reason why `OnChanges` is special is because it
+ * takes an argument.
  *
  * @param index The index of the directive in LView
  * @param def The definition containing the hooks to setup in tView
