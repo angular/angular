@@ -54,7 +54,7 @@ export function getLContainer(tNode: TViewNode, embeddedView: LView): LContainer
  */
 export function getContainerRenderParent(tViewNode: TViewNode, view: LView): RElement|null {
   const container = getLContainer(tViewNode, view);
-  return container ? container[RENDER_PARENT] : null;
+  return container ? nativeParentNode(view[RENDERER], container[NATIVE]) : null;
 }
 
 const enum WalkTNodeTreeAction {
