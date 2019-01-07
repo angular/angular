@@ -1,3 +1,15 @@
+<a name="7.2.0"></a>
+# [7.2.0](https://github.com/angular/angular/compare/7.2.0-rc.0...7.2.0) (2019-01-07)
+
+
+### Bug Fixes
+
+* **bazel:** unable to launch protractor test on windows ([#27850](https://github.com/angular/angular/issues/27850)) ([1e6c9be](https://github.com/angular/angular/commit/1e6c9be))
+* **forms:** match getError and hasError to get method signature ([#20211](https://github.com/angular/angular/issues/20211)) ([1b0b36d](https://github.com/angular/angular/commit/1b0b36d))
+* **upgrade:** allow nesting components from different downgraded modules ([#27217](https://github.com/angular/angular/issues/27217)) ([bc0ee01](https://github.com/angular/angular/commit/bc0ee01))
+* **upgrade:** correctly handle nested downgraded components with `downgradeModule()` ([#27217](https://github.com/angular/angular/issues/27217)) ([326b464](https://github.com/angular/angular/commit/326b464)), closes [#22581](https://github.com/angular/angular/issues/22581) [#22869](https://github.com/angular/angular/issues/22869) [#27083](https://github.com/angular/angular/issues/27083)
+
+
 <a name="7.2.0-rc.0"></a>
 # [7.2.0-rc.0](https://github.com/angular/angular/compare/7.2.0-beta.2...7.2.0-rc.0) (2018-12-18)
 
