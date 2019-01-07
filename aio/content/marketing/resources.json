@@ -453,6 +453,12 @@
             "rev": true,
             "title": "Smart Web Components",
             "url": "https://www.htmlelements.com/angular/"
+          },
+          "AlyleUI": {
+            "desc": "Minimal Design, a set of components for Angular.",
+            "rev": true,
+            "title": "Alyle UI",
+            "url": "https://alyle-ui.firebaseapp.com/"
           }
         }
       }
