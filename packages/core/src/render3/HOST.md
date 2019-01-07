@@ -1,10 +1,10 @@
 # Host
 
-This document explains the concept of _host_ in angular application.
+This document explains the concept of _host_ in Angular applications.
 
 # What is a _host_ element?
 
-A _host_ is the element where the _component_ or _directive_ is attached to.
+A _host_ is the element to which a _component_ or _directive_ is attached.
 At most one _component_ and zero or more _directives_ can share the same _host_ element.
 
 ```typescript
@@ -16,18 +16,18 @@ class MyApp {}
 ```
 
 In the above example the element `my-component` is a host element, because it has a _component_ and two _directives_ attached to it.
-The important thing to understand is that the `my-component` element is owned by `MyApp` not by `MyComponent`.
+The important thing to understand is that the `my-component` element is owned by `MyApp`, not by `MyComponent`.
 Ownership describes who is responsible for creating and destroying the element.
 (It is the responsibility of `MyApp` (not `MyComponent`) to create `my-component` element; `MyComponent` simply assumes that existing _host_ element exist and attaches itself to it.)
 
-## Why can't component create its own host?
+## Why can't a component create its own host?
 
 Host components exist for several reasons:
 - It is the way WebComponents work and Angular's mental model was modeled on WebComponents.
-- Host elements allow for composition of _component_ and _directives_ on a single element.
+- Host elements allow for composition of a _component_ and _directives_ on a single element.
 - Host element is needed for selectors.
   (Parent component declares a _host_ element and existing components and directives match the host element and attach to it.)
-- Host element is the context where host bindings and host listeners are executed on.
+- Host element is the context on which host bindings and host listeners are executed.
 
 ## Explicit vs Implicit Host Elements
 
@@ -47,14 +47,15 @@ class Parent {}
 ```
 
 Notice that the `Parent` component view implicitly creates the `<child>` element regardless if the `Child` has been declared. 
-For example `<child>` could be a custom element in which case the browser would render it's content instead of Angular.
+For example `<child>` could be a custom element in which case the browser would render its content instead of Angular.
 In most cases the _host_ element for a component is just an element in the parent component's view. 
 Therefore in most cases the _host_ element is created implicitly as part of the parent component rendering.
+
 However there comes a point where the parent component has no more parents.
 In this case the _host_ element needs to be created explicitly. 
-In addition to the _host_ element it is also is necessary to create a change detection view for the _host_ element so that any `@HostBinding` and `@HostListeners` can be correctly registered and change detected. 
+In addition to the _host_ element it is also necessary to create a change detection view for the _host_ element so that any `@HostBinding` and `@HostListeners` can be correctly registered and change detected. 
 For this reason Angular needs to create a _host_ view which contains the element, and any associated component and directives.
-The _host_ view is attached to the _host_ element provides the change detection context for the `@HostBinding` and `@HostListeners`.
+The _host_ view is attached to the _host_ element, and provides the change detection context for the `@HostBinding` and `@HostListeners`.
 It can also provide change detection from the _host_ element attributes to the inputs of the component and or directives.
 
 Summary:
@@ -101,7 +102,7 @@ let myAppHostElement = document.createElement('my-app');
 let myApp: MyApp = createComponent(MyApp, myAppHostElement);
 ```
 
-Same operation can be repeated for the second component as well as the directive. 
+In the example below, the same operation can be repeated for the second component as well as the directive. 
 Notice there is no rule that the host element name (`<div>`) must match the selector of the component (`<my-component>`).
 Selectors are only used when assembling the components automatically from other templates.
 
@@ -114,7 +115,7 @@ let myDirective: MyDirective = createDirective(MyDirective, myComponentHostEleme
 At this point we have created two components (and a directive). 
 There are no relationships between them.
 They are independent in DOM and in change detection relationship.
-First we attach their DOM trees, and than we attach their change detection trees.
+First we attach their DOM trees, and then we attach their change detection trees.
 
 ```typescript
 // We join the DOM trees together using standard DOM APIs.
@@ -139,7 +140,7 @@ detachChangeDetection(myApp, getHostElement(myComponent));
 # Change Detection
 
 Change detection describes the act of dirty checking the components and reflecting its state to the component's view. 
-Each view (component's template) has a change detector attach to it which can detect changes in the component and reflect those changes to the DOM.
+Each view (component's template) has a change detector attached to it which can detect changes in the component and reflect those changes to the DOM.
 For convenience the change detectors are attached in a tree which reflects the logical tree of components in the DOM.
 The implication is that triggering the change detection on the root component will in turn trigger the change detection on the child components as well.
 The following API shows how the change detectors can be attach/detached, change detected and marked dirty.
@@ -147,7 +148,7 @@ The following API shows how the change detectors can be attach/detached, change 
 ## `attachChangeDetection` / `detachChangeDetection` / `setChangeDetectionMode`
 
 Change detection is broken down to views.
-The changed detection on the views can be attached or detached in any order.
+The change detection on the views can be attached or detached in any order.
 Usually the change detection views are implicitly linked in the logical order in which they were declared in the component's template.
 This API is only needed if one wishes to rearrange the order or when creating components implicitly.
 
@@ -156,7 +157,7 @@ This API is only needed if one wishes to rearrange the order or when creating co
  * Attach the child view to a specific location in the change detection tree.
  * 
  * For all parameters:
- *  - If component than the view associated with that component.
+ *  - If component, then the view that the component owns.
  *  - If element that the view associated with that Element. (Usually host view).
  * 
  * @param parent Where the change detector should be attached so that it is a child of the parent.
@@ -187,7 +188,7 @@ const enum ChangeDetectionMode {
   /**
    * A change detection triggered at parent component view will not cross this boundary.
    * 
-   * The component is effectively cut of from the parent change detection events. 
+   * The component is effectively cut off from the parent change detection events. 
    * Change detection can still occur if called explicitly using `detectChanges` or `markDirty`.
    */
   Disabled = 0,

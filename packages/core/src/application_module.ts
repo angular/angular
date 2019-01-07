@@ -64,7 +64,7 @@ export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
 /**
  * Schedule work at next available slot.
  *
- * In Ivy this is just `requestAnimationFrame` For compatibility reasons when bootstrapped
+ * In Ivy this is just `requestAnimationFrame`. For compatibility reasons when bootstrapped
  * using `platformRef.bootstrap` we need to use `NgZone.onStable` as the scheduling mechanism.
  * This overrides the scheduling mechanism in Ivy to `NgZone.onStable`.
  *
