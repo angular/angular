@@ -101,7 +101,6 @@ merge:
 
     # list of PR statuses that need to be successful
     requiredStatuses:
-      - "continuous-integration/travis-ci/pr"
       - "ci/circleci: build"
       - "ci/circleci: lint"
 
