@@ -1265,6 +1265,96 @@ describe('providers', () => {
       expect(injector.get(Some).location).toEqual('From app component');
     });
   });
+
+  describe('lifecycles', () => {
+    it('should execute ngOnDestroy hooks on providers (and only this one)', () => {
+      const logs: string[] = [];
+
+      @Injectable()
+      class InjectableWithLifeCycleHooks {
+        ngOnChanges() { logs.push('Injectable OnChanges'); }
+        ngOnInit() { logs.push('Injectable OnInit'); }
+        ngDoCheck() { logs.push('Injectable DoCheck'); }
+        ngAfterContentInit() { logs.push('Injectable AfterContentInit'); }
+        ngAfterContentChecked() { logs.push('Injectable AfterContentChecked'); }
+        ngAfterViewInit() { logs.push('Injectable AfterViewInit'); }
+        ngAfterViewChecked() { logs.push('Injectable gAfterViewChecked'); }
+        ngOnDestroy() { logs.push('Injectable OnDestroy'); }
+      }
+
+      @Component({template: `<span></span>`, providers: [InjectableWithLifeCycleHooks]})
+      class MyComponent {
+        constructor(foo: InjectableWithLifeCycleHooks) {}
+
+        static ngComponentDef = defineComponent({
+          type: MyComponent,
+          selectors: [['my-comp']],
+          factory: () => new MyComponent(directiveInject(InjectableWithLifeCycleHooks)),
+          consts: 1,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: MyComponent) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'span');
+            }
+          },
+          features: [ProvidersFeature([InjectableWithLifeCycleHooks])]
+        });
+      }
+
+      @Component({
+        template: `
+        <div>
+        % if (ctx.condition) {
+          <my-comp></my-comp>
+        % }
+        </div>
+        `,
+      })
+      class App {
+        public condition = true;
+
+        static ngComponentDef = defineComponent({
+          type: App,
+          selectors: [['app-cmp']],
+          factory: () => new App(),
+          consts: 2,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: App) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div');
+              { container(1); }
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              containerRefreshStart(1);
+              {
+                if (ctx.condition) {
+                  let rf1 = embeddedViewStart(1, 2, 1);
+                  {
+                    if (rf1 & RenderFlags.Create) {
+                      element(0, 'my-comp');
+                    }
+                  }
+                  embeddedViewEnd();
+                }
+              }
+              containerRefreshEnd();
+            }
+          },
+          directives: [MyComponent]
+        });
+      }
+
+      const fixture = new ComponentFixture(App);
+      fixture.update();
+      expect(fixture.html).toEqual('<div><my-comp><span></span></my-comp></div>');
+
+      fixture.component.condition = false;
+      fixture.update();
+      expect(fixture.html).toEqual('<div></div>');
+      expect(logs).toEqual(['Injectable OnDestroy']);
+    });
+  });
 });
 interface ComponentTest {
   providers?: Provider[];
