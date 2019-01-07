@@ -89,7 +89,7 @@ export function prepareEventListenerParameters(
   statements.push(...bindingExpr.render3Stmts);
 
   const eventName: string =
-      type === ParsedEventType.Animation ? prepareSyntheticListenerName(name, phase) : name;
+      type === ParsedEventType.Animation ? prepareSyntheticListenerName(name, phase !) : name;
   const fnName = handlerName && sanitizeIdentifier(handlerName);
   const fnArgs = [new o.FnParam('$event', o.DYNAMIC_TYPE)];
   const handlerFn = o.fn(fnArgs, statements, o.INFERRED_TYPE, null, fnName);
