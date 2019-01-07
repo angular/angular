@@ -1149,89 +1149,85 @@ function declareTests(config?: {useJit: boolean}) {
                 expect(compRef.instance.someToken).toBe('someRootValue');
               });
 
-          fixmeIvy('FW-707: TestBed: No LView in getParentInjectorLocation')
-              .it('should create a component with the passed NgModuleRef', () => {
-                @Component({template: ''})
-                class RootComp {
-                  constructor(public vc: ViewContainerRef) {}
-                }
+          it('should create a component with the passed NgModuleRef', () => {
+            @Component({template: ''})
+            class RootComp {
+              constructor(public vc: ViewContainerRef) {}
+            }
 
-                @Component({template: ''})
-                class MyComp {
-                  constructor(@Inject('someToken') public someToken: string) {}
-                }
+            @Component({template: ''})
+            class MyComp {
+              constructor(@Inject('someToken') public someToken: string) {}
+            }
 
-                @NgModule({
-                  declarations: [RootComp, MyComp],
-                  entryComponents: [MyComp],
-                  providers: [{provide: 'someToken', useValue: 'someRootValue'}],
-                })
-                class RootModule {
-                }
+            @NgModule({
+              declarations: [RootComp, MyComp],
+              entryComponents: [MyComp],
+              providers: [{provide: 'someToken', useValue: 'someRootValue'}],
+            })
+            class RootModule {
+            }
 
-                @NgModule({providers: [{provide: 'someToken', useValue: 'someValue'}]})
-                class MyModule {
-                }
+            @NgModule({providers: [{provide: 'someToken', useValue: 'someValue'}]})
+            class MyModule {
+            }
 
-                const compFixture = TestBed.configureTestingModule({imports: [RootModule]})
-                                        .createComponent(RootComp);
-                const compiler = <Compiler>TestBed.get(Compiler);
-                const myModule =
-                    compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
-                const myCompFactory =
-                    (<ComponentFactoryResolver>TestBed.get(ComponentFactoryResolver))
-                        .resolveComponentFactory(MyComp);
+            const compFixture =
+                TestBed.configureTestingModule({imports: [RootModule]}).createComponent(RootComp);
+            const compiler = <Compiler>TestBed.get(Compiler);
+            const myModule = compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
+            const myCompFactory = (<ComponentFactoryResolver>TestBed.get(ComponentFactoryResolver))
+                                      .resolveComponentFactory(MyComp);
 
-                // Note: MyComp was declared as entryComponent in the RootModule,
-                // but we pass MyModule to the createComponent call.
-                // -> expect the providers of MyModule!
-                const compRef = compFixture.componentInstance.vc.createComponent(
-                    myCompFactory, undefined, undefined, undefined, myModule);
-                expect(compRef.instance.someToken).toBe('someValue');
-              });
+            // Note: MyComp was declared as entryComponent in the RootModule,
+            // but we pass MyModule to the createComponent call.
+            // -> expect the providers of MyModule!
+            const compRef = compFixture.componentInstance.vc.createComponent(
+                myCompFactory, undefined, undefined, undefined, myModule);
+            expect(compRef.instance.someToken).toBe('someValue');
+          });
 
-          fixmeIvy('FW-707: TestBed: No LView in getParentInjectorLocation')
-              .it('should create a component with the NgModuleRef of the ComponentFactoryResolver',
-                  () => {
-                    @Component({template: ''})
-                    class RootComp {
-                      constructor(public vc: ViewContainerRef) {}
-                    }
+          it('should create a component with the NgModuleRef of the ComponentFactoryResolver',
+             () => {
+               @Component({template: ''})
+               class RootComp {
+                 constructor(public vc: ViewContainerRef) {}
+               }
 
-                    @NgModule({
-                      declarations: [RootComp],
-                      providers: [{provide: 'someToken', useValue: 'someRootValue'}],
-                    })
-                    class RootModule {
-                    }
+               @NgModule({
+                 declarations: [RootComp],
+                 providers: [{provide: 'someToken', useValue: 'someRootValue'}],
+               })
+               class RootModule {
+               }
 
-                    @Component({template: ''})
-                    class MyComp {
-                      constructor(@Inject('someToken') public someToken: string) {}
-                    }
+               @Component({template: ''})
+               class MyComp {
+                 constructor(@Inject('someToken') public someToken: string) {}
+               }
 
-                    @NgModule({
-                      declarations: [MyComp],
-                      entryComponents: [MyComp],
-                      providers: [{provide: 'someToken', useValue: 'someValue'}],
-                    })
-                    class MyModule {
-                    }
+               @NgModule({
+                 declarations: [MyComp],
+                 entryComponents: [MyComp],
+                 providers: [{provide: 'someToken', useValue: 'someValue'}],
+               })
+               class MyModule {
+               }
 
-                    const compFixture = TestBed.configureTestingModule({imports: [RootModule]})
-                                            .createComponent(RootComp);
-                    const compiler = <Compiler>TestBed.get(Compiler);
-                    const myModule =
-                        compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
-                    const myCompFactory =
-                        myModule.componentFactoryResolver.resolveComponentFactory(MyComp);
+               const compFixture = TestBed.configureTestingModule({imports: [RootModule]})
+                                       .createComponent(RootComp);
+               const compiler = <Compiler>TestBed.get(Compiler);
+               const myModule =
+                   compiler.compileModuleSync(MyModule).create(TestBed.get(NgModuleRef));
+               const myCompFactory =
+                   myModule.componentFactoryResolver.resolveComponentFactory(MyComp);
 
-                    // Note: MyComp was declared as entryComponent in MyModule,
-                    // and we don't pass an explicit ModuleRef to the createComponent call.
-                    // -> expect the providers of MyModule!
-                    const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
-                    expect(compRef.instance.someToken).toBe('someValue');
-                  });
+               // Note: MyComp was declared as entryComponent in MyModule,
+               // and we don't pass an explicit ModuleRef to the createComponent call.
+               // -> expect the providers of MyModule!
+               const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
+               expect(compRef.instance.someToken).toBe('someValue');
+             });
         });
 
         describe('.insert', () => {
