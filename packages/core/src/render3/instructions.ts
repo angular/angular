@@ -1732,7 +1732,8 @@ function baseResolveDirective<T>(
     tView: TView, viewData: LView, def: DirectiveDef<T>,
     directiveFactory: (t: Type<T>| null) => any) {
   tView.data.push(def);
-  const nodeInjectorFactory = new NodeInjectorFactory(directiveFactory, isComponentDef(def), null);
+  const nodeInjectorFactory =
+      new NodeInjectorFactory(directiveFactory, isComponentDef(def), false, null);
   tView.blueprint.push(nodeInjectorFactory);
   viewData.push(nodeInjectorFactory);
 }
