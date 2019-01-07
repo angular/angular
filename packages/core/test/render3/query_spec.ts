@@ -7,10 +7,10 @@
  */
 
 import {NgForOfContext} from '@angular/common';
-import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
+import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {EventEmitter} from '../..';
-import {AttributeMarker, ProvidersFeature, QueryList, defineComponent, defineDirective, detectChanges} from '../../src/render3/index';
+import {AttributeMarker, ProvidersFeature, defineComponent, defineDirective, detectChanges} from '../../src/render3/index';
 import {getNativeByIndex} from '../../src/render3/util';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadQueryList, reference, registerContentQuery, template, text} from '../../src/render3/instructions';
