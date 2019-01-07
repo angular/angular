@@ -1167,23 +1167,22 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
              ]);
            }));
 
-        fixmeIvy('FW-848: ngOnDestroy hooks are not called on providers')
-            .it('should call ngOnDestroy on an injectable class', fakeAsync(() => {
-                  TestBed.overrideDirective(
-                      TestDirective, {set: {providers: [InjectableWithLifecycle]}});
+        it('should call ngOnDestroy on an injectable class', fakeAsync(() => {
+             TestBed.overrideDirective(
+                 TestDirective, {set: {providers: [InjectableWithLifecycle]}});
 
-                  const ctx = createCompFixture('<div testDirective="dir"></div>', TestComponent);
+             const ctx = createCompFixture('<div testDirective="dir"></div>', TestComponent);
 
-                  ctx.debugElement.children[0].injector.get(InjectableWithLifecycle);
-                  ctx.detectChanges(false);
+             ctx.debugElement.children[0].injector.get(InjectableWithLifecycle);
+             ctx.detectChanges(false);
 
-                  ctx.destroy();
+             ctx.destroy();
 
-                  // We don't care about the exact order in this test.
-                  expect(directiveLog.filter(['ngOnDestroy']).sort()).toEqual([
-                    'dir.ngOnDestroy', 'injectable.ngOnDestroy'
-                  ]);
-                }));
+             // We don't care about the exact order in this test.
+             expect(directiveLog.filter(['ngOnDestroy']).sort()).toEqual([
+               'dir.ngOnDestroy', 'injectable.ngOnDestroy'
+             ]);
+           }));
       });
     });
 

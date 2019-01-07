@@ -465,38 +465,37 @@ class TestComp {
            expect(comp.componentInstance.a).toBe('aValue');
          });
 
-      fixmeIvy('FW-848: ngOnDestroy hooks are not called on providers')
-          .it('should support ngOnDestroy for lazy providers', () => {
-            let created = false;
-            let destroyed = false;
+      it('should support ngOnDestroy for lazy providers', () => {
+        let created = false;
+        let destroyed = false;
 
-            class SomeInjectable {
-              constructor() { created = true; }
-              ngOnDestroy() { destroyed = true; }
-            }
+        class SomeInjectable {
+          constructor() { created = true; }
+          ngOnDestroy() { destroyed = true; }
+        }
 
-            @Component({providers: [SomeInjectable], template: ''})
-            class SomeComp {
-            }
+        @Component({providers: [SomeInjectable], template: ''})
+        class SomeComp {
+        }
 
-            TestBed.configureTestingModule({declarations: [SomeComp]});
+        TestBed.configureTestingModule({declarations: [SomeComp]});
 
 
-            let compRef = TestBed.createComponent(SomeComp).componentRef;
-            expect(created).toBe(false);
-            expect(destroyed).toBe(false);
+        let compRef = TestBed.createComponent(SomeComp).componentRef;
+        expect(created).toBe(false);
+        expect(destroyed).toBe(false);
 
-            // no error if the provider was not yet created
-            compRef.destroy();
-            expect(created).toBe(false);
-            expect(destroyed).toBe(false);
+        // no error if the provider was not yet created
+        compRef.destroy();
+        expect(created).toBe(false);
+        expect(destroyed).toBe(false);
 
-            compRef = TestBed.createComponent(SomeComp).componentRef;
-            compRef.injector.get(SomeInjectable);
-            expect(created).toBe(true);
-            compRef.destroy();
-            expect(destroyed).toBe(true);
-          });
+        compRef = TestBed.createComponent(SomeComp).componentRef;
+        compRef.injector.get(SomeInjectable);
+        expect(created).toBe(true);
+        compRef.destroy();
+        expect(destroyed).toBe(true);
+      });
 
       it('should instantiate view providers lazily', () => {
         let created = false;
