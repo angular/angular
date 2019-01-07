@@ -32,16 +32,15 @@ function declareTests(config?: {useJit: boolean}) {
     describe('platform pipes', () => {
       beforeEach(() => { TestBed.configureCompiler({...config}); });
 
-      fixmeIvy('FW-798: Handle pipes with duplicate names')
-          .it('should overwrite them by custom pipes', () => {
-            TestBed.configureTestingModule({declarations: [CustomPipe]});
-            const template = '{{true | somePipe}}';
-            TestBed.overrideComponent(MyComp1, {set: {template}});
-            const fixture = TestBed.createComponent(MyComp1);
+      it('should overwrite them by custom pipes', () => {
+        TestBed.configureTestingModule({declarations: [CustomPipe]});
+        const template = '{{true | somePipe}}';
+        TestBed.overrideComponent(MyComp1, {set: {template}});
+        const fixture = TestBed.createComponent(MyComp1);
 
-            fixture.detectChanges();
-            expect(fixture.nativeElement).toHaveText('someCustomPipe');
-          });
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('someCustomPipe');
+      });
     });
 
     describe('expressions', () => {
