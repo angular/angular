@@ -270,7 +270,7 @@ A provider object can associate any of these injection tokens with one or more c
 
 * [APP_INITIALIZER](api/core/APP_INITIALIZER): Callback is invoked before an app is initialized. All registered initializers can optionally return a Promise. All initializer functions that return Promises must be resolved before the application is bootstrapped. If one of the initializers fails to resolves, the application is not bootstrapped.
 
-The provider object can have a third option, `multi: true`, which you can use with `APP_INITIALIZER`
+The provider object can have a third option, `multi: true`, which you can use with the above injection tokens
 to register multiple handlers for the provide event.
 
 For example, when bootstrapping an application, you can register many initializers using the same token.
