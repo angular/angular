@@ -725,7 +725,6 @@ export function createTView(
     viewHooks: null,
     viewCheckHooks: null,
     destroyHooks: null,
-    pipeDestroyHooks: null,
     cleanup: null,
     contentQueries: null,
     components: null,

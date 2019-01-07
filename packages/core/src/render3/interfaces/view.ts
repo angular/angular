@@ -438,17 +438,6 @@ export interface TView {
   destroyHooks: HookData|null;
 
   /**
-   * Array of pipe ngOnDestroy hooks that should be executed when this view is destroyed.
-   *
-   * Even indices: Index of pipe in data
-   * Odd indices: Hook function
-   *
-   * These must be stored separately from directive destroy hooks because their contexts
-   * are stored in data.
-   */
-  pipeDestroyHooks: HookData|null;
-
-  /**
    * When a view is destroyed, listeners need to be released and outputs need to be
    * unsubscribed. This cleanup array stores both listener data (in chunks of 4)
    * and output data (in chunks of 2) for a particular view. Combining the arrays

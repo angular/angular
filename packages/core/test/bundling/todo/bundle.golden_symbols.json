@@ -585,9 +585,6 @@
     "name": "executeOnDestroys"
   },
   {
-    "name": "executePipeOnDestroys"
-  },
-  {
     "name": "extendStatics"
   },
   {

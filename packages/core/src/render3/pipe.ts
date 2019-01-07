@@ -33,8 +33,7 @@ export function pipe(index: number, pipeName: string): any {
     pipeDef = getPipeDef(pipeName, tView.pipeRegistry);
     tView.data[adjustedIndex] = pipeDef;
     if (pipeDef.onDestroy) {
-      (tView.pipeDestroyHooks || (tView.pipeDestroyHooks = [
-       ])).push(adjustedIndex, pipeDef.onDestroy);
+      (tView.destroyHooks || (tView.destroyHooks = [])).push(adjustedIndex, pipeDef.onDestroy);
     }
   } else {
     pipeDef = tView.data[adjustedIndex] as PipeDef<any>;
