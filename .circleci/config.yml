@@ -14,7 +14,7 @@
 # **NOTE**: If you change the version of the docker images, also change the `cache_key` suffix.
 var_1: &default_docker_image circleci/node:10.12
 var_2: &browsers_docker_image circleci/node:10.12-browsers
-var_3: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-node-10.12
+var_3: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-some_bazel_checksum_3-node-10.12
 
 # Define common ENV vars
 var_4: &define_env_vars
@@ -95,7 +95,7 @@ jobs:
           key: *cache_key
           paths:
             - "node_modules"
-            - "~/bazel_repository_cache"
+            - "/home/circleci/.cache/bazel/_bazel_circleci/9ce5c2144ecf75d11717c0aa41e45a8d"
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
@@ -406,51 +406,6 @@ workflows:
       - lint
       - test
       - test_ivy_aot
-      - build-packages-dist
-      - test_aio
-      - deploy_aio:
-          requires:
-            - test_aio
-      - test_aio_local:
-          requires:
-            - build-packages-dist
-      - test_aio_tools:
-          requires:
-            - build-packages-dist
-      - test_docs_examples_0:
-          requires:
-            - build-packages-dist
-      - test_docs_examples_1:
-          requires:
-            - build-packages-dist
-      - aio_preview:
-          # Only run on PR builds. (There can be no previews for non-PR builds.)
-          filters:
-            branches:
-              only: /pull\/\d+/
-      - test_aio_preview:
-          requires:
-            - aio_preview
-      - integration_test:
-          requires:
-            - build-packages-dist
-      - publish_snapshot:
-          # Note: no filters on this job because we want it to run for all upstream branches
-          # We'd really like to filter out pull requests here, but not yet available:
-          # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
-          # Instead, the job just exits immediately at the first step.
-          requires:
-            # Only publish if tests and integration tests pass
-            - test
-            - test_ivy_aot
-            - integration_test
-            # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
-            - test_aio_local
-            - test_docs_examples_0
-            - test_docs_examples_1
-            # Get the artifacts to publish from the build-packages-dist job
-            # since the publishing script expects the legacy outputs layout.
-            - build-packages-dist
 
   aio_monitoring:
     jobs:
