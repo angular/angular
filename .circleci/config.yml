@@ -223,7 +223,7 @@ jobs:
     docker:
       # Needed because the example e2e tests depend on Chrome.
       - image: *browsers_docker_image
-    parallelism: 2
+    parallelism: 3
     steps:
       - checkout:
           <<: *post_checkout
@@ -237,8 +237,8 @@ jobs:
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
-        # Since the parallelism is set to "2", there will be two parallel CircleCI containers
-        # with either "0" or "1" as node index. This can be passed to the "--shard" argument.
+        # Since the parallelism is set to "3", there will be three parallel CircleCI containers
+        # with either "0", "1" or "2" as node index. This can be passed to the "--shard" argument.
       - run: yarn --cwd aio example-e2e --setup --local --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
