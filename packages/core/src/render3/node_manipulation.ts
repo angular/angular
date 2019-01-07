@@ -427,7 +427,6 @@ function cleanUpView(viewOrContainer: LView | LContainer): void {
   if ((viewOrContainer as LView).length >= HEADER_OFFSET) {
     const view = viewOrContainer as LView;
     executeOnDestroys(view);
-    executePipeOnDestroys(view);
     removeListeners(view);
     const hostTNode = view[HOST_NODE];
     // For component views only, the local renderer is destroyed as clean up time.
@@ -483,14 +482,6 @@ function executeOnDestroys(view: LView): void {
   let destroyHooks: HookData|null;
   if (tView != null && (destroyHooks = tView.destroyHooks) != null) {
     callHooks(view, destroyHooks);
-  }
-}
-
-/** Calls pipe destroy hooks for this view */
-function executePipeOnDestroys(lView: LView): void {
-  const pipeDestroyHooks = lView[TVIEW] && lView[TVIEW].pipeDestroyHooks;
-  if (pipeDestroyHooks) {
-    callHooks(lView !, pipeDestroyHooks);
   }
 }
 
