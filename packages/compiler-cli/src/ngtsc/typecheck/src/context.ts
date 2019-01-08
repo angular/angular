@@ -9,11 +9,13 @@
 import {R3TargetBinder, SelectorMatcher, TmplAstNode} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {NoopImportRewriter} from '../../imports';
 import {ImportManager} from '../../translator';
 
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta, TypeCtorMetadata} from './api';
 import {generateTypeCheckBlock} from './type_check_block';
 import {generateTypeCtor} from './type_constructor';
+
 
 
 /**
@@ -117,7 +119,7 @@ export class TypeCheckContext {
 
     // Imports may need to be added to the file to support type-checking of directives used in the
     // template within it.
-    const importManager = new ImportManager(false, '_i');
+    const importManager = new ImportManager(new NoopImportRewriter(), '_i');
 
     // Each Op has a splitPoint index into the text where it needs to be inserted. Split the
     // original source text into chunks at these split points, where code will be inserted between
@@ -139,7 +141,7 @@ export class TypeCheckContext {
     });
 
     // Write out the imports that need to be added to the beginning of the file.
-    let imports = importManager.getAllImports(sf.fileName, null)
+    let imports = importManager.getAllImports(sf.fileName)
                       .map(i => `import * as ${i.as} from '${i.name}';`)
                       .join('\n');
     code = imports + '\n' + code;

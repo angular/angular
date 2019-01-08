@@ -13,9 +13,10 @@ import {basename, dirname, relative, resolve} from 'canonical-path';
 import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import * as ts from 'typescript';
 
+import {NoopImportRewriter, ImportRewriter, R3SymbolsImportRewriter} from '@angular/compiler-cli/src/ngtsc/imports';
 import {CompileResult} from '@angular/compiler-cli/src/ngtsc/transform';
 import {translateStatement, translateType, ImportManager} from '../../../ngtsc/translator';
-import {NgccImportManager} from './ngcc_import_manager';
+import {NgccFlatImportRewriter} from './ngcc_import_rewriter';
 import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
 import {ModuleWithProvidersInfo, ModuleWithProvidersAnalyses} from '../analysis/module_with_providers_analyzer';
 import {PrivateDeclarationsAnalyses, ExportInfo} from '../analysis/private_declarations_analyzer';
@@ -135,7 +136,8 @@ export abstract class Renderer {
     }
 
     if (compiledFile) {
-      const importManager = new NgccImportManager(this.bundle.isFlat, this.isCore, IMPORT_PREFIX);
+      const importManager = new ImportManager(
+          this.getImportRewriter(this.bundle.src.r3SymbolsFile, this.bundle.isFlat), IMPORT_PREFIX);
 
       // TODO: remove constructor param metadata and property decorators (we need info from the
       // handlers to do this)
@@ -152,9 +154,7 @@ export abstract class Renderer {
           renderConstantPool(compiledFile.sourceFile, compiledFile.constantPool, importManager),
           compiledFile.sourceFile);
 
-      this.addImports(
-          outputText, importManager.getAllImports(
-                          compiledFile.sourceFile.fileName, this.bundle.src.r3SymbolsFile));
+      this.addImports(outputText, importManager.getAllImports(compiledFile.sourceFile.fileName));
     }
 
     // Add exports to the entry-point file
@@ -169,7 +169,8 @@ export abstract class Renderer {
   renderDtsFile(dtsFile: ts.SourceFile, renderInfo: DtsRenderInfo): FileInfo[] {
     const input = this.extractSourceMap(dtsFile);
     const outputText = new MagicString(input.source);
-    const importManager = new NgccImportManager(false, this.isCore, IMPORT_PREFIX);
+    const importManager = new ImportManager(
+        this.getImportRewriter(this.bundle.dts !.r3SymbolsFile, false), IMPORT_PREFIX);
 
     renderInfo.classInfo.forEach(dtsClass => {
       const endOfClass = dtsClass.dtsDeclaration.getEnd();
@@ -181,8 +182,7 @@ export abstract class Renderer {
     });
 
     this.addModuleWithProvidersParams(outputText, renderInfo.moduleWithProviders, importManager);
-    this.addImports(
-        outputText, importManager.getAllImports(dtsFile.fileName, this.bundle.dts !.r3SymbolsFile));
+    this.addImports(outputText, importManager.getAllImports(dtsFile.fileName));
 
     this.addExports(outputText, dtsFile.fileName, renderInfo.privateExports);
 
@@ -199,7 +199,7 @@ export abstract class Renderer {
    */
   protected addModuleWithProvidersParams(
       outputText: MagicString, moduleWithProviders: ModuleWithProvidersInfo[],
-      importManager: NgccImportManager): void {
+      importManager: ImportManager): void {
     moduleWithProviders.forEach(info => {
       const ngModuleName = (info.ngModule.node as ts.ClassDeclaration).name !.text;
       const declarationFile = info.declaration.getSourceFile().fileName;
@@ -417,6 +417,16 @@ export abstract class Renderer {
     return (
         id && id.name === 'ModuleWithProviders' && (this.isCore || id.from === '@angular/core'));
   }
+
+  private getImportRewriter(r3SymbolsFile: ts.SourceFile|null, isFlat: boolean): ImportRewriter {
+    if (this.isCore && isFlat) {
+      return new NgccFlatImportRewriter();
+    } else if (this.isCore) {
+      return new R3SymbolsImportRewriter(r3SymbolsFile !.fileName);
+    } else {
+      return new NoopImportRewriter();
+    }
+  }
 }
 
 /**
@@ -451,7 +461,7 @@ export function mergeSourceMaps(
  * Render the constant pool as source code for the given class.
  */
 export function renderConstantPool(
-    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: NgccImportManager): string {
+    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: ImportManager): string {
   const printer = ts.createPrinter();
   return constantPool.statements.map(stmt => translateStatement(stmt, imports))
       .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
@@ -467,7 +477,7 @@ export function renderConstantPool(
  * @param imports An object that tracks the imports that are needed by the rendered definitions.
  */
 export function renderDefinitions(
-    sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: NgccImportManager): string {
+    sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
   const printer = ts.createPrinter();
   const name = (compiledClass.declaration as ts.NamedDeclaration).name !;
   const definitions =
