@@ -12,8 +12,21 @@ workspace(name = "<%= utils.underscore(name) %>")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
+RULES_NODEJS_VERSION = "<%= RULES_NODEJS_VERSION %>"
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/%s.zip" % RULES_NODEJS_VERSION,
+    strip_prefix = "rules_nodejs-%s" % RULES_NODEJS_VERSION,
+)
+
+RULES_TYPESCRIPT_VERSION = "<%= RULES_TYPESCRIPT_VERSION %>"
+http_archive(
+    name = "build_bazel_rules_typescript",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/%s.zip" % RULES_TYPESCRIPT_VERSION,
+    strip_prefix = "rules_typescript-%s" % RULES_TYPESCRIPT_VERSION,
+)
+
 # The @angular repo contains rule for building Angular applications
-# Provides "build_bazel_rules_typescript"
 ANGULAR_VERSION = "<%= ANGULAR_VERSION %>"
 http_archive(
     name = "angular",
@@ -45,7 +58,6 @@ rules_angular_dependencies()
 
 load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
 rules_typescript_dependencies()
-# build_bazel_rules_nodejs is loaded transitively through rules_typescript_dependencies.
 
 load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
 rules_nodejs_dependencies()
@@ -71,7 +83,7 @@ browser_repositories(
     firefox = True,
 )
 
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace", "check_rules_typescript_version")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
 ts_setup_workspace()
 
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
