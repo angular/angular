@@ -51,7 +51,7 @@ addTimestamp() {
   payloadData="$payloadData\"timestamp\": $timestamp, "
 }
 
-# Write travis commit message to global variable `$payloadData`.
+# Write the commit message for the current CI commit range to global variable `$payloadData`.
 #   $1: string - The commit range for this build (in `<SHA-1>...<SHA-2>` format).
 addMessage() {
   commitRange="$1"

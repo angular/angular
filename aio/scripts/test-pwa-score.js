@@ -23,13 +23,6 @@ const LIGHTHOUSE_FLAGS = {logLevel: 'info'};
 const SKIPPED_HTTPS_AUDITS = ['redirects-http'];
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer/';
 
-
-// Specify the path and flags for Chrome on Travis.
-if (process.env.TRAVIS) {
-  process.env.LIGHTHOUSE_CHROMIUM_PATH = process.env.CHROME_BIN;
-  CHROME_LAUNCH_OPTS.chromeFlags = ['--no-sandbox'];
-}
-
 // Be less verbose on CI.
 if (process.env.CI) {
   LIGHTHOUSE_FLAGS.logLevel = 'error';
