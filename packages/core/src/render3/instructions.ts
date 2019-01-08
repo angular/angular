@@ -1610,7 +1610,6 @@ function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): voi
  */
 function postProcessDirective<T>(
     lView: LView, directive: T, def: DirectiveDef<T>, directiveDefIdx: number): void {
-
   if (def.onChanges) {
     // We have onChanges, wrap it so that we can track changes.
     lView[directiveDefIdx] = new OnChangesDirectiveWrapper(lView[directiveDefIdx]);
@@ -1840,22 +1839,29 @@ function setInputsFromAttrs<T>(
       const privateName = initialInputs[i++];
       const declaredName = initialInputs[i++];
       const attrValue = initialInputs[i++];
-      recordChangeAndUpdateProperty(directiveOrWrappedDirective, privateName, declaredName, attrValue);
+      recordChangeAndUpdateProperty(
+          directiveOrWrappedDirective, privateName, declaredName, attrValue);
     }
   }
 }
 
 /**
- * Checks to see if the instanced passed as `directiveOrWrappedDirective` is wrapped in {@link OnChangesDirectiveWrapper} or not.
- * If it is, it will update the related {@link SimpleChanges} object with the change to signal `ngOnChanges` hook
- * should fire, then it will unwrap the instance. After that, it will set the property with the key provided
+ * Checks to see if the instanced passed as `directiveOrWrappedDirective` is wrapped in {@link
+ * OnChangesDirectiveWrapper} or not.
+ * If it is, it will update the related {@link SimpleChanges} object with the change to signal
+ * `ngOnChanges` hook
+ * should fire, then it will unwrap the instance. After that, it will set the property with the key
+ * provided
  * in `privateName` on the instance with the passed value.
- * @param directiveOrWrappedDirective The directive instance or a directive instance wrapped in {@link OnChangesDirectiveWrapper}
+ * @param directiveOrWrappedDirective The directive instance or a directive instance wrapped in
+ * {@link OnChangesDirectiveWrapper}
  * @param declaredName The original, declared name of the property to update.
  * @param privateName The private, possibly minified name of the property to update.
  * @param value The value to update the property with.
  */
-function recordChangeAndUpdateProperty<T, K extends keyof T>(directiveOrWrappedDirective: OnChangesDirectiveWrapper<T> | T, declaredName: string, privateName: K, value: any) {
+function recordChangeAndUpdateProperty<T, K extends keyof T>(
+    directiveOrWrappedDirective: OnChangesDirectiveWrapper<T>| T, declaredName: string,
+    privateName: K, value: any) {
   let instance: T;
   if (isOnChangesDirectiveWrapper(directiveOrWrappedDirective)) {
     instance = unwrapOnChangesDirectiveWrapper(directiveOrWrappedDirective);

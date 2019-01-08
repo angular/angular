@@ -734,7 +734,8 @@ const initializeBaseDef = (target: any): void => {
  * @see OutputDecorator
  * @see InheritenceFeature
  */
-function getOrCreateDefinitionAndUpdateMappingFor(getPropertyToUpdate: (baseDef: {inputs?: any, outputs?: any}) => any) {
+function getOrCreateDefinitionAndUpdateMappingFor(
+    getPropertyToUpdate: (baseDef: {inputs?: any, outputs?: any}) => any) {
   return function updateIOProp(target: any, name: string, ...args: any[]) {
     const constructor = target.constructor;
 

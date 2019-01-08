@@ -93,7 +93,8 @@ export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
 
       if (directiveDef.afterViewChecked) {
         (tView.viewHooks || (tView.viewHooks = [])).push(i, directiveDef.afterViewChecked);
-        (tView.viewCheckHooks || (tView.viewCheckHooks = [])).push(i, directiveDef.afterViewChecked);
+        (tView.viewCheckHooks || (tView.viewCheckHooks = [
+         ])).push(i, directiveDef.afterViewChecked);
       }
 
       if (directiveDef.onDestroy != null) {
@@ -154,10 +155,11 @@ export function executeHooks(
 export function callHooks(currentView: LView, arr: HookData): void {
   for (let i = 0; i < arr.length; i += 2) {
     const directiveIndex = arr[i] as number;
-    const hook = arr[i + 1] as ((() => void) | ((changes: SimpleChanges) => void));
+    const hook = arr[i + 1] as((() => void) | ((changes: SimpleChanges) => void));
     // Negative indices signal that we're dealing with an `onChanges` hook.
     const isOnChangesHook = directiveIndex < 0;
-    const directiveOrWrappedDirective = currentView[isOnChangesHook ? -directiveIndex : directiveIndex];
+    const directiveOrWrappedDirective =
+        currentView[isOnChangesHook ? -directiveIndex : directiveIndex];
     const directive = unwrapOnChangesDirectiveWrapper(directiveOrWrappedDirective);
 
     if (isOnChangesHook) {
