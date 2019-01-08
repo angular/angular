@@ -15,8 +15,8 @@ import {SimpleChange, SimpleChanges} from '../change_detection/simple_change';
  * @param obj The object to check
  * @param type The type to check the object against
  */
-export function isExactInstanceOf(obj: any, type: any): boolean {
-  return obj != null && typeof obj == 'object' && Object.getPrototypeOf(obj) == type.prototype;
+export function isExactInstanceOf<T>(obj: any, type: T): obj is T {
+  return obj != null && typeof obj == 'object' && Object.getPrototypeOf(obj) == (type as any).prototype;
 }
 
 /**

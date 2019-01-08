@@ -7,7 +7,11 @@
  */
 
 /**
- * Represents a basic change from a previous to a new value.
+ * Represents a basic change from a previous to a new value for a single
+ * property on a directive instance. Passed as a value in a
+ * {@link SimpleChanges} object to the `ngOnChanges` hook.
+ *
+ * @see `OnChanges`
  *
  * @publicApi
  */
@@ -20,8 +24,9 @@ export class SimpleChange {
 }
 
 /**
- * Defines an object that associates properties with
- * instances of `SimpleChange`.
+ * A hashtable of changes represented by {@link SimpleChange} objects stored
+ * at the declared property name they belong to on a Directive or Component. This is
+ * the type passed to the `ngOnChanges` hook.
  *
  * @see `OnChanges`
  *

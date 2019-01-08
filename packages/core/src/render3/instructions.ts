@@ -885,6 +885,7 @@ export function listener(
     const propsLength = props.length;
     if (propsLength) {
       const lCleanup = getCleanup(lView);
+      // Subscribe to listeners for each output, and setup clean up for each.
       for (let i = 0; i < propsLength;) {
         const directiveIndex = props[i++] as number;
         const minifiedName = props[i++] as string;
@@ -1143,11 +1144,11 @@ function setInputsForProperty(
     const declaredName = inputs[i++] as string;
     ngDevMode && assertDataInRange(lView, directiveIndex);
 
-    const record = lView[directiveIndex];
-    let instance = record;
-    if (isOnChangesDirectiveWrapper(record)) {
-      instance = record.instance;
-      recordChange(record, declaredName, value);
+    const maybeWrappedDirectiveInstance = lView[directiveIndex];
+    let instance = maybeWrappedDirectiveInstance;
+    if (isOnChangesDirectiveWrapper(maybeWrappedDirectiveInstance)) {
+      instance = maybeWrappedDirectiveInstance.instance;
+      recordChange(maybeWrappedDirectiveInstance, declaredName, value);
     }
     instance[privateName] = value;
   }
@@ -1870,7 +1871,7 @@ function setInputsFromAttrs<T>(
  * @param tNode The static data on this node
  */
 function generateInitialInputs(
-    directiveIndex: number, def: DirectiveDef<any>, tNode: TNode): InitialInputData {
+    directiveIndex: number, directiveDef: DirectiveDef<any>, tNode: TNode): InitialInputData {
   const initialInputData: InitialInputData = tNode.initialInputs || (tNode.initialInputs = []);
   initialInputData[directiveIndex] = null;
 
@@ -1887,8 +1888,8 @@ function generateInitialInputs(
       i += 4;
       continue;
     }
-    const minifiedName = def.inputs[attrName];
-    const declaredName = def.declaredInputs[attrName];
+    const minifiedName = directiveDef.inputs[attrName];
+    const declaredName = directiveDef.declaredInputs[attrName];
     const attrValue = attrs[i + 1];
 
     if (minifiedName !== undefined) {
