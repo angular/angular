@@ -3,7 +3,7 @@
   width:300px;
   margin-bottom: 10px;
 }
-div[myHighlight] {
+div[appHighlight] {
   padding: 2px 8px;
 }
 
