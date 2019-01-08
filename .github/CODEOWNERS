@@ -732,14 +732,6 @@ testing/**                                                      @angular/fw-test
 
 
 # ================================================
-#  Public API
-# ================================================
-
-/tools/public_api_guard/**                                      @angular/fw-public-api
-
-
-
-# ================================================
 #  Build & CI Owners
 # ================================================
 
@@ -752,6 +744,14 @@ testing/**                                                      @angular/fw-test
 /third_party/**                                                 @angular/fw-dev-infra
 /tools/**                                                       @angular/fw-dev-infra
 *.bzl                                                           @angular/fw-dev-infra
+
+
+
+# ================================================
+#  Public API
+# ================================================
+
+/tools/public_api_guard/**                                      @angular/fw-public-api
 
 
 
