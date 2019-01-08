@@ -250,7 +250,7 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string 
         getTemplateContent(inertBodyElement !) as Element || inertBodyElement);
     if (isDevMode() && sanitizer.sanitizedSomething) {
       console.warn(
-          'WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).');
+          'WARNING: sanitizing HTML stripped some content, see http://g.co/ng/security#xss');
     }
 
     return safeHtml;
