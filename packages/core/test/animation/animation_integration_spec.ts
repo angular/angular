@@ -817,43 +817,40 @@ const DEFAULT_COMPONENT_ID = '1';
          });
 
       describe('host bindings', () => {
-        fixmeIvy('unknown').it(
-            'should trigger a state change animation from state => state on the component host element',
-            fakeAsync(() => {
-              @Component({
-                selector: 'my-cmp',
-                template: '...',
-                animations: [trigger(
-                    'myAnimation',
-                    [transition(
-                        'a => b',
-                        [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
-              })
-              class Cmp {
-                @HostBinding('@myAnimation')
-                exp = 'a';
-              }
+        it('should trigger a state change animation from state => state on the component host element',
+           fakeAsync(() => {
+             @Component({
+               selector: 'my-cmp',
+               template: '...',
+               animations: [trigger(
+                   'myAnimation',
+                   [transition(
+                       'a => b',
+                       [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+             })
+             class Cmp {
+               @HostBinding('@myAnimation')
+               exp = 'a';
+             }
 
-              TestBed.configureTestingModule({declarations: [Cmp]});
+             TestBed.configureTestingModule({declarations: [Cmp]});
 
-              const engine = TestBed.get(ɵAnimationEngine);
-              const fixture = TestBed.createComponent(Cmp);
-              const cmp = fixture.componentInstance;
-              fixture.detectChanges();
-              engine.flush();
-              expect(getLog().length).toEqual(0);
+             const engine = TestBed.get(ɵAnimationEngine);
+             const fixture = TestBed.createComponent(Cmp);
+             const cmp = fixture.componentInstance;
+             fixture.detectChanges();
+             engine.flush();
+             expect(getLog().length).toEqual(0);
 
-              cmp.exp = 'b';
-              fixture.detectChanges();
-              engine.flush();
-              expect(getLog().length).toEqual(1);
+             cmp.exp = 'b';
+             fixture.detectChanges();
+             engine.flush();
+             expect(getLog().length).toEqual(1);
 
-              const data = getLog().pop() !;
-              expect(data.element).toEqual(fixture.elementRef.nativeElement);
-              expect(data.keyframes).toEqual([
-                {offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}
-              ]);
-            }));
+             const data = getLog().pop() !;
+             expect(data.element).toEqual(fixture.elementRef.nativeElement);
+             expect(data.keyframes).toEqual([{offset: 0, opacity: '0'}, {offset: 1, opacity: '1'}]);
+           }));
 
         // nonAnimationRenderer => animationRenderer
         fixmeIvy('unknown').it(
@@ -2720,44 +2717,43 @@ const DEFAULT_COMPONENT_ID = '1';
            expect(elm.innerText.trim()).toEqual('');
          }));
 
-      fixmeIvy('unknown').it(
-          'should trigger a state change listener for when the animation changes state from void => state on the host element',
-          fakeAsync(() => {
-            @Component({
-              selector: 'my-cmp',
-              template: `...`,
-              animations: [trigger(
-                  'myAnimation2',
-                  [transition(
-                      'void => *',
-                      [style({'opacity': '0'}), animate(1000, style({'opacity': '1'}))])])],
-            })
-            class Cmp {
-              // TODO(issue/24571): remove '!'.
-              event !: AnimationEvent;
+      it('should trigger a state change listener for when the animation changes state from void => state on the host element',
+         fakeAsync(() => {
+           @Component({
+             selector: 'my-cmp',
+             template: `...`,
+             animations: [trigger(
+                 'myAnimation2',
+                 [transition(
+                     'void => *',
+                     [style({'opacity': '0'}), animate(1000, style({'opacity': '1'}))])])],
+           })
+           class Cmp {
+             // TODO(issue/24571): remove '!'.
+             event !: AnimationEvent;
 
-              @HostBinding('@myAnimation2')
-              exp: any = false;
+             @HostBinding('@myAnimation2')
+             exp: any = false;
 
-              @HostListener('@myAnimation2.start', ['$event'])
-              callback = (event: any) => { this.event = event; }
-            }
+             @HostListener('@myAnimation2.start', ['$event'])
+             callback = (event: any) => { this.event = event; }
+           }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
+           TestBed.configureTestingModule({declarations: [Cmp]});
 
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
-            cmp.exp = 'TRUE';
-            fixture.detectChanges();
-            flushMicrotasks();
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.exp = 'TRUE';
+           fixture.detectChanges();
+           flushMicrotasks();
 
-            expect(cmp.event.triggerName).toEqual('myAnimation2');
-            expect(cmp.event.phaseName).toEqual('start');
-            expect(cmp.event.totalTime).toEqual(1000);
-            expect(cmp.event.fromState).toEqual('void');
-            expect(cmp.event.toState).toEqual('TRUE');
-          }));
+           expect(cmp.event.triggerName).toEqual('myAnimation2');
+           expect(cmp.event.phaseName).toEqual('start');
+           expect(cmp.event.totalTime).toEqual(1000);
+           expect(cmp.event.fromState).toEqual('void');
+           expect(cmp.event.toState).toEqual('TRUE');
+         }));
 
       it('should always fire callbacks even when a transition is not detected', fakeAsync(() => {
            @Component({
