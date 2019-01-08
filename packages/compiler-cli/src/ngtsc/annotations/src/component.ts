@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ResolvedReference} from '../../imports';
-import {PartialEvaluator} from '../../partial_evaluator';
+import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 import {TypeCheckContext, TypeCheckableDirectiveMeta} from '../../typecheck';
@@ -21,7 +21,7 @@ import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
 import {generateSetClassMetadataCall} from './metadata';
 import {ScopeDirective, SelectorScopeRegistry} from './selector_scope';
-import {extractDirectiveGuards, isAngularCore, unwrapExpression} from './util';
+import {extractDirectiveGuards, isAngularCore, isAngularCoreReference, unwrapExpression} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -226,10 +226,11 @@ export class ComponentDecoratorHandler implements
       styles.push(...styleUrls.map(styleUrl => this.resourceLoader.load(styleUrl, containingFile)));
     }
 
-    let encapsulation: number = 0;
-    if (component.has('encapsulation')) {
-      encapsulation = parseInt(this.evaluator.evaluate(component.get('encapsulation') !) as string);
-    }
+    const encapsulation: number =
+        this._resolveEnumValue(component, 'encapsulation', 'ViewEncapsulation') || 0;
+
+    const changeDetection: number|undefined =
+        this._resolveEnumValue(component, 'changeDetection', 'ChangeDetectionStrategy');
 
     let animations: Expression|null = null;
     if (component.has('animations')) {
@@ -244,6 +245,7 @@ export class ComponentDecoratorHandler implements
           viewQueries,
           encapsulation,
           interpolation,
+          changeDetection,
           styles: styles || [],
 
           // These will be replaced during the compilation step, after all `NgModule`s have been
@@ -325,6 +327,24 @@ export class ComponentDecoratorHandler implements
 
     this.literalCache.set(decorator, meta);
     return meta;
+  }
+
+  private _resolveEnumValue(
+      component: Map<string, ts.Expression>, field: string, enumSymbolName: string): number
+      |undefined {
+    let resolved: number|undefined;
+    if (component.has(field)) {
+      const expr = component.get(field) !;
+      const value = this.evaluator.evaluate(expr) as any;
+      if (value instanceof EnumValue && isAngularCoreReference(value.enumRef, enumSymbolName)) {
+        resolved = value.resolved as number;
+      } else {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
+            `${field} must be a member of ${enumSymbolName} enum from @angular/core`);
+      }
+    }
+    return resolved;
   }
 
   private _extractStyleUrls(component: Map<string, ts.Expression>): string[]|null {

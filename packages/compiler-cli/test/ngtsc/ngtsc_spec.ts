@@ -820,6 +820,73 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('interpolation1("", ctx.text, "")');
   });
 
+  it('should handle `encapsulation` field', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+      import {Component, ViewEncapsulation} from '@angular/core';
+      @Component({
+        selector: 'comp-a',
+        template: '...',
+        encapsulation: ViewEncapsulation.None
+      })
+      class CompA {}
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('encapsulation: 2');
+  });
+
+  it('should throw if `encapsulation` contains invalid value', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+      import {Component} from '@angular/core';
+      @Component({
+        selector: 'comp-a',
+        template: '...',
+        encapsulation: 'invalid-value'
+      })
+      class CompA {}
+    `);
+    const errors = env.driveDiagnostics();
+    expect(errors[0].messageText)
+        .toContain('encapsulation must be a member of ViewEncapsulation enum from @angular/core');
+  });
+
+  it('should handle `changeDetection` field', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+      import {Component, ChangeDetectionStrategy} from '@angular/core';
+      @Component({
+        selector: 'comp-a',
+        template: '...',
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class CompA {}
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('changeDetection: 0');
+  });
+
+  it('should throw if `changeDetection` contains invalid value', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+      import {Component} from '@angular/core';
+      @Component({
+        selector: 'comp-a',
+        template: '...',
+        changeDetection: 'invalid-value'
+      })
+      class CompA {}
+    `);
+    const errors = env.driveDiagnostics();
+    expect(errors[0].messageText)
+        .toContain(
+            'changeDetection must be a member of ChangeDetectionStrategy enum from @angular/core');
+  });
+
   it('should correctly recognize local symbols', () => {
     env.tsconfig();
     env.write('module.ts', `
