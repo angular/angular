@@ -70,7 +70,9 @@ export interface ResolvedValueArray extends Array<ResolvedValue> {}
  * Contains a `Reference` to the enumeration itself, and the name of the referenced member.
  */
 export class EnumValue {
-  constructor(readonly enumRef: Reference<ts.EnumDeclaration>, readonly name: string) {}
+  constructor(
+      readonly enumRef: Reference<ts.EnumDeclaration>, readonly name: string,
+      readonly resolved: ResolvedValue) {}
 }
 
 /**
