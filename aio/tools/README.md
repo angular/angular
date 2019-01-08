@@ -21,7 +21,7 @@ See the [README.md](cli-patches/README.md) for more details.
 Many of the documentation pages contain snippets of code examples. We extract these snippets from real
 working example applications, which are stored in subfolders of the `/aio/content/examples` folder. Each
 example can be built and run independently. Each example also provides e2e specs, which are run as part
-of our Travis build tasks, to verify that the examples continue to work as expected, as changes are made
+of our CI build tasks, to verify that the examples continue to work as expected, as changes are made
 to the core Angular libraries.
 
 In order to build, run and test these examples independently we need to install dependencies into their

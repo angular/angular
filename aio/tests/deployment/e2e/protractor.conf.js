@@ -10,11 +10,6 @@ exports.config = {
   suite: 'full',
   capabilities: {
     browserName: 'chrome',
-    // For Travis
-    chromeOptions: {
-      binary: process.env.CHROME_BIN,
-      args: ['--no-sandbox']
-    }
   },
   directConnect: true,
   framework: 'jasmine',

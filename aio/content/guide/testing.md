@@ -99,7 +99,7 @@ Continuous integration (CI) servers let you set up your project repository so th
 There are paid CI services like Circle CI and Travis CI, and you can also host your own for free using Jenkins and others. 
 Although Circle CI and Travis CI are paid services, they are provided free for open source projects. 
 You can create a public project on GitHub and add these services without paying. 
-Contributions to the Angular repo are automatically run through a whole suite of Circle CI and Travis CI tests.
+Contributions to the Angular repo are automatically run through a whole suite of Circle CI tests.
 
 This article explains how to configure your project to run Circle CI and Travis CI, and also update your test configuration to be able to run tests in the Chrome browser in either environment.
 
