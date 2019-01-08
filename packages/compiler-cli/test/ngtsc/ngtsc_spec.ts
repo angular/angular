@@ -905,6 +905,29 @@ describe('ngtsc behavioral tests', () => {
     expect(emptyFactory).toContain(`export var ɵNonEmptyModule = true;`);
   });
 
+  it('should generate correct imports in factory stubs when compiling @angular/core', () => {
+    env.tsconfig({'allowEmptyCodegenFiles': true});
+
+    env.write('test.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class TestModule {}
+    `);
+
+    // Trick the compiler into thinking it's compiling @angular/core.
+    env.write('r3_symbols.ts', 'export const ITS_JUST_ANGULAR = true;');
+
+    env.driveMain();
+
+    const factoryContents = env.getContents('test.ngfactory.js');
+    expect(normalize(factoryContents)).toBe(normalize(`
+      import * as i0 from "./r3_symbols";
+      import { TestModule } from './test';
+      export var TestModuleNgFactory = new i0.NgModuleFactory(TestModule);
+    `));
+  });
+
   it('should generate a summary stub for decorated classes in the input file only', () => {
     env.tsconfig({'allowEmptyCodegenFiles': true});
 
@@ -1634,4 +1657,8 @@ function expectTokenAtPosition<T extends ts.Node>(
   const node = (ts as any).getTokenAtPosition(sf, pos) as ts.Node;
   expect(guard(node)).toBe(true);
   return node as T;
+}
+
+function normalize(input: string): string {
+  return input.replace(/\s+/g, ' ').trim();
 }

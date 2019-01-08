@@ -9,7 +9,7 @@
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {relativePathBetween} from '../../util/src/path';
+import {ImportRewriter} from '../../imports';
 import {isNonDeclarationTsPath} from '../../util/src/typescript';
 
 import {ShimGenerator} from './host';
@@ -106,17 +106,17 @@ export interface FactoryInfo {
 
 export function generatedFactoryTransform(
     factoryMap: Map<string, FactoryInfo>,
-    coreImportsFrom: ts.SourceFile | null): ts.TransformerFactory<ts.SourceFile> {
+    importRewriter: ImportRewriter): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     return (file: ts.SourceFile): ts.SourceFile => {
-      return transformFactorySourceFile(factoryMap, context, coreImportsFrom, file);
+      return transformFactorySourceFile(factoryMap, context, importRewriter, file);
     };
   };
 }
 
 function transformFactorySourceFile(
     factoryMap: Map<string, FactoryInfo>, context: ts.TransformationContext,
-    coreImportsFrom: ts.SourceFile | null, file: ts.SourceFile): ts.SourceFile {
+    importRewriter: ImportRewriter, file: ts.SourceFile): ts.SourceFile {
   // If this is not a generated file, it won't have factory info associated with it.
   if (!factoryMap.has(file.fileName)) {
     // Don't transform non-generated code.
@@ -125,7 +125,7 @@ function transformFactorySourceFile(
 
   const {moduleSymbolNames, sourceFilePath} = factoryMap.get(file.fileName) !;
 
-  const clone = ts.getMutableClone(file);
+  file = ts.getMutableClone(file);
 
   // Not every exported factory statement is valid. They were generated before the program was
   // analyzed, and before ngtsc knew which symbols were actually NgModules. factoryMap contains
@@ -146,17 +146,30 @@ function transformFactorySourceFile(
   // The statement identified as the ɵNonEmptyModule export.
   let nonEmptyExport: ts.Statement|null = null;
 
+  // Extracted identifiers which refer to import statements from @angular/core.
+  const coreImportIdentifiers = new Set<string>();
+
   // Consider all the statements.
   for (const stmt of file.statements) {
     // Look for imports to @angular/core.
-    if (coreImportsFrom !== null && ts.isImportDeclaration(stmt) &&
-        ts.isStringLiteral(stmt.moduleSpecifier) && stmt.moduleSpecifier.text === '@angular/core') {
-      // Update the import path to point to the correct file (coreImportsFrom).
-      const path = relativePathBetween(sourceFilePath, coreImportsFrom.fileName);
-      if (path !== null) {
+    if (ts.isImportDeclaration(stmt) && ts.isStringLiteral(stmt.moduleSpecifier) &&
+        stmt.moduleSpecifier.text === '@angular/core') {
+      // Update the import path to point to the correct file using the ImportRewriter.
+      const rewrittenModuleSpecifier =
+          importRewriter.rewriteSpecifier('@angular/core', sourceFilePath);
+      if (rewrittenModuleSpecifier !== stmt.moduleSpecifier.text) {
         transformedStatements.push(ts.updateImportDeclaration(
             stmt, stmt.decorators, stmt.modifiers, stmt.importClause,
-            ts.createStringLiteral(path)));
+            ts.createStringLiteral(rewrittenModuleSpecifier)));
+
+        // Record the identifier by which this imported module goes, so references to its symbols
+        // can be discovered later.
+        if (stmt.importClause !== undefined && stmt.importClause.namedBindings !== undefined &&
+            ts.isNamespaceImport(stmt.importClause.namedBindings)) {
+          coreImportIdentifiers.add(stmt.importClause.namedBindings.name.text);
+        }
+      } else {
+        transformedStatements.push(stmt);
       }
     } else if (ts.isVariableStatement(stmt) && stmt.declarationList.declarations.length === 1) {
       const decl = stmt.declarationList.declarations[0];
@@ -189,6 +202,31 @@ function transformFactorySourceFile(
     // satisfy closure compiler.
     transformedStatements.push(nonEmptyExport);
   }
-  clone.statements = ts.createNodeArray(transformedStatements);
-  return clone;
+  file.statements = ts.createNodeArray(transformedStatements);
+
+  // If any imports to @angular/core were detected and rewritten (which happens when compiling
+  // @angular/core), go through the SourceFile and rewrite references to symbols imported from core.
+  if (coreImportIdentifiers.size > 0) {
+    const visit = <T extends ts.Node>(node: T): T => {
+      node = ts.visitEachChild(node, child => visit(child), context);
+
+      // Look for expressions of the form "i.s" where 'i' is a detected name for an @angular/core
+      // import that was changed above. Rewrite 's' using the ImportResolver.
+      if (ts.isPropertyAccessExpression(node) && ts.isIdentifier(node.expression) &&
+          coreImportIdentifiers.has(node.expression.text)) {
+        // This is an import of a symbol from @angular/core. Transform it with the importRewriter.
+        const rewrittenSymbol = importRewriter.rewriteSymbol(node.name.text, '@angular/core');
+        if (rewrittenSymbol !== node.name.text) {
+          const updated =
+              ts.updatePropertyAccess(node, node.expression, ts.createIdentifier(rewrittenSymbol));
+          node = updated as T & ts.PropertyAccessExpression;
+        }
+      }
+      return node;
+    };
+
+    file = visit(file);
+  }
+
+  return file;
 }

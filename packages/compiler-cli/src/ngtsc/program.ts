@@ -239,7 +239,7 @@ export class NgtscProgram implements api.Program {
 
     if (this.factoryToSourceInfo !== null) {
       beforeTransforms.push(
-          generatedFactoryTransform(this.factoryToSourceInfo, this.coreImportsFrom));
+          generatedFactoryTransform(this.factoryToSourceInfo, this.importRewriter));
     }
     if (this.isCore) {
       beforeTransforms.push(ivySwitchTransform);
