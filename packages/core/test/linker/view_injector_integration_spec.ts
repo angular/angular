@@ -10,7 +10,7 @@ import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, Compon
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 @Directive({selector: '[simpleDirective]'})
 class SimpleDirective {
@@ -818,37 +818,50 @@ class TestComp {
         expect(compEl.nativeElement).toHaveText('1');
       });
 
-      fixmeIvy(
-          'FW-893: expect(changeDetectorRef).toEqual(otherChangeDetectorRef) creates an infinite loop')
-          .it('should inject ChangeDetectorRef of the containing component into directives', () => {
-            TestBed.configureTestingModule({
-              declarations:
-                  [PushComponentNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]
-            });
-            TestBed.overrideComponent(PushComponentNeedsChangeDetectorRef, {
-              set: {
-                template:
-                    '{{counter}}<div directiveNeedsChangeDetectorRef></div><div *ngIf="true" directiveNeedsChangeDetectorRef></div>'
-              }
-            });
-            const cf = createComponentFixture('<div componentNeedsChangeDetectorRef></div>');
-            cf.detectChanges();
-            const compEl = cf.debugElement.children[0];
-            const comp: PushComponentNeedsChangeDetectorRef =
-                compEl.injector.get(PushComponentNeedsChangeDetectorRef);
-            comp.counter = 1;
-            cf.detectChanges();
-            expect(compEl.nativeElement).toHaveText('0');
-            expect(
-                compEl.children[0].injector.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef)
-                .toEqual(comp.changeDetectorRef);
-            expect(
-                compEl.children[1].injector.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef)
-                .toEqual(comp.changeDetectorRef);
-            comp.changeDetectorRef.markForCheck();
-            cf.detectChanges();
-            expect(compEl.nativeElement).toHaveText('1');
-          });
+      it('should inject ChangeDetectorRef of the containing component into directives', () => {
+        TestBed.configureTestingModule(
+            {declarations: [PushComponentNeedsChangeDetectorRef, DirectiveNeedsChangeDetectorRef]});
+        TestBed.overrideComponent(PushComponentNeedsChangeDetectorRef, {
+          set: {
+            template:
+                '{{counter}}<div directiveNeedsChangeDetectorRef></div><div *ngIf="true" directiveNeedsChangeDetectorRef></div>'
+          }
+        });
+        const cf = createComponentFixture('<div componentNeedsChangeDetectorRef></div>');
+        cf.detectChanges();
+        const compEl = cf.debugElement.children[0];
+        const comp: PushComponentNeedsChangeDetectorRef =
+            compEl.injector.get(PushComponentNeedsChangeDetectorRef);
+        comp.counter = 1;
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('0');
+
+        /**
+         * Compares two `ChangeDetectorRef` instances. The logic depends on the engine, as the
+         * implementation details of `ViewRef` vary.
+         */
+        function _compareChangeDetectorRefs(a: ChangeDetectorRef, b: ChangeDetectorRef) {
+          if (!ivyEnabled) {
+            // View Engine case
+            expect(a).toEqual(b);
+          } else {
+            // Ivy case
+            expect((a as any)._lView).toEqual((b as any)._lView);
+            expect((a as any).context).toEqual((b as any).context);
+          }
+        }
+
+        _compareChangeDetectorRefs(
+            compEl.children[0].injector.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef,
+            comp.changeDetectorRef);
+        _compareChangeDetectorRefs(
+            compEl.children[1].injector.get(DirectiveNeedsChangeDetectorRef).changeDetectorRef,
+            comp.changeDetectorRef);
+
+        comp.changeDetectorRef.markForCheck();
+        cf.detectChanges();
+        expect(compEl.nativeElement).toHaveText('1');
+      });
 
       it('should inject ChangeDetectorRef of a same element component into a directive', () => {
         TestBed.configureTestingModule(
