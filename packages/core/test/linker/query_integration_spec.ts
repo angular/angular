@@ -616,8 +616,8 @@ describe('Query API', () => {
               expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
             });
 
-    fixmeIvy('unknown').it(
-        'should remove manually projected templates if their parent view is destroyed', () => {
+    fixmeIvy('FW-920: Queries in nested views are not destroyed properly')
+        .it('should remove manually projected templates if their parent view is destroyed', () => {
           const template = `
           <manual-projecting #q><ng-template #tpl><div text="1"></div></ng-template></manual-projecting>
           <div *ngIf="shouldShow">
