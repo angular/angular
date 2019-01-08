@@ -1185,7 +1185,7 @@ describe('host bindings', () => {
               }
               if (rf & RenderFlags.Update) {
                 const fn = isAttribute ? elementAttribute : elementProperty;
-                fn(elementIndex, prop, bind(ctx[prop]), sanitizeFn, true);
+                (fn as any)(elementIndex, prop, bind(ctx[prop]), sanitizeFn, true);
               }
             }
           });
