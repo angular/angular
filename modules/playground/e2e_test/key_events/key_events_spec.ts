@@ -13,7 +13,7 @@ const Key = protractor.Key;
 
 describe('key_events', function() {
 
-  const URL = 'all/playground/src/key_events/index.html?bundles=false';
+  const URL = 'all/playground/src/key_events/index.html';
 
   afterEach(verifyNoBrowserErrors);
   beforeEach(() => { browser.get(URL); });
