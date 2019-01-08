@@ -1,39 +1,55 @@
 <a name="7.2.0"></a>
-# [7.2.0](https://github.com/angular/angular/compare/7.2.0-rc.0...7.2.0) (2019-01-07)
+# [7.2.0](https://github.com/angular/angular/compare/7.1.4...7.2.0) (2019-01-07)
 
+7.2.0 release also contains all the fixes released in 7.1.4.
 
-### Bug Fixes
+### Features
 
-* **bazel:** unable to launch protractor test on windows ([#27850](https://github.com/angular/angular/issues/27850)) ([1e6c9be](https://github.com/angular/angular/commit/1e6c9be))
+* add support for typescript 3.2 ([#27536](https://github.com/angular/angular/issues/27536)) ([17e702b](https://github.com/angular/angular/commit/17e702b))
+* **bazel:** ng-new schematics with Bazel ([#27277](https://github.com/angular/angular/issues/27277)) ([06d4a0c](https://github.com/angular/angular/commit/06d4a0c))
 * **forms:** match getError and hasError to get method signature ([#20211](https://github.com/angular/angular/issues/20211)) ([1b0b36d](https://github.com/angular/angular/commit/1b0b36d))
-* **upgrade:** allow nesting components from different downgraded modules ([#27217](https://github.com/angular/angular/issues/27217)) ([bc0ee01](https://github.com/angular/angular/commit/bc0ee01))
-* **upgrade:** correctly handle nested downgraded components with `downgradeModule()` ([#27217](https://github.com/angular/angular/issues/27217)) ([326b464](https://github.com/angular/angular/commit/326b464)), closes [#22581](https://github.com/angular/angular/issues/22581) [#22869](https://github.com/angular/angular/issues/22869) [#27083](https://github.com/angular/angular/issues/27083)
-
-
-<a name="7.2.0-rc.0"></a>
-# [7.2.0-rc.0](https://github.com/angular/angular/compare/7.2.0-beta.2...7.2.0-rc.0) (2018-12-18)
+* **router:** add predicate function  mode for runGuardsAndResolvers ([#27682](https://github.com/angular/angular/issues/27682)) ([12c3176](https://github.com/angular/angular/commit/12c3176)), closes [#26861](https://github.com/angular/angular/issues/26861) [#18253](https://github.com/angular/angular/issues/18253) [#27464](https://github.com/angular/angular/issues/27464)
+* **router:** add a Navigation type available during navigation ([#27198](https://github.com/angular/angular/issues/27198)) ([d40af0c](https://github.com/angular/angular/commit/d40af0c))
+* **router:** add pathParamsOrQueryParamsChange mode for runGuardsAndResolvers ([#27464](https://github.com/angular/angular/issues/27464)) ([d70a7f3](https://github.com/angular/angular/commit/d70a7f3)), closes [#26861](https://github.com/angular/angular/issues/26861) [#18253](https://github.com/angular/angular/issues/18253)
+* **router:** allow passing `state` to routerLink directives ([#27198](https://github.com/angular/angular/issues/27198)) ([73f6ed9](https://github.com/angular/angular/commit/73f6ed9)), closes [#24617](https://github.com/angular/angular/issues/24617)
+* **router:** allow passing state to `NavigationExtras` ([#27198](https://github.com/angular/angular/issues/27198)) ([67f4a5d](https://github.com/angular/angular/commit/67f4a5d))
+* **router:** restore whole object when navigating back to a page managed by Angular router ([#27198](https://github.com/angular/angular/issues/27198)) ([2684249](https://github.com/angular/angular/commit/2684249))
 
 
 ### Bug Fixes
 
 * **animations:** do not truncate decimals for delay ([#24455](https://github.com/angular/angular/issues/24455)) ([f1c9d6a](https://github.com/angular/angular/commit/f1c9d6a))
 * **animations:** mark actual descendant node as disabled ([#26180](https://github.com/angular/angular/issues/26180)) ([df123e0](https://github.com/angular/angular/commit/df123e0))
+* **bazel:** unable to launch protractor test on windows ([#27850](https://github.com/angular/angular/issues/27850)) ([1e6c9be](https://github.com/angular/angular/commit/1e6c9be))
 * **bazel:** devserver entry_module should have underscore name ([#27719](https://github.com/angular/angular/issues/27719)) ([f57916c](https://github.com/angular/angular/commit/f57916c))
 * **bazel:** emit full node stack traces when Angular compilation crashes ([#27678](https://github.com/angular/angular/issues/27678)) ([522919a](https://github.com/angular/angular/commit/522919a))
 * **bazel:** fix major/minor semver check between [@angular](https://github.com/angular)/bazel npm packager version and angular bazel repo version ([#27635](https://github.com/angular/angular/issues/27635)) ([1cc08b4](https://github.com/angular/angular/commit/1cc08b4))
 * **bazel:** Load http_archive and rules_nodejs dependencies ([#27609](https://github.com/angular/angular/issues/27609)) ([8313ffc](https://github.com/angular/angular/commit/8313ffc))
 * **bazel:** ng_package writes unrelevant definitions to bazel out ([#27519](https://github.com/angular/angular/issues/27519)) ([44dfa60](https://github.com/angular/angular/commit/44dfa60)), closes [/github.com/angular/angular/blob/4f9374951d67c75f67a31c110bd61ab72563db7d/packages/bazel/src/ng_package/packager.ts#L105-L124](https://github.com//github.com/angular/angular/blob/4f9374951d67c75f67a31c110bd61ab72563db7d/packages/bazel/src/ng_package/packager.ts/issues/L105-L124)
 * **bazel:** Set module_name and enable ng test ([#27715](https://github.com/angular/angular/issues/27715)) ([85866de](https://github.com/angular/angular/commit/85866de))
+* **bazel:** fix TS errors in the `schematics/bazel-workspace` files ([#27600](https://github.com/angular/angular/issues/27600)) ([3290fc3](https://github.com/angular/angular/commit/3290fc3))
+* **bazel:** Read latest versions from latest-versions.ts & use semver check ([#27526](https://github.com/angular/angular/issues/27526)) ([30a3b49](https://github.com/angular/angular/commit/30a3b49))
+* **bazel:** tsickle dependency not working with typescript 3.1.x ([#27402](https://github.com/angular/angular/issues/27402)) ([f034114](https://github.com/angular/angular/commit/f034114))
+* **bazel:** do not throw error when writing tsickle externs ([#27200](https://github.com/angular/angular/issues/27200)) ([20a2bae](https://github.com/angular/angular/commit/20a2bae))
+* **bazel:** do not throw if ts compile action does not create esm5 outputs ([#27401](https://github.com/angular/angular/issues/27401)) ([c61a8b7](https://github.com/angular/angular/commit/c61a8b7))
+* **bazel:** ng_package cannot be run multiple times without clean ([#27200](https://github.com/angular/angular/issues/27200)) ([4f93749](https://github.com/angular/angular/commit/4f93749))
+* **bazel:** ng_package not generating UMD bundles on windows ([#27200](https://github.com/angular/angular/issues/27200)) ([7d59880](https://github.com/angular/angular/commit/7d59880))
+* **bazel:** ng_package should correctly map to source maps in secondary entry-points ([#27313](https://github.com/angular/angular/issues/27313)) ([eb17502](https://github.com/angular/angular/commit/eb17502)), closes [#25510](https://github.com/angular/angular/issues/25510)
+* **bazel:** Respect existing angular installation ([#27495](https://github.com/angular/angular/issues/27495)) ([4da739a](https://github.com/angular/angular/commit/4da739a))
 * **common:** KeyValuePipe should return empty array for empty objects ([#27258](https://github.com/angular/angular/issues/27258)) ([b39efdd](https://github.com/angular/angular/commit/b39efdd))
+* **common:** expose request url in network error ([#27143](https://github.com/angular/angular/issues/27143)) ([1db53da](https://github.com/angular/angular/commit/1db53da)), closes [#27029](https://github.com/angular/angular/issues/27029)
 * **compiler-cli:** create LiteralLikeNode for String and Number literal ([#27536](https://github.com/angular/angular/issues/27536)) ([2c9b6c0](https://github.com/angular/angular/commit/2c9b6c0))
+* **compiler-cli:** flatModuleIndex files not generated on windows with multiple input files ([#27200](https://github.com/angular/angular/issues/27200)) ([d3c08e7](https://github.com/angular/angular/commit/d3c08e7))
+* **core:** export a value for InjectFlags ([#27279](https://github.com/angular/angular/issues/27279)) ([23b06af](https://github.com/angular/angular/commit/23b06af)), closes [#27251](https://github.com/angular/angular/issues/27251)
+* **core:** More precise return type for `InjectableDecorator` ([#27360](https://github.com/angular/angular/issues/27360)) ([4b9948c](https://github.com/angular/angular/commit/4b9948c)), closes [#26942](https://github.com/angular/angular/issues/26942)
+* **forms:** typed argument for FormBuilder group ([#26985](https://github.com/angular/angular/issues/26985)) ([b0c7561](https://github.com/angular/angular/commit/b0c7561))
+* **platform-server:** add [@angular](https://github.com/angular)/http to the list of peerDependencies ([#27307](https://github.com/angular/angular/issues/27307)) ([32c5be9](https://github.com/angular/angular/commit/32c5be9)), closes [#26154](https://github.com/angular/angular/issues/26154)
 * **router:** ensure URL is updated after second redirect with UrlUpdateStrategy="eager" ([#27523](https://github.com/angular/angular/issues/27523)) ([ad26cd6](https://github.com/angular/angular/commit/ad26cd6)), closes [#27116](https://github.com/angular/angular/issues/27116)
+* **router:** update URL after redirects when urlHandlingStrategy='eager' ([#27356](https://github.com/angular/angular/issues/27356)) ([11a8bd8](https://github.com/angular/angular/commit/11a8bd8)), closes [#27076](https://github.com/angular/angular/issues/27076)
+* **upgrade:** allow nesting components from different downgraded modules ([#27217](https://github.com/angular/angular/issues/27217)) ([bc0ee01](https://github.com/angular/angular/commit/bc0ee01))
+* **upgrade:** correctly handle nested downgraded components with `downgradeModule()` ([#27217](https://github.com/angular/angular/issues/27217)) ([326b464](https://github.com/angular/angular/commit/326b464)), closes [#22581](https://github.com/angular/angular/issues/22581) [#22869](https://github.com/angular/angular/issues/22869) [#27083](https://github.com/angular/angular/issues/27083)
 * **upgrade:** upgrade Directive facade should not return different instance from constructor ([#27660](https://github.com/angular/angular/issues/27660)) ([c986d3d](https://github.com/angular/angular/commit/c986d3d))
-
-
-### Features
-
-* add support for typescript 3.2 ([#27536](https://github.com/angular/angular/issues/27536)) ([17e702b](https://github.com/angular/angular/commit/17e702b))
-* **router:** add predicate function  mode for runGuardsAndResolvers ([#27682](https://github.com/angular/angular/issues/27682)) ([12c3176](https://github.com/angular/angular/commit/12c3176)), closes [#26861](https://github.com/angular/angular/issues/26861) [#18253](https://github.com/angular/angular/issues/18253) [#27464](https://github.com/angular/angular/issues/27464)
+* **upgrade:** don't rely upon the runtime to resolve forward refs ([#27132](https://github.com/angular/angular/issues/27132)) ([a4462c2](https://github.com/angular/angular/commit/a4462c2))
 
 
 
@@ -53,19 +69,6 @@
 * **bazel:** Read latest versions from latest-versions.ts & use semver check ([#27591](https://github.com/angular/angular/issues/27591)) ([93078e3](https://github.com/angular/angular/commit/93078e3))
 * **bazel:** Set module_name and enable ng test ([#27715](https://github.com/angular/angular/issues/27715)) ([183f278](https://github.com/angular/angular/commit/183f278))
 * **common:** KeyValuePipe should return empty array for empty objects ([#27258](https://github.com/angular/angular/issues/27258)) ([fa3af8b](https://github.com/angular/angular/commit/fa3af8b))
-
-
-
-<a name="7.2.0-beta.2"></a>
-# [7.2.0-beta.2](https://github.com/angular/angular/compare/7.2.0-beta.1...7.2.0-beta.2) (2018-12-11)
-
-
-### Bug Fixes
-
-* **bazel:** fix TS errors in the `schematics/bazel-workspace` files ([#27600](https://github.com/angular/angular/issues/27600)) ([3290fc3](https://github.com/angular/angular/commit/3290fc3))
-* **bazel:** Read latest versions from latest-versions.ts & use semver check ([#27526](https://github.com/angular/angular/issues/27526)) ([30a3b49](https://github.com/angular/angular/commit/30a3b49))
-* **bazel:** tsickle dependency not working with typescript 3.1.x ([#27402](https://github.com/angular/angular/issues/27402)) ([f034114](https://github.com/angular/angular/commit/f034114))
-* **forms:** typed argument for FormBuilder group ([#26985](https://github.com/angular/angular/issues/26985)) ([b0c7561](https://github.com/angular/angular/commit/b0c7561))
 
 
 
@@ -93,47 +96,6 @@
 * **compiler-cli:** flatModuleIndex files not generated on windows with multiple input files ([#27200](https://github.com/angular/angular/issues/27200)) ([8087b6b](https://github.com/angular/angular/commit/8087b6b))
 * **compiler-cli:** ngtsc shim files not being generated on case-insensitive platforms ([#27466](https://github.com/angular/angular/issues/27466)) ([84f2928](https://github.com/angular/angular/commit/84f2928)), closes [/github.com/Microsoft/TypeScript/blob/3e4c5c95abd515eb9713b881d27ab3a93cc00461/src/compiler/sys.ts#L681-L682](https://github.com//github.com/Microsoft/TypeScript/blob/3e4c5c95abd515eb9713b881d27ab3a93cc00461/src/compiler/sys.ts/issues/L681-L682)
 * **platform-server:** add [@angular](https://github.com/angular)/http to the list of peerDependencies ([#27307](https://github.com/angular/angular/issues/27307)) ([236ac06](https://github.com/angular/angular/commit/236ac06)), closes [#26154](https://github.com/angular/angular/issues/26154)
-
-
-<a name="7.2.0-beta.1"></a>
-# [7.2.0-beta.1](https://github.com/angular/angular/compare/7.1.0...7.2.0-beta.1) (2018-12-06)
-
-
-### Bug Fixes
-
-* **bazel:** do not throw error when writing tsickle externs ([#27200](https://github.com/angular/angular/issues/27200)) ([20a2bae](https://github.com/angular/angular/commit/20a2bae))
-* **bazel:** do not throw if ts compile action does not create esm5 outputs ([#27401](https://github.com/angular/angular/issues/27401)) ([c61a8b7](https://github.com/angular/angular/commit/c61a8b7))
-* **bazel:** ng_package cannot be run multiple times without clean ([#27200](https://github.com/angular/angular/issues/27200)) ([4f93749](https://github.com/angular/angular/commit/4f93749))
-* **bazel:** ng_package not generating UMD bundles on windows ([#27200](https://github.com/angular/angular/issues/27200)) ([7d59880](https://github.com/angular/angular/commit/7d59880))
-* **bazel:** ng_package should correctly map to source maps in secondary entry-points ([#27313](https://github.com/angular/angular/issues/27313)) ([eb17502](https://github.com/angular/angular/commit/eb17502)), closes [#25510](https://github.com/angular/angular/issues/25510)
-* **bazel:** Respect existing angular installation ([#27495](https://github.com/angular/angular/issues/27495)) ([4da739a](https://github.com/angular/angular/commit/4da739a))
-* **common:** expose request url in network error ([#27143](https://github.com/angular/angular/issues/27143)) ([1db53da](https://github.com/angular/angular/commit/1db53da)), closes [#27029](https://github.com/angular/angular/issues/27029)
-* **compiler-cli:** flatModuleIndex files not generated on windows with multiple input files ([#27200](https://github.com/angular/angular/issues/27200)) ([d3c08e7](https://github.com/angular/angular/commit/d3c08e7))
-* **core:** export a value for InjectFlags ([#27279](https://github.com/angular/angular/issues/27279)) ([23b06af](https://github.com/angular/angular/commit/23b06af)), closes [#27251](https://github.com/angular/angular/issues/27251)
-* **core:** More precise return type for `InjectableDecorator` ([#27360](https://github.com/angular/angular/issues/27360)) ([4b9948c](https://github.com/angular/angular/commit/4b9948c)), closes [#26942](https://github.com/angular/angular/issues/26942)
-* **forms:** apply unicode flag to pattern attribute when supported ([#20819](https://github.com/angular/angular/issues/20819)) ([3c34b8b](https://github.com/angular/angular/commit/3c34b8b))
-* **platform-server:** add [@angular](https://github.com/angular)/http to the list of peerDependencies ([#27307](https://github.com/angular/angular/issues/27307)) ([32c5be9](https://github.com/angular/angular/commit/32c5be9)), closes [#26154](https://github.com/angular/angular/issues/26154)
-* **router:** update URL after redirects when urlHandlingStrategy='eager' ([#27356](https://github.com/angular/angular/issues/27356)) ([11a8bd8](https://github.com/angular/angular/commit/11a8bd8)), closes [#27076](https://github.com/angular/angular/issues/27076)
-* **upgrade:** don't rely upon the runtime to resolve forward refs ([#27132](https://github.com/angular/angular/issues/27132)) ([a4462c2](https://github.com/angular/angular/commit/a4462c2))
-
-
-### Features
-
-* **bazel:** ng-new schematics with Bazel ([#27277](https://github.com/angular/angular/issues/27277)) ([06d4a0c](https://github.com/angular/angular/commit/06d4a0c))
-* **router:** add a Navigation type available during navigation ([#27198](https://github.com/angular/angular/issues/27198)) ([d40af0c](https://github.com/angular/angular/commit/d40af0c))
-* **router:** add pathParamsOrQueryParamsChange mode for runGuardsAndResolvers ([#27464](https://github.com/angular/angular/issues/27464)) ([d70a7f3](https://github.com/angular/angular/commit/d70a7f3)), closes [#26861](https://github.com/angular/angular/issues/26861) [#18253](https://github.com/angular/angular/issues/18253)
-* **router:** allow passing `state` to routerLink directives ([#27198](https://github.com/angular/angular/issues/27198)) ([73f6ed9](https://github.com/angular/angular/commit/73f6ed9)), closes [#24617](https://github.com/angular/angular/issues/24617)
-* **router:** allow passing state to `NavigationExtras` ([#27198](https://github.com/angular/angular/issues/27198)) ([67f4a5d](https://github.com/angular/angular/commit/67f4a5d))
-* **router:** restore whole  object when navigating back to a page managed by Angular router ([#27198](https://github.com/angular/angular/issues/27198)) ([2684249](https://github.com/angular/angular/commit/2684249))
-
-<a name="7.2.0-beta.0"></a>
-# [7.2.0-beta.0](https://github.com/angular/angular/compare/7.1.0...7.2.0-beta.0) (2018-11-28)
-
-
-### Bug Fixes
-
-* **common:** expose request url in network error ([#27143](https://github.com/angular/angular/issues/27143)) ([1db53da](https://github.com/angular/angular/commit/1db53da)), closes [#27029](https://github.com/angular/angular/issues/27029)
-* **upgrade:** don't rely upon the runtime to resolve forward refs ([#27132](https://github.com/angular/angular/issues/27132)) ([a4462c2](https://github.com/angular/angular/commit/a4462c2))
 
 
 
