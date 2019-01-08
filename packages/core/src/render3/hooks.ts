@@ -116,7 +116,7 @@ export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
  *
  * @param lView The current view
  * @param tView Static data for the view containing the hooks to be executed
- * @param creationMode Whether or not we're in creation mode.
+ * @param checkNoChangesMode Whether or not we're in checkNoChanges mode.
  */
 export function executeInitHooks(
     currentView: LView, tView: TView, checkNoChangesMode: boolean): void {
