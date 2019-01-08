@@ -29,7 +29,7 @@ import { SimpleChanges } from '../change_detection/simple_change';
  * @param directiveDef The definition containing the hooks to setup in tView
  * @param tView The current TView
  */
-export function setupHooksDirectiveStart(
+export function registerPreOrderHooks(
     directiveIndex: number, directiveDef: DirectiveDef<any>, tView: TView): void {
   ngDevMode &&
       assertEqual(tView.firstTemplatePass, true, 'Should only be called on first template pass');
@@ -70,7 +70,7 @@ export function setupHooksDirectiveStart(
  * @param tView The current TView
  * @param tNode The TNode whose directives are to be searched for hooks to queue
  */
-export function setupHooksDirectiveEnd(tView: TView, tNode: TNode): void {
+export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
   if (tView.firstTemplatePass) {
     // It's necessary to loop through the directives at elementEnd() (rather than processing in
     // directiveCreate) so we can preserve the current hook order. Content, view, and destroy

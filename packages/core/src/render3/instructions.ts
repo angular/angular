@@ -22,7 +22,7 @@ import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from 
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
 import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreateNodeInjectorForNode, injectAttributeImpl} from './di';
 import {throwMultipleComponentError} from './errors';
-import {executeHooks, executeInitHooks, setupHooksDirectiveEnd, setupHooksDirectiveStart} from './hooks';
+import {executeHooks, executeInitHooks, registerPostOrderHooks, registerPreOrderHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from './interfaces/injector';
@@ -523,7 +523,7 @@ export function elementContainerEnd(): void {
     lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TElementContainerNode);
   }
 
-  setupHooksDirectiveEnd(tView, previousOrParentTNode);
+  registerPostOrderHooks(tView, previousOrParentTNode);
 }
 
 /**
@@ -950,7 +950,7 @@ export function elementEnd(): void {
     lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TElementNode);
   }
 
-  setupHooksDirectiveEnd(getLView()[TVIEW], previousOrParentTNode);
+  registerPostOrderHooks(getLView()[TVIEW], previousOrParentTNode);
   decreaseElementDepthCount();
 
   // this is fired at the end of elementEnd because ALL of the stylingBindings code
@@ -1143,14 +1143,7 @@ function setInputsForProperty(
     const privateName = inputs[i++] as string;
     const declaredName = inputs[i++] as string;
     ngDevMode && assertDataInRange(lView, directiveIndex);
-
-    const maybeWrappedDirectiveInstance = lView[directiveIndex];
-    let instance = maybeWrappedDirectiveInstance;
-    if (isOnChangesDirectiveWrapper(maybeWrappedDirectiveInstance)) {
-      instance = maybeWrappedDirectiveInstance.instance;
-      recordChange(maybeWrappedDirectiveInstance, declaredName, value);
-    }
-    instance[privateName] = value;
+    recordChangeAndUpdateProperty(lView[directiveIndex], declaredName, privateName, value);
   }
 }
 
@@ -1524,7 +1517,7 @@ function resolveDirectives(
 
       // Init hooks are queued now so ngOnInit is called in host components before
       // any projected components.
-      setupHooksDirectiveStart(directiveDefIdx, def, tView);
+      registerPreOrderHooks(directiveDefIdx, def, tView);
     }
   }
   if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
@@ -1546,11 +1539,6 @@ function instantiateAllDirectives(tView: TView, lView: LView, tNode: TNode) {
       addComponentLogic(lView, tNode, def as ComponentDef<any>);
     }
     const directive = getNodeInjectable(tView.data, lView !, i, tNode as TElementNode);
-
-    if (def.onChanges) {
-      // We have onChanges, wrap it so that we can track changes.
-      lView[i] = new OnChangesDirectiveWrapper(lView[i]);
-    }
 
     postProcessDirective(lView, directive, def, i);
   }
@@ -1620,12 +1608,18 @@ function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): voi
  * Process a directive on the current node after its creation.
  */
 function postProcessDirective<T>(
-    viewData: LView, directive: T, def: DirectiveDef<T>, directiveDefIdx: number): void {
+    lView: LView, directive: T, def: DirectiveDef<T>, directiveDefIdx: number): void {
+
+  if (def.onChanges) {
+    // We have onChanges, wrap it so that we can track changes.
+    lView[directiveDefIdx] = new OnChangesDirectiveWrapper(lView[directiveDefIdx]);
+  }
+
   const previousOrParentTNode = getPreviousOrParentTNode();
-  postProcessBaseDirective(viewData, previousOrParentTNode, directive, def);
+  postProcessBaseDirective(lView, previousOrParentTNode, directive, def);
   ngDevMode && assertDefined(previousOrParentTNode, 'previousOrParentTNode');
   if (previousOrParentTNode && previousOrParentTNode.attrs) {
-    setInputsFromAttrs(viewData, directiveDefIdx, def, previousOrParentTNode);
+    setInputsFromAttrs(lView, directiveDefIdx, def, previousOrParentTNode);
   }
 
   if (def.contentQueries) {
@@ -1633,7 +1627,7 @@ function postProcessDirective<T>(
   }
 
   if (isComponentDef(def)) {
-    const componentView = getComponentViewByIndex(previousOrParentTNode.index, viewData);
+    const componentView = getComponentViewByIndex(previousOrParentTNode.index, lView);
     componentView[CONTEXT] = directive;
   }
 }
@@ -1839,20 +1833,36 @@ function setInputsFromAttrs<T>(
 
   const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
   if (initialInputs) {
-    const record = lView[directiveIndex];
-    const hasOnChanges = isOnChangesDirectiveWrapper(record);
-    const instance = hasOnChanges ? unwrapOnChangesDirectiveWrapper(record) : record;
+    const directiveOrWrappedDirective = lView[directiveIndex];
 
     for (let i = 0; i < initialInputs.length;) {
-      const minifiedKey = initialInputs[i++];
+      const privateName = initialInputs[i++];
       const declaredName = initialInputs[i++];
       const attrValue = initialInputs[i++];
-      if (hasOnChanges) {
-        recordChange(record, declaredName, attrValue);
-      }
-      instance[minifiedKey] = attrValue;
+      recordChangeAndUpdateProperty(directiveOrWrappedDirective, privateName, declaredName, attrValue);
     }
   }
+}
+
+/**
+ * Checks to see if the instanced passed as `directiveOrWrappedDirective` is wrapped in {@link OnChangesDirectiveWrapper} or not.
+ * If it is, it will update the related {@link SimpleChanges} object with the change to signal `ngOnChanges` hook
+ * should fire, then it will unwrap the instance. After that, it will set the property with the key provided
+ * in `privateName` on the instance with the passed value.
+ * @param directiveOrWrappedDirective The directive instance or a directive instance wrapped in {@link OnChangesDirectiveWrapper}
+ * @param declaredName The original, declared name of the property to update.
+ * @param privateName The private, possibly minified name of the property to update.
+ * @param value The value to update the property with.
+ */
+function recordChangeAndUpdateProperty<T, K extends keyof T>(directiveOrWrappedDirective: OnChangesDirectiveWrapper<T> | T, declaredName: string, privateName: K, value: any) {
+  let instance: T;
+  if (isOnChangesDirectiveWrapper(directiveOrWrappedDirective)) {
+    instance = unwrapOnChangesDirectiveWrapper(directiveOrWrappedDirective);
+    recordChange(directiveOrWrappedDirective, declaredName, value);
+  } else {
+    instance = directiveOrWrappedDirective;
+  }
+  instance[privateName] = value;
 }
 
 /**
@@ -1888,14 +1898,14 @@ function generateInitialInputs(
       i += 4;
       continue;
     }
-    const minifiedName = directiveDef.inputs[attrName];
+    const privateName = directiveDef.inputs[attrName];
     const declaredName = directiveDef.declaredInputs[attrName];
     const attrValue = attrs[i + 1];
 
-    if (minifiedName !== undefined) {
+    if (privateName !== undefined) {
       const inputsToStore: InitialInputs =
           initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);
-      inputsToStore.push(minifiedName, declaredName, attrValue as string);
+      inputsToStore.push(privateName, declaredName, attrValue as string);
     }
 
     i += 2;
@@ -1970,7 +1980,7 @@ export function template(
   if (currentQueries) {
     lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TContainerNode);
   }
-  setupHooksDirectiveEnd(tView, tNode);
+  registerPostOrderHooks(tView, tNode);
   setIsParent(false);
 }
 

@@ -36,8 +36,16 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChange
 export class NgTemplateOutlet implements OnChanges {
   private _viewRef: EmbeddedViewRef<any>|null = null;
 
+  /**
+   * A context object to attach to the {@link EmbeddedViewRef}. This should be an
+   * object, the object's keys will be available for binding by the local template `let` declarations.
+   * Using the key `$implicit` in the context object will set its value as default.
+   */
   @Input() public ngTemplateOutletContext: Object|null = null;
 
+  /**
+   * A string defining the template reference and optionally the context object for the template.
+   */
   @Input() public ngTemplateOutlet: TemplateRef<any>|null = null;
 
   constructor(private _viewContainerRef: ViewContainerRef) {}

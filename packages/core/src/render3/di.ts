@@ -515,8 +515,10 @@ export function getNodeInjectable(
       factory.resolving = false;
       setTNodeAndViewData(savePreviousOrParentTNode, saveLView);
     }
+  } else {
+    value = unwrapOnChangesDirectiveWrapper(value);
   }
-  return unwrapOnChangesDirectiveWrapper(value);
+  return value;
 }
 
 /**

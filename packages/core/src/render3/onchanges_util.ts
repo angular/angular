@@ -8,6 +8,7 @@
 import {SimpleChange, SimpleChanges} from '../change_detection/simple_change';
 
 
+type Constructor<T> = new(...args: any[]) => T;
 
 /**
  * Checks an object to see if it's an exact instance of a particular type
@@ -15,7 +16,7 @@ import {SimpleChange, SimpleChanges} from '../change_detection/simple_change';
  * @param obj The object to check
  * @param type The type to check the object against
  */
-export function isExactInstanceOf<T>(obj: any, type: T): obj is T {
+export function isExactInstanceOf<T>(obj: any, type: Constructor<T>): obj is T {
   return obj != null && typeof obj == 'object' && Object.getPrototypeOf(obj) == (type as any).prototype;
 }
 
