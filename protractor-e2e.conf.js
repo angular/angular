@@ -14,11 +14,7 @@ exports.config = {
   onPrepare: function() { beforeEach(function() { browser.ignoreSynchronization = false; }); },
   allScriptsTimeout: 11000,
   specs: ['dist/all/**/e2e_test/**/*_spec.js'],
-  exclude: [
-    'dist/all/@angular/examples/**',
-    '**/key_events/**',  // can't tell why this is failing
-    '**/sourcemap/**'    // fails only on travis
-  ],
+  exclude: ['dist/all/@angular/examples/**'],
   capabilities: {
     'browserName': 'chrome',
     // Enables concurrent testing. Currently runs four e2e files in parallel.
