@@ -1873,119 +1873,93 @@ the directive property name on the *left* and the public alias on the *right*:
 
 ## Template expression operators
 
-The template expression language employs a subset of JavaScript syntax supplemented with a few special operators
-for specific scenarios. The next sections cover two of these operators: _pipe_ and _safe navigation operator_.
+The Angular template expression language employs a subset of JavaScript syntax supplemented with a few special operators
+for specific scenarios. The next sections cover three of these operators:
+
+* [pipe](guide/template-syntax#pipe)
+* [safe navigation operator](guide/template-syntax#safe-navigation-operator)
+* [non-null assertion operator](guide/template-syntax#non-null-assertion-operator)
 
 {@a pipe}
 
-### The pipe operator ( <span class="syntax">|</span> )
+### The pipe operator (`|`)
 
 The result of an expression might require some transformation before you're ready to use it in a binding.
-For example, you might display a number as a currency, force text to uppercase, or filter a list and sort it.
+For example, you might display a number as a currency, change text to uppercase, or filter a list and sort it.
 
-Angular [pipes](guide/pipes) are a good choice for small transformations such as these.
 Pipes are simple functions that accept an input value and return a transformed value.
-They're easy to apply within template expressions, using the **pipe operator (`|`)**:
+They're easy to apply within template expressions, using the pipe operator (`|`):
 
-<code-example path="template-syntax/src/app/app.component.html" region="pipes-1" header="src/app/app.component.html" linenums="false">
+<code-example path="template-expression-operators/src/app/app.component.html" region="uppercase-pipe" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 The pipe operator passes the result of an expression on the left to a pipe function on the right.
 
 You can chain expressions through multiple pipes:
 
-<code-example path="template-syntax/src/app/app.component.html" region="pipes-2" header="src/app/app.component.html" linenums="false">
+<code-example path="template-expression-operators/src/app/app.component.html" region="pipe-chain" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 And you can also [apply parameters](guide/pipes#parameterizing-a-pipe) to a pipe:
 
-<code-example path="template-syntax/src/app/app.component.html" region="pipes-3" header="src/app/app.component.html" linenums="false">
+<code-example path="template-expression-operators/src/app/app.component.html" region="date-pipe" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 The `json` pipe is particularly helpful for debugging bindings:
 
-<code-example path="template-syntax/src/app/app.component.html" linenums="false" header="src/app/app.component.html (pipes-json)" region="pipes-json">
+<code-example path="template-expression-operators/src/app/app.component.html" region="json-pipe" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-The generated output would look something like this
+The generated output would look something like this:
 
 <code-example language="json">
-  { "id": 0, "name": "Hercules", "emotion": "happy",
-    "birthdate": "1970-02-25T08:00:00.000Z",
-    "url": "http://www.imdb.com/title/tt0065832/",
-    "rate": 325 }
+  { "name": "Telephone",
+    "manufactureDate": "1980-02-25T05:00:00.000Z",
+    "price": 98 }
 </code-example>
+
+<div class="alert is-helpful">
+
+**Note**: The pipe operator has a higher precedence than the ternary operator (`?:`),
+which means `a ? b : c | x` is parsed as `a ? b : (c | x)`.
+Nevertheless, for a number of reasons,
+the pipe operator cannot be used without parentheses in the first and second operands of `?:`.
+A good practice is to use parentheses in the third operand too.
+
+</div>
 
 
 <hr/>
 
 {@a safe-navigation-operator}
 
-### The safe navigation operator ( <span class="syntax">?.</span> ) and null property paths
+### The safe navigation operator ( `?` ) and null property paths
 
-The Angular **safe navigation operator (`?.`)** is a fluent and convenient way to
-guard against null and undefined values in property paths.
-Here it is, protecting against a view render failure if the `currentHero` is null.
+The Angular safe navigation operator, `?`, guards against `null` and `undefined`
+values in property paths. Here, it protects against a view render failure if `item` is `null`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="safe-2" header="src/app/app.component.html" linenums="false">
+<code-example path="template-expression-operators/src/app/app.component.html" region="safe" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-What happens when the following data bound `title` property is null?
+If `item` is `null`, the view still renders but the displayed value is blank; you see only "The item name is:" with nothing after it.
 
-<code-example path="template-syntax/src/app/app.component.html" region="safe-1" header="src/app/app.component.html" linenums="false">
-</code-example>
-
-The view still renders but the displayed value is blank; you see only "The title is" with nothing after it.
-That is reasonable behavior. At least the app doesn't crash.
-
-Suppose the template expression involves a property path, as in this next example
-that displays the `name` of a null hero.
+Consider the next example, with a `nullItem`.
 
 <code-example language="html">
-  The null hero's name is {{nullHero.name}}
+  The null item name is {{nullItem.name}}
 </code-example>
 
-JavaScript throws a null reference error, and so does Angular:
+Since there is no safe navigation operator and `nullItem` is `null`, JavaScript and Angular would throw a `null` reference error and break the rendering process of Angular:
 
 <code-example format="nocode">
-  TypeError: Cannot read property 'name' of null in [null].
+  TypeError: Cannot read property 'name' of null.
 </code-example>
 
-Worse, the *entire view disappears*.
+Sometimes however, `null` values in the property
+path may be OK under certain circumstances,
+especially when the value starts out null but the data arrives eventually.
 
-This would be reasonable behavior if the `hero` property could never be null.
-If it must never be null and yet it is null,
-that's a programming error that should be caught and fixed.
-Throwing an exception is the right thing to do.
-
-On the other hand, null values in the property path may be OK from time to time,
-especially when the data are null now and will arrive eventually.
-
-While waiting for data, the view should render without complaint, and
-the null property path should display as blank just as the `title` property does.
-
-Unfortunately, the app crashes when the `currentHero` is null.
-
-You could code around that problem with [*ngIf](guide/template-syntax#ngIf).
-
-<code-example path="template-syntax/src/app/app.component.html" region="safe-4" header="src/app/app.component.html" linenums="false">
-</code-example>
-
-You could try to chain parts of the property path with `&&`, knowing that the expression bails out
-when it encounters the first null.
-
-<code-example path="template-syntax/src/app/app.component.html" region="safe-5" header="src/app/app.component.html" linenums="false">
-</code-example>
-
-These approaches have merit but can be cumbersome, especially if the property path is long.
-Imagine guarding against a null somewhere in a long property path such as `a.b.c.d`.
-
-The Angular safe navigation operator (`?.`) is a more fluent and convenient way to guard against nulls in property paths.
-The expression bails out when it hits the first null value.
-The display is blank, but the app keeps rolling without errors.
-
-<code-example path="template-syntax/src/app/app.component.html" region="safe-6" header="src/app/app.component.html" linenums="false">
-</code-example>
+With the safe navigation operator, `?`, Angular stops evaluating the expression when it hits the first `null` value and renders the view without errors.
 
 It works perfectly with long property paths such as `a?.b?.c?.d`.
 
@@ -1994,34 +1968,31 @@ It works perfectly with long property paths such as `a?.b?.c?.d`.
 
 {@a non-null-assertion-operator}
 
-### The non-null assertion operator ( <span class="syntax">!</span> )
+### The non-null assertion operator ( `!` )
 
-As of Typescript 2.0, you can enforce [strict null checking](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript") with the `--strictNullChecks` flag. TypeScript then ensures that no variable is _unintentionally_ null or undefined.
+As of Typescript 2.0, you can enforce [strict null checking](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html "Strict null checking in TypeScript") with the `--strictNullChecks` flag. TypeScript then ensures that no variable is unintentionally null or undefined.
 
-In this mode, typed variables disallow null and undefined by default. The type checker throws an error if you leave a variable unassigned or try to assign null or undefined to a variable whose type disallows null and undefined.
+In this mode, typed variables disallow `null` and `undefined` by default. The type checker throws an error if you leave a variable unassigned or try to assign `null` or `undefined` to a variable whose type disallows `null` and `undefined`.
 
-The type checker also throws an error if it can't determine whether a variable will be null or undefined at runtime.
-You may know that can't happen but the type checker doesn't know.
-You tell the type checker that it can't happen by applying the post-fix
-[_non-null assertion operator (!)_](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator").
+The type checker also throws an error if it can't determine whether a variable will be `null` or undefined at runtime. You tell the type checker not to throw an error by applying the postfix
+[non-null assertion operator, !](http://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator "Non-null assertion operator").
 
-The _Angular_ **non-null assertion operator (`!`)** serves the same purpose in an Angular template.
+The Angular non-null assertion operator, `!`, serves the same purpose in
+an Angular template. For example, after you use [*ngIf](guide/template-syntax#ngIf)
+to check that `item` is defined, you can assert that
+`item` properties are also defined.
 
-For example, after you use [*ngIf](guide/template-syntax#ngIf) to check that `hero` is defined, you can assert that
-`hero` properties are also defined.
-
-<code-example path="template-syntax/src/app/app.component.html" region="non-null-assertion-1" header="src/app/app.component.html" linenums="false">
+<code-example path="template-expression-operators/src/app/app.component.html" region="non-null" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 When the Angular compiler turns your template into TypeScript code,
-it prevents TypeScript from reporting that `hero.name` might be null or undefined.
+it prevents TypeScript from reporting that `item` might be `null` or `undefined`.
 
-Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)"),
-the **non-null assertion operator** does not guard against null or undefined.
-Rather it tells the TypeScript type checker to suspend strict null checks for a specific property expression.
+Unlike the [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?)"),
+the non-null assertion operator does not guard against `null` or `undefined`.
+Rather, it tells the TypeScript type checker to suspend strict `null` checks for a specific property expression.
 
-You'll need this template operator when you turn on strict null checks. It's optional otherwise.
-
+The non-null assertion operator, `!`, is optional with the exception that you must use it when you turn on strict null checks.
 
 <a href="#top-of-page">back to top</a>
 
