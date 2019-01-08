@@ -63,11 +63,11 @@ if (isBrowser) {
               {providers: [{provide: FancyService, useValue: new FancyService()}]});
         });
 
-        fixmeIvy('unknown').it(
-            'provides a real ResourceLoader instance',
-            inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
-              expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
-            }));
+        fixmeIvy('FW-919: TestBed.get should be able to retrieve tokens from Compiler\'s injector')
+            .it('provides a real ResourceLoader instance',
+                inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
+                  expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
+                }));
 
         it('should allow the use of fakeAsync',
            fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
@@ -80,19 +80,20 @@ if (isBrowser) {
     });
 
     describe('Compiler', () => {
-      fixmeIvy('unknown').it('should return NgModule id when asked', () => {
-        @NgModule({
-          id: 'test-module',
-        })
-        class TestModule {
-        }
+      fixmeIvy('FW-855: TestBed.get(Compiler) should return TestBed-specific Compiler instance')
+          .it('should return NgModule id when asked', () => {
+            @NgModule({
+              id: 'test-module',
+            })
+            class TestModule {
+            }
 
-        TestBed.configureTestingModule({
-          imports: [TestModule],
-        });
-        const compiler = TestBed.get(Compiler) as Compiler;
-        expect(compiler.getModuleId(TestModule)).toBe('test-module');
-      });
+            TestBed.configureTestingModule({
+              imports: [TestModule],
+            });
+            const compiler = TestBed.get(Compiler) as Compiler;
+            expect(compiler.getModuleId(TestModule)).toBe('test-module');
+          });
     });
 
     describe('errors', () => {
