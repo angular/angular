@@ -1131,7 +1131,8 @@ export function createTNode(
  * Set the inputs of directives at the current node to corresponding value.
  *
  * @param lView the `LView` which contains the directives.
- * @param inputAliases mapping between the public name and and private properties to write to.
+ * @param inputAliases mapping between the public "input" name and privately-known,
+ * possibly minified, property names to write to.
  * @param publicName public binding name. (This is the `<div [publicName]=value>`)
  * @param value Value to set.
  */

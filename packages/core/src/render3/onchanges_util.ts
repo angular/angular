@@ -50,7 +50,7 @@ export class OnChangesDirectiveWrapper<T = any> {
 }
 
 /**
- * Updates the `simpleChanges` property on the `wrapper` instance, such that when it's
+ * Updates the `changes` property on the `wrapper` instance, such that when it's
  * checked in {@link callHooks} it will fire the related `onChanges` hook.
  * @param wrapper the wrapper for the directive instance
  * @param declaredName the declared name to be used in `SimpleChange`

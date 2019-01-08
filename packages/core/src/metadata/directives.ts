@@ -800,7 +800,7 @@ export interface Output { bindingPropertyName?: string; }
  */
 export const Output: OutputDecorator = makePropDecorator(
     'Output', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
-    getOrCreateDefinitionAndUpdateMappingFor(baseDef => baseDef.outputs || {}));
+    getOrCreateDefinitionAndUpdateMappingFor(def => def.outputs || {}));
 
 
 
