@@ -257,7 +257,8 @@ export class StaticInterpreter {
     node.members.forEach(member => {
       const name = this.stringNameFromPropertyName(member.name, context);
       if (name !== undefined) {
-        map.set(name, new EnumValue(enumRef, name));
+        const resolved = member.initializer && this.visit(member.initializer, context);
+        map.set(name, new EnumValue(enumRef, name, resolved));
       }
     });
     return map;

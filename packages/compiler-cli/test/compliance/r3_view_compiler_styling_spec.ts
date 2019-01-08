@@ -50,11 +50,11 @@ describe('compiler compliance: styling', () => {
          const files = {
            app: {
              'spec.ts': `
-                import {Component, NgModule} from '@angular/core';
+                import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 
                 @Component({
                   selector: "my-component",
-                  encapsulation: ${ViewEncapsulation.None},
+                  encapsulation: ViewEncapsulation.None,
                   styles: ["div.tall { height: 123px; }", ":host.small p { height:5px; }"],
                   template: "..."
                 })
@@ -77,10 +77,10 @@ describe('compiler compliance: styling', () => {
          const files = {
            app: {
              'spec.ts': `
-                import {Component, NgModule} from '@angular/core';
+                import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 
                 @Component({
-                  encapsulation: ${ViewEncapsulation.Native},
+                  encapsulation: ViewEncapsulation.Native,
                   selector: "my-component",
                   styles: ["div.cool { color: blue; }", ":host.nice p { color: gold; }"],
                   template: "..."

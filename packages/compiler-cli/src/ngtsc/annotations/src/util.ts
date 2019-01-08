@@ -85,6 +85,11 @@ export function isAngularCore(decorator: Decorator): boolean {
   return decorator.import !== null && decorator.import.from === '@angular/core';
 }
 
+export function isAngularCoreReference(reference: Reference, symbolName: string) {
+  return reference instanceof AbsoluteReference && reference.moduleName === '@angular/core' &&
+      reference.symbolName === symbolName;
+}
+
 /**
  * Unwrap a `ts.Expression`, removing outer type-casts or parentheses until the expression is in its
  * lowest level form.
