@@ -451,18 +451,17 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       expect(element).toHaveText('vingt - deux');
     });
 
-    fixmeIvy('FW-908: ICUs inside <ng-container>s throw an error at runtime')
-        .it('should handle ICUs inside <ng-container>', () => {
-          const template = `
-            <ng-container i18n>
-              {age, select, 10 {ten} 20 {twenty} other {other}}
-            </ng-container>
-          `;
-          const fixture = getFixtureWithOverrides({template});
+    it('should handle ICUs inside <ng-container>', () => {
+      const template = `
+        <ng-container i18n>
+          {age, select, 10 {ten} 20 {twenty} other {other}}
+        </ng-container>
+      `;
+      const fixture = getFixtureWithOverrides({template});
 
-          const element = fixture.nativeElement;
-          expect(element.innerHTML).toBe('vingt');
-        });
+      const element = fixture.nativeElement;
+      expect(element).toHaveText('vingt');
+    });
 
     fixmeIvy('FW-909: ICUs inside <ng-template>s throw errors at runtime')
         .it('should handle ICUs inside <ng-template>', () => {
