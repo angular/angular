@@ -16,7 +16,7 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
-import {Reference, TsReferenceResolver} from './imports';
+import {ImportRewriter, NoopImportRewriter, R3SymbolsImportRewriter, Reference, TsReferenceResolver} from './imports';
 import {PartialEvaluator} from './partial_evaluator';
 import {TypeScriptReflectionHost} from './reflection';
 import {FileResourceLoader, HostResourceLoader} from './resource_loader';
@@ -34,6 +34,7 @@ export class NgtscProgram implements api.Program {
   private sourceToFactorySymbols: Map<string, Set<string>>|null = null;
   private host: ts.CompilerHost;
   private _coreImportsFrom: ts.SourceFile|null|undefined = undefined;
+  private _importRewriter: ImportRewriter|undefined = undefined;
   private _reflector: TypeScriptReflectionHost|undefined = undefined;
   private _isCore: boolean|undefined = undefined;
   private rootDirs: string[];
@@ -234,7 +235,7 @@ export class NgtscProgram implements api.Program {
 
     const customTransforms = opts && opts.customTransformers;
     const beforeTransforms =
-        [ivyTransformFactory(this.compilation !, this.reflector, this.coreImportsFrom)];
+        [ivyTransformFactory(this.compilation !, this.reflector, this.importRewriter, this.isCore)];
 
     if (this.factoryToSourceInfo !== null) {
       beforeTransforms.push(
@@ -303,7 +304,7 @@ export class NgtscProgram implements api.Program {
     ];
 
     return new IvyCompilation(
-        handlers, checker, this.reflector, this.coreImportsFrom, this.sourceToFactorySymbols);
+        handlers, checker, this.reflector, this.importRewriter, this.sourceToFactorySymbols);
   }
 
   private get reflector(): TypeScriptReflectionHost {
@@ -325,6 +326,16 @@ export class NgtscProgram implements api.Program {
       this._isCore = isAngularCorePackage(this.tsProgram);
     }
     return this._isCore;
+  }
+
+  private get importRewriter(): ImportRewriter {
+    if (this._importRewriter === undefined) {
+      const coreImportsFrom = this.coreImportsFrom;
+      this._importRewriter = coreImportsFrom !== null ?
+          new R3SymbolsImportRewriter(coreImportsFrom.fileName) :
+          new NoopImportRewriter();
+    }
+    return this._importRewriter;
   }
 }
 

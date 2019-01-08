@@ -10,11 +10,13 @@ import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {FatalDiagnosticError} from '../../diagnostics';
+import {ImportRewriter} from '../../imports';
 import {Decorator, ReflectionHost, reflectNameOfDeclaration} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler} from './api';
 import {DtsFileTransformer} from './declaration';
+
 
 
 /**
@@ -63,7 +65,7 @@ export class IvyCompilation {
    */
   constructor(
       private handlers: DecoratorHandler<any, any>[], private checker: ts.TypeChecker,
-      private reflector: ReflectionHost, private coreImportsFrom: ts.SourceFile|null,
+      private reflector: ReflectionHost, private importRewriter: ImportRewriter,
       private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
 
 
@@ -227,7 +229,7 @@ export class IvyCompilation {
 
   private getDtsTransformer(tsFileName: string): DtsFileTransformer {
     if (!this.dtsMap.has(tsFileName)) {
-      this.dtsMap.set(tsFileName, new DtsFileTransformer(this.coreImportsFrom));
+      this.dtsMap.set(tsFileName, new DtsFileTransformer(this.importRewriter));
     }
     return this.dtsMap.get(tsFileName) !;
   }

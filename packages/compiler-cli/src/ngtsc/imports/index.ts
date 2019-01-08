@@ -6,5 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export {ImportRewriter, NoopImportRewriter, R3SymbolsImportRewriter, validateAndRewriteCoreSymbol} from './src/core';
 export {AbsoluteReference, ImportMode, NodeReference, Reference, ResolvedReference} from './src/references';
 export {ReferenceResolver, TsReferenceResolver} from './src/resolver';
