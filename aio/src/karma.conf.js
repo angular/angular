@@ -25,14 +25,8 @@ module.exports = function (config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['CustomChrome'],
+    browsers: ['Chrome'],
     browserNoActivityTimeout: 60000,
     singleRun: false,
-    customLaunchers: {
-      CustomChrome: {
-        base: 'Chrome',
-        flags: process.env.TRAVIS && ['--no-sandbox']
-      }
-    }
   });
 };

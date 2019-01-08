@@ -17,7 +17,7 @@ const isBazel = !!process.env.RUNFILES;
 const BASE = isBazel ? 'angular/modules' : 'dist/all';
 require(`./${BASE}/e2e_util/perf_util`).readCommandLine();
 
-var CHROME_OPTIONS = {
+const CHROME_OPTIONS = {
   'args': ['--js-flags=--expose-gc', '--no-sandbox', '--headless', '--disable-dev-shm-usage'],
   'perfLoggingPrefs': {
     'traceCategories':
@@ -25,8 +25,11 @@ var CHROME_OPTIONS = {
   }
 };
 
-var BROWSER_CAPS = {
-  LocalChrome: {
+const config = {
+  onPrepare: function() { beforeEach(function() { browser.ignoreSynchronization = false; }); },
+  restartBrowserBetweenTests: true,
+  allScriptsTimeout: 11000,
+  capabilities: {
     'browserName': 'chrome',
     chromeOptions: CHROME_OPTIONS,
     loggingPrefs: {
@@ -34,30 +37,6 @@ var BROWSER_CAPS = {
       browser: 'ALL',
     }
   },
-  ChromeOnTravis: {
-    browserName: 'chrome',
-    chromeOptions: mergeInto(CHROME_OPTIONS, {
-      'binary': process.env.CHROME_BIN,
-    }),
-    loggingPrefs: {
-      performance: 'ALL',
-      browser: 'ALL',
-    }
-  }
-};
-
-function mergeInto(src, target) {
-  for (var prop in src) {
-    target[prop] = src[prop];
-  }
-  return target;
-}
-
-const config = {
-  onPrepare: function() { beforeEach(function() { browser.ignoreSynchronization = false; }); },
-  restartBrowserBetweenTests: true,
-  allScriptsTimeout: 11000,
-  capabilities: process.env.TRAVIS ? BROWSER_CAPS.ChromeOnTravis : BROWSER_CAPS.LocalChrome,
   directConnect: true,
   framework: 'jasmine2',
   jasmineNodeOpts: {
