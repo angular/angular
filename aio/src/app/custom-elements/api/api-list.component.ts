@@ -14,6 +14,7 @@ import { LocationService } from 'app/shared/location.service';
 import { ApiSection, ApiService } from './api.service';
 
 import { Option } from 'app/shared/select/select.component';
+import { map } from 'rxjs/operators';
 
 class SearchCriteria {
   query ? = '';
@@ -67,14 +68,17 @@ export class ApiListComponent implements OnInit {
     private locationService: LocationService) { }
 
   ngOnInit() {
-    this.filteredSections = combineLatest(
-      this.apiService.sections,
-      this.criteriaSubject,
-      (sections, criteria) => {
-        return sections
-          .map(section => ({ ...section, items: this.filterSection(section, criteria) }));
-      }
-    );
+    this.filteredSections =
+        combineLatest(
+          this.apiService.sections,
+          this.criteriaSubject
+        ).pipe(
+          map( results => ({ sections: results[0], criteria: results[1]})),
+          map( results => (
+               results.sections
+                  .map(section => ({ ...section, items: this.filterSection(section, results.criteria) }))
+          ))
+        );
 
     this.initializeSearchCriteria();
   }
