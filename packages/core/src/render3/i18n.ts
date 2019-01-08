@@ -782,7 +782,10 @@ function readUpdateOpCodes(
 function removeNode(index: number, viewData: LView) {
   const removedPhTNode = getTNode(index, viewData);
   const removedPhRNode = getNativeByIndex(index, viewData);
-  removeChild(removedPhTNode, removedPhRNode || null, viewData);
+  if (removedPhRNode) {
+    removeChild(removedPhTNode, removedPhRNode, viewData);
+  }
+
   removedPhTNode.detached = true;
   ngDevMode && ngDevMode.rendererRemoveNode++;
 
@@ -790,7 +793,7 @@ function removeNode(index: number, viewData: LView) {
   if (isLContainer(slotValue)) {
     const lContainer = slotValue as LContainer;
     if (removedPhTNode.type !== TNodeType.Container) {
-      removeChild(removedPhTNode, lContainer[NATIVE] || null, viewData);
+      removeChild(removedPhTNode, lContainer[NATIVE], viewData);
     }
     lContainer[RENDER_PARENT] = null;
   }

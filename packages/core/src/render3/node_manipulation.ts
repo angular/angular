@@ -631,9 +631,8 @@ export function nativeNextSibling(renderer: Renderer3, node: RNode): RNode|null 
  * @param currentView The current LView
  * @returns Whether or not the child was appended
  */
-export function appendChild(
-    childEl: RNode | null = null, childTNode: TNode, currentView: LView): boolean {
-  if (childEl !== null && canInsertNativeNode(childTNode, currentView)) {
+export function appendChild(childEl: RNode, childTNode: TNode, currentView: LView): boolean {
+  if (canInsertNativeNode(childTNode, currentView)) {
     const renderer = currentView[RENDERER];
     const renderParent = getRenderParent(childTNode, currentView) !;
     const parentTNode: TNode = childTNode.parent || currentView[HOST_NODE] !;
@@ -690,9 +689,9 @@ export function getBeforeNodeForView(index: number, views: LView[], containerNat
  * @param currentView The current LView
  * @returns Whether or not the child was removed
  */
-export function removeChild(childTNode: TNode, childEl: RNode | null, currentView: LView): boolean {
+export function removeChild(childTNode: TNode, childEl: RNode, currentView: LView): boolean {
   // We only remove the element if not in View or not projected.
-  if (childEl !== null && canInsertNativeNode(childTNode, currentView)) {
+  if (canInsertNativeNode(childTNode, currentView)) {
     const parentNative = getRenderParent(childTNode, currentView) !;
     nativeRemoveChild(currentView[RENDERER], parentNative, childEl);
     return true;
