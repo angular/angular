@@ -688,6 +688,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const instruction = mapBindingToInstruction(input.type);
       if (input.type === BindingType.Animation) {
         const value = input.value.visit(this._valueConverter);
+        // animation bindings can be presented in the following formats:
+        // 1j [@binding]="fooExp"
+        // 2. [@binding]="{value:fooExp, params:{...}}"
+        // 3. [@binding]
+        // 4. @binding
+        // only formats 1. and 2. include actual the binding of a value to
+        // to an expression and therefore only those should be the only two that
+        // are allowed. The check below ensures that a binding with no expression
+        // does not get an empty `elementProperty` instruction created for it.
         const hasValue = value && (value instanceof LiteralPrimitive) ? !!value.value : true;
         if (hasValue) {
           this.allocateBindingSlots(value);
