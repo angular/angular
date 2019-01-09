@@ -8,7 +8,7 @@
 
 import {attachPatchData} from './context_discovery';
 import {callHooks} from './hooks';
-import {LContainer, NATIVE, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
+import {LContainer, NATIVE, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
@@ -110,8 +110,6 @@ function walkTNodeTree(
     } else if (tNode.type === TNodeType.Container) {
       const lContainer = currentView ![tNode.index] as LContainer;
       executeNodeAction(action, renderer, renderParent, lContainer[NATIVE], beforeNode);
-
-      if (renderParent) lContainer[RENDER_PARENT] = renderParent;
 
       if (lContainer[VIEWS].length) {
         currentView = lContainer[VIEWS][0];
@@ -487,7 +485,7 @@ function executeOnDestroys(view: LView): void {
   }
 }
 
-export function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
+function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
   if (canInsertNativeNode(tNode, currentView)) {
     // If we are asked for a render parent of the root component we need to do low-level DOM
     // operation as LTree doesn't exist above the topmost host node. We might need to find a render
@@ -527,17 +525,7 @@ function canInsertNativeChildOfElement(tNode: TElementNode): boolean {
  * the container itself has its render parent determined.
  */
 function canInsertNativeChildOfView(viewTNode: TViewNode, view: LView): boolean {
-  // Because we are inserting into a `View` the `View` may be disconnected.
-  const container = getLContainer(viewTNode, view) !;
-  if (container == null || container[RENDER_PARENT] == null) {
-    // The `View` is not inserted into a `Container` or the parent `Container`
-    // itself is disconnected. So we have to delay.
-    return false;
-  }
-
-  // The parent `Container` is in inserted state, so we can eagerly insert into
-  // this location.
-  return true;
+  return getContainerRenderParent(viewTNode, view) != null;
 }
 
 /**
@@ -558,7 +546,7 @@ function canInsertNativeChildOfView(viewTNode: TViewNode, view: LView): boolean 
  * @param currentView Current LView being processed.
  * @return boolean Whether the node should be inserted now (or delayed until later).
  */
-export function canInsertNativeNode(tNode: TNode, currentView: LView): boolean {
+function canInsertNativeNode(tNode: TNode, currentView: LView): boolean {
   // Nodes of the top-most view can be inserted eagerly
   if (isRootView(currentView)) {
     return true;
@@ -723,8 +711,6 @@ export function appendProjectedNode(
   // logical container of the content projected views
   attachPatchData(native, projectionView);
 
-  const renderParent = getRenderParent(tProjectionNode, currentView);
-
   const nodeOrContainer = projectionView[projectedTNode.index];
   if (projectedTNode.type === TNodeType.Container) {
     // The node we are adding is a container and we are adding it to an element which
@@ -732,7 +718,6 @@ export function appendProjectedNode(
     // Alternatively a container is projected at the root of a component's template
     // and can't be re-projected (as not content of any component).
     // Assign the final projection location in those cases.
-    nodeOrContainer[RENDER_PARENT] = renderParent;
     const views = nodeOrContainer[VIEWS];
     for (let i = 0; i < views.length; i++) {
       addRemoveViewFromContainer(views[i], true, nodeOrContainer[NATIVE]);
@@ -747,7 +732,6 @@ export function appendProjectedNode(
     }
 
     if (isLContainer(nodeOrContainer)) {
-      nodeOrContainer[RENDER_PARENT] = renderParent;
       appendChild(nodeOrContainer[NATIVE], tProjectionNode, currentView);
     }
   }
