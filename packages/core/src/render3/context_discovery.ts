@@ -5,14 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import './ng_dev_mode';
-import {assertDomNode} from './assert';
-import {EMPTY_ARRAY} from './empty';
+import '../utils/ng_dev_mode';
+
+import {assertDomNode} from '../utils/assert';
+import {EMPTY_ARRAY} from '../utils/empty';
+
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, TVIEW} from './interfaces/view';
-import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData} from './util';
+import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData} from './utils/util';
 
 
 

@@ -7,14 +7,15 @@
  */
 
 import {Injector} from '../di/injector';
-import {injectViewContainerRef as render3InjectViewContainerRef} from '../render3/view_engine_compatibility';
-import {noop} from '../util/noop';
+import {ElementRef} from '../ref/element_ref';
+import {TemplateRef} from '../ref/template_ref';
+import {EmbeddedViewRef, ViewRef} from '../ref/view_ref';
+import {injectViewContainerRef as render3InjectViewContainerRef} from '../render3/view_engine_compatibility/view_engine_compatibility';
+import {noop} from '../utils/noop';
 
 import {ComponentFactory, ComponentRef} from './component_factory';
-import {ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
-import {TemplateRef} from './template_ref';
-import {EmbeddedViewRef, ViewRef} from './view_ref';
+
 
 
 /**

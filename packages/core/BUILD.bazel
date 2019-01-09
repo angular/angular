@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module", "ng_package")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_library")
 
 ng_module(
     name = "core",
@@ -13,7 +13,9 @@ ng_module(
     module_name = "@angular/core",
     deps = [
         "//packages:types",
+        "//packages/core/src/di",
         "//packages/core/src/interfaces",
+        "//packages/core/src/primitives",
         "//packages/core/src/utils",
         "@ngdeps//zone.js",
         "@rxjs",

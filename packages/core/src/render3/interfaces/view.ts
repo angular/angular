@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../../di/injection_token';
-import {Injector} from '../../di/injector';
+import {InjectionToken} from '../../di/interfaces/injection_token';
+import {IInjector} from '../../di/interfaces/injector';
+import {Sanitizer} from '../../interfaces/security';
 import {Type} from '../../interfaces/type';
-import {QueryList} from '../../linker';
-import {Sanitizer} from '../../sanitization/security';
+import {QueryList} from '../../primitives/query_list';
 
 import {LContainer} from './container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList} from './definition';
@@ -150,7 +150,7 @@ export interface LView extends Array<any> {
   [CONTEXT]: {}|RootContext|null;
 
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
-  readonly[INJECTOR]: Injector|null;
+  readonly[INJECTOR]: IInjector|null;
 
   /** Renderer to be used for this view. */
   [RENDERER_FACTORY]: RendererFactory3;

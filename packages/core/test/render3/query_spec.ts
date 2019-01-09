@@ -11,13 +11,13 @@ import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/cor
 
 import {EventEmitter} from '../..';
 import {AttributeMarker, ProvidersFeature, defineComponent, defineDirective, detectChanges} from '../../src/render3/index';
-import {getNativeByIndex} from '../../src/render3/util';
+import {getNativeByIndex} from '../../src/render3/utils/util';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadQueryList, reference, registerContentQuery, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
 import {getLView} from '../../src/render3/state';
-import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
+import {templateRefExtractor} from '../../src/render3/view_engine_compatibility/view_engine_compatibility_prebound';
 
 import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
 import {ComponentFixture, TemplateFixture, createComponent, createDirective, renderComponent, getDirectiveOnNode} from './render_util';

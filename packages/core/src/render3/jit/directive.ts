@@ -6,22 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentType} from '..';
-import {resolveForwardRef} from '../../di/forward_ref';
-import {Type} from '../../interfaces/type';
-import {Query} from '../../metadata/di';
-import {Component, Directive} from '../../metadata/directives';
-import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
-import {ViewEncapsulation} from '../../metadata/view';
-import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
-import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
-import {stringify} from '../util';
+import {R3DirectiveMetadataFacade, getCompilerFacade} from '../compiler/compiler_facade';
+import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../compiler/compiler_facade_interface';
+import {getReflect, reflectDependencies} from '../compiler/util';
+import {Component, Directive, Query} from '../decorators/decorators';
+import {Type} from '../interfaces/type';
+import {ViewEncapsulation} from '../interfaces/view_encapsulation';
+import {ComponentType} from '../render3/interfaces/definition';
+import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../render3/interfaces/fields';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../utils/empty';
+import {resolveForwardRef} from '../utils/forward_ref';
+import {stringify} from '../utils/stringify';
 
-import {R3DirectiveMetadataFacade, getCompilerFacade} from './compiler_facade';
-import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from './compiler_facade_interface';
 import {angularCoreEnv} from './environment';
 import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
-import {getReflect, reflectDependencies} from './util';
+import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from './resource_loading';
 
 
 

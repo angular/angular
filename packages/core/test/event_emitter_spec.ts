@@ -9,7 +9,7 @@
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 import {filter} from 'rxjs/operators';
 
-import {EventEmitter} from '../src/event_emitter';
+import {EventEmitter} from '../src/primitives/event_emitter';
 
 {
   describe('EventEmitter', () => {

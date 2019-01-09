@@ -13,10 +13,10 @@ import {NgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ProvidersFeature} from './features/providers_feature';
 import {BaseDef, ComponentDef, ComponentDefWithMeta, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefWithMeta, DirectiveType, PipeDef, PipeDefWithMeta} from './interfaces/definition';
 
-export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
 export {getFactoryOf, getInheritedFactory} from './di';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
+
 
 
 // clang-format off
@@ -89,7 +89,7 @@ export {
 
   enableBindings,
   disableBindings,
-} from './state';
+} from './state/state';
 
 export {
   i18n,
@@ -101,8 +101,7 @@ export {
   i18nPostprocess
 } from './i18n';
 
-export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
-
+export {NgModuleType} from './interfaces/ng_module_def';
 export {
     AttributeMarker
 } from './interfaces/node';
@@ -142,9 +141,7 @@ export {
   pureFunctionV,
 } from './pure_function';
 
-export {templateRefExtractor} from './view_engine_compatibility_prebound';
-
-export {resolveWindow, resolveDocument, resolveBody} from './util';
+export {resolveWindow, resolveDocument, resolveBody} from './utils/util';
 
 // clang-format on
 

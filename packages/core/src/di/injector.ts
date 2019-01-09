@@ -7,17 +7,18 @@
  */
 
 import {Type} from '../interfaces/type';
-import {injectInjector} from '../render3/di';
-import {noop} from '../util/noop';
-import {getClosureSafeProperty} from '../util/property';
+import {injectInjector} from '../render3/di/node_injector';
+import {resolveForwardRef} from '../utils/forward_ref';
+import {noop} from '../utils/noop';
+import {getClosureSafeProperty} from '../utils/property';
 import {stringify} from '../utils/stringify';
 
-import {defineInjectable} from './defs';
-import {resolveForwardRef} from './forward_ref';
-import {InjectionToken} from './injection_token';
-import {InjectFlags, inject} from './injector_compatibility';
-import {Inject, Optional, Self, SkipSelf} from './metadata';
-import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './provider';
+import {Inject, Optional, Self, SkipSelf} from './decorators/metadata';
+import {inject} from './injector_compatibility';
+import {defineInjectable} from './interfaces/defs';
+import {InjectionToken} from './interfaces/injection_token';
+import {InjectFlags} from './interfaces/injector';
+import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interfaces/provider';
 
 export const SOURCE = '__source';
 const _THROW_IF_NOT_FOUND = new Object();

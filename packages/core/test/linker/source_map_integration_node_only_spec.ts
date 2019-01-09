@@ -13,7 +13,7 @@ import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_
 import {Attribute, Component, Directive, ErrorHandler, ɵglobal} from '@angular/core';
 import {getErrorLogger} from '@angular/core/src/errors';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
-import {resolveComponentResources} from '@angular/core/src/metadata/resource_loading';
+import {resolveComponentResources} from '@angular/core/src/render3/jit/resource_loading';
 import {TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {fixmeIvy} from '@angular/private/testing';
 

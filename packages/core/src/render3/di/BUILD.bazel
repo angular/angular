@@ -1,0 +1,21 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "di",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/core/src/di/fallback",
+        "//packages/core/src/di/interfaces",
+        "//packages/core/src/interfaces",
+        "//packages/core/src/render3/interfaces",
+        "//packages/core/src/render3/state",
+        "//packages/core/src/render3/utils",
+        "//packages/core/src/utils",
+    ],
+)

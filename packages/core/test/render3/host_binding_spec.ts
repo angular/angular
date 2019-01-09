@@ -13,7 +13,7 @@ import {allocHostVars, bind, directiveInject, element, elementAttribute, element
 import {query, queryRefresh} from '../../src/render3/query';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2} from '../../src/render3/pure_function';
-import {sanitizeUrl, sanitizeUrlOrResourceUrl, sanitizeHtml} from '../../src/sanitization/sanitization';
+import {sanitizeUrl, sanitizeUrlOrResourceUrl, sanitizeHtml} from '../../src/render3/sanitization';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 
 import {ComponentFixture, TemplateFixture, createComponent, createDirective} from './render_util';

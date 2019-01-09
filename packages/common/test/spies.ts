@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detector_ref';
+import {ChangeDetectorRef} from '@angular/core/src/ref/change_detector_ref';
 import {SpyObject} from '@angular/core/testing/src/testing_internal';
 
 export class SpyChangeDetectorRef extends SpyObject {

@@ -6,8 +6,12 @@ ts_library(
     name = "utils",
     srcs = glob(
         [
-            "*.ts",
-            "src/**/*.ts",
+            "**/*.ts",
         ],
     ),
+    deps = [
+        "//packages/core/src/interfaces",
+        "@rxjs",
+        "@rxjs//operators",
+    ],
 )

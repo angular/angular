@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef} from '../linker/element_ref';
-import {QueryList} from '../linker/query_list';
+import {QueryList} from '../primitives/query_list';
+import {ElementRef} from '../ref/element_ref';
 
 import {NodeDef, NodeFlags, QueryBindingDef, QueryBindingType, QueryDef, QueryValueType, ViewData, asElementData, asProviderData, asQueryList} from './types';
 import {declaredViewContainer, filterQueryId, isEmbeddedView} from './util';

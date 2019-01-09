@@ -7,7 +7,7 @@
  */
 
 import {Type, isType} from '../interfaces/type';
-import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
+import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../utils/decorators';
 import {global} from '../utils/global';
 import {stringify} from '../utils/stringify';
 

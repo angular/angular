@@ -7,7 +7,7 @@
  */
 
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, getBinding, updateBinding} from './bindings';
-import {getBindingRoot, getLView, isCreationMode} from './state';
+import {getBindingRoot, getLView, isCreationMode} from './state/state';
 
 
 

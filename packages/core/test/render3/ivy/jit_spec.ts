@@ -8,7 +8,7 @@
 import 'reflect-metadata';
 
 import {ElementRef, QueryList} from '@angular/core';
-import {InjectorDef, defineInjectable} from '@angular/core/src/di/defs';
+import {InjectorDef, defineInjectable} from '@angular/core/src/di/interfaces/defs';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {inject, setCurrentInjector} from '@angular/core/src/di/injector_compatibility';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';

@@ -8,7 +8,7 @@
 
 import {Reflector} from '@angular/core/src/reflection/reflection';
 import {DELEGATE_CTOR, INHERITED_CLASS, INHERITED_CLASS_WITH_CTOR, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
-import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
+import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/utils/decorators';
 import {global} from '@angular/core/src/utils/microtask';
 
 interface ClassDecoratorFactory {

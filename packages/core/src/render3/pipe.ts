@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WrappedValue} from '../change_detection/change_detection_util';
-import {PipeTransform} from '../change_detection/pipe_transform';
+import {PipeTransform} from '../interfaces/pipe_transform';
+import {WrappedValue} from '../utils/WrappedValue';
 
 import {load, store} from './instructions';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {HEADER_OFFSET, TVIEW} from './interfaces/view';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
-import {getBindingRoot, getLView} from './state';
+import {getBindingRoot, getLView} from './state/state';
 import {NO_CHANGE} from './tokens';
+
 
 
 /**

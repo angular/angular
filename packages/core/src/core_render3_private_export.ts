@@ -152,7 +152,7 @@ export {
   sanitizeUrl as ɵsanitizeUrl,
   sanitizeResourceUrl as ɵsanitizeResourceUrl,
   sanitizeUrlOrResourceUrl as ɵsanitizeUrlOrResourceUrl,
-} from './sanitization/sanitization';
+} from './render3/sanitization';
 
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
@@ -175,7 +175,7 @@ export {
   NG_PIPE_DEF as ɵNG_PIPE_DEF,
   NG_MODULE_DEF as ɵNG_MODULE_DEF,
   NG_BASE_DEF as ɵNG_BASE_DEF
-} from './render3/fields';
+} from './render3/interfaces/fields';
 
 export {
   Player as ɵPlayer,
@@ -223,7 +223,7 @@ export {
 } from './ivy_switch';
 export {
   SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as ɵSWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__,
-} from './change_detection/change_detector_ref';
+} from './ref/change_detector_ref';
 export {
   Compiler_compileModuleSync__POST_R3__ as ɵCompiler_compileModuleSync__POST_R3__,
   Compiler_compileModuleAsync__POST_R3__ as ɵCompiler_compileModuleAsync__POST_R3__,
@@ -232,10 +232,10 @@ export {
 } from './linker/compiler';
 export {
   SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as ɵSWITCH_ELEMENT_REF_FACTORY__POST_R3__,
-} from './linker/element_ref';
+} from './ref/element_ref';
 export {
   SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as ɵSWITCH_TEMPLATE_REF_FACTORY__POST_R3__,
-} from './linker/template_ref';
+} from './ref/template_ref';
 export {
   SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ as ɵSWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__,
 } from './linker/view_container_ref';

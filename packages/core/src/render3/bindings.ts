@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {devModeEqual} from '../change_detection/change_detection_util';
+import {assertDataInRange, assertLessThan, assertNotEqual} from '../utils/assert';
+import {devModeEqual} from '../utils/comparison';
 
-import {assertDataInRange, assertLessThan, assertNotEqual} from './assert';
 import {throwErrorIfNoChangesMode} from './errors';
-import {BINDING_INDEX, LView} from './interfaces/view';
-import {getCheckNoChangesMode, isCreationMode} from './state';
+import {LView} from './interfaces/view';
+import {getCheckNoChangesMode, isCreationMode} from './state/state';
 import {NO_CHANGE} from './tokens';
-import {isDifferent} from './util';
+import {isDifferent} from './utils/util';
 
 
 

@@ -11,12 +11,12 @@ import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Ho
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
-import {ElementRef} from '@angular/core/src/linker/element_ref';
-import {QueryList} from '@angular/core/src/linker/query_list';
-import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
-import {EmbeddedViewRef} from '@angular/core/src/linker/view_ref';
 import {Attribute, Component, ContentChildren, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata';
+import {QueryList} from '@angular/core/src/primitives/query_list';
+import {ElementRef} from '@angular/core/src/ref/element_ref';
+import {TemplateRef} from '@angular/core/src/ref/template_ref';
+import {EmbeddedViewRef} from '@angular/core/src/ref/view_ref';
 import {TestBed, async, fakeAsync, getTestBed, tick} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';

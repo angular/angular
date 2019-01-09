@@ -20,7 +20,7 @@ import {ClassAndStylePlayerBuilder, compareLogSummaries, directiveOwnerPointers,
 import {CorePlayerHandler} from '../../../src/render3/styling/core_player_handler';
 import {BoundPlayerFactory, bindPlayerFactory} from '../../../src/render3/styling/player_factory';
 import {allocStylingContext, createEmptyStylingContext} from '../../../src/render3/styling/util';
-import {defaultStyleSanitizer} from '../../../src/sanitization/sanitization';
+import {defaultStyleSanitizer} from '../../../src/render3/sanitization';
 import {StyleSanitizeFn} from '../../../src/sanitization/style_sanitizer';
 import {ComponentFixture, renderToHtml} from '../render_util';
 

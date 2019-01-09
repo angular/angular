@@ -7,8 +7,8 @@
  */
 
 import {Type} from '../../interfaces/type';
-import {fillProperties} from '../../util/property';
-import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../../utils/empty';
+import {fillProperties} from '../../utils/property';
 import {ComponentDef, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../interfaces/definition';
 
 

@@ -7,7 +7,7 @@
  */
 
 import {Type} from '../interfaces/type';
-import {InjectionToken} from './injection_token';
+import {InjectionToken} from './interfaces/injection_token';
 
 
 /**

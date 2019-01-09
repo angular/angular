@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {EventEmitter} from '../event_emitter';
+import {EventEmitter} from '../primitives/event_emitter';
 
 /**
  * An injectable service for executing work inside or outside of the Angular zone.

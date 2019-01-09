@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineInjectable, defineInjector,} from '../../di/defs';
-import {inject} from '../../di/injector_compatibility';
-import * as r3 from '../index';
-import * as sanitization from '../../sanitization/sanitization';
-
+import {angularCoreDiEnv} from '../di/jit/environment';
+import * as r3 from '../render3/index';
+import * as sanitization from '../render3/sanitization';
 
 /**
  * A mapping of the @angular/core API surface used in generated expressions to the actual symbols.
@@ -18,11 +16,10 @@ import * as sanitization from '../../sanitization/sanitization';
  * This should be kept up to date with the public exports of @angular/core.
  */
 export const angularCoreEnv: {[name: string]: Function} = {
+  ...angularCoreDiEnv,
   'ɵdefineBase': r3.defineBase,
   'ɵdefineComponent': r3.defineComponent,
   'ɵdefineDirective': r3.defineDirective,
-  'defineInjectable': defineInjectable,
-  'defineInjector': defineInjector,
   'ɵdefineNgModule': r3.defineNgModule,
   'ɵdefinePipe': r3.definePipe,
   'ɵdirectiveInject': r3.directiveInject,

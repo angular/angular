@@ -10,9 +10,9 @@
 import {SECURITY_SCHEMA} from '@angular/compiler/src/schema/dom_security_schema';
 import {setTNodeAndViewData} from '@angular/core/src/render3/state';
 
+import {SecurityContext} from '../../src/interfaces/security';
+import {getUrlSanitizer, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl, sanitizeUrlOrResourceUrl} from '../../src/render3/sanitization';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
-import {getUrlSanitizer, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl, sanitizeUrlOrResourceUrl} from '../../src/sanitization/sanitization';
-import {SecurityContext} from '../../src/sanitization/security';
 
 describe('sanitization', () => {
   beforeEach(() => setTNodeAndViewData(null !, [] as any));

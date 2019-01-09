@@ -1,0 +1,17 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "fallback",
+    srcs = glob(
+        [
+            "*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/core/src/di/interfaces",
+        "//packages/core/src/interfaces",
+        "//packages/core/src/utils",
+    ],
+)

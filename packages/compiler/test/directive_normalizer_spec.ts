@@ -9,7 +9,7 @@ import {CompileStylesheetMetadata, CompileTemplateMetadata} from '@angular/compi
 import {CompilerConfig, preserveWhitespacesDefault} from '@angular/compiler/src/config';
 import {DirectiveNormalizer} from '@angular/compiler/src/directive_normalizer';
 import {ResourceLoader} from '@angular/compiler/src/resource_loader';
-import {ViewEncapsulation} from '@angular/core/src/metadata/view';
+import {ViewEncapsulation} from '@angular/core/src/interfaces/view_encapsulation';
 import {TestBed, inject} from '@angular/core/testing';
 
 import {noUndefined} from '../src/util';

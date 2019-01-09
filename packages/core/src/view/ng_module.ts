@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectableDef, getInjectableDef} from '../di/defs';
-import {resolveForwardRef} from '../di/forward_ref';
 import {INJECTOR, Injector} from '../di/injector';
 import {setCurrentInjector} from '../di/injector_compatibility';
+import {InjectableDef, getInjectableDef} from '../di/interfaces/defs';
 import {APP_ROOT} from '../di/scope';
 import {NgModuleRef} from '../linker/ng_module_factory';
+import {resolveForwardRef} from '../utils/forward_ref';
 import {stringify} from '../utils/stringify';
 
 import {DepDef, DepFlags, NgModuleData, NgModuleDefinition, NgModuleProviderDef, NodeFlags} from './types';

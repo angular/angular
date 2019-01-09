@@ -6,18 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './ng_dev_mode';
+import '../utils/ng_dev_mode';
 
-import {ChangeDetectionStrategy} from '../change_detection/constants';
+import {NgModuleDef} from '../decorators/ng_module';
+import {ChangeDetectionStrategy} from '../interfaces/change_detection';
 import {Mutable, Type} from '../interfaces/type';
-import {NgModuleDef} from '../metadata/ng_module';
-import {ViewEncapsulation} from '../metadata/view';
+import {ViewEncapsulation} from '../interfaces/view_encapsulation';
 import {noSideEffects} from '../utils/closure';
-import {stringify} from '../utils/stringify';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../utils/empty';
 
-import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
-import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {getComponentDef, getDirectiveDef, getPipeDef} from './interfaces/fields';
 import {CssSelectorList} from './interfaces/projection';
 
 let _renderCompCount = 0;
@@ -635,32 +634,4 @@ export function definePipe<T>(pipeDef: {
     pure: pipeDef.pure !== false,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
   }) as never;
-}
-
-/**
- * The following getter methods retrieve the definition form the type. Currently the retrieval
- * honors inheritance, but in the future we may change the rule to require that definitions are
- * explicit. This would require some sort of migration strategy.
- */
-
-export function getComponentDef<T>(type: any): ComponentDef<T>|null {
-  return (type as any)[NG_COMPONENT_DEF] || null;
-}
-
-export function getDirectiveDef<T>(type: any): DirectiveDef<T>|null {
-  return (type as any)[NG_DIRECTIVE_DEF] || null;
-}
-
-export function getPipeDef<T>(type: any): PipeDef<T>|null {
-  return (type as any)[NG_PIPE_DEF] || null;
-}
-
-export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;
-export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null;
-export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleDef<T>|null {
-  const ngModuleDef = (type as any)[NG_MODULE_DEF] || null;
-  if (!ngModuleDef && throwNotFound === true) {
-    throw new Error(`Type ${stringify(type)} does not have 'ngModuleDef' property.`);
-  }
-  return ngModuleDef;
 }

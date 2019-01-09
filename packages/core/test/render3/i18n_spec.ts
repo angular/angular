@@ -11,7 +11,7 @@ import {Component as _Component} from '../../src/core';
 import {defineComponent} from '../../src/render3/definition';
 import {getTranslationForTemplate, i18n, i18nApply, i18nAttributes, i18nEnd, i18nExp, i18nPostprocess, i18nStart} from '../../src/render3/i18n';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {getNativeByIndex} from '../../src/render3/util';
+import {getNativeByIndex} from '../../src/render3/utils/util';
 
 import {NgIf} from './common_with_def';
 

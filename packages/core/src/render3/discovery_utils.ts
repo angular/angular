@@ -7,15 +7,15 @@
  */
 
 import {Injector} from '../di/injector';
+import {assertDefined} from '../utils/assert';
 
-import {assertDefined} from './assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from './context_discovery';
-import {NodeInjector} from './di';
+import {NodeInjector} from './di/node_injector';
 import {LContext} from './interfaces/context';
 import {DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from './interfaces/node';
 import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
-import {readElementValue, readPatchedLView, stringify} from './util';
+import {readElementValue, readPatchedLView, stringify} from './utils/util';
 
 
 

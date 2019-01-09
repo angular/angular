@@ -8,10 +8,10 @@
 
 import {Type} from '../interfaces/type';
 import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
-import {getClosureSafeProperty} from '../util/property';
+import {getClosureSafeProperty} from '../utils/property';
 
 import {inject, injectArgs} from './injector_compatibility';
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './interfaces/provider';
 
 const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});

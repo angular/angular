@@ -8,11 +8,11 @@
 
 import {ChangeDetectorRef, SimpleChange, SimpleChanges, WrappedValue} from '../change_detection/change_detection';
 import {INJECTOR, Injector, resolveForwardRef} from '../di';
-import {ElementRef} from '../linker/element_ref';
-import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
+import {ElementRef} from '../ref/element_ref';
+import {TemplateRef} from '../ref/template_ref';
 import {Renderer as RendererV1, Renderer2} from '../render/api';
-import {isObservable} from '../util/lang';
+import {isObservable} from '../utils/lang';
 import {stringify} from '../utils/stringify';
 
 import {createChangeDetectorRef, createInjector, createRendererV1} from './refs';

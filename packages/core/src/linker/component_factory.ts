@@ -9,10 +9,11 @@
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
 import {Type} from '../interfaces/type';
+import {ElementRef} from '../ref/element_ref';
+import {ViewRef} from '../ref/view_ref';
 
-import {ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
-import {ViewRef} from './view_ref';
+
 
 /**
  * Represents a component created by a `ComponentFactory`.

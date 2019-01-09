@@ -7,7 +7,7 @@
  */
 
 import {Type} from '../interfaces/type';
-import {NgModuleFactory as R3NgModuleFactory, NgModuleType} from '../render3/ng_module_ref';
+import {NgModuleFactory as R3NgModuleFactory, NgModuleType} from '../render3/view_engine_compatibility/ng_module_ref';
 import {stringify} from '../utils/stringify';
 
 import {NgModuleFactory} from './ng_module_factory';

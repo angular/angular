@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {wrappedError} from '../error_handler';
-import {ERROR_ORIGINAL_ERROR, getOriginalError} from '../errors';
 import {Type} from '../interfaces/type';
+import {ERROR_ORIGINAL_ERROR, wrappedError} from '../utils/errors';
 import {stringify} from '../utils/stringify';
 
 import {ReflectiveInjector} from './reflective_injector';

@@ -13,10 +13,10 @@
  */
 export * from './metadata';
 export * from './version';
-export {TypeDecorator} from './util/decorators';
+export {TypeDecorator} from './utils/decorators';
 export * from './di';
 export {createPlatform, assertPlatform, destroyPlatform, getPlatform, PlatformRef, ApplicationRef, createPlatformFactory, NgProbeToken} from './application_ref';
-export {enableProdMode, isDevMode} from './is_dev_mode';
+export {enableProdMode, isDevMode} from './utils/is_dev_mode';
 export {APP_ID, PACKAGE_ROOT_URL, PLATFORM_INITIALIZER, PLATFORM_ID, APP_BOOTSTRAP_LISTENER} from './application_tokens';
 export {APP_INITIALIZER, ApplicationInitStatus} from './application_init';
 export * from './zone';
@@ -30,9 +30,9 @@ export {TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID, MissingTranslationStrategy
 export {ApplicationModule} from './application_module';
 export {wtfCreateScope, wtfLeave, wtfStartTimeRange, wtfEndTimeRange, WtfScopeFn} from './profile/profile';
 export {Type} from './interfaces/type';
-export {EventEmitter} from './event_emitter';
+export {EventEmitter} from './primitives/event_emitter';
 export {ErrorHandler} from './error_handler';
 export * from './core_private_export';
 export * from './core_render3_private_export';
-export {Sanitizer, SecurityContext} from './sanitization/security';
+export {Sanitizer, SecurityContext} from './interfaces/security';
 export * from './codegen_private_exports';

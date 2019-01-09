@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "di",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/core/src/compiler",
+        "//packages/core/src/di/decorators",
+        "//packages/core/src/di/fallback",
+        "//packages/core/src/di/interfaces",
+        "//packages/core/src/interfaces",
+        "//packages/core/src/reflection",
+        "//packages/core/src/render3/di",  # This dependency should not be here!
+        "//packages/core/src/utils",
+    ],
+)

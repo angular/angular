@@ -12,13 +12,13 @@ import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
 import {Console} from './console';
 import {Injector, StaticProvider} from './di';
-import {Inject, Optional, SkipSelf} from './di/metadata';
+import {Inject, Optional, SkipSelf} from './di/decorators/metadata';
 import {ErrorHandler} from './error_handler';
 import {LOCALE_ID} from './i18n/tokens';
 import {ComponentFactoryResolver} from './linker';
 import {Compiler} from './linker/compiler';
 import {NgModule} from './metadata';
-import {SCHEDULER} from './render3/component_ref';
+import {SCHEDULER} from './render3/view_engine_compatibility/component_ref';
 import {NgZone} from './zone';
 
 export function _iterableDiffersFactory() {

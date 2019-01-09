@@ -7,7 +7,7 @@
  */
 
 import {reflector} from '../../src/reflection/reflection';
-import {ANNOTATIONS, makeDecorator, makePropDecorator} from '../../src/util/decorators';
+import {ANNOTATIONS, makeDecorator, makePropDecorator} from '../../src/utils/decorators';
 
 class DecoratedParent {}
 class DecoratedChild extends DecoratedParent {}

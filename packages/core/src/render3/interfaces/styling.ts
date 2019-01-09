@@ -5,9 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
+import {StyleSanitizeFn} from '../../interfaces/sanitization';
 import {RElement} from '../interfaces/renderer';
+
 import {PlayerContext} from './player';
+
 
 /**
  * The styling context acts as a styling manifest (shaped as an array) for determining which

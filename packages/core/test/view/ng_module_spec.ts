@@ -7,10 +7,10 @@
  */
 
 import {NgModuleRef} from '@angular/core';
-import {InjectableDef, defineInjectable} from '@angular/core/src/di/defs';
+import {InjectableDef, defineInjectable} from '@angular/core/src/di/interfaces/defs';
 import {INJECTOR, Injector} from '@angular/core/src/di/injector';
 import {InjectFlags, inject} from '@angular/core/src/di/injector_compatibility';
-import {makePropDecorator} from '@angular/core/src/util/decorators';
+import {makePropDecorator} from '@angular/core/src/utils/decorators';
 import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
 import {moduleDef, moduleProvideDef, resolveNgModuleDep} from '@angular/core/src/view/ng_module';
 import {createNgModuleRef} from '@angular/core/src/view/refs';

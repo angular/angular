@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineInjectable} from '../../di/defs';
-import {Optional, SkipSelf} from '../../di/metadata';
-import {StaticProvider} from '../../di/provider';
+import {Optional, SkipSelf} from '../../di/decorators/metadata';
+import {defineInjectable} from '../../di/interfaces/defs';
+import {StaticProvider} from '../../di/interfaces/provider';
 import {DefaultIterableDifferFactory} from '../differs/default_iterable_differ';
+
 
 
 /**

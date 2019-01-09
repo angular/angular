@@ -7,9 +7,9 @@
  */
 
 import {Component} from '../../src/core';
-import {clearResolutionOfComponentResourcesQueue, resolveComponentResources} from '../../src/metadata/resource_loading';
 import {ComponentType} from '../../src/render3/interfaces/definition';
 import {compileComponent} from '../../src/render3/jit/directive';
+import {clearResolutionOfComponentResourcesQueue, resolveComponentResources} from '../../src/render3/jit/resource_loading';
 
 describe('resource_loading', () => {
   describe('error handling', () => {

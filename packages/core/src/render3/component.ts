@@ -8,23 +8,25 @@
 
 // We are temporarily importing the existing viewEngine from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
-import {Type} from '../core';
 import {Injector} from '../di/injector';
-import {Sanitizer} from '../sanitization/security';
+import {Sanitizer} from '../interfaces/security';
+import {Type} from '../interfaces/type';
+import {assertDefined} from '../utils/assert';
 
-import {assertComponentType, assertDefined} from './assert';
-import {getComponentDef} from './definition';
+import {assertComponentType} from './assert';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {publishDefaultGlobalUtils} from './global_utils';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, createLView, createNodeAtIndex, createTNode, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
+import {CLEAN_PROMISE, createLView, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
+import {getComponentDef} from './interfaces/fields';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
-import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
-import {defaultScheduler, getRootView, readPatchedLView, stringify} from './util';
+import {enterView, getPreviousOrParentTNode, resetComponentState, setCurrentDirectiveDef} from './state/state';
+import {defaultScheduler, getRootView, readPatchedLView, stringify} from './utils/util';
+import {leaveView} from './view/leave';
 
 
 

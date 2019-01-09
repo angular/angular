@@ -8,7 +8,7 @@
 
 import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
 import {SOURCE} from '../di/injector';
-import {ViewEncapsulation} from '../metadata/view';
+import {ViewEncapsulation} from '../interfaces/view_encapsulation';
 import {RendererType2} from '../render/api';
 import {looseIdentical} from '../utils/comparison';
 import {stringify} from '../utils/stringify';

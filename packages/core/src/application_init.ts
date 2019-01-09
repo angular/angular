@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPromise} from '../src/util/lang';
+import {isPromise} from './utils/lang';
 
 import {Inject, Injectable, InjectionToken, Optional} from './di';
 

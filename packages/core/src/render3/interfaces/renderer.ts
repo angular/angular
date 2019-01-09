@@ -15,7 +15,7 @@
  * it will be easy to implement such API.
  */
 
-import {RendererStyleFlags2, RendererType2} from '../../render/api';
+import {RendererStyleFlags2, RendererType2} from '../../interfaces/renderer2';
 
 
 // TODO: cleanup once the code is merged in angular/angular

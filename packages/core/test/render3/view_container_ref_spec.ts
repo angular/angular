@@ -13,11 +13,11 @@ import {AttributeMarker, NO_CHANGE, NgOnChangesFeature, defineComponent, defineD
 import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement} from '../../src/render3/interfaces/renderer';
-import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
-import {NgModuleFactory} from '../../src/render3/ng_module_ref';
+import {templateRefExtractor} from '../../src/render3/view_engine_compatibility/view_engine_compatibility_prebound';
+import {NgModuleFactory} from '../../src/render3/view_engine_compatibility/ng_module_ref';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
 import {getLView} from '../../src/render3/state';
-import {getNativeByIndex} from '../../src/render3/util';
+import {getNativeByIndex} from '../../src/render3/utils/util';
 import {NgForOf} from '../../test/render3/common_with_def';
 
 import {getRendererFactory2} from './imported_renderer2';

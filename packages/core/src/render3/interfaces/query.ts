@@ -7,9 +7,10 @@
  */
 
 import {Type} from '../../interfaces/type';
-import {QueryList} from '../../linker';
+import {QueryList} from '../../primitives/query_list';
 
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './node';
+
 
 
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */

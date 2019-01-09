@@ -16,8 +16,8 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, CONTEXT} from '../../src/render3/interfaces/view';
 import {enableBindings, disableBindings} from '../../src/render3/state';
-import {sanitizeUrl} from '../../src/sanitization/sanitization';
-import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
+import {sanitizeUrl} from '../../src/render3/sanitization';
+import {Sanitizer, SecurityContext} from '../../src/interfaces/security';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, MockRendererFactory, TemplateFixture, createComponent, renderToHtml} from './render_util';

@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import '../ng_dev_mode';
+import '../../utils/ng_dev_mode';
 
-import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
+import {StyleSanitizeFn} from '../../interfaces/sanitization';
 import {getLContext} from '../context_discovery';
 import {LContainer} from '../interfaces/container';
 import {LContext} from '../interfaces/context';
@@ -16,7 +16,7 @@ import {PlayState, Player, PlayerContext, PlayerIndex} from '../interfaces/playe
 import {RElement} from '../interfaces/renderer';
 import {InitialStylingValues, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {HEADER_OFFSET, HOST, LView, RootContext} from '../interfaces/view';
-import {getTNode} from '../util';
+import {getTNode} from '../utils/util';
 
 import {CorePlayerHandler} from './core_player_handler';
 

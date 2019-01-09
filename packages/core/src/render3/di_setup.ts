@@ -7,18 +7,19 @@
  */
 
 
-import {resolveForwardRef} from '../di/forward_ref';
-import {Provider} from '../di/provider';
+import {Provider, StaticProvider} from '../di/interfaces/provider';
 import {isTypeProvider, providerToFactory} from '../di/r3_injector';
+import {resolveForwardRef} from '../utils/forward_ref';
 
 import {DirectiveDef} from '.';
-import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from './di';
+import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
+import {getNodeInjectable} from './di/node_injector';
 import {directiveInject} from './instructions';
 import {NodeInjectorFactory} from './interfaces/injector';
-import {TContainerNode, TElementContainerNode, TElementNode, TNodeFlags, TNodeProviderIndexes} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNodeProviderIndexes} from './interfaces/node';
 import {LView, TData, TVIEW, TView} from './interfaces/view';
-import {getLView, getPreviousOrParentTNode} from './state';
-import {isComponentDef} from './util';
+import {getLView, getPreviousOrParentTNode} from './state/state';
+import {isComponentDef} from './utils/util';
 
 
 
@@ -59,7 +60,7 @@ export function providersResolver<T>(
  * Resolves a provider and publishes it to the DI system.
  */
 function resolveProvider(
-    provider: Provider, tInjectables: TData, lInjectablesBlueprint: NodeInjectorFactory[],
+    provider: StaticProvider, tInjectables: TData, lInjectablesBlueprint: NodeInjectorFactory[],
     isComponent: boolean, isViewProvider: boolean): void {
   provider = resolveForwardRef(provider);
   if (Array.isArray(provider)) {

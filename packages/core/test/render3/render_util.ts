@@ -6,35 +6,35 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detector_ref';
-import {Provider} from '@angular/core/src/di/provider';
-import {ElementRef} from '@angular/core/src/linker/element_ref';
-import {TemplateRef} from '@angular/core/src/linker/template_ref';
+import {Provider} from '@angular/core/src/di/interfaces/provider';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
+import {ChangeDetectorRef} from '@angular/core/src/ref/change_detector_ref';
+import {ElementRef} from '@angular/core/src/ref/element_ref';
+import {TemplateRef} from '@angular/core/src/ref/template_ref';
 import {Renderer2} from '@angular/core/src/render/api';
 import {getLView} from '@angular/core/src/render3/state';
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
-import {SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as R3_CHANGE_DETECTOR_REF_FACTORY} from '../../src/change_detection/change_detector_ref';
 import {Injector, SWITCH_INJECTOR_FACTORY__POST_R3__ as R3_INJECTOR_FACTORY} from '../../src/di/injector';
+import {Sanitizer} from '../../src/interfaces/security';
 import {Type} from '../../src/interfaces/type';
-import {SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as R3_ELEMENT_REF_FACTORY} from '../../src/linker/element_ref';
-import {SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as R3_TEMPLATE_REF_FACTORY} from '../../src/linker/template_ref';
 import {SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ as R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/linker/view_container_ref';
+import {SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as R3_CHANGE_DETECTOR_REF_FACTORY} from '../../src/ref/change_detector_ref';
+import {SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as R3_ELEMENT_REF_FACTORY} from '../../src/ref/element_ref';
+import {SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as R3_TEMPLATE_REF_FACTORY} from '../../src/ref/template_ref';
 import {RendererStyleFlags2, RendererType2, SWITCH_RENDERER2_FACTORY__POST_R3__ as R3_RENDERER2_FACTORY} from '../../src/render/api';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {getDirectivesAtNodeIndex, getLContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
-import {NG_ELEMENT_ID} from '../../src/render3/fields';
 import {ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, ProvidersFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
+import {NG_ELEMENT_ID} from '../../src/render3/interfaces/fields';
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, LView} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
-import {getRootView} from '../../src/render3/util';
-import {Sanitizer} from '../../src/sanitization/security';
+import {getRootView} from '../../src/render3/utils/util';
 
 import {getRendererFactory2} from './imported_renderer2';
 

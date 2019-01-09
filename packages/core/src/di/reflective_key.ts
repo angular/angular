@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {resolveForwardRef} from '../utils/forward_ref';
 import {stringify} from '../utils/stringify';
-import {resolveForwardRef} from './forward_ref';
+
 
 
 /**

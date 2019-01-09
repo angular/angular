@@ -5,19 +5,20 @@
 * Use of this source code is governed by an MIT-style license that can be
 * found in the LICENSE file at https://angular.io/license
 */
-import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {assertNotEqual} from '../assert';
-import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
+import {StyleSanitizeFn} from '../../interfaces/sanitization';
+import {assertNotEqual} from '../../utils/assert';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../../utils/empty';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerIndex} from '../interfaces/player';
 import {RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
 import {DirectiveOwnerAndPlayerBuilderIndex, DirectiveRegistryValues, DirectiveRegistryValuesIndex, InitialStylingValues, InitialStylingValuesIndex, SinglePropOffsetValues, SinglePropOffsetValuesIndex, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {LView, RootContext} from '../interfaces/view';
 import {NO_CHANGE} from '../tokens';
-import {getRootContext} from '../util';
+import {getRootContext} from '../utils/util';
 
 import {BoundPlayerFactory} from './player_factory';
 import {addPlayerInternal, allocPlayerContext, createEmptyStylingContext, getPlayerContext} from './util';
+
 
 
 /**

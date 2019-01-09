@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di';
-import {assertDomNode} from '../render3/assert';
+import {assertDomNode} from '../render3/assert/assert';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/discovery_utils';
 import {TNode} from '../render3/interfaces/node';
 import {StylingIndex} from '../render3/interfaces/styling';

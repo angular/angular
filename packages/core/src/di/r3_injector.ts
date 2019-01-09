@@ -6,16 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import '../utils/ng_dev_mode';
+
+import {OnDestroy} from '../interfaces/lifecycle_hooks';
 import {Type} from '../interfaces/type';
-import {OnDestroy} from '../metadata/lifecycle_hooks';
+import {resolveForwardRef} from '../utils/forward_ref';
 import {stringify} from '../utils/stringify';
 
-import {InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef} from './defs';
-import {resolveForwardRef} from './forward_ref';
-import {InjectionToken} from './injection_token';
 import {INJECTOR, Injector, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE} from './injector';
-import {InjectFlags, inject, injectArgs, setCurrentInjector} from './injector_compatibility';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './provider';
+import {inject, injectArgs, setCurrentInjector} from './injector_compatibility';
+import {InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef} from './interfaces/defs';
+import {InjectionToken} from './interfaces/injection_token';
+import {InjectFlags} from './interfaces/injector';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interfaces/provider';
 import {APP_ROOT} from './scope';
 
 

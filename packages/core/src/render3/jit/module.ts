@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {resolveForwardRef} from '../../di/forward_ref';
-import {Type} from '../../interfaces/type';
-import {registerNgModuleType} from '../../linker/ng_module_factory_loader';
-import {Component} from '../../metadata';
-import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../../metadata/ng_module';
-import {assertDefined} from '../assert';
-import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
-import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_INJECTOR_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
-import {ComponentDef} from '../interfaces/definition';
-import {NgModuleType} from '../ng_module_ref';
-import {stringify} from '../util';
+import {stringify} from '..//utils/stringify';
+import {R3InjectorMetadataFacade, getCompilerFacade} from '../compiler/compiler_facade';
+import {reflectDependencies} from '../compiler/util';
+import {Component} from '../decorators/decorators';
+import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../decorators/ng_module';
+import {NG_INJECTOR_DEF} from '../di/interfaces/defs';
+import {Type} from '../interfaces/type';
+import {registerNgModuleType} from '../linker/ng_module_factory_loader';
+import {ComponentDef} from '../render3/interfaces/definition';
+import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF, getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../render3/interfaces/fields';
+import {NgModuleType} from '../render3/interfaces/ng_module_def';
+import {assertDefined} from '../utils/assert';
+import {resolveForwardRef} from '../utils/forward_ref';
 
-import {R3InjectorMetadataFacade, getCompilerFacade} from './compiler_facade';
 import {angularCoreEnv} from './environment';
-import {reflectDependencies} from './util';
 
 const EMPTY_ARRAY: Type<any>[] = [];
 
@@ -295,7 +295,7 @@ export function resetCompiledComponents(): void {
 function computeCombinedExports(type: Type<any>): Type<any>[] {
   type = resolveForwardRef(type);
   const ngModuleDef = getNgModuleDef(type, true);
-  return [...flatten(ngModuleDef.exports.map((type) => {
+  return [...flatten(ngModuleDef.exports.map((type: Type<any>) => {
     const ngModuleDef = getNgModuleDef(type);
     if (ngModuleDef) {
       verifySemanticsOfNgModuleDef(type as any as NgModuleType);
@@ -371,7 +371,7 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
     },
   };
 
-  def.declarations.forEach(declared => {
+  def.declarations.forEach((declared: any) => {
     const declaredWithDefs = declared as Type<any>& { ngPipeDef?: any; };
 
     if (getPipeDef(declaredWithDefs)) {
@@ -397,8 +397,9 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
     // When this module imports another, the imported module's exported directives and pipes are
     // added to the compilation scope of this module.
     const importedScope = transitiveScopesFor(importedTyped);
-    importedScope.exported.directives.forEach(entry => scopes.compilation.directives.add(entry));
-    importedScope.exported.pipes.forEach(entry => scopes.compilation.pipes.add(entry));
+    importedScope.exported.directives.forEach(
+        (entry: any) => scopes.compilation.directives.add(entry));
+    importedScope.exported.pipes.forEach((entry: any) => scopes.compilation.pipes.add(entry));
   });
 
   def.exports.forEach(<E>(exported: Type<E>) => {
@@ -416,11 +417,11 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
       // When this module exports another, the exported module's exported directives and pipes are
       // added to both the compilation and exported scopes of this module.
       const exportedScope = transitiveScopesFor(exportedTyped);
-      exportedScope.exported.directives.forEach(entry => {
+      exportedScope.exported.directives.forEach((entry: any) => {
         scopes.compilation.directives.add(entry);
         scopes.exported.directives.add(entry);
       });
-      exportedScope.exported.pipes.forEach(entry => {
+      exportedScope.exported.pipes.forEach((entry: any) => {
         scopes.compilation.pipes.add(entry);
         scopes.exported.pipes.add(entry);
       });

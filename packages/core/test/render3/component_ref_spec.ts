@@ -7,12 +7,12 @@
  */
 
 import {Injector, NgModuleRef, ViewEncapsulation} from '../../src/core';
+import {Sanitizer} from '../../src/interfaces/security';
 import {ComponentFactory} from '../../src/linker/component_factory';
 import {RendererFactory2} from '../../src/render/api';
-import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
 import {defineComponent} from '../../src/render3/index';
 import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {Sanitizer} from '../../src/sanitization/security';
+import {injectComponentFactoryResolver} from '../../src/render3/view_engine_compatibility/component_ref';
 
 describe('ComponentFactory', () => {
   const cfr = injectComponentFactoryResolver();

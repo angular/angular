@@ -6,11 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {ViewEncapsulation} from '../metadata/view';
-import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_compatibility';
-import {noop} from '../util/noop';
+import {InjectionToken} from '../di/interfaces/injection_token';
+import {RendererStyleFlags2, RendererType2} from '../interfaces/renderer2';
+import {ViewEncapsulation} from '../interfaces/view_encapsulation';
+import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_compatibility/view_engine_compatibility';
+import {noop} from '../utils/noop';
+
+export {RendererStyleFlags2, RendererType2} from '../interfaces/renderer2';
+
 
 
 /**
@@ -119,38 +123,6 @@ export abstract class RootRenderer {
   abstract renderComponent(componentType: RenderComponentType): Renderer;
 }
 
-/**
- * Used by `RendererFactory2` to associate custom rendering data and styles
- * with a rendering implementation.
- *  @publicApi
- */
-export interface RendererType2 {
-  /**
-   * A unique identifying string for the new renderer, used when creating
-   * unique styles for encapsulation.
-   */
-  id: string;
-  /**
-   * The view encapsulation type, which determines how styles are applied to
-   * DOM elements. One of
-   * - `Emulated` (default): Emulate native scoping of styles.
-   * - `Native`: Use the native encapsulation mechanism of the renderer.
-   * - `ShadowDom`: Use modern [Shadow
-   * DOM](https://w3c.github.io/webcomponents/spec/shadow/) and
-   * create a ShadowRoot for component's host element.
-   * - `None`: Do not provide any template or style encapsulation.
-   */
-  encapsulation: ViewEncapsulation;
-  /**
-   * Defines CSS styles to be stored on a renderer instance.
-   */
-  styles: (string|any[])[];
-  /**
-   * Defines arbitrary developer-defined data to be stored on a renderer instance.
-   * This is useful for renderers that delegate to other renderers.
-   */
-  data: {[kind: string]: any};
-}
 
 /**
  * Creates and initializes a custom renderer that implements the `Renderer2` base class.
@@ -178,21 +150,6 @@ export abstract class RendererFactory2 {
    * @returns The asynchronous result of the developer-defined function.
    */
   abstract whenRenderingDone?(): Promise<any>;
-}
-
-/**
- * Flags for renderer-specific style modifiers.
- * @publicApi
- */
-export enum RendererStyleFlags2 {
-  /**
-   * Marks a style as important.
-   */
-  Important = 1 << 0,
-  /**
-   * Marks a style as using dash case naming (this-is-dash-case).
-   */
-  DashCase = 1 << 1
 }
 
 /**

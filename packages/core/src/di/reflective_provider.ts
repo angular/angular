@@ -8,11 +8,11 @@
 
 import {Type} from '../interfaces/type';
 import {reflector} from '../reflection/reflection';
+import {resolveForwardRef} from '../utils/forward_ref';
 
-import {resolveForwardRef} from './forward_ref';
-import {InjectionToken} from './injection_token';
-import {Inject, Optional, Self, SkipSelf} from './metadata';
-import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './provider';
+import {Inject, Optional, Self, SkipSelf} from './decorators/metadata';
+import {InjectionToken} from './interfaces/injection_token';
+import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './interfaces/provider';
 import {invalidProviderError, mixingMultiProvidersWithRegularProvidersError, noAnnotationError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
 
@@ -213,10 +213,10 @@ function _dependenciesFor(typeOrFunc: any): ReflectiveDependency[] {
   const params = reflector.parameters(typeOrFunc);
 
   if (!params) return [];
-  if (params.some(p => p == null)) {
+  if (params.some((p: any) => p == null)) {
     throw noAnnotationError(typeOrFunc, params);
   }
-  return params.map(p => _extractToken(typeOrFunc, p, params));
+  return params.map((p: any) => _extractToken(typeOrFunc, p, params));
 }
 
 function _extractToken(

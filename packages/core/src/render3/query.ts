@@ -9,22 +9,23 @@
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 import {Type} from '../interfaces/type';
-import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
-import {QueryList} from '../linker/query_list';
-import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
+import {QueryList} from '../primitives/query_list';
+import {ElementRef as ViewEngine_ElementRef} from '../ref/element_ref';
+import {TemplateRef as ViewEngine_TemplateRef} from '../ref/template_ref';
+import {createTemplateRef} from '../ref/view_engine_compatibility';
+import {assertDefined, assertEqual} from '../utils/assert';
 
-import {assertDefined, assertEqual, assertPreviousIsParent} from './assert';
-import {getNodeInjectable, locateDirectiveOrProvider} from './di';
-import {NG_ELEMENT_ID} from './fields';
+import {assertPreviousIsParent} from './assert';
+import {getNodeInjectable, locateDirectiveOrProvider} from './di/node_injector';
 import {store, storeCleanupWithContext} from './instructions';
 import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
+import {NG_ELEMENT_ID} from './interfaces/fields';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
-import {LView, TVIEW} from './interfaces/view';
-import {getIsParent, getLView, getOrCreateCurrentQueries} from './state';
-import {isContentQueryHost} from './util';
-import {createElementRef, createTemplateRef} from './view_engine_compatibility';
+import {HOST_NODE, LView, QUERIES, TVIEW} from './interfaces/view';
+import {getIsParent, getLView, getPreviousOrParentTNode} from './state/state';
+import {getNativeByTNode, isContentQueryHost} from './utils/util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
@@ -257,7 +258,7 @@ function queryByReadToken(read: any, tNode: TNode, currentView: LView): any {
 
 function queryByTNodeType(tNode: TNode, currentView: LView): any {
   if (tNode.type === TNodeType.Element || tNode.type === TNodeType.ElementContainer) {
-    return createElementRef(ViewEngine_ElementRef, tNode, currentView);
+    return new ViewEngine_ElementRef(getNativeByTNode(tNode, currentView));
   }
   if (tNode.type === TNodeType.Container) {
     return createTemplateRef(ViewEngine_TemplateRef, ViewEngine_ElementRef, tNode, currentView);
@@ -391,4 +392,28 @@ export function queryRefresh(queryList: QueryList<any>): boolean {
     return true;
   }
   return false;
+}
+
+
+/**
+ * Query instructions can ask for "current queries" in 2 different cases:
+ * - when creating view queries (at the root of a component view, before any node is created - in
+ * this case currentQueries points to view queries)
+ * - when creating content queries (i.e. this previousOrParentTNode points to a node on which we
+ * create content queries).
+ */
+export function getOrCreateCurrentQueries(
+    QueryType: {new (parent: null, shallow: null, deep: null): LQueries}): LQueries {
+  const lView = getLView();
+  let currentQueries = lView[QUERIES];
+  // if this is the first content query on a node, any existing LQueries needs to be cloned
+  // in subsequent template passes, the cloning occurs before directive instantiation.
+  const previousOrParentTNode = getPreviousOrParentTNode();
+  if (previousOrParentTNode && previousOrParentTNode !== lView[HOST_NODE] &&
+      !isContentQueryHost(previousOrParentTNode)) {
+    currentQueries && (currentQueries = lView[QUERIES] = currentQueries.clone());
+    previousOrParentTNode.flags |= TNodeFlags.hasContentQuery;
+  }
+
+  return currentQueries || (lView[QUERIES] = new QueryType(null, null, null));
 }
