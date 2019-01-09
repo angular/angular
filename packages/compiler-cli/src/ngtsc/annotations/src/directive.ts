@@ -177,7 +177,7 @@ export function extractDirectiveMetadata(
           member.name === 'ngOnChanges');
 
   // Parse exportAs.
-  let exportAs: string|null = null;
+  let exportAs: string[]|null = null;
   if (directive.has('exportAs')) {
     const expr = directive.get('exportAs') !;
     const resolved = evaluator.evaluate(expr);
@@ -185,7 +185,7 @@ export function extractDirectiveMetadata(
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `exportAs must be a string`);
     }
-    exportAs = resolved;
+    exportAs = resolved.split(',').map(part => part.trim());
   }
 
   // Detect if the component inherits from another class

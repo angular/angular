@@ -366,7 +366,7 @@ export class SelectorScopeRegistry {
       name: clazz.name !.text,
       directive: ref,
       isComponent: def.name === 'ngComponentDef', selector,
-      exportAs: readStringType(def.type.typeArguments[2]),
+      exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs: readStringMapType(def.type.typeArguments[3]),
       outputs: readStringMapType(def.type.typeArguments[4]),
       queries: readStringArrayType(def.type.typeArguments[5]),
