@@ -1,5 +1,5 @@
 import {HttpClient} from '@angular/common/http';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, ViewChild, AfterViewInit} from '@angular/core';
 import {MatPaginator, MatSort} from '@angular/material';
 import {merge, Observable, of as observableOf} from 'rxjs';
 import {catchError, map, startWith, switchMap} from 'rxjs/operators';
@@ -12,9 +12,9 @@ import {catchError, map, startWith, switchMap} from 'rxjs/operators';
   styleUrls: ['table-http-example.css'],
   templateUrl: 'table-http-example.html',
 })
-export class TableHttpExample implements OnInit {
+export class TableHttpExample implements AfterViewInit {
   displayedColumns: string[] = ['created', 'state', 'number', 'title'];
-  exampleDatabase: ExampleHttpDao | null;
+  exampleDatabase: ExampleHttpDatabase | null;
   data: GithubIssue[] = [];
 
   resultsLength = 0;
@@ -26,8 +26,8 @@ export class TableHttpExample implements OnInit {
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit() {
-    this.exampleDatabase = new ExampleHttpDao(this.http);
+  ngAfterViewInit() {
+    this.exampleDatabase = new ExampleHttpDatabase(this.http);
 
     // If the user changes the sort order, reset back to the first page.
     this.sort.sortChange.subscribe(() => this.paginator.pageIndex = 0);
@@ -71,7 +71,7 @@ export interface GithubIssue {
 }
 
 /** An example database that the data source uses to retrieve data for the table. */
-export class ExampleHttpDao {
+export class ExampleHttpDatabase {
   constructor(private http: HttpClient) {}
 
   getRepoIssues(sort: string, order: string, page: number): Observable<GithubApi> {
