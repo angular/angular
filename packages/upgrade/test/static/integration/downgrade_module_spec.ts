@@ -25,6 +25,7 @@ withEachNg1Version(() => {
     describe(`lazy-load ng2 module (propagateDigest: ${propagateDigest})`, () => {
 
       beforeEach(() => destroyPlatform());
+      afterEach(() => destroyPlatform());
 
       it('should support multiple downgraded modules', async(() => {
            @Component({selector: 'ng2A', template: 'a'})
