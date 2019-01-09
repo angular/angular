@@ -373,48 +373,48 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(players.length).toEqual(0);
       });
 
-      fixmeIvy('unknown').it(
-          'should allow a transition to use a function to determine what method to run and expose any parameter values',
-          () => {
-            const transitionFn =
-                (fromState: string, toState: string, element: any,
-                 params: {[key: string]: any}) => { return params['doMatch'] == true; };
+      it('should allow a transition to use a function to determine what method to run and expose any parameter values',
+         () => {
+           const transitionFn =
+               (fromState: string, toState: string, element: any, params: {[key: string]: any}) => {
+                 return params['doMatch'] == true;
+               };
 
-            @Component({
-              selector: 'if-cmp',
-              template: '<div [@myAnimation]="{value:exp, params: {doMatch:doMatch}}"></div>',
-              animations: [
-                trigger(
-                    'myAnimation',
-                    [transition(
-                        transitionFn, [style({opacity: 0}), animate(3333, style({opacity: 1}))])]),
-              ]
-            })
-            class Cmp {
-              doMatch = false;
-              exp: any = '';
-            }
+           @Component({
+             selector: 'if-cmp',
+             template: '<div [@myAnimation]="{value:exp, params: {doMatch:doMatch}}"></div>',
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [transition(
+                       transitionFn, [style({opacity: 0}), animate(3333, style({opacity: 1}))])]),
+             ]
+           })
+           class Cmp {
+             doMatch = false;
+             exp: any = '';
+           }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
+           TestBed.configureTestingModule({declarations: [Cmp]});
 
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
-            cmp.doMatch = true;
-            fixture.detectChanges();
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           cmp.doMatch = true;
+           fixture.detectChanges();
 
-            let players = getLog();
-            expect(players.length).toEqual(1);
-            let [p1] = players;
-            expect(p1.totalTime).toEqual(3333);
-            resetLog();
+           let players = getLog();
+           expect(players.length).toEqual(1);
+           let [p1] = players;
+           expect(p1.totalTime).toEqual(3333);
+           resetLog();
 
-            cmp.doMatch = false;
-            cmp.exp = 'this-wont-match';
-            fixture.detectChanges();
+           cmp.doMatch = false;
+           cmp.exp = 'this-wont-match';
+           fixture.detectChanges();
 
-            players = getLog();
-            expect(players.length).toEqual(0);
-          });
+           players = getLog();
+           expect(players.length).toEqual(0);
+         });
 
       it('should allow a state value to be `0`', () => {
         @Component({
@@ -1567,62 +1567,64 @@ const DEFAULT_COMPONENT_ID = '1';
            }
          });
 
-      fixmeIvy('FW-932: Animation @triggers are not reported to the renderer in Ivy as they are in VE').it(
-          'should animate removals of nodes to the `void` state for each animation trigger, but treat all auto styles as pre styles',
-          () => {
-            @Component({
-              selector: 'ani-cmp',
-              template: `
+      fixmeIvy(
+          'FW-932: Animation @triggers are not reported to the renderer in Ivy as they are in VE')
+          .it('should animate removals of nodes to the `void` state for each animation trigger, but treat all auto styles as pre styles',
+              () => {
+                @Component({
+                  selector: 'ani-cmp',
+                  template: `
             <div *ngIf="exp" class="ng-if" [@trig1]="exp2" @trig2></div>
           `,
-              animations: [
-                trigger(
-                    'trig1', [transition('state => void', [animate(1000, style({opacity: 0}))])]),
-                trigger('trig2', [transition(':leave', [animate(1000, style({width: '0px'}))])])
-              ]
-            })
-            class Cmp {
-              public exp = true;
-              public exp2 = 'state';
-            }
+                  animations: [
+                    trigger('trig1', [transition(
+                                         'state => void', [animate(1000, style({opacity: 0}))])]),
+                    trigger(
+                        'trig2', [transition(':leave', [animate(1000, style({width: '0px'}))])])
+                  ]
+                })
+                class Cmp {
+                  public exp = true;
+                  public exp2 = 'state';
+                }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
+                TestBed.configureTestingModule({declarations: [Cmp]});
 
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
-            cmp.exp = true;
-            fixture.detectChanges();
-            engine.flush();
-            resetLog();
+                const engine = TestBed.get(ɵAnimationEngine);
+                const fixture = TestBed.createComponent(Cmp);
+                const cmp = fixture.componentInstance;
+                cmp.exp = true;
+                fixture.detectChanges();
+                engine.flush();
+                resetLog();
 
-            const element = getDOM().querySelector(fixture.nativeElement, '.ng-if');
-            assertHasParent(element, true);
+                const element = getDOM().querySelector(fixture.nativeElement, '.ng-if');
+                assertHasParent(element, true);
 
-            cmp.exp = false;
-            fixture.detectChanges();
-            engine.flush();
+                cmp.exp = false;
+                fixture.detectChanges();
+                engine.flush();
 
-            assertHasParent(element, true);
+                assertHasParent(element, true);
 
-            expect(getLog().length).toEqual(2);
+                expect(getLog().length).toEqual(2);
 
-            const player2 = getLog().pop() !;
-            const player1 = getLog().pop() !;
+                const player2 = getLog().pop() !;
+                const player1 = getLog().pop() !;
 
-            expect(player2.keyframes).toEqual([
-              {width: PRE_STYLE, offset: 0},
-              {width: '0px', offset: 1},
-            ]);
+                expect(player2.keyframes).toEqual([
+                  {width: PRE_STYLE, offset: 0},
+                  {width: '0px', offset: 1},
+                ]);
 
-            expect(player1.keyframes).toEqual([
-              {opacity: PRE_STYLE, offset: 0}, {opacity: '0', offset: 1}
-            ]);
+                expect(player1.keyframes).toEqual([
+                  {opacity: PRE_STYLE, offset: 0}, {opacity: '0', offset: 1}
+                ]);
 
-            player2.finish();
-            player1.finish();
-            assertHasParent(element, false);
-          });
+                player2.finish();
+                player1.finish();
+                assertHasParent(element, false);
+              });
 
       it('should properly cancel all existing animations when a removal occurs', () => {
         @Component({
@@ -1926,147 +1928,146 @@ const DEFAULT_COMPONENT_ID = '1';
            expect(p.contains(c2)).toBeTruthy();
          });
 
-      fixmeIvy('unknown').it(
-          'should detect trigger changes based on object.value properties', () => {
-            @Component({
-              selector: 'ani-cmp',
-              template: `
+      it('should detect trigger changes based on object.value properties', () => {
+        @Component({
+          selector: 'ani-cmp',
+          template: `
             <div [@myAnimation]="{value:exp}"></div>
           `,
-              animations: [
-                trigger(
-                    'myAnimation',
-                    [
-                      transition('* => 1', [animate(1234, style({opacity: 0}))]),
-                      transition('* => 2', [animate(5678, style({opacity: 0}))]),
-                    ]),
-              ]
-            })
-            class Cmp {
-              public exp: any;
-            }
+          animations: [
+            trigger(
+                'myAnimation',
+                [
+                  transition('* => 1', [animate(1234, style({opacity: 0}))]),
+                  transition('* => 2', [animate(5678, style({opacity: 0}))]),
+                ]),
+          ]
+        })
+        class Cmp {
+          public exp: any;
+        }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
+        TestBed.configureTestingModule({declarations: [Cmp]});
 
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
 
-            cmp.exp = '1';
-            fixture.detectChanges();
-            engine.flush();
-            let players = getLog();
-            expect(players.length).toEqual(1);
-            expect(players[0].duration).toEqual(1234);
-            resetLog();
+        cmp.exp = '1';
+        fixture.detectChanges();
+        engine.flush();
+        let players = getLog();
+        expect(players.length).toEqual(1);
+        expect(players[0].duration).toEqual(1234);
+        resetLog();
 
-            cmp.exp = '2';
-            fixture.detectChanges();
-            engine.flush();
-            players = getLog();
-            expect(players.length).toEqual(1);
-            expect(players[0].duration).toEqual(5678);
-          });
+        cmp.exp = '2';
+        fixture.detectChanges();
+        engine.flush();
+        players = getLog();
+        expect(players.length).toEqual(1);
+        expect(players[0].duration).toEqual(5678);
+      });
 
-      fixmeIvy('FW-932: Animation @triggers are not reported to the renderer in Ivy as they are in VE').it(
-          'should not render animations when the object expression value is the same as it was previously',
-          () => {
-            @Component({
-              selector: 'ani-cmp',
-              template: `
+      fixmeIvy(
+          'FW-932: Animation @triggers are not reported to the renderer in Ivy as they are in VE')
+          .it('should not render animations when the object expression value is the same as it was previously',
+              () => {
+                @Component({
+                  selector: 'ani-cmp',
+                  template: `
             <div [@myAnimation]="{value:exp,params:params}"></div>
           `,
-              animations: [
-                trigger(
-                    'myAnimation',
-                    [
-                      transition('* => *', [animate(1234, style({opacity: 0}))]),
-                    ]),
-              ]
-            })
-            class Cmp {
-              public exp: any;
-              public params: any;
-            }
+                  animations: [
+                    trigger(
+                        'myAnimation',
+                        [
+                          transition('* => *', [animate(1234, style({opacity: 0}))]),
+                        ]),
+                  ]
+                })
+                class Cmp {
+                  public exp: any;
+                  public params: any;
+                }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
+                TestBed.configureTestingModule({declarations: [Cmp]});
 
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
+                const engine = TestBed.get(ɵAnimationEngine);
+                const fixture = TestBed.createComponent(Cmp);
+                const cmp = fixture.componentInstance;
 
-            cmp.exp = '1';
-            cmp.params = {};
-            fixture.detectChanges();
-            engine.flush();
-            let players = getLog();
-            expect(players.length).toEqual(1);
-            expect(players[0].duration).toEqual(1234);
-            resetLog();
+                cmp.exp = '1';
+                cmp.params = {};
+                fixture.detectChanges();
+                engine.flush();
+                let players = getLog();
+                expect(players.length).toEqual(1);
+                expect(players[0].duration).toEqual(1234);
+                resetLog();
 
-            cmp.exp = '1';
-            cmp.params = {};
-            fixture.detectChanges();
-            engine.flush();
-            players = getLog();
-            expect(players.length).toEqual(0);
-          });
+                cmp.exp = '1';
+                cmp.params = {};
+                fixture.detectChanges();
+                engine.flush();
+                players = getLog();
+                expect(players.length).toEqual(0);
+              });
 
-      fixmeIvy('unknown').it(
-          'should update the final state styles when params update even if the expression hasn\'t changed',
-          fakeAsync(() => {
-            @Component({
-              selector: 'ani-cmp',
-              template: `
+      it('should update the final state styles when params update even if the expression hasn\'t changed',
+         fakeAsync(() => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
             <div [@myAnimation]="{value:exp,params:{color:color}}"></div>
           `,
-              animations: [
-                trigger(
-                    'myAnimation',
-                    [
-                      state('*', style({color: '{{ color }}'}), {params: {color: 'black'}}),
-                      transition('* => 1', animate(500))
-                    ]),
-              ]
-            })
-            class Cmp {
-              public exp: any;
-              // TODO(issue/24571): remove '!'.
-              public color !: string | null;
-            }
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     state('*', style({color: '{{ color }}'}), {params: {color: 'black'}}),
+                     transition('* => 1', animate(500))
+                   ]),
+             ]
+           })
+           class Cmp {
+             public exp: any;
+             // TODO(issue/24571): remove '!'.
+             public color !: string | null;
+           }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
+           TestBed.configureTestingModule({declarations: [Cmp]});
 
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
 
-            cmp.exp = '1';
-            cmp.color = 'red';
-            fixture.detectChanges();
-            const player = getLog()[0] !;
-            const element = player.element;
-            player.finish();
+           cmp.exp = '1';
+           cmp.color = 'red';
+           fixture.detectChanges();
+           const player = getLog()[0] !;
+           const element = player.element;
+           player.finish();
 
-            flushMicrotasks();
-            expect(getDOM().hasStyle(element, 'color', 'red')).toBeTruthy();
+           flushMicrotasks();
+           expect(getDOM().hasStyle(element, 'color', 'red')).toBeTruthy();
 
-            cmp.exp = '1';
-            cmp.color = 'blue';
-            fixture.detectChanges();
-            resetLog();
+           cmp.exp = '1';
+           cmp.color = 'blue';
+           fixture.detectChanges();
+           resetLog();
 
-            flushMicrotasks();
-            expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
+           flushMicrotasks();
+           expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
 
-            cmp.exp = '1';
-            cmp.color = null;
-            fixture.detectChanges();
-            resetLog();
+           cmp.exp = '1';
+           cmp.color = null;
+           fixture.detectChanges();
+           resetLog();
 
-            flushMicrotasks();
-            expect(getDOM().hasStyle(element, 'color', 'black')).toBeTruthy();
-          }));
+           flushMicrotasks();
+           expect(getDOM().hasStyle(element, 'color', 'black')).toBeTruthy();
+         }));
 
       it('should substitute in values if the provided state match is an object with values', () => {
         @Component({
@@ -2105,73 +2106,72 @@ const DEFAULT_COMPONENT_ID = '1';
         ]);
       });
 
-      fixmeIvy('unknown').it(
-          'should retain substituted styles on the element once the animation is complete if referenced in the final state',
-          fakeAsync(() => {
-            @Component({
-              selector: 'ani-cmp',
-              template: `
+      it('should retain substituted styles on the element once the animation is complete if referenced in the final state',
+         fakeAsync(() => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
             <div [@myAnimation]="{value:exp, params: { color: color }}"></div>
           `,
-              animations: [
-                trigger(
-                    'myAnimation',
-                    [
-                      state(
-                          'start', style({
-                            color: '{{ color }}',
-                            fontSize: '{{ fontSize }}px',
-                            width: '{{ width }}'
-                          }),
-                          {params: {color: 'red', fontSize: '200', width: '10px'}}),
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     state(
+                         'start', style({
+                           color: '{{ color }}',
+                           fontSize: '{{ fontSize }}px',
+                           width: '{{ width }}'
+                         }),
+                         {params: {color: 'red', fontSize: '200', width: '10px'}}),
 
-                      state(
-                          'final',
-                          style(
-                              {color: '{{ color }}', fontSize: '{{ fontSize }}px', width: '888px'}),
-                          {params: {color: 'green', fontSize: '50', width: '100px'}}),
+                     state(
+                         'final',
+                         style(
+                             {color: '{{ color }}', fontSize: '{{ fontSize }}px', width: '888px'}),
+                         {params: {color: 'green', fontSize: '50', width: '100px'}}),
 
-                      transition('start => final', animate(500)),
-                    ]),
-              ]
-            })
-            class Cmp {
-              public exp: any;
-              public color: any;
-            }
+                     transition('start => final', animate(500)),
+                   ]),
+             ]
+           })
+           class Cmp {
+             public exp: any;
+             public color: any;
+           }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
+           TestBed.configureTestingModule({declarations: [Cmp]});
 
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
 
-            cmp.exp = 'start';
-            cmp.color = 'red';
-            fixture.detectChanges();
-            resetLog();
+           cmp.exp = 'start';
+           cmp.color = 'red';
+           fixture.detectChanges();
+           resetLog();
 
-            cmp.exp = 'final';
-            cmp.color = 'blue';
-            fixture.detectChanges();
+           cmp.exp = 'final';
+           cmp.color = 'blue';
+           fixture.detectChanges();
 
-            const players = getLog();
-            expect(players.length).toEqual(1);
-            const [p1] = players;
+           const players = getLog();
+           expect(players.length).toEqual(1);
+           const [p1] = players;
 
-            expect(p1.keyframes).toEqual([
-              {color: 'red', fontSize: '200px', width: '10px', offset: 0},
-              {color: 'blue', fontSize: '50px', width: '888px', offset: 1}
-            ]);
+           expect(p1.keyframes).toEqual([
+             {color: 'red', fontSize: '200px', width: '10px', offset: 0},
+             {color: 'blue', fontSize: '50px', width: '888px', offset: 1}
+           ]);
 
-            const element = p1.element;
-            p1.finish();
-            flushMicrotasks();
+           const element = p1.element;
+           p1.finish();
+           flushMicrotasks();
 
-            expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
-            expect(getDOM().hasStyle(element, 'fontSize', '50px')).toBeTruthy();
-            expect(getDOM().hasStyle(element, 'width', '888px')).toBeTruthy();
-          }));
+           expect(getDOM().hasStyle(element, 'color', 'blue')).toBeTruthy();
+           expect(getDOM().hasStyle(element, 'fontSize', '50px')).toBeTruthy();
+           expect(getDOM().hasStyle(element, 'width', '888px')).toBeTruthy();
+         }));
 
       it('should only evaluate final state param substitutions from the expression and state values and not from the transition options ',
          fakeAsync(() => {
