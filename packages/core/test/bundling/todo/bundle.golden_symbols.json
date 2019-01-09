@@ -1032,6 +1032,9 @@
     "name": "recordChange"
   },
   {
+    "name": "recordChangeAndUpdateProperty"
+  },
+  {
     "name": "reference"
   },
   {
@@ -1045,6 +1048,12 @@
   },
   {
     "name": "refreshDynamicEmbeddedViews"
+  },
+  {
+    "name": "registerPostOrderHooks"
+  },
+  {
+    "name": "registerPreOrderHooks"
   },
   {
     "name": "removeListeners"
@@ -1168,12 +1177,6 @@
   },
   {
     "name": "setValue"
-  },
-  {
-    "name": "setupHooksDirectiveEnd"
-  },
-  {
-    "name": "setupHooksDirectiveStart"
   },
   {
     "name": "shouldSearchParent"

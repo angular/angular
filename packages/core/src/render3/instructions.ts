@@ -1840,7 +1840,7 @@ function setInputsFromAttrs<T>(
       const declaredName = initialInputs[i++];
       const attrValue = initialInputs[i++];
       recordChangeAndUpdateProperty(
-          directiveOrWrappedDirective, privateName, declaredName, attrValue);
+          directiveOrWrappedDirective, declaredName, privateName, attrValue);
     }
   }
 }
