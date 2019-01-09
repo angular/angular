@@ -164,9 +164,9 @@ export function compileDirectiveFromMetadata(
   addFeatures(definitionMap, meta);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
 
-  // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
-  // string literal, which must be on one line.
-  const selectorForType = (meta.selector || '').replace(/\n/g, '');
+  if (!meta.selector) {
+    throw new Error(`Directive ${meta.name} has no selector, please add it!`);
+  }
 
   const type = createTypeForDef(meta, R3.DirectiveDefWithMeta);
   return {expression, type, statements};
