@@ -35,6 +35,11 @@ export function updateToV7(): Rule {
   return createUpgradeRule(TargetVersion.V7, tslintUpgradeConfig);
 }
 
+/** Entry point for the migration schematics with target of Angular Material 8.0.0 */
+export function updateToV8(): Rule {
+  return createUpgradeRule(TargetVersion.V8, tslintUpgradeConfig);
+}
+
 /** Post-update schematic to be called when update is finished. */
 export function postUpdate(): Rule {
   return () => {

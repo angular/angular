@@ -14,10 +14,11 @@ targets a specific Angular CDK or Angular Material version.
 As of right now, we have two migration entry-points that handle the breaking changes for the
 given target version:  
   
-| Target Version | Description |
-|----------------|-------------|
+| Target Version | Description            |
+|----------------|------------------------|
 | V6 | Upgrade from any version to v6.0.0 |  
 | V7 | Upgrade from any version to v7.0.0 |  
+| V8 | Upgrade from any version to v8.0.0 |  
   
 Note that the migrations run _in order_ if multiple versions are transitively targeted. For
 example, consider an application which uses Angular Material v5.0.0. In case the developer runs

@@ -10,4 +10,14 @@
 export enum TargetVersion {
   V6,
   V7,
+  V8,
+}
+
+/**
+ * Returns all versions that are supported by "ng update". The versions are determined
+ * based on the "TargetVersion" enum.
+ */
+export function getAllVersionNames(): string[] {
+  return Object.keys(TargetVersion)
+    .filter(enumValue => typeof TargetVersion[enumValue] === 'number');
 }

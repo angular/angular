@@ -4,9 +4,8 @@ import {runTestCases} from '@angular/cdk/schematics/testing';
 describe('constructor checks', () => {
 
   it('should properly report invalid constructor expression signatures', async () => {
-    const {logOutput, removeTempDir} = await runTestCases('migration-v6', migrationCollection, {
-      'constructor-checks': require.resolve('./constructor-checks_input.ts')
-    });
+    const {logOutput, removeTempDir} = await runTestCases('migration-v6', migrationCollection,
+      [require.resolve('./constructor-checks_input.ts')]);
 
     expect(logOutput).toMatch(/:22.*Found "NativeDateAdapter"/,
       'Expected the constructor checks to report if an argument is not assignable.');
