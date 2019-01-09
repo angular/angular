@@ -1102,7 +1102,7 @@ function declareTests(config?: {useJit: boolean}) {
                    .toHaveText('dynamic greet');
              }));
 
-          fixmeIvy('FW-707: TestBed: No LView in getParentInjectorLocation')
+          fixmeIvy('FW-929: ModuleWithComponentFactories.componentFactories is never filled in')
               .it('should create a component that has been freshly compiled', () => {
                 @Component({template: ''})
                 class RootComp {
