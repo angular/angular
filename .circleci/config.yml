@@ -110,7 +110,7 @@ jobs:
       - *restore_cache
       - *copy_bazel_config
 
-      - run: bazel build src/...
+      - run: bazel build src/... --build_tag_filters=-docs-package
       - run: bazel test src/...
 
       # Note: We want to save the cache in this job because the workspace cache also

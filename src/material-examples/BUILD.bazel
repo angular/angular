@@ -24,12 +24,13 @@ ng_module(
 
 filegroup(
   name = "example-source-files",
-  srcs = glob(["*/*.html", "*/*.css", "*/*.ts"])
+  srcs = glob(["*/*.html", "*/*.css", "*/*.ts"]),
 )
 
 highlight_files(
   name = "highlighted-source-files",
-  srcs = [":example-source-files"]
+  srcs = [":example-source-files"],
+  tags = ["docs-package"],
 )
 
 package_docs_content(
@@ -53,7 +54,8 @@ package_docs_content(
 
     # Package the API docs for the Material and CDK package into the docs-content
     "//src:api-docs": "api-docs",
-  }
+  },
+  tags = ["docs-package"],
 )
 
 ng_package(
@@ -63,8 +65,7 @@ ng_package(
   globals = ROLLUP_GLOBALS,
   deps = [":examples"],
   data = [":docs-content"],
-  # TODO(devversion): re-enable once we have set up the proper compiler for the ng_package
-  tags = ["manual"],
+  tags = ["docs-package"],
 )
 
 genrule(

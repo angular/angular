@@ -31,4 +31,5 @@ dgeni_api_docs(
     "cdk": CDK_PACKAGES,
     "material": MATERIAL_PACKAGES,
   },
+  tags = ["docs-package"],
 )
