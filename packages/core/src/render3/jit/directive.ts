@@ -150,7 +150,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     },
     typeSourceSpan: null !,
     usesInheritance: !extendsDirectlyFromObject(type),
-    exportAs: metadata.exportAs || null,
+    exportAs: extractExportAs(metadata.exportAs),
     providers: metadata.providers || null,
   };
 }
@@ -187,6 +187,14 @@ function extractQueriesMetadata(
     }
   }
   return queriesMeta;
+}
+
+function extractExportAs(exportAs: string | undefined): string[]|null {
+  if (exportAs === undefined) {
+    return null;
+  }
+
+  return exportAs.split(',').map(part => part.trim());
 }
 
 function isContentQuery(value: any): value is Query {

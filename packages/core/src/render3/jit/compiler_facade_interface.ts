@@ -119,7 +119,7 @@ export interface R3DirectiveMetadataFacade {
   inputs: string[];
   outputs: string[];
   usesInheritance: boolean;
-  exportAs: string|null;
+  exportAs: string[]|null;
   providers: Provider[]|null;
 }
 

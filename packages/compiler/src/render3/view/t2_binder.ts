@@ -259,7 +259,10 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
         dirTarget = directives.find(dir => dir.isComponent) || null;
       } else {
         // This is a reference to a directive exported via exportAs. One should exist.
-        dirTarget = directives.find(dir => dir.exportAs === ref.value) || null;
+        dirTarget =
+            directives.find(
+                dir => dir.exportAs !== null && dir.exportAs.some(value => value === ref.value)) ||
+            null;
 
         // Check if a matching directive was found, and error if it wasn't.
         if (dirTarget === null) {
