@@ -104,7 +104,7 @@ export interface R3DirectiveMetadata {
    * Reference name under which to export the directive's type in a template,
    * if any.
    */
-  exportAs: string|null;
+  exportAs: string[]|null;
 
   /**
    * The list of providers defined in the directive.

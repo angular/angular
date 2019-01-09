@@ -58,7 +58,7 @@ export interface DirectiveMeta {
    *
    * Null otherwise
    */
-  exportAs: string|null;
+  exportAs: string[]|null;
 }
 
 /**

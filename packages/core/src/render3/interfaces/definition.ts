@@ -60,7 +60,7 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
 export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
 
 export type DirectiveDefWithMeta<
-    T, Selector extends string, ExportAs extends string, InputMap extends{[key: string]: string},
+    T, Selector extends string, ExportAs extends string[], InputMap extends{[key: string]: string},
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = DirectiveDef<T>;
 
 /**
@@ -163,7 +163,7 @@ export interface DirectiveDef<T> extends BaseDef<T> {
 }
 
 export type ComponentDefWithMeta<
-    T, Selector extends String, ExportAs extends string, InputMap extends{[key: string]: string},
+    T, Selector extends String, ExportAs extends string[], InputMap extends{[key: string]: string},
     OutputMap extends{[key: string]: string}, QueryFields extends string[]> = ComponentDef<T>;
 
 /**
