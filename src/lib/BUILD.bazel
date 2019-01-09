@@ -13,6 +13,12 @@ ng_module(
   deps = ["//src/lib/%s" % p for p in MATERIAL_PACKAGES],
 )
 
+# Alias so that developers can build Material using it's label shorthand (e.g. "build //src/lib")
+alias(
+  name = "lib",
+  actual = "material",
+)
+
 sass_bundle(
   name = "theming_bundle",
   srcs = [
