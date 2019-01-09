@@ -29,6 +29,7 @@ import {HttpEvent} from './response';
  * It is also rare but valid for an interceptor to return multiple responses on the
  * event stream for a single request.
  *
+ * @publicApi
  *
  * @see [HTTP Guide](guide/http#intercepting-requests-and-responses)
  *
