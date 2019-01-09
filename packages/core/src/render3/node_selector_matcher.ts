@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './ng_dev_mode';
+import '../util/ng_dev_mode';
 
-import {assertDefined, assertNotEqual} from './assert';
+import {assertDefined, assertNotEqual} from '../util/assert';
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 

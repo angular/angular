@@ -8,7 +8,7 @@
 
 import {devModeEqual} from '../change_detection/change_detection_util';
 
-import {assertDataInRange, assertLessThan, assertNotEqual} from './assert';
+import {assertDataInRange, assertLessThan, assertNotEqual} from '../util/assert';
 import {throwErrorIfNoChangesMode} from './errors';
 import {BINDING_INDEX, LView} from './interfaces/view';
 import {getCheckNoChangesMode, isCreationMode} from './state';

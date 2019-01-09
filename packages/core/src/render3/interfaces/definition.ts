@@ -7,7 +7,7 @@
  */
 
 import {ViewEncapsulation} from '../../core';
-import {Type} from '../../type';
+import {Type} from '../../interface/type';
 import {CssSelectorList} from './projection';
 
 

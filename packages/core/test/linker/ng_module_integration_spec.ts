@@ -8,7 +8,7 @@
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {Console} from '@angular/core/src/console';
-import {InjectableDef, defineInjectable} from '@angular/core/src/di/defs';
+import {InjectableDef, defineInjectable} from '@angular/core/src/di/interface/defs';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
 import {NgModuleData} from '@angular/core/src/view/types';
 import {tokenKey} from '@angular/core/src/view/util';
@@ -18,7 +18,7 @@ import {fixmeIvy, modifiedInIvy, obsoleteInIvy} from '@angular/private/testing';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
-import {stringify} from '../../src/util';
+import {stringify} from '../../src/util/stringify';
 
 class Engine {}
 

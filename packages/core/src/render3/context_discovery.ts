@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import './ng_dev_mode';
-import {assertDomNode} from './assert';
+import '../util/ng_dev_mode';
+import {assertDomNode} from '../util/assert';
 import {EMPTY_ARRAY} from './empty';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';

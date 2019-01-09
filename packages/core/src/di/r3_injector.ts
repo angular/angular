@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interface/type';
 import {OnDestroy} from '../metadata/lifecycle_hooks';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {stringify} from '../util/stringify';
 
-import {InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef} from './defs';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {INJECTOR, Injector, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE} from './injector';
 import {InjectFlags, inject, injectArgs, setCurrentInjector} from './injector_compatibility';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './provider';
+import {InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef} from './interface/defs';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {APP_ROOT} from './scope';
 
 

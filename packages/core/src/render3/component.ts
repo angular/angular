@@ -11,8 +11,9 @@
 import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/security';
+import {assertDefined} from '../util/assert';
 
-import {assertComponentType, assertDefined} from './assert';
+import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {publishDefaultGlobalUtils} from './global_utils';

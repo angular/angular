@@ -6,18 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interface/type';
 import {injectInjector} from '../render3/di';
-import {Type} from '../type';
-import {stringify} from '../util';
 import {noop} from '../util/noop';
 import {getClosureSafeProperty} from '../util/property';
+import {stringify} from '../util/stringify';
 
-import {defineInjectable} from './defs';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {InjectFlags, inject} from './injector_compatibility';
+import {defineInjectable} from './interface/defs';
+import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
-import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './provider';
 
 export const SOURCE = '__source';
 const _THROW_IF_NOT_FOUND = new Object();

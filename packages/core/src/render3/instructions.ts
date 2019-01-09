@@ -10,13 +10,14 @@ import {resolveForwardRef} from '../di/forward_ref';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/injector_compatibility';
+import {Type} from '../interface/type';
 import {QueryList} from '../linker';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
-import {Type} from '../type';
+import {assertDataInRange, assertDefined, assertEqual, assertLessThan, assertNotEqual} from '../util/assert';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
 
-import {assertDataInRange, assertDefined, assertEqual, assertHasParent, assertLessThan, assertNotEqual, assertPreviousIsParent} from './assert';
+import {assertHasParent, assertPreviousIsParent} from './assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from './bindings';
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
 import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreateNodeInjectorForNode, injectAttributeImpl} from './di';

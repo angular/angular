@@ -1,0 +1,12 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "interface",
+    srcs = glob(
+        [
+            "*.ts",
+        ],
+    ),
+)

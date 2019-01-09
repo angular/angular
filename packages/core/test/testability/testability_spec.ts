@@ -13,7 +13,7 @@ import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {async, fakeAsync, flush, tick} from '@angular/core/testing';
 import {SpyObject, beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
-import {scheduleMicroTask} from '../../src/util';
+import {scheduleMicroTask} from '../../src/util/microtask';
 
 // Schedules a microtasks (using a resolved promise .then())
 function microTask(fn: Function): void {

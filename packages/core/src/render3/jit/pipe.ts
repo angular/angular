@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';
-import {Type} from '../../type';
 import {NG_PIPE_DEF} from '../fields';
 import {stringify} from '../util';
 

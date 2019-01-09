@@ -7,7 +7,7 @@
  */
 
 import {ɵisPromise as isPromise} from '@angular/core';
-import {global} from '@angular/core/src/util';
+import {global} from '@angular/core/src/util/global';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {getTestBed, inject} from './test_bed';

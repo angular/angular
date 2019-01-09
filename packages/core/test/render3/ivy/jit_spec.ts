@@ -8,9 +8,9 @@
 import 'reflect-metadata';
 
 import {ElementRef, QueryList} from '@angular/core';
-import {InjectorDef, defineInjectable} from '@angular/core/src/di/defs';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {inject, setCurrentInjector} from '@angular/core/src/di/injector_compatibility';
+import {InjectorDef, defineInjectable} from '@angular/core/src/di/interface/defs';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
 import {ContentChild, ContentChildren, ViewChild, ViewChildren} from '@angular/core/src/metadata/di';
 import {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';

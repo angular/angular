@@ -6,7 +6,7 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {assertNotEqual} from '../assert';
+import {assertNotEqual} from '../../util/assert';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerIndex} from '../interfaces/player';
@@ -18,6 +18,7 @@ import {getRootContext} from '../util';
 
 import {BoundPlayerFactory} from './player_factory';
 import {addPlayerInternal, allocPlayerContext, createEmptyStylingContext, getPlayerContext} from './util';
+
 
 
 /**

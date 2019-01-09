@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interface/type';
 import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
-import {Type} from '../type';
 import {getClosureSafeProperty} from '../util/property';
 
 import {inject, injectArgs} from './injector_compatibility';
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './interface/provider';
 
 const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});

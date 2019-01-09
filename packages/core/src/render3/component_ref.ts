@@ -10,15 +10,17 @@ import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detec
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {inject} from '../di/injector_compatibility';
+import {Type} from '../interface/type';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/security';
-import {Type} from '../type';
+import {assertDefined} from '../util/assert';
 import {VERSION} from '../version';
-import {assertComponentType, assertDefined} from './assert';
+
+import {assertComponentType} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';

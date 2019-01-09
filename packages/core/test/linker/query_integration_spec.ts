@@ -12,7 +12,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy, ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 import {Subject} from 'rxjs';
 
-import {stringify} from '../../src/util';
+import {stringify} from '../../src/util/stringify';
 
 describe('Query API', () => {
 

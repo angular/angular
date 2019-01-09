@@ -7,10 +7,10 @@
  */
 
 import {Injectable} from '../../di/injectable';
-import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, ValueProvider, ValueSansProvider} from '../../di/provider';
-import {Type} from '../../type';
+import {NG_INJECTABLE_DEF} from '../../di/interface/defs';
+import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, ValueProvider, ValueSansProvider} from '../../di/interface/provider';
+import {Type} from '../../interface/type';
 import {getClosureSafeProperty} from '../../util/property';
-import {NG_INJECTABLE_DEF} from '../fields';
 
 import {R3InjectableMetadataFacade, getCompilerFacade} from './compiler_facade';
 import {angularCoreEnv} from './environment';
