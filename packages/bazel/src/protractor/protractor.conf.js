@@ -88,7 +88,8 @@ if (onPreparePath) {
 // ts_web_test_suite & rules_webtesting WEB_TEST_METADATA attributes
 setConf(conf, 'framework', 'jasmine2', 'is set to jasmine2');
 
-const specs = [TMPL_specs].map(s => require.resolve(s)).filter(s => /\b(spec|test)\.js$/.test(s));
+const specs =
+    [TMPL_specs].map(s => require.resolve(s)).filter(s => /(\b|_)(spec|test)\.js$/.test(s));
 
 setConf(conf, 'specs', specs, 'are determined by the srcs and deps attribute');
 
