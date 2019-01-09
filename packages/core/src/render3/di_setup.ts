@@ -8,7 +8,7 @@
 
 
 import {resolveForwardRef} from '../di/forward_ref';
-import {Provider} from '../di/provider';
+import {Provider} from '../di/interface/provider';
 import {isTypeProvider, providerToFactory} from '../di/r3_injector';
 
 import {DirectiveDef} from '.';

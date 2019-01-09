@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global} from '../util';
+import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
+import {global} from '../util/global';
 
-import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from './assert';
 import {ACTIVE_INDEX, LCONTAINER_LENGTH, LContainer} from './interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
@@ -17,6 +17,7 @@ import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './inte
 import {GlobalTargetName, GlobalTargetResolver, RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
+
 
 /**
  * Returns whether the values are different from a change detection stand point.

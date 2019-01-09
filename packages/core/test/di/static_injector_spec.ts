@@ -10,7 +10,7 @@ import {Inject, InjectionToken, Injector, Optional, ReflectiveKey, Self, SkipSel
 import {getOriginalError} from '@angular/core/src/errors';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {stringify} from '../../src/util';
+import {stringify} from '../../src/util/stringify';
 
 class Engine {
   static PROVIDER = {provide: Engine, useClass: Engine, deps: []};

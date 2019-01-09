@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ngDevModeResetPerfCounters} from '../../src/render3/ng_dev_mode';
+import {ngDevModeResetPerfCounters} from '../../src/util/ng_dev_mode';
 
 beforeEach(ngDevModeResetPerfCounters);
 beforeEach(() => {

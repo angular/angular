@@ -8,7 +8,7 @@
 
 import {InjectionToken} from '../../di/injection_token';
 import {InjectFlags} from '../../di/injector_compatibility';
-import {Type} from '../../type';
+import {Type} from '../../interface/type';
 import {TElementNode} from './node';
 import {LView, TData} from './view';
 

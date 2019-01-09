@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_ORIGINAL_ERROR, getDebugContext, getErrorLogger, getOriginalError} from './errors';
+import {getDebugContext, getErrorLogger, getOriginalError} from './errors';
+import {ERROR_ORIGINAL_ERROR} from './util/errors';
 
 
 

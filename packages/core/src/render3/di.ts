@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getInjectableDef, getInjectorDef} from '../di/defs';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {InjectFlags, injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
-import {Type} from '../type';
+import {getInjectableDef, getInjectorDef} from '../di/interface/defs';
+import {Type} from '../interface/type';
 
-import {assertDefined, assertEqual} from './assert';
+import {assertDefined, assertEqual} from '../util/assert';
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
 import {DirectiveDef} from './interfaces/definition';
@@ -22,6 +22,7 @@ import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LView, TData, TVIEW, TView} from 
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
 import {findComponentView, getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, isComponentDef, stringify} from './util';
+
 
 
 /**

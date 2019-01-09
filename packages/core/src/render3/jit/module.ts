@@ -7,13 +7,14 @@
  */
 
 import {resolveForwardRef} from '../../di/forward_ref';
+import {NG_INJECTOR_DEF} from '../../di/interface/defs';
+import {Type} from '../../interface/type';
 import {registerNgModuleType} from '../../linker/ng_module_factory_loader';
 import {Component} from '../../metadata';
 import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../../metadata/ng_module';
-import {Type} from '../../type';
-import {assertDefined} from '../assert';
+import {assertDefined} from '../../util/assert';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
-import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_INJECTOR_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
+import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {NgModuleType} from '../ng_module_ref';
 import {stringify} from '../util';

@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NG_INJECTABLE_DEF, NG_INJECTOR_DEF} from '../render3/fields';
-import {Type} from '../type';
+import {Type} from '../../interface/type';
+import {getClosureSafeProperty} from '../../util/property';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, ValueProvider} from './provider';
 
-import {ClassProvider, ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
+
 
 /**
  * Information about how a type or `InjectionToken` interfaces with the DI system.
@@ -179,3 +180,6 @@ export function getInjectableDef<T>(type: any): InjectableDef<T>|null {
 export function getInjectorDef<T>(type: any): InjectorDef<T>|null {
   return type && type.hasOwnProperty(NG_INJECTOR_DEF) ? (type as any)[NG_INJECTOR_DEF] : null;
 }
+
+export const NG_INJECTABLE_DEF = getClosureSafeProperty({ngInjectableDef: getClosureSafeProperty});
+export const NG_INJECTOR_DEF = getClosureSafeProperty({ngInjectorDef: getClosureSafeProperty});

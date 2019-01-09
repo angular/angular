@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
-import {stringify} from '../util';
+import {Type} from '../interface/type';
 import {getClosureSafeProperty} from '../util/property';
+import {stringify} from '../util/stringify';
 
 
 

@@ -10,6 +10,9 @@ ts_library(
     ),
     deps = [
         "//packages/core",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/util",
         "//packages/core/testing",
         "//packages/platform-browser",
         "//packages/private/testing",

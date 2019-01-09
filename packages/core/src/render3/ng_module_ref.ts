@@ -8,15 +8,15 @@
 
 import {INJECTOR, Injector} from '../di/injector';
 import {InjectFlags} from '../di/injector_compatibility';
-import {StaticProvider} from '../di/provider';
+import {StaticProvider} from '../di/interface/provider';
 import {createInjector} from '../di/r3_injector';
+import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {NgModuleDef} from '../metadata/ng_module';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {assertDefined} from '../util/assert';
+import {stringify} from '../util/stringify';
 
-import {assertDefined} from './assert';
 import {ComponentFactoryResolver} from './component_ref';
 import {getNgModuleDef} from './definition';
 
