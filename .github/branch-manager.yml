@@ -1,9 +1,7 @@
 enabled: true
 
 branches:
-  # Temporary disabled until https://github.com/angular/material2/issues/14582 is fixed, and the
-  # caretaker starts cherry-picking commits into the patch publish branch again.
-  # - branchName: 7.2.x
-  #   label: "target: patch"
-  # - branchName: 7.x
-  #   label: "target: minor"
+  - branchName: 7.2.x
+    label: "target: patch"
+  - branchName: 7.x
+    label: "target: minor"
