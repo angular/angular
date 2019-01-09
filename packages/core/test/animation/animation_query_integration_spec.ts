@@ -2444,28 +2444,27 @@ import {HostListener} from '../../src/metadata/directives';
            expect(element.innerText.trim()).toMatch(/this\s+child/mg);
          }));
 
-      fixmeIvy('unknown').it(
-          'should only mark outermost *directive nodes :enter and :leave when inserts and removals occur',
-          () => {
-            @Component({
-              selector: 'ani-cmp',
-              animations: [
-                trigger(
-                    'anim',
-                    [
-                      transition(
-                          '* => enter',
-                          [
-                            query(':enter', [animate(1000, style({color: 'red'}))]),
-                          ]),
-                      transition(
-                          '* => leave',
-                          [
-                            query(':leave', [animate(1000, style({color: 'blue'}))]),
-                          ]),
-                    ]),
-              ],
-              template: `
+      it('should only mark outermost *directive nodes :enter and :leave when inserts and removals occur',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             animations: [
+               trigger(
+                   'anim',
+                   [
+                     transition(
+                         '* => enter',
+                         [
+                           query(':enter', [animate(1000, style({color: 'red'}))]),
+                         ]),
+                     transition(
+                         '* => leave',
+                         [
+                           query(':leave', [animate(1000, style({color: 'blue'}))]),
+                         ]),
+                   ]),
+             ],
+             template: `
             <section class="container" [@anim]="exp ? 'enter' : 'leave'">
               <div class="a" *ngIf="exp">
                 <div class="b" *ngIf="exp">
@@ -2481,43 +2480,43 @@ import {HostListener} from '../../src/metadata/directives';
               </div>
             </section>
           `
-            })
-            class Cmp {
-              // TODO(issue/24571): remove '!'.
-              public exp !: boolean;
-            }
+           })
+           class Cmp {
+             // TODO(issue/24571): remove '!'.
+             public exp !: boolean;
+           }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
+           TestBed.configureTestingModule({declarations: [Cmp]});
 
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
-            const container = fixture.elementRef.nativeElement;
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
+           const container = fixture.elementRef.nativeElement;
 
-            cmp.exp = true;
-            fixture.detectChanges();
-            engine.flush();
+           cmp.exp = true;
+           fixture.detectChanges();
+           engine.flush();
 
-            let players = getLog();
-            resetLog();
-            expect(players.length).toEqual(2);
-            const [p1, p2] = players;
+           let players = getLog();
+           resetLog();
+           expect(players.length).toEqual(2);
+           const [p1, p2] = players;
 
-            expect(p1.element.classList.contains('a'));
-            expect(p2.element.classList.contains('d'));
+           expect(p1.element.classList.contains('a'));
+           expect(p2.element.classList.contains('d'));
 
-            cmp.exp = false;
-            fixture.detectChanges();
-            engine.flush();
+           cmp.exp = false;
+           fixture.detectChanges();
+           engine.flush();
 
-            players = getLog();
-            resetLog();
-            expect(players.length).toEqual(2);
-            const [p3, p4] = players;
+           players = getLog();
+           resetLog();
+           expect(players.length).toEqual(2);
+           const [p3, p4] = players;
 
-            expect(p3.element.classList.contains('a'));
-            expect(p4.element.classList.contains('d'));
-          });
+           expect(p3.element.classList.contains('a'));
+           expect(p4.element.classList.contains('d'));
+         });
 
       it('should collect multiple root levels of :enter and :leave nodes', () => {
         @Component({

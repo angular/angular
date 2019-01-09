@@ -688,10 +688,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const instruction = mapBindingToInstruction(input.type);
       if (input.type === BindingType.Animation) {
         const value = input.value.visit(this._valueConverter);
-        // setProperty without a value doesn't make any sense
-        if (value.name || value.value) {
-          const bindingName = prepareSyntheticPropertyName(input.name);
+        const hasValue = value && (value instanceof LiteralPrimitive) ? !!value.value : true;
+        if (hasValue) {
           this.allocateBindingSlots(value);
+          const bindingName = prepareSyntheticPropertyName(input.name);
           this.updateInstruction(input.sourceSpan, R3.elementProperty, () => {
             return [
               o.literal(elementIndex), o.literal(bindingName),
