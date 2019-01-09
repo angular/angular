@@ -1567,7 +1567,7 @@ const DEFAULT_COMPONENT_ID = '1';
            }
          });
 
-      fixmeIvy('unknown').it(
+      fixmeIvy('FW-932: Animation @triggers are not reported to the renderer in Ivy as they are in VE').it(
           'should animate removals of nodes to the `void` state for each animation trigger, but treat all auto styles as pre styles',
           () => {
             @Component({
@@ -1968,7 +1968,7 @@ const DEFAULT_COMPONENT_ID = '1';
             expect(players[0].duration).toEqual(5678);
           });
 
-      fixmeIvy('unknown').it(
+      fixmeIvy('FW-932: Animation @triggers are not reported to the renderer in Ivy as they are in VE').it(
           'should not render animations when the object expression value is the same as it was previously',
           () => {
             @Component({
