@@ -18,7 +18,7 @@ type Constructor<T> = new (...args: any[]) => T;
  */
 export function isExactInstanceOf<T>(obj: any, type: Constructor<T>): obj is T {
   return obj != null && typeof obj == 'object' &&
-      Object.getPrototypeOf(obj) == (type as any).prototype;
+      Object.getPrototypeOf(obj) == type.prototype;
 }
 
 /**
