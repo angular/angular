@@ -486,7 +486,7 @@ function declareTests(config?: {useJit: boolean}) {
 
       describe('import/export', () => {
 
-        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
+        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
             .it('should support exported directives and pipes', () => {
               @NgModule(
                   {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
@@ -508,7 +508,7 @@ function declareTests(config?: {useJit: boolean}) {
                   .toBe('transformed someValue');
             });
 
-        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
+        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
             .it('should support exported directives and pipes if the module is wrapped into an `ModuleWithProviders`',
                 () => {
                   @NgModule(
@@ -531,7 +531,7 @@ function declareTests(config?: {useJit: boolean}) {
                       .toBe('transformed someValue');
                 });
 
-        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
+        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
             .it('should support reexported modules', () => {
               @NgModule(
                   {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
@@ -556,7 +556,7 @@ function declareTests(config?: {useJit: boolean}) {
                   .toBe('transformed someValue');
             });
 
-        fixmeIvy('FW-756: Pipes and directives from imported modules are not taken into account')
+        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
             .it('should support exporting individual directives of an imported module', () => {
               @NgModule(
                   {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
