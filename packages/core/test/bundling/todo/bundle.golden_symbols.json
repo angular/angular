@@ -180,9 +180,6 @@
     "name": "RENDERER_FACTORY"
   },
   {
-    "name": "RENDER_PARENT"
-  },
-  {
     "name": "RecordViewTuple"
   },
   {

@@ -22,7 +22,6 @@ export const VIEWS = 1;
 // PARENT, NEXT, QUERIES, and HOST are indices 2, 3, 4, and 5.
 // As we already have these constants in LView, we don't need to re-create them.
 export const NATIVE = 6;
-export const RENDER_PARENT = 7;
 // Because interfaces in TS/JS cannot be instanceof-checked this means that we
 // need to rely on predictable characteristics of data-structures to check if they
 // are what we expect for them to be. The `LContainer` interface code below has a
@@ -30,7 +29,7 @@ export const RENDER_PARENT = 7;
 // below we can predictably gaurantee that we are dealing with an `LContainer` array.
 // This value MUST be kept up to date with the length of the `LContainer` array
 // interface below so that runtime type checking can work.
-export const LCONTAINER_LENGTH = 8;
+export const LCONTAINER_LENGTH = 7;
 
 /**
  * The state associated with a container.
@@ -90,28 +89,6 @@ export interface LContainer extends Array<any> {
 
   /** The comment element that serves as an anchor for this LContainer. */
   [NATIVE]: RComment;
-
-  /**
-   * Parent Element which will contain the location where all of the views will be
-   * inserted into to.
-   *
-   * If `renderParent` is `null` it is headless. This means that it is contained
-   * in another view which in turn is contained in another container and
-   * therefore it does not yet have its own parent.
-   *
-   * If `renderParent` is not `null` then it may be:
-   * - same as `tContainerNode.parent` in which case it is just a normal container.
-   * - different from `tContainerNode.parent` in which case it has been re-projected.
-   *   In other words `tContainerNode.parent` is logical parent where as
-   *   `tContainerNode.projectedParent` is render parent.
-   *
-   * When views are inserted into `LContainer` then `renderParent` is:
-   * - `null`, we are in a view, keep going up a hierarchy until actual
-   *   `renderParent` is found.
-   * - not `null`, then use the `projectedParent.native` as the `RElement` to insert
-   * views into.
-   */
-  [RENDER_PARENT]: RElement|null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
