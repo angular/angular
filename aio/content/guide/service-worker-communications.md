@@ -35,10 +35,22 @@ It's possible to ask the service worker to check if any updates have been deploy
 
 Do this with the `checkForUpdate()` method:
 
-<code-example path="service-worker-getting-started/src/app/check-for-update.service.ts" linenums="false" header="check-for-update.service.ts" region="sw-check-update"> </code-example>
+<code-example path="service-worker-getting-started/src/app/check-for-update.service.ts" linenums="false" header="check-for-update.service.ts"> </code-example>
 
 
 This method returns a `Promise` which indicates that the update check has completed successfully, though it does not indicate whether an update was discovered as a result of the check. Even if one is found, the service worker must still successfully download the changed files, which can fail. If successful, the `available` event will indicate availability of a new version of the app.
+
+<div class="alert is-important">
+
+In order to avoid negatively affecting the initial rendering, `ServiceWorkerModule` will by default
+wait for the app to stabilize, before registering the ServiceWorker script. Constantly polling for
+updates, e.g. with `interval()`, will prevent the app from stabilizing and the ServiceWorker
+script will never be registered with the browser.
+
+You can avoid that by waiting for the app to stabilize first, before starting to poll for updates
+(as shown in the example above).
+
+</div>
 
 ### Forcing update activation
 
