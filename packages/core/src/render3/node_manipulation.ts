@@ -513,11 +513,11 @@ function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
     // We've got a parent which is an element in the current view. We just need to verify if the
     // parent element is not a component. Component's content nodes are not inserted immediately
     // because they will be projected, and so doing insert at this point would be wasteful.
-    // Since the projection would than move it to its final destination.
-    if (!(parent.flags & TNodeFlags.isComponent)) {
-      return getNativeByTNode(parent, currentView) as RElement;
-    } else {
+    // Since the projection would then move it to its final destination.
+    if (parent.flags & TNodeFlags.isComponent) {
       return null;
+    } else {
+      return getNativeByTNode(parent, currentView) as RElement;
     }
   }
 }

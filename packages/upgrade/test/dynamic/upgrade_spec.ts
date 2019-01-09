@@ -2576,68 +2576,65 @@ withEachNg1Version(() => {
       });
 
       describe('transclusion', () => {
-        fixmeIvy('FW-714: ng1 projected content is not being rendered')
-            .it('should support single-slot transclusion', async(() => {
-                  const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-                  let ng2ComponentAInstance: Ng2ComponentA;
-                  let ng2ComponentBInstance: Ng2ComponentB;
+        it('should support single-slot transclusion', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             let ng2ComponentAInstance: Ng2ComponentA;
+             let ng2ComponentBInstance: Ng2ComponentB;
 
-                  // Define `ng1Component`
-                  const ng1Component: angular.IComponent = {
-                    template: 'ng1(<div ng-transclude></div>)',
-                    transclude: true
-                  };
+             // Define `ng1Component`
+             const ng1Component: angular.IComponent = {
+               template: 'ng1(<div ng-transclude></div>)',
+               transclude: true
+             };
 
-                  // Define `Ng2Component`
-                  @Component({
-                    selector: 'ng2A',
-                    template: 'ng2A(<ng1>{{ value }} | <ng2B *ngIf="showB"></ng2B></ng1>)'
-                  })
-                  class Ng2ComponentA {
-                    value = 'foo';
-                    showB = false;
-                    constructor() { ng2ComponentAInstance = this; }
-                  }
+             // Define `Ng2Component`
+             @Component({
+               selector: 'ng2A',
+               template: 'ng2A(<ng1>{{ value }} | <ng2B *ngIf="showB"></ng2B></ng1>)'
+             })
+             class Ng2ComponentA {
+               value = 'foo';
+               showB = false;
+               constructor() { ng2ComponentAInstance = this; }
+             }
 
-                  @Component({selector: 'ng2B', template: 'ng2B({{ value }})'})
-                  class Ng2ComponentB {
-                    value = 'bar';
-                    constructor() { ng2ComponentBInstance = this; }
-                  }
+             @Component({selector: 'ng2B', template: 'ng2B({{ value }})'})
+             class Ng2ComponentB {
+               value = 'bar';
+               constructor() { ng2ComponentBInstance = this; }
+             }
 
-                  // Define `ng1Module`
-                  const ng1Module =
-                      angular.module('ng1Module', [])
-                          .component('ng1', ng1Component)
-                          .directive('ng2A', adapter.downgradeNg2Component(Ng2ComponentA));
+             // Define `ng1Module`
+             const ng1Module = angular.module('ng1Module', [])
+                                   .component('ng1', ng1Component)
+                                   .directive('ng2A', adapter.downgradeNg2Component(Ng2ComponentA));
 
-                  // Define `Ng2Module`
-                  @NgModule({
-                    imports: [BrowserModule],
-                    declarations:
-                        [adapter.upgradeNg1Component('ng1'), Ng2ComponentA, Ng2ComponentB]
-                  })
-                  class Ng2Module {
-                  }
+             // Define `Ng2Module`
+             @NgModule({
+               imports: [BrowserModule],
+               declarations: [adapter.upgradeNg1Component('ng1'), Ng2ComponentA, Ng2ComponentB]
+             })
+             class Ng2Module {
+             }
 
-                  // Bootstrap
-                  const element = html(`<ng2-a></ng2-a>`);
+             // Bootstrap
+             const element = html(`<ng2-a></ng2-a>`);
 
-                  adapter.bootstrap(element, ['ng1Module']).ready((ref) => {
-                    expect(multiTrim(element.textContent)).toBe('ng2A(ng1(foo | ))');
+             adapter.bootstrap(element, ['ng1Module']).ready((ref) => {
+               expect(multiTrim(element.textContent)).toBe('ng2A(ng1(foo | ))');
 
-                    ng2ComponentAInstance.value = 'baz';
-                    ng2ComponentAInstance.showB = true;
-                    $digest(ref);
+               ng2ComponentAInstance.value = 'baz';
+               ng2ComponentAInstance.showB = true;
+               $digest(ref);
 
-                    expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(bar)))');
+               expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(bar)))');
 
-                    ng2ComponentBInstance.value = 'qux';
-                    $digest(ref);
+               ng2ComponentBInstance.value = 'qux';
+               $digest(ref);
 
-                    expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(qux)))');
-                  });
-                }));
+               expect(multiTrim(element.textContent)).toBe('ng2A(ng1(baz | ng2B(qux)))');
+             });
+           }));
 
         it('should support single-slot transclusion with fallback content', async(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
@@ -2943,22 +2940,21 @@ withEachNg1Version(() => {
              });
            }));
 
-        fixmeIvy('FW-714: ng1 projected content is not being rendered')
-            .it('should support structural directives in transcluded content', async(() => {
-                  const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-                  let ng2ComponentInstance: Ng2Component;
+        it('should support structural directives in transcluded content', async(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             let ng2ComponentInstance: Ng2Component;
 
-                  // Define `ng1Component`
-                  const ng1Component: angular.IComponent = {
-                    template:
-                        'ng1(x(<div ng-transclude="slotX"></div>) | default(<div ng-transclude=""></div>))',
-                    transclude: {slotX: 'contentX'}
-                  };
+             // Define `ng1Component`
+             const ng1Component: angular.IComponent = {
+               template:
+                   'ng1(x(<div ng-transclude="slotX"></div>) | default(<div ng-transclude=""></div>))',
+               transclude: {slotX: 'contentX'}
+             };
 
-                  // Define `Ng2Component`
-                  @Component({
-                    selector: 'ng2',
-                    template: `
+             // Define `Ng2Component`
+             @Component({
+               selector: 'ng2',
+               template: `
                 ng2(
                   <ng1>
                     <content-x><div *ngIf="show">{{ x }}1</div></content-x>
@@ -2967,51 +2963,47 @@ withEachNg1Version(() => {
                     <div *ngIf="show">{{ y }}2</div>
                   </ng1>
                 )`
-                  })
-                  class Ng2Component {
-                    x = 'foo';
-                    y = 'bar';
-                    show = true;
-                    constructor() { ng2ComponentInstance = this; }
-                  }
+             })
+             class Ng2Component {
+               x = 'foo';
+               y = 'bar';
+               show = true;
+               constructor() { ng2ComponentInstance = this; }
+             }
 
-                  // Define `ng1Module`
-                  const ng1Module =
-                      angular.module('ng1Module', [])
-                          .component('ng1', ng1Component)
-                          .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+             // Define `ng1Module`
+             const ng1Module = angular.module('ng1Module', [])
+                                   .component('ng1', ng1Component)
+                                   .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
 
-                  // Define `Ng2Module`
-                  @NgModule({
-                    imports: [BrowserModule],
-                    declarations: [adapter.upgradeNg1Component('ng1'), Ng2Component],
-                    schemas: [NO_ERRORS_SCHEMA]
-                  })
-                  class Ng2Module {
-                  }
+             // Define `Ng2Module`
+             @NgModule({
+               imports: [BrowserModule],
+               declarations: [adapter.upgradeNg1Component('ng1'), Ng2Component],
+               schemas: [NO_ERRORS_SCHEMA]
+             })
+             class Ng2Module {
+             }
 
-                  // Bootstrap
-                  const element = html(`<ng2></ng2>`);
+             // Bootstrap
+             const element = html(`<ng2></ng2>`);
 
-                  adapter.bootstrap(element, ['ng1Module']).ready(ref => {
-                    expect(multiTrim(element.textContent, true))
-                        .toBe('ng2(ng1(x(foo1)|default(bar2)))');
+             adapter.bootstrap(element, ['ng1Module']).ready(ref => {
+               expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(foo1)|default(bar2)))');
 
-                    ng2ComponentInstance.x = 'baz';
-                    ng2ComponentInstance.y = 'qux';
-                    ng2ComponentInstance.show = false;
-                    $digest(ref);
+               ng2ComponentInstance.x = 'baz';
+               ng2ComponentInstance.y = 'qux';
+               ng2ComponentInstance.show = false;
+               $digest(ref);
 
-                    expect(multiTrim(element.textContent, true))
-                        .toBe('ng2(ng1(x(baz2)|default(qux1)))');
+               expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(baz2)|default(qux1)))');
 
-                    ng2ComponentInstance.show = true;
-                    $digest(ref);
+               ng2ComponentInstance.show = true;
+               $digest(ref);
 
-                    expect(multiTrim(element.textContent, true))
-                        .toBe('ng2(ng1(x(baz1)|default(qux2)))');
-                  });
-                }));
+               expect(multiTrim(element.textContent, true)).toBe('ng2(ng1(x(baz1)|default(qux2)))');
+             });
+           }));
       });
 
       it('should bind input properties (<) of components', async(() => {
