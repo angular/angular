@@ -74,6 +74,16 @@
  * ---
  * Inspired by https://circleci.com/orbs/registry/orb/iynere/compare-url
  * (source code: https://github.com/iynere/compare-url-orb).
+ *
+ * We are not using the `compare-url` orb for the following reasons:
+ * 1. (By looking at the code) it would only work if the rerun workflow is the latest workflow on
+ *    the branch (which is not guaranteed to be true).
+ * 2. It is less efficient (e.g. makes unnecessary CircleCI API requests for builds on different
+ *    branches, installs extra dependencies, persists files to the workspace (as a means of passing
+ *    the result to the calling job), etc.).
+ * 3. It is slightly more complicated to setup and consume than our own script.
+ * 4. Its implementation is more complicated than needed for our usecase (e.g. handles different git
+ *    providers, handles newly created branches, etc.).
  */
 
 // Imports
