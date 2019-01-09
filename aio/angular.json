@@ -44,7 +44,8 @@
                 "glob": "native-shim.js",
                 "input": "node_modules/@webcomponents/custom-elements/src",
                 "output": "/assets/js"
-              }
+              },
+              "src/404.html"
             ],
             "styles": [
               "src/styles.scss"
