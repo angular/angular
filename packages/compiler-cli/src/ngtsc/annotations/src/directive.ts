@@ -165,6 +165,9 @@ export function extractDirectiveMetadata(
     }
     selector = resolved;
   }
+  if (!selector) {
+    throw new Error(`Directive ${clazz.name !.text} has no selector, please add it!`);
+  }
 
   const host = extractHostBindings(directive, decoratedElements, evaluator, coreModule);
 

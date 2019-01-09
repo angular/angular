@@ -1423,21 +1423,19 @@ function declareTests(config?: {useJit: boolean}) {
         expect(getDOM().querySelectorAll(fixture.nativeElement, 'script').length).toEqual(0);
       });
 
-      fixmeIvy('FW-662: Components without selector are not supported')
-          .it('should throw when using directives without selector', () => {
-            @Directive({})
-            class SomeDirective {
-            }
+      it('should throw when using directives without selector', () => {
+        @Directive({})
+        class SomeDirective {
+        }
 
-            @Component({selector: 'comp', template: ''})
-            class SomeComponent {
-            }
+        @Component({selector: 'comp', template: ''})
+        class SomeComponent {
+        }
 
-            TestBed.configureTestingModule({declarations: [MyComp, SomeDirective, SomeComponent]});
-            expect(() => TestBed.createComponent(MyComp))
-                .toThrowError(
-                    `Directive ${stringify(SomeDirective)} has no selector, please add it!`);
-          });
+        TestBed.configureTestingModule({declarations: [MyComp, SomeDirective, SomeComponent]});
+        expect(() => TestBed.createComponent(MyComp))
+            .toThrowError(`Directive ${stringify(SomeDirective)} has no selector, please add it!`);
+      });
 
       it('should use a default element name for components without selectors', () => {
         let noSelectorComponentFactory: ComponentFactory<SomeComponent> = undefined !;
