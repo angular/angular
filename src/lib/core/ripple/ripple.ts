@@ -167,7 +167,7 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
     return this.disabled || !!this._globalOptions.disabled;
   }
 
-  /** Sets up the the trigger event listeners if ripples are enabled. */
+  /** Sets up the trigger event listeners if ripples are enabled. */
   private _setupTriggerEventsIfEnabled() {
     if (!this.disabled && this._isInitialized) {
       this._rippleRenderer.setupTriggerEvents(this.trigger);

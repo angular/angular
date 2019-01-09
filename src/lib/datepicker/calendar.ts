@@ -82,7 +82,7 @@ export class MatCalendarHeader<D> {
         this._intl.switchToMultiYearViewLabel : this._intl.switchToMonthViewLabel;
   }
 
-  /** The label for the the previous button. */
+  /** The label for the previous button. */
   get prevButtonLabel(): string {
     return {
       'month': this._intl.prevMonthLabel,
@@ -91,7 +91,7 @@ export class MatCalendarHeader<D> {
     }[this.calendar.currentView];
   }
 
-  /** The label for the the next button. */
+  /** The label for the next button. */
   get nextButtonLabel(): string {
     return {
       'month': this._intl.nextMonthLabel,

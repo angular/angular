@@ -267,7 +267,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
     return this._keydownEventsObservable;
   }
 
-  /** Gets the the current overlay configuration, which is immutable. */
+  /** Gets the current overlay configuration, which is immutable. */
   getConfig(): OverlayConfig {
     return this._config;
   }

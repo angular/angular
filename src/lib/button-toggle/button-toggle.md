@@ -11,7 +11,7 @@ In this mode, the `value` of the `mat-button-toggle-group` will reflect the valu
 button and `ngModel` is supported.
 
 Adding the `multiple` attribute allows multiple items to be selected (checkbox behavior). In this
-mode the values of the the toggles are not used, the `mat-button-toggle-group` does not have a value,
+mode the values of the toggles are not used, the `mat-button-toggle-group` does not have a value, 
 and `ngModel` is not supported.
 
 ### Appearance

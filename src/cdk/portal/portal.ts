@@ -138,7 +138,7 @@ export class TemplatePortal<C = any> extends Portal<C> {
   }
 
   /**
-   * Attach the the portal to the provided `PortalOutlet`.
+   * Attach the portal to the provided `PortalOutlet`.
    * When a context is provided it will override the `context` property of the `TemplatePortal`
    * instance.
    */
