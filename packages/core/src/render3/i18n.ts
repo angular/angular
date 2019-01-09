@@ -12,7 +12,7 @@ import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {assertDefined, assertEqual, assertGreaterThan} from './assert';
 import {attachPatchData} from './context_discovery';
 import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions';
-import {LContainer, NATIVE, RENDER_PARENT} from './interfaces/container';
+import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
 import {RComment, RElement} from './interfaces/renderer';
@@ -795,7 +795,6 @@ function removeNode(index: number, viewData: LView) {
     if (removedPhTNode.type !== TNodeType.Container) {
       removeChild(removedPhTNode, lContainer[NATIVE], viewData);
     }
-    lContainer[RENDER_PARENT] = null;
   }
 }
 
