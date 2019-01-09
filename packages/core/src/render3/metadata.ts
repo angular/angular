@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
+import {Type} from '../interface/type';
 
 interface TypeWithMetadata extends Type<any> {
   decorators?: any[];

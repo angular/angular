@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
-import {stringify} from '../util';
+import {Type} from '../interface/type';
+import {stringify} from '../util/stringify';
 
-import {InjectableDef, getInjectableDef} from './defs';
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
+import {InjectableDef, getInjectableDef} from './interface/defs';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
+
 
 /**
  * Injection flags for DI.

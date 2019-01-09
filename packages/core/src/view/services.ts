@@ -8,16 +8,17 @@
 
 import {DebugElement__PRE_R3__, DebugNode__PRE_R3__, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
-import {InjectableDef, getInjectableDef} from '../di/defs';
 import {InjectableType} from '../di/injectable';
+import {InjectableDef, getInjectableDef} from '../di/interface/defs';
 import {ErrorHandler} from '../error_handler';
-import {isDevMode} from '../is_dev_mode';
+import {Type} from '../interface/type';
 import {ComponentFactory} from '../linker/component_factory';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '../render/api';
 import {Sanitizer} from '../sanitization/security';
-import {Type} from '../type';
+import {isDevMode} from '../util/is_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
+
 import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './errors';
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';

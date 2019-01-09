@@ -13,8 +13,8 @@ export {devModeEqual as ɵdevModeEqual} from './change_detection/change_detectio
 export {isListLikeIterable as ɵisListLikeIterable} from './change_detection/change_detection_util';
 export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetectionStrategy as ɵisDefaultChangeDetectionStrategy} from './change_detection/constants';
 export {Console as ɵConsole} from './console';
-export {InjectableDef as ɵInjectableDef, InjectorDef as ɵInjectorDef, getInjectableDef as ɵgetInjectableDef} from './di/defs';
 export {inject as ɵinject, setCurrentInjector as ɵsetCurrentInjector} from './di/injector_compatibility';
+export {InjectableDef as ɵInjectableDef, InjectorDef as ɵInjectorDef, getInjectableDef as ɵgetInjectableDef} from './di/interface/defs';
 export {APP_ROOT as ɵAPP_ROOT} from './di/scope';
 export {ivyEnabled as ɵivyEnabled} from './ivy_switch';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
@@ -26,7 +26,9 @@ export {DirectRenderer as ɵDirectRenderer, RenderDebugInfo as ɵRenderDebugInfo
 export {_sanitizeHtml as ɵ_sanitizeHtml} from './sanitization/html_sanitizer';
 export {_sanitizeStyle as ɵ_sanitizeStyle} from './sanitization/style_sanitizer';
 export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';
-export {global as ɵglobal, looseIdentical as ɵlooseIdentical, stringify as ɵstringify} from './util';
+export {global as ɵglobal} from './util/global';
+export {looseIdentical as ɵlooseIdentical,} from './util/comparison';
+export {stringify as ɵstringify} from './util/stringify';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
 export {isObservable as ɵisObservable, isPromise as ɵisPromise} from './util/lang';
 export {clearOverrides as ɵclearOverrides, initServicesIfNeeded as ɵinitServicesIfNeeded, overrideComponentView as ɵoverrideComponentView, overrideProvider as ɵoverrideProvider} from './view/index';

@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef} from '@angular/core/src/change_detection/change_detector_ref';
-import {Provider} from '@angular/core/src/di/provider';
+import {Provider} from '@angular/core/src/di/interface/provider';
 import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
@@ -17,6 +17,7 @@ import {stringifyElement} from '@angular/platform-browser/testing/src/browser_ut
 
 import {SWITCH_CHANGE_DETECTOR_REF_FACTORY__POST_R3__ as R3_CHANGE_DETECTOR_REF_FACTORY} from '../../src/change_detection/change_detector_ref';
 import {Injector, SWITCH_INJECTOR_FACTORY__POST_R3__ as R3_INJECTOR_FACTORY} from '../../src/di/injector';
+import {Type} from '../../src/interface/type';
 import {SWITCH_ELEMENT_REF_FACTORY__POST_R3__ as R3_ELEMENT_REF_FACTORY} from '../../src/linker/element_ref';
 import {SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ as R3_TEMPLATE_REF_FACTORY} from '../../src/linker/template_ref';
 import {SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ as R3_VIEW_CONTAINER_REF_FACTORY} from '../../src/linker/view_container_ref';
@@ -34,7 +35,6 @@ import {HEADER_OFFSET, LView} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util';
 import {Sanitizer} from '../../src/sanitization/security';
-import {Type} from '../../src/type';
 
 import {getRendererFactory2} from './imported_renderer2';
 

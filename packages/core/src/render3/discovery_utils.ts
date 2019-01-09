@@ -8,7 +8,7 @@
 
 import {Injector} from '../di/injector';
 
-import {assertDefined} from './assert';
+import {assertDefined} from '../util/assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from './context_discovery';
 import {NodeInjector} from './di';
 import {LContext} from './interfaces/context';

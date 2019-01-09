@@ -7,13 +7,14 @@
  */
 
 import {ApplicationRef} from '../application_ref';
-import {InjectorType, defineInjector} from '../di/defs';
-import {Provider} from '../di/provider';
+import {InjectorType, defineInjector} from '../di/interface/defs';
+import {Provider} from '../di/interface/provider';
 import {convertInjectableProviderToFactory} from '../di/util';
+import {Type} from '../interface/type';
 import {NgModuleType} from '../render3';
 import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
-import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
+
 
 /**
  * Represents the expansion of an `NgModule` into its scopes.

@@ -7,9 +7,9 @@
  */
 
 import {Host, Inject, Optional, Self, SkipSelf} from '../../di/metadata';
+import {Type} from '../../interface/type';
 import {Attribute} from '../../metadata/di';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
-import {Type} from '../../type';
 
 import {CompilerFacade, R3DependencyMetadataFacade, getCompilerFacade} from './compiler_facade';
 

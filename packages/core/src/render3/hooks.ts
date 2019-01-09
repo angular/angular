@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertEqual} from './assert';
+import {assertEqual} from '../util/assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {FLAGS, HookData, LView, LViewFlags, TView} from './interfaces/view';

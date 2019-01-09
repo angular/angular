@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from './assert';
+import {assertDefined} from '../util/assert';
 import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TViewNode} from './interfaces/node';

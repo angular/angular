@@ -24,7 +24,7 @@ import {dispatchEvent, el} from '@angular/platform-browser/testing/src/browser_u
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy, modifiedInIvy, obsoleteInIvy} from '@angular/private/testing';
 
-import {stringify} from '../../src/util';
+import {stringify} from '../../src/util/stringify';
 
 const ANCHOR_ELEMENT = new InjectionToken('AnchorElement');
 
