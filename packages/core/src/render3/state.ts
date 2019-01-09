@@ -319,11 +319,14 @@ export function leaveView(newView: LView): void {
   if (isCreationMode(lView)) {
     lView[FLAGS] &= ~LViewFlags.CreationMode;
   } else {
-    executeHooks(lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode);
-    // Views are clean and in update mode after being checked, so these bits are cleared
-    lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
-    lView[FLAGS] |= LViewFlags.RunInit;
-    lView[BINDING_INDEX] = tView.bindingStartIndex;
+    try {
+      executeHooks(lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode);
+    } finally {
+      // Views are clean and in update mode after being checked, so these bits are cleared
+      lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
+      lView[FLAGS] |= LViewFlags.RunInit;
+      lView[BINDING_INDEX] = tView.bindingStartIndex;
+    }
   }
   enterView(newView, null);
 }

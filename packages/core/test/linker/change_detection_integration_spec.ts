@@ -1022,33 +1022,31 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
              expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
            }));
 
-        fixmeIvy(
-            'FW-830: Exception thrown in ngAfterViewInit triggers ngAfterViewInit re-execution')
-            .it('should not call ngAfterViewInit again if it throws', fakeAsync(() => {
-                  const ctx = createCompFixture(
-                      '<div testDirective="dir" throwOn="ngAfterViewInit"></div>');
+        it('should not call ngAfterViewInit again if it throws', fakeAsync(() => {
+             const ctx =
+                 createCompFixture('<div testDirective="dir" throwOn="ngAfterViewInit"></div>');
 
-                  let errored = false;
-                  // First pass fails, but ngAfterViewInit should be called.
-                  try {
-                    ctx.detectChanges(false);
-                  } catch (e) {
-                    errored = true;
-                  }
-                  expect(errored).toBe(true);
+             let errored = false;
+             // First pass fails, but ngAfterViewInit should be called.
+             try {
+               ctx.detectChanges(false);
+             } catch (e) {
+               errored = true;
+             }
+             expect(errored).toBe(true);
 
-                  expect(directiveLog.filter(['ngAfterViewInit'])).toEqual(['dir.ngAfterViewInit']);
-                  directiveLog.clear();
+             expect(directiveLog.filter(['ngAfterViewInit'])).toEqual(['dir.ngAfterViewInit']);
+             directiveLog.clear();
 
-                  // Second change detection also fails, but this time ngAfterViewInit should not be
-                  // called.
-                  try {
-                    ctx.detectChanges(false);
-                  } catch (e) {
-                    throw new Error('Second detectChanges() should not have run detection.');
-                  }
-                  expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
-                }));
+             // Second change detection also fails, but this time ngAfterViewInit should not be
+             // called.
+             try {
+               ctx.detectChanges(false);
+             } catch (e) {
+               throw new Error('Second detectChanges() should not have run detection.');
+             }
+             expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
+           }));
       });
 
       describe('ngAfterViewChecked', () => {
