@@ -1,7 +1,5 @@
 export declare const _MatRadioButtonMixinBase: CanColorCtor & CanDisableRippleCtor & HasTabIndexCtor & typeof MatRadioButtonBase;
 
-export declare const _MatRadioGroupMixinBase: CanDisableCtor & typeof MatRadioGroupBase;
-
 export declare const MAT_RADIO_GROUP_CONTROL_VALUE_ACCESSOR: any;
 
 export declare class MatRadioButton extends _MatRadioButtonMixinBase implements OnInit, AfterViewInit, OnDestroy, CanColor, CanDisableRipple, HasTabIndex {
@@ -45,7 +43,7 @@ export declare class MatRadioChange {
     value: any);
 }
 
-export declare class MatRadioGroup extends _MatRadioGroupMixinBase implements AfterContentInit, ControlValueAccessor, CanDisable {
+export declare class MatRadioGroup implements AfterContentInit, ControlValueAccessor {
     _controlValueAccessorChangeFn: (value: any) => void;
     _radios: QueryList<MatRadioButton>;
     readonly change: EventEmitter<MatRadioChange>;
@@ -66,9 +64,6 @@ export declare class MatRadioGroup extends _MatRadioGroupMixinBase implements Af
     registerOnTouched(fn: any): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
-}
-
-export declare class MatRadioGroupBase {
 }
 
 export declare class MatRadioModule {
