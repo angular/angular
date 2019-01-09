@@ -508,21 +508,11 @@ export function getRenderParent(tNode: TNode, currentView: LView): RElement|null
   return null;
 }
 
-function canInsertNativeChildOfElement(tNode: TNode): boolean {
-  // If the parent is null, then we are inserting across views. This happens when we
-  // insert a root element of the component view into the component host element and it
-  // should always be eager.
-  if (tNode.parent == null ||
-      // We should also eagerly insert if the parent is a regular, non-component element
-      // since we know that this relationship will never be broken.
-      tNode.parent.type === TNodeType.Element && !(tNode.parent.flags & TNodeFlags.isComponent)) {
-    return true;
-  }
-
-  // Parent is a Component. Component's content nodes are not inserted immediately
+function canInsertNativeChildOfElement(tNode: TElementNode): boolean {
+  // Component's content nodes are not inserted immediately
   // because they will be projected, and so doing insert at this point would be wasteful.
   // Since the projection would than move it to its final destination.
-  return false;
+  return !(tNode.flags & TNodeFlags.isComponent);
 }
 
 /**
@@ -569,19 +559,33 @@ function canInsertNativeChildOfView(viewTNode: TViewNode, view: LView): boolean 
  * @return boolean Whether the node should be inserted now (or delayed until later).
  */
 export function canInsertNativeNode(tNode: TNode, currentView: LView): boolean {
-  let currentNode = tNode;
-  let parent: TNode|null;
+  // Nodes of the top-most view can be inserted eagerly
+  if (isRootView(currentView)) {
+    return true;
+  }
 
-  currentNode = getHighestElementOrICUContainer(currentNode);
-  parent = currentNode.parent;
+  const parent = getHighestElementOrICUContainer(tNode).parent;
 
-  if (parent === null) parent = currentView[HOST_NODE];
-
-  if (parent && parent.type === TNodeType.View) {
-    return canInsertNativeChildOfView(parent as TViewNode, currentView);
+  // If the parent is null, then we are inserting across views: either into an embedded view or a
+  // component view.
+  if (parent == null) {
+    const hostTNode = currentView[HOST_NODE] !;
+    if (hostTNode.type === TNodeType.View) {
+      // We are inserting a root element of an embedded view - this should only be possible if the
+      // embedded view in question is already inserted into a container and the container itself is
+      // inserted into the DOM.
+      return canInsertNativeChildOfView(hostTNode as TViewNode, currentView);
+    } else {
+      // We are inserting a root element of the component view into the component host element and
+      // it should always be eager.
+      return true;
+    }
   } else {
-    // Parent is a regular element or a component
-    return canInsertNativeChildOfElement(currentNode);
+    ngDevMode && assertNodeType(parent, TNodeType.Element);
+    // We've got a parent which is an element in the current view. We just need to verify if the
+    // parent element is not a component (this would mean that the tNode represents a root content
+    // node of a component and its insertion should be delayed due to content projection).
+    return canInsertNativeChildOfElement(parent as TElementNode);
   }
 }
 
