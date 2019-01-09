@@ -140,9 +140,9 @@ export function sanitizeScript(unsafeScript: any): string {
  * If tag and prop names don't match Resource URL schema, use URL sanitizer.
  */
 export function getUrlSanitizer(tag: string, prop: string) {
-  const key = `${tag}|${prop}`;
-  if (key === 'base|href' || key === 'link|href' || key === 'embed|src' || key === 'frame|src' ||
-      key === 'iframe|src' || key === 'media|src' || key === 'script|src') {
+  if ((prop === 'src' && (tag === 'embed' || tag === 'frame' || tag === 'iframe' ||
+                          tag === 'media' || tag === 'script')) ||
+      (prop === 'href' && (tag === 'base' || tag === 'link'))) {
     return sanitizeResourceUrl;
   }
   return sanitizeUrl;
