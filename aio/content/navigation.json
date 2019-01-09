@@ -3,7 +3,7 @@
     {
       "url": "features",
       "title!": "Features",
-      "title": "개요"
+      "title": "특징"
     },
     {
       "url": "docs",
@@ -35,7 +35,7 @@
         {
           "url": "features",
           "title!": "Features",
-          "title": "기능"
+          "title": "특징"
         },
         {
           "url": "resources",
@@ -909,7 +909,8 @@
       ]
     },
     {
-      "title": "Community",
+      "!title": "Community",
+      "title": "커뮤니티",
       "children": [
         {
           "url": "events",
@@ -945,8 +946,13 @@
       ]
     },
     {
-      "title": "Languages",
+      "!title": "Languages",
+      "title": "다른 언어",
       "children": [
+        {
+          "title": "English",
+          "url": "https://angular.io/"
+        },
         {
           "title": "中文版",
           "url": "https://angular.cn/"
