@@ -156,15 +156,6 @@
     "name": "callHooks"
   },
   {
-    "name": "canInsertNativeChildOfElement"
-  },
-  {
-    "name": "canInsertNativeChildOfView"
-  },
-  {
-    "name": "canInsertNativeNode"
-  },
-  {
     "name": "checkNoChangesMode"
   },
   {
@@ -298,9 +289,6 @@
   },
   {
     "name": "getParentInjectorViewOffset"
-  },
-  {
-    "name": "getParentNative"
   },
   {
     "name": "getPipeDef"
