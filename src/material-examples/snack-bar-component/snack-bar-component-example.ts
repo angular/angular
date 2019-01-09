@@ -7,9 +7,10 @@ import {MatSnackBar} from '@angular/material';
 @Component({
   selector: 'snack-bar-component-example',
   templateUrl: 'snack-bar-component-example.html',
+  styleUrls: ['snack-bar-component-example.css'],
 })
 export class SnackBarComponentExample {
-  constructor(public snackBar: MatSnackBar) {}
+  constructor(private snackBar: MatSnackBar) {}
 
   openSnackBar() {
     this.snackBar.openFromComponent(PizzaPartyComponent, {

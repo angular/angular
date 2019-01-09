@@ -11,13 +11,14 @@ import {
 @Component({
   selector: 'snack-bar-position-example',
   templateUrl: 'snack-bar-position-example.html',
+  styleUrls: ['snack-bar-position-example.css'],
 })
 export class SnackBarPositionExample {
 
   horizontalPosition: MatSnackBarHorizontalPosition = 'start';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
-  constructor(public snackBar: MatSnackBar) {}
+  constructor(private snackBar: MatSnackBar) {}
 
   openSnackBar() {
     this.snackBar.open('Canonball!!', 'End now', {
