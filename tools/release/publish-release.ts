@@ -242,7 +242,6 @@ class PublishReleaseTask extends BaseReleaseTask {
 
   /** Creates a specified tag and pushes it to the remote repository */
   private createAndPushReleaseTag(tagName: string, releaseNotes: string) {
-    // TODO(devversion): find a way to extract the changelog part just for this version.
     if (!this.git.createTag('HEAD', tagName, releaseNotes)) {
       console.error(red(`  ✘   Could not create the "${tagName}" tag.`));
       console.error(red(`      Please make sure there is no existing tag with the same name.`));

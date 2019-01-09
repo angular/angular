@@ -5,11 +5,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Add NodeJS rules (explicitly used for sass bundle rules)
 http_archive(
   name = "build_bazel_rules_nodejs",
-  # TODO(devversion): temporarily depend on a specific commit because we want to make sure that
-  # our CI is not flaky until there is a new version of the NodeJS rules. See commit:
-  # https://github.com/bazelbuild/rules_nodejs/commit/c40ceb960af4213164d4299d8fbc8220ebdd727f
-  url = "https://github.com/bazelbuild/rules_nodejs/archive/c40ceb960af4213164d4299d8fbc8220ebdd727f.zip",
-  strip_prefix = "rules_nodejs-c40ceb960af4213164d4299d8fbc8220ebdd727f",
+  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.16.4.zip",
+  strip_prefix = "rules_nodejs-0.16.4",
 )
 
 # Add TypeScript rules
@@ -83,7 +80,7 @@ check_bazel_version("0.18.0")
 
 node_repositories(
   # For deterministic builds, specify explicit NodeJS and Yarn versions.
-  node_version = "10.10.0",
+  node_version = "10.13.0",
   # Use latest yarn version to support integrity field (added in yarn 1.10)
   yarn_version = "1.12.1",
 )
