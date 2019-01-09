@@ -3,12 +3,12 @@ import {execSync} from 'child_process';
 import {readFileSync} from 'fs';
 import {join} from 'path';
 import {BaseReleaseTask} from './base-release-task';
+import {checkReleaseOutput} from './check-release-output';
 import {extractReleaseNotes} from './extract-release-notes';
 import {GitClient} from './git/git-client';
 import {getGithubReleasesUrl} from './git/github-urls';
 import {isNpmAuthenticated, runInteractiveNpmLogin, runNpmPublish} from './npm/npm-client';
 import {promptForNpmDistTag} from './prompt/npm-dist-tag-prompt';
-import {checkReleasePackage} from './release-output/check-packages';
 import {releasePackages} from './release-output/release-packages';
 import {CHANGELOG_FILE_NAME} from './stage-release';
 import {parseVersionName, Version} from './version-name/parse-version';
@@ -87,8 +87,8 @@ class PublishReleaseTask extends BaseReleaseTask {
     this.buildReleasePackages();
     console.info(green(`  ✓   Built the release output.`));
 
-    this.checkReleaseOutput();
-    console.info(green(`  ✓   Release output passed validation checks.`));
+    // Checks all release packages against release output validations before releasing.
+    checkReleaseOutput(this.releaseOutputPath);
 
     // Extract the release notes for the new version from the changelog file.
     const releaseNotes = extractReleaseNotes(
@@ -143,25 +143,6 @@ class PublishReleaseTask extends BaseReleaseTask {
     execSync('gulp clean', spawnOptions);
     execSync(`gulp ${releasePackages.map(name => `${name}:build-release`).join(' ')}`,
       spawnOptions);
-  }
-
-  /** Checks the release output by running the release-output validations. */
-  private checkReleaseOutput() {
-    let hasFailed = false;
-
-    releasePackages.forEach(packageName => {
-      if (!checkReleasePackage(this.releaseOutputPath, packageName)) {
-        hasFailed = true;
-      }
-    });
-
-    // In case any release validation did not pass, abort the publishing because
-    // the issues need to be resolved before publishing.
-    if (hasFailed) {
-      console.error(red(`  ✘   Release output does not pass all release validations. Please fix ` +
-        `all failures or reach out to the team.`));
-      process.exit(1);
-    }
   }
 
   /**

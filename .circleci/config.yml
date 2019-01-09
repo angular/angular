@@ -246,6 +246,7 @@ jobs:
       - *yarn_install
 
       - run: yarn gulp ci:build-release-packages
+      - run: yarn check-release-output
 
       # Store the release output in the workspace storage. This means that other jobs
       # in the same workflow can attach the release output to their job.
