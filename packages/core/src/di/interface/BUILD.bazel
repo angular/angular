@@ -12,7 +12,6 @@ ts_library(
             "**/*.ts",
         ],
     ),
-    module_name = "@angular/core/di/interface",
     deps = [
         "//packages/core/src/interface",
         "//packages/core/src/util",
