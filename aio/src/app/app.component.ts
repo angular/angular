@@ -204,9 +204,7 @@ export class AppComponent implements OnInit {
   }
 
   onDocRemoved() {
-    // The previous document has been removed.
-    // Scroll to top to restore a clean visual state for the new document.
-    this.scrollService.scrollToTop();
+    this.scrollService.removeStoredScrollPosition();
   }
 
   onDocInserted() {
@@ -216,9 +214,8 @@ export class AppComponent implements OnInit {
     // (e.g. sidenav, host classes) needs to happen asynchronously.
     setTimeout(() => this.updateShell());
 
-    // Scroll 500ms after the new document has been inserted into the doc-viewer.
-    // The delay is to allow time for async layout to complete.
-    setTimeout(() => this.autoScroll(), 500);
+    // Scroll the good position depending on the context
+    this.scrollService.scrollAfterRender(500);
   }
 
   onDocRendered() {
@@ -256,6 +253,8 @@ export class AppComponent implements OnInit {
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
   onClick(eventTarget: HTMLElement, button: number, ctrlKey: boolean, metaKey: boolean, altKey: boolean): boolean {
+
+    this.scrollService.updateScrollPositionInHistory();
 
     // Hide the search results if we clicked outside both the "search box" and the "search results"
     if (!this.searchElements.some(element => element.nativeElement.contains(eventTarget))) {
@@ -348,6 +347,9 @@ export class AppComponent implements OnInit {
   // Dynamically change height of table of contents container
   @HostListener('window:scroll')
   onScroll() {
+
+    this.scrollService.updateScrollPositionInHistory();
+
     if (!this.tocMaxHeightOffset) {
       // Must wait until `mat-toolbar` is measurable.
       const el = this.hostElement.nativeElement as Element;

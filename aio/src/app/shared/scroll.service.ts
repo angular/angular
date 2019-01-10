@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { PlatformLocation } from '@angular/common';
+import { Location, PlatformLocation, ViewportScroller } from '@angular/common';
 import { DOCUMENT } from '@angular/common';
 import { fromEvent } from 'rxjs';
 
@@ -12,6 +12,11 @@ export class ScrollService {
 
   private _topOffset: number | null;
   private _topOfPageElement: Element;
+
+  // true when popState event has been fired.
+  popStateFired = false;
+  // scroll position which has to be restored after the popState event
+  scrollPosition: [number, number] = [0, 0];
 
   // Offset from the top of the document to bottom of any static elements
   // at the top (e.g. toolbar) + some margin
@@ -32,9 +37,27 @@ export class ScrollService {
 
   constructor(
       @Inject(DOCUMENT) private document: any,
-      private location: PlatformLocation) {
+      private platformLocation: PlatformLocation,
+      private viewportScroller: ViewportScroller,
+      private location: Location) {
     // On resize, the toolbar might change height, so "invalidate" the top offset.
     fromEvent(window, 'resize').subscribe(() => this._topOffset = null);
+
+    // Change scroll restoration strategy to `manual` if it's supported
+    if (this.supportManualScrollRestoration()) {
+      history.scrollRestoration = 'manual';
+      // we have to detect forward and back navigation
+      this.location.subscribe(state => {
+        if (state.type === 'hashchange') {
+          this.popStateFired = false;
+          this.scrollToPosition();
+        } else {
+          this.popStateFired = true;
+          // we always should have a scrollPosition in our state history
+          this.scrollPosition = state.state ? state.state['scrollPosition'] : null;
+        }
+      });
+    }
   }
 
   /**
@@ -48,6 +71,37 @@ export class ScrollService {
         ? this.document.getElementById(hash)
         : this.topOfPageElement;
     this.scrollToElement(element);
+  }
+
+  /**
+   * test if the current location has a hash
+   */
+  isLocationWithHash(): boolean {
+    return !!this.getCurrentHash();
+  }
+
+  /**
+   * When we load a document, we have to scroll to the correct position depending on whether this is a new location
+   * or a back/forward in the history
+   * @param delay before we scroll to the good position
+   */
+  scrollAfterRender(delay: number) {
+    if (this.getStoredScrollPosition()) {
+      setTimeout(() => this.viewportScroller.scrollToPosition(this.getStoredScrollPosition() !), delay);
+    } else {
+      if (!this.needToFixScrollPosition()) {
+        if (this.isLocationWithHash()) {
+          // Scroll 500ms after the new document has been inserted into the doc-viewer.
+          // The delay is to allow time for async layout to complete.
+          setTimeout(() => this.scroll(), delay);
+        } else {
+          this.scrollToTop();
+        }
+      } else {
+        // The document was reloaded following a popState` event`, so we manage the scroll scrollPosition
+        this.scrollToPosition();
+      }
+    }
   }
 
   /**
@@ -79,10 +133,53 @@ export class ScrollService {
     this.scrollToElement(this.topOfPageElement);
   }
 
+  scrollToPosition() {
+    this.viewportScroller.scrollToPosition(this.scrollPosition);
+    this.popStateFired = false;
+  }
+
+  /**
+   * Update the state with scroll position into history.
+   */
+  updateScrollPositionInHistory() {
+    if (this.supportManualScrollRestoration()) {
+      const currentScrollPosition = this.viewportScroller.getScrollPosition();
+      this.location.replaceState(this.location.path(true), undefined, {scrollPosition: currentScrollPosition});
+      window.sessionStorage.setItem('scrollPosition', currentScrollPosition.toString());
+    }
+  }
+
+  getStoredScrollPosition(): [number, number] | null {
+    const position = window.sessionStorage.getItem('scrollPosition');
+    return position ? JSON.parse('[' + position + ']') : null;
+  }
+
+  removeStoredScrollPosition() {
+    window.sessionStorage.removeItem('scrollPosition');
+  }
+
+  /**
+   * Check if the browser support `scrollTo` and `scrollRestoration`
+   */
+  supportManualScrollRestoration(): boolean {
+    try {
+      return !!window && !!window.scrollTo && 'scrollX' in window && 'scrollY' in window && !!history && !!history.scrollRestoration;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Check if the scroll positon need to manually fix after popState event
+   */
+  needToFixScrollPosition(): boolean {
+    return this.popStateFired && this.scrollPosition && this.supportManualScrollRestoration()
+  }
+
   /**
    * Return the hash fragment from the `PlatformLocation`, minus the leading `#`.
    */
   private getCurrentHash() {
-    return decodeURIComponent(this.location.hash.replace(/^#/, ''));
+    return decodeURIComponent(this.platformLocation.hash.replace(/^#/, ''));
   }
 }
