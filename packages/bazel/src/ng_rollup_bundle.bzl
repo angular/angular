@@ -27,7 +27,19 @@ load(
 load("@build_bazel_rules_nodejs//internal:collect_es6_sources.bzl", collect_es2015_sources = "collect_es6_sources")
 load(":esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
 
-PACKAGES = ["packages/core/src", "packages/common/src", "packages/compiler/src", "external/rxjs"]
+PACKAGES = [
+    # Generated paths when using ng_rollup_bundle outside this monorepo.
+    "external/angular/packages/core/src",
+    "external/angular/packages/common/src",
+    "external/angular/packages/compiler/src",
+    "external/angular/packages/platform-browser/src",
+    "external/rxjs",
+    # Generated paths when using ng_rollup_bundle inside this monorepo.
+    "packages/core/src",
+    "packages/common/src",
+    "packages/compiler/src",
+    "packages/platform-browser/src",
+]
 PLUGIN_CONFIG = "{sideEffectFreeModules: [\n%s]}" % ",\n".join(
     ["        '.esm5/{0}'".format(p) for p in PACKAGES],
 )
