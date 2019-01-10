@@ -537,28 +537,27 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
              expect(renderLog.log).toEqual(['someProp=Megatron']);
            }));
 
-        fixmeIvy('FW-820: Pipes returning WrappedValue corrupt unrelated bindings ')
-            .it('should record unwrapped values via ngOnChanges', fakeAsync(() => {
-                  const ctx = createCompFixture(
-                      '<div [testDirective]="\'aName\' | wrappedPipe" [a]="1" [b]="2 | wrappedPipe"></div>');
-                  const dir: TestDirective = queryDirs(ctx.debugElement, TestDirective)[0];
-                  ctx.detectChanges(false);
-                  dir.changes = {};
-                  ctx.detectChanges(false);
+        it('should record unwrapped values via ngOnChanges', fakeAsync(() => {
+             const ctx = createCompFixture(
+                 '<div [testDirective]="\'aName\' | wrappedPipe" [a]="1" [b]="2 | wrappedPipe"></div>');
+             const dir: TestDirective = queryDirs(ctx.debugElement, TestDirective)[0];
+             ctx.detectChanges(false);
+             dir.changes = {};
+             ctx.detectChanges(false);
 
-                  // Note: the binding for `b` did not change and has no ValueWrapper,
-                  // and should therefore stay unchanged.
-                  expect(dir.changes).toEqual({
-                    'name': new SimpleChange('aName', 'aName', false),
-                    'b': new SimpleChange(2, 2, false)
-                  });
+             // Note: the binding for `a` did not change and has no ValueWrapper,
+             // and should therefore stay unchanged.
+             expect(dir.changes).toEqual({
+               'name': new SimpleChange('aName', 'aName', false),
+               'b': new SimpleChange(2, 2, false)
+             });
 
-                  ctx.detectChanges(false);
-                  expect(dir.changes).toEqual({
-                    'name': new SimpleChange('aName', 'aName', false),
-                    'b': new SimpleChange(2, 2, false)
-                  });
-                }));
+             ctx.detectChanges(false);
+             expect(dir.changes).toEqual({
+               'name': new SimpleChange('aName', 'aName', false),
+               'b': new SimpleChange(2, 2, false)
+             });
+           }));
 
         it('should call pure pipes only if the arguments change', fakeAsync(() => {
              const ctx = _bindSimpleValue('name | countingPipe', Person);
