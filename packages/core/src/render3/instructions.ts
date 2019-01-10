@@ -2376,17 +2376,24 @@ function wrapListenerWithPreventDefault(listenerFn: (e?: any) => any): EventList
   };
 }
 
-/** Marks current view and all ancestors dirty */
-export function markViewDirty(lView: LView): void {
+/**
+ * Marks current view and all ancestors dirty.
+ *
+ * Returns the root view because it is found as a byproduct of marking the view tree
+ * dirty, and can be used by methods that consume markViewDirty() to easily schedule
+ * change detection. Otherwise, such methods would need to traverse up the view tree
+ * an additional time to get the root view and schedule a tick on it.
+ *
+ * @param lView The starting LView to mark dirty
+ * @returns the root LView
+ */
+export function markViewDirty(lView: LView): LView {
   while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
     lView[FLAGS] |= LViewFlags.Dirty;
     lView = lView[PARENT] !;
   }
   lView[FLAGS] |= LViewFlags.Dirty;
-  ngDevMode && assertDefined(lView[CONTEXT], 'rootContext should be defined');
-
-  const rootContext = lView[CONTEXT] as RootContext;
-  scheduleTick(rootContext, RootContextFlags.DetectChanges);
+  return lView;
 }
 
 /**
@@ -2575,7 +2582,10 @@ function updateViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, co
  */
 export function markDirty<T>(component: T) {
   ngDevMode && assertDefined(component, 'component');
-  markViewDirty(getComponentViewByInstance(component));
+  const rootView = markViewDirty(getComponentViewByInstance(component));
+
+  ngDevMode && assertDefined(rootView[CONTEXT], 'rootContext should be defined');
+  scheduleTick(rootView[CONTEXT] as RootContext, RootContextFlags.DetectChanges);
 }
 
 ///////////////////////////////

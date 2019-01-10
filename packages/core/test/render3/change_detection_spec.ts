@@ -946,48 +946,50 @@ describe('change detection', () => {
         });
       }
 
-      it('should schedule check on OnPush components', () => {
-        const parent = renderComponent(OnPushParent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+      it('should ensure OnPush components are checked', () => {
+        const fixture = new ComponentFixture(OnPushParent);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('one - two');
+
+        // Change detection should not have run yet, since markForCheck
+        // does not itself schedule change detection.
+        expect(fixture.hostElement.textContent).toEqual('one - one');
+
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - two');
       });
 
-      it('should only run change detection once with multiple calls to markForCheck', () => {
-        renderComponent(OnPushParent);
+      it('should never schedule change detection on its own', () => {
+        const fixture = new ComponentFixture(OnPushParent);
         expect(comp.doCheckCount).toEqual(1);
 
         comp.cdr.markForCheck();
         comp.cdr.markForCheck();
-        comp.cdr.markForCheck();
-        comp.cdr.markForCheck();
-        comp.cdr.markForCheck();
         requestAnimationFrame.flush();
 
-        expect(comp.doCheckCount).toEqual(2);
+        expect(comp.doCheckCount).toEqual(1);
       });
 
-      it('should schedule check on ancestor OnPush components', () => {
-        const parent = renderComponent(OnPushParent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+      it('should ensure ancestor OnPush components are checked', () => {
+        const fixture = new ComponentFixture(OnPushParent);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
-        parent.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        fixture.component.value = 'two';
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('two - one');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('two - one');
 
       });
 
-      it('should schedule check on OnPush components in embedded views', () => {
+      it('should ensure OnPush components in embedded views are checked', () => {
         class EmbeddedViewParent {
           value = 'one';
           showing = true;
@@ -1029,24 +1031,27 @@ describe('change detection', () => {
           });
         }
 
-        const parent = renderComponent(EmbeddedViewParent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        const fixture = new ComponentFixture(EmbeddedViewParent);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('one - two');
+        // markForCheck should not trigger change detection on its own.
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
-        parent.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - two');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - two');
+
+        fixture.component.value = 'two';
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - two');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('two - two');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('two - two');
       });
 
       // TODO(kara): add test for dynamic views once bug fix is in
