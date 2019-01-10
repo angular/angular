@@ -26,5 +26,12 @@
     "message": "Join us for Angular Connect<br/>November 6th-7th, 2018",
     "imageUrl": "generated/images/marketing/home/angular-connect.png",
     "linkUrl": "https://angularconnect.com/"
+  },
+  {
+    "startDate": "2019-01-01",
+    "endDate": "2019-12-31",
+    "message": "angular.kr<br/>한국어 가이드 오픈",
+    "imageUrl": "generated/images/marketing/home/angular.kr.png",
+    "linkUrl": "http://han41858.tistory.com/48"
   }
 ]
