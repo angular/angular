@@ -10,6 +10,7 @@ import {InjectFlags, InjectionToken, Injector} from '../di';
 import {resolveForwardRef} from '../di/forward_ref';
 import {Type} from '../interface/type';
 import {QueryList} from '../linker';
+import {validateAttribute, validateProperty} from '../sanitization/sanitization';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDataInRange, assertDefined, assertEqual, assertLessThan, assertNotEqual} from '../util/assert';
@@ -973,6 +974,7 @@ export function elementEnd(): void {
 export function elementAttribute(
     index: number, name: string, value: any, sanitizer?: SanitizerFn | null): void {
   if (value !== NO_CHANGE) {
+    ngDevMode && validateAttribute(name);
     const lView = getLView();
     const renderer = lView[RENDERER];
     const element = getNativeByIndex(index, lView);
@@ -1064,11 +1066,14 @@ function elementPropertyInternal<T>(
       }
     }
   } else if (tNode.type === TNodeType.Element) {
+    if (ngDevMode) {
+      validateProperty(propName);
+      ngDevMode.rendererSetProperty++;
+    }
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     // It is assumed that the sanitizer is only added when the compiler determines that the property
     // is risky, so sanitization can be done without further checks.
     value = sanitizer != null ? (sanitizer(value, tNode.tagName || '', propName) as any) : value;
-    ngDevMode && ngDevMode.rendererSetProperty++;
     if (isProceduralRenderer(renderer)) {
       renderer.setProperty(element as RElement, propName, value);
     } else if (!isAnimationProp(propName)) {
