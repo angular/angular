@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, Sanitizer, SkipSelf, StaticProvider, Testability, createPlatformFactory, platformCore, ɵAPP_ROOT as APP_ROOT, ɵConsole as Console} from '@angular/core';
+import {APP_ID, ApplicationModule, ErrorHandler, Inject, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformFactory, PlatformRef, RendererFactory2, Sanitizer, SkipSelf, StaticProvider, Testability, createPlatformFactory, platformCore, ɵAPP_ROOT as APP_ROOT, ɵConsole as Console} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
@@ -44,7 +44,7 @@ export const BROWSER_SANITIZATION_PROVIDERS: StaticProvider[] = [
 /**
  * @publicApi
  */
-export const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef =
+export const platformBrowser: PlatformFactory =
     createPlatformFactory(platformCore, 'browser', INTERNAL_BROWSER_PLATFORM_PROVIDERS);
 
 export function initDomAdapter() {

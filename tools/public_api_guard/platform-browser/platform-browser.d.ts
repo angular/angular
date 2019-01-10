@@ -90,7 +90,7 @@ export declare type MetaDefinition = {
     [prop: string]: string;
 };
 
-export declare const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
+export declare const platformBrowser: PlatformFactory;
 
 export interface SafeHtml extends SafeValue {
 }

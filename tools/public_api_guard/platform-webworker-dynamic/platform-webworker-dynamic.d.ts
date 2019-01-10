@@ -1,3 +1,3 @@
-export declare const platformWorkerAppDynamic: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export declare const platformWorkerAppDynamic: PlatformFactory;
 
 export declare const VERSION: Version;

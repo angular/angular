@@ -33,9 +33,9 @@ export interface MessageBusSource {
     initChannel(channel: string, runInZone: boolean): void;
 }
 
-export declare const platformWorkerApp: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export declare const platformWorkerApp: PlatformFactory;
 
-export declare const platformWorkerUi: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;
+export declare const platformWorkerUi: PlatformFactory;
 
 export interface ReceivedMessage {
     args: any[];

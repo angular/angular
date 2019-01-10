@@ -52,6 +52,12 @@ export function compileNgModuleFactory__POST_R3__<M>(
 
 export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultipleToken');
 
+/**
+ * Factory for a platform
+ *
+ * @publicApi
+ */
+export type PlatformFactory = (extraProviders?: StaticProvider[]) => PlatformRef;
 
 
 /**
@@ -87,9 +93,8 @@ export function createPlatform(injector: Injector): PlatformRef {
  * @publicApi
  */
 export function createPlatformFactory(
-    parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null,
-    name: string, providers: StaticProvider[] = []): (extraProviders?: StaticProvider[]) =>
-    PlatformRef {
+    parentPlatformFactory: PlatformFactory | null, name: string,
+    providers: StaticProvider[] = []): PlatformFactory {
   const desc = `Platform: ${name}`;
   const marker = new InjectionToken(desc);
   return (extraProviders: StaticProvider[] = []) => {
