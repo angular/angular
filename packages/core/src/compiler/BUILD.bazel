@@ -13,7 +13,6 @@ ts_library(
             "**/*.ts",
         ],
     ),
-    module_name = "@angular/core/compiler",
     deps = [
         "//packages/core/src/util",
     ],

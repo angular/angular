@@ -12,5 +12,4 @@ ts_library(
             "*.ts",
         ],
     ),
-    module_name = "@angular/core/interface",
 )

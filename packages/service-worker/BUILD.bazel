@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/service-worker",
     deps = [
         "//packages/common",
         "//packages/core",

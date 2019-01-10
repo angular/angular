@@ -12,7 +12,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/common/http/testing",
     deps = [
         "//packages/common/http",
         "//packages/core",

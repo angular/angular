@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/platform-webworker",
     deps = [
         "//packages:types",
         "//packages/common",
