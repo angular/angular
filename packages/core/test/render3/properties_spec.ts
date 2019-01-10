@@ -382,7 +382,7 @@ describe('elementProperty', () => {
         factory: () => myDir = new MyDir(),
         inputs: {role: 'role', direction: 'dir'},
         outputs: {changeStream: 'change'},
-        exportAs: 'myDir'
+        exportAs: ['myDir']
       });
     }
 

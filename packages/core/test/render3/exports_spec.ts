@@ -115,7 +115,7 @@ describe('exports', () => {
         type: SomeDir,
         selectors: [['', 'someDir', '']],
         factory: () => new SomeDir,
-        exportAs: 'someDir'
+        exportAs: ['someDir']
       });
     }
 

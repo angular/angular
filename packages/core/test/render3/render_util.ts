@@ -329,7 +329,7 @@ export function createComponent(
 }
 
 export function createDirective(
-    name: string, {exportAs}: {exportAs?: string} = {}): DirectiveType<any> {
+    name: string, {exportAs}: {exportAs?: string[]} = {}): DirectiveType<any> {
   return class Directive {
     static ngDirectiveDef = defineDirective({
       type: Directive,

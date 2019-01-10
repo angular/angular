@@ -89,12 +89,12 @@ describe('discovery utils', () => {
     static ngDirectiveDef = defineDirective({
       type: DirectiveA,
       selectors: [['', 'dirA', '']],
-      exportAs: 'dirA',
+      exportAs: ['dirA'],
       factory: () => new DirectiveA(),
     });
   }
 
-  const MSG_DIV = `{�0�, select, 
+  const MSG_DIV = `{�0�, select,
         other {ICU expression}
       }`;
 
@@ -509,7 +509,7 @@ describe('discovery utils deprecated', () => {
         static ngDirectiveDef = defineDirective({
           type: MyDir,
           selectors: [['', 'myDir', '']],
-          exportAs: 'myDir',
+          exportAs: ['myDir'],
           factory: () => new MyDir()
         });
       }

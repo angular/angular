@@ -828,7 +828,7 @@ describe('query', () => {
             consts: 0,
             vars: 0,
             template: (rf: RenderFlags, ctx: Child) => {},
-            exportAs: 'child'
+            exportAs: ['child']
           });
         }
 
@@ -864,7 +864,7 @@ describe('query', () => {
 
       it('should read directive instance if element queried for has an exported directive with a matching name',
          () => {
-           const Child = createDirective('child', {exportAs: 'child'});
+           const Child = createDirective('child', {exportAs: ['child']});
 
            let childInstance;
            /**
@@ -902,8 +902,8 @@ describe('query', () => {
          });
 
       it('should read all matching directive instances from a given element', () => {
-        const Child1 = createDirective('child1', {exportAs: 'child1'});
-        const Child2 = createDirective('child2', {exportAs: 'child2'});
+        const Child1 = createDirective('child1', {exportAs: ['child1']});
+        const Child2 = createDirective('child2', {exportAs: ['child2']});
 
         let child1Instance, child2Instance;
         /**
@@ -942,7 +942,7 @@ describe('query', () => {
       });
 
       it('should read multiple locals exporting the same directive from a given element', () => {
-        const Child = createDirective('child', {exportAs: 'child'});
+        const Child = createDirective('child', {exportAs: ['child']});
         let childInstance;
 
         /**
@@ -989,7 +989,7 @@ describe('query', () => {
       });
 
       it('should match on exported directive name and read a requested token', () => {
-        const Child = createDirective('child', {exportAs: 'child'});
+        const Child = createDirective('child', {exportAs: ['child']});
 
         let div;
         /**
@@ -1024,7 +1024,7 @@ describe('query', () => {
       });
 
       it('should support reading a mix of ElementRef and directive instances', () => {
-        const Child = createDirective('child', {exportAs: 'child'});
+        const Child = createDirective('child', {exportAs: ['child']});
 
         let childInstance, div;
         /**
@@ -2493,7 +2493,7 @@ describe('query', () => {
         static ngDirectiveDef = defineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
-          exportAs: 'query',
+          exportAs: ['query'],
           factory: () => new QueryDirective(),
           contentQueries: (dirIndex) => {
             // @ContentChildren('foo, bar, baz', {descendants: true}) fooBars:
@@ -2557,7 +2557,7 @@ describe('query', () => {
         static ngDirectiveDef = defineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
-          exportAs: 'query',
+          exportAs: ['query'],
           factory: () => new QueryDirective(),
           contentQueries: (dirIndex) => {
             // @ContentChildren('foo, bar, baz', {descendants: true}) fooBars:
@@ -2611,7 +2611,7 @@ describe('query', () => {
            static ngDirectiveDef = defineDirective({
              type: ShallowQueryDirective,
              selectors: [['', 'shallow-query', '']],
-             exportAs: 'shallow-query',
+             exportAs: ['shallow-query'],
              factory: () => new ShallowQueryDirective(),
              contentQueries: (dirIndex) => {
                // @ContentChildren('foo', {descendants: false}) foos: QueryList<ElementRef>;
@@ -2631,7 +2631,7 @@ describe('query', () => {
            static ngDirectiveDef = defineDirective({
              type: DeepQueryDirective,
              selectors: [['', 'deep-query', '']],
-             exportAs: 'deep-query',
+             exportAs: ['deep-query'],
              factory: () => new DeepQueryDirective(),
              contentQueries: (dirIndex) => {
                // @ContentChildren('foo', {descendants: false}) foos: QueryList<ElementRef>;
