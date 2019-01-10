@@ -444,7 +444,7 @@ export class TestBedRender3 implements Injector, TestBed {
 
   // get overrides for a specific provider (if any)
   private _getProviderOverrides(provider: any) {
-    const token = typeof provider === 'object' && provider.hasOwnProperty('provide') ?
+    const token = provider && typeof provider === 'object' && provider.hasOwnProperty('provide') ?
         provider.provide :
         provider;
     return this._providerOverridesByToken.get(token) || [];
@@ -503,8 +503,13 @@ export class TestBedRender3 implements Injector, TestBed {
   private _getMetaWithOverrides(meta: Component|Directive|NgModule, type?: Type<any>) {
     const overrides: {providers?: any[], template?: string} = {};
     if (meta.providers && meta.providers.length) {
+      // There are two flattening operations here. The inner flatten() operates on the metadata's
+      // providers and applies a mapping function which retrieves overrides for each incoming
+      // provider. The outer flatten() then flattens the produced overrides array. If this is not
+      // done, the array can contain other empty arrays (e.g. `[[], []]`) which leak into the
+      // providers array and contaminate any error messages that might be generated.
       const providerOverrides =
-          flatten(meta.providers, (provider: any) => this._getProviderOverrides(provider));
+          flatten(flatten(meta.providers, (provider: any) => this._getProviderOverrides(provider)));
       if (providerOverrides.length) {
         overrides.providers = [...meta.providers, ...providerOverrides];
       }
