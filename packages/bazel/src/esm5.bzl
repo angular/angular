@@ -101,6 +101,7 @@ def _esm5_outputs_aspect(target, ctx):
         # a "npm" workspace with the "@angular/bazel" NPM package installed.
         if not replay_compiler_path.startswith("../"):
             compiler = ctx.executable._internal_ngc_wrapped
+
         # END-INTERNAL
     else:
         fail("Unknown replay compiler", target.typescript.replay_params.compiler.path)
