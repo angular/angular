@@ -169,7 +169,7 @@ describe('compiler compliance', () => {
     });
 
     // TODO(https://github.com/angular/angular/issues/24426): We need to support the parser actually
-    // building the proper attributes based off of xmlns atttribuates.
+    // building the proper attributes based off of xmlns attributes.
     xit('should support namspaced attributes', () => {
       const files = {
         app: {
@@ -2536,6 +2536,38 @@ describe('compiler compliance', () => {
       const source = result.source;
       expectEmit(source, MyAppDefinition, 'Invalid component definition');
     });
+
+    it('should split multiple `exportAs` values into an array', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Directive, NgModule} from '@angular/core';
+
+            @Directive({selector: '[some-directive]', exportAs: 'someDir, otherDir'})
+            export class SomeDirective {}
+
+            @NgModule({declarations: [SomeDirective, MyComponent]})
+            export class MyModule{}
+          `
+        }
+      };
+
+      // SomeDirective definition should be:
+      const SomeDirectiveDefinition = `
+        SomeDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
+          type: SomeDirective,
+          selectors: [["", "some-directive", ""]],
+          factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); },
+          exportAs: ["someDir", "otherDir"]
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+
+      expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ngDirectiveDef');
+    });
+
   });
 
   describe('inherited base classes', () => {

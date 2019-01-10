@@ -117,9 +117,7 @@ function baseDirectiveFields(
   definitionMap.set('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
 
   if (meta.exportAs !== null) {
-    // TODO: handle multiple exportAs values (currently only the first is taken).
-    const [exportAs] = meta.exportAs;
-    definitionMap.set('exportAs', o.literal(exportAs));
+    definitionMap.set('exportAs', o.literalArr(meta.exportAs.map(e => o.literal(e))));
   }
 
   return {definitionMap, statements: result.statements};
@@ -614,7 +612,6 @@ function createTypeForDef(meta: R3DirectiveMetadata, typeBase: o.ExternalReferen
   return o.expressionType(o.importExpr(typeBase, [
     typeWithParameters(meta.type, meta.typeArgumentCount),
     stringAsType(selectorForType),
-    // TODO: handle multiple exportAs values (currently only the first is taken).
     meta.exportAs !== null ? stringArrayAsType(meta.exportAs) : o.NONE_TYPE,
     stringMapAsType(meta.inputs),
     stringMapAsType(meta.outputs),

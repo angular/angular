@@ -151,7 +151,7 @@ export function defineComponent<T>(componentDefinition: {
    *
    * See: {@link Directive.exportAs}
    */
-  exportAs?: string;
+  exportAs?: string[];
 
   /**
    * Template function use for rendering DOM.
@@ -605,7 +605,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
    *
    * See: {@link Directive.exportAs}
    */
-  exportAs?: string;
+  exportAs?: string[];
 }) => never;
 
 /**

@@ -1716,7 +1716,11 @@ function saveNameToExportMap(
     index: number, def: DirectiveDef<any>| ComponentDef<any>,
     exportsMap: {[key: string]: number} | null) {
   if (exportsMap) {
-    if (def.exportAs) exportsMap[def.exportAs] = index;
+    if (def.exportAs) {
+      for (let i = 0; i < def.exportAs.length; i++) {
+        exportsMap[def.exportAs[i]] = index;
+      }
+    }
     if ((def as ComponentDef<any>).template) exportsMap[''] = index;
   }
 }

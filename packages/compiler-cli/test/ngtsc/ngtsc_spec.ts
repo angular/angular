@@ -934,7 +934,25 @@ describe('ngtsc behavioral tests', () => {
     env.driveMain();
 
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain(`exportAs: "foo"`);
+    expect(jsContents).toContain(`exportAs: ["foo"]`);
+  });
+
+  it('should generate multiple exportAs declarations', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {Component, Directive} from '@angular/core';
+
+        @Directive({
+          selector: '[test]',
+          exportAs: 'foo, bar',
+        })
+        class Dir {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain(`exportAs: ["foo", "bar"]`);
   });
 
   it('should generate correct factory stubs for a test module', () => {
