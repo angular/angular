@@ -19,6 +19,9 @@ ts_api_guardian_test(
         "//packages/core/src/util",
     ],
     golden = "angular/tools/public_api_guard/core/core.d.ts",
+    tags = [
+        "fixme-ivy-aot",  # ivy no longer emits generated index file
+    ],
 )
 
 # explicit target because the d.ts file is nested in the core and not part of typical public d.ts api
