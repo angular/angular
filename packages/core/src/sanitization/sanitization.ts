@@ -179,6 +179,24 @@ export const defaultStyleSanitizer = (function(prop: string, value?: string): st
   return sanitizeStyle(value);
 } as StyleSanitizeFn);
 
+export function validateProperty(name: string) {
+  if (name.toLowerCase().startsWith('on')) {
+    const msg = `Binding to event property '${name}' is disallowed for security reasons, ` +
+        `please use (${name.slice(2)})=...` +
+        `\nIf '${name}' is a directive input, make sure the directive is imported by the` +
+        ` current module.`;
+    throw new Error(msg);
+  }
+}
+
+export function validateAttribute(name: string) {
+  if (name.toLowerCase().startsWith('on')) {
+    const msg = `Binding to event attribute '${name}' is disallowed for security reasons, ` +
+        `please use (${name.slice(2)})=...`;
+    throw new Error(msg);
+  }
+}
+
 function getSanitizer(): Sanitizer|null {
   const lView = getLView();
   return lView && lView[SANITIZER];

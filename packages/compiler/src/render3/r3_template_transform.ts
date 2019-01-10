@@ -240,7 +240,8 @@ class HtmlAstToIvyAst implements html.Visitor {
         literal.push(new t.TextAttribute(
             prop.name, prop.expression.source || '', prop.sourceSpan, undefined, i18n));
       } else {
-        const bep = this.bindingParser.createBoundElementProperty(elementName, prop);
+        const bep = this.bindingParser.createBoundElementProperty(
+            elementName, prop, /* skipValidation */ true);
         bound.push(t.BoundAttribute.fromBoundElementProperty(bep, i18n));
       }
     });
