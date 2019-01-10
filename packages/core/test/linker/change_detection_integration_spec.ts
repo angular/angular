@@ -1315,7 +1315,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
     });
 
     describe('multi directive order', () => {
-      fixmeIvy('FW-822: Order of bindings to directive inputs different in ivy')
+      modifiedInIvy('order of bindings to directive inputs is different in ivy')
           .it('should follow the DI order for the same element', fakeAsync(() => {
                 const ctx = createCompFixture(
                     '<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');
