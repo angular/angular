@@ -227,7 +227,7 @@ export class NgtscProgram implements api.Program {
           if (fileName.endsWith('.d.ts')) {
             data = sourceFiles.reduce(
                 (data, sf) => this.compilation !.transformedDtsFor(sf.fileName, data), data);
-          } else if (this.closureCompilerEnabled && fileName.endsWith('.ts')) {
+          } else if (this.closureCompilerEnabled && fileName.endsWith('.js')) {
             data = nocollapseHack(data);
           }
           this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
