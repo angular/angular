@@ -451,55 +451,53 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
      })));
 
-  fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-      .it('should work when an outlet is in an ngIf',
-          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-            const fixture = createRoot(router, RootCmp);
+  it('should work when an outlet is in an ngIf',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       const fixture = createRoot(router, RootCmp);
 
-            router.resetConfig([{
-              path: 'child',
-              component: OutletInNgIf,
-              children: [{path: 'simple', component: SimpleCmp}]
-            }]);
+       router.resetConfig([{
+         path: 'child',
+         component: OutletInNgIf,
+         children: [{path: 'simple', component: SimpleCmp}]
+       }]);
 
-            router.navigateByUrl('/child/simple');
-            advance(fixture);
+       router.navigateByUrl('/child/simple');
+       advance(fixture);
 
-            expect(location.path()).toEqual('/child/simple');
-          })));
+       expect(location.path()).toEqual('/child/simple');
+     })));
 
-  fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-      .it('should work when an outlet is added/removed', fakeAsync(() => {
-            @Component({
-              selector: 'someRoot',
-              template: `[<div *ngIf="cond"><router-outlet></router-outlet></div>]`
-            })
-            class RootCmpWithLink {
-              cond: boolean = true;
-            }
-            TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
+  it('should work when an outlet is added/removed', fakeAsync(() => {
+       @Component({
+         selector: 'someRoot',
+         template: `[<div *ngIf="cond"><router-outlet></router-outlet></div>]`
+       })
+       class RootCmpWithLink {
+         cond: boolean = true;
+       }
+       TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
 
-            const router: Router = TestBed.get(Router);
+       const router: Router = TestBed.get(Router);
 
-            const fixture = createRoot(router, RootCmpWithLink);
+       const fixture = createRoot(router, RootCmpWithLink);
 
-            router.resetConfig([
-              {path: 'simple', component: SimpleCmp},
-              {path: 'blank', component: BlankCmp},
-            ]);
+       router.resetConfig([
+         {path: 'simple', component: SimpleCmp},
+         {path: 'blank', component: BlankCmp},
+       ]);
 
-            router.navigateByUrl('/simple');
-            advance(fixture);
-            expect(fixture.nativeElement).toHaveText('[simple]');
+       router.navigateByUrl('/simple');
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('[simple]');
 
-            fixture.componentInstance.cond = false;
-            advance(fixture);
-            expect(fixture.nativeElement).toHaveText('[]');
+       fixture.componentInstance.cond = false;
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('[]');
 
-            fixture.componentInstance.cond = true;
-            advance(fixture);
-            expect(fixture.nativeElement).toHaveText('[simple]');
-          }));
+       fixture.componentInstance.cond = true;
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('[simple]');
+     }));
 
   it('should update location when navigating', fakeAsync(() => {
        @Component({template: `record`})
@@ -633,49 +631,46 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
      })));
 
-  fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-      .it('should navigate back and forward',
-          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-            const fixture = createRoot(router, RootCmp);
+  it('should navigate back and forward',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       const fixture = createRoot(router, RootCmp);
 
-            router.resetConfig([{
-              path: 'team/:id',
-              component: TeamCmp,
-              children: [
-                {path: 'simple', component: SimpleCmp},
-                {path: 'user/:name', component: UserCmp}
-              ]
-            }]);
+       router.resetConfig([{
+         path: 'team/:id',
+         component: TeamCmp,
+         children:
+             [{path: 'simple', component: SimpleCmp}, {path: 'user/:name', component: UserCmp}]
+       }]);
 
-            let event: NavigationStart;
-            router.events.subscribe(e => {
-              if (e instanceof NavigationStart) {
-                event = e;
-              }
-            });
+       let event: NavigationStart;
+       router.events.subscribe(e => {
+         if (e instanceof NavigationStart) {
+           event = e;
+         }
+       });
 
-            router.navigateByUrl('/team/33/simple');
-            advance(fixture);
-            expect(location.path()).toEqual('/team/33/simple');
-            const simpleNavStart = event !;
+       router.navigateByUrl('/team/33/simple');
+       advance(fixture);
+       expect(location.path()).toEqual('/team/33/simple');
+       const simpleNavStart = event !;
 
-            router.navigateByUrl('/team/22/user/victor');
-            advance(fixture);
-            const userVictorNavStart = event !;
+       router.navigateByUrl('/team/22/user/victor');
+       advance(fixture);
+       const userVictorNavStart = event !;
 
 
-            location.back();
-            advance(fixture);
-            expect(location.path()).toEqual('/team/33/simple');
-            expect(event !.navigationTrigger).toEqual('hashchange');
-            expect(event !.restoredState !.navigationId).toEqual(simpleNavStart.id);
+       location.back();
+       advance(fixture);
+       expect(location.path()).toEqual('/team/33/simple');
+       expect(event !.navigationTrigger).toEqual('hashchange');
+       expect(event !.restoredState !.navigationId).toEqual(simpleNavStart.id);
 
-            location.forward();
-            advance(fixture);
-            expect(location.path()).toEqual('/team/22/user/victor');
-            expect(event !.navigationTrigger).toEqual('hashchange');
-            expect(event !.restoredState !.navigationId).toEqual(userVictorNavStart.id);
-          })));
+       location.forward();
+       advance(fixture);
+       expect(location.path()).toEqual('/team/22/user/victor');
+       expect(event !.navigationTrigger).toEqual('hashchange');
+       expect(event !.restoredState !.navigationId).toEqual(userVictorNavStart.id);
+     })));
 
   it('should navigate to the same url when config changes',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -1006,36 +1001,34 @@ describe('Integration', () => {
        ]);
      })));
 
-  fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-      .it('should handle failed navigations gracefully',
-          fakeAsync(inject([Router], (router: Router) => {
-            const fixture = createRoot(router, RootCmp);
+  it('should handle failed navigations gracefully', fakeAsync(inject([Router], (router: Router) => {
+       const fixture = createRoot(router, RootCmp);
 
-            router.resetConfig([{path: 'user/:name', component: UserCmp}]);
+       router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
-            const recordedEvents: any[] = [];
-            router.events.forEach(e => recordedEvents.push(e));
+       const recordedEvents: any[] = [];
+       router.events.forEach(e => recordedEvents.push(e));
 
-            let e: any;
-            router.navigateByUrl('/invalid') !.catch(_ => e = _);
-            advance(fixture);
-            expect(e.message).toContain('Cannot match any routes');
+       let e: any;
+       router.navigateByUrl('/invalid') !.catch(_ => e = _);
+       advance(fixture);
+       expect(e.message).toContain('Cannot match any routes');
 
-            router.navigateByUrl('/user/fedor');
-            advance(fixture);
+       router.navigateByUrl('/user/fedor');
+       advance(fixture);
 
-            expect(fixture.nativeElement).toHaveText('user fedor');
+       expect(fixture.nativeElement).toHaveText('user fedor');
 
-            expectEvents(recordedEvents, [
-              [NavigationStart, '/invalid'], [NavigationError, '/invalid'],
+       expectEvents(recordedEvents, [
+         [NavigationStart, '/invalid'], [NavigationError, '/invalid'],
 
-              [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
-              [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [ActivationStart],
-              [GuardsCheckEnd, '/user/fedor'], [ResolveStart, '/user/fedor'],
-              [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
-              [NavigationEnd, '/user/fedor']
-            ]);
-          })));
+         [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
+         [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [ActivationStart],
+         [GuardsCheckEnd, '/user/fedor'], [ResolveStart, '/user/fedor'],
+         [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
+         [NavigationEnd, '/user/fedor']
+       ]);
+     })));
 
   // Errors should behave the same for both deferred and eager URL update strategies
   ['deferred', 'eager'].forEach((strat: any) => {
@@ -1883,50 +1876,45 @@ describe('Integration', () => {
   });
 
   describe('redirects', () => {
-    fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-        .it('should work',
-            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-              const fixture = createRoot(router, RootCmp);
+    it('should work', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
 
-              router.resetConfig([
-                {path: 'old/team/:id', redirectTo: 'team/:id'},
-                {path: 'team/:id', component: TeamCmp}
-              ]);
+         router.resetConfig([
+           {path: 'old/team/:id', redirectTo: 'team/:id'}, {path: 'team/:id', component: TeamCmp}
+         ]);
 
-              router.navigateByUrl('old/team/22');
-              advance(fixture);
+         router.navigateByUrl('old/team/22');
+         advance(fixture);
 
-              expect(location.path()).toEqual('/team/22');
-            })));
+         expect(location.path()).toEqual('/team/22');
+       })));
 
-    fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-        .it('should update Navigation object after redirects are applied',
-            fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-              const fixture = createRoot(router, RootCmp);
-              let initialUrl, afterRedirectUrl;
+    it('should update Navigation object after redirects are applied',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+         let initialUrl, afterRedirectUrl;
 
-              router.resetConfig([
-                {path: 'old/team/:id', redirectTo: 'team/:id'},
-                {path: 'team/:id', component: TeamCmp}
-              ]);
+         router.resetConfig([
+           {path: 'old/team/:id', redirectTo: 'team/:id'}, {path: 'team/:id', component: TeamCmp}
+         ]);
 
-              router.events.subscribe(e => {
-                if (e instanceof NavigationStart) {
-                  const navigation = router.getCurrentNavigation();
-                  initialUrl = navigation && navigation.finalUrl;
-                }
-                if (e instanceof RoutesRecognized) {
-                  const navigation = router.getCurrentNavigation();
-                  afterRedirectUrl = navigation && navigation.finalUrl;
-                }
-              });
+         router.events.subscribe(e => {
+           if (e instanceof NavigationStart) {
+             const navigation = router.getCurrentNavigation();
+             initialUrl = navigation && navigation.finalUrl;
+           }
+           if (e instanceof RoutesRecognized) {
+             const navigation = router.getCurrentNavigation();
+             afterRedirectUrl = navigation && navigation.finalUrl;
+           }
+         });
 
-              router.navigateByUrl('old/team/22');
-              advance(fixture);
+         router.navigateByUrl('old/team/22');
+         advance(fixture);
 
-              expect(initialUrl).toBeUndefined();
-              expect(router.serializeUrl(afterRedirectUrl as any)).toBe('/team/22');
-            })));
+         expect(initialUrl).toBeUndefined();
+         expect(router.serializeUrl(afterRedirectUrl as any)).toBe('/team/22');
+       })));
 
     it('should not break the back button when trigger by location change',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -2031,18 +2019,16 @@ describe('Integration', () => {
           });
         });
 
-        fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-            .it('works',
-                fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-                  const fixture = createRoot(router, RootCmp);
+        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
 
-                  router.resetConfig(
-                      [{path: 'team/:id', component: TeamCmp, canActivate: ['alwaysTrue']}]);
+             router.resetConfig(
+                 [{path: 'team/:id', component: TeamCmp, canActivate: ['alwaysTrue']}]);
 
-                  router.navigateByUrl('/team/22');
-                  advance(fixture);
-                  expect(location.path()).toEqual('/team/22');
-                })));
+             router.navigateByUrl('/team/22');
+             advance(fixture);
+             expect(location.path()).toEqual('/team/22');
+           })));
       });
 
       describe('should work when given a class', () => {
@@ -2054,19 +2040,17 @@ describe('Integration', () => {
 
         beforeEach(() => { TestBed.configureTestingModule({providers: [AlwaysTrue]}); });
 
-        fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-            .it('works',
-                fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
-                  const fixture = createRoot(router, RootCmp);
+        it('works', fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+             const fixture = createRoot(router, RootCmp);
 
-                  router.resetConfig(
-                      [{path: 'team/:id', component: TeamCmp, canActivate: [AlwaysTrue]}]);
+             router.resetConfig(
+                 [{path: 'team/:id', component: TeamCmp, canActivate: [AlwaysTrue]}]);
 
-                  router.navigateByUrl('/team/22');
-                  advance(fixture);
+             router.navigateByUrl('/team/22');
+             advance(fixture);
 
-                  expect(location.path()).toEqual('/team/22');
-                })));
+             expect(location.path()).toEqual('/team/22');
+           })));
       });
 
       describe('should work when returns an observable', () => {
@@ -3355,38 +3339,37 @@ describe('Integration', () => {
   });
 
   describe('route events', () => {
-    fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-        .it('should fire matching (Child)ActivationStart/End events',
-            fakeAsync(inject([Router], (router: Router) => {
-              const fixture = createRoot(router, RootCmp);
+    it('should fire matching (Child)ActivationStart/End events',
+       fakeAsync(inject([Router], (router: Router) => {
+         const fixture = createRoot(router, RootCmp);
 
-              router.resetConfig([{path: 'user/:name', component: UserCmp}]);
+         router.resetConfig([{path: 'user/:name', component: UserCmp}]);
 
-              const recordedEvents: any[] = [];
-              router.events.forEach(e => recordedEvents.push(e));
+         const recordedEvents: any[] = [];
+         router.events.forEach(e => recordedEvents.push(e));
 
-              router.navigateByUrl('/user/fedor');
-              advance(fixture);
+         router.navigateByUrl('/user/fedor');
+         advance(fixture);
 
-              expect(fixture.nativeElement).toHaveText('user fedor');
-              expect(recordedEvents[3] instanceof ChildActivationStart).toBe(true);
-              expect(recordedEvents[3].snapshot).toBe(recordedEvents[9].snapshot.root);
-              expect(recordedEvents[9] instanceof ChildActivationEnd).toBe(true);
-              expect(recordedEvents[9].snapshot).toBe(recordedEvents[9].snapshot.root);
+         expect(fixture.nativeElement).toHaveText('user fedor');
+         expect(recordedEvents[3] instanceof ChildActivationStart).toBe(true);
+         expect(recordedEvents[3].snapshot).toBe(recordedEvents[9].snapshot.root);
+         expect(recordedEvents[9] instanceof ChildActivationEnd).toBe(true);
+         expect(recordedEvents[9].snapshot).toBe(recordedEvents[9].snapshot.root);
 
-              expect(recordedEvents[4] instanceof ActivationStart).toBe(true);
-              expect(recordedEvents[4].snapshot.routeConfig.path).toBe('user/:name');
-              expect(recordedEvents[8] instanceof ActivationEnd).toBe(true);
-              expect(recordedEvents[8].snapshot.routeConfig.path).toBe('user/:name');
+         expect(recordedEvents[4] instanceof ActivationStart).toBe(true);
+         expect(recordedEvents[4].snapshot.routeConfig.path).toBe('user/:name');
+         expect(recordedEvents[8] instanceof ActivationEnd).toBe(true);
+         expect(recordedEvents[8].snapshot.routeConfig.path).toBe('user/:name');
 
-              expectEvents(recordedEvents, [
-                [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
-                [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [ActivationStart],
-                [GuardsCheckEnd, '/user/fedor'], [ResolveStart, '/user/fedor'],
-                [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
-                [NavigationEnd, '/user/fedor']
-              ]);
-            })));
+         expectEvents(recordedEvents, [
+           [NavigationStart, '/user/fedor'], [RoutesRecognized, '/user/fedor'],
+           [GuardsCheckStart, '/user/fedor'], [ChildActivationStart], [ActivationStart],
+           [GuardsCheckEnd, '/user/fedor'], [ResolveStart, '/user/fedor'],
+           [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
+           [NavigationEnd, '/user/fedor']
+         ]);
+       })));
 
     it('should allow redirection in NavigationStart',
        fakeAsync(inject([Router], (router: Router) => {
@@ -4528,82 +4511,81 @@ describe('Integration', () => {
          expect(simpleCmp1).not.toBe(simpleCmp2);
        })));
 
-    fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
-        .it('should not mount the component of the previously reused route when the outlet was not instantiated at the time of route activation',
-            fakeAsync(() => {
-              @Component({
-                selector: 'root-cmp',
-                template:
-                    '<div *ngIf="isToolpanelShowing"><router-outlet name="toolpanel"></router-outlet></div>'
-              })
-              class RootCmpWithCondOutlet implements OnDestroy {
-                private subscription: Subscription;
-                public isToolpanelShowing: boolean = false;
+    it('should not mount the component of the previously reused route when the outlet was not instantiated at the time of route activation',
+       fakeAsync(() => {
+         @Component({
+           selector: 'root-cmp',
+           template:
+               '<div *ngIf="isToolpanelShowing"><router-outlet name="toolpanel"></router-outlet></div>'
+         })
+         class RootCmpWithCondOutlet implements OnDestroy {
+           private subscription: Subscription;
+           public isToolpanelShowing: boolean = false;
 
-                constructor(router: Router) {
-                  this.subscription =
-                      router.events.pipe(filter(event => event instanceof NavigationEnd))
-                          .subscribe(
-                              () => this.isToolpanelShowing =
-                                  !!router.parseUrl(router.url).root.children['toolpanel']);
-                }
+           constructor(router: Router) {
+             this.subscription =
+                 router.events.pipe(filter(event => event instanceof NavigationEnd))
+                     .subscribe(
+                         () => this.isToolpanelShowing =
+                             !!router.parseUrl(router.url).root.children['toolpanel']);
+           }
 
-                public ngOnDestroy(): void { this.subscription.unsubscribe(); }
-              }
+           public ngOnDestroy(): void { this.subscription.unsubscribe(); }
+         }
 
-              @Component({selector: 'tool-1-cmp', template: 'Tool 1 showing'})
-              class Tool1Component {
-              }
+         @Component({selector: 'tool-1-cmp', template: 'Tool 1 showing'})
+         class Tool1Component {
+         }
 
-              @Component({selector: 'tool-2-cmp', template: 'Tool 2 showing'})
-              class Tool2Component {
-              }
+         @Component({selector: 'tool-2-cmp', template: 'Tool 2 showing'})
+         class Tool2Component {
+         }
 
-              @NgModule({
-                declarations: [RootCmpWithCondOutlet, Tool1Component, Tool2Component],
-                imports: [
-                  CommonModule,
-                  RouterTestingModule.withRoutes([
-                    {path: 'a', outlet: 'toolpanel', component: Tool1Component},
-                    {path: 'b', outlet: 'toolpanel', component: Tool2Component},
-                  ]),
-                ],
-              })
-              class TestModule {
-              }
+         @NgModule({
+           declarations: [RootCmpWithCondOutlet, Tool1Component, Tool2Component],
+           imports: [
+             CommonModule,
+             RouterTestingModule.withRoutes([
+               {path: 'a', outlet: 'toolpanel', component: Tool1Component},
+               {path: 'b', outlet: 'toolpanel', component: Tool2Component},
+             ]),
+           ],
+         })
+         class TestModule {
+         }
 
-              TestBed.configureTestingModule({imports: [TestModule]});
+         TestBed.configureTestingModule({imports: [TestModule]});
 
-              const router: Router = TestBed.get(Router);
-              router.routeReuseStrategy = new AttachDetachReuseStrategy();
+         const router: Router = TestBed.get(Router);
+         router.routeReuseStrategy = new AttachDetachReuseStrategy();
 
-              const fixture = createRoot(router, RootCmpWithCondOutlet);
+         const fixture = createRoot(router, RootCmpWithCondOutlet);
 
-              // Activate 'tool-1'
-              router.navigate([{outlets: {toolpanel: 'a'}}]);
-              advance(fixture);
-              expect(fixture).toContainComponent(Tool1Component, '(a)');
+         // Activate 'tool-1'
+         router.navigate([{outlets: {toolpanel: 'a'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool1Component, '(a)');
 
-              // Deactivate 'tool-1'
-              router.navigate([{outlets: {toolpanel: null}}]);
-              advance(fixture);
-              expect(fixture).not.toContainComponent(Tool1Component, '(b)');
+         // Deactivate 'tool-1'
+         router.navigate([{outlets: {toolpanel: null}}]);
+         advance(fixture);
+         expect(fixture).not.toContainComponent(Tool1Component, '(b)');
 
-              // Activate 'tool-1'
-              router.navigate([{outlets: {toolpanel: 'a'}}]);
-              advance(fixture);
-              expect(fixture).toContainComponent(Tool1Component, '(c)');
+         // Activate 'tool-1'
+         router.navigate([{outlets: {toolpanel: 'a'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool1Component, '(c)');
 
-              // Deactivate 'tool-1'
-              router.navigate([{outlets: {toolpanel: null}}]);
-              advance(fixture);
-              expect(fixture).not.toContainComponent(Tool1Component, '(d)');
+         // Deactivate 'tool-1'
+         router.navigate([{outlets: {toolpanel: null}}]);
+         advance(fixture);
+         expect(fixture).not.toContainComponent(Tool1Component, '(d)');
 
-              // Activate 'tool-2'
-              router.navigate([{outlets: {toolpanel: 'b'}}]);
-              advance(fixture);
-              expect(fixture).toContainComponent(Tool2Component, '(e)');
-            }));
+         // Activate 'tool-2'
+         router.navigate([{outlets: {toolpanel: 'b'}}]);
+         advance(fixture);
+         expect(fixture).toContainComponent(Tool2Component, '(e)');
+       }));
   });
 });
 
