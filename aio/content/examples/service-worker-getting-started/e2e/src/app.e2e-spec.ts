@@ -34,8 +34,9 @@ describe('sw-example App', () => {
         expect(items[3].getText()).toBe('Angular blog');
       });
   });
-   // Check for a rejected promise as the service worker is not enabled
-   it('SwUpdate.checkForUpdate() should return a rejected promise', () => {
+
+  // Check for a rejected promise as the service worker is not enabled
+  it('SwUpdate.checkForUpdate() should return a rejected promise', () => {
     const button = element(by.css('button'));
     const rejectMessage = element(by.css('p'));
     button.click();
