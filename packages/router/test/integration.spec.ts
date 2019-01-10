@@ -1883,7 +1883,7 @@ describe('Integration', () => {
   });
 
   describe('redirects', () => {
-    fixmeIvy('unkwnown/maybe FW-918')
+    fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
         .it('should work',
             fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
               const fixture = createRoot(router, RootCmp);
@@ -1899,7 +1899,7 @@ describe('Integration', () => {
               expect(location.path()).toEqual('/team/22');
             })));
 
-    fixmeIvy('unkwnown/maybe FW-918')
+    fixmeIvy('FW-768: markViewDirty instruction is scheduling a tick')
         .it('should update Navigation object after redirects are applied',
             fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
               const fixture = createRoot(router, RootCmp);
