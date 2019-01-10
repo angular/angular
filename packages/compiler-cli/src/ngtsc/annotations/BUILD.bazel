@@ -8,7 +8,6 @@ ts_library(
         "index.ts",
         "src/**/*.ts",
     ]),
-    module_name = "@angular/compiler-cli/src/ngtsc/annotations",
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/diagnostics",

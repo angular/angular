@@ -44,7 +44,38 @@ PKG_GROUP_REPLACEMENTS = {
     ]""" % ",\n      ".join(["\"%s\"" % s for s in ANGULAR_SCOPED_PACKAGES]),
 }
 
-def ts_library(tsconfig = None, testonly = False, deps = [], **kwargs):
+def _default_module_name(testonly):
+    """ Provide better defaults for package names.
+
+    e.g. rather than angular/packages/core/testing we want @angular/core/testing
+
+    TODO(alexeagle): we ought to supply a default module name for every library in the repo.
+    But we short-circuit below in cases that are currently not working.
+    """
+    pkg = native.package_name()
+
+    if testonly:
+        # Some tests currently rely on the long-form package names
+        return None
+
+    if pkg.startswith("packages/bazel"):
+        # Avoid infinite recursion in the ViewEngine compiler. Error looks like:
+        #  Compiling Angular templates (ngc) //packages/bazel/test/ngc-wrapped/empty:empty failed (Exit 1)
+        # : RangeError: Maximum call stack size exceeded
+        #    at normalizeString (path.js:57:25)
+        #    at Object.normalize (path.js:1132:12)
+        #    at Object.join (path.js:1167:18)
+        #    at resolveModule (execroot/angular/bazel-out/host/bin/packages/bazel/src/ngc-wrapped/ngc-wrapped.runfiles/angular/packages/compiler-cli/src/metadata/bundler.js:582:50)
+        #    at MetadataBundler.exportAll (execroot/angular/bazel-out/host/bin/packages/bazel/src/ngc-wrapped/ngc-wrapped.runfiles/angular/packages/compiler-cli/src/metadata/bundler.js:119:42)
+        #    at MetadataBundler.exportAll (execroot/angular/bazel-out/host/bin/packages/bazel/src/ngc-wrapped/ngc-wrapped.runfiles/angular/packages/compiler-cli/src/metadata/bundler.js:121:52)
+        return None
+
+    if pkg.startswith("packages/"):
+        return "@angular/" + pkg[len("packages/"):]
+
+    return None
+
+def ts_library(tsconfig = None, testonly = False, deps = [], module_name = None, **kwargs):
     """Default values for ts_library"""
     deps = deps + ["@ngdeps//tslib"]
     if testonly:
@@ -57,15 +88,19 @@ def ts_library(tsconfig = None, testonly = False, deps = [], **kwargs):
         else:
             tsconfig = _DEFAULT_TSCONFIG_BUILD
 
+    if not module_name:
+        module_name = _default_module_name(testonly)
+
     _ts_library(
         tsconfig = tsconfig,
         testonly = testonly,
         deps = deps,
         node_modules = _DEFAULT_TS_TYPINGS,
+        module_name = module_name,
         **kwargs
     )
 
-def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], **kwargs):
+def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, **kwargs):
     """Default values for ng_module"""
     deps = deps + ["@ngdeps//tslib"]
     if testonly:
@@ -77,6 +112,8 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
             tsconfig = _DEFAULT_TSCONFIG_TEST
         else:
             tsconfig = _DEFAULT_TSCONFIG_BUILD
+    if not module_name:
+        module_name = _default_module_name(testonly)
     if not entry_point:
         entry_point = "public_api.ts"
     _ng_module(
@@ -89,6 +126,7 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         compiler = _INTERNAL_NG_MODULE_COMPILER,
         ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
         node_modules = _DEFAULT_TS_TYPINGS,
+        module_name = module_name,
         **kwargs
     )
 

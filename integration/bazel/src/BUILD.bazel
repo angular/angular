@@ -37,9 +37,14 @@ ts_devserver(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "rollup_bundle")
 
+filegroup(
+    name = "empty_node_modules",
+)
+
 rollup_bundle(
     name = "bundle",
     entry_point = "src/main",
+    node_modules = ":empty_node_modules",
     deps = ["//src"],
 )
 

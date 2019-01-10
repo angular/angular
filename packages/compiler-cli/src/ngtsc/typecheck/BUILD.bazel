@@ -5,7 +5,6 @@ load("//tools:defaults.bzl", "ts_library")
 ts_library(
     name = "typecheck",
     srcs = glob(["**/*.ts"]),
-    module_name = "@angular/compiler-cli/src/ngtsc/typecheck",
     deps = [
         "//packages:types",
         "//packages/compiler",
