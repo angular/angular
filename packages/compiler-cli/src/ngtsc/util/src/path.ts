@@ -28,5 +28,6 @@ export function relativePathBetween(from: string, to: string): string|null {
 }
 
 export function normalizeSeparators(path: string): string {
+  // TODO: normalize path only for OS that need it.
   return path.replace(/\\/g, '/');
 }
