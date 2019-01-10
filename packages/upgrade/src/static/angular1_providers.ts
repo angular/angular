@@ -12,7 +12,7 @@ import * as angular from '../common/angular1';
 // We store the ng1 injector so that the provider in the module injector can access it
 // Then we "get" the ng1 injector from the module injector, which triggers the provider to read
 // the stored injector and release the reference to it.
-let tempInjectorRef: angular.IInjectorService|null;
+let tempInjectorRef: angular.IInjectorService|null = null;
 export function setTempInjectorRef(injector: angular.IInjectorService) {
   tempInjectorRef = injector;
 }
@@ -21,7 +21,7 @@ export function injectorFactory() {
     throw new Error('Trying to get the AngularJS injector before it being set.');
   }
 
-  const injector: angular.IInjectorService|null = tempInjectorRef;
+  const injector: angular.IInjectorService = tempInjectorRef;
   tempInjectorRef = null;  // clear the value to prevent memory leaks
   return injector;
 }
