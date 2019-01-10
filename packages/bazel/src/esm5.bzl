@@ -12,6 +12,8 @@ However we need to publish this flavor on NPM, so it's necessary to be able
 to produce it.
 """
 
+load(":external.bzl", "DEFAULT_NG_COMPILER")
+
 # The provider downstream rules use to access the outputs
 ESM5Info = provider(
     doc = "Typescript compilation outputs in ES5 syntax with ES Modules",
@@ -142,7 +144,7 @@ esm5_outputs_aspect = aspect(
             cfg = "host",
         ),
         "_ngc_wrapped": attr.label(
-            default = Label("//packages/bazel/src/ngc-wrapped"),
+            default = Label(DEFAULT_NG_COMPILER),
             executable = True,
             cfg = "host",
         ),
