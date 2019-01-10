@@ -853,56 +853,57 @@ const DEFAULT_COMPONENT_ID = '1';
            }));
 
         // nonAnimationRenderer => animationRenderer
-        fixmeIvy('unknown').it(
-            'should trigger a leave animation when the inner components host binding updates',
-            fakeAsync(() => {
-              @Component({
-                selector: 'parent-cmp',
-                template: `
+        fixmeIvy(
+            'FW-943 - elements are removed in the wrong renderer so far as host animation @triggers are concerned')
+            .it('should trigger a leave animation when the inner components host binding updates',
+                fakeAsync(() => {
+                  @Component({
+                    selector: 'parent-cmp',
+                    template: `
                 <child-cmp *ngIf="exp"></child-cmp>
               `
-              })
-              class ParentCmp {
-                public exp = true;
-              }
+                  })
+                  class ParentCmp {
+                    public exp = true;
+                  }
 
-              @Component({
-                selector: 'child-cmp',
-                template: '...',
-                animations: [trigger(
-                    'host',
-                    [transition(
-                        ':leave', [style({opacity: 1}), animate(1000, style({opacity: 0}))])])]
-              })
-              class ChildCmp {
-                @HostBinding('@host') public hostAnimation = true;
-              }
+                  @Component({
+                    selector: 'child-cmp',
+                    template: '...',
+                    animations: [trigger(
+                        'host', [transition(
+                                    ':leave',
+                                    [style({opacity: 1}), animate(1000, style({opacity: 0}))])])]
+                  })
+                  class ChildCmp {
+                    @HostBinding('@host') public hostAnimation = true;
+                  }
 
-              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+                  TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-              const engine = TestBed.get(ɵAnimationEngine);
-              const fixture = TestBed.createComponent(ParentCmp);
-              const cmp = fixture.componentInstance;
-              fixture.detectChanges();
-              engine.flush();
-              expect(getLog().length).toEqual(0);
+                  const engine = TestBed.get(ɵAnimationEngine);
+                  const fixture = TestBed.createComponent(ParentCmp);
+                  const cmp = fixture.componentInstance;
+                  fixture.detectChanges();
+                  engine.flush();
+                  expect(getLog().length).toEqual(0);
 
-              cmp.exp = false;
-              fixture.detectChanges();
-              expect(fixture.debugElement.nativeElement.children.length).toBe(1);
+                  cmp.exp = false;
+                  fixture.detectChanges();
+                  expect(fixture.debugElement.nativeElement.children.length).toBe(1);
 
-              engine.flush();
-              expect(getLog().length).toEqual(1);
+                  engine.flush();
+                  expect(getLog().length).toEqual(1);
 
-              const [player] = getLog();
-              expect(player.keyframes).toEqual([
-                {opacity: '1', offset: 0},
-                {opacity: '0', offset: 1},
-              ]);
+                  const [player] = getLog();
+                  expect(player.keyframes).toEqual([
+                    {opacity: '1', offset: 0},
+                    {opacity: '0', offset: 1},
+                  ]);
 
-              player.finish();
-              expect(fixture.debugElement.nativeElement.children.length).toBe(0);
-            }));
+                  player.finish();
+                  expect(fixture.debugElement.nativeElement.children.length).toBe(0);
+                }));
 
         // animationRenderer => nonAnimationRenderer
         it('should trigger a leave animation when the outer components element binding updates on the host component element',
@@ -956,69 +957,70 @@ const DEFAULT_COMPONENT_ID = '1';
            }));
 
         // animationRenderer => animationRenderer
-        fixmeIvy('unknown').it(
-            'should trigger a leave animation when both the inner and outer components trigger on the same element',
-            fakeAsync(() => {
-              @Component({
-                selector: 'parent-cmp',
-                animations: [trigger(
-                    'host',
-                    [transition(
-                        ':leave',
-                        [style({height: '100px'}), animate(1000, style({height: '0px'}))])])],
-                template: `
+        fixmeIvy(
+            'FW-943 - elements are removed in the wrong renderer so far as host animation @triggers are concerned')
+            .it('should trigger a leave animation when both the inner and outer components trigger on the same element',
+                fakeAsync(() => {
+                  @Component({
+                    selector: 'parent-cmp',
+                    animations: [trigger(
+                        'host',
+                        [transition(
+                            ':leave',
+                            [style({height: '100px'}), animate(1000, style({height: '0px'}))])])],
+                    template: `
                 <child-cmp *ngIf="exp" @host></child-cmp>
               `
-              })
-              class ParentCmp {
-                public exp = true;
-              }
+                  })
+                  class ParentCmp {
+                    public exp = true;
+                  }
 
-              @Component({
-                selector: 'child-cmp',
-                template: '...',
-                animations: [trigger(
-                    'host',
-                    [transition(
-                        ':leave',
-                        [style({width: '100px'}), animate(1000, style({width: '0px'}))])])]
-              })
-              class ChildCmp {
-                @HostBinding('@host') public hostAnimation = true;
-              }
+                  @Component({
+                    selector: 'child-cmp',
+                    template: '...',
+                    animations: [trigger(
+                        'host',
+                        [transition(
+                            ':leave',
+                            [style({width: '100px'}), animate(1000, style({width: '0px'}))])])]
+                  })
+                  class ChildCmp {
+                    @HostBinding('@host') public hostAnimation = true;
+                  }
 
-              TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+                  TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
 
-              const engine = TestBed.get(ɵAnimationEngine);
-              const fixture = TestBed.createComponent(ParentCmp);
-              const cmp = fixture.componentInstance;
-              fixture.detectChanges();
-              engine.flush();
-              expect(getLog().length).toEqual(0);
+                  const engine = TestBed.get(ɵAnimationEngine);
+                  const fixture = TestBed.createComponent(ParentCmp);
+                  const cmp = fixture.componentInstance;
+                  fixture.detectChanges();
+                  engine.flush();
+                  expect(getLog().length).toEqual(0);
 
-              cmp.exp = false;
-              fixture.detectChanges();
-              expect(fixture.debugElement.nativeElement.children.length).toBe(1);
+                  cmp.exp = false;
+                  fixture.detectChanges();
+                  expect(fixture.debugElement.nativeElement.children.length).toBe(1);
 
-              engine.flush();
-              expect(getLog().length).toEqual(2);
+                  engine.flush();
+                  expect(getLog().length).toEqual(2);
 
-              const [p1, p2] = getLog();
-              expect(p1.keyframes).toEqual([
-                {width: '100px', offset: 0},
-                {width: '0px', offset: 1},
-              ]);
+                  const [p1, p2] = getLog();
+                  expect(p1.keyframes).toEqual([
+                    {width: '100px', offset: 0},
+                    {width: '0px', offset: 1},
+                  ]);
 
-              expect(p2.keyframes).toEqual([
-                {height: '100px', offset: 0},
-                {height: '0px', offset: 1},
-              ]);
+                  expect(p2.keyframes).toEqual([
+                    {height: '100px', offset: 0},
+                    {height: '0px', offset: 1},
+                  ]);
 
-              p1.finish();
-              p2.finish();
-              flushMicrotasks();
-              expect(fixture.debugElement.nativeElement.children.length).toBe(0);
-            }));
+                  p1.finish();
+                  p2.finish();
+                  flushMicrotasks();
+                  expect(fixture.debugElement.nativeElement.children.length).toBe(0);
+                }));
 
         it('should not throw when the host element is removed and no animation triggers',
            fakeAsync(() => {
@@ -2915,10 +2917,10 @@ const DEFAULT_COMPONENT_ID = '1';
            expect(cmp.log).toEqual(['parent-done', 'child-done']);
          }));
 
-      fixmeIvy('unknown').it(
-          'should fire callbacks and collect the correct the totalTime and element details for any queried sub animations',
-          fakeAsync(
-              () => {
+      fixmeIvy(
+          'FW-944 - style/class bindings lose track of consts/vars when interpolation is present')
+          .it('should fire callbacks and collect the correct the totalTime and element details for any queried sub animations',
+              fakeAsync(() => {
                 @Component({
           selector: 'my-cmp',
           template: `
