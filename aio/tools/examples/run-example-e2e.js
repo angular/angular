@@ -204,20 +204,22 @@ function runProtractorAoT(appDir, outputFile) {
 // CLI version
 function runE2eTestsCLI(appDir, outputFile) {
   console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
-  // `--preserve-symlinks` is needed due the symlinked `node_modules/` in each example.
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
-  const args = ['e2e', '--no-webdriver-update'];
-  const e2eSpawn = spawnExt('yarn', args, { cwd: appDir });
-  return e2eSpawn.promise.then(
-    function () {
-      fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`);
-      return finish(e2eSpawn.proc.pid, true);
-    },
-    function () {
-      fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`);
-      return finish(e2eSpawn.proc.pid, false);
-    }
-  );
+  const config = loadExampleConfig(appDir);
+  const commands = config.e2e || [{ cmd: 'yarn', args: ['e2e', '--no-webdriver-update'] }];
+
+  const e2eSpawnPromise = commands.reduce((prevSpawnPromise, { cmd, args }) => {
+    return prevSpawnPromise.then(() => {
+      const currSpawn = spawnExt(cmd, args, { cwd: appDir });
+      return currSpawn.promise.then(
+          () => Promise.resolve(finish(currSpawn.proc.pid, true)),
+          () => Promise.reject(finish(currSpawn.proc.pid, false)));
+    });
+  }, Promise.resolve());
+
+  return e2eSpawnPromise.then(
+      () => { fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`); return true; },
+      () => { fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`); return false; });
 }
 
 // Report final status.
