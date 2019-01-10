@@ -229,7 +229,7 @@ export class ComponentDecoratorHandler implements
     const encapsulation: number =
         this._resolveEnumValue(component, 'encapsulation', 'ViewEncapsulation') || 0;
 
-    const changeDetection: number|undefined =
+    const changeDetection: number|null =
         this._resolveEnumValue(component, 'changeDetection', 'ChangeDetectionStrategy');
 
     let animations: Expression|null = null;
@@ -237,7 +237,7 @@ export class ComponentDecoratorHandler implements
       animations = new WrappedNodeExpr(component.get('animations') !);
     }
 
-    return {
+    const output = {
       analysis: {
         meta: {
           ...metadata,
@@ -245,7 +245,6 @@ export class ComponentDecoratorHandler implements
           viewQueries,
           encapsulation,
           interpolation,
-          changeDetection,
           styles: styles || [],
 
           // These will be replaced during the compilation step, after all `NgModule`s have been
@@ -262,6 +261,10 @@ export class ComponentDecoratorHandler implements
       },
       typeCheck: true,
     };
+    if (changeDetection !== null) {
+      (output.analysis.meta as R3ComponentMetadata).changeDetection = changeDetection;
+    }
+    return output;
   }
 
   typeCheck(ctx: TypeCheckContext, node: ts.Declaration, meta: ComponentHandlerData): void {
@@ -330,9 +333,8 @@ export class ComponentDecoratorHandler implements
   }
 
   private _resolveEnumValue(
-      component: Map<string, ts.Expression>, field: string, enumSymbolName: string): number
-      |undefined {
-    let resolved: number|undefined;
+      component: Map<string, ts.Expression>, field: string, enumSymbolName: string): number|null {
+    let resolved: number|null = null;
     if (component.has(field)) {
       const expr = component.get(field) !;
       const value = this.evaluator.evaluate(expr) as any;
