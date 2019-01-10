@@ -94,7 +94,7 @@ export function obsoleteInIvy(reason: string): JasmineMethods {
  * ```
  */
 export function onlyInIvy(reason: string): JasmineMethods {
-  return ivyEnabled ? PASSTHROUGH : IGNORE;
+  return ivyEnabled && !FIND_PASSING_TESTS ? PASSTHROUGH : IGNORE;
 }
 
 /**
