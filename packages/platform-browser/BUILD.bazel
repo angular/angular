@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/platform-browser",
     deps = [
         "//packages:types",
         "//packages/common",

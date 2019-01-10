@@ -20,7 +20,6 @@ ts_library(
             "src/integrationtest/**/*.ts",
         ],
     ),
-    module_name = "@angular/compiler-cli",
     tsconfig = ":tsconfig",
     deps = [
         "//packages/compiler",
