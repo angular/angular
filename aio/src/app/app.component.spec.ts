@@ -169,6 +169,13 @@ describe('AppComponent', () => {
 
         expect(component.tocMaxHeight).toMatch(/^\d+\.\d{2}$/);
       });
+
+      it('should update `scrollService.updateScrollPositonInHistory()`', () => {
+        const scrollService = fixture.debugElement.injector.get<ScrollService>(ScrollService);
+        spyOn(scrollService, 'updateScrollPositionInHistory');
+        component.onScroll();
+        expect(scrollService.updateScrollPositionInHistory).toHaveBeenCalled();
+      });
     });
 
     describe('SideNav', () => {
@@ -461,11 +468,15 @@ describe('AppComponent', () => {
       let scrollService: ScrollService;
       let scrollSpy: jasmine.Spy;
       let scrollToTopSpy: jasmine.Spy;
+      let scrollAfterRenderSpy: jasmine.Spy;
+      let removeStoredScrollPositionSpy: jasmine.Spy;
 
       beforeEach(() => {
         scrollService = fixture.debugElement.injector.get<ScrollService>(ScrollService);
         scrollSpy = spyOn(scrollService, 'scroll');
         scrollToTopSpy = spyOn(scrollService, 'scrollToTop');
+        scrollAfterRenderSpy = spyOn(scrollService, 'scrollAfterRender');
+        removeStoredScrollPositionSpy = spyOn(scrollService, 'removeStoredScrollPosition');
       });
 
       it('should not scroll immediately when the docId (path) changes', () => {
@@ -510,33 +521,24 @@ describe('AppComponent', () => {
         expect(scrollSpy).toHaveBeenCalledTimes(1);
       });
 
-      it('should scroll to top when call `onDocRemoved` directly', () => {
-        scrollToTopSpy.calls.reset();
-
+      it('should call `removeStoredScrollPosition` when call `onDocRemoved` directly', () => {
         component.onDocRemoved();
-        expect(scrollToTopSpy).toHaveBeenCalled();
+        expect(removeStoredScrollPositionSpy).toHaveBeenCalled();
       });
 
-      it('should scroll after a delay when call `onDocInserted` directly', fakeAsync(() => {
+      it('should call `scrollAfterRender` when call `onDocInserted` directly', (() => {
         component.onDocInserted();
-        expect(scrollSpy).not.toHaveBeenCalled();
-
-        tick(scrollDelay);
-        expect(scrollSpy).toHaveBeenCalled();
+        expect(scrollAfterRenderSpy).toHaveBeenCalledWith(scrollDelay);
       }));
 
-      it('should scroll (via `onDocInserted`) when finish navigating to a new doc', fakeAsync(() => {
-        expect(scrollToTopSpy).not.toHaveBeenCalled();
-
+      it('should call `scrollAfterRender` (via `onDocInserted`) when navigate to a new Doc', fakeAsync(() => {
         locationService.go('guide/pipes');
-        tick(1);                 // triggers the HTTP response for the document
+        tick(1); // triggers the HTTP response for the document
         fixture.detectChanges(); // triggers the event that calls `onDocInserted`
 
-        expect(scrollToTopSpy).toHaveBeenCalled();
-        expect(scrollSpy).not.toHaveBeenCalled();
+        expect(scrollAfterRenderSpy).toHaveBeenCalledWith(scrollDelay);
 
-        tick(scrollDelay);
-        expect(scrollSpy).toHaveBeenCalled();
+        tick(500); // there are other outstanding timers in the AppComponent that are not relevant
       }));
     });
 
