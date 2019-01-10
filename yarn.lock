@@ -10,6 +10,16 @@
     "@angular-devkit/core" "7.0.6"
     rxjs "6.3.3"
 
+"@angular-devkit/build-optimizer@^0.12.1":
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/build-optimizer/-/build-optimizer-0.12.1.tgz#2160d75ca7d43fd91402538b0f5cc3a7a1037f10"
+  integrity sha512-zYea22pJ5kvMud8UBrdzIcR9F1FDYWJ3vwj5WRUFM0sF7mbbrmTC+OsIvNI7qDJuXWNZGySwNlHw0e+rhv30gg==
+  dependencies:
+    loader-utils "1.1.0"
+    source-map "0.5.6"
+    typescript "3.2.2"
+    webpack-sources "1.2.0"
+
 "@angular-devkit/core@7.0.5", "@angular-devkit/core@^7.0.4":
   version "7.0.5"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-7.0.5.tgz#60866c0a2367cea44b436a359ac9be99a138e180"
@@ -4924,6 +4934,15 @@ load-json-file@^4.0.0:
     pify "^3.0.0"
     strip-bom "^3.0.0"
 
+loader-utils@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-1.1.0.tgz#c98aef488bcceda2ffb5e2de646d6a754429f5cd"
+  integrity sha1-yYrvSIvM7aL/teLeZG1qdUQp9c0=
+  dependencies:
+    big.js "^3.1.3"
+    emojis-list "^2.0.0"
+    json5 "^0.5.0"
+
 loader-utils@^0.2.11:
   version "0.2.17"
   resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-0.2.17.tgz#f86e6374d43205a6e6c60e9196f17c0299bfb348"
@@ -7638,6 +7657,11 @@ socks@^1.1.10:
     ip "^1.1.4"
     smart-buffer "^1.0.13"
 
+source-list-map@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-2.0.1.tgz#3993bd873bfc48479cca9ea3a547835c7c154b34"
+  integrity sha512-qnQ7gVMxGNxsiL4lEuJwe/To8UnK7fAnmbGEEH8RpLouuKbeEm0lhbQVFIrNSuB+G7tVrAlVsZgETT5nljf+Iw==
+
 source-list-map@~0.1.7:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-0.1.8.tgz#c550b2ab5427f6b3f21f5afead88c4f5587b2106"
@@ -7692,6 +7716,11 @@ source-map@0.1.31:
   integrity sha1-n3BNDWnZ4TioG63267T94z0VHGE=
   dependencies:
     amdefine ">=0.0.4"
+
+source-map@0.5.6:
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.5.6.tgz#75ce38f52bf0733c5a7f0c118d81334a2bb5f412"
+  integrity sha1-dc449SvwczxafwwRjYEzSiu19BI=
 
 source-map@^0.4.4, source-map@~0.4.1:
   version "0.4.4"
@@ -8374,7 +8403,7 @@ typescript@3.1.6:
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.1.6.tgz#b6543a83cfc8c2befb3f4c8fba6896f5b0c9be68"
   integrity sha512-tDMYfVtvpb96msS1lDX9MEdHrW4yOuZ4Kdc4Him9oU796XldPYF/t2+uKoX0BBa0hXXwDlqYQbXY5Rzjzc5hBA==
 
-typescript@~3.2.2:
+typescript@3.2.2, typescript@~3.2.2:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.2.2.tgz#fe8101c46aa123f8353523ebdcf5730c2ae493e5"
   integrity sha512-VCj5UiSyHBjwfYacmDuc/NOk4QQixbE+Wn7MFJuS0nRuPQbof132Pw4u53dm264O8LPc2MVsc7RJNml5szurkg==
@@ -8794,6 +8823,14 @@ webpack-core@~0.6.0:
   dependencies:
     source-list-map "~0.1.7"
     source-map "~0.4.1"
+
+webpack-sources@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/webpack-sources/-/webpack-sources-1.2.0.tgz#18181e0d013fce096faf6f8e6d41eeffffdceac2"
+  integrity sha512-9BZwxR85dNsjWz3blyxdOhTgtnQvv3OEs5xofI0wPYTwu5kaWxS08UuD1oI7WLBLpRO+ylf0ofnXLXWmGb2WMw==
+  dependencies:
+    source-list-map "^2.0.0"
+    source-map "~0.6.1"
 
 webpack@1.12.9:
   version "1.12.9"
