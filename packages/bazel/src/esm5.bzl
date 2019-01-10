@@ -86,13 +86,22 @@ def _esm5_outputs_aspect(target, ctx):
         ],
     )
 
-    replay_compiler = target.typescript.replay_params.compiler.path.split("/")[-1]
+    replay_compiler_path = target.typescript.replay_params.compiler.short_path
+    replay_compiler_name = replay_compiler_path.split("/")[-1]
 
     # in windows replay_compiler path end with '.exe'
-    if replay_compiler.startswith("tsc_wrapped"):
+    if replay_compiler_name.startswith("tsc_wrapped"):
         compiler = ctx.executable._tsc_wrapped
-    elif replay_compiler.startswith("ngc-wrapped"):
+    elif replay_compiler_name.startswith("ngc-wrapped"):
         compiler = ctx.executable._ngc_wrapped
+
+        # BEGIN-INTERNAL
+        # If the "replay_compiler" path refers to "ngc_wrapped" from within the Angular workspace,
+        # we need to use "ngc_wrapped" from source. This is necessary because we don't have
+        # a "npm" workspace with the "@angular/bazel" NPM package installed.
+        if not replay_compiler_path.startswith("../"):
+            compiler = ctx.executable._internal_ngc_wrapped
+        # END-INTERNAL
     else:
         fail("Unknown replay compiler", target.typescript.replay_params.compiler.path)
 
@@ -133,6 +142,14 @@ esm5_outputs_aspect = aspect(
     # Recurse to the deps of any target we visit
     attr_aspects = ["deps"],
     attrs = {
+        # This is only used if the replay_compiler refers to the "angular" workspace. In that
+        # case we need to use "ngc_wrapped" from its source location because we can't have
+        # the "npm" workspace that has the "@angular/bazel" NPM package installed.
+        "_internal_ngc_wrapped": attr.label(
+            default = Label("//packages/bazel/src/ngc-wrapped"),
+            executable = True,
+            cfg = "host",
+        ),
         "_modify_tsconfig": attr.label(
             default = Label("//packages/bazel/src:modify_tsconfig"),
             executable = True,
@@ -143,6 +160,10 @@ esm5_outputs_aspect = aspect(
             executable = True,
             cfg = "host",
         ),
+        # This is the default "ngc_wrapped" executable that will be used to replay the compilation
+        # for ESM5 mode. The default compiler consumes "ngc_wrapped" from the "@npm" workspace.
+        # This is needed for downstream Bazel users that can have a different TypeScript
+        # version installed.
         "_ngc_wrapped": attr.label(
             default = Label(DEFAULT_NG_COMPILER),
             executable = True,
