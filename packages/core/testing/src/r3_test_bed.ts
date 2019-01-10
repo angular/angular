@@ -43,6 +43,7 @@ import {
   ɵcompileNgModuleDefs as compileNgModuleDefs,
   ɵcompilePipe as compilePipe,
   ɵgetInjectableDef as getInjectableDef,
+  ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵpatchComponentDefWithScope as patchComponentDefWithScope,
   ɵresetCompiledComponents as resetCompiledComponents,
   ɵstringify as stringify, ɵtransitiveScopesFor as transitiveScopesFor,
@@ -245,6 +246,7 @@ export class TestBedRender3 implements Injector, TestBed {
   private _testModuleType: NgModuleType<any> = null !;
 
   private _instantiated: boolean = false;
+  private _globalCompilationChecked = false;
 
   // Map that keeps initial version of component/directive/pipe defs in case
   // we compile a Type again, thus overriding respective static fields. This is
@@ -285,6 +287,7 @@ export class TestBedRender3 implements Injector, TestBed {
   }
 
   resetTestingModule(): void {
+    this._checkGlobalCompilationFinished();
     resetCompiledComponents();
     // reset metadata overrides
     this._moduleOverrides = [];
@@ -459,6 +462,7 @@ export class TestBedRender3 implements Injector, TestBed {
   // internal methods
 
   private _initIfNeeded(): void {
+    this._checkGlobalCompilationFinished();
     if (this._instantiated) {
       return;
     }
@@ -625,6 +629,27 @@ export class TestBedRender3 implements Injector, TestBed {
           transitiveScope;
       patchComponentDefWithScope((cmp as any).ngComponentDef, scope);
     });
+  }
+
+  /**
+   * Check whether the module scoping queue should be flushed, and flush it if needed.
+   *
+   * When the TestBed is reset, it clears the JIT module compilation queue, cancelling any
+   * in-progress module compilation. This creates a potential hazard - the very first time the
+   * TestBed is initialized (or if it's reset without being initialized), there may be pending
+   * compilations of modules declared in global scope. These compilations should be finished.
+   *
+   * To ensure that globally declared modules have their components scoped properly, this function
+   * is called whenever TestBed is initialized or reset. The _first_ time that this happens, prior
+   * to any other operations, the scoping queue is flushed.
+   */
+  private _checkGlobalCompilationFinished(): void {
+    // !this._instantiated should not be necessary, but is left in as an additional guard that
+    // compilations queued in tests (after instantiation) are never flushed accidentally.
+    if (!this._globalCompilationChecked && !this._instantiated) {
+      flushModuleScopingQueueAsMuchAsPossible();
+    }
+    this._globalCompilationChecked = true;
   }
 }
 
