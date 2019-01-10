@@ -11,12 +11,13 @@
  * The strategy that the default change detector uses to detect changes.
  * When set, takes effect the next time change detection is triggered.
  *
+ * @publicApi
  */
 export enum ChangeDetectionStrategy {
   /**
    * Use the `CheckOnce` strategy, meaning that automatic change detection is deactivated
    * until reactivated by setting the strategy to `Default` (`CheckAlways`).
-   * Change detection can still be explictly invoked.
+   * Change detection can still be explicitly invoked.
    */
   OnPush = 0,
 
@@ -45,7 +46,7 @@ export enum ChangeDetectorStatus {
   Checked,
 
   /**
-   * A state in which change detection continues automatically until explictly
+   * A state in which change detection continues automatically until explicitly
    * deactivated.
    */
   CheckAlways,
@@ -74,7 +75,7 @@ export enum ChangeDetectorStatus {
  * @param changeDetectionStrategy The strategy to check.
  * @returns True if the given strategy is the current default, false otherwise.
  * @see `ChangeDetectorStatus`
- * @see `ChangeDetectorRef` 
+ * @see `ChangeDetectorRef`
  */
 export function isDefaultChangeDetectionStrategy(changeDetectionStrategy: ChangeDetectionStrategy):
     boolean {

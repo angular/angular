@@ -8,8 +8,8 @@ import { ContactModule }    from './contact/contact.module';
 const routes: Routes = [
   { path: '', redirectTo: 'contact', pathMatch: 'full'},
   // #docregion lazy-routes
-  { path: 'crisis', loadChildren: 'app/crisis/crisis.module#CrisisModule' },
-  { path: 'heroes', loadChildren: 'app/hero/hero.module#HeroModule' }
+  { path: 'crisis', loadChildren: './crisis/crisis.module#CrisisModule' },
+  { path: 'heroes', loadChildren: './hero/hero.module#HeroModule' }
   // #enddocregion lazy-routes
 ];
 // #enddocregion routes

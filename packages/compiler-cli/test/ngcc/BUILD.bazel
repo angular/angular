@@ -3,13 +3,14 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 # Integration tests
 ts_library(
     name = "ngcc_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob([
         "**/*_spec.ts",
     ]),
     deps = [
         "//packages/compiler-cli/src/ngcc",
         "//packages/compiler-cli/test:test_utils",
+        "@ngdeps//@types/mock-fs",
     ],
 )
 
@@ -23,5 +24,10 @@ jasmine_node_test(
     deps = [
         ":ngcc_lib",
         "//tools/testing:node_no_angular",
+        "@ngdeps//@types/mock-fs",
+        "@ngdeps//canonical-path",
+        "@ngdeps//convert-source-map",
+        "@ngdeps//shelljs",
+        "@ngdeps//yargs",
     ],
 )

@@ -29,7 +29,7 @@ export {
  *
  * A host interface; see `LanguageSeriviceHost`.
  *
- * @experimental
+ * @publicApi
  */
 export interface TemplateSource {
   /**
@@ -73,7 +73,7 @@ export interface TemplateSource {
  *
  * A host type; see `LanguageSeriviceHost`.
  *
- * @experimental
+ * @publicApi
  */
 export type TemplateSources = TemplateSource[] | undefined;
 
@@ -83,7 +83,7 @@ export type TemplateSources = TemplateSource[] | undefined;
  *
  * A host type; see `LanguageServiceHost`.
  *
- * @experimental
+ * @publicApi
  */
 export interface DeclarationError {
   /**
@@ -109,7 +109,7 @@ export interface DeclarationError {
  *
  * A host type; see `LanguageSeriviceHost`.
  *
- * @experimental
+ * @publicApi
  */
 export interface Declaration {
   /**
@@ -139,7 +139,7 @@ export interface Declaration {
  *
  * A host type; see `LanguageSeriviceHost`.
  *
- * @experimental
+ * @publicApi
  */
 export type Declarations = Declaration[];
 
@@ -169,7 +169,7 @@ export type Declarations = Declaration[];
  * releases. After an interface is marked as stable breaking-changes will only be allowed between
  * major releases. No breaking changes are allowed between patch releases.
  *
- * @experimental
+ * @publicApi
  */
 export interface LanguageServiceHost {
   /**
@@ -212,7 +212,7 @@ export interface LanguageServiceHost {
  *
  * A `LanguageService` interface.
  *
- * @experimental
+ * @publicApi
  */
 export interface Completion {
   /**
@@ -234,7 +234,7 @@ export interface Completion {
 /**
  * A sequence of completions.
  *
- * @experimental
+ * @publicApi
  */
 export type Completions = Completion[] | undefined;
 
@@ -249,7 +249,7 @@ export interface Location {
 /**
  * The kind of diagnostic message.
  *
- * @experimental
+ * @publicApi
  */
 export enum DiagnosticKind {
   Error,
@@ -264,7 +264,7 @@ export enum DiagnosticKind {
  * For compatibility previous implementation, the values are expected to override
  * toString() to return a formatted message.
  *
- * @experimental
+ * @publicApi
  */
 export interface DiagnosticMessageChain {
   /**
@@ -281,7 +281,7 @@ export interface DiagnosticMessageChain {
 /**
  * An template diagnostic message to display.
  *
- * @experimental
+ * @publicApi
  */
 export interface Diagnostic {
   /**
@@ -303,7 +303,7 @@ export interface Diagnostic {
 /**
  * A sequence of diagnostic message.
  *
- * @experimental
+ * @publicApi
  */
 export type Diagnostics = Diagnostic[];
 
@@ -364,7 +364,7 @@ export interface Hover {
  * releases. After an interface is marked as stable breaking-changes will only be allowed between
  * major releases. No breaking changes are allowed between patch releases.
  *
- * @experimental
+ * @publicApi
  */
 export interface LanguageService {
   /**

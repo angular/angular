@@ -149,6 +149,15 @@ describe('diagnostics', () => {
       });
     });
 
+    it('should not report an error for sub-types of number', () => {
+      const code =
+          ` @Component({template: \`<div *ngIf="something === 123"></div>\`}) export class MyComponent { something: 123 | 456; }`;
+      addCode(code, fileName => {
+        const diagnostics = ngService.getDiagnostics(fileName);
+        expectOnlyModuleDiagnostics(diagnostics);
+      });
+    });
+
     it('should report a warning if an event results in a callable expression', () => {
       const code =
           ` @Component({template: \`<div (click)="onClick"></div>\`}) export class MyComponent { onClick() { } }`;

@@ -24,7 +24,7 @@ const _INTERPOLATION_REGEXP: RegExp = /#/g;
  *
  * {@example common/pipes/ts/i18n_pipe.ts region='I18nPluralPipeComponent'}
  *
- * @experimental
+ * @publicApi
  */
 @Pipe({name: 'i18nPlural', pure: true})
 export class I18nPluralPipe implements PipeTransform {

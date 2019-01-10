@@ -10,14 +10,16 @@
 # because it introduces an extra target_bin target.
 load("@build_bazel_rules_nodejs//internal/node:node.bzl", "nodejs_binary", "nodejs_test")
 
-DEFAULT_NODE_MODULES = "@angular_deps//:node_modules"
-
-def js_expected_symbol_test(name, src, golden, node_modules = DEFAULT_NODE_MODULES, **kwargs):
+def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
     """This test verifies that a set of top level symbols from a javascript file match a gold file.
     """
-    all_data = [src, golden]
-    all_data += [Label("//tools/symbol-extractor:lib")]
-    all_data += [Label("@bazel_tools//tools/bash/runfiles")]
+    all_data = data + [
+        src,
+        golden,
+        Label("//tools/symbol-extractor:lib"),
+        Label("@bazel_tools//tools/bash/runfiles"),
+        Label("@ngdeps//typescript"),
+    ]
     entry_point = "angular/tools/symbol-extractor/cli.js"
 
     nodejs_test(
@@ -25,7 +27,7 @@ def js_expected_symbol_test(name, src, golden, node_modules = DEFAULT_NODE_MODUL
         data = all_data,
         entry_point = entry_point,
         templated_args = ["$(location %s)" % src, "$(location %s)" % golden],
-        node_modules = node_modules,
+        configuration_env_vars = ["compile"],
         **kwargs
     )
 
@@ -34,7 +36,7 @@ def js_expected_symbol_test(name, src, golden, node_modules = DEFAULT_NODE_MODUL
         testonly = True,
         data = all_data,
         entry_point = entry_point,
+        configuration_env_vars = ["compile"],
         templated_args = ["$(location %s)" % src, "$(location %s)" % golden, "--accept"],
-        node_modules = node_modules,
         **kwargs
     )

@@ -1,0 +1,17 @@
+{
+    "name": "@angular/bazel",
+    "version": "0.1",
+    "schematics": {
+      "ng-new": {
+        "factory": "./ng-new",
+        "schema": "./ng-new/schema.json",
+        "description": "Create an Angular project that builds with Bazel."
+      },
+      "bazel-workspace": {
+        "factory": "./bazel-workspace",
+        "schema": "./bazel-workspace/schema.json",
+        "description": "Setup Bazel workspace",
+        "hidden": true
+      }
+    }
+  }

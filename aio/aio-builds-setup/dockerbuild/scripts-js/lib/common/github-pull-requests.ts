@@ -74,6 +74,6 @@ export class GithubPullRequests {
    */
   public fetchFiles(pr: number): Promise<FileInfo[]> {
     assert(pr > 0, `Invalid PR number: ${pr}`);
-    return this.api.get<FileInfo[]>(`/repos/${this.repoSlug}/pulls/${pr}/files`);
+    return this.api.getPaginated<FileInfo>(`/repos/${this.repoSlug}/pulls/${pr}/files`);
   }
 }

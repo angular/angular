@@ -5,9 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-const path = require('path');
-
 const DEBUG = false;
 
 const configPath = 'TMPL_config';
@@ -32,15 +29,44 @@ function setConf(conf, name, value, msg) {
   conf[name] = value;
 }
 
+function mergeCapabilities(conf, capabilities) {
+  if (conf.capabilities) {
+    if (conf.capabilities.browserName === capabilities.browserName) {
+      // there are capabilities to merge
+      if (capabilities.browserName === 'chrome') {
+        conf.capabilities.chromeOptions = conf.capabilities.chromeOptions || {};
+        conf.capabilities.chromeOptions.binary = capabilities.chromeOptions.binary;
+        conf.capabilities.chromeOptions.args = conf.capabilities.chromeOptions.args || [];
+        conf.capabilities.chromeOptions.args.push(...capabilities.chromeOptions.args);
+        console.warn(
+            `Your protractor configuration specifies capabilities for browser '${conf.capabilities.browserName}'
+which will be merged with capabilities provided by Bazel resulting in:`,
+            JSON.stringify(conf.capabilities, null, 2));
+      } else {
+        // TODO(gmagolan): implement firefox support for protractor
+        throw new Error(
+            `Unexpected browserName ${capabilities.browserName} for capabilities merging`);
+      }
+    } else {
+      console.warn(
+          `Your protractor configuration specifies capabilities for browser '${conf.capabilities.browserName}' which will be overwritten by Bazel`);
+      conf.capabilities = capabilities;
+    }
+  } else {
+    conf.capabilities = capabilities;
+  }
+}
+
 let conf = {};
 
 // Import the user's base protractor configuration if specified
 if (configPath) {
   const baseConf = require(configPath);
   if (!baseConf.config) {
-    throw new Error('Invalid base protractor configration. Expected config to be exported.');
+    throw new Error('Invalid base protractor configuration. Expected config to be exported.');
   }
   conf = baseConf.config;
+  if (DEBUG) console.info(`Base protractor configuration: ${JSON.stringify(conf, null, 2)}`);
 }
 
 // Import the user's on prepare function if specified
@@ -100,19 +126,17 @@ if (process.env['WEB_TEST_METADATA']) {
     const webTestNamedFiles = webTestMetadata['webTestFiles'][0]['namedFiles'];
     const headless = !process.env['DISPLAY'];
     if (webTestNamedFiles['CHROMIUM']) {
-      const chromeBin = path.join(process.cwd(), 'external', webTestNamedFiles['CHROMIUM']);
+      const chromeBin = require.resolve(webTestNamedFiles['CHROMIUM']);
+      const chromeDriver = require.resolve(webTestNamedFiles['CHROMEDRIVER']);
       const args = [];
       if (headless) {
         args.push('--headless');
         args.push('--disable-gpu');
       }
       setConf(conf, 'directConnect', true, 'is set to true for chrome');
-      setConf(
-          conf, 'chromeDriver',
-          path.join(process.cwd(), 'external', webTestNamedFiles['CHROMEDRIVER']),
-          'is determined by the browsers attribute');
-      setConf(
-          conf, 'capabilities', {
+      setConf(conf, 'chromeDriver', chromeDriver, 'is determined by the browsers attribute');
+      mergeCapabilities(
+          conf, {
             browserName: 'chrome',
             chromeOptions: {
               binary: chromeBin,
@@ -125,7 +149,7 @@ if (process.env['WEB_TEST_METADATA']) {
       // TODO(gmagolan): implement firefox support for protractor
       throw new Error('Firefox not yet support by protractor_web_test_suite');
 
-      // const firefoxBin = path.join('external', webTestNamedFiles['FIREFOX']);
+      // const firefoxBin = require.resolve(webTestNamedFiles['FIREFOX'])
       // const args = [];
       // if (headless) {
       //   args.push("--headless")
@@ -133,7 +157,7 @@ if (process.env['WEB_TEST_METADATA']) {
       // }
       // setConf(conf, 'seleniumAddress', process.env.WEB_TEST_HTTP_SERVER.trim() + "/wd/hub", 'is
       // configured by Bazel for firefox browser')
-      // setConf(conf, 'capabilities', {
+      // mergeCapabilities(conf, {
       //   browserName: "firefox",
       //   'moz:firefoxOptions': {
       //     binary: firefoxBin,

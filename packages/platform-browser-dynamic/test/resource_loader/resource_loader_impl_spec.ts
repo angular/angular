@@ -7,9 +7,9 @@
  */
 
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
-import {ResourceLoaderImpl} from '../../src/resource_loader/resource_loader_impl';
+import {ResourceLoaderImpl} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_impl';
 
-{
+if (isBrowser) {
   describe('ResourceLoaderImpl', () => {
     let resourceLoader: ResourceLoaderImpl;
 

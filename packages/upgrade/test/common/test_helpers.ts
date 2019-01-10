@@ -7,19 +7,23 @@
  */
 import {setAngularJSGlobal} from '@angular/upgrade/src/common/angular1';
 
+// Whether the upgrade tests should run against AngularJS minified or not. This can be
+// temporarily switched to "false" in order to make it easy to debug AngularJS locally.
+const TEST_MINIFIED = true;
+const ANGULARJS_FILENAME = TEST_MINIFIED ? 'angular.min.js' : 'angular.js';
 
 const ng1Versions = [
   {
     label: '1.5',
-    files: ['angular-1.5/angular.js', 'angular-mocks-1.5/angular-mocks.js'],
+    files: [`angular-1.5/${ANGULARJS_FILENAME}`, 'angular-mocks-1.5/angular-mocks.js'],
   },
   {
     label: '1.6',
-    files: ['angular-1.6/angular.js', 'angular-mocks-1.6/angular-mocks.js'],
+    files: [`angular-1.6/${ANGULARJS_FILENAME}`, 'angular-mocks-1.6/angular-mocks.js'],
   },
   {
     label: '1.7',
-    files: ['angular/angular.js', 'angular-mocks/angular-mocks.js'],
+    files: [`angular/${ANGULARJS_FILENAME}`, 'angular-mocks/angular-mocks.js'],
   },
 ];
 
@@ -69,12 +73,23 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
                 (prev, file) => prev.then(() => new Promise<void>((resolve, reject) => {
                                             const script = document.createElement('script');
                                             script.async = true;
-                                            script.onerror = reject;
+                                            script.onerror = () => {
+                                              // Whenever the script failed loading, browsers will
+                                              // just pass an "ErrorEvent" which does not contain
+                                              // useful information on most browsers we run tests
+                                              // against. In order to avoid writing logic to convert
+                                              // the event into a readable error and since just
+                                              // passing the event might cause people to spend
+                                              // unnecessary time debugging the "ErrorEvent", we
+                                              // create a simple error that doesn't imply that there
+                                              // is a lot of information within the "ErrorEvent".
+                                              reject(`An error occurred while loading: "${file}".`);
+                                            };
                                             script.onload = () => {
                                               document.body.removeChild(script);
                                               resolve();
                                             };
-                                            script.src = `base/angular_deps/node_modules/${file}`;
+                                            script.src = `base/ngdeps/node_modules/${file}`;
                                             document.body.appendChild(script);
                                           })),
                 Promise.resolve())

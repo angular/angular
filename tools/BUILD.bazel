@@ -1,4 +1,14 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_config")
+
 exports_files(["tsconfig.json"])
+
+ts_config(
+    name = "tsconfig-test",
+    src = "tsconfig-test.json",
+    deps = ["tsconfig.json"],
+)
 
 # The toolchain container used for execution is defined in the target indicated
 # by "extra_execution_platforms", "host_platform" and "platforms".
@@ -21,12 +31,11 @@ platform(
     remote_execution_properties = """
         properties: {
             name: "container-image"
-            value:"docker://gcr.io/asci-toolchain/nosla-ubuntu16_04-webtest@sha256:55fae2e51ecf38fec9778ab93a9b4edd7d318eeb5f420602450d3b509b52edf9"
+            value:"docker://gcr.io/asci-toolchain/nosla-ubuntu16_04-webtest@sha256:e874885f5e3d9ac0c0d3176e5369cb5969467dbf9ad8d42b862829cec8d84b9b"
         }
         properties: {
             name: "dockerAddCapabilities"
             value: "SYS_ADMIN"
         }
         """,
-    visibility = ["//visibility:public"],
 )

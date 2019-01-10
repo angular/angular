@@ -15,6 +15,8 @@ import {ɵglobal as global} from '@angular/core';
  *
  * The template cache needs to be built and loaded into window.$templateCache
  * via a separate mechanism.
+ *
+ * @publicApi
  */
 export class CachedResourceLoader extends ResourceLoader {
   private _cache: {[url: string]: string};

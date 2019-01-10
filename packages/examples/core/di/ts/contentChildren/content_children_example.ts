@@ -23,9 +23,7 @@ export class Pane {
   `
 })
 export class Tab {
-  // TODO(issue/24571): remove '!'.
   @ContentChildren(Pane) topLevelPanes !: QueryList<Pane>;
-  // TODO(issue/24571): remove '!'.
   @ContentChildren(Pane, {descendants: true}) arbitraryNestedPanes !: QueryList<Pane>;
 
   get serializedPanes(): string {

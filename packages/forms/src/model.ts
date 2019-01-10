@@ -93,18 +93,21 @@ export type FormHooks = 'change' | 'blur' | 'submit';
 /**
  * Interface for options provided to an `AbstractControl`.
  *
- * @experimental
+ * @publicApi
  */
 export interface AbstractControlOptions {
   /**
-   * List of validators applied to control.
+   * @description
+   * The list of validators applied to a control.
    */
   validators?: ValidatorFn|ValidatorFn[]|null;
   /**
-   * List of async validators applied to control.
+   * @description
+   * The list of async validators applied to control.
    */
   asyncValidators?: AsyncValidatorFn|AsyncValidatorFn[]|null;
   /**
+   * @description
    * The event name for control to update upon.
    */
   updateOn?: 'change'|'blur'|'submit';
@@ -130,6 +133,7 @@ function isOptionsObj(
  * @see [Reactive Forms Guide](/guide/reactive-forms)
  * @see [Dynamic Forms Guide](/guide/dynamic-form)
  *
+ * @publicApi
  */
 export abstract class AbstractControl {
   /** @internal */
@@ -378,7 +382,7 @@ export abstract class AbstractControl {
 
   /**
    * Marks the control as `dirty`. A control becomes dirty when
-   * the control's is changed through the UI; compare `markAsTouched`.
+   * the control's value is changed through the UI; compare `markAsTouched`.
    *
    *  @param opts Configuration options that determine how the control propagates changes
    * and emits events after marking is applied.
@@ -599,6 +603,7 @@ export abstract class AbstractControl {
    *
    * Calling `setErrors` also updates the validity of the parent control.
    *
+   * @usageNotes
    * ### Manually set the errors for a control
    *
    * ```
@@ -626,6 +631,7 @@ export abstract class AbstractControl {
    * @param path A dot-delimited string or array of string/number values that define the path to the
    * control.
    *
+   * @usageNotes
    * ### Retrieve a nested control
    *
    * For example, to get a `name` control nested within a `person` sub-group:
@@ -639,29 +645,70 @@ export abstract class AbstractControl {
   get(path: Array<string|number>|string): AbstractControl|null { return _find(this, path, '.'); }
 
   /**
-   * Reports error data for a specific error occurring in this control or in another control.
+   * @description
+   * Reports error data for the control with the given path.
    *
-   * @param errorCode The error code for which to retrieve data
-   * @param path The path to a control to check. If not supplied, checks for the error in this
-   * control.
+   * @param errorCode The code of the error to check
+   * @param path A list of control names that designates how to move from the current control
+   * to the control that should be queried for errors.
    *
-   * @returns The error data if the control with the given path has the given error, otherwise null
-   * or undefined.
+   * @usageNotes
+   * For example, for the following `FormGroup`:
+   *
+   * ```
+   * form = new FormGroup({
+   *   address: new FormGroup({ street: new FormControl() })
+   * });
+   * ```
+   *
+   * The path to the 'street' control from the root form would be 'address' -> 'street'.
+   *
+   * It can be provided to this method in one of two formats:
+   *
+   * 1. An array of string control names, e.g. `['address', 'street']`
+   * 1. A period-delimited list of control names in one string, e.g. `'address.street'`
+   *
+   * @returns error data for that particular error. If the control or error is not present,
+   * null is returned.
    */
-  getError(errorCode: string, path?: string[]): any {
+  getError(errorCode: string, path?: Array<string|number>|string): any {
     const control = path ? this.get(path) : this;
     return control && control.errors ? control.errors[errorCode] : null;
   }
 
   /**
+   * @description
    * Reports whether the control with the given path has the error specified.
    *
-   * @param errorCode The error code for which to retrieve data
-   * @param path The path to a control to check. If not supplied, checks for the error in this
-   * control.
-   * @returns True when the control with the given path has the error, otherwise false.
+   * @param errorCode The code of the error to check
+   * @param path A list of control names that designates how to move from the current control
+   * to the control that should be queried for errors.
+   *
+   * @usageNotes
+   * For example, for the following `FormGroup`:
+   *
+   * ```
+   * form = new FormGroup({
+   *   address: new FormGroup({ street: new FormControl() })
+   * });
+   * ```
+   *
+   * The path to the 'street' control from the root form would be 'address' -> 'street'.
+   *
+   * It can be provided to this method in one of two formats:
+   *
+   * 1. An array of string control names, e.g. `['address', 'street']`
+   * 1. A period-delimited list of control names in one string, e.g. `'address.street'`
+   *
+   * If no path is given, this method checks for the error on the current control.
+   *
+   * @returns whether the given error is present in the control at the given path.
+   *
+   * If the control is not present, false is returned.
    */
-  hasError(errorCode: string, path?: string[]): boolean { return !!this.getError(errorCode, path); }
+  hasError(errorCode: string, path?: Array<string|number>|string): boolean {
+    return !!this.getError(errorCode, path);
+  }
 
   /**
    * Retrieves the top-level ancestor of this control.
@@ -865,8 +912,10 @@ export abstract class AbstractControl {
  *
  * console.log(control.value); // 'Drew'
  * console.log(control.status); // 'DISABLED'
+ * ```
  *
-*/
+ * @publicApi
+ */
 export class FormControl extends AbstractControl {
   /** @internal */
   _onChange: Function[] = [];
@@ -1122,6 +1171,8 @@ export class FormControl extends AbstractControl {
  *   one: new FormControl()
  * }, { updateOn: 'blur' });
  * ```
+ *
+ * @publicApi
  */
 export class FormGroup extends AbstractControl {
   /**
@@ -1225,6 +1276,7 @@ export class FormGroup extends AbstractControl {
    * Sets the value of the `FormGroup`. It accepts an object that matches
    * the structure of the group, with control names as keys.
    *
+   * @usageNotes
    * ### Set the complete value for the form group
    *
    * ```
@@ -1237,8 +1289,8 @@ export class FormGroup extends AbstractControl {
    *
    * form.setValue({first: 'Nancy', last: 'Drew'});
    * console.log(form.value);   // {first: 'Nancy', last: 'Drew'}
-   *
    * ```
+   *
    * @throws When strict checks fail, such as setting the value of a control
    * that doesn't exist or if you excluding the value of a control.
    *
@@ -1272,19 +1324,19 @@ export class FormGroup extends AbstractControl {
    *
    * It accepts both super-sets and sub-sets of the group without throwing an error.
    *
+   * @usageNotes
    * ### Patch the value for a form group
    *
-   *  ```
-   *  const form = new FormGroup({
-   *     first: new FormControl(),
-   *     last: new FormControl()
-   *  });
-   *  console.log(form.value);   // {first: null, last: null}
+   * ```
+   * const form = new FormGroup({
+   *    first: new FormControl(),
+   *    last: new FormControl()
+   * });
+   * console.log(form.value);   // {first: null, last: null}
    *
-   *  form.patchValue({first: 'Nancy'});
-   *  console.log(form.value);   // {first: 'Nancy', last: null}
-   *
-   *  ```
+   * form.patchValue({first: 'Nancy'});
+   * console.log(form.value);   // {first: 'Nancy', last: null}
+   * ```
    *
    * @param value The object that matches the structure of the group.
    * @param options Configuration options that determine how the control propagates changes and
@@ -1537,14 +1589,14 @@ export class FormGroup extends AbstractControl {
  * the `FormArray` directly, as that result in strange and unexpected behavior such
  * as broken change detection.
  *
- *
+ * @publicApi
  */
 export class FormArray extends AbstractControl {
   /**
   * Creates a new `FormArray` instance.
   *
   * @param controls An array of child controls. Each child control is given an index
-  * wheh it is registered.
+  * where it is registered.
   *
   * @param validatorOrOpts A synchronous validator function, or an array of
   * such functions, or an `AbstractControlOptions` object that contains validation functions
@@ -1641,6 +1693,7 @@ export class FormArray extends AbstractControl {
    * to set the value of a control that doesn't exist or if you exclude the
    * value of a control.
    *
+   * @usageNotes
    * ### Set the values for the controls in the form array
    *
    * ```
@@ -1683,6 +1736,7 @@ export class FormArray extends AbstractControl {
    *
    * It accepts both super-sets and sub-sets of the array without throwing an error.
    *
+   * @usageNotes
    * ### Patch the values for controls in a form array
    *
    * ```
@@ -1726,6 +1780,7 @@ export class FormArray extends AbstractControl {
    * that matches the structure of the control. The state is a standalone value
    * or a form state object with both a value and a disabled status.
    *
+   * @usageNotes
    * ### Reset the values in a form array
    *
    * ```ts

@@ -33,7 +33,7 @@ function getResponseUrl(xhr: any): string|null {
 /**
  * A wrapper around the `XMLHttpRequest` constructor.
  *
- *
+ * @publicApi
  */
 export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
 
@@ -62,7 +62,7 @@ interface PartialResponse {
  * An `HttpBackend` which uses the XMLHttpRequest API to send
  * requests to a backend server.
  *
- *
+ * @publicApi
  */
 @Injectable()
 export class HttpXhrBackend implements HttpBackend {
@@ -232,10 +232,12 @@ export class HttpXhrBackend implements HttpBackend {
       // Connection timeout, DNS error, offline, etc. These are actual errors, and are
       // transmitted on the error channel.
       const onError = (error: ErrorEvent) => {
+        const {url} = partialFromXhr();
         const res = new HttpErrorResponse({
           error,
           status: xhr.status || 0,
           statusText: xhr.statusText || 'Unknown Error',
+          url: url || undefined,
         });
         observer.error(res);
       };

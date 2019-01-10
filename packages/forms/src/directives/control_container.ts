@@ -14,6 +14,8 @@ import {Form} from './form_interface';
  * @description
  * A base class for directives that contain multiple registered instances of `NgControl`.
  * Only used by the forms module.
+ *
+ * @publicApi
  */
 export abstract class ControlContainer extends AbstractControlDirective {
   /**

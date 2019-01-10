@@ -5,8 +5,9 @@ import {
   NgModuleRef,
 } from '@angular/core';
 import { ELEMENT_MODULE_PATHS_TOKEN } from './element-registry';
-import { from as fromPromise, Observable, of } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { createCustomElement } from '@angular/elements';
+
 
 @Injectable()
 export class ElementsLoader {
@@ -34,7 +35,7 @@ export class ElementsLoader {
 
     // Returns observable that completes when all discovered elements have been registered.
     const allRegistered = Promise.all(unregisteredSelectors.map(s => this.loadCustomElement(s)));
-    return fromPromise(allRegistered.then(() => undefined));
+    return from(allRegistered.then(() => undefined));
   }
 
   /** Loads and registers the custom element defined on the `WithCustomElement` module factory. */

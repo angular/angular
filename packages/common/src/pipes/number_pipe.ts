@@ -44,6 +44,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * <code-example path="common/pipes/ts/number_pipe.ts" region='NumberPipe'></code-example>
  *
+ * @publicApi
  */
 @Pipe({name: 'number'})
 export class DecimalPipe implements PipeTransform {
@@ -96,7 +97,7 @@ export class DecimalPipe implements PipeTransform {
  *
  * <code-example path="common/pipes/ts/percent_pipe.ts" region='PercentPipe'></code-example>
  *
- *
+ * @publicApi
  */
 @Pipe({name: 'percent'})
 export class PercentPipe implements PipeTransform {
@@ -113,7 +114,7 @@ export class PercentPipe implements PipeTransform {
    *   - `minFractionDigits`: The minimum number of digits after the decimal point.
    * Default is `0`.
    *   - `maxFractionDigits`: The maximum number of digits after the decimal point.
-   * Default is `3`.
+   * Default is `0`.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
@@ -150,7 +151,7 @@ export class PercentPipe implements PipeTransform {
  *
  * <code-example path="common/pipes/ts/currency_pipe.ts" region='CurrencyPipe'></code-example>
  *
- *
+ * @publicApi
  */
 @Pipe({name: 'currency'})
 export class CurrencyPipe implements PipeTransform {
@@ -169,6 +170,7 @@ export class CurrencyPipe implements PipeTransform {
    * For example, the Canadian dollar CAD has the symbol `CA$` and the symbol-narrow `$`. If the
    * locale has no narrow symbol, uses the standard symbol for the locale.
    *   - String: Use the given string value instead of a code or a symbol.
+   * For example, an empty string will suppress the currency & symbol.
    *   - Boolean (marked deprecated in v5): `true` for symbol and false for `code`.
    *
    * @param digitsInfo Decimal representation options, specified by a string
@@ -177,9 +179,9 @@ export class CurrencyPipe implements PipeTransform {
    *   - `minIntegerDigits`: The minimum number of integer digits before the decimal point.
    * Default is `1`.
    *   - `minFractionDigits`: The minimum number of digits after the decimal point.
-   * Default is `0`.
+   * Default is `2`.
    *   - `maxFractionDigits`: The maximum number of digits after the decimal point.
-   * Default is `3`.
+   * Default is `2`.
    * If not provided, the number will be formatted with the proper amount of digits,
    * depending on what the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) specifies.
    * For example, the Canadian dollar has 2 digits, whereas the Chilean peso has none.

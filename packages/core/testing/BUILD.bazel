@@ -13,5 +13,7 @@ ng_module(
     deps = [
         "//packages:types",
         "//packages/core",
+        "@ngdeps//@types/jasmine",
+        "@ngdeps//zone.js",
     ],
 )

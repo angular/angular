@@ -17,6 +17,27 @@ describe('CustomIconRegistry', () => {
     expect(svgElement).toEqual(createSvg(svgSrc));
   });
 
+  it('should support caching icons with a namespace', () => {
+    const mockHttp: any = {};
+    const mockSanitizer: any = {};
+    const mockDocument: any = {};
+
+    const svgSrc1 = '<svg xmlns="http://www.w3.org/2000/svg"><path d="h100" /></svg>';
+    const svgSrc2 = '<svg xmlns="http://www.w3.org/2000/svg"><path d="h200" /></svg>';
+    const svgSrc3 = '<svg xmlns="http://www.w3.org/2000/svg"><path d="h300" /></svg>';
+    const svgIcons: SvgIconInfo[] = [
+      { name: 'test_icon', svgSource: svgSrc1 },
+      { namespace: 'foo', name: 'test_icon', svgSource: svgSrc2 },
+      { namespace: 'bar', name: 'test_icon', svgSource: svgSrc3 },
+    ];
+
+    const registry = new CustomIconRegistry(mockHttp, mockSanitizer, mockDocument, svgIcons);
+    let svgElement: SVGElement|undefined;
+    registry.getNamedSvgIcon('test_icon', 'foo').subscribe(el => svgElement = el);
+
+    expect(svgElement).toEqual(createSvg(svgSrc2));
+  });
+
   it('should call through to the MdIconRegistry if the icon name is not in the preloaded cache', () => {
     const mockHttp: any = {};
     const mockSanitizer: any = {};

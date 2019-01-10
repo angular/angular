@@ -39,7 +39,7 @@ describe('CodeTabsComponent', () => {
     expect(tabs[0].linenums).toBe('linenums-A');
     expect(tabs[0].path).toBe('path-A');
     expect(tabs[0].region).toBe('region-A');
-    expect(tabs[0].title).toBe('title-A');
+    expect(tabs[0].header).toBe('header-A');
     expect(tabs[0].code.trim()).toBe('Code example 1');
 
     // Second code pane expectations
@@ -48,7 +48,7 @@ describe('CodeTabsComponent', () => {
     expect(tabs[1].linenums).toBe('default-linenums', 'Default linenums should have been used');
     expect(tabs[1].path).toBe('path-B');
     expect(tabs[1].region).toBe('region-B');
-    expect(tabs[1].title).toBe('title-B');
+    expect(tabs[1].header).toBe('header-B');
     expect(tabs[1].code.trim()).toBe('Code example 2');
   });
 
@@ -56,10 +56,10 @@ describe('CodeTabsComponent', () => {
     const matTabs = fixture.nativeElement.querySelectorAll('.mat-tab-label');
     expect(matTabs.length).toBe(2);
 
-    expect(matTabs[0].textContent.trim()).toBe('title-A');
+    expect(matTabs[0].textContent.trim()).toBe('header-A');
     expect(matTabs[0].querySelector('.class-A')).toBeTruthy();
 
-    expect(matTabs[1].textContent.trim()).toBe('title-B');
+    expect(matTabs[1].textContent.trim()).toBe('header-B');
     expect(matTabs[1].querySelector('.class-B')).toBeTruthy();
   });
 
@@ -78,14 +78,14 @@ describe('CodeTabsComponent', () => {
                  linenums="linenums-A"
                  path="path-A"
                  region="region-A"
-                 title="title-A">
+                 header="header-A">
         Code example 1
       </code-pane>
       <code-pane class="class-B"
                  language="language-B"
                  path="path-B"
                  region="region-B"
-                 title="title-B">
+                 header="header-B">
         Code example 2
       </code-pane>
     </code-tabs>

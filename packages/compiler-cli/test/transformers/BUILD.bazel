@@ -2,7 +2,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages:types",
@@ -12,6 +12,7 @@ ts_library(
         "//packages/compiler/test:test_utils",
         "//packages/core",
         "//packages/platform-browser",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -24,9 +25,15 @@ jasmine_node_test(
         "//packages/core:npm_package",
         "//packages/router:npm_package",
     ],
+    tags = [
+        # Disabled as these tests pertain to the old compiler and not ngtsc, which doesn't use any
+        # of these transformer utilities.
+        "no-ivy-aot",
+    ],
     deps = [
         ":test_lib",
         "//packages/core",
         "//tools/testing:node",
+        "@ngdeps//source-map",
     ],
 )

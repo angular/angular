@@ -11,18 +11,16 @@ import {Component, ContentChildren, Directive, Inject, NO_ERRORS_SCHEMA, NgModul
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-{
-  describe('forwardRef integration', function() {
-    beforeEach(() => { TestBed.configureTestingModule({imports: [Module], declarations: [App]}); });
+describe('forwardRef integration', function() {
+  beforeEach(() => { TestBed.configureTestingModule({imports: [Module], declarations: [App]}); });
 
-    it('should instantiate components which are declared using forwardRef', () => {
-      const a = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
-      a.detectChanges();
-      expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
-      expect(TestBed.get(ModuleFrame)).toBeDefined();
-    });
+  it('should instantiate components which are declared using forwardRef', () => {
+    const a = TestBed.configureTestingModule({schemas: [NO_ERRORS_SCHEMA]}).createComponent(App);
+    a.detectChanges();
+    expect(asNativeElements(a.debugElement.children)).toHaveText('frame(lock)');
+    expect(TestBed.get(ModuleFrame)).toBeDefined();
   });
-}
+});
 
 @NgModule({
   imports: [CommonModule],

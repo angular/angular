@@ -10,11 +10,12 @@ import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {FatalDiagnosticError} from '../../diagnostics';
-import {Decorator, ReflectionHost} from '../../host';
-import {reflectNameOfDeclaration} from '../../metadata/src/reflector';
+import {Decorator, ReflectionHost, reflectNameOfDeclaration} from '../../reflection';
+import {TypeCheckContext} from '../../typecheck';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler} from './api';
 import {DtsFileTransformer} from './declaration';
+
 
 /**
  * Record of an adapter which decided to emit a static field, and the analysis it performed to
@@ -38,6 +39,7 @@ export class IvyCompilation {
    * information recorded about them for later compilation.
    */
   private analysis = new Map<ts.Declaration, EmitFieldOperation<any, any>>();
+  private typeCheckMap = new Map<ts.Declaration, DecoratorHandler<any, any>>();
 
   /**
    * Tracks factory information which needs to be generated.
@@ -107,6 +109,9 @@ export class IvyCompilation {
                 analysis: analysis.analysis,
                 metadata: metadata,
               });
+              if (!!analysis.typeCheck) {
+                this.typeCheckMap.set(node, adapter);
+              }
             }
 
             if (analysis.diagnostics !== undefined) {
@@ -154,6 +159,14 @@ export class IvyCompilation {
     } else {
       return undefined;
     }
+  }
+
+  typeCheck(context: TypeCheckContext): void {
+    this.typeCheckMap.forEach((handler, node) => {
+      if (handler.typeCheck !== undefined) {
+        handler.typeCheck(context, node, this.analysis.get(node) !.analysis);
+      }
+    });
   }
 
   /**

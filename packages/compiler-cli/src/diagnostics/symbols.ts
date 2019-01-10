@@ -11,7 +11,7 @@ import {StaticSymbol} from '@angular/compiler';
 /**
  * The range of a span of text in a source file.
  *
- * @experimental
+ * @publicApi
  */
 export interface Span {
   /**
@@ -44,7 +44,7 @@ export type Definition = Location[] | undefined;
  * A symbol describing a language element that can be referenced by expressions
  * in an Angular template.
  *
- * @experimental
+ * @publicApi
  */
 export interface Symbol {
   /**
@@ -124,7 +124,7 @@ export interface Symbol {
 /**
  * A table of `Symbol`s accessible by name.
  *
- * @experimental
+ * @publicApi
  */
 export interface SymbolTable {
   /**
@@ -153,7 +153,7 @@ export interface SymbolTable {
 /**
  * A description of a function or method signature.
  *
- * @experimental
+ * @publicApi
  */
 export interface Signature {
   /**
@@ -171,7 +171,7 @@ export interface Signature {
 /**
  * An enumeration of basic types.
  *
- * @experimental
+ * @publicApi
  */
 export enum BuiltinType {
   /**
@@ -218,7 +218,7 @@ export enum BuiltinType {
 /**
  * The kinds of definition.
  *
- * @experimental
+ * @publicApi
  */
 export type DeclarationKind = 'attribute' | 'html attribute' | 'component' | 'element' | 'entity' |
     'key' | 'method' | 'pipe' | 'property' | 'type' | 'reference' | 'variable';
@@ -226,7 +226,7 @@ export type DeclarationKind = 'attribute' | 'html attribute' | 'component' | 'el
 /**
  * Describes a symbol to type binding used to build a symbol table.
  *
- * @experimental
+ * @publicApi
  */
 export interface SymbolDeclaration {
   /**
@@ -253,7 +253,7 @@ export interface SymbolDeclaration {
 /**
  * Information about the pipes that are available for use in a template.
  *
- * @experimental
+ * @publicApi
  */
 export interface PipeInfo {
   /**
@@ -270,14 +270,14 @@ export interface PipeInfo {
 /**
  * A sequence of pipe information.
  *
- * @experimental
+ * @publicApi
  */
 export type Pipes = PipeInfo[] | undefined;
 
 /**
  * Describes the language context in which an Angular expression is evaluated.
  *
- * @experimental
+ * @publicApi
  */
 export interface SymbolQuery {
   /**

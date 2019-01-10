@@ -5,7 +5,7 @@ import { FormsModule }          from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
 import { AppComponent }          from './app.component';
-import { PageNotFoundComponent } from './not-found.component';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 const routes: Routes = [
 

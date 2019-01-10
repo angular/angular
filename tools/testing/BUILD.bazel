@@ -7,6 +7,7 @@ ts_library(
     testonly = 1,
     srcs = ["init_browser_spec.ts"],
     deps = [
+        "//packages/compiler",
         "//packages/core/testing",
         "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/animations",
@@ -18,9 +19,11 @@ ts_library(
     testonly = 1,
     srcs = ["init_node_spec.ts"],
     deps = [
+        "//packages/compiler",
         "//packages/core/testing",
         "//packages/platform-server",
         "//packages/platform-server/testing",
+        "@ngdeps//domino",
     ],
 )
 
@@ -28,5 +31,7 @@ ts_library(
     name = "node_no_angular",
     testonly = 1,
     srcs = ["init_node_no_angular_spec.ts"],
-    deps = ["//packages:types"],
+    deps = [
+        "//packages:types",
+    ],
 )

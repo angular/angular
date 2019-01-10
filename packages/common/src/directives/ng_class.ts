@@ -34,7 +34,7 @@ import {Directive, DoCheck, ElementRef, Input, IterableChanges, IterableDiffer, 
  * - `Object` - keys are CSS classes that get added when the expression given in the value
  *              evaluates to a truthy value, otherwise they are removed.
  *
- *
+ * @publicApi
  */
 @Directive({selector: '[ngClass]'})
 export class NgClass implements DoCheck {

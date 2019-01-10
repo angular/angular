@@ -15,3 +15,10 @@ export const NG_INJECTOR_DEF = getClosureSafeProperty({ngInjectorDef: getClosure
 export const NG_PIPE_DEF = getClosureSafeProperty({ngPipeDef: getClosureSafeProperty});
 export const NG_MODULE_DEF = getClosureSafeProperty({ngModuleDef: getClosureSafeProperty});
 export const NG_BASE_DEF = getClosureSafeProperty({ngBaseDef: getClosureSafeProperty});
+
+/**
+ * If a directive is diPublic, bloomAdd sets a property on the type with this constant as
+ * the key and the directive's unique ID as the value. This allows us to map directives to their
+ * bloom filter bit for DI.
+ */
+export const NG_ELEMENT_ID = getClosureSafeProperty({__NG_ELEMENT_ID__: getClosureSafeProperty});

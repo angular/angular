@@ -11,7 +11,7 @@ import {
   AIO_NGINX_PORT_HTTPS,
   AIO_WWW_USER,
 } from '../common/env-variables';
-import {computeShortSha, createLogger} from '../common/utils';
+import {computeShortSha, Logger} from '../common/utils';
 
 // Interfaces - Types
 export interface CmdResult { success: boolean; err: Error | null; stdout: string; stderr: string; }
@@ -31,7 +31,7 @@ class Helper {
     https: AIO_NGINX_PORT_HTTPS,
   };
 
-  private logger = createLogger('TestHelper');
+  private logger = new Logger('TestHelper');
 
   // Constructor
   constructor() {
@@ -105,7 +105,7 @@ class Helper {
     Object.keys(this.portPerScheme).forEach(scheme => suiteFactory(scheme, this.portPerScheme[scheme]));
   }
 
-  public verifyResponse(status: number | [number, string], regex = /^/): VerifyCmdResultFn {
+  public verifyResponse(status: number | [number, string], regex: string | RegExp = /^/): VerifyCmdResultFn {
     let statusCode: number;
     let statusText: string;
 
@@ -180,26 +180,42 @@ class Helper {
   }
 }
 
+interface DefaultCurlOptions {
+  defaultMethod?: CurlOptions['method'];
+  defaultOptions?: CurlOptions['options'];
+  defaultHeaders?: CurlOptions['headers'];
+  defaultData?: CurlOptions['data'];
+  defaultExtraPath?: CurlOptions['extraPath'];
+}
+
 interface CurlOptions {
   method?: string;
   options?: string;
+  headers?: string[];
   data?: any;
   url?: string;
   extraPath?: string;
 }
 
-export function makeCurl(baseUrl: string) {
+export function makeCurl(baseUrl: string, {
+  defaultMethod = 'POST',
+  defaultOptions = '',
+  defaultHeaders = ['Content-Type: application/json'],
+  defaultData = {},
+  defaultExtraPath = '',
+}: DefaultCurlOptions = {}) {
   return function curl({
-    method = 'POST',
-    options = '',
-    data = {},
+    method = defaultMethod,
+    options = defaultOptions,
+    headers = defaultHeaders,
+    data = defaultData,
     url = baseUrl,
-    extraPath = '',
+    extraPath = defaultExtraPath,
   }: CurlOptions) {
     const dataString = data ? JSON.stringify(data) : '';
     const cmd = `curl -iLX ${method} ` +
                 `${options} ` +
-                `--header "Content-Type: application/json" ` +
+                headers.map(header => `--header "${header}" `).join('') +
                 `--data '${dataString}' ` +
                 `${url}${extraPath}`;
     return helper.runCmd(cmd);

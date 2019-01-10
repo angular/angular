@@ -1,16 +1,21 @@
 /* Second Heroes version */
 // #docregion
 import { Component } from '@angular/core';
+// #docregion animation-imports
+import { RouterOutlet } from '@angular/router';
+import { slideInAnimation } from './animations';
 
 @Component({
   selector: 'app-root',
-  template: `
-    <h1>Angular Router</h1>
-    <nav>
-      <a routerLink="/crisis-center" routerLinkActive="active">Crisis Center</a>
-      <a routerLink="/heroes" routerLinkActive="active">Heroes</a>
-    </nav>
-    <router-outlet></router-outlet>
-  `
+  templateUrl: 'app.component.html',
+  styleUrls: ['app.component.css'],
+  animations: [ slideInAnimation ]
 })
-export class AppComponent { }
+// #enddocregion animation-imports
+// #docregion function-binding
+export class AppComponent {
+  getAnimationData(outlet: RouterOutlet) {
+    return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
+  }
+}
+// #enddocregion function-binding

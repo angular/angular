@@ -8,15 +8,14 @@
 
 import {SelectorFlags} from '@angular/core/src/render3/interfaces/projection';
 
-import {Input, TemplateRef, ViewContainerRef, ViewRef} from '../../src/core';
-import {defineDirective} from '../../src/render3/definition';
-import {injectTemplateRef, injectViewContainerRef} from '../../src/render3/di';
-import {AttributeMarker, detectChanges} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, projection, projectionDef, template, text} from '../../src/render3/instructions';
+import {AttributeMarker, defineDirective, detectChanges, directiveInject, load, query, queryRefresh, reference, templateRefExtractor} from '../../src/render3/index';
+
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, template, text, textBinding, interpolation1} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
-import {NgIf} from './common_with_def';
-import {ComponentFixture, createComponent, renderComponent, toHtml} from './render_util';
+import {TemplateRef, ViewContainerRef, QueryList} from '@angular/core';
+import {NgIf, NgForOf} from './common_with_def';
+import {ComponentFixture, createComponent, getDirectiveOnNode, renderComponent, toHtml} from './render_util';
 
 describe('content projection', () => {
   it('should project content', () => {
@@ -48,7 +47,7 @@ describe('content projection', () => {
     expect(toHtml(parent)).toEqual('<child><div>content</div></child>');
   });
 
-  it('should project content when root.', () => {
+  it('should project content when <ng-content> is at a template root', () => {
     /** <ng-content></ng-content> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
@@ -234,7 +233,7 @@ describe('content projection', () => {
   });
 
   it('should project containers', () => {
-    /** <div> <ng-content></ng-content></div> */
+    /** <div><ng-content></ng-content></div> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         projectionDef();
@@ -455,7 +454,7 @@ describe('content projection', () => {
         elementEnd();
 
         // testing
-        childCmptInstance = loadDirective(0);
+        childCmptInstance = getDirectiveOnNode(0);
       }
     }, 4, 0, [Child]);
 
@@ -507,7 +506,7 @@ describe('content projection', () => {
         element(0, 'child');
 
         // testing
-        childCmptInstance = loadDirective(0);
+        childCmptInstance = getDirectiveOnNode(0);
       }
     }, 1, 0, [Child]);
 
@@ -559,7 +558,7 @@ describe('content projection', () => {
          if (rf & RenderFlags.Create) {
            elementStart(0, 'child');
            {
-             childCmptInstance = loadDirective(0);
+             childCmptInstance = getDirectiveOnNode(0);
              text(1, 'content');
            }
            elementEnd();
@@ -733,7 +732,7 @@ describe('content projection', () => {
         }
         elementEnd();
         // testing
-        parent = loadDirective(0);
+        parent = getDirectiveOnNode(0);
       }
     }, 3, 0, [Parent]);
 
@@ -789,7 +788,7 @@ describe('content projection', () => {
          if (rf & RenderFlags.Create) {
            elementStart(0, 'child');
            {
-             childCmptInstance = loadDirective(0);
+             childCmptInstance = getDirectiveOnNode(0);
              text(1, 'content');
            }
            elementEnd();
@@ -816,7 +815,7 @@ describe('content projection', () => {
       if (rf & RenderFlags.Create) {
         projectionDef();
         text(0, 'Before-');
-        template(1, IfTemplate, 1, 0, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        template(1, IfTemplate, 1, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngIf']);
         text(2, '-After');
       }
       if (rf & RenderFlags.Update) {
@@ -827,7 +826,6 @@ describe('content projection', () => {
 
     function IfTemplate(rf1: RenderFlags, ctx: any) {
       if (rf1 & RenderFlags.Create) {
-        projectionDef();
         projection(0);
       }
     }
@@ -851,7 +849,7 @@ describe('content projection', () => {
         elementEnd();
 
         // testing
-        child = loadDirective(0);
+        child = getDirectiveOnNode(0);
       }
     }, 4, 0, [Child]);
 
@@ -881,7 +879,7 @@ describe('content projection', () => {
       if (rf & RenderFlags.Create) {
         projectionDef();
         text(0, 'Before-');
-        template(1, IfTemplate, 1, 0, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        template(1, IfTemplate, 1, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngIf']);
         text(2, '-After');
       }
       if (rf & RenderFlags.Update) {
@@ -892,7 +890,6 @@ describe('content projection', () => {
 
     function IfTemplate(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef();
         projection(0);
       }
     }
@@ -916,7 +913,7 @@ describe('content projection', () => {
         elementEnd();
 
         // testing
-        child = loadDirective(0);
+        child = getDirectiveOnNode(0);
       }
     }, 4, 0, [Child]);
 
@@ -933,6 +930,151 @@ describe('content projection', () => {
     fixture.update();
     expect(fixture.html).toEqual('<child>Before-<div>A</div>Some text-After</child>');
   });
+
+  it('should project into dynamic views with specific selectors', () => {
+    /**
+     * <ng-content></ng-content>
+     * Before-
+     * <ng-template [ngIf]="showing">
+     *     <ng-content select="div"></ng-content>
+     * </ng-template>
+     * -After
+     */
+    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef([[['div']]], ['div']);
+        projection(0);
+        text(1, 'Before-');
+        template(2, IfTemplate, 1, 0, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        text(3, '-After');
+      }
+      if (rf & RenderFlags.Update) {
+        elementProperty(2, 'ngIf', bind(ctx.showing));
+      }
+
+    }, 4, 1, [NgIf]);
+
+    function IfTemplate(rf1: RenderFlags) {
+      if (rf1 & RenderFlags.Create) {
+        projection(0, 1);
+      }
+    }
+
+    let child: {showing: boolean};
+    /**
+     * <child>
+     *     <div>A</div>
+     *     <span>B</span>
+     * </child>
+     */
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'child');
+        {
+          elementStart(1, 'div');
+          { text(2, 'A'); }
+          elementEnd();
+          elementStart(3, 'span');
+          { text(4, 'B'); }
+          elementEnd();
+        }
+        elementEnd();
+
+        // testing
+        child = getDirectiveOnNode(0);
+      }
+    }, 5, 0, [Child]);
+
+    const fixture = new ComponentFixture(App);
+    child !.showing = true;
+    fixture.update();
+    expect(fixture.html).toEqual('<child><span>B</span>Before-<div>A</div>-After</child>');
+
+    child !.showing = false;
+    fixture.update();
+    expect(fixture.html).toEqual('<child><span>B</span>Before--After</child>');
+
+    child !.showing = true;
+    fixture.update();
+    expect(fixture.html).toEqual('<child><span>B</span>Before-<div>A</div>-After</child>');
+  });
+
+  it('should project if <ng-content> is in a template that has different declaration/insertion points',
+     () => {
+       let triggerDir !: Trigger;
+
+       function NgTemplate(rf: RenderFlags, ctx: any) {
+         if (rf & RenderFlags.Create) {
+           projection(0);
+         }
+       }
+
+       /**
+        * <ng-template>
+        *     <ng-content></ng-content>
+        * </ng-template>
+        */
+       const Comp = createComponent(
+           'comp',
+           (rf: RenderFlags, ctx: any) => {
+             if (rf & RenderFlags.Create) {
+               projectionDef();
+               template(1, NgTemplate, 1, 0, 'ng-template', null, null, templateRefExtractor);
+             }
+           },
+           2, 0, [], [],
+           function(rf: RenderFlags, ctx: any) {
+             /**  @ViewChild(TemplateRef) template: TemplateRef<any>  */
+             if (rf & RenderFlags.Create) {
+               query(0, TemplateRef as any, true);
+             }
+             if (rf & RenderFlags.Update) {
+               let tmp: any;
+               queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.template = tmp.first);
+             }
+           });
+
+       class Trigger {
+         // @Input()
+         trigger: any;
+
+         constructor(public vcr: ViewContainerRef) {}
+
+         open() { this.vcr.createEmbeddedView(this.trigger.template); }
+
+         static ngComponentDef = defineDirective({
+           type: Trigger,
+           selectors: [['', 'trigger', '']],
+           factory: () => triggerDir = new Trigger(directiveInject(ViewContainerRef as any)),
+           inputs: {trigger: 'trigger'}
+         });
+       }
+
+       /**
+        * <button [trigger]="comp"></button>
+        * <comp #comp>
+        *    Some content
+        * </comp>
+        */
+       const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+         if (rf & RenderFlags.Create) {
+           element(0, 'button', [AttributeMarker.SelectOnly, 'trigger']);
+           elementStart(1, 'comp', null, ['comp', '']);
+           { text(3, 'Some content'); }
+           elementEnd();
+         }
+         if (rf & RenderFlags.Update) {
+           const comp = reference(2);
+           elementProperty(0, 'trigger', bind(comp));
+         }
+       }, 4, 1, [Comp, Trigger]);
+
+       const fixture = new ComponentFixture(App);
+       expect(fixture.html).toEqual(`<button></button><comp></comp>`);
+
+       triggerDir.open();
+       expect(fixture.html).toEqual(`<button></button>Some content<comp></comp>`);
+     });
 
   it('should project nodes into the last ng-content', () => {
     /**
@@ -1015,7 +1157,7 @@ describe('content projection', () => {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'child');
         {
-          childCmptInstance = loadDirective(0);
+          childCmptInstance = getDirectiveOnNode(0);
           text(1, 'content');
         }
         elementEnd();
@@ -1028,6 +1170,52 @@ describe('content projection', () => {
     childCmptInstance.show = true;
     detectChanges(parent);
     expect(toHtml(parent)).toEqual('<child><div>content</div></child>');
+  });
+
+  // https://stackblitz.com/edit/angular-ceqmnw?file=src%2Fapp%2Fapp.component.ts
+  it('should project nodes into the last ng-content unrolled by ngFor', () => {
+    const items = [1, 2];
+
+    /**
+     <div *ngFor="let item of [1, 2]; let index = index">
+      ({{index}}): <ng-content></ng-content>
+     </div>
+     */
+    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef();
+        { template(0, ForTemplate, 3, 1, undefined, ['ngForOf', '']); }
+      }
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'ngForOf', bind(items));
+      }
+    }, 1, 1, [NgForOf]);
+
+    function ForTemplate(rf1: RenderFlags, ctx: {index: number}) {
+      if (rf1 & RenderFlags.Create) {
+        elementStart(0, 'div');
+        text(1);
+        projection(2);
+        elementEnd();
+      }
+      if (rf1 & RenderFlags.Update) {
+        textBinding(1, interpolation1('(', ctx.index, '):'));
+      }
+    }
+
+    /**
+     * <child>content</child>
+     */
+    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'child');
+        { text(1, 'content'); }
+        elementEnd();
+      }
+    }, 2, 0, [Child]);
+
+    const parent = renderComponent(Parent);
+    expect(toHtml(parent)).toEqual('<child><div>(0):</div><div>(1):content</div></child>');
   });
 
   it('should project with multiple instances of a component with projection', () => {

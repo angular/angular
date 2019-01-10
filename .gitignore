@@ -1,7 +1,8 @@
 .DS_STORE
 
 /dist/
-bazel-*
+/bazel-*
+/integration/bazel/bazel-*
 e2e_test.*
 node_modules
 bower_components
@@ -14,7 +15,6 @@ pubspec.lock
 .settings/
 *.swo
 modules/.settings
-.bazelrc
 .vscode
 modules/.vscode
 
@@ -30,3 +30,7 @@ yarn-error.log
 
 # rollup-test output
 /modules/rollup-test/dist/
+
+# User specific bazel settings
+.bazelrc.user
+

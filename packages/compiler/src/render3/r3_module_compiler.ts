@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticSymbol} from '../aot/static_symbol';
 import {CompileShallowModuleMetadata, identifierName} from '../compile_metadata';
 import {InjectableCompiler} from '../injectable_compiler';
 import {mapLiteral} from '../output/map_util';
@@ -73,7 +72,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     exports: o.literalArr(exports.map(ref => ref.value)),
   })]);
 
-  const type = new o.ExpressionType(o.importExpr(R3.NgModuleDef, [
+  const type = new o.ExpressionType(o.importExpr(R3.NgModuleDefWithMeta, [
     new o.ExpressionType(moduleType), tupleTypeOf(declarations), tupleTypeOf(imports),
     tupleTypeOf(exports)
   ]));

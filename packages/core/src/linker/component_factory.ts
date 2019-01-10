@@ -19,6 +19,7 @@ import {ViewRef} from './view_ref';
  * Provides access to the component instance and related objects,
  * and provides the means of destroying the instance.
  *
+ * @publicApi
  */
 export abstract class ComponentRef<C> {
   /**
@@ -66,9 +67,12 @@ export abstract class ComponentRef<C> {
   abstract onDestroy(callback: Function): void;
 }
 
+/**
+ * @publicApi
+ */
 export abstract class ComponentFactory<C> {
   /**
-   * The comonent's HTML selector.
+   * The component's HTML selector.
    */
   abstract get selector(): string;
   /**

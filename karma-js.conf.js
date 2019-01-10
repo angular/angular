@@ -29,11 +29,11 @@ module.exports = function(config) {
       {pattern: 'dist/all/@angular/**/*.js', included: false, watched: true},
 
       // Serve AngularJS for `ngUpgrade` testing.
-      {pattern: 'node_modules/angular-1.5/angular.js', included: false, watched: false},
+      {pattern: 'node_modules/angular-1.5/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks-1.5/angular-mocks.js', included: false, watched: false},
-      {pattern: 'node_modules/angular-1.6/angular.js', included: false, watched: false},
+      {pattern: 'node_modules/angular-1.6/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks-1.6/angular-mocks.js', included: false, watched: false},
-      {pattern: 'node_modules/angular/angular.js', included: false, watched: false},
+      {pattern: 'node_modules/angular/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
       'node_modules/core-js/client/core.js',
@@ -112,7 +112,7 @@ module.exports = function(config) {
     // don't need this entire config file.
     proxies: {
       '/base/angular/': '/base/',
-      '/base/angular_deps/': '/base/',
+      '/base/ngdeps/': '/base/',
     },
 
     reporters: ['dots'],
@@ -122,12 +122,9 @@ module.exports = function(config) {
       startConnect: false,
       recordVideo: false,
       recordScreenshots: false,
-      options: {
-        'selenium-version': '2.53.0',
-        'command-timeout': 600,
-        'idle-timeout': 600,
-        'max-duration': 5400,
-      }
+      idleTimeout: 600,
+      commandTimeout: 600,
+      maxDuration: 5400,
     },
 
     browserStack: {
@@ -147,22 +144,19 @@ module.exports = function(config) {
     browserNoActivityTimeout: 300000,
   });
 
-  if (process.env.TRAVIS) {
-    var buildId =
-        'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
-    if (process.env.CI_MODE.startsWith('saucelabs')) {
-      config.sauceLabs.build = buildId;
-      config.sauceLabs.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
+  if (process.env.CIRCLECI) {
+    const tunnelIdentifier = process.env['SAUCE_TUNNEL_IDENTIFIER'];
 
-      // TODO(mlaval): remove once SauceLabs supports websockets.
-      // This speeds up the capturing a bit, as browsers don't even try to use websocket.
-      console.log('>>>> setting socket.io transport to polling <<<<');
-      config.transports = ['polling'];
-    }
+    // Setup the Saucelabs plugin so that it can launch browsers using the proper tunnel.
+    config.sauceLabs.build = tunnelIdentifier;
+    config.sauceLabs.tunnelIdentifier = tunnelIdentifier;
 
-    if (process.env.CI_MODE.startsWith('browserstack')) {
-      config.browserStack.build = buildId;
-      config.browserStack.tunnelIdentifier = process.env.TRAVIS_JOB_NUMBER;
-    }
+    // Setup the Browserstack plugin so that it can launch browsers using the proper tunnel.
+    // TODO: This is currently not used because BS doesn't run on the CI. Consider removing.
+    config.browserStack.build = tunnelIdentifier;
+    config.browserStack.tunnelIdentifier = tunnelIdentifier;
+
+    // Try "websocket" for a faster transmission first. Fallback to "polling" if necessary.
+    config.transports = ['websocket', 'polling'];
   }
 };

@@ -23,7 +23,7 @@ An NgModule is defined by a class decorated with `@NgModule()`. The `@NgModule()
 
 Here's a simple root NgModule definition.
 
-<code-example path="architecture/src/app/mini-app.ts" region="module" title="src/app/app.module.ts" linenums="false"></code-example>
+<code-example path="architecture/src/app/mini-app.ts" region="module" header="src/app/app.module.ts" linenums="false"></code-example>
 
 <div class="alert is-helpful">
 
@@ -56,7 +56,9 @@ A component and its template together define a *view*. A component can contain a
 When you create a component, it's associated directly with a single view, called the *host view*. The host view can be the root of a view hierarchy, which can contain *embedded views*, which are in turn the host views of other components. Those components can be in the same NgModule, or can be imported from other NgModules. Views in the tree can be nested to any depth.
 
 <div class="alert is-helpful">
-    **Note:** The hierarchical structure of views is a key factor in the way Angular detects and responds to changes in the DOM and app data. 
+
+**Note:** The hierarchical structure of views is a key factor in the way Angular detects and responds to changes in the DOM and app data.
+
 </div>
 
 ## NgModules and JavaScript modules
@@ -79,7 +81,7 @@ Other JavaScript modules use *import statements* to access public objects from o
 
 <img src="generated/images/guide/architecture/library-module.png" alt="Component" class="left">
 
-Angular loads as a collection of JavaScript modules. You can think of them as library modules. Each Angular library name begins with the `@angular` prefix. Install them with the `npm` package manager and import parts of them with JavaScript `import` statements.
+Angular loads as a collection of JavaScript modules. You can think of them as library modules. Each Angular library name begins with the `@angular` prefix. Install them with the node package manager `npm` and import parts of them with JavaScript `import` statements.
 
 <br class="clear">
 

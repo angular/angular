@@ -8,7 +8,9 @@ load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 ng_module(
     name = "todo",
     srcs = ["index.ts"],
-    tags = ["ivy-only"],
+    tags = [
+        "ivy-only",
+    ],
     deps = [
         "//packages/common",
         "//packages/core",
@@ -25,7 +27,9 @@ ng_rollup_bundle(
     # has an "external" directory for external dependencies.
     # This should probably start with "angular/" and let the rule deal with it.
     entry_point = "packages/core/test/bundling/todo/index.js",
-    tags = ["ivy-only"],
+    tags = [
+        "ivy-only",
+    ],
     deps = [
         ":todo",
         "//packages/common",
@@ -36,10 +40,14 @@ ng_rollup_bundle(
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["*_spec.ts"]),
+    tags = [
+        "ivy-only",
+    ],
     deps = [
         "//packages:types",
+        "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",
         "//packages/private/testing",
@@ -55,8 +63,6 @@ jasmine_node_test(
         ":bundle.min_debug.js",
     ],
     tags = [
-        "ivy-jit",
-        "ivy-local",
         "ivy-only",
     ],
     deps = [":test_lib"],
@@ -67,7 +73,7 @@ js_expected_symbol_test(
     src = ":bundle.min_debug.js",
     golden = ":bundle.golden_symbols.json",
     tags = [
-        "ivy-local",
+        "ivy-aot",
         "ivy-only",
     ],
 )
@@ -75,12 +81,15 @@ js_expected_symbol_test(
 genrule(
     name = "tslib",
     srcs = [
-        "@angular_deps//:node_modules/tslib/tslib.js",
+        "@ngdeps//node_modules/tslib:tslib.js",
     ],
     outs = [
         "tslib.js",
     ],
     cmd = "cp $< $@",
+    tags = [
+        "ivy-only",
+    ],
 )
 
 ts_devserver(
@@ -93,6 +102,9 @@ ts_devserver(
         "todo.css",
         "base.css",
     ],
+    tags = [
+        "ivy-only",
+    ],
     deps = [":todo"],
 )
 
@@ -104,5 +116,8 @@ http_server(
         "todo.css",
         ":bundle.min.js.br",
         ":bundle.min_debug.js",
+    ],
+    tags = [
+        "ivy-only",
     ],
 )

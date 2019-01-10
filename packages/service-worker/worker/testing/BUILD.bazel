@@ -4,7 +4,7 @@ load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
     name = "testing",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages:types",

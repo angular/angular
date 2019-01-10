@@ -22,7 +22,7 @@ import {performWatchCompilation, createPerformWatchHost} from './perform_watch'
 
 export function main(
     args: string[], consoleError: (s: string) => void = console.error,
-    config?: NgcParsedConfiguration): number {
+    config?: NgcParsedConfiguration, customTransformers?: api.CustomTransformers): number {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
@@ -32,11 +32,26 @@ export function main(
     const result = watchMode(project, options, consoleError);
     return reportErrorsAndExit(result.firstCompileResult, options, consoleError);
   }
-  const {diagnostics: compileDiags} = performCompilation(
-      {rootNames, options, emitFlags, emitCallback: createEmitCallback(options)});
+  const {diagnostics: compileDiags} = performCompilation({
+    rootNames,
+    options,
+    emitFlags,
+    emitCallback: createEmitCallback(options), customTransformers
+  });
   return reportErrorsAndExit(compileDiags, options, consoleError);
 }
 
+export function mainDiagnosticsForTest(
+    args: string[], config?: NgcParsedConfiguration): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
+  let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
+      config || readNgcCommandLineAndConfiguration(args);
+  if (configErrors.length) {
+    return configErrors;
+  }
+  const {diagnostics: compileDiags} = performCompilation(
+      {rootNames, options, emitFlags, emitCallback: createEmitCallback(options)});
+  return compileDiags;
+}
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
   const transformDecorators = options.enableIvy !== 'ngtsc' && options.enableIvy !== 'tsc' &&

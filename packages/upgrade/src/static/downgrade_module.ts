@@ -10,12 +10,14 @@ import {Injector, NgModuleFactory, NgModuleRef, StaticProvider} from '@angular/c
 import {platformBrowser} from '@angular/platform-browser';
 
 import * as angular from '../common/angular1';
-import {$INJECTOR, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_MODULE_NAME} from '../common/constants';
-import {LazyModuleRef, isFunction} from '../common/util';
+import {$INJECTOR, $PROVIDE, DOWNGRADED_MODULE_COUNT_KEY, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
+import {LazyModuleRef, UpgradeAppType, getDowngradedModuleCount, isFunction} from '../common/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
 
+
+let moduleUid = 0;
 
 /**
  * @description
@@ -99,12 +101,40 @@ import {NgAdapterInjector} from './util';
  *
  * </div>
  *
- * @experimental
+ * ### Downgrading multiple modules
+ *
+ * It is possible to downgrade multiple modules and include them in an AngularJS application. In
+ * that case, each downgraded module will be bootstrapped when an associated downgraded component or
+ * injectable needs to be instantiated.
+ *
+ * Things to keep in mind, when downgrading multiple modules:
+ *
+ * - Each downgraded component/injectable needs to be explicitly associated with a downgraded
+ *   module. See `downgradeComponent()` and `downgradeInjectable()` for more details.
+ *
+ * - If you want some injectables to be shared among all downgraded modules, you can provide them as
+ *   `StaticProvider`s, when creating the `PlatformRef` (e.g. via `platformBrowser` or
+ *   `platformBrowserDynamic`).
+ *
+ * - When using {@link PlatformRef#bootstrapmodule `bootstrapModule()`} or
+ *   {@link PlatformRef#bootstrapmodulefactory `bootstrapModuleFactory()`} to bootstrap the
+ *   downgraded modules, each one is considered a "root" module. As a consequence, a new instance
+ *   will be created for every injectable provided in `"root"` (via
+ *   {@link Injectable#providedIn `providedIn`}).
+ *   If this is not your intention, you can have a shared module (that will act as act as the "root"
+ *   module) and create all downgraded modules using that module's injector:
+ *
+ *   {@example upgrade/static/ts/lite-multi-shared/module.ts region="shared-root-module"}
+ *
+ * @publicApi
  */
 export function downgradeModule<T>(
     moduleFactoryOrBootstrapFn: NgModuleFactory<T>|
     ((extraProviders: StaticProvider[]) => Promise<NgModuleRef<T>>)): string {
-  const LAZY_MODULE_NAME = UPGRADE_MODULE_NAME + '.lazy';
+  const lazyModuleName = `${UPGRADE_MODULE_NAME}.lazy${++moduleUid}`;
+  const lazyModuleRefKey = `${LAZY_MODULE_REF}${lazyModuleName}`;
+  const lazyInjectorKey = `${INJECTOR_KEY}${lazyModuleName}`;
+
   const bootstrapFn = isFunction(moduleFactoryOrBootstrapFn) ?
       moduleFactoryOrBootstrapFn :
       (extraProviders: StaticProvider[]) =>
@@ -113,32 +143,47 @@ export function downgradeModule<T>(
   let injector: Injector;
 
   // Create an ng1 module to bootstrap.
-  angular.module(LAZY_MODULE_NAME, [])
+  angular.module(lazyModuleName, [])
+      .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Lite)
+      .factory(INJECTOR_KEY, [lazyInjectorKey, identity])
       .factory(
-          INJECTOR_KEY,
+          lazyInjectorKey,
           () => {
             if (!injector) {
               throw new Error(
-                  'Trying to get the Angular injector before bootstrapping an Angular module.');
+                  'Trying to get the Angular injector before bootstrapping the corresponding ' +
+                  'Angular module.');
             }
             return injector;
           })
-      .factory(LAZY_MODULE_REF, [
-        $INJECTOR,
-        ($injector: angular.IInjectorService) => {
-          setTempInjectorRef($injector);
-          const result: LazyModuleRef = {
-            needsNgZone: true,
-            promise: bootstrapFn(angular1Providers).then(ref => {
-              injector = result.injector = new NgAdapterInjector(ref.injector);
-              injector.get($INJECTOR);
+      .factory(LAZY_MODULE_REF, [lazyModuleRefKey, identity])
+      .factory(
+          lazyModuleRefKey,
+          [
+            $INJECTOR,
+            ($injector: angular.IInjectorService) => {
+              setTempInjectorRef($injector);
+              const result: LazyModuleRef = {
+                promise: bootstrapFn(angular1Providers).then(ref => {
+                  injector = result.injector = new NgAdapterInjector(ref.injector);
+                  injector.get($INJECTOR);
 
-              return injector;
-            })
-          };
-          return result;
+                  return injector;
+                })
+              };
+              return result;
+            }
+          ])
+      .config([
+        $INJECTOR, $PROVIDE,
+        ($injector: angular.IInjectorService, $provide: angular.IProvideService) => {
+          $provide.constant(DOWNGRADED_MODULE_COUNT_KEY, getDowngradedModuleCount($injector) + 1);
         }
       ]);
 
-  return LAZY_MODULE_NAME;
+  return lazyModuleName;
+}
+
+function identity<T = any>(x: T): T {
+  return x;
 }

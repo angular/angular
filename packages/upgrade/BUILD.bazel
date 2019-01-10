@@ -16,6 +16,7 @@ ng_module(
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
+        "@ngdeps//zone.js",
     ],
 )
 
@@ -27,10 +28,11 @@ ng_package(
     ],
     entry_point = "packages/upgrade/index.js",
     tags = [
-        "ivy-jit",
-        "ivy-local",
         "release-with-framework",
     ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":upgrade",
         "//packages/upgrade/static",

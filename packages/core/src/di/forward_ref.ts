@@ -8,6 +8,7 @@
 
 import {Type} from '../type';
 import {stringify} from '../util';
+import {getClosureSafeProperty} from '../util/property';
 
 
 
@@ -18,9 +19,11 @@ import {stringify} from '../util';
  * ### Example
  *
  * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref_fn'}
- * @experimental
+ * @publicApi
  */
 export interface ForwardRefFn { (): any; }
+
+const __forward_ref__ = getClosureSafeProperty({__forward_ref__: getClosureSafeProperty});
 
 /**
  * Allows to refer to references which are not yet defined.
@@ -32,7 +35,7 @@ export interface ForwardRefFn { (): any; }
  * @usageNotes
  * ### Example
  * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='forward_ref'}
- * @experimental
+ * @publicApi
  */
 export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
   (<any>forwardRefFn).__forward_ref__ = forwardRef;
@@ -51,12 +54,13 @@ export function forwardRef(forwardRefFn: ForwardRefFn): Type<any> {
  * {@example core/di/ts/forward_ref/forward_ref_spec.ts region='resolve_forward_ref'}
  *
  * @see `forwardRef`
- * @experimental
+ * @publicApi
  */
-export function resolveForwardRef(type: any): any {
-  if (typeof type === 'function' && type.hasOwnProperty('__forward_ref__') &&
-      type.__forward_ref__ === forwardRef) {
-    return (<ForwardRefFn>type)();
+export function resolveForwardRef<T>(type: T): T {
+  const fn: any = type;
+  if (typeof fn === 'function' && fn.hasOwnProperty(__forward_ref__) &&
+      fn.__forward_ref__ === forwardRef) {
+    return fn();
   } else {
     return type;
   }

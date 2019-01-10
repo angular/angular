@@ -52,7 +52,7 @@ const _EMPTY_LIST: any[] = [];
  * expect(injector.get('message')).toEqual('Hello');
  * ```
  *
- * @experimental
+ * @publicApi
  */
 export interface ResolvedReflectiveProvider {
   /**
@@ -83,7 +83,7 @@ export class ResolvedReflectiveProvider_ implements ResolvedReflectiveProvider {
 
 /**
  * An internal resolved representation of a factory function created by resolving `Provider`.
- * @experimental
+ * @publicApi
  */
 export class ResolvedReflectiveFactory {
   constructor(

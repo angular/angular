@@ -83,6 +83,7 @@ function formatNumber(
  * {@example common/pipes/ts/number_pipe.ts region='DeprecatedNumberPipe'}
  *
  * @ngModule CommonModule
+ * @publicApi
  */
 @Pipe({name: 'number'})
 export class DeprecatedDecimalPipe implements PipeTransform {
@@ -112,7 +113,7 @@ export class DeprecatedDecimalPipe implements PipeTransform {
  *
  * {@example common/pipes/ts/percent_pipe.ts region='DeprecatedPercentPipe'}
  *
- *
+ * @publicApi
  */
 @Pipe({name: 'percent'})
 export class DeprecatedPercentPipe implements PipeTransform {
@@ -148,7 +149,7 @@ export class DeprecatedPercentPipe implements PipeTransform {
  *
  * {@example common/pipes/ts/currency_pipe.ts region='DeprecatedCurrencyPipe'}
  *
- *
+ * @publicApi
  */
 @Pipe({name: 'currency'})
 export class DeprecatedCurrencyPipe implements PipeTransform {

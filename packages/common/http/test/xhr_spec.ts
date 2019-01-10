@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HttpRequest} from '@angular/common/http/src/request';
+import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpResponse, HttpResponseBase, HttpUploadProgressEvent} from '@angular/common/http/src/response';
+import {HttpXhrBackend} from '@angular/common/http/src/xhr';
 import {ddescribe, describe, fit, it} from '@angular/core/testing/src/testing_internal';
 import {Observable} from 'rxjs';
 import {toArray} from 'rxjs/operators';
-
-import {HttpRequest} from '../src/request';
-import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpResponse, HttpResponseBase, HttpUploadProgressEvent} from '../src/response';
-import {HttpXhrBackend} from '../src/xhr';
 
 import {MockXhrFactory} from './xhr_mock';
 
@@ -143,6 +142,7 @@ const XSSI_PREFIX = ')]}\'\n';
       backend.handle(TEST_POST).subscribe(undefined, (err: HttpErrorResponse) => {
         expect(err instanceof HttpErrorResponse).toBe(true);
         expect(err.error instanceof Error);
+        expect(err.url).toBe('/test');
         done();
       });
       factory.mock.mockErrorEvent(new Error('blah'));

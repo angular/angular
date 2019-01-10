@@ -26,7 +26,7 @@ export function createTitle() {
  * (representing the `<title>` tag). Instead, this service can be used to set and get the current
  * title value.
  *
- * @experimental
+ * @publicApi
  */
 @Injectable({providedIn: 'root', useFactory: createTitle, deps: []})
 export class Title {

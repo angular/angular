@@ -13,6 +13,7 @@ ng_module(
         "@angular//packages/common/http",
         "@angular//packages/core",
         "@angular//packages/platform-browser",
+        "@npm//@types",
     ],
 )
 
@@ -21,14 +22,14 @@ load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 ts_devserver(
     name = "devserver",
     additional_root_paths = [
-        "bazel_integration_test/node_modules/tslib",
-        "bazel_integration_test/node_modules/zone.js/dist",
+        "npm/node_modules/tslib",
+        "npm/node_modules/zone.js/dist",
     ],
     entry_module = "bazel_integration_test/src/main",
     serving_path = "/bundle.min.js",
     static_files = [
-        "//:node_modules/tslib/tslib.js",
-        "//:node_modules/zone.js/dist/zone.min.js",
+        "@npm//node_modules/tslib:tslib.js",
+        "@npm//node_modules/zone.js:dist/zone.min.js",
         "index.html",
     ],
     deps = ["//src"],
@@ -39,7 +40,6 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "rollup_bundle")
 rollup_bundle(
     name = "bundle",
     entry_point = "src/main",
-    node_modules = "//:node_modules",
     deps = ["//src"],
 )
 
@@ -47,7 +47,7 @@ rollup_bundle(
 # package.
 genrule(
     name = "zone.js",
-    srcs = ["//:node_modules/zone.js/dist/zone.min.js"],
+    srcs = ["@npm//node_modules/zone.js:dist/zone.min.js"],
     outs = ["zone.min.js"],
     cmd = "cp $< $@",
 )

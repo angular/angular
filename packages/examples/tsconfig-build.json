@@ -16,7 +16,6 @@
 
   "include": [
     "../../node_modules/@types/jasminewd2/index.d.ts",
-    "../../tools/types-ext/jasminewd2.d.ts",
     "../types.d.ts",
     "**/*.ts"
   ]

@@ -3,25 +3,15 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CrisisCenterHomeComponent } from './crisis-center-home.component';
-import { CrisisListComponent }       from './crisis-list.component';
-import { CrisisCenterComponent }     from './crisis-center.component';
-import { CrisisDetailComponent }     from './crisis-detail.component';
+import { CrisisCenterHomeComponent } from './crisis-center-home/crisis-center-home.component';
+import { CrisisListComponent }       from './crisis-list/crisis-list.component';
+import { CrisisCenterComponent }     from './crisis-center/crisis-center.component';
+import { CrisisDetailComponent }     from './crisis-detail/crisis-detail.component';
 
-import { CanDeactivateGuard }     from '../can-deactivate-guard.service';
+import { CanDeactivateGuard }             from '../can-deactivate.guard';
+import { CrisisDetailResolverService }    from './crisis-detail-resolver.service';
 
-// #docregion crisis-detail-resolver
-import { CrisisDetailResolver }   from './crisis-detail-resolver.service';
-
-// #enddocregion crisis-detail-resolver
 const crisisCenterRoutes: Routes = [
-  // #docregion redirect
-  {
-    path: '',
-    redirectTo: '/crisis-center',
-    pathMatch: 'full'
-  },
-  // #enddocregion redirect
   {
     path: 'crisis-center',
     component: CrisisCenterComponent,
@@ -35,7 +25,7 @@ const crisisCenterRoutes: Routes = [
             component: CrisisDetailComponent,
             canDeactivate: [CanDeactivateGuard],
             resolve: {
-              crisis: CrisisDetailResolver
+              crisis: CrisisDetailResolverService
             }
           },
           {
@@ -48,18 +38,13 @@ const crisisCenterRoutes: Routes = [
   }
 ];
 
-// #docregion crisis-detail-resolver
 @NgModule({
   imports: [
     RouterModule.forChild(crisisCenterRoutes)
   ],
   exports: [
     RouterModule
-  ],
-  providers: [
-    CrisisDetailResolver
   ]
 })
 export class CrisisCenterRoutingModule { }
-// #enddocregion crisis-detail-resolver
 // #enddocregion

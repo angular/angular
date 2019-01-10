@@ -9,38 +9,25 @@ import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} fro
 import {SourceMapConverter, commentRegex, fromJSON, fromMapFileSource, fromObject, fromSource, generateMapFileComment, mapFileCommentRegex, removeComments, removeMapFileComments} from 'convert-source-map';
 import {readFileSync, statSync} from 'fs';
 import MagicString from 'magic-string';
-import {basename, dirname} from 'canonical-path';
+import {basename, dirname, relative, resolve} from 'canonical-path';
 import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import * as ts from 'typescript';
 
-import {Decorator} from '../../../ngtsc/host';
-import {ImportManager, translateStatement} from '../../../ngtsc/transform';
-import {AnalyzedClass, AnalyzedFile} from '../analyzer';
+import {CompileResult} from '@angular/compiler-cli/src/ngtsc/transform';
+import {translateStatement, translateType, ImportManager} from '../../../ngtsc/translator';
+import {NgccImportManager} from './ngcc_import_manager';
+import {CompiledClass, CompiledFile, DecorationAnalyses} from '../analysis/decoration_analyzer';
+import {ModuleWithProvidersInfo, ModuleWithProvidersAnalyses} from '../analysis/module_with_providers_analyzer';
+import {PrivateDeclarationsAnalyses, ExportInfo} from '../analysis/private_declarations_analyzer';
+import {SwitchMarkerAnalyses, SwitchMarkerAnalysis} from '../analysis/switch_marker_analyzer';
 import {IMPORT_PREFIX} from '../constants';
-import {NgccReflectionHost} from '../host/ngcc_host';
+import {NgccReflectionHost, SwitchableVariableDeclaration} from '../host/ngcc_host';
+import {EntryPointBundle} from '../packages/entry_point_bundle';
 
 interface SourceMapInfo {
   source: string;
   map: SourceMapConverter|null;
   isInline: boolean;
-}
-
-/**
- * The results of rendering an analyzed file.
- */
-export interface RenderResult {
-  /**
-   * The file that has been rendered.
-   */
-  file: AnalyzedFile;
-  /**
-   * The rendered source file.
-   */
-  source: FileInfo;
-  /**
-   * The rendered source map file.
-   */
-  map: FileInfo|null;
 }
 
 /**
@@ -57,6 +44,33 @@ export interface FileInfo {
   contents: string;
 }
 
+interface DtsClassInfo {
+  dtsDeclaration: ts.Declaration;
+  compilation: CompileResult[];
+}
+
+/**
+ * A structure that captures information about what needs to be rendered
+ * in a typings file.
+ *
+ * It is created as a result of processing the analysis passed to the renderer.
+ *
+ * The `renderDtsFile()` method consumes it when rendering a typings file.
+ */
+class DtsRenderInfo {
+  classInfo: DtsClassInfo[] = [];
+  moduleWithProviders: ModuleWithProvidersInfo[] = [];
+  privateExports: ExportInfo[] = [];
+}
+
+/**
+ * The collected decorators that have become redundant after the compilation
+ * of Ivy static fields. The map is keyed by the container node, such that we
+ * can tell if we should remove the entire decorator property
+ */
+export type RedundantDecoratorMap = Map<ts.Node, ts.Node[]>;
+export const RedundantDecoratorMap = Map;
+
 /**
  * A base-class for rendering an `AnalyzedFile`.
  *
@@ -64,65 +78,204 @@ export interface FileInfo {
  * implement the `addImports`, `addDefinitions` and `removeDecorators` abstract methods.
  */
 export abstract class Renderer {
-  constructor(protected host: NgccReflectionHost) {}
+  constructor(
+      protected host: NgccReflectionHost, protected isCore: boolean,
+      protected bundle: EntryPointBundle, protected sourcePath: string,
+      protected targetPath: string) {}
+
+  renderProgram(
+      decorationAnalyses: DecorationAnalyses, switchMarkerAnalyses: SwitchMarkerAnalyses,
+      privateDeclarationsAnalyses: PrivateDeclarationsAnalyses,
+      moduleWithProvidersAnalyses: ModuleWithProvidersAnalyses|null): FileInfo[] {
+    const renderedFiles: FileInfo[] = [];
+
+    // Transform the source files.
+    this.bundle.src.program.getSourceFiles().map(sourceFile => {
+      const compiledFile = decorationAnalyses.get(sourceFile);
+      const switchMarkerAnalysis = switchMarkerAnalyses.get(sourceFile);
+
+      if (compiledFile || switchMarkerAnalysis || sourceFile === this.bundle.src.file) {
+        renderedFiles.push(...this.renderFile(
+            sourceFile, compiledFile, switchMarkerAnalysis, privateDeclarationsAnalyses));
+      }
+    });
+
+    // Transform the .d.ts files
+    if (this.bundle.dts) {
+      const dtsFiles = this.getTypingsFilesToRender(
+          decorationAnalyses, privateDeclarationsAnalyses, moduleWithProvidersAnalyses);
+
+      // If the dts entry-point is not already there (it did not have compiled classes)
+      // then add it now, to ensure it gets its extra exports rendered.
+      if (!dtsFiles.has(this.bundle.dts.file)) {
+        dtsFiles.set(this.bundle.dts.file, new DtsRenderInfo());
+      }
+      dtsFiles.forEach(
+          (renderInfo, file) => renderedFiles.push(...this.renderDtsFile(file, renderInfo)));
+    }
+
+    return renderedFiles;
+  }
 
   /**
    * Render the source code and source-map for an Analyzed file.
-   * @param file The analyzed file to render.
+   * @param compiledFile The analyzed file to render.
    * @param targetPath The absolute path where the rendered file will be written.
    */
-  renderFile(file: AnalyzedFile, targetPath: string): RenderResult {
-    const importManager = new ImportManager(false, IMPORT_PREFIX);
-    const input = this.extractSourceMap(file.sourceFile);
-
+  renderFile(
+      sourceFile: ts.SourceFile, compiledFile: CompiledFile|undefined,
+      switchMarkerAnalysis: SwitchMarkerAnalysis|undefined,
+      privateDeclarationsAnalyses: PrivateDeclarationsAnalyses): FileInfo[] {
+    const input = this.extractSourceMap(sourceFile);
     const outputText = new MagicString(input.source);
-    const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
 
-    file.analyzedClasses.forEach(clazz => {
-      const renderedDefinition = renderDefinitions(file.sourceFile, clazz, importManager);
-      this.addDefinitions(outputText, clazz, renderedDefinition);
-      this.trackDecorators(clazz.decorators, decoratorsToRemove);
+    if (switchMarkerAnalysis) {
+      this.rewriteSwitchableDeclarations(
+          outputText, switchMarkerAnalysis.sourceFile, switchMarkerAnalysis.declarations);
+    }
+
+    if (compiledFile) {
+      const importManager = new NgccImportManager(this.bundle.isFlat, this.isCore, IMPORT_PREFIX);
+
+      // TODO: remove constructor param metadata and property decorators (we need info from the
+      // handlers to do this)
+      const decoratorsToRemove = this.computeDecoratorsToRemove(compiledFile.compiledClasses);
+      this.removeDecorators(outputText, decoratorsToRemove);
+
+      compiledFile.compiledClasses.forEach(clazz => {
+        const renderedDefinition = renderDefinitions(compiledFile.sourceFile, clazz, importManager);
+        this.addDefinitions(outputText, clazz, renderedDefinition);
+      });
+
+      this.addConstants(
+          outputText,
+          renderConstantPool(compiledFile.sourceFile, compiledFile.constantPool, importManager),
+          compiledFile.sourceFile);
+
+      this.addImports(
+          outputText, importManager.getAllImports(
+                          compiledFile.sourceFile.fileName, this.bundle.src.r3SymbolsFile));
+    }
+
+    // Add exports to the entry-point file
+    if (sourceFile === this.bundle.src.file) {
+      const entryPointBasePath = stripExtension(this.bundle.src.path);
+      this.addExports(outputText, entryPointBasePath, privateDeclarationsAnalyses);
+    }
+
+    return this.renderSourceAndMap(sourceFile, input, outputText);
+  }
+
+  renderDtsFile(dtsFile: ts.SourceFile, renderInfo: DtsRenderInfo): FileInfo[] {
+    const input = this.extractSourceMap(dtsFile);
+    const outputText = new MagicString(input.source);
+    const importManager = new NgccImportManager(false, this.isCore, IMPORT_PREFIX);
+
+    renderInfo.classInfo.forEach(dtsClass => {
+      const endOfClass = dtsClass.dtsDeclaration.getEnd();
+      dtsClass.compilation.forEach(declaration => {
+        const type = translateType(declaration.type, importManager);
+        const newStatement = `    static ${declaration.name}: ${type};\n`;
+        outputText.appendRight(endOfClass - 1, newStatement);
+      });
     });
 
-    this.addConstants(
-        outputText, renderConstantPool(file.sourceFile, file.constantPool, importManager),
-        file.sourceFile);
+    this.addModuleWithProvidersParams(outputText, renderInfo.moduleWithProviders, importManager);
+    this.addImports(
+        outputText, importManager.getAllImports(dtsFile.fileName, this.bundle.dts !.r3SymbolsFile));
 
-    this.addImports(outputText, importManager.getAllImports(file.sourceFile.fileName, null));
+    this.addExports(outputText, dtsFile.fileName, renderInfo.privateExports);
 
-    // TODO: remove contructor param metadata and property decorators (we need info from the
-    // handlers to do this)
-    this.removeDecorators(outputText, decoratorsToRemove);
 
-    this.rewriteSwitchableDeclarations(outputText, file.sourceFile);
+    return this.renderSourceAndMap(dtsFile, input, outputText);
+  }
 
-    return this.renderSourceAndMap(file, input, outputText, targetPath);
+  /**
+   * Add the type parameters to the appropriate functions that return `ModuleWithProviders`
+   * structures.
+   *
+   * This function only gets called on typings files, so it doesn't need different implementations
+   * for each bundle format.
+   */
+  protected addModuleWithProvidersParams(
+      outputText: MagicString, moduleWithProviders: ModuleWithProvidersInfo[],
+      importManager: NgccImportManager): void {
+    moduleWithProviders.forEach(info => {
+      const ngModuleName = (info.ngModule.node as ts.ClassDeclaration).name !.text;
+      const declarationFile = info.declaration.getSourceFile().fileName;
+      const ngModuleFile = info.ngModule.node.getSourceFile().fileName;
+      const importPath = info.ngModule.viaModule ||
+          (declarationFile !== ngModuleFile ?
+               stripExtension(`./${relative(dirname(declarationFile), ngModuleFile)}`) :
+               null);
+      const ngModule = getImportString(importManager, importPath, ngModuleName);
+
+      if (info.declaration.type) {
+        const typeName = info.declaration.type && ts.isTypeReferenceNode(info.declaration.type) ?
+            info.declaration.type.typeName :
+            null;
+        if (this.isCoreModuleWithProvidersType(typeName)) {
+          // The declaration already returns `ModuleWithProvider` but it needs the `NgModule` type
+          // parameter adding.
+          outputText.overwrite(
+              info.declaration.type.getStart(), info.declaration.type.getEnd(),
+              `ModuleWithProviders<${ngModule}>`);
+        } else {
+          // The declaration returns an unknown type so we need to convert it to a union that
+          // includes the ngModule property.
+          const originalTypeString = info.declaration.type.getText();
+          outputText.overwrite(
+              info.declaration.type.getStart(), info.declaration.type.getEnd(),
+              `(${originalTypeString})&{ngModule:${ngModule}}`);
+        }
+      } else {
+        // The declaration has no return type so provide one.
+        const lastToken = info.declaration.getLastToken();
+        const insertPoint = lastToken && lastToken.kind === ts.SyntaxKind.SemicolonToken ?
+            lastToken.getStart() :
+            info.declaration.getEnd();
+        outputText.appendLeft(
+            insertPoint,
+            `: ${getImportString(importManager, '@angular/core', 'ModuleWithProviders')}<${ngModule}>`);
+      }
+    });
   }
 
   protected abstract addConstants(output: MagicString, constants: string, file: ts.SourceFile):
       void;
   protected abstract addImports(output: MagicString, imports: {name: string, as: string}[]): void;
+  protected abstract addExports(output: MagicString, entryPointBasePath: string, exports: {
+    identifier: string,
+    from: string
+  }[]): void;
   protected abstract addDefinitions(
-      output: MagicString, analyzedClass: AnalyzedClass, definitions: string): void;
+      output: MagicString, compiledClass: CompiledClass, definitions: string): void;
   protected abstract removeDecorators(
-      output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>): void;
+      output: MagicString, decoratorsToRemove: RedundantDecoratorMap): void;
   protected abstract rewriteSwitchableDeclarations(
-      outputText: MagicString, sourceFile: ts.SourceFile): void;
+      outputText: MagicString, sourceFile: ts.SourceFile,
+      declarations: SwitchableVariableDeclaration[]): void;
 
   /**
-   * Add the decorator nodes that are to be removed to a map
-   * So that we can tell if we should remove the entire decorator property
+   * From the given list of classes, computes a map of decorators that should be removed.
+   * The decorators to remove are keyed by their container node, such that we can tell if
+   * we should remove the entire decorator property.
+   * @param classes The list of classes that may have decorators to remove.
+   * @returns A map of decorators to remove, keyed by their container node.
    */
-  protected trackDecorators(decorators: Decorator[], decoratorsToRemove: Map<ts.Node, ts.Node[]>):
-      void {
-    decorators.forEach(dec => {
-      const decoratorArray = dec.node.parent !;
-      if (!decoratorsToRemove.has(decoratorArray)) {
-        decoratorsToRemove.set(decoratorArray, [dec.node]);
-      } else {
-        decoratorsToRemove.get(decoratorArray) !.push(dec.node);
-      }
+  protected computeDecoratorsToRemove(classes: CompiledClass[]): RedundantDecoratorMap {
+    const decoratorsToRemove = new RedundantDecoratorMap();
+    classes.forEach(clazz => {
+      clazz.decorators.forEach(dec => {
+        const decoratorArray = dec.node.parent !;
+        if (!decoratorsToRemove.has(decoratorArray)) {
+          decoratorsToRemove.set(decoratorArray, [dec.node]);
+        } else {
+          decoratorsToRemove.get(decoratorArray) !.push(dec.node);
+        }
+      });
     });
+    return decoratorsToRemove;
   }
 
   /**
@@ -174,11 +327,11 @@ export abstract class Renderer {
    * with an appropriate source-map comment pointing to the merged source-map.
    */
   protected renderSourceAndMap(
-      file: AnalyzedFile, input: SourceMapInfo, output: MagicString,
-      outputPath: string): RenderResult {
+      sourceFile: ts.SourceFile, input: SourceMapInfo, output: MagicString): FileInfo[] {
+    const outputPath = resolve(this.targetPath, relative(this.sourcePath, sourceFile.fileName));
     const outputMapPath = `${outputPath}.map`;
     const outputMap = output.generateMap({
-      source: file.sourceFile.fileName,
+      source: sourceFile.fileName,
       includeContent: true,
       // hires: true // TODO: This results in accurate but huge sourcemaps. Instead we should fix
       // the merge algorithm.
@@ -190,22 +343,79 @@ export abstract class Renderer {
     const mergedMap =
         mergeSourceMaps(input.map && input.map.toObject(), JSON.parse(outputMap.toString()));
 
+    const result: FileInfo[] = [];
     if (input.isInline) {
-      return {
-        file,
-        source: {path: outputPath, contents: `${output.toString()}\n${mergedMap.toComment()}`},
-        map: null
-      };
+      result.push({path: outputPath, contents: `${output.toString()}\n${mergedMap.toComment()}`});
     } else {
-      return {
-        file,
-        source: {
-          path: outputPath,
-          contents: `${output.toString()}\n${generateMapFileComment(outputMapPath)}`
-        },
-        map: {path: outputMapPath, contents: mergedMap.toJSON()}
-      };
+      result.push({
+        path: outputPath,
+        contents: `${output.toString()}\n${generateMapFileComment(outputMapPath)}`
+      });
+      result.push({path: outputMapPath, contents: mergedMap.toJSON()});
     }
+    return result;
+  }
+
+  protected getTypingsFilesToRender(
+      decorationAnalyses: DecorationAnalyses,
+      privateDeclarationsAnalyses: PrivateDeclarationsAnalyses,
+      moduleWithProvidersAnalyses: ModuleWithProvidersAnalyses|
+      null): Map<ts.SourceFile, DtsRenderInfo> {
+    const dtsMap = new Map<ts.SourceFile, DtsRenderInfo>();
+
+    // Capture the rendering info from the decoration analyses
+    decorationAnalyses.forEach(compiledFile => {
+      compiledFile.compiledClasses.forEach(compiledClass => {
+        const dtsDeclaration = this.host.getDtsDeclaration(compiledClass.declaration);
+        if (dtsDeclaration) {
+          const dtsFile = dtsDeclaration.getSourceFile();
+          const renderInfo = dtsMap.get(dtsFile) || new DtsRenderInfo();
+          renderInfo.classInfo.push({dtsDeclaration, compilation: compiledClass.compilation});
+          dtsMap.set(dtsFile, renderInfo);
+        }
+      });
+    });
+
+    // Capture the ModuleWithProviders functions/methods that need updating
+    if (moduleWithProvidersAnalyses !== null) {
+      moduleWithProvidersAnalyses.forEach((moduleWithProvidersToFix, dtsFile) => {
+        const renderInfo = dtsMap.get(dtsFile) || new DtsRenderInfo();
+        renderInfo.moduleWithProviders = moduleWithProvidersToFix;
+        dtsMap.set(dtsFile, renderInfo);
+      });
+    }
+
+    // Capture the private declarations that need to be re-exported
+    if (privateDeclarationsAnalyses.length) {
+      const dtsExports = privateDeclarationsAnalyses.map(e => {
+        if (!e.dtsFrom) {
+          throw new Error(
+              `There is no typings path for ${e.identifier} in ${e.from}.\n` +
+              `We need to add an export for this class to a .d.ts typings file because ` +
+              `Angular compiler needs to be able to reference this class in compiled code, such as templates.\n` +
+              `The simplest fix for this is to ensure that this class is exported from the package's entry-point.`);
+        }
+        return {identifier: e.identifier, from: e.dtsFrom};
+      });
+      const dtsEntryPoint = this.bundle.dts !.file;
+      const renderInfo = dtsMap.get(dtsEntryPoint) || new DtsRenderInfo();
+      renderInfo.privateExports = dtsExports;
+      dtsMap.set(dtsEntryPoint, renderInfo);
+    }
+
+    return dtsMap;
+  }
+
+  /**
+   * Check whether the given type is the core Angular `ModuleWithProviders` interface.
+   * @param typeName The type to check.
+   * @returns true if the type is the core Angular `ModuleWithProviders` interface.
+   */
+  private isCoreModuleWithProvidersType(typeName: ts.EntityName|null) {
+    const id =
+        typeName && ts.isIdentifier(typeName) ? this.host.getImportOfIdentifier(typeName) : null;
+    return (
+        id && id.name === 'ModuleWithProviders' && (this.isCore || id.from === '@angular/core'));
   }
 }
 
@@ -241,7 +451,7 @@ export function mergeSourceMaps(
  * Render the constant pool as source code for the given class.
  */
 export function renderConstantPool(
-    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: ImportManager): string {
+    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: NgccImportManager): string {
   const printer = ts.createPrinter();
   return constantPool.statements.map(stmt => translateStatement(stmt, imports))
       .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
@@ -257,11 +467,11 @@ export function renderConstantPool(
  * @param imports An object that tracks the imports that are needed by the rendered definitions.
  */
 export function renderDefinitions(
-    sourceFile: ts.SourceFile, analyzedClass: AnalyzedClass, imports: ImportManager): string {
+    sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: NgccImportManager): string {
   const printer = ts.createPrinter();
-  const name = (analyzedClass.declaration as ts.NamedDeclaration).name !;
+  const name = (compiledClass.declaration as ts.NamedDeclaration).name !;
   const definitions =
-      analyzedClass.compilation
+      compiledClass.compilation
           .map(
               c => c.statements.map(statement => translateStatement(statement, imports))
                        .concat(translateStatement(
@@ -274,6 +484,10 @@ export function renderDefinitions(
   return definitions;
 }
 
+export function stripExtension(filePath: string): string {
+  return filePath.replace(/\.(js|d\.ts)$/, '');
+}
+
 /**
  * Create an Angular AST statement node that contains the assignment of the
  * compiled decorator to be applied to the class.
@@ -283,4 +497,10 @@ function createAssignmentStatement(
     receiverName: ts.DeclarationName, propName: string, initializer: Expression): Statement {
   const receiver = new WrappedNodeExpr(receiverName);
   return new WritePropExpr(receiver, propName, initializer).toStmt();
+}
+
+function getImportString(
+    importManager: ImportManager, importPath: string | null, importName: string) {
+  const importAs = importPath ? importManager.generateNamedImport(importPath, importName) : null;
+  return importAs ? `${importAs.moduleImport}.${importAs.symbol}` : `${importName}`;
 }

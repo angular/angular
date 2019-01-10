@@ -1,13 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-filegroup(
-    name = "package_assets",
-    srcs = glob(["*"]) + [
-        "//packages/bazel/src/protractor/utils:package_assets",
-    ],
-    visibility = ["//packages/bazel:__subpackages__"],
-)
-
 exports_files([
     "protractor.conf.js",
+    "protractor_web_test.bzl",
 ])

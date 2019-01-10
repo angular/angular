@@ -2,7 +2,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_sui
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages:types",
@@ -12,14 +12,13 @@ ts_library(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
     ],
 )
 
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    # dissable since tests are running but not yet passing
-    tags = ["manual"],
     deps = [
         ":test_lib",
         "//tools/testing:node",

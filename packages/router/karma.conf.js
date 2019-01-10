@@ -76,6 +76,8 @@ module.exports = function(config) {
         watched: false
       },
 
+      {pattern: 'dist/all/@angular/private/testing/**/*.js', included: false, watched: false},
+
       {pattern: 'dist/all/@angular/upgrade/static/*.js', included: false, watched: false},
       {pattern: 'dist/all/@angular/upgrade/static/src/**/*.js', included: false, watched: false},
 

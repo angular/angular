@@ -164,10 +164,10 @@ describe('AppComponent', () => {
 
     describe('onScroll', () => {
       it('should update `tocMaxHeight` accordingly', () => {
-        expect(component.tocMaxHeight).toBeUndefined();
-
+        component.tocMaxHeight = '';
         component.onScroll();
-        expect(component.tocMaxHeight).toBeGreaterThan(0);
+
+        expect(component.tocMaxHeight).toMatch(/^\d+\.\d{2}$/);
       });
     });
 
@@ -654,12 +654,13 @@ describe('AppComponent', () => {
       it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
         setHasFloatingToc(true);
 
-        expect(tocContainer!.style['max-height']).toBe('');
-
         component.tocMaxHeight = '100';
         fixture.detectChanges();
-
         expect(tocContainer!.style['max-height']).toBe('100px');
+
+        component.tocMaxHeight = '200';
+        fixture.detectChanges();
+        expect(tocContainer!.style['max-height']).toBe('200px');
       });
 
       it('should restrain scrolling inside the ToC container', () => {
@@ -741,7 +742,7 @@ describe('AppComponent', () => {
           expect(component.showSearchResults).toBe(true);
         });
 
-        it('should not intercept clicks om the searchBox', () => {
+        it('should not intercept clicks on the searchBox', () => {
           component.showSearchResults = true;
           fixture.detectChanges();
 
@@ -750,6 +751,11 @@ describe('AppComponent', () => {
           fixture.detectChanges();
 
           expect(component.showSearchResults).toBe(true);
+        });
+
+        it('should not call `locationService.setSearch` when searchResults are not shown', () => {
+          docViewer.click();
+          expect(locationService.setSearch).not.toHaveBeenCalled();
         });
       });
 

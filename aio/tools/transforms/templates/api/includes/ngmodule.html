@@ -1,4 +1,4 @@
-<h2>NgModules</h2>
+{% if doc.ngModules.length == 1 %}<h2>NgModule</h2>{% else %}<h2>NgModules</h2>{% endif %}
 <ul class="ngmodule-list">
 {% for ngModule in doc.ngModules %}
   <li>

@@ -8,7 +8,8 @@
 
 import {defineInjectable, defineInjector} from '../../src/di/defs';
 import {InjectionToken} from '../../src/di/injection_token';
-import {INJECTOR, Injector, inject} from '../../src/di/injector';
+import {INJECTOR, Injector} from '../../src/di/injector';
+import {inject} from '../../src/di/injector_compatibility';
 import {R3Injector, createInjector} from '../../src/di/r3_injector';
 
 describe('InjectorDef-based createInjector()', () => {
@@ -42,6 +43,9 @@ describe('InjectorDef-based createInjector()', () => {
   const STATIC_TOKEN = new InjectionToken<StaticService>('STATIC_TOKEN');
 
   const LOCALE = new InjectionToken<string[]>('LOCALE');
+
+  const PRIMITIVE_VALUE = new InjectionToken<string>('PRIMITIVE_VALUE');
+  const UNDEFINED_VALUE = new InjectionToken<undefined>('UNDEFINED_VALUE');
 
   class ServiceWithDep {
     constructor(readonly service: Service) {}
@@ -117,6 +121,14 @@ describe('InjectorDef-based createInjector()', () => {
     });
   }
 
+  class InjectorWithDep {
+    constructor(readonly service: Service) {}
+
+    static ngInjectorDef = defineInjector({
+      factory: () => new InjectorWithDep(inject(Service)),
+    });
+  }
+
   class Module {
     static ngInjectorDef = defineInjector({
       factory: () => new Module(),
@@ -126,11 +138,14 @@ describe('InjectorDef-based createInjector()', () => {
         ServiceWithMultiDep,
         {provide: LOCALE, multi: true, useValue: 'en'},
         {provide: LOCALE, multi: true, useValue: 'es'},
+        {provide: PRIMITIVE_VALUE, useValue: 'foo'},
+        {provide: UNDEFINED_VALUE, useValue: undefined},
         Service,
         {provide: SERVICE_TOKEN, useExisting: Service},
         CircularA,
         CircularB,
         {provide: STATIC_TOKEN, useClass: StaticService, deps: [Service]},
+        InjectorWithDep,
       ],
     });
   }
@@ -180,9 +195,6 @@ describe('InjectorDef-based createInjector()', () => {
     expect(injector.get(Service)).toBe(instance);
   });
 
-  it('throws an error when a token is not found',
-     () => { expect(() => injector.get(ServiceTwo)).toThrow(); });
-
   it('returns the default value if a provider isn\'t present',
      () => { expect(injector.get(ServiceTwo, null)).toBeNull(); });
 
@@ -198,9 +210,25 @@ describe('InjectorDef-based createInjector()', () => {
     expect(instance.locale).toEqual(['en', 'es']);
   });
 
+  it('injects an injector with dependencies', () => {
+    const instance = injector.get(InjectorWithDep);
+    expect(instance instanceof InjectorWithDep);
+    expect(instance.service).toBe(injector.get(Service));
+  });
+
   it('injects a token with useExisting', () => {
     const instance = injector.get(SERVICE_TOKEN);
     expect(instance).toBe(injector.get(Service));
+  });
+
+  it('injects a useValue token with a primitive value', () => {
+    const value = injector.get(PRIMITIVE_VALUE);
+    expect(value).toEqual('foo');
+  });
+
+  it('injects a useValue token with value undefined', () => {
+    const value = injector.get(UNDEFINED_VALUE);
+    expect(value).toBeUndefined();
   });
 
   it('instantiates a class with useClass and deps', () => {
@@ -208,9 +236,6 @@ describe('InjectorDef-based createInjector()', () => {
     expect(instance instanceof StaticService).toBeTruthy();
     expect(instance.dep).toBe(injector.get(Service));
   });
-
-  it('throws an error on circular deps',
-     () => { expect(() => injector.get(CircularA)).toThrow(); });
 
   it('allows injecting itself via INJECTOR',
      () => { expect(injector.get(INJECTOR)).toBe(injector); });
@@ -255,5 +280,25 @@ describe('InjectorDef-based createInjector()', () => {
   it('should not crash when importing something that has no ngInjectorDef', () => {
     injector = createInjector(ImportsNotAModule);
     expect(injector.get(ImportsNotAModule)).toBeDefined();
+  });
+
+  describe('error handling', () => {
+    it('throws an error when a token is not found',
+       () => { expect(() => injector.get(ServiceTwo)).toThrow(); });
+
+    it('throws an error on circular deps',
+       () => { expect(() => injector.get(CircularA)).toThrow(); });
+
+    it('should throw when it can\'t resolve all arguments', () => {
+      class MissingArgumentType {
+        constructor(missingType: any) {}
+      }
+      class ErrorModule {
+        static ngInjectorDef =
+            defineInjector({factory: () => new ErrorModule(), providers: [MissingArgumentType]});
+      }
+      expect(() => createInjector(ErrorModule).get(MissingArgumentType))
+          .toThrowError('Can\'t resolve all parameters for MissingArgumentType: (?).');
+    });
   });
 });

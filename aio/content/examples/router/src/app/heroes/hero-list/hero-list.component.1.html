@@ -1,0 +1,14 @@
+<!-- #docregion template -->
+<h2>HEROES</h2>
+<ul class="items">
+  <li *ngFor="let hero of heroes$ | async">
+    <!-- #docregion nav-to-detail -->
+    <a [routerLink]="['/hero', hero.id]">
+      <span class="badge">{{ hero.id }}</span>{{ hero.name }}
+    </a>
+    <!-- #enddocregion nav-to-detail -->
+  </li>
+</ul>
+
+<button routerLink="/sidekicks">Go to sidekicks</button>
+<!-- #enddocregion template -->

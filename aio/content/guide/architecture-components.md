@@ -15,7 +15,7 @@ Its `selectHero()` method sets a `selectedHero` property when the user clicks to
 The component acquires the heroes from a service, which is a TypeScript [parameter property](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) on the constructor. 
 The service is provided to the component through the dependency injection system.
 
-<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (class)" region="class"></code-example>
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (class)" region="class"></code-example>
 
 Angular creates, updates, and destroys components as the user moves through the application. Your app can take action at each moment in this lifecycle through optional [lifecycle hooks](guide/lifecycle-hooks), like `ngOnInit()`.
 
@@ -31,7 +31,7 @@ In addition to containing or pointing to the template, the `@Component` metadata
 
 Here's an example of basic metadata for `HeroListComponent`.
 
-<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (metadata)" region="metadata"></code-example>
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (metadata)" region="metadata"></code-example>
 
 This example shows some of the most useful `@Component` configuration options:
 
@@ -63,7 +63,7 @@ A template looks like regular HTML, except that it also contains Angular [templa
 
 For example, here is a template for the Tutorial's `HeroListComponent`.
 
-<code-example path="architecture/src/app/hero-list.component.html" title="src/app/hero-list.component.html"></code-example>
+<code-example path="architecture/src/app/hero-list.component.html" header="src/app/hero-list.component.html"></code-example>
 
 This template uses typical HTML elements like `<h2>` and  `<p>`, and also includes Angular template-syntax elements,  `*ngFor`, `{{hero.name}}`, `(click)`, `[hero]`, and `<app-hero-detail>`. The template-syntax elements tell Angular how to render the HTML to the screen, using program logic and data.
 
@@ -87,7 +87,7 @@ The following diagram shows the four forms of data binding markup. Each form has
 
 This example from the `HeroListComponent` template uses three of these forms.
 
-<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" title="src/app/hero-list.component.html (binding)" region="binding"></code-example>
+<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" header="src/app/hero-list.component.html (binding)" region="binding"></code-example>
 
 * The `{{hero.name}}` [*interpolation*](guide/displaying-data#interpolation)
 displays the component's `hero.name` property value within the `<li>` element.
@@ -101,7 +101,7 @@ Two-way data binding (used mainly in [template-driven forms](guide/forms))
 combines property and event binding in a single notation. 
 Here's an example from the `HeroDetailComponent` template that uses two-way data binding with the `ngModel` directive.
 
-<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
+<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" header="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
 In two-way binding, a data property value flows to the input box from the component as with property binding.
 The user's changes also flow back to the component, resetting the property to the latest value,
@@ -164,7 +164,7 @@ Just as for components, the metadata for a directive associates the decorated cl
 *Structural directives* alter layout by adding, removing, and replacing elements in the DOM. 
 The example template uses two built-in structural directives to add application logic to how the view is rendered.
 
-<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" title="src/app/hero-list.component.html (structural)" region="structural"></code-example>
+<code-example path="architecture/src/app/hero-list.component.1.html" linenums="false" header="src/app/hero-list.component.html (structural)" region="structural"></code-example>
 
 * [`*ngFor`](guide/displaying-data#ngFor) is an iterative; it tells Angular to stamp out one `<li>` per hero in the `heroes` list.
 * [`*ngIf`](guide/displaying-data#ngIf) is a conditional; it includes the `HeroDetail` component only if a selected hero exists.
@@ -176,7 +176,7 @@ In templates they look like regular HTML attributes, hence the name.
 
 The `ngModel` directive, which implements two-way data binding, is an example of an attribute directive. `ngModel` modifies the behavior of an existing element (typically `<input>`) by setting its display value property and responding to change events.
 
-<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
+<code-example path="architecture/src/app/hero-detail.component.html" linenums="false" header="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
 Angular has more pre-defined directives that either alter the layout structure
 (for example, [ngSwitch](guide/template-syntax#ngSwitch))

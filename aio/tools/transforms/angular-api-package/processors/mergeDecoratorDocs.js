@@ -42,7 +42,7 @@ const {mergeProperties} = require('../../helpers/utils');
  *
  * Finally we want to capture the documentation attached to the call signature interface of the
  * associated decorator (1). We copy across the properties that we care about from this call
- * signature (e.g. description, whatItDoes and howToUse).
+ * signature (e.g. `description` and `usageNotes`).
  */
 
 module.exports = function mergeDecoratorDocs(log) {

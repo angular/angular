@@ -13,16 +13,16 @@ import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
 
             <div class="contributor-image" [style.background-image]="'url('+pictureBase+(person.picture || noPicture)+')'">
                 <div class="contributor-info">
-                    <a *ngIf="person.bio" mat-button>
+                    <a *ngIf="person.bio" mat-button class="info-item">
                         View Bio
                     </a>
-                    <a *ngIf="person.twitter" mat-button class="icon"
+                    <a *ngIf="person.twitter" mat-icon-button class="info-item icon"
                         href="https://twitter.com/{{person.twitter}}" target="_blank" (click)="$event.stopPropagation()">
-                        <span class="fa fa-twitter fa-2x"></span>
+                        <mat-icon svgIcon="logos:twitter"></mat-icon>
                     </a>
-                    <a *ngIf="person.website" mat-button class="icon"
+                    <a *ngIf="person.website" mat-icon-button class="info-item icon"
                         href="{{person.website}}" target="_blank" (click)="$event.stopPropagation()">
-                        <span class="fa fa-link fa-2x"></span>
+                        <mat-icon class="link-icon">link</mat-icon>
                     </a>
                 </div>
             </div>

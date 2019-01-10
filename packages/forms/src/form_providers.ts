@@ -15,9 +15,10 @@ import {FormBuilder} from './form_builder';
 /**
  * Exports the required providers and directives for template-driven forms,
  * making them available for import by NgModules that import this module.
- * @see [Forms](guide/forms)
  *
  * @see [Forms Guide](/guide/forms)
+ *
+ * @publicApi
  */
 @NgModule({
   declarations: TEMPLATE_DRIVEN_DIRECTIVES,
@@ -51,6 +52,7 @@ export class FormsModule {
  *
  * @see [Reactive Forms Guide](/guide/reactive-forms)
  *
+ * @publicApi
  */
 @NgModule({
   declarations: [REACTIVE_DRIVEN_DIRECTIVES],

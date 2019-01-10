@@ -18,6 +18,8 @@ import {NgControl} from './ng_control';
  * An interface implemented by `FormGroupDirective` and `NgForm` directives.
  *
  * Only used by the `ReactiveFormsModule` and `FormsModule`.
+ *
+ * @publicApi
  */
 export interface Form {
   /**

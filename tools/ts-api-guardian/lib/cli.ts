@@ -22,9 +22,29 @@ export function startCli() {
   const {argv, mode, errors} = parseArguments(process.argv.slice(2));
 
   const options: SerializationOptions = {
-    stripExportPattern: argv['stripExportPattern'],
+    stripExportPattern: [].concat(argv['stripExportPattern']),
     allowModuleIdentifiers: [].concat(argv['allowModuleIdentifiers']),
   };
+
+  // Since the API guardian can be also used by other projects, we should not set up the default
+  // Angular project tag rules unless specified explicitly through a given option.
+  if (argv['useAngularTagRules']) {
+    options.exportTags = {
+      required: ['publicApi'],
+      banned: ['experimental'],
+      toCopy: ['deprecated']
+    };
+    options.memberTags = {
+      required: [],
+      banned: ['experimental', 'publicApi'],
+      toCopy: ['deprecated']
+    };
+    options.paramTags = {
+      required: [],
+      banned: ['experimental', 'publicApi'],
+      toCopy: ['deprecated']
+    };
+  }
 
   for (const error of errors) {
     console.warn(error);
@@ -33,7 +53,7 @@ export function startCli() {
   if (mode === 'help') {
     printUsageAndExit(!!errors.length);
   } else {
-    const targets = generateFileNamePairs(argv, mode);
+    const targets = resolveFileNamePairs(argv, mode);
 
     if (mode === 'out') {
       for (const {entrypoint, goldenFile} of targets) {
@@ -63,7 +83,7 @@ export function startCli() {
         // Under bazel, give instructions how to use bazel run to accept the golden file.
         if (!!process.env['BAZEL_TARGET']) {
           console.error('\n\nAccept the new golden file:');
-          console.error(`  bazel run ${process.env['BAZEL_TARGET']}.accept`);
+          console.error(`  bazel run ${process.env['BAZEL_TARGET'].replace(/_bin$/, "")}.accept`);
         }
         process.exit(1);
       }
@@ -82,7 +102,7 @@ export function parseArguments(input: string[]):
       'allowModuleIdentifiers'
     ],
     boolean: [
-      'help',
+      'help', 'useAngularTagRules',
       // Options used by chalk automagically
       'color', 'no-color'
     ],
@@ -153,25 +173,45 @@ Options:
 
         --rootDir <dir>                 Specify the root directory of input files
 
+        --useAngularTagRules <boolean>  Whether the Angular specific tag rules should be used.                                        
         --stripExportPattern <regexp>   Do not output exports matching the pattern
         --allowModuleIdentifiers <identifier>
                                         Whitelist identifier for "* as foo" imports`);
   process.exit(error ? 1 : 0);
 }
 
-export function generateFileNamePairs(
+/**
+ * Resolves a given path to the associated relative path if the current process runs within
+ * Bazel. We need to use the wrapped NodeJS resolve logic in order to properly handle the given
+ * runfiles files which are only part of the runfile manifest on Windows.
+ */
+function resolveBazelFilePath(fileName: string): string {
+  // If the CLI has been launched through the NodeJS Bazel rules, we need to resolve the
+  // actual file paths because otherwise this script won't work on Windows where runfiles
+  // are not available in the working directory. In order to resolve the real path for the
+  // runfile, we need to use `require.resolve` which handles runfiles properly on Windows.
+  if (process.env['BAZEL_TARGET']) {
+    return path.relative(process.cwd(), require.resolve(fileName));
+  }
+
+  return fileName;
+}
+
+function resolveFileNamePairs(
     argv: minimist.ParsedArgs, mode: string): {entrypoint: string, goldenFile: string}[] {
   if (argv[mode]) {
-    return [{entrypoint: argv._[0], goldenFile: argv[mode]}];
-
+    return [{
+      entrypoint: resolveBazelFilePath(argv._[0]),
+      goldenFile: resolveBazelFilePath(argv[mode]),
+    }];
   } else {  // argv[mode + 'Dir']
     let rootDir = argv['rootDir'] || '.';
     const goldenDir = argv[mode + 'Dir'];
 
     return argv._.map((fileName: string) => {
       return {
-        entrypoint: fileName,
-        goldenFile: path.join(goldenDir, path.relative(rootDir, fileName))
+        entrypoint: resolveBazelFilePath(fileName),
+        goldenFile: resolveBazelFilePath(path.join(goldenDir, path.relative(rootDir, fileName))),
       };
     });
   }

@@ -4,6 +4,7 @@ load("//tools:defaults.bzl", "ng_module", "ts_library")
 
 ng_module(
     name = "app",
+    testonly = True,
     srcs = glob(
         [
             "src/**/*.ts",
@@ -16,6 +17,7 @@ ng_module(
         "//packages/platform-browser",
         "//packages/platform-server",
         "//packages/router",
+        "@ngdeps//reflect-metadata",
         "@rxjs",
     ],
 )

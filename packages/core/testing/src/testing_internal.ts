@@ -169,7 +169,7 @@ export class SpyObject {
         let m: any = null;
         try {
           m = type.prototype[prop];
-        } catch (e) {
+        } catch {
           // As we are creating spys for abstract classes,
           // these classes might have getters that throw when they are accessed.
           // As we are only auto creating spys for methods, this

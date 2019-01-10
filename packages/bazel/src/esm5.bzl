@@ -51,6 +51,10 @@ def _esm5_outputs_aspect(target, ctx):
     if not hasattr(target.typescript, "replay_params"):
         print("WARNING: no esm5 output from target %s//%s:%s available" % (target.label.workspace_root, target.label.package, target.label.name))
         return []
+    elif not target.typescript.replay_params:
+        # In case there are "replay_params" specified but the compile action didn't generate any
+        # outputs (e.g. only "d.ts" files), we cannot create ESM5 outputs for this target either.
+        return []
 
     # We create a new tsconfig.json file that will have our compilation settings
     tsconfig = ctx.actions.declare_file("%s_esm5.tsconfig.json" % target.label.name)
@@ -80,12 +84,22 @@ def _esm5_outputs_aspect(target, ctx):
         ],
     )
 
+    replay_compiler = target.typescript.replay_params.compiler.path.split("/")[-1]
+
+    # in windows replay_compiler path end with '.exe'
+    if replay_compiler.startswith("tsc_wrapped"):
+        compiler = ctx.executable._tsc_wrapped
+    elif replay_compiler.startswith("ngc-wrapped"):
+        compiler = ctx.executable._ngc_wrapped
+    else:
+        fail("Unknown replay compiler", target.typescript.replay_params.compiler.path)
+
     ctx.actions.run(
         progress_message = "Compiling TypeScript (ES5 with ES Modules) %s" % target.label,
         inputs = target.typescript.replay_params.inputs + [tsconfig],
         outputs = outputs,
         arguments = [tsconfig.path],
-        executable = target.typescript.replay_params.compiler,
+        executable = compiler,
         execution_requirements = {
             # TODO(alexeagle): enable worker mode for these compilations
             "supports-workers": "0",
@@ -122,15 +136,11 @@ esm5_outputs_aspect = aspect(
             executable = True,
             cfg = "host",
         ),
-        # We must list tsc_wrapped here to ensure it's built before the action runs
-        # For some reason, having the compiler output as an input to the action above
-        # is not sufficient.
         "_tsc_wrapped": attr.label(
-            default = Label("@build_bazel_rules_typescript//internal:tsc_wrapped_bin"),
+            default = Label("@build_bazel_rules_typescript//:@bazel/typescript/tsc_wrapped"),
             executable = True,
             cfg = "host",
         ),
-        # Same comment as for tsc_wrapped above.
         "_ngc_wrapped": attr.label(
             default = Label("//packages/bazel/src/ngc-wrapped"),
             executable = True,
@@ -159,7 +169,7 @@ def flatten_esm5(ctx):
       ctx: the skylark rule execution context
 
     Returns:
-      list of flattened files
+      depset of flattened files
     """
     esm5_sources = []
     result = []
@@ -180,4 +190,4 @@ def flatten_esm5(ctx):
             template = f,
             substitutions = {},
         )
-    return result
+    return depset(result)

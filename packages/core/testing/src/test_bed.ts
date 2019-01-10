@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, CompilerOptions, Component, Directive, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵAPP_ROOT as APP_ROOT, ɵDepFlags as DepFlags, ɵInjectableDef as InjectableDef, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetComponentViewDefinitionFactory as getComponentViewDefinitionFactory, ɵgetInjectableDef as getInjectableDef, ɵivyEnabled as ivyEnabled, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, CompilerOptions, Component, Directive, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵAPP_ROOT as APP_ROOT, ɵDepFlags as DepFlags, ɵInjectableDef as InjectableDef, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetInjectableDef as getInjectableDef, ɵivyEnabled as ivyEnabled, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -15,11 +15,15 @@ import {TestBedRender3, _getTestBedRender3} from './r3_test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 
+
 const UNDEFINED = new Object();
 
 
 let _nextRootElementId = 0;
 
+/**
+ * @publicApi
+ */
 export interface TestBed {
   platform: PlatformRef;
 
@@ -35,16 +39,12 @@ export interface TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
-   *
-   * @experimental
    */
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @experimental
    */
   resetTestEnvironment(): void;
 
@@ -119,8 +119,6 @@ export class TestBedViewEngine implements Injector, TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
-   *
-   * @experimental
    */
   static initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef,
@@ -132,8 +130,6 @@ export class TestBedViewEngine implements Injector, TestBed {
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @experimental
    */
   static resetTestEnvironment(): void { _getTestBedViewEngine().resetTestEnvironment(); }
 
@@ -291,8 +287,6 @@ export class TestBedViewEngine implements Injector, TestBed {
    *
    * Test modules and platforms for individual platforms are available from
    * '@angular/<platform_name>/testing'.
-   *
-   * @experimental
    */
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void {
@@ -308,8 +302,6 @@ export class TestBedViewEngine implements Injector, TestBed {
 
   /**
    * Reset the providers for the test injector.
-   *
-   * @experimental
    */
   resetTestEnvironment(): void {
     this.resetTestingModule();
@@ -635,6 +627,8 @@ export class TestBedViewEngine implements Injector, TestBed {
  *
  * Note: Use `TestBed` in tests. It will be set to either `TestBedViewEngine` or `TestBedRender3`
  * according to the compiler used.
+ *
+ * @publicApi
  */
 export const TestBed: TestBedStatic =
     ivyEnabled ? TestBedRender3 as any as TestBedStatic : TestBedViewEngine as any as TestBedStatic;
@@ -644,7 +638,7 @@ export const TestBed: TestBedStatic =
  *
  * It will be either an instance of `TestBedViewEngine` or `TestBedRender3`.
  *
- * @experimental
+ * @publicApi
  */
 export const getTestBed: () => TestBed = ivyEnabled ? _getTestBedRender3 : _getTestBedViewEngine;
 
@@ -676,7 +670,7 @@ function _getTestBedViewEngine(): TestBedViewEngine {
  * eventually
  *   becomes `it('...', @Inject (object: AClass, async: AsyncTestCompleter) => { ... });`
  *
- *
+ * @publicApi
  */
 export function inject(tokens: any[], fn: Function): () => any {
   const testBed = getTestBed();
@@ -698,7 +692,7 @@ export function inject(tokens: any[], fn: Function): () => any {
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export class InjectSetupWrapper {
   constructor(private _moduleDef: () => TestModuleMetadata) {}
@@ -721,7 +715,7 @@ export class InjectSetupWrapper {
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
 export function withModule(moduleDef: TestModuleMetadata, fn: Function): () => any;

@@ -19,7 +19,7 @@ Observables are often compared to promises. Here are some key differences:
 
 ### Creation and subscription
 
-* Observables are not executed until a consumer subcribes. The `subscribe()` executes the defined behavior once, and it can be called again. Each subscription has its own computation. Resubscription causes recomputation of values.
+* Observables are not executed until a consumer subscribes. The `subscribe()` executes the defined behavior once, and it can be called again. Each subscription has its own computation. Resubscription causes recomputation of values.
 
 <code-example hideCopy>
 // declare a publishing operation

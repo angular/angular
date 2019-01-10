@@ -9,7 +9,7 @@ DI is a coding pattern in which a class asks for dependencies from external sour
 
 In Angular, the DI framework provides declared dependencies to a class when that class is instantiated. This guide explains how DI works in Angular, and how you use it to make your apps flexible, efficient, and robust, as well as testable and maintainable.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
  You can run the <live-example></live-example> of the sample app that accompanies this guide.
 
@@ -19,16 +19,16 @@ Start by reviewing this simplified version of the _heroes_ feature
 from the [The Tour of Heroes](tutorial/). This simple version doesn't use DI; we'll walk through converting it to do so.
 
 <code-tabs>
-  <code-pane title="src/app/heroes/heroes.component.ts" path="dependency-injection/src/app/heroes/heroes.component.1.ts" region="v1">
+  <code-pane header="src/app/heroes/heroes.component.ts" path="dependency-injection/src/app/heroes/heroes.component.1.ts" region="v1">
   </code-pane>
 
-  <code-pane title="src/app/heroes/hero-list.component.ts" path="dependency-injection/src/app/heroes/hero-list.component.1.ts">
+  <code-pane header="src/app/heroes/hero-list.component.ts" path="dependency-injection/src/app/heroes/hero-list.component.1.ts">
   </code-pane>
 
-  <code-pane title="src/app/heroes/hero.ts" path="dependency-injection/src/app/heroes/hero.ts">
+  <code-pane header="src/app/heroes/hero.ts" path="dependency-injection/src/app/heroes/hero.ts">
   </code-pane>
 
-  <code-pane title="src/app/heroes/mock-heroes.ts" path="dependency-injection/src/app/heroes/mock-heroes.ts">
+  <code-pane header="src/app/heroes/mock-heroes.ts" path="dependency-injection/src/app/heroes/mock-heroes.ts">
   </code-pane>
 
 </code-tabs>
@@ -39,7 +39,7 @@ Its only purpose is to display `HeroListComponent`, which displays a list of her
 This version of the `HeroListComponent` gets heroes from the `HEROES` array, an in-memory collection
 defined in a separate `mock-heroes` file.
 
-<code-example title="src/app/heroes/hero-list.component.ts (class)" path="dependency-injection/src/app/heroes/hero-list.component.1.ts" region="class">
+<code-example header="src/app/heroes/hero-list.component.ts (class)" path="dependency-injection/src/app/heroes/hero-list.component.1.ts" region="class">
 </code-example>
 
 This approach works for prototyping, but is not robust or maintainable.
@@ -52,7 +52,7 @@ replace every use of the `HEROES` mock data.
 
 The DI framework lets you supply data to a component from an injectable _service_ class, defined in its own file. To demonstrate, we'll create an injectable service class that provides a list of heroes, and register that class as a provider of that service.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 Having multiple classes in the same file can be confusing. We generally recommend that you define components and services in separate files.
 
@@ -68,7 +68,7 @@ See an example in the [DI Cookbook](guide/dependency-injection-in-action#forward
 
 ### Create an injectable service class
 
-The [**Angular CLI**](https://cli.angular.io/) can generate a new `HeroService` class in the `src/app/heroes` folder with this command.
+The [Angular CLI](cli) can generate a new `HeroService` class in the `src/app/heroes` folder with this command.
 
 <code-example language="sh" class="code-shell">
 ng generate service heroes/hero
@@ -76,12 +76,12 @@ ng generate service heroes/hero
 
 The command creates the following `HeroService` skeleton.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.0.ts" title="src/app/heroes/hero.service.ts (CLI-generated)">
+<code-example path="dependency-injection/src/app/heroes/hero.service.0.ts" header="src/app/heroes/hero.service.ts (CLI-generated)">
 </code-example>
 
 The `@Injectable()` is an essential ingredient in every Angular service definition. The rest of the class has been written to expose a `getHeroes` method that returns the same mock data as before. (A real app would probably get its data asynchronously from a remote server, but we'll ignore that to focus on the mechanics of injecting the service.)
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.3.ts" title="src/app/heroes/hero.service.ts">
+<code-example path="dependency-injection/src/app/heroes/hero.service.3.ts" header="src/app/heroes/hero.service.ts">
 </code-example>
 
 
@@ -147,7 +147,7 @@ In order for `HeroListComponent` to get heroes from `HeroService`, it needs to a
 
 You can tell Angular to inject a dependency in a component's constructor by specifying a **constructor parameter with the dependency type**. Here's the `HeroListComponent` constructor, asking for the `HeroService` to be injected.
 
-<code-example title="src/app/heroes/hero-list.component (constructor signature)" path="dependency-injection/src/app/heroes/hero-list.component.ts"
+<code-example header="src/app/heroes/hero-list.component (constructor signature)" path="dependency-injection/src/app/heroes/hero-list.component.ts"
 region="ctor-signature">
 </code-example>
 
@@ -155,10 +155,10 @@ Of course, `HeroListComponent` should do something with the injected `HeroServic
 Here's the revised component, making use of the injected service, side-by-side with the previous version for comparison.
 
 <code-tabs>
-  <code-pane title="hero-list.component (with DI)" path="dependency-injection/src/app/heroes/hero-list.component.2.ts">
+  <code-pane header="hero-list.component (with DI)" path="dependency-injection/src/app/heroes/hero-list.component.2.ts">
   </code-pane>
 
-  <code-pane title="hero-list.component (without DI)" path="dependency-injection/src/app/heroes/hero-list.component.1.ts">
+  <code-pane header="hero-list.component (without DI)" path="dependency-injection/src/app/heroes/hero-list.component.1.ts">
   </code-pane>
 </code-tabs>
 
@@ -197,7 +197,7 @@ Listing dependencies as constructor parameters may be all you need to test appli
 For example, you can create a new `HeroListComponent` with a mock service that you can manipulate
 under test.
 
-<code-example path="dependency-injection/src/app/test.component.ts" region="spec" title="src/app/test.component.ts" linenums="false">
+<code-example path="dependency-injection/src/app/test.component.ts" region="spec" header="src/app/test.component.ts" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -217,13 +217,13 @@ Here is the revised `HeroService` that injects `Logger`, side by side with the p
 
 <code-tabs>
 
-  <code-pane title="src/app/heroes/hero.service (v2)" path="dependency-injection/src/app/heroes/hero.service.2.ts">
+  <code-pane header="src/app/heroes/hero.service (v2)" path="dependency-injection/src/app/heroes/hero.service.2.ts">
   </code-pane>
 
-  <code-pane title="src/app/heroes/hero.service (v1)" path="dependency-injection/src/app/heroes/hero.service.1.ts">
+  <code-pane header="src/app/heroes/hero.service (v1)" path="dependency-injection/src/app/heroes/hero.service.1.ts">
   </code-pane>
 
-  <code-pane title="src/app/logger.service"
+  <code-pane header="src/app/logger.service"
   path="dependency-injection/src/app/logger.service.ts">
   </code-pane>
 
@@ -238,9 +238,9 @@ If Angular can't find that parameter information, it throws an error.
 Angular can only find the parameter information _if the class has a decorator of some kind_.
 The `@Injectable()` decorator is the standard decorator for service classes.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
- The decorator requirement is imposed by TypeScript. TypeScript normally discards parameter type information when it [transpiles]((guide/glossary#transpile) the code to JavaScript. TypeScript preserves this information if the class has a decorator and the `emitDecoratorMetadata` compiler option is set `true` in TypeScript's `tsconfig.json` configuration file. The CLI configures `tsconfig.json` with `emitDecoratorMetadata: true`.
+ The decorator requirement is imposed by TypeScript. TypeScript normally discards parameter type information when it [transpiles](guide/glossary#transpile) the code to JavaScript. TypeScript preserves this information if the class has a decorator and the `emitDecoratorMetadata` compiler option is set `true` in TypeScript's `tsconfig.json` configuration file. The CLI configures `tsconfig.json` with `emitDecoratorMetadata: true`.
  
  This means you're responsible for putting `@Injectable()` on your service classes.
 
@@ -260,14 +260,14 @@ In simple examples, the dependency value is an *instance*, and
 the class *type* serves as its own lookup key.
 Here you get a `HeroService` directly from the injector by supplying the `HeroService` type as the token:
 
-<code-example path="dependency-injection/src/app/injector.component.ts" region="get-hero-service" title="src/app/injector.component.ts" linenums="false">
+<code-example path="dependency-injection/src/app/injector.component.ts" region="get-hero-service" header="src/app/injector.component.ts" linenums="false">
 </code-example>
 
 The behavior is similar when you write a constructor that requires an injected class-based dependency.
 When you define a constructor parameter with the `HeroService` class type,
 Angular knows to inject the service associated with that `HeroService` class token:
 
-<code-example path="dependency-injection/src/app/heroes/hero-list.component.ts" region="ctor-signature" title="src/app/heroes/hero-list.component.ts">
+<code-example path="dependency-injection/src/app/heroes/hero-list.component.ts" region="ctor-signature" header="src/app/heroes/hero-list.component.ts">
 </code-example>
 
 Many dependency values are provided by classes, but not all. The expanded *provide* object lets you associate different kinds of providers with a DI token. 
@@ -295,7 +295,7 @@ When using `@Optional()`, your code must be prepared for a null value. If you
 don't register a logger provider anywhere, the injector sets the
 value of `logger` to null.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 `@Inject()` and `@Optional()` are _parameter decorators_.  They alter the way the DI framework provides a dependency, by annotating the dependency parameter on the constructor of the class that requires the dependency.
 

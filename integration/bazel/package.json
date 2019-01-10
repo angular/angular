@@ -4,20 +4,13 @@
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
-    "reflect-metadata": "file:../../node_modules/reflect-metadata",
-    "rxjs": "file:../../node_modules/rxjs",
-    "tslib": "file:../../node_modules/tslib",
-    "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@bazel/typescript": "0.17.0",
-    "@types/jasmine": "file:../../node_modules/@types/jasmine",
-    "@types/source-map": "0.5.1",
-    "protractor": "file:../../node_modules/protractor",
-    "tsickle": "file:../../node_modules/tsickle",
-    "typescript": "file:../../node_modules/typescript"
+    "@bazel/bazel": "file:../../node_modules/@bazel/bazel"
   },
   "scripts": {
+    "//": "deps are listed in src/package.json which is used by yarn_install",
+    "//": "this package.json file is only here so that `yarn test` can be called by /integration/run_tests.sh",
     "test": "bazel build ... --noshow_progress && bazel test ..."
   }
 }

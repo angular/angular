@@ -15,8 +15,10 @@ import {InjectionToken} from '@angular/core';
  *
  * Implement this interface to create a custom form control directive
  * that integrates with Angular forms.
- * 
+ *
  * @see DefaultValueAccessor
+ *
+ * @publicApi
  */
 export interface ControlValueAccessor {
   /**
@@ -26,6 +28,7 @@ export interface ControlValueAccessor {
    * This method is called by the forms API to write to the view when programmatic
    * changes from model to view are requested.
    *
+   * @usageNotes
    * ### Write a value to the element
    *
    * The following example writes a value to the native DOM element.
@@ -51,6 +54,7 @@ export interface ControlValueAccessor {
    * When implementing the `registerOnChange` method in your own value accessor,
    * save the given function so your class calls it at the appropriate time.
    *
+   * @usageNotes
    * ### Store the change function
    *
    * The following example stores the provided function as an internal method.
@@ -83,6 +87,7 @@ export interface ControlValueAccessor {
    * function so your class calls it when the control should be considered
    * blurred or "touched".
    *
+   * @usageNotes
    * ### Store the callback function
    *
    * The following example stores the provided function as an internal method.
@@ -112,6 +117,7 @@ export interface ControlValueAccessor {
    * or from 'DISABLED'. Depending on the status, it enables or disables the
    * appropriate DOM element.
    *
+   * @usageNotes
    * The following is an example of writing the disabled property to a native DOM element:
    *
    * ```ts
@@ -130,5 +136,6 @@ export interface ControlValueAccessor {
  *
  * See `DefaultValueAccessor` for how to implement one.
  *
+ * @publicApi
  */
 export const NG_VALUE_ACCESSOR = new InjectionToken<ControlValueAccessor>('NgValueAccessor');

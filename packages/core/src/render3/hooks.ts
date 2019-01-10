@@ -7,9 +7,10 @@
  */
 
 import {assertEqual} from './assert';
-import {DirectiveDefInternal} from './interfaces/definition';
-import {TNodeFlags} from './interfaces/node';
-import {DIRECTIVES, FLAGS, HookData, LViewData, LViewFlags, TView} from './interfaces/view';
+import {DirectiveDef} from './interfaces/definition';
+import {TNode} from './interfaces/node';
+import {FLAGS, HookData, LView, LViewFlags, TView} from './interfaces/view';
+
 
 
 /**
@@ -20,7 +21,7 @@ import {DIRECTIVES, FLAGS, HookData, LViewData, LViewFlags, TView} from './inter
  * directive index), then saved in the even indices of the initHooks array. The odd indices
  * hold the hook functions themselves.
  *
- * @param index The index of the directive in LViewData[DIRECTIVES]
+ * @param index The index of the directive in LView
  * @param hooks The static hooks map on the directive def
  * @param tView The current TView
  */
@@ -42,17 +43,13 @@ export function queueInitHooks(
  * Loops through the directives on a node and queues all their hooks except ngOnInit
  * and ngDoCheck, which are queued separately in directiveCreate.
  */
-export function queueLifecycleHooks(flags: number, tView: TView): void {
+export function queueLifecycleHooks(tView: TView, tNode: TNode): void {
   if (tView.firstTemplatePass) {
-    const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
-    const count = flags & TNodeFlags.DirectiveCountMask;
-    const end = start + count;
-
     // It's necessary to loop through the directives at elementEnd() (rather than processing in
     // directiveCreate) so we can preserve the current hook order. Content, view, and destroy
     // hooks for projected components and directives must be called *before* their hosts.
-    for (let i = start; i < end; i++) {
-      const def: DirectiveDefInternal<any> = tView.directives ![i];
+    for (let i = tNode.directiveStart, end = tNode.directiveEnd; i < end; i++) {
+      const def = tView.data[i] as DirectiveDef<any>;
       queueContentHooks(def, tView, i);
       queueViewHooks(def, tView, i);
       queueDestroyHooks(def, tView, i);
@@ -61,7 +58,7 @@ export function queueLifecycleHooks(flags: number, tView: TView): void {
 }
 
 /** Queues afterContentInit and afterContentChecked hooks on TView */
-function queueContentHooks(def: DirectiveDefInternal<any>, tView: TView, i: number): void {
+function queueContentHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
   if (def.afterContentInit) {
     (tView.contentHooks || (tView.contentHooks = [])).push(i, def.afterContentInit);
   }
@@ -73,7 +70,7 @@ function queueContentHooks(def: DirectiveDefInternal<any>, tView: TView, i: numb
 }
 
 /** Queues afterViewInit and afterViewChecked hooks on TView */
-function queueViewHooks(def: DirectiveDefInternal<any>, tView: TView, i: number): void {
+function queueViewHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
   if (def.afterViewInit) {
     (tView.viewHooks || (tView.viewHooks = [])).push(i, def.afterViewInit);
   }
@@ -85,7 +82,7 @@ function queueViewHooks(def: DirectiveDefInternal<any>, tView: TView, i: number)
 }
 
 /** Queues onDestroy hooks on TView */
-function queueDestroyHooks(def: DirectiveDefInternal<any>, tView: TView, i: number): void {
+function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): void {
   if (def.onDestroy != null) {
     (tView.destroyHooks || (tView.destroyHooks = [])).push(i, def.onDestroy);
   }
@@ -97,9 +94,9 @@ function queueDestroyHooks(def: DirectiveDefInternal<any>, tView: TView, i: numb
  * @param currentView The current view
  */
 export function executeInitHooks(
-    currentView: LViewData, tView: TView, creationMode: boolean): void {
-  if (currentView[FLAGS] & LViewFlags.RunInit) {
-    executeHooks(currentView[DIRECTIVES] !, tView.initHooks, tView.checkHooks, creationMode);
+    currentView: LView, tView: TView, checkNoChangesMode: boolean): void {
+  if (!checkNoChangesMode && currentView[FLAGS] & LViewFlags.RunInit) {
+    executeHooks(currentView, tView.initHooks, tView.checkHooks, checkNoChangesMode);
     currentView[FLAGS] &= ~LViewFlags.RunInit;
   }
 }
@@ -110,23 +107,25 @@ export function executeInitHooks(
  * @param currentView The current view
  */
 export function executeHooks(
-    data: any[], allHooks: HookData | null, checkHooks: HookData | null,
-    creationMode: boolean): void {
-  const hooksToCall = creationMode ? allHooks : checkHooks;
+    currentView: LView, allHooks: HookData | null, checkHooks: HookData | null,
+    checkNoChangesMode: boolean): void {
+  if (checkNoChangesMode) return;
+
+  const hooksToCall = currentView[FLAGS] & LViewFlags.FirstLViewPass ? allHooks : checkHooks;
   if (hooksToCall) {
-    callHooks(data, hooksToCall);
+    callHooks(currentView, hooksToCall);
   }
 }
 
 /**
  * Calls lifecycle hooks with their contexts, skipping init hooks if it's not
- * creation mode.
+ * the first LView pass.
  *
  * @param currentView The current view
  * @param arr The array in which the hooks are found
  */
-export function callHooks(data: any[], arr: HookData): void {
+export function callHooks(currentView: any[], arr: HookData): void {
   for (let i = 0; i < arr.length; i += 2) {
-    (arr[i + 1] as() => void).call(data[arr[i] as number]);
+    (arr[i + 1] as() => void).call(currentView[arr[i] as number]);
   }
 }

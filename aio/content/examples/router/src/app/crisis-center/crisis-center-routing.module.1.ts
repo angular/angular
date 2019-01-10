@@ -3,10 +3,10 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { CrisisCenterHomeComponent } from './crisis-center-home.component';
-import { CrisisListComponent }       from './crisis-list.component';
-import { CrisisCenterComponent }     from './crisis-center.component';
-import { CrisisDetailComponent }     from './crisis-detail.component';
+import { CrisisCenterHomeComponent } from './crisis-center-home/crisis-center-home.component';
+import { CrisisListComponent }       from './crisis-list/crisis-list.component';
+import { CrisisCenterComponent }     from './crisis-center/crisis-center.component';
+import { CrisisDetailComponent }     from './crisis-detail/crisis-detail.component';
 
 // #docregion routes
 const crisisCenterRoutes: Routes = [

@@ -119,7 +119,7 @@ export abstract class DomAdapter {
   abstract hasAttribute(element: any, attribute: string): boolean;
   abstract hasAttributeNS(element: any, ns: string, attribute: string): boolean;
   abstract getAttribute(element: any, attribute: string): string|null;
-  abstract getAttributeNS(element: any, ns: string, attribute: string): string;
+  abstract getAttributeNS(element: any, ns: string, attribute: string): string|null;
   abstract setAttribute(element: any, name: string, value: string): any;
   abstract setAttributeNS(element: any, ns: string, name: string, value: string): any;
   abstract removeAttribute(element: any, attribute: string): any;

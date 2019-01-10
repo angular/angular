@@ -16,7 +16,7 @@ import {EventEmitter, NgZone} from '@angular/core';
  * given channel to one MessageBusSink are received on the same channel
  * by the corresponding MessageBusSource.
  *
- * @experimental WebWorker support in Angular is currenlty experimental.
+ * @publicApi
  */
 export abstract class MessageBus implements MessageBusSource, MessageBusSink {
   /**
@@ -51,7 +51,7 @@ export abstract class MessageBus implements MessageBusSource, MessageBusSink {
 }
 
 /**
- * @experimental WebWorker support in Angular is currenlty experimental.
+ * @publicApi
  */
 export interface MessageBusSource {
   /**
@@ -77,7 +77,7 @@ export interface MessageBusSource {
 }
 
 /**
- * @experimental WebWorker support in Angular is currenlty experimental.
+ * @publicApi
  */
 export interface MessageBusSink {
   /**

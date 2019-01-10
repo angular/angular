@@ -8,6 +8,9 @@
 
 import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
 
+/**
+ * @publicApi
+ */
 export class NgForOfContext<T> {
   constructor(
       public $implicit: T, public ngForOf: NgIterable<T>, public index: number,
@@ -93,6 +96,7 @@ export class NgForOfContext<T> {
  * example.
  *
  * @ngModule CommonModule
+ * @publicApi
  */
 @Directive({selector: '[ngFor][ngForOf]'})
 export class NgForOf<T> implements DoCheck {
@@ -145,7 +149,7 @@ export class NgForOf<T> implements DoCheck {
       if (!this._differ && value) {
         try {
           this._differ = this._differs.find(value).create(this.ngForTrackBy);
-        } catch (e) {
+        } catch {
           throw new Error(
               `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
         }
@@ -197,6 +201,16 @@ export class NgForOf<T> implements DoCheck {
   private _perViewChange(
       view: EmbeddedViewRef<NgForOfContext<T>>, record: IterableChangeRecord<any>) {
     view.context.$implicit = record.item;
+  }
+
+  /**
+   * Assert the correct type of the context for the template that `NgForOf` will render.
+   *
+   * The presence of this method is a signal to the Ivy template type check compiler that the
+   * `NgForOf` structural directive renders its template with a specific context type.
+   */
+  static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T> {
+    return true;
   }
 }
 

@@ -14,6 +14,9 @@ import {ɵINTERNAL_BROWSER_PLATFORM_PROVIDERS as INTERNAL_BROWSER_PLATFORM_PROVI
 
 import {ResourceLoaderImpl} from './resource_loader/resource_loader_impl';
 
+/**
+ * @publicApi
+ */
 export const INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS: StaticProvider[] = [
   INTERNAL_BROWSER_PLATFORM_PROVIDERS,
   {

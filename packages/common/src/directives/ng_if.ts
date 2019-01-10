@@ -100,6 +100,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * ```
  *
  * @ngModule CommonModule
+ * @publicApi
  */
 @Directive({selector: '[ngIf]'})
 export class NgIf {
@@ -159,8 +160,21 @@ export class NgIf {
 
   /** @internal */
   public static ngIfUseIfTypeGuard: void;
+
+  /**
+   * Assert the correct type of the expression bound to the `ngIf` input within the template.
+   *
+   * The presence of this method is a signal to the Ivy template type check compiler that when the
+   * `NgIf` structural directive renders its template, the type of the expression bound to `ngIf`
+   * should be narrowed in some way. For `NgIf`, it is narrowed to be non-null, which allows the
+   * strictNullChecks feature of TypeScript to work with `NgIf`.
+   */
+  static ngTemplateGuard_ngIf<E>(dir: NgIf, expr: E): expr is NonNullable<E> { return true; }
 }
 
+/**
+ * @publicApi
+ */
 export class NgIfContext {
   public $implicit: any = null;
   public ngIf: any = null;

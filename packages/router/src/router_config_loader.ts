@@ -15,7 +15,7 @@ import {flatten, wrapIntoObservable} from './utils/collection';
 
 /**
  * @docsNotRequired
- * @experimental
+ * @publicApi
  */
 export const ROUTES = new InjectionToken<Route[][]>('ROUTES');
 

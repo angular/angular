@@ -6,20 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LiteralExpr, R3PipeMetadata, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
+import {LiteralExpr, R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Decorator, ReflectionHost} from '../../host';
-import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {PartialEvaluator} from '../../partial_evaluator';
+import {Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
+import {generateSetClassMetadataCall} from './metadata';
 import {SelectorScopeRegistry} from './selector_scope';
 import {getConstructorDependencies, isAngularCore, unwrapExpression} from './util';
 
-export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata, Decorator> {
+export interface PipeHandlerData {
+  meta: R3PipeMetadata;
+  metadataStmt: Statement|null;
+}
+
+export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, Decorator> {
   constructor(
-      private checker: ts.TypeChecker, private reflector: ReflectionHost,
+      private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
 
   detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
@@ -30,7 +36,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata, De
         decorator => decorator.name === 'Pipe' && (this.isCore || isAngularCore(decorator)));
   }
 
-  analyze(clazz: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3PipeMetadata> {
+  analyze(clazz: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<PipeHandlerData> {
     if (clazz.name === undefined) {
       throw new FatalDiagnosticError(
           ErrorCode.DECORATOR_ON_ANONYMOUS_CLASS, clazz, `@Pipes must have names`);
@@ -57,7 +63,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata, De
           ErrorCode.PIPE_MISSING_NAME, meta, `@Pipe decorator is missing name field`);
     }
     const pipeNameExpr = pipe.get('name') !;
-    const pipeName = staticallyResolve(pipeNameExpr, this.reflector, this.checker);
+    const pipeName = this.evaluator.evaluate(pipeNameExpr);
     if (typeof pipeName !== 'string') {
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, pipeNameExpr, `@Pipe.name must be a string`);
@@ -67,7 +73,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata, De
     let pure = true;
     if (pipe.has('pure')) {
       const expr = pipe.get('pure') !;
-      const pureValue = staticallyResolve(expr, this.reflector, this.checker);
+      const pureValue = this.evaluator.evaluate(expr);
       if (typeof pureValue !== 'boolean') {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `@Pipe.pure must be a boolean`);
@@ -77,20 +83,26 @@ export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata, De
 
     return {
       analysis: {
-        name,
-        type,
-        pipeName,
-        deps: getConstructorDependencies(clazz, this.reflector, this.isCore), pure,
-      }
+        meta: {
+          name,
+          type,
+          pipeName,
+          deps: getConstructorDependencies(clazz, this.reflector, this.isCore), pure,
+        },
+        metadataStmt: generateSetClassMetadataCall(clazz, this.reflector, this.isCore),
+      },
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3PipeMetadata): CompileResult {
-    const res = compilePipeFromMetadata(analysis);
+  compile(node: ts.ClassDeclaration, analysis: PipeHandlerData): CompileResult {
+    const res = compilePipeFromMetadata(analysis.meta);
+    const statements = res.statements;
+    if (analysis.metadataStmt !== null) {
+      statements.push(analysis.metadataStmt);
+    }
     return {
       name: 'ngPipeDef',
-      initializer: res.expression,
-      statements: [],
+      initializer: res.expression, statements,
       type: res.type,
     };
   }

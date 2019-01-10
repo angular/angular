@@ -74,12 +74,25 @@ export const getEnvVar = (name: string, isOptional = false): string => {
   return value || '';
 };
 
-export function createLogger(scope: string) {
-  const padding = ' '.repeat(20 - scope.length);
-  return {
-    error: (...args: any[]) => console.error(`[${new Date()}]`, `${scope}:${padding}`, ...args),
-    info: (...args: any[]) => console.info(`[${new Date()}]`, `${scope}:${padding}`, ...args),
-    log: (...args: any[]) => console.log(`[${new Date()}]`, `${scope}:${padding}`, ...args),
-    warn: (...args: any[]) => console.warn(`[${new Date()}]`, `${scope}:${padding}`, ...args),
-  };
+/**
+ * A basic logger implementation.
+ * Delegates to `console`, but prepends each message with the current date and specified scope (i.e caller).
+ */
+export class Logger {
+  private padding = ' '.repeat(20 - this.scope.length);
+
+  /**
+   * Create a new `Logger` instance for the specified `scope`.
+   * @param scope The logger's scope (added to all messages).
+   */
+  constructor(private scope: string) {}
+
+  public error(...args: any[]) { this.callMethod('error', args); }
+  public info(...args: any[]) { this.callMethod('info', args); }
+  public log(...args: any[]) { this.callMethod('log', args); }
+  public warn(...args: any[]) { this.callMethod('warn', args); }
+
+  private callMethod(method: 'error' | 'info' | 'log' | 'warn', args: any[]) {
+    console[method](`[${new Date()}]`, `${this.scope}:${this.padding}`, ...args);
+  }
 }

@@ -60,7 +60,7 @@ export interface TrustedUrlString extends TrustedString { [BRAND]: BypassType.Ur
 export interface TrustedResourceUrlString extends TrustedString { [BRAND]: BypassType.ResourceUrl; }
 
 export function allowSanitizationBypass(value: any, type: BypassType): boolean {
-  return (value instanceof String && (value as TrustedStyleString)[BRAND] === type) ? true : false;
+  return (value instanceof String && (value as TrustedStyleString)[BRAND] === type);
 }
 
 /**

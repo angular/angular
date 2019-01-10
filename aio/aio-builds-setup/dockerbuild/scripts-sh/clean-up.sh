@@ -2,6 +2,7 @@
 set -eu -o pipefail
 
 # Set up env variables
+export AIO_CIRCLE_CI_TOKEN=UNUSED_CIRCLE_CI_TOKEN
 export AIO_GITHUB_TOKEN=$(head -c -1 /aio-secrets/GITHUB_TOKEN 2>/dev/null)
 
 # Run the clean-up

@@ -18,6 +18,7 @@ import {URLSearchParams} from './url_search_params';
  * {@link Request}.
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export abstract class ConnectionBackend { abstract createConnection(request: any): Connection; }
 
@@ -25,6 +26,7 @@ export abstract class ConnectionBackend { abstract createConnection(request: any
  * Abstract class from which real connections are derived.
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export abstract class Connection {
   // TODO(issue/24571): remove '!'.
@@ -38,6 +40,7 @@ export abstract class Connection {
  * An XSRFStrategy configures XSRF protection (e.g. via headers) on an HTTP request.
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export abstract class XSRFStrategy { abstract configureRequest(req: Request): void; }
 
@@ -46,6 +49,7 @@ export abstract class XSRFStrategy { abstract configureRequest(req: Request): vo
  * [RequestInit](https://fetch.spec.whatwg.org/#requestinit) from the Fetch spec.
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export interface RequestOptionsArgs {
   url?: string|null;
@@ -69,6 +73,7 @@ export interface RequestArgs extends RequestOptionsArgs { url: string|null; }
  * [ResponseInit](https://fetch.spec.whatwg.org/#responseinit) from the Fetch spec.
  *
  * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export interface ResponseOptionsArgs {
   body?: string|Object|FormData|ArrayBuffer|Blob|null;

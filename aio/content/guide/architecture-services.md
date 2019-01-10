@@ -28,11 +28,11 @@ available to components through *dependency injection*.
 
 Here's an example of a service class that logs to the browser console.
 
-<code-example path="architecture/src/app/logger.service.ts" linenums="false" title="src/app/logger.service.ts (class)" region="class"></code-example>
+<code-example path="architecture/src/app/logger.service.ts" linenums="false" header="src/app/logger.service.ts (class)" region="class"></code-example>
 
 Services can depend on other services. For example, here's a `HeroService` that depends on the `Logger` service, and also uses `BackendService` to get heroes. That service in turn might depend on the `HttpClient` service to fetch heroes asynchronously from a server.
 
-<code-example path="architecture/src/app/hero.service.ts" linenums="false" title="src/app/hero.service.ts (class)" region="class"></code-example>
+<code-example path="architecture/src/app/hero.service.ts" linenums="false" header="src/app/hero.service.ts (class)" region="class"></code-example>
 
 ## Dependency injection (DI)
 
@@ -48,7 +48,7 @@ Similarly, use the `@Injectable()` decorator to indicate that a component or oth
 
 * An injector creates dependencies, and maintains a *container* of dependency instances that it reuses if possible.
 
-* A *provider* is an object that tell an injector how to obtain or create a dependency.
+* A *provider* is an object that tells an injector how to obtain or create a dependency.
 
 For any dependency that you need in your app, you must register a provider with the app's injector, 
 so that the injector can use the provider to create new instances. 
@@ -62,7 +62,7 @@ A dependency doesn't have to be a service&mdash;it could be a function, for exam
 
 When Angular creates a new instance of a component class, it determines which services or other dependencies that component needs by looking at the constructor parameter types. For example, the constructor of `HeroListComponent` needs `HeroService`.
 
-<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
+<code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (constructor)" region="ctor"></code-example>
 
 When Angular discovers that a component depends on a service, it first checks if the injector has any existing instances of that service. If a requested service instance doesn't yet exist, the injector makes one using the registered provider, and adds it to the injector before returning the service to Angular.
 
@@ -82,7 +82,7 @@ or you can register providers with specific modules or components.
 You register providers in the metadata of the service (in the `@Injectable()` decorator),
 or in the `@NgModule()` or `@Component()` metadata 
 
-* By default, the Angular CLI command `ng generate service` registers a provider with the root injector for your service by including provider metadata in the `@Injectable()` decorator. The tutorial uses this method to register the provider of  HeroService class definition.
+* By default, the Angular CLI command [`ng generate service`](cli/generate) registers a provider with the root injector for your service by including provider metadata in the `@Injectable()` decorator. The tutorial uses this method to register the provider of  HeroService class definition.
 
    ``` 
    @Injectable({
@@ -111,6 +111,6 @@ or in the `@NgModule()` or `@Component()` metadata
 service with each new instance of that component. 
 At the component level, register a service provider in the `providers` property of the `@Component()` metadata.
 
-   <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (component providers)" region="providers"></code-example>
+   <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" header="src/app/hero-list.component.ts (component providers)" region="providers"></code-example>
 
 For more detailed information, see the [Dependency Injection](guide/dependency-injection) section.

@@ -22,7 +22,7 @@ declare var System: any;
  * Configuration for SystemJsNgModuleLoader.
  * token.
  *
- * @experimental
+ * @publicApi
  */
 export abstract class SystemJsNgModuleLoaderConfig {
   /**
@@ -45,7 +45,7 @@ const DEFAULT_CONFIG: SystemJsNgModuleLoaderConfig = {
 
 /**
  * NgModuleFactoryLoader that uses SystemJS to load NgModuleFactory
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {

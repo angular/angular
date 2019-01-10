@@ -1,0 +1,15 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "translator",
+    srcs = glob(["**/*.ts"]),
+    module_name = "@angular/compiler-cli/src/ngtsc/translator",
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "@ngdeps//typescript",
+    ],
+)

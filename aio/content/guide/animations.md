@@ -37,7 +37,7 @@ To get started with adding Angular animations to your project, import the animat
 
 Import `BrowserAnimationsModule`, which introduces the animation capabilities into your Angular root application module.
 
-<code-example path="animations/src/app/app.module.1.ts" title="src/app/app.module.ts" language="typescript" linenums="false">
+<code-example path="animations/src/app/app.module.1.ts" header="src/app/app.module.ts" language="typescript" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -49,7 +49,7 @@ Import `BrowserAnimationsModule`, which introduces the animation capabilities in
 
 If you plan to use specific animation functions in component files, import those functions from `@angular/animations`.
 
-<code-example path="animations/src/app/app.component.ts" title="src/app/app.component.ts" region="imports" language="typescript">
+<code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="imports" language="typescript">
 </code-example>
 
 <div class="alert is-helpful">
@@ -61,7 +61,7 @@ If you plan to use specific animation functions in component files, import those
 
 In the component file, add a metadata property called `animations:` within the `@Component()` decorator. You put the trigger that defines an animation within the `animations` metadata property.
 
-<code-example path="animations/src/app/app.component.ts" title="src/app/app.component.ts" region="decorator" language="typescript">
+<code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="decorator" language="typescript">
 </code-example>
 
 ## Animating a simple transition
@@ -82,12 +82,12 @@ Use the `style()` function to define a set of styles to associate with a given s
 
 Let's see how Angular's `state()` function works with the `style⁣­(⁠)` function to set CSS style attributes. In this code snippet, multiple style attributes are set at the same time for the state. In the `open` state, the button has a height of 200 pixels, an opacity of 1, and a background color of yellow.
 
-<code-example path="animations/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state1" language="typescript">
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="state1" language="typescript">
 </code-example>
 
 In the `closed` state, shown below, the button has a height of 100 pixels, an opacity of 0.5, and a background color of green.
 
-<code-example path="animations/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state2" language="typescript">
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" region="state2" language="typescript">
 </code-example>
 
 ### Transitions and timing
@@ -134,7 +134,7 @@ The third argument, `easing`, controls how the animation [accelerates and decele
 
 This example provides a state transition from `open` to `closed` with a one second transition between states.
 
-<code-example path="animations/src/app/open-close.component.ts" title="src/app/open-close.component.ts" language="typescript"
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript"
 region="transition1">
 </code-example>
 
@@ -142,7 +142,7 @@ In the code snippet above, the `=>` operator indicates unidirectional transition
 
 This example adds a state transition from the `closed` state to the `open` state with a 0.5 second transition animation arc.
 
-<code-example path="animations/src/app/open-close.component.ts" title="src/app/open-close.component.ts" language="typescript"
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript"
 region="transition2">
 </code-example>
 
@@ -180,7 +180,7 @@ In this example, we'll name the trigger `openClose`, and attach it to the `butto
 
 Animations are defined in the metadata of the component that controls the HTML element to be animated. Put the code that defines your animations under the `animations:` property within the `@Component()` decorator.
 
-<code-example path="animations/src/app/open-close.component.ts" title="src/app/open-close.component.ts" language="typescript"
+<code-example path="animations/src/app/open-close.component.ts" header="src/app/open-close.component.ts" language="typescript"
 region="component" linenums="false">
 </code-example>
 
@@ -194,7 +194,7 @@ The animation is executed or triggered when the expression value changes to a ne
 
 The following code snippet binds the trigger to the value of the `isOpen` property.
 
-<code-example path="animations/src/app/open-close.component.1.html" title="src/app/open-close.component.html"
+<code-example path="animations/src/app/open-close.component.1.html" header="src/app/open-close.component.html"
 region="compare">
 </code-example>
 
@@ -216,15 +216,15 @@ Here are the code files discussed in the transition example.
 
 <code-tabs>
 
-<code-pane title="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" language="typescript"
+<code-pane header="src/app/open-close.component.ts" path="animations/src/app/open-close.component.ts" language="typescript"
 region="component">
 </code-pane>
 
-<code-pane title="src/app/open-close.component.html" path="animations/src/app/open-close.component.1.html"
+<code-pane header="src/app/open-close.component.html" path="animations/src/app/open-close.component.1.html"
 region="trigger">
 </code-pane>
 
-<code-pane title="src/app/open-close.component.css" path="animations/src/app/open-close.component.css">
+<code-pane header="src/app/open-close.component.css" path="animations/src/app/open-close.component.css">
 </code-pane>
 
 </code-tabs>

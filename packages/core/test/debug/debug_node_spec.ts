@@ -337,7 +337,6 @@ class TestApp {
 
       expect(fixture.debugElement.children[0].listeners.length).toEqual(1);
       expect(fixture.debugElement.children[1].listeners.length).toEqual(1);
-
     });
 
     it('should trigger event handlers', () => {

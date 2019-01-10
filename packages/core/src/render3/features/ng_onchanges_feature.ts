@@ -8,7 +8,7 @@
 
 import {SimpleChange} from '../../change_detection/change_detection_util';
 import {OnChanges, SimpleChanges} from '../../metadata/lifecycle_hooks';
-import {DirectiveDefInternal} from '../interfaces/definition';
+import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
 
 const PRIVATE_PREFIX = '__ngOnChanges_';
 
@@ -38,12 +38,14 @@ type OnChangesExpando = OnChanges & {
  * });
  * ```
  */
-export function NgOnChangesFeature<T>(definition: DirectiveDefInternal<T>): void {
-  const declaredToMinifiedInputs = definition.declaredInputs;
+export function NgOnChangesFeature<T>(definition: DirectiveDef<T>): void {
+  const publicToDeclaredInputs = definition.declaredInputs;
+  const publicToMinifiedInputs = definition.inputs;
   const proto = definition.type.prototype;
-  for (const declaredName in declaredToMinifiedInputs) {
-    if (declaredToMinifiedInputs.hasOwnProperty(declaredName)) {
-      const minifiedKey = declaredToMinifiedInputs[declaredName];
+  for (const publicName in publicToDeclaredInputs) {
+    if (publicToDeclaredInputs.hasOwnProperty(publicName)) {
+      const minifiedKey = publicToMinifiedInputs[publicName];
+      const declaredKey = publicToDeclaredInputs[publicName];
       const privateMinKey = PRIVATE_PREFIX + minifiedKey;
 
       // Walk the prototype chain to see if we find a property descriptor
@@ -72,12 +74,12 @@ export function NgOnChangesFeature<T>(definition: DirectiveDefInternal<T>): void
           }
 
           const isFirstChange = !this.hasOwnProperty(privateMinKey);
-          const currentChange = simpleChanges[declaredName];
+          const currentChange = simpleChanges[declaredKey];
 
           if (currentChange) {
             currentChange.currentValue = value;
           } else {
-            simpleChanges[declaredName] =
+            simpleChanges[declaredKey] =
                 new SimpleChange(this[privateMinKey], value, isFirstChange);
           }
 
@@ -105,6 +107,10 @@ export function NgOnChangesFeature<T>(definition: DirectiveDefInternal<T>): void
 
   definition.doCheck = onChangesWrapper(definition.doCheck);
 }
+
+// This option ensures that the ngOnChanges lifecycle hook will be inherited
+// from superclasses (in InheritDefinitionFeature).
+(NgOnChangesFeature as DirectiveDefFeature).ngInherit = true;
 
 function onChangesWrapper(delegateHook: (() => void) | null) {
   return function(this: OnChangesExpando) {

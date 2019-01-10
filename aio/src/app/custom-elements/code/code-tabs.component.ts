@@ -9,7 +9,7 @@ export interface TabInfo {
   linenums: any;
   path: string;
   region: string;
-  title: string|null;
+  header: string|null;
 }
 
 /**
@@ -29,14 +29,14 @@ export interface TabInfo {
       <mat-tab-group class="code-tab-group" disableRipple>
         <mat-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
           <ng-template mat-tab-label>
-            <span class="{{ tab.class }}">{{ tab.title }}</span>
+            <span class="{{ tab.class }}">{{ tab.header }}</span>
           </ng-template>
           <aio-code class="{{ tab.class }}"
                     [language]="tab.language"
                     [linenums]="tab.linenums"
                     [path]="tab.path"
                     [region]="tab.region"
-                    [title]="tab.title">
+                    [header]="tab.header">
           </aio-code>
         </mat-tab>
       </mat-tab-group>
@@ -77,7 +77,7 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
       linenums: tabContent.getAttribute('linenums') || this.linenums,
       path: tabContent.getAttribute('path') || '',
       region: tabContent.getAttribute('region') || '',
-      title: tabContent.getAttribute('title')
+      header: tabContent.getAttribute('header')
     };
   }
 }

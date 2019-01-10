@@ -26,50 +26,49 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   const proxy: ts.LanguageService = Object.create(null);
   let oldLS: ts.LanguageService = info.languageService;
 
-  function tryCall<T>(fileName: string | undefined, callback: () => T): T {
+  function tryCall<T>(fileName: string | undefined, callback: () => T): T|undefined {
     if (fileName && !oldLS.getProgram() !.getSourceFile(fileName)) {
-      return undefined as any as T;
+      return undefined;
     }
     try {
       return callback();
-    } catch (e) {
-      return undefined as any as T;
+    } catch {
+      return undefined;
     }
   }
 
-  function tryFilenameCall<T>(m: (fileName: string) => T): (fileName: string) => T {
+  function tryFilenameCall<T>(m: (fileName: string) => T): (fileName: string) => T | undefined {
     return fileName => tryCall(fileName, () => <T>(m.call(ls, fileName)));
   }
 
   function tryFilenameOneCall<T, P>(m: (fileName: string, p: P) => T): (filename: string, p: P) =>
-      T {
+      T | undefined {
     return (fileName, p) => tryCall(fileName, () => <T>(m.call(ls, fileName, p)));
   }
 
   function tryFilenameTwoCall<T, P1, P2>(m: (fileName: string, p1: P1, p2: P2) => T): (
-      filename: string, p1: P1, p2: P2) => T {
+      filename: string, p1: P1, p2: P2) => T | undefined {
     return (fileName, p1, p2) => tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2)));
   }
 
   function tryFilenameThreeCall<T, P1, P2, P3>(m: (fileName: string, p1: P1, p2: P2, p3: P3) => T):
-      (filename: string, p1: P1, p2: P2, p3: P3) => T {
+      (filename: string, p1: P1, p2: P2, p3: P3) => T | undefined {
     return (fileName, p1, p2, p3) => tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2, p3)));
   }
 
   function tryFilenameFourCall<T, P1, P2, P3, P4>(
       m: (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4) =>
-          T): (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4) => T {
+          T): (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4) => T | undefined {
     return (fileName, p1, p2, p3, p4) =>
                tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2, p3, p4)));
   }
 
   function tryFilenameFiveCall<T, P1, P2, P3, P4, P5>(
       m: (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) =>
-          T): (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) => T {
+          T): (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) => T | undefined {
     return (fileName, p1, p2, p3, p4, p5) =>
                tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2, p3, p4, p5)));
   }
-
 
   function typescriptOnly(ls: ts.LanguageService): ts.LanguageService {
     const languageService: ts.LanguageService = {
@@ -276,7 +275,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   };
 
   proxy.getDefinitionAtPosition = function(
-                                      fileName: string, position: number): ts.DefinitionInfo[] {
+      fileName: string, position: number): ReadonlyArray<ts.DefinitionInfo> {
     let base = oldLS.getDefinitionAtPosition(fileName, position);
     if (base && base.length) {
       return base;
@@ -284,10 +283,12 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
 
     return tryOperation('get definition', () => {
              const ours = ls.getDefinitionAt(fileName, position);
+             let combined;
+
              if (ours && ours.length) {
-               base = base || [];
+               combined = base && base.concat([]) || [];
                for (const loc of ours) {
-                 base.push({
+                 combined.push({
                    fileName: loc.fileName,
                    textSpan: {start: loc.span.start, length: loc.span.end - loc.span.start},
                    name: '',
@@ -297,8 +298,10 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
                    containerKind: 'file' as any,
                  });
                }
+             } else {
+               combined = base;
              }
-             return base;
+             return combined;
            }) || [];
   };
 

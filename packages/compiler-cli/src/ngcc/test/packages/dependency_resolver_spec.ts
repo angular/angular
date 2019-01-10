@@ -10,7 +10,7 @@ import {DependencyHost} from '../../src/packages/dependency_host';
 import {DependencyResolver} from '../../src/packages/dependency_resolver';
 import {EntryPoint} from '../../src/packages/entry_point';
 
-describe('DepencencyResolver', () => {
+describe('DependencyResolver', () => {
   let host: DependencyHost;
   let resolver: DependencyResolver;
   beforeEach(() => {
@@ -18,11 +18,11 @@ describe('DepencencyResolver', () => {
     resolver = new DependencyResolver(host);
   });
   describe('sortEntryPointsByDependency()', () => {
-    const first = { path: 'first', esm2015: 'first/index.ts' } as EntryPoint;
+    const first = { path: 'first', fesm2015: 'first/index.ts' } as EntryPoint;
     const second = { path: 'second', esm2015: 'second/index.ts' } as EntryPoint;
-    const third = { path: 'third', esm2015: 'third/index.ts' } as EntryPoint;
+    const third = { path: 'third', fesm2015: 'third/index.ts' } as EntryPoint;
     const fourth = { path: 'fourth', esm2015: 'fourth/index.ts' } as EntryPoint;
-    const fifth = { path: 'fifth', esm2015: 'fifth/index.ts' } as EntryPoint;
+    const fifth = { path: 'fifth', fesm2015: 'fifth/index.ts' } as EntryPoint;
 
     const dependencies = {
       'first/index.ts': {resolved: ['second', 'third', 'ignored-1'], missing: []},
@@ -80,10 +80,11 @@ describe('DepencencyResolver', () => {
       ]);
     });
 
-    it('should error if the entry point does not have the esm2015 format', () => {
-      expect(() => resolver.sortEntryPointsByDependency([{ path: 'first' } as EntryPoint]))
-          .toThrowError(`Esm2015 format missing in 'first' entry-point.`);
-    });
+    it('should error if the entry point does not have either the fesm2015 nor esm2015 formats',
+       () => {
+         expect(() => resolver.sortEntryPointsByDependency([{ path: 'first' } as EntryPoint]))
+             .toThrowError(`ESM2015 format (flat and non-flat) missing in 'first' entry-point.`);
+       });
 
     it('should capture any dependencies that were ignored', () => {
       spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies(dependencies));

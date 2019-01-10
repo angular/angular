@@ -26,6 +26,7 @@
       {"type": 301, "source": "/guide/service-worker-comm", "destination": "/guide/service-worker-communications"},
       {"type": 301, "source": "/guide/service-worker-configref", "destination": "/guide/service-worker-config"},
       {"type": 301, "source": "/guide/webpack", "destination": "https://v5.angular.io/guide/webpack"},
+      {"type": 301, "source": "/guide/setup-systemjs-anatomy", "destination": "/guide/file-structure"},
 
       // some top level guide pages on old site were moved below the guide folder
       {"type": 301, "source": "/styleguide", "destination": "/guide/styleguide"},

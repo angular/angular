@@ -130,7 +130,7 @@ like the title of the application or the address of a web API endpoint.
 These configuration objects aren't always instances of a class.
 They can be object literals, as shown in the following example.
 
-<code-example path="dependency-injection/src/app/app.config.ts" region="config" title="src/app/app.config.ts (excerpt)" linenums="false">
+<code-example path="dependency-injection/src/app/app.config.ts" region="config" header="src/app/app.config.ts (excerpt)" linenums="false">
 </code-example>
 
 {@a interface-not-valid-token}
@@ -147,7 +147,7 @@ In TypeScript, an interface is a design-time artifact, and doesn't have a runtim
 <code-example path="dependency-injection/src/app/providers.component.ts" region="provider-9-ctor-interface"  linenums="false">
 </code-example>
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 This might seem strange if you're used to dependency injection in strongly typed languages where an interface is the preferred dependency lookup key.
 However, JavaScript, doesn't have interfaces, so when TypeScript is transpiled to JavaScript, the interface disappears.
@@ -157,13 +157,13 @@ There is no interface type information left for Angular to find at runtime.
 
 One alternative is to provide and inject the configuration object in an NgModule like `AppModule`.
 
-<code-example path="dependency-injection/src/app/app.module.ts" region="providers" title="src/app/app.module.ts (providers)"></code-example>
+<code-example path="dependency-injection/src/app/app.module.ts" region="providers" header="src/app/app.module.ts (providers)"></code-example>
 
 Another solution to choosing a provider token for non-class dependencies is
 to define and use an `InjectionToken` object.
 The following example shows how to define such a token.
 
-<code-example path="dependency-injection/src/app/app.config.ts" region="token" title="src/app/app.config.ts" linenums="false">
+<code-example path="dependency-injection/src/app/app.config.ts" region="token" header="src/app/app.config.ts" linenums="false">
 </code-example>
 
 The type parameter, while optional, conveys the dependency's type to developers and tooling.
@@ -177,10 +177,10 @@ Register the dependency provider using the `InjectionToken` object:
 Now you can inject the configuration object into any constructor that needs it, with
 the help of an `@Inject()` parameter decorator.
 
-<code-example path="dependency-injection/src/app/app.component.2.ts" region="ctor" title="src/app/app.component.ts" linenums="false">
+<code-example path="dependency-injection/src/app/app.component.2.ts" region="ctor" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 Although the `AppConfig` interface plays no role in dependency injection,
 it supports typing of the configuration object within the class.
@@ -215,21 +215,21 @@ who is authorized and who isn't.
 
 To resolve this, we give the `HeroService` constructor a boolean flag to control display of secret heroes.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.ts" region="internals" title="src/app/heroes/hero.service.ts (excerpt)" linenums="false">
+<code-example path="dependency-injection/src/app/heroes/hero.service.ts" region="internals" header="src/app/heroes/hero.service.ts (excerpt)" linenums="false">
 </code-example>
 
 You can inject `Logger`, but you can't inject the  `isAuthorized` flag. Instead, you can use a factory provider to create a new logger instance for `HeroService`.
 
 A factory provider needs a factory function.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="factory" title="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
+<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="factory" header="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
 </code-example>
 
 Although `HeroService` has no access to `UserService`, the factory function does.
 You inject both `Logger` and `UserService` into the factory provider
 and let the injector pass them along to the factory function.
 
-<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="provider" title="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
+<code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="provider" header="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
 </code-example>
 
 * The `useFactory` field tells Angular that the provider is a factory function whose implementation is `heroServiceFactory`.
@@ -248,10 +248,10 @@ The following shows the new and the old implementations side-by-side.
 
 <code-tabs>
 
-  <code-pane title="src/app/heroes/heroes.component (v3)" path="dependency-injection/src/app/heroes/heroes.component.ts">
+  <code-pane header="src/app/heroes/heroes.component (v3)" path="dependency-injection/src/app/heroes/heroes.component.ts">
   </code-pane>
 
-  <code-pane title="src/app/heroes/heroes.component (v2)" path="dependency-injection/src/app/heroes/heroes.component.1.ts">
+  <code-pane header="src/app/heroes/heroes.component (v2)" path="dependency-injection/src/app/heroes/heroes.component.1.ts">
   </code-pane>
 
 </code-tabs>
@@ -293,7 +293,7 @@ When you provide multiple sets of routes using [RouterModule.forRoot](api/router
 and [RouterModule.forChild](api/router/RouterModule#forchild) in a single module,
 the [ROUTES](api/router/ROUTES) token combines all the different provided sets of routes into a single value.
 
-<div class="alert-is-helpful>
+<div class="alert is-helpful>
 
 Search for [Constants in API documentation](api?type=const) to find more built-in tokens. 
 
@@ -309,7 +309,7 @@ When providers are tree-shakable, the Angular compiler removes the associated
 services from the final output when it determines that they are not used in your application.
 This significantly reduces the size of your bundles.
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 Ideally, if an application isn't injecting a service, it shouldn't be included in the final output. 
 However, Angular has to be able to identify at build time whether the service will be required or not. 
@@ -322,13 +322,13 @@ Thus, services provided at the NgModule or component level are not tree-shakable
 
 The following example of non-tree-shakable providers in Angular configures a service provider for the injector of an NgModule.
 
-<code-example path="dependency-injection/src/app/tree-shaking/service-and-module.ts"  title="src/app/tree-shaking/service-and-modules.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service-and-module.ts"  header="src/app/tree-shaking/service-and-modules.ts" linenums="false"> </code-example>
 
 This module can then be imported into your application module 
 to make the service available for injection in your app, 
 as shown in the following example.
 
-<code-example path="dependency-injection/src/app/tree-shaking/app.module.ts"  title="src/app/tree-shaking/app.modules.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/app.module.ts"  header="src/app/tree-shaking/app.modules.ts" linenums="false"> </code-example>
 
 When `ngc` runs, it compiles `AppModule` into a module factory, which contains definitions for all the providers declared in all the modules it includes. At runtime, this factory becomes an injector that instantiates these services.
 
@@ -340,13 +340,13 @@ You can make a provider tree-shakable by specifying it in the `@Injectable()` de
 
 The following example shows the tree-shakable equivalent to the `ServiceModule` example above.
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.ts"  title="src/app/tree-shaking/service.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service.ts"  header="src/app/tree-shaking/service.ts" linenums="false"> </code-example>
 
 The service can be instantiated by configuring a factory function, as in the following example.
 
-<code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  title="src/app/tree-shaking/service.0.ts" linenums="false"> </code-example>
+<code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  header="src/app/tree-shaking/service.0.ts" linenums="false"> </code-example>
 
-<div class="alert-is-helpful">
+<div class="alert is-helpful">
 
 To override a tree-shakable provider, configure the injector of a specific NgModule or component with another provider, using the `providers: []` array syntax of the `@NgModule()` or `@Component()` decorator.
 

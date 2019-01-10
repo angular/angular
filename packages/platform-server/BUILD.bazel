@@ -21,6 +21,8 @@ ng_module(
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
+        "@ngdeps//@types/node",
+        "@ngdeps//zone.js",
         "@rxjs",
     ],
 )
@@ -33,9 +35,11 @@ ng_package(
     ],
     entry_point = "packages/platform-server/index.js",
     tags = [
-        "ivy-jit",
         "release-with-framework",
     ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":platform-server",
         "//packages/platform-server/testing",

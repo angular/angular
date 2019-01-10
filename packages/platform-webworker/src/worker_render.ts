@@ -25,7 +25,7 @@ import {MessageBasedRenderer2} from './web_workers/ui/renderer';
  * Wrapper class that exposes the Worker
  * and underlying {@link MessageBus} for lower level message passing.
  *
- * @experimental WebWorker support is currently experimental.
+ * @publicApi
  */
 @Injectable()
 export class WebWorkerInstance {
@@ -42,7 +42,7 @@ export class WebWorkerInstance {
 }
 
 /**
- * @experimental WebWorker support is currently experimental.
+ * @publicApi
  */
 export const WORKER_SCRIPT = new InjectionToken<string>('WebWorkerScript');
 
@@ -50,7 +50,7 @@ export const WORKER_SCRIPT = new InjectionToken<string>('WebWorkerScript');
  * A multi-provider used to automatically call the `start()` method after the service is
  * created.
  *
- * @experimental WebWorker support is currently experimental.
+ * @publicApi
  */
 export const WORKER_UI_STARTABLE_MESSAGING_SERVICE =
     new InjectionToken<({start: () => void})[]>('WorkerRenderStartableMsgService');
@@ -133,7 +133,7 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
     let scriptUri: string;
     try {
       scriptUri = injector.get(WORKER_SCRIPT);
-    } catch (e) {
+    } catch {
       throw new Error(
           'You must provide your WebWorker\'s initialization script with the WORKER_SCRIPT token');
     }
@@ -146,7 +146,7 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
 }
 
 /**
- * @experimental WebWorker support is currently experimental.
+ * @publicApi
  */
 export const platformWorkerUi =
     createPlatformFactory(platformCore, 'workerUi', _WORKER_UI_PLATFORM_PROVIDERS);

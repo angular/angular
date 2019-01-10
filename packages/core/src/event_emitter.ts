@@ -59,6 +59,7 @@ import {Subject, Subscription} from 'rxjs';
  *
  * Once a reference implementation of the spec is available, switch to it.
  *
+ * @publicApi
  */
 export class EventEmitter<T> extends Subject<T> {
   // TODO: mark this as internal once all the facades are gone

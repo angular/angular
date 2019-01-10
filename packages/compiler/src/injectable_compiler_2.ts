@@ -10,7 +10,7 @@ import {InjectFlags} from './core';
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
 import {R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata, compileFactoryFunction} from './render3/r3_factory';
-import {mapToMapExpression} from './render3/util';
+import {mapToMapExpression, typeWithParameters} from './render3/util';
 
 export interface InjectableDef {
   expression: o.Expression;
@@ -21,6 +21,7 @@ export interface InjectableDef {
 export interface R3InjectableMetadata {
   name: string;
   type: o.Expression;
+  typeArgumentCount: number;
   ctorDeps: R3DependencyMetadata[]|null;
   providedIn: o.Expression;
   useClass?: o.Expression;
@@ -32,10 +33,6 @@ export interface R3InjectableMetadata {
 
 export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
   let result: {factory: o.Expression, statements: o.Statement[]}|null = null;
-
-  function makeFn(ret: o.Expression): o.Expression {
-    return o.fn([], [new o.ReturnStatement(ret)], undefined, undefined, `${meta.name}_Factory`);
-  }
 
   const factoryMeta = {
     name: meta.name,
@@ -100,8 +97,8 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
 
   const expression = o.importExpr(Identifiers.defineInjectable).callFn([mapToMapExpression(
       {token, factory: result.factory, providedIn})]);
-  const type = new o.ExpressionType(
-      o.importExpr(Identifiers.InjectableDef, [new o.ExpressionType(meta.type)]));
+  const type = new o.ExpressionType(o.importExpr(
+      Identifiers.InjectableDef, [typeWithParameters(meta.type, meta.typeArgumentCount)]));
 
   return {
     expression,

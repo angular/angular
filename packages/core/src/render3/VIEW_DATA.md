@@ -1,28 +1,28 @@
 # View Data Explanation
 
-`LViewData` and `TView.data` are how the Ivy renderer keeps track of the internal data needed to render the template.
-`LViewData` is designed so that a single array can contain all of the necessary data for the template rendering in a compact form.
-`TView.data` is a corollary to the `LViewData` and contains information which can be shared across the template instances.
+`LView` and `TView.data` are how the Ivy renderer keeps track of the internal data needed to render the template.
+`LView` is designed so that a single array can contain all of the necessary data for the template rendering in a compact form.
+`TView.data` is a corollary to the `LView` and contains information which can be shared across the template instances.
 
-## `LViewData` / `TView.data` layout.
+## `LView` / `TView.data` layout.
 
-Both `LViewData` and `TView.data` are arrays whose indices refer to the same item.
-For example index `123` may point to a component instance in the `LViewData` but a component type in `TView.data`.
+Both `LView` and `TView.data` are arrays whose indices refer to the same item.
+For example index `123` may point to a component instance in the `LView` but a component type in `TView.data`.
 
 The layout is as such:
 
-| Section    | `LViewData`                                   | `TView.data`
-| ---------- | --------------------------------------------- | --------------------------------------------------
-| `HEADER`   | contextual data                               |  mostly `null`
-| `CONSTS`   | DOM, pipe, and local ref instances            |
-| `VARS`     | binding values                                |  property names
-| `EXPANDO`  | host bindings; directive instances; providers | host prop names; directive tokens; provider tokens
+| Section    | `LView`                                                  | `TView.data`
+| ---------- | ------------------------------------------------------------ | --------------------------------------------------
+| `HEADER`   | contextual data                                              |  mostly `null`
+| `CONSTS`   | DOM, pipe, and local ref instances                           |
+| `VARS`     | binding values                                               |  property names
+| `EXPANDO`  | host bindings; directive instances; providers; dynamic nodes | host prop names; directive tokens; provider tokens; `null`
 
 
 ## `HEADER`
 
 `HEADER` is a fixed array size which contains contextual information about the template.
-Mostly information such as parent `LViewData`, `Sanitizer`, `TView`, and many more bits of information needed for template rendering.
+Mostly information such as parent `LView`, `Sanitizer`, `TView`, and many more bits of information needed for template rendering.
 
 
 ## `CONSTS`
@@ -57,7 +57,7 @@ class MyApp {
 
 The above will create following layout:
 
-| Index | `LViewData`         | `TView.data`
+| Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
 | `CONSTS`
@@ -70,9 +70,9 @@ The above will create following layout:
 
 NOTE:
 - The `10` is not the actual size of `HEADER` but it is left here for simplification.
-- `LViewData` contains DOM instances only
+- `LView` contains DOM instances only
 - `TView.data` contains information on relationships such as where the parent is.
-  You need the `TView.data` information to make sense of the `LViewData` information.
+  You need the `TView.data` information to make sense of the `LView` information.
 
 
 ## `VARS`
@@ -109,7 +109,7 @@ class MyApp {
 
 The above will create following layout:
 
-| Index | `LViewData`         | `TView.data`
+| Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
 | `CONSTS`
@@ -121,14 +121,12 @@ The above will create following layout:
 | ...   | ...                 | ...
 
 NOTE:
-- `LViewData` contain DOM instances and previous binding values only
+- `LView` contain DOM instances and previous binding values only
 - `TView.data` contains information on relationships and property labels.
 
 
 
 ## `EXPANDO`
-
-*TODO*: This section is to be implemented.
 
 `EXPANDO` contains information on data which size is not known at compile time.
 Examples include:
@@ -184,7 +182,7 @@ class Tooltip {
 
 The above will create the following layout:
 
-| Index | `LViewData`         | `TView.data`
+| Index | `LView`         | `TView.data`
 | ----: | -----------         | ------------
 | `HEADER`
 | `CONSTS`
@@ -203,7 +201,7 @@ The `EXPANDO` section needs additional information for information stored in `TV
 
 | Index | `TView.expandoInstructions`         | Meaning
 | ----: | ---------------------------:        | -------
-| 0     | -10                                 | Negative numbers signifies pointers to elements. In this case 10 (`<child>`)
+| 0     | -10                                 | Negative numbers signify pointers to elements. In this case 10 (`<child>`)
 | 1     | 2                                   | Injector size. Number of values to skip to get to Host Bindings.
 | 2     | Child.ngComponentDef.hostBindings   | The function to call. (Only when `hostVars` is not `0`)
 | 3     | Child.ngComponentDef.hostVars       | Number of host bindings to process. (Only when `hostVars` is not `0`)
@@ -215,9 +213,9 @@ The reason for this layout is to make the host binding update efficient using th
 let currentDirectiveIndex = -1;
 let currentElementIndex = -1;
 // This is global state which is used internally by hostBindings to know where the offset is
-let bindingRootIndex = tView.expandoStart;
-for(var i = 0; i < tview.expandoInstructions.length; i++) {
-  let instruction = tview.expandoInstructions[i];
+let bindingRootIndex = tView.expandoStartIndex;
+for(var i = 0; i < tView.expandoInstructions.length; i++) {
+  let instruction = tView.expandoInstructions[i];
   if (typeof instruction === 'number') {
     // Numbers are used to update the indices.
     if (instruction < 0) {
@@ -258,10 +256,10 @@ This is because at the time of compilation we don't know about all of the inject
 
 Injection needs to store three things:
 - The injection token stored in `TView.data`
-- The token factory stored in `LProtoViewData` and subsequently in `LViewData`
-- The value for the injection token stored in `LViewData`. (Replacing token factory upon creation).
+- The token factory stored in `LProtoViewData` and subsequently in `LView`
+- The value for the injection token stored in `LView`. (Replacing token factory upon creation).
 
-To save time when creating `LViewData` we use an array clone operation to copy data from `LProtoViewdata` to `LViewData`.
+To save time when creating `LView` we use an array clone operation to copy data from `LProtoViewdata` to `LView`.
 The `LProtoViewData` is initialized by the `ProvidesFeature`.
 
 Injection tokens are sorted into three sections:
@@ -323,7 +321,7 @@ class Child {
 
 The above will create the following layout:
 
-| Index | `LViewData`                                  | `TView.data`
+| Index | `LView`                                  | `TView.data`
 | ----: | ------------                                 | -------------
 | `HEADER`
 | `CONSTS`
@@ -368,9 +366,9 @@ function isFactory(obj: any): obj is Factory {
 Pseudo code:
 1. Check if bloom filter has the value of the token. (If not exit)
 2. Locate the token in the expando honoring `directives`, `providers` and `viewProvider` rules by limiting the search scope.
-3. Read the value of `lViewData[index]` at that location.
-   - if `isFactory(lViewData[index])` then mark it as resolving and invoke it. Replace `lViewData[index]` with the value returned from factory (caching mechanism).
-   - if `!isFactory(lViewData[index])` then return the cached value as is.
+3. Read the value of `lView[index]` at that location.
+   - if `isFactory(lView[index])` then mark it as resolving and invoke it. Replace `lView[index]` with the value returned from factory (caching mechanism).
+   - if `!isFactory(lView[index])` then return the cached value as is.
 
 # `EXPANDO` and Injecting Special Objects.
 
@@ -382,17 +380,19 @@ NOTE:
 An interesting thing about these objects is that they are not memoized `injector.get(ElementRef) !== injector.get(ElementRef)`.
 This could be considered a bug, it means that we don't have to allocate storage space for them.
 
+We should treat these special objects like any other token. `directiveInject()` already reads a special `NG_ELEMENT_ID`
+property set on directives to locate their bit in the bloom filter. We can set this same property on special objects, 
+but point to a factory function rather than an element ID number. When we check that property in `directiveInject()` 
+and see that it's a function, we know to invoke the factory function directly instead of searching the node tree.
+
 ```typescript
-@Injectable({
-  provideIn: '__node__' as any // Special token not available to the developer
-  useFactory: injectElementRef // existing function which generates ElementRef
-})
 class ElementRef {
   ...
+  static __NG_ELEMENT_ID__ = () => injectElementRef();
 }
 ```
 
-Consequence of the above is that `injector.get(ElementRef)` returns an instance of `ElementRef` without `Injector` having to know about `ElementRef` at compile time.
+Consequence of the above is that `directiveInject(ElementRef)` returns an instance of `ElementRef` without `Injector` having to know about `ElementRef` at compile time.
 
 # `EXPANDO` and Injecting the `Injector`.
 
@@ -421,10 +421,7 @@ function inject(token: any): any {
   let injectableDef;
   if (typeof token === 'function' && injectableDef = token.ngInjectableDef) {
     const provideIn = injectableDef.provideIn;
-    if (provideIn === '__node__') {
-      // if it is a special object just call its factory
-      return injectableDef.useFactory();
-    } else if (provideIn === '__node_injector__') {
+   if (provideIn === '__node_injector__') {
       // if we are injecting `Injector` than create a wrapper object around the inject but which 
       // is bound to the current node.
       return createInjector();
@@ -440,6 +437,6 @@ function inject(token: any): any {
 
 TODO
 
-## Combining `LContainer` with `LViewData`
+## Combining `LContainer` with `LView`
 
 TODO

@@ -1,13 +1,15 @@
 package(default_visibility = ["//packages/bazel/test:__subpackages__"])
 
-load("//packages/bazel:index.bzl", "ng_module", "ng_package")
-load("//tools:defaults.bzl", "npm_package")
+load("//tools:defaults.bzl", "ng_module", "ng_package", "npm_package")
 
 ng_module(
     name = "example",
     srcs = glob(["*.ts"]),
     module_name = "example",
-    deps = ["//packages/bazel/test/ng_package/example/secondary"],
+    deps = [
+        "//packages/bazel/test/ng_package/example/secondary",
+        "@ngdeps//@types",
+    ],
 )
 
 ng_package(

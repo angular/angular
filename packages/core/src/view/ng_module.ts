@@ -8,7 +8,8 @@
 
 import {InjectableDef, getInjectableDef} from '../di/defs';
 import {resolveForwardRef} from '../di/forward_ref';
-import {INJECTOR, InjectFlags, Injector, setCurrentInjector} from '../di/injector';
+import {INJECTOR, Injector} from '../di/injector';
+import {setCurrentInjector} from '../di/injector_compatibility';
 import {APP_ROOT} from '../di/scope';
 import {NgModuleRef} from '../linker/ng_module_factory';
 import {stringify} from '../util';

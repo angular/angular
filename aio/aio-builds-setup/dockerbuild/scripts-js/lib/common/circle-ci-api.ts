@@ -62,7 +62,7 @@ export class CircleCiApi {
       if (response.status !== 200) {
         throw new Error(`${baseUrl}: ${response.status} - ${response.statusText}`);
       }
-      return response.json<BuildInfo>();
+      return response.json();
     } catch (error) {
         throw new Error(`CircleCI build info request failed (${error.message})`);
     }
@@ -77,7 +77,7 @@ export class CircleCiApi {
     const baseUrl = `${CIRCLE_CI_API_URL}/${this.githubOrg}/${this.githubRepo}/${buildNumber}`;
     try {
       const response = await fetch(`${baseUrl}/artifacts?${this.tokenParam}`);
-      const artifacts = await response.json<ArtifactResponse>();
+      const artifacts = await response.json() as ArtifactResponse;
       const artifact = artifacts.find(item => item.path === artifactPath);
       if (!artifact) {
         throw new Error(`Missing artifact (${artifactPath}) for CircleCI build: ${buildNumber}`);

@@ -5,27 +5,26 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, relative, resolve} from 'canonical-path';
-import {existsSync, readFileSync, writeFileSync} from 'fs';
+import {dirname} from 'canonical-path';
+import {existsSync, writeFileSync} from 'fs';
 import {mkdir, mv} from 'shelljs';
 import * as ts from 'typescript';
 
-import {DtsFileTransformer} from '../../../ngtsc/transform';
-import {AnalyzedFile, Analyzer} from '../analyzer';
-import {IMPORT_PREFIX} from '../constants';
-import {DtsMapper} from '../host/dts_mapper';
+import {CompiledFile, DecorationAnalyzer} from '../analysis/decoration_analyzer';
+import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analysis/module_with_providers_analyzer';
+import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
+import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
+import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
-import {Fesm2015ReflectionHost} from '../host/fesm2015_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
-import {Esm2015FileParser} from '../parsing/esm2015_parser';
-import {Esm5FileParser} from '../parsing/esm5_parser';
-import {FileParser} from '../parsing/file_parser';
-import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
+import {EsmRenderer} from '../rendering/esm_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
-import {checkMarkerFile, writeMarkerFile} from './build_marker';
-import {EntryPoint, EntryPointFormat} from './entry_point';
+
+import {EntryPoint} from './entry_point';
+import {EntryPointBundle} from './entry_point_bundle';
+
 
 
 /**
@@ -36,9 +35,11 @@ import {EntryPoint, EntryPointFormat} from './entry_point';
  * parsed to identify the decorated exported classes that need to be analyzed and compiled by one or
  * more `DecoratorHandler` objects.
  *
- * Each entry point to a package is identified by a `SourceFile` that can be parsed and analyzed to
+ * Each entry point to a package is identified by a `package.json` which contains properties that
+ * indicate what formatted bundles are accessible via this end-point.
+ *
+ * Each bundle is identified by a root `SourceFile` that can be parsed and analyzed to
  * identify classes that need to be transformed; and then finally rendered and written to disk.
- * The actual file which needs to be transformed depends upon the package format.
  *
  * Along with the source files, the corresponding source maps (either inline or external) and
  * `.d.ts` files are transformed accordingly.
@@ -50,156 +51,81 @@ import {EntryPoint, EntryPointFormat} from './entry_point';
 export class Transformer {
   constructor(private sourcePath: string, private targetPath: string) {}
 
-  transform(entryPoint: EntryPoint, format: EntryPointFormat): void {
-    if (checkMarkerFile(entryPoint, format)) {
-      return;
-    }
+  /**
+   * Transform the source (and typings) files of a bundle.
+   * @param bundle the bundle to transform.
+   */
+  transform(entryPoint: EntryPoint, isCore: boolean, bundle: EntryPointBundle): void {
+    console.warn(`Compiling ${entryPoint.name} - ${bundle.format}`);
 
-    const outputFiles: FileInfo[] = [];
-    const options: ts.CompilerOptions = {
-      allowJs: true,
-      maxNodeModuleJsDepth: Infinity,
-      rootDir: entryPoint.path,
-    };
-
-    // Create the TS program and necessary helpers.
-    // TODO : create a custom compiler host that reads from .bak files if available.
-    const host = ts.createCompilerHost(options);
-    let rootDirs: string[]|undefined = undefined;
-    if (options.rootDirs !== undefined) {
-      rootDirs = options.rootDirs;
-    } else if (options.rootDir !== undefined) {
-      rootDirs = [options.rootDir];
-    } else {
-      rootDirs = [host.getCurrentDirectory()];
-    }
-    const entryPointFilePath = entryPoint[format];
-    if (!entryPointFilePath) {
-      throw new Error(
-          `Missing entry point file for format, ${format}, in package, ${entryPoint.path}.`);
-    }
-    const packageProgram = ts.createProgram([entryPointFilePath], options, host);
-    const typeChecker = packageProgram.getTypeChecker();
-    const dtsMapper = new DtsMapper(dirname(entryPointFilePath), dirname(entryPoint.typings));
-    const reflectionHost = this.getHost(format, packageProgram, dtsMapper);
-
-    const parser = this.getFileParser(format, packageProgram, reflectionHost);
-    const analyzer = new Analyzer(typeChecker, reflectionHost, rootDirs);
-    const renderer = this.getRenderer(format, packageProgram, reflectionHost);
+    const reflectionHost = this.getHost(isCore, bundle);
 
     // Parse and analyze the files.
-    const entryPointFile = packageProgram.getSourceFile(entryPointFilePath) !;
-    const parsedFiles = parser.parseFile(entryPointFile);
-    const analyzedFiles = parsedFiles.map(parsedFile => analyzer.analyzeFile(parsedFile));
+    const {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+           moduleWithProvidersAnalyses} = this.analyzeProgram(reflectionHost, isCore, bundle);
 
     // Transform the source files and source maps.
-    outputFiles.push(
-        ...this.transformSourceFiles(analyzedFiles, this.sourcePath, this.targetPath, renderer));
-
-    // Transform the `.d.ts` files (if necessary).
-    // TODO(gkalpak): What about `.d.ts` source maps? (See
-    // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#new---declarationmap.)
-    if (format === 'esm2015') {
-      outputFiles.push(
-          ...this.transformDtsFiles(analyzedFiles, this.sourcePath, this.targetPath, dtsMapper));
-    }
+    const renderer = this.getRenderer(reflectionHost, isCore, bundle);
+    const renderedFiles = renderer.renderProgram(
+        decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+        moduleWithProvidersAnalyses);
 
     // Write out all the transformed files.
-    outputFiles.forEach(file => this.writeFile(file));
-
-    // Write the built-with-ngcc marker
-    writeMarkerFile(entryPoint, format);
+    renderedFiles.forEach(file => this.writeFile(file));
   }
 
-  getHost(format: string, program: ts.Program, dtsMapper: DtsMapper): NgccReflectionHost {
-    switch (format) {
+  getHost(isCore: boolean, bundle: EntryPointBundle): NgccReflectionHost {
+    const typeChecker = bundle.src.program.getTypeChecker();
+    switch (bundle.format) {
       case 'esm2015':
-        return new Esm2015ReflectionHost(program.getTypeChecker(), dtsMapper);
       case 'fesm2015':
-        return new Fesm2015ReflectionHost(program.getTypeChecker());
+        return new Esm2015ReflectionHost(isCore, typeChecker, bundle.dts);
       case 'esm5':
       case 'fesm5':
-        return new Esm5ReflectionHost(program.getTypeChecker());
+        return new Esm5ReflectionHost(isCore, typeChecker);
       default:
-        throw new Error(`Relection host for "${format}" not yet implemented.`);
+        throw new Error(`Reflection host for "${bundle.format}" not yet implemented.`);
     }
   }
 
-  getFileParser(format: string, program: ts.Program, host: NgccReflectionHost): FileParser {
-    switch (format) {
+  getRenderer(host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle): Renderer {
+    switch (bundle.format) {
       case 'esm2015':
       case 'fesm2015':
-        return new Esm2015FileParser(program, host);
+        return new EsmRenderer(host, isCore, bundle, this.sourcePath, this.targetPath);
       case 'esm5':
       case 'fesm5':
-        return new Esm5FileParser(program, host);
+        return new Esm5Renderer(host, isCore, bundle, this.sourcePath, this.targetPath);
       default:
-        throw new Error(`File parser for "${format}" not yet implemented.`);
+        throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }
   }
 
-  getRenderer(format: string, program: ts.Program, host: NgccReflectionHost): Renderer {
-    switch (format) {
-      case 'esm2015':
-      case 'fesm2015':
-        return new Esm2015Renderer(host);
-      case 'esm5':
-      case 'fesm5':
-        return new Esm5Renderer(host);
-      default:
-        throw new Error(`Renderer for "${format}" not yet implemented.`);
-    }
-  }
+  analyzeProgram(reflectionHost: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle):
+      ProgramAnalyses {
+    const typeChecker = bundle.src.program.getTypeChecker();
+    const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
 
-  transformDtsFiles(
-      analyzedFiles: AnalyzedFile[], sourceNodeModules: string, targetNodeModules: string,
-      dtsMapper: DtsMapper): FileInfo[] {
-    const outputFiles: FileInfo[] = [];
+    const switchMarkerAnalyzer = new SwitchMarkerAnalyzer(reflectionHost);
+    const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
 
-    analyzedFiles.forEach(analyzedFile => {
-      // Create a `DtsFileTransformer` for the source file and record the generated fields, which
-      // will allow the corresponding `.d.ts` file to be transformed later.
-      const dtsTransformer = new DtsFileTransformer(null, IMPORT_PREFIX);
-      analyzedFile.analyzedClasses.forEach(
-          analyzedClass =>
-              dtsTransformer.recordStaticField(analyzedClass.name, analyzedClass.compilation));
+    const decorationAnalyzer = new DecorationAnalyzer(
+        bundle.src.program, bundle.src.options, bundle.src.host, typeChecker, reflectionHost,
+        referencesRegistry, bundle.rootDirs, isCore);
+    const decorationAnalyses = decorationAnalyzer.analyzeProgram();
 
-      // Find the corresponding `.d.ts` file.
-      const sourceFileName = analyzedFile.sourceFile.fileName;
-      const originalDtsFileName = dtsMapper.getDtsFileNameFor(sourceFileName);
-      const originalDtsContents = readFileSync(originalDtsFileName, 'utf8');
+    const moduleWithProvidersAnalyzer =
+        bundle.dts && new ModuleWithProvidersAnalyzer(reflectionHost, referencesRegistry);
+    const moduleWithProvidersAnalyses = moduleWithProvidersAnalyzer &&
+        moduleWithProvidersAnalyzer.analyzeProgram(bundle.src.program);
 
-      // Transform the `.d.ts` file based on the recorded source file changes.
-      const transformedDtsFileName =
-          resolve(targetNodeModules, relative(sourceNodeModules, originalDtsFileName));
-      const transformedDtsContents = dtsTransformer.transform(originalDtsContents, sourceFileName);
+    const privateDeclarationsAnalyzer =
+        new PrivateDeclarationsAnalyzer(reflectionHost, referencesRegistry);
+    const privateDeclarationsAnalyses =
+        privateDeclarationsAnalyzer.analyzeProgram(bundle.src.program);
 
-      // Add the transformed `.d.ts` file to the list of output files.
-      outputFiles.push({path: transformedDtsFileName, contents: transformedDtsContents});
-    });
-
-    return outputFiles;
-  }
-
-  transformSourceFiles(
-      analyzedFiles: AnalyzedFile[], sourceNodeModules: string, targetNodeModules: string,
-      renderer: Renderer): FileInfo[] {
-    const outputFiles: FileInfo[] = [];
-
-    analyzedFiles.forEach(analyzedFile => {
-      // Transform the source file based on the recorded changes.
-      const targetPath =
-          resolve(targetNodeModules, relative(sourceNodeModules, analyzedFile.sourceFile.fileName));
-      const {source, map} = renderer.renderFile(analyzedFile, targetPath);
-
-      // Add the transformed file (and source map, if available) to the list of output files.
-      outputFiles.push(source);
-      if (map) {
-        outputFiles.push(map);
-      }
-    });
-
-    return outputFiles;
+    return {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+            moduleWithProvidersAnalyses};
   }
 
   writeFile(file: FileInfo): void {
@@ -210,4 +136,12 @@ export class Transformer {
     }
     writeFileSync(file.path, file.contents, 'utf8');
   }
+}
+
+
+interface ProgramAnalyses {
+  decorationAnalyses: Map<ts.SourceFile, CompiledFile>;
+  switchMarkerAnalyses: SwitchMarkerAnalyses;
+  privateDeclarationsAnalyses: ExportInfo[];
+  moduleWithProvidersAnalyses: ModuleWithProvidersAnalyses|null;
 }

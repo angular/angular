@@ -1,15 +1,11 @@
 # Getting started with service workers
 
 
-This document explains how to enable Angular service worker support in your CLI projects. It then uses a simple example to show you a service worker in action, demonstrating loading and basic caching. 
+This document explains how to enable Angular service worker support in projects that you created with the [Angular CLI](cli). It then uses a simple example to show you a service worker in action, demonstrating loading and basic caching. 
 
 #### Prerequisites
 
-A basic understanding of the following:
-* [Introduction to Angular service workers](guide/service-worker-intro).
-* Angular v6, including Angular CLI v6.
-
-<hr />
+A basic understanding of the information in [Introduction to Angular service workers](guide/service-worker-intro).
 
 
 ## Adding a service worker to your project
@@ -98,6 +94,16 @@ Notice that all of the files the browser needs to render this application are ca
 * `favicon.ico`.
 * Build artifacts (JS and CSS bundles).
 * Anything under `assets`.
+* Images and fonts directly under the configured `outputPath` (by default `./dist/<project-name>/`) or `resourcesOutputPath`. See [`ng build`](cli/build) for more information about these options.
+
+
+<div class="alert is-helpful">
+Pay attention to two key points:
+
+1. The generated `ngsw-config.json` includes a limited list of cachable fonts and images extentions. In some cases, you might want to modify the glob pattern to suit your needs.
+
+1. If `resourcesOutputPath` or `assets` paths are modified after the generation of configuration file, you need to change the paths manually in `ngsw-config.json`.
+</div>
 
 ### Making changes to your application
 

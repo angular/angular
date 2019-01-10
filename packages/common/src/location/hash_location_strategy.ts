@@ -31,7 +31,7 @@ import {LocationChangeListener, PlatformLocation} from './platform_location';
  *
  * {@example common/location/ts/hash_location_component.ts region='LocationComponent'}
  *
- *
+ * @publicApi
  */
 @Injectable()
 export class HashLocationStrategy extends LocationStrategy {

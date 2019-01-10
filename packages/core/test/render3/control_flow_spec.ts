@@ -10,7 +10,7 @@ import {defineComponent} from '../../src/render3/definition';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
-import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
 
 describe('JS control flow', () => {
   it('should work with if block', () => {
@@ -38,8 +38,8 @@ describe('JS control flow', () => {
             embeddedViewEnd();
           }
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }, 2);
 
     const fixture = new ComponentFixture(App);

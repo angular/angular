@@ -18,10 +18,13 @@ export {VERSION} from './version';
 export {JitCompilerFactory} from './compiler_factory';
 
 /**
- * @experimental
+ * @publicApi
  */
 export const RESOURCE_CACHE_PROVIDER: Provider[] =
     [{provide: ResourceLoader, useClass: CachedResourceLoader, deps: []}];
 
+/**
+ * @publicApi
+ */
 export const platformBrowserDynamic = createPlatformFactory(
     platformCoreDynamic, 'browserDynamic', INTERNAL_BROWSER_DYNAMIC_PLATFORM_PROVIDERS);

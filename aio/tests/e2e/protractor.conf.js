@@ -10,11 +10,6 @@ exports.config = {
   ],
   capabilities: {
     browserName: 'chrome',
-    // For Travis
-    chromeOptions: {
-      binary: process.env.CHROME_BIN,
-      args: ['--no-sandbox']
-    }
   },
   directConnect: true,
   baseUrl: 'http://localhost:4200/',

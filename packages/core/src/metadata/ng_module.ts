@@ -7,8 +7,11 @@
  */
 
 import {ApplicationRef} from '../application_ref';
+import {InjectorType, defineInjector} from '../di/defs';
 import {Provider} from '../di/provider';
-import {R3_COMPILE_NGMODULE} from '../ivy_switch';
+import {convertInjectableProviderToFactory} from '../di/util';
+import {NgModuleType} from '../render3';
+import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 
@@ -26,11 +29,7 @@ export interface NgModuleTransitiveScopes {
   exported: {directives: Set<any>; pipes: Set<any>;};
 }
 
-/**
- * A version of {@link NgModuleDef} that represents the runtime type shape only, and excludes
- * metadata parameters.
- */
-export type NgModuleDefInternal<T> = NgModuleDef<T, any, any, any>;
+export type NgModuleDefWithMeta<T, Declarations, Imports, Exports> = NgModuleDef<T>;
 
 /**
  * Runtime link information for NgModules.
@@ -42,7 +41,7 @@ export type NgModuleDefInternal<T> = NgModuleDef<T, any, any, any>;
  * never create the object directly since the shape of this object
  * can change between versions.
  */
-export interface NgModuleDef<T, Declarations, Imports, Exports> {
+export interface NgModuleDef<T> {
   /** Token representing the module. Used by DI. */
   type: T;
 
@@ -74,6 +73,8 @@ export interface NgModuleDef<T, Declarations, Imports, Exports> {
  *
  * @param T the module type. In Ivy applications, this must be explicitly
  * provided.
+ *
+ * @publicApi
  */
 export interface ModuleWithProviders<
     T = any /** TODO(alxhub): remove default when callers pass explicit type param */> {
@@ -88,7 +89,7 @@ export interface ModuleWithProviders<
  *
  * @param name The name of a defined schema.
  *
- * @experimental
+ * @publicApi
  */
 export interface SchemaMetadata { name: string; }
 
@@ -98,7 +99,7 @@ export interface SchemaMetadata { name: string; }
  * - Element properties named with dash case (`-`).
  * Dash case is the naming convention for custom elements.
  *
- *
+ * @publicApi
  */
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
   name: 'custom-elements'
@@ -107,7 +108,7 @@ export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
 /**
  * Defines a schema that allows any property on any element.
  *
- * @experimental
+ * @publicApi
  */
 export const NO_ERRORS_SCHEMA: SchemaMetadata = {
   name: 'no-errors-schema'
@@ -116,8 +117,6 @@ export const NO_ERRORS_SCHEMA: SchemaMetadata = {
 
 /**
  * Type of the NgModule decorator / constructor function.
- *
- *
  */
 export interface NgModuleDecorator {
   /**
@@ -130,7 +129,7 @@ export interface NgModuleDecorator {
 /**
  * Type of the NgModule metadata.
  *
- *
+ * @publicApi
  */
 export interface NgModule {
   /**
@@ -324,6 +323,7 @@ export interface NgModule {
 
 /**
  * @Annotation
+ * @publicApi
  */
 export const NgModule: NgModuleDecorator = makeDecorator(
     'NgModule', (ngModule: NgModule) => ngModule, undefined, undefined,
@@ -338,7 +338,7 @@ export const NgModule: NgModuleDecorator = makeDecorator(
      * * The `imports` and `exports` options bring in members from other modules, and make
      * this module's members available to others.
      */
-    (type: Type<any>, meta: NgModule) => R3_COMPILE_NGMODULE(type, meta));
+    (type: NgModuleType, meta: NgModule) => SWITCH_COMPILE_NGMODULE(type, meta));
 
 /**
  * @description
@@ -358,5 +358,24 @@ export const NgModule: NgModuleDecorator = makeDecorator(
  * }
  * ```
  *
+ * @publicApi
  */
 export interface DoBootstrap { ngDoBootstrap(appRef: ApplicationRef): void; }
+
+function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule): void {
+  let imports = (metadata && metadata.imports) || [];
+  if (metadata && metadata.exports) {
+    imports = [...imports, metadata.exports];
+  }
+
+  moduleType.ngInjectorDef = defineInjector({
+    factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
+    providers: metadata && metadata.providers,
+    imports: imports,
+  });
+}
+
+
+export const SWITCH_COMPILE_NGMODULE__POST_R3__ = render3CompileNgModule;
+const SWITCH_COMPILE_NGMODULE__PRE_R3__ = preR3NgModuleCompile;
+const SWITCH_COMPILE_NGMODULE: typeof render3CompileNgModule = SWITCH_COMPILE_NGMODULE__PRE_R3__;

@@ -12,7 +12,7 @@ without having to provide all of the angular specific peer dependencies.
 load(
     "@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
     "ROLLUP_ATTRS",
-    "rollup_module_mappings_aspect",
+    "ROLLUP_DEPS_ASPECTS",
     "run_rollup",
     "run_uglify",
     "write_rollup_config",
@@ -28,6 +28,11 @@ _ROLLUP_OUTPUTS = {
     "build_umd_min": "%{name}.umd.min.js",
 }
 
+DEPS_ASPECTS = [esm5_outputs_aspect]
+
+# Workaround skydoc bug which assumes ROLLUP_DEPS_ASPECTS is a str type
+[DEPS_ASPECTS.append(a) for a in ROLLUP_DEPS_ASPECTS]
+
 def _ls_rollup_bundle(ctx):
     esm5_sources = flatten_esm5(ctx)
     rollup_config = write_rollup_config(
@@ -42,10 +47,11 @@ def _ls_rollup_bundle(ctx):
 ls_rollup_bundle = rule(
     implementation = _ls_rollup_bundle,
     attrs = dict(ROLLUP_ATTRS, **{
-        "deps": attr.label_list(aspects = [
-            rollup_module_mappings_aspect,
-            esm5_outputs_aspect,
-        ]),
+        "deps": attr.label_list(
+            doc = """Other targets that provide JavaScript files.
+            Typically this will be `ts_library` or `ng_module` targets.""",
+            aspects = DEPS_ASPECTS,
+        ),
     }),
     outputs = _ROLLUP_OUTPUTS,
 )

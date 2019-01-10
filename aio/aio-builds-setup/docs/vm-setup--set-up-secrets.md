@@ -8,7 +8,7 @@ Necessary secrets:
 1. `GITHUB_TOKEN`
    - Used for:
      - Retrieving open PRs without rate-limiting.
-     - Retrieving PR author.
+     - Retrieving PR info, such as author, labels, changed files.
      - Retrieving members of the trusted GitHub teams.
      - Posting comments with preview links on PRs.
 
@@ -25,8 +25,9 @@ Necessary secrets:
    - Generate new token with the `public_repo` scope.
 
 2. `CIRCLE_CI_TOKEN`
-   - Visit https://circleci.com/gh/angular/angular/edit#api
-   - Create an API token with `Build Artifacts` scope
+   - Visit https://circleci.com/gh/angular/angular/edit#api.
+   - Create an API token with `Build Artifacts` scope.
+
 
 ## Save secrets on the VM
 

@@ -39,6 +39,8 @@ export const ContentChild = callablePropDecorator();
 export const ContentChildren = callablePropDecorator();
 export const HostBinding = callablePropDecorator();
 export const HostListener = callablePropDecorator();
+export const Input = callablePropDecorator();
+export const Output = callablePropDecorator();
 export const ViewChild = callablePropDecorator();
 export const ViewChildren = callablePropDecorator();
 
@@ -59,3 +61,6 @@ export function forwardRef<T>(fn: () => T): T {
 }
 
 export interface SimpleChanges { [propName: string]: any; }
+
+export type ɵNgModuleDefWithMeta<ModuleT, DeclarationsT, ImportsT, ExportsT> = any;
+export type ɵDirectiveDefWithMeta<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> = any;

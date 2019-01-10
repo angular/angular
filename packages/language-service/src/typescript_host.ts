@@ -58,7 +58,7 @@ export class DummyResourceLoader extends ResourceLoader {
  * The `TypeScriptServiceHost` implements the Angular `LanguageServiceHost` using
  * the TypeScript language services.
  *
- * @experimental
+ * @publicApi
  */
 export class TypeScriptServiceHost implements LanguageServiceHost {
   // TODO(issue/24571): remove '!'.

@@ -3,16 +3,13 @@
 
 exports.config = {
   allScriptsTimeout: 11000,
-  specs: [
-    './*.e2e-spec.ts'
-  ],
+  suites: {
+    full: './*.e2e-spec.ts',
+    smoke: './smoke-tests.e2e-spec.ts',
+  },
+  suite: 'full',
   capabilities: {
     browserName: 'chrome',
-    // For Travis
-    chromeOptions: {
-      binary: process.env.CHROME_BIN,
-      args: ['--no-sandbox']
-    }
   },
   directConnect: true,
   framework: 'jasmine',

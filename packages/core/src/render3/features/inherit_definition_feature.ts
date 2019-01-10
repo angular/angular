@@ -8,23 +8,23 @@
 
 import {Type} from '../../type';
 import {fillProperties} from '../../util/property';
-import {EMPTY, EMPTY_ARRAY} from '../definition';
-import {ComponentDefInternal, ComponentTemplate, DirectiveDefFeature, DirectiveDefInternal, RenderFlags} from '../interfaces/definition';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
+import {ComponentDef, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../interfaces/definition';
 
 
 
 /**
- * Determines if a definition is a {@link ComponentDefInternal} or a {@link DirectiveDefInternal}
+ * Determines if a definition is a {@link ComponentDef} or a {@link DirectiveDef}
  * @param definition The definition to examine
  */
-function isComponentDef<T>(definition: ComponentDefInternal<T>| DirectiveDefInternal<T>):
-    definition is ComponentDefInternal<T> {
-  const def = definition as ComponentDefInternal<T>;
+function isComponentDef<T>(definition: ComponentDef<T>| DirectiveDef<T>):
+    definition is ComponentDef<T> {
+  const def = definition as ComponentDef<T>;
   return typeof def.template === 'function';
 }
 
 function getSuperType(type: Type<any>): Type<any>&
-    {ngComponentDef?: ComponentDefInternal<any>, ngDirectiveDef?: DirectiveDefInternal<any>} {
+    {ngComponentDef?: ComponentDef<any>, ngDirectiveDef?: DirectiveDef<any>} {
   return Object.getPrototypeOf(type.prototype).constructor;
 }
 
@@ -32,12 +32,11 @@ function getSuperType(type: Type<any>): Type<any>&
  * Merges the definition from a super class to a sub class.
  * @param definition The definition that is a SubClass of another directive of component
  */
-export function InheritDefinitionFeature(
-    definition: DirectiveDefInternal<any>| ComponentDefInternal<any>): void {
+export function InheritDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
   let superType = getSuperType(definition.type);
 
   while (superType) {
-    let superDef: DirectiveDefInternal<any>|ComponentDefInternal<any>|undefined = undefined;
+    let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
     if (isComponentDef(definition)) {
       // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
       superDef = superType.ngComponentDef || superType.ngDirectiveDef;
@@ -73,9 +72,9 @@ export function InheritDefinitionFeature(
       const superHostBindings = superDef.hostBindings;
       if (superHostBindings) {
         if (prevHostBindings) {
-          definition.hostBindings = (directiveIndex: number, elementIndex: number) => {
-            superHostBindings(directiveIndex, elementIndex);
-            prevHostBindings(directiveIndex, elementIndex);
+          definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {
+            superHostBindings(rf, ctx, elementIndex);
+            prevHostBindings(rf, ctx, elementIndex);
           };
         } else {
           definition.hostBindings = superHostBindings;
@@ -103,9 +102,9 @@ export function InheritDefinitionFeature(
       const superContentQueries = superDef.contentQueries;
       if (superContentQueries) {
         if (prevContentQueries) {
-          definition.contentQueries = () => {
-            superContentQueries();
-            prevContentQueries();
+          definition.contentQueries = (dirIndex: number) => {
+            superContentQueries(dirIndex);
+            prevContentQueries(dirIndex);
           };
         } else {
           definition.contentQueries = superContentQueries;
@@ -147,7 +146,7 @@ export function InheritDefinitionFeature(
       const features = superDef.features;
       if (features) {
         for (const feature of features) {
-          if (feature && feature !== InheritDefinitionFeature) {
+          if (feature && feature.ngInherit) {
             (feature as DirectiveDefFeature)(definition);
           }
         }
@@ -179,7 +178,7 @@ export function InheritDefinitionFeature(
 function maybeUnwrapEmpty<T>(value: T[]): T[];
 function maybeUnwrapEmpty<T>(value: T): T;
 function maybeUnwrapEmpty(value: any): any {
-  if (value === EMPTY) {
+  if (value === EMPTY_OBJ) {
     return {};
   } else if (value === EMPTY_ARRAY) {
     return [];

@@ -35,14 +35,14 @@ describe('Reactive forms', function () {
 
     it('should update the name control when the Update Name button is clicked', async () => {
       await nameInput.sendKeys(nameText);
-      const value = await nameInput.getAttribute('value');
+      const value1 = await nameInput.getAttribute('value');
 
-      expect(value).toBe(nameText);
+      expect(value1).toBe(nameText);
       await updateButton.click();
 
-      const value = await nameInput.getAttribute('value');
+      const value2 = await nameInput.getAttribute('value');
 
-      expect(value).toBe('Nancy');
+      expect(value2).toBe('Nancy');
     });
 
     it('should update the displayed control value when the name control updated', async () => {

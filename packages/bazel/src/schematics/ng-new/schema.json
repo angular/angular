@@ -1,0 +1,150 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsAngularNgNew",
+  "title": "Angular Ng New Options Schema",
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "The directory name to create the workspace in."
+    },
+    "name": {
+      "description": "The name of the workspace.",
+      "type": "string",
+      "format": "html-selector",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the project?"
+    },
+    "experimentalIvy": {
+      "description": "EXPERIMENTAL: Specifies whether to create a new application which uses the Ivy rendering engine.",
+      "type": "boolean",
+      "default": false
+    },
+    "skipInstall": {
+      "description": "Skip installing dependency packages.",
+      "type": "boolean",
+      "default": false
+    },
+    "linkCli": {
+      "description": "Link CLI to global version (internal development only).",
+      "type": "boolean",
+      "default": false,
+      "visible": false
+    },
+    "skipGit": {
+      "description": "Skip initializing a git repository.",
+      "type": "boolean",
+      "default": false,
+      "alias": "g"
+    },
+    "commit": {
+      "description": "Initial repository commit information.",
+      "oneOf": [
+        { "type": "boolean" },
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "message": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "name",
+            "email"
+          ]
+        }
+      ],
+      "default": true
+    },
+    "newProjectRoot": {
+      "description": "The path where new projects will be created.",
+      "type": "string",
+      "default": "projects"
+    },
+    "inlineStyle": {
+      "description": "Specifies if the style will be in the ts file.",
+      "type": "boolean",
+      "default": false,
+      "alias": "s"
+    },
+    "inlineTemplate": {
+      "description": "Specifies if the template will be in the ts file.",
+      "type": "boolean",
+      "default": false,
+      "alias": "t"
+    },
+    "viewEncapsulation": {
+      "description": "Specifies the view encapsulation strategy.",
+      "enum": ["Emulated", "Native", "None", "ShadowDom"],
+      "type": "string"
+    },
+    "version": {
+      "type": "string",
+      "description": "The version of the Angular CLI to use.",
+      "visible": false,
+      "$default": {
+        "$source": "ng-cli-version"
+      }
+    },
+    "routing": {
+      "type": "boolean",
+      "description": "Generates a routing module.",
+      "default": false,
+      "x-prompt": "Would you like to add Angular routing?"
+    },
+    "prefix": {
+      "type": "string",
+      "format": "html-selector",
+      "description": "The prefix to apply to generated selectors.",
+      "minLength": 1,
+      "default": "app",
+      "alias": "p"
+    },
+    "style": {
+      "description": "The file extension to be used for style files.",
+      "type": "string",
+      "default": "css",
+      "x-prompt": {
+        "message": "Which stylesheet format would you like to use?",
+        "type": "list",
+        "items": [
+          { "value": "css", "label": "CSS" },
+          { "value": "scss", "label": "SCSS   [ http://sass-lang.com   ]" },
+          { "value": "sass", "label": "SASS   [ http://sass-lang.com   ]" },
+          { "value": "less", "label": "LESS   [ http://lesscss.org     ]" },
+          { "value": "styl", "label": "Stylus [ http://stylus-lang.com ]" }
+        ]
+      }
+    },
+    "skipTests": {
+      "description": "Skip creating spec files.",
+      "type": "boolean",
+      "default": false,
+      "alias": "S"
+    },
+    "createApplication": {
+      "description": "Flag to toggle creation of an application in the new workspace.",
+      "type": "boolean",
+      "default": true
+    },
+    "minimal": {
+      "description": "Create a barebones project without any testing frameworks",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "name",
+    "version"
+  ]
+}

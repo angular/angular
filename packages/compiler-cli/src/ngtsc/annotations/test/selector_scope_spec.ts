@@ -8,19 +8,18 @@
 
 import * as ts from 'typescript';
 
-import {TypeScriptReflectionHost} from '../../metadata';
-import {AbsoluteReference, ResolvedReference} from '../../metadata/src/resolver';
+import {AbsoluteReference, ResolvedReference, TsReferenceResolver} from '../../imports';
+import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
-import {NgModuleDecoratorHandler} from '../src/ng_module';
 import {SelectorScopeRegistry} from '../src/selector_scope';
 
 describe('SelectorScopeRegistry', () => {
   it('absolute imports work', () => {
-    const {program} = makeProgram([
+    const {program, options, host} = makeProgram([
       {
         name: 'node_modules/@angular/core/index.d.ts',
         contents: `
-        export interface NgComponentDef<A, B> {}
+        export interface NgComponentDefWithMeta<A, B, C, D, E, F> {}
         export interface NgModuleDef<A, B, C, D> {}
       `
       },
@@ -29,6 +28,7 @@ describe('SelectorScopeRegistry', () => {
         contents: `
         import {NgModuleDef} from '@angular/core';
         import * as i0 from './component';
+        export {SomeCmp} from './component';
         
         export declare class SomeModule {
           static ngModuleDef: NgModuleDef<SomeModule, [typeof i0.SomeCmp], never, [typeof i0.SomeCmp]>;
@@ -38,10 +38,10 @@ describe('SelectorScopeRegistry', () => {
       {
         name: 'node_modules/some_library/component.d.ts',
         contents: `
-        import {NgComponentDef} from '@angular/core';
+        import {NgComponentDefWithMeta} from '@angular/core';
 
         export declare class SomeCmp {
-          static ngComponentDef: NgComponentDef<SomeCmp, 'some-cmp'>;
+          static ngComponentDef: NgComponentDefWithMeta<SomeCmp, 'some-cmp', never, {}, {}, never>;
         }
       `
       },
@@ -54,7 +54,7 @@ describe('SelectorScopeRegistry', () => {
       },
     ]);
     const checker = program.getTypeChecker();
-    const host = new TypeScriptReflectionHost(checker);
+    const reflectionHost = new TypeScriptReflectionHost(checker);
     const ProgramModule =
         getDeclaration(program, 'entry.ts', 'ProgramModule', ts.isClassDeclaration);
     const ProgramCmp = getDeclaration(program, 'entry.ts', 'ProgramCmp', ts.isClassDeclaration);
@@ -63,7 +63,10 @@ describe('SelectorScopeRegistry', () => {
     expect(ProgramModule).toBeDefined();
     expect(SomeModule).toBeDefined();
 
-    const registry = new SelectorScopeRegistry(checker, host);
+    const ProgramCmpRef = new ResolvedReference(ProgramCmp, ProgramCmp.name !);
+
+    const resolver = new TsReferenceResolver(program, checker, options, host);
+    const registry = new SelectorScopeRegistry(checker, reflectionHost, resolver);
 
     registry.registerModule(ProgramModule, {
       declarations: [new ResolvedReference(ProgramCmp, ProgramCmp.name !)],
@@ -71,34 +74,47 @@ describe('SelectorScopeRegistry', () => {
       imports: [new AbsoluteReference(SomeModule, SomeModule.name !, 'some_library', 'SomeModule')],
     });
 
-    registry.registerSelector(ProgramCmp, 'program-cmp');
+    const ref = new ResolvedReference(ProgramCmp, ProgramCmp.name !);
+    registry.registerDirective(ProgramCmp, {
+      name: 'ProgramCmp',
+      ref: ProgramCmpRef,
+      directive: ProgramCmpRef,
+      selector: 'program-cmp',
+      isComponent: true,
+      exportAs: null,
+      inputs: {},
+      outputs: {},
+      queries: [],
+      hasNgTemplateContextGuard: false,
+      ngTemplateGuards: [],
+    });
 
     const scope = registry.lookupCompilationScope(ProgramCmp) !;
     expect(scope).toBeDefined();
     expect(scope.directives).toBeDefined();
-    expect(scope.directives.size).toBe(2);
+    expect(scope.directives.length).toBe(2);
   });
 
   it('exports of third-party libs work', () => {
-    const {program} = makeProgram([
+    const {program, options, host} = makeProgram([
       {
         name: 'node_modules/@angular/core/index.d.ts',
         contents: `
-        export interface NgComponentDef<A, B> {}
+        export interface NgComponentDefWithMeta<A, B, C, D, E, F> {}
         export interface NgModuleDef<A, B, C, D> {}
       `
       },
       {
         name: 'node_modules/some_library/index.d.ts',
         contents: `
-        import {NgComponentDef, NgModuleDef} from '@angular/core';
+        import {NgComponentDefWithMeta, NgModuleDef} from '@angular/core';
         
         export declare class SomeModule {
           static ngModuleDef: NgModuleDef<SomeModule, [typeof SomeCmp], never, [typeof SomeCmp]>;
         }
 
         export declare class SomeCmp {
-          static ngComponentDef: NgComponentDef<SomeCmp, 'some-cmp'>;
+          static ngComponentDef: NgComponentDefWithMeta<SomeCmp, 'some-cmp', never, {}, {}, never>;
         }
       `
       },
@@ -111,7 +127,7 @@ describe('SelectorScopeRegistry', () => {
       },
     ]);
     const checker = program.getTypeChecker();
-    const host = new TypeScriptReflectionHost(checker);
+    const reflectionHost = new TypeScriptReflectionHost(checker);
     const ProgramModule =
         getDeclaration(program, 'entry.ts', 'ProgramModule', ts.isClassDeclaration);
     const ProgramCmp = getDeclaration(program, 'entry.ts', 'ProgramCmp', ts.isClassDeclaration);
@@ -120,7 +136,10 @@ describe('SelectorScopeRegistry', () => {
     expect(ProgramModule).toBeDefined();
     expect(SomeModule).toBeDefined();
 
-    const registry = new SelectorScopeRegistry(checker, host);
+    const ProgramCmpRef = new ResolvedReference(ProgramCmp, ProgramCmp.name !);
+
+    const resolver = new TsReferenceResolver(program, checker, options, host);
+    const registry = new SelectorScopeRegistry(checker, reflectionHost, resolver);
 
     registry.registerModule(ProgramModule, {
       declarations: [new ResolvedReference(ProgramCmp, ProgramCmp.name !)],
@@ -128,11 +147,23 @@ describe('SelectorScopeRegistry', () => {
       imports: [],
     });
 
-    registry.registerSelector(ProgramCmp, 'program-cmp');
+    registry.registerDirective(ProgramCmp, {
+      name: 'ProgramCmp',
+      ref: ProgramCmpRef,
+      directive: ProgramCmpRef,
+      selector: 'program-cmp',
+      isComponent: true,
+      exportAs: null,
+      inputs: {},
+      outputs: {},
+      queries: [],
+      hasNgTemplateContextGuard: false,
+      ngTemplateGuards: [],
+    });
 
     const scope = registry.lookupCompilationScope(ProgramCmp) !;
     expect(scope).toBeDefined();
     expect(scope.directives).toBeDefined();
-    expect(scope.directives.size).toBe(2);
+    expect(scope.directives.length).toBe(2);
   });
 });

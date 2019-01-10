@@ -27,61 +27,88 @@ describe('DependencyHost', () => {
     it('should not generate a TS AST if the source does not contain any imports or re-exports',
        () => {
          spyOn(ts, 'createSourceFile');
-         host.computeDependencies('/no/imports/or/re-exports.js', new Set(), new Set());
+         host.computeDependencies('/no/imports/or/re-exports.js', new Set(), new Set(), new Set());
          expect(ts.createSourceFile).not.toHaveBeenCalled();
        });
 
     it('should resolve all the external imports of the source file', () => {
-      spyOn(host, 'tryResolveExternal')
+      spyOn(host, 'tryResolveEntryPoint')
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const resolved = new Set();
       const missing = new Set();
-      host.computeDependencies('/external/imports.js', resolved, missing);
+      const deepImports = new Set();
+      host.computeDependencies('/external/imports.js', resolved, missing, deepImports);
       expect(resolved.size).toBe(2);
-      expect(resolved.has('RESOLVED/path/to/x'));
-      expect(resolved.has('RESOLVED/path/to/y'));
+      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
+      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
     });
 
     it('should resolve all the external re-exports of the source file', () => {
-      spyOn(host, 'tryResolveExternal')
+      spyOn(host, 'tryResolveEntryPoint')
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const resolved = new Set();
       const missing = new Set();
-      host.computeDependencies('/external/re-exports.js', resolved, missing);
+      const deepImports = new Set();
+      host.computeDependencies('/external/re-exports.js', resolved, missing, deepImports);
       expect(resolved.size).toBe(2);
-      expect(resolved.has('RESOLVED/path/to/x'));
-      expect(resolved.has('RESOLVED/path/to/y'));
+      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
+      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
     });
 
     it('should capture missing external imports', () => {
-      spyOn(host, 'tryResolveExternal')
+      spyOn(host, 'tryResolveEntryPoint')
           .and.callFake(
               (from: string, importPath: string) =>
                   importPath === 'missing' ? null : `RESOLVED/${importPath}`);
+      spyOn(host, 'tryResolve').and.callFake(() => null);
       const resolved = new Set();
       const missing = new Set();
-      host.computeDependencies('/external/imports-missing.js', resolved, missing);
+      const deepImports = new Set();
+      host.computeDependencies('/external/imports-missing.js', resolved, missing, deepImports);
       expect(resolved.size).toBe(1);
-      expect(resolved.has('RESOLVED/path/to/x'));
+      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
       expect(missing.size).toBe(1);
-      expect(missing.has('missing'));
+      expect(missing.has('missing')).toBe(true);
+      expect(deepImports.size).toBe(0);
+    });
+
+    it('should not register deep imports as missing', () => {
+      // This scenario verifies the behavior of the dependency analysis when an external import
+      // is found that does not map to an entry-point but still exists on disk, i.e. a deep import.
+      // Such deep imports are captured for diagnostics purposes.
+      const tryResolveEntryPoint = (from: string, importPath: string) =>
+          importPath === 'deep/import' ? null : `RESOLVED/${importPath}`;
+      spyOn(host, 'tryResolveEntryPoint').and.callFake(tryResolveEntryPoint);
+      spyOn(host, 'tryResolve')
+          .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
+      const resolved = new Set();
+      const missing = new Set();
+      const deepImports = new Set();
+      host.computeDependencies('/external/deep-import.js', resolved, missing, deepImports);
+      expect(resolved.size).toBe(0);
+      expect(missing.size).toBe(0);
+      expect(deepImports.size).toBe(1);
+      expect(deepImports.has('deep/import')).toBe(true);
     });
 
     it('should recurse into internal dependencies', () => {
       spyOn(host, 'resolveInternal')
           .and.callFake(
               (from: string, importPath: string) => path.join('/internal', importPath + '.js'));
-      spyOn(host, 'tryResolveExternal')
+      spyOn(host, 'tryResolveEntryPoint')
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const getDependenciesSpy = spyOn(host, 'computeDependencies').and.callThrough();
       const resolved = new Set();
       const missing = new Set();
-      host.computeDependencies('/internal/outer.js', resolved, missing);
-      expect(getDependenciesSpy).toHaveBeenCalledWith('/internal/outer.js', resolved, missing);
+      const deepImports = new Set();
+      host.computeDependencies('/internal/outer.js', resolved, missing, deepImports);
       expect(getDependenciesSpy)
-          .toHaveBeenCalledWith('/internal/inner.js', resolved, missing, jasmine.any(Set));
+          .toHaveBeenCalledWith('/internal/outer.js', resolved, missing, deepImports);
+      expect(getDependenciesSpy)
+          .toHaveBeenCalledWith(
+              '/internal/inner.js', resolved, missing, deepImports, jasmine.any(Set));
       expect(resolved.size).toBe(1);
-      expect(resolved.has('RESOLVED/path/to/y'));
+      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
     });
 
 
@@ -89,14 +116,15 @@ describe('DependencyHost', () => {
       spyOn(host, 'resolveInternal')
           .and.callFake(
               (from: string, importPath: string) => path.join('/internal', importPath + '.js'));
-      spyOn(host, 'tryResolveExternal')
+      spyOn(host, 'tryResolveEntryPoint')
           .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
       const resolved = new Set();
       const missing = new Set();
-      host.computeDependencies('/internal/circular-a.js', resolved, missing);
+      const deepImports = new Set();
+      host.computeDependencies('/internal/circular-a.js', resolved, missing, deepImports);
       expect(resolved.size).toBe(2);
-      expect(resolved.has('RESOLVED/path/to/x'));
-      expect(resolved.has('RESOLVED/path/to/y'));
+      expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
+      expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
     });
 
     function createMockFileSystem() {
@@ -105,6 +133,7 @@ describe('DependencyHost', () => {
         '/external/imports.js': `import {X} from 'path/to/x';\nimport {Y} from 'path/to/y';`,
         '/external/re-exports.js': `export {X} from 'path/to/x';\nexport {Y} from 'path/to/y';`,
         '/external/imports-missing.js': `import {X} from 'path/to/x';\nimport {Y} from 'missing';`,
+        '/external/deep-import.js': `import {Y} from 'deep/import';`,
         '/internal/outer.js': `import {X} from './inner';`,
         '/internal/inner.js': `import {Y} from 'path/to/y';`,
         '/internal/circular-a.js': `import {B} from './circular-b'; import {X} from 'path/to/x';`,
@@ -131,18 +160,18 @@ describe('DependencyHost', () => {
   describe('tryResolveExternal', () => {
     it('should call `tryResolve`, appending `package.json` to the target path', () => {
       const tryResolveSpy = spyOn(host, 'tryResolve').and.returnValue('PATH/TO/RESOLVED');
-      host.tryResolveExternal('SOURCE_PATH', 'TARGET_PATH');
+      host.tryResolveEntryPoint('SOURCE_PATH', 'TARGET_PATH');
       expect(tryResolveSpy).toHaveBeenCalledWith('SOURCE_PATH', 'TARGET_PATH/package.json');
     });
 
     it('should return the directory containing the result from `tryResolve', () => {
       spyOn(host, 'tryResolve').and.returnValue('PATH/TO/RESOLVED');
-      expect(host.tryResolveExternal('SOURCE_PATH', 'TARGET_PATH')).toEqual('PATH/TO');
+      expect(host.tryResolveEntryPoint('SOURCE_PATH', 'TARGET_PATH')).toEqual('PATH/TO');
     });
 
     it('should return null if `tryResolve` returns null', () => {
       spyOn(host, 'tryResolve').and.returnValue(null);
-      expect(host.tryResolveExternal('SOURCE_PATH', 'TARGET_PATH')).toEqual(null);
+      expect(host.tryResolveEntryPoint('SOURCE_PATH', 'TARGET_PATH')).toEqual(null);
     });
   });
 
@@ -193,29 +222,30 @@ describe('DependencyHost', () => {
     }
   });
 
-  describe('hasImportOrReeportStatements', () => {
+  describe('hasImportOrReexportStatements', () => {
     it('should return true if there is an import statement', () => {
-      expect(host.hasImportOrReeportStatements('import {X} from "some/x";')).toBe(true);
-      expect(host.hasImportOrReeportStatements('import * as X from "some/x";')).toBe(true);
+      expect(host.hasImportOrReexportStatements('import {X} from "some/x";')).toBe(true);
+      expect(host.hasImportOrReexportStatements('import * as X from "some/x";')).toBe(true);
       expect(
-          host.hasImportOrReeportStatements('blah blah\n\n  import {X} from "some/x";\nblah blah'))
+          host.hasImportOrReexportStatements('blah blah\n\n  import {X} from "some/x";\nblah blah'))
           .toBe(true);
-      expect(host.hasImportOrReeportStatements('\t\timport {X} from "some/x";')).toBe(true);
+      expect(host.hasImportOrReexportStatements('\t\timport {X} from "some/x";')).toBe(true);
     });
     it('should return true if there is a re-export statement', () => {
-      expect(host.hasImportOrReeportStatements('export {X} from "some/x";')).toBe(true);
+      expect(host.hasImportOrReexportStatements('export {X} from "some/x";')).toBe(true);
       expect(
-          host.hasImportOrReeportStatements('blah blah\n\n  export {X} from "some/x";\nblah blah'))
+          host.hasImportOrReexportStatements('blah blah\n\n  export {X} from "some/x";\nblah blah'))
           .toBe(true);
-      expect(host.hasImportOrReeportStatements('\t\texport {X} from "some/x";')).toBe(true);
-      expect(host.hasImportOrReeportStatements(
+      expect(host.hasImportOrReexportStatements('\t\texport {X} from "some/x";')).toBe(true);
+      expect(host.hasImportOrReexportStatements(
                  'blah blah\n\n  export * from "@angular/core;\nblah blah'))
           .toBe(true);
     });
     it('should return false if there is no import nor re-export statement', () => {
-      expect(host.hasImportOrReeportStatements('blah blah')).toBe(false);
-      expect(host.hasImportOrReeportStatements('export function moo() {}')).toBe(false);
-      expect(host.hasImportOrReeportStatements('Some text that happens to include the word import'))
+      expect(host.hasImportOrReexportStatements('blah blah')).toBe(false);
+      expect(host.hasImportOrReexportStatements('export function moo() {}')).toBe(false);
+      expect(
+          host.hasImportOrReexportStatements('Some text that happens to include the word import'))
           .toBe(false);
     });
   });

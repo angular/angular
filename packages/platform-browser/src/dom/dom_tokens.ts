@@ -17,5 +17,6 @@ import {InjectionToken} from '@angular/core';
  * Contexts are not the same (e.g. when running the application into a Web Worker).
  *
  * @deprecated import from `@angular/common` instead.
+ * @publicApi
  */
 export const DOCUMENT = commonDOCUMENT;

@@ -138,7 +138,7 @@ function formatNumberToLocaleString(
  *    as `USD` for the US dollar and `EUR` for the euro.
  * - `digitInfo` See {@link DecimalPipe} for more details.
  *
- *
+ * @publicApi
  */
 export function formatCurrency(
     value: number, locale: string, currency: string, currencyCode?: string,
@@ -168,7 +168,7 @@ export function formatCurrency(
  * - `locale` is a `string` defining the locale to use.
  * - `digitInfo` See {@link DecimalPipe} for more details.
  *
- *
+ * @publicApi
  */
 export function formatPercent(value: number, locale: string, digitsInfo?: string): string {
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Percent);
@@ -191,7 +191,7 @@ export function formatPercent(value: number, locale: string, digitsInfo?: string
  * - `locale` is a `string` defining the locale to use.
  * - `digitInfo` See {@link DecimalPipe} for more details.
  *
- *
+ * @publicApi
  */
 export function formatNumber(value: number, locale: string, digitsInfo?: string): string {
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Decimal);

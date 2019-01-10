@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AttributeMarker, InitialStylingFlags} from '@angular/compiler/src/core';
+import {AttributeMarker} from '@angular/compiler/src/core';
 import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 
-/* These tests are codified version of the tests in compiler_canonical_spec.ts. Every
-  * test in compiler_canonical_spec.ts should have a corresponding test here.
-  */
+/**
+ * These tests are codified version of the tests in compiler_canonical_spec.ts. Every
+ * test in compiler_canonical_spec.ts should have a corresponding test here.
+ */
 describe('compiler compliance', () => {
 
   const angularFiles = setup({
@@ -47,17 +48,15 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello"];
-        const $c2$ = ["my-app", ${InitialStylingFlags.VALUES_MODE}, "my-app", true];
-        const $c3$ = ["cx", "20", "cy", "30", "r", "50"];
+        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
+        const $c2$ = ["cx", "20", "cy", "30", "r", "50"];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $c1$);
-            $r3$.ɵelementStyling($c2$);
             $r3$.ɵnamespaceSVG();
             $r3$.ɵelementStart(1, "svg");
-            $r3$.ɵelement(2, "circle", $c3$);
+            $r3$.ɵelement(2, "circle", $c2$);
             $r3$.ɵelementEnd();
             $r3$.ɵnamespaceHTML();
             $r3$.ɵelementStart(3, "p");
@@ -99,13 +98,11 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello"];
-        const $c2$ = ["my-app", ${InitialStylingFlags.VALUES_MODE}, "my-app", true];
+        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $c1$);
-            $r3$.ɵelementStyling($c2$);
             $r3$.ɵnamespaceMathML();
             $r3$.ɵelementStart(1, "math");
             $r3$.ɵelement(2, "infinity");
@@ -121,7 +118,6 @@ describe('compiler compliance', () => {
 
 
       const result = compile(files, angularFiles);
-
       expectEmit(result.source, factory, 'Incorrect factory');
       expectEmit(result.source, template, 'Incorrect template');
     });
@@ -150,13 +146,11 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ["title", "Hello"];
-        const $c2$ = ["my-app", ${InitialStylingFlags.VALUES_MODE}, "my-app", true];
+        const $c1$ = ["title", "Hello", ${AttributeMarker.Classes}, "my-app"];
         …
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div", $c1$);
-            $r3$.ɵelementStyling($c2$);
             $r3$.ɵtext(1, "Hello ");
             $r3$.ɵelementStart(2, "b");
             $r3$.ɵtext(3, "World");
@@ -245,12 +239,12 @@ describe('compiler compliance', () => {
           …
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              i0.ɵEC(0);
+              i0.ɵelementContainerStart(0);
               i0.ɵelementStart(1, "span");
               i0.ɵtext(2, "in a ");
               i0.ɵelementEnd();
               i0.ɵtext(3, "container");
-              i0.ɵeC();
+              i0.ɵelementContainerEnd();
             }
           }
         `;
@@ -282,8 +276,8 @@ describe('compiler compliance', () => {
           …
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              i0.ɵEC(0);
-              i0.ɵeC();
+              i0.ɵelementContainerStart(0);
+              i0.ɵelementContainerEnd();
             }
           }
         `;
@@ -384,6 +378,84 @@ describe('compiler compliance', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
+    it('should reserve slots for pure functions in host binding function', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Input} from '@angular/core';
+
+            @Component({
+              selector: 'my-component',
+              template: '...',
+              host: {
+                '[@expansionHeight]': \`{
+                    value: getExpandedState(),
+                    params: {
+                      collapsedHeight: collapsedHeight,
+                      expandedHeight: expandedHeight
+                    }
+                }\`,
+                '[@expansionWidth]': \`{
+                  value: getExpandedState(),
+                  params: {
+                    collapsedWidth: collapsedWidth,
+                    expandedWidth: expandedWidth
+                  }
+                }\`
+              }
+            })
+            export class MyComponent {
+              @Input() expandedHeight: string;
+              @Input() collapsedHeight: string;
+
+              @Input() expandedWidth: string;
+              @Input() collapsedWidth: string;
+
+              getExpandedState() {
+                return 'expanded';
+              }
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+
+      const hostBindingsDef = `
+        const $_c0$ = function (a0, a1) { return { collapsedHeight: a0, expandedHeight: a1 }; };
+        const $_c1$ = function (a0, a1) { return { value: a0, params: a1 }; };
+        const $_c2$ = function (a0, a1) { return { collapsedWidth: a0, expandedWidth: a1 }; };
+        …
+        hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+          if (rf & 1) {
+            $r3$.ɵallocHostVars(14);
+          }
+          if (rf & 2) {
+            $r3$.ɵcomponentHostSyntheticProperty(elIndex, "@expansionHeight",
+              $r3$.ɵbind(
+                $r3$.ɵpureFunction2(5, $_c1$, ctx.getExpandedState(),
+                  $r3$.ɵpureFunction2(2, $_c0$, ctx.collapsedHeight, ctx.expandedHeight)
+                )
+              ), null, true
+            );
+            $r3$.ɵcomponentHostSyntheticProperty(elIndex, "@expansionWidth",
+              $r3$.ɵbind(
+                $r3$.ɵpureFunction2(11, $_c1$, ctx.getExpandedState(),
+                  $r3$.ɵpureFunction2(8, $_c2$, ctx.collapsedWidth, ctx.expandedWidth)
+                )
+              ), null, true
+            );
+          }
+        },
+        …
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, hostBindingsDef, 'Incorrect "hostBindings" function');
+    });
+
     it('should bind to class and style names', () => {
       const files = {
         app: {
@@ -408,28 +480,28 @@ describe('compiler compliance', () => {
       const factory =
           'factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); }';
       const template = `
-        const _c0 = ["error"];
-        const _c1 = ["background-color"];
+        const $e0_classBindings$ = ["error"];
+        const $e0_styleBindings$ = ["background-color"];
         …
         MyComponent.ngComponentDef = i0.ɵdefineComponent({type:MyComponent,selectors:[["my-component"]],
             factory: function MyComponent_Factory(t){
               return new (t || MyComponent)();
             },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 0,
             template: function MyComponent_Template(rf,ctx){
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "div");
-                $r3$.ɵelementStyling(_c0, _c1);
+                $r3$.ɵelementStyling($e0_classBindings$, $e0_styleBindings$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
-                $r3$.ɵelementStylingProp(0, 0, ctx.color);
+                $r3$.ɵelementStyleProp(0, 0, ctx.color);
                 $r3$.ɵelementClassProp(0, 0, ctx.error);
                 $r3$.ɵelementStylingApply(0);
               }
-            }
+            },
+            encapsulation: 2
         });
       `;
 
@@ -470,14 +542,14 @@ describe('compiler compliance', () => {
           type: ChildComponent,
           selectors: [["child"]],
           factory: function ChildComponent_Factory(t) { return new (t || ChildComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 1,
           vars: 0,
           template:  function ChildComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵtext(0, "child-view");
             }
-          }
+          },
+          encapsulation: 2
         });`;
 
       // SomeDirective definition should be:
@@ -485,8 +557,7 @@ describe('compiler compliance', () => {
         SomeDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
           type: SomeDirective,
           selectors: [["", "some-directive", ""]],
-          factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); },
-          features: [$r3$.ɵPublicFeature]
+          factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); }
         });
       `;
 
@@ -498,7 +569,6 @@ describe('compiler compliance', () => {
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 2,
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {
@@ -507,7 +577,8 @@ describe('compiler compliance', () => {
               $r3$.ɵtext(1, "!");
             }
           },
-          directives: [ChildComponent, SomeDirective]
+          directives: [ChildComponent, SomeDirective],
+          encapsulation: 2
         });
       `;
 
@@ -543,8 +614,7 @@ describe('compiler compliance', () => {
         SomeDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
           type: SomeDirective,
           selectors: [["div", "some-directive", "", 8, "foo", 3, "title", "", 9, "baz"]],
-          factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); },
-          features: [$r3$.ɵPublicFeature]
+          factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); }
         });
       `;
 
@@ -553,8 +623,7 @@ describe('compiler compliance', () => {
         OtherDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
           type: OtherDirective,
           selectors: [["", 5, "span", "title", "", 9, "baz"]],
-          factory: function OtherDirective_Factory(t) {return new (t || OtherDirective)(); },
-          features: [$r3$.ɵPublicFeature]
+          factory: function OtherDirective_Factory(t) {return new (t || OtherDirective)(); }
         });
       `;
 
@@ -565,88 +634,104 @@ describe('compiler compliance', () => {
       expectEmit(source, OtherDirectiveDefinition, 'Incorrect OtherDirective.ngDirectiveDef');
     });
 
-    it('should support host bindings', () => {
+    it('should support components without selector', () => {
       const files = {
         app: {
           'spec.ts': `
-            import {Directive, HostBinding, NgModule} from '@angular/core';
+            import {Component, Directive, NgModule} from '@angular/core';
 
-            @Directive({selector: '[hostBindingDir]'})
-            export class HostBindingDir {
-              @HostBinding('id') dirId = 'some id';
-            }
+            @Directive({})
+            export class EmptyOutletDirective {}
 
-            @NgModule({declarations: [HostBindingDir]})
-            export class MyModule {}
+            @Component({template: '<router-outlet></router-outlet>'})
+            export class EmptyOutletComponent {}
+
+            @NgModule({declarations: [EmptyOutletComponent]})
+            export class MyModule{}
           `
         }
       };
 
-      const HostBindingDirDeclaration = `
-        HostBindingDir.ngDirectiveDef = $r3$.ɵdefineDirective({
-          type: HostBindingDir,
-          selectors: [["", "hostBindingDir", ""]],
-          factory: function HostBindingDir_Factory(t) { return new (t || HostBindingDir)(); },
-          hostBindings: function HostBindingDir_HostBindings(dirIndex, elIndex) {
-            $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵloadDirective(dirIndex).dirId));
+      // EmptyOutletDirective definition should be:
+      const EmptyOutletDirectiveDefinition = `
+        …
+        EmptyOutletDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
+          type: EmptyOutletDirective,
+          selectors: [],
+          factory: function EmptyOutletDirective_Factory(t) { return new (t || EmptyOutletDirective)(); }
+        });
+      `;
+
+      // EmptyOutletComponent definition should be:
+      const EmptyOutletComponentDefinition = `
+        …
+        EmptyOutletComponent.ngComponentDef = $r3$.ɵdefineComponent({
+          type: EmptyOutletComponent,
+          selectors: [["ng-component"]],
+          factory: function EmptyOutletComponent_Factory(t) { return new (t || EmptyOutletComponent)(); },
+          consts: 1,
+          vars: 0,
+          template: function EmptyOutletComponent_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵelement(0, "router-outlet");
+            }
           },
-          hostVars: 1,
-          features: [$r3$.ɵPublicFeature]
+          encapsulation: 2
         });
       `;
 
       const result = compile(files, angularFiles);
       const source = result.source;
 
-      expectEmit(source, HostBindingDirDeclaration, 'Invalid host binding code');
+      expectEmit(
+          source, EmptyOutletDirectiveDefinition,
+          'Incorrect EmptyOutletDirective.ngDirectiveDefDef');
+      expectEmit(
+          source, EmptyOutletComponentDefinition, 'Incorrect EmptyOutletComponent.ngComponentDef');
     });
 
-    it('should support host bindings with pure functions', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, NgModule} from '@angular/core';
+    it('should not treat ElementRef, ViewContainerRef, or ChangeDetectorRef specially when injecting',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+            import {Component, NgModule, ElementRef, ChangeDetectorRef, ViewContainerRef} from '@angular/core';
 
             @Component({
-              selector: 'host-binding-comp',
-              host: {
-                '[id]': '["red", id]'
-              },
+              selector: 'my-component',
               template: ''
             })
-            export class HostBindingComp {
-              id = 'some id';
+            export class MyComponent {
+              constructor(public el: ElementRef, public vcr: ViewContainerRef, public cdr: ChangeDetectorRef) {}
             }
 
-            @NgModule({declarations: [HostBindingComp]})
+            @NgModule({declarations: [MyComponent]})
             export class MyModule {}
-          `
-        }
-      };
+            `
+           }
+         };
 
-      const HostBindingCompDeclaration = `
-        const $ff$ = function ($v$) { return ["red", $v$]; };
+         const MyComponentDefinition = `
         …
-        HostBindingComp.ngComponentDef = $r3$.ɵdefineComponent({
-          type: HostBindingComp,
-          selectors: [["host-binding-comp"]],
-          factory: function HostBindingComp_Factory(t) { return new (t || HostBindingComp)(); },
-          hostBindings: function HostBindingComp_HostBindings(dirIndex, elIndex) {
-            $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵpureFunction1(1, $ff$, $r3$.ɵloadDirective(dirIndex).id)));
+        MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyComponent,
+          selectors: [["my-component"]],
+          factory: function MyComponent_Factory(t) {
+             return new (t || MyComponent)(
+                $r3$.ɵdirectiveInject(ElementRef), $r3$.ɵdirectiveInject(ViewContainerRef),
+                $r3$.ɵdirectiveInject(ChangeDetectorRef));
           },
-          hostVars: 3,
-          features: [$r3$.ɵPublicFeature],
           consts: 0,
           vars: 0,
-          template: function HostBindingComp_Template(rf, ctx) {}
-        });
-      `;
+          template:  function MyComponent_Template(rf, ctx) {},
+          encapsulation: 2
+        });`;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+         const result = compile(files, angularFiles);
+         const source = result.source;
 
-      expectEmit(source, HostBindingCompDeclaration, 'Invalid host binding code');
-    });
+         expectEmit(source, MyComponentDefinition, 'Incorrect MyComponent.ngComponentDef');
+       });
 
     it('should support structural directives', () => {
       const files = {
@@ -677,13 +762,12 @@ describe('compiler compliance', () => {
         IfDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
           type: IfDirective,
           selectors: [["", "if", ""]],
-          factory: function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵinjectTemplateRef()); },
-          features: [$r3$.ɵPublicFeature]
+          factory: function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵdirectiveInject(TemplateRef)); }
         });`;
       const MyComponentDefinition = `
         const $c1$ = ["foo", ""];
         const $c2$ = ["if", ""];
-        function MyComponent_li_Template_2(rf, ctx) {
+        function MyComponent_li_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "li");
             $r3$.ɵtext(1);
@@ -700,17 +784,17 @@ describe('compiler compliance', () => {
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 3,
           vars: 0,
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "ul", null, $c1$);
-              $r3$.ɵtemplate(2, MyComponent_li_Template_2, 2, 2, null, $c2$);
+              $r3$.ɵtemplate(2, MyComponent_li_2_Template, 2, 2, "li", $c2$);
               $r3$.ɵelementEnd();
             }
           },
-          directives:[IfDirective]
+          directives:[IfDirective],
+           encapsulation: 2
         });`;
 
       const result = compile(files, angularFiles);
@@ -763,7 +847,6 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 3,
             template:  function MyApp_Template(rf, ctx) {
@@ -774,7 +857,8 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementProperty(0, "names", $r3$.ɵbind($r3$.ɵpureFunction1(1, $e0_ff$, ctx.customName)));
               }
             },
-           directives: [MyComp]
+           directives: [MyComp],
+           encapsulation: 2
           });
         `;
 
@@ -845,7 +929,6 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 11,
             template:  function MyApp_Template(rf, ctx) {
@@ -858,7 +941,8 @@ describe('compiler compliance', () => {
                     $r3$.ɵbind($r3$.ɵpureFunctionV(1, $e0_ff$, [ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8])));
               }
             },
-            directives: [MyComp]
+            directives: [MyComp],
+            encapsulation: 2
           });
         `;
 
@@ -909,7 +993,6 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 3,
             template:  function MyApp_Template(rf, ctx) {
@@ -920,7 +1003,8 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementProperty(0, "config", $r3$.ɵbind($r3$.ɵpureFunction1(1, $e0_ff$, ctx.name)));
               }
             },
-            directives: [ObjectComp]
+            directives: [ObjectComp],
+            encapsulation: 2
           });
         `;
 
@@ -977,7 +1061,6 @@ describe('compiler compliance', () => {
             type: MyApp,
             selectors: [["my-app"]],
             factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 1,
             vars: 8,
             template:  function MyApp_Template(rf, ctx) {
@@ -990,7 +1073,8 @@ describe('compiler compliance', () => {
                     $r3$.ɵbind($r3$.ɵpureFunction2(5, $e0_ff_2$, ctx.name, $r3$.ɵpureFunction1(3, $e0_ff_1$, $r3$.ɵpureFunction1(1, $e0_ff$, ctx.duration)))));
               }
             },
-            directives: [NestedComp]
+            directives: [NestedComp],
+            encapsulation: 2
           });
         `;
 
@@ -1002,86 +1086,224 @@ describe('compiler compliance', () => {
       });
     });
 
-    it('should support content projection', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-            import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
+    describe('content projection', () => {
 
-            @Component({selector: 'simple', template: '<div><ng-content></ng-content></div>'})
-            export class SimpleComponent {}
+      it('should support content projection in root template', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component, Directive, NgModule, TemplateRef} from '@angular/core';
 
-            @Component({
-              selector: 'complex',
-              template: \`
-                <div id="first"><ng-content select="span[title=toFirst]"></ng-content></div>
-                <div id="second"><ng-content select="span[title=toSecond]"></ng-content></div>\`
+              @Component({selector: 'simple', template: '<div><ng-content></ng-content></div>'})
+              export class SimpleComponent {}
+
+              @Component({
+                selector: 'complex',
+                template: \`
+                  <div id="first"><ng-content select="span[title=toFirst]"></ng-content></div>
+                  <div id="second"><ng-content SELECT="span[title=toSecond]"></ng-content></div>\`
+                })
+              export class ComplexComponent { }
+
+              @NgModule({declarations: [SimpleComponent, ComplexComponent]})
+              export class MyModule {}
+
+              @Component({
+                selector: 'my-app',
+                template: '<simple>content</simple> <complex></complex>'
               })
-            export class ComplexComponent { }
-
-            @NgModule({declarations: [SimpleComponent, ComplexComponent]})
-            export class MyModule {}
-
-            @Component({
-              selector: 'my-app',
-              template: '<simple>content</simple> <complex></complex>'
-            })
-            export class MyApp {}
-          `
-        }
-      };
-
-      const SimpleComponentDefinition = `
-        SimpleComponent.ngComponentDef = $r3$.ɵdefineComponent({
-          type: SimpleComponent,
-          selectors: [["simple"]],
-          factory: function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); },
-          features: [$r3$.ɵPublicFeature],
-          consts: 2,
-          vars: 0,
-          template:  function SimpleComponent_Template(rf, ctx) {
-            if (rf & 1) {
-              $r3$.ɵprojectionDef();
-              $r3$.ɵelementStart(0, "div");
-              $r3$.ɵprojection(1);
-              $r3$.ɵelementEnd();
-            }
+              export class MyApp {}
+            `
           }
-        });`;
+        };
 
-      const ComplexComponentDefinition = `
-        const $c1$ = [[["span", "title", "tofirst"]], [["span", "title", "tosecond"]]];
-        const $c2$ = ["span[title=toFirst]", "span[title=toSecond]"];
-        const $c3$ = ["id","first"];
-        const $c4$ = ["id","second"];
-        …
-        ComplexComponent.ngComponentDef = $r3$.ɵdefineComponent({
-          type: ComplexComponent,
-          selectors: [["complex"]],
-          factory: function ComplexComponent_Factory(t) { return new (t || ComplexComponent)(); },
-          features: [$r3$.ɵPublicFeature],
-          consts: 4,
-          vars: 0,
-          template:  function ComplexComponent_Template(rf, ctx) {
-            if (rf & 1) {
-              $r3$.ɵprojectionDef($c1$, $c2$);
-              $r3$.ɵelementStart(0, "div", $c3$);
+        const SimpleComponentDefinition = `
+          SimpleComponent.ngComponentDef = $r3$.ɵdefineComponent({
+            type: SimpleComponent,
+            selectors: [["simple"]],
+            factory: function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); },
+            consts: 2,
+            vars: 0,
+            template:  function SimpleComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵprojectionDef();
+                $r3$.ɵelementStart(0, "div");
+                $r3$.ɵprojection(1);
+                $r3$.ɵelementEnd();
+              }
+            },
+            encapsulation: 2
+          });`;
+
+        const ComplexComponentDefinition = `
+          const $c3$ = ["id","first"];
+          const $c4$ = ["id","second"];
+          const $c1$ = [[["span", "title", "tofirst"]], [["span", "title", "tosecond"]]];
+          const $c2$ = ["span[title=toFirst]", "span[title=toSecond]"];
+          …
+          ComplexComponent.ngComponentDef = $r3$.ɵdefineComponent({
+            type: ComplexComponent,
+            selectors: [["complex"]],
+            factory: function ComplexComponent_Factory(t) { return new (t || ComplexComponent)(); },
+            consts: 4,
+            vars: 0,
+            template:  function ComplexComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵprojectionDef($c1$, $c2$);
+                $r3$.ɵelementStart(0, "div", $c3$);
+                $r3$.ɵprojection(1, 1);
+                $r3$.ɵelementEnd();
+                $r3$.ɵelementStart(2, "div", $c4$);
+                $r3$.ɵprojection(3, 2);
+                $r3$.ɵelementEnd();
+              }
+            },
+            encapsulation: 2
+          });
+        `;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
+        expectEmit(
+            result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
+        expectEmit(
+            result.source, ComplexComponentDefinition, 'Incorrect ComplexComponent definition');
+      });
+
+      it('should support content projection in nested templates', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                template: \`
+                  <div id="second" *ngIf="visible">
+                    <ng-content SELECT="span[title=toFirst]"></ng-content>
+                  </div>
+                  <div id="third" *ngIf="visible">
+                    No ng-content, no instructions generated.
+                  </div>
+                  <ng-template>
+                    '*' selector: <ng-content></ng-content>
+                  </ng-template>
+                \`,
+              })
+              class Cmp {}
+
+              @NgModule({ declarations: [Cmp] })
+              class Module {}
+            `
+          }
+        };
+        const output = `
+          const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+          const $_c1$ = ["id", "second"];
+          function Cmp_div_0_Template(rf, ctx) { if (rf & 1) {
+              $r3$.ɵelementStart(0, "div", $_c1$);
               $r3$.ɵprojection(1, 1);
               $r3$.ɵelementEnd();
-              $r3$.ɵelementStart(2, "div", $c4$);
-              $r3$.ɵprojection(3, 2);
+          } }
+          const $_c4$ = ["id", "third"];
+          function Cmp_div_1_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div", $_c4$);
+              $r3$.ɵtext(1, " No ng-content, no instructions generated. ");
               $r3$.ɵelementEnd();
             }
           }
-        });
-      `;
+          function Cmp_ng_template_2_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵtext(0, " '*' selector: ");
+              $r3$.ɵprojection(1);
+            }
+          }
+          const $_c2$ = [[["span", "title", "tofirst"]]];
+          const $_c3$ = ["span[title=toFirst]"];
+          …
+          template: function Cmp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵprojectionDef($_c2$, $_c3$);
+              $r3$.ɵtemplate(0, Cmp_div_0_Template, 2, 0, "div", $_c0$);
+              $r3$.ɵtemplate(1, Cmp_div_1_Template, 2, 0, "div", $_c0$);
+              $r3$.ɵtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
+            }
+            if (rf & 2) {
+              $r3$.ɵelementProperty(0, "ngIf", $r3$.ɵbind(ctx.visible));
+              $r3$.ɵelementProperty(1, "ngIf", $r3$.ɵbind(ctx.visible));
+            }
+          }
+        `;
 
-      const result = compile(files, angularFiles);
-      const source = result.source;
+        const {source} = compile(files, angularFiles);
+        expectEmit(source, output, 'Invalid content projection instructions generated');
+      });
 
-      expectEmit(result.source, SimpleComponentDefinition, 'Incorrect SimpleComponent definition');
-      expectEmit(
-          result.source, ComplexComponentDefinition, 'Incorrect ComplexComponent definition');
+      it('should support content projection in both the root and nested templates', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                template: \`
+                  <ng-content select="[id=toMainBefore]"></ng-content>
+                  <ng-template>
+                    <ng-content select="[id=toTemplate]"></ng-content>
+                    <ng-template>
+                      <ng-content select="[id=toNestedTemplate]"></ng-content>
+                    </ng-template>
+                  </ng-template>
+                  <ng-template>
+                    '*' selector in a template: <ng-content></ng-content>
+                  </ng-template>
+                  <ng-content select="[id=toMainAfter]"></ng-content>
+                \`,
+              })
+              class Cmp {}
+
+              @NgModule({ declarations: [Cmp] })
+              class Module {}
+            `
+          }
+        };
+
+        const output = `
+          function Cmp_ng_template_1_ng_template_1_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵprojection(0, 4);
+            }
+          }
+          function Cmp_ng_template_1_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵprojection(0, 3);
+              $r3$.ɵtemplate(1, Cmp_ng_template_1_ng_template_1_Template, 1, 0, "ng-template");
+            }
+          }
+          function Cmp_ng_template_2_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵtext(0, " '*' selector in a template: ");
+              $r3$.ɵprojection(1);
+            }
+          }
+          const $_c0$ = [[["", "id", "tomainbefore"]], [["", "id", "tomainafter"]], [["", "id", "totemplate"]], [["", "id", "tonestedtemplate"]]];
+          const $_c1$ = ["[id=toMainBefore]", "[id=toMainAfter]", "[id=toTemplate]", "[id=toNestedTemplate]"];
+          …
+          template: function Cmp_Template(rf, ctx) {
+            if (rf & 1) {
+              $r3$.ɵprojectionDef($_c2$, $_c3$);
+              $r3$.ɵprojection(0, 1);
+              $r3$.ɵtemplate(1, Cmp_ng_template_1_Template, 2, 0, "ng-template");
+              $r3$.ɵtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
+              $r3$.ɵprojection(3, 2);
+            }
+          }
+        `;
+
+        const {source} = compile(files, angularFiles);
+        expectEmit(source, output, 'Invalid content projection instructions generated');
+      });
     });
 
     describe('queries', () => {
@@ -1096,27 +1318,28 @@ describe('compiler compliance', () => {
         `
       };
 
-      it('should support view queries', () => {
+      it('should support view queries with directives', () => {
         const files = {
           app: {
             ...directive,
             'view_query.component.ts': `
-            import {Component, NgModule, ViewChild} from '@angular/core';
+            import {Component, NgModule, ViewChild, ViewChildren} from '@angular/core';
             import {SomeDirective} from './some.directive';
 
             @Component({
               selector: 'view-query-component',
               template: \`
-              <div someDir></div>
+                <div someDir></div>
               \`
             })
             export class ViewQueryComponent {
               @ViewChild(SomeDirective) someDir: SomeDirective;
+              @ViewChildren(SomeDirective) someDirs: QueryList<SomeDirective>;
             }
 
             @NgModule({declarations: [SomeDirective, ViewQueryComponent]})
             export class MyModule {}
-          `
+            `
           }
         };
 
@@ -1127,24 +1350,26 @@ describe('compiler compliance', () => {
             type: ViewQueryComponent,
             selectors: [["view-query-component"]],
             factory: function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); },
-            features: [$r3$.ɵPublicFeature],
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵquery(0, SomeDirective, true);
+                $r3$.ɵquery(1, SomeDirective, true);
               }
               if (rf & 2) {
                 var $tmp$;
                 ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(0))) && (ctx.someDir = $tmp$.first));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(1))) && (ctx.someDirs = $tmp$));
               }
             },
-            consts: 2,
+            consts: 3,
             vars: 0,
             template:  function ViewQueryComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵelement(1, "div", $e0_attrs$);
+                $r3$.ɵelement(2, "div", $e0_attrs$);
               }
             },
-            directives: function () { return [SomeDirective]; }
+            directives: function () { return [SomeDirective]; },
+            encapsulation: 2
           });`;
 
         const result = compile(files, angularFiles);
@@ -1153,11 +1378,120 @@ describe('compiler compliance', () => {
         expectEmit(source, ViewQueryComponentDefinition, 'Invalid ViewQuery declaration');
       });
 
-      it('should support content queries', () => {
+      it('should support view queries with local refs', () => {
+        const files = {
+          app: {
+            'view_query.component.ts': `
+            import {Component, NgModule, ViewChild, ViewChildren, QueryList} from '@angular/core';
+
+            @Component({
+              selector: 'view-query-component',
+              template: \`
+                <div #myRef></div>
+                <div #myRef1></div>
+              \`
+            })
+            export class ViewQueryComponent {
+              @ViewChild('myRef') myRef: any;
+              @ViewChildren('myRef1, myRef2, myRef3') myRefs: QueryList<any>;
+            }
+
+            @NgModule({declarations: [ViewQueryComponent]})
+            export class MyModule {}
+            `
+          }
+        };
+
+        const ViewQueryComponentDefinition = `
+          const $e0_attrs$ = ["myRef"];
+          const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
+          …
+          ViewQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
+            …
+            viewQuery: function ViewQueryComponent_Query(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵquery(0, $e0_attrs$, true);
+                $r3$.ɵquery(1, $e1_attrs$, true);
+              }
+              if (rf & 2) {
+                var $tmp$;
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(0))) && (ctx.myRef = $tmp$.first));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(1))) && (ctx.myRefs = $tmp$));
+              }
+            },
+            …
+          });`;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
+        expectEmit(source, ViewQueryComponentDefinition, 'Invalid ViewQuery declaration');
+      });
+
+      it('should support view queries with read tokens specified', () => {
         const files = {
           app: {
             ...directive,
-            'spec.ts': `
+            'view_query.component.ts': `
+            import {Component, NgModule, ViewChild, ViewChildren, QueryList, ElementRef, TemplateRef} from '@angular/core';
+            import {SomeDirective} from './some.directive';
+
+            @Component({
+              selector: 'view-query-component',
+              template: \`
+                <div someDir></div>
+                <div #myRef></div>
+                <div #myRef1></div>
+              \`
+            })
+            export class ViewQueryComponent {
+              @ViewChild('myRef', {read: TemplateRef}) myRef: TemplateRef;
+              @ViewChildren('myRef1, myRef2, myRef3', {read: ElementRef}) myRefs: QueryList<ElementRef>;
+              @ViewChild(SomeDirective, {read: ElementRef}) someDir: ElementRef;
+              @ViewChildren(SomeDirective, {read: TemplateRef}) someDirs: QueryList<TemplateRef>;
+            }
+
+            @NgModule({declarations: [ViewQueryComponent]})
+            export class MyModule {}
+            `
+          }
+        };
+
+        const ViewQueryComponentDefinition = `
+          const $e0_attrs$ = ["myRef"];
+          const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
+          …
+          ViewQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
+            …
+            viewQuery: function ViewQueryComponent_Query(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵquery(0, $e0_attrs$, true, TemplateRef);
+                $r3$.ɵquery(1, SomeDirective, true, ElementRef);
+                $r3$.ɵquery(2, $e1_attrs$, true, ElementRef);
+                $r3$.ɵquery(3, SomeDirective, true, TemplateRef);
+              }
+              if (rf & 2) {
+                var $tmp$;
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(0))) && (ctx.myRef = $tmp$.first));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(1))) && (ctx.someDir = $tmp$.first));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(2))) && (ctx.myRefs = $tmp$));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(3))) && (ctx.someDirs = $tmp$));
+              }
+            },
+            …
+          });`;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
+        expectEmit(source, ViewQueryComponentDefinition, 'Invalid ViewQuery declaration');
+      });
+
+      it('should support content queries with directives', () => {
+        const files = {
+          app: {
+            ...directive,
+            'content_query.ts': `
             import {Component, ContentChild, ContentChildren, NgModule, QueryList} from '@angular/core';
             import {SomeDirective} from './some.directive';
 
@@ -1195,17 +1529,16 @@ describe('compiler compliance', () => {
             factory: function ContentQueryComponent_Factory(t) {
               return new (t || ContentQueryComponent)();
             },
-            contentQueries: function ContentQueryComponent_ContentQueries() {
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, true));
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false));
+            contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, true), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false), dirIndex);
             },
             contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
-              const instance = $r3$.ɵloadDirective(dirIndex);
+              const instance = $r3$.ɵload(dirIndex);
               var $tmp$;
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && ($instance$.someDir = $tmp$.first));
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && ($instance$.someDirList = $tmp$));
             },
-            features: [$r3$.ɵPublicFeature],
             consts: 2,
             vars: 0,
             template:  function ContentQueryComponent_Template(rf, ctx) {
@@ -1215,57 +1548,165 @@ describe('compiler compliance', () => {
                 $r3$.ɵprojection(1);
                 $r3$.ɵelementEnd();
               }
-            }
+            },
+            encapsulation: 2
           });`;
 
         const result = compile(files, angularFiles);
-
         const source = result.source;
+
         expectEmit(source, ContentQueryComponentDefinition, 'Invalid ContentQuery declaration');
       });
+
+      it('should support content queries with local refs', () => {
+        const files = {
+          app: {
+            'content_query.component.ts': `
+            import {Component, ContentChild, ContentChildren, NgModule, QueryList} from '@angular/core';
+
+            @Component({
+              selector: 'content-query-component',
+              template: \`
+                <div #myRef></div>
+                <div #myRef1></div>
+              \`
+            })
+            export class ContentQueryComponent {
+              @ContentChild('myRef') myRef: any;
+              @ContentChildren('myRef1, myRef2, myRef3') myRefs: QueryList<any>;
+            }
+            @NgModule({declarations: [ContentQueryComponent]})
+            export class MyModule {}
+          `
+          }
+        };
+
+        const ContentQueryComponentDefinition = `
+          const $e0_attrs$ = ["myRef"];
+          const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
+          …
+          ContentQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
+            …
+            contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e0_attrs$, true), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e1_attrs$, false), dirIndex);
+            },
+            contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
+              const instance = $r3$.ɵload(dirIndex);
+              var $tmp$;
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && (instance.myRef = $tmp$.first));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && (instance.myRefs = $tmp$));
+            },
+            …
+          });`;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
+        expectEmit(source, ContentQueryComponentDefinition, 'Invalid ContentQuery declaration');
+      });
+
+      it('should support content queries with read tokens specified', () => {
+        const files = {
+          app: {
+            ...directive,
+            'content_query.component.ts': `
+            import {Component, ContentChild, ContentChildren, NgModule, QueryList, ElementRef, TemplateRef} from '@angular/core';
+            import {SomeDirective} from './some.directive';
+
+            @Component({
+              selector: 'content-query-component',
+              template: \`
+                <div someDir></div>
+                <div #myRef></div>
+                <div #myRef1></div>
+              \`
+            })
+            export class ContentQueryComponent {
+              @ContentChild('myRef', {read: TemplateRef}) myRef: TemplateRef;
+              @ContentChildren('myRef1, myRef2, myRef3', {read: ElementRef}) myRefs: QueryList<ElementRef>;
+              @ContentChild(SomeDirective, {read: ElementRef}) someDir: ElementRef;
+              @ContentChildren(SomeDirective, {read: TemplateRef}) someDirs: QueryList<TemplateRef>;
+            }
+            @NgModule({declarations: [ContentQueryComponent]})
+            export class MyModule {}
+          `
+          }
+        };
+
+        const ContentQueryComponentDefinition = `
+          const $e0_attrs$ = ["myRef"];
+          const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
+          …
+          ContentQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
+            …
+            contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e0_attrs$ , true, TemplateRef), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, true, ElementRef), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e1_attrs$, false, ElementRef), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false, TemplateRef), dirIndex);
+            },
+            contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
+              const instance = $r3$.ɵload(dirIndex);
+              var $tmp$;
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && (instance.myRef = $tmp$.first));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && (instance.someDir = $tmp$.first));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 2)))) && (instance.myRefs = $tmp$));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 3)))) && (instance.someDirs = $tmp$));
+            },
+            …
+          });`;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
+        expectEmit(source, ContentQueryComponentDefinition, 'Invalid ContentQuery declaration');
+      });
+
     });
 
     describe('pipes', () => {
 
-      const files = {
-        app: {
-          'spec.ts': `
-              import {Component, NgModule, Pipe, PipeTransform, OnDestroy} from '@angular/core';
-
-              @Pipe({
-                name: 'myPipe',
-                pure: false
-              })
-              export class MyPipe implements PipeTransform,
-                  OnDestroy {
-                transform(value: any, ...args: any[]) { return value; }
-                ngOnDestroy(): void {  }
-              }
-
-              @Pipe({
-                name: 'myPurePipe',
-                pure: true,
-              })
-              export class MyPurePipe implements PipeTransform {
-                transform(value: any, ...args: any[]) { return value; }
-              }
-
-              @Component({
-                selector: 'my-app',
-                template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }}</p>'
-              })
-              export class MyApp {
-                name = 'World';
-                size = 0;
-              }
-
-              @NgModule({declarations:[MyPipe, MyPurePipe, MyApp]})
-              export class MyModule {}
-          `
-        }
-      };
-
       it('should render pipes', () => {
+
+        const files = {
+          app: {
+            'spec.ts': `
+                import {Component, NgModule, Pipe, PipeTransform, OnDestroy} from '@angular/core';
+
+                @Pipe({
+                  name: 'myPipe',
+                  pure: false
+                })
+                export class MyPipe implements PipeTransform,
+                    OnDestroy {
+                  transform(value: any, ...args: any[]) { return value; }
+                  ngOnDestroy(): void {  }
+                }
+
+                @Pipe({
+                  name: 'myPurePipe',
+                  pure: true,
+                })
+                export class MyPurePipe implements PipeTransform {
+                  transform(value: any, ...args: any[]) { return value; }
+                }
+
+                @Component({
+                  selector: 'my-app',
+                  template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }}</p>'
+                })
+                export class MyApp {
+                  name = 'World';
+                  size = 0;
+                }
+
+                @NgModule({declarations:[MyPipe, MyPurePipe, MyApp]})
+                export class MyModule {}
+            `
+          }
+        };
+
         const MyPipeDefinition = `
             MyPipe.ngPipeDef = $r3$.ɵdefinePipe({
               name: "myPipe",
@@ -1292,7 +1733,6 @@ describe('compiler compliance', () => {
               type: MyApp,
               selectors: [["my-app"]],
               factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-              features: [$r3$.ɵPublicFeature],
               consts: 6,
               vars: 17,
               template:  function MyApp_Template(rf, ctx) {
@@ -1310,7 +1750,8 @@ describe('compiler compliance', () => {
                   $r3$.ɵtextBinding(4, $r3$.ɵinterpolation1("", $r3$.ɵpipeBindV(5, 8, $r3$.ɵpureFunction1(15, $c0$, ctx.name)), ""));
                 }
               },
-              pipes: [MyPurePipe, MyPipe]
+              pipes: [MyPurePipe, MyPipe],
+              encapsulation: 2
             });`;
 
         const result = compile(files, angularFiles);
@@ -1318,6 +1759,73 @@ describe('compiler compliance', () => {
 
         expectEmit(source, MyPipeDefinition, 'Invalid pipe definition');
         expectEmit(source, MyPurePipeDefinition, 'Invalid pure pipe definition');
+        expectEmit(source, MyAppDefinition, 'Invalid MyApp definition');
+      });
+
+      it('should use appropriate function for a given no of pipe arguments', () => {
+        const files = {
+          app: {
+            'spec.ts': `
+                import {Component, NgModule, Pipe, PipeTransform, OnDestroy} from '@angular/core';
+
+                @Pipe({
+                  name: 'myPipe',
+                  pure: false
+                })
+                export class MyPipe implements PipeTransform,
+                    OnDestroy {
+                  transform(value: any, ...args: any[]) { return value; }
+                  ngOnDestroy(): void {  }
+                }
+
+                @Component({
+                  selector: 'my-app',
+                  template: '0:{{name | myPipe}}1:{{name | myPipe:1}}2:{{name | myPipe:1:2}}3:{{name | myPipe:1:2:3}}4:{{name | myPipe:1:2:3:4}}'
+                })
+                export class MyApp {
+                }
+
+                @NgModule({declarations:[MyPipe, MyApp]})
+                export class MyModule {}
+            `
+          }
+        };
+
+        const MyAppDefinition = `
+            // ...
+            MyApp.ngComponentDef = $r3$.ɵdefineComponent({
+              type: MyApp,
+              selectors: [["my-app"]],
+              factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
+              consts: 6,
+              vars: 27,
+              template:  function MyApp_Template(rf, ctx) {
+                if (rf & 1) {
+                  $r3$.ɵtext(0);
+                  $r3$.ɵpipe(1, "myPipe");
+                  $r3$.ɵpipe(2, "myPipe");
+                  $r3$.ɵpipe(3, "myPipe");
+                  $r3$.ɵpipe(4, "myPipe");
+                  $r3$.ɵpipe(5, "myPipe");
+                }
+                if (rf & 2) {
+                  $r3$.ɵtextBinding(0, $r3$.ɵinterpolation5(
+                    "0:", i0.ɵpipeBind1(1, 5, ctx.name),
+                    "1:", i0.ɵpipeBind2(2, 7, ctx.name, 1),
+                    "2:", i0.ɵpipeBind3(3, 10, ctx.name, 1, 2),
+                    "3:", i0.ɵpipeBind4(4, 14, ctx.name, 1, 2, 3),
+                    "4:", i0.ɵpipeBindV(5, 19, $r3$.ɵpureFunction1(25, $c0$, ctx.name)),
+                    ""
+                  ));
+                }
+              },
+              pipes: [MyPipe],
+              encapsulation: 2
+            });`;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
         expectEmit(source, MyAppDefinition, 'Invalid MyApp definition');
       });
     });
@@ -1344,7 +1852,6 @@ describe('compiler compliance', () => {
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 3,
           vars: 1,
           template:  function MyComponent_Template(rf, ctx) {
@@ -1356,7 +1863,8 @@ describe('compiler compliance', () => {
               const $user$ = $r3$.ɵreference(1);
               $r3$.ɵtextBinding(2, $r3$.ɵinterpolation1("Hello ", $user$.value, "!"));
             }
-          }
+          },
+          encapsulation: 2
         });
       `;
 
@@ -1403,7 +1911,7 @@ describe('compiler compliance', () => {
         const $c2$ = ["if", ""];
         const $c3$ = ["baz", ""];
         const $c4$ = ["bar", ""];
-        function MyComponent_div_span_Template_2(rf, ctx) {
+        function MyComponent_div_3_span_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "span");
             $r3$.ɵtext(1);
@@ -1418,11 +1926,11 @@ describe('compiler compliance', () => {
             $r3$.ɵtextBinding(1, $r3$.ɵinterpolation3("", $foo$, "-", $bar$, "-", $baz$, ""));
           }
         }
-        function MyComponent_div_Template_3(rf, ctx) {
+        function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵtext(1);
-            $r3$.ɵtemplate(2, MyComponent_div_span_Template_2, 2, 3, null, $c2$);
+            $r3$.ɵtemplate(2, MyComponent_div_3_span_2_Template, 2, 3, "span", $c2$);
             $r3$.ɵelement(3, "span", null, $c4$);
             $r3$.ɵelementEnd();
           }
@@ -1438,14 +1946,13 @@ describe('compiler compliance', () => {
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-          features: [$r3$.ɵPublicFeature],
           consts: 6,
           vars: 1,
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelement(0, "div", null, $c1$);
               $r3$.ɵtext(2);
-              $r3$.ɵtemplate(3, MyComponent_div_Template_3, 5, 2, null, $c2$);
+              $r3$.ɵtemplate(3, MyComponent_div_3_Template, 5, 2, "div", $c2$);
               $r3$.ɵelement(4, "div", null, $c3$);
             }
             if (rf & 2) {
@@ -1453,7 +1960,8 @@ describe('compiler compliance', () => {
               $r3$.ɵtextBinding(2, $r3$.ɵinterpolation1(" ", $foo$, " "));
             }
           },
-          directives:[IfDirective]
+          directives:[IfDirective],
+          encapsulation: 2
         });`;
 
       const result = compile(files, angularFiles);
@@ -1492,7 +2000,7 @@ describe('compiler compliance', () => {
       const $c1$ = ["foo", ""];
       const $c2$ = [${AttributeMarker.SelectOnly}, "ngIf"];
 
-      function MyComponent_div_span_Template_3(rf, ctx) {
+      function MyComponent_div_0_span_3_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "span");
           $i0$.ɵtext(1);
@@ -1505,11 +2013,11 @@ describe('compiler compliance', () => {
         }
       }
 
-      function MyComponent_div_Template_0(rf, ctx) {
+      function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
           $i0$.ɵelement(1, "div", null, $c1$);
-          $i0$.ɵtemplate(3, MyComponent_div_span_Template_3, 2, 2, null, $c2$);
+          $i0$.ɵtemplate(3, MyComponent_div_0_span_3_Template, 2, 2, "span", $c2$);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -1521,7 +2029,7 @@ describe('compiler compliance', () => {
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_div_Template_0, 4, 1, null, $c0$);
+          $i0$.ɵtemplate(0, MyComponent_div_0_Template, 4, 1, "div", $c0$);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
@@ -1583,11 +2091,12 @@ describe('compiler compliance', () => {
             type: LifecycleComp,
             selectors: [["lifecycle-comp"]],
             factory: function LifecycleComp_Factory(t) { return new (t || LifecycleComp)(); },
-            inputs: {nameMin: "name"},
-            features: [$r3$.ɵPublicFeature, $r3$.ɵNgOnChangesFeature],
+            inputs: {nameMin: ["name", "nameMin"]},
+            features: [$r3$.ɵNgOnChangesFeature],
             consts: 0,
             vars: 0,
-            template:  function LifecycleComp_Template(rf, ctx) {}
+            template:  function LifecycleComp_Template(rf, ctx) {},
+            encapsulation: 2
           });`;
 
         const SimpleLayoutDefinition = `
@@ -1595,7 +2104,6 @@ describe('compiler compliance', () => {
             type: SimpleLayout,
             selectors: [["simple-layout"]],
             factory: function SimpleLayout_Factory(t) { return new (t || SimpleLayout)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 2,
             vars: 2,
             template:  function SimpleLayout_Template(rf, ctx) {
@@ -1608,7 +2116,8 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementProperty(1, "name", $r3$.ɵbind(ctx.name2));
               }
             },
-            directives: [LifecycleComp]
+            directives: [LifecycleComp],
+           encapsulation: 2
           });`;
 
         const result = compile(files, angularFiles);
@@ -1673,6 +2182,9 @@ describe('compiler compliance', () => {
         }
       };
 
+      // TODO(akushnir): tag name generated for <g> element inside <svg> is incorrect.
+      // It's generated as ":svg:g", when it should be just "g". Potentially related to
+      // the issue described in FW-672.
       it('should support embedded views in the SVG namespace', () => {
         const files = {
           app: {
@@ -1703,16 +2215,16 @@ describe('compiler compliance', () => {
                 type: ForOfDirective,
                 selectors: [["", "forOf", ""]],
                 factory: function ForOfDirective_Factory(t) {
-                  return new (t || ForOfDirective)($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
+                  return new (t || ForOfDirective)($r3$.ɵdirectiveInject(ViewContainerRef), $r3$.ɵdirectiveInject(TemplateRef));
                 },
-                features: [$r3$.ɵPublicFeature, $r3$.ɵNgOnChangesFeature],
+                features: [$r3$.ɵNgOnChangesFeature],
                 inputs: {forOf: "forOf"}
               });
             `;
 
         const MyComponentDefinition = `
               const $t1_attrs$ = ["for", "", ${AttributeMarker.SelectOnly}, "forOf"];
-              function MyComponent__svg_g_Template_1(rf, ctx) {
+              function MyComponent__svg_g_1_Template(rf, ctx) {
                 if (rf & 1) {
                   $r3$.ɵnamespaceSVG();
                   $r3$.ɵelementStart(0,"g");
@@ -1725,19 +2237,19 @@ describe('compiler compliance', () => {
                 type: MyComponent,
                 selectors: [["my-component"]],
                 factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-                features: [$r3$.ɵPublicFeature],
                 consts: 2,
                 vars: 1,
                 template:  function MyComponent_Template(rf, ctx){
                   if (rf & 1) {
                     $r3$.ɵnamespaceSVG();
                     $r3$.ɵelementStart(0,"svg");
-                    $r3$.ɵtemplate(1, MyComponent__svg_g_Template_1, 2, 0, null, $t1_attrs$);
+                    $r3$.ɵtemplate(1, MyComponent__svg_g_1_Template, 2, 0, ":svg:g", $t1_attrs$);
                     $r3$.ɵelementEnd();
                   }
                   if (rf & 2) { $r3$.ɵelementProperty(1,"forOf",$r3$.ɵbind(ctx.items)); }
                 },
-                directives: function() { return [ForOfDirective]; }
+                directives: function() { return [ForOfDirective]; },
+                encapsulation: 2
               });
             `;
 
@@ -1779,16 +2291,16 @@ describe('compiler compliance', () => {
             type: ForOfDirective,
             selectors: [["", "forOf", ""]],
             factory: function ForOfDirective_Factory(t) {
-              return new (t || ForOfDirective)($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
+              return new (t || ForOfDirective)($r3$.ɵdirectiveInject(ViewContainerRef), $r3$.ɵdirectiveInject(TemplateRef));
             },
-            features: [$r3$.ɵPublicFeature, $r3$.ɵNgOnChangesFeature],
+            features: [$r3$.ɵNgOnChangesFeature],
             inputs: {forOf: "forOf"}
           });
         `;
 
         const MyComponentDefinition = `
           const $t1_attrs$ = ["for", "", ${AttributeMarker.SelectOnly}, "forOf"];
-          function MyComponent_li_Template_1(rf, ctx) {
+          function MyComponent_li_1_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "li");
               $r3$.ɵtext(1);
@@ -1804,20 +2316,20 @@ describe('compiler compliance', () => {
             type: MyComponent,
             selectors: [["my-component"]],
             factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 2,
             vars: 1,
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "ul");
-                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 2, 1, null, $t1_attrs$);
+                $r3$.ɵtemplate(1, MyComponent_li_1_Template, 2, 1, "li", $t1_attrs$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
                 $r3$.ɵelementProperty(1, "forOf", $r3$.ɵbind(ctx.items));
               }
             },
-            directives: function() { return [ForOfDirective]; }
+            directives: function() { return [ForOfDirective]; },
+            encapsulation: 2
           });
         `;
 
@@ -1868,7 +2380,7 @@ describe('compiler compliance', () => {
 
         const MyComponentDefinition = `
           const $t4_attrs$ = ["for", "", ${AttributeMarker.SelectOnly}, "forOf"];
-          function MyComponent_li_li_Template_4(rf, ctx) {
+          function MyComponent_li_1_li_4_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "li");
               $r3$.ɵtext(1);
@@ -1881,14 +2393,14 @@ describe('compiler compliance', () => {
             }
           }
 
-          function MyComponent_li_Template_1(rf, ctx) {
+          function MyComponent_li_1_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "li");
               $r3$.ɵelementStart(1, "div");
               $r3$.ɵtext(2);
               $r3$.ɵelementEnd();
               $r3$.ɵelementStart(3, "ul");
-              $r3$.ɵtemplate(4, MyComponent_li_li_Template_4, 2, 2, null, $t4_attrs$);
+              $r3$.ɵtemplate(4, MyComponent_li_1_li_4_Template, 2, 2, "li", $t4_attrs$);
               $r3$.ɵelementEnd();
               $r3$.ɵelementEnd();
             }
@@ -1904,20 +2416,20 @@ describe('compiler compliance', () => {
             type: MyComponent,
             selectors: [["my-component"]],
             factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
-            features: [$r3$.ɵPublicFeature],
             consts: 2,
             vars: 1,
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "ul");
-                $r3$.ɵtemplate(1, MyComponent_li_Template_1, 5, 2, null, $c1$);
+                $r3$.ɵtemplate(1, MyComponent_li_1_Template, 5, 2, "li", $c1$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
                 $r3$.ɵelementProperty(1, "forOf", $r3$.ɵbind(ctx.items));
               }
             },
-            directives: function () { return [ForOfDirective]; }
+            directives: function () { return [ForOfDirective]; },
+            encapsulation: 2
           });`;
 
         const result = compile(files, angularFiles);
@@ -1925,9 +2437,83 @@ describe('compiler compliance', () => {
         expectEmit(source, MyComponentDefinition, 'Invalid component definition');
       });
     });
+
+    it('should instantiate directives in a closure when they are forward referenced', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Directive} from '@angular/core';
+
+            @Component({
+              selector: 'host-binding-comp',
+              template: \`
+                <my-forward-directive></my-forward-directive>
+              \`
+            })
+            export class HostBindingComp {
+            }
+
+            @Directive({
+              selector: 'my-forward-directive'
+            })
+            class MyForwardDirective {}
+
+            @NgModule({declarations: [HostBindingComp, MyForwardDirective]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDefinition = `
+        …
+        directives: function () { return [MyForwardDirective]; }
+        …
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+      expectEmit(source, MyAppDefinition, 'Invalid component definition');
+    });
+
+    it('should instantiate pipes in a closure when they are forward referenced', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Pipe} from '@angular/core';
+
+            @Component({
+              selector: 'host-binding-comp',
+              template: \`
+                <div [attr.style]="{} | my_forward_pipe">...</div>
+              \`
+            })
+            export class HostBindingComp {
+            }
+
+            @Pipe({
+              name: 'my_forward_pipe'
+            })
+            class MyForwardPipe {}
+
+            @NgModule({declarations: [HostBindingComp, MyForwardPipe]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const MyAppDefinition = `
+        …
+        pipes: function () { return [MyForwardPipe]; }
+        …
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+      expectEmit(source, MyAppDefinition, 'Invalid component definition');
+    });
   });
 
-  describe('inherited bare classes', () => {
+  describe('inherited base classes', () => {
     it('should add ngBaseDef if one or more @Input is present', () => {
       const files = {
         app: {

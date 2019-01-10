@@ -7,6 +7,9 @@
  */
 
 import {Injector} from '../di/injector';
+import {injectViewContainerRef as render3InjectViewContainerRef} from '../render3/view_engine_compatibility';
+import {noop} from '../util/noop';
+
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
@@ -27,6 +30,7 @@ import {EmbeddedViewRef, ViewRef} from './view_ref';
  * @see `ComponentRef`
  * @see `EmbeddedViewRef`
  *
+ * @publicApi
  */
 export abstract class ViewContainerRef {
   /**
@@ -139,4 +143,13 @@ export abstract class ViewContainerRef {
    * If not specified, the last view in the container is detached.
    */
   abstract detach(index?: number): ViewRef|null;
+
+  /** @internal */
+  static __NG_ELEMENT_ID__:
+      () => ViewContainerRef = () => SWITCH_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef, ElementRef)
 }
+
+export const SWITCH_VIEW_CONTAINER_REF_FACTORY__POST_R3__ = render3InjectViewContainerRef;
+const SWITCH_VIEW_CONTAINER_REF_FACTORY__PRE_R3__ = noop;
+const SWITCH_VIEW_CONTAINER_REF_FACTORY: typeof render3InjectViewContainerRef =
+    SWITCH_VIEW_CONTAINER_REF_FACTORY__PRE_R3__;

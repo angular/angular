@@ -11,7 +11,7 @@ We currently expect Ivy to remain behind the flag until it's feature complete an
 The work can be divided into three categories:
 - `@angular/compiler-cli`: TypeScript transformer pipeline which includes two command line tools:
   - `ngtsc`: (Angular TypeScript Compiler) Angular compiler which strips out `@Component` (and friends) and replaces it with `defineComponent` (and friends).
-  - `ngcc`: (Angular Compatibility Compiler) NPM upgrade compiler which reads the `.STORING_METADATA_IN_D.TS.json` files and `.js` files and adds `defineComponent` (and friends) into the `node_module`. This in effect converts a pre-ivy module into ivy module.
+  - `ngcc`: (Angular Compatibility Compiler) NPM upgrade compiler which reads the `STORING_METADATA_IN_D.TS.json` files and `.js` files and adds `defineComponent` (and friends) into the `node_module`. This in effect converts a pre-ivy module into ivy module.
 - `@angular/compiler`: Ivy Compiler which converts decorator into ivy
 - `@angular/core`: Decorators which can be patched with `@angular/compiler`.
 
@@ -22,45 +22,31 @@ The work can be divided into three categories:
 TSC transformer which removes and converts `@Pipe`, `@Component`, `@Directive` and `@NgModule`
 to the corresponding `definePipe`, `defineComponent`, `defineDirective` and `defineInjector`.
 
-- ❌ Basic setup of the transformer into `tsc`
-- ❌ Can read STORING_METADATA_IN_D.TS from `.d.ts` (see: [STORING_METADATA_IN_D.TS.md](./STORING_METADATA_IN_D.TS.md))
-- ❌ Detect decorators and convert them to the `defineXXX` method using the `__Compiler` in `@angular/compiler`.
-  - ❌ `@Pipe` => `definePipe`
-  - ❌ `@Component` => `defineComponent`
-  - ❌ `@Directive` => `defineDirective`
-  - ❌ `@NgModule` => `defineInjector`
-- ❌ Encode selectors into `.d.ts` file.
-  - ❌ `@Pipe` => see [STORING_METADATA_IN_D.TS.md](./STORING_METADATA_IN_D.TS.md)
-  - ❌ `@Component` => see [STORING_METADATA_IN_D.TS.md](./STORING_METADATA_IN_D.TS.md)
-  - ❌ `@Directive` => see [STORING_METADATA_IN_D.TS.md](./STORING_METADATA_IN_D.TS.md)
-  - ❌ `@NgModule` => see [STORING_METADATA_IN_D.TS.md](./STORING_METADATA_IN_D.TS.md)
-- ❌ support `extends` for `@Pipe`, `@Component`, `@Directive` and `@NgModule`.
+- ✅ Basic setup of the transformer into `tsc`
+- ✅ Can read STORING_METADATA_IN_D.TS from `.d.ts` (see: [STORING_METADATA_IN_D.TS.md](./STORING_METADATA_IN_D.TS.md))
+- ✅ Detect decorators and convert them to the `defineXXX` method using the `__Compiler` in `@angular/compiler`.
+- ✅ Encode selectors into `.d.ts` file.
+- ✅ support `extends` for `@Pipe`, `@Component`, `@Directive` and `@NgModule`.
 - ❌ Documentation
 
 ### `ngcc` Angular `node_module` compatibility compiler
 
 A tool which "upgrades" `node_module` compiled with non-ivy `ngc` into ivy compliant format.
 
-- ❌ Basic setup of stand alone executable
+- ✅ Basic setup of stand alone executable
+- ✅ Rewrite existing code by interpreting the associated STORING_METADATA_IN_D.TS
 - ❌ Integration with WebPack (cli)
-- ❌ Rewrite existing code by interpreting the associated STORING_METADATA_IN_D.TS
-  - ❌ `PipeCompiler`: `@Pipe` => `definePipe`
-  - ❌ `DirectiveCompiler`: `@Directive` => `defineDirective`
-  - ❌ `NgModuleCompiler`: `@NgModule` => `defineInjector`
-  - ❌ `ComponentCompiler`: `@Component` => `defineComponent`
-    - ❌ `TemplateCompiler`
-    - ❌ `StyleCompiler`
 - ❌ Documentation
 
 ## `@angular/compiler` changes
 
-- ❌ Component compilation: Translates `@Component` => `defineComponent`
-  - ❌ `TemplateCompiler` (current known as `ViewCompiler`)
-  - ❌ `StyleCompiler`
-- ❌ `PipeCompiler`: Translates `@Pipe` => `definePipe`
-- ❌ `DirectiveCompiler`: Translates `@Directive` => `defineDirective`
-- ❌ `InjectableCompiler`: Translates `@Injectable` => `defineInjectable`
-- ❌ `NgModuleCompiler`: Translates `@NgModule` => `defineInjector` (and `defineNgModule` only in jit)
+- ✅ Component compilation: Translates `@Component` => `defineComponent`
+  - ✅ `TemplateCompiler` (current known as `ViewCompiler`)
+  - ✅ `StyleCompiler`
+- ✅ `PipeCompiler`: Translates `@Pipe` => `definePipe`
+- ✅ `DirectiveCompiler`: Translates `@Directive` => `defineDirective`
+- ✅ `InjectableCompiler`: Translates `@Injectable` => `defineInjectable`
+- ✅ `NgModuleCompiler`: Translates `@NgModule` => `defineInjector` (and `defineNgModule` only in jit)
 - ❌ Documentation
 
 
@@ -68,40 +54,39 @@ A tool which "upgrades" `node_module` compiled with non-ivy `ngc` into ivy compl
 
 The goal is for the `@Component` (and friends) to be the compiler of template. Since decorators are functions which execute during parsing of the `.js` file, the decorator can compile the template into Ivy. The AoT compiler's job is to remove the `@Component` and replace it with call to `defineComponent`.
 
-- ❌ Remove `createDecorator` (and friends) since we no longer support other modes.
-- ❌ `@angular/compiler` can patch itself onto:
-  - ❌ `@Injectable`
-  - ❌ `@NgModule`
-  - ❌ `@Pipe`
-  - ❌ `@Directive`
-  - ❌ `@Component`
-- ❌ `ResourceLoader.resolved: Promise<>` Returns true if all `templateUrl`s and `styleUrl` have been resolved and application is ready to be bootstrapped.
+- ✅ `@angular/compiler` can patch itself onto:
+  - ✅ `@Injectable`
+  - ✅ `@NgModule`
+  - ✅ `@Pipe`
+  - ✅ `@Directive`
+  - ✅ `@Component`
+- ✅ `ResourceLoader.resolved: Promise<>` Returns true if all `templateUrl`s and `styleUrl` have been resolved and application is ready to be bootstrapped.
 
 # Testing / Debugging
-- ❌ in debug mode publish components into DOM nodes for easier debugging.
+- ✅ in debug mode publish components into DOM nodes for easier debugging.
 
 # Crosscutting
 
 ## Decorators
-| Annotation          | `defineXXX()`                  | Run time | Spec     | Compiler | Back Patch |
-| -------------------- | ------------------------------ | ------- | -------- | -------- | -------- |
-| `@Component`         | ✅ `defineComponent()`         |    ✅    |  ✅      |  ✅      |  ❌      |
-| `@Directive`         | ✅ `defineDirective()`         |    ✅    |  ✅      |  ✅      |  ❌      |
-| `@Directive`         | ❌ `defineAbstractDirective()` |    ❌    |  ❌      |  ❌      |  ❌      |
-| `@Pipe`              | ✅ `definePipe()`              |    ✅    |  ✅      |  ✅      |  ❌      |
-| `@Injectable`        | ✅ `defineInjectable()`        |    ✅    |  ❌      |  ❌      |  ❌      |
-| `@NgModule`          | ✅ `defineInjector()`          |    ✅    |  ❌      |  ❌      |  ❌      |
-| `@ConfigureInjector` | ❌ `defineInjector()`          |    ❌    |  ❌      |  ❌      |  ❌      |
+| Annotation          | `defineXXX()`                  | Run time | Spec     | Compiler | 
+| -------------------- | ------------------------------ | ------- | -------- | -------- | 
+| `@Component`         | ✅ `defineComponent()`         |    ✅    |  ✅      |  ✅      |
+| `@Directive`         | ✅ `defineDirective()`         |    ✅    |  ✅      |  ✅      |
+| `@Directive`         | ✅ `defineBase()`              |    ✅    |  ✅      |  ✅      |
+| `@Pipe`              | ✅ `definePipe()`              |    ✅    |  ✅      |  ✅      |
+| `@Injectable`        | ✅ `defineInjectable()`        |    ✅    |  ✅      |  ✅      |
+| `@NgModule`          | ✅ `defineInjector()`          |    ✅    |  ✅      |  ✅      |
+| `@ConfigureInjector` | ✅ `defineInjector()`          |    ❌    |  ❌      |  ❌      |
 
 
 
 ## Component Composition
 | Feature                                  | Runtime | Spec     | Compiler |
 | ---------------------------------------- | ------- | -------- | -------- |
-| creation reordering based on injection   |   ❌    |    ❌    |    ✅    |
-| `class CompA extends CompB {}`           |   ❌    |    ❌    |    ❌    |
-| `class CompA extends CompB { @Input }`   |   ❌    |    ❌    |    ❌    |
-| `class CompA extends CompB { @Output }`  |   ❌    |    ❌    |    ❌    |
+| creation reordering based on injection   |   ✅    |    ✅    |    ✅    |
+| `class CompA extends CompB {}`           |   ✅    |    ✅    |    ✅    |
+| `class CompA extends CompB { @Input }`   |   ✅    |    ✅    |    ✅    |
+| `class CompA extends CompB { @Output }`  |   ✅    |    ✅    |    ✅    |
 
 
 
@@ -147,16 +132,12 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `<div style="literal">`                     |  ✅     |  ✅      |  ✅      |
 | `<div [style]="exp">`                       |  ✅     |  ✅      |  ✅      |
 | `<div [style.foo]="exp">`                   |  ✅     |  ✅      |  ✅      |
-| `<div xmlns:foo="url" foo:bar="baz">` <br/>Compiler still needs to be updated to process templates with namespaced attributes. ([see #24386](https://github.com/angular/angular/pull/24386))       |  ✅     |  ✅      |  ❌      |
+| `<div xmlns:foo="url" foo:bar="baz">`       |  ✅     |  ✅      |  ✅      |
 | `{{ ['literal', exp ] }}`                   |  ✅     |  ✅      |  ✅      |
 | `{{ { a: 'literal', b: exp } }}`            |  ✅     |  ✅      |  ✅      |
 | `{{ exp \| pipe: arg }}`                    |  ✅     |  ✅      |  ✅      |
 | `<svg:g svg:p>`                             |  ✅     |  ✅      |  ✅      |
-| `<img src=[userData]>` sanitization         |  ❌     |  ❌      |  ❌      |
-| `<div (nocd.click)>`                        |  ❌     |  ❌      |  ❌      |
-| `<div (bubble.click)>`                      |  ❌     |  ❌      |  ❌      |
-| `<div (keyup.enter)>`                       |  ❌     |  ❌      |  ❌      |
-| `<div (hammer.js)>`                         |  ❌     |  ❌      |  ❌      |
+| `<img src=[userData]>` sanitization         |  ✅     |  ✅      |  ✅      |
 | [`<div (directiveOut)>`][gh23560]           |  ✅     |  ✅      |  ✅     |
 | [`<ng-template (directiveOut)>`][gh23561]   |  ✅     |  ✅      |  ✅      |
 | [`<ng-container>`][gh24381]                 |  ✅     |  ✅      |  ✅      |
@@ -189,10 +170,10 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `@Query(read)`                  |  ✅     |  ✅      |  n/a      |
 | `@Query(selector)`              |  ✅     |  ✅      |  n/a      |
 | `@Query(Type)`                  |  ✅     |  ✅      |  n/a      |
-| `@ContentChildren`              |  ✅     |  ✅      |  ❌       |
+| `@ContentChildren`              |  ✅     |  ✅      |  ✅       |
 | `@ContentChild`                 |  ✅     |  ✅      |  ✅       |
-| `@ViewChildren`                 |  ✅     |  ✅      |  ❌       |
-| `@ViewChild`                    |  ✅     |  ✅      |  ❌       |
+| `@ViewChildren`                 |  ✅     |  ✅      |  ✅       |
+| `@ViewChild`                    |  ✅     |  ✅      |  ✅       |
 
 
 
@@ -201,7 +182,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | ------------------------------- | ------- | -------- | -------- |
 | `<ng-content>`                  |  ✅     |  ✅      |  ✅      |
 | `<ng-content selector="...">`   |  ✅     |  ✅      |  ✅      |
-| container `projectAs`           |  ✅     |  ✅      |  ❌      |
+| container `ngProjectAs`         |  ✅     |  ✅      |  ✅      |
 
 
 
@@ -209,33 +190,40 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | Feature                             | Runtime | Spec     | Compiler |
 | ----------------------------------- | ------- | -------- | -------- |
 | `inject(Type)`                      |  ✅     |  ✅      |  ✅      |
-| `directiveInject(Type)`             |  ✅     |  ✅      |  ❌      |
+| `directiveInject(Type)`             |  ✅     |  ✅      |  ✅      |
 | `inject(Type, SkipSelf)`            |  ❌     |  ❌      |  ❌      |
 | `attribute('name')`                 |  ✅     |  ✅      |  ❌      |
-| `injectChangeDetectionRef()`        |  ✅     |  ✅      |  ❌      |
+| `injectChangeDetectionRef()`        |  ✅     |  ✅      |  ✅      |
 | `injectElementRef()`                |  ✅     |  ✅      |  ✅      |
 | `injectViewContainerRef()`          |  ✅     |  ✅      |  ✅      |
 | `injectTemplateRef()`               |  ✅     |  ✅      |  ✅      |
 | `injectRenderer2()`                 |  ✅     |  ✅      |  ✅      |
-| default `inject()` with no injector |  ❌     |  ❌      |  ❌      |
-| sanitization with no injector       |  ✅     |  ✅      |  ❌      |
+| default `inject()` with no injector |  ✅     |  ✅      |  ✅      |
+| sanitization with no injector       |  ✅     |  ✅      |  ✅      |
 
 
 ### I18N
 | Feature                             | Runtime | Spec     | Compiler |
 | ----------------------------------- | ------- | -------- | -------- |
-| translate text literals             |  ✅     |  ✅      |  ✅      |
-| rearrange text nodes                |  ❌     |  ❌      |  ❌      |
-| ICU                                 |  ❌     |  ❌      |  ❌      |
+| i18nStart                           |  ✅     |  ✅       |  ✅      |
+| i18nEnd                             |  ✅     |  ✅       |  ✅      |
+| i18nAttributes                      |  ✅     |  ✅       |  ✅      |
+| i18nExp                             |  ✅     |  ✅       |  ✅      |
+| i18nApply                           |  ✅     |  ✅       |  ✅      |
+| ICU expressions                     |  ✅     |  ✅       |  ✅      |
+| closure support for g3              |  ✅     |  ✅       |  ✅      |
+| `<ng-container>` support            |  ✅     |  ✅       |  ✅      |
+| runtime service for external world  |  ❌     |  ❌       |  ❌      |
+| migration tool                      |  ❌     |  ❌       |  ❌      |
 
 
 ### View Encapsulation
 | Feature                             | Runtime | Spec     | Compiler |
 | ----------------------------------- | ------- | -------- | -------- |
-| Renderer3.None                        |  ✅     |  ✅       |  ✅      |
-| Renderer2.None                        |  ✅     |  ✅       |  ✅      |
-| Renderer2.Emulated                    |  ❌     |  ❌       |  ❌      |
-| Renderer2.Native                      |  ❌     |  ❌       |  ❌      |
+| Renderer3.None                      |   ✅    |  ✅       |  ✅      |
+| Renderer2.None                      |   ✅    |  ✅       |  ✅      |
+| Renderer2.Emulated                  |   ✅    |  ✅       |  ✅      |
+| Renderer2.Native                    |   ✅    |  ✅       |  ✅      |
 
 
 
