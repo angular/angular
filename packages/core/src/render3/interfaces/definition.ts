@@ -121,7 +121,7 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   /**
    * Name under which the directive is exported (for use with local references in template)
    */
-  readonly exportAs: string|null;
+  readonly exportAs: string[]|null;
 
   /**
    * Factory function used to create a new directive instance.

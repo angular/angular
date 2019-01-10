@@ -477,20 +477,19 @@ function declareTests(config?: {useJit: boolean}) {
               .toBeAnInstanceOf(ExportDir);
         });
 
-        fixmeIvy('FW-708: Directives with multiple exports are not supported')
-            .it('should assign a directive to a ref when it has multiple exportAs names', () => {
-              TestBed.configureTestingModule(
-                  {declarations: [MyComp, DirectiveWithMultipleExportAsNames]});
+        it('should assign a directive to a ref when it has multiple exportAs names', () => {
+          TestBed.configureTestingModule(
+              {declarations: [MyComp, DirectiveWithMultipleExportAsNames]});
 
-              const template = '<div multiple-export-as #x="dirX" #y="dirY"></div>';
-              TestBed.overrideComponent(MyComp, {set: {template}});
+          const template = '<div multiple-export-as #x="dirX" #y="dirY"></div>';
+          TestBed.overrideComponent(MyComp, {set: {template}});
 
-              const fixture = TestBed.createComponent(MyComp);
-              expect(fixture.debugElement.children[0].references !['x'])
-                  .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
-              expect(fixture.debugElement.children[0].references !['y'])
-                  .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
-            });
+          const fixture = TestBed.createComponent(MyComp);
+          expect(fixture.debugElement.children[0].references !['x'])
+              .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
+          expect(fixture.debugElement.children[0].references !['y'])
+              .toBeAnInstanceOf(DirectiveWithMultipleExportAsNames);
+        });
 
         it('should make the assigned component accessible in property bindings, even if they were declared before the component',
            () => {
