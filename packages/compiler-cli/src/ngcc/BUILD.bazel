@@ -8,7 +8,6 @@ ts_library(
         "*.ts",
         "**/*.ts",
     ]),
-    module_name = "@angular/compiler-cli/src/ngcc",
     deps = [
         "//packages:types",
         "//packages/compiler",

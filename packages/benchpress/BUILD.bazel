@@ -10,7 +10,6 @@ ts_library(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/benchpress",
     deps = [
         "//packages:types",
         "//packages/core",

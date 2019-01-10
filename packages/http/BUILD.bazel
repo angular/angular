@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/http",
     deps = [
         "//packages/core",
         "//packages/platform-browser",
