@@ -4024,27 +4024,26 @@ describe('Integration', () => {
         });
       });
 
-      fixmeIvy('FW-887: JIT: compilation of NgModule')
-          .it('should use the injector of the lazily-loaded configuration',
-              fakeAsync(inject(
-                  [Router, Location, NgModuleFactoryLoader],
-                  (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-                    loader.stubbedModules = {expected: LoadedModule};
+      it('should use the injector of the lazily-loaded configuration',
+         fakeAsync(inject(
+             [Router, Location, NgModuleFactoryLoader],
+             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+               loader.stubbedModules = {expected: LoadedModule};
 
-                    const fixture = createRoot(router, RootCmp);
+               const fixture = createRoot(router, RootCmp);
 
-                    router.resetConfig([{
-                      path: 'eager-parent',
-                      component: EagerParentComponent,
-                      children: [{path: 'lazy', loadChildren: 'expected'}]
-                    }]);
+               router.resetConfig([{
+                 path: 'eager-parent',
+                 component: EagerParentComponent,
+                 children: [{path: 'lazy', loadChildren: 'expected'}]
+               }]);
 
-                    router.navigateByUrl('/eager-parent/lazy/lazy-parent/lazy-child');
-                    advance(fixture);
+               router.navigateByUrl('/eager-parent/lazy/lazy-parent/lazy-child');
+               advance(fixture);
 
-                    expect(location.path()).toEqual('/eager-parent/lazy/lazy-parent/lazy-child');
-                    expect(fixture.nativeElement).toHaveText('eager-parent lazy-parent lazy-child');
-                  })));
+               expect(location.path()).toEqual('/eager-parent/lazy/lazy-parent/lazy-child');
+               expect(fixture.nativeElement).toHaveText('eager-parent lazy-parent lazy-child');
+             })));
     });
 
     it('works when given a callback',
@@ -4367,43 +4366,41 @@ describe('Integration', () => {
       class LazyLoadedModule {
       }
 
-      fixmeIvy('FW-887: JIT: compilation of NgModule')
-          .it('should not ignore empty path when in legacy mode',
-              fakeAsync(inject(
-                  [Router, NgModuleFactoryLoader],
-                  (router: Router, loader: SpyNgModuleFactoryLoader) => {
-                    router.relativeLinkResolution = 'legacy';
-                    loader.stubbedModules = {expected: LazyLoadedModule};
+      it('should not ignore empty path when in legacy mode',
+         fakeAsync(inject(
+             [Router, NgModuleFactoryLoader],
+             (router: Router, loader: SpyNgModuleFactoryLoader) => {
+               router.relativeLinkResolution = 'legacy';
+               loader.stubbedModules = {expected: LazyLoadedModule};
 
-                    const fixture = createRoot(router, RootCmp);
+               const fixture = createRoot(router, RootCmp);
 
-                    router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+               router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
 
-                    router.navigateByUrl('/lazy/foo/bar');
-                    advance(fixture);
+               router.navigateByUrl('/lazy/foo/bar');
+               advance(fixture);
 
-                    const link = fixture.nativeElement.querySelector('a');
-                    expect(link.getAttribute('href')).toEqual('/lazy/foo/bar/simple');
-                  })));
+               const link = fixture.nativeElement.querySelector('a');
+               expect(link.getAttribute('href')).toEqual('/lazy/foo/bar/simple');
+             })));
 
-      fixmeIvy('FW-887: JIT: compilation of NgModule')
-          .it('should ignore empty path when in corrected mode',
-              fakeAsync(inject(
-                  [Router, NgModuleFactoryLoader],
-                  (router: Router, loader: SpyNgModuleFactoryLoader) => {
-                    router.relativeLinkResolution = 'corrected';
-                    loader.stubbedModules = {expected: LazyLoadedModule};
+      it('should ignore empty path when in corrected mode',
+         fakeAsync(inject(
+             [Router, NgModuleFactoryLoader],
+             (router: Router, loader: SpyNgModuleFactoryLoader) => {
+               router.relativeLinkResolution = 'corrected';
+               loader.stubbedModules = {expected: LazyLoadedModule};
 
-                    const fixture = createRoot(router, RootCmp);
+               const fixture = createRoot(router, RootCmp);
 
-                    router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+               router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
 
-                    router.navigateByUrl('/lazy/foo/bar');
-                    advance(fixture);
+               router.navigateByUrl('/lazy/foo/bar');
+               advance(fixture);
 
-                    const link = fixture.nativeElement.querySelector('a');
-                    expect(link.getAttribute('href')).toEqual('/lazy/foo/simple');
-                  })));
+               const link = fixture.nativeElement.querySelector('a');
+               expect(link.getAttribute('href')).toEqual('/lazy/foo/simple');
+             })));
     });
   });
 
