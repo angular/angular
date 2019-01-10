@@ -110,6 +110,7 @@ export abstract class Injector {
   });
 
   /** @internal */
+  /** @nocollapse */
   static __NG_ELEMENT_ID__: () => Injector = () => SWITCH_INJECTOR_FACTORY();
 }
 
