@@ -444,14 +444,13 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
          }));
 
 
-      fixmeIvy('FW-814: Bindings with an empty value should be ignored in the compiler')
-          .it('should ignore empty bindings', fakeAsync(() => {
-                const ctx = _bindSimpleProp('[someProp]', TestData);
-                ctx.componentInstance.a = 'value';
-                ctx.detectChanges(false);
+      it('should ignore empty bindings', fakeAsync(() => {
+           const ctx = _bindSimpleProp('[someProp]', TestData);
+           ctx.componentInstance.a = 'value';
+           ctx.detectChanges(false);
 
-                expect(renderLog.log).toEqual([]);
-              }));
+           expect(renderLog.log).toEqual([]);
+         }));
 
       it('should support interpolation', fakeAsync(() => {
            const ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);

@@ -709,21 +709,20 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           });
         }
       } else if (instruction) {
-        const params: any[] = [];
-        const isAttributeBinding = input.type === BindingType.Attribute;
-        const sanitizationRef = resolveSanitizationFn(input.securityContext, isAttributeBinding);
-        if (sanitizationRef) params.push(sanitizationRef);
-
-        // TODO(chuckj): runtime: security context
         const value = input.value.visit(this._valueConverter);
-        this.allocateBindingSlots(value);
-
-        this.updateInstruction(input.sourceSpan, instruction, () => {
-          return [
-            o.literal(elementIndex), o.literal(input.name),
-            this.convertPropertyBinding(implicit, value), ...params
-          ];
-        });
+        if (value !== undefined) {
+          const params: any[] = [];
+          const isAttributeBinding = input.type === BindingType.Attribute;
+          const sanitizationRef = resolveSanitizationFn(input.securityContext, isAttributeBinding);
+          if (sanitizationRef) params.push(sanitizationRef);
+          this.allocateBindingSlots(value);
+          this.updateInstruction(input.sourceSpan, instruction, () => {
+            return [
+              o.literal(elementIndex), o.literal(input.name),
+              this.convertPropertyBinding(implicit, value), ...params
+            ];
+          });
+        }
       } else {
         this._unsupported(`binding type ${input.type}`);
       }
