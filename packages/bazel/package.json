@@ -15,7 +15,7 @@
     "@angular-devkit/architect": "^0.10.6",
     "@angular-devkit/core": "^7.0.4",
     "@angular-devkit/schematics": "^7.0.4",
-    "@bazel/typescript": "^0.21.0",
+    "@bazel/typescript": "^0.22.1",
     "@schematics/angular": "^7.0.4",
     "@types/node": "6.0.84",
     "semver": "^5.6.0",
