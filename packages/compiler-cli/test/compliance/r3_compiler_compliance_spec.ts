@@ -689,7 +689,8 @@ describe('compiler compliance', () => {
         }
       };
 
-      expect(() => compile(files, angularFiles)).toThrow();
+      expect(() => compile(files, angularFiles))
+          .toThrowError('Directive EmptyOutletDirective has no selector, please add it!');
     });
 
     it('should not support directives with empty selector', () => {
@@ -707,7 +708,8 @@ describe('compiler compliance', () => {
         }
       };
 
-      expect(() => compile(files, angularFiles)).toThrow();
+      expect(() => compile(files, angularFiles))
+          .toThrowError('Directive EmptyOutletDirective has no selector, please add it!');
     });
 
     it('should not treat ElementRef, ViewContainerRef, or ChangeDetectorRef specially when injecting',
