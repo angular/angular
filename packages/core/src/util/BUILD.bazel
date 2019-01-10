@@ -9,6 +9,7 @@ ts_library(
             "**/*.ts",
         ],
     ),
+    module_name = "@angular/core/util",
     deps = [
         "//packages/core/src/interface",
         "@rxjs",
