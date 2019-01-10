@@ -908,6 +908,21 @@ describe('ngtsc behavioral tests', () => {
             'changeDetection must be a member of ChangeDetectionStrategy enum from @angular/core');
   });
 
+  it('should ignore empty bindings', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+      import {Component} from '@angular/core';
+       @Component({
+        selector: 'test',
+        template: '<div [someProp]></div>'
+      })
+      class FooCmp {}
+    `);
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).not.toContain('i0.ɵelementProperty');
+  });
+
   it('should correctly recognize local symbols', () => {
     env.tsconfig();
     env.write('module.ts', `
