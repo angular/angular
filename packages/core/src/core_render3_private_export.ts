@@ -135,6 +135,7 @@ export {
   compileNgModuleDefs as ɵcompileNgModuleDefs,
   patchComponentDefWithScope as ɵpatchComponentDefWithScope,
   resetCompiledComponents as ɵresetCompiledComponents,
+  flushModuleScopingQueueAsMuchAsPossible as ɵflushModuleScopingQueueAsMuchAsPossible,
   transitiveScopesFor as ɵtransitiveScopesFor,
 } from './render3/jit/module';
 export {
