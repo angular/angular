@@ -572,7 +572,21 @@ export const Component: ComponentDecorator = makeDecorator(
  */
 export interface PipeDecorator {
   /**
-   * Declares a reusable pipe function, and supplies configuration metadata.
+   * Decorator that marks a class as pipe and supplies configuration metadata.
+   *
+   * A pipe class must implement the `PipeTransform` interface.
+   * For example, if the name is "myPipe", use a template binding expression
+   * such as the following:
+   *
+   * ```
+   * {{ exp | myPipe }}
+   * ```
+   *
+   * The result of the expression is passed to the pipe's `transform()` method.
+   *
+   * A pipe must belong to an NgModule in order for it to be available
+   * to a template. To make it a member of an NgModule,
+   * list it in the `declarations` field of the `@NgModule` metadata.
    *
    */
   (obj: Pipe): TypeDecorator;
@@ -622,34 +636,6 @@ export const Pipe: PipeDecorator = makeDecorator(
  */
 export interface InputDecorator {
   /**
-   * Decorator that marks a class as pipe and supplies configuration metadata.
-   *
-   * A pipe class must implement the `PipeTransform` interface.
-   * For example, if the name is "myPipe", use a template binding expression
-   * such as the following:
-   *
-   * ```
-   * {{ exp | myPipe }}
-   * ```
-   *
-   * The result of the expression is passed to the pipe's `transform()` method.
-   *
-   * A pipe must belong to an NgModule in order for it to be available
-   * to a template. To make it a member of an NgModule,
-   * list it in the `declarations` field of the `@NgModule` metadata.
-   *
-   */
-  (bindingPropertyName?: string): any;
-  new (bindingPropertyName?: string): any;
-}
-
-/**
- * Type of metadata for an `Input` property.
- *
- * @publicApi
- */
-export interface Input {
-  /**
    * Decorator that marks a class field as an input property and supplies configuration metadata.
    * Declares a data-bound input property, which Angular automatically updates
    * during change detection.
@@ -693,6 +679,20 @@ export interface Input {
    * class App {}
    * ```
    *
+   */
+
+  (bindingPropertyName?: string): any;
+  new (bindingPropertyName?: string): any;
+}
+
+/**
+ * Type of metadata for an `Input` property.
+ *
+ * @publicApi
+ */
+export interface Input {
+  /**
+   * Name used when instantiating a component in the template.
    */
   bindingPropertyName?: string;
 }
