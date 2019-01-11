@@ -26,8 +26,8 @@ function getBazelActionArguments() {
 }
 
 if (require.main === module) {
-  // The script expects the output path as first argument. All remaining arguments will be
-  // considered as markdown input files that need to be transformed.
+  // Process all file pairs that have been passed to this executable. Each argument will
+  // consist of the input file path and the desired output location.
   getBazelActionArguments().forEach(argument => {
     // Each argument that has been passed consists of an input file path and the expected
     // output path. e.g. {path_to_input_file},{expected_output_path}
