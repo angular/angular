@@ -3,9 +3,6 @@
     "name": "ACTIVE_INDEX"
   },
   {
-    "name": "ANIMATION_PROP_PREFIX"
-  },
-  {
     "name": "BINDING_INDEX"
   },
   {
@@ -76,9 +73,6 @@
   },
   {
     "name": "NG_PIPE_DEF"
-  },
-  {
-    "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
     "name": "NO_CHANGE"
@@ -321,9 +315,6 @@
     "name": "invertObject"
   },
   {
-    "name": "isAnimationProp"
-  },
-  {
     "name": "isComponentDef"
   },
   {
@@ -433,9 +424,6 @@
   },
   {
     "name": "setTNodeAndViewData"
-  },
-  {
-    "name": "setUpAttributes"
   },
   {
     "name": "syncViewWithBlueprint"

@@ -10,7 +10,7 @@ import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, El
 import {ViewEncapsulation} from '../../src/metadata';
 import {AttributeMarker, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, load, query, queryRefresh} from '../../src/render3/index';
 
-import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
+import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding, elementHostAttrs} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement} from '../../src/render3/interfaces/renderer';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
@@ -1855,9 +1855,9 @@ describe('ViewContainerRef', () => {
           consts: 0,
           vars: 0,
           template: (rf: RenderFlags, cmp: HostBindingCmpt) => {},
-          attributes: ['id', 'attribute'],
           hostBindings: function(rf: RenderFlags, ctx: HostBindingCmpt, elIndex: number) {
             if (rf & RenderFlags.Create) {
+              elementHostAttrs(ctx, ['id', 'attribute']);
               allocHostVars(1);
             }
             if (rf & RenderFlags.Update) {

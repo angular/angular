@@ -20,7 +20,7 @@ import {ValueConverter} from './template';
 /**
  * A styling expression summary that is to be processed by the compiler
  */
-export interface StylingInstruction {
+export interface Instruction {
   sourceSpan: ParseSourceSpan|null;
   reference: o.ExternalReference;
   buildParams(convertFn: (value: any) => o.Expression): o.Expression[];
@@ -225,17 +225,17 @@ export class StylingBuilder {
    * Builds an instruction with all the expressions and parameters for `elementHostAttrs`.
    *
    * The instruction generation code below is used for producing the AOT statement code which is
-   * responsible for registering initial styles (within a directive hostBindings' creation block)
-   * to the directive host element.
+   * responsible for registering initial styles (within a directive hostBindings' creation block),
+   * as well as any of the provided attribute values, to the directive host element.
    */
-  buildDirectiveHostAttrsInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool):
-      StylingInstruction|null {
-    if (this._hasInitialValues && this._directiveExpr) {
+  buildHostAttrsInstruction(
+      sourceSpan: ParseSourceSpan|null, attrs: o.Expression[],
+      constantPool: ConstantPool): Instruction|null {
+    if (this._directiveExpr && (attrs.length || this._hasInitialValues)) {
       return {
         sourceSpan,
         reference: R3.elementHostAttrs,
         buildParams: () => {
-          const attrs: o.Expression[] = [];
           this.populateInitialStylingAttrs(attrs);
           return [this._directiveExpr !, getConstantLiteralFromArray(constantPool, attrs)];
         }
@@ -251,7 +251,7 @@ export class StylingBuilder {
    * responsible for registering style/class bindings to an element.
    */
   buildElementStylingInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool):
-      StylingInstruction|null {
+      Instruction|null {
     if (this._hasBindings) {
       return {
         sourceSpan,
@@ -312,7 +312,7 @@ export class StylingBuilder {
    * which include the `[style]` and `[class]` expression params (if they exist) as well as
    * the sanitizer and directive reference expression.
    */
-  buildElementStylingMapInstruction(valueConverter: ValueConverter): StylingInstruction|null {
+  buildElementStylingMapInstruction(valueConverter: ValueConverter): Instruction|null {
     if (this._classMapInput || this._styleMapInput) {
       const stylingInput = this._classMapInput ! || this._styleMapInput !;
 
@@ -355,7 +355,7 @@ export class StylingBuilder {
 
   private _buildSingleInputs(
       reference: o.ExternalReference, inputs: BoundStylingEntry[], mapIndex: Map<string, number>,
-      allowUnits: boolean, valueConverter: ValueConverter): StylingInstruction[] {
+      allowUnits: boolean, valueConverter: ValueConverter): Instruction[] {
     return inputs.map(input => {
       const bindingIndex: number = mapIndex.get(input.name) !;
       const value = input.value.visit(valueConverter);
@@ -381,7 +381,7 @@ export class StylingBuilder {
     });
   }
 
-  private _buildClassInputs(valueConverter: ValueConverter): StylingInstruction[] {
+  private _buildClassInputs(valueConverter: ValueConverter): Instruction[] {
     if (this._singleClassInputs) {
       return this._buildSingleInputs(
           R3.elementClassProp, this._singleClassInputs, this._classesIndex, false, valueConverter);
@@ -389,7 +389,7 @@ export class StylingBuilder {
     return [];
   }
 
-  private _buildStyleInputs(valueConverter: ValueConverter): StylingInstruction[] {
+  private _buildStyleInputs(valueConverter: ValueConverter): Instruction[] {
     if (this._singleStyleInputs) {
       return this._buildSingleInputs(
           R3.elementStyleProp, this._singleStyleInputs, this._stylesIndex, true, valueConverter);
@@ -397,7 +397,7 @@ export class StylingBuilder {
     return [];
   }
 
-  private _buildApplyFn(): StylingInstruction {
+  private _buildApplyFn(): Instruction {
     return {
       sourceSpan: this._lastStylingInput ? this._lastStylingInput.sourceSpan : null,
       reference: R3.elementStylingApply,
@@ -416,7 +416,7 @@ export class StylingBuilder {
    * into the update block of a template function or a directive hostBindings function.
    */
   buildUpdateLevelInstructions(valueConverter: ValueConverter) {
-    const instructions: StylingInstruction[] = [];
+    const instructions: Instruction[] = [];
     if (this._hasBindings) {
       const mapInstruction = this.buildElementStylingMapInstruction(valueConverter);
       if (mapInstruction) {

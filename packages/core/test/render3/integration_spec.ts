@@ -478,8 +478,12 @@ describe('render3 integration test', () => {
           factory: () => new HostAttributeComp(),
           consts: 0,
           vars: 0,
+          hostBindings: function(rf, ctx, elIndex) {
+            if (rf & RenderFlags.Create) {
+              elementHostAttrs(ctx, ['role', 'button']);
+            }
+          },
           template: (rf: RenderFlags, ctx: HostAttributeComp) => {},
-          attributes: ['role', 'button']
         });
       }
 
@@ -1706,8 +1710,8 @@ describe('render3 integration test', () => {
                    rf: RenderFlags, ctx: DirWithInitialStyling, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
                    elementHostAttrs(ctx, [
-                     AttributeMarker.Classes, 'heavy', 'golden', AttributeMarker.Styles, 'color',
-                     'purple', 'font-weight', 'bold'
+                     'title', 'foo', AttributeMarker.Classes, 'heavy', 'golden',
+                     AttributeMarker.Styles, 'color', 'purple', 'font-weight', 'bold'
                    ]);
                  }
                }
@@ -1735,6 +1739,7 @@ describe('render3 integration test', () => {
            const classes = target.getAttribute('class') !.split(/\s+/).sort();
            expect(classes).toEqual(['big', 'golden', 'heavy']);
 
+           expect(target.getAttribute('title')).toEqual('foo');
            expect(target.style.getPropertyValue('color')).toEqual('black');
            expect(target.style.getPropertyValue('font-size')).toEqual('200px');
            expect(target.style.getPropertyValue('font-weight')).toEqual('bold');

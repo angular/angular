@@ -1100,7 +1100,7 @@ describe('compiler compliance: styling', () => {
     };
 
     const template = `
-      const $_c0$ = [${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"];
+      const $_c0$ = ["title", "foo title", ${AttributeMarker.Classes}, "foo", "baz", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"];
       …
       hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
@@ -1114,9 +1114,7 @@ describe('compiler compliance: styling', () => {
           $r3$.ɵelementStylingMap(elIndex, ctx.myClass, ctx.myStyle, ctx);
           $r3$.ɵelementStylingApply(elIndex, ctx);
         }
-      },
-      consts: 0,
-      vars: 0,
+      }
     `;
 
     const result = compile(files, angularFiles);

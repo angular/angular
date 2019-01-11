@@ -965,7 +965,11 @@ describe('host bindings', () => {
         selectors: [['', 'hostAttributeDir', '']],
         type: HostAttributeDir,
         factory: () => new HostAttributeDir(),
-        attributes: ['role', 'listbox']
+        hostBindings: function(rf, ctx, elIndex) {
+          if (rf & RenderFlags.Create) {
+            elementHostAttrs(ctx, ['role', 'listbox']);
+          }
+        }
       });
     }
 

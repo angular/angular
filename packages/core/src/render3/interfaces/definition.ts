@@ -140,14 +140,6 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   /** Refreshes host bindings on the associated directive. */
   hostBindings: HostBindingsFunction<T>|null;
 
-  /**
-   * Static attributes to set on host element.
-   *
-   * Even indices: attribute name
-   * Odd indices: attribute value
-   */
-  readonly attributes: string[]|null;
-
   /* The following are lifecycle hooks for this component */
   onInit: (() => void)|null;
   doCheck: (() => void)|null;
