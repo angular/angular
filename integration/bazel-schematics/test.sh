@@ -8,7 +8,11 @@ function testBazel() {
   rm -rf demo
   # Create project
   ng new demo --collection=@angular/bazel --defaults --skip-git
+  node replace_angular_repo.js "./demo/WORKSPACE"
   cd demo
+  # TODO(kyliau) Remove this once the type annotations are added to AppPage
+  # https://github.com/angular/angular-cli/pull/13406
+  cp ../app.po.ts ./e2e/src/
   # Run build
   # TODO(kyliau): Use `bazel build` for now. Running `ng build` requires
   # node_modules to be available in project directory.
