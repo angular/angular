@@ -130,18 +130,17 @@ jobs:
 
     - run: bazel test tools/public_api_guard/...
 
-  # ----------------------------------------------------------------
-  # Job that runs the e2e tests with Protractor and Chrome Headless
-  # ----------------------------------------------------------------
+  # -----------------------------------------------------------------
+  # Job that runs the e2e tests with Protractor and Chromium headless
+  # -----------------------------------------------------------------
   e2e_tests:
     <<: *job_defaults
     resource_class: xlarge
     steps:
       - *checkout_code
       - *restore_cache
-      - *yarn_install
 
-      - run: yarn gulp ci:e2e
+      - run: bazel test e2e/...
 
   # ------------------------------------------------------------------------------------------
   # Job that runs the unit tests on locally installed browsers (Chrome and Firefox headless).

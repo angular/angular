@@ -1,0 +1,30 @@
+package(default_visibility=["//visibility:public"])
+
+load("@angular//:index.bzl", "protractor_web_test_suite")
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+  name = "e2e_specs_lib",
+  srcs = glob(["**/*.ts"]),
+  tsconfig = ":tsconfig.json",
+  deps = [
+    "@matdeps//@types/jasmine",
+    "@matdeps//protractor"
+  ]
+)
+
+protractor_web_test_suite(
+  name = "e2e",
+  configuration = ":protractor.conf.js",
+  on_prepare = ":start-devserver.js",
+  server = "//src/e2e-app:devserver",
+  deps = [
+    "@matdeps//protractor",
+    ":e2e_specs_lib"
+  ],
+  data = [
+    "@angular//packages/bazel/src/protractor/utils",
+    "//tools/axe-protractor",
+  ],
+)
+

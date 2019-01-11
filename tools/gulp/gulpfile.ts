@@ -22,7 +22,6 @@ import './tasks/clean';
 import './tasks/default';
 import './tasks/development';
 import './tasks/docs';
-import './tasks/e2e';
 import './tasks/example-module';
 import './tasks/lint';
 import './tasks/material-release';

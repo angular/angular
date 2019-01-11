@@ -5,8 +5,8 @@ describe('icon', () => {
   describe('font icons by ligature', () => {
     let testIcon: any;
 
-    beforeEach(() => {
-      browser.get('/icon');
+    beforeEach(async () => {
+      await browser.get('/icon');
       testIcon = element(by.id('test-icon'));
     });
 
@@ -17,8 +17,8 @@ describe('icon', () => {
       expect(attr).toContain('material-icons');
     });
 
-    it('should have the correct role when used', () => {
-      expect(testIcon.getAttribute('role')).toBe('img');
+    it('should have the correct role when used', async () => {
+      expect(await testIcon.getAttribute('role')).toBe('img');
     });
   });
 });

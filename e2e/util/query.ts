@@ -1,4 +1,4 @@
-import {ElementFinder, by, element, ProtractorBy, browser} from 'protractor';
+import {browser, by, element, ElementFinder} from 'protractor';
 import {Point} from './actions';
 
 /**
@@ -12,8 +12,8 @@ export function getElement(el: FinderResult): ElementFinder {
 /**
  * Waits for an element to be rendered.
  */
-export function waitForElement(selector: string) {
-  return browser.isElementPresent(by.css(selector) as ProtractorBy);
+export async function waitForElement(selector: string) {
+  return await browser.isElementPresent(by.css(selector));
 }
 
 /**

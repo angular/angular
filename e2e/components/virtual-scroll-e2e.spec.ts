@@ -8,8 +8,8 @@ describe('autosize cdk-virtual-scroll', () => {
   let viewport: ElementFinder;
 
   describe('with uniform items', () => {
-    beforeEach(() => {
-      browser.get('/virtual-scroll');
+    beforeEach(async () => {
+      await browser.get('/virtual-scroll');
       viewport = element(by.css('.demo-virtual-scroll-uniform-size cdk-virtual-scroll-viewport'));
     });
 
@@ -38,8 +38,8 @@ describe('autosize cdk-virtual-scroll', () => {
   });
 
   describe('with variable size', () => {
-    beforeEach(() => {
-      browser.get('/virtual-scroll');
+    beforeEach(async () => {
+      await browser.get('/virtual-scroll');
       viewport = element(by.css('.demo-virtual-scroll-variable-size cdk-virtual-scroll-viewport'));
     });
 

@@ -2,10 +2,10 @@ import {browser, by, element} from 'protractor';
 
 describe('expansion', () => {
 
-  beforeEach(() => browser.get('/expansion'));
+  beforeEach(async () => await browser.get('/expansion'));
 
   it('should show an accordion', async () => {
-    expect(element(by.css('.mat-accordion'))).toBeDefined();
+    expect(await element(by.css('.mat-accordion'))).toBeDefined();
   });
 
   it('should show two panels', async () => {
@@ -18,7 +18,7 @@ describe('expansion', () => {
 
     expect(await panelContent.isDisplayed()).toBe(false);
 
-    panelHeader.click();
+    await panelHeader.click();
 
     expect(await panelContent.isDisplayed()).toBe(true);
   });
@@ -28,13 +28,13 @@ describe('expansion', () => {
     const panelDescription = element
       .all(by.css('.mat-expansion-panel-header mat-panel-description')).get(1);
 
-    panelHeader.click();
+    await panelHeader.click();
 
-    expect(panelDescription.getText()).toContain('Currently I am open');
+    expect(await panelDescription.getText()).toContain('Currently I am open');
 
-    panelHeader.click();
+    await panelHeader.click();
 
-    expect(panelDescription.getText()).toContain('Currently I am closed');
+    expect(await panelDescription.getText()).toContain('Currently I am closed');
   });
 
 });

@@ -9,7 +9,7 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
-  <link href="dist/packages/material/core/theming/prebuilt/indigo-pink.css" rel="stylesheet">
+  <link href="angular_material/src/lib/prebuilt-themes/indigo-pink.css" rel="stylesheet">
 
   <!-- FontAwesome for mat-icon demo. -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
@@ -17,15 +17,12 @@
 <body>
   <e2e-app>Loading...</e2e-app>
 
-  <script src="node_modules/core-js/client/core.js"></script>
-  <script src="node_modules/systemjs/dist/system.src.js"></script>
-  <script src="node_modules/zone.js/dist/zone.js"></script>
-  <script src="node_modules/hammerjs/hammer.min.js"></script>
+  <!-- Static scripts which are not imported through AMD nor part of the ConcatJS bundle. -->
+  <script src="core-js/client/core.min.js"></script>
+  <script src="zone.js/dist/zone.min.js"></script>
+  <script src="hammerjs/hammer.min.js"></script>
 
-  <script>
-    System.import('system-config.js').then(function () {
-      System.import('main');
-    }).catch(console.error.bind(console));
-  </script>
+  <!-- ConcatJS bundle from the Bazel TypeScript devserver. -->
+  <script src="bundle.js"></script>
 </body>
 </html>

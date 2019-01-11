@@ -12,8 +12,10 @@ http_archive(
 # Add TypeScript rules
 http_archive(
   name = "build_bazel_rules_typescript",
-  url = "https://github.com/bazelbuild/rules_typescript/archive/0.22.0.zip",
-  strip_prefix = "rules_typescript-0.22.0",
+  # Explicitly depend on https://github.com/bazelbuild/rules_typescript/pull/327 which fixes the devserver
+  # for windows. Once this has been reviewed and merged, we can switch back to a normal release.
+  url = "https://github.com/bazelbuild/rules_typescript/archive/1bb017e2f9c58f96bac8ddda2ed4a170282bc58e.zip",
+  strip_prefix = "rules_typescript-1bb017e2f9c58f96bac8ddda2ed4a170282bc58e",
 )
 
 # Add Angular source and Bazel rules.

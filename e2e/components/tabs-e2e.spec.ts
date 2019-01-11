@@ -13,21 +13,21 @@ describe('tabs', () => {
     let tabLabels: ElementArrayFinder;
     let tabBodies: ElementArrayFinder;
 
-    beforeEach(() => {
-      browser.get('/tabs');
+    beforeEach(async () => {
+      await browser.get('/tabs');
       tabLabels = element.all(by.css('.mat-tab-label'));
       tabBodies = element.all(by.css('mat-tab-body'));
     });
 
     it('should change tabs when the label is clicked', async () => {
-      tabLabels.get(1).click();
+      await tabLabels.get(1).click();
       expect(await getLabelActiveStates(tabLabels)).toEqual([false, true, false]);
       expect(await getBodyActiveStates(tabBodies)).toEqual([false, true, false]);
 
       await browser.wait(ExpectedConditions.not(
         ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
 
-      tabLabels.get(0).click();
+      await tabLabels.get(0).click();
       expect(await getLabelActiveStates(tabLabels)).toEqual([true, false, false]);
       expect(await getBodyActiveStates(tabBodies)).toEqual([true, false, false]);
 
@@ -39,19 +39,19 @@ describe('tabs', () => {
       const right = Key.RIGHT;
       const left = Key.LEFT;
 
-      tabLabels.get(0).click();
+      await tabLabels.get(0).click();
       expect(await getFocusStates(tabLabels)).toEqual([true, false, false]);
 
-      pressKeys(right);
+      await pressKeys(right);
       expect(await getFocusStates(tabLabels)).toEqual([false, true, false]);
 
-      pressKeys(right);
+      await pressKeys(right);
       expect(await getFocusStates(tabLabels)).toEqual([false, false, true]);
 
-      pressKeys(left);
+      await pressKeys(left);
       expect(await getFocusStates(tabLabels)).toEqual([false, true, false]);
 
-      pressKeys(left);
+      await pressKeys(left);
       expect(await getFocusStates(tabLabels)).toEqual([true, false, false]);
     });
   });

@@ -8,8 +8,6 @@ task('ci:lint', ['lint']);
 // TODO(devversion): look if there is some blocking child process.
 task('ci:test', ['test:single-run'], () => process.exit(0));
 
-task('ci:e2e', ['e2e']);
-
 /**
  * Task to verify that all components work with AOT compilation. This task requires the
  * release output to be built already.
