@@ -2642,6 +2642,61 @@ describe('lifecycles', () => {
       ]);
     });
 
+    it('should not call onChanges if props are set directly', () => {
+      let events: SimpleChanges[] = [];
+      let compInstance: MyComp;
+      class MyComp {
+        value = 0;
+
+        ngOnChanges(changes: SimpleChanges) { events.push(changes); }
+
+        static ngComponentDef = defineComponent({
+          type: MyComp,
+          factory: () => {
+            // Capture the instance so we can test setting the property directly
+            compInstance = new MyComp();
+            return compInstance;
+          },
+          template: (rf: RenderFlags, ctx: any) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div');
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(0, 'data-a', bind(ctx.a));
+            }
+          },
+          selectors: [['mycomp']],
+          inputs: {
+            value: 'value',
+          },
+          consts: 1,
+          vars: 1,
+        });
+      }
+
+      /**
+       *  <my-comp [value]="1"></my-comp>
+       */
+
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'mycomp');
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'value', bind(1));
+        }
+      }, 1, 1, [MyComp]);
+
+      const fixture = new ComponentFixture(App);
+      events = [];
+
+      // Try setting the property directly
+      compInstance !.value = 2;
+
+      fixture.update();
+      expect(events).toEqual([]);
+    });
+
   });
 
   describe('hook order', () => {
