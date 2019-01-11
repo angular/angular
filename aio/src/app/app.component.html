@@ -52,7 +52,7 @@
     </div>
   </mat-sidenav>
 
-  <section class="sidenav-content" [id]="pageId" role="content">
+  <main class="sidenav-content" [id]="pageId" role="main">
     <aio-mode-banner [mode]="deployment.mode" [version]="versionInfo"></aio-mode-banner>
     <aio-doc-viewer [class.no-animations]="isStarting"
         [doc]="currentDocument"
@@ -62,7 +62,7 @@
         (docRendered)="onDocRendered()">
     </aio-doc-viewer>
     <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
-  </section>
+  </main>
 
 </mat-sidenav-container>
 
