@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {SimpleChanges} from '../change_detection/simple_change';
 import {assertEqual} from '../util/assert';
+
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {FLAGS, HookData, LView, LViewFlags, TView} from './interfaces/view';
 import {OnChangesDirectiveWrapper, unwrapOnChangesDirectiveWrapper} from './onchanges_util';
-import { SimpleChanges } from '../change_detection/simple_change';
 
 
 
