@@ -87,6 +87,8 @@ If that form will need additional customization by the user, it might work best 
 However, if the forms will always be the same and not need much customization by developers, then you could create a dynamic component that takes the configuration and generates the form.
 In general, the more complex the customization, the more useful the schematic approach.
 
+{@a integrating-with-the-cli}
+
 ## Integrating with the CLI
 
 A library can include [schematics](guide/glossary#schematic) that allow it to integrate with the Angular CLI.
