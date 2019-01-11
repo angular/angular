@@ -36,8 +36,7 @@ export class SwitchView {
 /**
  * @ngModule CommonModule
  *
- * @description A structural directive that adds or removes templates
- * (displaying or hiding views)
+ * @description A structural directive that adds or removes templates (displaying or hiding views)
  * when the next match expression matches the switch expression.
  *
  * The `[ngSwitch]` directive on a container specifies an expression to match against.
@@ -205,7 +204,7 @@ export class NgSwitchCase implements DoCheck {
   }
 
   /**
-   * Performs case matching internally.
+   * Performs case matching. For internal use only.
    */
   ngDoCheck() { this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase)); }
 }
