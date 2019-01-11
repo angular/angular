@@ -19,4 +19,5 @@ export const NG_BASE_DEF = getClosureSafeProperty({ngBaseDef: getClosureSafeProp
  * the key and the directive's unique ID as the value. This allows us to map directives to their
  * bloom filter bit for DI.
  */
+// TODO(misko): This is wrong. The NG_ELEMENT_ID should never be minified.
 export const NG_ELEMENT_ID = getClosureSafeProperty({__NG_ELEMENT_ID__: getClosureSafeProperty});

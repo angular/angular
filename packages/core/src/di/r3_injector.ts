@@ -13,9 +13,8 @@ import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {INJECTOR, Injector, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE} from './injector';
-import {InjectFlags, inject, injectArgs, setCurrentInjector} from './injector_compatibility';
-import {InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef} from './interface/defs';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
+import {inject, injectArgs, setCurrentInjector} from './injector_compatibility';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, InjectFlags, InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, Provider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider, getInjectableDef, getInjectorDef} from './interface';
 import {APP_ROOT} from './scope';
 
 
