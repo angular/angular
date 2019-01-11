@@ -69,14 +69,6 @@ export function defineComponent<T>(componentDefinition: {
   vars: number;
 
   /**
-   * Static attributes to set on host element.
-   *
-   * Even indices: attribute name
-   * Odd indices: attribute value
-   */
-  attributes?: string[];
-
-  /**
    * A map of input names.
    *
    * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
@@ -260,7 +252,6 @@ export function defineComponent<T>(componentDefinition: {
     hostBindings: componentDefinition.hostBindings || null,
     contentQueries: componentDefinition.contentQueries || null,
     contentQueriesRefresh: componentDefinition.contentQueriesRefresh || null,
-    attributes: componentDefinition.attributes || null,
     declaredInputs: declaredInputs,
     inputs: null !,   // assigned in noSideEffects
     outputs: null !,  // assigned in noSideEffects
@@ -515,14 +506,6 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
    * Factory method used to create an instance of directive.
    */
   factory: (t: Type<T>| null) => T;
-
-  /**
-   * Static attributes to set on host element.
-   *
-   * Even indices: attribute name
-   * Odd indices: attribute value
-   */
-  attributes?: string[];
 
   /**
    * A map of input names.

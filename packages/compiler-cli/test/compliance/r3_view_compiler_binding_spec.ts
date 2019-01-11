@@ -296,11 +296,17 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostAttributeDirDeclaration = `
+        const $c0$ = ["aria-label", "label"];
+        …
         HostAttributeDir.ngDirectiveDef = $r3$.ɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
           factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
-          attributes: ["aria-label", "label"]
+          hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵelementHostAttrs(ctx, $c0$);
+            }
+          }
         });
       `;
 
@@ -310,6 +316,75 @@ describe('compiler compliance: bindings', () => {
       expectEmit(source, HostAttributeDirDeclaration, 'Invalid host attribute code');
     });
 
+    it('should support host attributes together with host classes and styles', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, Directive, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'my-host-attribute-component',
+              template: "...",
+              host: {
+                'title': 'hello there from component',
+                'style': 'opacity:1'
+              }
+            })
+            export class HostAttributeComp {
+            }
+
+            @Directive({
+              selector: '[hostAttributeDir]',
+              host: {
+                'style': 'width: 200px; height: 500px',
+                '[style.opacity]': "true",
+                'class': 'one two',
+                '[class.three]': "true",
+                'title': 'hello there from directive',
+              }
+            })
+            export class HostAttributeDir {
+            }
+
+            @NgModule({declarations: [HostAttributeComp, HostAttributeDir]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const CompAndDirDeclaration = `
+        const $c0$ = ["title", "hello there from component", ${AttributeMarker.Styles}, "opacity", "1"];
+        const $c1$ = ["title", "hello there from directive", ${AttributeMarker.Classes}, "one", "two", ${AttributeMarker.Styles}, "width", "200px", "height", "500px"];
+        …
+        HostAttributeComp.ngComponentDef = $r3$.ɵdefineComponent({
+          type: HostAttributeComp,
+          selectors: [["my-host-attribute-component"]],
+          factory: function HostAttributeComp_Factory(t) { return new (t || HostAttributeComp)(); },
+          hostBindings: function HostAttributeComp_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵelementHostAttrs(ctx, $c0$);
+              …
+            }
+            …
+          }
+        …
+        HostAttributeDir.ngDirectiveDef = $r3$.ɵdefineDirective({
+          type: HostAttributeDir,
+          selectors: [["", "hostAttributeDir", ""]],
+          factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
+          hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
+            if (rf & 1) {
+              $r3$.ɵelementHostAttrs(ctx, $c1$);
+              …
+            }
+            …
+          }
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+      expectEmit(source, CompAndDirDeclaration, 'Invalid host attribute code');
+    });
   });
 
   describe('non bindable behavior', () => {
