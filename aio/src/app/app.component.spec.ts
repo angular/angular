@@ -1071,7 +1071,7 @@ describe('AppComponent', () => {
 
       it('should set the id of the doc viewer container based on the current doc', () => {
         initializeTest(false);
-        const container = fixture.debugElement.query(By.css('section.sidenav-content'));
+        const container = fixture.debugElement.query(By.css('main.sidenav-content'));
 
         navigateTo('guide/pipes');
         expect(component.pageId).toEqual('guide-pipes');
@@ -1088,7 +1088,7 @@ describe('AppComponent', () => {
 
       it('should not be affected by changes to the query', () => {
         initializeTest(false);
-        const container = fixture.debugElement.query(By.css('section.sidenav-content'));
+        const container = fixture.debugElement.query(By.css('main.sidenav-content'));
 
         navigateTo('guide/pipes');
         navigateTo('guide/other?search=http');
