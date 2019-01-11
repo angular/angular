@@ -14,6 +14,7 @@ import {validateAttribute, validateProperty} from '../sanitization/sanitization'
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDataInRange, assertDefined, assertEqual, assertLessThan, assertNotEqual} from '../util/assert';
+import {isObservable} from '../util/lang';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
 
 import {assertHasParent, assertPreviousIsParent} from './assert';
@@ -936,7 +937,14 @@ export function listener(
         const declaredName = props[i++] as string;
         ngDevMode && assertDataInRange(lView, directiveIndex as number);
         const directive = unwrapOnChangesDirectiveWrapper(lView[directiveIndex]);
-        const subscription = directive[minifiedName].subscribe(listenerFn);
+        const output = directive[minifiedName];
+
+        if (ngDevMode && !isObservable(output)) {
+          throw new Error(
+              `@Output ${minifiedName} not initialized in '${directive.constructor.name}'.`);
+        }
+
+        const subscription = output.subscribe(listenerFn);
         const idx = lCleanup.length;
         lCleanup.push(listenerFn, subscription);
         tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
