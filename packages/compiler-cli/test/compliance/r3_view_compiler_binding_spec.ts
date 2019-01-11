@@ -120,6 +120,23 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect interpolated property binding');
     });
+
+    it('should ignore empty bindings', () => {
+      const files: MockDirectory = {
+        app: {
+          'example.ts': `
+            import {Component} from '@angular/core';
+            @Component({
+              selector: 'test',
+              template: '<div [someProp]></div>'
+            })
+            class FooCmp {}
+          `
+        }
+      };
+      const result = compile(files, angularFiles);
+      expect(result.source).not.toContain('i0.ɵelementProperty');
+    });
   });
 
   describe('host bindings', () => {
