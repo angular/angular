@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../di/injection_token';
+import {InjectionToken} from '../di/interface/injection_token';
 
 /**
  * Provide this token to set the locale of your application.

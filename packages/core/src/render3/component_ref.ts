@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {InjectionToken} from '../di/injection_token';
+import {InjectionToken} from '../di/interface/injection_token';
 import {Injector} from '../di/injector';
 import {inject} from '../di/injector_compatibility';
 import {Type} from '../interface/type';

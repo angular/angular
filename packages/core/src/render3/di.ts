@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
-import {InjectFlags, injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
+import {injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
+import {InjectFlags, InjectionToken} from '../di/interface';
 import {getInjectableDef, getInjectorDef} from '../di/interface/defs';
 import {Type} from '../interface/type';
-
 import {assertDefined, assertEqual} from '../util/assert';
+
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
 import {DirectiveDef} from './interfaces/definition';
@@ -315,6 +315,10 @@ export function getOrCreateInjectable<T>(
         setTNodeAndViewData(savePreviousOrParentTNode, saveLView);
       }
     } else if (typeof bloomHash == 'number') {
+      if (bloomHash === -1) {
+        // `-1` is a special value used to identify `Injector` types.
+        return new NodeInjector(tNode, lView) as any;
+      }
       // If the token has a bloom hash, then it is a token which could be in NodeInjector.
 
       // A reference to the previous injector TView that was found while climbing the element
@@ -536,7 +540,8 @@ export function bloomHashBitOrFactory(token: Type<any>| InjectionToken<any>| str
     return token.charCodeAt(0) || 0;
   }
   const tokenId: number|undefined = (token as any)[NG_ELEMENT_ID];
-  return typeof tokenId === 'number' ? tokenId & BLOOM_MASK : tokenId;
+  // Negative token IDs are used for special objects such as `Injector`
+  return (typeof tokenId === 'number' && tokenId > 0) ? tokenId & BLOOM_MASK : tokenId;
 }
 
 export function bloomHasToken(
@@ -570,11 +575,6 @@ export function bloomHasToken(
 /** Returns true if flags prevent parent injector from being searched for tokens */
 function shouldSearchParent(flags: InjectFlags, isFirstHostTNode: boolean): boolean|number {
   return !(flags & InjectFlags.Self) && !(flags & InjectFlags.Host && isFirstHostTNode);
-}
-
-export function injectInjector() {
-  const tNode = getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode;
-  return new NodeInjector(tNode, getLView());
 }
 
 export class NodeInjector implements Injector {

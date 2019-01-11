@@ -7,9 +7,7 @@
  */
 
 import {resolveForwardRef} from '../di/forward_ref';
-import {InjectionToken} from '../di/injection_token';
-import {Injector} from '../di/injector';
-import {InjectFlags} from '../di/injector_compatibility';
+import {InjectFlags, InjectionToken, Injector} from '../di/interface';
 import {Type} from '../interface/type';
 import {QueryList} from '../linker';
 import {Sanitizer} from '../sanitization/security';

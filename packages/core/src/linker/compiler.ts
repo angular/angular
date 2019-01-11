@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '../di/injectable';
-import {InjectionToken} from '../di/injection_token';
+import {InjectionToken} from '../di/interface/injection_token';
 import {StaticProvider} from '../di/interface/provider';
 import {MissingTranslationStrategy} from '../i18n/tokens';
 import {Type} from '../interface/type';
