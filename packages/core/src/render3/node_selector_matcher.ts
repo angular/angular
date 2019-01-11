@@ -11,6 +11,7 @@ import '../util/ng_dev_mode';
 import {assertDefined, assertNotEqual} from '../util/assert';
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
+import {getInitialClassNameValue} from './styling/class_and_style_bindings';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
 
@@ -58,7 +59,6 @@ function hasTagAndTypeMatch(
 export function isNodeMatchingSelector(
     tNode: TNode, selector: CssSelector, isProjectionMode: boolean): boolean {
   ngDevMode && assertDefined(selector[0], 'Selector should have a tag name');
-
   let mode: SelectorFlags = SelectorFlags.ELEMENT;
   const nodeAttrs = tNode.attrs !;
   const selectOnlyMarkerIdx = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.SelectOnly) : -1;
@@ -92,7 +92,19 @@ export function isNodeMatchingSelector(
         skipToNextSelector = true;
       }
     } else {
-      const attrName = mode & SelectorFlags.CLASS ? 'class' : current;
+      const selectorAttrValue = mode & SelectorFlags.CLASS ? current : selector[++i];
+
+      // special case for matching against classes when a tNode has been instantiated with
+      // class and style values as separate attribute values (e.g. ['title', CLASS, 'foo'])
+      if ((mode & SelectorFlags.CLASS) && tNode.stylingTemplate) {
+        if (!isCssClassMatching(readClassValueFromTNode(tNode), selectorAttrValue as string)) {
+          if (isPositive(mode)) return false;
+          skipToNextSelector = true;
+        }
+        continue;
+      }
+
+      const attrName = (mode & SelectorFlags.CLASS) ? 'class' : current;
       const attrIndexInNode = findAttrIndexInNode(attrName, nodeAttrs);
 
       if (attrIndexInNode === -1) {
@@ -101,7 +113,6 @@ export function isNodeMatchingSelector(
         continue;
       }
 
-      const selectorAttrValue = mode & SelectorFlags.CLASS ? current : selector[++i];
       if (selectorAttrValue !== '') {
         let nodeAttrValue: string;
         const maybeAttrName = nodeAttrs[attrIndexInNode];
@@ -113,8 +124,10 @@ export function isNodeMatchingSelector(
                            'We do not match directives on namespaced attributes');
           nodeAttrValue = nodeAttrs[attrIndexInNode + 1] as string;
         }
-        if (mode & SelectorFlags.CLASS &&
-                !isCssClassMatching(nodeAttrValue as string, selectorAttrValue as string) ||
+
+        const compareAgainstClassName = mode & SelectorFlags.CLASS ? nodeAttrValue : null;
+        if (compareAgainstClassName &&
+                !isCssClassMatching(compareAgainstClassName, selectorAttrValue as string) ||
             mode & SelectorFlags.ATTRIBUTE && selectorAttrValue !== nodeAttrValue) {
           if (isPositive(mode)) return false;
           skipToNextSelector = true;
@@ -128,6 +141,16 @@ export function isNodeMatchingSelector(
 
 function isPositive(mode: SelectorFlags): boolean {
   return (mode & SelectorFlags.NOT) === 0;
+}
+
+function readClassValueFromTNode(tNode: TNode): string {
+  // comparing against CSS class values is complex because the compiler doesn't place them as
+  // regular attributes when an element is created. Instead, the classes (and styles for
+  // that matter) are placed in a special styling context that is used for resolving all
+  // class/style values across static attributes, [style]/[class] and [style.prop]/[class.name]
+  // bindings. Therefore if and when the styling context exists then the class values are to be
+  // extracted by the context helper code below...
+  return tNode.stylingTemplate ? getInitialClassNameValue(tNode.stylingTemplate) : '';
 }
 
 /**
