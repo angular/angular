@@ -70,7 +70,7 @@ describe('style and class based bindings', () => {
       attrs.push(AttributeMarker.Styles);
       attrs.push(...styles);
     }
-    patchContextWithStaticAttrs(context, attrs, directiveRef || null);
+    patchContextWithStaticAttrs(context, attrs, 0, directiveRef || null);
   }
 
   function getRootContextInternal(lView: LView) { return lView[CONTEXT] as RootContext; }
@@ -1388,7 +1388,7 @@ describe('style and class based bindings', () => {
       let styles: any = {fontSize: ''};
       updateStyleProp(stylingContext, 0, '');
       updateStylingMap(stylingContext, null, styles);
-      patchContextWithStaticAttrs(stylingContext, [], otherDirective);
+      patchContextWithStaticAttrs(stylingContext, [], 0, otherDirective);
 
       getStyles(stylingContext, otherDirective);
       expect(store.getValues()).toEqual({});

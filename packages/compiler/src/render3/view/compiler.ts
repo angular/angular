@@ -29,7 +29,7 @@ import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
-import {StylingBuilder, StylingInstruction} from './styling_builder';
+import {Instruction, StylingBuilder} from './styling_builder';
 import {BindingScope, TemplateDefinitionBuilder, ValueConverter, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
@@ -101,14 +101,11 @@ function baseDirectiveFields(
     }
   }
 
-  // e.g. `attributes: ['role', 'listbox']`
-  definitionMap.set('attributes', createHostAttributesArray(allOtherAttributes));
-
   // e.g. `hostBindings: (rf, ctx, elIndex) => { ... }
   definitionMap.set(
-      'hostBindings',
-      createHostBindingsFunction(
-          meta, elVarExp, contextVarExp, styleBuilder, bindingParser, constantPool, hostVarsCount));
+      'hostBindings', createHostBindingsFunction(
+                          meta, elVarExp, contextVarExp, allOtherAttributes, styleBuilder,
+                          bindingParser, constantPool, hostVarsCount));
 
   // e.g 'inputs: {a: 'a'}`
   definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs, true));
@@ -504,16 +501,13 @@ function createDirectiveSelector(selector: string | null): o.Expression {
   return asLiteral(core.parseSelectorToR3Selector(selector));
 }
 
-function createHostAttributesArray(attributes: any): o.Expression|null {
+function convertAttributesToExpressions(attributes: any): o.Expression[] {
   const values: o.Expression[] = [];
   for (let key of Object.getOwnPropertyNames(attributes)) {
     const value = attributes[key];
     values.push(o.literal(key), o.literal(value));
   }
-  if (values.length > 0) {
-    return o.literalArr(values);
-  }
-  return null;
+  return values;
 }
 
 // Return a contentQueries function or null if one is not necessary.
@@ -649,8 +643,8 @@ function createViewQueriesFunction(
 // Return a host binding function or null if one is not necessary.
 function createHostBindingsFunction(
     meta: R3DirectiveMetadata, elVarExp: o.ReadVarExpr, bindingContext: o.ReadVarExpr,
-    styleBuilder: StylingBuilder, bindingParser: BindingParser, constantPool: ConstantPool,
-    hostVarsCount: number): o.Expression|null {
+    staticAttributesAndValues: any[], styleBuilder: StylingBuilder, bindingParser: BindingParser,
+    constantPool: ConstantPool, hostVarsCount: number): o.Expression|null {
   const createStatements: o.Statement[] = [];
   const updateStatements: o.Statement[] = [];
 
@@ -740,18 +734,20 @@ function createHostBindingsFunction(
       }
     }
 
-    if (styleBuilder.hasBindingsOrInitialValues()) {
-      // since we're dealing with directives here and directives have a hostBinding
-      // function, we need to generate special instructions that deal with styling
-      // (both bindings and initial values). The instruction below will instruct
-      // all initial styling (styling that is inside of a host binding within a
-      // directive) to be attached to the host element of the directive.
-      const hostAttrsInstruction =
-          styleBuilder.buildDirectiveHostAttrsInstruction(null, constantPool);
-      if (hostAttrsInstruction) {
-        createStatements.push(createStylingStmt(hostAttrsInstruction, bindingContext, bindingFn));
-      }
+    // since we're dealing with directives/components and both have hostBinding
+    // functions, we need to generate a special hostAttrs instruction that deals
+    // with both the assignment of styling as well as static attributes to the host
+    // element. The instruction below will instruct all initial styling (styling
+    // that is inside of a host binding within a directive/component) to be attached
+    // to the host element alongside any of the provided host attributes that were
+    // collected earlier.
+    const hostAttrs = convertAttributesToExpressions(staticAttributesAndValues);
+    const hostInstruction = styleBuilder.buildHostAttrsInstruction(null, hostAttrs, constantPool);
+    if (hostInstruction) {
+      createStatements.push(createStylingStmt(hostInstruction, bindingContext, bindingFn));
+    }
 
+    if (styleBuilder.hasBindingsOrInitialValues()) {
       // singular style/class bindings (things like `[style.prop]` and `[class.name]`)
       // MUST be registered on a given element within the component/directive
       // templateFn/hostBindingsFn functions. The instruction below will figure out
@@ -799,7 +795,7 @@ function createHostBindingsFunction(
 }
 
 function createStylingStmt(
-    instruction: StylingInstruction, bindingContext: any, bindingFn: Function): o.Statement {
+    instruction: Instruction, bindingContext: any, bindingFn: Function): o.Statement {
   const params = instruction.buildParams(value => bindingFn(bindingContext, value).currValExpr);
   return o.importExpr(instruction.reference, null, instruction.sourceSpan)
       .callFn(params, instruction.sourceSpan)

@@ -36,7 +36,7 @@ import {I18nContext} from './i18n/context';
 import {I18nMetaVisitor} from './i18n/meta';
 import {getSerializedI18nContent} from './i18n/serializer';
 import {I18N_ICU_MAPPING_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoundString, formatI18nPlaceholderName, getTranslationConstPrefix, getTranslationDeclStmts, icuFromI18nMessage, isI18nRootNode, isSingleI18nIcu, metaFromI18nMessage, placeholdersToParams, wrapI18nPlaceholder} from './i18n/util';
-import {StylingBuilder, StylingInstruction} from './styling_builder';
+import {Instruction, StylingBuilder} from './styling_builder';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
 // Default selector used by `<ng-content>` if none specified
@@ -689,7 +689,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (input.type === BindingType.Animation) {
         const value = input.value.visit(this._valueConverter);
         // animation bindings can be presented in the following formats:
-        // 1j [@binding]="fooExp"
+        // 1. [@binding]="fooExp"
         // 2. [@binding]="{value:fooExp, params:{...}}"
         // 3. [@binding]
         // 4. @binding
@@ -936,7 +936,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private processStylingInstruction(
-      implicit: any, instruction: StylingInstruction|null, createMode: boolean) {
+      implicit: any, instruction: Instruction|null, createMode: boolean) {
     if (instruction) {
       const paramsFn = () =>
           instruction.buildParams(value => this.convertPropertyBinding(implicit, value, true));

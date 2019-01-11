@@ -752,31 +752,62 @@ function createViewBlueprint(bindingStartIndex: number, initialViewLength: numbe
   return blueprint;
 }
 
-function setUpAttributes(native: RElement, attrs: TAttributes): void {
+/**
+ * Assigns all attribute values to the provided element via the inferred renderer.
+ *
+ * This function accepts two forms of attribute entries:
+ *
+ * default: (key, value):
+ *  attrs = [key1, value1, key2, value2]
+ *
+ * namespaced: (NAMESPACE_MARKER, uri, name, value)
+ *  attrs = [NAMESPACE_MARKER, uri, name, value, NAMESPACE_MARKER, uri, name, value]
+ *
+ * The `attrs` array can contain a mix of both the default and namespaced entries.
+ * The "default" values are set without a marker, but if the function comes across
+ * a marker value then it will attempt to set a namespaced value. If the marker is
+ * not of a namespaced value then the function will quit and return the index value
+ * where it stopped during the iteration of the attrs array.
+ *
+ * See [AttributeMarker] to understand what the namespace marker value is.
+ *
+ * Note that this instruction does not support assigning style and class values to
+ * an element. See `elementStart` and `elementHostAttrs` to learn how styling values
+ * are applied to an element.
+ *
+ * @param native The element that the attributes will be assigned to
+ * @param attrs The attribute array of values that will be assigned to the element
+ * @returns the index value that was last accessed in the attributes array
+ */
+function setUpAttributes(native: RElement, attrs: TAttributes): number {
   const renderer = getLView()[RENDERER];
   const isProc = isProceduralRenderer(renderer);
-  let i = 0;
 
+  let i = 0;
   while (i < attrs.length) {
-    const attrName = attrs[i++];
-    if (typeof attrName == 'number') {
-      if (attrName === AttributeMarker.NamespaceURI) {
-        // Namespaced attributes
-        const namespaceURI = attrs[i++] as string;
-        const attrName = attrs[i++] as string;
-        const attrVal = attrs[i++] as string;
-        ngDevMode && ngDevMode.rendererSetAttribute++;
-        isProc ?
-            (renderer as ProceduralRenderer3)
-                .setAttribute(native, attrName, attrVal, namespaceURI) :
-            native.setAttributeNS(namespaceURI, attrName, attrVal);
-      } else {
-        // All other `AttributeMarker`s are ignored here.
+    const value = attrs[i];
+    if (typeof value === 'number') {
+      // only namespaces are supported. Other value types (such as style/class
+      // entries) are not supported in this function.
+      if (value !== AttributeMarker.NamespaceURI) {
         break;
       }
+
+      // we just landed on the marker value ... therefore
+      // we should skip to the next entry
+      i++;
+
+      const namespaceURI = attrs[i++] as string;
+      const attrName = attrs[i++] as string;
+      const attrVal = attrs[i++] as string;
+      ngDevMode && ngDevMode.rendererSetAttribute++;
+      isProc ?
+          (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal, namespaceURI) :
+          native.setAttributeNS(namespaceURI, attrName, attrVal);
     } else {
       /// attrName is string;
-      const attrVal = attrs[i++];
+      const attrName = value as string;
+      const attrVal = attrs[++i];
       if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
         // Standard attributes
         ngDevMode && ngDevMode.rendererSetAttribute++;
@@ -791,8 +822,15 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
               native.setAttribute(attrName as string, attrVal as string);
         }
       }
+      i++;
     }
   }
+
+  // another piece of code may iterate over the same attributes array. Therefore
+  // it may be helpful to return the exact spot where the attributes array exited
+  // whether by running into an unsupported marker or if all the static values were
+  // iterated over.
+  return i;
 }
 
 export function createError(text: string, token: any) {
@@ -1257,19 +1295,41 @@ export function elementStyling(
 }
 
 /**
- * Assign static styling values to a host element.
+ * Assign static attribute values to a host element.
+ *
+ * This instruction will assign static attribute values as well as class and style
+ * values to an element within the host bindings function. Since attribute values
+ * can consist of different types of values, the `attrs` array must include the values in
+ * the following format:
+ *
+ * attrs = [
+ *   // static attributes (like `title`, `name`, `id`...)
+ *   attr1, value1, attr2, value,
+ *
+ *   // a single namespace value (like `x:id`)
+ *   NAMESPACE_MARKER, namespaceUri1, name1, value1,
+ *
+ *   // another single namespace value (like `x:name`)
+ *   NAMESPACE_MARKER, namespaceUri2, name2, value2,
+ *
+ *   // a series of CSS classes that will be applied to the element (no spaces)
+ *   CLASSES_MARKER, class1, class2, class3,
+ *
+ *   // a series of CSS styles (property + value) that will be applied to the element
+ *   STYLES_MARKER, prop1, value1, prop2, value2
+ * ]
+ *
+ * All non-class and non-style attributes must be defined at the start of the list
+ * first before all class and style values are set. When there is a change in value
+ * type (like when classes and styles are introduced) a marker must be used to separate
+ * the entries. The marker values themselves are set via entries found in the
+ * [AttributeMarker] enum.
  *
  * NOTE: This instruction is meant to used from `hostBindings` function only.
  *
  * @param directive A directive instance the styling is associated with.
- * @param attrs An array containing class and styling information. The values must be marked with
- *              `AttributeMarker`.
- *
- *        ```
- *        var attrs = [AttributeMarker.Classes, 'foo', 'bar',
- *                     AttributeMarker.Styles, 'width', '100px', 'height, '200px']
- *        elementHostAttrs(directive, attrs);
- *        ```
+ * @param attrs An array of static values (attributes, classes and styles) with the correct marker
+ * values.
  *
  * @publicApi
  */
@@ -1278,7 +1338,10 @@ export function elementHostAttrs(directive: any, attrs: TAttributes) {
   if (!tNode.stylingTemplate) {
     tNode.stylingTemplate = initializeStaticStylingContext(attrs);
   }
-  patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, directive);
+  const lView = getLView();
+  const native = getNativeByTNode(tNode, lView) as RElement;
+  const i = setUpAttributes(native, attrs);
+  patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, i, directive);
 }
 
 /**
@@ -1657,11 +1720,6 @@ function postProcessBaseDirective<T>(
   attachPatchData(directive, lView);
   if (native) {
     attachPatchData(native, lView);
-  }
-
-  // TODO(misko): setUpAttributes should be a feature for better treeshakability.
-  if (def.attributes != null && previousOrParentTNode.type == TNodeType.Element) {
-    setUpAttributes(native as RElement, def.attributes as string[]);
   }
 }
 
