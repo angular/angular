@@ -7,8 +7,9 @@ generate_targets(glob(
     exclude = ["core/core.d.ts"],
 ))
 
-# Explicit target because core is broken down into sub-packages. The ts_api_guardian rule does not know how to collect
-# the .d.ts files from the sub-packages so we have to list it here explicitly.
+# Explicit target because core is broken down into sub-packages.
+# The ts_api_guardian rule does not know how to collect the .d.ts files from the sub-packages so we have to list it here explicitly.
+# see: https://github.com/angular/angular/issues/28057
 ts_api_guardian_test(
     name = "core_api",
     actual = "angular/packages/core/core.d.ts",
