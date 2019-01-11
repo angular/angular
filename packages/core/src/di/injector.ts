@@ -7,16 +7,13 @@
  */
 
 import {Type} from '../interface/type';
-import {injectInjector} from '../render3/di';
-import {noop} from '../util/noop';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {InjectFlags, inject} from './injector_compatibility';
-import {defineInjectable} from './interface/defs';
-import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interface/provider';
+import {inject} from './injector_compatibility';
+import {ConstructorProvider, ExistingProvider, FactoryProvider, InjectFlags, StaticClassProvider, StaticProvider, ValueProvider, defineInjectable} from './interface';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
 
 export const SOURCE = '__source';
@@ -31,7 +28,10 @@ export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
  *
  * @publicApi
  */
-export const INJECTOR = new InjectionToken<Injector>('INJECTOR');
+export const INJECTOR = new InjectionToken<Injector>(
+    'INJECTOR',
+    -1 as any  // `-1` is used by Ivy DI system as special value to recognize it as `Injector`.
+    );
 
 export class NullInjector implements Injector {
   get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
@@ -109,16 +109,13 @@ export abstract class Injector {
     factory: () => inject(INJECTOR),
   });
 
-  /** @internal */
-  /** @nocollapse */
-  static __NG_ELEMENT_ID__: () => Injector = () => SWITCH_INJECTOR_FACTORY();
+  /**
+   * @internal
+   * @nocollapse
+   */
+  static __NG_ELEMENT_ID__ = -1;
 }
 
-export const SWITCH_INJECTOR_FACTORY__POST_R3__ = function() {
-  return injectInjector();
-};
-const SWITCH_INJECTOR_FACTORY__PRE_R3__ = noop;
-const SWITCH_INJECTOR_FACTORY: typeof injectInjector = SWITCH_INJECTOR_FACTORY__PRE_R3__;
 
 
 const IDENT = function<T>(value: T): T {
