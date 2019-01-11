@@ -1023,6 +1023,9 @@
     "name": "queueComponentIndexForCheck"
   },
   {
+    "name": "readClassValueFromTNode"
+  },
+  {
     "name": "readElementValue"
   },
   {
