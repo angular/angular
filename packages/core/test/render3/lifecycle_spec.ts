@@ -1960,7 +1960,7 @@ describe('lifecycles', () => {
     }, 2);
 
     /**
-     * <comp [val1]="a" [publicName]="b"/>
+     * <comp [val1]="a" [publicVal2]="b"/>
      */
     const Parent = createOnChangesComponent('parent', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
