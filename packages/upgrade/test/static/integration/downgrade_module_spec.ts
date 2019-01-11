@@ -725,66 +725,63 @@ withEachNg1Version(() => {
            });
          }));
 
-      fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly')
-          .it('should propagate input changes inside the Angular zone', async(() => {
-                let ng2Component: Ng2Component;
+      it('should propagate input changes inside the Angular zone', async(() => {
+           let ng2Component: Ng2Component;
 
-                @Component({selector: 'ng2', template: ''})
-                class Ng2Component implements OnChanges {
-                  @Input() attrInput = 'foo';
-                  @Input() propInput = 'foo';
+           @Component({selector: 'ng2', template: ''})
+           class Ng2Component implements OnChanges {
+             @Input() attrInput = 'foo';
+             @Input() propInput = 'foo';
 
-                  constructor() { ng2Component = this; }
-                  ngOnChanges() {}
-                }
+             constructor() { ng2Component = this; }
+             ngOnChanges() {}
+           }
 
-                @NgModule({
-                  declarations: [Ng2Component],
-                  entryComponents: [Ng2Component],
-                  imports: [BrowserModule],
-                })
-                class Ng2Module {
-                  ngDoBootstrap() {}
-                }
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
 
-                const bootstrapFn = (extraProviders: StaticProvider[]) =>
-                    platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
-                const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
-                const ng1Module =
-                    angular.module('ng1', [lazyModuleName])
-                        .directive(
-                            'ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
-                        .run(($rootScope: angular.IRootScopeService) => {
-                          $rootScope.attrVal = 'bar';
-                          $rootScope.propVal = 'bar';
-                        });
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module('ng1', [lazyModuleName])
+                   .directive('ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
+                   .run(($rootScope: angular.IRootScopeService) => {
+                     $rootScope.attrVal = 'bar';
+                     $rootScope.propVal = 'bar';
+                   });
 
-                const element =
-                    html('<ng2 attr-input="{{ attrVal }}" [prop-input]="propVal"></ng2>');
-                const $injector = angular.bootstrap(element, [ng1Module.name]);
-                const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+           const element = html('<ng2 attr-input="{{ attrVal }}" [prop-input]="propVal"></ng2>');
+           const $injector = angular.bootstrap(element, [ng1Module.name]);
+           const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
-                setTimeout(() => {    // Wait for the module to be bootstrapped.
-                  setTimeout(() => {  // Wait for `$evalAsync()` to propagate inputs.
-                    const expectToBeInNgZone = () => expect(NgZone.isInAngularZone()).toBe(true);
-                    const changesSpy =
-                        spyOn(ng2Component, 'ngOnChanges').and.callFake(expectToBeInNgZone);
+           setTimeout(() => {    // Wait for the module to be bootstrapped.
+             setTimeout(() => {  // Wait for `$evalAsync()` to propagate inputs.
+               const expectToBeInNgZone = () => expect(NgZone.isInAngularZone()).toBe(true);
+               const changesSpy =
+                   spyOn(ng2Component, 'ngOnChanges').and.callFake(expectToBeInNgZone);
 
-                    expect(ng2Component.attrInput).toBe('bar');
-                    expect(ng2Component.propInput).toBe('bar');
+               expect(ng2Component.attrInput).toBe('bar');
+               expect(ng2Component.propInput).toBe('bar');
 
-                    $rootScope.$apply('attrVal = "baz"');
-                    expect(ng2Component.attrInput).toBe('baz');
-                    expect(ng2Component.propInput).toBe('bar');
-                    expect(changesSpy).toHaveBeenCalledTimes(1);
+               $rootScope.$apply('attrVal = "baz"');
+               expect(ng2Component.attrInput).toBe('baz');
+               expect(ng2Component.propInput).toBe('bar');
+               expect(changesSpy).toHaveBeenCalledTimes(1);
 
-                    $rootScope.$apply('propVal = "qux"');
-                    expect(ng2Component.attrInput).toBe('baz');
-                    expect(ng2Component.propInput).toBe('qux');
-                    expect(changesSpy).toHaveBeenCalledTimes(2);
-                  });
-                });
-              }));
+               $rootScope.$apply('propVal = "qux"');
+               expect(ng2Component.attrInput).toBe('baz');
+               expect(ng2Component.propInput).toBe('qux');
+               expect(changesSpy).toHaveBeenCalledTimes(2);
+             });
+           });
+         }));
 
       fixmeIvy('FW-714: ng1 projected content is not being rendered')
           .it('should create and destroy nested, asynchronously instantiated components inside the Angular zone',
@@ -951,167 +948,165 @@ withEachNg1Version(() => {
                 });
               }));
 
-      fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly')
-          .it('should run the lifecycle hooks in the correct order', async(() => {
-                const logs: string[] = [];
-                let rootScope: angular.IRootScopeService;
+      it('should run the lifecycle hooks in the correct order', async(() => {
+           const logs: string[] = [];
+           let rootScope: angular.IRootScopeService;
 
-                @Component({
-                  selector: 'ng2',
-                  template: `
+           @Component({
+             selector: 'ng2',
+             template: `
                {{ value }}
                <button (click)="value = 'qux'"></button>
                <ng-content></ng-content>
              `
-                })
-                class Ng2Component implements AfterContentChecked,
-                    AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges,
-                    OnDestroy, OnInit {
-                  @Input() value = 'foo';
+           })
+           class Ng2Component implements AfterContentChecked,
+               AfterContentInit, AfterViewChecked, AfterViewInit, DoCheck, OnChanges, OnDestroy,
+               OnInit {
+             @Input() value = 'foo';
 
-                  ngAfterContentChecked() { this.log('AfterContentChecked'); }
-                  ngAfterContentInit() { this.log('AfterContentInit'); }
-                  ngAfterViewChecked() { this.log('AfterViewChecked'); }
-                  ngAfterViewInit() { this.log('AfterViewInit'); }
-                  ngDoCheck() { this.log('DoCheck'); }
-                  ngOnChanges() { this.log('OnChanges'); }
-                  ngOnDestroy() { this.log('OnDestroy'); }
-                  ngOnInit() { this.log('OnInit'); }
+             ngAfterContentChecked() { this.log('AfterContentChecked'); }
+             ngAfterContentInit() { this.log('AfterContentInit'); }
+             ngAfterViewChecked() { this.log('AfterViewChecked'); }
+             ngAfterViewInit() { this.log('AfterViewInit'); }
+             ngDoCheck() { this.log('DoCheck'); }
+             ngOnChanges() { this.log('OnChanges'); }
+             ngOnDestroy() { this.log('OnDestroy'); }
+             ngOnInit() { this.log('OnInit'); }
 
-                  private log(hook: string) { logs.push(`${hook}(${this.value})`); }
-                }
+             private log(hook: string) { logs.push(`${hook}(${this.value})`); }
+           }
 
-                @NgModule({
-                  declarations: [Ng2Component],
-                  entryComponents: [Ng2Component],
-                  imports: [BrowserModule],
-                })
-                class Ng2Module {
-                  ngDoBootstrap() {}
-                }
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
 
-                const bootstrapFn = (extraProviders: StaticProvider[]) =>
-                    platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
-                const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
-                const ng1Module =
-                    angular.module('ng1', [lazyModuleName])
-                        .directive(
-                            'ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
-                        .run(($rootScope: angular.IRootScopeService) => {
-                          rootScope = $rootScope;
-                          rootScope.value = 'bar';
-                        });
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module('ng1', [lazyModuleName])
+                   .directive('ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
+                   .run(($rootScope: angular.IRootScopeService) => {
+                     rootScope = $rootScope;
+                     rootScope.value = 'bar';
+                   });
 
-                const element =
-                    html('<div><ng2 value="{{ value }}" ng-if="!hideNg2">Content</ng2></div>');
-                angular.bootstrap(element, [ng1Module.name]);
+           const element =
+               html('<div><ng2 value="{{ value }}" ng-if="!hideNg2">Content</ng2></div>');
+           angular.bootstrap(element, [ng1Module.name]);
 
-                setTimeout(() => {    // Wait for the module to be bootstrapped.
-                  setTimeout(() => {  // Wait for `$evalAsync()` to propagate inputs.
-                    const button = element.querySelector('button') !;
+           setTimeout(() => {    // Wait for the module to be bootstrapped.
+             setTimeout(() => {  // Wait for `$evalAsync()` to propagate inputs.
+               const button = element.querySelector('button') !;
 
-                    // Once initialized.
-                    expect(multiTrim(element.textContent)).toBe('bar Content');
-                    expect(logs).toEqual([
-                      // `ngOnChanges()` call triggered directly through the `inputChanges`
-                      // $watcher.
-                      'OnChanges(bar)',
-                      // Initial CD triggered directly through the `detectChanges()` or
-                      // `inputChanges`
-                      // $watcher (for `propagateDigest` true/false respectively).
-                      'OnInit(bar)',
-                      'DoCheck(bar)',
-                      'AfterContentInit(bar)',
-                      'AfterContentChecked(bar)',
-                      'AfterViewInit(bar)',
-                      'AfterViewChecked(bar)',
-                      ...(propagateDigest ?
-                              [
-                                // CD triggered directly through the `detectChanges()` $watcher (2nd
-                                // $digest).
-                                'DoCheck(bar)',
-                                'AfterContentChecked(bar)',
-                                'AfterViewChecked(bar)',
-                              ] :
-                              []),
-                      // CD triggered due to entering/leaving the NgZone (in `downgradeFn()`).
-                      'DoCheck(bar)',
-                      'AfterContentChecked(bar)',
-                      'AfterViewChecked(bar)',
-                    ]);
-                    logs.length = 0;
+               // Once initialized.
+               expect(multiTrim(element.textContent)).toBe('bar Content');
+               expect(logs).toEqual([
+                 // `ngOnChanges()` call triggered directly through the `inputChanges`
+                 // $watcher.
+                 'OnChanges(bar)',
+                 // Initial CD triggered directly through the `detectChanges()` or
+                 // `inputChanges`
+                 // $watcher (for `propagateDigest` true/false respectively).
+                 'OnInit(bar)',
+                 'DoCheck(bar)',
+                 'AfterContentInit(bar)',
+                 'AfterContentChecked(bar)',
+                 'AfterViewInit(bar)',
+                 'AfterViewChecked(bar)',
+                 ...(propagateDigest ?
+                         [
+                           // CD triggered directly through the `detectChanges()` $watcher (2nd
+                           // $digest).
+                           'DoCheck(bar)',
+                           'AfterContentChecked(bar)',
+                           'AfterViewChecked(bar)',
+                         ] :
+                         []),
+                 // CD triggered due to entering/leaving the NgZone (in `downgradeFn()`).
+                 'DoCheck(bar)',
+                 'AfterContentChecked(bar)',
+                 'AfterViewChecked(bar)',
+               ]);
+               logs.length = 0;
 
-                    // Change inputs and run `$digest`.
-                    rootScope.$apply('value = "baz"');
-                    expect(multiTrim(element.textContent)).toBe('baz Content');
-                    expect(logs).toEqual([
-                      // `ngOnChanges()` call triggered directly through the `inputChanges`
-                      // $watcher.
-                      'OnChanges(baz)',
-                      // `propagateDigest: true` (3 CD runs):
-                      //   - CD triggered due to entering/leaving the NgZone (in `inputChanges`
-                      //   $watcher).
-                      //   - CD triggered directly through the `detectChanges()` $watcher.
-                      //   - CD triggered due to entering/leaving the NgZone (in `detectChanges`
-                      //   $watcher).
-                      // `propagateDigest: false` (2 CD runs):
-                      //   - CD triggered directly through the `inputChanges` $watcher.
-                      //   - CD triggered due to entering/leaving the NgZone (in `inputChanges`
-                      //   $watcher).
-                      'DoCheck(baz)',
-                      'AfterContentChecked(baz)',
-                      'AfterViewChecked(baz)',
-                      'DoCheck(baz)',
-                      'AfterContentChecked(baz)',
-                      'AfterViewChecked(baz)',
-                      ...(propagateDigest ?
-                              [
-                                'DoCheck(baz)',
-                                'AfterContentChecked(baz)',
-                                'AfterViewChecked(baz)',
-                              ] :
-                              []),
-                    ]);
-                    logs.length = 0;
+               // Change inputs and run `$digest`.
+               rootScope.$apply('value = "baz"');
+               expect(multiTrim(element.textContent)).toBe('baz Content');
+               expect(logs).toEqual([
+                 // `ngOnChanges()` call triggered directly through the `inputChanges`
+                 // $watcher.
+                 'OnChanges(baz)',
+                 // `propagateDigest: true` (3 CD runs):
+                 //   - CD triggered due to entering/leaving the NgZone (in `inputChanges`
+                 //   $watcher).
+                 //   - CD triggered directly through the `detectChanges()` $watcher.
+                 //   - CD triggered due to entering/leaving the NgZone (in `detectChanges`
+                 //   $watcher).
+                 // `propagateDigest: false` (2 CD runs):
+                 //   - CD triggered directly through the `inputChanges` $watcher.
+                 //   - CD triggered due to entering/leaving the NgZone (in `inputChanges`
+                 //   $watcher).
+                 'DoCheck(baz)',
+                 'AfterContentChecked(baz)',
+                 'AfterViewChecked(baz)',
+                 'DoCheck(baz)',
+                 'AfterContentChecked(baz)',
+                 'AfterViewChecked(baz)',
+                 ...(propagateDigest ?
+                         [
+                           'DoCheck(baz)',
+                           'AfterContentChecked(baz)',
+                           'AfterViewChecked(baz)',
+                         ] :
+                         []),
+               ]);
+               logs.length = 0;
 
-                    // Run `$digest` (without changing inputs).
-                    rootScope.$digest();
-                    expect(multiTrim(element.textContent)).toBe('baz Content');
-                    expect(logs).toEqual(
-                        propagateDigest ?
-                            [
-                              // CD triggered directly through the `detectChanges()` $watcher.
-                              'DoCheck(baz)',
-                              'AfterContentChecked(baz)',
-                              'AfterViewChecked(baz)',
-                              // CD triggered due to entering/leaving the NgZone (in the above
-                              // $watcher).
-                              'DoCheck(baz)',
-                              'AfterContentChecked(baz)',
-                              'AfterViewChecked(baz)',
-                            ] :
-                            []);
-                    logs.length = 0;
+               // Run `$digest` (without changing inputs).
+               rootScope.$digest();
+               expect(multiTrim(element.textContent)).toBe('baz Content');
+               expect(logs).toEqual(
+                   propagateDigest ?
+                       [
+                         // CD triggered directly through the `detectChanges()` $watcher.
+                         'DoCheck(baz)',
+                         'AfterContentChecked(baz)',
+                         'AfterViewChecked(baz)',
+                         // CD triggered due to entering/leaving the NgZone (in the above
+                         // $watcher).
+                         'DoCheck(baz)',
+                         'AfterContentChecked(baz)',
+                         'AfterViewChecked(baz)',
+                       ] :
+                       []);
+               logs.length = 0;
 
-                    // Trigger change detection (without changing inputs).
-                    button.click();
-                    expect(multiTrim(element.textContent)).toBe('qux Content');
-                    expect(logs).toEqual([
-                      'DoCheck(qux)',
-                      'AfterContentChecked(qux)',
-                      'AfterViewChecked(qux)',
-                    ]);
-                    logs.length = 0;
+               // Trigger change detection (without changing inputs).
+               button.click();
+               expect(multiTrim(element.textContent)).toBe('qux Content');
+               expect(logs).toEqual([
+                 'DoCheck(qux)',
+                 'AfterContentChecked(qux)',
+                 'AfterViewChecked(qux)',
+               ]);
+               logs.length = 0;
 
-                    // Destroy the component.
-                    rootScope.$apply('hideNg2 = true');
-                    expect(logs).toEqual([
-                      'OnDestroy(qux)',
-                    ]);
-                    logs.length = 0;
-                  });
-                });
-              }));
+               // Destroy the component.
+               rootScope.$apply('hideNg2 = true');
+               expect(logs).toEqual([
+                 'OnDestroy(qux)',
+               ]);
+               logs.length = 0;
+             });
+           });
+         }));
 
       it('should detach hostViews from the ApplicationRef once destroyed', async(() => {
            let ng2Component: Ng2Component;
