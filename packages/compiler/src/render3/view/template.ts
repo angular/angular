@@ -39,7 +39,6 @@ import {I18N_ICU_MAPPING_PREFIX, assembleBoundTextPlaceholders, assembleI18nBoun
 import {Instruction, StylingBuilder} from './styling_builder';
 import {CONTEXT_NAME, IMPLICIT_REFERENCE, NON_BINDABLE_ATTR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, getAttrsForDirectiveMatching, invalid, trimTrailingNulls, unsupported} from './util';
 
-
 // Default selector used by `<ng-content>` if none specified
 const DEFAULT_NG_CONTENT_SELECTOR = '*';
 
