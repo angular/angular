@@ -9,6 +9,8 @@ a `PortalOutlet`.
 Portals and PortalOutlets are low-level building blocks that other concepts, such as overlays, are
 built upon.
 
+<!-- example(cdk-portal-overview) -->
+
 ##### `Portal<T>`
 | Method                      | Description                         |
 | --------------------------- | ----------------------------------- |

@@ -5,6 +5,7 @@ import {A11yModule} from '@angular/cdk/a11y';
 import {CdkTableModule} from '@angular/cdk/table';
 import {CdkTreeModule} from '@angular/cdk/tree';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {PortalModule} from '@angular/cdk/portal';
 import {
   MatAutocompleteModule, MatBadgeModule, MatBottomSheetModule, MatButtonModule,
   MatButtonToggleModule, MatCardModule, MatCheckboxModule, MatChipsModule, MatDatepickerModule,
@@ -57,6 +58,7 @@ import {
     MatTooltipModule,
     MatTreeModule,
     ScrollingModule,
+    PortalModule,
   ],
   exports: [
     A11yModule,
@@ -99,6 +101,7 @@ import {
     MatTooltipModule,
     MatTreeModule,
     ScrollingModule,
+    PortalModule,
   ]
 })
 export class ExampleMaterialModule {}
