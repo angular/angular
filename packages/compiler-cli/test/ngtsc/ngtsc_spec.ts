@@ -66,6 +66,88 @@ describe('ngtsc behavioral tests', () => {
     expect(dtsContents).toContain('static ngInjectableDef: i0.ɵInjectableDef<Store<any>>;');
   });
 
+  it('should compile Injectables with providedIn without errors', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {Injectable} from '@angular/core';
+
+        @Injectable()
+        export class Dep {}
+
+        @Injectable({ providedIn: 'root' })
+        export class Service {
+          constructor(dep: Dep) {}
+        }
+    `);
+
+    env.driveMain();
+
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('Dep.ngInjectableDef =');
+    expect(jsContents).toContain('Service.ngInjectableDef =');
+    expect(jsContents)
+        .toContain('return new (t || Service)(i0.inject(Dep)); }, providedIn: \'root\' });');
+    expect(jsContents).not.toContain('__decorate');
+    const dtsContents = env.getContents('test.d.ts');
+    expect(dtsContents).toContain('static ngInjectableDef: i0.ɵInjectableDef<Dep>;');
+    expect(dtsContents).toContain('static ngInjectableDef: i0.ɵInjectableDef<Service>;');
+  });
+
+  it('should compile Injectables with providedIn and factory without errors', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {Injectable} from '@angular/core';
+
+        @Injectable({ providedIn: 'root', useFactory: () => new Service() })
+        export class Service {
+          constructor() {}
+        }
+    `);
+
+    env.driveMain();
+
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('Service.ngInjectableDef =');
+    expect(jsContents).toContain('(r = new t());');
+    expect(jsContents).toContain('(r = (function () { return new Service(); })());');
+    expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
+    expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
+    expect(jsContents).not.toContain('__decorate');
+    const dtsContents = env.getContents('test.d.ts');
+    expect(dtsContents).toContain('static ngInjectableDef: i0.ɵInjectableDef<Service>;');
+  });
+
+  it('should compile Injectables with providedIn and factory with deps without errors', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {Injectable} from '@angular/core';
+
+        @Injectable()
+        export class Dep {}
+
+        @Injectable({ providedIn: 'root', useFactory: (dep: Dep) => new Service(dep), deps: [Dep] })
+        export class Service {
+          constructor(dep: Dep) {}
+        }
+    `);
+
+    env.driveMain();
+
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('Service.ngInjectableDef =');
+    expect(jsContents).toContain('factory: function Service_Factory(t) { var r = null; if (t) {');
+    expect(jsContents).toContain('(r = new t(i0.inject(Dep)));');
+    expect(jsContents)
+        .toContain('(r = (function (dep) { return new Service(dep); })(i0.inject(Dep)));');
+    expect(jsContents).toContain('return r; }, providedIn: \'root\' });');
+    expect(jsContents).not.toContain('__decorate');
+    const dtsContents = env.getContents('test.d.ts');
+    expect(dtsContents).toContain('static ngInjectableDef: i0.ɵInjectableDef<Service>;');
+  });
+
   it('should compile Components without errors', () => {
     env.tsconfig();
     env.write('test.ts', `
@@ -238,6 +320,92 @@ describe('ngtsc behavioral tests', () => {
             `TestModule.ngInjectorDef = i0.defineInjector({ factory: ` +
             `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
             `Token, useValue: 'test' }], imports: [[OtherModule]] });`);
+
+    const dtsContents = env.getContents('test.d.ts');
+    expect(dtsContents)
+        .toContain(
+            'static ngModuleDef: i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
+    expect(dtsContents).toContain('static ngInjectorDef: i0.ɵInjectorDef');
+  });
+
+  it('should compile NgModules with factory providers without errors', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        export class Token {}
+
+        @NgModule({})
+        export class OtherModule {}
+
+        @Component({
+          selector: 'test-cmp',
+          template: 'this is a test',
+        })
+        export class TestCmp {}
+
+        @NgModule({
+          declarations: [TestCmp],
+          providers: [{provide: Token, useFactory: () => new Token()}],
+          imports: [OtherModule],
+        })
+        export class TestModule {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule,');
+    expect(jsContents)
+        .toContain(
+            `TestModule.ngInjectorDef = i0.defineInjector({ factory: ` +
+            `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
+            `Token, useFactory: function () { return new Token(); } }], imports: [[OtherModule]] });`);
+
+    const dtsContents = env.getContents('test.d.ts');
+    expect(dtsContents)
+        .toContain(
+            'static ngModuleDef: i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
+    expect(dtsContents).toContain('static ngInjectorDef: i0.ɵInjectorDef');
+  });
+
+  it('should compile NgModules with factory providers and deps without errors', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        
+        export class Dep {}
+
+        export class Token {
+          constructor(dep: Dep) {}
+        }
+
+        @NgModule({})
+        export class OtherModule {}
+
+        @Component({
+          selector: 'test-cmp',
+          template: 'this is a test',
+        })
+        export class TestCmp {}
+
+        @NgModule({
+          declarations: [TestCmp],
+          providers: [{provide: Token, useFactory: (dep: Dep) => new Token(dep), deps: [Dep]}],
+          imports: [OtherModule],
+        })
+        export class TestModule {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule,');
+    expect(jsContents)
+        .toContain(
+            `TestModule.ngInjectorDef = i0.defineInjector({ factory: ` +
+            `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
+            `Token, useFactory: function (dep) { return new Token(dep); }, deps: [Dep] }], imports: [[OtherModule]] });`);
 
     const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents)
