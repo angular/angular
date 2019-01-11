@@ -437,7 +437,7 @@ node dist/server.js
 ### Creating scripts
 
 Now let's create a few handy scripts to help us do all of this in the future.
-You can add these in the `"server"` section of the Angular configuration file, `angular.json`.
+You can add these in the `"server"` section of the Angular configuration file, `angular.json`. As mentioned in step 3, the `"ng run"` command with the `"projectName#serverTarget"` format is used to create a server bundle.
 
 <code-example format="." language="none" linenums="false">
 "architect": {
@@ -450,7 +450,7 @@ You can add these in the `"server"` section of the Angular configuration file, `
       "serve:ssr": "node dist/server.js",
 
       // Helpers for the scripts
-      "build:client-and-server-bundles": "ng build --prod && ng build --prod --app 1 --output-hashing=false",
+      "build:client-and-server-bundles": "ng build --prod && ng run my-project:server",
       "webpack:server": "webpack --config webpack.server.config.js --progress --colors"
     }
    ...
