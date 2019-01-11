@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-import {InjectionToken} from './interface/injection_token';
+import {InjectionToken} from './interface';
 
 
 /**

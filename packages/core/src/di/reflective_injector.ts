@@ -7,7 +7,7 @@
  */
 
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
-import {Provider} from './interface/provider';
+import {Provider} from './interface';
 import {Self, SkipSelf} from './metadata';
 import {cyclicDependencyError, instantiationError, noProviderError, outOfBoundsError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';

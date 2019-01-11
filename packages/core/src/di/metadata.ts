@@ -6,12 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../interface/type';
-import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
-import {makeDecorator, makeParamDecorator} from '../util/decorators';
-import {EMPTY_ARRAY} from '../view/util';
-
-import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './interface/provider';
+import {makeParamDecorator} from '../util/decorators';
 
 
 

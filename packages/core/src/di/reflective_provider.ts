@@ -10,8 +10,7 @@ import {Type} from '../interface/type';
 import {reflector} from '../reflection/reflection';
 
 import {resolveForwardRef} from './forward_ref';
-import {InjectionToken} from './interface/injection_token';
-import {ClassProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ValueProvider} from './interface/provider';
+import {ClassProvider, ExistingProvider, FactoryProvider, InjectionToken, Provider, TypeProvider, ValueProvider} from './interface';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
 import {invalidProviderError, mixingMultiProvidersWithRegularProvidersError, noAnnotationError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';

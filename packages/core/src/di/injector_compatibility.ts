@@ -10,8 +10,7 @@ import {Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 
 import {Injector} from './injector';
-import {InjectFlags, InjectableDef, getInjectableDef} from './interface';
-import {InjectionToken} from './interface/injection_token';
+import {InjectFlags, InjectableDef, InjectionToken, getInjectableDef} from './interface';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
 
 
