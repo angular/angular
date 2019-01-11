@@ -7,8 +7,7 @@
  */
 
 import {INJECTOR, Injector} from '../di/injector';
-import {InjectFlags} from '../di/injector_compatibility';
-import {StaticProvider} from '../di/interface/provider';
+import {InjectFlags, StaticProvider} from '../di/interface';
 import {createInjector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';

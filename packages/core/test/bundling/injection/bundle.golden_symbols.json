@@ -6,7 +6,7 @@
     "name": "CIRCULAR$1"
   },
   {
-    "name": "EMPTY_ARRAY$1"
+    "name": "EMPTY_ARRAY$2"
   },
   {
     "name": "EmptyErrorImpl"
@@ -33,7 +33,7 @@
     "name": "NOT_YET"
   },
   {
-    "name": "NULL_INJECTOR$2"
+    "name": "NULL_INJECTOR$1"
   },
   {
     "name": "NullInjector"
@@ -63,7 +63,7 @@
     "name": "THROW_IF_NOT_FOUND"
   },
   {
-    "name": "USE_VALUE"
+    "name": "USE_VALUE$2"
   },
   {
     "name": "UnsubscriptionErrorImpl"

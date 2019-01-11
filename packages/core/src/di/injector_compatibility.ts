@@ -11,32 +11,8 @@ import {stringify} from '../util/stringify';
 
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
-import {InjectableDef, getInjectableDef} from './interface/defs';
+import {InjectFlags, InjectableDef, getInjectableDef} from './interface';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
-
-
-/**
- * Injection flags for DI.
- *
- * @publicApi
- */
-export enum InjectFlags {
-  // TODO(alxhub): make this 'const' when ngc no longer writes exports of it into ngfactory files.
-
-  Default = 0b0000,
-
-  /**
-   * Specifies that an injector should retrieve a dependency from any injector until reaching the
-   * host element of the current component. (Only used with Element Injector)
-   */
-  Host = 0b0001,
-  /** Don't descend into ancestors of the node requesting injection. */
-  Self = 0b0010,
-  /** Skip the node that is requesting injection. */
-  SkipSelf = 0b0100,
-  /** Inject `defaultValue` instead if token not found. */
-  Optional = 0b1000,
-}
 
 
 

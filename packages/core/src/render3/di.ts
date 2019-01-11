@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../di/injection_token';
+import {InjectFlags, InjectionToken} from '../di';
 import {Injector} from '../di/injector';
-import {InjectFlags, injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
+import {injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
 import {getInjectableDef, getInjectorDef} from '../di/interface/defs';
 import {Type} from '../interface/type';
-
 import {assertDefined, assertEqual} from '../util/assert';
+
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
 import {DirectiveDef} from './interfaces/definition';
@@ -286,6 +286,10 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
  * Look for the injector providing the token by walking up the node injector tree and then
  * the module injector tree.
  *
+ * This function patches `token` with `__NG_ELEMENT_ID__` which contains the id for the bloom
+ * filter. Negative values are reserved for special objects.
+ *   - `-1` is reserved for injecting `Injector` (implemented by `NodeInjector`)
+ *
  * @param tNode The Node where the search for the injector should start
  * @param lView The `LView` that contains the `tNode`
  * @param token The token to look for
@@ -316,6 +320,10 @@ export function getOrCreateInjectable<T>(
         setTNodeAndViewData(savePreviousOrParentTNode, saveLView);
       }
     } else if (typeof bloomHash == 'number') {
+      if (bloomHash === -1) {
+        // `-1` is a special value used to identify `Injector` types.
+        return new NodeInjector(tNode, lView) as any;
+      }
       // If the token has a bloom hash, then it is a token which could be in NodeInjector.
 
       // A reference to the previous injector TView that was found while climbing the element
@@ -531,6 +539,7 @@ export function getNodeInjectable(
  *
  * @param token the injection token
  * @returns the matching bit to check in the bloom filter or `null` if the token is not known.
+ *   When the returned value is negative then it represents special values such as `Injector`.
  */
 export function bloomHashBitOrFactory(token: Type<any>| InjectionToken<any>| string): number|
     Function|undefined {
@@ -539,7 +548,8 @@ export function bloomHashBitOrFactory(token: Type<any>| InjectionToken<any>| str
     return token.charCodeAt(0) || 0;
   }
   const tokenId: number|undefined = (token as any)[NG_ELEMENT_ID];
-  return typeof tokenId === 'number' ? tokenId & BLOOM_MASK : tokenId;
+  // Negative token IDs are used for special objects such as `Injector`
+  return (typeof tokenId === 'number' && tokenId > 0) ? tokenId & BLOOM_MASK : tokenId;
 }
 
 export function bloomHasToken(
@@ -573,11 +583,6 @@ export function bloomHasToken(
 /** Returns true if flags prevent parent injector from being searched for tokens */
 function shouldSearchParent(flags: InjectFlags, isFirstHostTNode: boolean): boolean|number {
   return !(flags & InjectFlags.Self) && !(flags & InjectFlags.Host && isFirstHostTNode);
-}
-
-export function injectInjector() {
-  const tNode = getPreviousOrParentTNode() as TElementNode | TContainerNode | TElementContainerNode;
-  return new NodeInjector(tNode, getLView());
 }
 
 export class NodeInjector implements Injector {
