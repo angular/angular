@@ -109,9 +109,6 @@ function extractInjectableMetadata(
             ErrorCode.VALUE_NOT_LITERAL, depsExpr,
             `In Ivy, deps metadata must be an inline array.`);
       }
-      if (depsExpr.elements.length > 0) {
-        throw new Error(`deps not yet supported`);
-      }
       userDeps = depsExpr.elements.map(dep => getDep(dep, reflector));
     }
 
