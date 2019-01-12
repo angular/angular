@@ -13,7 +13,9 @@ import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {inject} from './injector_compatibility';
-import {ConstructorProvider, ExistingProvider, FactoryProvider, InjectFlags, StaticClassProvider, StaticProvider, ValueProvider, defineInjectable} from './interface';
+import {defineInjectable} from './interface/defs';
+import {InjectFlags} from './interface/injector';
+import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
 
 export const SOURCE = '__source';
