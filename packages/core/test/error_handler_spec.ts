@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER, ERROR_TYPE} from '@angular/core/src/util/errors';
+import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER, ERROR_TYPE, wrappedError} from '@angular/core/src/util/errors';
 
-import {ErrorHandler, wrappedError} from '../src/error_handler';
+import {ErrorHandler} from '../src/error_handler';
 
 class MockConsole {
   res: any[][] = [];

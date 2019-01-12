@@ -7,7 +7,10 @@
  */
 
 import {ComponentType} from '..';
+import {R3DirectiveMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
+import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
+import {getReflect, reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Query} from '../../metadata/di';
 import {Component, Directive} from '../../metadata/directives';
@@ -17,11 +20,8 @@ import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
 import {renderStringify} from '../util';
 
-import {R3DirectiveMetadataFacade, getCompilerFacade} from './compiler_facade';
-import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from './compiler_facade_interface';
 import {angularCoreEnv} from './environment';
 import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
-import {getReflect, reflectDependencies} from './util';
 
 
 

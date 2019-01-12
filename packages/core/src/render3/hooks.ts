@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChanges} from '../change_detection/simple_change';
+import {SimpleChanges} from '../interface/simple_change';
 import {assertEqual} from '../util/assert';
 
 import {DirectiveDef} from './interfaces/definition';
