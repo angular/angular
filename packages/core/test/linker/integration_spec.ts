@@ -541,18 +541,16 @@ function declareTests(config?: {useJit: boolean}) {
           expect(value.tagName.toLowerCase()).toEqual('div');
         });
 
-        fixmeIvy(
-            'FW-870: DebugNode.references gets comment node instead of TemplateRef for template nodes')
-            .it('should assign the TemplateRef to a user-defined variable', () => {
-              const fixture =
-                  TestBed.configureTestingModule({declarations: [MyComp]})
-                      .overrideComponent(
-                          MyComp, {set: {template: '<ng-template ref-alice></ng-template>'}})
-                      .createComponent(MyComp);
+        it('should assign the TemplateRef to a user-defined variable', () => {
+          const fixture =
+              TestBed.configureTestingModule({declarations: [MyComp]})
+                  .overrideComponent(
+                      MyComp, {set: {template: '<ng-template ref-alice></ng-template>'}})
+                  .createComponent(MyComp);
 
-              const value = fixture.debugElement.childNodes[0].references !['alice'];
-              expect(value.createEmbeddedView).toBeTruthy();
-            });
+          const value = fixture.debugElement.childNodes[0].references !['alice'];
+          expect(value.createEmbeddedView).toBeTruthy();
+        });
 
         it('should preserve case', () => {
           TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
