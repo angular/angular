@@ -50,6 +50,12 @@ script will never be registered with the browser.
 You can avoid that by waiting for the app to stabilize first, before starting to poll for updates
 (as shown in the example above).
 
+Note that this is true for any kind of polling done by your application!
+The `isStable` observable will never emit `true` if, for example, a `setInterval` is running when your application starts.
+You will have to first wait for the application to be stable, then start the polling for updates 
+and your other polling tasks.
+Check the `isStable` documentation for more information. 
+
 </div>
 
 ### Forcing update activation
