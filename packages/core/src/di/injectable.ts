@@ -10,7 +10,8 @@ import {Type} from '../interface/type';
 import {compileInjectable as render3CompileInjectable} from '../render3/jit/injectable';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
 
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, InjectableDef, InjectableType, StaticClassSansProvider, ValueSansProvider, defineInjectable, getInjectableDef} from './interface';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider,} from './interface/provider';
+import {InjectableType, defineInjectable, getInjectableDef, InjectableDef} from './interface/defs';
 import {convertInjectableProviderToFactory} from './util';
 
 

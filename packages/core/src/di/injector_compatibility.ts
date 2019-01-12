@@ -11,7 +11,8 @@ import {stringify} from '../util/stringify';
 
 import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
-import {InjectFlags, InjectableDef, getInjectableDef} from './interface';
+import {InjectableDef, getInjectableDef} from './interface/defs';
+import {InjectFlags} from './interface/injector';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
 
 

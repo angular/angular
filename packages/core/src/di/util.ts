@@ -11,7 +11,7 @@ import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
 import {getClosureSafeProperty} from '../util/property';
 
 import {inject, injectArgs} from './injector_compatibility';
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './interface';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './interface/provider';
 
 const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
