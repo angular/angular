@@ -14,6 +14,7 @@ ng_module(
     deps = [
         "//packages:types",
         "//packages/core/src/compiler",
+        "//packages/core/src/di",
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",
         "//packages/core/src/reflection",

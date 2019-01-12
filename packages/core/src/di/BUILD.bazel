@@ -1,0 +1,23 @@
+package(default_visibility = [
+    "//packages/core:__subpackages__",
+    "//tools/public_api_guard:__pkg__",
+])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "di",
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    module_name = "@angular/core/di",
+    deps = [
+        "//packages/core/src/compiler",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/reflection",
+        "//packages/core/src/util",
+    ],
+)

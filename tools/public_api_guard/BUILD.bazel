@@ -15,6 +15,7 @@ ts_api_guardian_test(
     actual = "angular/packages/core/core.d.ts",
     data = ["//tools/public_api_guard:core/core.d.ts"] + [
         "//packages/core",
+        "//packages/core/src/di",
         "//packages/core/src/di/interface",
         "//packages/core/src/interface",
         "//packages/core/src/util",
