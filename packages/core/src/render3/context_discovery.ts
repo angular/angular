@@ -299,11 +299,15 @@ export function discoverLocalRefs(lView: LView, nodeIndex: number): {[key: strin
   const tNode = lView[TVIEW].data[nodeIndex] as TNode;
   if (tNode && tNode.localNames) {
     const result: {[key: string]: any} = {};
-    for (let i = 0; i < tNode.localNames.length; i += 2) {
+    let localIndex = tNode.index + 1;
+    for (let i = 0; i < tNode.localNames.length; i += 2, localIndex++) {
       const localRefName = tNode.localNames[i];
       const directiveIndex = tNode.localNames[i + 1] as number;
-      result[localRefName] =
-          directiveIndex === -1 ? getNativeByTNode(tNode, lView) ! : lView[directiveIndex];
+      if (directiveIndex === -1) {
+        result[localRefName] = lView[localIndex] || getNativeByTNode(tNode, lView);
+      } else {
+        result[localRefName] = lView[directiveIndex];
+      }
     }
     return result;
   }
