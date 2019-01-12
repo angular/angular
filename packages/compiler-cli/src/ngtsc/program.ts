@@ -24,6 +24,7 @@ import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator,
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, ivyTransformFactory} from './transform';
 import {TypeCheckContext, TypeCheckProgramHost} from './typecheck';
+import {normalizeSeparators} from './util/src/path';
 import {isDtsPath} from './util/src/typescript';
 
 export class NgtscProgram implements api.Program {
@@ -107,8 +108,9 @@ export class NgtscProgram implements api.Program {
         });
       } else {
         const flatModuleId = options.flatModuleId || null;
+        const flatModuleOutFile = normalizeSeparators(options.flatModuleOutFile);
         this.flatIndexGenerator =
-            new FlatIndexGenerator(entryPoint, options.flatModuleOutFile, flatModuleId);
+            new FlatIndexGenerator(entryPoint, flatModuleOutFile, flatModuleId);
         generators.push(this.flatIndexGenerator);
         rootFiles.push(this.flatIndexGenerator.flatIndexPath);
       }
