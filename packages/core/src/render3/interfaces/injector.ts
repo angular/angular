@@ -7,7 +7,7 @@
  */
 
 import {InjectionToken} from '../../di/injection_token';
-import {InjectFlags} from '../../di/interface';
+import {InjectFlags} from '../../di/interface/injector';
 import {Type} from '../../interface/type';
 
 import {TElementNode} from './node';
