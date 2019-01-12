@@ -637,6 +637,11 @@ export class TestBedRender3 implements Injector, TestBed {
   /**
    * @internal
    */
+  _getModuleResolver() { return this._resolvers.module; }
+
+  /**
+   * @internal
+   */
   _compileNgModule(moduleType: NgModuleType): void {
     const ngModule = this._resolvers.module.resolve(moduleType);
 
@@ -764,5 +769,8 @@ class R3TestCompiler implements Compiler {
 
   clearCacheFor(type: Type<any>): void {}
 
-  getModuleId(moduleType: Type<any>): string|undefined { return undefined; }
+  getModuleId(moduleType: Type<any>): string|undefined {
+    const meta = this.testBed._getModuleResolver().resolve(moduleType);
+    return meta && meta.id || undefined;
+  }
 }
