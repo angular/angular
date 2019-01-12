@@ -47,7 +47,7 @@ export class SymbolExtractor {
         case ts.SyntaxKind.VariableDeclaration:
           const varDecl = child as ts.VariableDeclaration;
           if (varDecl.initializer && fnRecurseDepth !== 0) {
-            symbols.push({name: varDecl.name.getText()});
+            symbols.push({name: stripSuffix(varDecl.name.getText())});
           }
           if (fnRecurseDepth == 0 && isRollupExportSymbol(varDecl)) {
             ts.forEachChild(child, visitor);
@@ -55,7 +55,7 @@ export class SymbolExtractor {
           break;
         case ts.SyntaxKind.FunctionDeclaration:
           const funcDecl = child as ts.FunctionDeclaration;
-          funcDecl.name && symbols.push({name: funcDecl.name.getText()});
+          funcDecl.name && symbols.push({name: stripSuffix(funcDecl.name.getText())});
           break;
         default:
           // Left for easier debugging.
@@ -107,6 +107,11 @@ export class SymbolExtractor {
 
     return passed;
   }
+}
+
+function stripSuffix(text: string): string {
+  const index = text.lastIndexOf('$');
+  return index > -1 ? text.substring(0, index) : text;
 }
 
 function toSymbol(v: string | Symbol): Symbol {

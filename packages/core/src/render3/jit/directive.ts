@@ -15,7 +15,7 @@ import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from
 import {ViewEncapsulation} from '../../metadata/view';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
-import {stringify} from '../util';
+import {renderStringify} from '../util';
 
 import {R3DirectiveMetadataFacade, getCompilerFacade} from './compiler_facade';
 import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from './compiler_facade_interface';
@@ -43,9 +43,9 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
       const compiler = getCompilerFacade();
       if (ngComponentDef === null) {
         if (componentNeedsResolution(metadata)) {
-          const error = [`Component '${stringify(type)}' is not resolved:`];
+          const error = [`Component '${renderStringify(type)}' is not resolved:`];
           if (metadata.templateUrl) {
-            error.push(` - templateUrl: ${stringify(metadata.templateUrl)}`);
+            error.push(` - templateUrl: ${renderStringify(metadata.templateUrl)}`);
           }
           if (metadata.styleUrls && metadata.styleUrls.length) {
             error.push(` - styleUrls: ${JSON.stringify(metadata.styleUrls)}`);
@@ -69,7 +69,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           viewProviders: metadata.viewProviders || null,
         };
         ngComponentDef = compiler.compileComponent(
-            angularCoreEnv, `ng://${stringify(type)}/template.html`, meta);
+            angularCoreEnv, `ng://${renderStringify(type)}/template.html`, meta);
 
         // When NgModule decorator executed, we enqueued the module definition such that
         // it would only dequeue and add itself as module scope to all of its declarations,
@@ -176,7 +176,7 @@ function extractQueriesMetadata(
           if (!ann.selector) {
             throw new Error(
                 `Can't construct a query for the property "${field}" of ` +
-                `"${stringify(type)}" since the query selector wasn't defined.`);
+                `"${renderStringify(type)}" since the query selector wasn't defined.`);
           }
           queriesMeta.push(convertToR3QueryMetadata(field, ann));
         }

@@ -8,7 +8,7 @@
 
 import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
-import {stringify} from '../render3/util';
+import {renderStringify} from '../render3/util';
 
 import {BypassType, allowSanitizationBypass} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
@@ -39,7 +39,7 @@ export function sanitizeHtml(unsafeHtml: any): string {
   if (allowSanitizationBypass(unsafeHtml, BypassType.Html)) {
     return unsafeHtml.toString();
   }
-  return _sanitizeHtml(document, stringify(unsafeHtml));
+  return _sanitizeHtml(document, renderStringify(unsafeHtml));
 }
 
 /**
@@ -63,7 +63,7 @@ export function sanitizeStyle(unsafeStyle: any): string {
   if (allowSanitizationBypass(unsafeStyle, BypassType.Style)) {
     return unsafeStyle.toString();
   }
-  return _sanitizeStyle(stringify(unsafeStyle));
+  return _sanitizeStyle(renderStringify(unsafeStyle));
 }
 
 /**
@@ -88,7 +88,7 @@ export function sanitizeUrl(unsafeUrl: any): string {
   if (allowSanitizationBypass(unsafeUrl, BypassType.Url)) {
     return unsafeUrl.toString();
   }
-  return _sanitizeUrl(stringify(unsafeUrl));
+  return _sanitizeUrl(renderStringify(unsafeUrl));
 }
 
 /**

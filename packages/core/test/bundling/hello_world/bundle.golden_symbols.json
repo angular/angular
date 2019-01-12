@@ -402,6 +402,9 @@
     "name": "renderEmbeddedTemplate"
   },
   {
+    "name": "renderStringify"
+  },
+  {
     "name": "resetComponentState"
   },
   {
@@ -433,9 +436,6 @@
   },
   {
     "name": "setUpAttributes"
-  },
-  {
-    "name": "stringify$1"
   },
   {
     "name": "syncViewWithBlueprint"
