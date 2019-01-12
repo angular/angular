@@ -22,7 +22,7 @@ import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, LView, RENDERER, TVIEW, TView} 
 import {appendChild, createTextNode, removeChild} from './node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
-import {addAllToArray, getNativeByIndex, getNativeByTNode, getTNode, isLContainer, stringify} from './util';
+import {addAllToArray, getNativeByIndex, getNativeByTNode, getTNode, isLContainer, renderStringify} from './util';
 
 const MARKER = `�`;
 const ICU_BLOCK_REGEX = /^\s*(�\d+:?\d*�)\s*,\s*(select|plural)\s*,/;
@@ -712,7 +712,7 @@ function readUpdateOpCodes(
         } else if (typeof opCode == 'number') {
           if (opCode < 0) {
             // It's a binding index whose value is negative
-            value += stringify(viewData[bindingsStartIndex - opCode]);
+            value += renderStringify(viewData[bindingsStartIndex - opCode]);
           } else {
             const nodeIndex = opCode >>> I18nUpdateOpCode.SHIFT_REF;
             switch (opCode & I18nUpdateOpCode.MASK_OPCODE) {

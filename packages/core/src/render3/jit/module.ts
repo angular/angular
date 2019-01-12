@@ -17,7 +17,7 @@ import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../d
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {NgModuleType} from '../ng_module_ref';
-import {stringify} from '../util';
+import {renderStringify} from '../util';
 
 import {R3InjectorMetadataFacade, getCompilerFacade} from './compiler_facade';
 import {angularCoreEnv} from './environment';
@@ -183,7 +183,7 @@ function verifySemanticsOfNgModuleDef(moduleType: NgModuleType): void {
     const def = getComponentDef(type) || getDirectiveDef(type) || getPipeDef(type);
     if (!def) {
       errors.push(
-          `Unexpected value '${stringify(type)}' declared by the module '${stringify(moduleType)}'. Please add a @Pipe/@Directive/@Component annotation.`);
+          `Unexpected value '${renderStringify(type)}' declared by the module '${renderStringify(moduleType)}'. Please add a @Pipe/@Directive/@Component annotation.`);
     }
   }
 
@@ -197,7 +197,7 @@ function verifySemanticsOfNgModuleDef(moduleType: NgModuleType): void {
       if (combinedDeclarations.lastIndexOf(type) === -1) {
         // We are exporting something which we don't explicitly declare or import.
         errors.push(
-            `Can't export ${kind} ${stringify(type)} from ${stringify(moduleType)} as it was neither declared nor imported!`);
+            `Can't export ${kind} ${renderStringify(type)} from ${renderStringify(moduleType)} as it was neither declared nor imported!`);
       }
     }
   }
@@ -206,11 +206,11 @@ function verifySemanticsOfNgModuleDef(moduleType: NgModuleType): void {
     type = resolveForwardRef(type);
     const existingModule = ownerNgModule.get(type);
     if (existingModule && existingModule !== moduleType) {
-      const modules = [existingModule, moduleType].map(stringify).sort();
+      const modules = [existingModule, moduleType].map(renderStringify).sort();
       errors.push(
-          `Type ${stringify(type)} is part of the declarations of 2 modules: ${modules[0]} and ${modules[1]}! ` +
-          `Please consider moving ${stringify(type)} to a higher module that imports ${modules[0]} and ${modules[1]}. ` +
-          `You can also create a new NgModule that exports and includes ${stringify(type)} then import that NgModule in ${modules[0]} and ${modules[1]}.`);
+          `Type ${renderStringify(type)} is part of the declarations of 2 modules: ${modules[0]} and ${modules[1]}! ` +
+          `Please consider moving ${renderStringify(type)} to a higher module that imports ${modules[0]} and ${modules[1]}. ` +
+          `You can also create a new NgModule that exports and includes ${renderStringify(type)} then import that NgModule in ${modules[0]} and ${modules[1]}.`);
     } else {
       // Mark type as having owner.
       ownerNgModule.set(type, moduleType);
@@ -222,7 +222,7 @@ function verifySemanticsOfNgModuleDef(moduleType: NgModuleType): void {
     const existingModule = ownerNgModule.get(type);
     if (!existingModule) {
       errors.push(
-          `Component ${stringify(type)} is not part of any NgModule or the module has not been imported into your module.`);
+          `Component ${renderStringify(type)} is not part of any NgModule or the module has not been imported into your module.`);
     }
   }
 

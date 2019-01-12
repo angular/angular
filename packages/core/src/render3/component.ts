@@ -25,7 +25,7 @@ import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
-import {defaultScheduler, getRootView, readPatchedLView, stringify} from './util';
+import {defaultScheduler, getRootView, readPatchedLView, renderStringify} from './util';
 
 
 
@@ -84,7 +84,7 @@ type HostFeature = (<T>(component: T, componentDef: ComponentDef<T>) => void);
 // TODO: A hack to not pull in the NullInjector from @angular/core.
 export const NULL_INJECTOR: Injector = {
   get: (token: any, notFoundValue?: any) => {
-    throw new Error('NullInjector: Not found: ' + stringify(token));
+    throw new Error('NullInjector: Not found: ' + renderStringify(token));
   }
 };
 

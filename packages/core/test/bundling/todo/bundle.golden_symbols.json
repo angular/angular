@@ -795,10 +795,10 @@
     "name": "getTViewCleanup"
   },
   {
-    "name": "getTypeNameForDebugging"
+    "name": "getTypeName"
   },
   {
-    "name": "getTypeNameForDebugging$1"
+    "name": "getTypeNameForDebugging"
   },
   {
     "name": "getValue"
@@ -906,13 +906,13 @@
     "name": "isFactory"
   },
   {
-    "name": "isJsObject$1"
+    "name": "isJsObject"
   },
   {
     "name": "isLContainer"
   },
   {
-    "name": "isListLikeIterable$1"
+    "name": "isListLikeIterable"
   },
   {
     "name": "isNodeMatchingSelector"
@@ -936,7 +936,7 @@
     "name": "isStylingContext"
   },
   {
-    "name": "iterateListLike$1"
+    "name": "iterateListLike"
   },
   {
     "name": "leaveView"
@@ -1077,6 +1077,9 @@
     "name": "renderInitialStylingValues"
   },
   {
+    "name": "renderStringify"
+  },
+  {
     "name": "renderStyling"
   },
   {
@@ -1186,9 +1189,6 @@
   },
   {
     "name": "stringify"
-  },
-  {
-    "name": "stringify$1"
   },
   {
     "name": "syncViewWithBlueprint"
