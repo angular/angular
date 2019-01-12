@@ -129,23 +129,25 @@ const verify = (input: string, output: string, extra: any = {}): void => {
       ({i18nUseExternalIds, ...(extra.compilerOptions || {})});
 
   // invoke with file-based prefix translation names
-  let result = compile(files, angularFiles, opts(false));
-  maybePrint(result.source, extra.verbose);
-  expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
-  expectEmit(result.source, output, 'Incorrect template');
-
-  if (extra.skipIdBasedCheck) return;
+  if (!extra.skipPathBasedCheck) {
+    const result = compile(files, angularFiles, opts(false));
+    maybePrint(result.source, extra.verbose);
+    expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
+    expectEmit(result.source, output, 'Incorrect template');
+  }
 
   // invoke with translation names based on external ids
-  result = compile(files, angularFiles, opts(true));
-  maybePrint(result.source, extra.verbose);
-  const interpolationConfig = extra.inputArgs && extra.inputArgs.interpolation ?
-      InterpolationConfig.fromArray(extra.inputArgs.interpolation) :
-      undefined;
-  expect(verifyTranslationIds(input, result.source, extra.exceptions, interpolationConfig))
-      .toBe(true);
-  expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
-  expectEmit(result.source, output, 'Incorrect template');
+  if (!extra.skipIdBasedCheck) {
+    const result = compile(files, angularFiles, opts(true));
+    maybePrint(result.source, extra.verbose);
+    const interpolationConfig = extra.inputArgs && extra.inputArgs.interpolation ?
+        InterpolationConfig.fromArray(extra.inputArgs.interpolation) :
+        undefined;
+    expect(verifyTranslationIds(input, result.source, extra.exceptions, interpolationConfig))
+        .toBe(true);
+    expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
+    expectEmit(result.source, output, 'Incorrect template');
+  }
 };
 
 describe('i18n support in the view compiler', () => {
@@ -588,6 +590,27 @@ describe('i18n support in the view compiler', () => {
       `;
 
       verify(input, output);
+    });
+
+    it('should sanitize ids and generate proper const names', () => {
+      const input = `
+        <div i18n="@@ID.WITH.INVALID.CHARS.2" i18n-title="@@ID.WITH.INVALID.CHARS" title="Element title">
+          Some content
+        </div>
+      `;
+
+      const output = String.raw `
+        const MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_0 = goog.getMsg("Element title");
+        const $_c1$ = ["title", MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_0];
+        const MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_2 = goog.getMsg(" Some content ");
+        …
+      `;
+
+      const exceptions = {
+        'ID.WITH.INVALID.CHARS': 'Verify const name generation only',
+        'ID.WITH.INVALID.CHARS.2': 'Verify const name generation only'
+      };
+      verify(input, output, {exceptions, skipPathBasedCheck: true});
     });
   });
 
