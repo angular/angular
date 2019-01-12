@@ -31,7 +31,10 @@ export function isDifferent(a: any, b: any): boolean {
   return !(a !== a && b !== b) && a !== b;
 }
 
-export function stringify(value: any): string {
+/**
+ * Used for stringify render output in Ivy.
+ */
+export function renderStringify(value: any): string {
   if (typeof value == 'function') return value.name || value;
   if (typeof value == 'string') return value;
   if (value == null) return '';

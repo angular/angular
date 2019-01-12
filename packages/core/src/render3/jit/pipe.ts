@@ -9,7 +9,7 @@
 import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';
 import {NG_PIPE_DEF} from '../fields';
-import {stringify} from '../util';
+import {renderStringify} from '../util';
 
 import {getCompilerFacade} from './compiler_facade';
 import {angularCoreEnv} from './environment';
@@ -21,7 +21,7 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
     get: () => {
       if (ngPipeDef === null) {
         ngPipeDef = getCompilerFacade().compilePipe(
-            angularCoreEnv, `ng://${stringify(type)}/ngPipeDef.js`, {
+            angularCoreEnv, `ng://${renderStringify(type)}/ngPipeDef.js`, {
               type: type,
               name: type.name,
               deps: reflectDependencies(type),

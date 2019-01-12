@@ -40,7 +40,7 @@ import {getInitialClassNameValue, initializeStaticContext as initializeStaticSty
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
-import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
+import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, renderStringify} from './util';
 
 
 
@@ -788,7 +788,7 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
 }
 
 export function createError(text: string, token: any) {
-  return new Error(`Renderer: ${text} [${stringify(token)}]`);
+  return new Error(`Renderer: ${text} [${renderStringify(token)}]`);
 }
 
 
@@ -984,7 +984,7 @@ export function elementAttribute(
       ngDevMode && ngDevMode.rendererSetAttribute++;
       const tNode = getTNode(index, lView);
       const strValue =
-          sanitizer == null ? stringify(value) : sanitizer(value, tNode.tagName || '', name);
+          sanitizer == null ? renderStringify(value) : sanitizer(value, tNode.tagName || '', name);
       isProceduralRenderer(renderer) ? renderer.setAttribute(element, name, strValue) :
                                        element.setAttribute(name, strValue);
     }
@@ -1329,7 +1329,7 @@ export function elementStyleProp(
     if (suffix) {
       // when a suffix is applied then it will bypass
       // sanitization entirely (b/c a new string is created)
-      valueToAdd = stringify(value) + suffix;
+      valueToAdd = renderStringify(value) + suffix;
     } else {
       // sanitization happens by dealing with a String value
       // this means that the string value will be passed through
@@ -1458,8 +1458,8 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
     ngDevMode && assertDefined(element, 'native element should exist');
     ngDevMode && ngDevMode.rendererSetText++;
     const renderer = lView[RENDERER];
-    isProceduralRenderer(renderer) ? renderer.setValue(element, stringify(value)) :
-                                     element.textContent = stringify(value);
+    isProceduralRenderer(renderer) ? renderer.setValue(element, renderStringify(value)) :
+                                     element.textContent = renderStringify(value);
   }
 }
 
@@ -2718,7 +2718,7 @@ export function interpolationV(values: any[]): string|NO_CHANGE {
   // Build the updated content
   let content = values[0];
   for (let i = 1; i < values.length; i += 2) {
-    content += stringify(values[i]) + values[i + 1];
+    content += renderStringify(values[i]) + values[i + 1];
   }
 
   return content;
@@ -2735,7 +2735,7 @@ export function interpolation1(prefix: string, v0: any, suffix: string): string|
   const lView = getLView();
   const different = bindingUpdated(lView, lView[BINDING_INDEX], v0);
   lView[BINDING_INDEX] += 1;
-  return different ? prefix + stringify(v0) + suffix : NO_CHANGE;
+  return different ? prefix + renderStringify(v0) + suffix : NO_CHANGE;
 }
 
 /** Creates an interpolation binding with 2 expressions. */
@@ -2745,7 +2745,7 @@ export function interpolation2(
   const different = bindingUpdated2(lView, lView[BINDING_INDEX], v0, v1);
   lView[BINDING_INDEX] += 2;
 
-  return different ? prefix + stringify(v0) + i0 + stringify(v1) + suffix : NO_CHANGE;
+  return different ? prefix + renderStringify(v0) + i0 + renderStringify(v1) + suffix : NO_CHANGE;
 }
 
 /** Creates an interpolation binding with 3 expressions. */
@@ -2756,8 +2756,9 @@ export function interpolation3(
   const different = bindingUpdated3(lView, lView[BINDING_INDEX], v0, v1, v2);
   lView[BINDING_INDEX] += 3;
 
-  return different ? prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + suffix :
-                     NO_CHANGE;
+  return different ?
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + suffix :
+      NO_CHANGE;
 }
 
 /** Create an interpolation binding with 4 expressions. */
@@ -2769,8 +2770,8 @@ export function interpolation4(
   lView[BINDING_INDEX] += 4;
 
   return different ?
-      prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) +
-          suffix :
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
+          renderStringify(v3) + suffix :
       NO_CHANGE;
 }
 
@@ -2785,8 +2786,8 @@ export function interpolation5(
   lView[BINDING_INDEX] += 5;
 
   return different ?
-      prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
-          stringify(v4) + suffix :
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
+          renderStringify(v3) + i3 + renderStringify(v4) + suffix :
       NO_CHANGE;
 }
 
@@ -2801,8 +2802,8 @@ export function interpolation6(
   lView[BINDING_INDEX] += 6;
 
   return different ?
-      prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
-          stringify(v4) + i4 + stringify(v5) + suffix :
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
+          renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + suffix :
       NO_CHANGE;
 }
 
@@ -2818,8 +2819,9 @@ export function interpolation7(
   lView[BINDING_INDEX] += 7;
 
   return different ?
-      prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
-          stringify(v4) + i4 + stringify(v5) + i5 + stringify(v6) + suffix :
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
+          renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + i5 +
+          renderStringify(v6) + suffix :
       NO_CHANGE;
 }
 
@@ -2835,8 +2837,9 @@ export function interpolation8(
   lView[BINDING_INDEX] += 8;
 
   return different ?
-      prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
-          stringify(v4) + i4 + stringify(v5) + i5 + stringify(v6) + i6 + stringify(v7) + suffix :
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
+          renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + i5 +
+          renderStringify(v6) + i6 + renderStringify(v7) + suffix :
       NO_CHANGE;
 }
 

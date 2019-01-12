@@ -22,7 +22,7 @@ import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LView, TData, TVIEW, TView} from 
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {unwrapOnChangesDirectiveWrapper} from './onchanges_util';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
-import {findComponentView, getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, isComponentDef, stringify} from './util';
+import {findComponentView, getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, isComponentDef, renderStringify} from './util';
 
 
 
@@ -312,7 +312,7 @@ export function getOrCreateInjectable<T>(
       try {
         const value = bloomHash();
         if (value == null && !(flags & InjectFlags.Optional)) {
-          throw new Error(`No provider for ${stringify(token)}!`);
+          throw new Error(`No provider for ${renderStringify(token)}!`);
         } else {
           return value;
         }
@@ -402,7 +402,7 @@ export function getOrCreateInjectable<T>(
   if (flags & InjectFlags.Optional) {
     return notFoundValue;
   } else {
-    throw new Error(`NodeInjector: NOT_FOUND [${stringify(token)}]`);
+    throw new Error(`NodeInjector: NOT_FOUND [${renderStringify(token)}]`);
   }
 }
 
@@ -500,7 +500,7 @@ export function getNodeInjectable(
   if (isFactory(value)) {
     const factory: NodeInjectorFactory = value;
     if (factory.resolving) {
-      throw new Error(`Circular dep for ${stringify(tData[index])}`);
+      throw new Error(`Circular dep for ${renderStringify(tData[index])}`);
     }
     const previousIncludeViewProviders = setIncludeViewProviders(factory.canSeeViewProviders);
     factory.resolving = true;
