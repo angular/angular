@@ -169,53 +169,50 @@ withEachNg1Version(() => {
     });
 
     describe('scope/component change-detection', () => {
-      fixmeIvy(
-          'FW-918: Create API and mental model to work with Host Element; and ChangeDetections')
-          .it('should interleave scope and component expressions', async(() => {
-                const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
-                const ng1Module = angular.module('ng1', []);
-                const log: string[] = [];
-                const l = (value: string) => {
-                  log.push(value);
-                  return value + ';';
-                };
+      it('should interleave scope and component expressions', async(() => {
+           const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module('ng1', []);
+           const log: string[] = [];
+           const l = (value: string) => {
+             log.push(value);
+             return value + ';';
+           };
 
-                ng1Module.directive('ng1a', () => ({template: '{{ l(\'ng1a\') }}'}));
-                ng1Module.directive('ng1b', () => ({template: '{{ l(\'ng1b\') }}'}));
-                ng1Module.run(($rootScope: any) => {
-                  $rootScope.l = l;
-                  $rootScope.reset = () => log.length = 0;
-                });
+           ng1Module.directive('ng1a', () => ({template: '{{ l(\'ng1a\') }}'}));
+           ng1Module.directive('ng1b', () => ({template: '{{ l(\'ng1b\') }}'}));
+           ng1Module.run(($rootScope: any) => {
+             $rootScope.l = l;
+             $rootScope.reset = () => log.length = 0;
+           });
 
-                @Component({
-                  selector: 'ng2',
-                  template: `{{l('2A')}}<ng1a></ng1a>{{l('2B')}}<ng1b></ng1b>{{l('2C')}}`
-                })
-                class Ng2 {
-                  l: any;
-                  constructor() { this.l = l; }
-                }
+           @Component({
+             selector: 'ng2',
+             template: `{{l('2A')}}<ng1a></ng1a>{{l('2B')}}<ng1b></ng1b>{{l('2C')}}`
+           })
+           class Ng2 {
+             l: any;
+             constructor() { this.l = l; }
+           }
 
-                @NgModule({
-                  declarations: [
-                    adapter.upgradeNg1Component('ng1a'), adapter.upgradeNg1Component('ng1b'), Ng2
-                  ],
-                  imports: [BrowserModule],
-                })
-                class Ng2Module {
-                }
+           @NgModule({
+             declarations:
+                 [adapter.upgradeNg1Component('ng1a'), adapter.upgradeNg1Component('ng1b'), Ng2],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+           }
 
-                ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
 
-                const element =
-                    html('<div>{{reset(); l(\'1A\');}}<ng2>{{l(\'1B\')}}</ng2>{{l(\'1C\')}}</div>');
-                adapter.bootstrap(element, ['ng1']).ready((ref) => {
-                  expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
-                  // https://github.com/angular/angular.js/issues/12983
-                  expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
-                  ref.dispose();
-                });
-              }));
+           const element =
+               html('<div>{{reset(); l(\'1A\');}}<ng2>{{l(\'1B\')}}</ng2>{{l(\'1C\')}}</div>');
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
+             // https://github.com/angular/angular.js/issues/12983
+             expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
+             ref.dispose();
+           });
+         }));
 
 
       it('should propagate changes to a downgraded component inside the ngZone', async(() => {

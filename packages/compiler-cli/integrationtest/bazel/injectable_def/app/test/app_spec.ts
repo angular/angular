@@ -168,21 +168,20 @@ describe('ngInjectableDef Bazel Integration', () => {
     expect(TestBed.get(INJECTOR).get('foo')).toEqual('bar');
   });
 
-  fixmeIvy('FW-854: NodeInjector does not know how to get itself (INJECTOR)')
-      .it('Component injector understands requests for INJECTABLE', () => {
-        @Component({
-          selector: 'test-cmp',
-          template: 'test',
-          providers: [{provide: 'foo', useValue: 'bar'}],
-        })
-        class TestCmp {
-        }
+  it('Component injector understands requests for INJECTABLE', () => {
+    @Component({
+      selector: 'test-cmp',
+      template: 'test',
+      providers: [{provide: 'foo', useValue: 'bar'}],
+    })
+    class TestCmp {
+    }
 
-        TestBed.configureTestingModule({
-          declarations: [TestCmp],
-        });
+    TestBed.configureTestingModule({
+      declarations: [TestCmp],
+    });
 
-        const fixture = TestBed.createComponent(TestCmp);
-        expect(fixture.componentRef.injector.get(INJECTOR).get('foo')).toEqual('bar');
-      });
+    const fixture = TestBed.createComponent(TestCmp);
+    expect(fixture.componentRef.injector.get(INJECTOR).get('foo')).toEqual('bar');
+  });
 });

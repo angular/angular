@@ -21,61 +21,60 @@ withEachNg1Version(() => {
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    fixmeIvy('FW-918: Create API and mental model to work with Host Element; and ChangeDetections')
-        .it('should interleave scope and component expressions', async(() => {
-              const log: string[] = [];
-              const l = (value: string) => {
-                log.push(value);
-                return value + ';';
-              };
+    it('should interleave scope and component expressions', async(() => {
+         const log: string[] = [];
+         const l = (value: string) => {
+           log.push(value);
+           return value + ';';
+         };
 
-              @Directive({selector: 'ng1a'})
-              class Ng1aComponent extends UpgradeComponent {
-                constructor(elementRef: ElementRef, injector: Injector) {
-                  super('ng1a', elementRef, injector);
-                }
-              }
+         @Directive({selector: 'ng1a'})
+         class Ng1aComponent extends UpgradeComponent {
+           constructor(elementRef: ElementRef, injector: Injector) {
+             super('ng1a', elementRef, injector);
+           }
+         }
 
-              @Directive({selector: 'ng1b'})
-              class Ng1bComponent extends UpgradeComponent {
-                constructor(elementRef: ElementRef, injector: Injector) {
-                  super('ng1b', elementRef, injector);
-                }
-              }
+         @Directive({selector: 'ng1b'})
+         class Ng1bComponent extends UpgradeComponent {
+           constructor(elementRef: ElementRef, injector: Injector) {
+             super('ng1b', elementRef, injector);
+           }
+         }
 
-              @Component({
-                selector: 'ng2',
-                template: `{{l('2A')}}<ng1a></ng1a>{{l('2B')}}<ng1b></ng1b>{{l('2C')}}`
-              })
-              class Ng2Component {
-                l = l;
-              }
+         @Component({
+           selector: 'ng2',
+           template: `{{l('2A')}}<ng1a></ng1a>{{l('2B')}}<ng1b></ng1b>{{l('2C')}}`
+         })
+         class Ng2Component {
+           l = l;
+         }
 
-              @NgModule({
-                declarations: [Ng1aComponent, Ng1bComponent, Ng2Component],
-                entryComponents: [Ng2Component],
-                imports: [BrowserModule, UpgradeModule]
-              })
-              class Ng2Module {
-                ngDoBootstrap() {}
-              }
+         @NgModule({
+           declarations: [Ng1aComponent, Ng1bComponent, Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule, UpgradeModule]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
 
-              const ng1Module = angular.module('ng1', [])
-                                    .directive('ng1a', () => ({template: '{{ l(\'ng1a\') }}'}))
-                                    .directive('ng1b', () => ({template: '{{ l(\'ng1b\') }}'}))
-                                    .directive('ng2', downgradeComponent({component: Ng2Component}))
-                                    .run(($rootScope: angular.IRootScopeService) => {
-                                      $rootScope.l = l;
-                                      $rootScope.reset = () => log.length = 0;
-                                    });
+         const ng1Module = angular.module('ng1', [])
+                               .directive('ng1a', () => ({template: '{{ l(\'ng1a\') }}'}))
+                               .directive('ng1b', () => ({template: '{{ l(\'ng1b\') }}'}))
+                               .directive('ng2', downgradeComponent({component: Ng2Component}))
+                               .run(($rootScope: angular.IRootScopeService) => {
+                                 $rootScope.l = l;
+                                 $rootScope.reset = () => log.length = 0;
+                               });
 
-              const element =
-                  html('<div>{{reset(); l(\'1A\');}}<ng2>{{l(\'1B\')}}</ng2>{{l(\'1C\')}}</div>');
-              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
-                expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
-                expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
-              });
-            }));
+         const element =
+             html('<div>{{reset(); l(\'1A\');}}<ng2>{{l(\'1B\')}}</ng2>{{l(\'1C\')}}</div>');
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
+           expect(document.body.textContent).toEqual('1A;2A;ng1a;2B;ng1b;2C;1C;');
+           expect(log).toEqual(['1A', '1C', '2A', '2B', '2C', 'ng1a', 'ng1b']);
+         });
+       }));
 
     it('should propagate changes to a downgraded component inside the ngZone', async(() => {
          const element = html('<my-app></my-app>');
