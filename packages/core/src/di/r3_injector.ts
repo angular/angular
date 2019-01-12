@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
-import {OnDestroy} from '../metadata/lifecycle_hooks';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
