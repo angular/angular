@@ -573,7 +573,7 @@ export class TestBedRender3 implements Injector, TestBed {
   /**
    * @internal
    */
-  _getModuleResolver() { return this._resolvers.module; };
+  _getModuleResolver() { return this._resolvers.module; }
 
   /**
    * @internal
