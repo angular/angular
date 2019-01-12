@@ -1442,7 +1442,6 @@ describe('ngtsc behavioral tests', () => {
       expect(dtsContents).toContain('/// <amd-module name="@mymodule" />');
     });
 
-
     it('should generate a proper flat module index file when nested', () => {
       env.tsconfig({
         'flatModuleOutFile': './public-api/index.js',
@@ -1451,8 +1450,7 @@ describe('ngtsc behavioral tests', () => {
       env.write('test.ts', `export const SOME_EXPORT = 'some-export'`);
       env.driveMain();
 
-      expect(env.getContents('./public-api/index.js'))
-          .toContain(`export * from '../test';`);
+      expect(env.getContents('./public-api/index.js')).toContain(`export * from '../test';`);
     });
 
     it('should report an error when a flat module index is requested but no entrypoint can be determined',
