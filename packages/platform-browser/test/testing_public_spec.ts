@@ -457,28 +457,25 @@ class CompWithUrlTemplate {
             expect(TestBed.get('a')).toBe('mockA: depValue');
           });
 
-          fixmeIvy('FW-855: TestBed.get(Compiler) should return TestBed-specific Compiler instance')
-              .it('should support SkipSelf', () => {
-                @NgModule({
-                  providers: [
-                    {provide: 'a', useValue: 'aValue'},
-                    {provide: 'dep', useValue: 'depValue'},
-                  ]
-                })
-                class MyModule {
-                }
+          it('should support SkipSelf', () => {
+            @NgModule({
+              providers: [
+                {provide: 'a', useValue: 'aValue'},
+                {provide: 'dep', useValue: 'depValue'},
+              ]
+            })
+            class MyModule {
+            }
 
-                TestBed.overrideProvider(
-                    'a',
-                    {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new SkipSelf(), 'dep']]});
-                TestBed.configureTestingModule(
-                    {providers: [{provide: 'dep', useValue: 'parentDepValue'}]});
+            TestBed.overrideProvider(
+                'a', {useFactory: (dep: any) => `mockA: ${dep}`, deps: [[new SkipSelf(), 'dep']]});
+            TestBed.configureTestingModule(
+                {providers: [{provide: 'dep', useValue: 'parentDepValue'}]});
 
-                const compiler = TestBed.get(Compiler) as Compiler;
-                const modFactory = compiler.compileModuleSync(MyModule);
-                expect(modFactory.create(getTestBed()).injector.get('a'))
-                    .toBe('mockA: parentDepValue');
-              });
+            const compiler = TestBed.get(Compiler) as Compiler;
+            const modFactory = compiler.compileModuleSync(MyModule);
+            expect(modFactory.create(getTestBed()).injector.get('a')).toBe('mockA: parentDepValue');
+          });
 
           it('should keep imported NgModules eager', () => {
             let someModule: SomeModule|undefined;
