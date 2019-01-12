@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {R3InjectorMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
 import {resolveForwardRef} from '../../di/forward_ref';
 import {NG_INJECTOR_DEF} from '../../di/interface/defs';
+import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {registerNgModuleType} from '../../linker/ng_module_factory_loader';
 import {Component} from '../../metadata';
@@ -19,9 +21,7 @@ import {ComponentDef} from '../interfaces/definition';
 import {NgModuleType} from '../ng_module_ref';
 import {renderStringify} from '../util';
 
-import {R3InjectorMetadataFacade, getCompilerFacade} from './compiler_facade';
 import {angularCoreEnv} from './environment';
-import {reflectDependencies} from './util';
 
 const EMPTY_ARRAY: Type<any>[] = [];
 

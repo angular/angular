@@ -53,6 +53,11 @@ export interface Attribute {
 
 export declare const Attribute: AttributeDecorator;
 
+export interface AttributeDecorator {
+    (name: string): any;
+    new (name: string): Attribute;
+}
+
 export declare enum ChangeDetectionStrategy {
     OnPush = 0,
     Default = 1

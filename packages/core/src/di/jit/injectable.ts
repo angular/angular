@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '../../di/injectable';
-import {NG_INJECTABLE_DEF} from '../../di/interface/defs';
-import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, ValueProvider, ValueSansProvider} from '../../di/interface/provider';
+import {R3InjectableMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
 import {Type} from '../../interface/type';
 import {getClosureSafeProperty} from '../../util/property';
+import {Injectable} from '../injectable';
+import {NG_INJECTABLE_DEF} from '../interface/defs';
+import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, ValueProvider, ValueSansProvider} from '../interface/provider';
 
-import {R3InjectableMetadataFacade, getCompilerFacade} from './compiler_facade';
-import {angularCoreEnv} from './environment';
+import {angularCoreDiEnv} from './environment';
 import {convertDependencies, reflectDependencies} from './util';
 
 
@@ -71,7 +71,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
           throw new Error(`Unreachable state.`);
         }
         def = getCompilerFacade().compileInjectable(
-            angularCoreEnv, `ng://${type.name}/ngInjectableDef.js`, compilerMeta);
+            angularCoreDiEnv, `ng://${type.name}/ngInjectableDef.js`, compilerMeta);
       }
       return def;
     },

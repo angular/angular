@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {getCompilerFacade} from '../../compiler/compiler_facade';
+import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';
 import {NG_PIPE_DEF} from '../fields';
 import {renderStringify} from '../util';
 
-import {getCompilerFacade} from './compiler_facade';
 import {angularCoreEnv} from './environment';
-import {reflectDependencies} from './util';
 
 export function compilePipe(type: Type<any>, meta: Pipe): void {
   let ngPipeDef: any = null;
