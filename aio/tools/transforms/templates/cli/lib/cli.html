@@ -56,6 +56,7 @@
         <code class="cli-option-syntax no-auto-link">{$ renderOption(option.name, option.type, option.default, option.enum) $}</code>
       </td>
       <td>
+        {% if option.deprecated !== undefined and option.deprecated !== false %}<label class="raised cli-deprecated">deprecated</label> {% if option.deprecated !== true %} {$ option.deprecated | marked $} {% endif %}{% endif %}
         {$ option.description | marked $}
         {% if option.default !== undefined %}<p><span class="cli-default">Default:</span> <code class="no-auto-link">{$ option.default $}</code></p>{% endif %}
         {% if option.aliases.length %}<p><span class="cli-aliases">Aliases:</span> {% for alias in option.aliases %}{$ renderOptionName(alias) $}{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
