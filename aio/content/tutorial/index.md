@@ -8,20 +8,19 @@ The _Tour of Heroes_ tutorial covers the fundamentals of Angular.
 In this tutorial you will build an app that helps a staffing agency manage its stable of heroes.
 -->
 _히어로들의 여행_ 튜토리얼은 Angular의 기본 기능을 다룹니다.
+이 튜토리얼을 진행하면서 히어로들을 관리할 수 있는 앱을 만들어 봅시다.
 
 <!--
 This basic app has many of the features you'd expect to find in a data-driven application.
 It acquires and displays a list of heroes, edits a selected hero's detail, and navigates among different views of heroic data.
 -->
-이 튜토리얼에서는 히어로 인력 회사에서 히어로들을 안정적으로 관리할 때 사용하는 앱을 만들 것입니다.
-
-히어로 관리 앱은 데이터 드리븐 애플리케이션에서 활용할 수 있는 다양한 기능을 제공합니다.
-히어로들의 목록을 가져와 표시하고, 히어로의 정보를 편집하며, 히어로의 데이터를 다양한 방식으로 표시합니다.
+히어로 관리 앱은 데이터 드리븐 애플리케이션에서 활용할 수 있는 다양한 기능을 활용해서 구현합니다.
+이 앱은 히어로들의 목록을 가져와서 표시하고, 히어로의 정보를 편집하며, 히어로의 데이터를 다양한 방식으로 표시합니다.
 
 <!--
 By the end of the tutorial you will be able to do the following:
 -->
-튜토리얼을 마지막까지 진행하면 다음 내용에 대해 알게 될것입니다.
+튜토리얼을 마지막까지 진행하면 다음 내용에 대해 알게 될 것입니다.
 
 <!--
 * Use built-in Angular directives to show and hide elements and display lists of hero data.
@@ -34,26 +33,26 @@ By the end of the tutorial you will be able to do the following:
 * Create a shared service to assemble the heroes.
 * Use routing to navigate among different views and their components.
 -->
-* Angular에서 기본으로 제공하는 디렉티브를 활용해서 전체 히어로 목록을 표시하며, 특정 히어로의 데이터를 표시하거나 표시하지 않을 수 있습니다.
+* Angular가 제공하는 디렉티브를 활용해서 전체 히어로 목록을 표시할 수 있으며, 특정 히어로의 데이터를 표시하거나 표시하지 않을 수 있습니다.
 * 히어로들의 목록과 상세 정보를 표시하는 Angular 컴포넌트를 생성할 수 있습니다.
 * 단방향 데이터 바인딩을 사용해서 읽기전용 데이터를 표시합니다.
 * 양방향 데이터 바인딩을 사용하면 입력 필드와 모델을 동기화할 수 있습니다.
-* 키보드 입력이나 마우스 클릭과 같은 사용자 이벤트를 컴포넌트 메서드와 바인딩할 수 있습니다.
+* 키보드 입력이나 마우스 클릭과 같은 사용자 이벤트를 컴포넌트 메소드와 바인딩할 수 있습니다.
 * 사용자가 목록에서 히어로을 선택하면 상세 화면으로 전환하고, 이 화면에서 해당 히어로의 정보를 편집할 수 있습니다.
 * 파이프를 사용하면 데이터가 화면에 표시되는 형식을 지정할 수 있습니다.
-* 히어로의 정보를 여러 뷰에서 사용하려면 서비스를 사용합니다.
+* 서비스를 사용하면 여러 컴포넌트에서 히어로의 정보를 함께 사용할 수 있습니다.
 * 뷰와 컴포넌트는 라우터로 전환합니다.
 
 <!--
 You'll learn enough Angular to get started and gain confidence that
 Angular can do whatever you need it to do. 
 -->
-위 내용을 구현하면서 Angular가 제공하는 기능을 다양하게 살펴보기 때문에, 튜토리얼을 끝낼 쯤이면 Angular로 새로운 프로젝트를 시작하는 것에 어려움을 느끼지 않을 것입니다.
+이 내용들을 구현하면서 Angular가 제공하는 기능을 다양하게 살펴보기 때문에, 튜토리얼을 끝낼때 쯤이면 Angular로 새로운 프로젝트를 시작하는 것에 어려움을 느끼지 않을 것입니다.
 
 <!--
 After completing all tutorial steps, the final app will look like this <live-example name="toh-pt6"></live-example>.
 -->
-완성된 튜토리얼은 <live-example name="toh-pt6"></live-example> 에서 확인하거나 다운받을 수 있습니다.
+완성된 튜토리얼은 <live-example name="toh-pt6"></live-example> 에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 
 <!--
@@ -123,7 +122,7 @@ The following diagram captures all of the navigation options.
 <!--
 Here's the app in action:
 -->
-실제 앱은 다음과 같이 동작합니다:
+앱을 실제로 실행하면 다음과 같이 동작합니다:
 
 <figure>
   <img src='generated/images/guide/toh/toh-anim.gif' alt="Tour of Heroes in Action">

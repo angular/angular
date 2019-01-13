@@ -178,7 +178,10 @@ Angular supports *two-way data binding*, a mechanism for coordinating the parts 
 Angular에는 템플릿과 컴포넌트를 간편하게 연결하는 **데이터 바인딩** 기능이 있습니다.
 템플릿 HTML에 어떤 항목을 바인딩하겠다고 선언하면, Angular가 해당 항목을 자동으로 처리합니다.
 
+<!--
 The following diagram shows the four forms of data binding markup. Each form has a direction: to the DOM, from the DOM, or both.
+-->
+4가지 종류의 데이터 바인딩이 동작하는 방식은 아래 그림으로 확인할 수 있습니다.
 
 <figure>
 <!--
@@ -286,13 +289,13 @@ You can chain pipes, sending the output of one pipe function to be transformed b
 
 <!--
 ```
-  <!-- Default format: output 'Jun 15, 2015'-->
+  &lt;!-- Default format: output 'Jun 15, 2015'--&gt;
   <p>Today is {{today | date}}</p>
 
- <!-- fullDate format: output 'Monday, June 15, 2015'-->
+ &lt;!-- fullDate format: output 'Monday, June 15, 2015'--&gt;
  <p>The date is {{today | date:'fullDate'}}</p>
 
-  <!-- shortTime format: output '9:43 AM'-->
+  &lt;!-- shortTime format: output '9:43 AM'--&gt;
   <p>The time is {{today | date:'shortTime'}}</p>
 ```
 -->

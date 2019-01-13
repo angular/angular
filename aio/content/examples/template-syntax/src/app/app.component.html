@@ -554,11 +554,11 @@ bindon-ngModel
 </ng-template>
 
 <!-- #docregion NgIf-3 -->
-<!-- isSpecial is true -->
+<!-- isSpecial이 true인 경우 -->
 <div [class.hidden]="!isSpecial">Show with class</div>
 <div [class.hidden]="isSpecial">Hide with class</div>
 
-<!-- HeroDetail is in the DOM but hidden -->
+<!-- HeroDetail 컴포넌트는 DOM에 존재하지만 화면에 표시되지 않습니다. -->
 <app-hero-detail [class.hidden]="isSpecial"></app-hero-detail>
 
 <div [style.display]="isSpecial ? 'block' : 'none'">Show with style</div>

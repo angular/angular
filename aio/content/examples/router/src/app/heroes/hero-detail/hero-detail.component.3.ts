@@ -38,9 +38,8 @@ export class HeroDetailComponent implements OnInit {
   // #docregion gotoHeroes
   gotoHeroes(hero: Hero) {
     let heroId = hero ? hero.id : null;
-    // Pass along the hero id if available
-    // so that the HeroList component can select that hero.
-    // Include a junk 'foo' property for fun.
+    // HeroList 컴포넌트에서 히어로를 선택하기 위해 히어로의 id를 전달합니다.
+    // 'foo' 프로퍼티는 사용하지 않는 프로퍼티입니다.
     this.router.navigate(['/heroes', { id: heroId, foo: 'foo' }]);
   }
   // #enddocregion gotoHeroes

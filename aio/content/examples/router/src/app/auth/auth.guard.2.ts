@@ -21,10 +21,10 @@ export class AuthGuard implements CanActivate {
   checkLogin(url: string): boolean {
     if (this.authService.isLoggedIn) { return true; }
 
-    // Store the attempted URL for redirecting
+    // 로그인한 후 리다이렉트할 수 있도록 URL을 저장합니다.
     this.authService.redirectUrl = url;
 
-    // Navigate to the login page with extras
+    // 로그인하지 않았기 때문에 로그인 페이지로 이동합니다.
     this.router.navigate(['/login']);
     return false;
   }

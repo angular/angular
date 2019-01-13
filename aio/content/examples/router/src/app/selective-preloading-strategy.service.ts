@@ -11,10 +11,10 @@ export class SelectivePreloadingStrategyService implements PreloadingStrategy {
 
   preload(route: Route, load: () => Observable<any>): Observable<any> {
     if (route.data && route.data['preload']) {
-      // add the route path to the preloaded module array
+      // 사전로딩할 모듈의 라우팅 규칙을 배열에 추가합니다.
       this.preloadedModules.push(route.path);
 
-      // log the route path to the console
+      // 라우팅 규칙을 확인하기 위해 콘솔에 출력합니다.
       console.log('Preloaded: ' + route.path);
 
       return load();

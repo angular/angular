@@ -3,7 +3,7 @@
     {
       "url": "features",
       "title!": "Features",
-      "title": "기능"
+      "title": "특징"
     },
     {
       "url": "docs",
@@ -35,7 +35,7 @@
         {
           "url": "features",
           "title!": "Features",
-          "title": "기능"
+          "title": "특징"
         },
         {
           "url": "resources",
@@ -90,38 +90,52 @@
       "children": [
         {
           "url": "tutorial",
-          "title": "Introduction",
-          "tooltip": "Introduction to the Tour of Heroes tutorial"
+          "!title": "Introduction",
+          "title": "소개",
+          "!tooltip": "Introduction to the Tour of Heroes tutorial",
+          "tooltip": "히어로들의 여행 튜토리얼에 대해 소개합니다."
         },
         {
           "url": "tutorial/toh-pt0",
-          "title": "The Application Shell",
-          "tooltip": "Creating the application shell"
+          "!title": "The Application Shell",
+          "title": "애플리케이션 셸",
+          "!tooltip": "Creating the application shell",
+          "tooltip": "애플리케이션 셸을 구성해 봅시다."
         },
         {
           "url": "tutorial/toh-pt1",
-          "title": "1. The Hero Editor",
-          "tooltip": "Part 1: Build a simple hero editor"
+          "!title": "1. The Hero Editor",
+          "title": "1. 히어로 에디터",
+          "!tooltip": "Part 1: Build a simple hero editor",
+          "tooltip": "1단계: 간단한 히어로 에디터를 만들어 봅시다."
         },
         {
           "url": "tutorial/toh-pt2",
-          "title": "2. Displaying a List",
-          "tooltip": "Part 2: Build a master/detail page with a list of heroes."
+          "!title": "2. Displaying a List",
+          "title": "2. 목록 표시하기",
+          "!tooltip": "Part 2: Build a master/detail page with a list of heroes.",
+          "tooltip": "2단계: 히어로의 목록을 표시하는 페이지를 구성해 봅시다."
         },
         {
           "url": "tutorial/toh-pt3",
-          "title": "3. Master/Detail Components",
-          "tooltip": "Part 3: Refactor the master/detail view into separate components."
+          "!title": "3. Master/Detail Components",
+          "title": "3. 컴포넌트 구조",
+          "!tooltip": "Part 3: Refactor the master/detail view into separate components.",
+          "tooltip": "3단계: 목록/상세정보 화면을 개별 컴포넌트로 리팩토링해 봅시다."
         },
         {
           "url": "tutorial/toh-pt4",
-          "title": "4. Services",
-          "tooltip": "Part 4: Create a reusable service to manage hero data."
+          "!title": "4. Services",
+          "title": "4. 서비스",
+          "!tooltip": "Part 4: Create a reusable service to manage hero data.",
+          "tooltip": "4단계: 히어로의 데이터를 관리하는 서비스를 만들어 봅시다."
         },
         {
           "url": "tutorial/toh-pt5",
-          "title": "5. Routing",
-          "tooltip": "Part 5: Add the Angular router and navigate among the views."
+          "!title": "5. Routing",
+          "title": "5. 라우팅",
+          "!tooltip": "Part 5: Add the Angular router and navigate among the views.",
+          "tooltip": "5단계: Angular 라우터를 추가하고 화면을 전환해 봅시다."
         },
         {
           "url": "tutorial/toh-pt6",
@@ -133,9 +147,9 @@
 
     {
       "title!": "Fundamentals",
-      "title": "가이드",
+      "title": "기초 지식",
       "tooltip!": "The fundamentals of Angular",
-      "tooltip": "Angular 가이드",
+      "tooltip": "Angular 기초 지식",
       "children": [
         {
           "title!": "Architecture",
@@ -308,8 +322,10 @@
           ]
        },
        {
-          "title": "Observables & RxJS",
-          "tooltip": "Observables & RxJS",
+          "!title": "Observables & RxJS",
+          "title": "옵저버블 & RxJS",
+          "!tooltip": "Observables & RxJS",
+          "tooltip": "옵저버블 & RxJS",
           "children": [
             {
               "url": "guide/observables",
@@ -546,9 +562,9 @@
 
     {
       "title!": "Techniques",
-      "title": "테크닉",
+      "title": "고급",
       "tooltip!": "Techniques for putting Angular to work in your environment",
-      "tooltip": "Angular에 실제 프로젝트에 활용하는 테크닉",
+      "tooltip": "Angular를 실제 프로젝트에 더 활용할 수 있는 방법에 대해 안내합니다.",
       "children": [
 
         {
@@ -791,13 +807,13 @@
           "title!": "Glossary",
           "title": "찾아보기",
           "tooltip!": "Brief definitions of the most important words in the Angular vocabulary.",
-          "tooltip": "Angular에 자주 나오는 용어를 간단하게 모아뒀습니다."
+          "tooltip": "Angular에 자주 나오는 용어를 빠르게 찾아보세요."
         }
       ]
     },
     {
       "!title": "CLI Commands",
-      "title": "CLI 명령",
+      "title": "Angular CLI",
       "!tooltip": "Angular CLI command reference.",
       "tooltip": "Angular CLI 명령에 대해 안내합니다.",
       "children": [
@@ -893,7 +909,8 @@
       ]
     },
     {
-      "title": "Community",
+      "!title": "Community",
+      "title": "커뮤니티",
       "children": [
         {
           "url": "events",
@@ -929,8 +946,13 @@
       ]
     },
     {
-      "title": "Languages",
+      "!title": "Languages",
+      "title": "다른 언어",
       "children": [
+        {
+          "title": "English",
+          "url": "https://angular.io/"
+        },
         {
           "title": "中文版",
           "url": "https://angular.cn/"

@@ -29,7 +29,7 @@ export class HeroSearchComponent implements OnInit {
   constructor(private heroService: HeroService) {}
   // #docregion searchTerms
 
-  // Push a search term into the observable stream.
+  // 사용자가 입력한 검색어를 옵저버블 스트림으로 보냅니다.
   search(term: string): void {
     this.searchTerms.next(term);
   }
@@ -38,13 +38,13 @@ export class HeroSearchComponent implements OnInit {
   ngOnInit(): void {
     // #docregion search
     this.heroes$ = this.searchTerms.pipe(
-      // wait 300ms after each keystroke before considering the term
+      // 연속된 키입력을 처리하기 위해 300ms 대기합니다.
       debounceTime(300),
 
-      // ignore new term if same as previous term
+      // 이전에 입력한 검색어와 같으면 무시합니다.
       distinctUntilChanged(),
 
-      // switch to new search observable each time the term changes
+      // 검색어가 변경되면 새로운 옵저버블을 생성합니다.
       switchMap((term: string) => this.heroService.searchHeroes(term)),
     );
     // #enddocregion search

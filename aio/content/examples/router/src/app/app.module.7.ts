@@ -31,9 +31,9 @@ import { AuthModule }              from './auth/auth.module';
 })
 // #docregion inspect-config
 export class AppModule {
-  // Diagnostic only: inspect router configuration
+  // 디버그용: 라우터 설정값 확인하기
   constructor(router: Router) {
-    // Use a custom replacer to display function names in the route configs
+    // 라우터 설정 객체의 프로퍼티 중 함수는 이름만 출력하도록 조정합니다.
     const replacer = (key, value) => (typeof value === 'function') ? value.name : value;
 
     console.log('Routes: ', JSON.stringify(router.config, replacer, 2));

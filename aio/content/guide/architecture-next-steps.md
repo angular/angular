@@ -67,7 +67,10 @@ without deep knowledge of animation techniques or CSS.
 -->
 ## 개발 지원
 
+<!--
 * [Compilation](guide/aot-compiler): Angular provides just-in-time (JIT) compilation for the development environment, and ahead-of-time (AOT) compilation for the production environment.
+-->
+* [컴파일](guide/aot-compiler): Angular 애플리케이션을 개발할 때는 JIT(Just-In-Time) 컴파일러를 사용하며, 애플리케이션을 배포할 때는 AOT(Ahead-Of-Time) 컴파일러를 사용합니다.
 
 <!--
 * [Testing platform](guide/testing): Run unit tests on your application parts as they interact with the Angular framework.
@@ -94,11 +97,20 @@ without deep knowledge of animation techniques or CSS.
 -->
 ## 개발, 빌드, 배포 환경 설정
 
+<!--
 * [CLI Command Reference](cli): The Angular CLI is a command-line tool that you use to create projects, generate application and library code, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
+-->
+* [CLI 명령어](cli): Angular CLI는 다양한 용도로 사용할 수 있는 커맨드라인 툴입니다. 프로젝트를 생성하거나 애플리케이션 코드를 생성할 때, 라이브러리 코드를 생성할 때도 사용하며 테스트, 번들링, 배포에도 사용할 수 있습니다.
 
+<!--
 * [Workspace and File Structure](guide/file-structure): Understand the structure of Angular workspace and project folders. 
+-->
+* [개발 환경과 파일 구성](guide/file-structure): Angular의 개발환경과 프로젝트 폴더에 대해 알아보세요.
 
+<!--
 * [npm Packages](guide/npm-packages): The Angular Framework, Angular CLI, and components used by Angular applications are packaged as [npm](https://docs.npmjs.com/) packages and distributed via the npm registry. The Angular CLI creates a default `package.json` file, which specifies a starter set of packages that work well together and jointly support many common application scenarios.
+-->
+* [npm 패키지](guide/npm-packages): Angular 프레임워크와 Angular CLI, Angular 애플리케이션에서 사용하는 컴포넌트도 모두 [npm](https://docs.npmjs.com/) 패키지를 사용하며, 배포될 때도 npm 패키지 형태로 배포됩니다. Angular CLI로 프로젝트를 생성하면 기본 `package.json` 파일이 생성되며 애플리케이션이 확장되면서 이 파일도 함께 확장될 것입니다.
 
 <!--
 * [TypeScript configuration](guide/typescript-configuration): TypeScript is the primary language for Angular application development.
@@ -110,7 +122,10 @@ without deep knowledge of animation techniques or CSS.
 -->
 * [브라우저 지원](guide/browser-support): 개발하려는 앱이 얼마나 많은 브라우저에서 동작할 수 있는지 확인해 보세요.
 
+<!--
 * [Building and Serving](guide/build): Learn to define different build and proxy server configurations for your project, such as development, staging, and production.
+-->
+* [빌드와 개발서버](guide/build): 개발, 스테이징, 운영 환경에 맞게 개발 서버를 띄우거나 빌드할 수 있습니다.
 
 <!--
 * [Deployment](guide/deployment): Learn techniques for deploying your Angular application to a remote server.

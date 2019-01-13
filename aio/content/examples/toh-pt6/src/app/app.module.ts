@@ -31,9 +31,8 @@ import { MessagesComponent }    from './messages/messages.component';
     // #docregion in-mem-web-api-imports
     HttpClientModule,
 
-    // The HttpClientInMemoryWebApiModule module intercepts HTTP requests
-    // and returns simulated server responses.
-    // Remove it when a real server is ready to receive requests.
+    // HttpClientInMemoryWebApiModule 모듈은 HTTP 요청을 가로채고 서버의 응답을 흉내냅니다.
+    // 실제 서버가 준비되면 이 부분을 제거하면 됩니다.
     HttpClientInMemoryWebApiModule.forRoot(
       InMemoryDataService, { dataEncapsulation: false }
     )

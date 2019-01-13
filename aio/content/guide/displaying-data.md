@@ -214,8 +214,9 @@ In either style, the template data bindings have the same access to the componen
   <!--
   By default, the Angular CLI command [`ng generate component`](cli/generate) generates components with a template file. You can override that with:
   -->
-  Angular CLI의 [`ng generate component`](cli/generate)명령으로 컴포넌트를 생성하면 템플릿 파일을 별개로 만듭니다.
-  이 때 템플릿을 인라인으로 만들려면 <code>-it</code> 옵션을 사용하면 됩니다.
+
+Angular CLI의 [`ng generate component`](cli/generate)명령으로 컴포넌트를 생성하면 템플릿 파일을 별개로 만듭니다.
+이 때 템플릿을 인라인으로 만들려면 <code>-it</code> 옵션을 사용하면 됩니다.
 
   <code-example hideCopy language="sh" class="code-shell">
     ng generate component hero -it

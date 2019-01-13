@@ -28,9 +28,9 @@ const appRoutes: Routes = [
   imports: [
     RouterModule.forRoot(
       appRoutes,
-      { enableTracing: true } // <-- debugging purposes only
+      { enableTracing: true } // <-- 디버그 활성화
     )
-    // other imports here
+    // 다른 모듈 로드
   ],
 // #enddocregion
 /*

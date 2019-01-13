@@ -858,7 +858,10 @@ Add the template HTML below after the `<div>` closing the `formGroupName` elemen
 
 </code-example>
 
+<!--
 The `*ngFor` directive iterates over each form control instance provided by the aliases form array instance. Because form array elements are unnamed, you assign the index to the `i` variable and pass it to each control to bind it to the `formControlName` input. 
+-->
+`*ngFor` 디렉티브는 폼 배열 인스턴스의 각 폼 컨트롤 인스턴스를 순회합니다. 폼 배열 안에 있는 항목은 이름이 없기 때문에 인덱스를 변수 `i`에 활용해서 `formControlName`으로 바인딩했습니다.
 
 <figure>
   <img src="generated/images/guide/reactive-forms/profile-editor-4.png" alt="Profile Editor Aliases">

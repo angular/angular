@@ -1,4 +1,4 @@
-/* DashboardComponent's private CSS styles */
+/* DashboardComponent에 적용되는 CSS styles */
 [class*='col-'] {
   float: left;
   padding-right: 20px;

@@ -21,7 +21,7 @@ export class HeroContactComponent {
       @Host() // HeroCacheService 인스턴스 탐색 범위를 호스트 컴포넌트까지로 제한합니다.
       private heroCache: HeroCacheService,
 
-      @Host()     // LoggerService를 찾습니다. 이 데코레이터를 사용하면 애플리케이션 전역 인스턴스가 가려집니다.
+      @Host()     // LoggerService를 찾을 범위를 제한합니다. 애플리케이션 전역 인스턴스는 가려집니다.
       @Optional() // 서비스 인스턴스가 존재하지 않는 것도 허용합니다.
       private loggerService: LoggerService
   // #enddocregion ctor-params

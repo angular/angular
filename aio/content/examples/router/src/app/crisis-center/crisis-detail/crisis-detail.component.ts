@@ -45,12 +45,12 @@ export class CrisisDetailComponent implements OnInit {
 
   // #docregion canDeactivate
   canDeactivate(): Observable<boolean> | boolean {
-    // Allow synchronous navigation (`true`) if no crisis or the crisis is unchanged
+    // 위기 목록이 없거나 변경되지 않았으면 `true`를 바로 반환합니다.
     if (!this.crisis || this.crisis.name === this.editName) {
       return true;
     }
-    // Otherwise ask the user with the dialog service and return its
-    // observable which resolves to true or false when the user decides
+    // 내용이 변경된 경우에는 사용자에게 물어보는 팝업을 띄웁니다.
+    // 그리고 사용자가 응답한 값을 Observable 타입으로 반환합니다.
     return this.dialogService.confirm('Discard changes?');
   }
   // #enddocregion canDeactivate
@@ -61,7 +61,7 @@ export class CrisisDetailComponent implements OnInit {
     // so that the CrisisListComponent can select that crisis.
     // Add a totally useless `foo` parameter for kicks.
   // #docregion gotoCrises-navigate
-    // Relative navigation back to the crises
+    // 상대주소를 사용해서 목록 화면으로 돌아갑니다.
     this.router.navigate(['../', { id: crisisId, foo: 'foo' }], { relativeTo: this.route });
   // #enddocregion gotoCrises-navigate
   }

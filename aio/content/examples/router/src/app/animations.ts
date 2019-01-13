@@ -5,7 +5,7 @@ import {
 } from '@angular/animations';
 
 
-// Routable animations
+// 라우팅할 때 사용하는 애니메이션
 export const slideInAnimation =
   trigger('routeAnimation', [
     transition('heroes <=> hero', [

@@ -19,7 +19,7 @@ import { MessagesComponent } from './messages/messages.component';
   ],
   // #docregion providers
   providers: [
-    // no need to place any providers due to the `providedIn` flag...
+    // `providedIn`을 사용했기 때문에 프로바이더는 등록하지 않습니다.
   ],
   // #enddocregion providers
   bootstrap: [ AppComponent ]

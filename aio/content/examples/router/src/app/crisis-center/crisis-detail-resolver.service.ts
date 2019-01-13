@@ -26,7 +26,7 @@ export class CrisisDetailResolverService implements Resolve<Crisis> {
       mergeMap(crisis => {
         if (crisis) {
           return of(crisis);
-        } else { // id not found
+        } else { // id에 해당하는 데이터를 찾지 못한 경우
           this.router.navigate(['/crisis-center']);
           return EMPTY;
         }

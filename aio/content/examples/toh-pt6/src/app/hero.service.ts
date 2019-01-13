@@ -23,7 +23,7 @@ const httpOptions = {
 export class HeroService {
 
   // #docregion heroesUrl
-  private heroesUrl = 'api/heroes';  // URL to web api
+  private heroesUrl = 'api/heroes';  // 웹 API 형식의 URL로 사용
   // #enddocregion heroesUrl
 
   // #docregion ctor
@@ -33,7 +33,7 @@ export class HeroService {
   // #enddocregion ctor
 
   // #docregion getHeroes, getHeroes-1
-  /** GET heroes from the server */
+  /** GET: 서버에서 히어로 목록 가져오기 */
   // #docregion getHeroes-2
   getHeroes (): Observable<Hero[]> {
     return this.http.get<Hero[]>(this.heroesUrl)
@@ -49,12 +49,12 @@ export class HeroService {
   // #enddocregion getHeroes, getHeroes-1, getHeroes-2
 
   // #docregion getHeroNo404
-  /** GET hero by id. Return `undefined` when id not found */
+  /** GET: id에 해당하는 히어로 데이터를 가져옵니다. 존재하지 않으면 `undefined`를 반환합니다. */
   getHeroNo404<Data>(id: number): Observable<Hero> {
     const url = `${this.heroesUrl}/?id=${id}`;
     return this.http.get<Hero[]>(url)
       .pipe(
-        map(heroes => heroes[0]), // returns a {0|1} element array
+        map(heroes => heroes[0]), // 배열에 있는 항목 중 하나만 반환합니다.
         // #enddocregion getHeroNo404
         tap(h => {
           const outcome = h ? `fetched` : `did not find`;
@@ -67,7 +67,7 @@ export class HeroService {
   // #enddocregion getHeroNo404
 
   // #docregion getHero
-  /** GET hero by id. Will 404 if id not found */
+  /** GET: id에 해당하는 히어로 데이터 가져오기. 존재하지 않으면 404를 반환합니다. */
   getHero(id: number): Observable<Hero> {
     const url = `${this.heroesUrl}/${id}`;
     return this.http.get<Hero>(url).pipe(
@@ -78,10 +78,10 @@ export class HeroService {
   // #enddocregion getHero
 
   // #docregion searchHeroes
-  /* GET heroes whose name contains search term */
+  /* GET: 입력된 문구가 이름에 포함된 히어로 목록을 반환합니다. */
   searchHeroes(term: string): Observable<Hero[]> {
     if (!term.trim()) {
-      // if not search term, return empty hero array.
+      // 입력된 내용이 없으면 빈 배열을 반환합니다.
       return of([]);
     }
     return this.http.get<Hero[]>(`${this.heroesUrl}/?name=${term}`).pipe(
@@ -91,10 +91,10 @@ export class HeroService {
   }
   // #enddocregion searchHeroes
 
-  //////// Save methods //////////
+  //////// 저장 기능 //////////
 
   // #docregion addHero
-  /** POST: add a new hero to the server */
+  /** POST: 서버에 새로운 히어로를 추가합니다. */
   addHero (hero: Hero): Observable<Hero> {
     return this.http.post<Hero>(this.heroesUrl, hero, httpOptions).pipe(
       tap((hero: Hero) => this.log(`added hero w/ id=${hero.id}`)),
@@ -104,7 +104,7 @@ export class HeroService {
   // #enddocregion addHero
 
   // #docregion deleteHero
-  /** DELETE: delete the hero from the server */
+  /** DELETE: 서버에서 히어로를 제거합니다. */
   deleteHero (hero: Hero | number): Observable<Hero> {
     const id = typeof hero === 'number' ? hero : hero.id;
     const url = `${this.heroesUrl}/${id}`;
@@ -117,7 +117,7 @@ export class HeroService {
   // #enddocregion deleteHero
 
   // #docregion updateHero
-  /** PUT: update the hero on the server */
+  /** PUT: 서버에 저장된 히어로 데이터를 변경합니다. */
   updateHero (hero: Hero): Observable<any> {
     return this.http.put(this.heroesUrl, hero, httpOptions).pipe(
       tap(_ => this.log(`updated hero id=${hero.id}`)),
@@ -128,28 +128,28 @@ export class HeroService {
 
   // #docregion handleError
   /**
-   * Handle Http operation that failed.
-   * Let the app continue.
-   * @param operation - name of the operation that failed
-   * @param result - optional value to return as the observable result
+   * HTTP 요청이 실패한 경우를 처리합니다.
+   * 애플리케이션 로직 흐름은 그대로 유지됩니다.
+   * @param operation - 실패한 동작의 이름
+   * @param result - 기본값으로 반환할 객체
    */
   private handleError<T> (operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      // TODO: send the error to remote logging infrastructure
-      console.error(error); // log to console instead
+      // TODO: 리모트 서버로 에러 메시지 보내기
+      console.error(error); // 지금은 콘솔에 로그를 출력합니다.
 
-      // TODO: better job of transforming error for user consumption
+      // TODO: 사용자가 이해할 수 있는 형태로 변환하기
       this.log(`${operation} failed: ${error.message}`);
 
-      // Let the app keep running by returning an empty result.
+      // 애플리케이션 로직이 끊기지 않도록 기본값으로 받은 객체를 반환합니다.
       return of(result as T);
     };
   }
   // #enddocregion handleError
 
   // #docregion log
-  /** Log a HeroService message with the MessageService */
+  /** HeroService에서 보내는 메시지는 MessageService가 화면에 표시합니다. */
   private log(message: string) {
     this.messageService.add(`HeroService: ${message}`);
   }

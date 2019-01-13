@@ -1,4 +1,4 @@
-/* HeroListComponent's private CSS styles */
+/* HeroListComponent에만 적용되는 CSS 스타일 */
 .heroes {
   margin: 0 0 2em 0;
   list-style-type: none;

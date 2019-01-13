@@ -25,11 +25,11 @@ export class LoginComponent {
     this.authService.login().subscribe(() => {
       this.setMessage();
       if (this.authService.isLoggedIn) {
-        // Get the redirect URL from our auth service
-        // If no redirect has been set, use the default
+        // AuthService에서 리다이렉트할 URL을 가져옵니다.
+        // 저장된 주소가 없으면 기본 페이지로 이동합니다.
         let redirect = this.authService.redirectUrl ? this.authService.redirectUrl : '/crisis-center/admin';
 
-        // Redirect the user
+        // 최종 주소로 이동합니다.
         this.router.navigate([redirect]);
       }
     });

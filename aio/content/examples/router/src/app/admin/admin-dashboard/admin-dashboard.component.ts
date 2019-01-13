@@ -24,12 +24,12 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Capture the session ID if available
+    // 세션 ID가 있으면 가져옵니다.
     this.sessionId = this.route
       .queryParamMap
       .pipe(map(params => params.get('session_id') || 'None'));
 
-    // Capture the fragment if available
+    // 프래그먼트가 있으면 가져옵니다.
     this.token = this.route
       .fragment
       .pipe(map(fragment => fragment || 'None'));

@@ -1,7 +1,7 @@
 <!--
 # Entry Components
 -->
-# 진입 컴포넌트
+# 진입 컴포넌트 (Entry Components)
 
 <!--
 #### Prerequisites:
