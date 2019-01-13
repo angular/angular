@@ -373,6 +373,91 @@ export class ApplicationRef {
 
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
+   * Note two important points, demonstrated in the examples below:
+   * - the application will never be stable if you start a `setInterval`
+   * or use RxJS operator `interval` when the application starts
+   * (for example for a polling process);
+   * - the `isStable` Observable runs outside of the Angular zone.
+   *
+   * Let's imagine that you start a recurrent task
+   * (here incrementing a counter, using RxJS `interval`),
+   * and then subscribe to `isStable`.
+   *
+   * ```
+   * constructor(appRef: ApplicationRef) {
+   *   interval(1000).subscribe(counter => console.log(counter));
+   *   appRef.isStable.pipe(
+   *      filter(stable => stable)
+   *   ).subscribe(() => console.log('App is stable now');
+   * }
+   * ```
+   * In this example, `isStable` will never emit `true`,
+   * and the trace "App is stable now" will never get logged.
+   *
+   * If you want to execute something when the app is stable,
+   * you'll have to delay your polling process,
+   * or wait for the application to be stable before starting it.
+   *
+   * ```
+   * constructor(appRef: ApplicationRef) {
+   *   appRef.isStable.pipe(
+   *     filter(stable => stable),
+   *     first(),
+   *     tap(stable => console.log('App is stable now')),
+   *     switchMap(() => interval(1000))
+   *   ).subscribe(counter => console.log(counter));
+   * }
+   * ```
+   * In this example, the trace "App is stable now" will be logged
+   * and then the counter starts incrementing every second.
+   *
+   * Note also that this Observable runs outside of the Angular zone,
+   * which means that the code in the subscription
+   * to this Observable will not trigger the change detection.
+   *
+   * Let's imagine that instead of logging the counter value,
+   * you update a field of your component
+   * and display it in its template.
+   *
+   * ```
+   * constructor(appRef: ApplicationRef) {
+   *   appRef.isStable.pipe(
+   *     filter(stable => stable),
+   *     first(),
+   *     switchMap(() => interval(1000))
+   *   ).subscribe(counter => this.value = counter);
+   * }
+   * ```
+   * As the `isStable` Observable runs outside the zone,
+   * the `value` field will be updated properly,
+   * but the template will not be refreshed!
+   *
+   * You'll have to manually trigger the change detection to update the template.
+   *
+   * ```
+   * constructor(appRef: ApplicationRef, cd: ChangeDetectorRef) {
+   *   appRef.isStable.pipe(
+   *     filter(stable => stable),
+   *     first(),
+   *     switchMap(() => interval(1000))
+   *   ).subscribe(counter => {
+   *     this.value = counter;
+   *     cd.detectChanges();
+   *   });
+   * }
+   * ```
+   *
+   * Or make the subscription callback run inside the zone.
+   *
+   * ```
+   * constructor(appRef: ApplicationRef, zone: NgZone) {
+   *   appRef.isStable.pipe(
+   *     filter(stable => stable),
+   *     first(),
+   *     switchMap(() => interval(1000))
+   *   ).subscribe(counter => zone.run(this.value = counter));
+   * }
+   * ```
    */
   // TODO(issue/24571): remove '!'.
   public readonly isStable !: Observable<boolean>;
