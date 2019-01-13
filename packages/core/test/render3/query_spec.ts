@@ -2613,7 +2613,7 @@ describe('query', () => {
         static ngDirectiveDef = defineDirective({
           type: QueryDirective,
           selectors: [['', 'query', '']],
-          exportAs: 'query',
+          exportAs: ['query'],
           factory: () => new QueryDirective(),
           contentQueries: (dirIndex) => {
             // @ContentChildren('foo', {descendants: true}) fooBars:

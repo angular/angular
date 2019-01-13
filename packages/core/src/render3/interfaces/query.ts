@@ -25,18 +25,11 @@ export interface LQueries {
   parent: LQueries|null;
 
   /**
-   * Refers to the node that this queries instance was created for. This is used for determining
-   * whether the queries need to be cloned or if the current queries instance may be reused iff
-   * the queries' owner corresponds with the node that requests queries.
-   */
-  owner: TNode;
-
-  /**
    * Ask queries to prepare copy of itself. This assures that tracking new queries on content nodes
    * doesn't mutate list of queries tracked on a parent node. We will clone LQueries before
    * constructing content queries.
    */
-  clone(owner: TNode): LQueries;
+  clone(): LQueries;
 
   /**
    * Notify `LQueries` that a new `TNode` has been created and needs to be added to query results

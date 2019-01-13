@@ -172,20 +172,19 @@ export function setIsParent(value: boolean): void {
  * create content queries).
  */
 export function getOrCreateCurrentQueries(
-    QueryType: {new (parent: null, shallow: null, deep: null, owner: TNode): LQueries}): LQueries {
+    QueryType: {new (parent: null, shallow: null, deep: null): LQueries}): LQueries {
   const lView = getLView();
   let currentQueries = lView[QUERIES];
-  // if this is the first content query on a node, any existing LQueries needs to be cloned
-  // in subsequent template passes, the cloning occurs before directive instantiation.
-  if (previousOrParentTNode && previousOrParentTNode !== lView[HOST_NODE]) {
-    if (currentQueries && currentQueries.owner !== previousOrParentTNode) {
-      currentQueries = lView[QUERIES] = currentQueries.clone(previousOrParentTNode);
-    }
+  // If this is the first content query on a node, any existing LQueries needs to be cloned.
+  // In subsequent template passes, the cloning occurs before directive instantiation
+  // in `createDirectivesAndLocals`.
+  if (previousOrParentTNode && previousOrParentTNode !== lView[HOST_NODE] &&
+      !isContentQueryHost(previousOrParentTNode)) {
+    currentQueries && (currentQueries = lView[QUERIES] = currentQueries.clone());
     previousOrParentTNode.flags |= TNodeFlags.hasContentQuery;
   }
 
-  return currentQueries ||
-      (lView[QUERIES] = new QueryType(null, null, null, previousOrParentTNode));
+  return currentQueries || (lView[QUERIES] = new QueryType(null, null, null));
 }
 
 /** Checks whether a given view is in creation mode */
