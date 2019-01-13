@@ -395,21 +395,19 @@ function i18nStartFirstPass(
       }
     } else {
       // Even indexes are text (including bindings & ICU expressions)
-      const parts = value.split(ICU_REGEXP);
+      const parts = extractParts(value);
       for (let j = 0; j < parts.length; j++) {
-        value = parts[j];
-
         if (j & 1) {
           // Odd indexes are ICU expressions
           // Create the comment node that will anchor the ICU expression
           allocExpando(viewData);
           const icuNodeIndex = tView.blueprint.length - 1 - HEADER_OFFSET;
           createOpCodes.push(
-              COMMENT_MARKER, ngDevMode ? `ICU ${icuNodeIndex}` : '',
+              COMMENT_MARKER, ngDevMode ? `ICU ${icuNodeIndex}` : '', icuNodeIndex,
               parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
           // Update codes for the ICU expression
-          const icuExpression = parseICUBlock(value.substr(1, value.length - 2));
+          const icuExpression = parts[j] as IcuExpression;
           const mask = getBindingMask(icuExpression);
           icuStart(icuExpressions, icuExpression, icuNodeIndex, icuNodeIndex);
           // Since this is recursive, the last TIcu that was pushed is the one we want
@@ -422,19 +420,21 @@ function i18nStartFirstPass(
               mask,  // mask of all the bindings of this ICU expression
               2,     // skip 2 opCodes if not changed
               icuNodeIndex << I18nUpdateOpCode.SHIFT_REF | I18nUpdateOpCode.IcuUpdate, tIcuIndex);
-        } else if (value !== '') {
+        } else if (parts[j] !== '') {
+          const text = parts[j] as string;
           // Even indexes are text (including bindings)
-          const hasBinding = value.match(BINDING_REGEXP);
+          const hasBinding = text.match(BINDING_REGEXP);
           // Create text nodes
           allocExpando(viewData);
+          const textNodeIndex = tView.blueprint.length - 1 - HEADER_OFFSET;
           createOpCodes.push(
               // If there is a binding, the value will be set during update
-              hasBinding ? '' : value,
+              hasBinding ? '' : text, textNodeIndex,
               parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
           if (hasBinding) {
             addAllToArray(
-                generateBindingUpdateOpCodes(value, tView.blueprint.length - 1 - HEADER_OFFSET),
+                generateBindingUpdateOpCodes(text, tView.blueprint.length - 1 - HEADER_OFFSET),
                 updateOpCodes);
           }
         }
@@ -580,8 +580,7 @@ function i18nEndFirstPass(tView: TView) {
 
   // The last placeholder that was added before `i18nEnd`
   const previousOrParentTNode = getPreviousOrParentTNode();
-  const visitedPlaceholders =
-      readCreateOpCodes(rootIndex, tI18n.create, tI18n.expandoStartIndex, viewData);
+  const visitedPlaceholders = readCreateOpCodes(rootIndex, tI18n.create, tI18n.icus, viewData);
 
   // Remove deleted placeholders
   // The last placeholder that was added before `i18nEnd` is `previousOrParentTNode`
@@ -593,7 +592,7 @@ function i18nEndFirstPass(tView: TView) {
 }
 
 function readCreateOpCodes(
-    index: number, createOpCodes: I18nMutateOpCodes, expandoStartIndex: number,
+    index: number, createOpCodes: I18nMutateOpCodes, icus: TIcu[] | null,
     viewData: LView): number[] {
   const renderer = getLView()[RENDERER];
   let currentTNode: TNode|null = null;
@@ -603,10 +602,10 @@ function readCreateOpCodes(
     const opCode = createOpCodes[i];
     if (typeof opCode == 'string') {
       const textRNode = createTextNode(opCode, renderer);
+      const textNodeIndex = createOpCodes[++i] as number;
       ngDevMode && ngDevMode.rendererCreateTextNode++;
       previousTNode = currentTNode;
-      currentTNode =
-          createNodeAtIndex(expandoStartIndex++, TNodeType.Element, textRNode, null, null);
+      currentTNode = createNodeAtIndex(textNodeIndex, TNodeType.Element, textRNode, null, null);
       setIsParent(false);
     } else if (typeof opCode == 'number') {
       switch (opCode & I18nMutateOpCode.MASK_OPCODE) {
@@ -658,14 +657,15 @@ function readCreateOpCodes(
       switch (opCode) {
         case COMMENT_MARKER:
           const commentValue = createOpCodes[++i] as string;
+          const commentNodeIndex = createOpCodes[++i] as number;
           ngDevMode && assertEqual(
                            typeof commentValue, 'string',
                            `Expected "${commentValue}" to be a comment node value`);
           const commentRNode = renderer.createComment(commentValue);
           ngDevMode && ngDevMode.rendererCreateComment++;
           previousTNode = currentTNode;
-          currentTNode = createNodeAtIndex(
-              expandoStartIndex++, TNodeType.IcuContainer, commentRNode, null, null);
+          currentTNode =
+              createNodeAtIndex(commentNodeIndex, TNodeType.IcuContainer, commentRNode, null, null);
           attachPatchData(commentRNode, viewData);
           (currentTNode as TIcuContainerNode).activeCaseIndex = null;
           // We will add the case nodes later, during the update phase
@@ -673,6 +673,7 @@ function readCreateOpCodes(
           break;
         case ELEMENT_MARKER:
           const tagNameValue = createOpCodes[++i] as string;
+          const elementNodeIndex = createOpCodes[++i] as number;
           ngDevMode && assertEqual(
                            typeof tagNameValue, 'string',
                            `Expected "${tagNameValue}" to be an element node tag name`);
@@ -680,7 +681,7 @@ function readCreateOpCodes(
           ngDevMode && ngDevMode.rendererCreateElement++;
           previousTNode = currentTNode;
           currentTNode = createNodeAtIndex(
-              expandoStartIndex++, TNodeType.Element, elementRNode, tagNameValue, null);
+              elementNodeIndex, TNodeType.Element, elementRNode, tagNameValue, null);
           break;
         default:
           throw new Error(`Unable to determine the type of mutate operation for "${opCode}"`);
@@ -759,7 +760,7 @@ function readUpdateOpCodes(
                 icuTNode.activeCaseIndex = caseIndex !== -1 ? caseIndex : null;
 
                 // Add the nodes for the new case
-                readCreateOpCodes(-1, tIcu.create[caseIndex], tIcu.expandoStartIndex, viewData);
+                readCreateOpCodes(-1, tIcu.create[caseIndex], icus, viewData);
                 caseCreated = true;
                 break;
               case I18nUpdateOpCode.IcuUpdate:
@@ -1400,7 +1401,7 @@ function parseNodes(
             icuCase.vars--;
           } else {
             icuCase.create.push(
-                ELEMENT_MARKER, tagName,
+                ELEMENT_MARKER, tagName, newIndex,
                 parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
             const elAttrs = element.attributes;
             for (let i = 0; i < elAttrs.length; i++) {
@@ -1446,7 +1447,7 @@ function parseNodes(
           const value = currentNode.textContent || '';
           const hasBinding = value.match(BINDING_REGEXP);
           icuCase.create.push(
-              hasBinding ? '' : value,
+              hasBinding ? '' : value, newIndex,
               parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
           icuCase.remove.push(newIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Remove);
           if (hasBinding) {
@@ -1461,7 +1462,7 @@ function parseNodes(
             const newLocal = ngDevMode ? `nested ICU ${nestedIcuIndex}` : '';
             // Create the comment node that will anchor the ICU expression
             icuCase.create.push(
-                COMMENT_MARKER, newLocal,
+                COMMENT_MARKER, newLocal, newIndex,
                 parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
             const nestedIcu = nestedIcus[nestedIcuIndex];
             nestedIcusToCreate.push([nestedIcu, newIndex]);
