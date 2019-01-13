@@ -701,6 +701,17 @@ export class TestBedRender3 implements Injector, TestBed {
   }
 
   /**
+   * @internal
+   */
+  _getComponentFactories(moduleType: NgModuleType): ComponentFactory<any>[] {
+    return moduleType.ngModuleDef.declarations.reduce((factories, declaration) => {
+      const componentDef = (declaration as any).ngComponentDef;
+      componentDef && factories.push(new ComponentFactory(componentDef, this._moduleRef));
+      return factories;
+    }, [] as ComponentFactory<any>[]);
+  }
+
+  /**
    * Check whether the module scoping queue should be flushed, and flush it if needed.
    *
    * When the TestBed is reset, it clears the JIT module compilation queue, cancelling any
@@ -757,7 +768,9 @@ class R3TestCompiler implements Compiler {
   }
 
   compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T> {
-    return new ModuleWithComponentFactories(this.compileModuleSync(moduleType), []);
+    const ngModuleFactory = this.compileModuleSync(moduleType);
+    const componentFactories = this.testBed._getComponentFactories(moduleType as NgModuleType<T>);
+    return new ModuleWithComponentFactories(ngModuleFactory, componentFactories);
   }
 
   compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>):

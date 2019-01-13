@@ -1097,45 +1097,44 @@ function declareTests(config?: {useJit: boolean}) {
                    .toHaveText('dynamic greet');
              }));
 
-          fixmeIvy('FW-929: ModuleWithComponentFactories.componentFactories is never filled in')
-              .it('should create a component that has been freshly compiled', () => {
-                @Component({template: ''})
-                class RootComp {
-                  constructor(public vc: ViewContainerRef) {}
-                }
+          it('should create a component that has been freshly compiled', () => {
+            @Component({template: ''})
+            class RootComp {
+              constructor(public vc: ViewContainerRef) {}
+            }
 
-                @NgModule({
-                  declarations: [RootComp],
-                  providers: [{provide: 'someToken', useValue: 'someRootValue'}],
-                })
-                class RootModule {
-                }
+            @NgModule({
+              declarations: [RootComp],
+              providers: [{provide: 'someToken', useValue: 'someRootValue'}],
+            })
+            class RootModule {
+            }
 
-                @Component({template: ''})
-                class MyComp {
-                  constructor(@Inject('someToken') public someToken: string) {}
-                }
+            @Component({template: ''})
+            class MyComp {
+              constructor(@Inject('someToken') public someToken: string) {}
+            }
 
-                @NgModule({
-                  declarations: [MyComp],
-                  providers: [{provide: 'someToken', useValue: 'someValue'}],
-                })
-                class MyModule {
-                }
+            @NgModule({
+              declarations: [MyComp],
+              providers: [{provide: 'someToken', useValue: 'someValue'}],
+            })
+            class MyModule {
+            }
 
-                const compFixture = TestBed.configureTestingModule({imports: [RootModule]})
-                                        .createComponent(RootComp);
-                const compiler = <Compiler>TestBed.get(Compiler);
-                const myCompFactory =
-                    <ComponentFactory<MyComp>>compiler.compileModuleAndAllComponentsSync(MyModule)
-                        .componentFactories[0];
+            const compFixture =
+                TestBed.configureTestingModule({imports: [RootModule]}).createComponent(RootComp);
+            const compiler = <Compiler>TestBed.get(Compiler);
+            const myCompFactory =
+                <ComponentFactory<MyComp>>compiler.compileModuleAndAllComponentsSync(MyModule)
+                    .componentFactories[0];
 
-                // Note: the ComponentFactory was created directly via the compiler, i.e. it
-                // does not have an association to an NgModuleRef.
-                // -> expect the providers of the module that the view container belongs to.
-                const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
-                expect(compRef.instance.someToken).toBe('someRootValue');
-              });
+            // Note: the ComponentFactory was created directly via the compiler, i.e. it
+            // does not have an association to an NgModuleRef.
+            // -> expect the providers of the module that the view container belongs to.
+            const compRef = compFixture.componentInstance.vc.createComponent(myCompFactory);
+            expect(compRef.instance.someToken).toBe('someRootValue');
+          });
 
           it('should create a component with the passed NgModuleRef', () => {
             @Component({template: ''})
