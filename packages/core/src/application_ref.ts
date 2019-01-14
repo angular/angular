@@ -373,10 +373,12 @@ export class ApplicationRef {
 
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
+   *
    * Note two important points, demonstrated in the examples below:
-   * - the application will never be stable if you start a `setInterval`
-   * or use RxJS operator `interval` when the application starts
-   * (for example for a polling process);
+   * - the application will never be stable if you start any kind
+   * of asynchronous task when the application starts
+   * (for example for a polling process, started with a `setInterval`, a `setTimeout`
+   * or using RxJS operators like `interval`);
    * - the `isStable` Observable runs outside of the Angular zone.
    *
    * Let's imagine that you start a recurrent task
@@ -401,8 +403,7 @@ export class ApplicationRef {
    * ```
    * constructor(appRef: ApplicationRef) {
    *   appRef.isStable.pipe(
-   *     filter(stable => stable),
-   *     first(),
+   *     first(stable => stable),
    *     tap(stable => console.log('App is stable now')),
    *     switchMap(() => interval(1000))
    *   ).subscribe(counter => console.log(counter));
@@ -422,8 +423,7 @@ export class ApplicationRef {
    * ```
    * constructor(appRef: ApplicationRef) {
    *   appRef.isStable.pipe(
-   *     filter(stable => stable),
-   *     first(),
+   *     first(stable => stable),
    *     switchMap(() => interval(1000))
    *   ).subscribe(counter => this.value = counter);
    * }
@@ -437,8 +437,7 @@ export class ApplicationRef {
    * ```
    * constructor(appRef: ApplicationRef, cd: ChangeDetectorRef) {
    *   appRef.isStable.pipe(
-   *     filter(stable => stable),
-   *     first(),
+   *     first(stable => stable),
    *     switchMap(() => interval(1000))
    *   ).subscribe(counter => {
    *     this.value = counter;
@@ -452,10 +451,9 @@ export class ApplicationRef {
    * ```
    * constructor(appRef: ApplicationRef, zone: NgZone) {
    *   appRef.isStable.pipe(
-   *     filter(stable => stable),
-   *     first(),
+   *     first(stable => stable),
    *     switchMap(() => interval(1000))
-   *   ).subscribe(counter => zone.run(this.value = counter));
+   *   ).subscribe(counter => zone.run(() => this.value = counter));
    * }
    * ```
    */
