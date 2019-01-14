@@ -374,8 +374,10 @@ export abstract class Renderer2 {
       target: 'window'|'document'|'body'|any, eventName: string,
       callback: (event: any) => boolean | void): () => void;
 
-  /** @internal */
-  /** @nocollapse */
+  /**
+   * @internal
+   * @nocollapse
+   */
   static __NG_ELEMENT_ID__: () => Renderer2 = () => SWITCH_RENDERER2_FACTORY();
 }
 
