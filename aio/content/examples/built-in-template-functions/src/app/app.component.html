@@ -1,0 +1,15 @@
+<h1>{{title}}</h1>
+
+<h2><code>$any( )</code> type cast function and an undeclared member</h2>
+
+<p>There is no such member as <code>bestByDate</code> in the following two examples, so nothing renders:</p>
+<!-- #docregion any-type-cast-function-1 -->
+<p>The item's undeclared best by date is: {{$any(item).bestByDate}}</p>
+<!-- #enddocregion any-type-cast-function-1 -->
+
+<h2>using <code>this</code></h2>
+<!-- #docregion any-type-cast-function-2 -->
+<p>The item's undeclared best by date is: {{$any(this).bestByDate}}</p>
+<!-- #enddocregion any-type-cast-function-2 -->
+
+
