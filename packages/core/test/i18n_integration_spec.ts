@@ -46,8 +46,12 @@ const TRANSLATIONS: any = {
       '{$startTagSpan}Mon logo{$tagImg}{$closeTagSpan}',
   '{$startTagNgTemplate} Hello {$closeTagNgTemplate}{$startTagNgContainer} Bye {$closeTagNgContainer}':
       '{$startTagNgTemplate} Bonjour {$closeTagNgTemplate}{$startTagNgContainer} Au revoir {$closeTagNgContainer}',
+  '{$startTagNgTemplate}{$startTagSpan}Hello{$closeTagSpan}{$closeTagNgTemplate}{$startTagNgContainer}{$startTagSpan}Hello{$closeTagSpan}{$closeTagNgContainer}':
+      '{$startTagNgTemplate}{$startTagSpan}Bonjour{$closeTagSpan}{$closeTagNgTemplate}{$startTagNgContainer}{$startTagSpan}Bonjour{$closeTagSpan}{$closeTagNgContainer}',
   '{$startTagNgTemplate}{$startTagSpan}Hello{$closeTagSpan}{$closeTagNgTemplate}{$startTagNgContainer}{$startTagSpan_1}Hello{$closeTagSpan}{$closeTagNgContainer}':
       '{$startTagNgTemplate}{$startTagSpan}Bonjour{$closeTagSpan}{$closeTagNgTemplate}{$startTagNgContainer}{$startTagSpan_1}Bonjour{$closeTagSpan}{$closeTagNgContainer}',
+  '{$startTagSpan} Hello - 1 {$closeTagSpan}{$startTagSpan_1} Hello - 2 {$startTagSpan_1} Hello - 3 {$startTagSpan_1} Hello - 4 {$closeTagSpan}{$closeTagSpan}{$closeTagSpan}{$startTagSpan} Hello - 5 {$closeTagSpan}':
+      '{$startTagSpan} Bonjour - 1 {$closeTagSpan}{$startTagSpan_1} Bonjour - 2 {$startTagSpan_1} Bonjour - 3 {$startTagSpan_1} Bonjour - 4 {$closeTagSpan}{$closeTagSpan}{$closeTagSpan}{$startTagSpan} Bonjour - 5 {$closeTagSpan}',
   '{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}':
       '{VAR_SELECT, select, 10 {dix} 20 {vingt} other {autres}}',
   '{VAR_SELECT, select, 1 {one} 2 {two} other {more than two}}':
@@ -283,29 +287,56 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       expect(element.textContent.replace(/\s+/g, ' ').trim()).toBe('Bonjour Au revoir');
     });
 
-    fixmeIvy(
-        'FW-910: Invalid placeholder structure generated when using <ng-template> with content that contains tags')
-        .it('should be able to act as child elements inside i18n block (text + tags)', () => {
-          const content = 'Hello';
-          const template = `
-            <div i18n>
-              <ng-template tplRef>
-                <span>${content}</span>
-              </ng-template>
-              <ng-container>
-                <span>${content}</span>
-              </ng-container>
-            </div>
-          `;
-          const fixture = getFixtureWithOverrides({template});
+    it('should be able to act as child elements inside i18n block (text + tags)', () => {
+      const content = 'Hello';
+      const template = `
+        <div i18n>
+          <ng-template tplRef>
+            <span>${content}</span>
+          </ng-template>
+          <ng-container>
+            <span>${content}</span>
+          </ng-container>
+        </div>
+      `;
+      const fixture = getFixtureWithOverrides({template});
 
-          const element = fixture.nativeElement;
-          const spans = element.getElementsByTagName('span');
-          for (let i = 0; i < spans.length; i++) {
-            const child = spans[i];
-            expect((child as any).innerHTML).toBe('Bonjour');
-          }
-        });
+      const element = fixture.nativeElement;
+      const spans = element.getElementsByTagName('span');
+      for (let i = 0; i < spans.length; i++) {
+        expect(spans[i]).toHaveText('Bonjour');
+      }
+    });
+
+    it('should be able to handle deep nested levels with templates', () => {
+      const content = 'Hello';
+      const template = `
+        <div i18n>
+          <span>
+            ${content} - 1
+          </span>
+          <span *ngIf="visible">
+            ${content} - 2
+            <span *ngIf="visible">
+              ${content} - 3
+              <span *ngIf="visible">
+                ${content} - 4
+              </span>
+            </span>
+          </span>
+          <span>
+            ${content} - 5
+          </span>
+        </div>
+      `;
+      const fixture = getFixtureWithOverrides({template});
+
+      const element = fixture.nativeElement;
+      const spans = element.getElementsByTagName('span');
+      for (let i = 0; i < spans.length; i++) {
+        expect(spans[i].innerHTML).toContain(`Bonjour - ${i + 1}`);
+      }
+    });
 
     it('should handle self-closing tags as content', () => {
       const label = 'My logo';
@@ -333,6 +364,16 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
     it('should handle single ICUs', () => {
       const template = `
         <div i18n>{age, select, 10 {ten} 20 {twenty} other {other}}</div>
+      `;
+      const fixture = getFixtureWithOverrides({template});
+
+      const element = fixture.nativeElement;
+      expect(element).toHaveText('vingt');
+    });
+
+    it('should support ICU-only templates', () => {
+      const template = `
+        {age, select, 10 {ten} 20 {twenty} other {other}}
       `;
       const fixture = getFixtureWithOverrides({template});
 

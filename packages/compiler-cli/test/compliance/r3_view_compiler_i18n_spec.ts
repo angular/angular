@@ -1682,6 +1682,31 @@ describe('i18n support in the view compiler', () => {
       verify(input, output);
     });
 
+    it('should support ICU-only templates', () => {
+      const input = `
+        {age, select, 10 {ten} 20 {twenty} other {other}}
+      `;
+
+      const output = String.raw `
+        const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
+        const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$, { "VAR_SELECT": "\uFFFD0\uFFFD" });
+        …
+        consts: 1,
+        vars: 1,
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵi18n(0, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS_0$);
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind(ctx.age));
+            $r3$.ɵi18nApply(0);
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
+
     it('should generate i18n instructions for icus generated outside of i18n blocks', () => {
       const input = `
         <div>{gender, select, male {male} female {female} other {other}}</div>
