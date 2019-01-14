@@ -965,6 +965,9 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
   /** Adds native table sections (e.g. tbody) and moves the row outlets into them. */
   private _applyNativeTableSections() {
+    // @breaking-change 8.0.0 remove the `|| document` once the `_document` is a required param.
+    const documentRef = this._document || document;
+    const documentFragment = documentRef.createDocumentFragment();
     const sections = [
       {tag: 'thead', outlet: this._headerRowOutlet},
       {tag: 'tbody', outlet: this._rowOutlet},
@@ -972,12 +975,13 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     ];
 
     for (const section of sections) {
-      // @breaking-change 8.0.0 remove the `|| document` once the `_document` is a required param.
-      const documentRef = this._document || document;
       const element = documentRef.createElement(section.tag);
       element.appendChild(section.outlet.elementRef.nativeElement);
-      this._elementRef.nativeElement.appendChild(element);
+      documentFragment.appendChild(element);
     }
+
+    // Use a DocumentFragment so we don't hit the DOM on each iteration.
+    this._elementRef.nativeElement.appendChild(documentFragment);
   }
 
   /**
