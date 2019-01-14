@@ -17,6 +17,12 @@ export interface ReferenceResolver {
       Reference<ts.Declaration>;
 }
 
+/**
+ * Used by `RouterEntryPointManager` and `NgModuleRouteAnalyzer` (which is in turn is used by
+ * `NgModuleDecoratorHandler`) for resolving the module source-files references in lazy-loaded
+ * routes (relative to the source-file containing the `NgModule` that provides the route
+ * definitions).
+ */
 export class ModuleResolver {
   constructor(
       private program: ts.Program, private compilerOptions: ts.CompilerOptions,
