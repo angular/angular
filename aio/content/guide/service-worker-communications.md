@@ -51,7 +51,7 @@ You can avoid that by waiting for the app to stabilize first, before starting to
 (as shown in the example above).
 
 Note that this is true for any kind of polling done by your application!
-Check the {@link ApplicationRef#isStable} documentation for more information. 
+Check the {@link ApplicationRef#isStable isStable} documentation for more information. 
 
 </div>
 
