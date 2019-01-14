@@ -1,17 +1,17 @@
 steps:
-  - label: windows-test
+  - label: windows-test-cached
+    branches: "!master"
     plugins:
       - docker-compose#v2.6.0:
-          build: windows-test
+          build: windows-test-cached
           config: .buildkite/dockerfiles/docker-compose.yml
     agents:
       windows: true
-  - wait
-  - label: windows-update-image
+  - label: windows-test-clean
     branches: master
     plugins:
       - docker-compose#v2.6.0:
-          push: windows-test:gcr.io/internal-200822/angular-windows:master
+          push: windows-test-clean:gcr.io/internal-200822/angular-windows:master
           config: .buildkite/dockerfiles/docker-compose.yml
     agents:
       windows: true

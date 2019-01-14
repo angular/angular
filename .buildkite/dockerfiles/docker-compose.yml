@@ -4,7 +4,14 @@ services:
     build:
       context: ../../
       dockerfile: ./.buildkite/dockerfiles/windows-env.Dockerfile
-  windows-test:
+  windows-test-cached:
+    build:
+      context: ../../
+      dockerfile: ./.buildkite/dockerfiles/windows-test.Dockerfile
+      args:
+        COMMIT_SHA: "${BUILDKITE_COMMIT}"
+        FROM_IMG: "gcr.io/internal-200822/angular-windows:master"
+  windows-test-clean:
     build:
       context: ../../
       dockerfile: ./.buildkite/dockerfiles/windows-test.Dockerfile
