@@ -1777,7 +1777,7 @@ describe('Runtime i18n', () => {
 
   describe('i18nPostprocess', () => {
     it('should handle valid cases', () => {
-      const arr = ['�*1:1��#2:1�', '�#4:2�', '�6:4�', '�/#2:1��/*1:1�'];
+      const arr = ['�*1:1��#2:1�', '�#4:1�', '�6:1�', '�/#2:1��/*1:1�'];
       const str = `[${arr.join('|')}]`;
 
       const cases = [
@@ -1853,6 +1853,57 @@ describe('Runtime i18n', () => {
       cases.forEach(([input, replacements, output]) => {
         expect(i18nPostprocess(input as string, replacements as any)).toEqual(output as string);
       });
+    });
+
+    it('should handle nested template represented by multi-value placeholders', () => {
+      /**
+       * <div i18n>
+       *   <span>
+       *     Hello - 1
+       *   </span>
+       *   <span *ngIf="visible">
+       *     Hello - 2
+       *     <span *ngIf="visible">
+       *       Hello - 3
+       *       <span *ngIf="visible">
+       *         Hello - 4
+       *       </span>
+       *     </span>
+       *   </span>
+       *   <span>
+       *     Hello - 5
+       *   </span>
+       * </div>
+       */
+      const generated = `
+        [�#2�|�#4�] Bonjour - 1 [�/#2�|�/#1:3��/*2:3�|�/#1:2��/*2:2�|�/#1:1��/*3:1�|�/#4�]
+        [�*3:1��#1:1�|�*2:2��#1:2�|�*2:3��#1:3�]
+          Bonjour - 2
+          [�*3:1��#1:1�|�*2:2��#1:2�|�*2:3��#1:3�]
+            Bonjour - 3
+            [�*3:1��#1:1�|�*2:2��#1:2�|�*2:3��#1:3�] Bonjour - 4 [�/#2�|�/#1:3��/*2:3�|�/#1:2��/*2:2�|�/#1:1��/*3:1�|�/#4�]
+          [�/#2�|�/#1:3��/*2:3�|�/#1:2��/*2:2�|�/#1:1��/*3:1�|�/#4�]
+        [�/#2�|�/#1:3��/*2:3�|�/#1:2��/*2:2�|�/#1:1��/*3:1�|�/#4�]
+        [�#2�|�#4�] Bonjour - 5 [�/#2�|�/#1:3��/*2:3�|�/#1:2��/*2:2�|�/#1:1��/*3:1�|�/#4�]
+      `;
+      const final = `
+        �#2� Bonjour - 1 �/#2�
+        �*3:1�
+          �#1:1�
+            Bonjour - 2
+            �*2:2�
+              �#1:2�
+                Bonjour - 3
+                �*2:3�
+                  �#1:3� Bonjour - 4 �/#1:3�
+                �/*2:3�
+              �/#1:2�
+            �/*2:2�
+          �/#1:1�
+        �/*3:1�
+        �#4� Bonjour - 5 �/#4�
+      `;
+      expect(i18nPostprocess(generated.replace(/\s+/g, ''))).toEqual(final.replace(/\s+/g, ''));
     });
 
     it('should throw in case we have invalid string', () => {
