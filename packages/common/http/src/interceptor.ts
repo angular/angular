@@ -14,7 +14,7 @@ import {HttpRequest} from './request';
 import {HttpEvent} from './response';
 
 /**
- * Intercepts `HttpRequest` or `HttpRepsonse` and handles them.
+ * Intercepts `HttpRequest` or `HttpResponse` and handles them.
  *
  * Most interceptors transform the outgoing request before passing it to the
  * next interceptor in the chain, by calling `next.handle(transformedReq)`.
