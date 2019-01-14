@@ -111,7 +111,7 @@ jobs:
       - *copy_bazel_config
 
       - run: bazel build src/... --build_tag_filters=-docs-package
-      - run: bazel test src/...
+      - run: bazel test src/... --build_tag_filters=-docs-package
 
       # Note: We want to save the cache in this job because the workspace cache also
       # includes the Bazel repository cache that will be updated in this job.
