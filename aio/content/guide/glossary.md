@@ -354,7 +354,13 @@ Learn more about reactive and template-driven forms in the [Introduction to form
 
 ## form validation
 
+<!--
 A check that runs when form values change and reports whether the given values are correct and complete, according to the defined constraints. Reactive forms apply [validator functions](guide/form-validation#adding-to-reactive-forms). Template-driven forms use [validator directives](guide/form-validation#adding-to-template-driven-forms).
+
+
+To learn more, see [Form Validation](guide/form-validation).
+-->
+A check that runs when form values change and reports whether the given values are correct and complete, according to the defined constraints. Reactive forms apply [validator functions](guide/form-validation#반응형-폼에-적용하기). Template-driven forms use [validator directives](guide/form-validation#템플릿-기반-폼에-적용하기).
 
 
 To learn more, see [Form Validation](guide/form-validation).

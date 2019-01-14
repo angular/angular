@@ -80,6 +80,7 @@ Begin with the first form of data binding&mdash;interpolation&mdash;to see how m
 <hr/>
 
 {@a interpolation}
+{@a 문자열-바인딩}
 
 ## Interpolation and Template Expressions
 
@@ -130,7 +131,6 @@ it assigns this composite interpolated result to an **element or directive prope
 -->
 이중 중괄호 안에 있는 템플릿 표현식은 Angular 프레임워크가 평가하고 문자열로 변환해서 같은 엘리먼트에 있는 문자열과 연결합니다. 이렇게 템플릿에 삽입된 문자열은 **엘리먼트나 디렉티브의 속성값**으로 사용됩니다.
 
-<!--
 You appear to be inserting the result between element tags and assigning it to attributes.
 
 <div class="alert is-helpful">
@@ -145,7 +145,10 @@ option in the `Component` metadata.
 
 </div>
 
+<!--
 ### Template expressions
+-->
+### 템플릿 표현식
 
 A template **expression** produces a value and appears within the double
 curly braces, `{{ }}`.
@@ -256,9 +259,14 @@ If an idempotent expression returns a string or a number, it returns the same st
 
 <div class="alert is-helpful">
 
+<!--
 There is one exception to this behavior that applies to `*ngFor`. `*ngFor` has `trackBy` functionality that can deal with referential inequality of objects that when iterating over them.
 
-For more information, see the [*ngFor with `trackBy`](guide/template-syntax#ngfor-with-trackby) section of this guide.
+For more information, see the [\*ngFor with `trackBy`](guide/template-syntax#ngfor-with-trackby) section of this guide.
+-->
+There is one exception to this behavior that applies to `*ngFor`. `*ngFor` has `trackBy` functionality that can deal with referential inequality of objects that when iterating over them.
+
+For more information, see the [\*ngFor with `trackBy`](guide/template-syntax#trackBy) section of this guide.
 
 </div>
 
