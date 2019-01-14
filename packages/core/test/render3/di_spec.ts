@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ElementRef, Host, Inject, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, createInjector, defineInjectable, defineInjector} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ElementRef, Host, INJECTOR, Inject, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, createInjector, defineInjectable, defineInjector} from '@angular/core';
 import {ComponentType, RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
@@ -1458,6 +1458,36 @@ describe('di', () => {
         expect(otherInjectorDir.injector.get(ElementRef).nativeElement).toBe(divElement);
         expect(otherInjectorDir.injector.get(InjectorDir)).toBe(injectorDir);
         expect(injectorDir.injector).not.toBe(otherInjectorDir.injector);
+      });
+
+      it('should inject INJECTOR', () => {
+        let injectorDir !: INJECTORDir;
+        let divElement !: HTMLElement;
+
+        class INJECTORDir {
+          constructor(public injector: Injector) {}
+
+          static ngDirectiveDef = defineDirective({
+            type: INJECTORDir,
+            selectors: [['', 'injectorDir', '']],
+            factory: () => injectorDir = new INJECTORDir(directiveInject(INJECTOR as any))
+          });
+        }
+
+
+        /** <div injectorDir otherInjectorDir></div> */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'div', ['injectorDir', '']);
+          }
+          // testing only
+          divElement = load(0);
+        }, 1, 0, [INJECTORDir]);
+
+        const fixture = new ComponentFixture(App);
+        expect(injectorDir.injector.get(ElementRef).nativeElement).toBe(divElement);
+        expect(injectorDir.injector.get(Injector).get(ElementRef).nativeElement).toBe(divElement);
+        expect(injectorDir.injector.get(INJECTOR).get(ElementRef).nativeElement).toBe(divElement);
       });
 
     });
