@@ -148,8 +148,8 @@ export class BaseAnimationRenderer implements Renderer2 {
     this.engine.onInsert(this.namespaceId, newChild, parent, true);
   }
 
-  removeChild(parent: any, oldChild: any): void {
-    this.engine.onRemove(this.namespaceId, oldChild, this.delegate);
+  removeChild(parent: any, oldChild: any, isHostElement: boolean): void {
+    this.engine.onRemove(this.namespaceId, oldChild, this.delegate, isHostElement);
   }
 
   selectRootElement(selectorOrNode: any, preserveContent?: boolean) {

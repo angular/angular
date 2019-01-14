@@ -14,7 +14,7 @@ import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection'
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {findComponentView, getNativeByTNode, isLContainer, isRootView, readElementValue, renderStringify} from './util';
+import {findComponentView, getNativeByTNode, isComponent, isLContainer, isRootView, readElementValue, renderStringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -84,15 +84,16 @@ function walkTNodeTree(
     let nextTNode: TNode|null = null;
     if (tNode.type === TNodeType.Element) {
       executeNodeAction(
-          action, renderer, renderParent, getNativeByTNode(tNode, currentView), beforeNode);
+          action, renderer, renderParent, getNativeByTNode(tNode, currentView), tNode, beforeNode);
       const nodeOrContainer = currentView[tNode.index];
       if (isLContainer(nodeOrContainer)) {
         // This element has an LContainer, and its comment needs to be handled
-        executeNodeAction(action, renderer, renderParent, nodeOrContainer[NATIVE], beforeNode);
+        executeNodeAction(
+            action, renderer, renderParent, nodeOrContainer[NATIVE], tNode, beforeNode);
       }
     } else if (tNode.type === TNodeType.Container) {
       const lContainer = currentView ![tNode.index] as LContainer;
-      executeNodeAction(action, renderer, renderParent, lContainer[NATIVE], beforeNode);
+      executeNodeAction(action, renderer, renderParent, lContainer[NATIVE], tNode, beforeNode);
 
       if (lContainer[VIEWS].length) {
         currentView = lContainer[VIEWS][0];
@@ -166,11 +167,11 @@ function walkTNodeTree(
  */
 function executeNodeAction(
     action: WalkTNodeTreeAction, renderer: Renderer3, parent: RElement | null,
-    node: RComment | RElement | RText, beforeNode?: RNode | null) {
+    node: RComment | RElement | RText, tNode: TNode, beforeNode?: RNode | null) {
   if (action === WalkTNodeTreeAction.Insert) {
     nativeInsertBefore(renderer, parent !, node, beforeNode || null);
   } else if (action === WalkTNodeTreeAction.Detach) {
-    nativeRemoveChild(renderer, parent !, node);
+    nativeRemoveChild(renderer, parent !, node, isComponent(tNode));
   } else if (action === WalkTNodeTreeAction.Destroy) {
     ngDevMode && ngDevMode.rendererDestroyNode++;
     (renderer as ProceduralRenderer3).destroyNode !(node);
@@ -550,8 +551,9 @@ export function nativeInsertBefore(
 /**
  * Removes a native child node from a given native parent node.
  */
-export function nativeRemoveChild(renderer: Renderer3, parent: RElement, child: RNode): void {
-  isProceduralRenderer(renderer) ? renderer.removeChild(parent as RElement, child) :
+export function nativeRemoveChild(
+    renderer: Renderer3, parent: RElement, child: RNode, isHostElement?: boolean): void {
+  isProceduralRenderer(renderer) ? renderer.removeChild(parent as RElement, child, isHostElement) :
                                    parent.removeChild(child);
 }
 

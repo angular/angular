@@ -2239,7 +2239,7 @@ import {HostListener} from '../../src/metadata/directives';
       });
 
       fixmeIvy(
-          'FW-943 - elements are removed in the wrong renderer so far as host animation @triggers are concerned')
+          'FW-943 - Fix final `unknown` issue in `animation_query_integration_spec.ts` once #28162 lands')
           .it('should emulate a leave animation on the nearest sub host elements when a parent is removed',
               fakeAsync(() => {
                 @Component({
