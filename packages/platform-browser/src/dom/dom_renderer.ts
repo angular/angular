@@ -111,7 +111,9 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string): any {
     if (namespace) {
-      return document.createElementNS(NAMESPACE_URIS[namespace], name);
+      // In cases where Ivy (not ViewEngine) is giving us the actual namespace, the look up by key
+      // will result in undefined, so we just return the namespace here.
+      return document.createElementNS(NAMESPACE_URIS[namespace] || namespace, name);
     }
 
     return document.createElement(name);
