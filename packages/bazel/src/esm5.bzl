@@ -96,10 +96,10 @@ def _esm5_outputs_aspect(target, ctx):
         compiler = ctx.executable._ngc_wrapped
 
         # BEGIN-INTERNAL
-        # If the "replay_compiler" path refers to "ngc_wrapped" from within the Angular workspace,
-        # we need to use "ngc_wrapped" from source. This is necessary because we don't have
-        # a "npm" workspace with the "@angular/bazel" NPM package installed.
-        if not replay_compiler_path.startswith("../"):
+        # If the "replay_compiler" path does not refer to "ngc_wrapped" from the "@npm" workspace,
+        # we use "ngc_wrapped" from within the Angular workspace. This is necessary because we
+        # don't have a "npm" workspace with the "@angular/bazel" NPM package installed.
+        if replay_compiler_path != ctx.executable._ngc_wrapped.short_path:
             compiler = ctx.executable._internal_ngc_wrapped
 
         # END-INTERNAL
