@@ -111,7 +111,7 @@ const DEFAULT_NAMESPACE_ID = 'id';
 
         expect(engine.elementContainsData(DEFAULT_NAMESPACE_ID, element)).toBeTruthy();
 
-        engine.removeNode(DEFAULT_NAMESPACE_ID, element, true);
+        engine.removeNode(DEFAULT_NAMESPACE_ID, element, true, true);
         engine.flush();
 
         expect(engine.elementContainsData(DEFAULT_NAMESPACE_ID, element)).toBeTruthy();
