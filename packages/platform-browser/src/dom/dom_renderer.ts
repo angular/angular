@@ -111,7 +111,9 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string): any {
     if (namespace) {
-      return document.createElementNS(NAMESPACE_URIS[namespace], name);
+      // In cases where Ivy (not ViewEngine) is giving us the actual namespace, the look up by key
+      // will result in undefined, so we just return the namespace here.
+      return document.createElementNS(NAMESPACE_URIS[namespace] || namespace, name);
     }
 
     return document.createElement(name);
@@ -154,6 +156,8 @@ class DefaultDomRenderer2 implements Renderer2 {
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
       name = `${namespace}:${name}`;
+      // TODO(benlesh): Ivy may cause issues here because it's passing around
+      // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
         el.setAttributeNS(namespaceUri, name, value);
@@ -167,10 +171,15 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   removeAttribute(el: any, name: string, namespace?: string): void {
     if (namespace) {
+      // TODO(benlesh): Ivy may cause issues here because it's passing around
+      // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
         el.removeAttributeNS(namespaceUri, name);
       } else {
+        // TODO(benlesh): Since ivy is passing around full URIs for namespaces
+        // this could result in properties like `http://www.w3.org/2000/svg:cx="123"`,
+        // which is wrong.
         el.removeAttribute(`${namespace}:${name}`);
       }
     } else {

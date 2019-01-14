@@ -1852,25 +1852,24 @@ function declareTests(config?: {useJit: boolean}) {
               expect(firstAttribute.namespaceURI).toEqual('http://www.w3.org/1999/xlink');
             });
 
-        fixmeIvy('FW-811: Align HTML namespaces between Ivy and Render2')
-            .it('should support foreignObjects with document fragments', () => {
-              TestBed.configureTestingModule({declarations: [MyComp]});
-              const template =
-                  '<svg><foreignObject><xhtml:div><p>Test</p></xhtml:div></foreignObject></svg>';
-              TestBed.overrideComponent(MyComp, {set: {template}});
-              const fixture = TestBed.createComponent(MyComp);
+        it('should support foreignObjects with document fragments', () => {
+          TestBed.configureTestingModule({declarations: [MyComp]});
+          const template =
+              '<svg><foreignObject><xhtml:div><p>Test</p></xhtml:div></foreignObject></svg>';
+          TestBed.overrideComponent(MyComp, {set: {template}});
+          const fixture = TestBed.createComponent(MyComp);
 
-              const el = fixture.nativeElement;
-              const svg = getDOM().childNodes(el)[0];
-              const foreignObject = getDOM().childNodes(svg)[0];
-              const p = getDOM().childNodes(foreignObject)[0];
-              expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
-                  .toEqual('http://www.w3.org/2000/svg');
-              expect(getDOM().getProperty(<Element>foreignObject, 'namespaceURI'))
-                  .toEqual('http://www.w3.org/2000/svg');
-              expect(getDOM().getProperty(<Element>p, 'namespaceURI'))
-                  .toEqual('http://www.w3.org/1999/xhtml');
-            });
+          const el = fixture.nativeElement;
+          const svg = getDOM().childNodes(el)[0];
+          const foreignObject = getDOM().childNodes(svg)[0];
+          const p = getDOM().childNodes(foreignObject)[0];
+          expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
+              .toEqual('http://www.w3.org/2000/svg');
+          expect(getDOM().getProperty(<Element>foreignObject, 'namespaceURI'))
+              .toEqual('http://www.w3.org/2000/svg');
+          expect(getDOM().getProperty(<Element>p, 'namespaceURI'))
+              .toEqual('http://www.w3.org/1999/xhtml');
+        });
       });
 
       describe('attributes', () => {
