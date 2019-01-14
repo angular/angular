@@ -23,7 +23,8 @@ ng_module(
     ]),
     deps = [
         "@angular//packages/core",
-        "@angular//packages/platform-browser",
+        "@angular//packages/platform-browser",<% if (routing) { %>
+        "@angular//packages/router",<% } %>
         "@npm//@types",
     ],
 )

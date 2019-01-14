@@ -51,6 +51,17 @@ describe('Bazel-workspace Schematic', () => {
     expect(content).toContain('entry_module = "demo_app/src/main.dev"');
   });
 
+  it('should add router if project contains routing module', () => {
+    let host = new UnitTestTree(new HostTree);
+    host.create('/demo/src/app/app-routing.module.ts', '');
+    expect(host.files).toContain('/demo/src/app/app-routing.module.ts');
+    const options = {...defaultOptions};
+    host = schematicRunner.runSchematic('bazel-workspace', options, host);
+    expect(host.files).toContain('/demo/src/BUILD.bazel');
+    const content = host.readContent('/demo/src/BUILD.bazel');
+    expect(content).toContain('@angular//packages/router');
+  });
+
   describe('WORKSPACE', () => {
     it('should contain project name', () => {
       const options = {...defaultOptions};
