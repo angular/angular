@@ -45,7 +45,7 @@ export interface MatIconLocation {
 export declare class MatIconModule {
 }
 
-export declare class MatIconRegistry {
+export declare class MatIconRegistry implements OnDestroy {
     constructor(_httpClient: HttpClient, _sanitizer: DomSanitizer, document: any);
     addSvgIcon(iconName: string, url: SafeResourceUrl): this;
     addSvgIconInNamespace(namespace: string, iconName: string, url: SafeResourceUrl): this;
@@ -59,6 +59,7 @@ export declare class MatIconRegistry {
     getDefaultFontSetClass(): string;
     getNamedSvgIcon(name: string, namespace?: string): Observable<SVGElement>;
     getSvgIconFromUrl(safeUrl: SafeResourceUrl): Observable<SVGElement>;
+    ngOnDestroy(): void;
     registerFontClassAlias(alias: string, className?: string): this;
     setDefaultFontSetClass(className: string): this;
 }
