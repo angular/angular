@@ -49,6 +49,7 @@ import {
   ɵtransitiveScopesFor as transitiveScopesFor,
   CompilerOptions,
   StaticProvider,
+  COMPILER_OPTIONS,
 } from '@angular/core';
 // clang-format on
 import {ResourceLoader} from '@angular/compiler';
@@ -594,7 +595,14 @@ export class TestBedRender3 implements Injector, TestBed {
       return;
     }
 
-    const providers = this._compilerProviders;
+    const providers = [];
+    const compilerOptions = this.platform.injector.get(COMPILER_OPTIONS);
+    compilerOptions.forEach(opts => {
+      if (opts.providers) {
+        providers.push(opts.providers);
+      }
+    });
+    providers.push(...this._compilerProviders);
 
     @NgModule({providers})
     class CompilerModule {
