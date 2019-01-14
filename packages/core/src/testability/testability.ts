@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '../di';
-import {scheduleMicroTask} from '../util';
+import {scheduleMicroTask} from '../util/microtask';
 import {NgZone} from '../zone/ng_zone';
 
 /**
@@ -67,11 +67,14 @@ export class Testability implements PublicTestability {
   private _didWork: boolean = false;
   private _callbacks: WaitCallback[] = [];
 
-  private taskTrackingZone: any;
+  private taskTrackingZone: {macroTasks: Task[]}|null = null;
 
   constructor(private _ngZone: NgZone) {
     this._watchAngularEvents();
-    _ngZone.run(() => { this.taskTrackingZone = Zone.current.get('TaskTrackingZone'); });
+    _ngZone.run(() => {
+      this.taskTrackingZone =
+          typeof Zone == 'undefined' ? null : Zone.current.get('TaskTrackingZone');
+    });
   }
 
   private _watchAngularEvents(): void {

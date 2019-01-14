@@ -11,7 +11,7 @@ import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, Event
 import * as angular from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
-import {getComponentName, hookupNgModel, strictEquals} from './util';
+import {getTypeName, hookupNgModel, strictEquals} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -81,7 +81,7 @@ export class DowngradeComponentAdapter {
     hookupNgModel(this.ngModel, this.component);
   }
 
-  setupInputs(needsNgZone: boolean, propagateDigest = true): void {
+  setupInputs(manuallyAttachView: boolean, propagateDigest = true): void {
     const attrs = this.attrs;
     const inputs = this.componentFactory.inputs || [];
     for (let i = 0; i < inputs.length; i++) {
@@ -159,7 +159,7 @@ export class DowngradeComponentAdapter {
 
     // If necessary, attach the view so that it will be dirty-checked.
     // (Allow time for the initial input values to be set and `ngOnChanges()` to be called.)
-    if (needsNgZone || !propagateDigest) {
+    if (manuallyAttachView || !propagateDigest) {
       let unwatch: Function|null = this.componentScope.$watch(() => {
         unwatch !();
         unwatch = null;
@@ -208,7 +208,7 @@ export class DowngradeComponentAdapter {
       });
     } else {
       throw new Error(
-          `Missing emitter '${output.prop}' on component '${getComponentName(this.componentFactory.componentType)}'!`);
+          `Missing emitter '${output.prop}' on component '${getTypeName(this.componentFactory.componentType)}'!`);
     }
   }
 

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, NgZone, StaticProvider, Testability, Type} from '@angular/core';
+import {Compiler, CompilerOptions, Injector, NgModule, NgModuleRef, NgZone, StaticProvider, Testability, Type, resolveForwardRef} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../common/angular1';
-import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY} from '../common/constants';
+import {$$TESTABILITY, $COMPILE, $INJECTOR, $ROOT_SCOPE, COMPILER_KEY, INJECTOR_KEY, LAZY_MODULE_REF, NG_ZONE_KEY, UPGRADE_APP_TYPE_KEY} from '../common/constants';
 import {downgradeComponent} from '../common/downgrade_component';
 import {downgradeInjectable} from '../common/downgrade_injectable';
-import {Deferred, LazyModuleRef, controllerKey, onError} from '../common/util';
+import {Deferred, LazyModuleRef, UpgradeAppType, controllerKey, onError} from '../common/util';
 
 import {UpgradeNg1ComponentAdapterBuilder} from './upgrade_ng1_adapter';
 
@@ -506,13 +506,11 @@ export class UpgradeAdapter {
 
     this.ngZone = new NgZone({enableLongStackTrace: Zone.hasOwnProperty('longStackTraceZoneSpec')});
     this.ng2BootstrapDeferred = new Deferred();
-    ng1Module.factory(INJECTOR_KEY, () => this.moduleRef !.injector.get(Injector))
+    ng1Module.constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Dynamic)
+        .factory(INJECTOR_KEY, () => this.moduleRef !.injector.get(Injector))
         .factory(
             LAZY_MODULE_REF,
-            [
-              INJECTOR_KEY,
-              (injector: Injector) => ({ injector, needsNgZone: false } as LazyModuleRef)
-            ])
+            [INJECTOR_KEY, (injector: Injector) => ({ injector } as LazyModuleRef)])
         .constant(NG_ZONE_KEY, this.ngZone)
         .factory(COMPILER_KEY, () => this.moduleRef !.injector.get(Compiler))
         .config([
@@ -573,7 +571,7 @@ export class UpgradeAdapter {
                   {provide: $COMPILE, useFactory: () => ng1Injector.get($COMPILE)},
                   this.upgradedProviders
                 ],
-                imports: [this.ng2AppModule],
+                imports: [resolveForwardRef(this.ng2AppModule)],
                 entryComponents: this.downgradedComponents
               };
               // At this point we have ng1 injector and we have prepared

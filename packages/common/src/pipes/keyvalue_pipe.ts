@@ -36,7 +36,7 @@ export interface KeyValue<K, V> {
  * @usageNotes
  * ### Examples
  *
- * This examples show how an Object or a Map and be iterated by ngFor with the use of this keyvalue
+ * This examples show how an Object or a Map can be iterated by ngFor with the use of this keyvalue
  * pipe.
  *
  * {@example common/pipes/ts/keyvalue_pipe.ts region='KeyValuePipe'}
@@ -47,10 +47,8 @@ export interface KeyValue<K, V> {
 export class KeyValuePipe implements PipeTransform {
   constructor(private readonly differs: KeyValueDiffers) {}
 
-  // TODO(issue/24571): remove '!'.
   private differ !: KeyValueDiffer<any, any>;
-  // TODO(issue/24571): remove '!'.
-  private keyValues !: Array<KeyValue<any, any>>;
+  private keyValues: Array<KeyValue<any, any>> = [];
 
   transform<K, V>(input: null, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): null;
   transform<V>(

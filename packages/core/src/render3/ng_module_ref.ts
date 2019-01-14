@@ -6,35 +6,38 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../di/injector';
-import {StaticProvider} from '../di/provider';
+import {INJECTOR, Injector} from '../di/injector';
+import {InjectFlags} from '../di/interface/injector';
+import {StaticProvider} from '../di/interface/provider';
 import {createInjector} from '../di/r3_injector';
+import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {NgModuleDef} from '../metadata/ng_module';
-import {Type} from '../type';
-import {stringify} from '../util';
-import {assertDefined} from './assert';
+import {assertDefined} from '../util/assert';
+import {stringify} from '../util/stringify';
+
 import {ComponentFactoryResolver} from './component_ref';
 import {getNgModuleDef} from './definition';
 
-export interface NgModuleType { ngModuleDef: NgModuleDef<any>; }
+export interface NgModuleType<T = any> extends Type<T> { ngModuleDef: NgModuleDef<T>; }
 
-export const COMPONENT_FACTORY_RESOLVER: StaticProvider = {
+const COMPONENT_FACTORY_RESOLVER: StaticProvider = {
   provide: viewEngine_ComponentFactoryResolver,
-  useFactory: () => new ComponentFactoryResolver(),
-  deps: [],
+  useClass: ComponentFactoryResolver,
+  deps: [viewEngine_NgModuleRef],
 };
 
 export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements InternalNgModuleRef<T> {
   // tslint:disable-next-line:require-internal-with-underscore
   _bootstrapComponents: Type<any>[] = [];
-  injector: Injector;
-  componentFactoryResolver: viewEngine_ComponentFactoryResolver;
+  // tslint:disable-next-line:require-internal-with-underscore
+  _r3Injector: Injector;
+  injector: Injector = this;
   instance: T;
   destroyCbs: (() => void)[]|null = [];
 
-  constructor(ngModuleType: Type<T>, parentInjector: Injector|null) {
+  constructor(ngModuleType: Type<T>, public _parent: Injector|null) {
     super();
     const ngModuleDef = getNgModuleDef(ngModuleType);
     ngDevMode && assertDefined(
@@ -43,14 +46,26 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
 
     this._bootstrapComponents = ngModuleDef !.bootstrap;
     const additionalProviders: StaticProvider[] = [
-      COMPONENT_FACTORY_RESOLVER, {
+      {
         provide: viewEngine_NgModuleRef,
         useValue: this,
-      }
+      },
+      COMPONENT_FACTORY_RESOLVER
     ];
-    this.injector = createInjector(ngModuleType, parentInjector, additionalProviders);
-    this.instance = this.injector.get(ngModuleType);
-    this.componentFactoryResolver = new ComponentFactoryResolver();
+    this._r3Injector = createInjector(ngModuleType, _parent, additionalProviders);
+    this.instance = this.get(ngModuleType);
+  }
+
+  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
+      injectFlags: InjectFlags = InjectFlags.Default): any {
+    if (token === Injector || token === viewEngine_NgModuleRef || token === INJECTOR) {
+      return this;
+    }
+    return this._r3Injector.get(token, notFoundValue, injectFlags);
+  }
+
+  get componentFactoryResolver(): viewEngine_ComponentFactoryResolver {
+    return this.get(viewEngine_ComponentFactoryResolver);
   }
 
   destroy(): void {

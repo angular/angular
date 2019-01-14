@@ -5,25 +5,27 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, resolve} from 'canonical-path';
-import {existsSync, lstatSync, readdirSync, writeFileSync} from 'fs';
+import {dirname} from 'canonical-path';
+import {existsSync, writeFileSync} from 'fs';
 import {mkdir, mv} from 'shelljs';
 import * as ts from 'typescript';
 
-import {DecorationAnalyzer} from '../analysis/decoration_analyzer';
-import {SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
-import {DtsMapper} from '../host/dts_mapper';
+import {CompiledFile, DecorationAnalyzer} from '../analysis/decoration_analyzer';
+import {ModuleWithProvidersAnalyses, ModuleWithProvidersAnalyzer} from '../analysis/module_with_providers_analyzer';
+import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
+import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
+import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
-import {Fesm2015ReflectionHost} from '../host/fesm2015_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
-import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
-import {Fesm2015Renderer} from '../rendering/fesm2015_renderer';
+import {EsmRenderer} from '../rendering/esm_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
 
-import {checkMarkerFile, writeMarkerFile} from './build_marker';
-import {EntryPoint, EntryPointFormat} from './entry_point';
+import {EntryPoint} from './entry_point';
+import {EntryPointBundle} from './entry_point_bundle';
+
+
 
 /**
  * A Package is stored in a directory on disk and that directory can contain one or more package
@@ -33,9 +35,11 @@ import {EntryPoint, EntryPointFormat} from './entry_point';
  * parsed to identify the decorated exported classes that need to be analyzed and compiled by one or
  * more `DecoratorHandler` objects.
  *
- * Each entry point to a package is identified by a `SourceFile` that can be parsed and analyzed to
+ * Each entry point to a package is identified by a `package.json` which contains properties that
+ * indicate what formatted bundles are accessible via this end-point.
+ *
+ * Each bundle is identified by a root `SourceFile` that can be parsed and analyzed to
  * identify classes that need to be transformed; and then finally rendered and written to disk.
- * The actual file which needs to be transformed depends upon the package format.
  *
  * Along with the source files, the corresponding source maps (either inline or external) and
  * `.d.ts` files are transformed accordingly.
@@ -47,105 +51,81 @@ import {EntryPoint, EntryPointFormat} from './entry_point';
 export class Transformer {
   constructor(private sourcePath: string, private targetPath: string) {}
 
-  transform(entryPoint: EntryPoint, format: EntryPointFormat): void {
-    if (checkMarkerFile(entryPoint, format)) {
-      return;
-    }
+  /**
+   * Transform the source (and typings) files of a bundle.
+   * @param bundle the bundle to transform.
+   */
+  transform(entryPoint: EntryPoint, isCore: boolean, bundle: EntryPointBundle): void {
+    console.warn(`Compiling ${entryPoint.name} - ${bundle.format}`);
 
-    const options: ts.CompilerOptions = {
-      allowJs: true,
-      maxNodeModuleJsDepth: Infinity,
-      rootDir: entryPoint.path,
-    };
-
-    // Create the TS program and necessary helpers.
-    // TODO : create a custom compiler host that reads from .bak files if available.
-    const host = ts.createCompilerHost(options);
-    const rootDirs = this.getRootDirs(host, options);
-    const entryPointFilePath = entryPoint[format];
-    if (!entryPointFilePath) {
-      throw new Error(
-          `Missing entry point file for format, ${format}, in package, ${entryPoint.path}.`);
-    }
-    const isCore = entryPoint.name === '@angular/core';
-    const r3SymbolsPath = isCore ? this.findR3SymbolsPath(dirname(entryPointFilePath)) : null;
-    const rootPaths = r3SymbolsPath ? [entryPointFilePath, r3SymbolsPath] : [entryPointFilePath];
-    const packageProgram = ts.createProgram(rootPaths, options, host);
-    const dtsMapper = new DtsMapper(dirname(entryPointFilePath), dirname(entryPoint.typings));
-    const reflectionHost = this.getHost(isCore, format, packageProgram, dtsMapper);
-    const r3SymbolsFile = r3SymbolsPath && packageProgram.getSourceFile(r3SymbolsPath) || null;
+    const reflectionHost = this.getHost(isCore, bundle);
 
     // Parse and analyze the files.
-    const {decorationAnalyses, switchMarkerAnalyses} =
-        this.analyzeProgram(packageProgram, reflectionHost, rootDirs, isCore);
+    const {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+           moduleWithProvidersAnalyses} = this.analyzeProgram(reflectionHost, isCore, bundle);
 
     // Transform the source files and source maps.
-    const renderer =
-        this.getRenderer(format, packageProgram, reflectionHost, isCore, r3SymbolsFile, dtsMapper);
-    const renderedFiles =
-        renderer.renderProgram(packageProgram, decorationAnalyses, switchMarkerAnalyses);
+    const renderer = this.getRenderer(reflectionHost, isCore, bundle);
+    const renderedFiles = renderer.renderProgram(
+        decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+        moduleWithProvidersAnalyses);
 
     // Write out all the transformed files.
     renderedFiles.forEach(file => this.writeFile(file));
-
-    // Write the built-with-ngcc marker
-    writeMarkerFile(entryPoint, format);
   }
 
-  getRootDirs(host: ts.CompilerHost, options: ts.CompilerOptions) {
-    if (options.rootDirs !== undefined) {
-      return options.rootDirs;
-    } else if (options.rootDir !== undefined) {
-      return [options.rootDir];
-    } else {
-      return [host.getCurrentDirectory()];
-    }
-  }
-
-  getHost(isCore: boolean, format: string, program: ts.Program, dtsMapper: DtsMapper):
-      NgccReflectionHost {
-    switch (format) {
+  getHost(isCore: boolean, bundle: EntryPointBundle): NgccReflectionHost {
+    const typeChecker = bundle.src.program.getTypeChecker();
+    switch (bundle.format) {
       case 'esm2015':
-        return new Esm2015ReflectionHost(isCore, program.getTypeChecker(), dtsMapper);
       case 'fesm2015':
-        return new Fesm2015ReflectionHost(isCore, program.getTypeChecker());
+        return new Esm2015ReflectionHost(isCore, typeChecker, bundle.dts);
       case 'esm5':
       case 'fesm5':
-        return new Esm5ReflectionHost(isCore, program.getTypeChecker());
+        return new Esm5ReflectionHost(isCore, typeChecker);
       default:
-        throw new Error(`Relection host for "${format}" not yet implemented.`);
+        throw new Error(`Reflection host for "${bundle.format}" not yet implemented.`);
     }
   }
 
-  getRenderer(
-      format: string, program: ts.Program, host: NgccReflectionHost, isCore: boolean,
-      rewriteCoreImportsTo: ts.SourceFile|null, dtsMapper: DtsMapper): Renderer {
-    switch (format) {
+  getRenderer(host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle): Renderer {
+    switch (bundle.format) {
       case 'esm2015':
-        return new Esm2015Renderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath, dtsMapper);
       case 'fesm2015':
-        return new Fesm2015Renderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath);
+        return new EsmRenderer(host, isCore, bundle, this.sourcePath, this.targetPath);
       case 'esm5':
       case 'fesm5':
-        return new Esm5Renderer(
-            host, isCore, rewriteCoreImportsTo, this.sourcePath, this.targetPath);
+        return new Esm5Renderer(host, isCore, bundle, this.sourcePath, this.targetPath);
       default:
-        throw new Error(`Renderer for "${format}" not yet implemented.`);
+        throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);
     }
   }
 
-  analyzeProgram(
-      program: ts.Program, reflectionHost: NgccReflectionHost, rootDirs: string[],
-      isCore: boolean) {
-    const decorationAnalyzer =
-        new DecorationAnalyzer(program.getTypeChecker(), reflectionHost, rootDirs, isCore);
+  analyzeProgram(reflectionHost: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle):
+      ProgramAnalyses {
+    const typeChecker = bundle.src.program.getTypeChecker();
+    const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
+
     const switchMarkerAnalyzer = new SwitchMarkerAnalyzer(reflectionHost);
-    return {
-      decorationAnalyses: decorationAnalyzer.analyzeProgram(program),
-      switchMarkerAnalyses: switchMarkerAnalyzer.analyzeProgram(program),
-    };
+    const switchMarkerAnalyses = switchMarkerAnalyzer.analyzeProgram(bundle.src.program);
+
+    const decorationAnalyzer = new DecorationAnalyzer(
+        bundle.src.program, bundle.src.options, bundle.src.host, typeChecker, reflectionHost,
+        referencesRegistry, bundle.rootDirs, isCore);
+    const decorationAnalyses = decorationAnalyzer.analyzeProgram();
+
+    const moduleWithProvidersAnalyzer =
+        bundle.dts && new ModuleWithProvidersAnalyzer(reflectionHost, referencesRegistry);
+    const moduleWithProvidersAnalyses = moduleWithProvidersAnalyzer &&
+        moduleWithProvidersAnalyzer.analyzeProgram(bundle.src.program);
+
+    const privateDeclarationsAnalyzer =
+        new PrivateDeclarationsAnalyzer(reflectionHost, referencesRegistry);
+    const privateDeclarationsAnalyses =
+        privateDeclarationsAnalyzer.analyzeProgram(bundle.src.program);
+
+    return {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
+            moduleWithProvidersAnalyses};
   }
 
   writeFile(file: FileInfo): void {
@@ -156,32 +136,12 @@ export class Transformer {
     }
     writeFileSync(file.path, file.contents, 'utf8');
   }
+}
 
-  findR3SymbolsPath(directory: string): string|null {
-    const r3SymbolsFilePath = resolve(directory, 'r3_symbols.js');
-    if (existsSync(r3SymbolsFilePath)) {
-      return r3SymbolsFilePath;
-    }
 
-    const subDirectories =
-        readdirSync(directory)
-            // Not interested in hidden files
-            .filter(p => !p.startsWith('.'))
-            // Ignore node_modules
-            .filter(p => p !== 'node_modules')
-            // Only interested in directories (and only those that are not symlinks)
-            .filter(p => {
-              const stat = lstatSync(resolve(directory, p));
-              return stat.isDirectory() && !stat.isSymbolicLink();
-            });
-
-    for (const subDirectory of subDirectories) {
-      const r3SymbolsFilePath = this.findR3SymbolsPath(resolve(directory, subDirectory));
-      if (r3SymbolsFilePath) {
-        return r3SymbolsFilePath;
-      }
-    }
-
-    return null;
-  }
+interface ProgramAnalyses {
+  decorationAnalyses: Map<ts.SourceFile, CompiledFile>;
+  switchMarkerAnalyses: SwitchMarkerAnalyses;
+  privateDeclarationsAnalyses: ExportInfo[];
+  moduleWithProvidersAnalyses: ModuleWithProvidersAnalyses|null;
 }

@@ -31,15 +31,22 @@ export class Identifiers {
 
   static elementProperty: o.ExternalReference = {name: 'ɵelementProperty', moduleName: CORE};
 
+  static componentHostSyntheticProperty:
+      o.ExternalReference = {name: 'ɵcomponentHostSyntheticProperty', moduleName: CORE};
+
   static elementAttribute: o.ExternalReference = {name: 'ɵelementAttribute', moduleName: CORE};
 
   static elementClassProp: o.ExternalReference = {name: 'ɵelementClassProp', moduleName: CORE};
 
-  static elementContainerStart: o.ExternalReference = {name: 'ɵEC', moduleName: CORE};
+  static elementContainerStart:
+      o.ExternalReference = {name: 'ɵelementContainerStart', moduleName: CORE};
 
-  static elementContainerEnd: o.ExternalReference = {name: 'ɵeC', moduleName: CORE};
+  static elementContainerEnd:
+      o.ExternalReference = {name: 'ɵelementContainerEnd', moduleName: CORE};
 
   static elementStyling: o.ExternalReference = {name: 'ɵelementStyling', moduleName: CORE};
+
+  static elementHostAttrs: o.ExternalReference = {name: 'ɵelementHostAttrs', moduleName: CORE};
 
   static elementStylingMap: o.ExternalReference = {name: 'ɵelementStylingMap', moduleName: CORE};
 
@@ -63,6 +70,8 @@ export class Identifiers {
   static enableBindings: o.ExternalReference = {name: 'ɵenableBindings', moduleName: CORE};
 
   static disableBindings: o.ExternalReference = {name: 'ɵdisableBindings', moduleName: CORE};
+
+  static allocHostVars: o.ExternalReference = {name: 'ɵallocHostVars', moduleName: CORE};
 
   static getCurrentView: o.ExternalReference = {name: 'ɵgetCurrentView', moduleName: CORE};
 
@@ -95,11 +104,13 @@ export class Identifiers {
   static pipeBind4: o.ExternalReference = {name: 'ɵpipeBind4', moduleName: CORE};
   static pipeBindV: o.ExternalReference = {name: 'ɵpipeBindV', moduleName: CORE};
 
-  static i18nAttribute: o.ExternalReference = {name: 'ɵi18nAttribute', moduleName: CORE};
+  static i18n: o.ExternalReference = {name: 'ɵi18n', moduleName: CORE};
+  static i18nAttributes: o.ExternalReference = {name: 'ɵi18nAttributes', moduleName: CORE};
   static i18nExp: o.ExternalReference = {name: 'ɵi18nExp', moduleName: CORE};
   static i18nStart: o.ExternalReference = {name: 'ɵi18nStart', moduleName: CORE};
   static i18nEnd: o.ExternalReference = {name: 'ɵi18nEnd', moduleName: CORE};
   static i18nApply: o.ExternalReference = {name: 'ɵi18nApply', moduleName: CORE};
+  static i18nPostprocess: o.ExternalReference = {name: 'ɵi18nPostprocess', moduleName: CORE};
 
   static load: o.ExternalReference = {name: 'ɵload', moduleName: CORE};
   static loadQueryList: o.ExternalReference = {name: 'ɵloadQueryList', moduleName: CORE};
@@ -119,6 +130,10 @@ export class Identifiers {
 
   static templateRefExtractor:
       o.ExternalReference = {name: 'ɵtemplateRefExtractor', moduleName: CORE};
+
+  static resolveWindow: o.ExternalReference = {name: 'ɵresolveWindow', moduleName: CORE};
+  static resolveDocument: o.ExternalReference = {name: 'ɵresolveDocument', moduleName: CORE};
+  static resolveBody: o.ExternalReference = {name: 'ɵresolveBody', moduleName: CORE};
 
   static defineBase: o.ExternalReference = {name: 'ɵdefineBase', moduleName: CORE};
 
@@ -170,12 +185,10 @@ export class Identifiers {
   static registerContentQuery:
       o.ExternalReference = {name: 'ɵregisterContentQuery', moduleName: CORE};
 
-  static NgOnChangesFeature: o.ExternalReference = {name: 'ɵNgOnChangesFeature', moduleName: CORE};
-
   static InheritDefinitionFeature:
       o.ExternalReference = {name: 'ɵInheritDefinitionFeature', moduleName: CORE};
 
-  static PublicFeature: o.ExternalReference = {name: 'ɵPublicFeature', moduleName: CORE};
+  static ProvidersFeature: o.ExternalReference = {name: 'ɵProvidersFeature', moduleName: CORE};
 
   static listener: o.ExternalReference = {name: 'ɵlistener', moduleName: CORE};
 
@@ -198,4 +211,6 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵsanitizeResourceUrl', moduleName: CORE};
   static sanitizeScript: o.ExternalReference = {name: 'ɵsanitizeScript', moduleName: CORE};
   static sanitizeUrl: o.ExternalReference = {name: 'ɵsanitizeUrl', moduleName: CORE};
+  static sanitizeUrlOrResourceUrl:
+      o.ExternalReference = {name: 'ɵsanitizeUrlOrResourceUrl', moduleName: CORE};
 }

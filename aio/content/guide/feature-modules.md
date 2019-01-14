@@ -161,7 +161,7 @@ Angular CLI로 만든  `CustomerDashboardComponent`의 템플릿 파일인 `cust
 
 
 <!--
-To see this HTML in the `AppComponent`, you first have to export the `CustomerDashboardComponent` in the `CustomerDashboardModule`. In `customer-dashboard.module.ts`, just beneath the `declarations` array, add an `exports` array containing `CustomerDashboardModule`:
+To see this HTML in the `AppComponent`, you first have to export the `CustomerDashboardComponent` in the `CustomerDashboardModule`. In `customer-dashboard.module.ts`, just beneath the `declarations` array, add an `exports` array containing `CustomerDashboardComponent`:
 -->
 이 컴포넌트를 `AppComponent`의 템플릿에 추가하려면, 먼저 `CustomerDashboardComponent`를 모듈 외부로 공개해야 합니다.
 `customer-dashboard.module.ts` 파일의 `declarations` 배열 밑에 `exports` 배열을 추가하고 이 배열에 `CustomerDashboardComponent`를 추가합니다:

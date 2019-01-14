@@ -11,6 +11,7 @@ import {Injector} from '@angular/core';
 import {LoadedRouterConfig, RunGuardsAndResolvers} from '../config';
 import {ChildrenOutletContexts, OutletContext} from '../router_outlet_context';
 import {ActivatedRouteSnapshot, RouterStateSnapshot, equalParamsAndUrlSegments} from '../router_state';
+import {equalPath} from '../url_tree';
 import {forEach, shallowEqual} from '../utils/collection';
 import {TreeNode, nodeChildrenAsMap} from '../utils/tree';
 
@@ -121,8 +122,8 @@ function getRouteGuards(
     }
 
     if (shouldRun) {
-      const outlet = context !.outlet !;
-      checks.canDeactivateChecks.push(new CanDeactivate(outlet.component, curr));
+      const component = context && context.outlet && context.outlet.component || null;
+      checks.canDeactivateChecks.push(new CanDeactivate(component, curr));
     }
   } else {
     if (curr) {
@@ -146,7 +147,17 @@ function getRouteGuards(
 function shouldRunGuardsAndResolvers(
     curr: ActivatedRouteSnapshot, future: ActivatedRouteSnapshot,
     mode: RunGuardsAndResolvers | undefined): boolean {
+  if (typeof mode === 'function') {
+    return mode(curr, future);
+  }
   switch (mode) {
+    case 'pathParamsChange':
+      return !equalPath(curr.url, future.url);
+
+    case 'pathParamsOrQueryParamsChange':
+      return !equalPath(curr.url, future.url) ||
+          !shallowEqual(curr.queryParams, future.queryParams);
+
     case 'always':
       return true;
 

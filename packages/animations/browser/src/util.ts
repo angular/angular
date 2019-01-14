@@ -65,7 +65,7 @@ function parseTimeExpression(
 
     const delayMatch = matches[3];
     if (delayMatch != null) {
-      delay = _convertTimeValueToMS(Math.floor(parseFloat(delayMatch)), matches[4]);
+      delay = _convertTimeValueToMS(parseFloat(delayMatch), matches[4]);
     }
 
     const easingVal = matches[5];

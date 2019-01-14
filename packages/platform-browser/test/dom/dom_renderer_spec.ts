@@ -8,9 +8,9 @@
 import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {NAMESPACE_URIS} from '@angular/platform-browser/src/dom/dom_renderer';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
 
 {
   describe('DefaultDomRendererV2', () => {

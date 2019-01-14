@@ -22,4 +22,4 @@ protractor_web_test = _protractor_web_test
 protractor_web_test_suite = _protractor_web_test_suite
 ng_setup_workspace = _ng_setup_workspace
 # DO NOT ADD PUBLIC API without including in the documentation generation
-# Run `bazel build //packages/bazel/docs` to verify
+# Run `yarn bazel build //packages/bazel/docs` to verify

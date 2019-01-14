@@ -322,7 +322,7 @@ Here are two sample components and the `AdComponent` interface for reference:
 우리가 구현한 광고 배너의 최종 결과물은 다음과 같습니다:
 
 <figure>
-  <img src="generated/images/guide/dynamic-component-loader/ads.gif" alt="Ads">
+  <img src="generated/images/guide/dynamic-component-loader/ads-example.gif" alt="Ads">
 </figure>
 
 

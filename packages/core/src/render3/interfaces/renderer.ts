@@ -26,6 +26,12 @@ export enum RendererStyleFlags3 {
 
 export type Renderer3 = ObjectOrientedRenderer3 | ProceduralRenderer3;
 
+export type GlobalTargetName = 'document' | 'window' | 'body';
+
+export type GlobalTargetResolver = (element: any) => {
+  name: GlobalTargetName, target: EventTarget
+};
+
 /**
  * Object Oriented style of API needed to create elements and text nodes.
  *
@@ -71,6 +77,9 @@ export interface ProceduralRenderer3 {
   removeChild(parent: RElement, oldChild: RNode): void;
   selectRootElement(selectorOrNode: string|any): RElement;
 
+  parentNode(node: RNode): RElement|null;
+  nextSibling(node: RNode): RNode|null;
+
   setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void;
   removeAttribute(el: RElement, name: string, namespace?: string|null): void;
   addClass(el: RElement, name: string): void;
@@ -80,10 +89,12 @@ export interface ProceduralRenderer3 {
       flags?: RendererStyleFlags2|RendererStyleFlags3): void;
   removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|RendererStyleFlags3): void;
   setProperty(el: RElement, name: string, value: any): void;
-  setValue(node: RText, value: string): void;
+  setValue(node: RText|RComment, value: string): void;
 
   // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
-  listen(target: RNode, eventName: string, callback: (event: any) => boolean | void): () => void;
+  listen(
+      target: GlobalTargetName|RNode, eventName: string,
+      callback: (event: any) => boolean | void): () => void;
 }
 
 export interface RendererFactory3 {
@@ -99,6 +110,10 @@ export const domRendererFactory3: RendererFactory3 = {
 
 /** Subset of API needed for appending elements and text nodes. */
 export interface RNode {
+  parentNode: RNode|null;
+
+  nextSibling: RNode|null;
+
   removeChild(oldChild: RNode): void;
 
   /**
@@ -145,7 +160,7 @@ export interface RDomTokenList {
 
 export interface RText extends RNode { textContent: string|null; }
 
-export interface RComment extends RNode {}
+export interface RComment extends RNode { textContent: string|null; }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

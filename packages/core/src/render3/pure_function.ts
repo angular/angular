@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bindingUpdated, bindingUpdated2, bindingUpdated4, updateBinding, getBinding, getCreationMode, bindingUpdated3, getBindingRoot, getTView,} from './instructions';
+import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, getBinding, updateBinding} from './bindings';
+import {getBindingRoot, getLView, isCreationMode} from './state';
+
+
 
 /**
  * Bindings for pure functions are stored after regular bindings.
@@ -38,9 +41,10 @@ import {bindingUpdated, bindingUpdated2, bindingUpdated4, updateBinding, getBind
 export function pureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: any): T {
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
-  return getCreationMode() ?
-      updateBinding(bindingIndex, thisArg ? pureFn.call(thisArg) : pureFn()) :
-      getBinding(bindingIndex);
+  const lView = getLView();
+  return isCreationMode() ?
+      updateBinding(lView, bindingIndex, thisArg ? pureFn.call(thisArg) : pureFn()) :
+      getBinding(lView, bindingIndex);
 }
 
 /**
@@ -56,10 +60,11 @@ export function pureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: 
 export function pureFunction1(
     slotOffset: number, pureFn: (v: any) => any, exp: any, thisArg?: any): any {
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
+  const lView = getLView();
   const bindingIndex = getBindingRoot() + slotOffset;
-  return bindingUpdated(bindingIndex, exp) ?
-      updateBinding(bindingIndex + 1, thisArg ? pureFn.call(thisArg, exp) : pureFn(exp)) :
-      getBinding(bindingIndex + 1);
+  return bindingUpdated(lView, bindingIndex, exp) ?
+      updateBinding(lView, bindingIndex + 1, thisArg ? pureFn.call(thisArg, exp) : pureFn(exp)) :
+      getBinding(lView, bindingIndex + 1);
 }
 
 /**
@@ -78,10 +83,12 @@ export function pureFunction2(
     thisArg?: any): any {
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
-  return bindingUpdated2(bindingIndex, exp1, exp2) ?
+  const lView = getLView();
+  return bindingUpdated2(lView, bindingIndex, exp1, exp2) ?
       updateBinding(
-          bindingIndex + 2, thisArg ? pureFn.call(thisArg, exp1, exp2) : pureFn(exp1, exp2)) :
-      getBinding(bindingIndex + 2);
+          lView, bindingIndex + 2,
+          thisArg ? pureFn.call(thisArg, exp1, exp2) : pureFn(exp1, exp2)) :
+      getBinding(lView, bindingIndex + 2);
 }
 
 /**
@@ -101,11 +108,12 @@ export function pureFunction3(
     thisArg?: any): any {
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
-  return bindingUpdated3(bindingIndex, exp1, exp2, exp3) ?
+  const lView = getLView();
+  return bindingUpdated3(lView, bindingIndex, exp1, exp2, exp3) ?
       updateBinding(
-          bindingIndex + 3,
+          lView, bindingIndex + 3,
           thisArg ? pureFn.call(thisArg, exp1, exp2, exp3) : pureFn(exp1, exp2, exp3)) :
-      getBinding(bindingIndex + 3);
+      getBinding(lView, bindingIndex + 3);
 }
 
 /**
@@ -126,11 +134,12 @@ export function pureFunction4(
     exp3: any, exp4: any, thisArg?: any): any {
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
-  return bindingUpdated4(bindingIndex, exp1, exp2, exp3, exp4) ?
+  const lView = getLView();
+  return bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4) ?
       updateBinding(
-          bindingIndex + 4,
+          lView, bindingIndex + 4,
           thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4) : pureFn(exp1, exp2, exp3, exp4)) :
-      getBinding(bindingIndex + 4);
+      getBinding(lView, bindingIndex + 4);
 }
 
 /**
@@ -152,12 +161,13 @@ export function pureFunction5(
     exp2: any, exp3: any, exp4: any, exp5: any, thisArg?: any): any {
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
-  const different = bindingUpdated4(bindingIndex, exp1, exp2, exp3, exp4);
-  return bindingUpdated(bindingIndex + 4, exp5) || different ?
+  const lView = getLView();
+  const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
+  return bindingUpdated(lView, bindingIndex + 4, exp5) || different ?
       updateBinding(
-          bindingIndex + 5, thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5) :
-                                      pureFn(exp1, exp2, exp3, exp4, exp5)) :
-      getBinding(bindingIndex + 5);
+          lView, bindingIndex + 5, thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5) :
+                                             pureFn(exp1, exp2, exp3, exp4, exp5)) :
+      getBinding(lView, bindingIndex + 5);
 }
 
 /**
@@ -180,12 +190,14 @@ export function pureFunction6(
     exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, thisArg?: any): any {
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
-  const different = bindingUpdated4(bindingIndex, exp1, exp2, exp3, exp4);
-  return bindingUpdated2(bindingIndex + 4, exp5, exp6) || different ?
+  const lView = getLView();
+  const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
+  return bindingUpdated2(lView, bindingIndex + 4, exp5, exp6) || different ?
       updateBinding(
-          bindingIndex + 6, thisArg ? pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6) :
-                                      pureFn(exp1, exp2, exp3, exp4, exp5, exp6)) :
-      getBinding(bindingIndex + 6);
+          lView, bindingIndex + 6, thisArg ?
+              pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6) :
+              pureFn(exp1, exp2, exp3, exp4, exp5, exp6)) :
+      getBinding(lView, bindingIndex + 6);
 }
 
 /**
@@ -210,13 +222,14 @@ export function pureFunction7(
     exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, thisArg?: any): any {
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
-  let different = bindingUpdated4(bindingIndex, exp1, exp2, exp3, exp4);
-  return bindingUpdated3(bindingIndex + 4, exp5, exp6, exp7) || different ?
+  const lView = getLView();
+  let different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
+  return bindingUpdated3(lView, bindingIndex + 4, exp5, exp6, exp7) || different ?
       updateBinding(
-          bindingIndex + 7, thisArg ?
+          lView, bindingIndex + 7, thisArg ?
               pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6, exp7) :
               pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7)) :
-      getBinding(bindingIndex + 7);
+      getBinding(lView, bindingIndex + 7);
 }
 
 /**
@@ -243,13 +256,14 @@ export function pureFunction8(
     thisArg?: any): any {
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
-  const different = bindingUpdated4(bindingIndex, exp1, exp2, exp3, exp4);
-  return bindingUpdated4(bindingIndex + 4, exp5, exp6, exp7, exp8) || different ?
+  const lView = getLView();
+  const different = bindingUpdated4(lView, bindingIndex, exp1, exp2, exp3, exp4);
+  return bindingUpdated4(lView, bindingIndex + 4, exp5, exp6, exp7, exp8) || different ?
       updateBinding(
-          bindingIndex + 8, thisArg ?
+          lView, bindingIndex + 8, thisArg ?
               pureFn.call(thisArg, exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8) :
               pureFn(exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8)) :
-      getBinding(bindingIndex + 8);
+      getBinding(lView, bindingIndex + 8);
 }
 
 /**
@@ -270,9 +284,10 @@ export function pureFunctionV(
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   let bindingIndex = getBindingRoot() + slotOffset;
   let different = false;
+  const lView = getLView();
   for (let i = 0; i < exps.length; i++) {
-    bindingUpdated(bindingIndex++, exps[i]) && (different = true);
+    bindingUpdated(lView, bindingIndex++, exps[i]) && (different = true);
   }
-  return different ? updateBinding(bindingIndex, pureFn.apply(thisArg, exps)) :
-                     getBinding(bindingIndex);
+  return different ? updateBinding(lView, bindingIndex, pureFn.apply(thisArg, exps)) :
+                     getBinding(lView, bindingIndex);
 }

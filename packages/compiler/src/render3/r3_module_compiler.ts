@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticSymbol} from '../aot/static_symbol';
 import {CompileShallowModuleMetadata, identifierName} from '../compile_metadata';
 import {InjectableCompiler} from '../injectable_compiler';
 import {mapLiteral} from '../output/map_util';

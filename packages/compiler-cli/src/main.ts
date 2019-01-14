@@ -22,7 +22,7 @@ import {performWatchCompilation, createPerformWatchHost} from './perform_watch'
 
 export function main(
     args: string[], consoleError: (s: string) => void = console.error,
-    config?: NgcParsedConfiguration): number {
+    config?: NgcParsedConfiguration, customTransformers?: api.CustomTransformers): number {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
@@ -32,8 +32,12 @@ export function main(
     const result = watchMode(project, options, consoleError);
     return reportErrorsAndExit(result.firstCompileResult, options, consoleError);
   }
-  const {diagnostics: compileDiags} = performCompilation(
-      {rootNames, options, emitFlags, emitCallback: createEmitCallback(options)});
+  const {diagnostics: compileDiags} = performCompilation({
+    rootNames,
+    options,
+    emitFlags,
+    emitCallback: createEmitCallback(options), customTransformers
+  });
   return reportErrorsAndExit(compileDiags, options, consoleError);
 }
 

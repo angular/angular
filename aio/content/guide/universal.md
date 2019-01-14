@@ -62,7 +62,7 @@ Your app may have to launch faster to engage these users before they decide to d
 
 With Angular Universal, you can generate landing pages for the app that look like the complete app.
 The pages are pure HTML, and can display even if JavaScript is disabled.
-The pages don't handle browser events, but they _do_ support navigation through the site using `[routerLink](guide/router#router-link)`.
+The pages don't handle browser events, but they _do_ support navigation through the site using [`routerLink`](guide/router#router-link).
 
 In practice, you'll serve a static version of the landing page to hold the user's attention.
 At the same time, you'll load the full Angular app behind it. 
@@ -385,7 +385,6 @@ Set up a webpack configuration to handle the Node Express `server.ts` file and s
 In your app root directory, create a webpack configuration file (`webpack.server.config.js`) that compiles the `server.ts` file and its dependencies into `dist/server.js`.
 
 <code-example format="." language="typescript" linenums="false">
-@NgModule({
 const path = require('path');
 const webpack = require('webpack');
 

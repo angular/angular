@@ -61,6 +61,12 @@ BOILERPLATE_PATHS.i18n = [
   'package.json'
 ];
 
+BOILERPLATE_PATHS['service-worker'] = [
+  ...cliRelativePath,
+  'angular.json',
+  'package.json'
+];
+
 BOILERPLATE_PATHS.testing = [
   ...cliRelativePath,
   'angular.json'

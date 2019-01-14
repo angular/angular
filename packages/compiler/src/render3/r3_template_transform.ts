@@ -7,6 +7,7 @@
  */
 
 import {ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
+import * as i18n from '../i18n/i18n_ast';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
 import {isNgTemplate} from '../ml_parser/tags';
@@ -17,7 +18,7 @@ import {PreparsedElementType, preparseElement} from '../template_parser/template
 import {syntaxError} from '../util';
 
 import * as t from './r3_ast';
-
+import {I18N_ICU_VAR_PREFIX} from './view/i18n/util';
 
 const BIND_NAME_REGEXP =
     /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
@@ -44,16 +45,10 @@ const IDENT_PROPERTY_IDX = 9;
 const IDENT_EVENT_IDX = 10;
 
 const TEMPLATE_ATTR_PREFIX = '*';
-// Default selector used by `<ng-content>` if none specified
-const DEFAULT_CONTENT_SELECTOR = '*';
 
 // Result of the html AST to Ivy AST transformation
 export type Render3ParseResult = {
   nodes: t.Node[]; errors: ParseError[];
-  // Any non default (empty or '*') selector found in the template
-  ngContentSelectors: string[];
-  // Wether the template contains any `<ng-content>`
-  hasNgContent: boolean;
 };
 
 export function htmlAstToRender3Ast(
@@ -73,17 +68,11 @@ export function htmlAstToRender3Ast(
   return {
     nodes: ivyNodes,
     errors: allErrors,
-    ngContentSelectors: transformer.ngContentSelectors,
-    hasNgContent: transformer.hasNgContent,
   };
 }
 
 class HtmlAstToIvyAst implements html.Visitor {
   errors: ParseError[] = [];
-  // Selectors for the `ng-content` tags. Only non `*` selectors are recorded here
-  ngContentSelectors: string[] = [];
-  // Any `<ng-content>` in the template ?
-  hasNgContent = false;
 
   constructor(private bindingParser: BindingParser) {}
 
@@ -112,6 +101,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     const variables: t.Variable[] = [];
     const references: t.Reference[] = [];
     const attributes: t.TextAttribute[] = [];
+    const i18nAttrsMeta: {[key: string]: i18n.AST} = {};
 
     const templateParsedProperties: ParsedProperty[] = [];
     const templateVariables: t.Variable[] = [];
@@ -125,6 +115,10 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       // `*attr` defines template bindings
       let isTemplateBinding = false;
+
+      if (attribute.i18n) {
+        i18nAttrsMeta[attribute.name] = attribute.i18n;
+      }
 
       if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
         // *-attributes
@@ -162,74 +156,92 @@ class HtmlAstToIvyAst implements html.Visitor {
     let parsedElement: t.Node|undefined;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       // `<ng-content>`
-      this.hasNgContent = true;
-
       if (element.children && !element.children.every(isEmptyTextNode)) {
         this.reportError(`<ng-content> element cannot have content.`, element.sourceSpan);
       }
-
       const selector = preparsedElement.selectAttr;
-
-      let attributes: t.TextAttribute[] =
-          element.attrs.map(attribute => this.visitAttribute(attribute));
-
-      const selectorIndex =
-          selector === DEFAULT_CONTENT_SELECTOR ? 0 : this.ngContentSelectors.push(selector);
-      parsedElement = new t.Content(selectorIndex, attributes, element.sourceSpan);
+      const attrs: t.TextAttribute[] = element.attrs.map(attr => this.visitAttribute(attr));
+      parsedElement = new t.Content(selector, attrs, element.sourceSpan, element.i18n);
     } else if (isTemplateElement) {
       // `<ng-template>`
-      const attrs = this.extractAttributes(element.name, parsedProperties);
+      const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
 
       parsedElement = new t.Template(
-          attributes, attrs.bound, boundEvents, children, references, variables, element.sourceSpan,
-          element.startSourceSpan, element.endSourceSpan);
+          element.name, attributes, attrs.bound, boundEvents, children, references, variables,
+          element.sourceSpan, element.startSourceSpan, element.endSourceSpan, element.i18n);
     } else {
-      const attrs = this.extractAttributes(element.name, parsedProperties);
-
+      const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
       parsedElement = new t.Element(
           element.name, attributes, attrs.bound, boundEvents, children, references,
-          element.sourceSpan, element.startSourceSpan, element.endSourceSpan);
+          element.sourceSpan, element.startSourceSpan, element.endSourceSpan, element.i18n);
     }
 
     if (elementHasInlineTemplate) {
-      const attrs = this.extractAttributes('ng-template', templateParsedProperties);
+      const attrs = this.extractAttributes('ng-template', templateParsedProperties, i18nAttrsMeta);
       // TODO(pk): test for this case
       parsedElement = new t.Template(
-          attrs.literal, attrs.bound, [], [parsedElement], [], templateVariables,
-          element.sourceSpan, element.startSourceSpan, element.endSourceSpan);
+          (parsedElement as t.Element).name, attrs.literal, attrs.bound, [], [parsedElement], [],
+          templateVariables, element.sourceSpan, element.startSourceSpan, element.endSourceSpan,
+          element.i18n);
     }
     return parsedElement;
   }
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
-        attribute.name, attribute.value, attribute.sourceSpan, attribute.valueSpan);
+        attribute.name, attribute.value, attribute.sourceSpan, attribute.valueSpan, attribute.i18n);
   }
 
   visitText(text: html.Text): t.Node {
-    const valueNoNgsp = replaceNgsp(text.value);
-    const expr = this.bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan);
-    return expr ? new t.BoundText(expr, text.sourceSpan) : new t.Text(valueNoNgsp, text.sourceSpan);
+    return this._visitTextWithInterpolation(text.value, text.sourceSpan, text.i18n);
   }
 
-  visitComment(comment: html.Comment): null { return null; }
-
-  visitExpansion(expansion: html.Expansion): null { return null; }
+  visitExpansion(expansion: html.Expansion): t.Icu|null {
+    const meta = expansion.i18n as i18n.Message;
+    // do not generate Icu in case it was created
+    // outside of i18n block in a template
+    if (!meta) {
+      return null;
+    }
+    const vars: {[name: string]: t.BoundText} = {};
+    const placeholders: {[name: string]: t.Text | t.BoundText} = {};
+    // extract VARs from ICUs - we process them separately while
+    // assembling resulting message via goog.getMsg function, since
+    // we need to pass them to top-level goog.getMsg call
+    Object.keys(meta.placeholders).forEach(key => {
+      const value = meta.placeholders[key];
+      if (key.startsWith(I18N_ICU_VAR_PREFIX)) {
+        const config = this.bindingParser.interpolationConfig;
+        // ICU expression is a plain string, not wrapped into start
+        // and end tags, so we wrap it before passing to binding parser
+        const wrapped = `${config.start}${value}${config.end}`;
+        vars[key] = this._visitTextWithInterpolation(wrapped, expansion.sourceSpan) as t.BoundText;
+      } else {
+        placeholders[key] = this._visitTextWithInterpolation(value, expansion.sourceSpan);
+      }
+    });
+    return new t.Icu(vars, placeholders, expansion.sourceSpan, meta);
+  }
 
   visitExpansionCase(expansionCase: html.ExpansionCase): null { return null; }
 
+  visitComment(comment: html.Comment): null { return null; }
+
   // convert view engine `ParsedProperty` to a format suitable for IVY
-  private extractAttributes(elementName: string, properties: ParsedProperty[]):
+  private extractAttributes(
+      elementName: string, properties: ParsedProperty[], i18nPropsMeta: {[key: string]: i18n.AST}):
       {bound: t.BoundAttribute[], literal: t.TextAttribute[]} {
     const bound: t.BoundAttribute[] = [];
     const literal: t.TextAttribute[] = [];
 
     properties.forEach(prop => {
+      const i18n = i18nPropsMeta[prop.name];
       if (prop.isLiteral) {
-        literal.push(new t.TextAttribute(prop.name, prop.expression.source || '', prop.sourceSpan));
+        literal.push(new t.TextAttribute(
+            prop.name, prop.expression.source || '', prop.sourceSpan, undefined, i18n));
       } else {
         const bep = this.bindingParser.createBoundElementProperty(elementName, prop);
-        bound.push(t.BoundAttribute.fromBoundElementProperty(bep));
+        bound.push(t.BoundAttribute.fromBoundElementProperty(bep, i18n));
       }
     });
 
@@ -305,6 +317,13 @@ class HtmlAstToIvyAst implements html.Visitor {
     return hasBinding;
   }
 
+  private _visitTextWithInterpolation(value: string, sourceSpan: ParseSourceSpan, i18n?: i18n.AST):
+      t.Text|t.BoundText {
+    const valueNoNgsp = replaceNgsp(value);
+    const expr = this.bindingParser.parseInterpolation(valueNoNgsp, sourceSpan);
+    return expr ? new t.BoundText(expr, sourceSpan, i18n) : new t.Text(valueNoNgsp, sourceSpan);
+  }
+
   private parseVariable(
       identifier: string, value: string, sourceSpan: ParseSourceSpan, variables: t.Variable[]) {
     if (identifier.indexOf('-') > -1) {
@@ -360,7 +379,8 @@ class NonBindableVisitor implements html.Visitor {
   visitComment(comment: html.Comment): any { return null; }
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
-    return new t.TextAttribute(attribute.name, attribute.value, attribute.sourceSpan);
+    return new t.TextAttribute(
+        attribute.name, attribute.value, attribute.sourceSpan, undefined, attribute.i18n);
   }
 
   visitText(text: html.Text): t.Text { return new t.Text(text.value, text.sourceSpan); }

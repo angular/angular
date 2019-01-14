@@ -5,14 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import 'reflect-metadata';
 
-import {InjectorDef, defineInjectable} from '@angular/core/src/di/defs';
+import {ElementRef, QueryList} from '@angular/core';
 import {Injectable} from '@angular/core/src/di/injectable';
-import {inject, setCurrentInjector} from '@angular/core/src/di/injector';
+import {inject, setCurrentInjector} from '@angular/core/src/di/injector_compatibility';
+import {InjectorDef, defineInjectable} from '@angular/core/src/di/interface/defs';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
-import {Component, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
+import {ContentChild, ContentChildren, ViewChild, ViewChildren} from '@angular/core/src/metadata/di';
+import {Component, Directive, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
 import {NgModule, NgModuleDef} from '@angular/core/src/metadata/ng_module';
 import {ComponentDef, PipeDef} from '@angular/core/src/render3/interfaces/definition';
 
@@ -204,8 +205,8 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     const moduleDef: NgModuleDef<Module> = (Module as any).ngModuleDef;
-    expect(cmpDef.directiveDefs instanceof Function).toBe(true);
-    expect((cmpDef.directiveDefs as Function)()).toEqual([cmpDef]);
+    // directive defs are still null, since no directives were in that component
+    expect(cmpDef.directiveDefs).toBeNull();
   });
 
   it('should add hostbindings and hostlisteners', () => {
@@ -228,7 +229,7 @@ ivyEnabled && describe('render3 jit', () => {
     const cmpDef = (Cmp as any).ngComponentDef as ComponentDef<Cmp>;
 
     expect(cmpDef.hostBindings).toBeDefined();
-    expect(cmpDef.hostBindings !.length).toBe(2);
+    expect(cmpDef.hostBindings !.length).toBe(3);
   });
 
   it('should compile @Pipes without errors', () => {
@@ -239,7 +240,7 @@ ivyEnabled && describe('render3 jit', () => {
     const pipeDef = (P as any).ngPipeDef as PipeDef<P>;
     expect(pipeDef.name).toBe('test-pipe');
     expect(pipeDef.pure).toBe(false, 'pipe should not be pure');
-    expect(pipeDef.factory() instanceof P)
+    expect(pipeDef.factory(null) instanceof P)
         .toBe(true, 'factory() should create an instance of the pipe');
   });
 
@@ -250,6 +251,33 @@ ivyEnabled && describe('render3 jit', () => {
 
     const pipeDef = (P as any).ngPipeDef as PipeDef<P>;
     expect(pipeDef.pure).toBe(true, 'pipe should be pure');
+  });
+
+  it('should add @Input properties to a component', () => {
+    @Component({
+      selector: 'input-comp',
+      template: 'test',
+    })
+    class InputComp {
+      @Input('publicName') privateName = 'name1';
+    }
+
+    const InputCompAny = InputComp as any;
+    expect(InputCompAny.ngComponentDef.inputs).toEqual({publicName: 'privateName'});
+    expect(InputCompAny.ngComponentDef.declaredInputs).toEqual({publicName: 'privateName'});
+  });
+
+  it('should add @Input properties to a directive', () => {
+    @Directive({
+      selector: '[dir]',
+    })
+    class InputDir {
+      @Input('publicName') privateName = 'name1';
+    }
+
+    const InputDirAny = InputDir as any;
+    expect(InputDirAny.ngDirectiveDef.inputs).toEqual({publicName: 'privateName'});
+    expect(InputDirAny.ngDirectiveDef.declaredInputs).toEqual({publicName: 'privateName'});
   });
 
   it('should add ngBaseDef to types with @Input properties', () => {
@@ -276,6 +304,78 @@ ivyEnabled && describe('render3 jit', () => {
 
     expect((C as any).ngBaseDef).toBeDefined();
     expect((C as any).ngBaseDef.outputs).toEqual({prop1: 'alias1', prop2: 'alias2'});
+  });
+
+  it('should compile ContentChildren query with string predicate on a directive', () => {
+    @Directive({selector: '[test]'})
+    class TestDirective {
+      @ContentChildren('foo') foos: QueryList<ElementRef>|undefined;
+    }
+
+    expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
+    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
+  });
+
+  it('should compile ContentChild query with string predicate on a directive', () => {
+    @Directive({selector: '[test]'})
+    class TestDirective {
+      @ContentChild('foo') foo: ElementRef|undefined;
+    }
+
+    expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
+    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
+  });
+
+  it('should compile ContentChildren query with type predicate on a directive', () => {
+    class SomeDir {}
+
+    @Directive({selector: '[test]'})
+    class TestDirective {
+      @ContentChildren(SomeDir) dirs: QueryList<SomeDir>|undefined;
+    }
+
+    expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
+    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
+  });
+
+  it('should compile ContentChild query with type predicate on a directive', () => {
+    class SomeDir {}
+
+    @Directive({selector: '[test]'})
+    class TestDirective {
+      @ContentChild(SomeDir) dir: SomeDir|undefined;
+    }
+
+    expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
+    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
+  });
+
+  it('should not pick up view queries from directives', () => {
+    @Directive({selector: '[test]'})
+    class TestDirective {
+      @ViewChildren('foo') foos: QueryList<ElementRef>|undefined;
+    }
+
+    expect((TestDirective as any).ngDirectiveDef.contentQueries).toBeNull();
+    expect((TestDirective as any).ngDirectiveDef.viewQuery).toBeNull();
+  });
+
+  it('should compile ViewChild query on a component', () => {
+    @Component({selector: 'test', template: ''})
+    class TestComponent {
+      @ViewChild('foo') foo: ElementRef|undefined;
+    }
+
+    expect((TestComponent as any).ngComponentDef.foo).not.toBeNull();
+  });
+
+  it('should compile ViewChildren query on a component', () => {
+    @Component({selector: 'test', template: ''})
+    class TestComponent {
+      @ViewChildren('foo') foos: QueryList<ElementRef>|undefined;
+    }
+
+    expect((TestComponent as any).ngComponentDef.viewQuery).not.toBeNull();
   });
 });
 

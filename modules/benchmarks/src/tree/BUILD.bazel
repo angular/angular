@@ -13,3 +13,16 @@ ts_library(
         "//packages/core",
     ],
 )
+
+ts_library(
+    name = "perf_lib",
+    testonly = 1,
+    srcs = [
+        "tree_perf.spec.ts",
+    ],
+    deps = [
+        "//modules/e2e_util:lib",
+        "//packages:types",
+        "@ngdeps//protractor",
+    ],
+)

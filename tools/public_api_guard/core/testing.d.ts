@@ -47,6 +47,52 @@ export declare type MetadataOverride<T> = {
 
 export declare function resetFakeAsyncZone(): void;
 
+export interface TestBed {
+    ngModule: Type<any> | Type<any>[];
+    platform: PlatformRef;
+    compileComponents(): Promise<any>;
+    configureCompiler(config: {
+        providers?: any[];
+        useJit?: boolean;
+    }): void;
+    configureTestingModule(moduleDef: TestModuleMetadata): void;
+    createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    deprecatedOverrideProvider(token: any, provider: {
+        useFactory?: Function;
+        useValue?: any;
+        deps?: any[];
+    }): void;
+    /** @deprecated */ deprecatedOverrideProvider(token: any, provider: {
+        useFactory: Function;
+        deps: any[];
+    }): void;
+    deprecatedOverrideProvider(token: any, provider: {
+        useValue: any;
+    }): void;
+    execute(tokens: any[], fn: Function, context?: any): any;
+    get(token: any, notFoundValue?: any): any;
+    initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
+    overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;
+    overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void;
+    overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void;
+    overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void;
+    overrideProvider(token: any, provider: {
+        useFactory?: Function;
+        useValue?: any;
+        deps?: any[];
+    }): void;
+    overrideProvider(token: any, provider: {
+        useFactory: Function;
+        deps: any[];
+    }): void;
+    overrideProvider(token: any, provider: {
+        useValue: any;
+    }): void;
+    overrideTemplateUsingTestingModule(component: Type<any>, template: string): void;
+    resetTestEnvironment(): void;
+    resetTestingModule(): void;
+}
+
 export declare const TestBed: TestBedStatic;
 
 export interface TestBedStatic {

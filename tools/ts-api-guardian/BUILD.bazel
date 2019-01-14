@@ -78,6 +78,8 @@ jasmine_node_test(
     ]) + [
         ":ts-api-guardian",
         "@ts-api-guardian_deps//chalk",
+        # TODO: remove this once the boostrap.js workaround has been removed.
+        ":package.json",
     ],
     node_modules = "@ts-api-guardian_deps//typescript:typescript__typings",
     tags = ["local"],

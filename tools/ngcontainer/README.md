@@ -2,6 +2,9 @@
 
 This docker container provides everything needed to build and test Angular applications:
 
+**Note**: This docker image will be no longer actively updated. Consider using other Docker 
+images that come with Node installed. Bazel can be installed through the `@bazel/bazel` NPM package.
+
 - node 10.9.0
 - npm 6.2.0
 - yarn 1.9.2

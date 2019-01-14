@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../../type';
+import {Type} from '../../interface/type';
 import {fillProperties} from '../../util/property';
-import {EMPTY, EMPTY_ARRAY} from '../definition';
-import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../interfaces/definition';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
+import {ComponentDef, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../interfaces/definition';
 
 
 
@@ -60,7 +60,6 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
     }
 
     if (baseDef) {
-      // Merge inputs and outputs
       fillProperties(definition.inputs, baseDef.inputs);
       fillProperties(definition.declaredInputs, baseDef.declaredInputs);
       fillProperties(definition.outputs, baseDef.outputs);
@@ -72,9 +71,9 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
       const superHostBindings = superDef.hostBindings;
       if (superHostBindings) {
         if (prevHostBindings) {
-          definition.hostBindings = (directiveIndex: number, elementIndex: number) => {
-            superHostBindings(directiveIndex, elementIndex);
-            prevHostBindings(directiveIndex, elementIndex);
+          definition.hostBindings = (rf: RenderFlags, ctx: any, elementIndex: number) => {
+            superHostBindings(rf, ctx, elementIndex);
+            prevHostBindings(rf, ctx, elementIndex);
           };
         } else {
           definition.hostBindings = superHostBindings;
@@ -102,9 +101,9 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
       const superContentQueries = superDef.contentQueries;
       if (superContentQueries) {
         if (prevContentQueries) {
-          definition.contentQueries = () => {
-            superContentQueries();
-            prevContentQueries();
+          definition.contentQueries = (dirIndex: number) => {
+            superContentQueries(dirIndex);
+            prevContentQueries(dirIndex);
           };
         } else {
           definition.contentQueries = superContentQueries;
@@ -125,7 +124,6 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
         }
       }
 
-
       // Merge inputs and outputs
       fillProperties(definition.inputs, superDef.inputs);
       fillProperties(definition.declaredInputs, superDef.declaredInputs);
@@ -141,12 +139,13 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
       definition.doCheck = definition.doCheck || superDef.doCheck;
       definition.onDestroy = definition.onDestroy || superDef.onDestroy;
       definition.onInit = definition.onInit || superDef.onInit;
+      definition.onChanges = definition.onChanges || superDef.onChanges;
 
       // Run parent features
       const features = superDef.features;
       if (features) {
         for (const feature of features) {
-          if (feature && feature !== InheritDefinitionFeature) {
+          if (feature && feature.ngInherit) {
             (feature as DirectiveDefFeature)(definition);
           }
         }
@@ -156,18 +155,18 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
     } else {
       // Even if we don't have a definition, check the type for the hooks and use those if need be
       const superPrototype = superType.prototype;
-
       if (superPrototype) {
         definition.afterContentChecked =
-            definition.afterContentChecked || superPrototype.afterContentChecked;
+            definition.afterContentChecked || superPrototype.ngAfterContentChecked;
         definition.afterContentInit =
-            definition.afterContentInit || superPrototype.afterContentInit;
+            definition.afterContentInit || superPrototype.ngAfterContentInit;
         definition.afterViewChecked =
-            definition.afterViewChecked || superPrototype.afterViewChecked;
-        definition.afterViewInit = definition.afterViewInit || superPrototype.afterViewInit;
-        definition.doCheck = definition.doCheck || superPrototype.doCheck;
-        definition.onDestroy = definition.onDestroy || superPrototype.onDestroy;
-        definition.onInit = definition.onInit || superPrototype.onInit;
+            definition.afterViewChecked || superPrototype.ngAfterViewChecked;
+        definition.afterViewInit = definition.afterViewInit || superPrototype.ngAfterViewInit;
+        definition.doCheck = definition.doCheck || superPrototype.ngDoCheck;
+        definition.onDestroy = definition.onDestroy || superPrototype.ngOnDestroy;
+        definition.onInit = definition.onInit || superPrototype.ngOnInit;
+        definition.onChanges = definition.onChanges || superPrototype.ngOnChanges;
       }
     }
 
@@ -178,7 +177,7 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
 function maybeUnwrapEmpty<T>(value: T[]): T[];
 function maybeUnwrapEmpty<T>(value: T): T;
 function maybeUnwrapEmpty(value: any): any {
-  if (value === EMPTY) {
+  if (value === EMPTY_OBJ) {
     return {};
   } else if (value === EMPTY_ARRAY) {
     return [];

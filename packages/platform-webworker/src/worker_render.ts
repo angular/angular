@@ -133,7 +133,7 @@ function initWebWorkerRenderPlatform(injector: Injector): () => void {
     let scriptUri: string;
     try {
       scriptUri = injector.get(WORKER_SCRIPT);
-    } catch (e) {
+    } catch {
       throw new Error(
           'You must provide your WebWorker\'s initialization script with the WORKER_SCRIPT token');
     }

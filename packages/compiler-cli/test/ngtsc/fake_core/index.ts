@@ -61,3 +61,18 @@ export function forwardRef<T>(fn: () => T): T {
 }
 
 export interface SimpleChanges { [propName: string]: any; }
+
+export type ɵNgModuleDefWithMeta<ModuleT, DeclarationsT, ImportsT, ExportsT> = any;
+export type ɵDirectiveDefWithMeta<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> = any;
+
+export enum ViewEncapsulation {
+  Emulated = 0,
+  Native = 1,
+  None = 2,
+  ShadowDom = 3
+}
+
+export enum ChangeDetectionStrategy {
+  OnPush = 0,
+  Default = 1
+}

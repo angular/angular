@@ -13,6 +13,7 @@ import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_
 import {noop} from '../util/noop';
 
 
+
 /**
  * @deprecated Use `RendererType2` (and `Renderer2`) instead.
  * @publicApi
@@ -374,6 +375,7 @@ export abstract class Renderer2 {
       callback: (event: any) => boolean | void): () => void;
 
   /** @internal */
+  /** @nocollapse */
   static __NG_ELEMENT_ID__: () => Renderer2 = () => SWITCH_RENDERER2_FACTORY();
 }
 

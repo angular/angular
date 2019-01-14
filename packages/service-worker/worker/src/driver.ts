@@ -29,9 +29,9 @@ const IDLE_THRESHOLD = 5000;
 
 const SUPPORTED_CONFIG_VERSION = 1;
 
-const NOTIFICATION_OPTION_NAMES = [
-  'actions', 'badge', 'body', 'dir', 'icon', 'lang', 'renotify', 'requireInteraction', 'tag',
-  'vibrate', 'data'
+const NOTIFICATION_OPTION_NAMES: (keyof Notification)[] = [
+  'actions', 'badge', 'body', 'data', 'dir', 'icon', 'image', 'lang', 'renotify',
+  'requireInteraction', 'silent', 'tag', 'timestamp', 'title', 'vibrate'
 ];
 
 interface LatestEntry {
@@ -159,6 +159,7 @@ export class Driver implements Debuggable, UpdateSource {
     this.scope.addEventListener('fetch', (event) => this.onFetch(event !));
     this.scope.addEventListener('message', (event) => this.onMessage(event !));
     this.scope.addEventListener('push', (event) => this.onPush(event !));
+    this.scope.addEventListener('notificationclick', (event) => this.onClick(event !));
 
     // The debugger generates debug pages in response to debugging requests.
     this.debugger = new DebugHandler(this, this.adapter);
@@ -275,6 +276,11 @@ export class Driver implements Debuggable, UpdateSource {
     msg.waitUntil(this.handlePush(msg.data.json()));
   }
 
+  private onClick(event: NotificationEvent): void {
+    // Handle the click event and keep the SW alive until it's handled.
+    event.waitUntil(this.handleClick(event.notification, event.action));
+  }
+
   private async handleMessage(msg: MsgAny&{action: string}, from: Client): Promise<void> {
     if (isMsgCheckForUpdates(msg)) {
       const action = (async() => { await this.checkForUpdate(); })();
@@ -297,6 +303,21 @@ export class Driver implements Debuggable, UpdateSource {
     NOTIFICATION_OPTION_NAMES.filter(name => desc.hasOwnProperty(name))
         .forEach(name => options[name] = desc[name]);
     await this.scope.registration.showNotification(desc['title'] !, options);
+  }
+
+  private async handleClick(notification: Notification, action?: string): Promise<void> {
+    notification.close();
+
+    const options: {-readonly[K in keyof Notification]?: Notification[K]} = {};
+    // The filter uses `name in notification` because the properties are on the prototype so
+    // hasOwnProperty does not work here
+    NOTIFICATION_OPTION_NAMES.filter(name => name in notification)
+        .forEach(name => options[name] = notification[name]);
+
+    await this.broadcast({
+      type: 'NOTIFICATION_CLICK',
+      data: {action, notification: options},
+    });
   }
 
   private async reportStatus(client: Client, promise: Promise<void>, nonce: number): Promise<void> {

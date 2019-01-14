@@ -4,7 +4,7 @@
 # 배포
 
 When you are ready to deploy your Angular application to a remote server, you have various options for
-deployment. 
+deployment.
 
 {@a dev-deploy}
 {@a copy-files}
@@ -15,17 +15,17 @@ deployment.
 ## 가장 간단한 배포 방법
 
 <!--
-For the simplest deployment, build for development and copy the output directory to a web server.
+For the simplest deployment, create a production build and copy the output directory to a web server.
 -->
-애플리케이션을 배포하는 방법중 가장 간단한 것은 애플리케이션을 빌드한 후에 생성되는 빌드 결과물을 웹 서버로 복사하는 것입니다.
+애플리케이션을 배포하는 방법중 가장 간단한 것은 애플리케이션을 운영용으로 빌드한 후에 생성되는 빌드 결과물을 웹 서버로 복사하는 것입니다.
 
 <!--
-1. Start with the development build:
+1. Start with the production build:
 -->
-1. 애플리케이션을 빌드합니다.
+1. 애플리케이션을 운영용으로 빌드합니다.
 
   <code-example language="none" class="code-shell">
-    ng build
+    ng build --prod
   </code-example>
 
 
@@ -37,8 +37,7 @@ For the simplest deployment, build for development and copy the output directory
 3. Configure the server to redirect requests for missing files to `index.html`.
 Learn more about server-side redirects [below](#fallback).
 
-This is _not_ a production deployment. It's not optimized, and it won't be fast for users.
-It might be good enough for sharing your progress and ideas internally with managers, teammates, and other stakeholders. For the next steps in deployment, see [Optimize for production](#optimize).
+This is the simplest production-ready deployment of your application.
 
 {@a deploy-to-github}
 
@@ -46,7 +45,7 @@ It might be good enough for sharing your progress and ideas internally with mana
 
 Another simple way to deploy your Angular app is to use [GitHub Pages](https://help.github.com/articles/what-is-github-pages/).
 
-1. You need to [create a GitHub account](https://github.com/join) if you don't have one, and then [create a repository](https://help.github.com/articles/create-a-repo/) for your project. 
+1. You need to [create a GitHub account](https://github.com/join) if you don't have one, and then [create a repository](https://help.github.com/articles/create-a-repo/) for your project.
 Make a note of the user name and project name in GitHub.
 
 1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
@@ -54,17 +53,17 @@ Make a note of the user name and project name in GitHub.
      ng build --prod --output-path docs --base-href <project_name>
     </code-example>
 
-1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`. 
+1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
 
-1. Commit your changes and push. 
+1. Commit your changes and push.
 
 1. On the GitHub project page, configure it to [publish from the docs folder](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch).
 
 You can see your deployed page at `https://<user_name>.github.io/<project_name>/`.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
- Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
+Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
 
 </div>
 
@@ -111,51 +110,6 @@ configured to return `index.html` instead.
 There is no single configuration that works for every server.
 The following sections describe configurations for some of the most popular servers.
 The list is by no means exhaustive, but should provide you with a good starting point.
-
-#### Development servers
-
-During development, the [`ng serve`](cli/serve) CLI command lets you run your app in a local browser. 
-The CLI recompiles the application each time you save a file, 
-and reloads the browser with the newly compiled application. 
-
-The app is hosted in local memory and served on `http://localhost:4200/`, using [webpack-dev-server](https://webpack.js.org/guides/development/#webpack-dev-server).
-
-{@a serve-from-disk}
-
-Later in development, you might want a closer approximation of how your app will behave when deployed. 
-You can output your distribution folder (`dist`) to disk, but you need to install a different web server. 
-Try installing  [lite-server](https://github.com/johnpapa/lite-server); like `webpack-dev-server`, it can automatically reload your browser when you write new files.
-
-To get the live-reload experience, you will need to run two terminals. 
-The first runs the build in a watch mode and compiles the application to the `dist` folder. 
-The second runs the web server against the `dist` folder. 
-The combination of these two processes provides the same behavior as `ng serve`.
-
-1. Start the build in terminal A:
-<code-example language="none" class="code-shell">
-ng build --watch
-</code-example>
-
-1. Start the web server in terminal B:
-<code-example language="none" class="code-shell">
-lite-server --baseDir="dist"
-</code-example>
-The default browser opens to the appropriate URL.
-
-* [Lite-Server](https://github.com/johnpapa/lite-server): the default dev server installed with the
-[Quickstart repo](https://github.com/angular/quickstart) is pre-configured to fallback to `index.html`.
-
-* [Webpack-Dev-Server](https://github.com/webpack/webpack-dev-server):  setup the
-`historyApiFallback` entry in the dev server options as follows:
-
-  <code-example>
-    historyApiFallback: {
-      disableDotRule: true,
-      htmlAcceptHeaders: ['text/html', 'application/xhtml+xml']
-    }
-  </code-example>
-
-#### Production servers
 
 * [Apache](https://httpd.apache.org/): add a
 [rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html) to the `.htaccess` file as shown
@@ -245,31 +199,9 @@ Read about how to enable CORS for specific servers at
 
 {@a optimize}
 
-<!--
-## Optimize for production
--->
-## 배포용 빌드 최적화하기
+## Production optimizations
 
-<!--
-Although deploying directly from the development environment works, 
-you can generate an optimized build with additional CLI command line flags,
-starting with `--prod`.
--->
-단순하게 애플리케이션을 빌드해도 이 애플리케이션이 동작하는 것에는 문제가 없지만, Angular CLI 명령을 실행하면서 `--prod` 옵션을 주면 빌드 결과물을 좀 더 최적화할 수 있습니다.
-
-<!--
-### Build with _--prod_
--->
-### _--prod_ 옵션으로 빌드하기
-
-<code-example language="none" class="code-shell">
-  ng build --prod
-</code-example>
-
-<!--
-The `--prod` _meta-flag_ engages the following optimization features.
--->
-`--prod` _메타 플래그(meta flag)_ 를 사용하면 다음과 같은 최적화 옵션이 적용됩니다.
+The `--prod` _meta-flag_ engages the following build optimization features.
 
 <!--
 * [Ahead-of-Time (AOT) Compilation](guide/aot-compiler): pre-compiles Angular component templates.
@@ -286,40 +218,28 @@ The `--prod` _meta-flag_ engages the following optimization features.
 * 난독화(Uglification): 변수와 함수 이름을 난독화하고 이름의 길이도 짧게 줄입니다.
 * 데드 코드 제거: 사용하지 않는 모듈과 코드를 제거합니다.
 
-<!---
-The remaining [copy deployment steps](#copy-files) are the same as before.
--->
-애플리케이션이 빌드된 이후에 [복사되는 과정](#copy-files)은 옵션을 사용하지 않을 때와 같습니다.
-
 See [`ng build`](cli/build) for more about CLI build options and what they do.
+
 
 {@a enable-prod-mode}
 
 <!--
-### Enable production mode
+### Enable runtime production mode
 -->
 ### 운영 모드 활성화하기
 
-<!--
-Angular apps run in development mode by default, as you can see by the following message on the browser
-console:
--->
-기본적으로 Angular 앱은 개발 모드로 동작하기 때문에 브라우저 콘솔을 확인해보면 다음과 같은 메시지가 표시되는 것을 확인할 수 있습니다.
+In addition to build optimizations, Angular also has a runtime production mode. Angular apps run in development mode by default, as you can see by the following message on the browser console:
 
 <code-example format="nocode">
   Angular is running in the development mode. Call enableProdMode() to enable the production mode.
 </code-example>
 
 <!--
-Switching to _production mode_ can make it run faster by disabling development specific checks such as the dual change detection cycles.
+Switching to _production mode_ makes it run faster by disabling development specific checks such as the dual change detection cycles.
 -->
 애플리케이션이 동작하는 환경을 _운영 모드_ 로 변경하면 개발 모드에서 동작하는 이중 변화 감지 로직이 생략되기 때문에 애플리케이션 실행속도가 조금 더 빨라집니다.
 
-<!--
-Building for production (or appending the `--environment=prod` flag) enables _production mode_
-Look at the CLI-generated `main.ts` to see how this works.
--->
-_운영 모드_ 는 애플리케이션을 운영 모드로 빌드하거나 `--environment=prod` 플래그로 실행하면 활성화할 수 있습니다.
+When you enable production builds via `--prod` command line flag, the runtime production mode is enabled as well.
 
 {@a lazy-loading}
 
@@ -352,7 +272,7 @@ If you do that, the module will be loaded immediately.
 
 The bundling configuration must take lazy loading into consideration.
 Because lazy-loaded modules aren't imported in JavaScript, bundlers exclude them by default.
-Bundlers don't know about the router configuration and can't create separate bundles for lazy-loaded modules. 
+Bundlers don't know about the router configuration and can't create separate bundles for lazy-loaded modules.
 You would have to create these bundles manually.
 
 <!--
@@ -513,7 +433,7 @@ for the missing files. Look at where it _tried_ to find those files and adjust t
 
 ## Building and serving for deployment
 
-When you are designing and developing applications, you typically use `ng serve` to build your app for fast, local, iterative development. 
+When you are designing and developing applications, you typically use `ng serve` to build your app for fast, local, iterative development.
 When you are ready to deploy, however, you must use the `ng build` command to build the app and deploy the build artifacts elsewhere.
 
 Both `ng build` and `ng serve` clear the output folder before they build the project, but only the `ng build` command writes the generated build artifacts to the output folder.
@@ -530,12 +450,12 @@ To output to a different folder, change the `outputPath` in `angular.json`.
 </div>
 
 The `ng serve` command builds, watches, and serves the application from local memory, using a local development server.
-When you have deployed your app to another server, however, you might still want to serve the app so that you can continue to see changes that you make in it. 
+When you have deployed your app to another server, however, you might still want to serve the app so that you can continue to see changes that you make in it.
 You can do this by adding the `--watch` option to the `ng build` command.
 
 ```
 ng build --watch
 ```
-Like the `ng serve` command, this regenerates output files when source files change. 
+Like the `ng serve` command, this regenerates output files when source files change.
 
 For complete details of the CLI commands, see the [CLI command reference](cli).

@@ -7,7 +7,7 @@
  */
 
 import {InjectionToken} from '../di/injection_token';
-import {Type} from '../type';
+import {Type} from '../interface/type';
 import {makeParamDecorator, makePropDecorator} from '../util/decorators';
 
 /**
@@ -50,7 +50,7 @@ export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForE
 /**
  * Type of the Attribute decorator / constructor function.
  *
- *
+ * @publicApi
  */
 export interface AttributeDecorator {
   /**
@@ -90,7 +90,7 @@ export interface AttributeDecorator {
    * ]
    * ```
    *
-   *
+   * @publicApi
    */
   (name: string): any;
   new (name: string): Attribute;
@@ -99,6 +99,8 @@ export interface AttributeDecorator {
 
 /**
  * Type of the Attribute metadata.
+ *
+ * @publicApi
  */
 export interface Attribute { attributeName?: string; }
 
@@ -113,6 +115,8 @@ export const Attribute: AttributeDecorator =
 
 /**
  * Type of the Query metadata.
+ *
+ * @publicApi
  */
 export interface Query {
   descendants: boolean;
@@ -181,6 +185,7 @@ export interface ContentChildrenDecorator {
  *
  *
  * @Annotation
+ * @publicApi
  */
 export type ContentChildren = Query;
 
@@ -237,7 +242,7 @@ export interface ContentChildDecorator {
  *
  * @see `ContentChild`.
  *
- *
+ * @publicApi
  */
 export type ContentChild = Query;
 
@@ -246,6 +251,7 @@ export type ContentChild = Query;
  *
  *
  * @Annotation
+ *
  * @publicApi
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
@@ -293,6 +299,8 @@ export interface ViewChildrenDecorator {
 
 /**
  * Type of the ViewChildren metadata.
+ *
+ * @publicApi
  */
 export type ViewChildren = Query;
 
@@ -330,7 +338,7 @@ export interface ViewChildDecorator {
    *
    * Supported selectors include:
    *   * any class with the `@Component` or `@Directive` decorator
-   *   * a template reference variable as a string (e.g. query `<my-component #cmp></my-component>
+   *   * a template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
    * with `@ViewChild('cmp')`)
    *   * any provider defined in the child component tree of the current component (e.g.
    * `@ViewChild(SomeService) someService: SomeService`)
@@ -359,6 +367,8 @@ export interface ViewChildDecorator {
 
 /**
  * Type of the ViewChild metadata.
+ *
+ * @publicApi
  */
 export type ViewChild = Query;
 

@@ -4,7 +4,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "test_utils",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "mocks.ts",
         "test_support.ts",
@@ -24,7 +24,7 @@ ts_library(
 # extract_18n_spec
 ts_library(
     name = "extract_i18n_lib",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "extract_i18n_spec.ts",
     ],
@@ -42,6 +42,11 @@ jasmine_node_test(
     data = [
         "//packages/core:npm_package",
     ],
+    tags = [
+        # Disabled as the tests pertain to the old extraction tool only, whereas the Ivy extraction
+        # tool will likely work differently.
+        "no-ivy-aot",
+    ],
     deps = [
         ":extract_i18n_lib",
         "//packages/common:npm_package",
@@ -54,7 +59,7 @@ jasmine_node_test(
 # ngc_spec
 ts_library(
     name = "ngc_lib",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "ngc_spec.ts",
     ],
@@ -76,6 +81,11 @@ jasmine_node_test(
         "//packages/platform-browser:npm_package",
         "//packages/router:npm_package",
     ],
+    tags = [
+        # Disabled as these tests are specific to the old ngc compiler, and not ngtsc which has its
+        # own tests under //packages/compiler-cli/test/ngtsc.
+        "no-ivy-aot",
+    ],
     deps = [
         ":ngc_lib",
         "//packages/core",
@@ -88,7 +98,7 @@ jasmine_node_test(
 # ngctools_api_spec
 ts_library(
     name = "ngtools_api_lib",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "ngtools_api_spec.ts",
     ],
@@ -96,6 +106,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "//packages/private/testing",
         "@ngdeps//typescript",
     ],
 )
@@ -117,7 +128,7 @@ jasmine_node_test(
 # perform_watch_spec
 ts_library(
     name = "perform_watch_lib",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "perform_watch_spec.ts",
     ],
@@ -145,7 +156,7 @@ jasmine_node_test(
 # perform_compile_spec
 ts_library(
     name = "perform_compile_lib",
-    testonly = 1,
+    testonly = True,
     srcs = [
         "perform_compile_spec.ts",
     ],

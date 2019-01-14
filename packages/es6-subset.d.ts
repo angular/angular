@@ -32,7 +32,7 @@ interface Array<T> {
    * @param thisArg If provided, it will be used as the this value for each invocation of
    * predicate. If it is not provided, undefined is used instead.
    */
-  find(predicate: (value: T, index: number, obj: Array<T>) => boolean, thisArg?: any): T;
+  find(predicate: (value: T, index: number, obj: Array<T>) => boolean, thisArg?: any): T|undefined;
   /**
    * Returns the this object after filling the section identified by start and end with value
    * @param value value to fill array section with

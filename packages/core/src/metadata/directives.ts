@@ -8,14 +8,13 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
-import {NG_BASE_DEF} from '../render3/fields';
+import {Type} from '../interface/type';
+import {NG_BASE_DEF, NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../render3/fields';
 import {compileComponent as render3CompileComponent, compileDirective as render3CompileDirective} from '../render3/jit/directive';
 import {compilePipe as render3CompilePipe} from '../render3/jit/pipe';
-import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
 import {noop} from '../util/noop';
 import {fillProperties} from '../util/property';
-
 import {ViewEncapsulation} from './view';
 
 
@@ -77,23 +76,31 @@ export interface DirectiveDecorator {
   new (obj: Directive): Directive;
 }
 
+/**
+ * Directive decorator and metadata.
+ *
+ * @Annotation
+ * @publicApi
+ */
 export interface Directive {
   /**
-   * The CSS selector that triggers the instantiation of a directive.
+   * The CSS selector that identifies this directive in a template
+   * and triggers instantiation of the directive.
    *
    * Declare as one of the following:
    *
-   * - `element-name`: select by element name.
-   * - `.class`: select by class name.
-   * - `[attribute]`: select by attribute name.
-   * - `[attribute=value]`: select by attribute name and value.
-   * - `:not(sub_selector)`: select only if the element does not match the `sub_selector`.
-   * - `selector1, selector2`: select if either `selector1` or `selector2` matches.
+   * - `element-name`: Select by element name.
+   * - `.class`: Select by class name.
+   * - `[attribute]`: Select by attribute name.
+   * - `[attribute=value]`: Select by attribute name and value.
+   * - `:not(sub_selector)`: Select only if the element does not match the `sub_selector`.
+   * - `selector1, selector2`: Select if either `selector1` or `selector2` matches.
    *
-   * Angular only allows directives to trigger on CSS selectors that do not cross element
-   * boundaries. For example, consider a directive with an `input[type=text]` selector.
-   * For the following HTML, the directive is instantiated only on the
-   * `<input type="text">` element.
+   * Angular only allows directives to apply on CSS selectors that do not cross
+   * element boundaries.
+   *
+   * For the following template HTML, a directive with an `input[type=text]` selector,
+   * would be instantiated only on the `<input type="text">` element.
    *
    * ```html
    * <form>
@@ -136,6 +143,7 @@ export interface Directive {
    *   id: string;
    *
    * ```
+   *
    */
   inputs?: string[];
 
@@ -170,12 +178,14 @@ export interface Directive {
    * class MainComponent {
    * }
    * ```
+   *
    */
   outputs?: string[];
 
   /**
-   * A set of injection tokens that allow the DI system to
-   * provide a dependency to this directive or component.
+   * Configures the [injector](guide/glossary#injector) of this
+   * directive or component with a [token](guide/glossary#di-token)
+   * that maps to a [provider](guide/glossary#provider) of a dependency.
    */
   providers?: Provider[];
 
@@ -201,6 +211,7 @@ export interface Directive {
    * class MainComponent {
    * }
    * ```
+   *
    */
   exportAs?: string;
 
@@ -245,62 +256,6 @@ export interface Directive {
   queries?: {[key: string]: any};
 
   /**
-   * If true, this directive/component will be skipped by the AOT compiler and so will always be
-   * compiled using JIT.
-   *
-   * This exists to support future Ivy work and has no effect currently.
-   */
-  jit?: true;
-}
-
-/**
- * Directive decorator and metadata.
- *
- * @Annotation
- */
-export interface Directive {
-  /**
-   * The CSS selector that identifies this directive in a template
-   * and triggers instantiation of the directive.
-   *
-   * Declare as one of the following:
-   *
-   * - `element-name`: Select by element name.
-   * - `.class`: Select by class name.
-   * - `[attribute]`: Select by attribute name.
-   * - `[attribute=value]`: Select by attribute name and value.
-   * - `:not(sub_selector)`: Select only if the element does not match the `sub_selector`.
-   * - `selector1, selector2`: Select if either `selector1` or `selector2` matches.
-   *
-   * Angular only allows directives to apply on CSS selectors that do not cross
-   * element boundaries.
-   *
-   * For the following template HTML, a directive with an `input[type=text]` selector,
-   * would be instantiated only on the `<input type="text">` element.
-   *
-   * ```html
-   * <form>
-   *   <input type="text">
-   *   <input type="radio">
-   * <form>
-   * ```
-   *
-   */
-  selector?: string;
-
-  /**
-   * The set of event-bound output properties.
-   * When an output property emits an event, an event handler attached
-   * to that event in the template is invoked.
-   *
-   * Each output property maps a `directiveProperty` to a `bindingProperty`:
-   * - `directiveProperty` specifies the component property that emits events.
-   * - `bindingProperty` specifies the HTML attribute the event handler is attached to.
-   *
-   */
-  outputs?: string[];
-
-  /**
    * Maps class properties to host element bindings for properties,
    * attributes, and events, using a set of key-value pairs.
    *
@@ -325,27 +280,12 @@ export interface Directive {
   host?: {[key: string]: string};
 
   /**
-   * Configures the [injector](guide/glossary#injector) of this
-   * directive or component with a [token](guide/glossary#di-token)
-   * that maps to a [provider](guide/glossary#provider) of a dependency.
-   */
-  providers?: Provider[];
-
-  /**
-   * The name or names that can be used in the template to assign this directive to a variable.
-   * For multiple names, use a comma-separated string.
+   * If true, this directive/component will be skipped by the AOT compiler and so will always be
+   * compiled using JIT.
    *
+   * This exists to support future Ivy work and has no effect currently.
    */
-  exportAs?: string;
-
-  /**
-   * Configures the queries that will be injected into the directive.
-   *
-   * Content queries are set before the `ngAfterContentInit` callback is called.
-   * View queries are set before the `ngAfterViewInit` callback is called.
-   *
-   */
-  queries?: {[key: string]: any};
+  jit?: true;
 }
 
 /**
@@ -436,6 +376,67 @@ export interface ComponentDecorator {
    *
    * ```
    *
+   * ### Preserving whitespace
+   *
+   * Removing whitespace can greatly reduce AOT-generated code size and speed up view creation.
+   * As of Angular 6, the default for `preserveWhitespaces` is false (whitespace is removed).
+   * To change the default setting for all components in your application, set
+   * the `preserveWhitespaces` option of the AOT compiler.
+   *
+   * By default, the AOT compiler removes whitespace characters as follows:
+   * * Trims all whitespaces at the beginning and the end of a template.
+   * * Removes whitespace-only text nodes. For example,
+   *
+   * ```
+   * <button>Action 1</button>  <button>Action 2</button>
+   * ```
+   *
+   * becomes:
+   *
+   * ```
+   * <button>Action 1</button><button>Action 2</button>
+   * ```
+   *
+   * * Replaces a series of whitespace characters in text nodes with a single space.
+   * For example, `<span>\n some text\n</span>` becomes `<span> some text </span>`.
+   * * Does NOT alter text nodes inside HTML tags such as `<pre>` or `<textarea>`,
+   * where whitespace characters are significant.
+   *
+   * Note that these transformations can influence DOM nodes layout, although impact
+   * should be minimal.
+   *
+   * You can override the default behavior to preserve whitespace characters
+   * in certain fragments of a template. For example, you can exclude an entire
+   * DOM sub-tree by using the `ngPreserveWhitespaces` attribute:
+   *
+   * ```html
+   * <div ngPreserveWhitespaces>
+   *     whitespaces are preserved here
+   *     <span>    and here </span>
+   * </div>
+   * ```
+   *
+   * You can force a single space to be preserved in a text node by using `&ngsp;`,
+   * which is replaced with a space character by Angular's template
+   * compiler:
+   *
+   * ```html
+   * <a>Spaces</a>&ngsp;<a>between</a>&ngsp;<a>links.</a>
+   * <!-->compiled to be equivalent to:</>
+   *  <a>Spaces</a> <a>between</a> <a>links.</a>
+   * ```
+   *
+   * Note that sequences of `&ngsp;` are still collapsed to just one space character when
+   * the `preserveWhitespaces` option is set to `false`.
+   *
+   * ```html
+   * <a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>
+   * <!-->compiled to be equivalent to:</>
+   *  <a>Spaces</a> <a>between</a> <a>links.</a>
+   * ```
+   *
+   * To preserve sequences of whitespace characters, use the
+   * `ngPreserveWhitespaces` attribute.
    *
    * @Annotation
    */
@@ -448,6 +449,8 @@ export interface ComponentDecorator {
 
 /**
  * Supplies configuration metadata for an Angular component.
+ *
+ * @publicApi
  */
 export interface Component extends Directive {
   /**
@@ -553,89 +556,6 @@ export interface Component extends Directive {
 /**
  * Component decorator and metadata.
  *
- * @usageNotes
- *
- * ### Using animations
- *
- * The following snippet shows an animation trigger in a component's
- * metadata. The trigger is attached to an element in the component's
- * template, using "@_trigger_name_", and a state expression that is evaluated
- * at run time to determine whether the animation should start.
- *
- * ```typescript
- * @Component({
- *   selector: 'animation-cmp',
- *   templateUrl: 'animation-cmp.html',
- *   animations: [
- *     trigger('myTriggerName', [
- *       state('on', style({ opacity: 1 }),
- *       state('off', style({ opacity: 0 }),
- *       transition('on => off', [
- *         animate("1s")
- *       ])
- *     ])
- *   ]
- * })
- * ```
- *
- * ```html
- * <!-- animation-cmp.html -->
- * <div @myTriggerName="expression">...</div>
- * ```
- *
- * ### Preserving whitespace
- *
- * Removing whitespace can greatly reduce AOT-generated code size, and speed up view creation.
- * As of Angular 6, default for `preserveWhitespaces` is false (whitespace is removed).
- * To change the default setting for all components in your application, set
- * the `preserveWhitespaces` option of the AOT compiler.
- *
- * Current implementation removes whitespace characters as follows:
- * - Trims all whitespaces at the beginning and the end of a template.
- * - Removes whitespace-only text nodes. For example,
- * `<button>Action 1</button>  <button>Action 2</button>` becomes
- * `<button>Action 1</button><button>Action 2</button>`.
- * - Replaces a series of whitespace characters in text nodes with a single space.
- * For example, `<span>\n some text\n</span>` becomes `<span> some text </span>`.
- * - Does NOT alter text nodes inside HTML tags such as `<pre>` or `<textarea>`,
- * where whitespace characters are significant.
- *
- * Note that these transformations can influence DOM nodes layout, although impact
- * should be minimal.
- *
- * You can override the default behavior to preserve whitespace characters
- * in certain fragments of a template. For example, you can exclude an entire
- * DOM sub-tree by using the `ngPreserveWhitespaces` attribute:
- *
- * ```html
- * <div ngPreserveWhitespaces>
- *     whitespaces are preserved here
- *     <span>    and here </span>
- * </div>
- * ```
- *
- * You can force a single space to be preserved in a text node by using `&ngsp;`,
- * which is replaced with a space character by Angular's template
- * compiler:
- *
- * ```html
- * <a>Spaces</a>&ngsp;<a>between</a>&ngsp;<a>links.</a>
- * <!-->compiled to be equivalent to:</>
- *  <a>Spaces</a> <a>between</a> <a>links.</a>
- * ```
- *
- * Note that sequences of `&ngsp;` are still collapsed to just one space character when
- * the `preserveWhitespaces` option is set to `false`.
- *
- * ```html
- * <a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>
- * <!-->compiled to be equivalent to:</>
- *  <a>Spaces</a> <a>between</a> <a>links.</a>
- * ```
- *
- * To preserve sequences of whitespace characters, use the
- * `ngPreserveWhitespaces` attribute.
- *
  * @Annotation
  * @publicApi
  */
@@ -664,6 +584,8 @@ export interface PipeDecorator {
 
 /**
  * Type of the Pipe metadata.
+ *
+ * @publicApi
  */
 export interface Pipe {
   /**
@@ -723,7 +645,7 @@ export interface InputDecorator {
 /**
  * Type of metadata for an `Input` property.
  *
- *
+ * @publicApi
  */
 export interface Input {
   /**
@@ -769,6 +691,7 @@ export interface Input {
    *
    * class App {}
    * ```
+   *
    */
   bindingPropertyName?: string;
 }
@@ -791,21 +714,46 @@ const initializeBaseDef = (target: any): void => {
 };
 
 /**
- * Does the work of creating the `ngBaseDef` property for the @Input and @Output decorators.
- * @param key "inputs" or "outputs"
+ * Returns a function that will update the static definition on a class to have the
+ * appropriate input or output mapping.
+ *
+ * Will also add an {@link ngBaseDef} property to a directive if no `ngDirectiveDef`
+ * or `ngComponentDef` is present. This is done because a class may have {@link InputDecorator}s and
+ * {@link OutputDecorator}s without having a {@link ComponentDecorator} or {@link DirectiveDecorator},
+ * and those inputs and outputs should still be inheritable, we need to add an
+ * `ngBaseDef` property if there are no existing `ngComponentDef` or `ngDirectiveDef`
+ * properties, so that we can track the inputs and outputs for inheritance purposes.
+ *
+ * @param getPropertyToUpdate A function that maps to either the `inputs` property or the
+ * `outputs` property of a definition.
+ * @returns A function that, the called, will add a `ngBaseDef` if no other definition is present,
+ * then update the `inputs` or `outputs` on it, depending on what was selected by `getPropertyToUpdate`
+ *
+ *
+ * @see InputDecorator
+ * @see OutputDecorator
+ * @see InheritenceFeature
  */
-const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any}) => any) =>
-    (target: any, name: string, ...args: any[]) => {
-      const constructor = target.constructor;
+function getOrCreateDefinitionAndUpdateMappingFor(
+    getPropertyToUpdate: (baseDef: {inputs?: any, outputs?: any}) => any) {
+  return function updateIOProp(target: any, name: string, ...args: any[]) {
+    const constructor = target.constructor;
 
-      if (!constructor.hasOwnProperty(NG_BASE_DEF)) {
-        initializeBaseDef(target);
-      }
+    let def: any =
+        constructor[NG_COMPONENT_DEF] || constructor[NG_DIRECTIVE_DEF] || constructor[NG_BASE_DEF];
 
-      const baseDef = constructor.ngBaseDef;
-      const defProp = getProp(baseDef);
+    if (!def) {
+      initializeBaseDef(target);
+      def = constructor[NG_BASE_DEF];
+    }
+
+    const defProp = getPropertyToUpdate(def);
+    // Use of `in` because we *do* want to check the prototype chain here.
+    if (!(name in defProp)) {
       defProp[name] = args[0];
-    };
+    }
+  };
+}
 
 /**
  * @Annotation
@@ -813,7 +761,7 @@ const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any
  */
 export const Input: InputDecorator = makePropDecorator(
     'Input', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
-    updateBaseDefFromIOProp(baseDef => baseDef.inputs || {}));
+    getOrCreateDefinitionAndUpdateMappingFor(def => def.inputs || {}));
 
 /**
  * Type of the Output decorator / constructor function.
@@ -842,6 +790,8 @@ export interface OutputDecorator {
 
 /**
  * Type of the Output metadata.
+ *
+ * @publicApi
  */
 export interface Output { bindingPropertyName?: string; }
 
@@ -851,7 +801,7 @@ export interface Output { bindingPropertyName?: string; }
  */
 export const Output: OutputDecorator = makePropDecorator(
     'Output', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
-    updateBaseDefFromIOProp(baseDef => baseDef.outputs || {}));
+    getOrCreateDefinitionAndUpdateMappingFor(def => def.outputs || {}));
 
 
 
@@ -888,6 +838,7 @@ export interface HostBindingDecorator {
    *   prop;
    * }
    * ```
+   *
    */
   (hostPropertyName?: string): any;
   new (hostPropertyName?: string): any;
@@ -896,6 +847,7 @@ export interface HostBindingDecorator {
 /**
  * Type of the HostBinding metadata.
  *
+ * @publicApi
  */
 export interface HostBinding { hostPropertyName?: string; }
 
@@ -919,6 +871,8 @@ export interface HostListenerDecorator {
 
 /**
  * Type of the HostListener metadata.
+ *
+ * @publicApi
  */
 export interface HostListener {
   /**

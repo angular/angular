@@ -7,7 +7,7 @@ import {CircleCiApi} from '../common/circle-ci-api';
 import {GithubApi} from '../common/github-api';
 import {GithubPullRequests} from '../common/github-pull-requests';
 import {GithubTeams} from '../common/github-teams';
-import {assert, assertNotMissingOrEmpty, Logger} from '../common/utils';
+import {assert, assertNotMissingOrEmpty, computeShortSha, Logger} from '../common/utils';
 import {BuildCreator} from './build-creator';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from './build-events';
 import {BuildRetriever} from './build-retriever';
@@ -144,7 +144,10 @@ export class PreviewServerFactory {
         const artifactPath = await buildRetriever.downloadBuildArtifact(buildNum, pr, sha, cfg.buildArtifactPath);
         const isPublic = await buildVerifier.getPrIsTrusted(pr);
         await buildCreator.create(pr, sha, artifactPath, isPublic);
+
         res.sendStatus(isPublic ? 201 : 202);
+        logger.log(`PR:${pr}, SHA:${computeShortSha(sha)}, Build:${buildNum} - ` +
+                   `Successfully created ${isPublic ? 'public' : 'non-public'} preview.`);
       } catch (err) {
         logger.error('CircleCI webhook error', err);
         respondWithError(res, err);

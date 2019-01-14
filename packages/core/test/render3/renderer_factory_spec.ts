@@ -37,9 +37,12 @@ describe('renderer factory lifecycle', () => {
       consts: 1,
       vars: 0,
       template: function(rf: RenderFlags, ctx: SomeComponent) {
-        logs.push('component');
         if (rf & RenderFlags.Create) {
+          logs.push('component create');
           text(0, 'foo');
+        }
+        if (rf & RenderFlags.Update) {
+          logs.push('component update');
         }
       },
       factory: () => new SomeComponent
@@ -61,19 +64,25 @@ describe('renderer factory lifecycle', () => {
   }
 
   function Template(rf: RenderFlags, ctx: any) {
-    logs.push('function');
     if (rf & RenderFlags.Create) {
+      logs.push('function create');
       text(0, 'bar');
+    }
+    if (rf & RenderFlags.Update) {
+      logs.push('function update');
     }
   }
 
   const directives = [SomeComponent, SomeComponentWhichThrows];
 
   function TemplateWithComponent(rf: RenderFlags, ctx: any) {
-    logs.push('function_with_component');
     if (rf & RenderFlags.Create) {
+      logs.push('function_with_component create');
       text(0, 'bar');
       element(1, 'some-component');
+    }
+    if (rf & RenderFlags.Update) {
+      logs.push('function_with_component update');
     }
   }
 
@@ -81,11 +90,12 @@ describe('renderer factory lifecycle', () => {
 
   it('should work with a component', () => {
     const component = renderComponent(SomeComponent, {rendererFactory});
-    expect(logs).toEqual(['create', 'create', 'begin', 'component', 'end']);
+    expect(logs).toEqual(
+        ['create', 'create', 'begin', 'component create', 'component update', 'end']);
 
     logs = [];
     tick(component);
-    expect(logs).toEqual(['begin', 'component', 'end']);
+    expect(logs).toEqual(['begin', 'component update', 'end']);
   });
 
   it('should work with a component which throws', () => {
@@ -95,21 +105,23 @@ describe('renderer factory lifecycle', () => {
 
   it('should work with a template', () => {
     renderToHtml(Template, {}, 1, 0, null, null, rendererFactory);
-    expect(logs).toEqual(['create', 'begin', 'function', 'end']);
+    expect(logs).toEqual(['create', 'begin', 'function create', 'function update', 'end']);
 
     logs = [];
     renderToHtml(Template, {});
-    expect(logs).toEqual(['begin', 'function', 'end']);
+    expect(logs).toEqual(['begin', 'function update', 'end']);
   });
 
   it('should work with a template which contains a component', () => {
     renderToHtml(TemplateWithComponent, {}, 2, 0, directives, null, rendererFactory);
-    expect(logs).toEqual(
-        ['create', 'begin', 'function_with_component', 'create', 'component', 'end']);
+    expect(logs).toEqual([
+      'create', 'begin', 'function_with_component create', 'create', 'component create',
+      'function_with_component update', 'component update', 'end'
+    ]);
 
     logs = [];
     renderToHtml(TemplateWithComponent, {}, 2, 0, directives);
-    expect(logs).toEqual(['begin', 'function_with_component', 'component', 'end']);
+    expect(logs).toEqual(['begin', 'function_with_component update', 'component update', 'end']);
   });
 
 });

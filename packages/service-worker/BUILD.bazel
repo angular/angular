@@ -49,9 +49,11 @@ ng_package(
     ],
     entry_point = "packages/service-worker/index.js",
     tags = [
-        "ivy-jit",
         "release-with-framework",
     ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":service-worker",
         "//packages/service-worker/config",

@@ -32,11 +32,11 @@ For example:
 
 The base file `environment.ts`, contains the default environment settings. For example:
 
-<code-example language="none" class="code-shell">
+```
 export const environment = {
   production: false
 };
-</code-example>
+```
 
 The `build` command uses this as the build target when no environment is specified. 
 You can add further variables, either as additional properties on the environment object, or as separate objects. 
@@ -54,7 +54,7 @@ The following sets content sets default values for the production build target:
 
 ```
 export const environment = {
-  production: true
+  production: true,
   apiUrl: 'http://my-prod-url'
 };
 ```
@@ -144,7 +144,11 @@ You can add additional configurations as required. To add a staging environment,
 You can add more configuration options to this target environment as well. 
 Any option that your build supports can be overridden in a build target configuration.
 
-To build using the staging configuration, run `ng build --configuration=staging`.
+To build using the staging configuration, run the following command:
+
+<code-example language="sh" class="code-shell">
+ ng build --configuration=staging
+</code-example>
 
 You can also configure the `serve` command to use the targeted build configuration if you add it to the "serve:configurations" section of `angular.json`:
 
@@ -231,31 +235,31 @@ Each budget entry is a JSON object with the following properties:
   </tr>
   <tr>
     <td>baseline</td>
-    <td>An absolute baseline size for percentage values. </td>
+    <td>The baseline size for comparison.</td>
   </tr>
   <tr>
     <td>maximumWarning</td>
-    <td>Warns when a size exceeds this threshold percentage of the baseline.</td>
+    <td>The maximum threshold for warning relative to the baseline.</td>
   </tr>
   <tr>
     <td>maximumError</td>
-    <td>Reports an error when the size exceeds this threshold percentage of the baseline.</td>
+    <td>The maximum threshold for error relative to the baseline.</td>
   </tr>
   <tr>
     <td>minimumWarning</td>
-    <td>Warns when the size reaches this threshold percentage of the baseline.</td>
+    <td>The minimum threshold for warning relative to the baseline.</td>
   </tr>
   <tr>
     <td>minimumError</td>
-    <td>Reports an error when the size reaches this threshold percentage of the baseline.</td>
+    <td>The minimum threshold for error relative to the baseline.</td>
   </tr>
   <tr>
     <td>warning</td>
-    <td>Warns when the size ??reaches or exceeds?? this threshold percentage of the baseline.</td>
+    <td>The threshold for warning relative to the baseline (min & max).</td>
   </tr>
   <tr>
     <td>error</td>
-    <td>Reports an error when the size ??reaches or exceeds?? this threshold percentage of the baseline.</td>
+    <td>The threshold for error relative to the baseline (min & max).</td>
   </tr>
 
  </table>

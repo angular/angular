@@ -5,32 +5,37 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import '../ng_dev_mode';
+import '../../util/ng_dev_mode';
 
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {getContext} from '../context_discovery';
-import {ACTIVE_INDEX, LContainer} from '../interfaces/container';
+import {getLContext} from '../context_discovery';
+import {LContainer} from '../interfaces/container';
 import {LContext} from '../interfaces/context';
+import {AttributeMarker, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {PlayState, Player, PlayerContext, PlayerIndex} from '../interfaces/player';
 import {RElement} from '../interfaces/renderer';
-import {InitialStyles, StylingContext, StylingIndex} from '../interfaces/styling';
-import {FLAGS, HEADER_OFFSET, HOST, LViewData, RootContext} from '../interfaces/view';
+import {InitialStylingValues, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
+import {HEADER_OFFSET, HOST, LView, RootContext} from '../interfaces/view';
 import {getTNode} from '../util';
 
 import {CorePlayerHandler} from './core_player_handler';
 
+const ANIMATION_PROP_PREFIX = '@';
+
 export function createEmptyStylingContext(
     element?: RElement | null, sanitizer?: StyleSanitizeFn | null,
-    initialStylingValues?: InitialStyles): StylingContext {
+    initialStyles?: InitialStylingValues | null,
+    initialClasses?: InitialStylingValues | null): StylingContext {
   return [
-    null,                            // PlayerContext
-    sanitizer || null,               // StyleSanitizer
-    initialStylingValues || [null],  // InitialStyles
-    0,                               // MasterFlags
-    0,                               // ClassOffset
-    element || null,                 // Element
-    null,                            // PreviousMultiClassValue
-    null                             // PreviousMultiStyleValue
+    0,                                     // MasterFlags
+    [null, -1, false, sanitizer || null],  // DirectiveRefs
+    initialStyles || [null],               // InitialStyles
+    initialClasses || [null],              // InitialClasses
+    [0, 0],                                // SinglePropOffsets
+    element || null,                       // Element
+    null,                                  // PreviousMultiClassValue
+    null,                                  // PreviousMultiStyleValue
+    null,                                  // PlayerContext
   ];
 }
 
@@ -45,6 +50,9 @@ export function allocStylingContext(
   // each instance gets a copy
   const context = templateStyleContext.slice() as any as StylingContext;
   context[StylingIndex.ElementPosition] = element;
+
+  // this will prevent any other directives from extending the context
+  context[StylingIndex.MasterFlagPosition] |= StylingFlags.BindingAllocationLocked;
   return context;
 }
 
@@ -59,21 +67,21 @@ export function allocStylingContext(
  * @param index Index of the style allocation. See: `elementStyling`.
  * @param viewData The view to search for the styling context
  */
-export function getStylingContext(index: number, viewData: LViewData): StylingContext {
-  let storageIndex = index + HEADER_OFFSET;
-  let slotValue: LContainer|LViewData|StylingContext|RElement = viewData[storageIndex];
-  let wrapper: LContainer|LViewData|StylingContext = viewData;
+export function getStylingContext(index: number, viewData: LView): StylingContext {
+  let storageIndex = index;
+  let slotValue: LContainer|LView|StylingContext|RElement = viewData[storageIndex];
+  let wrapper: LContainer|LView|StylingContext = viewData;
 
   while (Array.isArray(slotValue)) {
     wrapper = slotValue;
-    slotValue = slotValue[HOST] as LViewData | StylingContext | RElement;
+    slotValue = slotValue[HOST] as LView | StylingContext | RElement;
   }
 
   if (isStylingContext(wrapper)) {
     return wrapper as StylingContext;
   } else {
-    // This is an LViewData or an LContainer
-    const stylingTemplate = getTNode(index, viewData).stylingTemplate;
+    // This is an LView or an LContainer
+    const stylingTemplate = getTNode(index - HEADER_OFFSET, viewData).stylingTemplate;
 
     if (wrapper !== viewData) {
       storageIndex = HOST;
@@ -85,9 +93,14 @@ export function getStylingContext(index: number, viewData: LViewData): StylingCo
   }
 }
 
-function isStylingContext(value: LViewData | LContainer | StylingContext) {
-  // Not an LViewData or an LContainer
-  return typeof value[FLAGS] !== 'number' && typeof value[ACTIVE_INDEX] !== 'number';
+export function isStylingContext(value: any): value is StylingContext {
+  // Not an LView or an LContainer
+  return Array.isArray(value) && typeof value[StylingIndex.MasterFlagPosition] === 'number' &&
+      Array.isArray(value[StylingIndex.InitialStyleValuesPosition]);
+}
+
+export function isAnimationProp(name: string): boolean {
+  return name[0] === ANIMATION_PROP_PREFIX;
 }
 
 export function addPlayerInternal(
@@ -152,14 +165,14 @@ export function getPlayersInternal(playerContext: PlayerContext): Player[] {
 
 export function getOrCreatePlayerContext(target: {}, context?: LContext | null): PlayerContext|
     null {
-  context = context || getContext(target) !;
+  context = context || getLContext(target) !;
   if (!context) {
     ngDevMode && throwInvalidRefError();
     return null;
   }
 
-  const {lViewData, nodeIndex} = context;
-  const stylingContext = getStylingContext(nodeIndex - HEADER_OFFSET, lViewData);
+  const {lView, nodeIndex} = context;
+  const stylingContext = getStylingContext(nodeIndex, lView);
   return getPlayerContext(stylingContext) || allocPlayerContext(stylingContext);
 }
 
@@ -174,4 +187,16 @@ export function allocPlayerContext(data: StylingContext): PlayerContext {
 
 export function throwInvalidRefError() {
   throw new Error('Only elements that exist in an Angular application can be used for animations');
+}
+
+export function hasStyling(attrs: TAttributes): boolean {
+  for (let i = 0; i < attrs.length; i++) {
+    const attr = attrs[i];
+    if (attr == AttributeMarker.Classes || attr == AttributeMarker.Styles) return true;
+  }
+  return false;
+}
+
+export function hasClassInput(tNode: TNode) {
+  return tNode.flags & TNodeFlags.hasClassInput ? true : false;
 }

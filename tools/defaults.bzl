@@ -3,12 +3,12 @@
 load("@build_bazel_rules_nodejs//:defs.bzl", _jasmine_node_test = "jasmine_node_test", _nodejs_binary = "nodejs_binary", _npm_package = "npm_package")
 load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library", _ts_web_test_suite = "ts_web_test_suite")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("//packages/bazel/src:ng_module.bzl", _internal_global_ng_module = "internal_global_ng_module")
 load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 
 _DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test.json"
 _DEFAULT_TS_TYPINGS = "@ngdeps//typescript:typescript__typings"
+_DEFAULT_KARMA_BIN = "@ngdeps//@bazel/karma/bin:karma"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
 _INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
 _INTERNAL_NG_PACKAGER_PACKAGER = "//packages/bazel/src/ng_package:packager"
@@ -56,6 +56,7 @@ def ts_library(tsconfig = None, testonly = False, deps = [], **kwargs):
             tsconfig = _DEFAULT_TSCONFIG_TEST
         else:
             tsconfig = _DEFAULT_TSCONFIG_BUILD
+
     _ts_library(
         tsconfig = tsconfig,
         testonly = testonly,
@@ -79,36 +80,6 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
     if not entry_point:
         entry_point = "public_api.ts"
     _ng_module(
-        name = name,
-        flat_module_out_file = name,
-        tsconfig = tsconfig,
-        entry_point = entry_point,
-        testonly = testonly,
-        deps = deps,
-        compiler = _INTERNAL_NG_MODULE_COMPILER,
-        ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
-        node_modules = _DEFAULT_TS_TYPINGS,
-        **kwargs
-    )
-
-# ivy_ng_module behaves like ng_module, and under --define=compile=legacy it runs ngc with global
-# analysis but produces Ivy outputs. Under other compile modes, it behaves as ng_module.
-# TODO(alxhub): remove when ngtsc supports the same use cases.
-def ivy_ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], **kwargs):
-    """Default values for ivy_ng_module"""
-    deps = deps + ["@ngdeps//tslib"]
-    if testonly:
-        # Match the types[] in //packages:tsconfig-test.json
-        deps.append("@ngdeps//@types/jasmine")
-        deps.append("@ngdeps//@types/node")
-    if not tsconfig:
-        if testonly:
-            tsconfig = _DEFAULT_TSCONFIG_TEST
-        else:
-            tsconfig = _DEFAULT_TSCONFIG_BUILD
-    if not entry_point:
-        entry_point = "public_api.ts"
-    _internal_global_ng_module(
         name = name,
         flat_module_out_file = name,
         tsconfig = tsconfig,
@@ -149,21 +120,25 @@ def npm_package(name, replacements = {}, **kwargs):
         **kwargs
     )
 
-def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
+def ts_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
     """Default values for ts_web_test_suite"""
     if not bootstrap:
         bootstrap = ["//:web_test_bootstrap_scripts"]
     local_deps = [
         "@ngdeps//node_modules/tslib:tslib.js",
-        "//tools/testing:browser",
     ] + deps
+    local_runtime_deps = [
+        "//tools/testing:browser",
+    ] + runtime_deps
 
     _ts_web_test_suite(
+        runtime_deps = local_runtime_deps,
         bootstrap = bootstrap,
         deps = local_deps,
+        karma = _DEFAULT_KARMA_BIN,
         # Run unit tests on local Chromium by default.
         # You can exclude tests based on tags, e.g. to skip Firefox testing,
-        #   `bazel test --test_tag_filters=-browser:firefox-local [targets]`
+        #   `yarn bazel test --test_tag_filters=-browser:firefox-local [targets]`
         browsers = [
             "@io_bazel_rules_webtesting//browsers:chromium-local",
             # Don't test on local Firefox by default, for faster builds.
@@ -175,11 +150,12 @@ def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
         **kwargs
     )
 
-def nodejs_binary(**kwargs):
+def nodejs_binary(data = [], **kwargs):
     """Default values for nodejs_binary"""
     _nodejs_binary(
         # Pass-thru --define=compile=foo as an environment variable
         configuration_env_vars = ["compile"],
+        data = data + ["@ngdeps//source-map-support"],
         **kwargs
     )
 
@@ -193,6 +169,7 @@ def jasmine_node_test(deps = [], **kwargs):
         "@ngdeps//jasmine-core",
         "@ngdeps//mock-fs",
         "@ngdeps//reflect-metadata",
+        "@ngdeps//source-map-support",
         "@ngdeps//tslib",
         "@ngdeps//xhr2",
     ]
@@ -207,6 +184,7 @@ def ng_rollup_bundle(deps = [], **kwargs):
     """Default values for ng_rollup_bundle"""
     deps = deps + [
         "@ngdeps//tslib",
+        "@ngdeps//reflect-metadata",
     ]
     _ng_rollup_bundle(
         deps = deps,

@@ -36,6 +36,7 @@ import 'zone.js/dist/jasmine-patch.js';
 (global as any).isNode = true;
 (global as any).isBrowser = false;
 
+import '@angular/compiler'; // For JIT mode. Must be in front of any other @angular/* imports.
 // Init TestBed
 import {TestBed} from '@angular/core/testing';
 import {ServerTestingModule, platformServerTesting} from '@angular/platform-server/testing/src/server';

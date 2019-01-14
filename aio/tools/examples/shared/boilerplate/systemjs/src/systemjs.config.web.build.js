@@ -1,3 +1,10 @@
+/*
+Copyright Google LLC. All Rights Reserved.
+Use of this source code is governed by an MIT-style license that
+can be found in the LICENSE file at http://angular.io/license
+*/
+
+
 /**
  * WEB VERSION FOR CURRENT ANGULAR BUILD
  * (based on systemjs.config.js in angular.io)
@@ -94,9 +101,3 @@
   });
 
 })(this);
-
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/

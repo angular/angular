@@ -8,9 +8,12 @@
 
 import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
 import {Observable} from 'rxjs';
+
 import {EmptyOutletComponent} from './components/empty_outlet';
+import {ActivatedRouteSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
+
 
 /**
  * @description
@@ -37,8 +40,21 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `resolve` is a map of DI tokens used to look up data resolvers. See `Resolve` for more
  *   info.
  * - `runGuardsAndResolvers` defines when guards and resolvers will be run. By default they run only
- *    when the matrix parameters of the route change. When set to `paramsOrQueryParamsChange` they
- *    will also run when query params change. And when set to `always`, they will run every time.
+ *    when the matrix parameters of the route change. Options include:
+ *    - `paramsChange` (default) - Run guards and resolvers when path or matrix params change. This
+ *      mode ignores query param changes.
+ *    - `paramsOrQueryParamsChange` - Guards and resolvers will run when any parameters change. This
+ *      includes path, matrix, and query params.
+ *    - `pathParamsChange` - Run guards and resolvers path or any path params change. This mode is
+ *      useful if you want to ignore changes to all optional parameters such as query *and* matrix
+ *      params.
+ *    - `pathParamsOrQueryParamsChange` - Same as `pathParamsChange`, but also rerun when any query
+ *      param changes
+ *    - `always` - Run guards and resolvers on every navigation.
+ *    - (from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean - Use a predicate
+ *      function when none of the pre-configured modes fit the needs of the application. An example
+ *      might be when you need to ignore updates to a param such as `sortDirection`, but need to
+ *      reload guards and resolvers when changing the `searchRoot` param.
  * - `children` is an array of child route definitions.
  * - `loadChildren` is a reference to lazy loaded child routes. See `LoadChildren` for more
  *   info.
@@ -359,7 +375,9 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
  * See `Routes` for more details.
  * @publicApi
  */
-export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParamsChange' |
+    'paramsChange' | 'paramsOrQueryParamsChange' | 'always' |
+    ((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
 
 /**
  * See `Routes` for more details.

@@ -6,25 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './ng_dev_mode';
+import '../util/ng_dev_mode';
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {Provider} from '../di/provider';
+import {Mutable, Type} from '../interface/type';
 import {NgModuleDef} from '../metadata/ng_module';
 import {ViewEncapsulation} from '../metadata/view';
-import {Mutable, Type} from '../type';
-import {noSideEffects} from '../util';
+import {noSideEffects} from '../util/closure';
+import {stringify} from '../util/stringify';
 
+import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
-import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
-import {CssSelectorList, SelectorFlags} from './interfaces/projection';
+import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {CssSelectorList} from './interfaces/projection';
 
-export const EMPTY: {} = {};
-export const EMPTY_ARRAY: any[] = [];
-if (typeof ngDevMode !== 'undefined' && ngDevMode) {
-  Object.freeze(EMPTY);
-  Object.freeze(EMPTY_ARRAY);
-}
 let _renderCompCount = 0;
 
 /**
@@ -54,12 +49,12 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * Factory method used to create an instance of directive.
    */
-  factory: () => T;
+  factory: (t: Type<T>| null) => T;
 
   /**
    * The number of nodes, local refs, and pipes in this component template.
    *
-   * Used to calculate the length of this component's LViewData array, so we
+   * Used to calculate the length of this component's LView array, so we
    * can pre-fill the array and set the binding start index.
    */
   // TODO(kara): remove queries from this count
@@ -68,18 +63,10 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * The number of bindings in this component template (including pure fn bindings).
    *
-   * Used to calculate the length of this component's LViewData array, so we
+   * Used to calculate the length of this component's LView array, so we
    * can pre-fill the array and set the host binding start index.
    */
   vars: number;
-
-  /**
-   * The number of host bindings (including pure fn bindings) in this component.
-   *
-   * Used to calculate the length of the LViewData array for the *parent* component
-   * of this component.
-   */
-  hostVars?: number;
 
   /**
    * Static attributes to set on host element.
@@ -109,7 +96,7 @@ export function defineComponent<T>(componentDefinition: {
    * ```
    * {
    *   publicInput1: 'publicInput1',
-   *   declaredInput2: ['declaredInput2', 'publicInput2'],
+   *   declaredInput2: ['publicInput2', 'declaredInput2'],
    * }
    * ```
    *
@@ -117,7 +104,7 @@ export function defineComponent<T>(componentDefinition: {
    * ```
    * {
    *   minifiedPublicInput1: 'publicInput1',
-   *   minifiedDeclaredInput2: [ 'publicInput2', 'declaredInput2'],
+   *   minifiedDeclaredInput2: ['publicInput2', 'declaredInput2'],
    * }
    * ```
    *
@@ -126,7 +113,7 @@ export function defineComponent<T>(componentDefinition: {
    *
    * NOTE:
    *  - Because declared and public name are usually same we only generate the array
-   *    `['declared', 'public']` format when they differ.
+   *    `['public', 'declared']` format when they differ.
    *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
    *    inconsistent behavior in that it uses declared names rather than minified or public. For
    *    this reason `NgOnChanges` will be deprecated and removed in future version and this
@@ -149,12 +136,12 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * Function executed by the parent template to allow child directive to apply host bindings.
    */
-  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
+  hostBindings?: HostBindingsFunction<T>;
 
   /**
    * Function to create instances of content queries associated with a given directive.
    */
-  contentQueries?: (() => void);
+  contentQueries?: ((dirIndex: number) => void);
 
   /** Refreshes content queries associated with directives in a given view */
   contentQueriesRefresh?: ((directiveIndex: number, queryIndex: number) => void);
@@ -164,7 +151,7 @@ export function defineComponent<T>(componentDefinition: {
    *
    * See: {@link Directive.exportAs}
    */
-  exportAs?: string;
+  exportAs?: string[];
 
   /**
    * Template function use for rendering DOM.
@@ -198,6 +185,11 @@ export function defineComponent<T>(componentDefinition: {
   template: ComponentTemplate<T>;
 
   /**
+   * An array of `ngContent[selector]` values that were found in the template.
+   */
+  ngContentSelectors?: string[];
+
+  /**
    * Additional set of instructions specific to view query processing. This could be seen as a
    * set of instruction to be inserted into the template function.
    *
@@ -210,7 +202,7 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * A list of optional features to apply.
    *
-   * See: {@link NgOnChangesFeature}, {@link PublicFeature}
+   * See: {@link ProvidersFeature}
    */
   features?: ComponentDefFeature[];
 
@@ -239,17 +231,6 @@ export function defineComponent<T>(componentDefinition: {
   changeDetection?: ChangeDetectionStrategy;
 
   /**
-   * Defines the set of injectable objects that are visible to a Directive and its light DOM
-   * children.
-   */
-  providers?: Provider[];
-
-  /**
-   * Defines the set of injectable objects that are visible to its view DOM children.
-   */
-  viewProviders?: Provider[];
-
-  /**
    * Registry of directives and components that may be found in this component's view.
    *
    * The property is either an array of `DirectiveDef`s or a function which returns the array of
@@ -270,12 +251,12 @@ export function defineComponent<T>(componentDefinition: {
   const declaredInputs: {[key: string]: string} = {} as any;
   const def: Mutable<ComponentDef<any>, keyof ComponentDef<any>> = {
     type: type,
-    diPublic: null,
+    providersResolver: null,
     consts: componentDefinition.consts,
     vars: componentDefinition.vars,
-    hostVars: componentDefinition.hostVars || 0,
     factory: componentDefinition.factory,
     template: componentDefinition.template || null !,
+    ngContentSelectors: componentDefinition.ngContentSelectors,
     hostBindings: componentDefinition.hostBindings || null,
     contentQueries: componentDefinition.contentQueries || null,
     contentQueriesRefresh: componentDefinition.contentQueriesRefresh || null,
@@ -284,6 +265,7 @@ export function defineComponent<T>(componentDefinition: {
     inputs: null !,   // assigned in noSideEffects
     outputs: null !,  // assigned in noSideEffects
     exportAs: componentDefinition.exportAs || null,
+    onChanges: typePrototype.ngOnChanges || null,
     onInit: typePrototype.ngOnInit || null,
     doCheck: typePrototype.ngDoCheck || null,
     afterContentInit: typePrototype.ngAfterContentInit || null,
@@ -301,8 +283,6 @@ export function defineComponent<T>(componentDefinition: {
     // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in the
     // next line. Also `None` should be 0 not 2.
     encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
-    providers: EMPTY_ARRAY,
-    viewProviders: EMPTY_ARRAY,
     id: 'c',
     styles: componentDefinition.styles || EMPTY_ARRAY,
     _: null as never,
@@ -367,8 +347,8 @@ export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): nev
  *   @Input()
  *   propName1: string;
  *
- *   @Input('publicName')
- *   propName2: number;
+ *   @Input('publicName2')
+ *   declaredPropName2: number;
  * }
  * ```
  *
@@ -376,37 +356,46 @@ export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): nev
  *
  * ```
  * {
- *   a0: 'propName1',
- *   b1: ['publicName', 'propName2'],
+ *   propName1: 'propName1',
+ *   declaredPropName2: ['publicName2', 'declaredPropName2'],
  * }
  * ```
  *
- * becomes
+ * which is than translated by the minifier as:
  *
  * ```
  * {
- *  'propName1': 'a0',
- *  'publicName': 'b1'
+ *   minifiedPropName1: 'propName1',
+ *   minifiedPropName2: ['publicName2', 'declaredPropName2'],
  * }
  * ```
  *
- * Optionally the function can take `secondary` which will result in:
+ * becomes: (public name => minifiedName)
  *
  * ```
  * {
- *  'propName1': 'a0',
- *  'propName2': 'b1'
+ *  'propName1': 'minifiedPropName1',
+ *  'publicName2': 'minifiedPropName2',
+ * }
+ * ```
+ *
+ * Optionally the function can take `secondary` which will result in: (public name => declared name)
+ *
+ * ```
+ * {
+ *  'propName1': 'propName1',
+ *  'publicName2': 'declaredPropName2',
  * }
  * ```
  *
 
  */
 function invertObject(obj: any, secondary?: any): any {
-  if (obj == null) return EMPTY;
+  if (obj == null) return EMPTY_OBJ;
   const newLookup: any = {};
   for (const minifiedKey in obj) {
     if (obj.hasOwnProperty(minifiedKey)) {
-      let publicName = obj[minifiedKey];
+      let publicName: string = obj[minifiedKey];
       let declaredName = publicName;
       if (Array.isArray(publicName)) {
         declaredName = publicName[1];
@@ -414,7 +403,7 @@ function invertObject(obj: any, secondary?: any): any {
       }
       newLookup[publicName] = minifiedKey;
       if (secondary) {
-        (secondary[declaredName] = minifiedKey);
+        (secondary[publicName] = declaredName);
       }
     }
   }
@@ -525,7 +514,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   /**
    * Factory method used to create an instance of directive.
    */
-  factory: () => T;
+  factory: (t: Type<T>| null) => T;
 
   /**
    * Static attributes to set on host element.
@@ -595,27 +584,19 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   /**
    * A list of optional features to apply.
    *
-   * See: {@link NgOnChangesFeature}, {@link PublicFeature}, {@link InheritDefinitionFeature}
+   * See: {@link ProvidersFeature}, {@link InheritDefinitionFeature}
    */
   features?: DirectiveDefFeature[];
 
   /**
-   * The number of host bindings (including pure fn bindings) in this directive.
-   *
-   * Used to calculate the length of the LViewData array for the *parent* component
-   * of this directive.
-   */
-  hostVars?: number;
-
-  /**
    * Function executed by the parent template to allow child directive to apply host bindings.
    */
-  hostBindings?: (directiveIndex: number, elementIndex: number) => void;
+  hostBindings?: HostBindingsFunction<T>;
 
   /**
    * Function to create instances of content queries associated with a given directive.
    */
-  contentQueries?: (() => void);
+  contentQueries?: ((directiveIndex: number) => void);
 
   /** Refreshes content queries associated with directives in a given view */
   contentQueriesRefresh?: ((directiveIndex: number, queryIndex: number) => void);
@@ -625,7 +606,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
    *
    * See: {@link Directive.exportAs}
    */
-  exportAs?: string;
+  exportAs?: string[];
 }) => never;
 
 /**
@@ -650,7 +631,7 @@ export function definePipe<T>(pipeDef: {
   type: Type<T>,
 
   /** A factory for creating a pipe instance. */
-  factory: () => T,
+  factory: (t: Type<T>| null) => T,
 
   /** Whether the pipe is pure. */
   pure?: boolean
@@ -681,6 +662,12 @@ export function getPipeDef<T>(type: any): PipeDef<T>|null {
   return (type as any)[NG_PIPE_DEF] || null;
 }
 
-export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null {
-  return (type as any)[NG_MODULE_DEF] || null;
+export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;
+export function getNgModuleDef<T>(type: any): NgModuleDef<T>|null;
+export function getNgModuleDef<T>(type: any, throwNotFound?: boolean): NgModuleDef<T>|null {
+  const ngModuleDef = (type as any)[NG_MODULE_DEF] || null;
+  if (!ngModuleDef && throwNotFound === true) {
+    throw new Error(`Type ${stringify(type)} does not have 'ngModuleDef' property.`);
+  }
+  return ngModuleDef;
 }

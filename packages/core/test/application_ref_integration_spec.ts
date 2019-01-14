@@ -41,12 +41,16 @@ ivyEnabled && describe('ApplicationRef bootstrap', () => {
            await getTestBed().platform.bootstrapModuleFactory(MyAppModuleFactory, {ngZone: 'noop'});
        const appRef = moduleRef.injector.get(ApplicationRef);
        const helloWorldComponent = appRef.components[0].instance as HelloWorldComponent;
-       expect(document.body.innerHTML).toEqual('<hello-world><div>Hello World</div></hello-world>');
+       expect(document.body.innerHTML)
+           .toEqual(
+               '<hello-world ng-version="0.0.0-PLACEHOLDER"><div>Hello World</div></hello-world>');
        expect(helloWorldComponent.log).toEqual(['OnInit', 'DoCheck']);
 
        helloWorldComponent.name = 'Mundo';
        appRef.tick();
-       expect(document.body.innerHTML).toEqual('<hello-world><div>Hello Mundo</div></hello-world>');
+       expect(document.body.innerHTML)
+           .toEqual(
+               '<hello-world ng-version="0.0.0-PLACEHOLDER"><div>Hello Mundo</div></hello-world>');
        expect(helloWorldComponent.log).toEqual(['OnInit', 'DoCheck', 'DoCheck']);
 
        // Cleanup TestabilityRegistry

@@ -42,6 +42,7 @@ function flipIvySwitchInFile(sf: ts.SourceFile): ts.SourceFile {
 
   // Only update the statements in the SourceFile if any have changed.
   if (newStatements !== undefined) {
+    sf = ts.getMutableClone(sf);
     sf.statements = ts.createNodeArray(newStatements);
   }
   return sf;
@@ -119,9 +120,6 @@ function flipIvySwitchesInVariableStatement(
         /* name */ decl.name,
         /* type */ decl.type,
         /* initializer */ newIdentifier);
-
-    // Keeping parent pointers up to date is important for emit.
-    newIdentifier.parent = newDeclarations[i];
   }
 
   const newDeclList = ts.updateVariableDeclarationList(
@@ -133,12 +131,6 @@ function flipIvySwitchesInVariableStatement(
       /* modifiers */ stmt.modifiers,
       /* declarationList */ newDeclList);
 
-  // Keeping parent pointers up to date is important for emit.
-  for (const decl of newDeclarations) {
-    decl.parent = newDeclList;
-  }
-  newDeclList.parent = newStmt;
-  newStmt.parent = stmt.parent;
   return newStmt;
 }
 

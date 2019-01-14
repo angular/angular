@@ -17,13 +17,13 @@ export type SwitchMarkerAnalyses = Map<ts.SourceFile, SwitchMarkerAnalysis>;
 export const SwitchMarkerAnalyses = Map;
 
 /**
- * This Analyzer will analyse the files that have an NGCC switch marker in them
+ * This Analyzer will analyse the files that have an R3 switch marker in them
  * that will be replaced.
  */
 export class SwitchMarkerAnalyzer {
   constructor(private host: NgccReflectionHost) {}
   /**
-   * Analyze the files in the program to identify declarations that contain NGCC
+   * Analyze the files in the program to identify declarations that contain R3
    * switch markers.
    * @param program The program to analyze.
    * @return A map of source files to analysis objects. The map will contain only the

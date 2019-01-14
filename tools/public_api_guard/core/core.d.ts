@@ -47,6 +47,10 @@ export declare function asNativeElements(debugEls: DebugElement[]): any;
 
 export declare function assertPlatform(requiredToken: any): PlatformRef;
 
+export interface Attribute {
+    attributeName?: string;
+}
+
 export declare const Attribute: AttributeDecorator;
 
 export declare enum ChangeDetectionStrategy {
@@ -72,12 +76,12 @@ export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {
 }
 
 export declare class Compiler {
+    compileModuleAndAllComponentsAsync: <T>(moduleType: Type<T>) => Promise<ModuleWithComponentFactories<T>>;
+    compileModuleAndAllComponentsSync: <T>(moduleType: Type<T>) => ModuleWithComponentFactories<T>;
+    compileModuleAsync: <T>(moduleType: Type<T>) => Promise<NgModuleFactory<T>>;
+    compileModuleSync: <T>(moduleType: Type<T>) => NgModuleFactory<T>;
     clearCache(): void;
     clearCacheFor(type: Type<any>): void;
-    compileModuleAndAllComponentsAsync<T>(moduleType: Type<T>): Promise<ModuleWithComponentFactories<T>>;
-    compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
-    compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
-    compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
     getModuleId(moduleType: Type<any>): string | undefined;
 }
 
@@ -94,6 +98,21 @@ export declare type CompilerOptions = {
     missingTranslation?: MissingTranslationStrategy;
     preserveWhitespaces?: boolean;
 };
+
+export interface Component extends Directive {
+    animations?: any[];
+    changeDetection?: ChangeDetectionStrategy;
+    encapsulation?: ViewEncapsulation;
+    entryComponents?: Array<Type<any> | any[]>;
+    interpolation?: [string, string];
+    moduleId?: string;
+    preserveWhitespaces?: boolean;
+    styleUrls?: string[];
+    styles?: string[];
+    template?: string;
+    templateUrl?: string;
+    viewProviders?: Provider[];
+}
 
 export declare const Component: ComponentDecorator;
 
@@ -137,7 +156,7 @@ export interface ConstructorSansProvider {
     deps?: any[];
 }
 
-export declare const ContentChild: ContentChildDecorator;
+export declare type ContentChild = Query;
 
 export interface ContentChildDecorator {
     (selector: Type<any> | Function | string, opts?: {
@@ -148,7 +167,7 @@ export interface ContentChildDecorator {
     }): ContentChild;
 }
 
-export declare const ContentChildren: ContentChildrenDecorator;
+export declare type ContentChildren = Query;
 
 export interface ContentChildrenDecorator {
     (selector: Type<any> | Function | string, opts?: {
@@ -169,47 +188,49 @@ export declare function createPlatformFactory(parentPlatformFactory: ((extraProv
 
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
-export declare class DebugElement extends DebugNode {
-    attributes: {
+export interface DebugElement extends DebugNode {
+    readonly attributes: {
         [key: string]: string | null;
     };
-    childNodes: DebugNode[];
+    readonly childNodes: DebugNode[];
     readonly children: DebugElement[];
-    classes: {
+    readonly classes: {
         [key: string]: boolean;
     };
-    name: string;
-    nativeElement: any;
-    properties: {
+    readonly name: string;
+    readonly nativeElement: any;
+    readonly properties: {
         [key: string]: any;
     };
-    styles: {
+    readonly styles: {
         [key: string]: string | null;
     };
-    constructor(nativeNode: any, parent: any, _debugContext: DebugContext);
-    addChild(child: DebugNode): void;
-    insertBefore(refChild: DebugNode, newChild: DebugNode): void;
-    insertChildrenAfter(child: DebugNode, newChildren: DebugNode[]): void;
     query(predicate: Predicate<DebugElement>): DebugElement;
     queryAll(predicate: Predicate<DebugElement>): DebugElement[];
     queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[];
-    removeChild(child: DebugNode): void;
     triggerEventHandler(eventName: string, eventObj: any): void;
 }
 
-export declare class DebugNode {
+export declare const DebugElement: {
+    new (...args: any[]): DebugElement;
+};
+
+export interface DebugNode {
     readonly componentInstance: any;
     readonly context: any;
     readonly injector: Injector;
-    listeners: EventListener[];
-    nativeNode: any;
-    parent: DebugElement | null;
+    readonly listeners: EventListener[];
+    readonly nativeNode: any;
+    readonly parent: DebugElement | null;
     readonly providerTokens: any[];
     readonly references: {
         [key: string]: any;
     };
-    constructor(nativeNode: any, parent: DebugNode | null, _debugContext: DebugContext);
 }
+
+export declare const DebugNode: {
+    new (...args: any[]): DebugNode;
+};
 
 /** @deprecated */
 export declare class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
@@ -241,6 +262,21 @@ export declare function defineInjector(options: {
 }): never;
 
 export declare function destroyPlatform(): void;
+
+export interface Directive {
+    exportAs?: string;
+    host?: {
+        [key: string]: string;
+    };
+    inputs?: string[];
+    jit?: true;
+    outputs?: string[];
+    providers?: Provider[];
+    queries?: {
+        [key: string]: any;
+    };
+    selector?: string;
+}
 
 export declare const Directive: DirectiveDecorator;
 
@@ -277,7 +313,7 @@ export declare class EventEmitter<T> extends Subject<T> {
     __isAsync: boolean;
     constructor(isAsync?: boolean);
     emit(value?: T): void;
-    subscribe(generatorOrNext?: any, error?: any, complete?: any): any;
+    subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
 }
 
 export interface ExistingProvider extends ExistingSansProvider {
@@ -296,9 +332,9 @@ export interface ForwardRefFn {
     (): any;
 }
 
-export declare function getDebugNode(nativeNode: any): DebugNode | null;
+export declare const getDebugNode: (nativeNode: any) => DebugNode | null;
 
-export declare function getModuleFactory(id: string): NgModuleFactory<any>;
+export declare const getModuleFactory: (id: string) => NgModuleFactory<any>;
 
 export declare function getPlatform(): PlatformRef | null;
 
@@ -307,7 +343,14 @@ export interface GetTestability {
     findTestabilityInTree(registry: TestabilityRegistry, elem: any, findInAncestors: boolean): Testability | null;
 }
 
+export interface Host {
+}
+
 export declare const Host: HostDecorator;
+
+export interface HostBinding {
+    hostPropertyName?: string;
+}
 
 export declare const HostBinding: HostBindingDecorator;
 
@@ -316,20 +359,33 @@ export interface HostDecorator {
     new (): Host;
 }
 
+export interface HostListener {
+    args?: string[];
+    eventName?: string;
+}
+
 export declare const HostListener: HostListenerDecorator;
 
 export declare function inject<T>(token: Type<T> | InjectionToken<T>): T;
 export declare function inject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
 
+export interface Inject {
+    token: any;
+}
+
 export declare const Inject: InjectDecorator;
+
+export interface Injectable {
+    providedIn?: Type<any> | 'root' | null;
+}
 
 export declare const Injectable: InjectableDecorator;
 
 export interface InjectableDecorator {
-    (): any;
+    (): TypeDecorator;
     (options?: {
         providedIn: Type<any> | 'root' | null;
-    } & InjectableProvider): any;
+    } & InjectableProvider): TypeDecorator;
     new (): Injectable;
     new (options?: {
         providedIn: Type<any> | 'root' | null;
@@ -347,7 +403,7 @@ export interface InjectDecorator {
     new (token: any): Inject;
 }
 
-export declare const enum InjectFlags {
+export declare enum InjectFlags {
     Default = 0,
     Host = 1,
     Self = 2,
@@ -383,6 +439,10 @@ export declare const INJECTOR: InjectionToken<Injector>;
 
 export interface InjectorType<T> extends Type<T> {
     ngInjectorDef: never;
+}
+
+export interface Input {
+    bindingPropertyName?: string;
 }
 
 export declare const Input: InputDecorator;
@@ -454,6 +514,7 @@ export declare class KeyValueDiffers {
     /** @deprecated */ factories: KeyValueDifferFactory[];
     constructor(factories: KeyValueDifferFactory[]);
     find(kv: any): KeyValueDifferFactory;
+    static ngInjectableDef: never;
     static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
     static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
 }
@@ -478,6 +539,18 @@ export interface ModuleWithProviders<T = any /** TODO(alxhub): remove default wh
 }
 
 export declare type NgIterable<T> = Array<T> | Iterable<T>;
+
+export interface NgModule {
+    bootstrap?: Array<Type<any> | any[]>;
+    declarations?: Array<Type<any> | any[]>;
+    entryComponents?: Array<Type<any> | any[]>;
+    exports?: Array<Type<any> | any[]>;
+    id?: string;
+    imports?: Array<Type<any> | ModuleWithProviders<{}> | any[]>;
+    jit?: true;
+    providers?: Provider[];
+    schemas?: Array<SchemaMetadata | any[]>;
+}
 
 export declare const NgModule: NgModuleDecorator;
 
@@ -538,6 +611,9 @@ export interface OnInit {
     ngOnInit(): void;
 }
 
+export interface Optional {
+}
+
 export declare const Optional: OptionalDecorator;
 
 export interface OptionalDecorator {
@@ -545,9 +621,18 @@ export interface OptionalDecorator {
     new (): Optional;
 }
 
+export interface Output {
+    bindingPropertyName?: string;
+}
+
 export declare const Output: OutputDecorator;
 
 export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
+
+export interface Pipe {
+    name: string;
+    pure?: boolean;
+}
 
 export declare const Pipe: PipeDecorator;
 
@@ -575,6 +660,14 @@ export interface Predicate<T> {
 }
 
 export declare type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];
+
+export interface Query {
+    descendants: boolean;
+    first: boolean;
+    isViewQuery: boolean;
+    read: any;
+    selector: any;
+}
 
 export declare abstract class Query {
 }
@@ -717,7 +810,7 @@ export interface ResolvedReflectiveProvider {
     resolvedFactories: ResolvedReflectiveFactory[];
 }
 
-export declare function resolveForwardRef(type: any): any;
+export declare function resolveForwardRef<T>(type: T): T;
 
 /** @deprecated */
 export declare abstract class RootRenderer {
@@ -741,6 +834,9 @@ export declare enum SecurityContext {
     RESOURCE_URL = 5
 }
 
+export interface Self {
+}
+
 export declare const Self: SelfDecorator;
 
 export interface SelfDecorator {
@@ -760,6 +856,9 @@ export declare class SimpleChange {
 
 export interface SimpleChanges {
     [propName: string]: SimpleChange;
+}
+
+export interface SkipSelf {
 }
 
 export declare const SkipSelf: SkipSelfDecorator;
@@ -840,7 +939,7 @@ export declare class Version {
 
 export declare const VERSION: Version;
 
-export declare const ViewChild: ViewChildDecorator;
+export declare type ViewChild = Query;
 
 export interface ViewChildDecorator {
     (selector: Type<any> | Function | string, opts?: {
@@ -851,7 +950,7 @@ export interface ViewChildDecorator {
     }): ViewChild;
 }
 
-export declare const ViewChildren: ViewChildrenDecorator;
+export declare type ViewChildren = Query;
 
 export interface ViewChildrenDecorator {
     (selector: Type<any> | Function | string, opts?: {

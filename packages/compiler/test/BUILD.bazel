@@ -28,7 +28,7 @@ ts_library(
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = NODE_ONLY + UTILS,
@@ -38,6 +38,7 @@ ts_library(
         "//packages/common",
         "//packages/compiler",
         "//packages/compiler/test/expression_parser/utils",
+        "//packages/compiler/test/ml_parser/util",
         "//packages/compiler/testing",
         "//packages/core",
         "//packages/core/testing",
@@ -49,7 +50,7 @@ ts_library(
 
 ts_library(
     name = "test_node_only_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         NODE_ONLY,
         exclude = UTILS,
@@ -74,6 +75,10 @@ jasmine_node_test(
         "//packages/common:npm_package",
         "//packages/core:npm_package",
     ],
+    tags = [
+        # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
+        "no-ivy-aot",
+    ],
     deps = [
         ":test_lib",
         ":test_node_only_lib",
@@ -86,6 +91,10 @@ jasmine_node_test(
 
 ts_web_test_suite(
     name = "test_web",
+    tags = [
+        # Disabled as these tests pertain to the old ngc compilation and are not relevant in Ivy.
+        "no-ivy-aot",
+    ],
     deps = [
         ":test_lib",
     ],

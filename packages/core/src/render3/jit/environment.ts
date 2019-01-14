@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineInjectable, defineInjector,} from '../../di/defs';
-import {inject} from '../../di/injector';
+import {defineInjectable, defineInjector,} from '../../di/interface/defs';
+import {inject} from '../../di/injector_compatibility';
 import * as r3 from '../index';
 import * as sanitization from '../../sanitization/sanitization';
 
@@ -31,8 +31,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'inject': inject,
   'ɵinjectAttribute': r3.injectAttribute,
   'ɵtemplateRefExtractor': r3.templateRefExtractor,
-  'ɵNgOnChangesFeature': r3.NgOnChangesFeature,
-  'ɵPublicFeature': r3.PublicFeature,
+  'ɵProvidersFeature': r3.ProvidersFeature,
   'ɵInheritDefinitionFeature': r3.InheritDefinitionFeature,
   'ɵelementAttribute': r3.elementAttribute,
   'ɵbind': r3.bind,
@@ -46,11 +45,12 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵnamespaceSVG': r3.namespaceSVG,
   'ɵenableBindings': r3.enableBindings,
   'ɵdisableBindings': r3.disableBindings,
+  'ɵallocHostVars': r3.allocHostVars,
   'ɵelementStart': r3.elementStart,
   'ɵelementEnd': r3.elementEnd,
   'ɵelement': r3.element,
-  'ɵEC': r3.elementContainerStart,
-  'ɵeC': r3.elementContainerEnd,
+  'ɵelementContainerStart': r3.elementContainerStart,
+  'ɵelementContainerEnd': r3.elementContainerEnd,
   'ɵpureFunction0': r3.pureFunction0,
   'ɵpureFunction1': r3.pureFunction1,
   'ɵpureFunction2': r3.pureFunction2,
@@ -77,6 +77,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵload': r3.load,
   'ɵprojection': r3.projection,
   'ɵelementProperty': r3.elementProperty,
+  'ɵcomponentHostSyntheticProperty': r3.componentHostSyntheticProperty,
   'ɵpipeBind1': r3.pipeBind1,
   'ɵpipeBind2': r3.pipeBind2,
   'ɵpipeBind3': r3.pipeBind3,
@@ -89,6 +90,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵregisterContentQuery': r3.registerContentQuery,
   'ɵreference': r3.reference,
   'ɵelementStyling': r3.elementStyling,
+  'ɵelementHostAttrs': r3.elementHostAttrs,
   'ɵelementStylingMap': r3.elementStylingMap,
   'ɵelementStyleProp': r3.elementStyleProp,
   'ɵelementStylingApply': r3.elementStylingApply,
@@ -97,16 +99,22 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵtextBinding': r3.textBinding,
   'ɵembeddedViewStart': r3.embeddedViewStart,
   'ɵembeddedViewEnd': r3.embeddedViewEnd,
-  'ɵi18nAttribute': r3.i18nAttribute,
+  'ɵi18n': r3.i18n,
+  'ɵi18nAttributes': r3.i18nAttributes,
   'ɵi18nExp': r3.i18nExp,
   'ɵi18nStart': r3.i18nStart,
   'ɵi18nEnd': r3.i18nEnd,
   'ɵi18nApply': r3.i18nApply,
+  'ɵi18nPostprocess': r3.i18nPostprocess,
+  'ɵresolveWindow': r3.resolveWindow,
+  'ɵresolveDocument': r3.resolveDocument,
+  'ɵresolveBody': r3.resolveBody,
 
   'ɵsanitizeHtml': sanitization.sanitizeHtml,
   'ɵsanitizeStyle': sanitization.sanitizeStyle,
   'ɵdefaultStyleSanitizer': sanitization.defaultStyleSanitizer,
   'ɵsanitizeResourceUrl': sanitization.sanitizeResourceUrl,
   'ɵsanitizeScript': sanitization.sanitizeScript,
-  'ɵsanitizeUrl': sanitization.sanitizeUrl
+  'ɵsanitizeUrl': sanitization.sanitizeUrl,
+  'ɵsanitizeUrlOrResourceUrl': sanitization.sanitizeUrlOrResourceUrl
 };

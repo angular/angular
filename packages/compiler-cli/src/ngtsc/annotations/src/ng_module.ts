@@ -6,20 +6,24 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, LiteralArrayExpr, R3DirectiveMetadata, R3InjectorMetadata, R3NgModuleMetadata, WrappedNodeExpr, compileInjector, compileNgModule, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {Expression, LiteralArrayExpr, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Decorator, ReflectionHost} from '../../host';
-import {Reference, ResolvedValue, reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {Reference, ResolvedReference} from '../../imports';
+import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
+import {Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
+import {generateSetClassMetadataCall} from './metadata';
+import {ReferencesRegistry} from './references_registry';
 import {SelectorScopeRegistry} from './selector_scope';
 import {getConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
   ngInjectorDef: R3InjectorMetadata;
+  metadataStmt: Statement|null;
 }
 
 /**
@@ -29,8 +33,9 @@ export interface NgModuleAnalysis {
  */
 export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalysis, Decorator> {
   constructor(
-      private checker: ts.TypeChecker, private reflector: ReflectionHost,
-      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
+      private reflector: ReflectionHost, private evaluator: PartialEvaluator,
+      private scopeRegistry: SelectorScopeRegistry, private referencesRegistry: ReferencesRegistry,
+      private isCore: boolean) {}
 
   detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
     if (!decorators) {
@@ -68,29 +73,28 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     let declarations: Reference<ts.Declaration>[] = [];
     if (ngModule.has('declarations')) {
       const expr = ngModule.get('declarations') !;
-      const declarationMeta = staticallyResolve(expr, this.reflector, this.checker);
+      const declarationMeta = this.evaluator.evaluate(expr);
       declarations = this.resolveTypeList(expr, declarationMeta, 'declarations');
     }
     let imports: Reference<ts.Declaration>[] = [];
     if (ngModule.has('imports')) {
       const expr = ngModule.get('imports') !;
-      const importsMeta = staticallyResolve(
-          expr, this.reflector, this.checker,
-          ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
+      const importsMeta = this.evaluator.evaluate(
+          expr, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       imports = this.resolveTypeList(expr, importsMeta, 'imports');
     }
     let exports: Reference<ts.Declaration>[] = [];
     if (ngModule.has('exports')) {
       const expr = ngModule.get('exports') !;
-      const exportsMeta = staticallyResolve(
-          expr, this.reflector, this.checker,
-          ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
+      const exportsMeta = this.evaluator.evaluate(
+          expr, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       exports = this.resolveTypeList(expr, exportsMeta, 'exports');
+      this.referencesRegistry.add(node, ...exports);
     }
     let bootstrap: Reference<ts.Declaration>[] = [];
     if (ngModule.has('bootstrap')) {
       const expr = ngModule.get('bootstrap') !;
-      const bootstrapMeta = staticallyResolve(expr, this.reflector, this.checker);
+      const bootstrapMeta = this.evaluator.evaluate(expr);
       bootstrap = this.resolveTypeList(expr, bootstrapMeta, 'bootstrap');
     }
 
@@ -98,14 +102,21 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     // the compile() phase, the module's metadata is available for selector scope computation.
     this.scopeRegistry.registerModule(node, {declarations, imports, exports});
 
-    const context = node.getSourceFile();
+    const valueContext = node.getSourceFile();
+
+    let typeContext = valueContext;
+    const typeNode = this.reflector.getDtsDeclaration(node);
+    if (typeNode !== null) {
+      typeContext = typeNode.getSourceFile();
+    }
 
     const ngModuleDef: R3NgModuleMetadata = {
       type: new WrappedNodeExpr(node.name !),
-      bootstrap: bootstrap.map(bootstrap => toR3Reference(bootstrap, context)),
-      declarations: declarations.map(decl => toR3Reference(decl, context)),
-      exports: exports.map(exp => toR3Reference(exp, context)),
-      imports: imports.map(imp => toR3Reference(imp, context)),
+      bootstrap:
+          bootstrap.map(bootstrap => this._toR3Reference(bootstrap, valueContext, typeContext)),
+      declarations: declarations.map(decl => this._toR3Reference(decl, valueContext, typeContext)),
+      exports: exports.map(exp => this._toR3Reference(exp, valueContext, typeContext)),
+      imports: imports.map(imp => this._toR3Reference(imp, valueContext, typeContext)),
       emitInline: false,
     };
 
@@ -130,7 +141,9 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     return {
       analysis: {
-          ngModuleDef, ngInjectorDef,
+        ngModuleDef,
+        ngInjectorDef,
+        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
       },
       factorySymbolName: node.name !== undefined ? node.name.text : undefined,
     };
@@ -139,20 +152,39 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
   compile(node: ts.ClassDeclaration, analysis: NgModuleAnalysis): CompileResult[] {
     const ngInjectorDef = compileInjector(analysis.ngInjectorDef);
     const ngModuleDef = compileNgModule(analysis.ngModuleDef);
+    const ngModuleStatements = ngModuleDef.additionalStatements;
+    if (analysis.metadataStmt !== null) {
+      ngModuleStatements.push(analysis.metadataStmt);
+    }
     return [
       {
         name: 'ngModuleDef',
         initializer: ngModuleDef.expression,
-        statements: [],
+        statements: ngModuleStatements,
         type: ngModuleDef.type,
       },
       {
         name: 'ngInjectorDef',
         initializer: ngInjectorDef.expression,
-        statements: [],
+        statements: ngInjectorDef.statements,
         type: ngInjectorDef.type,
       },
     ];
+  }
+
+  private _toR3Reference(
+      valueRef: Reference<ts.Declaration>, valueContext: ts.SourceFile,
+      typeContext: ts.SourceFile): R3Reference {
+    if (!(valueRef instanceof ResolvedReference)) {
+      return toR3Reference(valueRef, valueRef, valueContext, valueContext);
+    } else {
+      let typeRef = valueRef;
+      let typeNode = this.reflector.getDtsDeclaration(typeRef.node);
+      if (typeNode !== null && ts.isClassDeclaration(typeNode)) {
+        typeRef = new ResolvedReference(typeNode, typeNode.name !);
+      }
+      return toR3Reference(valueRef, typeRef, valueContext, typeContext);
+    }
   }
 
   /**
@@ -161,9 +193,20 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
    */
   private _extractModuleFromModuleWithProvidersFn(node: ts.FunctionDeclaration|
                                                   ts.MethodDeclaration): ts.Expression|null {
-    const type = node.type;
+    const type = node.type || null;
+    return type &&
+        (this._reflectModuleFromTypeParam(type) || this._reflectModuleFromLiteralType(type));
+  }
+
+  /**
+   * Retrieve an `NgModule` identifier (T) from the specified `type`, if it is of the form:
+   * `ModuleWithProviders<T>`
+   * @param type The type to reflect on.
+   * @returns the identifier of the NgModule type if found, or null otherwise.
+   */
+  private _reflectModuleFromTypeParam(type: ts.TypeNode): ts.Expression|null {
     // Examine the type of the function to see if it's a ModuleWithProviders reference.
-    if (type === undefined || !ts.isTypeReferenceNode(type) || !ts.isIdentifier(type.typeName)) {
+    if (!ts.isTypeReferenceNode(type) || !ts.isIdentifier(type.typeName)) {
       return null;
     }
 
@@ -187,12 +230,33 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     const arg = type.typeArguments[0];
 
-    // If the argument isn't an Identifier, bail.
-    if (!ts.isTypeReferenceNode(arg) || !ts.isIdentifier(arg.typeName)) {
+    return typeNodeToValueExpr(arg);
+  }
+
+  /**
+   * Retrieve an `NgModule` identifier (T) from the specified `type`, if it is of the form:
+   * `A|B|{ngModule: T}|C`.
+   * @param type The type to reflect on.
+   * @returns the identifier of the NgModule type if found, or null otherwise.
+   */
+  private _reflectModuleFromLiteralType(type: ts.TypeNode): ts.Expression|null {
+    if (!ts.isIntersectionTypeNode(type)) {
       return null;
     }
-
-    return arg.typeName;
+    for (const t of type.types) {
+      if (ts.isTypeLiteralNode(t)) {
+        for (const m of t.members) {
+          const ngModuleType = ts.isPropertySignature(m) && ts.isIdentifier(m.name) &&
+                  m.name.text === 'ngModule' && m.type ||
+              null;
+          const ngModuleExpression = ngModuleType && typeNodeToValueExpr(ngModuleType);
+          if (ngModuleExpression) {
+            return ngModuleExpression;
+          }
+        }
+      }
+    }
+    return null;
   }
 
   /**

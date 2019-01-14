@@ -6,21 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isType} from '../type';
-import {global, stringify} from '../util';
+import {Type, isType} from '../interface/type';
 import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
+import {global} from '../util/global';
+import {stringify} from '../util/stringify';
 
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
+
 
 
 /**
  * Attention: These regex has to hold even if the code is minified!
  */
 export const DELEGATE_CTOR = /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*arguments\)/;
-export const INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[A-Za-z\d$_]+\s*{/;
+export const INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{/;
 export const INHERITED_CLASS_WITH_CTOR =
-    /^class\s+[A-Za-z\d$_]*\s*extends\s+[A-Za-z\d$_]+\s*{[\s\S]*constructor\s*\(/;
+    /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(/;
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;

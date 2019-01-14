@@ -1,10 +1,10 @@
 
 // #docregion promise
 
-import { fromPromise } from 'rxjs';
+import { from } from 'rxjs';
 
 // Promise를 옵저버블로 변환합니다.
-const data = fromPromise(fetch('/api/endpoint'));
+const data = from(fetch('/api/endpoint'));
 // 구독을 시작하고 Promise가 반환하는 객체를 처리합니다.
 data.subscribe({
  next(response) { console.log(response); },

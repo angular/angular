@@ -54,7 +54,8 @@ describe('Ivy NgModule', () => {
       }
 
       expect(() => createInjector(AModule))
-          .toThrowError('Circular dependency: type AModule ends up importing itself.');
+          .toThrowError(
+              'Circular dependency in DI detected for type AModule. Dependency path: AModule > BModule > AModule.');
     });
 
     it('merges imports and exports', () => {

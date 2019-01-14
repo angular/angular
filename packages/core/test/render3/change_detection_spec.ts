@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TemplateRef, ViewContainerRef} from '@angular/core';
+import {EmbeddedViewRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, RendererType2} from '../../src/core';
-import {getRenderedText, whenRendered} from '../../src/render3/component';
-import {directiveInject} from '../../src/render3/di';
-import {LifecycleHooksFeature, defineComponent, defineDirective, templateRefExtractor} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, reference, text, template, textBinding, tick} from '../../src/render3/instructions';
+import {whenRendered} from '../../src/render3/component';
+import {LifecycleHooksFeature, defineComponent, defineDirective, getRenderedText, templateRefExtractor} from '../../src/render3/index';
+
+import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, reference, text, template, textBinding, tick} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 
@@ -87,73 +87,6 @@ describe('change detection', () => {
          await whenRendered(myComp);
          expect(getRenderedText(myComp)).toEqual('updated');
        }));
-
-    it('should support detectChanges on components that have LContainers', () => {
-      let structuralComp !: StructuralComp;
-
-      class StructuralComp {
-        tmp !: TemplateRef<any>;
-        value = 'one';
-
-        constructor(public vcr: ViewContainerRef) {}
-
-        create() { this.vcr.createEmbeddedView(this.tmp); }
-
-        static ngComponentDef = defineComponent({
-          type: StructuralComp,
-          selectors: [['structural-comp']],
-          factory: () => structuralComp =
-                       new StructuralComp(directiveInject(ViewContainerRef as any)),
-          inputs: {tmp: 'tmp'},
-          consts: 1,
-          vars: 1,
-          template: (rf: RenderFlags, ctx: StructuralComp) => {
-            if (rf & RenderFlags.Create) {
-              text(0);
-            }
-            if (rf & RenderFlags.Update) {
-              textBinding(0, bind(ctx.value));
-            }
-          }
-        });
-      }
-
-      function FooTemplate(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          text(0, 'Temp content');
-        }
-      }
-
-      /**
-       * <ng-template #foo>
-       *     Temp content
-       * </ng-template>
-       * <structural-comp [tmp]="foo"></structural-comp>
-       */
-      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          template(0, FooTemplate, 1, 0, '', null, ['foo', ''], templateRefExtractor);
-          element(2, 'structural-comp');
-        }
-        if (rf & RenderFlags.Update) {
-          const foo = reference(1) as any;
-          elementProperty(2, 'tmp', bind(foo));
-        }
-      }, 3, 1, [StructuralComp]);
-
-      const fixture = new ComponentFixture(App);
-      fixture.update();
-      expect(fixture.html).toEqual('<structural-comp>one</structural-comp>');
-
-      structuralComp.create();
-      fixture.update();
-      expect(fixture.html).toEqual('<structural-comp>one</structural-comp>Temp content');
-
-      structuralComp.value = 'two';
-      detectChanges(structuralComp);
-      expect(fixture.html).toEqual('<structural-comp>two</structural-comp>Temp content');
-    });
-
   });
 
   describe('onPush', () => {
@@ -662,6 +595,117 @@ describe('change detection', () => {
         expect(getRenderedText(comp)).toEqual('1');
       });
 
+      describe('dynamic views', () => {
+        let structuralComp: StructuralComp|null = null;
+
+        beforeEach(() => structuralComp = null);
+
+        class StructuralComp {
+          tmp !: TemplateRef<any>;
+          value = 'one';
+
+          constructor(public vcr: ViewContainerRef) {}
+
+          create() { return this.vcr.createEmbeddedView(this.tmp, this); }
+
+          static ngComponentDef = defineComponent({
+            type: StructuralComp,
+            selectors: [['structural-comp']],
+            factory: () => structuralComp =
+                         new StructuralComp(directiveInject(ViewContainerRef as any)),
+            inputs: {tmp: 'tmp'},
+            consts: 1,
+            vars: 1,
+            template: function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                text(0);
+              }
+              if (rf & RenderFlags.Update) {
+                textBinding(0, bind(ctx.value));
+              }
+            }
+          });
+        }
+
+        it('should support ViewRef.detectChanges()', () => {
+          function FooTemplate(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              text(0);
+            }
+            if (rf & RenderFlags.Update) {
+              textBinding(0, bind(ctx.value));
+            }
+          }
+
+          /**
+           * <ng-template #foo>{{ value }}</ng-template>
+           * <structural-comp [tmp]="foo"></structural-comp>
+           */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              template(
+                  0, FooTemplate, 1, 1, 'ng-template', null, ['foo', ''], templateRefExtractor);
+              element(2, 'structural-comp');
+            }
+            if (rf & RenderFlags.Update) {
+              const foo = reference(1) as any;
+              elementProperty(2, 'tmp', bind(foo));
+            }
+          }, 3, 1, [StructuralComp]);
+
+          const fixture = new ComponentFixture(App);
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>');
+
+          const viewRef: EmbeddedViewRef<any> = structuralComp !.create();
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>one');
+
+          // check embedded view update
+          structuralComp !.value = 'two';
+          viewRef.detectChanges();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>two');
+
+          // check root view update
+          structuralComp !.value = 'three';
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>three</structural-comp>three');
+        });
+
+        it('should support ViewRef.detectChanges() directly after creation', () => {
+          function FooTemplate(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              text(0, 'Template text');
+            }
+          }
+
+          /**
+           * <ng-template #foo>Template text</ng-template>
+           * <structural-comp [tmp]="foo"></structural-comp>
+           */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              template(
+                  0, FooTemplate, 1, 0, 'ng-template', null, ['foo', ''], templateRefExtractor);
+              element(2, 'structural-comp');
+            }
+            if (rf & RenderFlags.Update) {
+              const foo = reference(1) as any;
+              elementProperty(2, 'tmp', bind(foo));
+            }
+          }, 3, 1, [StructuralComp]);
+
+          const fixture = new ComponentFixture(App);
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>');
+
+          const viewRef: EmbeddedViewRef<any> = structuralComp !.create();
+          viewRef.detectChanges();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>Template text');
+        });
+
+      });
+
     });
 
     describe('attach/detach', () => {
@@ -902,48 +946,50 @@ describe('change detection', () => {
         });
       }
 
-      it('should schedule check on OnPush components', () => {
-        const parent = renderComponent(OnPushParent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+      it('should ensure OnPush components are checked', () => {
+        const fixture = new ComponentFixture(OnPushParent);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('one - two');
+
+        // Change detection should not have run yet, since markForCheck
+        // does not itself schedule change detection.
+        expect(fixture.hostElement.textContent).toEqual('one - one');
+
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - two');
       });
 
-      it('should only run change detection once with multiple calls to markForCheck', () => {
-        renderComponent(OnPushParent);
+      it('should never schedule change detection on its own', () => {
+        const fixture = new ComponentFixture(OnPushParent);
         expect(comp.doCheckCount).toEqual(1);
 
         comp.cdr.markForCheck();
         comp.cdr.markForCheck();
-        comp.cdr.markForCheck();
-        comp.cdr.markForCheck();
-        comp.cdr.markForCheck();
         requestAnimationFrame.flush();
 
-        expect(comp.doCheckCount).toEqual(2);
+        expect(comp.doCheckCount).toEqual(1);
       });
 
-      it('should schedule check on ancestor OnPush components', () => {
-        const parent = renderComponent(OnPushParent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+      it('should ensure ancestor OnPush components are checked', () => {
+        const fixture = new ComponentFixture(OnPushParent);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
-        parent.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        fixture.component.value = 'two';
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('two - one');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('two - one');
 
       });
 
-      it('should schedule check on OnPush components in embedded views', () => {
+      it('should ensure OnPush components in embedded views are checked', () => {
         class EmbeddedViewParent {
           value = 'one';
           showing = true;
@@ -985,24 +1031,27 @@ describe('change detection', () => {
           });
         }
 
-        const parent = renderComponent(EmbeddedViewParent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        const fixture = new ComponentFixture(EmbeddedViewParent);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('one - two');
+        // markForCheck should not trigger change detection on its own.
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
-        parent.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - two');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - two');
+
+        fixture.component.value = 'two';
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - two');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('two - two');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('two - two');
       });
 
       // TODO(kara): add test for dynamic views once bug fix is in

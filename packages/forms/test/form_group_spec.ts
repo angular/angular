@@ -684,6 +684,70 @@ import {of } from 'rxjs';
         expect(g.getError('required', ['one'])).toEqual(null);
         expect(g.getError('required', ['invalid'])).toEqual(null);
       });
+
+      it('should be able to traverse group with single string', () => {
+        const c = new FormControl('', Validators.required);
+        const g = new FormGroup({'one': c});
+        expect(c.getError('required')).toEqual(true);
+        expect(g.getError('required', 'one')).toEqual(true);
+      });
+
+      it('should be able to traverse group with string delimited by dots', () => {
+        const c = new FormControl('', Validators.required);
+        const g2 = new FormGroup({'two': c});
+        const g1 = new FormGroup({'one': g2});
+        expect(c.getError('required')).toEqual(true);
+        expect(g1.getError('required', 'one.two')).toEqual(true);
+      });
+
+      it('should traverse group with form array using string and numbers', () => {
+        const c = new FormControl('', Validators.required);
+        const g2 = new FormGroup({'two': c});
+        const a = new FormArray([g2]);
+        const g1 = new FormGroup({'one': a});
+        expect(c.getError('required')).toEqual(true);
+        expect(g1.getError('required', ['one', 0, 'two'])).toEqual(true);
+      });
+    });
+
+    describe('hasError', () => {
+      it('should return true when it is present', () => {
+        const c = new FormControl('', Validators.required);
+        const g = new FormGroup({'one': c});
+        expect(c.hasError('required')).toEqual(true);
+        expect(g.hasError('required', ['one'])).toEqual(true);
+      });
+
+      it('should return false otherwise', () => {
+        const c = new FormControl('not empty', Validators.required);
+        const g = new FormGroup({'one': c});
+        expect(c.hasError('invalid')).toEqual(false);
+        expect(g.hasError('required', ['one'])).toEqual(false);
+        expect(g.hasError('required', ['invalid'])).toEqual(false);
+      });
+
+      it('should be able to traverse group with single string', () => {
+        const c = new FormControl('', Validators.required);
+        const g = new FormGroup({'one': c});
+        expect(c.hasError('required')).toEqual(true);
+        expect(g.hasError('required', 'one')).toEqual(true);
+      });
+
+      it('should be able to traverse group with string delimited by dots', () => {
+        const c = new FormControl('', Validators.required);
+        const g2 = new FormGroup({'two': c});
+        const g1 = new FormGroup({'one': g2});
+        expect(c.hasError('required')).toEqual(true);
+        expect(g1.hasError('required', 'one.two')).toEqual(true);
+      });
+      it('should traverse group with form array using string and numbers', () => {
+        const c = new FormControl('', Validators.required);
+        const g2 = new FormGroup({'two': c});
+        const a = new FormArray([g2]);
+        const g1 = new FormGroup({'one': a});
+        expect(c.getError('required')).toEqual(true);
+        expect(g1.getError('required', ['one', 0, 'two'])).toEqual(true);
+      });
     });
 
     describe('validator', () => {

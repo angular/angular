@@ -8,6 +8,7 @@
 
 import {Location} from '@angular/common';
 import {TestBed, inject} from '@angular/core/testing';
+import {RouterTestingModule} from '@angular/router/testing';
 import {of } from 'rxjs';
 
 import {Routes} from '../src/config';
@@ -17,10 +18,9 @@ import {resolveData as resolveDataOperator} from '../src/operators/resolve_data'
 import {NavigationTransition, Router} from '../src/router';
 import {ChildrenOutletContexts} from '../src/router_outlet_context';
 import {RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
-import {DefaultUrlSerializer} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlTree} from '../src/url_tree';
 import {getAllRouteGuards} from '../src/utils/preactivation';
 import {TreeNode} from '../src/utils/tree';
-import {RouterTestingModule} from '../testing/src/router_testing_module';
 
 import {Logger, createActivatedRouteSnapshot, provideTokenLogger} from './helpers';
 
@@ -103,23 +103,38 @@ describe('Router', () => {
 
     const CA_CHILD = 'canActivate_child';
     const CA_CHILD_FALSE = 'canActivate_child_false';
+    const CA_CHILD_REDIRECT = 'canActivate_child_redirect';
     const CAC_CHILD = 'canActivateChild_child';
     const CAC_CHILD_FALSE = 'canActivateChild_child_false';
+    const CAC_CHILD_REDIRECT = 'canActivateChild_child_redirect';
     const CA_GRANDCHILD = 'canActivate_grandchild';
     const CA_GRANDCHILD_FALSE = 'canActivate_grandchild_false';
+    const CA_GRANDCHILD_REDIRECT = 'canActivate_grandchild_redirect';
     const CDA_CHILD = 'canDeactivate_child';
     const CDA_CHILD_FALSE = 'canDeactivate_child_false';
+    const CDA_CHILD_REDIRECT = 'canDeactivate_child_redirect';
     const CDA_GRANDCHILD = 'canDeactivate_grandchild';
     const CDA_GRANDCHILD_FALSE = 'canDeactivate_grandchild_false';
+    const CDA_GRANDCHILD_REDIRECT = 'canDeactivate_grandchild_redirect';
 
     beforeEach(() => {
+
       TestBed.configureTestingModule({
+        imports: [RouterTestingModule],
         providers: [
           Logger, provideTokenLogger(CA_CHILD), provideTokenLogger(CA_CHILD_FALSE, false),
+          provideTokenLogger(CA_CHILD_REDIRECT, serializer.parse('/canActivate_child_redirect')),
           provideTokenLogger(CAC_CHILD), provideTokenLogger(CAC_CHILD_FALSE, false),
+          provideTokenLogger(
+              CAC_CHILD_REDIRECT, serializer.parse('/canActivateChild_child_redirect')),
           provideTokenLogger(CA_GRANDCHILD), provideTokenLogger(CA_GRANDCHILD_FALSE, false),
+          provideTokenLogger(
+              CA_GRANDCHILD_REDIRECT, serializer.parse('/canActivate_grandchild_redirect')),
           provideTokenLogger(CDA_CHILD), provideTokenLogger(CDA_CHILD_FALSE, false),
-          provideTokenLogger(CDA_GRANDCHILD), provideTokenLogger(CDA_GRANDCHILD_FALSE, false)
+          provideTokenLogger(CDA_CHILD_REDIRECT, serializer.parse('/canDeactivate_child_redirect')),
+          provideTokenLogger(CDA_GRANDCHILD), provideTokenLogger(CDA_GRANDCHILD_FALSE, false),
+          provideTokenLogger(
+              CDA_GRANDCHILD_REDIRECT, serializer.parse('/canDeactivate_grandchild_redirect'))
         ]
       });
 
@@ -389,11 +404,11 @@ describe('Router', () => {
 
       it('should not run activate if deactivate fails guards', () => {
         /**
-         *      R  -->  R
-         *     /         \
-         *    prev (CDA)  child (CA)
-         *                 \
-         *                  grandchild (CA)
+         *      R  -->     R
+         *     /            \
+         *    prev (CDA: x)  child (CA)
+         *                    \
+         *                     grandchild (CA)
          */
 
         const prevSnapshot = createActivatedRouteSnapshot(
@@ -459,6 +474,114 @@ describe('Router', () => {
           expect(result).toBe(true);
           expect(logger.logs).toEqual([]);
         });
+      });
+
+      describe('UrlTree', () => {
+        it('should allow return of UrlTree from CanActivate', () => {
+          /**
+           * R  -->  R
+           *          \
+           *           child (CA: redirect)
+           */
+
+          const childSnapshot = createActivatedRouteSnapshot({
+            component: 'child',
+            routeConfig: {
+
+              canActivate: [CA_CHILD_REDIRECT]
+            }
+          });
+
+          const futureState = new (RouterStateSnapshot as any)(
+              'url', new TreeNode(empty.root, [new TreeNode(childSnapshot, [])]));
+
+          checkGuards(futureState, empty, TestBed, (result) => {
+            expect(serializer.serialize(result as UrlTree)).toBe('/' + CA_CHILD_REDIRECT);
+            expect(logger.logs).toEqual([CA_CHILD_REDIRECT]);
+          });
+        });
+
+        it('should allow return of UrlTree from CanActivateChild', () => {
+          /**
+           * R  -->  R
+           *          \
+           *           child (CAC: redirect)
+           *            \
+           *             grandchild (CA)
+           */
+
+          const childSnapshot = createActivatedRouteSnapshot(
+              {component: 'child', routeConfig: {canActivateChild: [CAC_CHILD_REDIRECT]}});
+          const grandchildSnapshot = createActivatedRouteSnapshot(
+              {component: 'grandchild', routeConfig: {canActivate: [CA_GRANDCHILD]}});
+
+          const futureState = new (RouterStateSnapshot as any)(
+              'url', new TreeNode(
+                         empty.root,
+                         [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+
+          checkGuards(futureState, empty, TestBed, (result) => {
+            expect(serializer.serialize(result as UrlTree)).toBe('/' + CAC_CHILD_REDIRECT);
+            expect(logger.logs).toEqual([CAC_CHILD_REDIRECT]);
+          });
+        });
+
+        it('should allow return of UrlTree from a child CanActivate', () => {
+          /**
+           * R  -->  R
+           *          \
+           *           child (CAC)
+           *            \
+           *             grandchild (CA: redirect)
+           */
+
+          const childSnapshot = createActivatedRouteSnapshot(
+              {component: 'child', routeConfig: {canActivateChild: [CAC_CHILD]}});
+          const grandchildSnapshot = createActivatedRouteSnapshot(
+              {component: 'grandchild', routeConfig: {canActivate: [CA_GRANDCHILD_REDIRECT]}});
+
+          const futureState = new (RouterStateSnapshot as any)(
+              'url', new TreeNode(
+                         empty.root,
+                         [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+
+          checkGuards(futureState, empty, TestBed, (result) => {
+            expect(serializer.serialize(result as UrlTree)).toBe('/' + CA_GRANDCHILD_REDIRECT);
+            expect(logger.logs).toEqual([CAC_CHILD, CA_GRANDCHILD_REDIRECT]);
+          });
+        });
+
+        it('should allow return of UrlTree from a child CanDeactivate', () => {
+          /**
+           *      R  -->            R
+           *     /                   \
+           *    prev (CDA: redirect)  child (CA)
+           *                           \
+           *                            grandchild (CA)
+           */
+
+          const prevSnapshot = createActivatedRouteSnapshot(
+              {component: 'prev', routeConfig: {canDeactivate: [CDA_CHILD_REDIRECT]}});
+          const childSnapshot = createActivatedRouteSnapshot({
+            component: 'child',
+            routeConfig: {canActivate: [CA_CHILD], canActivateChild: [CAC_CHILD]}
+          });
+          const grandchildSnapshot = createActivatedRouteSnapshot(
+              {component: 'grandchild', routeConfig: {canActivate: [CA_GRANDCHILD]}});
+
+          const currentState = new (RouterStateSnapshot as any)(
+              'prev', new TreeNode(empty.root, [new TreeNode(prevSnapshot, [])]));
+          const futureState = new (RouterStateSnapshot as any)(
+              'url', new TreeNode(
+                         empty.root,
+                         [new TreeNode(childSnapshot, [new TreeNode(grandchildSnapshot, [])])]));
+
+          checkGuards(futureState, currentState, TestBed, (result) => {
+            expect(serializer.serialize(result as UrlTree)).toBe('/' + CDA_CHILD_REDIRECT);
+            expect(logger.logs).toEqual([CDA_CHILD_REDIRECT]);
+          });
+        });
+
       });
     });
 
@@ -544,10 +667,16 @@ function checkResolveData(
 
 function checkGuards(
     future: RouterStateSnapshot, curr: RouterStateSnapshot, injector: any,
-    check: (result: boolean) => void): void {
+    check: (result: boolean | UrlTree) => void): void {
   of ({
     guards: getAllRouteGuards(future, curr, new ChildrenOutletContexts())
   } as Partial<NavigationTransition>)
       .pipe(checkGuardsOperator(injector))
-      .subscribe(t => check(!!t.guardsResult), (e) => { throw e; });
+      .subscribe({
+        next(t) {
+          if (t.guardsResult === null) throw new Error('Guard result expected');
+          return check(t.guardsResult);
+        },
+        error(e) { throw e; }
+      });
 }

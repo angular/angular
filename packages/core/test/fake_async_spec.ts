@@ -9,6 +9,7 @@
 import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick} from '@angular/core/testing';
 import {Log, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 import {Parser} from '../../compiler/src/expression_parser/parser';
 
@@ -32,9 +33,11 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
       })('foo', 'bar');
     });
 
-    it('should work with inject()', fakeAsync(inject([Parser], (parser: any /** TODO #9100 */) => {
-         expect(parser).toBeAnInstanceOf(Parser);
-       })));
+    fixmeIvy('FW-806: Ivy\'s TestBed implementation doesn\'t inject compiler-related tokens')
+        .it('should work with inject()',
+            fakeAsync(inject([Parser], (parser: any /** TODO #9100 */) => {
+              expect(parser).toBeAnInstanceOf(Parser);
+            })));
 
     it('should throw on nested calls', () => {
       expect(() => {

@@ -1,6 +1,6 @@
 # These options are enabled when running on CI
 # We do this by copying this file to /etc/bazel.bazelrc at the start of the build.
-# See remote cache documentation in /docs/BAZEL.md
+# See documentation in /docs/BAZEL.md
 
 # Don't be spammy in the logs
 # TODO(gmagolan): Hide progress again once build performance improves
@@ -8,17 +8,10 @@
 # error: Too long with no output (exceeded 10m0s)
 # build --noshow_progress
 
-# Don't run manual tests
-test --test_tag_filters=-manual
-
 # Print all the options that apply to the build.
 # This helps us diagnose which options override others
 # (e.g. /etc/bazel.bazelrc vs. tools/bazel.rc)
 build --announce_rc
-
-# Create dist/bin symlink to $(bazel info bazel-bin)
-# We use this when uploading artifacts after the build finishes
-build --symlink_prefix=dist/
 
 # Workaround https://github.com/bazelbuild/bazel/issues/3645
 # Bazel doesn't calculate the memory ceiling correctly when running under Docker.

@@ -8,12 +8,12 @@
 
 import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {NgswCommChannel} from '@angular/service-worker/src/low_level';
+import {RegistrationOptions, ngswCommChannelFactory} from '@angular/service-worker/src/module';
+import {SwPush} from '@angular/service-worker/src/push';
+import {SwUpdate} from '@angular/service-worker/src/update';
+import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration, patchDecodeBase64} from '@angular/service-worker/testing/mock';
 
-import {NgswCommChannel} from '../src/low_level';
-import {RegistrationOptions, ngswCommChannelFactory} from '../src/module';
-import {SwPush} from '../src/push';
-import {SwUpdate} from '../src/update';
-import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration, patchDecodeBase64} from '../testing/mock';
 import {async_fit, async_it} from './async';
 
 {
@@ -304,6 +304,27 @@ import {async_fit, async_it} from './async';
         });
       });
 
+      describe('notificationClicks', () => {
+        it('receives notification clicked messages', () => {
+          const sendMessage = (type: string, action: string) =>
+              mock.sendMessage({type, data: {action}});
+
+          const receivedMessages: string[] = [];
+          push.notificationClicks.subscribe(
+              (msg: {action: string}) => receivedMessages.push(msg.action));
+
+          sendMessage('NOTIFICATION_CLICK', 'this was a click');
+          sendMessage('NOT_IFICATION_CLICK', 'this was not a click');
+          sendMessage('NOTIFICATION_CLICK', 'this was a click too');
+          sendMessage('KCILC_NOITACIFITON', 'this was a KCILC_NOITACIFITON message');
+
+          expect(receivedMessages).toEqual([
+            'this was a click',
+            'this was a click too',
+          ]);
+        });
+      });
+
       describe('subscription', () => {
         let nextSubEmitResolve: () => void;
         let nextSubEmitPromise: Promise<void>;
@@ -367,6 +388,7 @@ import {async_fit, async_it} from './async';
 
         it('does not crash on subscription to observables', () => {
           push.messages.toPromise().catch(err => fail(err));
+          push.notificationClicks.toPromise().catch(err => fail(err));
           push.subscription.toPromise().catch(err => fail(err));
         });
 

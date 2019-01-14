@@ -123,12 +123,15 @@ function publishAllBuilds() {
   local latestTag=`getLatestTag`
 
   publishPackages $GIT_SCHEME dist/packages-dist $CUR_BRANCH "${latestTag}+${shortSha}"
-  publishPackages $GIT_SCHEME dist/packages-dist-ivy-jit "${CUR_BRANCH}-ivy-jit" "${latestTag}-ivy-jit+${shortSha}"
-  publishPackages $GIT_SCHEME dist/packages-dist-ivy-local "${CUR_BRANCH}-ivy-aot" "${latestTag}-ivy-aot+${shortSha}"
+
+  # don't publish ivy builds on non-master branch
+  if [[ "${CI_BRANCH-}" == "master" ]]; then
+    publishPackages $GIT_SCHEME dist/packages-dist-ivy-aot "${CUR_BRANCH}-ivy-aot" "${latestTag}-ivy-aot+${shortSha}"
+  fi
 }
 
 # See docs/DEVELOPER.md for help
-CUR_BRANCH=${CIRCLE_BRANCH:-$(git symbolic-ref --short HEAD)}
+CUR_BRANCH=${CI_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
   publishAllBuilds "ssh"

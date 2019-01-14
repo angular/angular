@@ -8,13 +8,6 @@ exports_files([
     "protractor-perf.conf.js",
 ])
 
-# Developers should always run `bazel run :install`
-# This ensures that package.json in subdirectories get installed as well.
-alias(
-    name = "install",
-    actual = "@nodejs//:yarn",
-)
-
 filegroup(
     name = "web_test_bootstrap_scripts",
     # do not sort
@@ -30,9 +23,14 @@ filegroup(
 filegroup(
     name = "angularjs_scripts",
     srcs = [
+        # We also declare the unminfied AngularJS files since these can be used for
+        # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
         "@ngdeps//node_modules/angular:angular.js",
+        "@ngdeps//node_modules/angular:angular.min.js",
         "@ngdeps//node_modules/angular-1.5:angular.js",
+        "@ngdeps//node_modules/angular-1.5:angular.min.js",
         "@ngdeps//node_modules/angular-1.6:angular.js",
+        "@ngdeps//node_modules/angular-1.6:angular.min.js",
         "@ngdeps//node_modules/angular-mocks:angular-mocks.js",
         "@ngdeps//node_modules/angular-mocks-1.5:angular-mocks.js",
         "@ngdeps//node_modules/angular-mocks-1.6:angular-mocks.js",
@@ -50,6 +48,7 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 # set which is required to support the call to `global.gc()`.
 nodejs_binary(
     name = "@angular/bazel/ngc-wrapped",
+    configuration_env_vars = ["compile"],
     data = ["@npm//@angular/bazel"],
     entry_point = "@angular/bazel/src/ngc-wrapped/index.js",
     install_source_map_support = False,

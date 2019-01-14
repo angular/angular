@@ -18,11 +18,3 @@ export function getComponentContainer() {
   const findContainer = () => by.css('div');
   return locate(getComponent(), findContainer());
 }
-
-export async function getComponentText() {
-  const findContainerText = () => by.css('div');
-  const contents = locate(getComponent(), findContainerText());
-  const componentText = await contents.getText();
-
-  return componentText;
-}

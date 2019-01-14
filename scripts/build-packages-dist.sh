@@ -12,7 +12,10 @@ cd "$(dirname "$0")"
 
 # basedir is the workspace root
 readonly basedir=$(pwd)/..
-readonly bin=$(bazel info bazel-bin)
+# We need to resolve the Bazel binary in the node modules because running Bazel
+# through `yarn bazel` causes additional output that throws off command stdout.
+readonly bazelBin=$(yarn bin)/bazel
+readonly bin=$(${bazelBin} info bazel-bin)
 
 function buildTargetPackages() {
   targets="$1"
@@ -20,17 +23,18 @@ function buildTargetPackages() {
   compileMode="$3"
   desc="$4"
 
-echo "##################################"
-echo "scripts/build-packages-dist.sh:"
-echo "  building @angular/* npm packages"
-echo "  mode: ${desc}"
-echo "##################################"
+  echo "##################################"
+  echo "scripts/build-packages-dist.sh:"
+  echo "  building @angular/* npm packages"
+  echo "  mode: ${desc}"
+  echo "##################################"
 
-  echo "$targets" | xargs bazel build --define=compile=$compileMode
+  # Use --config=release so that snapshot builds get published with embedded version info
+  echo "$targets" | xargs ${bazelBin} build --config=release --define=compile=$compileMode
 
   [ -d "${basedir}/${destPath}" ] || mkdir -p $basedir/${destPath}
 
-  dirs=`echo "$targets" | grep '//packages/[^/]*:npm_package' | sed -e 's/\/\/packages\/\(.*\):npm_package/\1/'`
+  dirs=`echo "$targets" | sed -e 's/\/\/packages\/\(.*\):npm_package/\1/'`
 
   for pkg in $dirs; do
     # Skip any that don't have an "npm_package" target
@@ -49,20 +53,17 @@ echo "##################################"
 # packages in their deps[].
 # Until then, we have to manually run bazel first to create the npm packages we
 # want to test.
-LEGACY_TARGETS=`bazel query --output=label 'kind(.*_package, //packages/...)'`
-buildTargetPackages "$LEGACY_TARGETS" "dist/packages-dist" "legacy" "Production"
+BAZEL_TARGETS=`${bazelBin} query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
+buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist" "legacy" "Production"
 
 # We don't use the ivy build in the integration tests, only when publishing
 # snapshots.
 # This logic matches what we use in the .circleci/config.yml file to short-
 # circuit execution of the publish-packages job.
-[[  "${CIRCLE_PR_NUMBER-}" != ""
-    || "${CIRCLE_PROJECT_USERNAME-}" != "angular"
-    || "${CIRCLE_PROJECT_REPONAME-}" != "angular"
+[[  "${CI_PULL_REQUEST-}" != "false"
+    || "${CI_REPO_OWNER-}" != "angular"
+    || "${CI_REPO_NAME-}" != "angular"
+    || "${CI_BRANCH}" != "master"
 ]] && exit 0
 
-IVY_JIT_TARGETS=`bazel query --output=label 'attr("tags", "\[.*ivy-jit.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
-IVY_LOCAL_TARGETS=`bazel query --output=label 'attr("tags", "\[.*ivy-local.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
-buildTargetPackages "$IVY_JIT_TARGETS" "dist/packages-dist-ivy-jit" "jit" "Ivy JIT"
-buildTargetPackages "$IVY_LOCAL_TARGETS" "dist/packages-dist-ivy-local" "local" "Ivy AOT"
-
+buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist-ivy-aot" "aot" "Ivy AOT"

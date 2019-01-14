@@ -29,10 +29,12 @@
     <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
     <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
     <div class="toolbar-external-icons-container">
-      <a  href="https://twitter.com/angular" title="Twitter">
-        <img src="assets/images/logos/twitter-icon.svg"></a>
-      <a  href="https://github.com/angular/angular" title="GitHub">
-        <img src="assets/images/logos/github-icon.svg"></a>
+      <a href="https://twitter.com/angular" title="Twitter" aria-label="Angular on twitter">
+        <mat-icon svgIcon="logos:twitter"></mat-icon>
+      </a>
+      <a href="https://github.com/angular/angular" title="GitHub" aria-label="Angular on github">
+        <mat-icon svgIcon="logos:github"></mat-icon>
+      </a>
     </div>
   </mat-toolbar-row>
 </mat-toolbar>
@@ -72,3 +74,10 @@
   <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo" ></aio-footer>
 </footer>
 
+<!--
+  Work-around to ensure that the `.woff2` file for the 'Material Icons' font will always be fetched.
+  This allows the SW to cache the file (even if there are no icons in the current page) and ensure
+  material icons on other pages are displayed correctly in offline mode.
+  (Note: Instantiate lazily to avoid affecting the initial rendering.)
+-->
+<mat-icon class="cdk-visually-hidden" *ngIf="!isStarting">&nbsp;</mat-icon>

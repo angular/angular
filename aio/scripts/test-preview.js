@@ -45,8 +45,9 @@ get(previewabilityCheckUrl).
         const totalSecs = Math.round((previewCheckInterval * previewCheckAttempts) / 1000);
         throw new Error(`Preview still not available after ${totalSecs}s.`);
       }).
-      // The preview is now available. Run the PWA tests.
-      then(() => runPwaTests());
+      // The preview is now available. Run the tests.
+      then(() => yarnRun('smoke-tests', previewUrl)).
+      then(() => yarnRun('test-pwa-score', previewUrl, minPwaScore));
   }).
   catch(onError);
 
@@ -93,15 +94,6 @@ function reportNoPreview(reason) {
   console.log(`No (public) preview available. (Reason: ${reason})`);
 }
 
-function runPwaTests() {
-  return new Promise((resolve, reject) => {
-    const spawnOptions = {cwd: __dirname, stdio: 'inherit'};
-    spawn('yarn', ['test-pwa-score', previewUrl, minPwaScore], spawnOptions).
-      on('error', reject).
-      on('exit', code => (code === 0 ? resolve : reject)());
-  });
-}
-
 function validateArgs(args) {
   if (args.length !== 3) {
     const relativeScriptPath = relative('.', __filename.replace(/\.js$/, ''));
@@ -118,4 +110,13 @@ function validateArgs(args) {
 function wait(delay) {
   console.log(`Waiting ${delay}ms...`);
   return new Promise(resolve => setTimeout(resolve, delay));
+}
+
+function yarnRun(script, ...args) {
+  return new Promise((resolve, reject) => {
+    const spawnOptions = {cwd: __dirname, stdio: 'inherit'};
+    spawn('yarn', [script, ...args], spawnOptions).
+      on('error', reject).
+      on('exit', code => (code === 0 ? resolve : reject)());
+  });
 }

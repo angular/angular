@@ -8,8 +8,8 @@
 
 import {Reflector} from '@angular/core/src/reflection/reflection';
 import {DELEGATE_CTOR, INHERITED_CLASS, INHERITED_CLASS_WITH_CTOR, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
-import {global} from '@angular/core/src/util';
 import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
+import {global} from '@angular/core/src/util/global';
 
 interface ClassDecoratorFactory {
   (data: ClassDecorator): any;
@@ -194,6 +194,10 @@ class TestObj {
         const ChildWithCtor = `class ChildWithCtor extends Parent {\n` +
             `  constructor() { super(); }` +
             `}\n`;
+        const ChildNoCtorComplexBase = `class ChildNoCtor extends Parent['foo'].bar(baz) {}\n`;
+        const ChildWithCtorComplexBase = `class ChildWithCtor extends Parent['foo'].bar(baz) {\n` +
+            `  constructor() { super(); }` +
+            `}\n`;
         const ChildNoCtorPrivateProps = `class ChildNoCtorPrivateProps extends Parent {\n` +
             `  private x = 10;\n` +
             `}\n`;
@@ -204,6 +208,8 @@ class TestObj {
         expect(checkNoOwnMetadata(ChildNoCtor)).toBeTruthy();
         expect(checkNoOwnMetadata(ChildNoCtorPrivateProps)).toBeTruthy();
         expect(checkNoOwnMetadata(ChildWithCtor)).toBeFalsy();
+        expect(checkNoOwnMetadata(ChildNoCtorComplexBase)).toBeTruthy();
+        expect(checkNoOwnMetadata(ChildWithCtorComplexBase)).toBeFalsy();
       });
 
       it('should properly handle all class forms', () => {

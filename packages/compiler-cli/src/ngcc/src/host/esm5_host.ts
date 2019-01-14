@@ -8,13 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, Decorator, FunctionDefinition, Parameter} from '../../../ngtsc/host';
-import {reflectObjectLiteral} from '../../../ngtsc/metadata';
-import {getNameText, getOriginalSymbol, isDefined} from '../utils';
+import {ClassMember, ClassMemberKind, Decorator, FunctionDefinition, Parameter, reflectObjectLiteral} from '../../../ngtsc/reflection';
+import {getNameText} from '../utils';
 
-import {DecoratedClass} from './decorated_class';
-import {DecoratedFile} from './decorated_file';
-import {Fesm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './fesm2015_host';
+import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
 
 
 /**
@@ -34,13 +31,33 @@ import {Fesm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignm
  *   a static method called `ctorParameters`.
  *
  */
-export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
+export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   constructor(isCore: boolean, checker: ts.TypeChecker) { super(isCore, checker); }
 
   /**
    * Check whether the given node actually represents a class.
    */
-  isClass(node: ts.Node): boolean { return super.isClass(node) || !!this.getClassSymbol(node); }
+  isClass(node: ts.Node): node is ts.NamedDeclaration {
+    return super.isClass(node) || !!this.getClassSymbol(node);
+  }
+
+  /**
+   * Determines whether the given declaration has a base class.
+   *
+   * In ES5, we need to determine if the IIFE wrapper takes a `_super` parameter .
+   */
+  hasBaseClass(node: ts.Declaration): boolean {
+    const classSymbol = this.getClassSymbol(node);
+    if (!classSymbol) return false;
+
+    const iifeBody = classSymbol.valueDeclaration.parent;
+    if (!iifeBody || !ts.isBlock(iifeBody)) return false;
+
+    const iife = iifeBody.parent;
+    if (!iife || !ts.isFunctionExpression(iife)) return false;
+
+    return iife.parameters.length === 1 && isSuperIdentifier(iife.parameters[0].name);
+  }
 
   /**
    * Find a symbol for a node that we think is a class.
@@ -125,41 +142,6 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
     return {node, body: statements || null, parameters};
   }
 
-  /**
-     * Find all the files accessible via an entry-point, that contain decorated classes.
-     * @param entryPoint The starting point file for finding files that contain decorated classes.
-     * @returns A collection of files objects that hold info about the decorated classes and import
-     * information.
-     */
-  findDecoratedFiles(entryPoint: ts.SourceFile): Map<ts.SourceFile, DecoratedFile> {
-    const moduleSymbol = this.checker.getSymbolAtLocation(entryPoint);
-    const map = new Map<ts.SourceFile, DecoratedFile>();
-    const getParsedClass = (declaration: ts.VariableDeclaration) => {
-      const decorators = this.getDecoratorsOfDeclaration(declaration);
-      if (decorators) {
-        return new DecoratedClass(getNameText(declaration.name), declaration, decorators);
-      }
-    };
-
-    if (moduleSymbol) {
-      const classDeclarations = this.checker.getExportsOfModule(moduleSymbol)
-                                    .map(getOriginalSymbol(this.checker))
-                                    .map(exportSymbol => exportSymbol.valueDeclaration)
-                                    .filter(isDefined)
-                                    .filter(ts.isVariableDeclaration);
-
-      const decoratedClasses = classDeclarations.map(getParsedClass).filter(isDefined);
-
-      decoratedClasses.forEach(clazz => {
-        const file = clazz.declaration.getSourceFile();
-        if (!map.has(file)) {
-          map.set(file, new DecoratedFile(file));
-        }
-        map.get(file) !.decoratedClasses.push(clazz);
-      });
-    }
-    return map;
-  }
 
   ///////////// Protected Helpers /////////////
 
@@ -173,10 +155,14 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
    * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
    * the class's constructor or null if there is no constructor.
    */
-  protected getConstructorParameterDeclarations(classSymbol: ts.Symbol): ts.ParameterDeclaration[] {
+  protected getConstructorParameterDeclarations(classSymbol: ts.Symbol):
+      ts.ParameterDeclaration[]|null {
     const constructor = classSymbol.valueDeclaration as ts.FunctionDeclaration;
-    if (constructor && constructor.parameters) {
+    if (constructor.parameters.length > 0) {
       return Array.from(constructor.parameters);
+    }
+    if (isSynthesizedConstructor(constructor)) {
+      return null;
     }
     return [];
   }
@@ -210,10 +196,10 @@ export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
     if (expression && ts.isArrayLiteralExpression(expression)) {
       const elements = expression.elements;
       return elements.map(reflectArrayElement).map(paramInfo => {
-        const type = paramInfo && paramInfo.get('type') || null;
+        const typeExpression = paramInfo && paramInfo.get('type') || null;
         const decoratorInfo = paramInfo && paramInfo.get('decorators') || null;
         const decorators = decoratorInfo && this.reflectDecorators(decoratorInfo);
-        return {type, decorators};
+        return {typeExpression, decorators};
       });
     }
     return null;
@@ -287,6 +273,147 @@ function getReturnStatement(declaration: ts.Expression | undefined): ts.ReturnSt
 
 function reflectArrayElement(element: ts.Expression) {
   return ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null;
+}
+
+/**
+ * A constructor function may have been "synthesized" by TypeScript during JavaScript emit,
+ * in the case no user-defined constructor exists and e.g. property initializers are used.
+ * Those initializers need to be emitted into a constructor in JavaScript, so the TypeScript
+ * compiler generates a synthetic constructor.
+ *
+ * We need to identify such constructors as ngcc needs to be able to tell if a class did
+ * originally have a constructor in the TypeScript source. For ES5, we can not tell an
+ * empty constructor apart from a synthesized constructor, but fortunately that does not
+ * matter for the code generated by ngtsc.
+ *
+ * When a class has a superclass however, a synthesized constructor must not be considered
+ * as a user-defined constructor as that prevents a base factory call from being created by
+ * ngtsc, resulting in a factory function that does not inject the dependencies of the
+ * superclass. Hence, we identify a default synthesized super call in the constructor body,
+ * according to the structure that TypeScript's ES2015 to ES5 transformer generates in
+ * https://github.com/Microsoft/TypeScript/blob/v3.2.2/src/compiler/transformers/es2015.ts#L1082-L1098
+ *
+ * @param constructor a constructor function to test
+ * @returns true if the constructor appears to have been synthesized
+ */
+function isSynthesizedConstructor(constructor: ts.FunctionDeclaration): boolean {
+  if (!constructor.body) return false;
+
+  const firstStatement = constructor.body.statements[0];
+  if (!firstStatement) return false;
+
+  return isSynthesizedSuperThisAssignment(firstStatement) ||
+      isSynthesizedSuperReturnStatement(firstStatement);
+}
+
+/**
+ * Identifies a synthesized super call of the form:
+ *
+ * ```
+ * var _this = _super !== null && _super.apply(this, arguments) || this;
+ * ```
+ *
+ * @param statement a statement that may be a synthesized super call
+ * @returns true if the statement looks like a synthesized super call
+ */
+function isSynthesizedSuperThisAssignment(statement: ts.Statement): boolean {
+  if (!ts.isVariableStatement(statement)) return false;
+
+  const variableDeclarations = statement.declarationList.declarations;
+  if (variableDeclarations.length !== 1) return false;
+
+  const variableDeclaration = variableDeclarations[0];
+  if (!ts.isIdentifier(variableDeclaration.name) ||
+      !variableDeclaration.name.text.startsWith('_this'))
+    return false;
+
+  const initializer = variableDeclaration.initializer;
+  if (!initializer) return false;
+
+  return isSynthesizedDefaultSuperCall(initializer);
+}
+/**
+ * Identifies a synthesized super call of the form:
+ *
+ * ```
+ * return _super !== null && _super.apply(this, arguments) || this;
+ * ```
+ *
+ * @param statement a statement that may be a synthesized super call
+ * @returns true if the statement looks like a synthesized super call
+ */
+function isSynthesizedSuperReturnStatement(statement: ts.Statement): boolean {
+  if (!ts.isReturnStatement(statement)) return false;
+
+  const expression = statement.expression;
+  if (!expression) return false;
+
+  return isSynthesizedDefaultSuperCall(expression);
+}
+
+/**
+ * Tests whether the expression is of the form:
+ *
+ * ```
+ * _super !== null && _super.apply(this, arguments) || this;
+ * ```
+ *
+ * This structure is generated by TypeScript when transforming ES2015 to ES5, see
+ * https://github.com/Microsoft/TypeScript/blob/v3.2.2/src/compiler/transformers/es2015.ts#L1148-L1163
+ *
+ * @param expression an expression that may represent a default super call
+ * @returns true if the expression corresponds with the above form
+ */
+function isSynthesizedDefaultSuperCall(expression: ts.Expression): boolean {
+  if (!isBinaryExpr(expression, ts.SyntaxKind.BarBarToken)) return false;
+  if (expression.right.kind !== ts.SyntaxKind.ThisKeyword) return false;
+
+  const left = expression.left;
+  if (!isBinaryExpr(left, ts.SyntaxKind.AmpersandAmpersandToken)) return false;
+
+  return isSuperNotNull(left.left) && isSuperApplyCall(left.right);
+}
+
+function isSuperNotNull(expression: ts.Expression): boolean {
+  return isBinaryExpr(expression, ts.SyntaxKind.ExclamationEqualsEqualsToken) &&
+      isSuperIdentifier(expression.left);
+}
+
+/**
+ * Tests whether the expression is of the form
+ *
+ * ```
+ * _super.apply(this, arguments)
+ * ```
+ *
+ * @param expression an expression that may represent a default super call
+ * @returns true if the expression corresponds with the above form
+ */
+function isSuperApplyCall(expression: ts.Expression): boolean {
+  if (!ts.isCallExpression(expression) || expression.arguments.length !== 2) return false;
+
+  const targetFn = expression.expression;
+  if (!ts.isPropertyAccessExpression(targetFn)) return false;
+  if (!isSuperIdentifier(targetFn.expression)) return false;
+  if (targetFn.name.text !== 'apply') return false;
+
+  const thisArgument = expression.arguments[0];
+  if (thisArgument.kind !== ts.SyntaxKind.ThisKeyword) return false;
+
+  const argumentsArgument = expression.arguments[1];
+  return ts.isIdentifier(argumentsArgument) && argumentsArgument.text === 'arguments';
+}
+
+function isBinaryExpr(
+    expression: ts.Expression, operator: ts.BinaryOperator): expression is ts.BinaryExpression {
+  return ts.isBinaryExpression(expression) && expression.operatorToken.kind === operator;
+}
+
+function isSuperIdentifier(node: ts.Node): boolean {
+  // Verify that the identifier is prefixed with `_super`. We don't test for equivalence
+  // as TypeScript may have suffixed the name, e.g. `_super_1` to avoid name conflicts.
+  // Requiring only a prefix should be sufficiently accurate.
+  return ts.isIdentifier(node) && node.text.startsWith('_super');
 }
 
 /**

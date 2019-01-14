@@ -4,7 +4,7 @@
 size:
   disabled: false
   maxSizeIncrease: 2000
-  circleCiStatusName: "ci/circleci: test"
+  circleCiStatusName: "ci/circleci: test_ivy_aot"
 
 # options for the merge plugin
 merge:
@@ -39,15 +39,28 @@ merge:
       - "packages/**"
     # list of patterns to ignore for the files changed by the PR
     exclude:
-      - "packages/bazel/*.bzl"
+      - "packages/*"
+      - "packages/bazel/*"
+      - "packages/bazel/src/builders/**"
+      - "packages/bazel/src/ng_package/**"
+      - "packages/bazel/src/protractor/**"
+      - "packages/bazel/src/schematics/**"
+      - "packages/compiler-cli/src/ngcc/**"
+      - "packages/docs/**"
+      - "packages/elements/schematics/**"
+      - "packages/examples/**"
       - "packages/language-service/**"
+      - "packages/private/**"
+      - "packages/service-worker/**"
       - "**/.gitignore"
       - "**/.gitkeep"
+      - "**/yarn.lock"
       - "**/package.json"
       - "**/tsconfig-build.json"
       - "**/tsconfig.json"
       - "**/rollup.config.js"
       - "**/BUILD.bazel"
+      - "**/*.md"
       - "packages/**/integrationtest/**"
       - "packages/**/test/**"
 
@@ -58,13 +71,17 @@ merge:
   # label to monitor
   mergeLabel: "PR action: merge"
 
+  # adding any of these labels will also add the merge label
+  mergeLinkedLabels:
+    - "PR action: merge-assistance"
+
   # list of checks that will determine if the merge label can be added
   checks:
 
     # require that the PR has reviews from all requested reviewers
     #
     # This enables us to request reviews from both eng and tech writers, or multiple eng folks, and prevents accidental merges.
-    # Rather than merging PRs with pending reviews, if all PullApprove requirements are satisfied and additional reviews are not needed pending reviewers should be removed via GitHub UI (this also leaves an audit trail behind these decisions).
+    # Rather than merging PRs with pending reviews, if all approvals are obtained and additional reviews are not needed, any pending reviewers should be removed via GitHub UI (this also leaves an audit trail behind these decisions).
     requireReviews: true,
 <<<<<<< HEAD
   
@@ -88,8 +105,6 @@ merge:
 
     # list of PR statuses that need to be successful
     requiredStatuses:
-      - "continuous-integration/travis-ci/pr"
-      - "code-review/pullapprove"
       - "ci/circleci: build"
       - "ci/circleci: lint"
 

@@ -41,8 +41,6 @@ Here are the most important tasks you might need to use:
   - `yarn example-e2e --filter=foo` - limit e2e tests to those containing the word "foo"
   - `yarn example-e2e --setup --local` - run e2e tests with the local version of Angular contained in the "dist" folder
 
-* `yarn build-ie-polyfills` - generates a js file of polyfills that can be loaded in Internet Explorer.
-
 ## Developing on Windows
 The `packages/` directory may contain Linux-specific symlinks, which are not recognized by Windows.
 These unresolved links cause the docs generation process to fail because it cannot locate certain files.
@@ -50,7 +48,7 @@ These unresolved links cause the docs generation process to fail because it cann
 > Hint: The following steps require administration rights or [Windows Developer Mode](https://docs.microsoft.com/en-us/windows/uwp/get-started/enable-your-device-for-development) enabled!
 
 To fix this problem, run `scripts/windows/create-symlinks.sh`. This command creates temporary files where the symlinks used to be. Make sure not to commit those files with your documentation changes.
-When you are done making and testing your documentation changes, you can restore the original symlinks and delete the temporary files by running `scripts/windows/remove-symlinks.sh`. 
+When you are done making and testing your documentation changes, you can restore the original symlinks and delete the temporary files by running `scripts/windows/remove-symlinks.sh`.
 
 It's necessary to remove the temporary files, because otherwise they're displayed as local changes in your git working copy and certain operations are blocked.
 

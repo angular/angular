@@ -275,7 +275,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   };
 
   proxy.getDefinitionAtPosition = function(
-                                      fileName: string, position: number): ts.DefinitionInfo[] {
+      fileName: string, position: number): ReadonlyArray<ts.DefinitionInfo> {
     let base = oldLS.getDefinitionAtPosition(fileName, position);
     if (base && base.length) {
       return base;
@@ -283,10 +283,12 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
 
     return tryOperation('get definition', () => {
              const ours = ls.getDefinitionAt(fileName, position);
+             let combined;
+
              if (ours && ours.length) {
-               base = base || [];
+               combined = base && base.concat([]) || [];
                for (const loc of ours) {
-                 base.push({
+                 combined.push({
                    fileName: loc.fileName,
                    textSpan: {start: loc.span.start, length: loc.span.end - loc.span.start},
                    name: '',
@@ -296,8 +298,10 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
                    containerKind: 'file' as any,
                  });
                }
+             } else {
+               combined = base;
              }
-             return base;
+             return combined;
            }) || [];
   };
 

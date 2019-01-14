@@ -7,7 +7,17 @@
  */
 
 import * as e from '../../../src/expression_parser/ast';
+import {Lexer} from '../../../src/expression_parser/lexer';
+import {Parser} from '../../../src/expression_parser/parser';
+import * as html from '../../../src/ml_parser/ast';
+import {HtmlParser} from '../../../src/ml_parser/html_parser';
+import {WhitespaceVisitor} from '../../../src/ml_parser/html_whitespaces';
+import {DEFAULT_INTERPOLATION_CONFIG} from '../../../src/ml_parser/interpolation_config';
 import * as a from '../../../src/render3/r3_ast';
+import {Render3ParseResult, htmlAstToRender3Ast} from '../../../src/render3/r3_template_transform';
+import {processI18nMeta} from '../../../src/render3/view/i18n/meta';
+import {BindingParser} from '../../../src/template_parser/binding_parser';
+import {MockSchemaRegistry} from '../../../testing';
 
 export function findExpression(tmpl: a.Node[], expr: string): e.AST|null {
   const res = tmpl.reduce((found, node) => {
@@ -64,4 +74,31 @@ export function toStringExpression(expr: e.AST): string {
   } else {
     throw new Error(`Unsupported type: ${(expr as any).constructor.name}`);
   }
+}
+
+// Parse an html string to IVY specific info
+export function parseR3(
+    input: string, options: {preserveWhitespaces?: boolean} = {}): Render3ParseResult {
+  const htmlParser = new HtmlParser();
+
+  const parseResult = htmlParser.parse(input, 'path:://to/template', true);
+
+  if (parseResult.errors.length > 0) {
+    const msg = parseResult.errors.map(e => e.toString()).join('\n');
+    throw new Error(msg);
+  }
+
+  let htmlNodes = processI18nMeta(parseResult).rootNodes;
+
+  if (!options.preserveWhitespaces) {
+    htmlNodes = html.visitAll(new WhitespaceVisitor(), htmlNodes);
+  }
+
+  const expressionParser = new Parser(new Lexer());
+  const schemaRegistry = new MockSchemaRegistry(
+      {'invalidProp': false}, {'mappedAttr': 'mappedProp'}, {'unknown': false, 'un-known': false},
+      ['onEvent'], ['onEvent']);
+  const bindingParser =
+      new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, null, []);
+  return htmlAstToRender3Ast(htmlNodes, bindingParser);
 }

@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/schema",
+    "title": "Bazel builder schema",
+    "description": "Options for Bazel Builder",
+    "type": "object",
+    "properties": {
+        "targetLabel": {
+            "type": "string",
+            "description": "Target to be executed under Bazel."
+        },
+        "bazelCommand": {
+            "type": "string",
+            "enum": [
+                "run",
+                "build",
+                "test"
+            ]
+        },
+        "watch": {
+            "type": "boolean",
+            "default": false
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "targetLabel",
+        "bazelCommand"
+    ]
+}
