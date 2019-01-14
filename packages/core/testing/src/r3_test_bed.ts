@@ -382,12 +382,11 @@ export class TestBedRender3 implements Injector, TestBed {
       }
     });
 
-    this._createCompilerInjector();
     let resourceLoader: ResourceLoader;
 
     return resolveComponentResources(url => {
              if (!resourceLoader) {
-               resourceLoader = this._compilerInjector.get(ResourceLoader);
+               resourceLoader = this.compilerInjector.get(ResourceLoader);
              }
              return Promise.resolve(resourceLoader.get(url));
            })
@@ -590,9 +589,9 @@ export class TestBedRender3 implements Injector, TestBed {
     return DynamicTestModule as NgModuleType;
   }
 
-  private _createCompilerInjector() {
-    if (this._compilerInjector) {
-      return;
+  get compilerInjector(): Injector {
+    if (this._compilerInjector !== undefined) {
+      this._compilerInjector;
     }
 
     const providers = [];
@@ -604,12 +603,14 @@ export class TestBedRender3 implements Injector, TestBed {
     });
     providers.push(...this._compilerProviders);
 
+    // TODO(ocombe): make this work with an Injector directly instead of creating a module for it
     @NgModule({providers})
     class CompilerModule {
     }
 
     const CompilerModuleFactory = new R3NgModuleFactory(CompilerModule);
     this._compilerInjector = CompilerModuleFactory.create(this.platform.injector).injector;
+    return this._compilerInjector;
   }
 
   private _getMetaWithOverrides(meta: Component|Directive|NgModule, type?: Type<any>) {
