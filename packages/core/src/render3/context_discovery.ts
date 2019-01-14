@@ -300,14 +300,9 @@ export function discoverLocalRefs(lView: LView, nodeIndex: number): {[key: strin
   if (tNode && tNode.localNames) {
     const result: {[key: string]: any} = {};
     let localIndex = tNode.index + 1;
-    for (let i = 0; i < tNode.localNames.length; i += 2, localIndex++) {
-      const localRefName = tNode.localNames[i];
-      const directiveIndex = tNode.localNames[i + 1] as number;
-      if (directiveIndex === -1) {
-        result[localRefName] = lView[localIndex] || getNativeByTNode(tNode, lView);
-      } else {
-        result[localRefName] = lView[directiveIndex];
-      }
+    for (let i = 0; i < tNode.localNames.length; i += 2) {
+      result[tNode.localNames[i]] = lView[localIndex];
+      localIndex++;
     }
     return result;
   }
