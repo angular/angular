@@ -376,29 +376,29 @@ export class ApplicationRef {
    *
    * Note two important points, demonstrated in the examples below:
    * - the application will never be stable if you start any kind
-   * of asynchronous task when the application starts
+   * of recurrent asynchronous task when the application starts
    * (for example for a polling process, started with a `setInterval`, a `setTimeout`
    * or using RxJS operators like `interval`);
    * - the `isStable` Observable runs outside of the Angular zone.
    *
    * Let's imagine that you start a recurrent task
    * (here incrementing a counter, using RxJS `interval`),
-   * and then subscribe to `isStable`.
+   * and at the same time subscribe to `isStable`.
    *
    * ```
    * constructor(appRef: ApplicationRef) {
-   *   interval(1000).subscribe(counter => console.log(counter));
    *   appRef.isStable.pipe(
    *      filter(stable => stable)
    *   ).subscribe(() => console.log('App is stable now');
+   *   interval(1000).subscribe(counter => console.log(counter));
    * }
    * ```
    * In this example, `isStable` will never emit `true`,
    * and the trace "App is stable now" will never get logged.
    *
    * If you want to execute something when the app is stable,
-   * you'll have to delay your polling process,
-   * or wait for the application to be stable before starting it.
+   * you have to wait for the application to be stable
+   * before starting your polling process.
    *
    * ```
    * constructor(appRef: ApplicationRef) {
