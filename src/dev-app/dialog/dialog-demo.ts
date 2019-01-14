@@ -7,7 +7,7 @@
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Component, Inject, TemplateRef, ViewChild} from '@angular/core';
+import {Component, Inject, TemplateRef, ViewChild, ViewEncapsulation} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 
 
@@ -101,8 +101,11 @@ export class DialogDemo {
       <p cdkDragHandle> {{ data.message }} </p>
       <button type="button" (click)="dialogRef.close(howMuch.value)">Close dialog</button>
       <button (click)="togglePosition()">Change dimensions</button>
+      <button (click)="temporarilyHide()">Hide for 2 seconds</button>
     </div>
-  `
+  `,
+  encapsulation: ViewEncapsulation.None,
+  styles: [`.hidden-dialog { opacity: 0; }`]
 })
 export class JazzDialog {
   private _dimesionToggle = false;
@@ -123,6 +126,13 @@ export class JazzDialog {
         .updateSize()
         .updatePosition();
     }
+  }
+
+  temporarilyHide(): void {
+    this.dialogRef.addPanelClass('hidden-dialog');
+    setTimeout(() => {
+      this.dialogRef.removePanelClass('hidden-dialog');
+    }, 2000);
   }
 }
 

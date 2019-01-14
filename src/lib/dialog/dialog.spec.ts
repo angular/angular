@@ -830,6 +830,23 @@ describe('MatDialog', () => {
     sibling.parentNode!.removeChild(sibling);
   }));
 
+  it('should add and remove classes while open', () => {
+    let dialogRef = dialog.open(PizzaMsg, {
+      disableClose: true,
+      viewContainerRef: testViewContainerRef
+    });
+
+    const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+    expect(pane.classList)
+      .not.toContain('custom-class-one', 'Expected class to be initially missing');
+
+    dialogRef.addPanelClass('custom-class-one');
+    expect(pane.classList).toContain('custom-class-one', 'Expected class to be added');
+
+    dialogRef.removePanelClass('custom-class-one');
+    expect(pane.classList).not.toContain('custom-class-one', 'Expected class to be removed');
+  });
+
   describe('disableClose option', () => {
     it('should prevent closing via clicks on the backdrop', fakeAsync(() => {
       dialog.open(PizzaMsg, {

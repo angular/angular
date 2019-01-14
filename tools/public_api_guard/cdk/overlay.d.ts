@@ -227,9 +227,10 @@ export declare class OverlayRef implements PortalOutlet, OverlayReference {
     readonly hostElement: HTMLElement;
     readonly overlayElement: HTMLElement;
     constructor(_portalOutlet: PortalOutlet, _host: HTMLElement, _pane: HTMLElement, _config: ImmutableObject<OverlayConfig>, _ngZone: NgZone, _keyboardDispatcher: OverlayKeyboardDispatcher, _document: Document, _location?: Location | undefined);
-    attach<T>(portal: TemplatePortal<T>): EmbeddedViewRef<T>;
+    addPanelClass(classes: string | string[]): void;
     attach(portal: any): any;
     attach<T>(portal: ComponentPortal<T>): ComponentRef<T>;
+    attach<T>(portal: TemplatePortal<T>): EmbeddedViewRef<T>;
     attachments(): Observable<void>;
     backdropClick(): Observable<MouseEvent>;
     detach(): any;
@@ -240,6 +241,7 @@ export declare class OverlayRef implements PortalOutlet, OverlayReference {
     getDirection(): Direction;
     hasAttached(): boolean;
     keydownEvents(): Observable<KeyboardEvent>;
+    removePanelClass(classes: string | string[]): void;
     setDirection(dir: Direction | Directionality): void;
     updatePosition(): void;
     updatePositionStrategy(strategy: PositionStrategy): void;

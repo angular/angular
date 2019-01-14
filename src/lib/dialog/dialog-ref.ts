@@ -173,6 +173,18 @@ export class MatDialogRef<T, R = any> {
     return this;
   }
 
+  /** Add a CSS class or an array of classes to the overlay pane. */
+  addPanelClass(classes: string | string[]): this {
+    this._overlayRef.addPanelClass(classes);
+    return this;
+  }
+
+  /** Remove a CSS class or an array of classes from the overlay pane. */
+  removePanelClass(classes: string | string[]): this {
+    this._overlayRef.removePanelClass(classes);
+    return this;
+  }
+
   /**
    * Gets an observable that is notified when the dialog is finished opening.
    * @deprecated Use `afterOpened` instead.

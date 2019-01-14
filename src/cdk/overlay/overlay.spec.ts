@@ -398,6 +398,26 @@ describe('Overlay', () => {
     expect(overlayContainerElement.textContent).toBe('');
   });
 
+  it('should add and remove classes while open', () => {
+    let overlayRef = overlay.create();
+    overlayRef.attach(componentPortal);
+
+    const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+    expect(pane.classList)
+      .not.toContain('custom-class-one', 'Expected class to be initially missing');
+
+    overlayRef.addPanelClass('custom-class-one');
+    expect(pane.classList).toContain('custom-class-one', 'Expected class to be added');
+
+    overlayRef.removePanelClass('custom-class-one');
+    expect(pane.classList).not.toContain('custom-class-one', 'Expected class to be removed');
+
+    // Destroy the overlay and make sure no errors are thrown when trying to alter
+    // panel classes
+    overlayRef.dispose();
+    expect(() => overlayRef.addPanelClass('custom-class-two')).not.toThrowError();
+  });
+
   describe('positioning', () => {
     let config: OverlayConfig;
 

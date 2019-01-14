@@ -273,14 +273,14 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   }
 
   /** Updates the position of the overlay based on the position strategy. */
-  updatePosition() {
+  updatePosition(): void {
     if (this._positionStrategy) {
       this._positionStrategy.apply();
     }
   }
 
   /** Switches to a new position strategy and updates the overlay position. */
-  updatePositionStrategy(strategy: PositionStrategy) {
+  updatePositionStrategy(strategy: PositionStrategy): void {
     if (strategy === this._positionStrategy) {
       return;
     }
@@ -298,15 +298,29 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   }
 
   /** Update the size properties of the overlay. */
-  updateSize(sizeConfig: OverlaySizeConfig) {
+  updateSize(sizeConfig: OverlaySizeConfig): void {
     this._config = {...this._config, ...sizeConfig};
     this._updateElementSize();
   }
 
   /** Sets the LTR/RTL direction for the overlay. */
-  setDirection(dir: Direction | Directionality) {
+  setDirection(dir: Direction | Directionality): void {
     this._config = {...this._config, direction: dir};
     this._updateElementDirection();
+  }
+
+  /** Add a CSS class or an array of classes to the overlay pane. */
+  addPanelClass(classes: string | string[]): void {
+    if (this._pane) {
+      this._toggleClasses(this._pane, classes, true);
+    }
+  }
+
+  /** Remove a CSS class or an array of classes from the overlay pane. */
+  removePanelClass(classes: string | string[]): void {
+    if (this._pane) {
+      this._toggleClasses(this._pane, classes, false);
+    }
   }
 
   /**
