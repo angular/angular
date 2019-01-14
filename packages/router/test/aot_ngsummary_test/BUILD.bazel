@@ -2,6 +2,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ts_library", "ts
 
 ng_module(
     name = "aot_routing_module",
+    testonly = True,
     srcs = ["aot_router_module.ts"],
     deps = [
         "//packages/core",
@@ -12,7 +13,7 @@ ng_module(
 
 ts_library(
     name = "aot_test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = ["aot_router_bootstrap.spec.ts"],
     deps = [
         ":aot_routing_module",

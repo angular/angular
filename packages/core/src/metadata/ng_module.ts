@@ -7,12 +7,14 @@
  */
 
 import {ApplicationRef} from '../application_ref';
-import {InjectorType, defineInjector} from '../di/defs';
-import {Provider} from '../di/provider';
+import {InjectorType, defineInjector} from '../di/interface/defs';
+import {Provider} from '../di/interface/provider';
 import {convertInjectableProviderToFactory} from '../di/util';
+import {Type} from '../interface/type';
+import {NgModuleType} from '../render3';
 import {compileNgModule as render3CompileNgModule} from '../render3/jit/module';
-import {Type} from '../type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
+
 
 /**
  * Represents the expansion of an `NgModule` into its scopes.
@@ -127,6 +129,8 @@ export interface NgModuleDecorator {
 
 /**
  * Type of the NgModule metadata.
+ *
+ * @publicApi
  */
 export interface NgModule {
   /**
@@ -335,7 +339,7 @@ export const NgModule: NgModuleDecorator = makeDecorator(
      * * The `imports` and `exports` options bring in members from other modules, and make
      * this module's members available to others.
      */
-    (type: Type<any>, meta: NgModule) => SWITCH_COMPILE_NGMODULE(type, meta));
+    (type: NgModuleType, meta: NgModule) => SWITCH_COMPILE_NGMODULE(type, meta));
 
 /**
  * @description

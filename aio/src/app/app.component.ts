@@ -389,7 +389,10 @@ export class AppComponent implements OnInit {
 
   hideSearchResults() {
     this.showSearchResults = false;
-    this.locationService.setSearch('', { ...this.locationService.search(), search: undefined });
+    const oldSearch = this.locationService.search();
+    if (oldSearch.search !== undefined) {
+      this.locationService.setSearch('', { ...oldSearch, search: undefined });
+    }
   }
 
   focusSearchBox() {

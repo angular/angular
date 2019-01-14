@@ -9,7 +9,7 @@
 import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, Type, TypeVisitor, TypeofExpr, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {relativePathBetween} from '../../util/src/path';
+import {ImportRewriter, NoopImportRewriter} from '../../imports';
 
 export class Context {
   constructor(readonly isStatement: boolean) {}
@@ -38,45 +38,41 @@ const BINARY_OPERATORS = new Map<BinaryOperator, ts.BinaryOperator>([
   [BinaryOperator.Plus, ts.SyntaxKind.PlusToken],
 ]);
 
-const CORE_SUPPORTED_SYMBOLS = new Set<string>([
-  'defineInjectable',
-  'defineInjector',
-  'ɵdefineNgModule',
-  'inject',
-  'ɵInjectableDef',
-  'ɵInjectorDef',
-  'ɵNgModuleDefWithMeta',
-  'ɵNgModuleFactory',
-]);
+
 
 export class ImportManager {
   private moduleToIndex = new Map<string, string>();
+  private importedModules = new Set<string>();
   private nextIndex = 0;
 
-  constructor(protected isCore: boolean, private prefix = 'i') {}
+  constructor(protected rewriter: ImportRewriter = new NoopImportRewriter(), private prefix = 'i') {
+  }
 
-  generateNamedImport(moduleName: string, symbol: string): string|null {
+  generateNamedImport(moduleName: string, originalSymbol: string):
+      {moduleImport: string | null, symbol: string} {
+    // First, rewrite the symbol name.
+    const symbol = this.rewriter.rewriteSymbol(originalSymbol, moduleName);
+
+    // Ask the rewriter if this symbol should be imported at all. If not, it can be referenced
+    // directly (moduleImport: null).
+    if (!this.rewriter.shouldImportSymbol(symbol, moduleName)) {
+      // The symbol should be referenced directly.
+      return {moduleImport: null, symbol};
+    }
+
+    // If not, this symbol will be imported. Allocate a prefix for the imported module if needed.
     if (!this.moduleToIndex.has(moduleName)) {
       this.moduleToIndex.set(moduleName, `${this.prefix}${this.nextIndex++}`);
     }
-    if (this.isCore && moduleName === '@angular/core' && !CORE_SUPPORTED_SYMBOLS.has(symbol)) {
-      throw new Error(`Importing unexpected symbol ${symbol} while compiling core`);
-    }
-    return this.moduleToIndex.get(moduleName) !;
+    const moduleImport = this.moduleToIndex.get(moduleName) !;
+
+    return {moduleImport, symbol};
   }
 
-  getAllImports(contextPath: string, rewriteCoreImportsTo: ts.SourceFile|null):
-      {name: string, as: string}[] {
+  getAllImports(contextPath: string): {name: string, as: string}[] {
     return Array.from(this.moduleToIndex.keys()).map(name => {
-      const as: string|null = this.moduleToIndex.get(name) !;
-      if (rewriteCoreImportsTo !== null && name === '@angular/core') {
-        const relative = relativePathBetween(contextPath, rewriteCoreImportsTo.fileName);
-        if (relative === null) {
-          throw new Error(
-              `Failed to rewrite import inside core: ${contextPath} -> ${rewriteCoreImportsTo.fileName}`);
-        }
-        name = relative;
-      }
+      const as = this.moduleToIndex.get(name) !;
+      name = this.rewriter.rewriteSpecifier(name, contextPath);
       return {name, as};
     });
   }
@@ -185,9 +181,13 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: Context): ts.CallExpression {
-    return ts.createCall(
+    const expr = ts.createCall(
         ast.fn.visitExpression(this, context), undefined,
         ast.args.map(arg => arg.visitExpression(this, context)));
+    if (ast.pure) {
+      ts.addSyntheticLeadingComment(expr, ts.SyntaxKind.MultiLineCommentTrivia, '@__PURE__', false);
+    }
+    return expr;
   }
 
   visitInstantiateExpr(ast: InstantiateExpr, context: Context): ts.NewExpression {
@@ -211,12 +211,13 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol ${ast.value}`);
     }
-    const importIdentifier = this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
-    if (importIdentifier === null) {
-      return ts.createIdentifier(ast.value.name);
+    const {moduleImport, symbol} =
+        this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
+    if (moduleImport === null) {
+      return ts.createIdentifier(symbol);
     } else {
       return ts.createPropertyAccess(
-          ts.createIdentifier(importIdentifier), ts.createIdentifier(ast.value.name));
+          ts.createIdentifier(moduleImport), ts.createIdentifier(symbol));
     }
   }
 
@@ -232,7 +233,7 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitAssertNotNullExpr(ast: AssertNotNull, context: Context): ts.NonNullExpression {
-    return ts.createNonNullExpression(ast.condition.visitExpression(this, context));
+    return ast.condition.visitExpression(this, context);
   }
 
   visitCastExpr(ast: CastExpr, context: Context): ts.Expression {
@@ -377,8 +378,9 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol`);
     }
-    const moduleSymbol = this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
-    const base = `${moduleSymbol}.${ast.value.name}`;
+    const {moduleImport, symbol} =
+        this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
+    const base = moduleImport ? `${moduleImport}.${symbol}` : symbol;
     if (ast.typeParams !== null) {
       const generics = ast.typeParams.map(type => type.visitType(this, context)).join(', ');
       return `${base}<${generics}>`;

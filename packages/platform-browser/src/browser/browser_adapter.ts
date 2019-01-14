@@ -295,7 +295,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getBoundingClientRect(el: Element): any {
     try {
       return el.getBoundingClientRect();
-    } catch (e) {
+    } catch {
       return {top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0};
     }
   }

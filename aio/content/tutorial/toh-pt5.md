@@ -34,7 +34,7 @@ When you’re done, users will be able to navigate the app like this:
 ## `AppRoutingModule` 생성하기
 
 <!--
-An Angular best practice is to load and configure the router in a separate, top-level module
+In Angular, the best practice is to load and configure the router in a separate, top-level module
 that is dedicated to routing and imported by the root `AppModule`.
 
 By convention, the module class name is `AppRoutingModule` and it belongs in the `app-routing.module.ts` in the `src/app` folder.

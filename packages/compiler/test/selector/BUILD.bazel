@@ -1,0 +1,31 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+
+ts_library(
+    name = "selector_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler/testing",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "selector",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    deps = [
+        ":selector_lib",
+        "//tools/testing:node",
+    ],
+)
+
+ts_web_test_suite(
+    name = "selector_web",
+    deps = [
+        ":selector_lib",
+    ],
+)

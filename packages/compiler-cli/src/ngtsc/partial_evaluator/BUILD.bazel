@@ -1,0 +1,21 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "partial_evaluator",
+    srcs = glob([
+        "index.ts",
+        "src/*.ts",
+    ]),
+    module_name = "@angular/compiler-cli/src/ngtsc/partial_evaluator",
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/reflection",
+        "//packages/compiler-cli/src/ngtsc/util",
+        "@ngdeps//@types/node",
+        "@ngdeps//typescript",
+    ],
+)

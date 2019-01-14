@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
+import {Type} from '../interface/type';
 
 /**
  * An interface implemented by all Angular type decorators, which allows them to be used as ES7

@@ -12,9 +12,9 @@ export class AppComponent {
   constructor(private update: SwUpdate) {}
 
   updateCheck(): void {
-      this.update
+    this.update
         .checkForUpdate()
         .then(() => this.updateCheckText = 'resolved')
         .catch(err => this.updateCheckText = `rejected: ${err.message}`);
-    }
+  }
 }

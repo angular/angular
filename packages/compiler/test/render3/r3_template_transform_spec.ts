@@ -7,37 +7,10 @@
  */
 
 import {BindingType} from '../../src/expression_parser/ast';
-import {Lexer} from '../../src/expression_parser/lexer';
-import {Parser} from '../../src/expression_parser/parser';
-import {HtmlParser} from '../../src/ml_parser/html_parser';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
 import * as t from '../../src/render3/r3_ast';
-import {Render3ParseResult, htmlAstToRender3Ast} from '../../src/render3/r3_template_transform';
-import {BindingParser} from '../../src/template_parser/binding_parser';
-import {MockSchemaRegistry} from '../../testing';
 import {unparse} from '../expression_parser/utils/unparser';
+import {parseR3 as parse} from './view/util';
 
-
-// Parse an html string to IVY specific info
-function parse(html: string): Render3ParseResult {
-  const htmlParser = new HtmlParser();
-
-  const parseResult = htmlParser.parse(html, 'path:://to/template', true);
-
-  if (parseResult.errors.length > 0) {
-    const msg = parseResult.errors.map(e => e.toString()).join('\n');
-    throw new Error(msg);
-  }
-
-  const htmlNodes = parseResult.rootNodes;
-  const expressionParser = new Parser(new Lexer());
-  const schemaRegistry = new MockSchemaRegistry(
-      {'invalidProp': false}, {'mappedAttr': 'mappedProp'}, {'unknown': false, 'un-known': false},
-      ['onEvent'], ['onEvent']);
-  const bindingParser =
-      new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, null, []);
-  return htmlAstToRender3Ast(htmlNodes, bindingParser);
-}
 
 // Transform an IVY AST to a flat list of nodes to ease testing
 class R3AstHumanizer implements t.Visitor<void> {
@@ -66,7 +39,7 @@ class R3AstHumanizer implements t.Visitor<void> {
   }
 
   visitContent(content: t.Content) {
-    this.result.push(['Content', content.selectorIndex]);
+    this.result.push(['Content', content.selector]);
     t.visitAll(this, content.attributes);
   }
 
@@ -104,6 +77,8 @@ class R3AstHumanizer implements t.Visitor<void> {
 
   visitBoundText(text: t.BoundText) { this.result.push(['BoundText', unparse(text.value)]); }
 
+  visitIcu(icu: t.Icu) { return null; }
+
   private visitAll(nodes: t.Node[][]) { nodes.forEach(node => t.visitAll(this, node)); }
 }
 
@@ -135,17 +110,15 @@ describe('R3 template transform', () => {
 
     it('should parse ngContent', () => {
       const res = parse('<ng-content select="a"></ng-content>');
-      expect(res.hasNgContent).toEqual(true);
-      expect(res.ngContentSelectors).toEqual(['a']);
       expectFromR3Nodes(res.nodes).toEqual([
-        ['Content', 1],
+        ['Content', 'a'],
         ['TextAttribute', 'select', 'a'],
       ]);
     });
 
     it('should parse ngContent when it contains WS only', () => {
       expectFromHtml('<ng-content select="a">    \n   </ng-content>').toEqual([
-        ['Content', 1],
+        ['Content', 'a'],
         ['TextAttribute', 'select', 'a'],
       ]);
     });
@@ -153,7 +126,7 @@ describe('R3 template transform', () => {
     it('should parse ngContent regardless the namespace', () => {
       expectFromHtml('<svg><ng-content select="a"></ng-content></svg>').toEqual([
         ['Element', ':svg:svg'],
-        ['Content', 1],
+        ['Content', 'a'],
         ['TextAttribute', 'select', 'a'],
       ]);
     });
@@ -402,30 +375,16 @@ describe('R3 template transform', () => {
   describe('ng-content', () => {
     it('should parse ngContent without selector', () => {
       const res = parse('<ng-content></ng-content>');
-      expect(res.hasNgContent).toEqual(true);
-      expect(res.ngContentSelectors).toEqual([]);
       expectFromR3Nodes(res.nodes).toEqual([
-        ['Content', 0],
-      ]);
-    });
-
-    it('should parse ngContent with a * selector', () => {
-      const res = parse('<ng-content></ng-content>');
-      const selectors = [''];
-      expect(res.hasNgContent).toEqual(true);
-      expect(res.ngContentSelectors).toEqual([]);
-      expectFromR3Nodes(res.nodes).toEqual([
-        ['Content', 0],
+        ['Content', '*'],
       ]);
     });
 
     it('should parse ngContent with a specific selector', () => {
       const res = parse('<ng-content select="tag[attribute]"></ng-content>');
       const selectors = ['', 'tag[attribute]'];
-      expect(res.hasNgContent).toEqual(true);
-      expect(res.ngContentSelectors).toEqual(['tag[attribute]']);
       expectFromR3Nodes(res.nodes).toEqual([
-        ['Content', 1],
+        ['Content', selectors[1]],
         ['TextAttribute', 'select', selectors[1]],
       ]);
     });
@@ -433,24 +392,20 @@ describe('R3 template transform', () => {
     it('should parse ngContent with a selector', () => {
       const res = parse(
           '<ng-content select="a"></ng-content><ng-content></ng-content><ng-content select="b"></ng-content>');
-      const selectors = ['', 'a', 'b'];
-      expect(res.hasNgContent).toEqual(true);
-      expect(res.ngContentSelectors).toEqual(['a', 'b']);
+      const selectors = ['*', 'a', 'b'];
       expectFromR3Nodes(res.nodes).toEqual([
-        ['Content', 1],
+        ['Content', selectors[1]],
         ['TextAttribute', 'select', selectors[1]],
-        ['Content', 0],
-        ['Content', 2],
+        ['Content', selectors[0]],
+        ['Content', selectors[2]],
         ['TextAttribute', 'select', selectors[2]],
       ]);
     });
 
     it('should parse ngProjectAs as an attribute', () => {
       const res = parse('<ng-content ngProjectAs="a"></ng-content>');
-      expect(res.hasNgContent).toEqual(true);
-      expect(res.ngContentSelectors).toEqual([]);
       expectFromR3Nodes(res.nodes).toEqual([
-        ['Content', 0],
+        ['Content', '*'],
         ['TextAttribute', 'ngProjectAs', 'a'],
       ]);
     });

@@ -6,17 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
 
-import {DoCheck, Input, TemplateRef, ViewContainerRef, ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
-import {getRenderedText} from '../../src/render3/component';
-import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty, template} from '../../src/render3/index';
+import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty, template, getRenderedText} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, text, textBinding, tick} from '../../src/render3/instructions';
-import {ComponentDef, DirectiveDef, RenderFlags} from '../../src/render3/interfaces/definition';
-import {createRendererType2} from '../../src/view/index';
+import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
+import {ComponentFixture, MockRendererFactory, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
 
 describe('component', () => {
   class CounterComponent {
@@ -108,6 +106,109 @@ describe('component', () => {
 
   });
 
+  it('should instantiate components at high indices', () => {
+
+    // {{ name }}
+    class Comp {
+      // @Input
+      name = '';
+
+      static ngComponentDef = defineComponent({
+        type: Comp,
+        selectors: [['comp']],
+        factory: () => new Comp(),
+        consts: 1,
+        vars: 1,
+        template: (rf: RenderFlags, ctx: Comp) => {
+          if (rf & RenderFlags.Create) {
+            text(0);
+          }
+          if (rf & RenderFlags.Update) {
+            textBinding(0, bind(ctx.name));
+          }
+        },
+        inputs: {name: 'name'}
+      });
+    }
+
+    // Artificially inflating the slot IDs of this app component to mimic an app
+    // with a very large view
+    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(4097, 'comp');
+      }
+      if (rf & RenderFlags.Update) {
+        elementProperty(4097, 'name', bind(ctx.name));
+      }
+    }, 4098, 1, [Comp]);
+
+    const fixture = new ComponentFixture(App);
+    expect(fixture.html).toEqual('<comp></comp>');
+
+    fixture.component.name = 'some name';
+    fixture.update();
+    expect(fixture.html).toEqual('<comp>some name</comp>');
+  });
+
+});
+
+it('should not invoke renderer destroy method for embedded views', () => {
+  let comp: Comp;
+
+  function MyComponent_div_Template_2(rf: any, ctx: any) {
+    if (rf & RenderFlags.Create) {
+      elementStart(0, 'div');
+      text(1, 'Child view');
+      elementEnd();
+    }
+  }
+
+  class Comp {
+    visible = true;
+
+    static ngComponentDef = defineComponent({
+      type: Comp,
+      selectors: [['comp']],
+      consts: 3,
+      vars: 1,
+      factory: () => {
+        comp = new Comp();
+        return comp;
+      },
+      directives: [NgIf],
+      /**
+       *  <div>Root view</div>
+       *  <div *ngIf="visible">Child view</div>
+       */
+      template: function(rf: RenderFlags, ctx: Comp) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div');
+          text(1, 'Root view');
+          elementEnd();
+          template(2, MyComponent_div_Template_2, 2, 0, null, [AttributeMarker.SelectOnly, 'ngIf']);
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(2, 'ngIf', bind(ctx.visible));
+        }
+      }
+    });
+  }
+
+  const rendererFactory = new MockRendererFactory(['destroy']);
+  const fixture = new ComponentFixture(Comp, {rendererFactory});
+
+  comp !.visible = false;
+  fixture.update();
+
+  comp !.visible = true;
+  fixture.update();
+
+  const renderer = rendererFactory.lastRenderer !;
+  const destroySpy = renderer.spies['destroy'];
+
+  // we should never see `destroy` method being called
+  // in case child views are created/removed
+  expect(destroySpy.calls.count()).toBe(0);
 });
 
 describe('component with a container', () => {
@@ -397,6 +498,8 @@ describe('recursive components', () => {
   class NgIfTree {
     data: TreeNode = _buildTree(0);
 
+    ngDoCheck() { events.push('check' + this.data.value); }
+
     ngOnDestroy() { events.push('destroy' + this.data.value); }
 
     static ngComponentDef = defineComponent({
@@ -410,8 +513,8 @@ describe('recursive components', () => {
 
         if (rf & RenderFlags.Create) {
           text(0);
-          template(1, IfTemplate, 1, 1, '', [AttributeMarker.SelectOnly, 'ngIf']);
-          template(2, IfTemplate2, 1, 1, '', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(1, IfTemplate, 1, 1, 'ng-if-tree', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(2, IfTemplate2, 1, 1, 'ng-if-tree', [AttributeMarker.SelectOnly, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           textBinding(0, bind(ctx.data.value));
@@ -527,6 +630,7 @@ describe('recursive components', () => {
 
     const fixture = new ComponentFixture(App);
     expect(getRenderedText(fixture.component)).toEqual('6201534');
+    expect(events).toEqual(['check6', 'check2', 'check0', 'check1', 'check5', 'check3', 'check4']);
 
     events = [];
     fixture.component.skipContent = true;

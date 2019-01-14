@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {QueryList} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {defineComponent, getHostElement} from '../../../src/render3/index';
@@ -12,7 +13,7 @@ import {element, elementEnd, elementStart, elementStyling, elementStylingApply, 
 import {PlayState, Player, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
-import {QueryList, query, queryRefresh} from '../../../src/render3/query';
+import {query, queryRefresh} from '../../../src/render3/query';
 import {getOrCreatePlayerContext} from '../../../src/render3/styling/util';
 import {ComponentFixture} from '../render_util';
 
@@ -229,7 +230,7 @@ function buildElementWithStyling() {
 class Comp {
   static ngComponentDef = defineComponent({
     type: Comp,
-    exportAs: 'child',
+    exportAs: ['child'],
     selectors: [['child-comp']],
     factory: () => new Comp(),
     consts: 1,
@@ -249,7 +250,7 @@ class Comp {
 class CompWithStyling {
   static ngComponentDef = defineComponent({
     type: CompWithStyling,
-    exportAs: 'child-styled',
+    exportAs: ['child-styled'],
     selectors: [['child-styled-comp']],
     factory: () => new CompWithStyling(),
     consts: 1,

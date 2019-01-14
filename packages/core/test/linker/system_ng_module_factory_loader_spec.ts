@@ -7,7 +7,7 @@
  */
 
 import {Compiler, SystemJsNgModuleLoader} from '@angular/core';
-import {global} from '@angular/core/src/util';
+import {global} from '@angular/core/src/util/global';
 import {async} from '@angular/core/testing';
 import {afterEach, beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 

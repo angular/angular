@@ -160,7 +160,7 @@ JavaScript에서는 각각의 *파일* 이 하나의 모듈이며, 이 파일에
 <img src="generated/images/guide/architecture/library-module.png" alt="컴포넌트" class="left">
 
 <!--
-Angular loads as a collection of JavaScript modules. You can think of them as library modules. Each Angular library name begins with the `@angular` prefix. Install them with the `npm` package manager and import parts of them with JavaScript `import` statements.
+Angular loads as a collection of JavaScript modules. You can think of them as library modules. Each Angular library name begins with the `@angular` prefix. Install them with the node package manager `npm` and import parts of them with JavaScript `import` statements.
 -->
 Angular 프레임워크는 JavaScript 모듈 형태로 제공되며, 프레임워크 자체를 라이브러리 모듈의 묶음으로 생각할 수도 있습니다. 각각의 Angular 라이브러리는 `@angular`라는 접두사로 시작하며, `npm` 패키지 매니저를 사용해서 설치하고 JavaScript `import` 구문으로 불러와서 사용합니다.
 

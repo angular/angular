@@ -128,7 +128,7 @@ RxJS는 수많은 연산자를 제공하지만, 이 중 자주 사용하는 연�
 <!--
 | Area | Operators |
 | :------------| :----------|
-| Creation |  `from`, `fromPromise`,`fromEvent`, `of` |
+| Creation |  `from`,`fromEvent`, `of` |
 | Combination | `combineLatest`, `concat`, `merge`, `startWith` , `withLatestFrom`, `zip` |
 | Filtering | `debounceTime`, `distinctUntilChanged`, `filter`, `take`, `takeUntil` |
 | Transformation | `bufferTime`, `concatMap`, `map`, `mergeMap`, `scan`, `switchMap` |

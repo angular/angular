@@ -10,7 +10,10 @@
 module.exports = (gulp) => (done) => {
   const madge = require('madge');
 
-  const dependencyObject = madge(['dist/all/'], {
+  // TODO: This only checks for circular dependencies within each package because
+  // imports to other packages cannot be resolved by Madge when CommonJS is used.
+  // We should consider updating Madge and use a tsonfig to check across packages.
+  const dependencyObject = madge(['dist/packages-dist/'], {
     format: 'cjs',
     extensions: ['.js'],
     onParseFile: function(data) { data.src = data.src.replace(/\/\* circular \*\//g, '//'); }

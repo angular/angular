@@ -114,7 +114,7 @@ export class PercentPipe implements PipeTransform {
    *   - `minFractionDigits`: The minimum number of digits after the decimal point.
    * Default is `0`.
    *   - `maxFractionDigits`: The maximum number of digits after the decimal point.
-   * Default is `3`.
+   * Default is `0`.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
@@ -179,9 +179,9 @@ export class CurrencyPipe implements PipeTransform {
    *   - `minIntegerDigits`: The minimum number of integer digits before the decimal point.
    * Default is `1`.
    *   - `minFractionDigits`: The minimum number of digits after the decimal point.
-   * Default is `0`.
+   * Default is `2`.
    *   - `maxFractionDigits`: The maximum number of digits after the decimal point.
-   * Default is `3`.
+   * Default is `2`.
    * If not provided, the number will be formatted with the proper amount of digits,
    * depending on what the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) specifies.
    * For example, the Canadian dollar has 2 digits, whereas the Chilean peso has none.

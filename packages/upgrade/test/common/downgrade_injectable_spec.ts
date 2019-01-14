@@ -6,20 +6,46 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {INJECTOR_KEY} from '@angular/upgrade/src/common/constants';
+import {Injector} from '@angular/core';
+import * as angular from '@angular/upgrade/src/common/angular1';
+import {$INJECTOR, INJECTOR_KEY, UPGRADE_APP_TYPE_KEY} from '@angular/upgrade/src/common/constants';
 import {downgradeInjectable} from '@angular/upgrade/src/common/downgrade_injectable';
+import {UpgradeAppType} from '@angular/upgrade/src/common/util';
 
-{
-  describe('downgradeInjectable', () => {
-    it('should return an AngularJS annotated factory for the token', () => {
-      const factory = downgradeInjectable('someToken');
-      expect(factory).toEqual(jasmine.any(Function));
-      expect((factory as any).$inject).toEqual([INJECTOR_KEY]);
+describe('downgradeInjectable', () => {
+  const setupMockInjectors = (downgradedModule = '') => {
+    const mockNg1Injector = jasmine.createSpyObj<angular.IInjectorService>(['get', 'has']);
+    mockNg1Injector.get.and.callFake((key: string) => mockDependencies[key]);
+    mockNg1Injector.has.and.callFake((key: string) => mockDependencies.hasOwnProperty(key));
 
-      const injector = {get: jasmine.createSpy('get').and.returnValue('service value')};
-      const value = factory(injector);
-      expect(injector.get).toHaveBeenCalledWith('someToken');
-      expect(value).toEqual('service value');
-    });
+    const mockNg2Injector = jasmine.createSpyObj<Injector>(['get']);
+    mockNg2Injector.get.and.returnValue('service value');
+
+    const mockDependencies: {[key: string]: any} = {
+      [UPGRADE_APP_TYPE_KEY]: downgradedModule ? UpgradeAppType.Lite : UpgradeAppType.Static,
+      [`${INJECTOR_KEY}${downgradedModule}`]: mockNg2Injector,
+    };
+
+    return {mockNg1Injector, mockNg2Injector};
+  };
+
+  it('should return an AngularJS annotated factory for the token', () => {
+    const factory = downgradeInjectable('someToken');
+    expect(factory).toEqual(jasmine.any(Function));
+    expect((factory as any).$inject).toEqual([$INJECTOR]);
+
+    const {mockNg1Injector, mockNg2Injector} = setupMockInjectors();
+    expect(factory(mockNg1Injector)).toEqual('service value');
+    expect(mockNg2Injector.get).toHaveBeenCalledWith('someToken');
   });
-}
+
+  it('should inject the specified module\'s injector when specifying a module name', () => {
+    const factory = downgradeInjectable('someToken', 'someModule');
+    expect(factory).toEqual(jasmine.any(Function));
+    expect((factory as any).$inject).toEqual([$INJECTOR]);
+
+    const {mockNg1Injector, mockNg2Injector} = setupMockInjectors('someModule');
+    expect(factory(mockNg1Injector)).toEqual('service value');
+    expect(mockNg2Injector.get).toHaveBeenCalledWith('someToken');
+  });
+});

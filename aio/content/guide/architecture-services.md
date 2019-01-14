@@ -99,7 +99,7 @@ Similarly, use the `@Injectable()` decorator to indicate that a component or oth
 * 인젝터는 의존성 객체의 인스턴스를 생성하고, 이 인스턴스를 나중에 재사용할 수 있도록 *컨테이너*에 관리합니다.
 
 <!--
-* A *provider* is an object that tell an injector how to obtain or create a dependency.
+* A *provider* is an object that tells an injector how to obtain or create a dependency.
 -->
 * *프로바이더*는 의존성으로 주입되는 객체를 어떻게 만드는지 정의한 것입니다.
 

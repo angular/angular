@@ -30,8 +30,8 @@ export declare abstract class AbstractControl {
         emitEvent?: boolean;
     }): void;
     get(path: Array<string | number> | string): AbstractControl | null;
-    getError(errorCode: string, path?: string[]): any;
-    hasError(errorCode: string, path?: string[]): boolean;
+    getError(errorCode: string, path?: Array<string | number> | string): any;
+    hasError(errorCode: string, path?: Array<string | number> | string): boolean;
     markAsDirty(opts?: {
         onlySelf?: boolean;
     }): void;
@@ -80,8 +80,8 @@ export declare abstract class AbstractControlDirective {
     readonly valid: boolean | null;
     readonly value: any;
     readonly valueChanges: Observable<any> | null;
-    getError(errorCode: string, path?: string[]): any;
-    hasError(errorCode: string, path?: string[]): boolean;
+    getError(errorCode: string, path?: Array<string | number> | string): any;
+    hasError(errorCode: string, path?: Array<string | number> | string): boolean;
     reset(value?: any): void;
 }
 
@@ -201,11 +201,11 @@ export declare class FormArrayName extends ControlContainer implements OnInit, O
 }
 
 export declare class FormBuilder {
-    array(controlsConfig: any[], validator?: ValidatorFn | ValidatorFn[] | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray;
-    control(formState: any, validator?: ValidatorFn | ValidatorFn[] | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
+    array(controlsConfig: any[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray;
+    control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
     group(controlsConfig: {
         [key: string]: any;
-    }, extra?: {
+    }, options?: AbstractControlOptions | {
         [key: string]: any;
     } | null): FormGroup;
 }
@@ -435,6 +435,16 @@ export declare class NgSelectOption implements OnDestroy {
     ngOnDestroy(): void;
 }
 
+export declare class NumberValueAccessor implements ControlValueAccessor {
+    onChange: (_: any) => void;
+    onTouched: () => void;
+    constructor(_renderer: Renderer2, _elementRef: ElementRef);
+    registerOnChange(fn: (_: number | null) => void): void;
+    registerOnTouched(fn: () => void): void;
+    setDisabledState(isDisabled: boolean): void;
+    writeValue(value: number): void;
+}
+
 export declare class PatternValidator implements Validator, OnChanges {
     pattern: string | RegExp;
     ngOnChanges(changes: SimpleChanges): void;
@@ -454,6 +464,16 @@ export declare class RadioControlValueAccessor implements ControlValueAccessor, 
     ngOnInit(): void;
     registerOnChange(fn: (_: any) => {}): void;
     registerOnTouched(fn: () => {}): void;
+    setDisabledState(isDisabled: boolean): void;
+    writeValue(value: any): void;
+}
+
+export declare class RangeValueAccessor implements ControlValueAccessor {
+    onChange: (_: any) => void;
+    onTouched: () => void;
+    constructor(_renderer: Renderer2, _elementRef: ElementRef);
+    registerOnChange(fn: (_: number | null) => void): void;
+    registerOnTouched(fn: () => void): void;
     setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
 }

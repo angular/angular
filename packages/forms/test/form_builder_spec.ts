@@ -7,7 +7,7 @@
  */
 import {fakeAsync, tick} from '@angular/core/testing';
 import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
-import {FormBuilder} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 import {of } from 'rxjs';
 
 (function() {
@@ -118,6 +118,85 @@ import {of } from 'rxjs';
       const a = b.array(['one', 'two'], [syncValidator1, syncValidator2]);
       expect(a.value).toEqual(['one', 'two']);
       expect(a.errors).toEqual({'sync1': true, 'sync2': true});
+    });
+
+    describe('updateOn', () => {
+      it('should default to on change', () => {
+        const c = b.control('');
+        expect(c.updateOn).toEqual('change');
+      });
+
+      it('should default to on change with an options obj', () => {
+        const c = b.control('', {validators: Validators.required});
+        expect(c.updateOn).toEqual('change');
+      });
+
+      it('should set updateOn when updating on blur', () => {
+        const c = b.control('', {updateOn: 'blur'});
+        expect(c.updateOn).toEqual('blur');
+      });
+
+      describe('in groups and arrays', () => {
+        it('should default to group updateOn when not set in control', () => {
+          const g = b.group({one: b.control(''), two: b.control('')}, {updateOn: 'blur'});
+
+          expect(g.get('one') !.updateOn).toEqual('blur');
+          expect(g.get('two') !.updateOn).toEqual('blur');
+        });
+
+        it('should default to array updateOn when not set in control', () => {
+          const a = b.array([b.control(''), b.control('')], {updateOn: 'blur'});
+
+          expect(a.get([0]) !.updateOn).toEqual('blur');
+          expect(a.get([1]) !.updateOn).toEqual('blur');
+        });
+
+        it('should set updateOn with nested groups', () => {
+          const g = b.group(
+              {
+                group: b.group({one: b.control(''), two: b.control('')}),
+              },
+              {updateOn: 'blur'});
+
+          expect(g.get('group.one') !.updateOn).toEqual('blur');
+          expect(g.get('group.two') !.updateOn).toEqual('blur');
+          expect(g.get('group') !.updateOn).toEqual('blur');
+        });
+
+        it('should set updateOn with nested arrays', () => {
+          const g = b.group(
+              {
+                arr: b.array([b.control(''), b.control('')]),
+              },
+              {updateOn: 'blur'});
+
+          expect(g.get(['arr', 0]) !.updateOn).toEqual('blur');
+          expect(g.get(['arr', 1]) !.updateOn).toEqual('blur');
+          expect(g.get('arr') !.updateOn).toEqual('blur');
+        });
+
+        it('should allow control updateOn to override group updateOn', () => {
+          const g = b.group(
+              {one: b.control('', {updateOn: 'change'}), two: b.control('')}, {updateOn: 'blur'});
+
+          expect(g.get('one') !.updateOn).toEqual('change');
+          expect(g.get('two') !.updateOn).toEqual('blur');
+        });
+
+        it('should set updateOn with complex setup', () => {
+          const g = b.group({
+            group: b.group(
+                {one: b.control('', {updateOn: 'change'}), two: b.control('')}, {updateOn: 'blur'}),
+            groupTwo: b.group({one: b.control('')}, {updateOn: 'submit'}),
+            three: b.control('')
+          });
+
+          expect(g.get('group.one') !.updateOn).toEqual('change');
+          expect(g.get('group.two') !.updateOn).toEqual('blur');
+          expect(g.get('groupTwo.one') !.updateOn).toEqual('submit');
+          expect(g.get('three') !.updateOn).toEqual('change');
+        });
+      });
     });
   });
 })();

@@ -29,6 +29,12 @@
             "rev": true,
             "title": "Made with Angular",
             "url": "https://www.madewithangular.com/"
+          },
+          "angular-subreddit": {
+            "desc": "An Angular-dedicated subreddit.",
+            "rev": true,
+            "title": "Angular Subreddit",
+            "url": "https://www.reddit.com/r/Angular2/"
           }
         }
       },
@@ -177,6 +183,13 @@
             "rev": true,
             "title": "AngularCommerce",
             "url": "https://github.com/NodeArt/angular-commerce"
+          },
+          "ngx-api-utils": {
+            "desc": "ngx-api-utils is a lean library of utilities and helpers to quickly integrate any HTTP API (REST, Ajax, and any other) with Angular.",
+            "logo": "",
+            "rev": true,
+            "title": "ngx-api-utils",
+            "url": "https://github.com/ngx-api-utils/ngx-api-utils"
           }
         }
       },
@@ -250,7 +263,7 @@
             "logo": "https://cloud.githubusercontent.com/assets/1016365/10639063/138338bc-7806-11e5-8057-d34c75f3cafc.png",
             "rev": true,
             "title": "Angular Universal",
-            "url": "https://github.com/angular/universal"
+            "url": "https://angular.io/guide/universal"
           },
           "c1": {
             "//desc": "Lightweight development only Node.js® server",
@@ -323,6 +336,13 @@
             "title": "UI-jar - Test Driven Style Guide Development",
             "//title": "UI-jar - 테스트 파일로 개발 문서 자동 생성하기",
             "url": "https://github.com/ui-jar/ui-jar"
+          },
+          "protactor": {
+            "desc": "The official end to end testing framework for Angular apps",
+            "logo": "",
+            "rev": true,
+            "title": "Protractor",
+            "url": "https://protractor.angular.io/"
           }
         }
       },
@@ -426,7 +446,7 @@
             "logo": "",
             "rev": true,
             "title": "Angular Material",
-            "url": "https://github.com/angular/material2"
+            "url": "https://material.angular.io/"
           },
           "mcc": {
             "//desc": "Material components made by the community",
@@ -442,6 +462,12 @@
             "rev": true,
             "title": "Ant Design of Angular (ng-zorro-antd)",
             "url": "https://ng.ant.design/docs/introduce/en"
+          },
+          "ngzorromobile": {
+            "desc": "A set of enterprise-class mobile UI components based on Ant Design Mobile and Angular",
+            "rev": true,
+            "title": "Ant Design Mobile of Angular (ng-zorro-antd-mobile)",
+            "url": "http://ng.mobile.ant.design/#/docs/introduce/en"
           },
           "aggrid": {
             "//desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
@@ -493,6 +519,18 @@
             "rev": true,
             "title": "Simple Quality UI",
             "url": "https://sq-ui.github.io/ng-sq-ui/#/"
+          },
+          "smart": {
+            "desc": "Web Components for Angular. Dependency-free Angular components for building modern and mobile-friendly web apps",
+            "rev": true,
+            "title": "Smart Web Components",
+            "url": "https://www.htmlelements.com/angular/"
+          },
+          "AlyleUI": {
+            "desc": "Minimal Design, a set of components for Angular.",
+            "rev": true,
+            "title": "Alyle UI",
+            "url": "https://alyle-ui.firebaseapp.com/"
           }
         }
       }
@@ -787,6 +825,12 @@
         "Workshops & Onsite Training": "",
         "order": 2,
         "resources": {
+          "webucator": {
+            "desc": "Customized in-person instructor-led Angular training for private groups and public online instructor-led Angular classes.",
+            "rev": true,
+            "title": "Webucator",
+            "url": "https://www.webucator.com/webdev-training/angular-training"
+          },
           "-acceleb": {
             "//desc": "Customized, Instructor-Led Angular Training",
             "desc": "효율적인 Angular 학습 코스",
@@ -894,6 +938,12 @@
             "//title": "SFEIR School (French)",
             "title": "SFEIR School (프랑스)",
             "url": "https://school.sfeir.com/project/sa200/"
+          },
+          "zenika-angular": {
+            "desc": "Angular trainings delivered by Zenika (FRANCE)",
+            "rev": true,
+            "title": "Angular Trainings (French)",
+            "url": "https://training.zenika.com/fr/training/angular2/description"
           },
           "formationjs": {
             "//desc": "Angular onsite training in Paris (France). Monthly Angular workshops and custom onsite classes. We are focused on Angular, so we are always up to date.",

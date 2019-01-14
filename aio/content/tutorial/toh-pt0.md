@@ -43,10 +43,9 @@ To set up your development environment, follow these instructions in [Getting St
 <div class="alert is-helpful">
 
 <!--
-**Note:**: You do not need to complete the entire Getting Started. After you complete the above two sections of Getting Started, your environment is set up. Continue below to create the Tour of Heroes workspace and an initial app project.
+**Note:** You do not need to complete the entire Getting Started. After you complete the above two sections of Getting Started, your environment is set up. Continue below to create the Tour of Heroes workspace and an initial app project.
 -->
 **참고:** 시작하기 문서에 있는 내용을 모두 완료할 필요없이 위에서 언급한 두 섹션만 참고하면 개발환경 설정은 모두 끝납니다. 이렇게 설정한 환경에서 히어로들의 여행 앱 개발을 시작하면 됩니다.
-
 </div>
 
 <!--

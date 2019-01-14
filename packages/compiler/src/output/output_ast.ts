@@ -424,13 +424,13 @@ export class InvokeMethodExpr extends Expression {
 export class InvokeFunctionExpr extends Expression {
   constructor(
       public fn: Expression, public args: Expression[], type?: Type|null,
-      sourceSpan?: ParseSourceSpan|null) {
+      sourceSpan?: ParseSourceSpan|null, public pure = false) {
     super(type, sourceSpan);
   }
 
   isEquivalent(e: Expression): boolean {
     return e instanceof InvokeFunctionExpr && this.fn.isEquivalent(e.fn) &&
-        areAllEquivalent(this.args, e.args);
+        areAllEquivalent(this.args, e.args) && this.pure === e.pure;
   }
 
   isConstant() { return false; }

@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../../interface/type';
 import {QueryList} from '../../linker';
-import {Type} from '../../type';
+
 import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './node';
+
 
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */
 export interface LQueries {

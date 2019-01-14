@@ -26,11 +26,15 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
-        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/entry_point",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
+        "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/shims",
         "//packages/compiler-cli/src/ngtsc/switch",
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/typecheck",
+        "//packages/compiler-cli/src/ngtsc/util",
         "@ngdeps//@bazel/typescript",
         "@ngdeps//@types",
         "@ngdeps//tsickle",
@@ -44,10 +48,11 @@ npm_package(
         "package.json",
     ],
     tags = [
-        "ivy-jit",
-        "ivy-local",
         "release-with-framework",
     ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":compiler-cli",
         "//packages/compiler-cli/src/ngcc",

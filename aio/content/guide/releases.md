@@ -65,68 +65,34 @@ Disclaimer: The dates are offered as general guidance and may be adjusted by us 
 
 The following table contains our current target release dates for the next two major versions of Angular: 
 
- Date                   | Stable Release | Compatibility
- ---------------------- | -------------- | ----------------
- September/October 2018 | 7.0.0          | ^6.0.0
+ Date                   | Stable Release | Compatibility 
+ ---------------------- | -------------- | -------------
  March/April 2019       | 8.0.0          | ^7.0.0
+ September/October 2019 | 9.0.0          | ^8.0.0
 
  Compatibility note: The primary goal of the backward compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
 
 
 {@a lts}
 {@a support}
-## Support policy
+## Support policy and schedule
 
 All of our major releases are supported for 18 months. 
 
-* 6 months of active support, during which regularly-scheduled updates and patches are released, as described above in [Release frequency](#frequency "Release frequency").
+* 6 months of *active support*, during which regularly-scheduled updates and patches are released.
 
-* 12 months of long-term support (LTS). During the LTS period, only critical fixes and security patches will be released.
+* 12 months of *long-term support (LTS)*, during which only critical fixes and security patches are released.
 
-The following table provides the support status and key dates for Angular version 4.0.0 and higher. 
+The following table provides the support status and key dates for Angular version 5.0.0 and higher. 
 
-<style>
 
-    td, th {vertical-align: top}
+Version | Status | Released     | Active Ends  | LTS Ends
+------- | ------ | ------------ | ------------ | ------------ 
+^7.0.0  | Active | Oct 18, 2018 | Apr 18, 2019 | Apr 18, 2020
+^6.0.0  | LTS    | May 3, 2018  | Nov 3, 2018  | Nov 3, 2019
+^5.0.0  | LTS    | Nov 1, 2017  | May 1, 2018  | May 1, 2019
 
-</style>
-
-<table>
-
-    <tr>
-        <th>Version</th>
-        <th>Status</th>
-        <th>Release Date</th>
-        <th>LTS Start Date</th>
-        <th>LTS End Date</th>
-    </tr>
-
-    <tr>
-        <td>^4.0.0</td>
-        <td>LTS</td>
-        <td>March 23, 2017</td>
-        <td>September 23, 2017</td>
-        <td>September 23, 2018</td>
-    </tr>
-
-    <tr>
-        <td>^5.0.0</td>
-        <td>LTS</td>
-        <td>November 1, 2017</td>
-        <td>May 1, 2018</td>
-        <td>May 1, 2019</td>
-    </tr>
-
-    <tr>
-        <td>^6.0.0</td>
-        <td>Active</td>
-        <td>May 3, 2018</td>
-        <td>November 3, 2018</td>
-        <td>November 3, 2019</td>
-    </tr>
-
-</table>
-
+LTS for Angular version ^4.0.0 ended on September 23, 2018.
 
 
 {@a deprecation}

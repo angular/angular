@@ -327,7 +327,7 @@ class MockBrowserXHR extends BrowserXhr {
           let newBlob: Blob;
           try {
             newBlob = new Blob(data || [], datatype ? {type: datatype} : {});
-          } catch (e) {
+          } catch {
             const BlobBuilder = (<any>global).BlobBuilder || (<any>global).WebKitBlobBuilder ||
                 (<any>global).MozBlobBuilder || (<any>global).MSBlobBuilder;
             const builder = new BlobBuilder();

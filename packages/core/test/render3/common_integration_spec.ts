@@ -7,14 +7,15 @@
  */
 
 import {NgForOfContext} from '@angular/common';
-import {ElementRef, TemplateRef} from '@angular/core';
 
-import {AttributeMarker, defineComponent, templateRefExtractor} from '../../src/render3/index';
-import {bind, template, elementEnd, elementProperty, elementStart, getCurrentView, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, restoreView, text, textBinding, elementContainerStart, elementContainerEnd, reference} from '../../src/render3/instructions';
+import {AttributeMarker, defineComponent, element, getCurrentView, templateRefExtractor} from '../../src/render3/index';
+
+import {bind, template, elementEnd, elementProperty, elementStart, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, text, textBinding, elementContainerStart, elementContainerEnd, reference} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {restoreView} from '../../src/render3/state';
 
 import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
-import {ComponentFixture} from './render_util';
+import {ComponentFixture, createDirective, getDirectiveOnNode} from './render_util';
 
 describe('@angular/common integration', () => {
 
@@ -47,7 +48,7 @@ describe('@angular/common integration', () => {
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'ul');
-              { template(1, liTemplate, 2, 1, undefined, ['ngForOf', '']); }
+              { template(1, liTemplate, 2, 1, 'li', ['ngForOf', '']); }
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
@@ -110,7 +111,7 @@ describe('@angular/common integration', () => {
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'ul');
-              { template(1, liTemplate, 2, 3, undefined, ['ngForOf', '']); }
+              { template(1, liTemplate, 2, 3, 'li', ['ngForOf', '']); }
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
@@ -131,6 +132,75 @@ describe('@angular/common integration', () => {
           .toEqual('<ul><li>0 of 3: first</li><li>1 of 3: middle</li><li>2 of 3: second</li></ul>');
     });
 
+    it('should instantiate directives inside directives properly in an ngFor', () => {
+      let dirs: any[] = [];
+
+      const Dir = createDirective('dir');
+
+      class Comp {
+        static ngComponentDef = defineComponent({
+          type: Comp,
+          selectors: [['comp']],
+          factory: () => new Comp(),
+          consts: 2,
+          vars: 0,
+          template: (rf: RenderFlags, cmp: Comp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div', ['dir', '']);
+              { text(1, 'comp text'); }
+              elementEnd();
+              // testing only
+              dirs.push(getDirectiveOnNode(0));
+            }
+          },
+          directives: [Dir]
+        });
+      }
+
+      function ngForTemplate(rf: RenderFlags, ctx: NgForOfContext<string>) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'comp');
+        }
+      }
+
+      /** <comp *ngFor="let row of rows"></comp> */
+      class MyApp {
+        rows: string[] = ['first', 'second'];
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          consts: 1,
+          vars: 1,
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              template(0, ngForTemplate, 1, 0, 'comp', ['ngForOf', '']);
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(0, 'ngForOf', bind(ctx.rows));
+            }
+          },
+          directives: () => [NgForOf, Comp, Dir]
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html)
+          .toEqual(
+              '<comp><div dir="">comp text</div></comp><comp><div dir="">comp text</div></comp>');
+      expect(dirs.length).toBe(2);
+      expect(dirs[0] instanceof Dir).toBe(true);
+      expect(dirs[1] instanceof Dir).toBe(true);
+
+      fixture.component.rows.push('third');
+      fixture.update();
+      expect(dirs.length).toBe(3);
+      expect(dirs[2] instanceof Dir).toBe(true);
+      expect(fixture.html)
+          .toEqual(
+              '<comp><div dir="">comp text</div></comp><comp><div dir="">comp text</div></comp><comp><div dir="">comp text</div></comp>');
+    });
 
     it('should retain parent view listeners when the NgFor destroy views', () => {
 
@@ -177,7 +247,7 @@ describe('@angular/common integration', () => {
               }
               elementEnd();
               elementStart(2, 'ul');
-              { template(3, liTemplate, 2, 1, undefined, ['ngForOf', '']); }
+              { template(3, liTemplate, 2, 1, 'li', ['ngForOf', '']); }
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
@@ -232,7 +302,7 @@ describe('@angular/common integration', () => {
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'ul');
-              { template(1, liTemplate, 2, 1, null, ['ngForOf', '']); }
+              { template(1, liTemplate, 2, 1, 'li', ['ngForOf', '']); }
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
@@ -247,7 +317,7 @@ describe('@angular/common integration', () => {
       function liTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'li');
-          { template(1, spanTemplate, 2, 3, null, ['ngForOf', '']); }
+          { template(1, spanTemplate, 2, 3, 'span', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -322,7 +392,7 @@ describe('@angular/common integration', () => {
           vars: 1,
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              template(0, divTemplate, 2, 1, null, ['ngForOf', '']);
+              template(0, divTemplate, 2, 1, 'div', ['ngForOf', '']);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngForOf', bind(ctx.items));
@@ -336,7 +406,7 @@ describe('@angular/common integration', () => {
       function divTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
-          { template(1, pTemplate, 3, 2, null, ['ngForOf', '']); }
+          { template(1, pTemplate, 3, 2, 'p', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -416,7 +486,7 @@ describe('@angular/common integration', () => {
           vars: 1,
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              template(0, divTemplate, 2, 1, null, ['ngForOf', '']);
+              template(0, divTemplate, 2, 1, 'div', ['ngForOf', '']);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngForOf', bind(ctx.items));
@@ -430,7 +500,7 @@ describe('@angular/common integration', () => {
       function divTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
-          { template(1, innerDivTemplate, 2, 1, null, ['ngForOf', '']); }
+          { template(1, innerDivTemplate, 2, 1, 'div', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -442,7 +512,7 @@ describe('@angular/common integration', () => {
       function innerDivTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
-          { template(1, spanTemplate, 2, 2, null, ['ngForOf', '']); }
+          { template(1, spanTemplate, 2, 2, 'span', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -584,7 +654,7 @@ describe('@angular/common integration', () => {
           vars: 1,
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              template(0, itemTemplate0, 2, 1, null, ['ngForOf', '']);
+              template(0, itemTemplate0, 2, 1, 'span', ['ngForOf', '']);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngForOf', bind(ctx.items));
@@ -598,7 +668,7 @@ describe('@angular/common integration', () => {
       function itemTemplate0(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
-          { template(1, itemTemplate1, 2, 1, null, ['ngForOf', '']); }
+          { template(1, itemTemplate1, 2, 1, 'span', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -610,7 +680,7 @@ describe('@angular/common integration', () => {
       function itemTemplate1(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
-          { template(1, itemTemplate2, 2, 1, null, ['ngForOf', '']); }
+          { template(1, itemTemplate2, 2, 1, 'span', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -622,7 +692,7 @@ describe('@angular/common integration', () => {
       function itemTemplate2(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
-          { template(1, itemTemplate3, 2, 1, null, ['ngForOf', '']); }
+          { template(1, itemTemplate3, 2, 1, 'span', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -634,7 +704,7 @@ describe('@angular/common integration', () => {
       function itemTemplate3(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
-          { template(1, itemTemplate4, 2, 1, null, ['ngForOf', '']); }
+          { template(1, itemTemplate4, 2, 1, 'span', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -646,7 +716,7 @@ describe('@angular/common integration', () => {
       function itemTemplate4(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
-          { template(1, itemTemplate5, 2, 1, null, ['ngForOf', '']); }
+          { template(1, itemTemplate5, 2, 1, 'span', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -658,7 +728,7 @@ describe('@angular/common integration', () => {
       function itemTemplate5(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
-          { template(1, itemTemplate6, 2, 1, null, ['ngForOf', '']); }
+          { template(1, itemTemplate6, 2, 1, 'span', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -670,7 +740,7 @@ describe('@angular/common integration', () => {
       function itemTemplate6(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
-          { template(1, itemTemplate7, 2, 1, null, ['ngForOf', '']); }
+          { template(1, itemTemplate7, 2, 1, 'span', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -682,7 +752,7 @@ describe('@angular/common integration', () => {
       function itemTemplate7(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
-          { template(1, itemTemplate8, 2, 10, null, ['ngForOf', '']); }
+          { template(1, itemTemplate8, 2, 10, 'span', ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -752,8 +822,8 @@ describe('@angular/common integration', () => {
            */
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              template(0, templateOne, 2, 1, undefined, ['ngIf', '']);
-              template(1, templateTwo, 2, 1, undefined, ['ngIf', '']);
+              template(0, templateOne, 2, 1, 'div', ['ngIf', '']);
+              template(1, templateTwo, 2, 1, 'div', ['ngIf', '']);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngIf', bind(ctx.showing));
@@ -822,7 +892,7 @@ describe('@angular/common integration', () => {
           vars: 1,
           template: (rf: RenderFlags, ctx: AppComponent) => {
             if (rf & RenderFlags.Create) {
-              template(0, divTemplate, 2, 1, undefined, ['ngIf', '']);
+              template(0, divTemplate, 2, 1, 'div', ['ngIf', '']);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngIf', bind(ctx.showing));
@@ -836,7 +906,7 @@ describe('@angular/common integration', () => {
       function divTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
-          { template(1, outerDivTemplate, 2, 1, undefined, ['ngIf', '']); }
+          { template(1, outerDivTemplate, 2, 1, 'div', ['ngIf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -848,7 +918,7 @@ describe('@angular/common integration', () => {
       function outerDivTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
-          { template(1, innerDivTemplate, 2, 1, undefined, ['ngIf', '']); }
+          { template(1, innerDivTemplate, 2, 1, 'div', ['ngIf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -901,8 +971,9 @@ describe('@angular/common integration', () => {
                 if (rf1 & RenderFlags.Create) {
                   text(0, 'from tpl');
                 }
-              }, 1, 0, undefined, undefined, ['tpl', ''], templateRefExtractor);
-              template(2, null, 0, 0, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+              }, 1, 0, 'ng-template', undefined, ['tpl', ''], templateRefExtractor);
+              template(
+                  2, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
             }
             if (rf & RenderFlags.Update) {
               const tplRef = load(1);
@@ -944,7 +1015,7 @@ describe('@angular/common integration', () => {
                 if (rf1 & RenderFlags.Create) {
                   text(0, 'from tpl');
                 }
-              }, 1, 0, undefined, undefined, ['tpl', ''], templateRefExtractor);
+              }, 1, 0, 'ng-template', undefined, ['tpl', ''], templateRefExtractor);
               elementContainerStart(2, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
               elementContainerEnd();
             }

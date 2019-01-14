@@ -10,9 +10,10 @@ import {Component, Directive, ElementRef, ErrorHandler, EventEmitter, Inject, In
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {fixmeIvy} from '@angular/private/testing';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
-import {$SCOPE} from '@angular/upgrade/static/src/common/constants';
+import {$EXCEPTION_HANDLER, $SCOPE} from '@angular/upgrade/static/src/common/constants';
 
 import {$digest, bootstrap, html, multiTrim, withEachNg1Version} from '../test_helpers';
 
@@ -1777,7 +1778,7 @@ withEachNg1Version(() => {
              }
 
              // Define `ng1Module`
-             const mockExceptionHandler = jasmine.createSpy('$exceptionHandler');
+             const mockExceptionHandler = jasmine.createSpy($EXCEPTION_HANDLER);
              const ng1Module =
                  angular.module('ng1Module', [])
                      .component('ng1A', ng1ComponentA)
@@ -1786,7 +1787,7 @@ withEachNg1Version(() => {
                      .directive('ng2A', downgradeComponent({component: Ng2ComponentA}))
                      .directive('ng2B', downgradeComponent({component: Ng2ComponentB}))
                      .directive('ng2C', downgradeComponent({component: Ng2ComponentC}))
-                     .value('$exceptionHandler', mockExceptionHandler);
+                     .value($EXCEPTION_HANDLER, mockExceptionHandler);
 
              // Define `Ng2Module`
              @NgModule({
@@ -1849,11 +1850,11 @@ withEachNg1Version(() => {
              }
 
              // Define `ng1Module`
-             const mockExceptionHandler = jasmine.createSpy('$exceptionHandler');
+             const mockExceptionHandler = jasmine.createSpy($EXCEPTION_HANDLER);
              const ng1Module = angular.module('ng1Module', [])
                                    .component('ng1', ng1Component)
                                    .directive('ng2', downgradeComponent({component: Ng2Component}))
-                                   .value('$exceptionHandler', mockExceptionHandler);
+                                   .value($EXCEPTION_HANDLER, mockExceptionHandler);
 
              // Define `Ng2Module`
              @NgModule({
@@ -2502,7 +2503,7 @@ withEachNg1Version(() => {
            // Define `ng1Module`
            const ng1Module =
                angular.module('ng1Module', [])
-                   .value('$exceptionHandler', (error: Error) => errorMessage = error.message)
+                   .value($EXCEPTION_HANDLER, (error: Error) => errorMessage = error.message)
                    .component('ng1', ng1Component)
                    .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -4106,7 +4107,8 @@ withEachNg1Version(() => {
                .toBe('ng2A(foo, bar, baz6) | ng1X(foo4, bar4, baz6) | ng2B(foo4, baz6)');
 
            // Emit from `ng1XOutputA`.
-           // (Should propagate upwards to `ng1ADataA` and back all the way down to `ng2BInputA`.)
+           // (Should propagate upwards to `ng1ADataA` and back all the way down to
+           // `ng2BInputA`.)
            (ng1ControllerXInstance as any).ng1XOutputA({value: 'foo7'});
            $digest(adapter);
            tick();

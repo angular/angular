@@ -5,19 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {SimpleChanges} from '../change_detection/simple_change';
 
-import {SimpleChange} from '../change_detection/change_detection_util';
-
-
-/**
- * Defines an object that associates properties with
- * instances of `SimpleChange`.
- *
- * @see `OnChanges`
- *
- * @publicApi
- */
-export interface SimpleChanges { [propName: string]: SimpleChange; }
 
 /**
  * @description

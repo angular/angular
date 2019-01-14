@@ -5,7 +5,7 @@
 
 <!--
 The Angular dependency injection system is _hierarchical_.
-There is a tree of injectors that parallel an app's component tree.
+There is a tree of injectors that parallels an app's component tree.
 You can reconfigure the injectors at any level of that component tree.
 -->
 Angular의 인젝터는 _계층_ 구조로 구성됩니다.

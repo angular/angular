@@ -78,6 +78,14 @@ p, ol, ul, ol, li, input, a  {
   }
 }
 
+p {
+  margin: 14px 0 0;
+}
+
+p + ul {
+  margin-top: 4px;
+}
+
 ol {
   li, p {
     margin: 4px 0;
@@ -123,8 +131,13 @@ td {
   padding: 8px 30px;
   letter-spacing: 0.30px;
 
-  p {
-    margin: 0;
+  > p, ul {
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 

@@ -19,5 +19,3 @@ export class AppModule {
   }
   ngDoBootstrap() {}
 }
-
-export {HelloWorldComponent};

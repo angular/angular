@@ -7,14 +7,22 @@ npm_package(
         "package.json",
         "protractor-utils.js",
         "//packages/bazel/src:package_assets",
+        "//packages/bazel/src/builders:package_assets",
+        "//packages/bazel/src/schematics:package_assets",
     ],
     packages = [
         "//packages/bazel/docs",
     ],
     tags = ["release-with-framework"],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
+        "//packages/bazel/src/builders",
         "//packages/bazel/src/ng_package:lib",
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
         "//packages/bazel/src/protractor/utils",
+        "//packages/bazel/src/schematics/bazel-workspace",
+        "//packages/bazel/src/schematics/ng-new",
     ],
 )

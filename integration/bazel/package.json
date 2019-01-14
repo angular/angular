@@ -5,6 +5,9 @@
   "license": "MIT",
   "dependencies": {
   },
+  "devDependencies": {
+    "@bazel/bazel": "file:../../node_modules/@bazel/bazel"
+  },
   "scripts": {
     "//": "deps are listed in src/package.json which is used by yarn_install",
     "//": "this package.json file is only here so that `yarn test` can be called by /integration/run_tests.sh",

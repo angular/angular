@@ -1,3 +1,11 @@
+# Load any settings specific to the current user
+try-import .bazelrc.user
+################################
+# Settings for Angular team members only
+################################
+# To enable this feature check the "Remote caching" section in docs/BAZEL.md.
+build:angular-team --remote_http_cache=https://storage.googleapis.com/angular-team-cache
+
 ###############################
 # Typescript / Angular / Sass #
 ###############################
@@ -24,12 +32,20 @@ build --symlink_prefix=/
 # Performance: avoid stat'ing input files
 build --watchfs
 
+# Turn off legacy external runfiles
+run --nolegacy_external_runfiles
+test --nolegacy_external_runfiles
+
 ###############################
 # Release support             #
+# Turn on these settings with #
+#  --config=release           #
 ###############################
 
 # Releases should always be stamped with version control info
-build --workspace_status_command=./tools/bazel_stamp_vars.sh
+# This command assumes node on the path and is a workaround for
+# https://github.com/bazelbuild/bazel/issues/4802
+build:release --workspace_status_command="node ./tools/bazel_stamp_vars.js"
 
 ###############################
 # Output                      #
@@ -57,6 +73,33 @@ test --experimental_ui
 ################################
 # Temporary Settings for Ivy   #
 ################################
-# to determine if the compiler used should be Ivy or ViewEngine one can use `--define=compile=local` on
+# to determine if the compiler used should be Ivy or ViewEngine one can use `--define=compile=aot` on
 # any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
 build --define=compile=legacy
+
+###############################
+# Remote Build Execution support
+# Turn on these settings with
+#  --config=remote
+###############################
+
+# Load default settings for Remote Build Execution
+# When updating, the URLs of bazel_toolchains in packages/bazel/package.bzl
+# may also need to be updated (see https://github.com/angular/angular/pull/27935)
+import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/bazel-0.21.0.bazelrc
+
+# Increase the default number of jobs by 50% because our build has lots of
+# parallelism
+build:remote --jobs=150
+
+# Point to our custom execution platform; see tools/BUILD.bazel
+build:remote --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
+build:remote --host_platform=//tools:rbe_ubuntu1604-angular
+build:remote --platforms=//tools:rbe_ubuntu1604-angular
+
+# Remote instance.
+build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
+
+# Do not accept remote cache.
+# We need to understand the security risks of using prior build artifacts.
+build:remote --remote_accept_cached=false

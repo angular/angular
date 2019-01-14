@@ -73,7 +73,7 @@ aio-notification {
   }
 
   mat-sidenav.mat-sidenav.sidenav {
-    top: 56px + $notificationHeight;
+    top: 64px + $notificationHeight;
 
     @media (max-width: 600px) {
       top: 56px + $notificationHeight;

@@ -543,7 +543,7 @@ A common UI pattern is to show a spinner while the async validation is being per
 가장 일반적인 방법은 비동기 유효성 검사가 실행되는 동안 회전하는 로딩 아이콘을 표시하는 것입니다. 템플릿 기반의 폼이라면 다음과 같이 구현할 수 있습니다:
 
 ```html
-<input [(ngModel)}="name" #model="ngModel" appSomeAsyncValidator>
+<input [(ngModel)]="name" #model="ngModel" appSomeAsyncValidator>
 <app-spinner *ngIf="model.pending"></app-spinner>
 ```
 

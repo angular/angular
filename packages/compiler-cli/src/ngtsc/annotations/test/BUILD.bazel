@@ -4,7 +4,7 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob([
         "**/*.ts",
     ]),
@@ -13,8 +13,11 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
-        "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/partial_evaluator",
+        "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/compiler-cli/src/ngtsc/translator",
         "@ngdeps//typescript",
     ],
 )

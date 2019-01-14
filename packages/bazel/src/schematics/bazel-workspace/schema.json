@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsAngularBazelWorkspace",
+  "title": "Angular Bazel Workspace Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "The name of the project.",
+      "type": "string",
+      "format": "html-selector",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      }
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

@@ -246,7 +246,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
           if (packageTypings === originalImportedFile) {
             moduleName = importedFilePackageName;
           }
-        } catch (e) {
+        } catch {
           // the above require() will throw if there is no package.json file
           // and this is safe to ignore and correct to keep the longer
           // moduleName in this case
@@ -582,7 +582,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
                 result = false;
               }
             }
-          } catch (e) {
+          } catch {
             // If we encounter any errors assume we this isn't a bundle index.
             result = false;
           }

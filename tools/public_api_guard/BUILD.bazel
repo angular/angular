@@ -1,26 +1,37 @@
 load("//tools/ts-api-guardian:index.bzl", "ts_api_guardian_test")
+load(":public_api_guard.bzl", "generate_targets")
 
-[ts_api_guardian_test(
-    name = "%s_%s_api" % (
-        bundle[0],
-        bundle[1].replace("/", "_"),
-    ),
-    actual = "packages/%s/npm_package/%s.d.ts" % (
-        bundle[0],
-        bundle[1],
-    ),
-    data = glob([
-        "%s/**/*.d.ts" % bundle[0],
-    ]) + [
-        "//packages/%s:npm_package" % bundle[0],
+generate_targets(glob(
+    ["*/**/*.d.ts"],
+    # exclude the following target because we have an explicit target for it bellow, see :core_api
+    exclude = ["core/core.d.ts"],
+))
+
+# Explicit target because core is broken down into sub-packages.
+# The ts_api_guardian rule does not know how to collect the .d.ts files from the sub-packages so we have to list it here explicitly.
+# see: https://github.com/angular/angular/issues/28057
+ts_api_guardian_test(
+    name = "core_api",
+    actual = "angular/packages/core/core.d.ts",
+    data = ["//tools/public_api_guard:core/core.d.ts"] + [
+        "//packages/core",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/util",
     ],
-    golden = "tools/public_api_guard/%s/%s.d.ts" % (
-        bundle[0],
-        bundle[1],
-    ),
-) for bundle in [b[:-len(".d.ts")].split("/", 1) for b in glob(
-    ["**/*.d.ts"],
-    # The API surface of the compiler is currently unstable - all of the important APIs are exposed
-    # via @angular/core, @angular/platform-browser or @angular/platform-browser-dynamic instead.
-    exclude = ["compiler/*"],
-)]]
+    golden = "angular/tools/public_api_guard/core/core.d.ts",
+    tags = [
+        "fixme-ivy-aot",  # ivy no longer emits generated index file
+    ],
+)
+
+# explicit target because the d.ts file is nested in the core and not part of typical public d.ts api
+ts_api_guardian_test(
+    name = "ng_global_utils_api",
+    actual = "angular/packages/core/src/render3/global_utils_api.d.ts",
+    data = [
+        ":global_utils.d.ts",
+        "//packages/core",
+    ],
+    golden = "angular/tools/public_api_guard/global_utils.d.ts",
+)

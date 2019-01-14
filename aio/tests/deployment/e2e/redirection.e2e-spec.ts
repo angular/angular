@@ -27,14 +27,16 @@ describe(browser.baseUrl, () => {
 
   describe('(with legacy URLs)', () => {
     page.legacyUrls.forEach(([fromUrl, toUrl], i) => {
+      const isExternalUrl = /^https?:/.test(toUrl);
+
       it(`should redirect '${fromUrl}' to '${toUrl}' (${i + 1}/${page.legacyUrls.length})`, async () => {
         await page.goTo(fromUrl);
 
-        const expectedUrl = stripTrailingSlash(/^http/.test(toUrl) ? toUrl : page.baseUrl + toUrl);
+        const expectedUrl = stripTrailingSlash(isExternalUrl ? toUrl : page.baseUrl + toUrl);
         const actualUrl = await getCurrentUrl();
 
         expect(actualUrl).toBe(expectedUrl);
-      });
+      }, isExternalUrl ? 60000 : undefined);
     });
   });
 
@@ -59,7 +61,9 @@ describe(browser.baseUrl, () => {
     it('should serve `index.html` for unknown pages', async () => {
       const aioShell = element(by.css('aio-shell'));
       const heading = aioShell.element(by.css('h1'));
+
       await page.goTo(unknownPagePath);
+      await browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
 
       expect(aioShell.isPresent()).toBe(true);
       expect(heading.getText()).toMatch(/page not found/i);

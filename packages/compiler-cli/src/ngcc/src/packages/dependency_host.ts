@@ -17,18 +17,18 @@ export class DependencyHost {
   /**
    * Get a list of the resolved paths to all the dependencies of this entry point.
    * @param from An absolute path to the file whose dependencies we want to get.
-   * @param resolved A set that will have the resolved dependencies added to it.
+   * @param resolved A set that will have the absolute paths of resolved entry points added to it.
    * @param missing A set that will have the dependencies that could not be found added to it.
+   * @param deepImports A set that will have the import paths that exist but cannot be mapped to
+   * entry-points, i.e. deep-imports.
    * @param internal A set that is used to track internal dependencies to prevent getting stuck in a
    * circular dependency loop.
-   * @returns an object containing an array of absolute paths to `resolved` depenendencies and an
-   * array of import specifiers for dependencies that were `missing`.
    */
   computeDependencies(
-      from: string, resolved: Set<string>, missing: Set<string>,
+      from: string, resolved: Set<string>, missing: Set<string>, deepImports: Set<string>,
       internal: Set<string> = new Set()): void {
     const fromContents = fs.readFileSync(from, 'utf8');
-    if (!this.hasImportOrReeportStatements(fromContents)) {
+    if (!this.hasImportOrReexportStatements(fromContents)) {
       return;
     }
 
@@ -48,14 +48,22 @@ export class DependencyHost {
             // Avoid circular dependencies
             if (!internal.has(internalDependency)) {
               internal.add(internalDependency);
-              this.computeDependencies(internalDependency, resolved, missing, internal);
+              this.computeDependencies(
+                  internalDependency, resolved, missing, deepImports, internal);
             }
           } else {
-            const externalDependency = this.tryResolveExternal(from, importPath);
-            if (externalDependency !== null) {
-              resolved.add(externalDependency);
+            const resolvedEntryPoint = this.tryResolveEntryPoint(from, importPath);
+            if (resolvedEntryPoint !== null) {
+              resolved.add(resolvedEntryPoint);
             } else {
-              missing.add(importPath);
+              // If the import could not be resolved as entry point, it either does not exist
+              // at all or is a deep import.
+              const deeplyImportedFile = this.tryResolve(from, importPath);
+              if (deeplyImportedFile !== null) {
+                deepImports.add(importPath);
+              } else {
+                missing.add(importPath);
+              }
             }
           }
         });
@@ -91,9 +99,9 @@ export class DependencyHost {
    * @returns the resolved path to the entry point directory of the import or null
    * if it cannot be resolved.
    */
-  tryResolveExternal(from: string, to: string): string|null {
-    const externalDependency = this.tryResolve(from, `${to}/package.json`);
-    return externalDependency && path.dirname(externalDependency);
+  tryResolveEntryPoint(from: string, to: string): string|null {
+    const entryPoint = this.tryResolve(from, `${to}/package.json`);
+    return entryPoint && path.dirname(entryPoint);
   }
 
   /**
@@ -134,7 +142,7 @@ export class DependencyHost {
    * @returns false if there are definitely no import or re-export statements
    * in this file, true otherwise.
    */
-  hasImportOrReeportStatements(source: string): boolean {
+  hasImportOrReexportStatements(source: string): boolean {
     return /(import|export)\s.+from/.test(source);
   }
 }

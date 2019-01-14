@@ -15,7 +15,6 @@ import {FormBuilder} from './form_builder';
 /**
  * Exports the required providers and directives for template-driven forms,
  * making them available for import by NgModules that import this module.
- * @see [Forms](guide/forms)
  *
  * @see [Forms Guide](/guide/forms)
  *

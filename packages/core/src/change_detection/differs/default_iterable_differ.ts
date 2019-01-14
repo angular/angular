@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {looseIdentical, stringify} from '../../util';
+import {looseIdentical} from '../../util/comparison';
+import {stringify} from '../../util/stringify';
 import {isListLikeIterable, iterateListLike} from '../change_detection_util';
+
 import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
 
 

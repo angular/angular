@@ -11,23 +11,23 @@
 import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/security';
+import {assertDefined} from '../util/assert';
 
-import {assertComponentType, assertDefined} from './assert';
-import {getComponentViewByInstance} from './context_discovery';
+import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
-import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createNodeAtIndex, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getOrCreateTView, leaveView, locateHostElement, prefillHostVars, resetComponentState, setHostBindings} from './instructions';
-import {ComponentDef, ComponentType} from './interfaces/definition';
-import {TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
+import {publishDefaultGlobalUtils} from './global_utils';
+import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
+import {CLEAN_PROMISE, createLView, createNodeAtIndex, createTNode, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
+import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
+import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
-import {RElement, RNode, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
-import {getRootView, readElementValue, readPatchedLViewData, stringify} from './util';
+import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
+import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
+import {defaultScheduler, getRootView, readPatchedLView, stringify} from './util';
 
 
-
-// Root component will always have an element index of 0 and an injector size of 1
-const ROOT_EXPANDO_INSTRUCTIONS = [0, 1];
 
 /** Options that control how the component should be bootstrapped. */
 export interface CreateComponentOptions {
@@ -106,6 +106,7 @@ export function renderComponent<T>(
         Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
     ,
     opts: CreateComponentOptions = {}): T {
+  ngDevMode && publishDefaultGlobalUtils();
   ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
@@ -117,26 +118,25 @@ export function renderComponent<T>(
   const hostRNode = locateHostElement(rendererFactory, opts.host || componentTag);
   const rootFlags = componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                           LViewFlags.CheckAlways | LViewFlags.IsRoot;
-  const rootContext = createRootContext(
-      opts.scheduler || requestAnimationFrame.bind(window), opts.playerHandler || null);
+  const rootContext = createRootContext(opts.scheduler, opts.playerHandler);
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
-  const rootView: LViewData = createLViewData(
-      renderer, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags);
-  rootView[INJECTOR] = opts.injector || null;
+  const rootView: LView = createLView(
+      null, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags, rendererFactory,
+      renderer, undefined, opts.injector || null);
 
   const oldView = enterView(rootView, null);
   let component: T;
   try {
     if (rendererFactory.begin) rendererFactory.begin();
-
-    const componentView =
-        createRootComponentView(hostRNode, componentDef, rootView, renderer, sanitizer);
+    const componentView = createRootComponentView(
+        hostRNode, componentDef, rootView, rendererFactory, renderer, sanitizer);
     component = createRootComponent(
-        hostRNode, componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
+        componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
-    executeInitAndContentHooks();
-    detectChangesInternal(componentView, component);
+    refreshDescendantViews(rootView);  // creation mode pass
+    rootView[FLAGS] &= ~LViewFlags.CreationMode;
+    refreshDescendantViews(rootView);  // update mode pass
   } finally {
     leaveView(oldView);
     if (rendererFactory.end) rendererFactory.end();
@@ -157,22 +157,23 @@ export function renderComponent<T>(
  * @returns Component view created
  */
 export function createRootComponentView(
-    rNode: RElement | null, def: ComponentDef<any>, rootView: LViewData, renderer: Renderer3,
-    sanitizer?: Sanitizer | null): LViewData {
+    rNode: RElement | null, def: ComponentDef<any>, rootView: LView,
+    rendererFactory: RendererFactory3, renderer: Renderer3, sanitizer?: Sanitizer | null): LView {
   resetComponentState();
   const tView = rootView[TVIEW];
-  const componentView = createLViewData(
-      renderer,
+  const componentView = createLView(
+      rootView,
       getOrCreateTView(
           def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery),
-      null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer);
+      null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rendererFactory, renderer,
+      sanitizer);
   const tNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null);
 
   if (tView.firstTemplatePass) {
-    tView.expandoInstructions = ROOT_EXPANDO_INSTRUCTIONS.slice();
-    if (def.diPublic) def.diPublic(def);
-    tNode.flags =
-        rootView.length << TNodeFlags.DirectiveStartingIndexShift | TNodeFlags.isComponent;
+    diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), rootView, def.type);
+    tNode.flags = TNodeFlags.isComponent;
+    initNodeFlags(tNode, rootView.length, 1);
+    queueComponentIndexForCheck(tNode);
   }
 
   // Store component view at node index, with node as the HOST
@@ -186,27 +187,33 @@ export function createRootComponentView(
  * renderComponent() and ViewContainerRef.createComponent().
  */
 export function createRootComponent<T>(
-    hostRNode: RNode | null, componentView: LViewData, componentDef: ComponentDef<T>,
-    rootView: LViewData, rootContext: RootContext, hostFeatures: HostFeature[] | null): any {
+    componentView: LView, componentDef: ComponentDef<T>, rootView: LView, rootContext: RootContext,
+    hostFeatures: HostFeature[] | null): any {
+  const tView = rootView[TVIEW];
   // Create directive instance with factory() and store at next index in viewData
-  const component =
-      baseDirectiveCreate(rootView.length, componentDef.factory() as T, componentDef, hostRNode);
+  const component = instantiateRootComponent(tView, rootView, componentDef);
 
   rootContext.components.push(component);
   componentView[CONTEXT] = component;
 
   hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
-  if (rootView[TVIEW].firstTemplatePass) prefillHostVars(componentDef.hostVars);
-  setHostBindings();
+
+  if (tView.firstTemplatePass && componentDef.hostBindings) {
+    const rootTNode = getPreviousOrParentTNode();
+    setCurrentDirectiveDef(componentDef);
+    componentDef.hostBindings(RenderFlags.Create, component, rootTNode.index - HEADER_OFFSET);
+    setCurrentDirectiveDef(null);
+  }
+
   return component;
 }
 
 
 export function createRootContext(
-    scheduler: (workFn: () => void) => void, playerHandler?: PlayerHandler|null): RootContext {
+    scheduler?: (workFn: () => void) => void, playerHandler?: PlayerHandler|null): RootContext {
   return {
     components: [],
-    scheduler: scheduler,
+    scheduler: scheduler || defaultScheduler,
     clean: CLEAN_PROMISE,
     playerHandler: playerHandler || null,
     flags: RootContextFlags.Empty
@@ -227,11 +234,14 @@ export function createRootContext(
  * ```
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
-  const rootTView = readPatchedLViewData(component) ![TVIEW];
+  const rootTView = readPatchedLView(component) ![TVIEW];
   const dirIndex = rootTView.data.length - 1;
 
-  queueInitHooks(dirIndex, def.onInit, def.doCheck, rootTView);
-  queueLifecycleHooks(dirIndex << TNodeFlags.DirectiveStartingIndexShift | 1, rootTView);
+  registerPreOrderHooks(dirIndex, def, rootTView);
+  // TODO(misko): replace `as TNode` with createTNode call. (needs refactoring to lose dep on
+  // LNode).
+  registerPostOrderHooks(
+      rootTView, { directiveStart: dirIndex, directiveEnd: dirIndex + 1 } as TNode);
 }
 
 /**
@@ -246,32 +256,6 @@ function getRootContext(component: any): RootContext {
   return rootContext;
 }
 
-/**
- * Retrieve the host element of the component.
- *
- * Use this function to retrieve the host element of the component. The host
- * element is the element which the component is associated with.
- *
- * @param component Component for which the host element should be retrieved.
- */
-export function getHostElement<T>(component: T): HTMLElement {
-  return readElementValue(getComponentViewByInstance(component)) as HTMLElement;
-}
-
-/**
- * Retrieves the rendered text for a given component.
- *
- * This function retrieves the host element of a component and
- * and then returns the `textContent` for that element. This implies
- * that the text returned will include re-projected content of
- * the component as well.
- *
- * @param component The component to return the content text for.
- */
-export function getRenderedText(component: any): string {
-  const hostElement = getHostElement(component);
-  return hostElement.textContent || '';
-}
 
 /**
  * Wait on component until it is rendered.

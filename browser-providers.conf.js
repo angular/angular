@@ -10,7 +10,7 @@
 // and BrowserStack (BS).
 // If the target is set to null, then the browser is not run anywhere during CI.
 // If a category becomes empty (e.g. BS and required), then the corresponding job must be commented
-// out in Travis configuration.
+// out in the CI configuration.
 var CIconfiguration = {
   'Chrome': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},

@@ -179,5 +179,4 @@ class ToDoAppComponent {
 class ToDoAppModule {
 }
 
-// TODO(misko): create cleaner way to publish component into global location for tests.
-(window as any).toDoAppComponent = renderComponent(ToDoAppComponent);
+renderComponent(ToDoAppComponent);

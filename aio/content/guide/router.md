@@ -1910,7 +1910,7 @@ Create an `AppRouting` module in the `/app` folder to contain the routing config
 </code-example>
 
 <!--
-Import the `CrisisListComponent`, `HeroListComponent`, and `PageNotFoundCompponent` symbols
+Import the `CrisisListComponent`, `HeroListComponent`, and `PageNotFoundComponent` symbols
 just like you did in the `app.module.ts`. Then move the `Router` imports
 and routing configuration, including `RouterModule.forRoot`, into this routing module.
 
@@ -4423,6 +4423,7 @@ A guard's return value controls the router's behavior:
 
 * If it returns `true`, the navigation process continues.
 * If it returns `false`, the navigation process stops and the user stays put.
+* If it returns a `UrlTree`, the current navigation cancels and a new navigation is initiated to the `UrlTree` returned.
 -->
 지금까지 작성한 애플리케이션은 *아무* 사용자가 애플리케이션의 *모든 페이지에* *아무때나* 접근할 수 있습니다.
 하지만 이 방법이 언제나 괜찮은 것은 아닙니다.
@@ -4439,13 +4440,17 @@ A guard's return value controls the router's behavior:
 
 * `true`를 반환하면 네비게이션 동작을 계속합니다.
 * `false`를 반환하면 네비게이션 동작을 멈춥니다.
+* If it returns a `UrlTree`, the current navigation cancels and a new navigation is initiated to the `UrlTree` returned.
 
 <div class="alert is-helpful">
 
+**Note:** The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation. When
+doing so inside a guard, the guard should return `false`;
 <!--
 **Note:** The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation.
 -->
 **참고:** 라우팅 가드를 사용하면 지금 동작하는 네비게이션을 취소하고 다른 곳으로 이동하게 할 수 있습니다.
+이 경우에는 현재 실행되는 라우팅 가드가 `false`를 반환해야 합니다.
 
 </div>
 
@@ -4872,14 +4877,14 @@ The admin feature is now protected by the guard, albeit protected poorly.
 <!--
 Make the `AuthGuard` at least pretend to authenticate.
 
-The `AuthGuard` should call an application service that can login a user and retain information about the current user. Generate a new `AuthService` in the `admin` folder:
+The `AuthGuard` should call an application service that can login a user and retain information about the current user. Generate a new `AuthService` in the `auth` folder:
 -->
 이제 인증기능을 수행하는 `AuthGuard`를 구현해 봅시다.
 
 `AuthGuard`는 애플리케이션에 있는 서비스를 사용해서 사용자가 로그인한 정보를 가져와야 합니다. 다음 명령을 실행해서 `admin` 폴더에 `AuthService`를 생성합니다:
 
 <code-example language="none" class="code-shell">
-  ng generate service admin/auth
+  ng generate service auth/auth
 </code-example>
 
 <!--

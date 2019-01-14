@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {devModeEqual} from '@angular/core/src/change_detection/change_detection_util';
+
 import {flatten, isDifferent} from '../../src/render3/util';
 
 describe('util', () => {
@@ -14,53 +16,51 @@ describe('util', () => {
 
     describe('checkNoChangeMode = false', () => {
       it('should mark non-equal arguments as different', () => {
-        expect(isDifferent({}, {}, false)).toBeTruthy();
-        expect(isDifferent('foo', 'bar', false)).toBeTruthy();
-        expect(isDifferent(0, 1, false)).toBeTruthy();
+        expect(isDifferent({}, {})).toBeTruthy();
+        expect(isDifferent('foo', 'bar')).toBeTruthy();
+        expect(isDifferent(0, 1)).toBeTruthy();
       });
 
       it('should not mark equal arguments as different', () => {
         const obj = {};
-        expect(isDifferent(obj, obj, false)).toBeFalsy();
-        expect(isDifferent('foo', 'foo', false)).toBeFalsy();
-        expect(isDifferent(1, 1, false)).toBeFalsy();
+        expect(isDifferent(obj, obj)).toBeFalsy();
+        expect(isDifferent('foo', 'foo')).toBeFalsy();
+        expect(isDifferent(1, 1)).toBeFalsy();
       });
 
-      it('should not mark NaN as different',
-         () => { expect(isDifferent(NaN, NaN, false)).toBeFalsy(); });
+      it('should not mark NaN as different', () => { expect(isDifferent(NaN, NaN)).toBeFalsy(); });
 
       it('should mark NaN with other values as different', () => {
-        expect(isDifferent(NaN, 'foo', false)).toBeTruthy();
-        expect(isDifferent(5, NaN, false)).toBeTruthy();
+        expect(isDifferent(NaN, 'foo')).toBeTruthy();
+        expect(isDifferent(5, NaN)).toBeTruthy();
       });
     });
 
     describe('checkNoChangeMode = true', () => {
       // Assert relaxed constraint in checkNoChangeMode
       it('should not mark non-equal arrays, object and function as different', () => {
-        expect(isDifferent([], [], true)).toBeFalsy();
-        expect(isDifferent(() => 0, () => 0, true)).toBeFalsy();
-        expect(isDifferent({}, {}, true)).toBeFalsy();
+        expect(!devModeEqual([], [])).toBeFalsy();
+        expect(!devModeEqual(() => 0, () => 0)).toBeFalsy();
+        expect(!devModeEqual({}, {})).toBeFalsy();
       });
 
       it('should mark non-equal arguments as different', () => {
-        expect(isDifferent('foo', 'bar', true)).toBeTruthy();
-        expect(isDifferent(0, 1, true)).toBeTruthy();
+        expect(!devModeEqual('foo', 'bar')).toBeTruthy();
+        expect(!devModeEqual(0, 1)).toBeTruthy();
       });
 
       it('should not mark equal arguments as different', () => {
         const obj = {};
-        expect(isDifferent(obj, obj, false)).toBeFalsy();
-        expect(isDifferent('foo', 'foo', false)).toBeFalsy();
-        expect(isDifferent(1, 1, false)).toBeFalsy();
+        expect(isDifferent(obj, obj)).toBeFalsy();
+        expect(isDifferent('foo', 'foo')).toBeFalsy();
+        expect(isDifferent(1, 1)).toBeFalsy();
       });
 
-      it('should not mark NaN as different',
-         () => { expect(isDifferent(NaN, NaN, false)).toBeFalsy(); });
+      it('should not mark NaN as different', () => { expect(isDifferent(NaN, NaN)).toBeFalsy(); });
 
       it('should mark NaN with other values as different', () => {
-        expect(isDifferent(NaN, 'foo', false)).toBeTruthy();
-        expect(isDifferent(5, NaN, false)).toBeTruthy();
+        expect(isDifferent(NaN, 'foo')).toBeTruthy();
+        expect(isDifferent(5, NaN)).toBeTruthy();
       });
     });
 

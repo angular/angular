@@ -8,10 +8,10 @@
 
 import {ConstantPool} from '../../constant_pool';
 import * as o from '../../output/output_ast';
+import {splitAtColon} from '../../util';
 import * as t from '../r3_ast';
-
 import {R3QueryMetadata} from './api';
-import {isI18NAttribute} from './i18n';
+import {isI18nAttribute} from './i18n/util';
 
 /** Name of the temporary to use during data binding */
 export const TEMPORARY_NAME = '_t';
@@ -67,17 +67,37 @@ export function asLiteral(value: any): o.Expression {
   return o.literal(value, o.INFERRED_TYPE);
 }
 
-export function conditionallyCreateMapObjectLiteral(keys: {[key: string]: string}): o.Expression|
-    null {
+export function conditionallyCreateMapObjectLiteral(
+    keys: {[key: string]: string | string[]}, keepDeclared?: boolean): o.Expression|null {
   if (Object.getOwnPropertyNames(keys).length > 0) {
-    return mapToExpression(keys);
+    return mapToExpression(keys, keepDeclared);
   }
   return null;
 }
 
-export function mapToExpression(map: {[key: string]: any}, quoted = false): o.Expression {
-  return o.literalMap(
-      Object.getOwnPropertyNames(map).map(key => ({key, quoted, value: asLiteral(map[key])})));
+function mapToExpression(
+    map: {[key: string]: string | string[]}, keepDeclared?: boolean): o.Expression {
+  return o.literalMap(Object.getOwnPropertyNames(map).map(key => {
+    // canonical syntax: `dirProp: publicProp`
+    // if there is no `:`, use dirProp = elProp
+    const value = map[key];
+    let declaredName: string;
+    let publicName: string;
+    let minifiedName: string;
+    if (Array.isArray(value)) {
+      [publicName, declaredName] = value;
+    } else {
+      [declaredName, publicName] = splitAtColon(key, [key, value]);
+    }
+    minifiedName = declaredName;
+    return {
+      key: minifiedName,
+      quoted: false,
+      value: (keepDeclared && publicName !== declaredName) ?
+          o.literalArr([asLiteral(publicName), asLiteral(declaredName)]) :
+          asLiteral(publicName)
+    };
+  }));
 }
 
 /**
@@ -135,7 +155,7 @@ export function getAttrsForDirectiveMatching(elOrTpl: t.Element | t.Template):
   const attributesMap: {[name: string]: string} = {};
 
   elOrTpl.attributes.forEach(a => {
-    if (!isI18NAttribute(a.name)) {
+    if (!isI18nAttribute(a.name)) {
       attributesMap[a.name] = a.value;
     }
   });

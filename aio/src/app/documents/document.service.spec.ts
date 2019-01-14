@@ -113,6 +113,7 @@ describe('DocumentService', () => {
 
       httpMock.expectOne({}).flush(null, {status: 500, statusText: 'Server Error'});
       expect(latestDocument.id).toEqual(FETCHING_ERROR_ID);
+      expect(latestDocument.contents).toContain('We are unable to retrieve the "initial/doc" page at this time.');
       expect(logger.output.error).toEqual([
         [jasmine.any(Error)]
       ]);

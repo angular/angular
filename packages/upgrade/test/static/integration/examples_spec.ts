@@ -10,6 +10,7 @@ import {Component, Directive, ElementRef, Injector, Input, NgModule, destroyPlat
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {fixmeIvy} from '@angular/private/testing';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 
@@ -54,7 +55,8 @@ withEachNg1Version(() => {
            imports: [BrowserModule, UpgradeModule]
          })
          class Ng2Module {
-           ngDoBootstrap() { /* this is a placeholder to stop the bootstrapper from complaining */
+           ngDoBootstrap() { /* this is a placeholder to stop the bootstrapper from
+                                complaining */
            }
          }
 
@@ -72,7 +74,8 @@ withEachNg1Version(() => {
                          template: 'ng1[Hello {{title}}!](<span ng-transclude></span>)'
                        };
                      })
-                 // This is wrapping (downgrading) an Angular component to be used in AngularJS
+                 // This is wrapping (downgrading) an Angular component to be used in
+                 // AngularJS
                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
          // This is the (AngularJS) application bootstrap element

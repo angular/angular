@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined, assertEqual} from './assert';
+import {assertDefined, assertEqual} from '../util/assert';
 import {TNode, TNodeType} from './interfaces/node';
 
 export function assertNodeType(tNode: TNode, type: TNodeType) {

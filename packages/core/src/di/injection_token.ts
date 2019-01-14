@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
+import {Type} from '../interface/type';
 
-import {defineInjectable} from './defs';
+import {defineInjectable} from './interface/defs';
 
 /**
  * Creates a token that can be used in a DI Provider.
@@ -60,13 +60,17 @@ export class InjectionToken<T> {
     providedIn?: Type<any>| 'root' | null,
     factory: () => T
   }) {
-    if (options !== undefined) {
+    this.ngInjectableDef = undefined;
+    if (typeof options == 'number') {
+      // This is a special hack to assign __NG_ELEMENT_ID__ to this instance.
+      // __NG_ELEMENT_ID__ is Used by Ivy to determine bloom filter id.
+      // We are using it to assign `-1` which is used to identify `Injector`.
+      (this as any).__NG_ELEMENT_ID__ = options;
+    } else if (options !== undefined) {
       this.ngInjectableDef = defineInjectable({
         providedIn: options.providedIn || 'root',
         factory: options.factory,
       });
-    } else {
-      this.ngInjectableDef = undefined;
     }
   }
 

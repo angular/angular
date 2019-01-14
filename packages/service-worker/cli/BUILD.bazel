@@ -5,9 +5,7 @@ load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
 ts_library(
     name = "cli",
     srcs = glob(
-        [
-            "*.ts",
-        ],
+        ["**/*.ts"],
     ),
     tsconfig = ":tsconfig.json",
     deps = [

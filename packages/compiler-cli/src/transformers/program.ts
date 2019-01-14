@@ -79,7 +79,7 @@ const MIN_TS_VERSION = '3.1.1';
  * ∀ supported typescript version v, v < MAX_TS_VERSION
  * MAX_TS_VERSION is not considered as a supported TypeScript version
  */
-const MAX_TS_VERSION = '3.2.0';
+const MAX_TS_VERSION = '3.3.0';
 
 class AngularCompilerProgram implements Program {
   private rootNames: string[];
@@ -935,7 +935,8 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
 
   return {
     locale: options.i18nInLocale,
-    i18nFormat: options.i18nInFormat || options.i18nOutFormat, translations, missingTranslation,
+    i18nFormat: options.i18nInFormat || options.i18nOutFormat,
+    i18nUseExternalIds: options.i18nUseExternalIds, translations, missingTranslation,
     enableSummariesForJit: options.enableSummariesForJit,
     preserveWhitespaces: options.preserveWhitespaces,
     fullTemplateTypeCheck: options.fullTemplateTypeCheck,
@@ -974,10 +975,8 @@ function normalizeSeparators(path: string): string {
  * TODO(tbosch): talk to the TypeScript team to expose their logic for calculating the `rootDir`
  * if none was specified.
  *
- * Note: This function works on normalized paths from typescript.
- *
- * @param outDir
- * @param outSrcMappings
+ * Note: This function works on normalized paths from typescript but should always return
+ * POSIX normalized paths for output paths.
  */
 export function createSrcToOutPathMapper(
     outDir: string | undefined, sampleSrcFileName: string | undefined,
@@ -986,7 +985,6 @@ export function createSrcToOutPathMapper(
       resolve: typeof path.resolve,
       relative: typeof path.relative
     } = path): (srcFileName: string) => string {
-  let srcToOutPath: (srcFileName: string) => string;
   if (outDir) {
     let path: {} = {};  // Ensure we error if we use `path` instead of `host`.
     if (sampleSrcFileName == null || sampleOutFileName == null) {
@@ -1006,11 +1004,18 @@ export function createSrcToOutPathMapper(
            srcDirParts[srcDirParts.length - 1 - i] === outDirParts[outDirParts.length - 1 - i])
       i++;
     const rootDir = srcDirParts.slice(0, srcDirParts.length - i).join('/');
-    srcToOutPath = (srcFileName) => host.resolve(outDir, host.relative(rootDir, srcFileName));
+    return (srcFileName) => {
+      // Note: Before we return the mapped output path, we need to normalize the path delimiters
+      // because the output path is usually passed to TypeScript which sometimes only expects
+      // posix normalized paths (e.g. if a custom compiler host is used)
+      return normalizeSeparators(host.resolve(outDir, host.relative(rootDir, srcFileName)));
+    };
   } else {
-    srcToOutPath = (srcFileName) => srcFileName;
+    // Note: Before we return the output path, we need to normalize the path delimiters because
+    // the output path is usually passed to TypeScript which only passes around posix
+    // normalized paths (e.g. if a custom compiler host is used)
+    return (srcFileName) => normalizeSeparators(srcFileName);
   }
-  return srcToOutPath;
 }
 
 export function i18nExtract(

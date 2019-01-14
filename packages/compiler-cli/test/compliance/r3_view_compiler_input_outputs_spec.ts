@@ -56,7 +56,7 @@ describe('compiler compliance: listen()', () => {
           …
           inputs:{
             componentInput: "componentInput",
-            originalComponentInput: "renamedComponentInput"
+            originalComponentInput: ["renamedComponentInput", "originalComponentInput"]
           },
           outputs: {
             componentOutput: "componentOutput",
@@ -70,7 +70,7 @@ describe('compiler compliance: listen()', () => {
         …
         inputs:{
           directiveInput: "directiveInput",
-          originalDirectiveInput: "renamedDirectiveInput"
+          originalDirectiveInput: ["renamedDirectiveInput", "originalDirectiveInput"]
         },
         outputs: {
           directiveOutput: "directiveOutput",

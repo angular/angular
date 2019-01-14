@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, ElementRef, EventEmitter, Inject, Injector, OnChanges, OnInit, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {Directive, DoCheck, ElementRef, EventEmitter, Inject, Injector, OnChanges, OnDestroy, OnInit, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
 import * as angular from '../common/angular1';
 import {$SCOPE} from '../common/constants';
@@ -46,23 +46,14 @@ export class UpgradeNg1ComponentAdapterBuilder {
     const directive = {selector: selector, inputs: this.inputsRename, outputs: this.outputsRename};
 
     @Directive({jit: true, ...directive})
-    class MyClass {
-      // TODO(issue/24571): remove '!'.
-      directive !: angular.IDirective;
+    class MyClass extends UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck,
+        OnDestroy {
       constructor(
           @Inject($SCOPE) scope: angular.IScope, injector: Injector, elementRef: ElementRef) {
-        const helper = new UpgradeHelper(injector, name, elementRef, this.directive);
-        return new UpgradeNg1ComponentAdapter(
-            helper, scope, self.template, self.inputs, self.outputs, self.propertyOutputs,
-            self.checkProperties, self.propertyMap) as any;
-      }
-      ngOnInit() { /* needs to be here for ng2 to properly detect it */
-      }
-      ngOnChanges() { /* needs to be here for ng2 to properly detect it */
-      }
-      ngDoCheck() { /* needs to be here for ng2 to properly detect it */
-      }
-      ngOnDestroy() { /* needs to be here for ng2 to properly detect it */
+        super(
+            new UpgradeHelper(injector, name, elementRef, self.directive || undefined), scope,
+            self.template, self.inputs, self.outputs, self.propertyOutputs, self.checkProperties,
+            self.propertyMap) as any;
       }
     }
     this.type = MyClass;
@@ -149,7 +140,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   private controllerInstance: IControllerInstance|null = null;
   destinationObj: IBindingDestination|null = null;
   checkLastValues: any[] = [];
-  private directive: angular.IDirective;
+  directive: angular.IDirective;
   element: Element;
   $element: any = null;
   componentScope: angular.IScope;

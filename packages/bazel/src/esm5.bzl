@@ -51,6 +51,10 @@ def _esm5_outputs_aspect(target, ctx):
     if not hasattr(target.typescript, "replay_params"):
         print("WARNING: no esm5 output from target %s//%s:%s available" % (target.label.workspace_root, target.label.package, target.label.name))
         return []
+    elif not target.typescript.replay_params:
+        # In case there are "replay_params" specified but the compile action didn't generate any
+        # outputs (e.g. only "d.ts" files), we cannot create ESM5 outputs for this target either.
+        return []
 
     # We create a new tsconfig.json file that will have our compilation settings
     tsconfig = ctx.actions.declare_file("%s_esm5.tsconfig.json" % target.label.name)
@@ -81,9 +85,11 @@ def _esm5_outputs_aspect(target, ctx):
     )
 
     replay_compiler = target.typescript.replay_params.compiler.path.split("/")[-1]
-    if replay_compiler == "tsc_wrapped":
+
+    # in windows replay_compiler path end with '.exe'
+    if replay_compiler.startswith("tsc_wrapped"):
         compiler = ctx.executable._tsc_wrapped
-    elif replay_compiler == "ngc-wrapped":
+    elif replay_compiler.startswith("ngc-wrapped"):
         compiler = ctx.executable._ngc_wrapped
     else:
         fail("Unknown replay compiler", target.typescript.replay_params.compiler.path)
@@ -163,7 +169,7 @@ def flatten_esm5(ctx):
       ctx: the skylark rule execution context
 
     Returns:
-      list of flattened files
+      depset of flattened files
     """
     esm5_sources = []
     result = []
@@ -184,4 +190,4 @@ def flatten_esm5(ctx):
             template = f,
             substitutions = {},
         )
-    return result
+    return depset(result)

@@ -7,13 +7,14 @@
  */
 
 import {NgModuleRef} from '@angular/core';
-import {InjectableDef, defineInjectable} from '@angular/core/src/di/defs';
-import {INJECTOR, InjectFlags, Injector, inject} from '@angular/core/src/di/injector';
-import {makePropDecorator} from '@angular/core/src/util/decorators';
+import {InjectFlags, inject} from '@angular/core/src/di';
+import {INJECTOR, Injector} from '@angular/core/src/di/injector';
+import {InjectableDef, defineInjectable} from '@angular/core/src/di/interface/defs';
 import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
-import {moduleDef, moduleProvideDef, resolveNgModuleDep} from '@angular/core/src/view/ng_module';
+import {moduleDef} from '@angular/core/src/view/ng_module';
 import {createNgModuleRef} from '@angular/core/src/view/refs';
 import {tokenKey} from '@angular/core/src/view/util';
+
 import {APP_ROOT} from '../../src/di/scope';
 
 class Foo {}

@@ -74,7 +74,7 @@ export class InertBodyHelper {
     html = '<body><remove></remove>' + html + '</body>';
     try {
       html = encodeURI(html);
-    } catch (e) {
+    } catch {
       return null;
     }
     const xhr = new XMLHttpRequest();
@@ -103,7 +103,7 @@ export class InertBodyHelper {
                        .body as HTMLBodyElement;
       body.removeChild(body.firstChild !);
       return body;
-    } catch (e) {
+    } catch {
       return null;
     }
   }
@@ -169,7 +169,7 @@ export class InertBodyHelper {
 function isDOMParserAvailable() {
   try {
     return !!(window as any).DOMParser;
-  } catch (e) {
+  } catch {
     return false;
   }
 }

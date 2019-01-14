@@ -11,15 +11,16 @@ import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags,} from '../../src/render3/interfaces/projection';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isNodeMatchingSelector} from '../../src/render3/node_selector_matcher';
 import {createTNode} from '@angular/core/src/render3/instructions';
+import {getLView} from '@angular/core/src/render3/state';
 
 function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
-  return createTNode(TNodeType.Element, 0, tagName, attrs, null);
+  return createTNode(getLView(), TNodeType.Element, 0, tagName, attrs, null);
 }
 
 describe('css selector matching', () => {
   function isMatching(tagName: string, attrs: TAttributes | null, selector: CssSelector): boolean {
     return isNodeMatchingSelector(
-        createTNode(TNodeType.Element, 0, tagName, attrs, null), selector);
+        createTNode(getLView(), TNodeType.Element, 0, tagName, attrs, null), selector, false);
   }
 
   describe('isNodeMatchingSimpleSelector', () => {
@@ -46,6 +47,9 @@ describe('css selector matching', () => {
             .toBeFalsy(`Selector 'span' should NOT match <SPAN>'`);
       });
 
+      it('should never match empty string selector', () => {
+        expect(isMatching('span', null, [''])).toBeFalsy(`Selector '' should NOT match <span>`);
+      });
     });
 
     describe('attributes matching', () => {
@@ -413,7 +417,7 @@ describe('css selector matching', () => {
 
     function isAnyMatching(
         tagName: string, attrs: string[] | null, selector: CssSelectorList): boolean {
-      return isNodeMatchingSelectorList(testLStaticData(tagName, attrs), selector);
+      return isNodeMatchingSelectorList(testLStaticData(tagName, attrs), selector, false);
     }
 
     it('should match when there is only one simple selector without negations', () => {

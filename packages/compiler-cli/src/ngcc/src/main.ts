@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as path from 'canonical-path';
-import {existsSync, lstatSync, readFileSync, readdirSync} from 'fs';
 import * as yargs from 'yargs';
 
+import {checkMarkerFile, writeMarkerFile} from './packages/build_marker';
 import {DependencyHost} from './packages/dependency_host';
 import {DependencyResolver} from './packages/dependency_resolver';
 import {EntryPointFormat} from './packages/entry_point';
+import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {EntryPointFinder} from './packages/entry_point_finder';
 import {Transformer} from './packages/transformer';
 
@@ -48,8 +49,35 @@ export function mainNgcc(args: string[]): number {
 
   try {
     const {entryPoints} = finder.findEntryPoints(sourcePath);
-    entryPoints.forEach(
-        entryPoint => formats.forEach(format => transformer.transform(entryPoint, format)));
+    entryPoints.forEach(entryPoint => {
+
+      // Are we compiling the Angular core?
+      const isCore = entryPoint.name === '@angular/core';
+
+      // We transform the d.ts typings files while transforming one of the formats.
+      // This variable decides with which of the available formats to do this transform.
+      // It is marginally faster to process via the flat file if available.
+      const dtsTransformFormat: EntryPointFormat = entryPoint.fesm2015 ? 'fesm2015' : 'esm2015';
+
+      formats.forEach(format => {
+        if (checkMarkerFile(entryPoint, format)) {
+          console.warn(`Skipping ${entryPoint.name} : ${format} (already built).`);
+          return;
+        }
+
+        const bundle =
+            makeEntryPointBundle(entryPoint, isCore, format, format === dtsTransformFormat);
+        if (bundle === null) {
+          console.warn(
+              `Skipping ${entryPoint.name} : ${format} (no entry point file for this format).`);
+        } else {
+          transformer.transform(entryPoint, isCore, bundle);
+        }
+
+        // Write the built-with-ngcc marker
+        writeMarkerFile(entryPoint, format);
+      });
+    });
   } catch (e) {
     console.error(e.stack);
     return 1;

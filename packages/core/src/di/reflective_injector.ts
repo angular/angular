@@ -7,11 +7,12 @@
  */
 
 import {Injector, THROW_IF_NOT_FOUND} from './injector';
+import {Provider} from './interface/provider';
 import {Self, SkipSelf} from './metadata';
-import {Provider} from './provider';
 import {cyclicDependencyError, instantiationError, noProviderError, outOfBoundsError} from './reflective_errors';
 import {ReflectiveKey} from './reflective_key';
 import {ReflectiveDependency, ResolvedReflectiveFactory, ResolvedReflectiveProvider, resolveReflectiveProviders} from './reflective_provider';
+
 
 // Threshold for the dynamic version
 const UNDEFINED = new Object();

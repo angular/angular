@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ReflectionHost} from '../../host';
-import {AbsoluteReference, Reference, ResolvedReference, reflectTypeEntityToDeclaration} from '../../metadata';
-import {reflectIdentifierOfDeclaration, reflectNameOfDeclaration} from '../../metadata/src/reflector';
+import {AbsoluteReference, Reference, ReferenceResolver, ResolvedReference} from '../../imports';
+import {ReflectionHost, reflectIdentifierOfDeclaration, reflectNameOfDeclaration, reflectTypeEntityToDeclaration} from '../../reflection';
 import {TypeCheckableDirectiveMeta} from '../../typecheck';
 
-import {extractDirectiveGuards, toR3Reference} from './util';
+import {extractDirectiveGuards} from './util';
 
 
 /**
@@ -31,7 +30,7 @@ export interface ModuleData {
  * context of some module.
  */
 export interface CompilationScope<T> {
-  directives: Map<string, ScopeDirective<T>>;
+  directives: ScopeDirective<T>[];
   pipes: Map<string, T>;
   containsForwardDecls?: boolean;
 }
@@ -90,7 +89,9 @@ export class SelectorScopeRegistry {
    */
   private _declararedTypeToModule = new Map<ts.Declaration, ts.Declaration>();
 
-  constructor(private checker: ts.TypeChecker, private reflector: ReflectionHost) {}
+  constructor(
+      private checker: ts.TypeChecker, private reflector: ReflectionHost,
+      private resolver: ReferenceResolver) {}
 
   /**
    * Register a module's metadata with the registry.
@@ -153,28 +154,40 @@ export class SelectorScopeRegistry {
     }
 
     // This is the first time the scope for this module is being computed.
-    const directives = new Map<string, ScopeDirective<Reference<ts.Declaration>>>();
-    const pipes = new Map<string, Reference>();
+    const directives: ScopeDirective<Reference<ts.Declaration>>[] = [];
+    const pipes = new Map<string, Reference<ts.Declaration>>();
+
+    // Tracks which declarations already appear in the `CompilationScope`.
+    const seenSet = new Set<ts.Declaration>();
 
     // Process the declaration scope of the module, and lookup the selector of every declared type.
     // The initial value of ngModuleImportedFrom is 'null' which signifies that the NgModule
     // was not imported from a .d.ts source.
-    this.lookupScopesOrDie(module !, /* ngModuleImportedFrom */ null).compilation.forEach(ref => {
+    for (const ref of this
+             .lookupScopesOrDie(
+                 module !, /* ngModuleImportedFrom */ null, node.getSourceFile().fileName)
+             .compilation) {
       const node = ts.getOriginalNode(ref.node) as ts.Declaration;
+
+      // Track whether this `ts.Declaration` has been seen before.
+      if (seenSet.has(node)) {
+        continue;
+      } else {
+        seenSet.add(node);
+      }
 
       // Either the node represents a directive or a pipe. Look for both.
       const metadata = this.lookupDirectiveMetadata(ref);
       // Only directives/components with selectors get added to the scope.
-      if (metadata != null) {
-        directives.set(metadata.selector, {...metadata, directive: ref});
-        return;
+      if (metadata !== null) {
+        directives.push({...metadata, directive: ref});
+      } else {
+        const name = this.lookupPipeName(node);
+        if (name !== null) {
+          pipes.set(name, ref);
+        }
       }
-
-      const name = this.lookupPipeName(node);
-      if (name != null) {
-        pipes.set(name, ref);
-      }
-    });
+    }
 
     const scope: CompilationScope<Reference> = {directives, pipes};
 
@@ -194,11 +207,12 @@ export class SelectorScopeRegistry {
     return scope !== null ? convertScopeToExpressions(scope, node) : null;
   }
 
-  private lookupScopesOrDie(node: ts.Declaration, ngModuleImportedFrom: string|null):
-      SelectorScopes {
-    const result = this.lookupScopes(node, ngModuleImportedFrom);
+  private lookupScopesOrDie(
+      node: ts.Declaration, ngModuleImportedFrom: string|null,
+      resolutionContext: string): SelectorScopes {
+    const result = this.lookupScopes(node, ngModuleImportedFrom, resolutionContext);
     if (result === null) {
-      throw new Error(`Module not found: ${reflectIdentifierOfDeclaration(node)}`);
+      throw new Error(`Module not found: ${reflectNameOfDeclaration(node)}`);
     }
     return result;
   }
@@ -210,8 +224,9 @@ export class SelectorScopeRegistry {
    * (`ngModuleImportedFrom`) then all of its declarations are exported at that same path, as well
    * as imports and exports from other modules that are relatively imported.
    */
-  private lookupScopes(node: ts.Declaration, ngModuleImportedFrom: string|null): SelectorScopes
-      |null {
+  private lookupScopes(
+      node: ts.Declaration, ngModuleImportedFrom: string|null,
+      resolutionContext: string): SelectorScopes|null {
     let data: ModuleData|null = null;
 
     // Either this module was analyzed directly, or has a precompiled ngModuleDef.
@@ -221,7 +236,7 @@ export class SelectorScopeRegistry {
     } else {
       // The module wasn't analyzed before, and probably has a precompiled ngModuleDef with a type
       // annotation that specifies the needed metadata.
-      data = this._readModuleDataFromCompiledClass(node, ngModuleImportedFrom);
+      data = this._readModuleDataFromCompiledClass(node, ngModuleImportedFrom, resolutionContext);
       // Note that data here could still be null, if the class didn't have a precompiled
       // ngModuleDef.
     }
@@ -230,22 +245,28 @@ export class SelectorScopeRegistry {
       return null;
     }
 
+    const context = node.getSourceFile().fileName;
+
     return {
       compilation: [
         ...data.declarations,
         // Expand imports to the exported scope of those imports.
         ...flatten(data.imports.map(
-            ref => this.lookupScopesOrDie(ref.node as ts.Declaration, absoluteModuleName(ref))
-                       .exported)),
+            ref =>
+                this.lookupScopesOrDie(ref.node as ts.Declaration, absoluteModuleName(ref), context)
+                    .exported)),
         // And include the compilation scope of exported modules.
         ...flatten(
             data.exports
-                .map(ref => this.lookupScopes(ref.node as ts.Declaration, absoluteModuleName(ref)))
+                .map(
+                    ref => this.lookupScopes(
+                        ref.node as ts.Declaration, absoluteModuleName(ref), context))
                 .filter((scope: SelectorScopes | null): scope is SelectorScopes => scope !== null)
                 .map(scope => scope.exported))
       ],
       exported: flatten(data.exports.map(ref => {
-        const scope = this.lookupScopes(ref.node as ts.Declaration, absoluteModuleName(ref));
+        const scope =
+            this.lookupScopes(ref.node as ts.Declaration, absoluteModuleName(ref), context);
         if (scope !== null) {
           return scope.exported;
         } else {
@@ -288,7 +309,8 @@ export class SelectorScopeRegistry {
    * stemming from this module.
    */
   private _readModuleDataFromCompiledClass(
-      clazz: ts.Declaration, ngModuleImportedFrom: string|null): ModuleData|null {
+      clazz: ts.Declaration, ngModuleImportedFrom: string|null,
+      resolutionContext: string): ModuleData|null {
     // This operation is explicitly not memoized, as it depends on `ngModuleImportedFrom`.
     // TODO(alxhub): investigate caching of .d.ts module metadata.
     const ngModuleDef = this.reflector.getMembersOfClass(clazz).find(
@@ -306,9 +328,12 @@ export class SelectorScopeRegistry {
     // Read the ModuleData out of the type arguments.
     const [_, declarationMetadata, importMetadata, exportMetadata] = ngModuleDef.type.typeArguments;
     return {
-      declarations: this._extractReferencesFromType(declarationMetadata, ngModuleImportedFrom),
-      exports: this._extractReferencesFromType(exportMetadata, ngModuleImportedFrom),
-      imports: this._extractReferencesFromType(importMetadata, ngModuleImportedFrom),
+      declarations: this._extractReferencesFromType(
+          declarationMetadata, ngModuleImportedFrom, resolutionContext),
+      exports:
+          this._extractReferencesFromType(exportMetadata, ngModuleImportedFrom, resolutionContext),
+      imports:
+          this._extractReferencesFromType(importMetadata, ngModuleImportedFrom, resolutionContext),
     };
   }
 
@@ -341,7 +366,7 @@ export class SelectorScopeRegistry {
       name: clazz.name !.text,
       directive: ref,
       isComponent: def.name === 'ngComponentDef', selector,
-      exportAs: readStringType(def.type.typeArguments[2]),
+      exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs: readStringMapType(def.type.typeArguments[3]),
       outputs: readStringMapType(def.type.typeArguments[4]),
       queries: readStringArrayType(def.type.typeArguments[5]),
@@ -380,8 +405,9 @@ export class SelectorScopeRegistry {
    * This operation assumes that these types should be imported from `ngModuleImportedFrom` unless
    * they themselves were imported from another absolute path.
    */
-  private _extractReferencesFromType(def: ts.TypeNode, ngModuleImportedFrom: string|null):
-      Reference<ts.Declaration>[] {
+  private _extractReferencesFromType(
+      def: ts.TypeNode, ngModuleImportedFrom: string|null,
+      resolutionContext: string): Reference<ts.Declaration>[] {
     if (!ts.isTupleTypeNode(def)) {
       return [];
     }
@@ -393,12 +419,10 @@ export class SelectorScopeRegistry {
       if (ngModuleImportedFrom !== null) {
         const {node, from} = reflectTypeEntityToDeclaration(type, this.checker);
         const moduleName = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
-        const id = reflectIdentifierOfDeclaration(node);
-        return new AbsoluteReference(node, id !, moduleName, id !.text);
+        return this.resolver.resolve(node, moduleName, resolutionContext);
       } else {
         const {node} = reflectTypeEntityToDeclaration(type, this.checker);
-        const id = reflectIdentifierOfDeclaration(node);
-        return new ResolvedReference(node, id !);
+        return this.resolver.resolve(node, null, resolutionContext);
       }
     });
   }
@@ -418,33 +442,40 @@ function absoluteModuleName(ref: Reference): string|null {
   return ref.moduleName;
 }
 
-function convertDirectiveReferenceMap(
-    map: Map<string, ScopeDirective<Reference>>,
-    context: ts.SourceFile): Map<string, ScopeDirective<Expression>> {
-  const newMap = new Map<string, ScopeDirective<Expression>>();
-  map.forEach((meta, selector) => {
-    newMap.set(selector, {...meta, directive: toR3Reference(meta.directive, context).value});
+function convertDirectiveReferenceList(
+    input: ScopeDirective<Reference>[], context: ts.SourceFile): ScopeDirective<Expression>[] {
+  return input.map(meta => {
+    const directive = meta.directive.toExpression(context);
+    if (directive === null) {
+      throw new Error(`Could not write expression to reference ${meta.directive.node}`);
+    }
+    return {...meta, directive};
   });
-  return newMap;
 }
 
 function convertPipeReferenceMap(
     map: Map<string, Reference>, context: ts.SourceFile): Map<string, Expression> {
   const newMap = new Map<string, Expression>();
-  map.forEach((meta, selector) => { newMap.set(selector, toR3Reference(meta, context).value); });
+  map.forEach((meta, selector) => {
+    const pipe = meta.toExpression(context);
+    if (pipe === null) {
+      throw new Error(`Could not write expression to reference ${meta.node}`);
+    }
+    newMap.set(selector, pipe);
+  });
   return newMap;
 }
 
 function convertScopeToExpressions(
     scope: CompilationScope<Reference>, context: ts.Declaration): CompilationScope<Expression> {
   const sourceContext = ts.getOriginalNode(context).getSourceFile();
-  const directives = convertDirectiveReferenceMap(scope.directives, sourceContext);
+  const directives = convertDirectiveReferenceList(scope.directives, sourceContext);
   const pipes = convertPipeReferenceMap(scope.pipes, sourceContext);
   const declPointer = maybeUnwrapNameOfDeclaration(context);
   let containsForwardDecls = false;
-  directives.forEach(expr => {
+  directives.forEach(meta => {
     containsForwardDecls = containsForwardDecls ||
-        isExpressionForwardReference(expr.directive, declPointer, sourceContext);
+        isExpressionForwardReference(meta.directive, declPointer, sourceContext);
   });
   !containsForwardDecls && pipes.forEach(expr => {
     containsForwardDecls =

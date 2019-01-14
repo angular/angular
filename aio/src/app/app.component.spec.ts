@@ -742,7 +742,7 @@ describe('AppComponent', () => {
           expect(component.showSearchResults).toBe(true);
         });
 
-        it('should not intercept clicks om the searchBox', () => {
+        it('should not intercept clicks on the searchBox', () => {
           component.showSearchResults = true;
           fixture.detectChanges();
 
@@ -751,6 +751,11 @@ describe('AppComponent', () => {
           fixture.detectChanges();
 
           expect(component.showSearchResults).toBe(true);
+        });
+
+        it('should not call `locationService.setSearch` when searchResults are not shown', () => {
+          docViewer.click();
+          expect(locationService.setSearch).not.toHaveBeenCalled();
         });
       });
 

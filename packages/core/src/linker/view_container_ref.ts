@@ -145,6 +145,7 @@ export abstract class ViewContainerRef {
   abstract detach(index?: number): ViewRef|null;
 
   /** @internal */
+  /** @nocollapse */
   static __NG_ELEMENT_ID__:
       () => ViewContainerRef = () => SWITCH_VIEW_CONTAINER_REF_FACTORY(ViewContainerRef, ElementRef)
 }

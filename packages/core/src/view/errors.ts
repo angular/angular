@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER, getDebugContext} from '../errors';
-import {DebugContext, ViewState} from './types';
+import {getDebugContext} from '../errors';
+import {ERROR_DEBUG_CONTEXT, ERROR_LOGGER} from '../util/errors';
+
+import {DebugContext} from './types';
 
 export function expressionChangedAfterItHasBeenCheckedError(
     context: DebugContext, oldValue: any, currValue: any, isFirstCheck: boolean): Error {
