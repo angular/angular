@@ -116,7 +116,6 @@ Once the component's owner triage is done, the ng-bot automatically changes the 
 ## Triaging PRs
 
 Triaging PRs is the same as triaging issues, except that the labels `frequency: *` and `severity: *` are replaced by:
-- `type: *`
 - `effort*`
 - `risk: *`
 
@@ -177,5 +176,6 @@ Applying this label to a PR makes the angular.io preview available regardless of
 ### `PR action: merge-assistance`
 This label can be added to let the caretaker know that the PR needs special attention.
 There should always be a comment added to the PR to explain why the caretaker's assistance is needed.
+The comment should be formatted like this: `merge-assistance: <explain what kind of assistance you need, and if not obvious why>`
 
 For example, the PR owner might not be a Googler and needs help to run g3sync; or one of the checks is failing due to external causes and the PR should still be merged.
