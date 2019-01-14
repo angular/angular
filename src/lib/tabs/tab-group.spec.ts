@@ -622,7 +622,7 @@ describe('nested MatTabGroup with enabled animations', () => {
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatTabsModule, BrowserAnimationsModule],
-      declarations: [NestedTabs]
+      declarations: [NestedTabs, TabsWithCustomAnimationDuration]
     });
 
     TestBed.compileComponents();
@@ -631,6 +631,14 @@ describe('nested MatTabGroup with enabled animations', () => {
   it('should not throw when creating a component with nested tab groups', fakeAsync(() => {
     expect(() => {
       let fixture = TestBed.createComponent(NestedTabs);
+      fixture.detectChanges();
+      tick();
+    }).not.toThrow();
+  }));
+
+  it('should not throw when setting an animationDuration without units', fakeAsync(() => {
+    expect(() => {
+      let fixture = TestBed.createComponent(TabsWithCustomAnimationDuration);
       fixture.detectChanges();
       tick();
     }).not.toThrow();
@@ -861,3 +869,14 @@ class TabGroupWithAriaInputs {
 })
 class TabGroupWithIsActiveBinding {
 }
+
+
+@Component({
+  template: `
+    <mat-tab-group animationDuration="500">
+      <mat-tab label="One">Tab one content</mat-tab>
+      <mat-tab label="Two">Tab two content</mat-tab>
+    </mat-tab-group>
+  `,
+})
+class TabsWithCustomAnimationDuration {}
