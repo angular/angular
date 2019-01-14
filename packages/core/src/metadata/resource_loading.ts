@@ -79,7 +79,7 @@ export function resolveComponentResources(
       });
     });
   });
-  componentResourceResolutionQueue.clear();
+  clearResolutionOfComponentResourcesQueue();
   return Promise.all(urlFetches).then(() => null);
 }
 

@@ -10,7 +10,7 @@ import {CompilerConfig, ResourceLoader} from '@angular/compiler';
 import {CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, Directive, Inject, Injectable, Injector, Input, NgModule, Optional, Pipe, SkipSelf, ɵstringify as stringify} from '@angular/core';
 import {TestBed, async, fakeAsync, getTestBed, inject, tick, withModule} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, obsoleteInIvy} from '@angular/private/testing';
+import {fixmeIvy, ivyEnabled, obsoleteInIvy} from '@angular/private/testing';
 
 // Services, and components for the tests.
 
@@ -311,12 +311,11 @@ class CompWithUrlTemplate {
         }));
 
         isBrowser &&
-            fixmeIvy('FW-553: TestBed is unaware of async compilation')
-                .it('should allow to createSync components with templateUrl after explicit async compilation',
-                    () => {
-                      const fixture = TestBed.createComponent(CompWithUrlTemplate);
-                      expect(fixture.nativeElement).toHaveText('from external template');
-                    });
+            it('should allow to createSync components with templateUrl after explicit async compilation',
+               () => {
+                 const fixture = TestBed.createComponent(CompWithUrlTemplate);
+                 expect(fixture.nativeElement).toHaveText('from external template');
+               });
       });
 
       describe('overwriting metadata', () => {
@@ -792,13 +791,12 @@ class CompWithUrlTemplate {
                 {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
           });
 
-          fixmeIvy('FW-553: TestBed is unaware of async compilation')
-              .it('should use set up providers', fakeAsync(() => {
-                    TestBed.compileComponents();
-                    tick();
-                    const compFixture = TestBed.createComponent(CompWithUrlTemplate);
-                    expect(compFixture.nativeElement).toHaveText('Hello world!');
-                  }));
+          it('should use set up providers', fakeAsync(() => {
+               TestBed.compileComponents();
+               tick();
+               const compFixture = TestBed.createComponent(CompWithUrlTemplate);
+               expect(compFixture.nativeElement).toHaveText('Hello world!');
+             }));
         });
 
         describe('useJit true', () => {
@@ -904,22 +902,25 @@ class CompWithUrlTemplate {
               {providers: [{provide: ResourceLoader, useValue: {get: resourceLoaderGet}}]});
         });
 
-        fixmeIvy('FW-553: TestBed is unaware of async compilation')
-            .it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',
-                () => {
-                  const itPromise = patchJasmineIt();
+        it('should report an error for declared components with templateUrl which never call TestBed.compileComponents',
+           () => {
+             const itPromise = patchJasmineIt();
 
-                  expect(
-                      () => it(
-                          'should fail', withModule(
-                                             {declarations: [CompWithUrlTemplate]},
-                                             () => TestBed.createComponent(CompWithUrlTemplate))))
-                      .toThrowError(
-                          `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
-                          `Please call "TestBed.compileComponents" before your test.`);
+             expect(
+                 () =>
+                     it('should fail', withModule(
+                                           {declarations: [CompWithUrlTemplate]},
+                                           () => TestBed.createComponent(CompWithUrlTemplate))))
+                 .toThrowError(
+                     ivyEnabled ?
+                         `Component 'CompWithUrlTemplate' is not resolved:
+ - templateUrl: /base/angular/packages/platform-browser/test/static_assets/test.html
+Did you run and wait for 'resolveComponentResources()'?` :
+                         `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
+                             `Please call "TestBed.compileComponents" before your test.`);
 
-                  restoreJasmineIt();
-                });
+             restoreJasmineIt();
+           });
 
       });
 
@@ -1015,7 +1016,6 @@ class CompWithUrlTemplate {
       });
 
       it('should override component dependencies', async(() => {
-
            const componentFixture = TestBed.createComponent(ParentComp);
            componentFixture.detectChanges();
            expect(componentFixture.nativeElement).toHaveText('Parent(Mock)');

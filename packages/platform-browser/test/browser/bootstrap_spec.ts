@@ -161,7 +161,9 @@ function bootstrap(
     afterEach(destroyPlatform);
 
     // TODO(misko): can't use `fixmeIvy.it` because the `it` is somehow special here.
-    fixmeIvy('FW-553: TestBed is unaware of async compilation').isEnabled &&
+    fixmeIvy(
+        'FW-876: Bootstrap factory method should throw if bootstrapped Directive is not a Component')
+            .isEnabled &&
         it('should throw if bootstrapped Directive is not a Component',
            inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
              const logger = new MockConsole();
@@ -190,7 +192,8 @@ function bootstrap(
        }));
 
     // TODO(misko): can't use `fixmeIvy.it` because the `it` is somehow special here.
-    fixmeIvy('FW-553: TestBed is unaware of async compilation').isEnabled &&
+    fixmeIvy('FW-875: The source of the error is missing in the `StaticInjectorError` message')
+            .isEnabled &&
         it('should throw if no provider',
            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
              const logger = new MockConsole();
