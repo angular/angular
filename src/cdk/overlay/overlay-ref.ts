@@ -43,7 +43,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   private _previousHostParent: HTMLElement;
 
   private _keydownEventsObservable: Observable<KeyboardEvent> =
-      Observable.create((observer: Observer<KeyboardEvent>) => {
+      new Observable((observer: Observer<KeyboardEvent>) => {
         const subscription = this._keydownEvents.subscribe(observer);
         this._keydownEventSubscriptions++;
 

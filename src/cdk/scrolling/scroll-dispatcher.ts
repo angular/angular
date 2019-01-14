@@ -86,7 +86,7 @@ export class ScrollDispatcher implements OnDestroy {
       return observableOf<void>();
     }
 
-    return Observable.create((observer: Observer<CdkScrollable|void>) => {
+    return new Observable((observer: Observer<CdkScrollable|void>) => {
       if (!this._globalSubscription) {
         this._addGlobalListener();
       }

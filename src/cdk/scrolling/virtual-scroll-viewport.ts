@@ -71,7 +71,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   // performance.
   /** Emits when the index of the first element visible in the viewport changes. */
   @Output() scrolledIndexChange: Observable<number> =
-      Observable.create((observer: Observer<number>) =>
+      new Observable((observer: Observer<number>) =>
         this._scrollStrategy.scrolledIndexChange.subscribe(index =>
             Promise.resolve().then(() => this.ngZone.run(() => observer.next(index)))));
 

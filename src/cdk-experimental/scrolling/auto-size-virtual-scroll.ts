@@ -70,7 +70,7 @@ export class ItemSizeAverager {
 /** Virtual scrolling strategy for lists with items of unknown or dynamic size. */
 export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
   /** @docs-private Implemented as part of VirtualScrollStrategy. */
-  scrolledIndexChange = Observable.create(() => {
+  scrolledIndexChange = new Observable<number>(() => {
     // TODO(mmalerba): Implement.
     throw Error('cdk-virtual-scroll: scrolledIndexChange is currently not supported for the' +
         ' autosize scroll strategy');

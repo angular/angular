@@ -65,7 +65,7 @@ export class ContentObserver implements OnDestroy {
   observe(elementOrRef: Element | ElementRef<Element>): Observable<MutationRecord[]> {
     const element = coerceElement(elementOrRef);
 
-    return Observable.create((observer: Observer<MutationRecord[]>) => {
+    return new Observable((observer: Observer<MutationRecord[]>) => {
       const stream = this._observeElement(element);
       const subscription = stream.subscribe(observer);
 

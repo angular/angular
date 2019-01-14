@@ -146,7 +146,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
    * because this event will fire for every pixel that the user has dragged.
    */
   @Output('cdkDragMoved') moved: Observable<CdkDragMove<T>> =
-      Observable.create((observer: Observer<CdkDragMove<T>>) => {
+      new Observable((observer: Observer<CdkDragMove<T>>) => {
         const subscription = this._dragRef.moved.pipe(map(movedEvent => ({
           source: this,
           pointerPosition: movedEvent.pointerPosition,

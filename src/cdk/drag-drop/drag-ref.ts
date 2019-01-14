@@ -249,7 +249,7 @@ export class DragRef<T = any> {
     pointerPosition: {x: number, y: number};
     event: MouseEvent | TouchEvent;
     delta: {x: -1 | 0 | 1, y: -1 | 0 | 1};
-  }> = Observable.create((observer: Observer<any>) => {
+  }> = new Observable((observer: Observer<any>) => {
     const subscription = this._moveEvents.subscribe(observer);
     this._moveEventSubscriptions++;
 
