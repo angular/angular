@@ -29,7 +29,7 @@ import {error} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
-import {getSyntheticPropertyName, prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
+import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
 
 import {R3QueryMetadata} from './api';
 import {I18nContext} from './i18n/context';
@@ -571,8 +571,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // this will build the instructions so that they fall into the following syntax
     // add attributes for directive matching purposes
-    attributes.push(...this.prepareSyntheticAndSelectOnlyAttrs(
-        allOtherInputs, element.outputs, stylingBuilder));
+    attributes.push(
+        ...this.prepareSelectOnlyAttrs(allOtherInputs, element.outputs, stylingBuilder));
     parameters.push(this.toAttrsParam(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -686,8 +686,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.processStylingInstruction(implicit, instruction, false);
     });
 
+    // the reason why `undefined` is used is because the renderer understands this as a
+    // special value to symbolize that there is no RHS to this binding
+    // TODO (matsko): revisit this once FW-959 is approached
+    const emptyValueBindInstruction = o.importExpr(R3.bind).callFn([o.literal(undefined)]);
+
     // Generate element input bindings
     allOtherInputs.forEach((input: t.BoundAttribute) => {
+
       const instruction = mapBindingToInstruction(input.type);
       if (input.type === BindingType.Animation) {
         const value = input.value.visit(this._valueConverter);
@@ -696,21 +702,19 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         // 2. [@binding]="{value:fooExp, params:{...}}"
         // 3. [@binding]
         // 4. @binding
-        // only formats 1. and 2. include the actual binding of a value to
-        // an expression and therefore only those should be the only two that
-        // are allowed. The check below ensures that a binding with no expression
-        // does not get an empty `elementProperty` instruction created for it.
-        const hasValue = value && (value instanceof LiteralPrimitive) ? !!value.value : true;
-        if (hasValue) {
-          this.allocateBindingSlots(value);
-          const bindingName = prepareSyntheticPropertyName(input.name);
-          this.updateInstruction(input.sourceSpan, R3.elementProperty, () => {
-            return [
-              o.literal(elementIndex), o.literal(bindingName),
-              this.convertPropertyBinding(implicit, value)
-            ];
-          });
-        }
+        // All formats will be valid for when a synthetic binding is created.
+        // The reasoning for this is because the renderer should get each
+        // synthetic binding value in the order of the array that they are
+        // defined in...
+        const hasValue = value instanceof LiteralPrimitive ? !!value.value : true;
+        this.allocateBindingSlots(value);
+        const bindingName = prepareSyntheticPropertyName(input.name);
+        this.updateInstruction(input.sourceSpan, R3.elementProperty, () => {
+          return [
+            o.literal(elementIndex), o.literal(bindingName),
+            (hasValue ? this.convertPropertyBinding(implicit, value) : emptyValueBindInstruction)
+          ];
+        });
       } else if (instruction) {
         const value = input.value.visit(this._valueConverter);
         if (value !== undefined) {
@@ -775,7 +779,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const attrsExprs: o.Expression[] = [];
     template.attributes.forEach(
         (a: t.TextAttribute) => { attrsExprs.push(asLiteral(a.name), asLiteral(a.value)); });
-    attrsExprs.push(...this.prepareSyntheticAndSelectOnlyAttrs(template.inputs, template.outputs));
+    attrsExprs.push(...this.prepareSelectOnlyAttrs(template.inputs, template.outputs));
     parameters.push(this.toAttrsParam(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -969,7 +973,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return originalSlots;
   }
 
-  private allocateBindingSlots(value: AST) {
+  private allocateBindingSlots(value: AST|null) {
     this._bindingSlots += value instanceof Interpolation ? value.expressions.length : 1;
   }
 
@@ -1018,21 +1022,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    *   STYLES, style1, value1, style2, value2,
    *   SELECT_ONLY, name1, name2, name2, ...]
    * ```
+   *
+   * Note that this function will fully ignore all synthetic (@foo) attribute values
+   * because those values are intended to always be generated as property instructions.
    */
-  private prepareSyntheticAndSelectOnlyAttrs(
+  private prepareSelectOnlyAttrs(
       inputs: t.BoundAttribute[], outputs: t.BoundEvent[],
       styles?: StylingBuilder): o.Expression[] {
-    const attrExprs: o.Expression[] = [];
-    const nonSyntheticInputs: t.BoundAttribute[] = [];
     const alreadySeen = new Set<string>();
-
-    function isASTWithSource(ast: AST): ast is ASTWithSource {
-      return ast instanceof ASTWithSource;
-    }
-
-    function isLiteralPrimitive(ast: AST): ast is LiteralPrimitive {
-      return ast instanceof LiteralPrimitive;
-    }
+    const attrExprs: o.Expression[] = [];
 
     function addAttrExpr(key: string | number, value?: o.Expression): void {
       if (typeof key === 'string') {
@@ -1048,27 +1046,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     }
 
-    if (inputs.length) {
-      const EMPTY_STRING_EXPR = asLiteral('');
-      inputs.forEach(input => {
-        if (input.type === BindingType.Animation) {
-          // @attributes are for Renderer2 animation @triggers, but this feature
-          // may be supported differently in future versions of angular. However,
-          // @triggers should always just be treated as regular attributes (it's up
-          // to the renderer to detect and use them in a special way).
-          const valueExp = input.value;
-          if (isASTWithSource(valueExp)) {
-            const literal = valueExp.ast;
-            if (isLiteralPrimitive(literal) && literal.value === undefined) {
-              addAttrExpr(prepareSyntheticPropertyName(input.name), EMPTY_STRING_EXPR);
-            }
-          }
-        } else {
-          nonSyntheticInputs.push(input);
-        }
-      });
-    }
-
     // it's important that this occurs before SelectOnly because once `elementStart`
     // comes across the SelectOnly marker then it will continue reading each value as
     // as single property value cell by cell.
@@ -1076,14 +1053,30 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       styles.populateInitialStylingAttrs(attrExprs);
     }
 
-    if (nonSyntheticInputs.length || outputs.length) {
-      addAttrExpr(core.AttributeMarker.SelectOnly);
-      nonSyntheticInputs.forEach((i: t.BoundAttribute) => addAttrExpr(i.name));
-      outputs.forEach((o: t.BoundEvent) => {
-        const name =
-            o.type === ParsedEventType.Animation ? getSyntheticPropertyName(o.name) : o.name;
-        addAttrExpr(name);
-      });
+    if (inputs.length || outputs.length) {
+      const attrsStartIndex = attrExprs.length;
+
+      for (let i = 0; i < inputs.length; i++) {
+        const input = inputs[i];
+        if (input.type !== BindingType.Animation) {
+          addAttrExpr(input.name);
+        }
+      }
+
+      for (let i = 0; i < outputs.length; i++) {
+        const output = outputs[i];
+        if (output.type !== ParsedEventType.Animation) {
+          addAttrExpr(output.name);
+        }
+      }
+
+      // this is a cheap way of adding the marker only after all the input/output
+      // values have been filtered (by not including the animation ones) and added
+      // to the expressions. The marker is important because it tells the runtime
+      // code that this is where attributes without values start...
+      if (attrExprs.length) {
+        attrExprs.splice(attrsStartIndex, 0, o.literal(core.AttributeMarker.SelectOnly));
+      }
     }
 
     return attrExprs;
