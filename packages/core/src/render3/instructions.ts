@@ -2398,8 +2398,8 @@ export function projectionDef(selectors?: CssSelectorList[], textSelectors?: str
         tails[bucketIndex] !.next = componentChild;
       } else {
         pData[bucketIndex] = componentChild;
-        componentChild.next = null;
       }
+      componentChild.next = null;
       tails[bucketIndex] = componentChild;
 
       componentChild = nextNode;
