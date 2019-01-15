@@ -594,7 +594,7 @@ export class TestBedRender3 implements Injector, TestBed {
       this._compilerInjector;
     }
 
-    const providers = [];
+    const providers: StaticProvider[] = [];
     const compilerOptions = this.platform.injector.get(COMPILER_OPTIONS);
     compilerOptions.forEach(opts => {
       if (opts.providers) {
