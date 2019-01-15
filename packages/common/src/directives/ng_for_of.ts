@@ -118,11 +118,6 @@ export class NgForOfContext<T> {
  * `trackBy` takes a function that has two arguments: `index` and `item`.
  * If `trackBy` is given, Angular tracks changes by the return value of the function.
  *
- * ### Example
- *
- * See a [live demo](http://plnkr.co/edit/KVuXxDp0qinGDyo307QW?p=preview) for a more detailed
- * example.
- *
  * @see [Structural Directives](guide/structural-directives)
  * @ngModule CommonModule
  * @publicApi
@@ -233,9 +228,9 @@ export class NgForOf<T> implements DoCheck {
   }
 
   /**
-   * Assert the correct type of the context for the template that `NgForOf` will render.
+   * Asserts the correct type of the context for the template that `NgForOf` will render.
    *
-   * The presence of this method is a signal to the Ivy template type check compiler that the
+   * The presence of this method is a signal to the Ivy template type-check compiler that the
    * `NgForOf` structural directive renders its template with a specific context type.
    */
   static ngTemplateContextGuard<T>(dir: NgForOf<T>, ctx: any): ctx is NgForOfContext<T> {
