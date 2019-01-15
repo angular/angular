@@ -291,14 +291,16 @@ jobs:
           name: Wait for preview and run tests
           command: node aio/scripts/test-preview.js $CI_PULL_REQUEST $CI_COMMIT $CI_AIO_MIN_PWA_SCORE
 
-  # This job exists only for backwards-compatibility with old scripts and tests
-  # that rely on the pre-Bazel dist/packages-dist layout.
-  # It duplicates some work with the job above: we build the bazel packages
-  # twice. Even though we have a remote cache, these jobs will typically run in
-  # parallel so up-to-date outputs will not be available at the time the build
+
+  # The `build-npm-packages` tasks exist for backwards-compatibility with old scripts and
+  # tests that rely on the pre-Bazel `dist/packages-dist` output structure (build.sh).
+  # Having multiple jobs that independently build in this manner duplicates some work; we build
+  # the bazel packages more than once. Even though we have a remote cache, these jobs will
+  # typically run in parallel so up-to-date outputs will not be available at the time the build
   # starts.
-  # No new jobs should depend on this one.
-  build-packages-dist:
+
+  # Build the view engine npm packages. No new jobs should depend on this.
+  build-npm-packages:
     <<: *job_defaults
     resource_class: xlarge
     steps:
@@ -319,6 +321,29 @@ jobs:
           root: dist
           paths:
             - packages-dist
+
+
+  # Build the ivy npm packages.
+  build-ivy-npm-packages:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - *define_env_vars
+      - *setup_circleci_bazel_config
+      - *yarn_install
+      - *setup_bazel_remote_execution
+
+      - run: scripts/build-ivy-npm-packages.sh
+
+      # Save the npm packages from //packages/... for other workflow jobs to read
+      # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
+      - persist_to_workspace:
+          root: dist
+          paths:
             - packages-dist-ivy-aot
 
   # We run the integration tests outside of Bazel for now.
@@ -484,6 +509,21 @@ jobs:
       # the ESM5/ES2015 output. See: https://github.com/angular/angular/issues/27966
       # - run: yarn gulp source-map-test
 
+  # Job to run unit tests from angular/material2. Needs a browser since all
+  # component unit tests assume they're running in the browser environment.
+  material-unit-tests:
+    <<: *job_defaults
+    resource_class: xlarge
+    docker:
+      - image: *browsers_docker_image
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - *define_env_vars
+      - attach_workspace:
+          at: dist
+      - run: ./scripts/ci/run_angular_material_unit_tests.sh
+
 workflows:
   version: 2
   default_workflow:
@@ -491,7 +531,8 @@ workflows:
       - lint
       - test
       - test_ivy_aot
-      - build-packages-dist
+      - build-npm-packages
+      - build-ivy-npm-packages
       - test_aio
       - legacy-unit-tests-local
       - legacy-unit-tests-saucelabs
@@ -500,22 +541,22 @@ workflows:
             - test_aio
       - legacy-e2e-tests:
           requires:
-            - build-packages-dist
+            - build-npm-packages
       - legacy-misc-tests:
           requires:
-            - build-packages-dist
+            - build-npm-packages
       - test_aio_local:
           requires:
-            - build-packages-dist
+            - build-npm-packages
       - test_aio_local_ivy:
           requires:
-            - build-packages-dist
+            - build-npm-packages
       - test_aio_tools:
           requires:
-            - build-packages-dist
+            - build-npm-packages
       - test_docs_examples:
           requires:
-            - build-packages-dist
+            - build-npm-packages
       - aio_preview:
           # Only run on PR builds. (There can be no previews for non-PR builds.)
           filters:
@@ -526,7 +567,7 @@ workflows:
             - aio_preview
       - integration_test:
           requires:
-            - build-packages-dist
+            - build-npm-packages
       - publish_snapshot:
           # Note: no filters on this job because we want it to run for all upstream branches
           # We'd really like to filter out pull requests here, but not yet available:
@@ -541,13 +582,17 @@ workflows:
             - test_aio_local
             - test_aio_local_ivy
             - test_docs_examples
-            # Get the artifacts to publish from the build-packages-dist job
+            # Get the artifacts to publish from the build-npm-packages job
             # since the publishing script expects the legacy outputs layout.
-            - build-packages-dist
+            - build-npm-packages
+            - build-ivy-npm-packages
             - legacy-e2e-tests
             - legacy-misc-tests
             - legacy-unit-tests-local
             - legacy-unit-tests-saucelabs
+      - material-unit-tests:
+          requires:
+            - build-ivy-npm-packages
 
 
   aio_monitoring:
