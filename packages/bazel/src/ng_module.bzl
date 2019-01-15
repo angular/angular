@@ -215,7 +215,7 @@ def _expected_outs(ctx):
     # TODO(alxhub): i18n is only produced by the legacy compiler currently. This should be re-enabled
     # when ngtsc can extract messages
     if is_legacy_ngc:
-        i18n_messages_files = [ctx.new_file(ctx.genfiles_dir, ctx.label.name + "_ngc_messages.xmb")]
+        i18n_messages_files = [ctx.actions.declare_file("_ngc_messages.xmb", sibling = ctx.genfiles_dir)]
     else:
         i18n_messages_files = []
 

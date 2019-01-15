@@ -91,7 +91,7 @@ def _run_tsc(ctx, input, output):
     args.add(input)
     args.add("--outFile", output)
 
-    ctx.action(
+    ctx.actions.run(
         executable = ctx.executable._tsc,
         inputs = [input],
         outputs = [output],
