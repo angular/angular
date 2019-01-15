@@ -32,7 +32,6 @@ import {
   ɵNG_INJECTOR_DEF as NG_INJECTOR_DEF,
   ɵNG_MODULE_DEF as NG_MODULE_DEF,
   ɵNG_PIPE_DEF as NG_PIPE_DEF,
-  ɵNgModuleDef as NgModuleDef,
   ɵNgModuleFactory as R3NgModuleFactory,
   ɵNgModuleType as NgModuleType,
   ɵRender3ComponentFactory as ComponentFactory,
@@ -733,10 +732,6 @@ function flatten<T>(values: any[], mapFn?: (value: T) => any): T[] {
     }
   });
   return out;
-}
-
-function isNgModule<T>(value: Type<T>): value is Type<T>&{ngModuleDef: NgModuleDef<T>} {
-  return (value as{ngModuleDef?: NgModuleDef<T>}).ngModuleDef !== undefined;
 }
 
 class R3TestCompiler implements Compiler {
