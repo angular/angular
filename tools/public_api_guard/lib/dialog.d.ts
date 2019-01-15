@@ -107,6 +107,7 @@ export declare class MatDialogRef<T, R = any> {
     disableClose: boolean | undefined;
     readonly id: string;
     constructor(_overlayRef: OverlayRef, _containerInstance: MatDialogContainer, _location?: Location, id?: string);
+    addPanelClass(classes: string | string[]): this;
     afterClosed(): Observable<R | undefined>;
     afterOpen(): Observable<void>;
     afterOpened(): Observable<void>;
@@ -115,6 +116,7 @@ export declare class MatDialogRef<T, R = any> {
     beforeClosed(): Observable<R | undefined>;
     close(dialogResult?: R): void;
     keydownEvents(): Observable<KeyboardEvent>;
+    removePanelClass(classes: string | string[]): this;
     updatePosition(position?: DialogPosition): this;
     updateSize(width?: string, height?: string): this;
 }
