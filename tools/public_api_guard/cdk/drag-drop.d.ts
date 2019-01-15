@@ -62,11 +62,13 @@ export interface CdkDragExit<T = any, I = T> {
     item: CdkDrag<I>;
 }
 
-export declare class CdkDragHandle {
+export declare class CdkDragHandle implements OnDestroy {
     _parentDrag: {} | undefined;
+    _stateChanges: Subject<CdkDragHandle>;
     disabled: boolean;
     element: ElementRef<HTMLElement>;
     constructor(element: ElementRef<HTMLElement>, parentDrag?: any);
+    ngOnDestroy(): void;
 }
 
 export interface CdkDragMove<T = any> {

@@ -147,10 +147,7 @@ export class DropListRef<T = any> {
    */
   private _previousSwap = {drag: null as DragRef | null, delta: 0};
 
-  /**
-   * Draggable items in the container.
-   * TODO(crisbeto): support arrays.
-   */
+  /** Draggable items in the container. */
   private _draggables: DragRef[];
 
   private _siblings: DropListRef[] = [];

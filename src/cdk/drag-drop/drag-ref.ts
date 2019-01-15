@@ -10,7 +10,7 @@ import {EmbeddedViewRef, ElementRef, NgZone, ViewContainerRef, TemplateRef} from
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Directionality} from '@angular/cdk/bidi';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {coerceBooleanProperty, coerceElement} from '@angular/cdk/coercion';
 import {Subscription, Subject, Observable, Observer} from 'rxjs';
 import {DropListRefInternal as DropListRef} from './drop-list-ref';
 import {DragDropRegistry} from './drag-drop-registry';
@@ -46,23 +46,9 @@ const activeEventListenerOptions = normalizePassiveListenerOptions({passive: fal
  */
 const MOUSE_EVENT_IGNORE_TIME = 800;
 
-/**
- * Template that can be used to create a drag helper element (e.g. a preview or a placeholder).
- */
-interface DragHelperTemplate<T = any> {
-  templateRef: TemplateRef<T>;
-  data: T;
-}
-
-interface DragHandle {
-  element: ElementRef<HTMLElement>;
-  disabled: boolean;
-}
-
 // TODO(crisbeto): add auto-scrolling functionality.
 // TODO(crisbeto): add an API for moving a draggable up/down the
 // list programmatically. Useful for keyboard controls.
-
 
 /**
  * Internal compile-time-only representation of a `DragRef`.
@@ -187,13 +173,16 @@ export class DragRef<T = any> {
   private _boundaryRect?: ClientRect;
 
   /** Element that will be used as a template to create the draggable item's preview. */
-  private _previewTemplate: DragHelperTemplate | null;
+  private _previewTemplate?: {template: TemplateRef<any> | null, context?: any};
 
   /** Template for placeholder element rendered to show where a draggable would be dropped. */
-  private _placeholderTemplate: DragHelperTemplate | null;
+  private _placeholderTemplate?: {template: TemplateRef<any> | null, context?: any};
 
   /** Elements that can be used to drag the draggable item. */
-  private _handles: DragHandle[] = [];
+  private _handles: HTMLElement[] = [];
+
+  /** Registered handles that are currently disabled. */
+  private _disabledHandles = new Set<HTMLElement>();
 
   /** Axis along which dragging is locked. */
   lockAxis: 'x' | 'y';
@@ -292,28 +281,32 @@ export class DragRef<T = any> {
   }
 
   /** Registers the handles that can be used to drag the element. */
-  withHandles(handles: DragHandle[]): this {
-    // TODO(crisbeto): have this accept HTMLElement[] | ElementRef<HTMLElement>[]
-    this._handles = handles;
-    handles.forEach(handle => toggleNativeDragInteractions(handle.element.nativeElement, false));
+  withHandles(handles: (HTMLElement | ElementRef<HTMLElement>)[]): this {
+    this._handles = handles.map(handle => coerceElement(handle));
+    this._handles.forEach(handle => toggleNativeDragInteractions(handle, false));
     this._toggleNativeDragInteractions();
     return this;
   }
 
-  /** Registers the template that should be used for the drag preview. */
-  withPreviewTemplate(template: DragHelperTemplate | null): this {
-    // TODO(crisbeto): have this accept a TemplateRef
-    this._previewTemplate = template;
+  /**
+   * Registers the template that should be used for the drag preview.
+   * @param template Template that from which to stamp out the preview.
+   * @param context Variables to add to the template's context.
+   */
+  withPreviewTemplate(template: TemplateRef<any> | null, context?: any): this {
+    this._previewTemplate = {template, context};
     return this;
   }
 
-  /** Registers the template that should be used for the drag placeholder. */
-  withPlaceholderTemplate(template: DragHelperTemplate | null): this {
-    // TODO(crisbeto): have this accept a TemplateRef
-    this._placeholderTemplate = template;
+  /**
+   * Registers the template that should be used for the drag placeholder.
+   * @param template Template that from which to stamp out the placeholder.
+   * @param context Variables to add to the template's context.
+   */
+  withPlaceholderTemplate(template: TemplateRef<any> | null, context?: any): this {
+    this._placeholderTemplate = {template, context};
     return this;
   }
-
 
   /**
    * Sets an alternate drag root element. The root element is the element that will be moved as
@@ -321,7 +314,7 @@ export class DragRef<T = any> {
    * dragging on an element that you might not have access to.
    */
   withRootElement(rootElement: ElementRef<HTMLElement> | HTMLElement): this {
-    const element = rootElement instanceof ElementRef ? rootElement.nativeElement : rootElement;
+    const element = coerceElement(rootElement);
 
     if (element !== this._rootElement) {
       if (this._rootElement) {
@@ -340,8 +333,7 @@ export class DragRef<T = any> {
    * Element to which the draggable's position will be constrained.
    */
   withBoundaryElement(boundaryElement: ElementRef<HTMLElement> | HTMLElement | null): this {
-    this._boundaryElement = boundaryElement instanceof ElementRef ?
-        boundaryElement.nativeElement : boundaryElement;
+    this._boundaryElement = boundaryElement ? coerceElement(boundaryElement) : null;
     return this;
   }
 
@@ -370,6 +362,7 @@ export class DragRef<T = any> {
     this.dropped.complete();
     this._moveEvents.complete();
     this._handles = [];
+    this._disabledHandles.clear();
     this._boundaryElement = this._rootElement = this._placeholderTemplate =
         this._previewTemplate = this._nextSibling = null!;
   }
@@ -384,6 +377,24 @@ export class DragRef<T = any> {
     this._rootElement.style.transform = '';
     this._activeTransform = {x: 0, y: 0};
     this._passiveTransform = {x: 0, y: 0};
+  }
+
+  /**
+   * Sets a handle as disabled. While a handle is disabled, it'll capture and interrupt dragging.
+   * @param handle Handle element that should be disabled.
+   */
+  disableHandle(handle: HTMLElement) {
+    if (this._handles.indexOf(handle) > -1) {
+      this._disabledHandles.add(handle);
+    }
+  }
+
+  /**
+   * Enables a handle, if it has been disabled.
+   * @param handle Handle element to be enabled.
+   */
+  enableHandle(handle: HTMLElement) {
+    this._disabledHandles.delete(handle);
   }
 
   /** Unsubscribes from the global subscriptions. */
@@ -418,7 +429,6 @@ export class DragRef<T = any> {
     this._placeholder = this._placeholderRef = null!;
   }
 
-
   /** Handler for the `mousedown`/`touchstart` events. */
   private _pointerDown = (event: MouseEvent | TouchEvent) => {
     this.beforeStarted.next();
@@ -426,13 +436,12 @@ export class DragRef<T = any> {
     // Delegate the event based on whether it started from a handle or the element itself.
     if (this._handles.length) {
       const targetHandle = this._handles.find(handle => {
-        const element = handle.element.nativeElement;
         const target = event.target;
-        return !!target && (target === element || element.contains(target as HTMLElement));
+        return !!target && (target === handle || handle.contains(target as HTMLElement));
       });
 
-      if (targetHandle && !targetHandle.disabled && !this.disabled) {
-        this._initializeDragSequence(targetHandle.element.nativeElement, event);
+      if (targetHandle && !this._disabledHandles.has(targetHandle) && !this.disabled) {
+        this._initializeDragSequence(targetHandle, event);
       }
     } else if (!this.disabled) {
       this._initializeDragSequence(this._rootElement, event);
@@ -638,7 +647,8 @@ export class DragRef<T = any> {
 
     // If we have a custom preview template, the element won't be visible anyway so we avoid the
     // extra `getBoundingClientRect` calls and just move the preview next to the cursor.
-    this._pickupPositionInElement = this._previewTemplate ? {x: 0, y: 0} :
+    this._pickupPositionInElement = this._previewTemplate && this._previewTemplate.template ?
+      {x: 0, y: 0} :
       this._getPointerPositionInElement(referenceElement, event);
     const pointerPosition = this._pickupPositionOnPage = this._getPointerPositionOnPage(event);
     this._pointerDirectionDelta = {x: 0, y: 0};
@@ -724,12 +734,12 @@ export class DragRef<T = any> {
    * and will be used as a preview of the element that is being dragged.
    */
   private _createPreviewElement(): HTMLElement {
+    const previewTemplate = this._previewTemplate;
     let preview: HTMLElement;
 
-    if (this._previewTemplate) {
-      const viewRef = this._viewContainerRef.createEmbeddedView(this._previewTemplate.templateRef,
-                                                                this._previewTemplate.data);
-
+    if (previewTemplate && previewTemplate.template) {
+      const viewRef = this._viewContainerRef.createEmbeddedView(previewTemplate.template,
+                                                                previewTemplate.context);
       preview = viewRef.rootNodes[0];
       this._previewRef = viewRef;
       preview.style.transform =
@@ -811,12 +821,13 @@ export class DragRef<T = any> {
 
   /** Creates an element that will be shown instead of the current element while dragging. */
   private _createPlaceholderElement(): HTMLElement {
+    const placeholderTemplate = this._placeholderTemplate;
     let placeholder: HTMLElement;
 
-    if (this._placeholderTemplate) {
+    if (placeholderTemplate && placeholderTemplate.template) {
       this._placeholderRef = this._viewContainerRef.createEmbeddedView(
-        this._placeholderTemplate.templateRef,
-        this._placeholderTemplate.data
+        placeholderTemplate.template,
+        placeholderTemplate.context
       );
       placeholder = this._placeholderRef.rootNodes[0];
     } else {
