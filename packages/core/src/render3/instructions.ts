@@ -348,8 +348,6 @@ export function createEmbeddedViewAndNode<T>(
 export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, context: T) {
   const _isParent = getIsParent();
   const _previousOrParentTNode = getPreviousOrParentTNode();
-  setIsParent(true);
-  setPreviousOrParentTNode(null !);
   let oldView: LView;
   if (viewToRender[FLAGS] & LViewFlags.IsRoot) {
     // This is a root view inside the view tree
