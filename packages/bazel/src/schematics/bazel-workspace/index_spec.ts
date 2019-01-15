@@ -12,7 +12,7 @@ import {clean} from './index';
 
 describe('Bazel-workspace Schematic', () => {
   const schematicRunner =
-      new SchematicTestRunner('@angular/bazel', require.resolve('../collection.json'), );
+      new SchematicTestRunner('@angular/bazel', require.resolve('../collection.json'));
   const defaultOptions = {
     name: 'demo',
   };
@@ -77,6 +77,46 @@ describe('Bazel-workspace Schematic', () => {
       expect(host.files).toContain('/demo-project/WORKSPACE');
       const content = host.readContent('/demo-project/WORKSPACE');
       expect(content).toContain('workspace(name = "demo_project"');
+    });
+  });
+
+  describe('SASS', () => {
+    let host = new UnitTestTree(new HostTree);
+    beforeAll(() => {
+      host.create('/demo/src/app/app.component.scss', '');
+      expect(host.files).toContain('/demo/src/app/app.component.scss');
+      const options = {...defaultOptions};
+      host = schematicRunner.runSchematic('bazel-workspace', options, host);
+      expect(host.files).toContain('/demo/WORKSPACE');
+      expect(host.files).toContain('/demo/src/BUILD.bazel');
+    });
+
+    it('should download rules_sass in WORKSPACE', () => {
+      const content = host.readContent('/demo/WORKSPACE');
+      expect(content).toContain('RULES_SASS_VERSION');
+      expect(content).toContain('io_bazel_rules_sass');
+    });
+
+    it('should load sass_repositories in WORKSPACE', () => {
+      const content = host.readContent('/demo/WORKSPACE');
+      expect(content).toContain(
+          'load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")');
+      expect(content).toContain('sass_repositories()');
+    });
+
+    it('should add sass_binary rules in src/BUILD', () => {
+      const content = host.readContent('/demo/src/BUILD.bazel');
+      expect(content).toContain('load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")');
+      expect(content).toMatch(/sass_binary\((.*\n)+\)/);
+    });
+
+    it('should add SASS targets to assets of ng_module in src/BUILD', () => {
+      const content = host.readContent('/demo/src/BUILD.bazel');
+      expect(content).toContain(`
+    assets = glob([
+      "**/*.css",
+      "**/*.html",
+    ]) + [":style_" + x for x in glob(["**/*.scss"])],`);
     });
   });
 });
