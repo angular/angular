@@ -95,7 +95,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('I AM PROJECTED');
   });
 
-  fixmeIvy('unknown').it('should support multiple content tags', () => {
+  it('should support multiple content tags', () => {
     TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
     TestBed.overrideComponent(MainComp, {
       set: {
@@ -195,7 +195,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
   });
 
-  fixmeIvy('unknown').it('should redistribute when the shadow dom changes', () => {
+  it('should redistribute when the shadow dom changes', () => {
     TestBed.configureTestingModule(
         {declarations: [ConditionalContentComponent, ManualViewportDirective]});
     TestBed.overrideComponent(MainComp, {
@@ -302,7 +302,7 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('SIMPLE()START(A)END');
   });
 
-  fixmeIvy('unknown').it('should support moving ng-content around', () => {
+  it('should support moving ng-content around', () => {
     TestBed.configureTestingModule(
         {declarations: [ConditionalContentComponent, ProjectDirective, ManualViewportDirective]});
     TestBed.overrideComponent(MainComp, {
