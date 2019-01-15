@@ -1971,50 +1971,48 @@ const DEFAULT_COMPONENT_ID = '1';
         expect(players[0].duration).toEqual(5678);
       });
 
-      fixmeIvy(
-          'FW-932: Animation @triggers are not reported to the renderer in Ivy as they are in VE')
-          .it('should not render animations when the object expression value is the same as it was previously',
-              () => {
-                @Component({
-                  selector: 'ani-cmp',
-                  template: `
+      it('should not render animations when the object expression value is the same as it was previously',
+         () => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
             <div [@myAnimation]="{value:exp,params:params}"></div>
           `,
-                  animations: [
-                    trigger(
-                        'myAnimation',
-                        [
-                          transition('* => *', [animate(1234, style({opacity: 0}))]),
-                        ]),
-                  ]
-                })
-                class Cmp {
-                  public exp: any;
-                  public params: any;
-                }
+             animations: [
+               trigger(
+                   'myAnimation',
+                   [
+                     transition('* => *', [animate(1234, style({opacity: 0}))]),
+                   ]),
+             ]
+           })
+           class Cmp {
+             public exp: any;
+             public params: any;
+           }
 
-                TestBed.configureTestingModule({declarations: [Cmp]});
+           TestBed.configureTestingModule({declarations: [Cmp]});
 
-                const engine = TestBed.get(ɵAnimationEngine);
-                const fixture = TestBed.createComponent(Cmp);
-                const cmp = fixture.componentInstance;
+           const engine = TestBed.get(ɵAnimationEngine);
+           const fixture = TestBed.createComponent(Cmp);
+           const cmp = fixture.componentInstance;
 
-                cmp.exp = '1';
-                cmp.params = {};
-                fixture.detectChanges();
-                engine.flush();
-                let players = getLog();
-                expect(players.length).toEqual(1);
-                expect(players[0].duration).toEqual(1234);
-                resetLog();
+           cmp.exp = '1';
+           cmp.params = {};
+           fixture.detectChanges();
+           engine.flush();
+           let players = getLog();
+           expect(players.length).toEqual(1);
+           expect(players[0].duration).toEqual(1234);
+           resetLog();
 
-                cmp.exp = '1';
-                cmp.params = {};
-                fixture.detectChanges();
-                engine.flush();
-                players = getLog();
-                expect(players.length).toEqual(0);
-              });
+           cmp.exp = '1';
+           cmp.params = {};
+           fixture.detectChanges();
+           engine.flush();
+           players = getLog();
+           expect(players.length).toEqual(0);
+         });
 
       it('should update the final state styles when params update even if the expression hasn\'t changed',
          fakeAsync(() => {
