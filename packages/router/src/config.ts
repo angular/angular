@@ -23,7 +23,8 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * `Routes` is an array of route configurations. Each one has the following properties:
  *
  * - `path` is a string that uses the route matcher DSL.
- * - `pathMatch` is a string that specifies the matching strategy.
+ * - `pathMatch` is a string that specifies the matching strategy. Options are `prefix` (default)
+ *   and `full`. See [Matching Strategy](#matching-strategy) below for more information.
  * - `matcher` defines a custom strategy for path matching and supersedes `path` and `pathMatch`.
  * - `component` is a component type.
  * - `redirectTo` is the url fragment which will replace the current matched segment.
