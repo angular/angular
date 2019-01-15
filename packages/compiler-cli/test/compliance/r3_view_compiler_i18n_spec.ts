@@ -580,8 +580,8 @@ describe('i18n support in the view compiler', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
-            $r3$.ɵi18n(1, $MSG_EXTERNAL_4969674997806975147$$APP_SPEC_TS_0$);
-            $r3$.ɵi18nAttributes(2, $_c0$);
+            $r3$.ɵi18nAttributes(1, $_c0$);
+            $r3$.ɵi18n(2, $MSG_EXTERNAL_4969674997806975147$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
           }
         }
