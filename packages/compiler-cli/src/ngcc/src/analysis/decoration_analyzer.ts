@@ -11,7 +11,8 @@ import * as fs from 'fs';
 import * as ts from 'typescript';
 
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader, SelectorScopeRegistry} from '../../../ngtsc/annotations';
-import {TsReferenceResolver} from '../../../ngtsc/imports';
+import {CycleAnalyzer, ImportGraph} from '../../../ngtsc/cycles';
+import {ModuleResolver, TsReferenceResolver} from '../../../ngtsc/imports';
 import {PartialEvaluator} from '../../../ngtsc/partial_evaluator';
 import {CompileResult, DecoratorHandler} from '../../../ngtsc/transform';
 import {DecoratedClass} from '../host/decorated_class';
@@ -65,12 +66,15 @@ export class DecorationAnalyzer {
   resolver = new TsReferenceResolver(this.program, this.typeChecker, this.options, this.host);
   scopeRegistry = new SelectorScopeRegistry(this.typeChecker, this.reflectionHost, this.resolver);
   evaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker, this.resolver);
+  moduleResolver = new ModuleResolver(this.program, this.options, this.host);
+  importGraph = new ImportGraph(this.moduleResolver);
+  cycleAnalyzer = new CycleAnalyzer(this.importGraph);
   handlers: DecoratorHandler<any, any>[] = [
     new BaseDefDecoratorHandler(this.reflectionHost, this.evaluator),
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore, this.resourceManager,
-        this.rootDirs, /* defaultPreserveWhitespaces */ false,
-        /* i18nUseExternalIds */ true),
+        this.rootDirs, /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
+        this.moduleResolver, this.cycleAnalyzer),
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore),
     new InjectableDecoratorHandler(this.reflectionHost, this.isCore),

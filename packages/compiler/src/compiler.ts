@@ -91,6 +91,7 @@ export * from './render3/view/api';
 export {BoundAttribute as TmplAstBoundAttribute, BoundEvent as TmplAstBoundEvent, BoundText as TmplAstBoundText, Content as TmplAstContent, Element as TmplAstElement, Node as TmplAstNode, Reference as TmplAstReference, Template as TmplAstTemplate, Text as TmplAstText, TextAttribute as TmplAstTextAttribute, Variable as TmplAstVariable,} from './render3/r3_ast';
 export * from './render3/view/t2_api';
 export * from './render3/view/t2_binder';
+export {Identifiers as R3Identifiers} from './render3/r3_identifiers';
 export {jitExpression} from './render3/r3_jit';
 export {R3DependencyMetadata, R3FactoryMetadata, R3ResolvedDependencyType} from './render3/r3_factory';
 export {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata} from './render3/r3_module_compiler';

@@ -298,6 +298,13 @@ export function defineComponent<T>(componentDefinition: {
   return def as never;
 }
 
+export function setComponentScope(
+    type: ComponentType<any>, directives: Type<any>[], pipes: Type<any>[]): void {
+  const def = (type.ngComponentDef as ComponentDef<any>);
+  def.directiveDefs = () => directives.map(extractDirectiveDef);
+  def.pipeDefs = () => pipes.map(extractPipeDef);
+}
+
 export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>):
     DirectiveDef<any>|ComponentDef<any> {
   const def = getComponentDef(type) || getDirectiveDef(type);

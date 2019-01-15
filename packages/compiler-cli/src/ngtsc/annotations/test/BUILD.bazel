@@ -12,6 +12,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/annotations",
+        "//packages/compiler-cli/src/ngtsc/cycles",
         "//packages/compiler-cli/src/ngtsc/diagnostics",
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
