@@ -101,6 +101,7 @@ describe('FocusTrap', () => {
       ) as HTMLElement[];
 
       expect(anchors.every(current => current.getAttribute('tabindex') === '0')).toBe(true);
+      expect(anchors.every(current => current.getAttribute('aria-hidden') === 'true')).toBe(true);
 
       fixture.componentInstance._isFocusTrapEnabled = false;
       fixture.detectChanges();
