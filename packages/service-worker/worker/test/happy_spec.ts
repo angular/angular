@@ -9,7 +9,7 @@
 import {processNavigationUrls} from '../../config/src/generator';
 import {CacheDatabase} from '../src/db-cache';
 import {Driver, DriverReadyState} from '../src/driver';
-import {Manifest} from '../src/manifest';
+import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 import {MockCache, clearAllCaches} from '../testing/cache';
 import {MockRequest} from '../testing/fetch';
@@ -64,6 +64,24 @@ const brokenManifest: Manifest = {
   dataGroups: [],
   navigationUrls: processNavigationUrls(''),
   hashTable: tmpHashTableForFs(brokenFs, {'/foo.txt': true}),
+};
+
+// Manifest without navigation urls to test backward compatibility with
+// versions < 6.0.0.
+export interface ManifestV5 {
+  configVersion: number;
+  appData?: {[key: string]: string};
+  index: string;
+  assetGroups?: AssetGroupConfig[];
+  dataGroups?: DataGroupConfig[];
+  hashTable: {[url: string]: string};
+}
+
+// To simulate versions < 6.0.0
+const manifestOld: ManifestV5 = {
+  configVersion: 1,
+  index: '/foo.txt',
+  hashTable: tmpHashTableForFs(dist),
 };
 
 const manifest: Manifest = {
@@ -988,6 +1006,28 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         expect(await requestFoo('default', 'no-cors')).toBe('this is foo');
         expect(await requestFoo('only-if-cached', 'same-origin')).toBe('this is foo');
         expect(await requestFoo('only-if-cached', 'no-cors')).toBeNull();
+      });
+
+      describe('Backwards compatibility with v5', () => {
+        beforeEach(() => {
+          const serverV5 = new MockServerStateBuilder()
+                               .withStaticFiles(dist)
+                               .withManifest(<Manifest>manifestOld)
+                               .build();
+
+          scope = new SwTestHarnessBuilder().withServerState(serverV5).build();
+          driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+        });
+
+        // Test this bug: https://github.com/angular/angular/issues/27209
+        async_it(
+            'Fill previous versions of manifests with default navigation urls for backwards compatibility',
+            async() => {
+              expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+              await driver.initialized;
+              scope.updateServerState(serverUpdate);
+              expect(await driver.checkForUpdate()).toEqual(true);
+            });
       });
     });
   });
