@@ -64,6 +64,20 @@ export class WrappedValue {
   static isWrapped(value: any): value is WrappedValue { return value instanceof WrappedValue; }
 }
 
+/**
+ * Represents a basic change from a previous to a new value.
+ *
+ * @publicApi
+ */
+export class SimpleChange {
+  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
+
+  /**
+   * Check whether the new value is the first value assigned.
+   */
+  isFirstChange(): boolean { return this.firstChange; }
+}
+
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;
   return Array.isArray(obj) ||

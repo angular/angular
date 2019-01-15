@@ -144,6 +144,9 @@
     "name": "NgModuleRef"
   },
   {
+    "name": "NgOnChangesFeature"
+  },
+  {
     "name": "NodeInjector"
   },
   {
@@ -151,9 +154,6 @@
   },
   {
     "name": "ObjectUnsubscribedErrorImpl"
-  },
-  {
-    "name": "OnChangesDirectiveWrapper"
   },
   {
     "name": "Optional"
@@ -166,6 +166,9 @@
   },
   {
     "name": "PARENT_INJECTOR"
+  },
+  {
+    "name": "PRIVATE_PREFIX"
   },
   {
     "name": "QUERIES"
@@ -903,9 +906,6 @@
     "name": "isDirty"
   },
   {
-    "name": "isExactInstanceOf"
-  },
-  {
     "name": "isFactory"
   },
   {
@@ -922,9 +922,6 @@
   },
   {
     "name": "isNodeMatchingSelectorList"
-  },
-  {
-    "name": "isOnChangesDirectiveWrapper"
   },
   {
     "name": "isPositive"
@@ -1008,6 +1005,9 @@
     "name": "noSideEffects"
   },
   {
+    "name": "onChangesWrapper"
+  },
+  {
     "name": "pointers"
   },
   {
@@ -1036,12 +1036,6 @@
   },
   {
     "name": "readPatchedLView"
-  },
-  {
-    "name": "recordChange"
-  },
-  {
-    "name": "recordChangeAndUpdateProperty"
   },
   {
     "name": "reference"
@@ -1219,9 +1213,6 @@
   },
   {
     "name": "trackByIdentity"
-  },
-  {
-    "name": "unwrapOnChangesDirectiveWrapper"
   },
   {
     "name": "updateClassProp"

@@ -75,6 +75,17 @@ export interface R3DirectiveMetadata {
   };
 
   /**
+   * Information about usage of specific lifecycle events which require special treatment in the
+   * code generator.
+   */
+  lifecycle: {
+    /**
+     * Whether the directive uses NgOnChanges.
+     */
+    usesOnChanges: boolean;
+  };
+
+  /**
    * A mapping of input field names to the property names.
    */
   inputs: {[field: string]: string | [string, string]};
