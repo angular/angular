@@ -430,7 +430,7 @@ describe('MatDatepicker', () => {
         }))
       );
 
-      it('should close the datpeicker using ALT + UP_ARROW', fakeAsync(() => {
+      it('should close the datepicker using ALT + UP_ARROW', fakeAsync(() => {
         testComponent.datepicker.open();
         fixture.detectChanges();
         flush();
