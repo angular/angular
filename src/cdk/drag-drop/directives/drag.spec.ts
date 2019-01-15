@@ -844,6 +844,30 @@ describe('CdkDrag', () => {
       expect(dropZone.element.nativeElement.classList).not.toContain('cdk-drop-dragging');
     }));
 
+    it('should toggle the drop dragging classes if there is nothing to trigger change detection',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZoneWithoutEvents);
+        fixture.detectChanges();
+        const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+        const dropZone = fixture.componentInstance.dropInstance;
+
+        expect(dropZone.element.nativeElement.classList).not.toContain('cdk-drop-list-dragging');
+        expect(item.classList).not.toContain('cdk-drag-dragging');
+
+        startDraggingViaMouse(fixture, item);
+
+        expect(dropZone.element.nativeElement.classList).toContain('cdk-drop-list-dragging');
+        expect(item.classList).toContain('cdk-drag-dragging');
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(dropZone.element.nativeElement.classList).not.toContain('cdk-drop-dragging');
+        expect(item.classList).not.toContain('cdk-drag-dragging');
+      }));
+
     it('should toggle a class when the user starts dragging an item with OnPush change detection',
       fakeAsync(() => {
         const fixture = createComponent(DraggableInOnPushDropZone);
@@ -3115,6 +3139,27 @@ class NestedDropListGroups {
 class DraggableOnNgContainer {}
 
 
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <div cdkDropList style="width: 100px; background: pink;">
+      <div *ngFor="let item of items"
+        cdkDrag
+        [style.height.px]="item.height"
+        style="width: 100%; background: red;">{{item.value}}</div>
+    </div>
+  `
+})
+class DraggableInDropZoneWithoutEvents {
+  @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
+  @ViewChild(CdkDropList) dropInstance: CdkDropList;
+  items = [
+    {value: 'Zero', height: ITEM_HEIGHT},
+    {value: 'One', height: ITEM_HEIGHT},
+    {value: 'Two', height: ITEM_HEIGHT},
+    {value: 'Three', height: ITEM_HEIGHT}
+  ];
+}
 
 /**
  * Component that passes through whatever content is projected into it.
