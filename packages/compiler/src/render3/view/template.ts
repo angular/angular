@@ -619,10 +619,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         this.creationInstruction(element.sourceSpan, R3.disableBindings);
       }
 
-      if (isI18nRootElement) {
-        this.i18nStart(element.sourceSpan, element.i18n !, createSelfClosingI18nInstruction);
-      }
-
       // process i18n element attributes
       if (i18nAttrs.length) {
         let hasBindings: boolean = false;
@@ -654,6 +650,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             this.updateInstruction(element.sourceSpan, R3.i18nApply, [index]);
           }
         }
+      }
+
+      // Note: it's important to keep i18n/i18nStart instructions after i18nAttributes ones,
+      // to make sure i18nAttributes instruction targets current element at runtime.
+      if (isI18nRootElement) {
+        this.i18nStart(element.sourceSpan, element.i18n !, createSelfClosingI18nInstruction);
       }
 
       // The style bindings code is placed into two distinct blocks within the template function AOT
