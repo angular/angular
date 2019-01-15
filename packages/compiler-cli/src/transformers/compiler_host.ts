@@ -19,6 +19,7 @@ import {DTS, GENERATED_FILES, isInRootDir, relativeToRootDirs} from './util';
 
 const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-|\.)+|(@(\w|-|\.)+\/(\w|-|\.)+))/;
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
+const CSS_PREPROCESSOR_EXT = /(\.scss|\.less|\.styl)$/;
 
 export function createCompilerHost(
     {options, tsHost = ts.createCompilerHost(options, true)}:
@@ -270,8 +271,15 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     } else if (firstChar !== '.') {
       resourceName = `./${resourceName}`;
     }
-    const filePathWithNgResource =
+    let filePathWithNgResource =
         this.moduleNameToFileName(addNgResourceSuffix(resourceName), containingFile);
+    // If the user specified styleUrl pointing to *.scss, but the Sass compiler was run before
+    // Angular, then the resource may have been generated as *.css. Simply try the resolution again.
+    if (!filePathWithNgResource && CSS_PREPROCESSOR_EXT.test(resourceName)) {
+      const fallbackResourceName = resourceName.replace(CSS_PREPROCESSOR_EXT, '.css');
+      filePathWithNgResource =
+          this.moduleNameToFileName(addNgResourceSuffix(fallbackResourceName), containingFile);
+    }
     const result = filePathWithNgResource ? stripNgResourceSuffix(filePathWithNgResource) : null;
     // Used under Bazel to report more specific error with remediation advice
     if (!result && (this.context as any).reportMissingResource) {
