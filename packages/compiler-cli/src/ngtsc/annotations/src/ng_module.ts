@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, LiteralArrayExpr, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
+import {Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -25,6 +25,7 @@ export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
   ngInjectorDef: R3InjectorMetadata;
   metadataStmt: Statement|null;
+  declarations: Reference<ts.Declaration>[];
 }
 
 /**
@@ -152,6 +153,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       analysis: {
         ngModuleDef,
         ngInjectorDef,
+        declarations,
         metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
       },
       factorySymbolName: node.name !== undefined ? node.name.text : undefined,
@@ -164,6 +166,28 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const ngModuleStatements = ngModuleDef.additionalStatements;
     if (analysis.metadataStmt !== null) {
       ngModuleStatements.push(analysis.metadataStmt);
+    }
+    const context = node.getSourceFile();
+    for (const decl of analysis.declarations) {
+      if (this.scopeRegistry.requiresRemoteScope(decl.node)) {
+        const scope = this.scopeRegistry.lookupCompilationScopeAsRefs(decl.node);
+        if (scope === null) {
+          continue;
+        }
+        const directives: Expression[] = [];
+        const pipes: Expression[] = [];
+        scope.directives.forEach(
+            (directive, _) => { directives.push(directive.ref.toExpression(context) !); });
+        scope.pipes.forEach(pipe => pipes.push(pipe.toExpression(context) !));
+        const directiveArray = new LiteralArrayExpr(directives);
+        const pipesArray = new LiteralArrayExpr(pipes);
+        const declExpr = decl.toExpression(context) !;
+        const setComponentScope = new ExternalExpr(R3Identifiers.setComponentScope);
+        const callExpr =
+            new InvokeFunctionExpr(setComponentScope, [declExpr, directiveArray, pipesArray]);
+
+        ngModuleStatements.push(callExpr.toStmt());
+      }
     }
     return [
       {

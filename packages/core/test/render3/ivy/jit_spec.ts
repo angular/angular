@@ -7,7 +7,7 @@
  */
 import 'reflect-metadata';
 
-import {ElementRef, QueryList} from '@angular/core';
+import {ElementRef, QueryList, ɵsetComponentScope as setComponentScope} from '@angular/core';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {inject, setCurrentInjector} from '@angular/core/src/di/injector_compatibility';
 import {InjectorDef, defineInjectable} from '@angular/core/src/di/interface/defs';

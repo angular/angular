@@ -25,6 +25,7 @@ export {
   injectAttribute as ɵinjectAttribute,
   getFactoryOf as ɵgetFactoryOf,
   getInheritedFactory as ɵgetInheritedFactory,
+  setComponentScope as ɵsetComponentScope,
   templateRefExtractor as ɵtemplateRefExtractor,
   ProvidersFeature as ɵProvidersFeature,
   InheritDefinitionFeature as ɵInheritDefinitionFeature,

@@ -163,6 +163,14 @@ export class IvyCompilation {
     }
   }
 
+  resolve(): void {
+    this.analysis.forEach((op, decl) => {
+      if (op.adapter.resolve !== undefined) {
+        op.adapter.resolve(decl, op.analysis);
+      }
+    });
+  }
+
   typeCheck(context: TypeCheckContext): void {
     this.typeCheckMap.forEach((handler, node) => {
       if (handler.typeCheck !== undefined) {
