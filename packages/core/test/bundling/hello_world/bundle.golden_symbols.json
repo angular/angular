@@ -81,19 +81,22 @@
     "name": "NO_PARENT_INJECTOR"
   },
   {
+    "name": "NgOnChangesFeature"
+  },
+  {
     "name": "NodeInjectorFactory"
   },
   {
     "name": "ObjectUnsubscribedErrorImpl"
   },
   {
-    "name": "OnChangesDirectiveWrapper"
-  },
-  {
     "name": "PARENT"
   },
   {
     "name": "PARENT_INJECTOR"
+  },
+  {
+    "name": "PRIVATE_PREFIX"
   },
   {
     "name": "RENDERER"
@@ -103,6 +106,9 @@
   },
   {
     "name": "SANITIZER"
+  },
+  {
+    "name": "SimpleChange"
   },
   {
     "name": "TVIEW"
@@ -327,13 +333,7 @@
     "name": "isCreationMode"
   },
   {
-    "name": "isExactInstanceOf"
-  },
-  {
     "name": "isFactory"
-  },
-  {
-    "name": "isOnChangesDirectiveWrapper"
   },
   {
     "name": "isProceduralRenderer"
@@ -367,6 +367,9 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "onChangesWrapper"
   },
   {
     "name": "postProcessBaseDirective"
@@ -445,9 +448,6 @@
   },
   {
     "name": "tickRootContext"
-  },
-  {
-    "name": "unwrapOnChangesDirectiveWrapper"
   },
   {
     "name": "updateViewQuery"

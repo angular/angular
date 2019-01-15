@@ -11,7 +11,6 @@ import {getDebugContext} from '@angular/core/src/errors';
 import {BindingFlags, NodeFlags, Services, ViewData, ViewDefinition, asElementData, elementDef} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {fixmeIvy} from '@angular/private/testing';
 
 import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDynamic, compViewDef, createAndGetRootNodes, isBrowser, recordNodeToRemove} from './helper';
 
@@ -185,7 +184,6 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
           return result;
         }
 
-
         it('should listen to DOM events', () => {
           const handleEventSpy = jasmine.createSpy('handleEvent');
           const removeListenerSpy =
@@ -253,7 +251,6 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
           expect(removeListenerSpy).toHaveBeenCalled();
         });
 
-
         it('should preventDefault only if the handler returns false', () => {
           let eventHandlerResult: any;
           let preventDefaultSpy: jasmine.Spy = undefined !;
@@ -281,7 +278,6 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
           rootNodes[0].click();
           expect(preventDefaultSpy).toHaveBeenCalled();
         });
-
 
         it('should report debug info on event errors', () => {
           const handleErrorSpy = spyOn(TestBed.get(ErrorHandler), 'handleError');

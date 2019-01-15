@@ -534,7 +534,7 @@ export interface RootContext {
  * Even indices: Directive index
  * Odd indices: Hook function
  */
-export type HookData = (number | (() => void) | ((changes: SimpleChanges) => void))[];
+export type HookData = (number | (() => void))[];
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.

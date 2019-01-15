@@ -36,6 +36,9 @@
     "name": "NULL_INJECTOR"
   },
   {
+    "name": "NgOnChangesFeature"
+  },
+  {
     "name": "NullInjector"
   },
   {
@@ -48,6 +51,9 @@
     "name": "PARAMETERS"
   },
   {
+    "name": "PRIVATE_PREFIX"
+  },
+  {
     "name": "R3Injector"
   },
   {
@@ -55,6 +61,9 @@
   },
   {
     "name": "Self"
+  },
+  {
+    "name": "SimpleChange"
   },
   {
     "name": "SkipSelf"
@@ -154,6 +163,9 @@
   },
   {
     "name": "makeRecord"
+  },
+  {
+    "name": "onChangesWrapper"
   },
   {
     "name": "providerToFactory"
