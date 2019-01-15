@@ -82,44 +82,75 @@ Begin with the first form of data binding&mdash;interpolation&mdash;to see how m
 {@a interpolation}
 {@a 문자열-바인딩}
 
+<!--
 ## Interpolation and Template Expressions
+-->
+## 문자열 바인딩과 템플릿 표현식
 
+<!--
 Interpolation allows you to incorporate calculated strings into the text
 between HTML element tags and within attribute assignments. Template
 expressions are what you use to calculate those strings.
 
 The interpolation <live-example></live-example> demonstrates all of
 the syntax and code snippets described in this section.
+-->
+문자열 바인딩(Interpolation)을 사용하면 HTML 엘리먼트 태그나 어트리뷰트에 지정하는 문자열을 조합할 수 있습니다.
+그리고 이 문자열은 템플릿 표현식으로도 조합할 수 있습니다.
 
+이 섹션에서 다루는 예제는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+
+<!--
 ### Interpolation `{{...}}`
+-->
+### 문자열 바인딩 `{{...}}`
 
+<!--
 Interpolation refers to embedding expressions into marked up text.
 By default, interpolation uses as its delimiter the double curly braces, `{{` and `}}`.
 
 In the following snippet, `{{ currentCustomer }}` is an example of interpolation.
+-->
+문자열 바인딩은 문자열 안에 포함된 표현식을 의미합니다.
+기본적으로 문자열 바인딩 문법은 이중 중괄호 `{{`와 `}}`를 사용합니다.
+
+그래서 아래 코드에서 `{{ currentCustomer }}` 라고 정의된 부분이 문자열 바인딩이 사용된 코드입니다.
 
 <code-example path="interpolation/src/app/app.component.html" region="interpolation-example1" header="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The text between the braces is often the name of a component
 property. Angular replaces that name with the
 string value of the corresponding component property.
+-->
+이중 중괄호 안에는 보통 컴포넌트 프로퍼티 이름을 사용합니다.
+그러면 Angular가 템플릿을 파싱하면서 이 프로퍼티 이름을 해당 프로퍼티에 할당된 문자열 값으로 치환합니다.
 
 <code-example path="interpolation/src/app/app.component.html" region="component-property" header="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 In the example above, Angular evaluates the `title` and `itemImageUrl` properties
 and fills in the blanks, first displaying some title text and then an image.
 
 More generally, the text between the braces is a **template expression**
 that Angular first **evaluates** and then **converts to a string**.
 The following interpolation illustrates the point by adding two numbers:
+-->
+위 예제에서 Angular는 `title`과 `itemImageUrl` 프로퍼티의 값으로 템플릿의 내용을 치환하기 때문에 화면에는 애플리케이션의 이름과 이미지가 표시됩니다.
+
+좀 더 일반적으로 이야기하면, 이중 중괄호 안에 잇는 텍스트는 **템플릿 표현식(template expression)**인데, 이 표현식은 Angular가 가장 먼저 **평가(evaluate)**해서 **문자열로 변환합니다**.
+그래서 다음과 같이 숫자 2개를 더하는 연산도 처리할 수 있습니다:
 
 <code-example path="interpolation/src/app/app.component.html" region="convert-string" header="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 The expression can invoke methods of the host component such as `getVal()` in
 the following example:
+-->
+템플릿 표현식에서는 메소드를 실행할 수도 있습니다. 아래 예제에 사용된 `getVal()`은 호스트 컴포넌트에 선언된 메소드입니다:
 
 <code-example path="interpolation/src/app/app.component.html" region="invoke-method" header="src/app/app.component.html" linenums="false">
 </code-example>
@@ -128,13 +159,14 @@ the following example:
 Angular evaluates all expressions in double curly braces,
 converts the expression results to strings, and links them with neighboring literal strings. Finally,
 it assigns this composite interpolated result to an **element or directive property**.
--->
-이중 중괄호 안에 있는 템플릿 표현식은 Angular 프레임워크가 평가하고 문자열로 변환해서 같은 엘리먼트에 있는 문자열과 연결합니다. 이렇게 템플릿에 삽입된 문자열은 **엘리먼트나 디렉티브의 속성값**으로 사용됩니다.
 
 You appear to be inserting the result between element tags and assigning it to attributes.
+-->
+이중 중괄호 안에 있는 템플릿 표현식은 Angular 프레임워크가 평가하고 문자열로 변환해서 같은 엘리먼트에 있는 문자열과 연결합니다. 이렇게 템플릿에 삽입된 문자열은 **엘리먼트나 디렉티브의 프로퍼티**로 사용됩니다.
 
 <div class="alert is-helpful">
 
+<!--
 However, interpolation is a special syntax that Angular converts into a
 property binding.
 
@@ -142,6 +174,10 @@ If you'd like to use something other than `{{` and `}}`, you can
 configure the interpolation delimiter via the
 [interpolation](api/core/Component#interpolation)
 option in the `Component` metadata.
+-->
+사실 문자열 바인딩은 프로퍼티 바인딩을 사용하는 문법 중 하나입니다.
+
+`Component` 메타데이터에 [interpolation](api/core/Component#interpolation) 옵션을 지정하면 `{{`와 `}}` 대신 다른 표기법을 사용할 수 있습니다.
 
 </div>
 
@@ -150,6 +186,7 @@ option in the `Component` metadata.
 -->
 ### 템플릿 표현식
 
+<!--
 A template **expression** produces a value and appears within the double
 curly braces, `{{ }}`.
 Angular executes the expression and assigns it to a property of a binding target;
@@ -158,7 +195,14 @@ the target could be an HTML element, a component, or a directive.
 The interpolation braces in `{{1 + 1}}` surround the template expression `1 + 1`.
 In the property binding,
 a template expression appears in quotes to the right of the&nbsp;`=` symbol as in `[property]="expression"`.
+-->
+템플릿 **표현식**은 이중 중괄호를 사용해서 `{{ }}`와 같이 사용하며, 표현식이 실행된 결과를 반환합니다.
+Angular는 이 표현식을 실행하고 HTML 엘리먼트나 컴포넌트, 디렉티브 등 바인딩 대상이 되는 프로퍼티에 연결합니다.
 
+그리고 문자열 바인딩은 템플릿 표현식을 감싼 형태입니다. 그래서 `1 + 1` 이라는 템플릿 표현식을 문자열 바인딩하면 `{{1 + 1}}`과 같은 형태가 됩니다.
+프로퍼티 바인딩과 함께 사용한다면 큰따옴표(`"`)와 등호(`=`)를 사용해서 `[프로퍼티]="표현식"`과 같이 사용합니다.
+
+<!--
 In terms of syntax, template expressions are similar to JavaScript.
 Many JavaScript expressions are legal template expressions, with a few exceptions.
 
@@ -170,27 +214,56 @@ including:
 * Chaining expressions with <code>;</code> or <code>,</code>
 * The increment and decrement operators `++` and `--`
 * Some of the ES2015+ operators
+-->
+문법으로만 보면 템플릿 표현식은 JavaScript 문법과 비슷합니다.
+그래서 JavaScript 문법 대부분은 템플릿 표현식에도 사용할 수 있지만 예외가 몇가지 있습니다.
 
+다음 JavaScript 표현식은 템플릿 표현식에 사용할 수 없습니다:
+
+* 값을 할당하는 표현 (`=`, `+=`, `-=`, `...`)
+* `new`, `typeof`, `instanceof` 연산자
+* <code>;</code>나 <code>,</code>로 체이닝하는 표현식
+* 증감연산자 `++`, `--`
+* ES2015 이후에 도입된 연산자 중 일부
+
+<!--
 Other notable differences from JavaScript syntax include:
 
 * No support for the bitwise operators such as `|` and `&`
 * New template expression operators, such as `|`, `?.` and `!`
+-->
+그리고 이런 점도 JavaScript 문법과 다릅니다:
+
+* 비트 연산자 `|`와 `&`는 사용할 수 없습니다.
+* 템플릿 표현식에서만 사용하는 연산자도 존재합니다: `|`, `?.`, `!`
+
 <!-- link to: guide/template-syntax#expression-operators -->
 
+<!--
 ### Expression context
+-->
+### 표현식의 컨텍스트
 
+<!--
 The *expression context* is typically the _component_ instance.
 In the following snippets, the `recommended` within double curly braces and the
 `itemImageUrl2` in quotes refer to properties of the `AppComponent`.
+-->
+*템플릿 표현식의 컨텍스트*는 일반적으로 _컴포넌트_ 인스턴스의 범위와 같습니다.
+그래서 아래 예제에서 이중 중괄호 안에 사용된 `recommended`와 `itemImageUrl2`는 모두 `AppComponent`에 선언된 프로퍼티를 가리킵니다.
 
 <code-example path="interpolation/src/app/app.component.html" region="component-context" header="src/app/app.component.html" linenums="false">
 </code-example>
 
+<!--
 An expression may also refer to properties of the _template's_ context
 such as a template input variable,
-<!-- link to built-in-directives#template-input-variables -->
+&lt;!-- link to built-in-directives#template-input-variables --&gt;
 `let customer`, or a template reference variable, `#customerInput`.
-<!-- link to guide/template-ref-variables -->
+&lt;!-- link to guide/template-ref-variables --&gt;
+-->
+템플릿 표현식에서는 _템플릿 안에_ 선언된 템플릿 입력 변수도 참조할 수 있습니다.
+그래서 아래 코드에 선언된 `let customer`나 `#customerInput`도 템플릿 표현식에 사용할 수 있습니다.
 
 <code-example path="interpolation/src/app/app.component.html" region="template-input-variable" header="src/app/app.component.html (template input variable)" linenums="false">
 </code-example>
@@ -209,11 +282,16 @@ Angular 템플릿의 컨텍스트는 _템플릿 변수_와 디렉티브의 _cont
 이 중 참조하는 항목의 이름이 동시에 두 군데 존재하면 템플릿 변수의 우선순위가 가장 높습니다.
 그 다음 우선순위는 디렉티브의 _context_ 객체이며, 컴포넌트 멤버의 우선순위가 가장 낮습니다.
 
+<!--
 The previous example presents such a name collision. The component has a `customer`
 property and the `*ngFor` defines a `customer` template variable.
+-->
+위에서 살펴본 예제에도 이름이 겹치는 상황이 있습니다.
+템플릿에 사용된 변수 `customer`는 컴포넌트 프로퍼티로도 존재하고 `*ngFor` 안에도 존재합니다.
 
 <div class="alert is-helpful">
 
+<!--
 The `customer` in `{{customer.name}}`
 refers to the template input variable, not the component's property.
 
@@ -222,22 +300,44 @@ the global namespace, except `undefined`. They can't refer to
 `window` or `document`. Additionally, they
 can't call `console.log()` or `Math.max()` and they are restricted to referencing
 members of the expression context.
+-->
+`{{customer.name}}`에 사용된 `customer`는 컴포넌트 프로퍼티가 아니라 템플릿 입력 변수를 가리킵니다.
+
+그리고 템플릿 표현식은 전역 범위에 있는 객체는 사용할 수 없으며 `undefined`만 허용됩니다.
+그래서 `window`나 `document`도 참조할 수 없습니다.
+마찬가지로, `console.log()`나 `Math.max()`와 같은 템플릿 표현식도 사용할 수 없습니다.
 
 </div>
 
+<!--
 ### Expression guidelines
+-->
+### 템플릿 표현식 가이드라인
 
+<!--
 When using template expressions follow these guidelines:
 
 * [No visible side effects](guide/template-syntax#no-visible-side-effects)
 * [Quick execution](guide/template-syntax#quick-execution)
 * [Simplicity](guide/template-syntax#simplicity)
+-->
+템플릿 표현식은 다음 가이드라인을 준수하며 사용하는 것을 권장합니다:
 
+* [외부 영향 최소화](guide/template-syntax#외부-영향-최소화)
+* [실행시간은 최대한 짧게](guide/template-syntax#실행시간은-최대한-짧게)
+* [로직은 최대한 단순하게](guide/template-syntax#로직은-최대한-단순하게)
 
+<!--
 ### No visible side effects
+-->
+### 외부 영향 최소화
 
+<!--
 A template expression should not change any application state other than the value of the
 target property.
+-->
+템플릿 표현식은 대상 프로퍼티의 값만 변경하는 방식으로 작성하는 것이 좋습니다.
+여러 프로퍼티나 애플리케이션의 상태를 변경하는 로직은 작성하지 않는 것을 권장합니다.
 
 <!--
 This rule is essential to Angular's "unidirectional data flow" policy.
@@ -245,17 +345,27 @@ You should never worry that reading a component value might change some other di
 The view should be stable throughout a single rendering pass.
 -->
 이 규칙은 Angular가 제안하는 "단방향 데이터 흐름"의 관점에서도 아주 중요합니다.
-다른 프로퍼티의 영향을 최소화하면 컴포넌트 프로퍼티를 참조하는 과정에서 다른 컴포넌트 프로퍼티가 영향을 줄 걱정은 할 필요가 없으며, 뷰는 렌더링 단계에서 한 번만 갱신됩니다.
+다른 프로퍼티의 영향을 최소화하면 컴포넌트 프로퍼티를 참조하는 과정에 다른 프로퍼티의 영향을 걱정할 필요가 없으며, 뷰는 렌더링 단계에서 한 번만 갱신됩니다.
 
+<!--
 An [idempotent](https://en.wikipedia.org/wiki/Idempotence) expression is ideal because
 it is free of side effects and improves Angular's change detection performance.
 
 In Angular terms, an idempotent expression always returns
 *exactly the same thing* until
 one of its dependent values changes.
+-->
+그래서 템플릿 표현식은 사이드 이펙트릉 방지하고 Angular의 변화 감지 성능을 최대화하기 위해 [멱등적 (idempotent)](https://en.wikipedia.org/wiki/Idempotence)인 표현식으로 작성하는 것이 이상적입니다.
 
+Angular에서 이야기하는 멱등적인 표현식이란, 어떤 값을 기준으로 표현식을 실행했을 때 *항상 같은 값을* 반환하는 표현식을 의미합니다.
+
+<!--
 Dependent values should not change during a single turn of the event loop.
 If an idempotent expression returns a string or a number, it returns the same string or number when called twice in a row. If the expression returns an object, including an `array`, it returns the same object *reference* when called twice in a row.
+-->
+그리고 템플릿 표현식에 사용된 값은 이벤트 루프가 한 번 실행되는 동안 여러변 변경되면 안됩니다.
+템플릿 표현식을 멱등적으로 작성해서 어떤 문자열이나 숫자를 반환한다면, 이 템플릿 표현식은 여러번 실행되더라도 항상 같은 값을 반환해야 합니다.
+그리고 템플릿 표현식이 객체나 배열을 반환한다면, 이 템플릿 표현식은 여러번 실행되더라도 항상 같은 객체를 참조해야 합니다.
 
 <div class="alert is-helpful">
 
@@ -264,13 +374,17 @@ There is one exception to this behavior that applies to `*ngFor`. `*ngFor` has `
 
 For more information, see the [\*ngFor with `trackBy`](guide/template-syntax#ngfor-with-trackby) section of this guide.
 -->
-There is one exception to this behavior that applies to `*ngFor`. `*ngFor` has `trackBy` functionality that can deal with referential inequality of objects that when iterating over them.
+`*ngFor`의 동작을 제어할 때는 이 규칙을 예외로 처리할 수 있습니다.
+`*ngFor`를 사용하면서 `trackBy` 기능을 사용하면 이전과 다른 객체를 참조하더라도 같은 객체를 참조하는 것으로 간주할 수 있습니다.
 
-For more information, see the [\*ngFor with `trackBy`](guide/template-syntax#trackBy) section of this guide.
+더 자세한 내용을 확인하려면 이 문서의 [`trackBy`와 함께 사용하기](guide/template-syntax#trackBy) 섹션을 참고하세요.
 
 </div>
 
+<!--
 ### Quick execution
+-->
+### 실행시간은 최대한 짧게
 
 <!--
 Angular executes template expressions after every change detection cycle.
@@ -287,14 +401,24 @@ Consider caching values when their computation is expensive.
 따라서 템플릿 표현식은 최대한 빠르게 완료되어야 하며, 실행 시간이 오래 걸린다면 사용자가 불편을 느낄 것입니다.
 연산이 많이 필요한 작업이라면 결과값을 캐싱하는 방법도 고려해 보세요.
 
+<!--
 ### Simplicity
+-->
+### 로직은 최대한 단순하게
 
+<!--
 Although it's possible to write complex template expressions, it's a better
 practice to avoid them.
 
 A property name or method call should be the norm, but an occasional Boolean negation, `!`, is OK.
 Otherwise, confine application and business logic to the component,
 where it is easier to develop and test.
+-->
+템플릿 표현식에는 복잡한 로직도 자유롭게 작성할 수 있지만, 이런 방식은 피하는 것이 좋습니다.
+
+프로퍼티를 참조하거나 메소드를 실행하는 정도가 좋고, `!`과 같은 불리언 부정 표현도 가끔 사용한다면 괜찮습니다.
+그밖의 로직은 컴포넌트에 작성하고 템플릿에서는 실행만 하는 것이 좋습니다.
+이렇게 작성하면 개발도 간단해지고 테스트하기도 쉽습니다.
 
 <!-- end of Interpolation doc -->
 

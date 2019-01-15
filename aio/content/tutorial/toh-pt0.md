@@ -112,7 +112,10 @@ The initial app project contains a simple Welcome app, ready to run.
 -->
 ## 애플리케이션 실행하기
 
+<!--
 Go to the workspace directory and launch the application.
+-->
+워크스페이스 폴더로 이동해서 애플리케이션을 실행합니다.
 
 <code-example language="sh" class="code-shell">
   cd angular-tour-of-heroes
