@@ -117,19 +117,18 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       }
     });
 
-    fixmeIvy('FW-904: i18n attributes placed on i18n root node don\'t work')
-        .it('should work correctly when placed on i18n root node', () => {
-          const title = 'Hello {{ name }}';
-          const content = 'Hello';
-          const template = `
+    it('should work correctly when placed on i18n root node', () => {
+      const title = 'Hello {{ name }}';
+      const content = 'Hello';
+      const template = `
             <div i18n i18n-title="m|d" title="${title}">${content}</div>
           `;
-          const fixture = getFixtureWithOverrides({template});
+      const fixture = getFixtureWithOverrides({template});
 
-          const element = fixture.nativeElement.firstChild;
-          expect(element.title).toBe('Bonjour John');
-          expect(element).toHaveText('Bonjour');
-        });
+      const element = fixture.nativeElement.firstChild;
+      expect(element.title).toBe('Bonjour John');
+      expect(element).toHaveText('Bonjour');
+    });
 
     it('should add i18n attributes on self-closing tags', () => {
       const title = 'Hello {{ name }}';
