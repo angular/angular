@@ -194,7 +194,7 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * A list of optional features to apply.
    *
-   * See: {@link ProvidersFeature}
+   * See: {@link NgOnChangesFeature}, {@link ProvidersFeature}
    */
   features?: ComponentDefFeature[];
 
@@ -256,7 +256,6 @@ export function defineComponent<T>(componentDefinition: {
     inputs: null !,   // assigned in noSideEffects
     outputs: null !,  // assigned in noSideEffects
     exportAs: componentDefinition.exportAs || null,
-    onChanges: typePrototype.ngOnChanges || null,
     onInit: typePrototype.ngOnInit || null,
     doCheck: typePrototype.ngDoCheck || null,
     afterContentInit: typePrototype.ngAfterContentInit || null,
@@ -567,7 +566,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   /**
    * A list of optional features to apply.
    *
-   * See: {@link ProvidersFeature}, {@link InheritDefinitionFeature}
+   * See: {@link NgOnChangesFeature}, {@link ProvidersFeature}, {@link InheritDefinitionFeature}
    */
   features?: DirectiveDefFeature[];
 

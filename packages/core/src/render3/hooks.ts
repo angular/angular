@@ -12,7 +12,6 @@ import {assertEqual} from '../util/assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {FLAGS, HookData, LView, LViewFlags, TView} from './interfaces/view';
-import {OnChangesDirectiveWrapper, unwrapOnChangesDirectiveWrapper} from './onchanges_util';
 
 
 
@@ -35,12 +34,7 @@ export function registerPreOrderHooks(
   ngDevMode &&
       assertEqual(tView.firstTemplatePass, true, 'Should only be called on first template pass');
 
-  const {onChanges, onInit, doCheck} = directiveDef;
-
-  if (onChanges) {
-    (tView.initHooks || (tView.initHooks = [])).push(-directiveIndex, onChanges);
-    (tView.checkHooks || (tView.checkHooks = [])).push(-directiveIndex, onChanges);
-  }
+  const {onInit, doCheck} = directiveDef;
 
   if (onInit) {
     (tView.initHooks || (tView.initHooks = [])).push(directiveIndex, onInit);
@@ -148,31 +142,13 @@ export function executeHooks(
 
 /**
  * Calls lifecycle hooks with their contexts, skipping init hooks if it's not
- * the first LView pass, and skipping onChanges hooks if there are no changes present.
+ * the first LView pass
  *
  * @param currentView The current view
  * @param arr The array in which the hooks are found
  */
 export function callHooks(currentView: LView, arr: HookData): void {
   for (let i = 0; i < arr.length; i += 2) {
-    const directiveIndex = arr[i] as number;
-    const hook = arr[i + 1] as((() => void) | ((changes: SimpleChanges) => void));
-    // Negative indices signal that we're dealing with an `onChanges` hook.
-    const isOnChangesHook = directiveIndex < 0;
-    const directiveOrWrappedDirective =
-        currentView[isOnChangesHook ? -directiveIndex : directiveIndex];
-    const directive = unwrapOnChangesDirectiveWrapper(directiveOrWrappedDirective);
-
-    if (isOnChangesHook) {
-      const onChanges: OnChangesDirectiveWrapper = directiveOrWrappedDirective;
-      const changes = onChanges.changes;
-      if (changes) {
-        onChanges.previous = changes;
-        onChanges.changes = null;
-        hook.call(onChanges.instance, changes);
-      }
-    } else {
-      hook.call(directive);
-    }
+    (arr[i + 1] as() => void).call(currentView[arr[i] as number]);
   }
 }

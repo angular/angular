@@ -174,6 +174,11 @@ export function extractDirectiveMetadata(
   const providers: Expression|null =
       directive.has('providers') ? new WrappedNodeExpr(directive.get('providers') !) : null;
 
+  // Determine if `ngOnChanges` is a lifecycle hook defined on the component.
+  const usesOnChanges = members.some(
+      member => !member.isStatic && member.kind === ClassMemberKind.Method &&
+          member.name === 'ngOnChanges');
+
   // Parse exportAs.
   let exportAs: string[]|null = null;
   if (directive.has('exportAs')) {
@@ -192,6 +197,9 @@ export function extractDirectiveMetadata(
   const metadata: R3DirectiveMetadata = {
     name: clazz.name !.text,
     deps: getConstructorDependencies(clazz, reflector, isCore), host,
+    lifecycle: {
+        usesOnChanges,
+    },
     inputs: {...inputsFromMeta, ...inputsFromFields},
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, selector,
     type: new WrappedNodeExpr(clazz.name !),

@@ -11,11 +11,10 @@ import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detec
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
-import {checkNoChanges, checkNoChangesInRootView, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
+import {checkNoChanges, checkNoChangesInRootView, checkView, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
 import {TNode, TNodeType, TViewNode} from './interfaces/node';
-import {FLAGS, HOST, HOST_NODE, LView, LViewFlags, PARENT} from './interfaces/view';
+import {FLAGS, HOST, HOST_NODE, LView, LViewFlags, PARENT, RENDERER_FACTORY} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
-import {unwrapOnChangesDirectiveWrapper} from './onchanges_util';
 import {getNativeByTNode} from './util';
 
 
@@ -272,8 +271,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   }
 
   private _lookUpContext(): T {
-    return this._context =
-               unwrapOnChangesDirectiveWrapper(this._lView[PARENT] ![this._componentIndex] as T);
+    return this._context = this._lView[PARENT] ![this._componentIndex] as T;
   }
 }
 

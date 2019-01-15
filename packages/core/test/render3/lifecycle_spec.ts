@@ -14,6 +14,7 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
+import { fixmeIvy } from '@angular/private/testing';
 
 describe('lifecycles', () => {
 
@@ -1940,6 +1941,7 @@ describe('lifecycles', () => {
 
   });
 
+  fixmeIvy('FW-956: refactor onChanges').
   describe('onChanges', () => {
     let events: ({type: string, name: string, [key: string]: any})[];
 
@@ -2699,6 +2701,7 @@ describe('lifecycles', () => {
 
   });
 
+  fixmeIvy('FW-956: refactor onChanges').
   describe('hook order', () => {
     let events: string[];
 

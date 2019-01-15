@@ -306,8 +306,8 @@ export declare class NgSwitchDefault {
 }
 
 export declare class NgTemplateOutlet implements OnChanges {
-    ngTemplateOutlet: TemplateRef<any> | null;
-    ngTemplateOutletContext: Object | null;
+    ngTemplateOutlet: TemplateRef<any>;
+    ngTemplateOutletContext: Object;
     constructor(_viewContainerRef: ViewContainerRef);
     ngOnChanges(changes: SimpleChanges): void;
 }

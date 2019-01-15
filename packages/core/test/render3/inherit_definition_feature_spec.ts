@@ -7,7 +7,7 @@
  */
 
 import {Inject, InjectionToken} from '../../src/core';
-import {ComponentDef, DirectiveDef, InheritDefinitionFeature, ProvidersFeature, RenderFlags, allocHostVars, bind, defineBase, defineComponent, defineDirective, directiveInject, element, elementProperty} from '../../src/render3/index';
+import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, allocHostVars, bind, defineBase, defineComponent, defineDirective, directiveInject, element, elementProperty, load} from '../../src/render3/index';
 
 import {ComponentFixture, createComponent} from './render_util';
 
@@ -501,7 +501,8 @@ describe('InheritDefinitionFeature', () => {
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
         factory: () => new SuperDirective(),
-        inputs: {someInput: 'someInput'},
+        features: [NgOnChangesFeature],
+        inputs: {someInput: 'someInput'}
       });
     }
 
@@ -517,9 +518,6 @@ describe('InheritDefinitionFeature', () => {
     const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
         element(0, 'div', ['subDir', '']);
-      }
-      if (rf & RenderFlags.Update) {
-        elementProperty(0, 'someInput', bind('Weee'));
       }
     }, 1, 0, [SubDirective]);
 
