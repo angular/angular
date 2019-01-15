@@ -12,11 +12,13 @@ import {DOCUMENT, EventManager, ɵNAMESPACE_URIS as NAMESPACE_URIS, ɵSharedStyl
 
 const EMPTY_ARRAY: any[] = [];
 
+const DEFAULT_SCHEMA = new DomElementSchemaRegistry();
+
 @Injectable()
 export class ServerRendererFactory2 implements RendererFactory2 {
   private rendererByCompId = new Map<string, Renderer2>();
   private defaultRenderer: Renderer2;
-  private schema = new DomElementSchemaRegistry();
+  private schema = DEFAULT_SCHEMA;
 
   constructor(
       private eventManager: EventManager, private ngZone: NgZone,
