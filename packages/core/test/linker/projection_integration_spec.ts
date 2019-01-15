@@ -543,48 +543,74 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('B(A)');
   });
 
-  fixmeIvy('unknown').it('should project filled view containers into a view container', () => {
+  it('should project view containers', () => {
     TestBed.configureTestingModule(
-        {declarations: [ConditionalContentComponent, ManualViewportDirective]});
+        {declarations: [SingleContentTagComponent, ManualViewportDirective]});
     TestBed.overrideComponent(MainComp, {
       set: {
-        template: '<conditional-content>' +
-            '<div class="left">A</div>' +
-            '<ng-template manual class="left">B</ng-template>' +
-            '<div class="left">C</div>' +
-            '<div>D</div>' +
-            '</conditional-content>'
+        template: '<single-content-tag>' +
+            '<div class="target">A</div>' +
+            '<ng-template manual class="target">B</ng-template>' +
+            '<div class="target">C</div>' +
+            '</single-content-tag>'
       }
     });
+
     const main = TestBed.createComponent(MainComp);
-
-    const conditionalComp = main.debugElement.query(By.directive(ConditionalContentComponent));
-
-    const viewViewportDir =
-        conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
+    const manualDirective =
+        main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
             ManualViewportDirective);
 
-    expect(main.nativeElement).toHaveText('(, D)');
-    expect(main.nativeElement).toHaveText('(, D)');
+    expect(main.nativeElement).toHaveText('AC');
 
-    viewViewportDir.show();
+    manualDirective.show();
     main.detectChanges();
-    expect(main.nativeElement).toHaveText('(AC, D)');
-
-    const contentViewportDir =
-        conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[1].injector.get(
-            ManualViewportDirective);
-
-    contentViewportDir.show();
-    main.detectChanges();
-    expect(main.nativeElement).toHaveText('(ABC, D)');
-
-    // hide view viewport, and test that it also hides
-    // the content viewport's views
-    viewViewportDir.hide();
-    main.detectChanges();
-    expect(main.nativeElement).toHaveText('(, D)');
+    expect(main.nativeElement).toHaveText('ABC');
   });
+
+  fixmeIvy('FW-869: debugElement.queryAllNodes returns nodes in the wrong order')
+      .it('should project filled view containers into a view container', () => {
+        TestBed.configureTestingModule(
+            {declarations: [ConditionalContentComponent, ManualViewportDirective]});
+        TestBed.overrideComponent(MainComp, {
+          set: {
+            template: '<conditional-content>' +
+                '<div class="left">A</div>' +
+                '<ng-template manual class="left">B</ng-template>' +
+                '<div class="left">C</div>' +
+                '<div>D</div>' +
+                '</conditional-content>'
+          }
+        });
+        const main = TestBed.createComponent(MainComp);
+
+        const conditionalComp = main.debugElement.query(By.directive(ConditionalContentComponent));
+
+        const viewViewportDir =
+            conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
+                ManualViewportDirective);
+
+        expect(main.nativeElement).toHaveText('(, D)');
+        expect(main.nativeElement).toHaveText('(, D)');
+
+        viewViewportDir.show();
+        main.detectChanges();
+        expect(main.nativeElement).toHaveText('(AC, D)');
+
+        const contentViewportDir =
+            conditionalComp.queryAllNodes(By.directive(ManualViewportDirective))[1].injector.get(
+                ManualViewportDirective);
+
+        contentViewportDir.show();
+        main.detectChanges();
+        expect(main.nativeElement).toHaveText('(ABC, D)');
+
+        // hide view viewport, and test that it also hides
+        // the content viewport's views
+        viewViewportDir.hide();
+        main.detectChanges();
+        expect(main.nativeElement).toHaveText('(, D)');
+      });
 });
 
 @Component({selector: 'main', template: ''})
