@@ -60,6 +60,16 @@ function hasRoutingModule(host: Tree) {
   return hasRouting;
 }
 
+/**
+ * Returns true if project uses SASS stylesheets, false otherwise.
+ */
+function hasSassStylesheet(host: Tree) {
+  let hasSass = false;
+  // The proper extension for SASS is .scss
+  host.visit((file: string) => { hasSass = hasSass || file.endsWith('.scss'); });
+  return hasSass;
+}
+
 export default function(options: BazelWorkspaceOptions): Rule {
   return (host: Tree, context: SchematicContext) => {
     if (!options.name) {
@@ -103,6 +113,7 @@ export default function(options: BazelWorkspaceOptions): Rule {
         ...options,
         'dot': '.', ...workspaceVersions,
         routing: hasRoutingModule(host),
+        sass: hasSassStylesheet(host),
       }),
       move(appDir),
     ]));
