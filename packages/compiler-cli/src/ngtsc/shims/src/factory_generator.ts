@@ -89,8 +89,8 @@ export class FactoryGenerator implements ShimGenerator {
 
   static forRootFiles(files: ReadonlyArray<string>): FactoryGenerator {
     const map = new Map<string, string>();
-    files.map(sourceFile => normalizeSeparators(sourceFile))
-        .filter(sourceFile => isNonDeclarationTsPath(sourceFile))
+    files.filter(sourceFile => isNonDeclarationTsPath(sourceFile))
+        .map(sourceFile => normalizeSeparators(sourceFile))
         .forEach(sourceFile => map.set(sourceFile.replace(/\.ts$/, '.ngfactory.ts'), sourceFile));
     return new FactoryGenerator(map);
   }
