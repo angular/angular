@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, ElementSchemaRegistry, Expression, InterpolationConfig, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, ElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
+import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {ResolvedReference} from '../../imports';
+import {ModuleResolver, Reference, ResolvedReference} from '../../imports';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
@@ -41,7 +42,8 @@ export class ComponentDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean,
       private resourceLoader: ResourceLoader, private rootDirs: string[],
-      private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean) {}
+      private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
+      private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -289,28 +291,39 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  compile(node: ts.ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):
-      CompileResult {
+  resolve(node: ts.ClassDeclaration, analysis: ComponentHandlerData): void {
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
     const scope = this.scopeRegistry.lookupCompilationScope(node);
     let metadata = analysis.meta;
     if (scope !== null) {
       // Replace the empty components and directives from the analyze() step with a fully expanded
-      // scope. This is possible now because during compile() the whole compilation unit has been
+      // scope. This is possible now because during resolve() the whole compilation unit has been
       // fully analyzed.
       const {pipes, containsForwardDecls} = scope;
-      const directives: {selector: string, expression: Expression}[] = [];
+      const directives =
+          scope.directives.map(dir => ({selector: dir.selector, expression: dir.directive}));
 
-      for (const meta of scope.directives) {
-        directives.push({selector: meta.selector, expression: meta.directive});
+      // Scan through the references of the `scope.directives` array and check whether
+      // any import which needs to be generated for the directive would create a cycle.
+      const origin = node.getSourceFile();
+      const cycleDetected =
+          scope.directives.some(meta => this._isCyclicImport(meta.directive, origin)) ||
+          Array.from(scope.pipes.values()).some(pipe => this._isCyclicImport(pipe, origin));
+      if (!cycleDetected) {
+        const wrapDirectivesAndPipesInClosure: boolean = !!containsForwardDecls;
+        metadata.directives = directives;
+        metadata.pipes = pipes;
+        metadata.wrapDirectivesAndPipesInClosure = wrapDirectivesAndPipesInClosure;
+      } else {
+        this.scopeRegistry.setComponentAsRequiringRemoteScoping(node);
       }
-      const wrapDirectivesAndPipesInClosure: boolean = !!containsForwardDecls;
-      metadata = {...metadata, directives, pipes, wrapDirectivesAndPipesInClosure};
     }
+  }
 
-    const res =
-        compileComponentFromMetadata(metadata, pool, makeBindingParser(metadata.interpolation));
+  compile(node: ts.ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):
+      CompileResult {
+    const res = compileComponentFromMetadata(analysis.meta, pool, makeBindingParser());
 
     const statements = res.statements;
     if (analysis.metadataStmt !== null) {
@@ -372,5 +385,20 @@ export class ComponentDecoratorHandler implements
           ErrorCode.VALUE_HAS_WRONG_TYPE, styleUrlsExpr, 'styleUrls must be an array of strings');
     }
     return styleUrls as string[];
+  }
+
+  private _isCyclicImport(expr: Expression, origin: ts.SourceFile): boolean {
+    if (!(expr instanceof ExternalExpr)) {
+      return false;
+    }
+
+    // Figure out what file is being imported.
+    const imported = this.moduleResolver.resolveModuleName(expr.value.moduleName !, origin);
+    if (imported === null) {
+      return false;
+    }
+
+    // Check whether the import is legal.
+    return this.cycleAnalyzer.wouldCreateCycle(origin, imported);
   }
 }

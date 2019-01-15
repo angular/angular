@@ -14,6 +14,7 @@ import {nocollapseHack} from '../transformers/nocollapse_hack';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry, SelectorScopeRegistry} from './annotations';
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
+import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {ImportRewriter, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, TsReferenceResolver} from './imports';
@@ -48,6 +49,7 @@ export class NgtscProgram implements api.Program {
 
   private constructionDiagnostics: ts.Diagnostic[] = [];
   private moduleResolver: ModuleResolver;
+  private cycleAnalyzer: CycleAnalyzer;
 
 
   constructor(
@@ -128,6 +130,7 @@ export class NgtscProgram implements api.Program {
 
     this.entryPoint = entryPoint !== null ? this.tsProgram.getSourceFile(entryPoint) || null : null;
     this.moduleResolver = new ModuleResolver(this.tsProgram, options, this.host);
+    this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
   }
 
   getTsProgram(): ts.Program { return this.tsProgram; }
@@ -184,6 +187,7 @@ export class NgtscProgram implements api.Program {
                           .filter(file => !file.fileName.endsWith('.d.ts'))
                           .map(file => this.compilation !.analyzeAsync(file))
                           .filter((result): result is Promise<void> => result !== undefined));
+    this.compilation.resolve();
   }
 
   listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
@@ -213,6 +217,7 @@ export class NgtscProgram implements api.Program {
       this.tsProgram.getSourceFiles()
           .filter(file => !file.fileName.endsWith('.d.ts'))
           .forEach(file => this.compilation !.analyzeSync(file));
+      this.compilation.resolve();
     }
     return this.compilation;
   }
@@ -307,7 +312,7 @@ export class NgtscProgram implements api.Program {
       new ComponentDecoratorHandler(
           this.reflector, evaluator, scopeRegistry, this.isCore, this.resourceManager,
           this.rootDirs, this.options.preserveWhitespaces || false,
-          this.options.i18nUseExternalIds !== false),
+          this.options.i18nUseExternalIds !== false, this.moduleResolver, this.cycleAnalyzer),
       new DirectiveDecoratorHandler(this.reflector, evaluator, scopeRegistry, this.isCore),
       new InjectableDecoratorHandler(this.reflector, this.isCore),
       new NgModuleDecoratorHandler(

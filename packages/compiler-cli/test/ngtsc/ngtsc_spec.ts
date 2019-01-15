@@ -1402,11 +1402,49 @@ describe('ngtsc behavioral tests', () => {
         declarations: [Cmp, DirA, DirB],
       })
       class Module {}
-    `);
+  `);
 
     env.driveMain();
     const jsContents = env.getContents('test.js');
     expect(jsContents).toMatch(/directives: \[DirA,\s+DirB\]/);
+  });
+
+  describe('cycle detection', () => {
+    it('should detect a simple cycle and use remote component scoping', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {NormalComponent} from './cyclic';
+  
+        @Component({
+          selector: 'cyclic-component',
+          template: 'Importing this causes a cycle',
+        })
+        export class CyclicComponent {}
+  
+        @NgModule({
+          declarations: [NormalComponent, CyclicComponent],
+        })
+        export class Module {}
+      `);
+
+      env.write('cyclic.ts', `
+        import {Component} from '@angular/core';
+  
+        @Component({
+          selector: 'normal-component',
+          template: '<cyclic-component></cyclic-component>',
+        })
+        export class NormalComponent {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents)
+          .toContain(
+              'i0.ɵsetComponentScope(NormalComponent, [i1.NormalComponent, CyclicComponent], [])');
+      expect(jsContents).not.toContain('/*__PURE__*/ i0.ɵsetComponentScope');
+    });
   });
 
   describe('duplicate local refs', () => {

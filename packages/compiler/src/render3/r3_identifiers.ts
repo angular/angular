@@ -147,6 +147,8 @@ export class Identifiers {
 
   static defineComponent: o.ExternalReference = {name: 'ɵdefineComponent', moduleName: CORE};
 
+  static setComponentScope: o.ExternalReference = {name: 'ɵsetComponentScope', moduleName: CORE};
+
   static ComponentDefWithMeta: o.ExternalReference = {
     name: 'ɵComponentDefWithMeta',
     moduleName: CORE,
