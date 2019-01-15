@@ -277,6 +277,11 @@ mat-action-list {
     border: none;
     font: inherit;
     outline: inherit;
+    -webkit-tap-highlight-color: transparent;
+
+    &::-moz-focus-inner {
+      border: 0;
+    }
   }
 
   .mat-list-item {
