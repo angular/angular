@@ -747,7 +747,7 @@ function createHostBindingsFunction(
       createStatements.push(createStylingStmt(hostInstruction, bindingContext, bindingFn));
     }
 
-    if (styleBuilder.hasBindingsOrInitialValues()) {
+    if (styleBuilder.hasBindings) {
       // singular style/class bindings (things like `[style.prop]` and `[class.name]`)
       // MUST be registered on a given element within the component/directive
       // templateFn/hostBindingsFn functions. The instruction below will figure out

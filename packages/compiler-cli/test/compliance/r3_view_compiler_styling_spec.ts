@@ -395,6 +395,99 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
+    it('should correctly count the total slots required when style/class bindings include interpolation',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component-with-interpolation',
+                  template: \`
+                    <div class="foo foo-{{ fooId }}"></div>
+                  \`
+                })
+                export class MyComponentWithInterpolation {
+                  fooId = '123';
+                }
+
+                @Component({
+                  selector: 'my-component-with-muchos-interpolation',
+                  template: \`
+                    <div class="foo foo-{{ fooId }}-{{ fooUsername }}"></div>
+                  \`
+                })
+                export class MyComponentWithMuchosInterpolation {
+                  fooId = '123';
+                  fooUsername = 'superfoo';
+                }
+
+                @Component({
+                  selector: 'my-component-without-interpolation',
+                  template: \`
+                    <div [class]="exp"></div>
+                  \`
+                })
+                export class MyComponentWithoutInterpolation {
+                  exp = 'bar';
+                }
+
+                @NgModule({declarations: [MyComponentWithInterpolation, MyComponentWithMuchosInterpolation, MyComponentWithoutInterpolation]})
+                export class MyModule {}
+            `
+           }
+         };
+
+         const template = `
+        …
+          consts: 1,
+          vars: 1,
+          template: function MyComponentWithInterpolation_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling();
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(0, $r3$.ɵinterpolation1("foo foo-", $ctx$.fooId, ""));
+              $r3$.ɵelementStylingApply(0);
+            }
+          }
+        …
+          consts: 1,
+          vars: 2,
+          template: function MyComponentWithMuchosInterpolation_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling();
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(0, $r3$.ɵinterpolation2("foo foo-", $ctx$.fooId, "-", $ctx$.fooUsername, ""));
+              $r3$.ɵelementStylingApply(0);
+            }
+          }
+        …
+          consts: 1,
+          vars: 0,
+          template: function MyComponentWithoutInterpolation_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling();
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(0, $ctx$.exp);
+              $r3$.ɵelementStylingApply(0);
+            }
+          }
+          `;
+
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+
     it('should place initial, multi, singular and application followed by attribute style instructions in the template code in that order',
        () => {
          const files = {
@@ -688,8 +781,7 @@ describe('compiler compliance: styling', () => {
               vars: 2,
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
-                  $r3$.ɵelementStart(0, "div", $e0_attrs$);
-                  $r3$.ɵelementEnd();
+                  $r3$.ɵelement(0, "div", $e0_attrs$);
                 }
                 if (rf & 2) {
                   $r3$.ɵelementAttribute(0, "class", $r3$.ɵbind("round"));
