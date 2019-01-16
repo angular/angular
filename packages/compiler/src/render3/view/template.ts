@@ -687,6 +687,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // the reason why `undefined` is used is because the renderer understands this as a
     // special value to symbolize that there is no RHS to this binding
+    // TODO (matsko): revisit this once FW-959 is approached
     const emptyValueBindInstruction = o.importExpr(R3.bind).callFn([o.literal(undefined)]);
 
     // Generate element input bindings
@@ -1021,7 +1022,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    *   SELECT_ONLY, name1, name2, name2, ...]
    * ```
    *
-   * Note that this function will fully ignore all synethic (@foo) attribute values
+   * Note that this function will fully ignore all synthetic (@foo) attribute values
    * because those values are intended to always be generated as property instructions.
    */
   private prepareSelectOnlyAttrs(
