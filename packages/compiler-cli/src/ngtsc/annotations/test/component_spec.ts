@@ -18,7 +18,10 @@ import {ComponentDecoratorHandler} from '../src/component';
 import {SelectorScopeRegistry} from '../src/selector_scope';
 
 export class NoopResourceLoader implements ResourceLoader {
-  load(url: string): string { throw new Error('Not implemented'); }
+  resolve(): string { throw new Error('Not implemented.'); }
+  canPreload = false;
+  load(): string { throw new Error('Not implemented'); }
+  preload(): Promise<void>|undefined { throw new Error('Not implemented'); }
 }
 
 describe('ComponentDecoratorHandler', () => {
