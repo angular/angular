@@ -122,7 +122,7 @@ export declare class MatTabHeader extends _MatTabHeaderMixinBase implements Afte
     scrollDistance: number;
     readonly selectFocusedIndex: EventEmitter<{}>;
     selectedIndex: number;
-    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _viewportRuler: ViewportRuler, _dir: Directionality, _ngZone?: NgZone | undefined);
+    constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _viewportRuler: ViewportRuler, _dir: Directionality, _ngZone?: NgZone | undefined, _platform?: Platform | undefined);
     _alignInkBarToSelectedTab(): void;
     _checkPaginationEnabled(): void;
     _checkScrollingControls(): void;
