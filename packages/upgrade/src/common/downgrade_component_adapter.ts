@@ -213,6 +213,7 @@ export class DowngradeComponentAdapter {
   }
 
   registerCleanup() {
+    const testabilityRegistry = this.componentRef.injector.get(TestabilityRegistry);
     const destroyComponentRef = this.wrapCallback(() => this.componentRef.destroy());
     let destroyed = false;
 
@@ -220,8 +221,7 @@ export class DowngradeComponentAdapter {
     this.componentScope.$on('$destroy', () => {
       if (!destroyed) {
         destroyed = true;
-        this.componentRef.injector.get(TestabilityRegistry)
-            .unregisterApplication(this.componentRef.location.nativeElement);
+        testabilityRegistry.unregisterApplication(this.componentRef.location.nativeElement);
         destroyComponentRef();
       }
     });

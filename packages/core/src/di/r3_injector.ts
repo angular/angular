@@ -102,7 +102,8 @@ export class R3Injector {
   /**
    * Flag indicating that this injector was previously destroyed.
    */
-  private destroyed = false;
+  get destroyed(): boolean { return this._destroyed; }
+  private _destroyed = false;
 
   constructor(
       def: InjectorType<any>, additionalProviders: StaticProvider[]|null,
@@ -138,7 +139,7 @@ export class R3Injector {
     this.assertNotDestroyed();
 
     // Set destroyed = true first, in case lifecycle hooks re-enter destroy().
-    this.destroyed = true;
+    this._destroyed = true;
     try {
       // Call all the lifecycle hooks.
       this.onDestroy.forEach(service => service.ngOnDestroy());
@@ -189,7 +190,7 @@ export class R3Injector {
   }
 
   private assertNotDestroyed(): void {
-    if (this.destroyed) {
+    if (this._destroyed) {
       throw new Error('Injector has already been destroyed.');
     }
   }

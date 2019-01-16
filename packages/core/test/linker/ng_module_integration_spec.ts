@@ -1045,55 +1045,53 @@ function declareTests(config?: {useJit: boolean}) {
           expect(created).toBe(false);
         });
 
-        fixmeIvy('FW-739: TestBed: destroy on NgModuleRef is not being called')
-            .it('should support ngOnDestroy on any provider', () => {
-              let destroyed = false;
+        it('should support ngOnDestroy on any provider', () => {
+          let destroyed = false;
 
-              class SomeInjectable {
-                ngOnDestroy() { destroyed = true; }
-              }
+          class SomeInjectable {
+            ngOnDestroy() { destroyed = true; }
+          }
 
-              @NgModule({providers: [SomeInjectable]})
-              class SomeModule {
-                // Inject SomeInjectable to make it eager...
-                constructor(i: SomeInjectable) {}
-              }
+          @NgModule({providers: [SomeInjectable]})
+          class SomeModule {
+            // Inject SomeInjectable to make it eager...
+            constructor(i: SomeInjectable) {}
+          }
 
-              const moduleRef = createModule(SomeModule);
-              expect(destroyed).toBe(false);
-              moduleRef.destroy();
-              expect(destroyed).toBe(true);
-            });
+          const moduleRef = createModule(SomeModule);
+          expect(destroyed).toBe(false);
+          moduleRef.destroy();
+          expect(destroyed).toBe(true);
+        });
 
-        fixmeIvy('FW-739: TestBed: destroy on NgModuleRef is not being called')
-            .it('should support ngOnDestroy for lazy providers', () => {
-              let created = false;
-              let destroyed = false;
+        it('should support ngOnDestroy for lazy providers', () => {
+          let created = false;
+          let destroyed = false;
 
-              class SomeInjectable {
-                constructor() { created = true; }
-                ngOnDestroy() { destroyed = true; }
-              }
+          class SomeInjectable {
+            constructor() { created = true; }
+            ngOnDestroy() { destroyed = true; }
+          }
 
-              @NgModule({providers: [SomeInjectable]})
-              class SomeModule {
-              }
+          @NgModule({providers: [SomeInjectable]})
+          class SomeModule {
+          }
 
-              let moduleRef = createModule(SomeModule);
-              expect(created).toBe(false);
-              expect(destroyed).toBe(false);
+          let moduleRef = createModule(SomeModule);
+          expect(created).toBe(false);
+          expect(destroyed).toBe(false);
 
-              // no error if the provider was not yet created
-              moduleRef.destroy();
-              expect(created).toBe(false);
-              expect(destroyed).toBe(false);
+          // no error if the provider was not yet created
+          moduleRef.destroy();
+          expect(created).toBe(false);
+          expect(destroyed).toBe(false);
 
-              moduleRef = createModule(SomeModule);
-              moduleRef.injector.get(SomeInjectable);
-              expect(created).toBe(true);
-              moduleRef.destroy();
-              expect(destroyed).toBe(true);
-            });
+          moduleRef = createModule(SomeModule);
+          moduleRef.injector.get(SomeInjectable);
+          expect(created).toBe(true);
+          moduleRef.destroy();
+          expect(destroyed).toBe(true);
+        });
       });
 
       describe('imported and exported modules', () => {
