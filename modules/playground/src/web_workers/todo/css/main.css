@@ -13,11 +13,6 @@ body {
   color: #4d4d4d;
   width: 550px;
   margin: 0 auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-font-smoothing: antialiased;
-  -ms-font-smoothing: antialiased;
-  -o-font-smoothing: antialiased;
-  font-smoothing: antialiased;
 }
 
 button {
@@ -33,10 +28,6 @@ button {
   -webkit-appearance: none;
   -ms-appearance: none;
   appearance: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-font-smoothing: antialiased;
-  -ms-font-smoothing: antialiased;
-  font-smoothing: antialiased;
 }
 
 button,
@@ -109,10 +100,6 @@ input[type="checkbox"] {
   box-shadow: inset 0 -1px 5px 0 rgba(0, 0, 0, 0.2);
   -ms-box-sizing: border-box;
   box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
-  -moz-font-smoothing: antialiased;
-  -ms-font-smoothing: antialiased;
-  font-smoothing: antialiased;
 }
 
 #new-todo {
