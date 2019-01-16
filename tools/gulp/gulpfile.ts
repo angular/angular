@@ -21,7 +21,6 @@ import './tasks/ci';
 import './tasks/clean';
 import './tasks/default';
 import './tasks/development';
-import './tasks/docs';
 import './tasks/example-module';
 import './tasks/lint';
 import './tasks/material-release';

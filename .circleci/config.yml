@@ -63,7 +63,7 @@ var_9: &docker-firefox-image
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
 var_10: &attach_release_output
   attach_workspace:
-    at: dist/releases
+    at: dist/
 
 
 # Branch filter that we can specify for jobs that should only run on publish branches. This filter
@@ -250,9 +250,9 @@ jobs:
       # Store the release output in the workspace storage. This means that other jobs
       # in the same workflow can attach the release output to their job.
       - persist_to_workspace:
-          root: dist/releases
+          root: dist
           paths:
-            - "**/*"
+            - "releases/**/*"
 
       # Since there is no UMD bundle that includes everything from the CDK, we need to move
       # all bundles into a directory. This allows us to store all CDK UMD bundles as job
@@ -293,6 +293,9 @@ jobs:
       # to publish the build snapshots. In order to fix this, we unset the global option.
       - run: git config --global --unset "url.ssh://git@github.com.insteadof"
 
+      # TODO(devversion): Ideally the "build_release_packages" job should build all packages with
+      # Bazel, but for now we mix up the Gulp and bazel setup, so we need to build the package here.
+      - run: bazel build src/material-examples:npm_package --config=release
       - run: ./scripts/circleci/publish-snapshots.sh
 
 
@@ -320,9 +323,7 @@ jobs:
 workflows:
   version: 2
 
-  # Build and test workflow. A workflow includes multiple jobs that run in parallel. All jobs
-  # that build and test source code should be part of this workflow
-  build_and_test:
+  bazel_targets:
     jobs:
       - bazel_build_test:
           filters: *ignore_presubmit_branch_filter
@@ -347,7 +348,8 @@ workflows:
 
   release_output:
     jobs:
-      - build_release_packages
+      - build_release_packages:
+          filters: *ignore_presubmit_branch_filter
       - build_devapp_aot:
           filters: *ignore_presubmit_branch_filter
           requires:

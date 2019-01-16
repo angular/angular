@@ -14,11 +14,6 @@ if [ -z ${MATERIAL2_BUILDS_TOKEN} ]; then
   exit 1
 fi
 
-if [[ ! ${*} == *--no-build* ]]; then
-  $(npm bin)/gulp material-examples:build-release:clean
-  $(npm bin)/gulp docs
-fi
-
 # Path to the project directory.
 projectPath="$(pwd)"
 
@@ -28,8 +23,8 @@ docsDistPath="${projectPath}/dist/docs"
 # Path to the cloned docs-content repository.
 docsContentPath="${projectPath}/tmp/material2-docs-content"
 
-# Path to the release output of the @angular/material-examples package.
-examplesPackagePath="${projectPath}/dist/releases/material-examples"
+# Path to the release output of the Bazel "@angular/material-examples" NPM package.
+examplesPackagePath="$(bazel info bazel-bin)/src/material-examples/npm_package"
 
 # Git clone URL for the material2-docs-content repository.
 docsContentRepoUrl="https://github.com/angular/material2-docs-content"
@@ -79,33 +74,12 @@ fi
 # Remove everything inside of the docs-content repository.
 rm -Rf ${docsContentPath}/*
 
-echo "Removed everything from the docs-content repository. Copying all files into repository.."
+echo "Removed everything from the docs-content repository. Copying package output.."
 
-# Create all folders that need to exist in the docs-content repository.
-mkdir ${docsContentPath}/{overview,guides,api,examples,stackblitz,examples-package}
+# Copy the package output to the docs-content repository.
+cp -R ${examplesPackagePath}/* ${docsContentPath}
 
-# Copy API and example files to the docs-content repository.
-cp -R ${docsDistPath}/api/* ${docsContentPath}/api
-cp -r ${docsDistPath}/examples/* ${docsContentPath}/examples
-cp -r ${docsDistPath}/stackblitz/* ${docsContentPath}/stackblitz
-
-# Copy the @angular/material-examples package to the docs-content repository.
-cp -r ${examplesPackagePath}/* ${docsContentPath}/examples-package
-
-# Copy the license file to the docs-content repository.
-cp ${projectPath}/LICENSE ${docsContentPath}
-
-# Copy all immediate children of the markdown output the guides/ directory.
-for guidePath in $(find ${docsDistPath}/markdown/ -maxdepth 1 -type f); do
-  cp ${guidePath} ${docsContentPath}/guides
-done
-
-# All files that aren't immediate children of the markdown output are overview documents.
-for overviewPath in $(find ${docsDistPath}/markdown/ -mindepth 2 -type f); do
-  cp ${overviewPath} ${docsContentPath}/overview
-done
-
-echo "Successfully copied all content into the docs-content repository."
+echo "Successfully copied package output into the docs-content repository."
 
 if [[ $(git ls-remote origin "refs/tags/${buildTagName}") ]]; then
   echo "Skipping publish of docs-content because tag is already published. Exiting.."

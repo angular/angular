@@ -10,9 +10,6 @@ cd $(dirname ${0})/../..
 # fetched from the CircleCI workspace storage.
 ./scripts/deploy/publish-build-artifacts.sh --no-build
 
-# Build the docs output before publishing the docs content.
-yarn gulp docs
-
 # Deploy the docs content to the Github repository. We don't want to build the examples
 # package here again because it's already fetched from the CircleCI workspace storage.
 ./scripts/deploy/publish-docs-content.sh --no-build
