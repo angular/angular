@@ -108,13 +108,13 @@ export declare class FlexibleConnectedPositionStrategy implements PositionStrate
     _preferredPositions: ConnectionPositionPair[];
     positionChanges: Observable<ConnectedOverlayPositionChange>;
     readonly positions: ConnectionPositionPair[];
-    constructor(connectedTo: ElementRef | HTMLElement, _viewportRuler: ViewportRuler, _document: Document, _platform?: Platform | undefined, _overlayContainer?: OverlayContainer | undefined);
+    constructor(connectedTo: FlexibleConnectedPositionStrategyOrigin, _viewportRuler: ViewportRuler, _document: Document, _platform?: Platform | undefined, _overlayContainer?: OverlayContainer | undefined);
     apply(): void;
     attach(overlayRef: OverlayReference): void;
     detach(): void;
     dispose(): void;
     reapplyLastPosition(): void;
-    setOrigin(origin: ElementRef | HTMLElement): this;
+    setOrigin(origin: FlexibleConnectedPositionStrategyOrigin): this;
     withDefaultOffsetX(offset: number): this;
     withDefaultOffsetY(offset: number): this;
     withFlexibleDimensions(flexibleDimensions?: boolean): this;
@@ -216,7 +216,7 @@ export declare class OverlayModule {
 export declare class OverlayPositionBuilder {
     constructor(_viewportRuler: ViewportRuler, _document: any, _platform?: Platform | undefined, _overlayContainer?: OverlayContainer | undefined);
     connectedTo(elementRef: ElementRef, originPos: OriginConnectionPosition, overlayPos: OverlayConnectionPosition): ConnectedPositionStrategy;
-    flexibleConnectedTo(elementRef: ElementRef | HTMLElement): FlexibleConnectedPositionStrategy;
+    flexibleConnectedTo(origin: FlexibleConnectedPositionStrategyOrigin): FlexibleConnectedPositionStrategy;
     global(): GlobalPositionStrategy;
 }
 

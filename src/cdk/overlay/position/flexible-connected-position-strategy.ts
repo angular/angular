@@ -19,7 +19,7 @@ import {
 import {Observable, Subscription, Subject, Observer} from 'rxjs';
 import {OverlayReference} from '../overlay-reference';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
-import {coerceCssPixelValue, coerceArray, coerceElement} from '@angular/cdk/coercion';
+import {coerceCssPixelValue, coerceArray} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {OverlayContainer} from '../overlay-container';
 
@@ -28,6 +28,9 @@ import {OverlayContainer} from '../overlay-container';
 
 /** Class to be added to the overlay bounding box. */
 const boundingBoxClass = 'cdk-overlay-connected-position-bounding-box';
+
+/** Possible values that can be set as the origin of a FlexibleConnectedPositionStrategy. */
+export type FlexibleConnectedPositionStrategyOrigin = ElementRef | HTMLElement | Point;
 
 /**
  * A strategy for positioning overlays. Using this strategy, an overlay is given an
@@ -80,7 +83,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   _preferredPositions: ConnectionPositionPair[] = [];
 
   /** The origin element against which the overlay will be positioned. */
-  private _origin: HTMLElement;
+  private _origin: FlexibleConnectedPositionStrategyOrigin;
 
   /** The overlay pane element. */
   private _pane: HTMLElement;
@@ -139,7 +142,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   }
 
   constructor(
-    connectedTo: ElementRef | HTMLElement,
+    connectedTo: FlexibleConnectedPositionStrategyOrigin,
     private _viewportRuler: ViewportRuler,
     private _document: Document,
     // @breaking-change 8.0.0 `_platform` and `_overlayContainer` parameters to be made required.
@@ -211,7 +214,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     // the overlay relative to the origin.
     // We use the viewport rect to determine whether a position would go off-screen.
     this._viewportRect = this._getNarrowedViewportRect();
-    this._originRect = this._origin.getBoundingClientRect();
+    this._originRect = this._getOriginRect();
     this._overlayRect = this._pane.getBoundingClientRect();
 
     const originRect = this._originRect;
@@ -350,7 +353,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    */
   reapplyLastPosition(): void {
     if (!this._isDisposed && (!this._platform || this._platform.isBrowser)) {
-      this._originRect = this._origin.getBoundingClientRect();
+      this._originRect = this._getOriginRect();
       this._overlayRect = this._pane.getBoundingClientRect();
       this._viewportRect = this._getNarrowedViewportRect();
 
@@ -427,11 +430,14 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   }
 
   /**
-   * Sets the origin element, relative to which to position the overlay.
-   * @param origin Reference to the new origin element.
+   * Sets the origin, relative to which to position the overlay.
+   * Using an element origin is useful for building components that need to be positioned
+   * relatively to a trigger (e.g. dropdown menus or tooltips), whereas using a point can be
+   * used for cases like contextual menus which open relative to the user's pointer.
+   * @param origin Reference to the new origin.
    */
-  setOrigin(origin: ElementRef | HTMLElement): this {
-    this._origin = coerceElement(origin);
+  setOrigin(origin: FlexibleConnectedPositionStrategyOrigin): this {
+    this._origin = origin;
     return this;
   }
 
@@ -988,7 +994,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    */
   private _getScrollVisibility(): ScrollingVisibility {
     // Note: needs fresh rects since the position could've changed.
-    const originBounds = this._origin.getBoundingClientRect();
+    const originBounds = this._getOriginRect();
     const overlayBounds =  this._pane.getBoundingClientRect();
 
     // TODO(jelbourn): instead of needing all of the client rects for these scrolling containers
@@ -1089,6 +1095,29 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       this._appliedPanelClasses.forEach(cssClass => this._pane.classList.remove(cssClass));
       this._appliedPanelClasses = [];
     }
+  }
+
+  /** Returns the ClientRect of the current origin. */
+  private _getOriginRect(): ClientRect {
+    const origin = this._origin;
+
+    if (origin instanceof ElementRef) {
+      return origin.nativeElement.getBoundingClientRect();
+    }
+
+    if (origin instanceof HTMLElement) {
+      return origin.getBoundingClientRect();
+    }
+
+    // If the origin is a point, return a client rect as if it was a 0x0 element at the point.
+    return {
+      top: origin.y,
+      bottom: origin.y,
+      left: origin.x,
+      right: origin.x,
+      height: 0,
+      width: 0
+    };
   }
 }
 

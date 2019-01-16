@@ -11,7 +11,10 @@ import {DOCUMENT} from '@angular/common';
 import {ElementRef, Inject, Injectable, Optional} from '@angular/core';
 import {OriginConnectionPosition, OverlayConnectionPosition} from './connected-position';
 import {ConnectedPositionStrategy} from './connected-position-strategy';
-import {FlexibleConnectedPositionStrategy} from './flexible-connected-position-strategy';
+import {
+  FlexibleConnectedPositionStrategy,
+  FlexibleConnectedPositionStrategyOrigin,
+} from './flexible-connected-position-strategy';
 import {GlobalPositionStrategy} from './global-position-strategy';
 import {Platform} from '@angular/cdk/platform';
 import {OverlayContainer} from '../overlay-container';
@@ -53,10 +56,11 @@ export class OverlayPositionBuilder {
 
   /**
    * Creates a flexible position strategy.
-   * @param elementRef
+   * @param origin Origin relative to which to position the overlay.
    */
-  flexibleConnectedTo(elementRef: ElementRef | HTMLElement): FlexibleConnectedPositionStrategy {
-    return new FlexibleConnectedPositionStrategy(elementRef, this._viewportRuler, this._document,
+  flexibleConnectedTo(origin: FlexibleConnectedPositionStrategyOrigin):
+    FlexibleConnectedPositionStrategy {
+    return new FlexibleConnectedPositionStrategy(origin, this._viewportRuler, this._document,
         this._platform, this._overlayContainer);
   }
 

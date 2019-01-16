@@ -703,6 +703,53 @@ describe('FlexibleConnectedPositionStrategy', () => {
 
     });
 
+    describe('with origin set to a point', () => {
+      it('should be able to render at the primary position', () => {
+        positionStrategy
+          .setOrigin({x: 50, y: 100})
+          .withPositions([{
+            originX: 'start',
+            originY: 'bottom',
+            overlayX: 'start',
+            overlayY: 'top'
+          }]);
+
+        attachOverlay({positionStrategy});
+
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+        expect(Math.floor(overlayRect.top)).toBe(100);
+        expect(Math.floor(overlayRect.left)).toBe(50);
+      });
+
+      it('should be able to render at a fallback position', () => {
+        const viewportHeight = viewport.getViewportRect().height;
+
+        positionStrategy
+          .setOrigin({x: 50, y: viewportHeight})
+          .withPositions([
+              {
+                originX: 'start',
+                originY: 'bottom',
+                overlayX: 'start',
+                overlayY: 'top'
+              },
+              {
+                originX: 'start',
+                originY: 'top',
+                overlayX: 'start',
+                overlayY: 'bottom'
+              }
+          ]);
+
+        attachOverlay({positionStrategy});
+
+        const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+        expect(Math.floor(overlayRect.bottom)).toBe(viewportHeight);
+        expect(Math.floor(overlayRect.left)).toBe(50);
+      });
+
+    });
+
     it('should account for the `offsetX` pushing the overlay out of the screen', () => {
       // Position the element so it would have enough space to fit.
       originElement.style.top = '200px';
