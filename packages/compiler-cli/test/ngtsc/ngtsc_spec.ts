@@ -1794,11 +1794,11 @@ describe('ngtsc behavioral tests', () => {
     `);
 
     env.driveMain({
-      beforeTs: [() => sourceFile => {
+      beforeTs: [() => (sourceFile: ts.SourceFile) => {
         beforeCount++;
         return sourceFile;
       }],
-      afterTs: [() => sourceFile => {
+      afterTs: [() => (sourceFile: ts.SourceFile) => {
         afterCount++;
         return sourceFile;
       }],
