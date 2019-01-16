@@ -39,37 +39,39 @@ var_6: &save_cache
       - "node_modules"
       - "~/bazel_repository_cache"
 
+# Decryption token that is used to decode the GCP credentials file in ".circleci/gcp_token".
+var_7: &gcp_decrypt_token "angular"
+
 # Job step that ensures that the node module dependencies are installed and up-to-date. We use
 # Yarn with the frozen lockfile option in order to make sure that lock file and package.json are
 # in sync. Unlike in Travis, we don't need to manually purge the node modules if stale because
 # CircleCI automatically discards the cache if the checksum of the lock file has changed.
-var_7: &yarn_install
+var_8: &yarn_install
   run: yarn install --frozen-lockfile --non-interactive
 
 # Copies the Bazel config which is specifically for CircleCI to a location where Bazel picks it
 # up and merges it with the project-wide bazel configuration (tools/bazel.rc)
-var_8: &copy_bazel_config
+var_9: &copy_bazel_config
   # Set up the CircleCI specific bazel configuration.
   run: sudo cp ./.circleci/bazel.rc /etc/bazel.bazelrc
 
 # Sets up a different Docker image that includes a moe recent Firefox version which
 # is needed for headless testing.
-var_9: &docker-firefox-image
+var_10: &docker-firefox-image
   # TODO(devversion): Temporarily use a image that includes Firefox 62 because the
   # ngcontainer image does include an old Firefox version that does not support headless.
   - image: circleci/node:11.4.0-browsers
 
 # Attaches the release output which has been stored in the workspace to the current job.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
-var_10: &attach_release_output
+var_11: &attach_release_output
   attach_workspace:
     at: dist/
-
 
 # Branch filter that we can specify for jobs that should only run on publish branches. This filter
 # is used to ensure that not all upstream branches will be published as Github builds
 # (e.g. revert branches, feature branches)
-var_11: &publish_branches_filter
+var_12: &publish_branches_filter
   branches:
     only:
       - master
@@ -83,10 +85,17 @@ var_11: &publish_branches_filter
 # In order to reduce duplication we use a YAML anchor that just always excludes the "_presubmit"
 # branch. We don't want to run Circle for the temporary "_presubmit" branch which is reserved
 # for the caretaker.
-var_12: &ignore_presubmit_branch_filter
+var_13: &ignore_presubmit_branch_filter
   branches:
     ignore:
       - "_presubmit"
+
+# Runs a script that sets up the Bazel remote execution. This will be used by jobs that run
+# Bazel primarily and should benefit from remote caching and execution.
+var_14: &setup_bazel_remote_execution
+  run:
+    name: "Setup bazel RBE remote execution"
+    command: ./scripts/circleci/bazel/setup-remote-execution.sh
 
 # -----------------------------
 # Container version of CircleCI
@@ -105,10 +114,13 @@ jobs:
   bazel_build_test:
     <<: *job_defaults
     resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
       - *checkout_code
       - *restore_cache
       - *copy_bazel_config
+      - *setup_bazel_remote_execution
 
       - run: bazel build src/... --build_tag_filters=-docs-package
       - run: bazel test src/... --build_tag_filters=-docs-package
@@ -122,11 +134,15 @@ jobs:
   # This job fails whenever an API has been updated but not explicitly approved through goldens.
   # --------------------------------------------------------------------------------------------
   api_golden_checks:
-    resource_class: xlarge
     <<: *job_defaults
+    resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
     - *checkout_code
     - *restore_cache
+    - *copy_bazel_config
+    - *setup_bazel_remote_execution
 
     - run: bazel test tools/public_api_guard/...
 
