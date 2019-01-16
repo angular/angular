@@ -68,7 +68,9 @@ export class TocService {
         }
       }
       // now remove the anchor
-      anchorLink.remove();
+      if (anchorLink.parentNode !== null) {
+        anchorLink.parentNode.removeChild(anchorLink);
+      }
     }
     // security: the document element which provides this heading content
     // is always authored by the documentation team and is considered to be safe
