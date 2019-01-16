@@ -247,6 +247,12 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (this._position) {
       this._updatePositionStrategy(this._position);
+      this._overlayRef.updateSize({
+        width: this.width,
+        minWidth: this.minWidth,
+        height: this.height,
+        minHeight: this.minHeight,
+      });
 
       if (changes['origin'] && this.open) {
         this._position.apply();
@@ -349,13 +355,6 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       this._createOverlay();
     } else {
       // Update the overlay size, in case the directive's inputs have changed
-      this._overlayRef.updateSize({
-        width: this.width,
-        minWidth: this.minWidth,
-        height: this.height,
-        minHeight: this.minHeight,
-      });
-
       this._overlayRef.getConfig().hasBackdrop = this.hasBackdrop;
     }
 

@@ -427,6 +427,24 @@ describe('Overlay directives', () => {
       expect(fixture.componentInstance.connectedOverlayDirective.push).toBe(true);
     });
 
+    it('should update the element size if it changes while open', () => {
+      fixture.componentInstance.width = 250;
+      fixture.componentInstance.height = 250;
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+      expect(pane.style.width).toBe('250px');
+      expect(pane.style.height).toBe('250px');
+
+      fixture.componentInstance.width = 100;
+      fixture.componentInstance.height = 100;
+      fixture.detectChanges();
+
+      expect(pane.style.width).toBe('100px');
+      expect(pane.style.height).toBe('100px');
+    });
+
   });
 
   describe('outputs', () => {
