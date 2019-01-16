@@ -282,6 +282,7 @@ jobs:
   # ----------------------------------------
   publish_snapshots:
     <<: *job_defaults
+    resource_class: xlarge
     steps:
       - *checkout_code
       - *restore_cache
