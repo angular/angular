@@ -27,6 +27,9 @@ export class MatBottomSheetRef<T = any, R = any> {
    */
   containerInstance: MatBottomSheetContainer;
 
+  /** Whether the user is allowed to close the bottom sheet. */
+  disableClose: boolean | undefined;
+
   /** Subject for notifying the user that the bottom sheet has been dismissed. */
   private readonly _afterDismissed = new Subject<R | undefined>();
 
@@ -42,6 +45,7 @@ export class MatBottomSheetRef<T = any, R = any> {
     // @breaking-change 8.0.0 `_location` parameter to be removed.
     _location?: Location) {
     this.containerInstance = containerInstance;
+    this.disableClose = containerInstance.bottomSheetConfig.disableClose;
 
     // Emit when opening animation completes
     containerInstance._animationStateChanged.pipe(
@@ -64,12 +68,14 @@ export class MatBottomSheetRef<T = any, R = any> {
       this._afterDismissed.complete();
     });
 
-    if (!containerInstance.bottomSheetConfig.disableClose) {
-      merge(
-        _overlayRef.backdropClick(),
-        _overlayRef.keydownEvents().pipe(filter(event => event.keyCode === ESCAPE))
-      ).subscribe(() => this.dismiss());
-    }
+    merge(
+      _overlayRef.backdropClick(),
+      _overlayRef.keydownEvents().pipe(filter(event => event.keyCode === ESCAPE))
+    ).subscribe(() => {
+      if (!this.disableClose) {
+        this.dismiss();
+      }
+    });
   }
 
   /**

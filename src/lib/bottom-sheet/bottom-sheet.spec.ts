@@ -459,6 +459,27 @@ describe('MatBottomSheet', () => {
       expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
     }));
 
+    it('should allow for the disableClose option to be updated while open', fakeAsync(() => {
+      let bottomSheetRef = bottomSheet.open(PizzaMsg, {
+        disableClose: true,
+        viewContainerRef: testViewContainerRef
+      });
+
+      viewContainerFixture.detectChanges();
+
+      let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+      backdrop.click();
+
+      expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
+
+      bottomSheetRef.disableClose = false;
+      backdrop.click();
+      viewContainerFixture.detectChanges();
+      flush();
+
+      expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeFalsy();
+    }));
+
   });
 
   describe('hasBackdrop option', () => {
