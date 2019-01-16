@@ -9,7 +9,7 @@
 import {INJECTOR, Injector} from '../di/injector';
 import {InjectFlags} from '../di/interface/injector';
 import {StaticProvider} from '../di/interface/provider';
-import {createInjector} from '../di/r3_injector';
+import {R3Injector, createInjector} from '../di/r3_injector';
 import {Type} from '../interface/type';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -32,7 +32,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   // tslint:disable-next-line:require-internal-with-underscore
   _bootstrapComponents: Type<any>[] = [];
   // tslint:disable-next-line:require-internal-with-underscore
-  _r3Injector: Injector;
+  _r3Injector: R3Injector;
   injector: Injector = this;
   instance: T;
   destroyCbs: (() => void)[]|null = [];
@@ -52,7 +52,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
       },
       COMPONENT_FACTORY_RESOLVER
     ];
-    this._r3Injector = createInjector(ngModuleType, _parent, additionalProviders);
+    this._r3Injector = createInjector(ngModuleType, _parent, additionalProviders) as R3Injector;
     this.instance = this.get(ngModuleType);
   }
 
@@ -70,6 +70,8 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
 
   destroy(): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
+    const injector = this._r3Injector;
+    !injector.destroyed && injector.destroy();
     this.destroyCbs !.forEach(fn => fn());
     this.destroyCbs = null;
   }
