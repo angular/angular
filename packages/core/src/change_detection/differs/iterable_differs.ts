@@ -117,8 +117,12 @@ export interface IterableChangeRecord<V> {
 export interface CollectionChangeRecord<V> extends IterableChangeRecord<V> {}
 
 /**
- * An optional function passed into {@link NgForOf} that defines how to track
- * items in an iterable (e.g. fby index or id)
+ * An optional function passed into the `NgForOf` directive that defines how to track
+ * changes for items in an iterable.
+ * When supplied, Angular tracks changes by the return value of the function.
+ * @param index The iteration index.
+ * @param item The item ID.
+ * @return The value to use for tracking changes.
  *
  * @publicApi
  */
