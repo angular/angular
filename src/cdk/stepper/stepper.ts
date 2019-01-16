@@ -247,8 +247,17 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
    */
   private _document: Document | undefined;
 
-  /** The list of step components that the stepper is holding. */
+  /**
+   * The list of step components that the stepper is holding.
+   * @deprecated use `steps` instead
+   * @breaking-change 9.0.0 remove this property
+   */
   @ContentChildren(CdkStep) _steps: QueryList<CdkStep>;
+
+  /** The list of step components that the stepper is holding. */
+  get steps():  QueryList<CdkStep> {
+    return this._steps;
+  }
 
   /**
    * The list of step headers of the steps in the stepper.
@@ -267,15 +276,15 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
   @Input()
   get selectedIndex() { return this._selectedIndex; }
   set selectedIndex(index: number) {
-    if (this._steps) {
+    if (this.steps) {
       // Ensure that the index can't be out of bounds.
-      if (index < 0 || index > this._steps.length - 1) {
+      if (index < 0 || index > this.steps.length - 1) {
         throw Error('cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.');
       }
 
       if (this._selectedIndex != index &&
           !this._anyControlsInvalidOrPending(index) &&
-          (index >= this._selectedIndex || this._steps.toArray()[index].editable)) {
+          (index >= this._selectedIndex || this.steps.toArray()[index].editable)) {
         this._updateSelectedItemIndex(index);
       }
     } else {
@@ -288,10 +297,10 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
   @Input()
   get selected(): CdkStep {
     // @breaking-change 8.0.0 Change return type to `CdkStep | undefined`.
-    return this._steps ? this._steps.toArray()[this.selectedIndex] : undefined!;
+    return this.steps ? this.steps.toArray()[this.selectedIndex] : undefined!;
   }
   set selected(step: CdkStep) {
-    this.selectedIndex = this._steps ? this._steps.toArray().indexOf(step) : -1;
+    this.selectedIndex = this.steps ? this.steps.toArray().indexOf(step) : -1;
   }
 
   /** Event emitted when the selected step has changed. */
@@ -327,7 +336,7 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
 
     this._keyManager.updateActiveItemIndex(this._selectedIndex);
 
-    this._steps.changes.pipe(takeUntil(this._destroyed)).subscribe(() => {
+    this.steps.changes.pipe(takeUntil(this._destroyed)).subscribe(() => {
       if (!this.selected) {
         this._selectedIndex = Math.max(this._selectedIndex - 1, 0);
       }
@@ -341,7 +350,7 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
 
   /** Selects and focuses the next step in list. */
   next(): void {
-    this.selectedIndex = Math.min(this._selectedIndex + 1, this._steps.length - 1);
+    this.selectedIndex = Math.min(this._selectedIndex + 1, this.steps.length - 1);
   }
 
   /** Selects and focuses the previous step in list. */
@@ -352,7 +361,7 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
   /** Resets the stepper to its initial state. Note that this includes clearing form data. */
   reset(): void {
     this._updateSelectedItemIndex(0);
-    this._steps.forEach(step => step.reset());
+    this.steps.forEach(step => step.reset());
     this._stateChanged();
   }
 
@@ -384,7 +393,7 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
 
   /** Returns the type of icon to be displayed. */
   _getIndicatorType(index: number, state: StepState = STEP_STATE.NUMBER): StepState {
-    const step = this._steps.toArray()[index];
+    const step = this.steps.toArray()[index];
     const isCurrentStep = this._isCurrentStep(index);
 
     return step._displayDefaultIndicatorType
@@ -429,7 +438,7 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
   }
 
   private _updateSelectedItemIndex(newIndex: number): void {
-    const stepsArray = this._steps.toArray();
+    const stepsArray = this.steps.toArray();
     this.selectionChange.emit({
       selectedIndex: newIndex,
       previouslySelectedIndex: this._selectedIndex,
@@ -469,7 +478,7 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
   }
 
   private _anyControlsInvalidOrPending(index: number): boolean {
-    const steps = this._steps.toArray();
+    const steps = this.steps.toArray();
 
     steps[this._selectedIndex].interacted = true;
 
