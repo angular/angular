@@ -8,7 +8,7 @@
 
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {coerceNumberProperty} from '@angular/cdk/coercion';
-import {END, ENTER, HOME, SPACE} from '@angular/cdk/keycodes';
+import {END, ENTER, HOME, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterContentChecked,
@@ -176,6 +176,11 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
   }
 
   _handleKeydown(event: KeyboardEvent) {
+    // We don't handle any key bindings with a modifier key.
+    if (hasModifierKey(event)) {
+      return;
+    }
+
     switch (event.keyCode) {
       case HOME:
         this._keyManager.setFirstItemActive();

@@ -2,7 +2,12 @@ import {Direction, Directionality} from '@angular/cdk/bidi';
 import {END, ENTER, HOME, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
 import {PortalModule} from '@angular/cdk/portal';
 import {ScrollingModule, ViewportRuler} from '@angular/cdk/scrolling';
-import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {
+  dispatchFakeEvent,
+  dispatchKeyboardEvent,
+  createKeyboardEvent,
+  dispatchEvent,
+} from '@angular/cdk/testing';
 import {CommonModule} from '@angular/common';
 import {Component, ViewChild} from '@angular/core';
 import {
@@ -191,6 +196,30 @@ describe('MatTabHeader', () => {
       fixture.detectChanges();
 
       expect(appComponent.tabHeader.focusIndex).toBe(2);
+    });
+
+    it('should not do anything if a modifier key is pressed', () => {
+      const rightArrowEvent = createKeyboardEvent('keydown', RIGHT_ARROW);
+      const enterEvent = createKeyboardEvent('keydown', ENTER);
+
+      [rightArrowEvent, enterEvent].forEach(event => {
+        Object.defineProperty(event, 'shiftKey', {get: () => true});
+      });
+
+      appComponent.tabHeader.focusIndex = 0;
+      fixture.detectChanges();
+      expect(appComponent.tabHeader.focusIndex).toBe(0);
+
+      dispatchEvent(tabListContainer, rightArrowEvent);
+      fixture.detectChanges();
+      expect(appComponent.tabHeader.focusIndex).toBe(0);
+      expect(rightArrowEvent.defaultPrevented).toBe(false);
+
+      expect(appComponent.selectedIndex).toBe(0);
+      dispatchEvent(tabListContainer, enterEvent);
+      fixture.detectChanges();
+      expect(appComponent.selectedIndex).toBe(0);
+      expect(enterEvent.defaultPrevented).toBe(false);
     });
 
   });
