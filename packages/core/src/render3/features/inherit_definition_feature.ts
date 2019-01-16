@@ -7,10 +7,10 @@
  */
 
 import {Type} from '../../interface/type';
+import {Component} from '../../metadata/directives';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../interfaces/definition';
-import { Component } from '../../metadata/directives';
 
 
 

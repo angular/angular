@@ -519,7 +519,10 @@ describe('InheritDefinitionFeature', () => {
       if (rf & RenderFlags.Create) {
         element(0, 'div', ['subDir', '']);
       }
-    }, 1, 0, [SubDirective]);
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'someInput', bind(1));
+      }
+    }, 1, 1, [SubDirective]);
 
     const fixture = new ComponentFixture(App);
     expect(log).toEqual(['on changes!']);

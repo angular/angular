@@ -1873,7 +1873,6 @@ withEachNg1Version(() => {
              });
            }));
 
-        fixmeIvy('FW-956: refactor onChanges').
         it('should call `$onChanges()` on binding destination', fakeAsync(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
              const $onChangesControllerSpyA = jasmine.createSpy('$onChangesControllerA');

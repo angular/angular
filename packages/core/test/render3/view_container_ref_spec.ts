@@ -1677,7 +1677,8 @@ describe('ViewContainerRef', () => {
               elementProperty(3, 'name', bind('B'));
             }
           },
-          directives: [ComponentWithHooks, DirectiveWithVCRef]
+          directives: [ComponentWithHooks, DirectiveWithVCRef],
+          features: [NgOnChangesFeature],
         });
       }
 
@@ -1769,7 +1770,8 @@ describe('ViewContainerRef', () => {
               elementProperty(1, 'name', bind('B'));
             }
           },
-          directives: [ComponentWithHooks, DirectiveWithVCRef]
+          directives: [ComponentWithHooks, DirectiveWithVCRef],
+          features: [NgOnChangesFeature],
         });
       }
 
@@ -1801,7 +1803,7 @@ describe('ViewContainerRef', () => {
       fixture.update();
       expect(fixture.html).toEqual('<hooks vcref="">A</hooks><hooks>D</hooks><hooks>B</hooks>');
       expect(log).toEqual([
-        'doCheck-A', 'doCheck-B', 'onChanges-D', 'onInit-D', 'doCheck-D', 'afterContentInit-D',
+        'doCheck-A', 'doCheck-B', 'onInit-D', 'doCheck-D', 'afterContentInit-D',
         'afterContentChecked-D', 'afterViewInit-D', 'afterViewChecked-D', 'afterContentChecked-A',
         'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
       ]);

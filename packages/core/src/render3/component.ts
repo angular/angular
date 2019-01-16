@@ -17,6 +17,7 @@ import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {publishDefaultGlobalUtils} from './global_utils';
+import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
 import {CLEAN_PROMISE, createLView, createNodeAtIndex, createTNode, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
@@ -25,7 +26,6 @@ import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './inte
 import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
 import {defaultScheduler, getRootView, readPatchedLView, renderStringify} from './util';
-import { registerPreOrderHooks, registerPostOrderHooks } from './hooks';
 
 
 
@@ -240,7 +240,8 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
   registerPreOrderHooks(dirIndex, def, rootTView);
   // TODO(misko): replace `as TNode` with createTNode call. (needs refactoring to lose dep on
   // LNode).
-  registerPostOrderHooks(rootTView, { directiveStart: dirIndex, directiveEnd: dirIndex + 1 } as TNode);
+  registerPostOrderHooks(
+      rootTView, { directiveStart: dirIndex, directiveEnd: dirIndex + 1 } as TNode);
 }
 
 /**

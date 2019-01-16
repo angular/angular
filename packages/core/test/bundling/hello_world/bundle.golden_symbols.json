@@ -96,9 +96,6 @@
     "name": "PARENT_INJECTOR"
   },
   {
-    "name": "PRIVATE_PREFIX"
-  },
-  {
     "name": "RENDERER"
   },
   {
@@ -106,6 +103,9 @@
   },
   {
     "name": "SANITIZER"
+  },
+  {
+    "name": "SIMPLE_CHANGES_STORE"
   },
   {
     "name": "SimpleChange"
@@ -303,6 +303,9 @@
     "name": "getRootView"
   },
   {
+    "name": "getSimpleChangesStore"
+  },
+  {
     "name": "hasParentInjector"
   },
   {
@@ -354,10 +357,10 @@
     "name": "nextNgElementId"
   },
   {
-    "name": "noSideEffects"
+    "name": "ngOnChangesSetInput"
   },
   {
-    "name": "onChangesWrapper"
+    "name": "noSideEffects"
   },
   {
     "name": "postProcessBaseDirective"
@@ -426,6 +429,9 @@
     "name": "setPreviousOrParentTNode"
   },
   {
+    "name": "setSimpleChangesStore"
+  },
+  {
     "name": "setTNodeAndViewData"
   },
   {
@@ -442,5 +448,8 @@
   },
   {
     "name": "viewAttached"
+  },
+  {
+    "name": "wrapOnChanges"
   }
 ]

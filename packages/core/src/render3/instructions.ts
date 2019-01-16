@@ -959,10 +959,10 @@ function listenerInternal(
     const propsLength = props.length;
     if (propsLength) {
       const lCleanup = getCleanup(lView);
-      for (let i = 0; i < propsLength; i += 2) {
+      for (let i = 0; i < propsLength; i += 3) {
         const index = props[i] as number;
         ngDevMode && assertDataInRange(lView, index);
-        const minifiedName = props[i + 1];
+        const minifiedName = props[i + 2];
         const directiveInstance = lView[index];
         const output = directiveInstance[minifiedName];
 
@@ -1214,18 +1214,29 @@ export function createTNode(
  * @param value Value to set.
  */
 function setInputsForProperty(lView: LView, inputs: PropertyAliasValue, value: any): void {
-  for (let i = 0; i < inputs.length; i += 2) {
-    ngDevMode && assertDataInRange(lView, inputs[i] as number);
-    lView[inputs[i] as number][inputs[i + 1]] = value;
+  const tView = lView[TVIEW];
+  for (let i = 0; i < inputs.length;) {
+    const index = inputs[i++] as number;
+    const publicName = inputs[i++] as string;
+    const privateName = inputs[i++] as string;
+    const instance = lView[index];
+    ngDevMode && assertDataInRange(lView, index);
+    const def = tView.data[index] as DirectiveDef<any>;
+    const setInput = def.setInput;
+    if (setInput) {
+      def.setInput !(instance, value, publicName, privateName);
+    } else {
+      instance[privateName] = value;
+    }
   }
 }
 
 function setNgReflectProperties(
     lView: LView, element: RElement | RComment, type: TNodeType, inputs: PropertyAliasValue,
     value: any) {
-  for (let i = 0; i < inputs.length; i += 2) {
+  for (let i = 0; i < inputs.length; i += 3) {
     const renderer = lView[RENDERER];
-    const attrName = normalizeDebugBindingName(inputs[i + 1] as string);
+    const attrName = normalizeDebugBindingName(inputs[i + 2] as string);
     const debugValue = normalizeDebugBindingValue(value);
     if (type === TNodeType.Element) {
       isProceduralRenderer(renderer) ?
@@ -1268,8 +1279,8 @@ function generatePropertyAliases(tNode: TNode, direction: BindingDirection): Pro
           propStore = propStore || {};
           const internalName = propertyAliasMap[publicName];
           const hasProperty = propStore.hasOwnProperty(publicName);
-          hasProperty ? propStore[publicName].push(i, internalName) :
-                        (propStore[publicName] = [i, internalName]);
+          hasProperty ? propStore[publicName].push(i, publicName, internalName) :
+                        (propStore[publicName] = [i, publicName, internalName]);
         }
       }
     }
@@ -1702,7 +1713,7 @@ function postProcessDirective<T>(
   postProcessBaseDirective(viewData, previousOrParentTNode, directive, def);
   ngDevMode && assertDefined(previousOrParentTNode, 'previousOrParentTNode');
   if (previousOrParentTNode && previousOrParentTNode.attrs) {
-    setInputsFromAttrs(directiveDefIdx, directive, def.inputs, previousOrParentTNode);
+    setInputsFromAttrs(directiveDefIdx, directive, def, previousOrParentTNode);
   }
 
   if (def.contentQueries) {
@@ -1903,16 +1914,24 @@ function addComponentLogic<T>(
  * @param tNode The static data for this node
  */
 function setInputsFromAttrs<T>(
-    directiveIndex: number, instance: T, inputs: {[P in keyof T]: string;}, tNode: TNode): void {
+    directiveIndex: number, instance: T, def: DirectiveDef<T>, tNode: TNode): void {
   let initialInputData = tNode.initialInputs as InitialInputData | undefined;
   if (initialInputData === undefined || directiveIndex >= initialInputData.length) {
-    initialInputData = generateInitialInputs(directiveIndex, inputs, tNode);
+    initialInputData = generateInitialInputs(directiveIndex, def.inputs, tNode);
   }
 
   const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
   if (initialInputs) {
-    for (let i = 0; i < initialInputs.length; i += 2) {
-      (instance as any)[initialInputs[i]] = initialInputs[i + 1];
+    const setInput = def.setInput;
+    for (let i = 0; i < initialInputs.length;) {
+      const publicName = initialInputs[i++];
+      const privateName = initialInputs[i++];
+      const value = initialInputs[i++];
+      if (setInput) {
+        def.setInput !(instance, value, publicName, privateName);
+      } else {
+        (instance as any)[privateName] = value;
+      }
     }
   }
 }
@@ -1956,7 +1975,7 @@ function generateInitialInputs(
     if (minifiedInputName !== undefined) {
       const inputsToStore: InitialInputs =
           initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);
-      inputsToStore.push(minifiedInputName, attrValue as string);
+      inputsToStore.push(attrName, minifiedInputName, attrValue as string);
     }
 
     i += 2;
