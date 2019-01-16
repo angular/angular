@@ -158,7 +158,9 @@ describe('FlexibleConnectedPositionStrategy', () => {
           overlayX: 'start',
           overlayY: 'top',
           originX: 'start',
-          originY: 'bottom'
+          originY: 'bottom',
+          offsetX: 10,
+          offsetY: 20
         }]);
 
     // Needs to be in the DOM for IE not to throw an "Unspecified error".
@@ -185,6 +187,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
     expect(pane.style.left).toBeFalsy();
     expect(pane.style.right).toBeFalsy();
     expect(pane.style.position).toBeFalsy();
+    expect(pane.style.transform).toBeFalsy();
 
     overlayRef.dispose();
     document.body.removeChild(origin);

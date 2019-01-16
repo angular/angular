@@ -857,6 +857,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       bottom: '',
       right: '',
       position: '',
+      transform: '',
     } as CSSStyleDeclaration);
   }
 
