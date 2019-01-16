@@ -9,7 +9,7 @@
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {relativePathBetween} from '../../util/src/path';
+import {normalizeSeparators, relativePathBetween} from '../../util/src/path';
 
 import {ShimGenerator} from './host';
 import {generatedModuleName, isNonDeclarationTsFile} from './util';
@@ -88,6 +88,7 @@ export class FactoryGenerator implements ShimGenerator {
   static forRootFiles(files: ReadonlyArray<string>): FactoryGenerator {
     const map = new Map<string, string>();
     files.filter(sourceFile => isNonDeclarationTsFile(sourceFile))
+        .map(sourceFile => normalizeSeparators(sourceFile))
         .forEach(sourceFile => map.set(sourceFile.replace(/\.ts$/, '.ngfactory.ts'), sourceFile));
     return new FactoryGenerator(map);
   }
