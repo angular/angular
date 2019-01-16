@@ -16,6 +16,7 @@ import {UpgradeComponent, downgradeComponent, downgradeModule} from '@angular/up
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 import {$EXCEPTION_HANDLER, $ROOT_SCOPE, INJECTOR_KEY, LAZY_MODULE_REF} from '@angular/upgrade/static/src/common/constants';
 import {LazyModuleRef} from '@angular/upgrade/static/src/common/util';
+import {setTempInjectorRef} from '@angular/upgrade/static/src/static/angular1_providers';
 
 import {html, multiTrim, withEachNg1Version} from '../test_helpers';
 
@@ -1295,6 +1296,12 @@ withEachNg1Version(() => {
           downModB = doDowngradeModule(Ng2ModuleB);
           errorSpy = jasmine.createSpy($EXCEPTION_HANDLER);
         });
+
+        // In the tests below, some of the components' bootstrap process is interrupted by an error.
+        // If the bootstrap process for other components/modules is not completed in time, there is
+        // a chance that some global state is retained, possibly messing subsequent tests.
+        // Explicitly clean up after each test to prevent that.
+        afterEach(() => setTempInjectorRef(null !));
 
         it('should throw if no downgraded module is included', async(() => {
              const ng1Module = angular.module('ng1', [])
