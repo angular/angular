@@ -602,11 +602,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       return element.children.length > 0;
     };
 
-    const createSelfClosingInstruction = !stylingBuilder.hasBindingsOrInitialValues() &&
-        !isNgContainer && element.outputs.length === 0 && i18nAttrs.length === 0 && !hasChildren();
+    const createSelfClosingInstruction = !stylingBuilder.hasBindings && !isNgContainer &&
+        element.outputs.length === 0 && i18nAttrs.length === 0 && !hasChildren();
 
     const createSelfClosingI18nInstruction = !createSelfClosingInstruction &&
-        !stylingBuilder.hasBindingsOrInitialValues() && hasTextChildrenOnly(element.children);
+        !stylingBuilder.hasBindings && hasTextChildrenOnly(element.children);
 
     if (createSelfClosingInstruction) {
       this.creationInstruction(element.sourceSpan, R3.element, trimTrailingNulls(parameters));
@@ -682,6 +682,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // `elementStylingMap`, `elementClassProp` and `elementStylingApply` are all generated
     // and assign in the code below.
     stylingBuilder.buildUpdateLevelInstructions(this._valueConverter).forEach(instruction => {
+      this._bindingSlots += instruction.allocateBindingSlots;
       this.processStylingInstruction(implicit, instruction, false);
     });
 

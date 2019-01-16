@@ -2915,11 +2915,10 @@ const DEFAULT_COMPONENT_ID = '1';
            expect(cmp.log).toEqual(['parent-done', 'child-done']);
          }));
 
-      fixmeIvy(
-          'FW-944 - style/class bindings lose track of consts/vars when interpolation is present')
-          .it('should fire callbacks and collect the correct the totalTime and element details for any queried sub animations',
-              fakeAsync(() => {
-                @Component({
+      it('should fire callbacks and collect the correct the totalTime and element details for any queried sub animations',
+         fakeAsync(
+             () => {
+               @Component({
           selector: 'my-cmp',
           template: `
               <div class="parent" [@parent]="exp" (@parent.done)="cb('all','done', $event)">
@@ -2955,62 +2954,62 @@ const DEFAULT_COMPONENT_ID = '1';
           ]
         })
         class Cmp {
-                  log: string[] = [];
-                  events: {[name: string]: any} = {};
-                  // TODO(issue/24571): remove '!'.
-                  exp !: string;
-                  items: any = [0, 1, 2, 3];
+                 log: string[] = [];
+                 events: {[name: string]: any} = {};
+                 // TODO(issue/24571): remove '!'.
+                 exp !: string;
+                 items: any = [0, 1, 2, 3];
 
-                  cb(name: string, phase: string, event: AnimationEvent) {
-                    this.log.push(name + '-' + phase);
-                    this.events[name] = event;
-                  }
-                }
+                 cb(name: string, phase: string, event: AnimationEvent) {
+                   this.log.push(name + '-' + phase);
+                   this.events[name] = event;
+                 }
+               }
 
-                TestBed.configureTestingModule({declarations: [Cmp]});
+               TestBed.configureTestingModule({declarations: [Cmp]});
 
-                const engine = TestBed.get(ɵAnimationEngine);
-                const fixture = TestBed.createComponent(Cmp);
-                const cmp = fixture.componentInstance;
-                cmp.exp = 'go';
-                fixture.detectChanges();
-                engine.flush();
-                flushMicrotasks();
+               const engine = TestBed.get(ɵAnimationEngine);
+               const fixture = TestBed.createComponent(Cmp);
+               const cmp = fixture.componentInstance;
+               cmp.exp = 'go';
+               fixture.detectChanges();
+               engine.flush();
+               flushMicrotasks();
 
-                expect(cmp.log).toEqual(['c-0-start', 'c-1-start', 'c-2-start', 'c-3-start']);
-                cmp.log = [];
+               expect(cmp.log).toEqual(['c-0-start', 'c-1-start', 'c-2-start', 'c-3-start']);
+               cmp.log = [];
 
-                const players = getLog();
-                // 1 + 4 + 4 = 9 players
-                expect(players.length).toEqual(9);
+               const players = getLog();
+               // 1 + 4 + 4 = 9 players
+               expect(players.length).toEqual(9);
 
-                const [pA, pq1a, pq1b, pq1c, pq1d, pq2a, pq2b, pq2c, pq2d] = getLog();
-                pA.finish();
-                pq1a.finish();
-                pq1b.finish();
-                pq1c.finish();
-                pq1d.finish();
-                flushMicrotasks();
+               const [pA, pq1a, pq1b, pq1c, pq1d, pq2a, pq2b, pq2c, pq2d] = getLog();
+               pA.finish();
+               pq1a.finish();
+               pq1b.finish();
+               pq1c.finish();
+               pq1d.finish();
+               flushMicrotasks();
 
-                expect(cmp.log).toEqual([]);
-                pq2a.finish();
-                pq2b.finish();
-                pq2c.finish();
-                pq2d.finish();
-                flushMicrotasks();
+               expect(cmp.log).toEqual([]);
+               pq2a.finish();
+               pq2b.finish();
+               pq2c.finish();
+               pq2d.finish();
+               flushMicrotasks();
 
-                expect(cmp.log).toEqual(
-                    ['all-done', 'c-0-done', 'c-1-done', 'c-2-done', 'c-3-done']);
+               expect(cmp.log).toEqual(
+                   ['all-done', 'c-0-done', 'c-1-done', 'c-2-done', 'c-3-done']);
 
-                expect(cmp.events['c-0'].totalTime).toEqual(4100);  // 1000 + 1000 + 1800 + 300
-                expect(cmp.events['c-0'].element.innerText.trim()).toEqual('0');
-                expect(cmp.events['c-1'].totalTime).toEqual(4100);
-                expect(cmp.events['c-1'].element.innerText.trim()).toEqual('1');
-                expect(cmp.events['c-2'].totalTime).toEqual(4100);
-                expect(cmp.events['c-2'].element.innerText.trim()).toEqual('2');
-                expect(cmp.events['c-3'].totalTime).toEqual(4100);
-                expect(cmp.events['c-3'].element.innerText.trim()).toEqual('3');
-              }));
+               expect(cmp.events['c-0'].totalTime).toEqual(4100);  // 1000 + 1000 + 1800 + 300
+               expect(cmp.events['c-0'].element.innerText.trim()).toEqual('0');
+               expect(cmp.events['c-1'].totalTime).toEqual(4100);
+               expect(cmp.events['c-1'].element.innerText.trim()).toEqual('1');
+               expect(cmp.events['c-2'].totalTime).toEqual(4100);
+               expect(cmp.events['c-2'].element.innerText.trim()).toEqual('2');
+               expect(cmp.events['c-3'].totalTime).toEqual(4100);
+               expect(cmp.events['c-3'].element.innerText.trim()).toEqual('3');
+             }));
     });
 
     describe('animation control flags', () => {
