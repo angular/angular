@@ -578,6 +578,20 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBeFalsy();
     }));
 
+    it('should preserve initial transform after resetting', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      dragElement.style.transform = 'scale(2)';
+
+      dragElementViaMouse(fixture, dragElement, 50, 100);
+      expect(dragElement.style.transform).toBe('scale(2) translate3d(50px, 100px, 0px)');
+
+      fixture.componentInstance.dragInstance.reset();
+      expect(dragElement.style.transform).toBe('scale(2)');
+    }));
+
     it('should start dragging an item from its initial position after a reset', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable);
       fixture.detectChanges();

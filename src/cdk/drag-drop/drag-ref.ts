@@ -374,7 +374,7 @@ export class DragRef<T = any> {
 
   /** Resets a standalone drag item to its initial position. */
   reset(): void {
-    this._rootElement.style.transform = '';
+    this._rootElement.style.transform = this._initialTransform || '';
     this._activeTransform = {x: 0, y: 0};
     this._passiveTransform = {x: 0, y: 0};
   }
