@@ -1,5 +1,5 @@
 import {DataSource} from '@angular/cdk/collections';
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, AfterViewInit} from '@angular/core';
 import {
   async,
   ComponentFixture,
@@ -151,14 +151,14 @@ describe('MatTable', () => {
     let dataSource: MatTableDataSource<TestData>;
     let component: ArrayDataSourceMatTableApp;
 
-    beforeEach(() => {
+    beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(ArrayDataSourceMatTableApp);
       fixture.detectChanges();
 
       tableElement = fixture.nativeElement.querySelector('.mat-table');
       component = fixture.componentInstance;
       dataSource = fixture.componentInstance.dataSource;
-    });
+    }));
 
     it('should create table and display data source contents', () => {
       expectTableToMatchContent(tableElement, [
@@ -196,6 +196,33 @@ describe('MatTable', () => {
         ['Footer A', 'Footer B', 'Footer C'],
       ]);
     });
+
+    it('should update the page index when switching to a smaller data set from a page',
+      fakeAsync(() => {
+        // Add 20 rows so we can switch pages.
+        for (let i = 0; i < 20; i++) {
+          component.underlyingDataSource.addData();
+          fixture.detectChanges();
+          tick();
+          fixture.detectChanges();
+        }
+
+        // Go to the last page.
+        fixture.componentInstance.paginator.lastPage();
+        fixture.detectChanges();
+
+        // Switch to a smaller data set.
+        dataSource.data = [{a: 'a_0', b: 'b_0', c: 'c_0'}];
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
+
+        expectTableToMatchContent(tableElement, [
+          ['Column A', 'Column B', 'Column C'],
+          ['a_0', 'b_0', 'c_0'],
+          ['Footer A', 'Footer B', 'Footer C'],
+        ]);
+      }));
 
     it('should be able to filter the table contents', fakeAsync(() => {
       // Change filter to a_1, should match one row
@@ -650,7 +677,7 @@ class MatTableWithWhenRowApp {
     <mat-paginator [pageSize]="5"></mat-paginator>
   `
 })
-class ArrayDataSourceMatTableApp implements OnInit {
+class ArrayDataSourceMatTableApp implements AfterViewInit {
   underlyingDataSource = new FakeDataSource();
   dataSource = new MatTableDataSource<TestData>();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
@@ -673,9 +700,9 @@ class ArrayDataSourceMatTableApp implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.dataSource!.sort = this.sort;
-    this.dataSource!.paginator = this.paginator;
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
   }
 }
 
