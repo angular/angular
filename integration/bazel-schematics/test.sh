@@ -13,6 +13,7 @@ function testBazel() {
   # TODO(kyliau) Remove this once the type annotations are added to AppPage
   # https://github.com/angular/angular-cli/pull/13406
   cp ../app.po.ts ./e2e/src/
+  cp ../package.json.replace ./package.json
   # Run build
   # TODO(kyliau): Use `bazel build` for now. Running `ng build` requires
   # node_modules to be available in project directory.
