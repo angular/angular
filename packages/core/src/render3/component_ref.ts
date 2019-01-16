@@ -102,6 +102,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
   selector: string;
   componentType: Type<any>;
   ngContentSelectors: string[];
+  isBoundToModule: boolean;
 
   get inputs(): {propName: string; templateName: string;}[] {
     return toRefArray(this.componentDef.inputs);
@@ -124,6 +125,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     // It is implicitly expected as the first item in the projectable nodes array.
     this.ngContentSelectors =
         componentDef.ngContentSelectors ? ['*', ...componentDef.ngContentSelectors] : [];
+    this.isBoundToModule = !!ngModule;
   }
 
   create(
