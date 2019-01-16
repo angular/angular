@@ -31,7 +31,7 @@ export class NgForOfContext<T> {
  * The directive is placed on an element, which becomes the parent
  * of the cloned templates.
  *
- * The `ngForOf` is generally used in the
+ * The `ngForOf` directive is generally used in the
  * [shorthand form](guide/structural-directives#the-asterisk--prefix) `*ngFor`.
  * In this form, the template to be rendered for each iteration is the content
  * of an anchor element containing the directive.
@@ -124,11 +124,19 @@ export class NgForOfContext<T> {
  */
 @Directive({selector: '[ngFor][ngForOf]'})
 export class NgForOf<T> implements DoCheck {
+  /**
+   * The value of the iterable expression, which can be used as a
+   * [template input variable](guide/structural-directives#template-input-variable).
+   */
   @Input()
   set ngForOf(ngForOf: NgIterable<T>) {
     this._ngForOf = ngForOf;
     this._ngForOfDirty = true;
   }
+  /**
+   * A function that customizes the default tracking algorithm.
+   * When supplied, Angular tracks changes by the return value of the function.
+   */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
     if (isDevMode() && fn != null && typeof fn !== 'function') {
@@ -155,6 +163,11 @@ export class NgForOf<T> implements DoCheck {
       private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForOfContext<T>>,
       private _differs: IterableDiffers) {}
 
+  /**
+   * The [template reference variable](guide/template-syntax#template-reference-variables--var-)
+   * for the expanded directive.
+   * Compare [template input variable](guide/structural-directives#template-input-variable)
+   */
   @Input()
   set ngForTemplate(value: TemplateRef<NgForOfContext<T>>) {
     // TODO(TS2.1): make TemplateRef<Partial<NgForRowOf<T>>> once we move to TS v2.1
