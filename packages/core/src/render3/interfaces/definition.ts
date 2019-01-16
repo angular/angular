@@ -84,14 +84,14 @@ export interface BaseDef<T> {
    * @deprecated This is only here because `NgOnChanges` incorrectly uses declared name instead of
    * public or minified name.
    */
-  readonly declaredInputs: {[P in keyof T]: P};
+  readonly declaredInputs: {[P in keyof T]: string};
 
   /**
    * A dictionary mapping the outputs' minified property names to their public API names, which
    * are their aliases if any, or their original unminified property names
    * (as in `@Output('alias') propertyName: any;`).
    */
-  readonly outputs: {[P in keyof T]: P};
+  readonly outputs: {[P in keyof T]: string};
 }
 
 /**
@@ -152,6 +152,10 @@ export interface DirectiveDef<T> extends BaseDef<T> {
    * The features applied to this directive
    */
   readonly features: DirectiveDefFeature[]|null;
+
+  setInput:
+      ((this: DirectiveDef<T>, instance: T, value: any, publicName: string,
+        privateName: string) => void)|null;
 }
 
 export type ComponentDefWithMeta<

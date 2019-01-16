@@ -168,9 +168,6 @@
     "name": "PARENT_INJECTOR"
   },
   {
-    "name": "PRIVATE_PREFIX"
-  },
-  {
     "name": "QUERIES"
   },
   {
@@ -187,6 +184,9 @@
   },
   {
     "name": "SANITIZER"
+  },
+  {
+    "name": "SIMPLE_CHANGES_STORE"
   },
   {
     "name": "SWITCH_ELEMENT_REF_FACTORY"
@@ -786,6 +786,9 @@
     "name": "getRootView"
   },
   {
+    "name": "getSimpleChangesStore"
+  },
+  {
     "name": "getSinglePropIndexValue"
   },
   {
@@ -1014,10 +1017,10 @@
     "name": "nextNgElementId"
   },
   {
-    "name": "noSideEffects"
+    "name": "ngOnChangesSetInput"
   },
   {
-    "name": "onChangesWrapper"
+    "name": "noSideEffects"
   },
   {
     "name": "pointers"
@@ -1185,6 +1188,9 @@
     "name": "setSanitizeFlag"
   },
   {
+    "name": "setSimpleChangesStore"
+  },
+  {
     "name": "setStyle"
   },
   {
@@ -1249,5 +1255,8 @@
   },
   {
     "name": "wrapListenerWithPreventDefault"
+  },
+  {
+    "name": "wrapOnChanges"
   }
 ]

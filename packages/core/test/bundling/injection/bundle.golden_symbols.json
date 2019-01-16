@@ -9,6 +9,9 @@
     "name": "EMPTY_ARRAY"
   },
   {
+    "name": "EMPTY_OBJ"
+  },
+  {
     "name": "EmptyErrorImpl"
   },
   {
@@ -51,10 +54,10 @@
     "name": "PARAMETERS"
   },
   {
-    "name": "PRIVATE_PREFIX"
+    "name": "R3Injector"
   },
   {
-    "name": "R3Injector"
+    "name": "SIMPLE_CHANGES_STORE"
   },
   {
     "name": "ScopedService"
@@ -123,6 +126,9 @@
     "name": "getNullInjector"
   },
   {
+    "name": "getSimpleChangesStore"
+  },
+  {
     "name": "hasDeps"
   },
   {
@@ -165,7 +171,7 @@
     "name": "makeRecord"
   },
   {
-    "name": "onChangesWrapper"
+    "name": "ngOnChangesSetInput"
   },
   {
     "name": "providerToFactory"
@@ -180,6 +186,12 @@
     "name": "setCurrentInjector"
   },
   {
+    "name": "setSimpleChangesStore"
+  },
+  {
     "name": "stringify"
+  },
+  {
+    "name": "wrapOnChanges"
   }
 ]
