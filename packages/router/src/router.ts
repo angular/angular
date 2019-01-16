@@ -920,7 +920,15 @@ export class Router {
           // hybrid apps.
           setTimeout(() => {
             const {source, state, urlTree} = currentChange;
-            this.scheduleNavigation(urlTree, source, state, {replaceUrl: true});
+            const extras: NavigationExtras = {replaceUrl: true};
+            if (state) {
+              const stateCopy = {...state};
+              delete stateCopy.navigationId;
+              if (Object.keys(stateCopy).length !== 0) {
+                extras.state = stateCopy;
+              }
+            }
+            this.scheduleNavigation(urlTree, source, state, extras);
           }, 0);
         }
         this.lastLocationChangeInfo = currentChange;
