@@ -211,7 +211,8 @@ export {
 //
 // no code actually imports these symbols from the @angular/core entry point
 export {
-  compileNgModuleFactory__POST_R3__ as ɵcompileNgModuleFactory__POST_R3__
+  compileNgModuleFactory__POST_R3__ as ɵcompileNgModuleFactory__POST_R3__,
+  isBoundToModule__POST_R3__ as ɵisBoundToModule__POST_R3__
 } from './application_ref';
 export {
   SWITCH_COMPILE_COMPONENT__POST_R3__ as ɵSWITCH_COMPILE_COMPONENT__POST_R3__,
