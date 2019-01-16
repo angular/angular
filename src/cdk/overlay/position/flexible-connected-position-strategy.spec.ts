@@ -1777,6 +1777,47 @@ describe('FlexibleConnectedPositionStrategy', () => {
       document.body.removeChild(veryLargeElement);
     });
 
+    it('should size the bounding box correctly when opening downwards on a scrolled page', () => {
+      const viewportMargin = 10;
+      const veryLargeElement: HTMLElement = document.createElement('div');
+      veryLargeElement.style.width = '4000px';
+      veryLargeElement.style.height = '4000px';
+      document.body.appendChild(veryLargeElement);
+      window.scroll(2100, 2100);
+
+      originElement.style.position = 'fixed';
+      originElement.style.top = '100px';
+      originElement.style.left = '200px';
+
+      positionStrategy
+        .withFlexibleDimensions()
+        .withPush(false)
+        .withViewportMargin(viewportMargin)
+        .withPositions([{
+          overlayY: 'top',
+          overlayX: 'start',
+          originY: 'bottom',
+          originX: 'start'
+        }]);
+
+      attachOverlay({positionStrategy});
+
+      const boundingBox = overlayContainer
+        .getContainerElement()
+        .querySelector('.cdk-overlay-connected-position-bounding-box') as HTMLElement;
+
+      // Use the `documentElement` here to determine the viewport
+      // height since it's what is used by the overlay.
+      const viewportHeight = document.documentElement!.clientHeight - (2 * viewportMargin);
+      const originRect = originElement.getBoundingClientRect();
+      const boundingBoxRect = boundingBox.getBoundingClientRect();
+
+      expect(Math.floor(boundingBoxRect.height))
+          .toBe(Math.floor(viewportHeight - originRect.bottom + viewportMargin));
+
+      window.scroll(0, 0);
+      document.body.removeChild(veryLargeElement);
+    });
 
   });
 
