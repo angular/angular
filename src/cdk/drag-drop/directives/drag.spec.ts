@@ -490,6 +490,26 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBeFalsy();
     }));
 
+    it('should preserve the initial transform if the root element changes', fakeAsync(() => {
+      const fixture = createComponent(DraggableWithAlternateRoot);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const alternateRoot = fixture.componentInstance.dragRoot.nativeElement;
+
+      dragElement.style.transform = 'translateX(-50%)';
+      dragElementViaMouse(fixture, dragElement, 50, 100);
+      expect(dragElement.style.transform).toContain('translateX(-50%)');
+
+      alternateRoot.style.transform = 'scale(2)';
+      fixture.componentInstance.rootElementSelector = '.alternate-root';
+      fixture.detectChanges();
+
+      dragElementViaMouse(fixture, alternateRoot, 50, 100);
+
+      expect(alternateRoot.style.transform).not.toContain('translateX(-50%)');
+      expect(alternateRoot.style.transform).toContain('scale(2)');
+    }));
+
     it('should handle the root element selector changing after init', fakeAsync(() => {
       const fixture = createComponent(DraggableWithAlternateRoot);
       fixture.detectChanges();
