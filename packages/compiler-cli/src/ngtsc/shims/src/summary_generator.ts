@@ -8,6 +8,8 @@
 
 import * as ts from 'typescript';
 
+import {normalizeSeparators} from '../../util/src/path';
+
 import {ShimGenerator} from './host';
 import {generatedModuleName, isNonDeclarationTsFile} from './util';
 
@@ -62,6 +64,7 @@ export class SummaryGenerator implements ShimGenerator {
   static forRootFiles(files: ReadonlyArray<string>): SummaryGenerator {
     const map = new Map<string, string>();
     files.filter(sourceFile => isNonDeclarationTsFile(sourceFile))
+        .map(sourceFile => normalizeSeparators(sourceFile))
         .forEach(sourceFile => map.set(sourceFile.replace(/\.ts$/, '.ngsummary.ts'), sourceFile));
     return new SummaryGenerator(map);
   }
