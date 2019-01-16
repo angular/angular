@@ -3,6 +3,8 @@ package(default_visibility = ["//visibility:public"])
 load("//tools:defaults.bzl", "npm_package", "ts_library")
 load("@npm_bazel_typescript//:defs.bzl", "ts_config")
 
+package(default_visibility = ["//visibility:public"])
+
 ts_config(
     name = "tsconfig",
     src = "tsconfig-build.json",

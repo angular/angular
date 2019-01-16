@@ -91,7 +91,7 @@ def _run_tsc(ctx, input, output):
     args.add(input)
     args.add("--outFile", output)
 
-    ctx.action(
+    ctx.actions.run(
         executable = ctx.executable._tsc,
         inputs = [input],
         outputs = [output],
@@ -170,15 +170,15 @@ ng_rollup_bundle = rule(
             Typically this will be `ts_library` or `ng_module` targets.""",
             aspects = DEPS_ASPECTS,
         ),
-        "_rollup": attr.label(
-            executable = True,
-            cfg = "host",
-            default = Label("@angular//packages/bazel/src:rollup_with_build_optimizer"),
-        ),
         "_brotli": attr.label(
             executable = True,
             cfg = "host",
             default = Label("@org_brotli//:brotli"),
+        ),
+        "_rollup": attr.label(
+            executable = True,
+            cfg = "host",
+            default = Label("@angular//packages/bazel/src:rollup_with_build_optimizer"),
         ),
     }),
     outputs = dict(ROLLUP_OUTPUTS, **{
