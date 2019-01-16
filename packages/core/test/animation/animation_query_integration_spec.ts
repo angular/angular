@@ -295,73 +295,71 @@ import {HostListener} from '../../src/metadata/directives';
         expect(p6.element.classList.contains('b3')).toBeTruthy();
       });
 
-      fixmeIvy(
-          'FW-944 - style/class bindings lose track of consts/vars when interpolation is present')
-          .it('should be able to query all active animations using :animating in a query', () => {
-            @Component({
-              selector: 'ani-cmp',
-              template: `
+      it('should be able to query all active animations using :animating in a query', () => {
+        @Component({
+          selector: 'ani-cmp',
+          template: `
             <div [@myAnimation]="exp" #parent>
               <div *ngFor="let item of items" class="item e-{{ item }}">
               </div>
             </div>
           `,
-              animations: [
-                trigger(
-                    'myAnimation',
-                    [
-                      transition(
-                          '* => a',
-                          [
-                            query(
-                                '.item:nth-child(odd)',
-                                [
-                                  style({opacity: 0}),
-                                  animate(1000, style({opacity: 1})),
-                                ]),
-                          ]),
-                      transition(
-                          '* => b',
-                          [
-                            query(
-                                '.item:animating',
-                                [
-                                  style({opacity: 1}),
-                                  animate(1000, style({opacity: 0})),
-                                ]),
-                          ]),
-                    ]),
-              ]
-            })
-            class Cmp {
-              public exp: any;
-              public items: number[] = [0, 1, 2, 3, 4];
-            }
+          animations: [
+            trigger(
+                'myAnimation',
+                [
+                  transition(
+                      '* => a',
+                      [
+                        query(
+                            '.item:nth-child(odd)',
+                            [
+                              style({opacity: 0}),
+                              animate(1000, style({opacity: 1})),
+                            ]),
+                      ]),
+                  transition(
+                      '* => b',
+                      [
+                        query(
+                            '.item:animating',
+                            [
+                              style({opacity: 1}),
+                              animate(1000, style({opacity: 0})),
+                            ]),
+                      ]),
+                ]),
+          ]
+        })
+        class Cmp {
+          public exp: any;
+          public items: number[] = [0, 1, 2, 3, 4];
+        }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
+        TestBed.configureTestingModule({declarations: [Cmp]});
 
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
 
-            cmp.exp = 'a';
-            fixture.detectChanges();
-            engine.flush();
+        cmp.exp = 'a';
+        fixture.detectChanges();
+        engine.flush();
 
-            let players = getLog();
-            expect(players.length).toEqual(3);
-            resetLog();
+        let players = getLog();
+        expect(players.length).toEqual(3);
+        resetLog();
 
-            cmp.exp = 'b';
-            fixture.detectChanges();
-            engine.flush();
+        cmp.exp = 'b';
+        fixture.detectChanges();
+        engine.flush();
 
-            players = getLog();
-            expect(players.length).toEqual(3);
-            expect(players[0].element.classList.contains('e-0')).toBeTruthy();
-            expect(players[1].element.classList.contains('e-2')).toBeTruthy();
-            expect(players[2].element.classList.contains('e-4')).toBeTruthy();
-          });
+        players = getLog();
+        expect(players.length).toEqual(3);
+        expect(players[0].element.classList.contains('e-0')).toBeTruthy();
+        expect(players[1].element.classList.contains('e-2')).toBeTruthy();
+        expect(players[2].element.classList.contains('e-4')).toBeTruthy();
+      });
 
       it('should be able to query all actively queued animation triggers via `@*:animating`',
          () => {

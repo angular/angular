@@ -7,7 +7,7 @@
  */
 import {ConstantPool} from '../../constant_pool';
 import {AttributeMarker} from '../../core';
-import {AST, BindingType} from '../../expression_parser/ast';
+import {AST, BindingType, Interpolation} from '../../expression_parser/ast';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
@@ -23,6 +23,7 @@ import {ValueConverter} from './template';
 export interface Instruction {
   sourceSpan: ParseSourceSpan|null;
   reference: o.ExternalReference;
+  allocateBindingSlots: number;
   buildParams(convertFn: (value: any) => o.Expression): o.Expression[];
 }
 
@@ -35,7 +36,6 @@ interface BoundStylingEntry {
   sourceSpan: ParseSourceSpan;
   value: AST;
 }
-
 
 /**
  * Produces creation/update instructions for all styling bindings (class and style)
@@ -73,7 +73,7 @@ export class StylingBuilder {
    *  Whether or not there are any styling bindings present
    *  (i.e. `[style]`, `[class]`, `[style.prop]` or `[class.name]`)
    */
-  private _hasBindings = false;
+  public hasBindings = false;
 
   /** the input for [class] (if it exists) */
   private _classMapInput: BoundStylingEntry|null = null;
@@ -109,8 +109,6 @@ export class StylingBuilder {
   private _useDefaultSanitizer = false;
 
   constructor(private _elementIndexExpr: o.Expression, private _directiveExpr: o.Expression|null) {}
-
-  hasBindingsOrInitialValues() { return this._hasBindings || this._hasInitialValues; }
 
   /**
    * Registers a given input to the styling builder to be later used when producing AOT code.
@@ -158,7 +156,7 @@ export class StylingBuilder {
       this._styleMapInput = entry;
     }
     this._lastStylingInput = entry;
-    this._hasBindings = true;
+    this.hasBindings = true;
     return entry;
   }
 
@@ -172,7 +170,7 @@ export class StylingBuilder {
       this._classMapInput = entry;
     }
     this._lastStylingInput = entry;
-    this._hasBindings = true;
+    this.hasBindings = true;
     return entry;
   }
 
@@ -235,6 +233,7 @@ export class StylingBuilder {
       return {
         sourceSpan,
         reference: R3.elementHostAttrs,
+        allocateBindingSlots: 0,
         buildParams: () => {
           this.populateInitialStylingAttrs(attrs);
           return [this._directiveExpr !, getConstantLiteralFromArray(constantPool, attrs)];
@@ -252,9 +251,10 @@ export class StylingBuilder {
    */
   buildElementStylingInstruction(sourceSpan: ParseSourceSpan|null, constantPool: ConstantPool):
       Instruction|null {
-    if (this._hasBindings) {
+    if (this.hasBindings) {
       return {
         sourceSpan,
+        allocateBindingSlots: 0,
         reference: R3.elementStyling,
         buildParams: () => {
           // a string array of every style-based binding
@@ -315,18 +315,27 @@ export class StylingBuilder {
   buildElementStylingMapInstruction(valueConverter: ValueConverter): Instruction|null {
     if (this._classMapInput || this._styleMapInput) {
       const stylingInput = this._classMapInput ! || this._styleMapInput !;
+      let totalBindingSlotsRequired = 0;
 
       // these values must be outside of the update block so that they can
       // be evaluted (the AST visit call) during creation time so that any
       // pipes can be picked up in time before the template is built
       const mapBasedClassValue =
           this._classMapInput ? this._classMapInput.value.visit(valueConverter) : null;
+      if (mapBasedClassValue instanceof Interpolation) {
+        totalBindingSlotsRequired += mapBasedClassValue.expressions.length;
+      }
+
       const mapBasedStyleValue =
           this._styleMapInput ? this._styleMapInput.value.visit(valueConverter) : null;
+      if (mapBasedStyleValue instanceof Interpolation) {
+        totalBindingSlotsRequired += mapBasedStyleValue.expressions.length;
+      }
 
       return {
         sourceSpan: stylingInput.sourceSpan,
         reference: R3.elementStylingMap,
+        allocateBindingSlots: totalBindingSlotsRequired,
         buildParams: (convertFn: (value: any) => o.Expression) => {
           const params: o.Expression[] = [this._elementIndexExpr];
 
@@ -356,12 +365,14 @@ export class StylingBuilder {
   private _buildSingleInputs(
       reference: o.ExternalReference, inputs: BoundStylingEntry[], mapIndex: Map<string, number>,
       allowUnits: boolean, valueConverter: ValueConverter): Instruction[] {
+    let totalBindingSlotsRequired = 0;
     return inputs.map(input => {
       const bindingIndex: number = mapIndex.get(input.name) !;
       const value = input.value.visit(valueConverter);
+      totalBindingSlotsRequired += (value instanceof Interpolation) ? value.expressions.length : 0;
       return {
         sourceSpan: input.sourceSpan,
-        reference,
+        allocateBindingSlots: totalBindingSlotsRequired, reference,
         buildParams: (convertFn: (value: any) => o.Expression) => {
           const params = [this._elementIndexExpr, o.literal(bindingIndex), convertFn(value)];
           if (allowUnits) {
@@ -401,6 +412,7 @@ export class StylingBuilder {
     return {
       sourceSpan: this._lastStylingInput ? this._lastStylingInput.sourceSpan : null,
       reference: R3.elementStylingApply,
+      allocateBindingSlots: 0,
       buildParams: () => {
         const params: o.Expression[] = [this._elementIndexExpr];
         if (this._directiveExpr) {
@@ -417,7 +429,7 @@ export class StylingBuilder {
    */
   buildUpdateLevelInstructions(valueConverter: ValueConverter) {
     const instructions: Instruction[] = [];
-    if (this._hasBindings) {
+    if (this.hasBindings) {
       const mapInstruction = this.buildElementStylingMapInstruction(valueConverter);
       if (mapInstruction) {
         instructions.push(mapInstruction);
