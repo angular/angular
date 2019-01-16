@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
-import {TsReferenceResolver} from '@angular/compiler-cli/src/ngtsc/imports';
-import {PartialEvaluator} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import * as path from 'canonical-path';
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader, SelectorScopeRegistry} from '../../../ngtsc/annotations';
+import {TsReferenceResolver} from '../../../ngtsc/imports';
+import {PartialEvaluator} from '../../../ngtsc/partial_evaluator';
 import {CompileResult, DecoratorHandler} from '../../../ngtsc/transform';
 import {DecoratedClass} from '../host/decorated_class';
 import {NgccReflectionHost} from '../host/ngcc_host';
@@ -46,12 +46,14 @@ export interface MatchingHandler<A, M> {
 }
 
 /**
- * `ResourceLoader` which directly uses the filesystem to resolve resources synchronously.
+ * Simple class that resolves and loads files directly from the filesystem.
  */
-export class FileResourceLoader implements ResourceLoader {
-  load(url: string, containingFile: string): string {
-    url = path.resolve(path.dirname(containingFile), url);
-    return fs.readFileSync(url, 'utf8');
+class NgccResourceLoader implements ResourceLoader {
+  canPreload = false;
+  preload(): undefined|Promise<void> { throw new Error('Not implemented.'); }
+  load(url: string): string { return fs.readFileSync(url, 'utf8'); }
+  resolve(url: string, containingFile: string): string {
+    return path.resolve(path.dirname(containingFile), url);
   }
 }
 
@@ -59,15 +61,16 @@ export class FileResourceLoader implements ResourceLoader {
  * This Analyzer will analyze the files that have decorated classes that need to be transformed.
  */
 export class DecorationAnalyzer {
-  resourceLoader = new FileResourceLoader();
+  resourceManager = new NgccResourceLoader();
   resolver = new TsReferenceResolver(this.program, this.typeChecker, this.options, this.host);
   scopeRegistry = new SelectorScopeRegistry(this.typeChecker, this.reflectionHost, this.resolver);
   evaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker, this.resolver);
   handlers: DecoratorHandler<any, any>[] = [
     new BaseDefDecoratorHandler(this.reflectionHost, this.evaluator),
     new ComponentDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore, this.resourceLoader,
-        this.rootDirs, /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true),
+        this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore, this.resourceManager,
+        this.rootDirs, /* defaultPreserveWhitespaces */ false,
+        /* i18nUseExternalIds */ true),
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore),
     new InjectableDecoratorHandler(this.reflectionHost, this.isCore),

@@ -12,14 +12,14 @@ import * as ts from 'typescript';
 import * as api from '../transformers/api';
 import {nocollapseHack} from '../transformers/nocollapse_hack';
 
-import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader, SelectorScopeRegistry} from './annotations';
+import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry, SelectorScopeRegistry} from './annotations';
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {ImportRewriter, NoopImportRewriter, R3SymbolsImportRewriter, Reference, TsReferenceResolver} from './imports';
 import {PartialEvaluator} from './partial_evaluator';
 import {TypeScriptReflectionHost} from './reflection';
-import {FileResourceLoader, HostResourceLoader} from './resource_loader';
+import {HostResourceLoader} from './resource_loader';
 import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, ivyTransformFactory} from './transform';
@@ -28,7 +28,7 @@ import {isDtsPath} from './util/src/typescript';
 
 export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
-  private resourceLoader: ResourceLoader;
+  private resourceManager: HostResourceLoader;
   private compilation: IvyCompilation|undefined = undefined;
   private factoryToSourceInfo: Map<string, FactoryInfo>|null = null;
   private sourceToFactorySymbols: Map<string, Set<string>>|null = null;
@@ -58,11 +58,7 @@ export class NgtscProgram implements api.Program {
       this.rootDirs.push(host.getCurrentDirectory());
     }
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
-    this.resourceLoader =
-        host.readResource !== undefined && host.resourceNameToFileName !== undefined ?
-        new HostResourceLoader(
-            host.resourceNameToFileName.bind(host), host.readResource.bind(host)) :
-        new FileResourceLoader(host, this.options);
+    this.resourceManager = new HostResourceLoader(host, options);
     const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
     this.host = host;
     let rootFiles = [...rootNames];
@@ -294,8 +290,9 @@ export class NgtscProgram implements api.Program {
     const handlers = [
       new BaseDefDecoratorHandler(this.reflector, evaluator),
       new ComponentDecoratorHandler(
-          this.reflector, evaluator, scopeRegistry, this.isCore, this.resourceLoader, this.rootDirs,
-          this.options.preserveWhitespaces || false, this.options.i18nUseExternalIds !== false),
+          this.reflector, evaluator, scopeRegistry, this.isCore, this.resourceManager,
+          this.rootDirs, this.options.preserveWhitespaces || false,
+          this.options.i18nUseExternalIds !== false),
       new DirectiveDecoratorHandler(this.reflector, evaluator, scopeRegistry, this.isCore),
       new InjectableDecoratorHandler(this.reflector, this.isCore),
       new NgModuleDecoratorHandler(

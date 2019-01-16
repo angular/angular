@@ -56,33 +56,40 @@ export class ComponentDecoratorHandler implements
   }
 
   preanalyze(node: ts.ClassDeclaration, decorator: Decorator): Promise<void>|undefined {
+    if (!this.resourceLoader.canPreload) {
+      return undefined;
+    }
+
     const meta = this._resolveLiteral(decorator);
     const component = reflectObjectLiteral(meta);
     const promises: Promise<void>[] = [];
     const containingFile = node.getSourceFile().fileName;
 
-    if (this.resourceLoader.preload !== undefined && component.has('templateUrl')) {
+    if (component.has('templateUrl')) {
       const templateUrlExpr = component.get('templateUrl') !;
       const templateUrl = this.evaluator.evaluate(templateUrlExpr);
       if (typeof templateUrl !== 'string') {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
       }
-      const promise = this.resourceLoader.preload(templateUrl, containingFile);
+      const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
+      const promise = this.resourceLoader.preload(resourceUrl);
       if (promise !== undefined) {
         promises.push(promise);
       }
     }
 
     const styleUrls = this._extractStyleUrls(component);
-    if (this.resourceLoader.preload !== undefined && styleUrls !== null) {
+    if (styleUrls !== null) {
       for (const styleUrl of styleUrls) {
-        const promise = this.resourceLoader.preload(styleUrl, containingFile);
+        const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
+        const promise = this.resourceLoader.preload(resourceUrl);
         if (promise !== undefined) {
           promises.push(promise);
         }
       }
     }
+
     if (promises.length !== 0) {
       return Promise.all(promises).then(() => undefined);
     } else {
@@ -118,7 +125,8 @@ export class ComponentDecoratorHandler implements
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
       }
-      templateStr = this.resourceLoader.load(templateUrl, containingFile);
+      const resolvedTemplateUrl = this.resourceLoader.resolve(templateUrl, containingFile);
+      templateStr = this.resourceLoader.load(resolvedTemplateUrl);
     } else if (component.has('template')) {
       const templateExpr = component.get('template') !;
       const resolvedTemplate = this.evaluator.evaluate(templateExpr);
@@ -223,7 +231,10 @@ export class ComponentDecoratorHandler implements
       if (styles === null) {
         styles = [];
       }
-      styles.push(...styleUrls.map(styleUrl => this.resourceLoader.load(styleUrl, containingFile)));
+      styleUrls.forEach(styleUrl => {
+        const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
+        styles !.push(this.resourceLoader.load(resourceUrl));
+      });
     }
 
     const encapsulation: number =
