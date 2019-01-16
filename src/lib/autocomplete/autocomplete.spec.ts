@@ -47,6 +47,7 @@ import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
   MatAutocompleteTrigger,
+  MatAutocompleteOrigin,
 } from './index';
 
 
@@ -2218,6 +2219,34 @@ describe('MatAutocomplete', () => {
     const fixture = createComponent(AutocompleteWithDifferentOrigin);
 
     fixture.detectChanges();
+    fixture.componentInstance.connectedTo = fixture.componentInstance.alternateOrigin;
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openPanel();
+    fixture.detectChanges();
+    zone.simulateZoneExit();
+
+    const overlayRect =
+        overlayContainerElement.querySelector('.cdk-overlay-pane')!.getBoundingClientRect();
+    const originRect = fixture.nativeElement.querySelector('.origin').getBoundingClientRect();
+
+    expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom),
+        'Expected autocomplete panel to align with the bottom of the new origin.');
+  });
+
+  it('should be able to change the origin after the panel has been opened', () => {
+    const fixture = createComponent(AutocompleteWithDifferentOrigin);
+
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openPanel();
+    fixture.detectChanges();
+    zone.simulateZoneExit();
+
+    fixture.componentInstance.trigger.closePanel();
+    fixture.detectChanges();
+
+    fixture.componentInstance.connectedTo = fixture.componentInstance.alternateOrigin;
+    fixture.detectChanges();
+
     fixture.componentInstance.trigger.openPanel();
     fixture.detectChanges();
     zone.simulateZoneExit();
@@ -2603,7 +2632,7 @@ class AutocompleteWithNumberInputAndNgModel {
         <input
           matInput
           [matAutocomplete]="auto"
-          [matAutocompleteConnectedTo]="origin"
+          [matAutocompleteConnectedTo]="connectedTo"
           [(ngModel)]="selectedValue">
       </mat-form-field>
     </div>
@@ -2623,8 +2652,10 @@ class AutocompleteWithNumberInputAndNgModel {
 })
 class AutocompleteWithDifferentOrigin {
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocompleteOrigin) alternateOrigin: MatAutocompleteOrigin;
   selectedValue: string;
   values = ['one', 'two', 'three'];
+  connectedTo?: MatAutocompleteOrigin;
 }
 
 @Component({
