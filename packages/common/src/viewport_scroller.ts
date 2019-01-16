@@ -105,6 +105,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    * @param anchor The ID of the anchor element.
    */
   scrollToAnchor(anchor: string): void {
+    anchor = CSS.escape(anchor);
     if (this.supportScrollRestoration()) {
       const elSelectedById = this.document.querySelector(`#${anchor}`);
       if (elSelectedById) {
