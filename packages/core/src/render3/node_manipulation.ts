@@ -14,7 +14,7 @@ import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection'
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {findComponentView, getNativeByTNode, isLContainer, isRootView, readElementValue, renderStringify} from './util';
+import {findComponentView, getNativeByTNode, isComponent, isLContainer, isRootView, readElementValue, renderStringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -171,8 +171,7 @@ function executeNodeAction(
   if (action === WalkTNodeTreeAction.Insert) {
     nativeInsertBefore(renderer, parent !, node, beforeNode || null);
   } else if (action === WalkTNodeTreeAction.Detach) {
-    const isHostElement = (tNode.flags & TNodeFlags.isComponent) > 0;
-    nativeRemoveChild(renderer, parent !, node, isHostElement);
+    nativeRemoveChild(renderer, parent !, node, isComponent(tNode));
   } else if (action === WalkTNodeTreeAction.Destroy) {
     ngDevMode && ngDevMode.rendererDestroyNode++;
     (renderer as ProceduralRenderer3).destroyNode !(node);
