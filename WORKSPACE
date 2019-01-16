@@ -41,7 +41,9 @@ Angular has a dependency on the @bazel/bazel package which supplies it.
 Try running `yarn bazel` instead.
     (If you did run that, check that you've got a fresh `yarn install`)
 
-""")
+""",
+    minimum_bazel_version = "0.21.0",
+)
 
 # Setup the Node.js toolchain
 node_repositories(

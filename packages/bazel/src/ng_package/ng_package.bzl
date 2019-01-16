@@ -17,6 +17,12 @@ load("@build_bazel_rules_nodejs//internal/common:collect_es6_sources.bzl", "coll
 load("@build_bazel_rules_nodejs//internal/common:node_module_info.bzl", "NodeModuleInfo")
 load("@build_bazel_rules_nodejs//internal/common:sources_aspect.bzl", "sources_aspect")
 load(
+    "@build_bazel_rules_nodejs//:internal/npm_package/npm_package.bzl",
+    "NPM_PACKAGE_ATTRS",
+    "NPM_PACKAGE_OUTPUTS",
+    "create_package",
+)
+load(
     "@build_bazel_rules_nodejs//:internal/rollup/rollup_bundle.bzl",
     "ROLLUP_ATTRS",
     "ROLLUP_DEPS_ASPECTS",
@@ -32,6 +38,7 @@ load(
 load("//packages/bazel/src:external.bzl", "FLAT_DTS_FILE_SUFFIX")
 load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
 load("//packages/bazel/src/ng_package:collect-type-definitions.bzl", "collect_type_definitions")
+load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
 
 _DEFAULT_NG_PACKAGER = "@npm//@angular/bazel/bin:packager"
 
@@ -336,8 +343,8 @@ def _ng_package_impl(ctx):
         packager_inputs.extend([m.metadata_file])
         metadata_arg[m.module_name] = {
             "index": m.typings_file.path.replace(".d.ts", ".js"),
-            "typings": m.typings_file.path,
             "metadata": m.metadata_file.path,
+            "typings": m.typings_file.path,
         }
     packager_args.add(str(metadata_arg))
 
@@ -401,7 +408,6 @@ DEPS_ASPECTS = [esm5_outputs_aspect, sources_aspect]
 
 NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
     "srcs": attr.label_list(allow_files = True),
-    "deps": attr.label_list(aspects = DEPS_ASPECTS),
     "data": attr.label_list(
         doc = "Additional, non-Angular files to be added to the package, e.g. global CSS assets.",
         allow_files = True,
@@ -412,11 +418,15 @@ NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
     "entry_point_name": attr.string(
         doc = "Name to use when generating bundle files for the primary entry-point.",
     ),
+    "globals": attr.string_dict(default = {}),
+    "include_devmode_srcs": attr.bool(default = False),
     "ng_packager": attr.label(
         default = Label(_DEFAULT_NG_PACKAGER),
         executable = True,
         cfg = "host",
     ),
+    "readme_md": attr.label(allow_single_file = [".md"]),
+    "deps": attr.label_list(aspects = DEPS_ASPECTS),
     "_rollup": attr.label(
         default = Label("@build_bazel_rules_nodejs//internal/rollup"),
         executable = True,
@@ -479,8 +489,8 @@ def ng_package_outputs(name, entry_point, entry_point_name):
 
     basename = primary_entry_point_name(name, entry_point, entry_point_name)
     outputs = {
-        "fesm5": "fesm5/%s.js" % basename,
         "fesm2015": "fesm2015/%s.js" % basename,
+        "fesm5": "fesm5/%s.js" % basename,
         "umd": "%s.umd.js" % basename,
         "umd_min": "%s.umd.min.js" % basename,
     }

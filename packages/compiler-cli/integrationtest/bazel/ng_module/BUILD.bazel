@@ -1,4 +1,6 @@
 load("//packages/bazel:index.bzl", "ng_module")
+load("//tools:defaults.bzl", "jasmine_node_test")
+load(":extract_flat_module_index.bzl", "extract_flat_module_index")
 
 ng_module(
     name = "test_module",
@@ -21,15 +23,11 @@ ng_module(
     ],
 )
 
-load(":extract_flat_module_index.bzl", "extract_flat_module_index")
-
 extract_flat_module_index(
     name = "flat_module_index",
     testonly = True,
     deps = [":test_module"],
 )
-
-load("//tools:defaults.bzl", "jasmine_node_test")
 
 jasmine_node_test(
     name = "test",
