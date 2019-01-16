@@ -68,7 +68,10 @@ export class TocService {
         }
       }
       // now remove the anchor
-      anchorLink.remove();
+      if (anchorLink.parentNode !== null) {
+        // We cannot use ChildNode.remove() because of IE11
+        anchorLink.parentNode.removeChild(anchorLink);
+      }
     }
     // security: the document element which provides this heading content
     // is always authored by the documentation team and is considered to be safe
