@@ -24,40 +24,16 @@ let _uniqueIdCounter = 0;
 const DROP_PROXIMITY_THRESHOLD = 0.05;
 
 /**
- * Object used to cache the position of a drag list, its items. and siblings.
- * @docs-private
- */
-interface PositionCache {
-  /** Cached positions of the items in the list. */
-  items: ItemPositionCacheEntry[];
-  /** Cached positions of the connected lists. */
-  siblings: ListPositionCacheEntry[];
-  /** Dimensions of the list itself. */
-  self: ClientRect;
-}
-
-/**
  * Entry in the position cache for draggable items.
  * @docs-private
  */
-interface ItemPositionCacheEntry {
+interface CachedItemPosition {
   /** Instance of the drag item. */
   drag: DragRef;
   /** Dimensions of the item. */
   clientRect: ClientRect;
   /** Amount by which the item has been moved since dragging started. */
   offset: number;
-}
-
-/**
- * Entry in the position cache for drop lists.
- * @docs-private
- */
-interface ListPositionCacheEntry {
-  /** Instance of the drop list. */
-  drop: DropListRef;
-  /** Dimensions of the list. */
-  clientRect: ClientRect;
 }
 
 /**
@@ -131,8 +107,11 @@ export class DropListRef<T = any> {
   /** Whether an item in the list is being dragged. */
   private _isDragging = false;
 
-  /** Cache of the dimensions of all the items and the sibling containers. */
-  private _positionCache: PositionCache = {items: [], siblings: [], self: {} as ClientRect};
+  /** Cache of the dimensions of all the items inside the container. */
+  private _itemPositions: CachedItemPosition[] = [];
+
+  /** Cached `ClientRect` of the drop list. */
+  private _clientRect: ClientRect;
 
   /**
    * Draggable items that are currently active inside the container. Includes the items
@@ -150,13 +129,14 @@ export class DropListRef<T = any> {
   /** Draggable items in the container. */
   private _draggables: DragRef[];
 
+  /** Drop lists that are connected to the current one. */
   private _siblings: DropListRef[] = [];
 
   /** Direction in which the list is oriented. */
   private _orientation: 'horizontal' | 'vertical' = 'vertical';
 
-  /** Amount of connected siblings that currently have a dragged item. */
-  private _activeSiblings = 0;
+  /** Connected siblings that currently have a dragged item. */
+  private _activeSiblings = new Set<DropListRef>();
 
   constructor(
     public element: ElementRef<HTMLElement>,
@@ -174,6 +154,7 @@ export class DropListRef<T = any> {
     this.exited.complete();
     this.dropped.complete();
     this.sorted.complete();
+    this._activeSiblings.clear();
     this._dragDropRegistry.removeDropContainer(this);
   }
 
@@ -187,8 +168,9 @@ export class DropListRef<T = any> {
     this.beforeStarted.next();
     this._isDragging = true;
     this._activeDraggables = this._draggables.slice();
-    this._cachePositions();
-    this._positionCache.siblings.forEach(sibling => sibling.drop._toggleIsReceiving(true));
+    this._cacheOwnPosition();
+    this._cacheItemPositions();
+    this._siblings.forEach(sibling => sibling._startReceiving(this));
   }
 
   /**
@@ -230,7 +212,7 @@ export class DropListRef<T = any> {
 
     // Note that the positions were already cached when we called `start` above,
     // but we need to refresh them since the amount of items has changed.
-    this._cachePositions();
+    this._cacheItemPositions();
   }
 
   /**
@@ -304,7 +286,7 @@ export class DropListRef<T = any> {
     // The rest of the logic still stands no matter what orientation we're in, however
     // we need to invert the array when determining the index.
     const items = this._orientation === 'horizontal' && this._dir && this._dir.value === 'rtl' ?
-        this._positionCache.items.slice().reverse() : this._positionCache.items;
+        this._itemPositions.slice().reverse() : this._itemPositions;
 
     return findIndex(items, currentItem => currentItem.drag === item);
   }
@@ -314,7 +296,7 @@ export class DropListRef<T = any> {
    * is currently being dragged inside a connected drop list.
    */
   isReceiving(): boolean {
-    return this._activeSiblings > 0;
+    return this._activeSiblings.size > 0;
   }
 
   /**
@@ -331,7 +313,7 @@ export class DropListRef<T = any> {
       return;
     }
 
-    const siblings = this._positionCache.items;
+    const siblings = this._itemPositions;
     const newIndex = this._getItemIndexFromPointerPosition(item, pointerX, pointerY, pointerDelta);
 
     if (newIndex === -1 && siblings.length > 0) {
@@ -398,54 +380,43 @@ export class DropListRef<T = any> {
     });
   }
 
-  /** Refreshes the position cache of the items and sibling containers. */
-  private _cachePositions() {
-    const isHorizontal = this._orientation === 'horizontal';
-
-    this._positionCache.self = this.element.nativeElement.getBoundingClientRect();
-    this._positionCache.items = this._activeDraggables
-      .map(drag => {
-        const elementToMeasure = this._dragDropRegistry.isDragging(drag) ?
-            // If the element is being dragged, we have to measure the
-            // placeholder, because the element is hidden.
-            drag.getPlaceholderElement() :
-            drag.getRootElement();
-        const clientRect = elementToMeasure.getBoundingClientRect();
-
-        return {
-          drag,
-          offset: 0,
-          // We need to clone the `clientRect` here, because all the values on it are readonly
-          // and we need to be able to update them. Also we can't use a spread here, because
-          // the values on a `ClientRect` aren't own properties. See:
-          // https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect#Notes
-          clientRect: {
-            top: clientRect.top,
-            right: clientRect.right,
-            bottom: clientRect.bottom,
-            left: clientRect.left,
-            width: clientRect.width,
-            height: clientRect.height
-          }
-        };
-      })
-      .sort((a, b) => {
-        return isHorizontal ? a.clientRect.left - b.clientRect.left :
-                              a.clientRect.top - b.clientRect.top;
-      });
-
-    this._positionCache.siblings = this._siblings.map(drop => ({
-      drop,
-      clientRect: drop.element.nativeElement.getBoundingClientRect()
-    }));
+  /** Caches the position of the drop list. */
+  private _cacheOwnPosition() {
+    this._clientRect = this.element.nativeElement.getBoundingClientRect();
   }
 
-  /**
-   * Toggles whether the list can receive the item that is currently being dragged.
-   * Usually called by a sibling that initiated the dragging.
-   */
-  _toggleIsReceiving(isDragging: boolean) {
-    this._activeSiblings = Math.max(0, this._activeSiblings + (isDragging ? 1 : -1));
+  /** Refreshes the position cache of the items and sibling containers. */
+  private _cacheItemPositions() {
+    const isHorizontal = this._orientation === 'horizontal';
+
+    this._itemPositions = this._activeDraggables.map(drag => {
+      const elementToMeasure = this._dragDropRegistry.isDragging(drag) ?
+          // If the element is being dragged, we have to measure the
+          // placeholder, because the element is hidden.
+          drag.getPlaceholderElement() :
+          drag.getRootElement();
+      const clientRect = elementToMeasure.getBoundingClientRect();
+
+      return {
+        drag,
+        offset: 0,
+        // We need to clone the `clientRect` here, because all the values on it are readonly
+        // and we need to be able to update them. Also we can't use a spread here, because
+        // the values on a `ClientRect` aren't own properties. See:
+        // https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect#Notes
+        clientRect: {
+          top: clientRect.top,
+          right: clientRect.right,
+          bottom: clientRect.bottom,
+          left: clientRect.left,
+          width: clientRect.width,
+          height: clientRect.height
+        }
+      };
+    }).sort((a, b) => {
+      return isHorizontal ? a.clientRect.left - b.clientRect.left :
+                            a.clientRect.top - b.clientRect.top;
+    });
   }
 
   /** Resets the container to its initial state. */
@@ -454,10 +425,9 @@ export class DropListRef<T = any> {
 
     // TODO(crisbeto): may have to wait for the animations to finish.
     this._activeDraggables.forEach(item => item.getRootElement().style.transform = '');
-    this._positionCache.siblings.forEach(sibling => sibling.drop._toggleIsReceiving(false));
+    this._siblings.forEach(sibling => sibling._stopReceiving(this));
     this._activeDraggables = [];
-    this._positionCache.items = [];
-    this._positionCache.siblings = [];
+    this._itemPositions = [];
     this._previousSwap.drag = null;
     this._previousSwap.delta = 0;
   }
@@ -469,7 +439,7 @@ export class DropListRef<T = any> {
    * @param delta Direction in which the user is moving.
    */
   private _getSiblingOffsetPx(currentIndex: number,
-                              siblings: ItemPositionCacheEntry[],
+                              siblings: CachedItemPosition[],
                               delta: 1 | -1) {
 
     const isHorizontal = this._orientation === 'horizontal';
@@ -501,7 +471,7 @@ export class DropListRef<T = any> {
    * @param pointerY Coordinates along the Y axis.
    */
   private _isPointerNearDropContainer(pointerX: number, pointerY: number): boolean {
-    const {top, right, bottom, left, width, height} = this._positionCache.self;
+    const {top, right, bottom, left, width, height} = this._clientRect;
     const xThreshold = width * DROP_PROXIMITY_THRESHOLD;
     const yThreshold = height * DROP_PROXIMITY_THRESHOLD;
 
@@ -538,10 +508,9 @@ export class DropListRef<T = any> {
    */
   private _getItemIndexFromPointerPosition(item: DragRef, pointerX: number, pointerY: number,
                                            delta?: {x: number, y: number}) {
-
     const isHorizontal = this._orientation === 'horizontal';
 
-    return findIndex(this._positionCache.items, ({drag, clientRect}, _, array) => {
+    return findIndex(this._itemPositions, ({drag, clientRect}, _, array) => {
       if (drag === item) {
         // If there's only one item left in the container, it must be
         // the dragged item itself so we use it as a reference.
@@ -572,7 +541,7 @@ export class DropListRef<T = any> {
    * @param y Pointer position along the Y axis.
    */
   _isOverContainer(x: number, y: number): boolean {
-    return isInsideClientRect(this._positionCache.self, x, y);
+    return isInsideClientRect(this._clientRect, x, y);
   }
 
   /**
@@ -582,14 +551,19 @@ export class DropListRef<T = any> {
    * @param x Position of the item along the X axis.
    * @param y Position of the item along the Y axis.
    */
-  _getSiblingContainerFromPosition(item: DragRef, x: number, y: number): DropListRef | null {
-    const results = this._positionCache.siblings.filter(sibling => {
-      return isInsideClientRect(sibling.clientRect, x, y);
-    });
+  _getSiblingContainerFromPosition(item: DragRef, x: number, y: number): DropListRef | undefined {
+    return this._siblings.find(sibling => sibling._canReceive(item, x, y));
+  }
 
-    // No drop containers are intersecting with the pointer.
-    if (!results.length) {
-      return null;
+  /**
+   * Checks whether the drop list can receive the passed-in item.
+   * @param item Item that is being dragged into the list.
+   * @param x Position of the item along the X axis.
+   * @param y Position of the item along the Y axis.
+   */
+  _canReceive(item: DragRef, x: number, y: number): boolean {
+    if (!this.enterPredicate(item, this) || !isInsideClientRect(this._clientRect, x, y)) {
+      return false;
     }
 
     const elementFromPoint = this._document.elementFromPoint(x, y);
@@ -597,8 +571,10 @@ export class DropListRef<T = any> {
     // If there's no element at the pointer position, then
     // the client rect is probably scrolled out of the view.
     if (!elementFromPoint) {
-      return null;
+      return false;
     }
+
+    const element = this.element.nativeElement;
 
     // The `ClientRect`, that we're using to find the container over which the user is
     // hovering, doesn't give us any information on whether the element has been scrolled
@@ -606,14 +582,29 @@ export class DropListRef<T = any> {
     // we could end up transferring the item into a container that's invisible or is positioned
     // below another one. We use the result from `elementFromPoint` to get the top-most element
     // at the pointer position and to find whether it's one of the intersecting drop containers.
-    const result = results.find(sibling => {
-      const element = sibling.drop.element.nativeElement;
-      return element === elementFromPoint || element.contains(elementFromPoint);
-    });
-
-    return result && result.drop.enterPredicate(item, result.drop) ? result.drop : null;
+    return elementFromPoint === element || element.contains(elementFromPoint);
   }
 
+  /**
+   * Called by one of the connected drop lists when a dragging sequence has started.
+   * @param sibling Sibling in which dragging has started.
+   */
+  _startReceiving(sibling: DropListRef) {
+    const activeSiblings = this._activeSiblings;
+
+    if (!activeSiblings.has(sibling)) {
+      activeSiblings.add(sibling);
+      this._cacheOwnPosition();
+    }
+  }
+
+  /**
+   * Called by a connected drop list when dragging has stopped.
+   * @param sibling Sibling whose dragging has stopped.
+   */
+  _stopReceiving(sibling: DropListRef) {
+    this._activeSiblings.delete(sibling);
+  }
 }
 
 

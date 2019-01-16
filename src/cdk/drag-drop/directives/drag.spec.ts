@@ -2736,6 +2736,63 @@ describe('CdkDrag', () => {
             'Expected new container not to have the receiving class after entering.');
       }));
 
+    it('should be able to move the item over an intermediate container before ' +
+      'dropping it into the final one', fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+
+        const dropInstances = fixture.componentInstance.dropInstances.toArray();
+        dropInstances[0].connectedTo = [dropInstances[1], dropInstances[2]];
+        dropInstances[1].connectedTo = [];
+        dropInstances[2].connectedTo = [];
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems;
+        const dropZones = dropInstances.map(d => d.element.nativeElement);
+        const item = groups[0][1];
+        const intermediateRect = dropZones[1].getBoundingClientRect();
+        const finalRect = dropZones[2].getBoundingClientRect();
+
+        startDraggingViaMouse(fixture, item.element.nativeElement);
+
+        const placeholder = dropZones[0].querySelector('.cdk-drag-placeholder')!;
+
+        expect(placeholder).toBeTruthy();
+        expect(dropZones[0].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be inside the first container.');
+
+        dispatchMouseEvent(document, 'mousemove',
+            intermediateRect.left + 1, intermediateRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[1].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be inside second container.');
+
+        dispatchMouseEvent(document, 'mousemove', finalRect.left + 1, finalRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[2].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be inside third container.');
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+        expect(event).toBeTruthy();
+        expect(event).toEqual(jasmine.objectContaining({
+          previousIndex: 1,
+          currentIndex: 0,
+          item: groups[0][1],
+          container: dropInstances[2],
+          previousContainer: dropInstances[0],
+          isPointerOverContainer: false
+        }));
+
+      }));
+
   });
 
 });
@@ -3025,6 +3082,14 @@ class DraggableInDropZoneWithCustomPlaceholder {
       (cdkDropListDropped)="droppedSpy($event)">
       <div [cdkDragData]="item" *ngFor="let item of done" cdkDrag>{{item}}</div>
     </div>
+
+    <div
+      cdkDropList
+      #extraZone="cdkDropList"
+      [cdkDropListData]="extra"
+      (cdkDropListDropped)="droppedSpy($event)">
+      <div [cdkDragData]="item" *ngFor="let item of extra" cdkDrag>{{item}}</div>
+    </div>
   `
 })
 class ConnectedDropZones implements AfterViewInit {
@@ -3034,6 +3099,7 @@ class ConnectedDropZones implements AfterViewInit {
   groupedDragItems: CdkDrag[][] = [];
   todo = ['Zero', 'One', 'Two', 'Three'];
   done = ['Four', 'Five', 'Six'];
+  extra = [];
   droppedSpy = jasmine.createSpy('dropped spy');
 
   ngAfterViewInit() {
