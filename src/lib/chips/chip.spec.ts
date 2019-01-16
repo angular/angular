@@ -3,6 +3,7 @@ import {BACKSPACE, DELETE, SPACE} from '@angular/cdk/keycodes';
 import {createKeyboardEvent, dispatchFakeEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {MAT_RIPPLE_GLOBAL_OPTIONS, RippleGlobalOptions} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 import {MatChip, MatChipEvent, MatChipSelectionChange, MatChipsModule} from './index';
@@ -13,19 +14,22 @@ describe('Chips', () => {
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;
   let chipInstance: MatChip;
+  let globalRippleOptions: RippleGlobalOptions;
 
   let dir = 'ltr';
 
   beforeEach(async(() => {
+    globalRippleOptions = {};
     TestBed.configureTestingModule({
       imports: [MatChipsModule],
       declarations: [BasicChip, SingleChip],
-      providers: [{
-        provide: Directionality, useFactory: () => ({
+      providers: [
+        {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useFactory: () => globalRippleOptions},
+        {provide: Directionality, useFactory: () => ({
           value: dir,
           change: new Subject()
-        })
-      }]
+        })},
+      ]
     });
 
     TestBed.compileComponents();
@@ -203,6 +207,13 @@ describe('Chips', () => {
         subscription.unsubscribe();
       });
 
+      it('should be able to disable ripples through ripple global options at runtime', () => {
+        expect(chipInstance.rippleDisabled).toBe(false, 'Expected chip ripples to be enabled.');
+
+        globalRippleOptions.disabled = true;
+
+        expect(chipInstance.rippleDisabled).toBe(true, 'Expected chip ripples to be disabled.');
+      });
     });
 
     describe('keyboard behavior', () => {

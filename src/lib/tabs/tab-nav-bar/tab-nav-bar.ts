@@ -191,9 +191,6 @@ export class MatTabLink extends _MatTabLinkMixinBase
   /** Reference to the RippleRenderer for the tab-link. */
   protected _tabLinkRipple: RippleRenderer;
 
-  /** Whether the ripples are globally disabled through the RippleGlobalOptions */
-  private _ripplesGloballyDisabled = false;
-
   /** Whether the link is active. */
   @Input()
   get active(): boolean { return this._isActive; }
@@ -205,25 +202,28 @@ export class MatTabLink extends _MatTabLinkMixinBase
   }
 
   /**
-   * Ripple configuration for ripples that are launched on pointer down.
+   * Ripple configuration for ripples that are launched on pointer down. The ripple config
+   * is set to the global ripple options since we don't have any configurable options for
+   * the tab link ripples.
    * @docs-private
    */
-  rippleConfig: RippleConfig = {};
+  rippleConfig: RippleConfig & RippleGlobalOptions;
 
   /**
-   * Whether ripples are disabled on interaction
+   * Whether ripples are disabled on interaction.
    * @docs-private
    */
   get rippleDisabled(): boolean {
     return this.disabled || this.disableRipple || this._tabNavBar.disableRipple ||
-      this._ripplesGloballyDisabled;
+      !!this.rippleConfig.disabled;
   }
 
   constructor(private _tabNavBar: MatTabNav,
               public _elementRef: ElementRef,
               ngZone: NgZone,
               platform: Platform,
-              @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions,
+              @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
+              globalRippleOptions: RippleGlobalOptions | null,
               @Attribute('tabindex') tabIndex: string,
               /**
                * @deprecated
@@ -234,17 +234,9 @@ export class MatTabLink extends _MatTabLinkMixinBase
 
     this._tabLinkRipple = new RippleRenderer(this, ngZone, _elementRef, platform);
     this._tabLinkRipple.setupTriggerEvents(_elementRef.nativeElement);
+    this.rippleConfig = globalRippleOptions || {};
 
     this.tabIndex = parseInt(tabIndex) || 0;
-
-    if (globalOptions) {
-      // TODO(paul): Do not copy each option manually. Allow dynamic global option changes: #9729
-      this._ripplesGloballyDisabled = !!globalOptions.disabled;
-      this.rippleConfig = {
-        terminateOnPointerUp: globalOptions.terminateOnPointerUp,
-        animation: globalOptions.animation,
-      };
-    }
 
     if (_focusMonitor) {
       _focusMonitor.monitor(_elementRef);

@@ -34,6 +34,9 @@
             <mat-icon>fullscreen</mat-icon>
           </button>
           <button mat-button (click)="toggleTheme()">{{dark ? 'Light' : 'Dark'}} theme</button>
+          <button mat-button (click)="rippleOptions.disabled = !rippleOptions.disabled">
+            {{rippleOptions.disabled ? 'Enable' : 'Disable'}} ripples
+          </button>
           <button mat-button (click)="root.dir = (root.dir === 'rtl' ? 'ltr' : 'rtl')"
                   title="Toggle between RTL and LTR">
             {{root.dir.toUpperCase()}}

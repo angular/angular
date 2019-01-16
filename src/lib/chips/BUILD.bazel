@@ -51,6 +51,7 @@ ng_test_library(
     "@angular//packages/platform-browser/animations",
     "//src/cdk/a11y",
     "//src/cdk/bidi",
+    "//src/lib/core",
     "//src/cdk/keycodes",
     "//src/cdk/platform",
     "//src/cdk/testing",

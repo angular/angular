@@ -20,7 +20,7 @@ and calling its `launch` method.
 ### Ripple trigger
 
 By default ripples will fade in on interaction with the directive's host element.
-In some situations, developers may want to show ripples on interaction with *some other* element, 
+In some situations, developers may want to show ripples on interaction with *some other* element,
 but still want to have the ripples placed in another location. This can be done by specifying
 the `matRippleTrigger` option that expects a reference to an `HTMLElement`.
 
@@ -29,7 +29,7 @@ the `matRippleTrigger` option that expects a reference to an `HTMLElement`.
   <div matRipple [matRippleTrigger]="trigger" class="my-ripple-container">
     <!-- This is the ripple container, but not the trigger element for ripples. -->
   </div>
-  
+
   <div #trigger></div>
 </div>
 ```
@@ -43,14 +43,14 @@ class MyComponent {
 
   /** Reference to the directive instance of the ripple. */
   @ViewChild(MatRipple) ripple: MatRipple;
-  
+
   /** Shows a centered and persistent ripple. */
   launchRipple() {
     const rippleRef = this.ripple.launch({
       persistent: true,
       centered: true
     });
-    
+
     // Fade out the ripple later.
     rippleRef.fadeOut();
   }
@@ -91,7 +91,7 @@ const globalRippleConfig: RippleGlobalOptions = {
 
 @NgModule({
   providers: [
-    {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: globalRippleConfig} 
+    {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useValue: globalRippleConfig}
   ]
 })
 ```
@@ -100,7 +100,7 @@ All available global options can be seen in the `RippleGlobalOptions` interface.
 
 ### Disabling animation
 
-The animation of ripples can be disabled by using the `animation` global option. If the 
+The animation of ripples can be disabled by using the `animation` global option. If the
 `enterDuration` and `exitDuration` is being set to `0`, ripples will just appear without any
 animation.
 
@@ -138,4 +138,44 @@ the same for Angular Material. This behavior can be activated by specifying the
 const globalRippleConfig: RippleGlobalOptions = {
   terminateOnPointerUp: true
 };
+```
+
+### Updating global options at runtime
+
+To change global ripple options at runtime, just inject the `MAT_RIPPLE_GLOBAL_OPTIONS`
+provider and update the desired options.
+
+There are various ways of injecting the global options. In order to make it easier to
+inject and update options at runtime, it's recommended to create a service that implements
+the `RippleGlobalOptions` interface.
+
+```ts
+@Injectable({providedIn: 'root'})
+export class AppGlobalRippleOptions implements RippleGlobalOptions {
+  /** Whether ripples should be disabled globally. */
+  disabled: boolean = false;
+}
+```
+
+```ts
+@NgModule({
+  providers: [
+    {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useExisting: AppGlobalRippleOptions},
+  ]
+})
+export class MyModule {...}
+```
+
+Now that the global ripple options are set to a service we can inject, the service can be
+used update any global ripple option at runtime.
+
+```ts
+@Component(...)
+export class MyComponent {
+  constructor(private _appRippleOptions: AppGlobalRippleOptions) {}
+
+  disableRipples() {
+    this._appRippleOptions.disabled = true;
+  }
+}
 ```

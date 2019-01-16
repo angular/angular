@@ -8,6 +8,7 @@
 
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {Component, ElementRef, ViewEncapsulation} from '@angular/core';
+import {DevAppRippleOptions} from './ripple/ripple-options';
 
 /** Root component for the dev-app demos. */
 @Component({
@@ -69,7 +70,8 @@ export class DevAppComponent {
 
   constructor(
     private _element: ElementRef<HTMLElement>,
-    private _overlayContainer: OverlayContainer) {}
+    private _overlayContainer: OverlayContainer,
+    public rippleOptions: DevAppRippleOptions) {}
 
   toggleFullscreen() {
     // Cast to `any`, because the typings don't include the browser-prefixed methods.

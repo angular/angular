@@ -12,6 +12,7 @@ import {CommonModule} from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MAT_RIPPLE_GLOBAL_OPTIONS} from '@angular/material';
 import {ExampleModule} from '@angular/material-examples';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -50,6 +51,7 @@ import {ProgressBarDemo} from './progress-bar/progress-bar-demo';
 import {ProgressSpinnerDemo} from './progress-spinner/progress-spinner-demo';
 import {RadioDemo} from './radio/radio-demo';
 import {RippleDemo} from './ripple/ripple-demo';
+import {DevAppRippleOptions} from './ripple/ripple-options';
 import {DEV_APP_ROUTES} from './routes';
 import {ScreenTypeDemo} from './screen-type/screen-type-demo';
 import {SelectDemo} from './select/select-demo';
@@ -140,6 +142,7 @@ import {VirtualScrollDemo} from './virtual-scroll/virtual-scroll-demo';
   ],
   providers: [
     {provide: OverlayContainer, useClass: FullscreenOverlayContainer},
+    {provide: MAT_RIPPLE_GLOBAL_OPTIONS, useExisting: DevAppRippleOptions},
   ],
   entryComponents: [
     ContentElementDialog,

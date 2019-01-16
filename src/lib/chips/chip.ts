@@ -123,21 +123,20 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   /** Reference to the RippleRenderer for the chip. */
   private _chipRipple: RippleRenderer;
 
-  /** Whether the ripples are globally disabled through the RippleGlobalOptions */
-  private _ripplesGloballyDisabled = false;
-
   /**
-   * Ripple configuration for ripples that are launched on pointer down.
+   * Ripple configuration for ripples that are launched on pointer down. The ripple config
+   * is set to the global ripple options since we don't have any configurable options for
+   * the chip ripples.
    * @docs-private
    */
-  rippleConfig: RippleConfig = {};
+  rippleConfig: RippleConfig & RippleGlobalOptions;
 
   /**
    * Whether ripples are disabled on interaction
    * @docs-private
    */
   get rippleDisabled(): boolean {
-    return this.disabled || this.disableRipple || this._ripplesGloballyDisabled;
+    return this.disabled || this.disableRipple || !!this.rippleConfig.disabled;
   }
 
   /** Whether the chip has focus. */
@@ -225,22 +224,15 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   constructor(public _elementRef: ElementRef,
               private _ngZone: NgZone,
               platform: Platform,
-              @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions) {
+              @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
+              globalRippleOptions: RippleGlobalOptions | null) {
     super(_elementRef);
 
     this._addHostClassName();
 
     this._chipRipple = new RippleRenderer(this, _ngZone, _elementRef, platform);
     this._chipRipple.setupTriggerEvents(_elementRef.nativeElement);
-
-    if (globalOptions) {
-      // TODO(paul): Do not copy each option manually. Allow dynamic global option changes: #9729
-      this._ripplesGloballyDisabled = !!globalOptions.disabled;
-      this.rippleConfig = {
-        animation: globalOptions.animation,
-        terminateOnPointerUp: globalOptions.terminateOnPointerUp,
-      };
-    }
+    this.rippleConfig = globalRippleOptions || {};
   }
 
   _addHostClassName() {
