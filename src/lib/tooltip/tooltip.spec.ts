@@ -453,6 +453,24 @@ describe('MatTooltip', () => {
       } as AnimationEvent);
     }));
 
+    it('should complete the afterHidden stream when tooltip is destroyed', fakeAsync(() => {
+      tooltipDirective.show();
+      fixture.detectChanges();
+      tick(150);
+
+      const spy = jasmine.createSpy('complete spy');
+      const subscription = tooltipDirective._tooltipInstance!.afterHidden()
+          .subscribe(undefined, undefined, spy);
+
+      tooltipDirective.hide(0);
+      tick(0);
+      fixture.detectChanges();
+      tick(500);
+
+      expect(spy).toHaveBeenCalled();
+      subscription.unsubscribe();
+    }));
+
     it('should consistently position before and after overlay origin in ltr and rtl dir', () => {
       tooltipDirective.position = 'left';
       const leftOrigin = tooltipDirective._getOrigin().main;

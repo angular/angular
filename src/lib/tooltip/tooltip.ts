@@ -528,7 +528,7 @@ export type TooltipVisibility = 'initial' | 'visible' | 'hidden';
     'aria-hidden': 'true',
   }
 })
-export class TooltipComponent {
+export class TooltipComponent implements OnDestroy {
   /** Message to display in the tooltip */
   message: string;
 
@@ -609,6 +609,10 @@ export class TooltipComponent {
   /** Whether the tooltip is being displayed. */
   isVisible(): boolean {
     return this._visibility === 'visible';
+  }
+
+  ngOnDestroy() {
+    this._onHide.complete();
   }
 
   _animationStart() {
