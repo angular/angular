@@ -1,3 +1,30 @@
+<a name="7.2.1"></a>
+## [7.2.1](https://github.com/angular/angular/compare/7.2.0...7.2.1) (2019-01-16)
+
+
+### Bug Fixes
+
+* **bazel:** Add [@bazel](https://github.com/bazel)/bazel to dev deps ([#28032](https://github.com/angular/angular/issues/28032)) ([21093b9](https://github.com/angular/angular/commit/21093b9))
+* **bazel:** Add /bazel-out to .gitignore ([#27874](https://github.com/angular/angular/issues/27874)) ([e4fc8ba](https://github.com/angular/angular/commit/e4fc8ba))
+* **bazel:** Add ibazel to deps of Bazel project ([#28090](https://github.com/angular/angular/issues/28090)) ([28d34b6](https://github.com/angular/angular/commit/28d34b6))
+* **bazel:** Bazel schematics should add router package ([#28141](https://github.com/angular/angular/issues/28141)) ([02a852a](https://github.com/angular/angular/commit/02a852a))
+* **bazel:** flat module misses AMD module name on windows ([#27839](https://github.com/angular/angular/issues/27839)) ([c3d8e28](https://github.com/angular/angular/commit/c3d8e28))
+* **bazel:** incorrectly always uses ngc-wrapped from "npm" workspace ([#28137](https://github.com/angular/angular/issues/28137)) ([ca3965a](https://github.com/angular/angular/commit/ca3965a))
+* **bazel:** ng_package creates invalid typings reexport on windows ([#27829](https://github.com/angular/angular/issues/27829)) ([6b394f6](https://github.com/angular/angular/commit/6b394f6))
+* **bazel:** packager not properly removing amd directives on windows ([#27829](https://github.com/angular/angular/issues/27829)) ([fad4145](https://github.com/angular/angular/commit/fad4145))
+* **bazel:** protractor rule does not run spec files with underscore ([#28022](https://github.com/angular/angular/issues/28022)) ([f05c5f8](https://github.com/angular/angular/commit/f05c5f8))
+* **bazel:** protractor utils cannot start server on windows ([#27915](https://github.com/angular/angular/issues/27915)) ([0be8487](https://github.com/angular/angular/commit/0be8487))
+* **bazel:** replay compilation uses wrong compiler for building esm5 ([#28053](https://github.com/angular/angular/issues/28053)) ([fbbdaaa](https://github.com/angular/angular/commit/fbbdaaa))
+* **router:** ensure URL is updated after second redirect with UrlUpdateStrategy="eager" ([#27680](https://github.com/angular/angular/issues/27680)) ([6ae7aee](https://github.com/angular/angular/commit/6ae7aee)), closes [#27116](https://github.com/angular/angular/issues/27116)
+* **service-worker:** navigation urls backwards compatibility ([#27244](https://github.com/angular/angular/issues/27244)) ([585e871](https://github.com/angular/angular/commit/585e871))
+
+
+### Performance Improvements
+
+* **platform-server:** use shared `DomElementSchemaRegistry` instance ([#28150](https://github.com/angular/angular/issues/28150)) ([#28151](https://github.com/angular/angular/issues/28151)) ([6851581](https://github.com/angular/angular/commit/6851581))
+
+
+
 <a name="7.2.0"></a>
 # [7.2.0](https://github.com/angular/angular/compare/7.1.4...7.2.0) (2019-01-07)
 
