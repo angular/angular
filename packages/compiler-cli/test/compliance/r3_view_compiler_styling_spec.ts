@@ -403,36 +403,82 @@ describe('compiler compliance: styling', () => {
                 import {Component, NgModule} from '@angular/core';
 
                 @Component({
-                  selector: 'my-component',
+                  selector: 'my-component-with-interpolation',
                   template: \`
                     <div class="foo foo-{{ fooId }}"></div>
-                    <div style="width:100px; height:200px;"></div>
                   \`
                 })
-                export class MyComponent {
+                export class MyComponentWithInterpolation {
                   fooId = '123';
                 }
 
-                @NgModule({declarations: [MyComponent]})
+                @Component({
+                  selector: 'my-component-with-muchos-interpolation',
+                  template: \`
+                    <div class="foo foo-{{ fooId }}-{{ fooUsername }}"></div>
+                  \`
+                })
+                export class MyComponentWithMuchosInterpolation {
+                  fooId = '123';
+                  fooUsername = 'superfoo';
+                }
+
+                @Component({
+                  selector: 'my-component-without-interpolation',
+                  template: \`
+                    <div [class]="exp"></div>
+                  \`
+                })
+                export class MyComponentWithoutInterpolation {
+                  exp = 'bar';
+                }
+
+                @NgModule({declarations: [MyComponentWithInterpolation, MyComponentWithMuchosInterpolation, MyComponentWithoutInterpolation]})
                 export class MyModule {}
             `
            }
          };
 
          const template = `
-        const _c0 = [2, "width", "100px", "height", "200px"];
         …
-          consts: 2,
+          consts: 1,
           vars: 1,
-          template: function MyComponent_Template(rf, $ctx$) {
+          template: function MyComponentWithInterpolation_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "div");
               $r3$.ɵelementStyling();
               $r3$.ɵelementEnd();
-              $r3$.ɵelement(1, "div", _c0);
             }
             if (rf & 2) {
               $r3$.ɵelementStylingMap(0, $r3$.ɵinterpolation1("foo foo-", $ctx$.fooId, ""));
+              $r3$.ɵelementStylingApply(0);
+            }
+          }
+        …
+          consts: 1,
+          vars: 2,
+          template: function MyComponentWithMuchosInterpolation_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling();
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(0, $r3$.ɵinterpolation2("foo foo-", $ctx$.fooId, "-", $ctx$.fooUsername, ""));
+              $r3$.ɵelementStylingApply(0);
+            }
+          }
+        …
+          consts: 1,
+          vars: 0,
+          template: function MyComponentWithoutInterpolation_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelementStart(0, "div");
+              $r3$.ɵelementStyling();
+              $r3$.ɵelementEnd();
+            }
+            if (rf & 2) {
+              $r3$.ɵelementStylingMap(0, $ctx$.exp);
               $r3$.ɵelementStylingApply(0);
             }
           }

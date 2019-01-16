@@ -323,13 +323,13 @@ export class StylingBuilder {
       const mapBasedClassValue =
           this._classMapInput ? this._classMapInput.value.visit(valueConverter) : null;
       if (mapBasedClassValue instanceof Interpolation) {
-        totalBindingSlotsRequired++;
+        totalBindingSlotsRequired += mapBasedClassValue.expressions.length;
       }
 
       const mapBasedStyleValue =
           this._styleMapInput ? this._styleMapInput.value.visit(valueConverter) : null;
       if (mapBasedStyleValue instanceof Interpolation) {
-        totalBindingSlotsRequired++;
+        totalBindingSlotsRequired += mapBasedStyleValue.expressions.length;
       }
 
       return {
@@ -369,7 +369,7 @@ export class StylingBuilder {
     return inputs.map(input => {
       const bindingIndex: number = mapIndex.get(input.name) !;
       const value = input.value.visit(valueConverter);
-      totalBindingSlotsRequired += (value instanceof Interpolation) ? 1 : 0;
+      totalBindingSlotsRequired += (value instanceof Interpolation) ? value.expressions.length : 0;
       return {
         sourceSpan: input.sourceSpan,
         allocateBindingSlots: totalBindingSlotsRequired, reference,

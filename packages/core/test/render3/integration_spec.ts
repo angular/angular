@@ -1916,6 +1916,30 @@ describe('render3 integration test', () => {
            fixture.update();
            expect(target.style.getPropertyValue('width')).toEqual('777px');
          });
+
+      it('should properly handle and render interpolation for class attribute bindings', () => {
+        const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'div');
+            elementStyling();
+            elementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+            elementStylingMap(0, interpolation2('-', ctx.name, '-', ctx.age, '-'));
+            elementStylingApply(0);
+          }
+        }, 1, 2);
+
+        const fixture = new ComponentFixture(App);
+        const target = fixture.hostElement.querySelector('div') !;
+        expect(target.classList.contains('-fred-36-')).toBeFalsy();
+
+        fixture.component.name = 'fred';
+        fixture.component.age = '36';
+        fixture.update();
+
+        expect(target.classList.contains('-fred-36-')).toBeTruthy();
+      });
     });
   });
 
