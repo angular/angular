@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, NgModule, NgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, InjectionToken, NgModule, NgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
@@ -15,7 +15,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, ivyEnabled, modifiedInIvy} from '@angular/private/testing';
+import {ivyEnabled} from '@angular/private/testing';
 
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
@@ -74,63 +74,65 @@ class SomeComponent {
       return MyModule;
     }
 
-    fixmeIvy('FW-776: Cannot bootstrap as there are still asynchronous initializers running')
-        .it('should bootstrap a component from a child module',
-            async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-              @Component({
-                selector: 'bootstrap-app',
-                template: '',
-              })
-              class SomeComponent {
-              }
+    it('should bootstrap a component from a child module',
+       async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+         @Component({
+           selector: 'bootstrap-app',
+           template: '',
+         })
+         class SomeComponent {
+         }
 
-              @NgModule({
-                providers: [{provide: 'hello', useValue: 'component'}],
-                declarations: [SomeComponent],
-                entryComponents: [SomeComponent],
-              })
-              class SomeModule {
-              }
+         const helloToken = new InjectionToken<string>('hello');
 
-              createRootEl();
-              const modFactory = compiler.compileModuleSync(SomeModule);
-              const module = modFactory.create(TestBed);
-              const cmpFactory =
-                  module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
-              const component = app.bootstrap(cmpFactory);
+         @NgModule({
+           providers: [{provide: helloToken, useValue: 'component'}],
+           declarations: [SomeComponent],
+           entryComponents: [SomeComponent],
+         })
+         class SomeModule {
+         }
 
-              // The component should see the child module providers
-              expect(component.injector.get('hello')).toEqual('component');
-            })));
+         createRootEl();
+         const modFactory = compiler.compileModuleSync(SomeModule);
+         const module = modFactory.create(TestBed);
+         const cmpFactory =
+             module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
+         const component = app.bootstrap(cmpFactory);
 
-    fixmeIvy('FW-776: Cannot bootstrap as there are still asynchronous initializers running')
-        .it('should bootstrap a component with a custom selector',
-            async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-              @Component({
-                selector: 'bootstrap-app',
-                template: '',
-              })
-              class SomeComponent {
-              }
+         // The component should see the child module providers
+         expect(component.injector.get(helloToken)).toEqual('component');
+       })));
 
-              @NgModule({
-                providers: [{provide: 'hello', useValue: 'component'}],
-                declarations: [SomeComponent],
-                entryComponents: [SomeComponent],
-              })
-              class SomeModule {
-              }
+    it('should bootstrap a component with a custom selector',
+       async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+         @Component({
+           selector: 'bootstrap-app',
+           template: '',
+         })
+         class SomeComponent {
+         }
 
-              createRootEl('custom-selector');
-              const modFactory = compiler.compileModuleSync(SomeModule);
-              const module = modFactory.create(TestBed);
-              const cmpFactory =
-                  module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
-              const component = app.bootstrap(cmpFactory, 'custom-selector');
+         const helloToken = new InjectionToken<string>('hello');
 
-              // The component should see the child module providers
-              expect(component.injector.get('hello')).toEqual('component');
-            })));
+         @NgModule({
+           providers: [{provide: helloToken, useValue: 'component'}],
+           declarations: [SomeComponent],
+           entryComponents: [SomeComponent],
+         })
+         class SomeModule {
+         }
+
+         createRootEl('custom-selector');
+         const modFactory = compiler.compileModuleSync(SomeModule);
+         const module = modFactory.create(TestBed);
+         const cmpFactory =
+             module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
+         const component = app.bootstrap(cmpFactory, 'custom-selector');
+
+         // The component should see the child module providers
+         expect(component.injector.get(helloToken)).toEqual('component');
+       })));
 
     describe('ApplicationRef', () => {
       beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });

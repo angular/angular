@@ -22,6 +22,7 @@ import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_mod
 import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {assertNgModuleType} from './render3/assert';
+import {ComponentFactory as R3ComponentFactory} from './render3/component_ref';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {isDevMode} from './util/is_dev_mode';
@@ -467,7 +468,8 @@ export class ApplicationRef {
     this.componentTypes.push(componentFactory.componentType);
 
     // Create a factory associated with the current module if it's not bound to some other
-    const ngModule = componentFactory instanceof ComponentFactoryBoundToModule ?
+    const ngModule = (componentFactory instanceof ComponentFactoryBoundToModule ||
+                      componentFactory instanceof R3ComponentFactory) ?
         null :
         this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
