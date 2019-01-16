@@ -82,23 +82,23 @@
     "@bazel/bazel-linux_x64" "0.22.0"
     "@bazel/bazel-win32_x64" "0.22.0"
 
-"@bazel/buildifier-darwin_x64@0.19.2":
-  version "0.19.2"
-  resolved "https://registry.yarnpkg.com/@bazel/buildifier-darwin_x64/-/buildifier-darwin_x64-0.19.2.tgz#1182862b4a3578fb9367ab42e807131187a61702"
-  integrity sha512-f6CITRj8jFhhZFrQkIao3IgJjZAXGYwUkW/QBSeAu0HIltBerJ0FTt/Nmu9ji1QZYT2aO4RpZ8oJksG6xv1dcQ==
+"@bazel/buildifier-darwin_x64@0.20.0":
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier-darwin_x64/-/buildifier-darwin_x64-0.20.0.tgz#1aeceb5a1a57a62eef6415377dbe95091781a7d4"
+  integrity sha512-yV7niwbdpDDPUw1vgyk1wIjPl3+YOM4o5FPgFmnFgzf48JUqrF3PK6Blg95Z8SqGOVoJAOChRC1GvopzEUzwZA==
 
-"@bazel/buildifier-linux_x64@0.19.2":
-  version "0.19.2"
-  resolved "https://registry.yarnpkg.com/@bazel/buildifier-linux_x64/-/buildifier-linux_x64-0.19.2.tgz#8b26eaf1f091cd3846a7dd7ea94008b55498401e"
-  integrity sha512-kJjzbrjuAW4yVms5mbTWSHpJF6ogDLkuq4MjVP6a03umQ7E15o9YoxbDoiN+CzAj9ZMWPWfc5/N5TouiwXkGzA==
+"@bazel/buildifier-linux_x64@0.20.0":
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier-linux_x64/-/buildifier-linux_x64-0.20.0.tgz#8cb6c8f999dbd8a9ee183906f202b698571d771b"
+  integrity sha512-djbBtcacgERWZoxjEm8lGmMyEaOYB3moiz0kioHTQc2F96wNLfm6Cikd4Ojrcj5VNQCMW9oy3YFTu+c5mIrCcA==
 
-"@bazel/buildifier@^0.19.2":
-  version "0.19.2"
-  resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-0.19.2.tgz#3e077de346ad98561cee703297aa8db50cfb3c76"
-  integrity sha512-MwkuoQdOdZ/VYKJvZe3qVCn3/20pLJyJpzNl3cBmaccWeUtdDKhtOm8YlLU08lxrt0VcKNcTYt4uiA62e/315A==
+"@bazel/buildifier@^0.20.0":
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-0.20.0.tgz#24a10e485fe65dbd75ef812cf37635df1fb91d0d"
+  integrity sha512-dahQRtE1KEp+efUV23q/JtOCSbQEk5C/+H3J33g8wP5roxMUa8mfDto85eloJ+gRPW7yOybxknuRYc4KSpgT7w==
   optionalDependencies:
-    "@bazel/buildifier-darwin_x64" "0.19.2"
-    "@bazel/buildifier-linux_x64" "0.19.2"
+    "@bazel/buildifier-darwin_x64" "0.20.0"
+    "@bazel/buildifier-linux_x64" "0.20.0"
 
 "@bazel/ibazel@~0.9.0":
   version "0.9.0"

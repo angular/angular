@@ -6,6 +6,7 @@ load("@npm_bazel_karma//:defs.bzl", _karma_web_test = "karma_web_test", _karma_w
 load("@npm_bazel_typescript//:defs.bzl", _ts_library = "ts_library")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
+load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 
 _DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"

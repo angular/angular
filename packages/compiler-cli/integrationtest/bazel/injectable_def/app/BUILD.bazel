@@ -1,6 +1,6 @@
-package(default_visibility = ["//visibility:public"])
+load("//tools:defaults.bzl", "ng_module")
 
-load("//tools:defaults.bzl", "ng_module", "ts_library")
+package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "app",

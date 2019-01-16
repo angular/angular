@@ -5,9 +5,9 @@
 
 "Install angular source dependencies"
 
-load("@build_bazel_rules_nodejs//:package.bzl", "check_rules_nodejs_version")
-load("@build_bazel_rules_nodejs//:defs.bzl", "yarn_install")
 load("@angular//packages/bazel/src:ng_setup_workspace.bzl", _ng_setup_workspace = "ng_setup_workspace")
+load("@build_bazel_rules_nodejs//:defs.bzl", "yarn_install")
+load("@build_bazel_rules_nodejs//:package.bzl", "check_rules_nodejs_version")
 
 def ng_setup_workspace():
     """This repository rule should be called from your WORKSPACE file.

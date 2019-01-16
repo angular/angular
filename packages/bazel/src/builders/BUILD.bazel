@@ -1,3 +1,5 @@
+load("//tools:defaults.bzl", "ts_library")
+
 package(default_visibility = ["//visibility:public"])
 
 filegroup(
@@ -7,8 +9,6 @@ filegroup(
     ],
     visibility = ["//packages/bazel:__subpackages__"],
 )
-
-load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
     name = "builders",

@@ -1,3 +1,5 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
 package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "node_modules_filegroup")
@@ -43,8 +45,6 @@ filegroup(
         "@ngdeps//node_modules/angular-mocks-1.6:angular-mocks.js",
     ],
 )
-
-load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 # A nodejs_binary for @angular/bazel/ngc-wrapped to use by default in
 # ng_module that depends on @npm//@angular/bazel instead of the
