@@ -416,6 +416,23 @@ describe('MatButtonToggle without forms', () => {
 
       expect(buttonToggleInstances.every(toggle => !toggle.checked)).toBe(true);
     });
+
+    it('should update the model if a selected toggle is removed', fakeAsync(() => {
+      expect(groupInstance.value).toBeFalsy();
+      buttonToggleLabelElements[0].click();
+      fixture.detectChanges();
+
+      expect(groupInstance.value).toBe('test1');
+      expect(groupInstance.selected).toBe(buttonToggleInstances[0]);
+
+      testComponent.renderFirstToggle = false;
+      fixture.detectChanges();
+      tick();
+
+      expect(groupInstance.value).toBeFalsy();
+      expect(groupInstance.selected).toBeFalsy();
+    }));
+
   });
 
   describe('with initial value and change event', () => {
@@ -787,7 +804,7 @@ describe('MatButtonToggle without forms', () => {
   <mat-button-toggle-group [disabled]="isGroupDisabled"
                            [vertical]="isVertical"
                            [(value)]="groupValue">
-    <mat-button-toggle value="test1">Test1</mat-button-toggle>
+    <mat-button-toggle value="test1" *ngIf="renderFirstToggle">Test1</mat-button-toggle>
     <mat-button-toggle value="test2">Test2</mat-button-toggle>
     <mat-button-toggle value="test3">Test3</mat-button-toggle>
   </mat-button-toggle-group>
@@ -797,6 +814,7 @@ class ButtonTogglesInsideButtonToggleGroup {
   isGroupDisabled: boolean = false;
   isVertical: boolean = false;
   groupValue: string;
+  renderFirstToggle = true;
 }
 
 @Component({
