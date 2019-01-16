@@ -189,7 +189,7 @@ describe('CdkDrag', () => {
 
         dragElement.style.transform = 'translateX(-50%)';
         dragElementViaMouse(fixture, dragElement, 50, 100);
-        expect(dragElement.style.transform).toBe('translateX(-50%) translate3d(50px, 100px, 0px)');
+        expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px) translateX(-50%)');
       }));
 
       it('should not generate multiple own `translate3d` values', fakeAsync(() => {
@@ -200,10 +200,10 @@ describe('CdkDrag', () => {
         dragElement.style.transform = 'translateY(-50%)';
 
         dragElementViaMouse(fixture, dragElement, 50, 100);
-        expect(dragElement.style.transform).toBe('translateY(-50%) translate3d(50px, 100px, 0px)');
+        expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px) translateY(-50%)');
 
         dragElementViaMouse(fixture, dragElement, 100, 200);
-        expect(dragElement.style.transform).toBe('translateY(-50%) translate3d(150px, 300px, 0px)');
+        expect(dragElement.style.transform).toBe('translate3d(150px, 300px, 0px) translateY(-50%)');
       }));
 
       it('should prevent the `mousedown` action for native draggable elements', fakeAsync(() => {

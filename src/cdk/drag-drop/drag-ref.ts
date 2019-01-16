@@ -491,9 +491,11 @@ export class DragRef<T = any> {
           constrainedPointerPosition.y - this._pickupPositionOnPage.y + this._passiveTransform.y;
       const transform = getTransform(activeTransform.x, activeTransform.y);
 
-      // Preserve the previous `transform` value, if there was one.
+      // Preserve the previous `transform` value, if there was one. Note that we apply our own
+      // transform before the user's, because things like rotation can affect which direction
+      // the element will be translated towards.
       this._rootElement.style.transform = this._initialTransform ?
-          this._initialTransform + ' ' + transform : transform;
+          transform + ' ' + this._initialTransform  : transform;
 
       // Apply transform as attribute if dragging and svg element to work for IE
       if (typeof SVGElement !== 'undefined' && this._rootElement instanceof SVGElement) {
