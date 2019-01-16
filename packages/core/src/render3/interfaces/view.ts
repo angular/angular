@@ -8,7 +8,6 @@
 
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
-import {SimpleChanges} from '../../interface/simple_change';
 import {Type} from '../../interface/type';
 import {QueryList} from '../../linker';
 import {Sanitizer} from '../../sanitization/security';

@@ -468,10 +468,11 @@ export type PropertyAliases = {
 /**
  * Store the runtime input or output names for all the directives.
  *
- * - Even indices: directive index
- * - Odd indices: minified / internal name
+ * i+0: directive instance index
+ * i+1: publicName
+ * i+2: privateName
  *
- * e.g. [0, 'change-minified']
+ * e.g. [0, 'change', 'change-minified']
  */
 export type PropertyAliasValue = (number | string)[];
 
@@ -484,14 +485,15 @@ export type PropertyAliasValue = (number | string)[];
  *
  * Within each sub-array:
  *
- * Even indices: minified/internal input name
- * Odd indices: initial value
+ * i+0: attribute name
+ * i+1: minified/internal input name
+ * i+2: initial value
  *
  * If a directive on a node does not have any input properties
  * that should be set from attributes, its index is set to null
  * to avoid a sparse array.
  *
- * e.g. [null, ['role-min', 'button']]
+ * e.g. [null, ['role-min', 'minified-input', 'button']]
  */
 export type InitialInputData = (InitialInputs | null)[];
 
@@ -499,10 +501,11 @@ export type InitialInputData = (InitialInputs | null)[];
  * Used by InitialInputData to store input properties
  * that should be set once from attributes.
  *
- * Even indices: minified/internal input name
- * Odd indices: initial value
+ * i+0: attribute name
+ * i+1: minified/internal input name
+ * i+2: initial value
  *
- * e.g. ['role-min', 'button']
+ * e.g. ['role-min', 'minified-input', 'button']
  */
 export type InitialInputs = string[];
 

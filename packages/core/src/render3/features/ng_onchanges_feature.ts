@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChange} from '../../change_detection/change_detection_util';
-import {SimpleChanges} from '../../interface/simple_change';
 import {OnChanges} from '../../interface/lifecycle_hooks';
+import {SimpleChange, SimpleChanges} from '../../interface/simple_change';
+import {EMPTY_OBJ} from '../empty';
 import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
 
 const PRIVATE_PREFIX = '__ngOnChanges_';
@@ -40,86 +40,63 @@ type OnChangesExpando = OnChanges & {
  * ```
  */
 export function NgOnChangesFeature<T>(definition: DirectiveDef<T>): void {
-  const publicToDeclaredInputs = definition.declaredInputs;
-  const publicToMinifiedInputs = definition.inputs;
-  const proto = definition.type.prototype;
-  for (const publicName in publicToDeclaredInputs) {
-    if (publicToDeclaredInputs.hasOwnProperty(publicName)) {
-      const minifiedKey = publicToMinifiedInputs[publicName];
-      const declaredKey = publicToDeclaredInputs[publicName];
-      const privateMinKey = PRIVATE_PREFIX + minifiedKey;
+  if (definition.type.prototype.ngOnChanges) {
+    definition.setInput = ngOnChangesSetInput;
 
-      // Walk the prototype chain to see if we find a property descriptor
-      // That way we can honor setters and getters that were inherited.
-      let originalProperty: PropertyDescriptor|undefined = undefined;
-      let checkProto = proto;
-      while (!originalProperty && checkProto &&
-             Object.getPrototypeOf(checkProto) !== Object.getPrototypeOf(Object.prototype)) {
-        originalProperty = Object.getOwnPropertyDescriptor(checkProto, minifiedKey);
-        checkProto = Object.getPrototypeOf(checkProto);
-      }
+    const prevDoCheck = definition.doCheck;
+    const prevOnInit = definition.onInit;
 
-      const getter = originalProperty && originalProperty.get;
-      const setter = originalProperty && originalProperty.set;
+    definition.onInit = wrapOnChanges(prevOnInit);
+    definition.doCheck = wrapOnChanges(prevDoCheck);
+  }
+}
 
-      // create a getter and setter for property
-      Object.defineProperty(proto, minifiedKey, {
-        get: getter ||
-            (setter ? undefined : function(this: OnChangesExpando) { return this[privateMinKey]; }),
-        set<T>(this: OnChangesExpando, value: T) {
-          let simpleChanges = this[PRIVATE_PREFIX];
-          if (!simpleChanges) {
-            simpleChanges = {};
-            // Place where we will store SimpleChanges if there is a change
-            Object.defineProperty(this, PRIVATE_PREFIX, {value: simpleChanges, writable: true});
-          }
+function wrapOnChanges(hook: (() => void) | null) {
+  return function(this: OnChanges) {
+    const simpleChangesStore = getSimpleChangesStore(this);
+    const current = simpleChangesStore && simpleChangesStore.current;
 
-          const isFirstChange = !this.hasOwnProperty(privateMinKey);
-          const currentChange = simpleChanges[declaredKey];
-
-          if (currentChange) {
-            currentChange.currentValue = value;
-          } else {
-            simpleChanges[declaredKey] =
-                new SimpleChange(this[privateMinKey], value, isFirstChange);
-          }
-
-          if (isFirstChange) {
-            // Create a place where the actual value will be stored and make it non-enumerable
-            Object.defineProperty(this, privateMinKey, {value, writable: true});
-          } else {
-            this[privateMinKey] = value;
-          }
-
-          if (setter) setter.call(this, value);
-        },
-        // Make the property configurable in dev mode to allow overriding in tests
-        configurable: !!ngDevMode
-      });
+    if (current) {
+      simpleChangesStore !.previous = current;
+      simpleChangesStore !.current = null;
+      this.ngOnChanges(current);
     }
-  }
 
-  // If an onInit hook is defined, it will need to wrap the ngOnChanges call
-  // so the call order is changes-init-check in creation mode. In subsequent
-  // change detection runs, only the check wrapper will be called.
-  if (definition.onInit != null) {
-    definition.onInit = onChangesWrapper(definition.onInit);
-  }
+    hook && hook.call(this);
+  };
+}
 
-  definition.doCheck = onChangesWrapper(definition.doCheck);
+function ngOnChangesSetInput<T>(
+    this: DirectiveDef<T>, instance: T, value: any, publicName: string, privateName: string): void {
+  const simpleChangesStore = getSimpleChangesStore(instance) ||
+      setSimpleChangesStore(instance, {previous: EMPTY_OBJ, current: null});
+  const current = simpleChangesStore.current || (simpleChangesStore.current = {});
+  const previous = simpleChangesStore.previous;
+
+  const declaredName = (this.declaredInputs as{[key: string]: string})[publicName];
+  const previousChange = previous[declaredName];
+  current[declaredName] = new SimpleChange(
+      previousChange && previousChange.currentValue, value, previous === EMPTY_OBJ);
+
+  (instance as any)[privateName] = value;
+}
+
+const SIMPLE_CHANGES_STORE = '__ngSimpleChanges__';
+
+function getSimpleChangesStore(instance: any): null|NgSimpleChangesStore {
+  return instance[SIMPLE_CHANGES_STORE] || null;
+}
+
+function setSimpleChangesStore(instance: any, store: NgSimpleChangesStore): NgSimpleChangesStore {
+  return instance[SIMPLE_CHANGES_STORE] = store;
 }
 
 // This option ensures that the ngOnChanges lifecycle hook will be inherited
 // from superclasses (in InheritDefinitionFeature).
 (NgOnChangesFeature as DirectiveDefFeature).ngInherit = true;
 
-function onChangesWrapper(delegateHook: (() => void) | null) {
-  return function(this: OnChangesExpando) {
-    const simpleChanges = this[PRIVATE_PREFIX];
-    if (simpleChanges != null) {
-      this.ngOnChanges(simpleChanges);
-      this[PRIVATE_PREFIX] = null;
-    }
-    if (delegateHook) delegateHook.apply(this);
-  };
+
+interface NgSimpleChangesStore {
+  previous: SimpleChanges;
+  current: SimpleChanges|null;
 }

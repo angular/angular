@@ -536,7 +536,6 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
              expect(renderLog.log).toEqual(['someProp=Megatron']);
            }));
 
-        fixmeIvy('FW-956: refactor onChanges').
         it('should record unwrapped values via ngOnChanges', fakeAsync(() => {
              const ctx = createCompFixture(
                  '<div [testDirective]="\'aName\' | wrappedPipe" [a]="1" [b]="2 | wrappedPipe"></div>');
@@ -739,7 +738,6 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
       });
 
       describe('ngOnChanges', () => {
-        fixmeIvy('FW-956: refactor onChanges').
         it('should notify the directive when a group of records changes', fakeAsync(() => {
              const ctx = createCompFixture(
                  '<div [testDirective]="\'aName\'" [a]="1" [b]="2"></div><div [testDirective]="\'bName\'" [a]="4"></div>');

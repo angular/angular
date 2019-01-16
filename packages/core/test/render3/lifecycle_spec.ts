@@ -7,14 +7,14 @@
  */
 
 import {ComponentFactoryResolver, OnDestroy, SimpleChange, SimpleChanges, ViewContainerRef} from '../../src/core';
-import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, defineComponent, defineDirective, injectComponentFactoryResolver} from '../../src/render3/index';
+import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, injectComponentFactoryResolver} from '../../src/render3/index';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
-import { fixmeIvy } from '@angular/private/testing';
+import {fixmeIvy} from '@angular/private/testing';
 
 describe('lifecycles', () => {
 
@@ -1941,7 +1941,6 @@ describe('lifecycles', () => {
 
   });
 
-  fixmeIvy('FW-956: refactor onChanges').
   describe('onChanges', () => {
     let events: ({type: string, name: string, [key: string]: any})[];
 
@@ -2008,7 +2007,8 @@ describe('lifecycles', () => {
           consts: consts,
           vars: vars,
           inputs: {a: 'val1', b: ['publicVal2', 'val2']}, template,
-          directives: directives
+          directives: directives,
+          features: [NgOnChangesFeature],
         });
       };
     }
@@ -2026,7 +2026,8 @@ describe('lifecycles', () => {
         type: Directive,
         selectors: [['', 'dir', '']],
         factory: () => new Directive(),
-        inputs: {a: 'val1', b: ['publicVal2', 'val2']}
+        inputs: {a: 'val1', b: ['publicVal2', 'val2']},
+        features: [NgOnChangesFeature],
       });
     }
 
@@ -2701,7 +2702,6 @@ describe('lifecycles', () => {
 
   });
 
-  fixmeIvy('FW-956: refactor onChanges').
   describe('hook order', () => {
     let events: string[];
 
@@ -2731,7 +2731,8 @@ describe('lifecycles', () => {
           consts: consts,
           vars: vars,
           inputs: {val: 'val'}, template,
-          directives: directives
+          directives: directives,
+          features: [NgOnChangesFeature],
         });
       };
     }
