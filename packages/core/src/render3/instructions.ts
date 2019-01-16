@@ -395,12 +395,13 @@ function renderComponentOrTemplate<T>(
   const rendererFactory = hostView[RENDERER_FACTORY];
   const oldView = enterView(hostView, hostView[HOST_NODE]);
   const normalExecutionPath = !getCheckNoChangesMode();
+  const creationModeIsActive = isCreationMode(hostView);
   try {
-    if (normalExecutionPath && rendererFactory.begin) {
+    if (normalExecutionPath && !creationModeIsActive && rendererFactory.begin) {
       rendererFactory.begin();
     }
 
-    if (isCreationMode(hostView)) {
+    if (creationModeIsActive) {
       // creation mode pass
       if (templateFn) {
         namespaceHTML();
@@ -415,7 +416,7 @@ function renderComponentOrTemplate<T>(
     templateFn && templateFn(RenderFlags.Update, context !);
     refreshDescendantViews(hostView);
   } finally {
-    if (normalExecutionPath && rendererFactory.end) {
+    if (normalExecutionPath && !creationModeIsActive && rendererFactory.end) {
       rendererFactory.end();
     }
     leaveView(oldView);

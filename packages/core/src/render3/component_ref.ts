@@ -169,8 +169,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     let component: T;
     let tElementNode: TElementNode;
     try {
-      if (rendererFactory.begin) rendererFactory.begin();
-
       const componentView = createRootComponentView(
           hostRNode, this.componentDef, rootLView, rendererFactory, renderer);
 
@@ -216,7 +214,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       refreshDescendantViews(rootLView);
     } finally {
       leaveView(oldLView);
-      if (rendererFactory.end) rendererFactory.end();
     }
 
     const componentRef = new ComponentRef(

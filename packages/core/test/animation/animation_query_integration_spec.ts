@@ -803,58 +803,56 @@ import {HostListener} from '../../src/metadata/directives';
         expect(player.element.style.height).toEqual('444px');
       });
 
-      fixmeIvy(
-          'FW-945 - Ivy createComponent calls CD while VE waits for CD to be explicitly called')
-          .it('should find newly inserted items in the component via :enter', () => {
-            @Component({
-              selector: 'ani-cmp',
-              template: `
+      it('should find newly inserted items in the component via :enter', () => {
+        @Component({
+          selector: 'ani-cmp',
+          template: `
             <div @myAnimation>
               <div *ngFor="let item of items" class="child">
                 {{ item }}
               </div>
             </div>
           `,
-              animations: [trigger(
-                  'myAnimation',
-                  [
-                    transition(
-                        ':enter',
-                        [
-                          query(
-                              ':enter',
-                              [
-                                style({opacity: 0}),
-                                animate(1000, style({opacity: .5})),
-                              ]),
-                        ]),
-                  ])]
-            })
-            class Cmp {
-              public items: any[] = [0, 1, 2];
-            }
+          animations: [trigger(
+              'myAnimation',
+              [
+                transition(
+                    ':enter',
+                    [
+                      query(
+                          ':enter',
+                          [
+                            style({opacity: 0}),
+                            animate(1000, style({opacity: .5})),
+                          ]),
+                    ]),
+              ])]
+        })
+        class Cmp {
+          public items: any[] = [0, 1, 2];
+        }
 
-            TestBed.configureTestingModule({declarations: [Cmp]});
+        TestBed.configureTestingModule({declarations: [Cmp]});
 
-            const engine = TestBed.get(ɵAnimationEngine);
-            const fixture = TestBed.createComponent(Cmp);
-            const cmp = fixture.componentInstance;
+        const engine = TestBed.get(ɵAnimationEngine);
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
 
-            fixture.detectChanges();
-            engine.flush();
+        fixture.detectChanges();
+        engine.flush();
 
-            const players = getLog();
-            expect(players.length).toEqual(3);
+        const players = getLog();
+        expect(players.length).toEqual(3);
 
-            const [p1, p2, p3] = players;
-            expect(p1.element.innerText.trim()).toEqual('0');
-            expect(p2.element.innerText.trim()).toEqual('1');
-            expect(p3.element.innerText.trim()).toEqual('2');
+        const [p1, p2, p3] = players;
+        expect(p1.element.innerText.trim()).toEqual('0');
+        expect(p2.element.innerText.trim()).toEqual('1');
+        expect(p3.element.innerText.trim()).toEqual('2');
 
-            players.forEach(p => {
-              expect(p.keyframes).toEqual([{opacity: '0', offset: 0}, {opacity: '0.5', offset: 1}]);
-            });
-          });
+        players.forEach(p => {
+          expect(p.keyframes).toEqual([{opacity: '0', offset: 0}, {opacity: '0.5', offset: 1}]);
+        });
+      });
 
       it('should cleanup :enter and :leave artifacts from nodes when any animation sequences fail to be built',
          () => {
