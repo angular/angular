@@ -28,7 +28,7 @@ export function setClassMetadata(
     propDecorators: {[field: string]: any} | null): void {
   const clazz = type as TypeWithMetadata;
   if (decorators !== null) {
-    if (clazz.decorators !== undefined) {
+    if (clazz.hasOwnProperty('decorators') && clazz.decorators !== undefined) {
       clazz.decorators.push(...decorators);
     } else {
       clazz.decorators = decorators;
