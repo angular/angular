@@ -91,32 +91,17 @@ describe('Bazel-workspace Schematic', () => {
       expect(host.files).toContain('/src/BUILD.bazel');
     });
 
-    it('should download rules_sass in WORKSPACE', () => {
+    it('should download and load rules_sass in WORKSPACE', () => {
       const content = host.readContent('/WORKSPACE');
       expect(content).toContain('RULES_SASS_VERSION');
-      expect(content).toContain('io_bazel_rules_sass');
-    });
-
-    it('should load sass_repositories in WORKSPACE', () => {
-      const content = host.readContent('/WORKSPACE');
       expect(content).toContain(
           'load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")');
-      expect(content).toContain('sass_repositories()');
     });
 
     it('should add sass_binary rules in src/BUILD', () => {
       const content = host.readContent('/src/BUILD.bazel');
       expect(content).toContain('load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")');
-      expect(content).toMatch(/sass_binary\((.*\n)+\)/);
-    });
-
-    it('should add SASS targets to assets of ng_module in src/BUILD', () => {
-      const content = host.readContent('/src/BUILD.bazel');
-      expect(content).toContain(`
-    assets = glob([
-      "**/*.css",
-      "**/*.html",
-    ]) + [":style_" + x for x in glob(["**/*.scss"])],`);
+      expect(content).toContain('glob(["**/*.scss"])');
     });
   });
 });

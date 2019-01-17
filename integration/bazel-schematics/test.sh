@@ -7,10 +7,11 @@ function testBazel() {
   bazel version
   rm -rf demo
   # Create project
-  ng new demo --collection=@angular/bazel --defaults --skip-git
+  ng new demo --collection=@angular/bazel --defaults --skip-git --style=scss
   node replace_angular_repo.js "./demo/WORKSPACE"
   cd demo
   cp ../package.json.replace ./package.json
+  ng generate component widget --style=css
   ng build
   ng test
   ng e2e
