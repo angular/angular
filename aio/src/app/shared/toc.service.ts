@@ -69,6 +69,7 @@ export class TocService {
       }
       // now remove the anchor
       if (anchorLink.parentNode !== null) {
+        // We cannot use ChildNode.remove() because of IE11
         anchorLink.parentNode.removeChild(anchorLink);
       }
     }
