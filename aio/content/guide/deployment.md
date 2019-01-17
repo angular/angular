@@ -1,12 +1,55 @@
 # Deployment
 
-When you are ready to deploy your Angular application to a remote server, you have various options for
-deployment.
+When you are ready to deploy your Angular application to a remote server, you have various options for deployment.
 
 {@a dev-deploy}
 {@a copy-files}
 
-## Simplest deployment possible
+
+## Simple deployment options
+
+Before fully deploying your application, you can test the process, build configuration, and deployed behavior by using one of these interim techniques
+
+### Building and serving from disk
+
+During development, you typically use the `ng serve` command to build, watch, and serve the application from local memory, using [webpack-dev-server](https://webpack.js.org/guides/development/#webpack-dev-server).
+When you are ready to deploy, however, you must use the `ng build` command to build the app and deploy the build artifacts elsewhere.
+
+Both `ng build` and `ng serve` clear the output folder before they build the project, but only the `ng build` command writes the generated build artifacts to the output folder.
+
+<div class="alert is-helpful">
+
+The output folder is  `dist/project-name/` by default.
+To output to a different folder, change the `outputPath` in `angular.json`.
+
+</div>
+
+As you near the end of the development process, serving the contents of your output folder from a local web server can give you a better idea of how your application will behave when it is deployed to a remote server.
+You will need two terminals to get the live-reload experience.
+
+* On the first terminal, run the [`ng build` command](cli/build) in *watch* mode to compile the application to the `dist` folder.
+
+  <code-example language="none" class="code-shell">
+   ng build --watch
+  </code-example>
+
+  Like the `ng serve` command, this regenerates output files when source files change.
+
+* On the second terminal, install a web server (such as [lite-server](https://github.com/johnpapa/lite-server)), and run it against the output folder. For example:
+
+  <code-example language="none" class="code-shell">
+   lite-server --baseDir="dist"
+  </code-example>
+
+   The server will automatically reload your browser when new files are output.
+
+<div class="alert is-critical">
+
+This method is for development and testing only, and is not a supported or secure way of deploying an application.
+
+</div>
+
+### Basic deployment to a remote server
 
 For the simplest deployment, create a production build and copy the output directory to a web server.
 
@@ -26,7 +69,7 @@ This is the simplest production-ready deployment of your application.
 
 {@a deploy-to-github}
 
-## Deploy to GitHub pages
+### Deploy to GitHub pages
 
 Another simple way to deploy your Angular app is to use [GitHub Pages](https://help.github.com/articles/what-is-github-pages/).
 
@@ -326,28 +369,3 @@ the subfolder is `my/app/` and you should add `<base href="/my/app/">` to the se
 
 When the `base` tag is mis-configured, the app fails to load and the browser console displays `404 - Not Found` errors
 for the missing files. Look at where it _tried_ to find those files and adjust the base tag appropriately.
-
-## Building and serving for deployment
-
-When you are designing and developing applications, you typically use `ng serve` to build your app for fast, local, iterative development.
-When you are ready to deploy, however, you must use the `ng build` command to build the app and deploy the build artifacts elsewhere.
-
-Both `ng build` and `ng serve` clear the output folder before they build the project, but only the `ng build` command writes the generated build artifacts to the output folder.
-
-<div class="alert is-helpful">
-
-The output folder is  `dist/` by default.
-To output to a different folder, change the `outputPath` in `angular.json`.
-
-</div>
-
-The `ng serve` command builds, watches, and serves the application from local memory, using a local development server.
-When you have deployed your app to another server, however, you might still want to serve the app so that you can continue to see changes that you make in it.
-You can do this by adding the `--watch` option to the `ng build` command.
-
-```
-ng build --watch
-```
-Like the `ng serve` command, this regenerates output files when source files change.
-
-For complete details of the CLI commands, see the [CLI command reference](cli).
