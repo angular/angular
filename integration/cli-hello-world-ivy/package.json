@@ -9,6 +9,7 @@
     "ng": "ng",
     "postinstall": "webdriver-manager update --gecko=false --standalone=false $CHROMEDRIVER_VERSION_ARG && yarn ivy-ngcc",
     "start": "ng serve",
+    "pretest": "ng version",
     "//test1": "TODO FW-813: Re-enable `ci-production`. Currently, it fails after a timeout as Protractor reports Angular cannot be found on the page",
     "//test2": "ng test --progress=false --watch=false && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production",
     "test": "ng test --progress=false --watch=false && yarn e2e --configuration=ci"
