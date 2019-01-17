@@ -63,11 +63,10 @@ if (isBrowser) {
               {providers: [{provide: FancyService, useValue: new FancyService()}]});
         });
 
-        fixmeIvy('FW-919: TestBed.get should be able to retrieve tokens from Compiler\'s injector')
-            .it('provides a real ResourceLoader instance',
-                inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
-                  expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
-                }));
+        it('provides a real ResourceLoader instance',
+           inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
+             expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
+           }));
 
         it('should allow the use of fakeAsync',
            fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
