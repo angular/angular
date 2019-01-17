@@ -52,6 +52,16 @@ export function compileNgModuleFactory__POST_R3__<M>(
   return Promise.resolve(new R3NgModuleFactory(moduleType));
 }
 
+let isBoundToModule: <C>(cf: ComponentFactory<C>) => boolean = isBoundToModule__PRE_R3__;
+
+export function isBoundToModule__PRE_R3__<C>(cf: ComponentFactory<C>): boolean {
+  return cf instanceof ComponentFactoryBoundToModule;
+}
+
+export function isBoundToModule__POST_R3__<C>(cf: ComponentFactory<C>): boolean {
+  return (cf as R3ComponentFactory<C>).isBoundToModule;
+}
+
 export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultipleToken');
 
 
@@ -468,10 +478,7 @@ export class ApplicationRef {
     this.componentTypes.push(componentFactory.componentType);
 
     // Create a factory associated with the current module if it's not bound to some other
-    const ngModule = (componentFactory instanceof ComponentFactoryBoundToModule ||
-                      componentFactory instanceof R3ComponentFactory) ?
-        null :
-        this._injector.get(NgModuleRef);
+    const ngModule = isBoundToModule(componentFactory) ? null : this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);
 
