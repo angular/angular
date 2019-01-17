@@ -18,7 +18,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 @Component({selector: 'non-existent', template: ''})
 class NonExistentComp {
@@ -205,44 +205,48 @@ function bootstrap(
          });
        }));
 
-    // TODO(misko): can't use `fixmeIvy.it` because the `it` is somehow special here.
-    fixmeIvy('FW-875: The source of the error is missing in the `StaticInjectorError` message')
-            .isEnabled &&
-        it('should throw if no provider',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             const logger = new MockConsole();
-             const errorHandler = new ErrorHandler();
-             (errorHandler as any)._console = logger as any;
+    it('should throw if no provider', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+         const logger = new MockConsole();
+         const errorHandler = new ErrorHandler();
+         (errorHandler as any)._console = logger as any;
 
-             class IDontExist {}
+         class IDontExist {}
 
-             @Component({selector: 'cmp', template: 'Cmp'})
-             class CustomCmp {
-               constructor(iDontExist: IDontExist) {}
-             }
+         @Component({selector: 'cmp', template: 'Cmp'})
+         class CustomCmp {
+           constructor(iDontExist: IDontExist) {}
+         }
 
-             @Component({
-               selector: 'hello-app',
-               template: '<cmp></cmp>',
-             })
-             class RootCmp {
-             }
+         @Component({
+           selector: 'hello-app',
+           template: '<cmp></cmp>',
+         })
+         class RootCmp {
+         }
 
-             @NgModule({declarations: [CustomCmp], exports: [CustomCmp]})
-             class CustomModule {
-             }
+         @NgModule({declarations: [CustomCmp], exports: [CustomCmp]})
+         class CustomModule {
+         }
 
-             bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
-               CustomModule
-             ]).then(null, (e: Error) => {
-               expect(e.message).toContain(
-                   'StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: \n' +
-                   '  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: \n' +
-                   '    NullInjectorError: No provider for IDontExist!');
-               async.done();
-               return null;
-             });
-           }));
+         bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
+           CustomModule
+         ]).then(null, (e: Error) => {
+           let errorMsg: string;
+           if (ivyEnabled) {
+             errorMsg = `R3InjectorError(TestModule)[IDontExist]: \n` +
+                 '  StaticInjectorError(TestModule)[IDontExist]: \n' +
+                 '    StaticInjectorError(Platform: core)[IDontExist]: \n' +
+                 '      NullInjectorError: No provider for IDontExist!';
+           } else {
+             errorMsg = `StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: \n` +
+                 '  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: \n' +
+                 '    NullInjectorError: No provider for IDontExist!';
+           }
+           expect(e.message).toContain(errorMsg);
+           async.done();
+           return null;
+         });
+       }));
 
     if (getDOM().supportsDOMEvents()) {
       it('should forward the error to promise when bootstrap fails',

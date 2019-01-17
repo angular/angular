@@ -6,10 +6,19 @@
     "name": "CIRCULAR"
   },
   {
+    "name": "CIRCULAR"
+  },
+  {
+    "name": "EMPTY"
+  },
+  {
     "name": "EMPTY_ARRAY"
   },
   {
     "name": "EmptyErrorImpl"
+  },
+  {
+    "name": "IDENT"
   },
   {
     "name": "INJECTOR"
@@ -24,13 +33,34 @@
     "name": "InjectionToken"
   },
   {
+    "name": "Injector"
+  },
+  {
+    "name": "MULTI_PROVIDER_FN"
+  },
+  {
+    "name": "NEW_LINE"
+  },
+  {
     "name": "NG_INJECTABLE_DEF"
   },
   {
     "name": "NG_INJECTOR_DEF"
   },
   {
+    "name": "NG_TEMP_TOKEN_PATH"
+  },
+  {
+    "name": "NG_TOKEN_PATH"
+  },
+  {
     "name": "NOT_YET"
+  },
+  {
+    "name": "NO_NEW_LINE"
+  },
+  {
+    "name": "NULL_INJECTOR"
   },
   {
     "name": "NULL_INJECTOR"
@@ -51,6 +81,9 @@
     "name": "R3Injector"
   },
   {
+    "name": "SOURCE"
+  },
+  {
     "name": "ScopedService"
   },
   {
@@ -60,7 +93,7 @@
     "name": "SkipSelf"
   },
   {
-    "name": "THROW_IF_NOT_FOUND"
+    "name": "StaticInjector"
   },
   {
     "name": "USE_VALUE"
@@ -84,6 +117,12 @@
     "name": "_currentInjector"
   },
   {
+    "name": "catchInjectorError"
+  },
+  {
+    "name": "computeDeps"
+  },
+  {
     "name": "couldBeInjectableType"
   },
   {
@@ -97,6 +136,9 @@
   },
   {
     "name": "defineInjector"
+  },
+  {
+    "name": "formatError"
   },
   {
     "name": "forwardRef"
@@ -156,18 +198,36 @@
     "name": "makeRecord"
   },
   {
+    "name": "multiProviderMixError"
+  },
+  {
     "name": "providerToFactory"
   },
   {
     "name": "providerToRecord"
   },
   {
+    "name": "recursivelyProcessProviders"
+  },
+  {
     "name": "resolveForwardRef"
+  },
+  {
+    "name": "resolveProvider"
+  },
+  {
+    "name": "resolveToken"
   },
   {
     "name": "setCurrentInjector"
   },
   {
+    "name": "staticError"
+  },
+  {
     "name": "stringify"
+  },
+  {
+    "name": "tryResolveToken"
   }
 ]

@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken, Injector, Optional, ReflectiveKey, Self, SkipSelf, forwardRef} from '@angular/core';
-import {getOriginalError} from '@angular/core/src/errors';
+import {Inject, InjectionToken, Injector, Optional, Self, SkipSelf, forwardRef} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {stringify} from '../../src/util/stringify';
