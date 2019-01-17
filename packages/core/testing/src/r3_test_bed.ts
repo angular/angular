@@ -65,6 +65,8 @@ let _nextRootElementId = 0;
 
 const EMPTY_ARRAY: Type<any>[] = [];
 
+const UNDEFINED: Symbol = Symbol('UNDEFINED');
+
 // Resolvers for Angular decorators
 type Resolvers = {
   module: Resolver<NgModule>,
@@ -311,6 +313,7 @@ export class TestBedRender3 implements Injector, TestBed {
     // reset test module config
     this._providers = [];
     this._compilerOptions = [];
+    this._compilerProviders = [];
     this._declarations = [];
     this._imports = [];
     this._schemas = [];
@@ -405,7 +408,8 @@ export class TestBedRender3 implements Injector, TestBed {
     if (token === TestBedRender3) {
       return this;
     }
-    return this._moduleRef.injector.get(token, notFoundValue);
+    const result = this._moduleRef.injector.get(token, UNDEFINED);
+    return result === UNDEFINED ? this.compilerInjector.get(token, notFoundValue) : result;
   }
 
   execute(tokens: any[], fn: Function, context?: any): any {
@@ -590,8 +594,8 @@ export class TestBedRender3 implements Injector, TestBed {
   }
 
   get compilerInjector(): Injector {
-    if (this._compilerInjector !== undefined) {
-      this._compilerInjector;
+    if (this._compilerInjector !== null) {
+      return this._compilerInjector;
     }
 
     const providers: StaticProvider[] = [];
