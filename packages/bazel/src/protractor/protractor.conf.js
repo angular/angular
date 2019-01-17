@@ -143,8 +143,7 @@ if (process.env['WEB_TEST_METADATA']) {
               binary: chromeBin,
               args: args,
             }
-          },
-          'is determined by the browsers attribute');
+          });
     }
     if (webTestNamedFiles['FIREFOX']) {
       // TODO(gmagolan): implement firefox support for protractor
