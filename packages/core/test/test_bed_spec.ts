@@ -185,7 +185,8 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello injected World !');
   });
 
-  it('should properly resolve components that inherit from other components', () => {
+  it('should resolve components that are extended by other components', () => {
+    // SimpleApp uses SimpleCmp in its template, which is extended by InheritedCmp
     const simpleApp = TestBed.createComponent(SimpleApp);
     simpleApp.detectChanges();
     expect(simpleApp.nativeElement).toHaveText('simple');

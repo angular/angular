@@ -37,6 +37,8 @@ abstract class OverrideResolver<T> implements Resolver<T> {
   }
 
   getAnnotation(type: Type<any>): T|null {
+    // We should always return the last match from filter(), or we may return superclass data by
+    // mistake.
     return reflection.annotations(type).filter(a => a instanceof this.type).pop() || null;
   }
 
