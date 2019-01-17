@@ -60,6 +60,12 @@ export interface MatAutocompleteDefaultOptions {
 export declare class MatAutocompleteModule {
 }
 
+export declare class MatAutocompleteOrigin {
+    elementRef: ElementRef<HTMLElement>;
+    constructor(
+    elementRef: ElementRef<HTMLElement>);
+}
+
 export declare class MatAutocompleteSelectedEvent {
     option: MatOption;
     source: MatAutocomplete;

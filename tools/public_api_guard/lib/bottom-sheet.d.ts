@@ -50,6 +50,7 @@ export declare class MatBottomSheetModule {
 
 export declare class MatBottomSheetRef<T = any, R = any> {
     containerInstance: MatBottomSheetContainer;
+    disableClose: boolean | undefined;
     instance: T;
     constructor(containerInstance: MatBottomSheetContainer, _overlayRef: OverlayRef, _location?: Location);
     afterDismissed(): Observable<R | undefined>;

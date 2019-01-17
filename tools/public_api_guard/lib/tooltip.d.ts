@@ -60,7 +60,7 @@ export declare const SCROLL_THROTTLE_MS = 20;
 
 export declare const TOOLTIP_PANEL_CLASS = "mat-tooltip-panel";
 
-export declare class TooltipComponent {
+export declare class TooltipComponent implements OnDestroy {
     _hideTimeoutId: number | null;
     _isHandset: Observable<BreakpointState>;
     _showTimeoutId: number | null;
@@ -77,6 +77,7 @@ export declare class TooltipComponent {
     afterHidden(): Observable<void>;
     hide(delay: number): void;
     isVisible(): boolean;
+    ngOnDestroy(): void;
     show(delay: number): void;
 }
 

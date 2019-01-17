@@ -20,14 +20,14 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
     removable: boolean;
     removeIcon: MatChipRemove;
     readonly removed: EventEmitter<MatChipEvent>;
-    rippleConfig: RippleConfig;
+    rippleConfig: RippleConfig & RippleGlobalOptions;
     readonly rippleDisabled: boolean;
     selectable: boolean;
     selected: boolean;
     readonly selectionChange: EventEmitter<MatChipSelectionChange>;
     trailingIcon: MatChipTrailingIcon;
     value: any;
-    constructor(_elementRef: ElementRef, _ngZone: NgZone, platform: Platform, globalOptions: RippleGlobalOptions);
+    constructor(_elementRef: ElementRef, _ngZone: NgZone, platform: Platform, globalRippleOptions: RippleGlobalOptions | null);
     _addHostClassName(): void;
     _blur(): void;
     _handleClick(event: Event): void;

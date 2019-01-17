@@ -606,7 +606,7 @@ describe('CdkDrag', () => {
       dragElement.style.transform = 'scale(2)';
 
       dragElementViaMouse(fixture, dragElement, 50, 100);
-      expect(dragElement.style.transform).toBe('scale(2) translate3d(50px, 100px, 0px)');
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px) scale(2)');
 
       fixture.componentInstance.dragInstance.reset();
       expect(dragElement.style.transform).toBe('scale(2)');
