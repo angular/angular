@@ -37,7 +37,7 @@ abstract class OverrideResolver<T> implements Resolver<T> {
   }
 
   getAnnotation(type: Type<any>): T|null {
-    return reflection.annotations(type).find(a => a instanceof this.type) || null;
+    return reflection.annotations(type).filter(a => a instanceof this.type).pop() || null;
   }
 
   resolve(type: Type<any>): T|null {

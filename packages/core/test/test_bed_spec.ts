@@ -48,8 +48,19 @@ export class SimpleCmp {
 export class WithRefsCmp {
 }
 
+// This is not used directly in tests, but it's necessary to keep it in the
+// HelloWorldModule so we can properly test resolution of components that
+// are extended (e.g. SimpleCmp should not throw if it's extended).
+@Component({selector: 'inherited-cmp', template: ''})
+export class InheritedCmp extends SimpleCmp {
+}
+
+@Component({selector: 'simple-app', template: '<simple-cmp></simple-cmp>'})
+export class SimpleApp {
+}
+
 @NgModule({
-  declarations: [HelloWorld, SimpleCmp, WithRefsCmp],
+  declarations: [HelloWorld, SimpleCmp, WithRefsCmp, InheritedCmp, SimpleApp],
   imports: [GreetingModule],
   providers: [
     {provide: NAME, useValue: 'World!'},
@@ -172,6 +183,12 @@ describe('TestBed', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
     expect(hello.nativeElement).toHaveText('Hello injected World !');
+  });
+
+  it('should properly resolve components that inherit from other components', () => {
+    const simpleApp = TestBed.createComponent(SimpleApp);
+    simpleApp.detectChanges();
+    expect(simpleApp.nativeElement).toHaveText('simple');
   });
 
   onlyInIvy('patched ng defs should be removed after resetting TestingModule')
