@@ -299,11 +299,13 @@ jobs:
   publish_snapshots:
     <<: *job_defaults
     resource_class: xlarge
+    environment:
+      GCP_DECRYPT_TOKEN: *gcp_decrypt_token
     steps:
       - *checkout_code
       - *restore_cache
-      - *yarn_install
       - *attach_release_output
+      - *setup_bazel_remote_execution
 
       # CircleCI has a config setting to enforce SSH for all github connections.
       # This is not compatible with our mechanism of using a Personal Access Token
@@ -313,6 +315,7 @@ jobs:
       # TODO(devversion): Ideally the "build_release_packages" job should build all packages with
       # Bazel, but for now we mix up the Gulp and bazel setup, so we need to build the package here.
       - run: bazel build src/material-examples:npm_package --config=release
+
       - run: ./scripts/circleci/publish-snapshots.sh
 
 
