@@ -134,8 +134,21 @@ export class NgForOf<T> implements DoCheck {
     this._ngForOfDirty = true;
   }
   /**
-   * A function that customizes the default tracking algorithm.
-   * When supplied, Angular tracks changes by the return value of the function.
+   * A function that defines how to track changes for items in the iterable.
+   *
+   * When items are added, moved, or removed in the iterable,
+   * the directive must re-render the appropriate DOM nodes.
+   * To minimize churn in the DOM, only nodes that have changed
+   * are re-rendered.
+   *
+   * By default, the change detector assumes that
+   * the object instance identifies the node in the iterable.
+   * When this function is supplied, the directive uses
+   * the result of calling this function to identify the item node,
+   * rather than the identity of the object itself.
+   *
+   * The function receives two inputs,
+   * the iteration index and the node object ID.
    */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
@@ -164,9 +177,8 @@ export class NgForOf<T> implements DoCheck {
       private _differs: IterableDiffers) {}
 
   /**
-   * The [template reference variable](guide/template-syntax#template-reference-variables--var-)
-   * for the expanded directive.
-   * Compare [template input variable](guide/structural-directives#template-input-variable)
+   * A reference to the template that is stamped out for each item in the iterable.
+   * @see [template reference variable](guide/template-syntax#template-reference-variables--var-)
    */
   @Input()
   set ngForTemplate(value: TemplateRef<NgForOfContext<T>>) {
