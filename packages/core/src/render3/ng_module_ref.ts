@@ -16,7 +16,6 @@ import {InternalNgModuleRef, NgModuleFactory as viewEngine_NgModuleFactory, NgMo
 import {NgModuleDef} from '../metadata/ng_module';
 import {assertDefined} from '../util/assert';
 import {stringify} from '../util/stringify';
-
 import {ComponentFactoryResolver} from './component_ref';
 import {getNgModuleDef} from './definition';
 
@@ -52,7 +51,8 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
       },
       COMPONENT_FACTORY_RESOLVER
     ];
-    this._r3Injector = createInjector(ngModuleType, _parent, additionalProviders) as R3Injector;
+    this._r3Injector = createInjector(
+        ngModuleType, _parent, additionalProviders, stringify(ngModuleType)) as R3Injector;
     this.instance = this.get(ngModuleType);
   }
 

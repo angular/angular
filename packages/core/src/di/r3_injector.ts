@@ -9,16 +9,14 @@
 import {OnDestroy} from '../interface/lifecycle_hooks';
 import {Type} from '../interface/type';
 import {stringify} from '../util/stringify';
-
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
-import {INJECTOR, Injector, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE} from './injector';
+import {INJECTOR, Injector, NG_TEMP_TOKEN_PATH, NullInjector, USE_VALUE, catchInjectorError} from './injector';
 import {inject, injectArgs, setCurrentInjector} from './injector_compatibility';
 import {InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {APP_ROOT} from './scope';
-
 
 
 /**
@@ -72,9 +70,9 @@ interface Record<T> {
  */
 export function createInjector(
     defType: /* InjectorType<any> */ any, parent: Injector | null = null,
-    additionalProviders: StaticProvider[] | null = null): Injector {
+    additionalProviders: StaticProvider[] | null = null, name?: string): Injector {
   parent = parent || getNullInjector();
-  return new R3Injector(defType, additionalProviders, parent);
+  return new R3Injector(defType, additionalProviders, parent, name);
 }
 
 export class R3Injector {
@@ -99,6 +97,8 @@ export class R3Injector {
    */
   private readonly isRootInjector: boolean;
 
+  readonly source: string|null;
+
   /**
    * Flag indicating that this injector was previously destroyed.
    */
@@ -106,8 +106,8 @@ export class R3Injector {
   private _destroyed = false;
 
   constructor(
-      def: InjectorType<any>, additionalProviders: StaticProvider[]|null,
-      readonly parent: Injector) {
+      def: InjectorType<any>, additionalProviders: StaticProvider[]|null, readonly parent: Injector,
+      source: string|null = null) {
     // Start off by creating Records for every provider declared in every InjectorType
     // included transitively in `def`.
     const dedupStack: InjectorType<any>[] = [];
@@ -127,6 +127,9 @@ export class R3Injector {
 
     // Eagerly instantiate the InjectorType classes themselves.
     this.injectorDefTypes.forEach(defType => this.get(defType));
+
+    // Source name, used for debugging
+    this.source = source || (def instanceof Array ? null : stringify(def));
   }
 
   /**
@@ -152,7 +155,7 @@ export class R3Injector {
   }
 
   get<T>(
-      token: Type<T>|InjectionToken<T>, notFoundValue: any = THROW_IF_NOT_FOUND,
+      token: Type<T>|InjectionToken<T>, notFoundValue: any = Injector.THROW_IF_NOT_FOUND,
       flags = InjectFlags.Default): T {
     this.assertNotDestroyed();
     // Set the injection context.
@@ -182,7 +185,21 @@ export class R3Injector {
       // Select the next injector based on the Self flag - if self is set, the next injector is
       // the NullInjector, otherwise it's the parent.
       const nextInjector = !(flags & InjectFlags.Self) ? this.parent : getNullInjector();
-      return nextInjector.get(token, notFoundValue);
+      return nextInjector.get(token, flags & InjectFlags.Optional ? null : notFoundValue);
+    } catch (e) {
+      if (e.name === 'NullInjectorError') {
+        const path: any[] = e[NG_TEMP_TOKEN_PATH] = e[NG_TEMP_TOKEN_PATH] || [];
+        path.unshift(stringify(token));
+        if (previousInjector) {
+          // We still have a parent injector, keep throwing
+          throw e;
+        } else {
+          // Format & throw the final error message when we don't have any previous injector
+          return catchInjectorError(e, token, 'R3InjectorError', this.source);
+        }
+      } else {
+        throw e;
+      }
     } finally {
       // Lastly, clean up the state by restoring the previous injector.
       setCurrentInjector(previousInjector);

@@ -15,8 +15,8 @@
 export enum InjectFlags {
   // TODO(alxhub): make this 'const' when ngc no longer writes exports of it into ngfactory files.
 
+  /** Check self and check parent injector if needed */
   Default = 0b0000,
-
   /**
    * Specifies that an injector should retrieve a dependency from any injector until reaching the
    * host element of the current component. (Only used with Element Injector)
