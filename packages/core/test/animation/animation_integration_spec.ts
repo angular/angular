@@ -13,7 +13,7 @@ import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
 import {ɵDomRendererFactory2} from '@angular/platform-browser';
 import {ANIMATION_MODULE_TYPE, BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {fixmeIvy, ivyEnabled} from '@angular/private/testing';
+import {ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 
 const DEFAULT_NAMESPACE_ID = 'id';
 const DEFAULT_COMPONENT_ID = '1';
@@ -3660,7 +3660,7 @@ const DEFAULT_COMPONENT_ID = '1';
       expect(() => { TestBed.createComponent(Cmp); }).not.toThrowError();
     });
 
-    fixmeIvy('FW-952 - Error recovery is handled differently in Ivy than VE')
+    modifiedInIvy('FW-952 - Error recovery is handled differently in Ivy than VE')
         .it('should continue to clean up DOM-related animation artificats even if a compiler-level error is thrown midway',
             () => {
               @Component({
