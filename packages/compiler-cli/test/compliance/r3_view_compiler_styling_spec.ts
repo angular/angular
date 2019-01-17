@@ -341,8 +341,8 @@ describe('compiler compliance: styling', () => {
           hostBindings: function MyAnimDir_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
               $r3$.ɵallocHostVars(1);
-              $r3$.ɵlistener("@myAnim.start", function MyAnimDir_animation_myAnim_start_HostBindingHandler($event) { return ctx.onStart(); });
-              $r3$.ɵlistener("@myAnim.done", function MyAnimDir_animation_myAnim_done_HostBindingHandler($event) { return ctx.onDone(); });
+              $r3$.ɵcomponentHostSyntheticListener("@myAnim.start", function MyAnimDir_animation_myAnim_start_HostBindingHandler($event) { return ctx.onStart(); });
+              $r3$.ɵcomponentHostSyntheticListener("@myAnim.done", function MyAnimDir_animation_myAnim_done_HostBindingHandler($event) { return ctx.onDone(); });
             } if (rf & 2) {
               $r3$.ɵcomponentHostSyntheticProperty(elIndex, "@myAnim", $r3$.ɵbind(ctx.myAnimState), null, true);
             }

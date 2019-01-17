@@ -839,7 +839,9 @@ function createHostListeners(
         meta.name && bindingName ? `${meta.name}_${bindingFnName}_HostBindingHandler` : null;
     const params = prepareEventListenerParameters(
         BoundEvent.fromParsedEvent(binding), bindingContext, handlerName);
-    return o.importExpr(R3.listener).callFn(params).toStmt();
+    const instruction =
+        binding.type == ParsedEventType.Animation ? R3.componentHostSyntheticListener : R3.listener;
+    return o.importExpr(instruction).callFn(params).toStmt();
   });
 }
 
