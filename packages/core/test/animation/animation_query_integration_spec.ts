@@ -2238,84 +2238,82 @@ import {HostListener} from '../../src/metadata/directives';
         expect(p3.element.classList.contains('parent1')).toBeTruthy();
       });
 
-      fixmeIvy(
-          'FW-943 - Fix final `unknown` issue in `animation_query_integration_spec.ts` once #28162 lands')
-          .it('should emulate a leave animation on the nearest sub host elements when a parent is removed',
-              fakeAsync(() => {
-                @Component({
-                  selector: 'ani-cmp',
-                  template: `
+      it('should emulate a leave animation on the nearest sub host elements when a parent is removed',
+         fakeAsync(() => {
+           @Component({
+             selector: 'ani-cmp',
+             template: `
             <div @parent *ngIf="exp" class="parent1" #parent>
               <child-cmp #child @leave (@leave.start)="animateStart($event)"></child-cmp>
             </div>
           `,
-                  animations: [
-                    trigger(
-                        'leave',
-                        [
-                          transition(':leave', [animate(1000, style({color: 'gold'}))]),
-                        ]),
-                    trigger(
-                        'parent',
-                        [
-                          transition(':leave', [query(':leave', animateChild())]),
-                        ]),
-                  ]
-                })
-                class ParentCmp {
-                  public exp: boolean = true;
-                  @ViewChild('child') public childElm: any;
+             animations: [
+               trigger(
+                   'leave',
+                   [
+                     transition(':leave', [animate(1000, style({color: 'gold'}))]),
+                   ]),
+               trigger(
+                   'parent',
+                   [
+                     transition(':leave', [query(':leave', animateChild())]),
+                   ]),
+             ]
+           })
+           class ParentCmp {
+             public exp: boolean = true;
+             @ViewChild('child') public childElm: any;
 
-                  public childEvent: any;
+             public childEvent: any;
 
-                  animateStart(event: any) {
-                    if (event.toState == 'void') {
-                      this.childEvent = event;
-                    }
-                  }
-                }
+             animateStart(event: any) {
+               if (event.toState == 'void') {
+                 this.childEvent = event;
+               }
+             }
+           }
 
-                @Component({
-                  selector: 'child-cmp',
-                  template: '...',
-                  animations: [
-                    trigger(
-                        'child',
-                        [
-                          transition(':leave', [animate(1000, style({color: 'gold'}))]),
-                        ]),
-                  ]
-                })
-                class ChildCmp {
-                  public childEvent: any;
+           @Component({
+             selector: 'child-cmp',
+             template: '...',
+             animations: [
+               trigger(
+                   'child',
+                   [
+                     transition(':leave', [animate(1000, style({color: 'gold'}))]),
+                   ]),
+             ]
+           })
+           class ChildCmp {
+             public childEvent: any;
 
-                  @HostBinding('@child') public animate = true;
+             @HostBinding('@child') public animate = true;
 
-                  @HostListener('@child.start', ['$event'])
-                  animateStart(event: any) {
-                    if (event.toState == 'void') {
-                      this.childEvent = event;
-                    }
-                  }
-                }
+             @HostListener('@child.start', ['$event'])
+             animateStart(event: any) {
+               if (event.toState == 'void') {
+                 this.childEvent = event;
+               }
+             }
+           }
 
-                TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
-                const fixture = TestBed.createComponent(ParentCmp);
-                const cmp = fixture.componentInstance;
+           TestBed.configureTestingModule({declarations: [ParentCmp, ChildCmp]});
+           const fixture = TestBed.createComponent(ParentCmp);
+           const cmp = fixture.componentInstance;
 
-                fixture.detectChanges();
+           fixture.detectChanges();
 
-                const childCmp = cmp.childElm;
+           const childCmp = cmp.childElm;
 
-                cmp.exp = false;
-                fixture.detectChanges();
-                flushMicrotasks();
+           cmp.exp = false;
+           fixture.detectChanges();
+           flushMicrotasks();
 
-                expect(cmp.childEvent.toState).toEqual('void');
-                expect(cmp.childEvent.totalTime).toEqual(1000);
-                expect(childCmp.childEvent.toState).toEqual('void');
-                expect(childCmp.childEvent.totalTime).toEqual(1000);
-              }));
+           expect(cmp.childEvent.toState).toEqual('void');
+           expect(cmp.childEvent.totalTime).toEqual(1000);
+           expect(childCmp.childEvent.toState).toEqual('void');
+           expect(childCmp.childEvent.totalTime).toEqual(1000);
+         }));
 
       it('should emulate a leave animation on a sub component\'s inner elements when a parent leave animation occurs with animateChild',
          () => {

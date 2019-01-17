@@ -876,6 +876,38 @@ export function locateHostElement(
 export function listener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
+  listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver);
+}
+
+/**
+ * Registers a synthetic host listener (e.g. `(@foo.start)`) on a component.
+ *
+ * This instruction is for compatibility purposes and is designed to ensure that a
+ * synthetic host listener (e.g. `@HostListener('@foo.start')`) properly gets rendered
+ * in the component's renderer. Normally all host listeners are evaluated with the
+ * parent component's renderer, but, in the case of animation @triggers, they need
+ * to be evaluated with the sub component's renderer (because that's where the
+ * animation triggers are defined).
+ *
+ * Do not use this instruction as a replacement for `listener`. This instruction
+ * only exists to ensure compatibility with the ViewEngine's host binding behavior.
+ *
+ * @param eventName Name of the event
+ * @param listenerFn The function to be called when event emits
+ * @param useCapture Whether or not to use capture in event listener
+ * @param eventTargetResolver Function that returns global target information in case this listener
+ * should be attached to a global object like window, document or body
+ */
+export function componentHostSyntheticListener<T>(
+    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
+    eventTargetResolver?: GlobalTargetResolver): void {
+  listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver, loadComponentRenderer);
+}
+
+function listenerInternal(
+    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
+    eventTargetResolver?: GlobalTargetResolver,
+    loadRendererFn?: ((tNode: TNode, lView: LView) => Renderer3) | null): void {
   const lView = getLView();
   const tNode = getPreviousOrParentTNode();
   const tView = lView[TVIEW];
@@ -890,7 +922,7 @@ export function listener(
     const resolved = eventTargetResolver ? eventTargetResolver(native) : {} as any;
     const target = resolved.target || native;
     ngDevMode && ngDevMode.rendererAddEventListener++;
-    const renderer = lView[RENDERER];
+    const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     const lCleanup = getCleanup(lView);
     const lCleanupIndex = lCleanup.length;
     let useCaptureOrSubIdx: boolean|number = useCapture;
@@ -1073,7 +1105,7 @@ export function elementProperty<T>(
  * synthetic host binding (e.g. `@HostBinding('@foo')`) properly gets rendered in
  * the component's renderer. Normally all host bindings are evaluated with the parent
  * component's renderer, but, in the case of animation @triggers, they need to be
- * evaluated with the sub components renderer (because that's where the animation
+ * evaluated with the sub component's renderer (because that's where the animation
  * triggers are defined).
  *
  * Do not use this instruction as a replacement for `elementProperty`. This instruction
@@ -1091,11 +1123,6 @@ export function componentHostSyntheticProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean) {
   elementPropertyInternal(index, propName, value, sanitizer, nativeOnly, loadComponentRenderer);
-}
-
-function loadComponentRenderer(tNode: TNode, lView: LView): Renderer3 {
-  const componentLView = lView[tNode.index] as LView;
-  return componentLView[RENDERER];
 }
 
 function elementPropertyInternal<T>(
@@ -3059,4 +3086,13 @@ function getCleanup(view: LView): any[] {
 
 function getTViewCleanup(view: LView): any[] {
   return view[TVIEW].cleanup || (view[TVIEW].cleanup = []);
+}
+
+/**
+ * There are cases where the sub component's renderer needs to be included
+ * instead of the current renderer (see the componentSyntheticHost* instructions).
+ */
+function loadComponentRenderer(tNode: TNode, lView: LView): Renderer3 {
+  const componentLView = lView[tNode.index] as LView;
+  return componentLView[RENDERER];
 }

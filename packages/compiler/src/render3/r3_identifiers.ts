@@ -34,6 +34,9 @@ export class Identifiers {
   static componentHostSyntheticProperty:
       o.ExternalReference = {name: 'ɵcomponentHostSyntheticProperty', moduleName: CORE};
 
+  static componentHostSyntheticListener:
+      o.ExternalReference = {name: 'ɵcomponentHostSyntheticListener', moduleName: CORE};
+
   static elementAttribute: o.ExternalReference = {name: 'ɵelementAttribute', moduleName: CORE};
 
   static elementClassProp: o.ExternalReference = {name: 'ɵelementClassProp', moduleName: CORE};

@@ -44,6 +44,7 @@ export {
   elementEnd,
   elementProperty,
   componentHostSyntheticProperty,
+  componentHostSyntheticListener,
   elementStart,
 
   elementContainerStart,
