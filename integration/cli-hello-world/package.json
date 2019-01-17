@@ -9,6 +9,7 @@
     "ng": "ng",
     "postinstall": "webdriver-manager update --gecko=false --standalone=false $CHROMEDRIVER_VERSION_ARG",
     "start": "ng serve",
+    "pretest": "ng version",
     "test": "ng test --progress=false --watch=false && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production"
   },
   "private": true,
