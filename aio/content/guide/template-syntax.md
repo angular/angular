@@ -20,7 +20,7 @@ You may be familiar with the component/template duality from your experience wit
 In Angular, the component plays the part of the controller/viewmodel, and the template represents the view.
 -->
 MVC(모델-뷰-컨트롤러)나 MVVM(모델-뷰-뷰모델) 구조를 다뤄봤다면 컴포넌트와 템플릿의 관계가 이미 익숙할 수도 있습니다.
-Angular에서는 컴포넌트가 컨트롤러나 뷰모델의 역할을 하고, 템플릿이 뷰 역할을 합니다.
+Angular에서는 컴포넌트가 컨트롤러나 뷰모델 역할을 하고, 템플릿이 뷰 역할을 합니다.
 
 <!--
 This page is a comprehensive technical reference to the Angular template language.
@@ -52,8 +52,7 @@ In practice, `<script>` is ignored and a warning appears in the browser console.
 See the [Security](guide/security) page for details.
 -->
 Angular 템플릿에는 HTML을 사용하며, 거의 모든 HTML 문법은 템플릿 문법에서도 유효합니다.
-다만 `<script>` 엘리먼트는 예외입니다. 이 엘리먼트는 스크립트 인젝션 공격에 노출될 수 있기 때문에 Angular 템플릿 문법에서 처리되지 않습니다.
-Angular 템플릿에 `<script>` 엘리먼트가 있어도 이 엘리먼트는 처리되지 않으며, 브라우저 콘솔에 경고 메시지를 출력합니다.
+하지만 `<script>` 엘리먼트는 예외입니다. 이 엘리먼트는 스크립트 인젝션 공격에 노출될 수 있기 때문에 Angular 템플릿에 있더라도 처리되지 않으며, 브라우저 콘솔에 경고 메시지를 출력합니다.
 더 자세한 내용은 [보안](guide/security) 문서를 확인하세요.
 
 <!--
@@ -61,9 +60,9 @@ Some legal HTML doesn't make much sense in a template.
 The `<html>`, `<body>`, and `<base>` elements have no useful role.
 Pretty much everything else is fair game.
 -->
-Angular 템플릿에 유효하지 않은 HTML 엘리먼트는 몇가지 더 있습니다.
+Angular 템플릿에 유효하지 않은 HTML 엘리먼트가 몇가지 더 있습니다.
 `<html>` 이나 `<body>`, `<base>` 엘리먼트는 Angular 템플릿에 사용해도 에러나 경고가 표시되지 않지만, 별다른 역할을 하지는 않습니다.
-언급하지 않은 엘리먼트는 그대로 사용해도 됩니다.
+언급하지 않은 엘리먼트는 사용해도 됩니다.
 
 <!--
 You can extend the HTML vocabulary of your templates with components and directives that appear as new elements and attributes.
@@ -114,7 +113,7 @@ In the following snippet, `{{ currentCustomer }}` is an example of interpolation
 문자열 바인딩은 문자열 안에 포함된 표현식을 의미합니다.
 기본적으로 문자열 바인딩 문법은 이중 중괄호 `{{`와 `}}`를 사용합니다.
 
-그래서 아래 코드에서 `{{ currentCustomer }}` 라고 정의된 부분이 문자열 바인딩이 사용된 코드입니다.
+그래서 아래 코드에서 `{{ currentCustomer }}` 부분이 문자열 바인딩이 사용된 코드입니다.
 
 <code-example path="interpolation/src/app/app.component.html" region="interpolation-example1" header="src/app/app.component.html" linenums="false">
 </code-example>
@@ -140,7 +139,7 @@ The following interpolation illustrates the point by adding two numbers:
 -->
 위 예제에서 Angular는 `title`과 `itemImageUrl` 프로퍼티의 값으로 템플릿의 내용을 치환하기 때문에 화면에는 애플리케이션의 이름과 이미지가 표시됩니다.
 
-좀 더 일반적으로 이야기하면, 이중 중괄호 안에 잇는 텍스트는 **템플릿 표현식(template expression)**인데, 이 표현식은 Angular가 가장 먼저 **평가(evaluate)**해서 **문자열로 변환합니다**.
+좀 더 일반적으로 이야기하면, 이중 중괄호 안에 있는 텍스트는 **템플릿 표현식(template expression)**인데, 이 표현식은 Angular가 가장 먼저 **평가(evaluate)**해서 **문자열로 변환합니다**.
 그래서 다음과 같이 숫자 2개를 더하는 연산도 처리할 수 있습니다:
 
 <code-example path="interpolation/src/app/app.component.html" region="convert-string" header="src/app/app.component.html" linenums="false">
