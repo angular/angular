@@ -208,7 +208,9 @@ export default function(options: Schema): Rule {
           }),
       addDevDependenciesToPackageJson(options),
       addDevAndProdMainForAot(options),
-      schematic('bazel-workspace', options),
+      schematic('bazel-workspace', options, {
+        scope: options.name,
+      }),
       overwriteGitignore(options),
       updateWorkspaceFileToUseBazelBuilder(options),
     ]);
