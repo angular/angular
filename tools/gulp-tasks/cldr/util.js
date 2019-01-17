@@ -146,7 +146,7 @@ module.exports.stringify = function(obj, quoteKeys) {
           objStack.push(obj_part);
           for (var prop in obj_part) {
             if (obj_part.hasOwnProperty(prop)) {
-              var value = internalStringify(obj_part, prop, false);
+              var value = internalStringify(obj_part, prop);
               if (typeof value !== 'undefined' && value !== null) {
                 nonEmpty = true;
                 key = isWord(prop) && !quoteKeys ? prop : escapeString(prop, quoteKeys);
@@ -173,7 +173,7 @@ module.exports.stringify = function(obj, quoteKeys) {
   // but when top-level, return undefined
   var topLevelHolder = {'': obj};
   if (obj === undefined) {
-    return getReplacedValueOrUndefined(topLevelHolder, '', true);
+    return getReplacedValueOrUndefined(topLevelHolder, '');
   }
   return internalStringify(topLevelHolder, '');
 };
