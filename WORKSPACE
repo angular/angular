@@ -1,18 +1,5 @@
 workspace(name = "angular")
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
-load(
-    "//packages/bazel:package.bzl",
-    "rules_angular_dependencies",
-    "rules_angular_dev_dependencies",
-)
-
-http_archive(
-    name = "io_bazel_rules_go",
-    sha256 = "b7a62250a3a73277ade0ce306d22f122365b513f5402222403e507f2f997d421",
-    url = "https://github.com/bazelbuild/rules_go/releases/download/0.16.3/rules_go-0.16.3.tar.gz",
-)
-
 # Uncomment for local bazel rules development
 #local_repository(
 #    name = "build_bazel_rules_nodejs",
@@ -23,25 +10,20 @@ http_archive(
 #    path = "../rules_typescript",
 #)
 
-# Angular Bazel users will call this function
-rules_angular_dependencies()
+###########################################################
+# Download Bazel dependencies directly and from npm
 
-# Install transitive deps of rules_nodejs
-load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-rules_nodejs_dependencies()
+# Explicitly load rules_go
+http_archive(
+    name = "io_bazel_rules_go",
+    sha256 = "b7a62250a3a73277ade0ce306d22f122365b513f5402222403e507f2f997d421",
+    url = "https://github.com/bazelbuild/rules_go/releases/download/0.16.3/rules_go-0.16.3.tar.gz",
+)
 
-# These are the dependencies only for us
-rules_angular_dev_dependencies()
-
-# Install transitive deps of rules_typescript
-load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
-
-rules_typescript_dependencies()
-
-#
-# Point Bazel to WORKSPACEs that live in subdirectories
-#
+# We build rxjs from source
+# TODO(gregmagolan): switch to using rxjs named-UMD bundles on next rxjs release
 http_archive(
     name = "rxjs",
     sha256 = "72b0b4e517f43358f554c125e40e39f67688cd2738a8998b4a266981ed32f403",
@@ -49,17 +31,29 @@ http_archive(
     url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
 )
 
-# Point to the integration test workspace just so that Bazel doesn't descend into it
-# when expanding the //... pattern
+# The @npm workspace aliases targets to @ngdeps which is setup by yarn_install
+# in ng_setup_workspace
 local_repository(
-    name = "bazel_integration_test",
-    path = "integration/bazel",
+    name = "npm",
+    path = "tools/npm_workspace",
 )
 
-#
-# Load and install our dependencies downloaded above.
-#
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
+# Install transitive deps of angular rules
+load("//packages/bazel:package.bzl", "rules_angular_dependencies", "rules_angular_dev_dependencies")
+
+# Angular Bazel users will call this function
+rules_angular_dependencies()
+
+# These are the dependencies only for local development
+rules_angular_dev_dependencies()
+
+# Install transitive deps of rules_nodejs
+load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
+
+rules_nodejs_dependencies()
+
+# Setup nodejs toolchain
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
 
 # Bazel version must be at least v0.21.0 because:
 #   - 0.21.0 Using --incompatible_strict_action_env flag fixes cache when running `yarn bazel`
@@ -75,21 +69,40 @@ Try running `yarn bazel` instead.
 node_repositories(
     node_version = "10.9.0",
     package_json = ["//:package.json"],
-    preserve_symlinks = True,
     yarn_version = "1.12.1",
 )
 
-local_repository(
-    name = "npm",
-    path = "tools/npm_workspace",
-)
+# Call ng_setup_workspace() to install @ngdeps npm dependencies
+load("@angular//tools:ng_setup_workspace.bzl", "ng_setup_workspace")
 
+ng_setup_workspace()
+
+# Install all bazel workspaces pulled from npm
+load("@ngdeps//:install_workspaces.bzl", "install_workspaces")
+
+install_workspaces()
+
+# Install transitive deps of rules_typescript
+load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
+
+rules_typescript_dependencies()
+
+# Install transitive deps of rules_karma
+load("@build_bazel_rules_karma//:package.bzl", "rules_karma_dependencies")
+
+rules_karma_dependencies()
+
+###########################################################
+# Setup toolchains for dependencies
+
+# Setup rules_go toolchain
 load("@io_bazel_rules_go//go:def.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 go_rules_dependencies()
 
 go_register_toolchains()
 
+# Setup rules_webtesting toolchain
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories", "web_test_repositories")
 
 web_test_repositories()
@@ -99,13 +112,10 @@ browser_repositories(
     firefox = True,
 )
 
+# Setup rules_typescript toolchain
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
 
 ts_setup_workspace()
-
-load("@angular//:index.bzl", "ng_setup_workspace")
-
-ng_setup_workspace()
 
 ##################################
 # Skylark documentation generation

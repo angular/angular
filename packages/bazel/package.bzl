@@ -18,19 +18,12 @@ def rules_angular_dependencies():
 
     #
     # Download Bazel toolchain dependencies as needed by build actions
-    # Use a SHA to get fix for needing symlink_prefix during npm publishing
+    # TODO(gregmagolan): update to next release
     _maybe(
         http_archive,
         name = "build_bazel_rules_nodejs",
-        url = "https://github.com/bazelbuild/rules_nodejs/archive/0.16.5.zip",
-        strip_prefix = "rules_nodejs-0.16.5",
-    )
-
-    _maybe(
-        http_archive,
-        name = "build_bazel_rules_typescript",
-        url = "https://github.com/bazelbuild/rules_typescript/archive/0.22.1.zip",
-        strip_prefix = "rules_typescript-0.22.1",
+        strip_prefix = "rules_nodejs-8578e8ef2df8b117e3e05b1c102e913e14429eb7",
+        urls = ["https://github.com/gregmagolan/rules_nodejs/archive/8578e8ef2df8b117e3e05b1c102e913e14429eb7.zip"],
     )
 
     # Needed for Remote Execution

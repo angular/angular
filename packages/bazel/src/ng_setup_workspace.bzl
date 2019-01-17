@@ -5,7 +5,7 @@
 
 "Install toolchain dependencies"
 
-load("@build_bazel_rules_typescript//:defs.bzl", "check_rules_typescript_version")
+# load("@build_bazel_rules_typescript//:defs.bzl", "check_rules_typescript_version")
 
 def ng_setup_workspace():
     """This repository rule should be called from your WORKSPACE file.
@@ -18,4 +18,6 @@ def ng_setup_workspace():
     # 0.16.2: bazel type resolution for zone.js types
     # 0.20.1: fine grained deps
     # 0.20.2: version check fix
-    check_rules_typescript_version("0.20.2")
+    # 0.22.1: npm based install
+    # TODO(gregmagolan): re-enable this check
+    # check_rules_typescript_version("0.22.1")

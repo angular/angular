@@ -1,16 +1,23 @@
 workspace(name = "bazel_integration_test")
 
+##################################
+# Download Bazel dependencies
+
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-#
-# Download Bazel toolchain dependencies as needed by build actions
-#
-
+# We build angular from source
 local_repository(
     name = "angular",
     path = "../..",
 )
 
+# Install transitive deps of angular
+load("@angular//packages/bazel:package.bzl", "rules_angular_dependencies")
+
+rules_angular_dependencies()
+
+# We build rxjs from source
+# TODO(gregmagolan): switch to using rxjs named-UMD bundles on next rxjs release
 http_archive(
     name = "rxjs",
     sha256 = "72b0b4e517f43358f554c125e40e39f67688cd2738a8998b4a266981ed32f403",
@@ -18,18 +25,7 @@ http_archive(
     url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
 )
 
-load("@angular//packages/bazel:package.bzl", "rules_angular_dependencies")
-
-rules_angular_dependencies()
-
-load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
-
-rules_typescript_dependencies()
-
-load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
-
-rules_nodejs_dependencies()
-
+# Explicitly load io_bazel_rules_sass
 http_archive(
     name = "io_bazel_rules_sass",
     sha256 = "dbe9fb97d5a7833b2a733eebc78c9c1e3880f676ac8af16e58ccf2139cbcad03",
@@ -37,13 +33,13 @@ http_archive(
     url = "https://github.com/bazelbuild/rules_sass/archive/1.11.0.zip",
 )
 
-#
-# Setup dependencies loaded above
-#
+# Install transitive deps of rules_nodejs
+load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
+rules_nodejs_dependencies()
 
-check_bazel_version("0.17.0")
+# Setup nodejs toolchain and install npm dependencies
+load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories", "yarn_install")
 
 node_repositories(
     node_version = "10.9.0",
@@ -56,12 +52,32 @@ yarn_install(
     yarn_lock = "//src:yarn.lock",
 )
 
+# Install all bazel workspaces pulled from npm
+load("@npm//:install_workspaces.bzl", "install_workspaces")
+
+install_workspaces()
+
+# Install transitive deps of rules_typescript
+load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
+
+rules_typescript_dependencies()
+
+# Install transitive deps of rules_karma
+load("@build_bazel_rules_karma//:package.bzl", "rules_karma_dependencies")
+
+rules_karma_dependencies()
+
+##################################
+# Setup toolchains for dependencies
+
+# Setup rules_go toolchain
 load("@io_bazel_rules_go//go:def.bzl", "go_register_toolchains", "go_rules_dependencies")
 
 go_rules_dependencies()
 
 go_register_toolchains()
 
+# Setup rules_webtesting toolchain
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories", "web_test_repositories")
 
 web_test_repositories()
@@ -71,14 +87,17 @@ browser_repositories(
     firefox = True,
 )
 
+# Setup rules_typescript toolchain
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
 
 ts_setup_workspace()
 
+# Setup io_bazel_rules_sass toolchain
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 
 sass_repositories()
 
+# Setup angular toolchain
 load("@angular//:index.bzl", "ng_setup_workspace")
 
 ng_setup_workspace()

@@ -445,6 +445,7 @@ jobs:
 
   legacy-e2e-tests:
     <<: *job_defaults
+    resource_class: xlarge
     docker:
       - image: *browsers_docker_image
     steps:
