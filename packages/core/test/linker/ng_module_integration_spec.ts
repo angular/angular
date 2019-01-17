@@ -622,7 +622,6 @@ function declareTests(config?: {useJit: boolean}) {
       });
     });
 
-
     describe('providers', function() {
       let moduleType: any = null;
 

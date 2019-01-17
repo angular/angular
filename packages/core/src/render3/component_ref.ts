@@ -25,7 +25,7 @@ import {LifecycleHooksFeature, createRootComponent, createRootComponentView, cre
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
 import {addToViewTree, createLView, createNodeAtIndex, createTView, createViewNode, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
-import {ComponentDef, RenderFlags} from './interfaces/definition';
+import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {HEADER_OFFSET, LView, LViewFlags, RootContext, TVIEW} from './interfaces/view';
@@ -199,6 +199,10 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
             }
             const tNode =
                 createNodeAtIndex(index, TNodeType.Element, nodeList[j] as RElement, null, null);
+            tElementNode.injectorIndex++;
+            tElementNode.directiveStart++;
+            tElementNode.directiveEnd++;
+
             previousTNode ? (previousTNode.next = tNode) : (firstTNode = tNode);
             previousTNode = tNode;
           }

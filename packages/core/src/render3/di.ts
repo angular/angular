@@ -11,7 +11,7 @@ import {Injector} from '../di/injector';
 import {injectRootLimpMode, setInjectImplementation} from '../di/injector_compatibility';
 import {getInjectableDef, getInjectorDef} from '../di/interface/defs';
 import {Type} from '../interface/type';
-import {assertDefined, assertEqual} from '../util/assert';
+import {assertDefined, assertEqual, assertNumber} from '../util/assert';
 
 import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
@@ -574,6 +574,11 @@ export function bloomHasToken(
     value = b6 ? (b5 ? injectorView[injectorIndex + 3] : injectorView[injectorIndex + 2]) :
                  (b5 ? injectorView[injectorIndex + 1] : injectorView[injectorIndex]);
   }
+
+  ngDevMode &&
+      assertNumber(
+          value,
+          `The value of a bloom filter starting at index ${injectorIndex} should be a number`);
 
   // If the bloom filter value has the bit corresponding to the directive's bloomBit flipped on,
   // this injector is a potential match.

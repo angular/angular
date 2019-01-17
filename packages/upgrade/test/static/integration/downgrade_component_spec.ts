@@ -705,37 +705,36 @@ withEachNg1Version(() => {
          });
        }));
 
-    fixmeIvy('FW-873: projected component injector hierarchy not wired up correctly')
-        .it('should respect hierarchical dependency injection for ng2', async(() => {
-              @Component({selector: 'parent', template: 'parent(<ng-content></ng-content>)'})
-              class ParentComponent {
-              }
+    it('should respect hierarchical dependency injection for ng2', async(() => {
+         @Component({selector: 'parent', template: 'parent(<ng-content></ng-content>)'})
+         class ParentComponent {
+         }
 
-              @Component({selector: 'child', template: 'child'})
-              class ChildComponent {
-                constructor(parent: ParentComponent) {}
-              }
+         @Component({selector: 'child', template: 'child'})
+         class ChildComponent {
+           constructor(parent: ParentComponent) {}
+         }
 
-              @NgModule({
-                declarations: [ParentComponent, ChildComponent],
-                entryComponents: [ParentComponent, ChildComponent],
-                imports: [BrowserModule, UpgradeModule]
-              })
-              class Ng2Module {
-                ngDoBootstrap() {}
-              }
+         @NgModule({
+           declarations: [ParentComponent, ChildComponent],
+           entryComponents: [ParentComponent, ChildComponent],
+           imports: [BrowserModule, UpgradeModule]
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
 
-              const ng1Module =
-                  angular.module('ng1', [])
-                      .directive('parent', downgradeComponent({component: ParentComponent}))
-                      .directive('child', downgradeComponent({component: ChildComponent}));
+         const ng1Module =
+             angular.module('ng1', [])
+                 .directive('parent', downgradeComponent({component: ParentComponent}))
+                 .directive('child', downgradeComponent({component: ChildComponent}));
 
-              const element = html('<parent><child></child></parent>');
+         const element = html('<parent><child></child></parent>');
 
-              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
-                expect(multiTrim(document.body.textContent)).toBe('parent(child)');
-              });
-            }));
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           expect(multiTrim(document.body.textContent)).toBe('parent(child)');
+         });
+       }));
 
     fixmeIvy(
         'FW-717: Injector on lazy loaded components are not the same as their NgModule\'s injector')

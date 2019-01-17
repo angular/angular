@@ -1460,6 +1460,31 @@ function declareTests(config?: {useJit: boolean}) {
                 .toLowerCase())
             .toEqual('ng-component');
       });
+
+      it('should get component instance from dynamically created component injector', () => {
+        @Component({selector: 'parent', template: ''})
+        class ParentComponent {
+        }
+
+        @NgModule({declarations: [ParentComponent], entryComponents: [ParentComponent]})
+        class SomeModule {
+        }
+
+        @Component({selector: 'test', template: ''})
+        class TestComponent {
+          constructor(public cfr: ComponentFactoryResolver) {}
+        }
+
+        TestBed.configureTestingModule({declarations: [TestComponent], imports: [SomeModule]});
+        const cfr = TestBed.createComponent(TestComponent).componentInstance.cfr;
+        const parentCf = cfr.resolveComponentFactory(ParentComponent);
+
+        expect(parentCf.create(Injector.NULL).injector.get(ParentComponent)).not.toBeNull();
+
+        // pass in projectable nodes to make sure that the internal data structures are not
+        // corrupted and the injection functionality still works as expected
+        expect(parentCf.create(Injector.NULL, [[{}]]).injector.get(ParentComponent)).not.toBeNull();
+      });
     });
 
     describe('error handling', () => {
