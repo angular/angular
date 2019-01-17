@@ -53,19 +53,6 @@ def rules_angular_dev_dependencies():
     shorter.
     """
 
-    # We have a source dependency on the Devkit repository, because it's built with
-    # Bazel.
-    # This allows us to edit sources and have the effect appear immediately without
-    # re-packaging or "npm link"ing.
-    # Even better, things like aspects will visit the entire graph including
-    # ts_library rules in the devkit repository.
-    http_archive(
-        name = "angular_cli",
-        sha256 = "8cf320ea58c321e103f39087376feea502f20eaf79c61a4fdb05c7286c8684fd",
-        strip_prefix = "angular-cli-6.1.0-rc.0",
-        url = "https://github.com/angular/angular-cli/archive/v6.1.0-rc.0.zip",
-    )
-
     http_archive(
         name = "org_brotli",
         sha256 = "774b893a0700b0692a76e2e5b7e7610dbbe330ffbe3fe864b4b52ca718061d5a",
