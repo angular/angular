@@ -118,9 +118,9 @@ export declare class MatTabHeader extends _MatTabHeaderMixinBase implements Afte
     _tabList: ElementRef;
     _tabListContainer: ElementRef;
     focusIndex: number;
-    readonly indexFocused: EventEmitter<{}>;
+    readonly indexFocused: EventEmitter<number>;
     scrollDistance: number;
-    readonly selectFocusedIndex: EventEmitter<{}>;
+    readonly selectFocusedIndex: EventEmitter<number>;
     selectedIndex: number;
     constructor(_elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _viewportRuler: ViewportRuler, _dir: Directionality, _ngZone?: NgZone | undefined, _platform?: Platform | undefined);
     _alignInkBarToSelectedTab(): void;

@@ -133,10 +133,10 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
   private _selectedIndex: number = 0;
 
   /** Event emitted when the option is selected. */
-  @Output() readonly selectFocusedIndex = new EventEmitter();
+  @Output() readonly selectFocusedIndex: EventEmitter<number> = new EventEmitter<number>();
 
   /** Event emitted when a label is focused. */
-  @Output() readonly indexFocused = new EventEmitter();
+  @Output() readonly indexFocused: EventEmitter<number> = new EventEmitter<number>();
 
   constructor(private _elementRef: ElementRef,
               private _changeDetectorRef: ChangeDetectorRef,
