@@ -982,6 +982,21 @@ describe('MatSelectionList with forms', () => {
         .toBe(true, 'Expected every list option to be unselected.');
     });
 
+    it('should deselect option whose value no longer matches', () => {
+      const option = listOptions[1];
+
+      fixture.componentInstance.formControl.setValue(['opt2']);
+      fixture.detectChanges();
+
+      expect(option.selected).toBe(true, 'Expected option to be selected.');
+
+      option.value = 'something-different';
+      fixture.detectChanges();
+
+      expect(option.selected).toBe(false, 'Expected option not to be selected.');
+      expect(fixture.componentInstance.formControl.value).toEqual([]);
+    });
+
     it('should mark options as selected when the value is set before they are initialized', () => {
       fixture.destroy();
       fixture = TestBed.createComponent(SelectionListWithFormControl);
