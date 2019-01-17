@@ -69,10 +69,9 @@ function wrapOnChanges(hook: (() => void) | null) {
 function ngOnChangesSetInput<T>(
     this: DirectiveDef<T>, instance: T, value: any, publicName: string, privateName: string): void {
   const simpleChangesStore = getSimpleChangesStore(instance) ||
-      setSimpleChangesStore(instance, {previous: null, current: null});
+      setSimpleChangesStore(instance, {previous: EMPTY_OBJ, current: null});
   const current = simpleChangesStore.current || (simpleChangesStore.current = {});
-  const previous =
-      simpleChangesStore.previous || (simpleChangesStore.previous = EMPTY_OBJ as SimpleChanges);
+  const previous = simpleChangesStore.previous;
 
   const declaredName = (this.declaredInputs as{[key: string]: string})[publicName];
   const previousChange = previous[declaredName];
@@ -98,6 +97,6 @@ function setSimpleChangesStore(instance: any, store: NgSimpleChangesStore): NgSi
 
 
 interface NgSimpleChangesStore {
-  previous: SimpleChanges|null;
+  previous: SimpleChanges;
   current: SimpleChanges|null;
 }

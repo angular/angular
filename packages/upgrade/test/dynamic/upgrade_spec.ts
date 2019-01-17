@@ -316,8 +316,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly')
-          .it('should bind properties, events', async(() => {
+      it('should bind properties, events', async(() => {
                 const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
                 const ng1Module = angular.module('ng1', []).value(
                     $EXCEPTION_HANDLER, (err: any) => { throw err; });
@@ -440,8 +439,7 @@ withEachNg1Version(() => {
 
               }));
 
-      fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly')
-          .it('should support two-way binding and event listener', async(() => {
+      it('should support two-way binding and event listener', async(() => {
                 const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
                 const listenerSpy = jasmine.createSpy('$rootScope.listener');
                 const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
@@ -490,8 +488,7 @@ withEachNg1Version(() => {
                 });
               }));
 
-      fixmeIvy('FW-715: ngOnChanges being called a second time unexpectedly')
-          .it('should initialize inputs in time for `ngOnChanges`', async(() => {
+      it('should initialize inputs in time for `ngOnChanges`', async(() => {
                 const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
 
                 @Component({
