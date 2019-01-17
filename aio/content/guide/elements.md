@@ -186,25 +186,28 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
   <!--
   <td>Supported natively.</td>
   -->
-  <td>네이티브로 지원</td>
+  <td>네이티브로 지원합니다.</td>
 </tr>
 <tr>
   <td>Opera</td>
   <!--
   <td>Supported natively.</td>
   -->
-  <td>네이티브로 지원</td>
+  <td>네이티브로 지원합니다.</td>
 </tr>
 <tr>
   <td>Safari</td>
   <!--
   <td>Supported natively.</td>
   -->
-  <td>네이티브로 지원</td>
+  <td>네이티브로 지원합니다.</td>
 </tr>
 <tr>
   <td>Firefox</td>
+  <!--
   <td>Supported natively as of version 63. In older versions: Set the <code>dom.webcomponents.enabled</code> and <code>dom.webcomponents.customelements.enabled</code> preferences to true.</td>
+  -->
+  <td>63 버전부터 네이티브로 지원합니다. 이전 버전에서는 <code>dom.webcomponents.enabled</code> 와 <code>dom.webcomponents.customelements.enabled</code> 를 <code>true</code>로 지정해야 합니다.</td>
 </tr>
 <tr>
   <td>Edge</td>

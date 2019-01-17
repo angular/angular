@@ -120,7 +120,7 @@ export class LiveExampleComponent implements AfterContentInit {
   }
 
   private getTitle(attrs: AttrMap) {
-    return (getAttrValue(attrs, 'title') || 'live example').trim();
+    return (getAttrValue(attrs, 'title') || '라이브 예제 링크').trim();
   }
 
   private getZip(exampleDir: string, stackblitzName: string) {

@@ -220,7 +220,7 @@ and confirm that the three `HeroBioComponent` instances have their own cached he
 `hero` 프로퍼티에 사용된 게터 함수는 컴포넌트가 아니라 서비스에서 히어로의 정보를 가져오기 위해 선언했습니다.
 템플릿은 이 프로퍼티를 데이터 바인딩해서 표시합니다.
 
-이제 `HeroBioComponent`의 인스턴스 3개는 모두 독립된 히어로의 정보를 캐싱할 수 있습니다. 이 예제는 <live-example name="dependency-injection-in-action">live code</live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+이제 `HeroBioComponent`의 인스턴스 3개는 모두 독립된 히어로의 정보를 캐싱할 수 있습니다. 이 예제는 <live-example name="dependency-injection-in-action">라이브 예제 링크</live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 <figure>
   <img src="generated/images/guide/dependency-injection-in-action/hero-bios.png" alt="Bios">

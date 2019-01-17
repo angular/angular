@@ -299,7 +299,10 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
+<!--
 The Angular CLI command [`ng generate component`](cli/generate) defines an empty `styles` array when you create the component with the `--inline-style` flag.
+-->
+Angular CLI로 [`ng generate component`](cli/generate) 명령을 실행할 때 `--inline-style` 플래그를 지정하면 `styles` 배열이 비어있는 상태에서 컴포넌트 코드 개발을 시작할 수 있습니다.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app --inline-style
@@ -340,7 +343,10 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
+<!--
 When you use the Angular CLI command [`ng generate component`](cli/generate) without the `--inline-style` flag, it creates an empty styles file for you and references that file in the component's generated `styleUrls`.
+-->
+Angular CLI로 [`ng generate component`](cli/generate) 명령을 실행할 때 `--inline-style` 플래그를 지정하지 않으면 컴포넌트 이름으로 스타일 파일을 만들고 컴포넌트 메타데이터의 `styleUrls`에서 이 파일을 참조합니다.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app
