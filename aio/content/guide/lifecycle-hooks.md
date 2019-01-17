@@ -124,7 +124,7 @@ calls the lifecycle hook methods in the following sequence at specific moments:
 
       Respond after Angular checks the component's views and child views / the view that a directive is in.
 
-      Called after the `ngAfterViewInit` and every subsequent `ngAfterContentChecked()`.
+      Called after the `ngAfterViewInit()` and every subsequent `ngAfterContentChecked()`.
 
     </td>
   </tr>
