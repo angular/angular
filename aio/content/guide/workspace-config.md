@@ -172,7 +172,57 @@ Some additional options (listed below) can only be set through the configuration
 | :------------------------- | :---------------------------- |
 | `fileReplacements`         | An object containing files and their compile-time replacements. |
 | `stylePreprocessorOptions` | An object containing option-value pairs to pass to style preprocessors. |
-| `assets`                   | An object containing paths to static assets to add to the global context of the project. The default paths point to the project's icon file and its `assets` folder. |
+| `assets`                   | An object containing paths to static assets to add to the global context of the project. The default paths point to the project's icon file and its `assets` folder.  See more below. |
 | `styles`                   | An object containing style files to add to the global context of the project. Angular CLI supports CSS imports and all major CSS preprocessors: [sass/scss](http://sass-lang.com/), [less](http://lesscss.org/), and [stylus](http://stylus-lang.com/). |
 | `scripts`                  | An object containing JavaScript script files to add to the global context of the project. The scripts are loaded exactly as if you had added them in a `<script>` tag inside `index.html`. |
 | `budgets`                  | Default size-budget type and threshholds for all or parts of your app. You can configure the builder to report a warning or an error when the output reaches or exceeds a threshold size. See [Configure size budgets](guide/build#configure-size-budgets). (Not available in `test` section.) |
+
+## Project asset configuration
+
+Each `build` target configuration can include as `assets` array that lists files or folders you want to copy as-is when building your project.
+By default, the `src/assets/` folder and `src/favicon.ico` are copied over.
+
+<code-example format="." language="json" linenums="false">
+"assets": [
+  "src/assets",
+  "src/favicon.ico"
+]
+</code-example>
+
+To exclude an asset, you can remove it from the assets configuration.
+
+You can further configure assets to be copied by specifying assets as objects, rather than as simple paths relative to the workspace root.
+A asset specification object can have the following fields.
+
+* `glob`:  A [node-glob](https://github.com/isaacs/node-glob/blob/master/README.md) using `input` as base directory.
+* `input`: A path relative to the workspace root.
+* `output`: A path relative to `outDir` (default is `dist/`*project-name*). Because of the security implications, the CLI never writes files outside of the project output path.
+* `ignore`: A list of globs to exclude.
+
+For example, the default asset paths can be represented in more detail using the following objects.
+
+<code-example format="." language="json" linenums="false">
+"assets": [
+  { "glob": "**/*", "input": "src/assets/", "output": "/assets/" },
+  { "glob": "favicon.ico", "input": "src/", "output": "/" },
+]
+</code-example>
+
+You can use this extended configuration to copy assets from outside your project.
+For example, the following configuration copies assets from a node package:
+
+<code-example format="." language="json" linenums="false">
+"assets": [
+ { "glob": "**/*", "input": "./node_modules/some-package/images", "output": "/some-package/" },
+]
+</code-example>
+
+The contents of `node_modules/some-package/images/` will be available in `dist/some-package/`.
+
+The following example uses the `ignore` field to exclude certain files in the assets folder from being copied into the build:
+
+<code-example format="." language="json" linenums="false">
+"assets": [
+ { "glob": "**/*", "input": "src/assets/", "ignore": ["**/*.svg"], "output": "/assets/" },
+]
+</code-example>
