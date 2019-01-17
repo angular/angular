@@ -92,8 +92,7 @@ $mat-stepper-line-gap: 8px !default;
       display: none;
     }
 
-    & .mat-step-icon,
-    & .mat-step-icon-not-touched {
+    & .mat-step-icon {
       // Cleans margin both for ltr and rtl direction
       margin-right: 0;
       margin-left: 0;
