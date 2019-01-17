@@ -272,7 +272,7 @@ export class MatListOption extends _MatListOptionMixinBase
   moduleId: module.id,
   selector: 'mat-selection-list',
   exportAs: 'matSelectionList',
-  inputs: ['disabled', 'disableRipple', 'tabIndex'],
+  inputs: ['disableRipple'],
   host: {
     'role': 'listbox',
     '[tabIndex]': 'tabIndex',
