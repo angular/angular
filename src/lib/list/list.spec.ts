@@ -1,10 +1,13 @@
-import {async, TestBed} from '@angular/core/testing';
+import {async, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {Component, QueryList, ViewChildren} from '@angular/core';
+import {defaultRippleAnimationConfig} from '@angular/material/core';
+import {dispatchMouseEvent} from '@angular/cdk/testing';
 import {By} from '@angular/platform-browser';
 import {MatListItem, MatListModule} from './index';
 
-
 describe('MatList', () => {
+  // Default ripple durations used for testing.
+  const {enterDuration, exitDuration} = defaultRippleAnimationConfig;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -206,6 +209,62 @@ describe('MatList', () => {
 
     expect(items.every(item => item._isRippleDisabled())).toBe(true);
   });
+
+  it('should disable item ripples when list ripples are disabled via the input in nav list',
+    fakeAsync(() => {
+      const fixture = TestBed.createComponent(NavListWithOneAnchorItem);
+      fixture.detectChanges();
+
+      const rippleTarget = fixture.nativeElement.querySelector('.mat-list-item-content');
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
+          .toBe(1, 'Expected ripples to be enabled by default.');
+
+      // Wait for the ripples to go away.
+      tick(enterDuration + exitDuration);
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
+          .toBe(0, 'Expected ripples to go away.');
+
+      fixture.componentInstance.disableListRipple = true;
+      fixture.detectChanges();
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
+          .toBe(0, 'Expected no ripples after list ripples are disabled.');
+    }));
+
+  it('should disable item ripples when list ripples are disabled via the input in an action list',
+    fakeAsync(() => {
+      const fixture = TestBed.createComponent(ActionListWithoutType);
+      fixture.detectChanges();
+
+      const rippleTarget = fixture.nativeElement.querySelector('.mat-list-item-content');
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
+          .toBe(1, 'Expected ripples to be enabled by default.');
+
+      // Wait for the ripples to go away.
+      tick(enterDuration + exitDuration);
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
+          .toBe(0, 'Expected ripples to go away.');
+
+      fixture.componentInstance.disableListRipple = true;
+      fixture.detectChanges();
+
+      dispatchMouseEvent(rippleTarget, 'mousedown');
+      dispatchMouseEvent(rippleTarget, 'mouseup');
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
+          .toBe(0, 'Expected no ripples after list ripples are disabled.');
+    }));
 
 });
 

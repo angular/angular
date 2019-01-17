@@ -8,9 +8,12 @@ export declare const _MatSelectionListMixinBase: CanDisableRippleCtor & typeof M
 
 export declare const MAT_SELECTION_LIST_VALUE_ACCESSOR: any;
 
-export declare class MatList extends _MatListMixinBase implements CanDisableRipple {
+export declare class MatList extends _MatListMixinBase implements CanDisableRipple, OnChanges, OnDestroy {
+    _stateChanges: Subject<void>;
     constructor(_elementRef?: ElementRef<HTMLElement> | undefined);
     _getListType(): 'list' | 'action-list' | null;
+    ngOnChanges(): void;
+    ngOnDestroy(): void;
 }
 
 export declare class MatListAvatarCssMatStyler {
@@ -22,14 +25,15 @@ export declare class MatListBase {
 export declare class MatListIconCssMatStyler {
 }
 
-export declare class MatListItem extends _MatListItemMixinBase implements AfterContentInit, CanDisableRipple {
+export declare class MatListItem extends _MatListItemMixinBase implements AfterContentInit, CanDisableRipple, OnDestroy {
     _avatar: MatListAvatarCssMatStyler;
     _icon: MatListIconCssMatStyler;
     _lines: QueryList<MatLine>;
-    constructor(_element: ElementRef<HTMLElement>, navList?: MatNavList, list?: MatList);
+    constructor(_element: ElementRef<HTMLElement>, navList?: MatNavList, list?: MatList, _changeDetectorRef?: ChangeDetectorRef);
     _getHostElement(): HTMLElement;
     _isRippleDisabled(): boolean;
     ngAfterContentInit(): void;
+    ngOnDestroy(): void;
 }
 
 export declare class MatListItemBase {
@@ -71,7 +75,10 @@ export declare class MatListOptionBase {
 export declare class MatListSubheaderCssMatStyler {
 }
 
-export declare class MatNavList extends _MatListMixinBase implements CanDisableRipple {
+export declare class MatNavList extends _MatListMixinBase implements CanDisableRipple, OnChanges, OnDestroy {
+    _stateChanges: Subject<void>;
+    ngOnChanges(): void;
+    ngOnDestroy(): void;
 }
 
 export declare class MatSelectionList extends _MatSelectionListMixinBase implements FocusableOption, CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy {
