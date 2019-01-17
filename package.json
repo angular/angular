@@ -34,7 +34,7 @@
     "@angular-devkit/architect": "^0.10.6",
     "@angular-devkit/build-optimizer": "^0.12.2",
     "@angular-devkit/core": "^7.0.4",
-    "@angular-devkit/schematics": "^7.0.4",
+    "@angular-devkit/schematics": "^7.3.0-rc.0",
     "@bazel/karma": "~0.22.1",
     "@bazel/typescript": "~0.22.1",
     "@schematics/angular": "^7.0.4",

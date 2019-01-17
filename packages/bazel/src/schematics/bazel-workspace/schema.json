@@ -15,6 +15,5 @@
     }
   },
   "required": [
-    "name"
   ]
 }

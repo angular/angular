@@ -61,7 +61,7 @@
     rxjs "6.3.3"
     source-map "0.7.3"
 
-"@angular-devkit/schematics@7.0.5", "@angular-devkit/schematics@^7.0.4":
+"@angular-devkit/schematics@7.0.5":
   version "7.0.5"
   resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-7.0.5.tgz#527bf0af5352172e92c5473a33bc07af44c77796"
   integrity sha512-mWtPfBtObXXw5IWnMuOXBLn/Bv2lPxdmSqrCX9chTmxLXlFuv5e6HkzJfuF4BxjRUMaA+OW1qhnsHRJSI+p6sQ==
@@ -69,7 +69,7 @@
     "@angular-devkit/core" "7.0.5"
     rxjs "6.3.3"
 
-"@angular-devkit/schematics@7.3.0-rc.0":
+"@angular-devkit/schematics@7.3.0-rc.0", "@angular-devkit/schematics@^7.3.0-rc.0":
   version "7.3.0-rc.0"
   resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-7.3.0-rc.0.tgz#9f1e1f6942da36b12c81241398ed6ca8b2e65875"
   integrity sha512-noqcQIOvah2G126DTFKY5Kiga8UwI9cKzyhQdNlf+8hAZpnWwTURItQ5xuMJg/XfRQLUSg9gWS2h1cI9AD7mxQ==
