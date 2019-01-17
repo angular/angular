@@ -83,6 +83,7 @@ export {
   elementEnd as ɵelementEnd,
   elementProperty as ɵelementProperty,
   componentHostSyntheticProperty as ɵcomponentHostSyntheticProperty,
+  componentHostSyntheticListener as ɵcomponentHostSyntheticListener,
   projectionDef as ɵprojectionDef,
   reference as ɵreference,
   enableBindings as ɵenableBindings,
