@@ -9,7 +9,7 @@ import '../../util/ng_dev_mode';
 
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {getLContext} from '../context_discovery';
-import {LContainer} from '../interfaces/container';
+import {LCONTAINER_LENGTH, LContainer} from '../interfaces/container';
 import {LContext} from '../interfaces/context';
 import {AttributeMarker, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {PlayState, Player, PlayerContext, PlayerIndex} from '../interfaces/player';
@@ -96,7 +96,7 @@ export function getStylingContext(index: number, viewData: LView): StylingContex
 export function isStylingContext(value: any): value is StylingContext {
   // Not an LView or an LContainer
   return Array.isArray(value) && typeof value[StylingIndex.MasterFlagPosition] === 'number' &&
-      Array.isArray(value[StylingIndex.InitialStyleValuesPosition]);
+      value.length !== LCONTAINER_LENGTH;
 }
 
 export function isAnimationProp(name: string): boolean {
