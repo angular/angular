@@ -157,7 +157,7 @@ class DefaultDomRenderer2 implements Renderer2 {
     if (namespace) {
       name = `${namespace}:${name}`;
       // TODO(benlesh): Ivy may cause issues here because it's passing around
-      // full URIs for namespaces, therefor this lookup will fail.
+      // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
         el.setAttributeNS(namespaceUri, name, value);
@@ -172,7 +172,7 @@ class DefaultDomRenderer2 implements Renderer2 {
   removeAttribute(el: any, name: string, namespace?: string): void {
     if (namespace) {
       // TODO(benlesh): Ivy may cause issues here because it's passing around
-      // full URIs for namespaces, therefor this lookup will fail.
+      // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
         el.removeAttributeNS(namespaceUri, name);
