@@ -359,6 +359,11 @@ export interface HostBinding {
 
 export declare const HostBinding: HostBindingDecorator;
 
+export interface HostBindingDecorator {
+    (hostPropertyName?: string): any;
+    new (hostPropertyName?: string): any;
+}
+
 export interface HostDecorator {
     (): any;
     new (): Host;
@@ -370,6 +375,11 @@ export interface HostListener {
 }
 
 export declare const HostListener: HostListenerDecorator;
+
+export interface HostListenerDecorator {
+    (eventName: string, args?: string[]): any;
+    new (eventName: string, args?: string[]): any;
+}
 
 export declare function inject<T>(token: Type<T> | InjectionToken<T>): T;
 export declare function inject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
@@ -451,6 +461,11 @@ export interface Input {
 }
 
 export declare const Input: InputDecorator;
+
+export interface InputDecorator {
+    (bindingPropertyName?: string): any;
+    new (bindingPropertyName?: string): any;
+}
 
 export declare function isDevMode(): boolean;
 
@@ -632,6 +647,11 @@ export interface Output {
 
 export declare const Output: OutputDecorator;
 
+export interface OutputDecorator {
+    (bindingPropertyName?: string): any;
+    new (bindingPropertyName?: string): any;
+}
+
 export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
 
 export interface Pipe {
@@ -640,6 +660,11 @@ export interface Pipe {
 }
 
 export declare const Pipe: PipeDecorator;
+
+export interface PipeDecorator {
+    (obj: Pipe): TypeDecorator;
+    new (obj: Pipe): Pipe;
+}
 
 export interface PipeTransform {
     transform(value: any, ...args: any[]): any;
