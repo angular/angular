@@ -34,14 +34,20 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChange
  */
 @Directive({selector: '[ngTemplateOutlet]'})
 export class NgTemplateOutlet implements OnChanges {
-  // TODO(issue/24571): remove '!'.
-  private _viewRef !: EmbeddedViewRef<any>;
+  private _viewRef: EmbeddedViewRef<any>|null = null;
 
-  // TODO(issue/24571): remove '!'.
-  @Input() public ngTemplateOutletContext !: Object;
+  /**
+   * A context object to attach to the {@link EmbeddedViewRef}. This should be an
+   * object, the object's keys will be available for binding by the local template `let`
+   * declarations.
+   * Using the key `$implicit` in the context object will set its value as default.
+   */
+  @Input() public ngTemplateOutletContext: Object|null = null;
 
-  // TODO(issue/24571): remove '!'.
-  @Input() public ngTemplateOutlet !: TemplateRef<any>;
+  /**
+   * A string defining the template reference and optionally the context object for the template.
+   */
+  @Input() public ngTemplateOutlet: TemplateRef<any>|null = null;
 
   constructor(private _viewContainerRef: ViewContainerRef) {}
 
@@ -97,7 +103,7 @@ export class NgTemplateOutlet implements OnChanges {
 
   private _updateExistingContext(ctx: Object): void {
     for (let propName of Object.keys(ctx)) {
-      (<any>this._viewRef.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
+      (<any>this._viewRef !.context)[propName] = (<any>this.ngTemplateOutletContext)[propName];
     }
   }
 }
