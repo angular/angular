@@ -187,7 +187,7 @@ These are the polyfills required to run an Angular application on each supported
 
     <td>
 
-      [ES7/reflect](guide/browser-support#core-es7-reflect) (JIT only)
+      [ES7/reflect](guide/browser-support#core-es7-reflect) (JIT only, automatically included by @angular/cli if AOT is off)
 
     </td>
 
@@ -268,7 +268,7 @@ Here are the features which may require additional polyfills:
     </td>
 
     <td>
-      All current browsers. Enabled by default.
+      All current browsers. Included automactically by @angular/cli if AOT is off.
       Can remove if you always use AOT and only use Angular decorators.
     </td>
 
