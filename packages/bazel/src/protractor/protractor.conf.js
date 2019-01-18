@@ -136,14 +136,13 @@ if (process.env['WEB_TEST_METADATA']) {
       }
       setConf(conf, 'directConnect', true, 'is set to true for chrome');
       setConf(conf, 'chromeDriver', chromeDriver, 'is determined by the browsers attribute');
-      mergeCapabilities(
-          conf, {
-            browserName: 'chrome',
-            chromeOptions: {
-              binary: chromeBin,
-              args: args,
-            }
-          });
+      mergeCapabilities(conf, {
+        browserName: 'chrome',
+        chromeOptions: {
+          binary: chromeBin,
+          args: args,
+        }
+      });
     }
     if (webTestNamedFiles['FIREFOX']) {
       // TODO(gmagolan): implement firefox support for protractor
