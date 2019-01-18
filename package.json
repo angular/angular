@@ -101,7 +101,7 @@
     "typescript": "~3.3.3333",
     "xhr2": "0.1.4",
     "yargs": "9.0.1",
-    "zone.js": "^0.8.26"
+    "zone.js": "^0.9.0"
   },
   "optionalDependencies": {
     "fsevents": "2.0.1"

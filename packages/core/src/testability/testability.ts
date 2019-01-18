@@ -27,7 +27,7 @@ export interface PendingMacrotask {
   source: string;
   creationLocation: Error;
   runCount?: number;
-  data: TaskData;
+  data?: TaskData;
 }
 
 export interface TaskData {

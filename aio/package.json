@@ -93,7 +93,7 @@
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
     "rxjs": "^6.3.0",
-    "zone.js": "^0.8.26"
+    "zone.js": "^0.9.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.12.1",
