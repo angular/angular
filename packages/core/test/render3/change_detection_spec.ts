@@ -563,61 +563,70 @@ describe('change detection', () => {
       });
 
 
-      it('should not go infinite loop when recursively called from children\'s ngOnChanges', () => {
-        class ChildComp {
-          // @Input
-          inp = '';
+      ['OnInit', 'AfterContentInit', 'AfterViewInit', 'OnChanges'].forEach(hook => {
+        it(`should not go infinite loop when recursively called from children's ng${hook}`, () => {
+          class ChildComp {
+            // @Input
+            inp = '';
 
-          count = 0;
-          constructor(public parentComp: ParentComp) {}
+            count = 0;
+            constructor(public parentComp: ParentComp) {}
 
-          ngOnChanges() {
-            this.count++;
-            if (this.count > 1) throw new Error(`ngOnChanges should be called only once!`);
-            this.parentComp.triggerChangeDetection();
+            ngOnInit() { this.check('OnInit'); }
+            ngAfterContentInit() { this.check('AfterContentInit'); }
+            ngAfterViewInit() { this.check('AfterViewInit'); }
+            ngOnChanges() { this.check('OnChanges'); }
+
+            check(h: string) {
+              if (h === hook) {
+                this.count++;
+                if (this.count > 1) throw new Error(`ng${hook} should be called only once!`);
+                this.parentComp.triggerChangeDetection();
+              }
+            }
+
+            static ngComponentDef = defineComponent({
+              type: ChildComp,
+              selectors: [['child-comp']],
+              factory: () => new ChildComp(directiveInject(ParentComp as any)),
+              consts: 1,
+              vars: 0,
+              template: (rf: RenderFlags, ctx: ChildComp) => {
+                if (rf & RenderFlags.Create) {
+                  text(0, 'foo');
+                }
+              },
+              inputs: {inp: 'inp'},
+              features: [NgOnChangesFeature]
+            });
           }
 
-          static ngComponentDef = defineComponent({
-            type: ChildComp,
-            selectors: [['child-comp']],
-            factory: () => new ChildComp(directiveInject(ParentComp as any)),
-            consts: 1,
-            vars: 0,
-            template: (rf: RenderFlags, ctx: ChildComp) => {
-              if (rf & RenderFlags.Create) {
-                text(0, 'foo');
-              }
-            },
-            inputs: {inp: 'inp'},
-            features: [NgOnChangesFeature]
-          });
-        }
+          class ParentComp {
+            constructor(public cdr: ChangeDetectorRef) {}
 
-        class ParentComp {
-          constructor(public cdr: ChangeDetectorRef) {}
+            triggerChangeDetection() { this.cdr.detectChanges(); }
 
-          triggerChangeDetection() { this.cdr.detectChanges(); }
+            static ngComponentDef = defineComponent({
+              type: ParentComp,
+              selectors: [['parent-comp']],
+              factory: () => new ParentComp(directiveInject(ChangeDetectorRef as any)),
+              consts: 1,
+              vars: 1,
+              /** {{ value }} */
+              template: (rf: RenderFlags, ctx: ParentComp) => {
+                if (rf & RenderFlags.Create) {
+                  element(0, 'child-comp');
+                }
+                if (rf & RenderFlags.Update) {
+                  elementProperty(0, 'inp', bind(true));
+                }
+              },
+              directives: [ChildComp]
+            });
+          }
 
-          static ngComponentDef = defineComponent({
-            type: ParentComp,
-            selectors: [['parent-comp']],
-            factory: () => new ParentComp(directiveInject(ChangeDetectorRef as any)),
-            consts: 1,
-            vars: 1,
-            /** {{ value }} */
-            template: (rf: RenderFlags, ctx: ParentComp) => {
-              if (rf & RenderFlags.Create) {
-                element(0, 'child-comp');
-              }
-              if (rf & RenderFlags.Update) {
-                elementProperty(0, 'inp', bind(true));
-              }
-            },
-            directives: [ChildComp]
-          });
-        }
-
-        expect(() => renderComponent(ParentComp)).not.toThrow();
+          expect(() => renderComponent(ParentComp)).not.toThrow();
+        });
       });
 
       it('should support call in ngDoCheck', () => {

@@ -215,6 +215,10 @@ export interface LView extends Array<any> {
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */
 export const enum LViewFlags {
+  /** The state of the init phase on the first 2 bits */
+  InitPhaseStateIncrementer = 0b00000000001,
+  InitPhaseStateMask = 0b00000000011,
+
   /**
    * Whether or not the view is in creationMode.
    *
@@ -223,7 +227,7 @@ export const enum LViewFlags {
    * back into the parent view, `data` will be defined and `creationMode` will be
    * improperly reported as false.
    */
-  CreationMode = 0b000000001,
+  CreationMode = 0b00000000100,
 
   /**
    * Whether or not this LView instance is on its first processing pass.
@@ -232,31 +236,43 @@ export const enum LViewFlags {
    * has completed one creation mode run and one update mode run. At this
    * time, the flag is turned off.
    */
-  FirstLViewPass = 0b000000010,
+  FirstLViewPass = 0b00000001000,
 
   /** Whether this view has default change detection strategy (checks always) or onPush */
-  CheckAlways = 0b000000100,
+  CheckAlways = 0b00000010000,
 
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b000001000,
+  Dirty = 0b00000100000,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b000010000,
-
-  /**
-   *  Whether or not the init hooks have run.
-   *
-   * If on, the init hooks haven't yet been run and should be executed by the first component that
-   * runs OR the first cR() instruction that runs (so inits are run for the top level view before
-   * any embedded views).
-   */
-  RunInit = 0b000100000,
+  Attached = 0b00001000000,
 
   /** Whether or not this view is destroyed. */
-  Destroyed = 0b001000000,
+  Destroyed = 0b00010000000,
 
   /** Whether or not this view is the root view */
-  IsRoot = 0b010000000,
+  IsRoot = 0b00100000000,
+
+  /**
+   * Index of the current init phase on last 23 bits
+   */
+  IndexWithinInitPhaseIncrementer = 0b01000000000,
+  IndexWithinInitPhaseShift = 9,
+  IndexWithinInitPhaseReset = 0b00111111111,
+}
+
+/**
+ * Possible states of the init phase:
+ * - 00: OnInit hooks to be run.
+ * - 01: AfterContentInit hooks to be run
+ * - 10: AfterViewInit hooks to be run
+ * - 11: All init hooks have been run
+ */
+export const enum InitPhaseState {
+  OnInitHooksToBeRun = 0b00,
+  AfterContentInitHooksToBeRun = 0b01,
+  AfterViewInitHooksToBeRun = 0b10,
+  InitPhaseCompleted = 0b11,
 }
 
 /**
