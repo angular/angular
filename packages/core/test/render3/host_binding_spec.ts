@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef, QueryList} from '@angular/core';
+import {ElementRef, QueryList, ViewContainerRef} from '@angular/core';
 
 import {AttributeMarker, defineComponent, template, defineDirective, InheritDefinitionFeature, ProvidersFeature} from '../../src/render3/index';
 import {allocHostVars, bind, directiveInject, element, elementAttribute, elementEnd, elementProperty, elementStyleProp, elementStyling, elementStylingApply, elementStart, listener, load, text, textBinding, loadQueryList, registerContentQuery, elementHostAttrs} from '../../src/render3/instructions';
@@ -1124,6 +1124,58 @@ describe('host bindings', () => {
       const fixture = new ComponentFixture(App);
       const hostBindingEl =
           fixture.hostElement.querySelector('host-binding-to-styles') as HTMLElement;
+      expect(hostBindingEl.style.width).toEqual('2px');
+
+      hostBindingDir.width = 5;
+      fixture.update();
+      expect(hostBindingEl.style.width).toEqual('5px');
+    });
+
+    it('should bind to host styles on containers', () => {
+      let hostBindingDir !: HostBindingToStyles;
+      /**
+       * host: {
+       *   '[style.width.px]': 'width'
+       * }
+       */
+      class HostBindingToStyles {
+        width = 2;
+
+        static ngDirectiveDef = defineDirective({
+          type: HostBindingToStyles,
+          selectors: [['', 'hostStyles', '']],
+          factory: () => hostBindingDir = new HostBindingToStyles(),
+          hostBindings: (rf: RenderFlags, ctx: HostBindingToStyles, elIndex: number) => {
+            if (rf & RenderFlags.Create) {
+              elementStyling(null, ['width'], null, ctx);
+            }
+            if (rf & RenderFlags.Update) {
+              elementStyleProp(0, 0, ctx.width, 'px', ctx);
+              elementStylingApply(0, ctx);
+            }
+          }
+        });
+      }
+
+      class ContainerDir {
+        constructor(public vcr: ViewContainerRef) {}
+
+        static ngDirectiveDef = defineDirective({
+          type: ContainerDir,
+          selectors: [['', 'containerDir', '']],
+          factory: () => new ContainerDir(directiveInject(ViewContainerRef as any)),
+        });
+      }
+
+      /** <div hostStyles containerDir></div> */
+      const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          element(0, 'div', ['containerDir', '', 'hostStyles', '']);
+        }
+      }, 1, 0, [ContainerDir, HostBindingToStyles]);
+
+      const fixture = new ComponentFixture(App);
+      const hostBindingEl = fixture.hostElement.querySelector('div') as HTMLElement;
       expect(hostBindingEl.style.width).toEqual('2px');
 
       hostBindingDir.width = 5;
