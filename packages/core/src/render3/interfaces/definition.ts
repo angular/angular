@@ -140,6 +140,7 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   hostBindings: HostBindingsFunction<T>|null;
 
   /* The following are lifecycle hooks for this component */
+  onChanges: (() => void)|null;
   onInit: (() => void)|null;
   doCheck: (() => void)|null;
   afterContentInit: (() => void)|null;
