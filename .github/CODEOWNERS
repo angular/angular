@@ -197,7 +197,62 @@
 /.circleci/**                                      @jelbourn
 /scripts/**                                        @devversion @jelbourn
 /test/**                                           @devversion @jelbourn
-/tools/**                                          @devversion @jelbourn
+/tools/**/!(*.d.ts)                                @devversion @jelbourn
+
+# Public API golden files
+/tools/public_api_guard/cdk/a11y.d.ts              @jelbourn @devversion
+/tools/public_api_guard/cdk/accordion.d.ts         @josephperrott
+/tools/public_api_guard/cdk/bidi.d.ts              @jelbourn
+/tools/public_api_guard/cdk/cdk.d.ts               @jelbourn
+/tools/public_api_guard/cdk/coercion.d.ts          @jelbourn
+/tools/public_api_guard/cdk/collections.d.ts       @jelbourn @crisbeto @andrewseguin
+/tools/public_api_guard/cdk/drag-drop.d.ts         @crisbeto
+/tools/public_api_guard/cdk/keycodes.d.ts          @jelbourn
+/tools/public_api_guard/cdk/layout.d.ts            @josephperrott
+/tools/public_api_guard/cdk/observers.d.ts         @jelbourn @crisbeto
+/tools/public_api_guard/cdk/overlay.d.ts           @jelbourn @crisbeto
+/tools/public_api_guard/cdk/platform.d.ts          @jelbourn @devversion
+/tools/public_api_guard/cdk/scrolling.d.ts         @andrewseguin @crisbeto
+/tools/public_api_guard/cdk/stepper.d.ts           @mmalerba
+/tools/public_api_guard/cdk/table.d.ts             @andrewseguin
+/tools/public_api_guard/cdk/text-field.d.ts        @mmalerba
+/tools/public_api_guard/cdk/tree.d.ts              @jelbourn @andrewseguin
+/tools/public_api_guard/lib/autocomplete.d.ts      @crisbeto
+/tools/public_api_guard/lib/badge.d.ts             @jelbourn
+/tools/public_api_guard/lib/bottom-sheet.d.ts      @jelbourn @crisbeto
+/tools/public_api_guard/lib/button-toggle.d.ts     @jelbourn
+/tools/public_api_guard/lib/button.d.ts            @jelbourn @josephperrott
+/tools/public_api_guard/lib/card.d.ts              @jelbourn
+/tools/public_api_guard/lib/checkbox.d.ts          @jelbourn @devversion @josephperrott
+/tools/public_api_guard/lib/chips.d.ts             @jelbourn
+/tools/public_api_guard/lib/core.d.ts              @jelbourn
+/tools/public_api_guard/lib/datepicker.d.ts        @mmalerba
+/tools/public_api_guard/lib/dialog.d.ts            @jelbourn @crisbeto
+/tools/public_api_guard/lib/divider.d.ts           @jelbourn @crisbeto
+/tools/public_api_guard/lib/expansion.d.ts         @josephperrott @jelbourn
+/tools/public_api_guard/lib/form-field.d.ts        @mmalerba
+/tools/public_api_guard/lib/grid-list.d.ts         @jelbourn
+/tools/public_api_guard/lib/icon.d.ts              @jelbourn
+/tools/public_api_guard/lib/input.d.ts             @mmalerba
+/tools/public_api_guard/lib/list.d.ts              @jelbourn @crisbeto @devversion
+/tools/public_api_guard/lib/menu.d.ts              @crisbeto
+/tools/public_api_guard/lib/paginator.d.ts         @andrewseguin
+/tools/public_api_guard/lib/progress-bar.d.ts      @jelbourn @crisbeto @josephperrott
+/tools/public_api_guard/lib/progress-spinner.d.ts  @jelbourn @crisbeto @josephperrott
+/tools/public_api_guard/lib/radio.d.ts             @jelbourn @devversion
+/tools/public_api_guard/lib/select.d.ts            @crisbeto
+/tools/public_api_guard/lib/sidenav.d.ts           @mmalerba
+/tools/public_api_guard/lib/slide-toggle.d.ts      @devversion
+/tools/public_api_guard/lib/slider.d.ts            @mmalerba
+/tools/public_api_guard/lib/snack-bar.d.ts         @jelbourn @crisbeto @josephperrott
+/tools/public_api_guard/lib/sort.d.ts              @andrewseguin
+/tools/public_api_guard/lib/stepper.d.ts           @mmalerba
+/tools/public_api_guard/lib/table.d.ts             @andrewseguin
+/tools/public_api_guard/lib/tabs.d.ts              @andrewseguin
+/tools/public_api_guard/lib/toolbar.d.ts           @devversion
+/tools/public_api_guard/lib/tooltip.d.ts           @andrewseguin
+/tools/public_api_guard/lib/tree.d.ts              @jelbourn @andrewseguin
+/tools/public_api_guard/lib/lib.d.ts               @jelbourn
 
 # Misc
 /*                                                 @jelbourn
