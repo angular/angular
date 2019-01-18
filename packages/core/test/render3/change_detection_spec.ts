@@ -11,7 +11,7 @@ import {withBody} from '@angular/private/testing';
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, RendererType2} from '../../src/core';
 import {whenRendered} from '../../src/render3/component';
-import {LifecycleHooksFeature, defineComponent, defineDirective, getRenderedText, templateRefExtractor} from '../../src/render3/index';
+import {LifecycleHooksFeature, NgOnChangesFeature, defineComponent, defineDirective, getRenderedText, templateRefExtractor} from '../../src/render3/index';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, reference, text, template, textBinding, tick} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -560,6 +560,64 @@ describe('change detection', () => {
 
         const comp = renderComponent(DetectChangesComp, {hostFeatures: [LifecycleHooksFeature]});
         expect(getRenderedText(comp)).toEqual('1');
+      });
+
+
+      it('should not go infinite loop when recursively called from children\'s ngOnChanges', () => {
+        class ChildComp {
+          // @Input
+          inp = '';
+
+          count = 0;
+          constructor(public parentComp: ParentComp) {}
+
+          ngOnChanges() {
+            this.count++;
+            if (this.count > 1) throw new Error(`ngOnChanges should be called only once!`);
+            this.parentComp.triggerChangeDetection();
+          }
+
+          static ngComponentDef = defineComponent({
+            type: ChildComp,
+            selectors: [['child-comp']],
+            factory: () => new ChildComp(directiveInject(ParentComp as any)),
+            consts: 1,
+            vars: 0,
+            template: (rf: RenderFlags, ctx: ChildComp) => {
+              if (rf & RenderFlags.Create) {
+                text(0, 'foo');
+              }
+            },
+            inputs: {inp: 'inp'},
+            features: [NgOnChangesFeature]
+          });
+        }
+
+        class ParentComp {
+          constructor(public cdr: ChangeDetectorRef) {}
+
+          triggerChangeDetection() { this.cdr.detectChanges(); }
+
+          static ngComponentDef = defineComponent({
+            type: ParentComp,
+            selectors: [['parent-comp']],
+            factory: () => new ParentComp(directiveInject(ChangeDetectorRef as any)),
+            consts: 1,
+            vars: 1,
+            /** {{ value }} */
+            template: (rf: RenderFlags, ctx: ParentComp) => {
+              if (rf & RenderFlags.Create) {
+                element(0, 'child-comp');
+              }
+              if (rf & RenderFlags.Update) {
+                elementProperty(0, 'inp', bind(true));
+              }
+            },
+            directives: [ChildComp]
+          });
+        }
+
+        expect(() => renderComponent(ParentComp)).not.toThrow();
       });
 
       it('should support call in ngDoCheck', () => {

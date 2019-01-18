@@ -68,6 +68,9 @@ export function refreshDescendantViews(lView: LView) {
   tView.firstTemplatePass = false;
   setFirstTemplatePass(false);
 
+  // Resetting the bindingIndex of the current LView as the next steps may trigger change detection.
+  lView[BINDING_INDEX] = tView.bindingStartIndex;
+
   // If this is a creation pass, we should not call lifecycle hooks or evaluate bindings.
   // This will be done in the update pass.
   if (!isCreationMode(lView)) {
