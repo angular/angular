@@ -49,16 +49,11 @@ export function NgOnChangesFeature<T>(): DirectiveDefFeature {
 function NgOnChangesFeatureImpl<T>(definition: DirectiveDef<T>): void {
   if (definition.type.prototype.ngOnChanges) {
     definition.setInput = ngOnChangesSetInput;
-
-    const prevDoCheck = definition.doCheck;
-    const prevOnInit = definition.onInit;
-
-    definition.onInit = wrapOnChanges(prevOnInit);
-    definition.doCheck = wrapOnChanges(prevDoCheck);
+    definition.onChanges = wrapOnChanges();
   }
 }
 
-function wrapOnChanges(hook: (() => void) | null) {
+function wrapOnChanges() {
   return function(this: OnChanges) {
     const simpleChangesStore = getSimpleChangesStore(this);
     const current = simpleChangesStore && simpleChangesStore.current;
@@ -68,8 +63,6 @@ function wrapOnChanges(hook: (() => void) | null) {
       simpleChangesStore !.current = null;
       this.ngOnChanges(current);
     }
-
-    hook && hook.call(this);
   };
 }
 

@@ -11,7 +11,7 @@ import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
-import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, HOST_NODE, LView, LViewFlags, OpaqueViewState, QUERIES, TVIEW} from './interfaces/view';
+import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, HOST_NODE, InitPhaseState, LView, LViewFlags, OpaqueViewState, QUERIES, TVIEW} from './interfaces/view';
 import {isContentQueryHost} from './util';
 
 
@@ -336,11 +336,12 @@ export function leaveView(newView: LView): void {
     lView[FLAGS] &= ~LViewFlags.CreationMode;
   } else {
     try {
-      executeHooks(lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode);
+      executeHooks(
+          lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode,
+          InitPhaseState.AfterViewInitHooksToBeRun);
     } finally {
       // Views are clean and in update mode after being checked, so these bits are cleared
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
-      lView[FLAGS] |= LViewFlags.RunInit;
       lView[BINDING_INDEX] = tView.bindingStartIndex;
     }
   }
