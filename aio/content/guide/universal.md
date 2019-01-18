@@ -86,7 +86,7 @@ The sample web server for this guide is based on the popular [Express](https://e
 
 </div>
 
-To make a Universal app, install the `platform-server` package, which provides server implementations 
+The `platform-server` package, which provides server implementations 
 of the DOM, `XMLHttpRequest`, and other low-level features that don't rely on a browser.
 Compile the client application with the `platform-server` module (instead of the `platform-browser` module)
 and run the resulting Universal app on a web server.
@@ -106,17 +106,46 @@ creating a finished HTML page for the client.
 Finally, the server returns the rendered page to the client.
 
 {@a summary}
-## Preparing for server-side rendering
+## Step 1: Add universal to an existing application
 
-Before your app can be rendered on a server, you must make changes in the app itself, and also set up the server.
+To add Universal support to an existing application use the `ng add` command.
 
-1. Install dependencies.
-1. Prepare your app by modifying both the app code and its configuration.
-1. Add a build target, and build a Universal bundle using the CLI with the `@nguniversal/express-engine` schematic.
-1. Set up a server to run Universal bundles.
-1. Pack and run the app on the server.
+<code-example format="." language="bash">
 
-The following sections go into each of these main steps in more detail.
+ng add @nguniversal/express-engine --clientProject <project-name>
+
+</code-example>
+
+The command install the required dependencies and creates the following folder structure.
+
+<code-example format="." language="none" linenums="false">
+src/
+  index.html                 <i>app web page</i>
+  main.ts                    <i>bootstrapper for client app</i>
+  main.server.ts             <i>* bootstrapper for server app</i>
+  tsconfig.app.json          <i>TypeScript client configuration</i>
+  tsconfig.server.json       <i>* TypeScript server configuration</i>
+  tsconfig.spec.json         <i>TypeScript spec configuration</i>
+  style.css                  <i>styles for the app</i>
+  app/ ...                   <i>application code</i>
+    app.server.module.ts     <i>* server-side application module</i>
+server.ts                    <i>* express web server</i>
+tsconfig.json                <i>TypeScript client configuration</i>
+package.json                 <i>npm configuration</i>
+webpack.server.config.js     <i>* webpack server configuration</i>
+</code-example>
+
+The files marked with `*` are newly generated files.
+
+A few handy scripts will be added in the `scripts` section of the `package.json`.
+
+<code-example format="." language="none" linenums="false">
+compile:server                  <i>compile the `server.ts` file and bundle all dependencies</i>
+serve:ssr                       <i>run the app on the server</i>
+build:ssr                       <i>build the server bundle</i>
+build:client-and-server-bundles <i>build the client and server bundles</i>
+</code-example>
+
 
 <div class="alert is-helpful">
 
@@ -140,286 +169,52 @@ If your server handles HTTP requests, you'll have to add your own security plumb
 
 </div>
 
-## Step 1: Install dependencies
+## Step 2: Build the client and server bundles
 
-Install `@angular/platform-server` into your project. Use the same version as the other `@angular` packages in your project. You also need `ts-loader`, `webpack-cli` for your webpack build and `@nguniversal/module-map-ngfactory-loader` to handle lazy-loading in the context of a server-render.
-
-<code-example language="sh" class="code-shell">
-$ npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader webpack-cli
-</code-example>
-
-## Step 2: Prepare your app
-
-To prepare your app for Universal rendering, take the following steps:
-
-* Add Universal support to your app.
-
-* Create a server root module.
-
-* Create a main file to export the server root module.
-
-* Configure the server root module.
-
-### 2a. Add Universal support to your app
-
-Make your `AppModule` compatible with Universal by adding `.withServerTransition()` and an application ID to your `BrowserModule` import in `src/app/app.module.ts`.
-
-<code-example format="." language="typescript" linenums="false">
-@NgModule({
-  bootstrap: [AppComponent],
-  imports: [
-    // Add .withServerTransition() to support Universal rendering.
-    // The application ID can be any identifier which is unique on
-    // the page.
-    BrowserModule.withServerTransition({appId: 'my-app'}),
-    ...
-  ],
-
-})
-export class AppModule {}
-</code-example>
-
-### 2b. Create a server root module
-
-Create a module named `AppServerModule` to act as the root module when running on the server. This example places it alongside `app.module.ts` in a file named `app.server.module.ts`. The new module  imports everything from the root `AppModule`, and adds `ServerModule`. It also adds `ModuleMapLoaderModule` to help make lazy-loaded routes possible during server-side renders with the Angular CLI.
-
-Here's an example in `src/app/app.server.module.ts`.
-
-<code-example format="." language="typescript" linenums="false">
-import {NgModule} from '@angular/core';
-import {ServerModule} from '@angular/platform-server';
-import {ModuleMapLoaderModule} from '@nguniversal/module-map-ngfactory-loader';
-
-import {AppModule} from './app.module';
-import {AppComponent} from './app.component';
-
-@NgModule({
-  imports: [
-    // The AppServerModule should import your AppModule followed
-    // by the ServerModule from @angular/platform-server.
-    AppModule,
-    ServerModule,
-    ModuleMapLoaderModule // <-- *Important* to have lazy-loaded routes work
-  ],
-  // Since the bootstrapped component is not inherited from your
-  // imported AppModule, it needs to be repeated here.
-  bootstrap: [AppComponent],
-})
-export class AppServerModule {}
-</code-example>
-
-### 2c. Create a main file to export AppServerModule
-
-Create a main file for your Universal bundle in the app `src/` folder  to export your `AppServerModule` instance. This example calls the file `main.server.ts`.
-
-<code-example format="." language="typescript" linenums="false">
-export { AppServerModule } from './app/app.server.module';
-</code-example>
-
-### 2d. Create a configuration file for AppServerModule 
-
-Copy `tsconfig.app.json` to `tsconfig.server.json` and modify it as follows:
-
-* In `"compilerOptions"`, set the  `"module"` target to `"commonjs"`.
-* Add a section for `"angularCompilerOptions"` and set `"entryModule"` to point to your `AppServerModule` instance. Use the format `importPath#symbolName`. In this example, the entry module is `app/app.server.module#AppServerModule`.
+To build the client and server bundles and pack the server application into a single file `server.js`, use the helper script `build:ssr`.
 
 <code-example format="." language="none" linenums="false">
-{
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "../out-tsc/app",
-    "baseUrl": "./",
-    // Set the module format to "commonjs":
-    "module": "commonjs",
-    "types": []
-  },
-  "exclude": [
-    "test.ts",
-    "**/*.spec.ts"
-  ],
-  // Add "angularCompilerOptions" with the AppServerModule you wrote
-  // set as the "entryModule".
-  "angularCompilerOptions": {
-    "entryModule": "app/app.server.module#AppServerModule"
-  }
-}
+npm run build:ssr
+
+Date: 2019-01-18T10:53:24.730Z
+Hash: ca215a8b40dbbe2599b5
+Time: 17003ms
+chunk {0} runtime.b57bf819d5bdce77f1c7.js (runtime) 1.41 kB [entry] [rendered]
+chunk {1} main.cefb84fae611a65366a1.js (main) 264 kB [initial] [rendered]
+chunk {2} polyfills.20d0bb3b90b253b298ff.js (polyfills) 41 kB [initial] [rendered]
+chunk {3} styles.3ff695c00d717f2d2a11.css (styles) 0 bytes [initial] [rendered]
+
+Date: 2019-01-18T10:53:37.124Z
+Hash: 5cd6732082cb3d2274c8
+Time: 7273ms
+chunk {main} main.js, main.js.map (main) 52.4 kB [entry] [rendered]
+
+Hash: cc14f8aa4dc4677bbd2e
+Version: webpack 4.28.4
+Time: 10125ms
+Built at: 01/18/2019 11:53:49 AM
+    Asset      Size  Chunks             Chunk Names
+server.js  5.58 MiB       0  [emitted]  server
+Entrypoint server = server.js
+  [0] ./server.ts 1.58 KiB {0} [built]
+  [2] external "events" 42 bytes {0} [built]
+  [3] external "fs" 42 bytes {0} [built]
+  [4] external "timers" 42 bytes {0} [optional] [built]
+  [5] external "crypto" 42 bytes {0} [built]
+[208] ./src lazy namespace object 160 bytes {0} [built]
+[220] external "url" 42 bytes {0} [built]
+[275] external "http" 42 bytes {0} [built]
+[276] external "https" 42 bytes {0} [built]
+[277] external "os" 42 bytes {0} [built]
+[287] external "path" 42 bytes {0} [built]
+[296] external "util" 42 bytes {0} [built]
+[304] external "net" 42 bytes {0} [built]
+[309] external "buffer" 42 bytes {0} [built]
+[414] ./dist/server/main.js 52.4 KiB {0} [built]
 </code-example>
 
-## Step 3: Create a new build target and build the bundle
 
-Open the Angular configuration file, `angular.json`, for your project, and add a new target in the `"architect"` section for the server build. The following example names the new target `"server"`.
-
-<code-example format="." language="none" linenums="false">
-"architect": {
-  "build": { ... }
-  "server": {
-    "builder": "@angular-devkit/build-angular:server",
-    "options": {
-      "outputPath": "dist/my-project-server",
-      "main": "src/main.server.ts",
-      "tsConfig": "src/tsconfig.server.json"
-    }
-  }
-}
-</code-example>
-
-To build a server bundle for your application, use the `ng run` command, with the format `projectName#serverTarget`. In our example, there are now two targets configured, `"build"` and `"server"`.
-
-<code-example format="." language="none" linenums="false">
-# This builds your project using the server target, and places the output
-# in dist/my-project-server/
-$ ng run my-project:server
-
-Date: 2017-07-24T22:42:09.739Z
-Hash: 9cac7d8e9434007fd8da
-Time: 4933ms
-chunk {0} main.js (main) 9.49 kB [entry] [rendered]
-chunk {1} styles.css (styles) 0 bytes [entry] [rendered]
-</code-example>
-
-## Step 4: Set up a server to run Universal bundles
-
-To run a Universal bundle, you need to send it to a server. 
-
-The following example passes `AppServerModule` (compiled with AoT) to the `PlatformServer` method `renderModuleFactory()`, which serializes the app and returns the result to the browser.
-
-<code-example format="." language="typescript" linenums="false">
-app.engine('html', (_, options, callback) => {
-  renderModuleFactory(AppServerModuleNgFactory, {
-    // Our index.html
-    document: template,
-    url: options.req.url,
-    // configure DI to make lazy-loading work differently
-    // (we need to instantly render the view)
-    extraProviders: [
-      provideModuleMap(LAZY_MODULE_MAP)
-    ]
-  }).then(html => {
-    callback(null, html);
-  });
-});
-</code-example>
-
-This technique gives you complete flexibility. For convenience, you can also use the `@nguniversal/express-engine` tool that has some built-in features.
-
-<code-example format="." language="typescript" linenums="false">
-import { ngExpressEngine } from '@nguniversal/express-engine';
-
-app.engine('html', ngExpressEngine({
-  bootstrap: AppServerModuleNgFactory,
-  providers: [
-    provideModuleMap(LAZY_MODULE_MAP)
-  ]
-}));
-</code-example>
-
-The following simple example implements a bare-bones Node Express server to fire everything up. 
-(Note that this is for demonstration only. In a real production environment, you need to set up additional authentication and security.)
-
-At the root level of your project, next to `package.json`, create a file named `server.ts` and add the following content.
-
-<code-example format="." language="typescript" linenums="false">
-// These are important and needed before anything else
-import 'zone.js/dist/zone-node';
-import 'reflect-metadata';
-
-import { renderModuleFactory } from '@angular/platform-server';
-import { enableProdMode } from '@angular/core';
-import { provideModuleMap } from '@nguniversal/module-map-ngfactory-loader';
-
-import * as express from 'express';
-import { join } from 'path';
-import { readFileSync } from 'fs';
-
-// Faster server renders w/ Prod mode (dev mode never needed)
-enableProdMode();
-
-// Express server
-const app = express();
-
-const PORT = process.env.PORT || 4000;
-const DIST_FOLDER = join(process.cwd(), 'dist');
-
-// Our index.html we'll use as our template
-const template = readFileSync(join(DIST_FOLDER, 'browser', 'index.html')).toString();
-
-const { AppServerModuleNgFactory, LAZY_MODULE_MAP } = require('./server/main');
-
-
-app.engine('html', (_, options, callback) => {
-  renderModuleFactory(AppServerModuleNgFactory, {
-    // Our index.html
-    document: template,
-    url: options.req.url,
-    // DI so that we can get lazy-loading to work differently (since we need it to just instantly render it)
-    extraProviders: [
-      provideModuleMap(LAZY_MODULE_MAP)
-    ]
-  }).then(html => {
-    callback(null, html);
-  });
-});
-
-app.set('view engine', 'html');
-app.set('views', join(DIST_FOLDER, 'browser'));
-
-// Server static files from /browser
-app.get('*.*', express.static(join(DIST_FOLDER, 'browser')));
-
-// All regular routes use the Universal engine
-app.get('*', (req, res) => {
-  res.render(join(DIST_FOLDER, 'browser', 'index.html'), { req });
-});
-
-// Start up the Node server
-app.listen(PORT, () => {
-  console.log(`Node server listening on http://localhost:${PORT}`);
-});
-</code-example>
-
-## Step 5: Pack and run the app on the server
-
-Set up a webpack configuration to handle the Node Express `server.ts` file and serve your application.
-
-In your app root directory, create a webpack configuration file (`webpack.server.config.js`) that compiles the `server.ts` file and its dependencies into `dist/server.js`.
-
-<code-example format="." language="typescript" linenums="false">
-const path = require('path');
-const webpack = require('webpack');
-
-module.exports = {
-  entry: {  server: './server.ts' },
-  resolve: { extensions: ['.js', '.ts'] },
-  target: 'node',
-  // this makes sure we include node_modules and other 3rd party libraries
-  externals: [/(node_modules|main\..*\.js)/],
-  output: {
-    path: path.join(__dirname, 'dist'),
-    filename: '[name].js'
-  },
-  module: {
-    rules: [
-      { test: /\.ts$/, loader: 'ts-loader' }
-    ]
-  },
-  plugins: [
-    // Temporary Fix for issue: https://github.com/angular/angular/issues/11580
-    // for "WARNING Critical dependency: the request of a dependency is an expression"
-    new webpack.ContextReplacementPlugin(
-      /(.+)?angular(\\|\/)core(.+)?/,
-      path.join(__dirname, 'src'), // location of your src
-      {} // a map of your routes
-    ),
-    new webpack.ContextReplacementPlugin(
-      /(.+)?express(\\|\/)(.+)?/,
-      path.join(__dirname, 'src'),
-      {}
-    )
-  ]
-}
-</code-example>
-
-The  project's `dist/` folder now contains both browser and server folders.
+The project's `dist/` folder now contains both browser and server folders.
 
 <code-example format="." language="none" linenums="false">
 dist/
@@ -427,32 +222,14 @@ dist/
    server/
 </code-example>
 
+## Step 3: Run the server
+
 To run the app on the server, type the following in a command shell.
 
 <code-example format="." language="bash" linenums="false">
-node dist/server.js
+npm run serve:ssr
 </code-example>
 
-### Creating scripts
-
-Now let's create a few handy scripts to help us do all of this in the future.
-You can add these in the `"scripts"` section of the `package.json`.
-
-<code-example format="." language="none" linenums="false">
-"scripts": {
-  "build:ssr": "npm run build:client-and-server-bundles && npm run webpack:server",
-  "serve:ssr": "node dist/server.js",
-  "build:client-and-server-bundles": "ng build --prod && ng run my-project:server:production",
-  "webpack:server": "webpack --config webpack.server.config.js --progress --colors",
-  ...
-}
-</code-example>
-
-To run a production build of your app with Universal on your local system, use the following command.
-
-<code-example format="." language="bash" linenums="false">
-npm run build:ssr && npm run serve:ssr
-</code-example>
 
 ### Working around the browser APIs
 
@@ -491,28 +268,6 @@ To create server-side app module, `app.server.module.ts`, run the following CLI 
 ng add @nguniversal/express-engine --clientProject angular.io-example
 
 </code-example>
-
-The command creates the following folder structure.
-
-<code-example format="." language="none" linenums="false">
-src/
-  index.html                 <i>app web page</i>
-  main.ts                    <i>bootstrapper for client app</i>
-  main.server.ts             <i>* bootstrapper for server app</i>
-  tsconfig.app.json          <i>TypeScript client configuration</i>
-  tsconfig.server.json       <i>* TypeScript server configuration</i>
-  tsconfig.spec.json         <i>TypeScript spec configuration</i>
-  style.css                  <i>styles for the app</i>
-  app/ ...                   <i>application code</i>
-    app.server.module.ts     <i>* server-side application module</i>
-server.ts                    <i>* express web server</i>
-tsconfig.json                <i>TypeScript client configuration</i>
-package.json                 <i>npm configuration</i>
-webpack.server.config.js     <i>* webpack server configuration</i>
-</code-example>
-
-The files marked with `*` are new and not in the original tutorial sample.
-This guide covers them in the sections below.
 
 
 {@a http-urls}
