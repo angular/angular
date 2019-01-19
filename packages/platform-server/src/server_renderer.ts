@@ -43,8 +43,6 @@ export class ServerRendererFactory2 implements RendererFactory2 {
         (<EmulatedEncapsulationServerRenderer2>renderer).applyToHost(element);
         return renderer;
       }
-      case ViewEncapsulation.Native:
-        throw new Error('Native encapsulation is not supported on the server!');
       default: {
         if (!this.rendererByCompId.has(type.id)) {
           const styles = flattenStyles(type.id, type.styles, []);
