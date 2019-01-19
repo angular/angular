@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, InjectionToken} from '../../src/core';
-import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, allocHostVars, bind, defineBase, defineComponent, defineDirective, directiveInject, element, elementProperty, load} from '../../src/render3/index';
+import {Inject, InjectionToken, QueryList} from '../../src/core';
+import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, allocHostVars, bind, defineBase, defineComponent, defineDirective, directiveInject, element, elementProperty, loadViewQuery, queryRefresh, viewQuery} from '../../src/render3/index';
 
 import {ComponentFixture, createComponent} from './render_util';
 
@@ -363,7 +363,7 @@ describe('InheritDefinitionFeature', () => {
     expect(divEl.title).toEqual('new-title');
   });
 
-  it('should compose viewQuery', () => {
+  it('should compose viewQuery (basic mechanics check)', () => {
     const log: Array<[string, RenderFlags, any]> = [];
 
     class SuperComponent {
@@ -402,6 +402,82 @@ describe('InheritDefinitionFeature', () => {
     subDef.viewQuery !(1, context);
 
     expect(log).toEqual([['super', 1, context], ['sub', 1, context]]);
+  });
+
+  it('should compose viewQuery (query logic check)', () => {
+    /*
+     * class SuperComponent {
+     *  @ViewChildren('super') superQuery;
+     * }
+     */
+    class SuperComponent {
+      superQuery?: QueryList<any>;
+      static ngComponentDef = defineComponent({
+        type: SuperComponent,
+        template: () => {},
+        consts: 0,
+        vars: 0,
+        selectors: [['', 'superDir', '']],
+        viewQuery: <T>(rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            viewQuery(['super'], false);
+          }
+          if (rf & RenderFlags.Update) {
+            let tmp: any;
+            queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                (ctx.superQuery = tmp as QueryList<any>);
+          }
+        },
+        factory: () => new SuperComponent(),
+      });
+    }
+
+    /**
+     * <div id="sub" #sub></div>
+     * <div id="super" #super></div>
+     * class SubComponent extends SuperComponent {
+     *  @ViewChildren('sub') subQuery;
+     * }
+     */
+    class SubComponent extends SuperComponent {
+      subQuery?: QueryList<any>;
+      static ngComponentDef = defineComponent({
+        type: SubComponent,
+        template: (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'div', ['id', 'sub'], ['sub', '']);
+            element(2, 'div', ['id', 'super'], ['super', '']);
+          }
+        },
+        consts: 4,
+        vars: 0,
+        selectors: [['', 'subDir', '']],
+        viewQuery: (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            viewQuery(['sub'], false);
+          }
+          if (rf & RenderFlags.Update) {
+            let tmp: any;
+            queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                (ctx.subQuery = tmp as QueryList<any>);
+          }
+        },
+        factory: () => new SubComponent(),
+        features: [InheritDefinitionFeature]
+      });
+    }
+
+    const fixture = new ComponentFixture(SubComponent);
+
+    const check = (key: string): void => {
+      const qList = (fixture.component as any)[`${key}Query`] as QueryList<any>;
+      expect(qList.length).toBe(1);
+      expect(qList.first.nativeElement).toEqual(fixture.hostElement.querySelector(`#${key}`));
+      expect(qList.first.nativeElement.id).toEqual(key);
+    };
+
+    check('sub');
+    check('super');
   });
 
   it('should compose contentQueries', () => {

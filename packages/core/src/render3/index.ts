@@ -124,6 +124,8 @@ export {
 export {
   query,
   queryRefresh,
+  viewQuery,
+  loadViewQuery,
 } from './query';
 export  {
   registerContentQuery,

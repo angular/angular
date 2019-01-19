@@ -483,9 +483,6 @@
     "name": "createViewNode"
   },
   {
-    "name": "createViewQuery"
-  },
-  {
     "name": "decreaseElementDepthCount"
   },
   {
@@ -565,6 +562,9 @@
   },
   {
     "name": "executeOnDestroys"
+  },
+  {
+    "name": "executeViewQueryFn"
   },
   {
     "name": "extendStatics"
@@ -1128,6 +1128,9 @@
     "name": "setCurrentDirectiveDef"
   },
   {
+    "name": "setCurrentViewQueryIndex"
+  },
+  {
     "name": "setDirectiveDirty"
   },
   {
@@ -1219,9 +1222,6 @@
   },
   {
     "name": "updateContextWithBindings"
-  },
-  {
-    "name": "updateViewQuery"
   },
   {
     "name": "valueExists"
