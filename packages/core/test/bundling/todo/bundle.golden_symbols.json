@@ -486,9 +486,6 @@
     "name": "createViewNode"
   },
   {
-    "name": "createViewQuery"
-  },
-  {
     "name": "decreaseElementDepthCount"
   },
   {
@@ -870,6 +867,12 @@
     "name": "invokeDirectivesHostBindings"
   },
   {
+    "name": "invokeViewQueryCreate"
+  },
+  {
+    "name": "invokeViewQueryUpdate"
+  },
+  {
     "name": "isAnimationProp"
   },
   {
@@ -1134,6 +1137,9 @@
     "name": "setCurrentDirectiveDef"
   },
   {
+    "name": "setCurrentViewQueryIndex"
+  },
+  {
     "name": "setDirectiveDirty"
   },
   {
@@ -1228,9 +1234,6 @@
   },
   {
     "name": "updateContextWithBindings"
-  },
-  {
-    "name": "updateViewQuery"
   },
   {
     "name": "valueExists"

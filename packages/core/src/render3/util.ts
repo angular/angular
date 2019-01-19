@@ -14,9 +14,9 @@ import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
 import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {GlobalTargetName, GlobalTargetResolver, RComment, RElement, RText} from './interfaces/renderer';
+import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
-import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
+import {CLEANUP, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
 import {isOnChangesDirectiveWrapper} from './onchanges_util';
 
 
@@ -285,6 +285,31 @@ export function findComponentView(lView: LView): LView {
   }
 
   return lView;
+}
+
+/**
+ * Saves context for this cleanup function in LView.cleanupInstances.
+ *
+ * On the first template pass, saves in TView:
+ * - Cleanup function
+ * - Index of context we just saved in LView.cleanupInstances
+ */
+export function storeCleanupWithContext(lView: LView, context: any, cleanupFn: Function): void {
+  const lCleanup = getCleanup(lView);
+  lCleanup.push(context);
+
+  if (lView[TVIEW].firstTemplatePass) {
+    getTViewCleanup(lView).push(cleanupFn, lCleanup.length - 1);
+  }
+}
+
+export function getCleanup(view: LView): any[] {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  return view[CLEANUP] || (view[CLEANUP] = []);
+}
+
+export function getTViewCleanup(view: LView): any[] {
+  return view[TVIEW].cleanup || (view[TVIEW].cleanup = []);
 }
 
 export function resolveWindow(element: RElement & {ownerDocument: Document}) {

@@ -337,6 +337,17 @@ export interface TView {
   expandoStartIndex: number;
 
   /**
+   * The index where viewQueries section of `LView` begins. This section contains
+   * view queries defined for a component/directive.
+   *
+   * We store this start index so we know where the list of view queries starts.
+   * This is required when we invoke view queries at runtime. We invoke queries one by one and
+   * increment query index after each iteration. This information helps us to reset index back to
+   * them beginning of view query list before we invoke view queries again.
+   */
+  viewQueryStartIndex: number;
+
+  /**
    * Index of the host node of the first LView or LContainer beneath this LView in
    * the hierarchy.
    *

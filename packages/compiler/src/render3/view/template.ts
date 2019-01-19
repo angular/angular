@@ -31,7 +31,6 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticListenerName, prepareSyntheticPropertyName} from '../util';
 
-import {R3QueryMetadata} from './api';
 import {I18nContext} from './i18n/context';
 import {I18nMetaVisitor} from './i18n/meta';
 import {getSerializedI18nContent} from './i18n/serializer';
@@ -161,14 +160,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private constantPool: ConstantPool, parentBindingScope: BindingScope, private level = 0,
       private contextName: string|null, private i18nContext: I18nContext|null,
       private templateIndex: number|null, private templateName: string|null,
-      private viewQueries: R3QueryMetadata[], private directiveMatcher: SelectorMatcher|null,
-      private directives: Set<o.Expression>, private pipeTypeByName: Map<string, o.Expression>,
-      private pipes: Set<o.Expression>, private _namespace: o.ExternalReference,
-      private relativeContextFilePath: string, private i18nUseExternalIds: boolean) {
-    // view queries can take up space in data and allocation happens earlier (in the "viewQuery"
-    // function)
-    this._dataIndex = viewQueries.length;
-
+      private directiveMatcher: SelectorMatcher|null, private directives: Set<o.Expression>,
+      private pipeTypeByName: Map<string, o.Expression>, private pipes: Set<o.Expression>,
+      private _namespace: o.ExternalReference, private relativeContextFilePath: string,
+      private i18nUseExternalIds: boolean) {
     this._bindingScope = parentBindingScope.nestedScope(level);
 
     // Turn the relative context file path into an identifier by replacing non-alphanumeric
@@ -804,9 +799,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Create the template function
     const templateVisitor = new TemplateDefinitionBuilder(
         this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n,
-        templateIndex, templateName, [], this.directiveMatcher, this.directives,
-        this.pipeTypeByName, this.pipes, this._namespace, this.fileBasedI18nSuffix,
-        this.i18nUseExternalIds);
+        templateIndex, templateName, this.directiveMatcher, this.directives, this.pipeTypeByName,
+        this.pipes, this._namespace, this.fileBasedI18nSuffix, this.i18nUseExternalIds);
 
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't

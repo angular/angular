@@ -257,6 +257,21 @@ export function setBindingRoot(value: number) {
 }
 
 /**
+ * Current index of a View Query which needs to be processed next.
+ * We iterate over the list of View Queries stored in LView and increment current query index.
+ */
+let viewQueryIndex: number = 0;
+
+export function getCurrentViewQueryIndex(): number {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  return viewQueryIndex;
+}
+
+export function setCurrentViewQueryIndex(value: number): void {
+  viewQueryIndex = value;
+}
+
+/**
  * Swap the current state with a new state.
  *
  * For performance reasons we store the state in the top level of the module.
