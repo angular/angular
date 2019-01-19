@@ -8,7 +8,7 @@
 
 import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
-import {AttributeMarker, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, load, query, queryRefresh} from '../../src/render3/index';
+import {AttributeMarker, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, loadViewQuery, queryRefresh, viewQuery} from '../../src/render3/index';
 
 import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding, elementHostAttrs} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -2067,11 +2067,12 @@ describe('ViewContainerRef', () => {
           },
           viewQuery: function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              query(0, ['foo'], true);
+              viewQuery(['foo'], true);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
-              queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.foo = tmp as QueryList<any>);
+              queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
+                  (ctx.foo = tmp as QueryList<any>);
             }
           }
         });

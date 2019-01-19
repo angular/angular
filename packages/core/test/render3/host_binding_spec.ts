@@ -1009,7 +1009,7 @@ describe('host bindings', () => {
             elementProperty(elIndex, 'id', bind(ctx.foos.length), null, true);
           }
         },
-        contentQueries: (dirIndex) => { registerContentQuery(query(null, ['foo']), dirIndex); },
+        contentQueries: (dirIndex) => { registerContentQuery(query(['foo']), dirIndex); },
         contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
           let tmp: any;
           const instance = load<HostBindingWithContentChildren>(dirIndex);

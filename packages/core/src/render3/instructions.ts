@@ -36,7 +36,7 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLA
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
+import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getCurrentViewQueryIndex, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentViewQueryIndex, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
 import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
@@ -722,6 +722,7 @@ export function createTView(
     data: blueprint.slice(),  // Fill in to match HEADER_OFFSET in LView
     childIndex: -1,           // Children set in addToViewTree(), if any
     bindingStartIndex: bindingStartIndex,
+    viewQueryStartIndex: initialViewLength,
     expandoStartIndex: initialViewLength,
     expandoInstructions: null,
     firstTemplatePass: true,
@@ -2705,12 +2706,14 @@ export function checkView<T>(hostView: LView, component: T) {
 
 function createViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
   if (viewQuery && isCreationMode(view)) {
+    setCurrentViewQueryIndex(view[TVIEW].viewQueryStartIndex);
     viewQuery(RenderFlags.Create, component);
   }
 }
 
 function updateViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
   if (viewQuery && !isCreationMode(view)) {
+    setCurrentViewQueryIndex(view[TVIEW].viewQueryStartIndex);
     viewQuery(RenderFlags.Update, component);
   }
 }

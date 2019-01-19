@@ -14,7 +14,7 @@ import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
 import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {GlobalTargetName, GlobalTargetResolver, RComment, RElement, RText} from './interfaces/renderer';
+import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
 
