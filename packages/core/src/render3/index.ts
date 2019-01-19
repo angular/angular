@@ -127,6 +127,8 @@ export {
 export  {
   registerContentQuery,
   loadQueryList,
+  createViewQuery,
+  loadViewQuery,
 } from './instructions';
 
 export {

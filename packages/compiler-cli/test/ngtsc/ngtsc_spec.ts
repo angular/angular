@@ -709,9 +709,9 @@ describe('ngtsc behavioral tests', () => {
 
     // Helper functions to construct RegExps for output validation
     const varRegExp = (name: string): RegExp => new RegExp(`var \\w+ = \\[\"${name}\"\\];`);
-    const queryRegExp = (id: number | null, descend: boolean, ref?: string): RegExp => {
+    const queryRegExp = (fnName: string, descend: boolean, ref?: string | null): RegExp => {
       const maybeRef = ref ? `, ${ref}` : ``;
-      return new RegExp(`i0\\.ɵquery\\(${id}, \\w+, ${descend}${maybeRef}\\)`);
+      return new RegExp(`i0\\.ɵ${fnName}\\(\\w+, ${descend}${maybeRef}\\)`);
     };
 
     env.tsconfig();
@@ -740,13 +740,23 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toMatch(varRegExp('test1'));
     expect(jsContents).toMatch(varRegExp('test2'));
     expect(jsContents).toMatch(varRegExp('accessor'));
-    expect(jsContents).toContain(`i0.ɵquery(null, TemplateRef, false)`);
+    expect(jsContents).toContain(`i0.ɵquery(TemplateRef, false)`);
     expect(jsContents)
-        .toMatch(queryRegExp(
-            null, true, 'TemplateRef'));  // match `i0.ɵquery(null, _c0, true, TemplateRef)`
-    expect(jsContents).toMatch(queryRegExp(null, true));  // match `i0.ɵquery(null, _c0, true)`
-    expect(jsContents).toMatch(queryRegExp(0, true));     // match `i0.ɵquery(0, _c0, true)`
-    expect(jsContents).toMatch(queryRegExp(1, true));     // match `i0.ɵquery(1, _c0, true)`
+        .toMatch(
+            // match `i0.ɵquery(_c0, true, TemplateRef)`
+            queryRegExp('query', true, 'TemplateRef'));
+    expect(jsContents)
+        .toMatch(
+            // match `i0.ɵquery(_c0, true)`
+            queryRegExp('query', true));
+    expect(jsContents)
+        .toMatch(
+            // match `i0.ɵcreateViewQuery(_c0, true)`
+            queryRegExp('createViewQuery', true));
+    expect(jsContents)
+        .toMatch(
+            // match `i0.ɵcreateViewQuery(_c0, true)`
+            queryRegExp('createViewQuery', true));
   });
 
   it('should handle queries that use forwardRef', () => {
@@ -767,8 +777,8 @@ describe('ngtsc behavioral tests', () => {
 
     env.driveMain();
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain(`i0.ɵquery(null, TemplateRef, true)`);
-    expect(jsContents).toContain(`i0.ɵquery(null, ViewContainerRef, true)`);
+    expect(jsContents).toContain(`i0.ɵquery(TemplateRef, true)`);
+    expect(jsContents).toContain(`i0.ɵquery(ViewContainerRef, true)`);
   });
 
   it('should generate host listeners for components', () => {

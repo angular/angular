@@ -9,11 +9,11 @@ import {QueryList} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {defineComponent, getHostElement} from '../../../src/render3/index';
-import {element, elementEnd, elementStart, elementStyling, elementStylingApply, load, markDirty} from '../../../src/render3/instructions';
+import {createViewQuery, element, elementEnd, elementStart, elementStyling, elementStylingApply, load, loadViewQuery, markDirty} from '../../../src/render3/instructions';
 import {PlayState, Player, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
-import {query, queryRefresh} from '../../../src/render3/query';
+import {queryRefresh} from '../../../src/render3/query';
 import {getOrCreatePlayerContext} from '../../../src/render3/styling/util';
 import {ComponentFixture} from '../render_util';
 
@@ -286,11 +286,11 @@ class SuperComp {
     },
     viewQuery: function(rf: RenderFlags, ctx: SuperComp) {
       if (rf & RenderFlags.Create) {
-        query(0, ['child'], true);
+        createViewQuery(['child'], true);
       }
       if (rf & RenderFlags.Update) {
         let tmp: any;
-        queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+        queryRefresh(tmp = loadViewQuery<QueryList<any>>()) && (ctx.query = tmp as QueryList<any>);
       }
     },
     directives: [Comp]

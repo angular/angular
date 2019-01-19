@@ -1376,20 +1376,20 @@ describe('compiler compliance', () => {
             factory: function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); },
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵquery(0, SomeDirective, true);
-                $r3$.ɵquery(1, SomeDirective, true);
+                $r3$.ɵcreateViewQuery(SomeDirective, true);
+                $r3$.ɵcreateViewQuery(SomeDirective, true);
               }
               if (rf & 2) {
                 var $tmp$;
-                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(0))) && (ctx.someDir = $tmp$.first));
-                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(1))) && (ctx.someDirs = $tmp$));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadViewQuery())) && (ctx.someDir = $tmp$.first));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadViewQuery())) && (ctx.someDirs = $tmp$));
               }
             },
-            consts: 3,
+            consts: 1,
             vars: 0,
             template:  function ViewQueryComponent_Template(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵelement(2, "div", $e0_attrs$);
+                $r3$.ɵelement(0, "div", $e0_attrs$);
               }
             },
             directives: function () { return [SomeDirective]; },
@@ -1434,13 +1434,13 @@ describe('compiler compliance', () => {
             …
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵquery(0, $e0_attrs$, true);
-                $r3$.ɵquery(1, $e1_attrs$, true);
+                $r3$.ɵcreateViewQuery($e0_attrs$, true);
+                $r3$.ɵcreateViewQuery($e1_attrs$, true);
               }
               if (rf & 2) {
                 var $tmp$;
-                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(0))) && (ctx.myRef = $tmp$.first));
-                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(1))) && (ctx.myRefs = $tmp$));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadViewQuery())) && (ctx.myRef = $tmp$.first));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadViewQuery())) && (ctx.myRefs = $tmp$));
               }
             },
             …
@@ -1489,17 +1489,17 @@ describe('compiler compliance', () => {
             …
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵquery(0, $e0_attrs$, true, TemplateRef);
-                $r3$.ɵquery(1, SomeDirective, true, ElementRef);
-                $r3$.ɵquery(2, $e1_attrs$, true, ElementRef);
-                $r3$.ɵquery(3, SomeDirective, true, TemplateRef);
+                $r3$.ɵcreateViewQuery($e0_attrs$, true, TemplateRef);
+                $r3$.ɵcreateViewQuery(SomeDirective, true, ElementRef);
+                $r3$.ɵcreateViewQuery($e1_attrs$, true, ElementRef);
+                $r3$.ɵcreateViewQuery(SomeDirective, true, TemplateRef);
               }
               if (rf & 2) {
                 var $tmp$;
-                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(0))) && (ctx.myRef = $tmp$.first));
-                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(1))) && (ctx.someDir = $tmp$.first));
-                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(2))) && (ctx.myRefs = $tmp$));
-                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵload(3))) && (ctx.someDirs = $tmp$));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadViewQuery())) && (ctx.myRef = $tmp$.first));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadViewQuery())) && (ctx.someDir = $tmp$.first));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadViewQuery())) && (ctx.myRefs = $tmp$));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadViewQuery())) && (ctx.someDirs = $tmp$));
               }
             },
             …
@@ -1554,8 +1554,8 @@ describe('compiler compliance', () => {
               return new (t || ContentQueryComponent)();
             },
             contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, true), dirIndex);
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(SomeDirective, true), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(SomeDirective, false), dirIndex);
             },
             contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
               const instance = $r3$.ɵload(dirIndex);
@@ -1613,8 +1613,8 @@ describe('compiler compliance', () => {
           ContentQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
             …
             contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e0_attrs$, true), dirIndex);
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e1_attrs$, false), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery($e0_attrs$, true), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery($e1_attrs$, false), dirIndex);
             },
             contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
               const instance = $r3$.ɵload(dirIndex);
@@ -1666,10 +1666,10 @@ describe('compiler compliance', () => {
           ContentQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
             …
             contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e0_attrs$ , true, TemplateRef), dirIndex);
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, true, ElementRef), dirIndex);
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, $e1_attrs$, false, ElementRef), dirIndex);
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false, TemplateRef), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery($e0_attrs$ , true, TemplateRef), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(SomeDirective, true, ElementRef), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery($e1_attrs$, false, ElementRef), dirIndex);
+              $r3$.ɵregisterContentQuery($r3$.ɵquery(SomeDirective, false, TemplateRef), dirIndex);
             },
             contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
               const instance = $r3$.ɵload(dirIndex);

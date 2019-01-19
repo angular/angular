@@ -37,12 +37,13 @@ import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {OnChangesDirectiveWrapper, isOnChangesDirectiveWrapper, recordChange, unwrapOnChangesDirectiveWrapper} from './onchanges_util';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
+import {query} from './query';
+import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getCurrentViewQueryIndex, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentViewQueryIndex, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
 import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
-import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isContentQueryHost, loadInternal, readElementValue, readPatchedLView, renderStringify} from './util';
+import {findComponentView, getCleanup, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, getTViewCleanup, isComponent, isComponentDef, isContentQueryHost, loadInternal, readElementValue, readPatchedLView, renderStringify, storeCleanupWithContext} from './util';
 
 
 
@@ -723,6 +724,7 @@ export function createTView(
     data: blueprint.slice(),  // Fill in to match HEADER_OFFSET in LView
     childIndex: -1,           // Children set in addToViewTree(), if any
     bindingStartIndex: bindingStartIndex,
+    viewQueryStartIndex: initialViewLength,
     expandoStartIndex: initialViewLength,
     expandoInstructions: null,
     firstTemplatePass: true,
@@ -981,22 +983,6 @@ function listenerInternal(
         tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
       }
     }
-  }
-}
-
-/**
- * Saves context for this cleanup function in LView.cleanupInstances.
- *
- * On the first template pass, saves in TView:
- * - Cleanup function
- * - Index of context we just saved in LView.cleanupInstances
- */
-export function storeCleanupWithContext(lView: LView, context: any, cleanupFn: Function): void {
-  const lCleanup = getCleanup(lView);
-  lCleanup.push(context);
-
-  if (lView[TVIEW].firstTemplatePass) {
-    getTViewCleanup(lView).push(cleanupFn, lCleanup.length - 1);
   }
 }
 
@@ -2717,23 +2703,27 @@ export function checkView<T>(hostView: LView, component: T) {
 
   try {
     namespaceHTML();
-    createViewQuery(viewQuery, hostView, component);
+    invokeViewQueryCreate(viewQuery, hostView, component);
     templateFn(getRenderFlags(hostView), component);
     refreshDescendantViews(hostView);
-    updateViewQuery(viewQuery, hostView, component);
+    invokeViewQueryUpdate(viewQuery, hostView, component);
   } finally {
     leaveView(oldView);
   }
 }
 
-function createViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
+function invokeViewQueryCreate<T>(
+    viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
   if (viewQuery && isCreationMode(view)) {
+    setCurrentViewQueryIndex(view[TVIEW].viewQueryStartIndex);
     viewQuery(RenderFlags.Create, component);
   }
 }
 
-function updateViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
+function invokeViewQueryUpdate<T>(
+    viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
   if (viewQuery && !isCreationMode(view)) {
+    setCurrentViewQueryIndex(view[TVIEW].viewQueryStartIndex);
     viewQuery(RenderFlags.Update, component);
   }
 }
@@ -3052,6 +3042,38 @@ export function registerContentQuery<Q>(
   }
 }
 
+/**
+ * Creates new QueryList, stores the reference in LView and returns QueryList.
+ *
+ * @param predicate The type for which the query will search
+ * @param descend Whether or not to descend into children
+ * @param read What to save in the query
+ * @returns QueryList<T>
+ */
+export function createViewQuery<T>(
+    // TODO: "read" should be an AbstractType (FW-486)
+    predicate: Type<any>| string[], descend?: boolean, read?: any): QueryList<T> {
+  const lView = getLView();
+  const tView = lView[TVIEW];
+  if (tView.firstTemplatePass) {
+    tView.expandoStartIndex++;
+  }
+  const index = getCurrentViewQueryIndex();
+  const viewQuery: QueryList<T> = query<T>(predicate, descend, read);
+  store(index, viewQuery);
+  setCurrentViewQueryIndex(index + 1);
+  return viewQuery;
+}
+
+/**
+ * Loads current View Query and moves the pointer/index to the next View Query in LView.
+ */
+export function loadViewQuery<T>(): T {
+  const index = getCurrentViewQueryIndex();
+  setCurrentViewQueryIndex(index + 1);
+  return load<T>(index);
+}
+
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
 
 function initializeTNodeInputs(tNode: TNode | null): PropertyAliases|null {
@@ -3077,15 +3099,6 @@ function initializeTNodeInputs(tNode: TNode | null): PropertyAliases|null {
  */
 export function getCurrentView(): OpaqueViewState {
   return getLView() as any as OpaqueViewState;
-}
-
-function getCleanup(view: LView): any[] {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return view[CLEANUP] || (view[CLEANUP] = []);
-}
-
-function getTViewCleanup(view: LView): any[] {
-  return view[TVIEW].cleanup || (view[TVIEW].cleanup = []);
 }
 
 /**

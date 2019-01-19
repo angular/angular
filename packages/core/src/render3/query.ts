@@ -18,14 +18,13 @@ import {assertDefined, assertEqual} from '../util/assert';
 import {assertPreviousIsParent} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {NG_ELEMENT_ID} from './fields';
-import {store, storeCleanupWithContext} from './instructions';
 import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {LView, TVIEW} from './interfaces/view';
 import {getIsParent, getLView, getOrCreateCurrentQueries} from './state';
-import {isContentQueryHost} from './util';
+import {isContentQueryHost, storeCleanupWithContext} from './util';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
@@ -357,26 +356,20 @@ type QueryList_<T> = QueryList<T>& {_valuesTree: any[]};
 /**
  * Creates and returns a QueryList.
  *
- * @param memoryIndex The index in memory where the QueryList should be saved. If null,
- * this is is a content query and the QueryList will be saved later through directiveCreate.
  * @param predicate The type for which the query will search
  * @param descend Whether or not to descend into children
  * @param read What to save in the query
  * @returns QueryList<T>
  */
 export function query<T>(
-    memoryIndex: number | null, predicate: Type<any>| string[], descend?: boolean,
     // TODO: "read" should be an AbstractType (FW-486)
-    read?: any): QueryList<T> {
+    predicate: Type<any>| string[], descend?: boolean, read?: any): QueryList<T> {
   ngDevMode && assertPreviousIsParent(getIsParent());
   const queryList = new QueryList<T>();
   const queries = getOrCreateCurrentQueries(LQueries_);
   (queryList as QueryList_<T>)._valuesTree = [];
   queries.track(queryList, predicate, descend, read);
   storeCleanupWithContext(getLView(), queryList, queryList.destroy);
-  if (memoryIndex != null) {
-    store(memoryIndex, queryList);
-  }
   return queryList;
 }
 

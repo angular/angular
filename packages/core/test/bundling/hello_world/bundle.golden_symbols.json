@@ -180,9 +180,6 @@
     "name": "createViewBlueprint"
   },
   {
-    "name": "createViewQuery"
-  },
-  {
     "name": "defaultScheduler"
   },
   {
@@ -315,6 +312,12 @@
     "name": "invertObject"
   },
   {
+    "name": "invokeViewQueryCreate"
+  },
+  {
+    "name": "invokeViewQueryUpdate"
+  },
+  {
     "name": "isComponentDef"
   },
   {
@@ -405,6 +408,9 @@
     "name": "setCurrentDirectiveDef"
   },
   {
+    "name": "setCurrentViewQueryIndex"
+  },
+  {
     "name": "setFirstTemplatePass"
   },
   {
@@ -436,9 +442,6 @@
   },
   {
     "name": "unwrapOnChangesDirectiveWrapper"
-  },
-  {
-    "name": "updateViewQuery"
   },
   {
     "name": "viewAttached"

@@ -8,7 +8,7 @@
 
 import {SelectorFlags} from '@angular/core/src/render3/interfaces/projection';
 
-import {AttributeMarker, defineDirective, detectChanges, directiveInject, load, query, queryRefresh, reference, templateRefExtractor} from '../../src/render3/index';
+import {AttributeMarker, createViewQuery, defineDirective, detectChanges, directiveInject, load, loadViewQuery, queryRefresh, reference, templateRefExtractor} from '../../src/render3/index';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, template, text, textBinding, interpolation1} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -1026,11 +1026,11 @@ describe('content projection', () => {
            function(rf: RenderFlags, ctx: any) {
              /**  @ViewChild(TemplateRef) template: TemplateRef<any>  */
              if (rf & RenderFlags.Create) {
-               query(0, TemplateRef as any, true);
+               createViewQuery(TemplateRef as any, true);
              }
              if (rf & RenderFlags.Update) {
                let tmp: any;
-               queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.template = tmp.first);
+               queryRefresh(tmp = loadViewQuery<QueryList<any>>()) && (ctx.template = tmp.first);
              }
            });
 

@@ -80,6 +80,8 @@ export {
   containerRefreshStart as ɵcontainerRefreshStart,
   containerRefreshEnd as ɵcontainerRefreshEnd,
   queryRefresh as ɵqueryRefresh,
+  createViewQuery as ɵcreateViewQuery,
+  loadViewQuery as ɵloadViewQuery,
   loadQueryList as ɵloadQueryList,
   elementEnd as ɵelementEnd,
   elementProperty as ɵelementProperty,
