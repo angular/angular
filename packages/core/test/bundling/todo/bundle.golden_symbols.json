@@ -1134,6 +1134,9 @@
     "name": "setCurrentDirectiveDef"
   },
   {
+    "name": "setCurrentViewQueryIndex"
+  },
+  {
     "name": "setDirectiveDirty"
   },
   {

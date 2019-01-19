@@ -185,6 +185,8 @@ export class Identifiers {
 
   static query: o.ExternalReference = {name: 'ɵquery', moduleName: CORE};
   static queryRefresh: o.ExternalReference = {name: 'ɵqueryRefresh', moduleName: CORE};
+  static viewQuery: o.ExternalReference = {name: 'ɵviewQuery', moduleName: CORE};
+  static loadViewQuery: o.ExternalReference = {name: 'ɵloadViewQuery', moduleName: CORE};
   static registerContentQuery:
       o.ExternalReference = {name: 'ɵregisterContentQuery', moduleName: CORE};
 
