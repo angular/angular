@@ -12,7 +12,7 @@ A basic understanding of the following concepts:
 -->
 다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다:
 * [부트스트랩](guide/bootstrapping).
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
+* [JavaScript 모듈 vs. NgModules](guide/ngmodule-vs-jsmodule).
 
 <hr>
 

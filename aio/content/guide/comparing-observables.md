@@ -1,7 +1,7 @@
 <!--
 # Observables compared to other techniques
 -->
-# 옵저버블과 다른 테크닉 비교
+# 옵저버블과 다른 방식 비교
 
 <!--
 You can often use observables instead of promises to deliver values asynchronously. Similarly, observables can take the place of event handlers. Finally, because observables deliver multiple values, you can use them where you might otherwise build and operate on arrays.
@@ -179,9 +179,11 @@ The following code snippets illustrate how the same kind of operation is defined
     <tr>
       <!--
       <th>Operation</th>
+      <th>Observable</th>
+      <th>Promise</th>
       -->
       <th>동작</th>
-      <th>Observable</th>
+      <th>옵저버블</th>
       <th>Promise</th>
     </tr>
   </thead>
@@ -263,8 +265,12 @@ Here are some code samples that illustrate how the same kind of operation is def
 <table>
   <tr>
     <th></th>
+    <!--
     <th>Observable</th>
     <th>Events API</th>
+    -->
+    <th>옵저버블</th>
+    <th>이벤트 API</th>
   </tr>
   <tr>
     <!--

@@ -12,7 +12,7 @@
 A basic understanding of the following:
 -->
 다음 내용을 이해하고 있는 것이 좋습니다:
-* [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
+* [JavaScript 모듈 vs. NgModules](guide/ngmodule-vs-jsmodule).
 
 <hr />
 
