@@ -349,7 +349,8 @@ describe('bootstrap', () => {
     window.scrollTo(0, 5000);
 
     // IE 11 uses non-standard pageYOffset instead of scrollY
-    const getScrollY = () => window.scrollY !== undefined ? window.scrollY : window.pageYOffset;
+    // For cross-browser compatibility, prefer window.pageYOffset instead of window.scrollY
+    const getScrollY = () => window.pageYOffset;
 
     await router.navigateByUrl('/fail');
     expect(getScrollY()).toEqual(5000);

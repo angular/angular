@@ -89,7 +89,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    */
   getScrollPosition(): [number, number] {
     if (this.supportsScrolling()) {
-      return [this.window.scrollX, this.window.scrollY];
+      return [this.window.pageXOffset, this.window.pageYOffset];
     } else {
       return [0, 0];
     }
@@ -149,7 +149,7 @@ export class BrowserViewportScroller implements ViewportScroller {
    */
   private supportScrollRestoration(): boolean {
     try {
-      if (!this.window || !this.window.scrollTo) {
+      if (!this.supportsScrolling()) {
         return false;
       }
       // The `scrollRestoration` property could be on the `history` instance or its prototype.
@@ -166,7 +166,7 @@ export class BrowserViewportScroller implements ViewportScroller {
 
   private supportsScrolling(): boolean {
     try {
-      return !!this.window.scrollTo;
+      return !!this.window && !!this.window.scrollTo && 'pageXOffset' in this.window;
     } catch {
       return false;
     }
