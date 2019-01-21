@@ -190,6 +190,9 @@ export class NgForOf<T> implements DoCheck {
     }
   }
 
+  /**
+   * Applies the changes when needed.
+   */
   ngDoCheck(): void {
     if (this._ngForOfDirty) {
       this._ngForOfDirty = false;
