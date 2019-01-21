@@ -260,6 +260,7 @@ class FakeModuleRef extends NgModuleRef<WithCustomElementComponent> {
   injector = jasmine.createSpyObj('injector', ['get']);
   componentFactoryResolver = new FakeComponentFactoryResolver(this.modulePath);
   instance: WithCustomElementComponent = new FakeCustomElementModule();
+  destroyed: boolean;
 
   constructor(private modulePath) {
     super();
