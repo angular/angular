@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, ElementRef, TemplateRef, ViewContainerRef, ViewEncapsulation} from '@angular/core';
-import {TestBed} from '@angular/core/testing';
+import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -611,6 +611,121 @@ describe('projection', () => {
         main.detectChanges();
         expect(main.nativeElement).toHaveText('(, D)');
       });
+
+  describe('projectable nodes', () => {
+
+    @Component({selector: 'test', template: ''})
+    class TestComponent {
+      constructor(public cfr: ComponentFactoryResolver) {}
+    }
+
+    @Component({selector: 'with-content', template: ''})
+    class WithContentCmpt {
+      @ViewChild('ref') directiveRef: any;
+    }
+
+    @Component({selector: 're-project', template: '<ng-content></ng-content>'})
+    class ReProjectCmpt {
+    }
+
+    @Directive({selector: '[insert]'})
+    class InsertTplRef implements OnInit {
+      constructor(private _vcRef: ViewContainerRef, private _tplRef: TemplateRef<{}>) {}
+
+      ngOnInit() { this._vcRef.createEmbeddedView(this._tplRef); }
+    }
+
+    @Directive({selector: '[delayedInsert]', exportAs: 'delayedInsert'})
+    class DelayedInsertTplRef {
+      constructor(public vc: ViewContainerRef, public templateRef: TemplateRef<Object>) {}
+      show() { this.vc.createEmbeddedView(this.templateRef); }
+      hide() { this.vc.clear(); }
+    }
+
+    @NgModule({
+      declarations: [WithContentCmpt, InsertTplRef, DelayedInsertTplRef, ReProjectCmpt],
+      entryComponents: [WithContentCmpt]
+    })
+    class TestModule {
+    }
+
+    let fixture: ComponentFixture<TestComponent>;
+
+    function createCmptInstance(
+        tpl: string, projectableNodes: any[][]): ComponentRef<WithContentCmpt> {
+      TestBed.configureTestingModule({declarations: [TestComponent], imports: [TestModule]});
+      TestBed.overrideTemplate(WithContentCmpt, tpl);
+
+      fixture = TestBed.createComponent(TestComponent);
+      const cfr = fixture.componentInstance.cfr;
+      const cf = cfr.resolveComponentFactory(WithContentCmpt);
+      const cmptRef = cf.create(Injector.NULL, projectableNodes);
+
+      cmptRef.changeDetectorRef.detectChanges();
+
+      return cmptRef;
+    }
+
+    it('should pass nodes to the default ng-content without selectors', () => {
+      const cmptRef = createCmptInstance(
+          '<div>(<ng-content></ng-content>)</div>', [[document.createTextNode('A')]]);
+      expect(cmptRef.location.nativeElement).toHaveText('(A)');
+    });
+
+    it('should pass nodes to the default ng-content at the root', () => {
+      const cmptRef =
+          createCmptInstance('<ng-content></ng-content>', [[document.createTextNode('A')]]);
+      expect(cmptRef.location.nativeElement).toHaveText('A');
+    });
+
+    it('should pass nodes to multiple ng-content tags', () => {
+      const cmptRef = createCmptInstance(
+          'A:(<ng-content></ng-content>)B:(<ng-content select="b"></ng-content>)C:(<ng-content select="c"></ng-content>)',
+          [
+            [document.createTextNode('A')], [document.createTextNode('B')],
+            [document.createTextNode('C')]
+          ]);
+      expect(cmptRef.location.nativeElement).toHaveText('A:(A)B:(B)C:(C)');
+    });
+
+    it('should pass nodes to the default ng-content inside ng-container', () => {
+      const cmptRef = createCmptInstance(
+          'A<ng-container>(<ng-content></ng-content>)</ng-container>C',
+          [[document.createTextNode('B')]]);
+      expect(cmptRef.location.nativeElement).toHaveText('A(B)C');
+    });
+
+    it('should pass nodes to the default ng-content inside an embedded view', () => {
+      const cmptRef = createCmptInstance(
+          'A<ng-template insert>(<ng-content></ng-content>)</ng-template>C',
+          [[document.createTextNode('B')]]);
+      expect(cmptRef.location.nativeElement).toHaveText('A(B)C');
+    });
+
+    it('should pass nodes to the default ng-content inside a delayed embedded view', () => {
+      const cmptRef = createCmptInstance(
+          'A(<ng-template #ref="delayedInsert" delayedInsert>[<ng-content></ng-content>]</ng-template>)C',
+          [[document.createTextNode('B')]]);
+      expect(cmptRef.location.nativeElement).toHaveText('A()C');
+
+      const delayedInsert = cmptRef.instance.directiveRef as DelayedInsertTplRef;
+
+      delayedInsert.show();
+      cmptRef.changeDetectorRef.detectChanges();
+      expect(cmptRef.location.nativeElement).toHaveText('A([B])C');
+
+      delayedInsert.hide();
+      cmptRef.changeDetectorRef.detectChanges();
+      expect(cmptRef.location.nativeElement).toHaveText('A()C');
+    });
+
+    it('should re-project at the root', () => {
+      const cmptRef = createCmptInstance(
+          'A[<re-project>(<ng-content></ng-content>)</re-project>]C',
+          [[document.createTextNode('B')]]);
+      expect(cmptRef.location.nativeElement).toHaveText('A[(B)]C');
+    });
+  });
 });
 
 @Component({selector: 'main', template: ''})

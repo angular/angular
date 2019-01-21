@@ -276,6 +276,9 @@
     "name": "__spread"
   },
   {
+    "name": "__values"
+  },
+  {
     "name": "__window"
   },
   {
@@ -705,6 +708,9 @@
     "name": "getMultiStartIndex"
   },
   {
+    "name": "getNativeAnchorNode"
+  },
+  {
     "name": "getNativeByIndex"
   },
   {
@@ -982,6 +988,12 @@
   },
   {
     "name": "namespaceHTML"
+  },
+  {
+    "name": "nativeAppendChild"
+  },
+  {
+    "name": "nativeAppendOrInsertBefore"
   },
   {
     "name": "nativeInsertBefore"
