@@ -160,12 +160,18 @@ export class NgIf {
     this._thenTemplateRef = templateRef;
   }
 
+  /**
+   * The Boolean expression to evaluate as the condition for showing a template.
+   */
   @Input()
   set ngIf(condition: any) {
     this._context.$implicit = this._context.ngIf = condition;
     this._updateView();
   }
 
+  /**
+   * A template to show if the condition expression evaluates to true.
+   */
   @Input()
   set ngIfThen(templateRef: TemplateRef<NgIfContext>|null) {
     assertTemplate('ngIfThen', templateRef);
@@ -174,6 +180,9 @@ export class NgIf {
     this._updateView();
   }
 
+  /**
+   * A template to show if the condition expression evaluates to false.
+   */
   @Input()
   set ngIfElse(templateRef: TemplateRef<NgIfContext>|null) {
     assertTemplate('ngIfElse', templateRef);
