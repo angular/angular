@@ -28,7 +28,6 @@ function logsToObject(logstr) {
     if (key.length > 0) obj[key] = true;
     return obj;
   }, Object.create(null));
-  return logs;
 }
 
 function camelize(str) {
