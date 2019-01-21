@@ -42,7 +42,7 @@ export class HeroService {
         // #enddocregion getHeroes-2
         tap(_ => this.log('fetched heroes')),
         // #docregion getHeroes-2
-        catchError(this.handleError('getHeroes', []))
+        catchError(this.handleError<Hero[]>('getHeroes', []))
       );
   // #docregion getHeroes-1
   }
