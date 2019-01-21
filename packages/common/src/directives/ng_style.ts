@@ -57,7 +57,7 @@ export class NgStyle implements DoCheck {
   @Input()
   set ngStyle(
       /**
-       * An array of style properties, specified as colon-separated
+       * A map of style properties, specified as colon-separated
        * key-value pairs.
        * * The key is a style name, with an optional `.<unit>` suffix
        *    (such as 'top.px', 'font-style.em').
