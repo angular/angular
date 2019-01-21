@@ -715,9 +715,9 @@ export class Router {
                 /* This error type is issued during Redirect, and is handled as a cancellation
                  * rather than an error. */
                 if (isNavigationCancelingError(e)) {
-                  this.navigated = true;
                   const redirecting = isUrlTree(e.url);
                   if (!redirecting) {
+                    this.navigated = true;
                     this.resetStateAndUrl(t.currentRouterState, t.currentUrlTree, t.rawUrl);
                   }
                   const navCancel =
