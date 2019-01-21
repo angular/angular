@@ -7,7 +7,7 @@
 # In Google Cloud Platform, create a Compute Engine instance.
 # We recommend machine type n1-standard-16 (16 vCPUs, 60 GB memory).
 # Use a recent windows boot disk with container support such as
-# "Windows Server version 1803 Datacenter Core for Containers", and add a 128GB disk.
+# "Windows Server version 1803 Datacenter Core for Containers", and add a 128GB SSD disk.
 # Give it a name, then click "Create".
 
 # VM setup:
@@ -35,7 +35,7 @@
 # Get the token and tags from arguments.
 param (
   [Parameter(Mandatory=$true)][string]$token,
-  [string]$tags = ""
+  [string]$tags = "",
   [Int]$agents = 1
 )
 
