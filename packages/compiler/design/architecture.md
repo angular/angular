@@ -68,7 +68,7 @@ GreetComponent = tslib_1.__decorate([
 ], GreetComponent);
 ```
 
-which translates the decorator into a form that is is executed at runtime. A `.d.ts` file is also emitted that might look something like
+which translates the decorator into a form that is executed at runtime. A `.d.ts` file is also emitted that might look something like
 
 ```ts
 export class GreetComponent {
@@ -87,12 +87,12 @@ GreetComponent.ngComponentDef = i0.ɵdefineComponent({
     factory: () => new GreetComponent(),
     template: function (rf, ctx) {
         if (rf & RenderFlags.Create) {
-            i0.ɵE(0, 'div');
-            i0.ɵT(1);
-            i0.ɵe();
+            i0.ɵelementStart(0, 'div');
+            i0.ɵtext(1);
+            i0.ɵelementEnd();
         }
         if (rf & RenderFlags.Update) {
-            i0.ɵt(1, i0.ɵi1('Hello ', ctx.name, '!'));
+            i0.ɵtextBinding(1, i0.ɵinterpolation1('Hello ', ctx.name, '!'));
         }
     }
 });
@@ -146,7 +146,7 @@ TypeScript supports the following extension points to alter its output. You can,
 
 1. Modify the TypeScript source it sees (`CompilerHost.getSourceFile`)
 2. Alter the list of transforms (`CustomTransformers`)
-3. Intercept the the output before it is written (`WriteFileCallback`)
+3. Intercept the output before it is written (`WriteFileCallback`)
 
 It is not recommended to alter the source code as this complicates the managing of source maps, makes it difficult to support incremental parsing, and is not supported by TypeScript's language service plug-in model.
 

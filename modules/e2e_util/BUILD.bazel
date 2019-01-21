@@ -1,0 +1,18 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "lib",
+    testonly = 1,
+    srcs = glob(["*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/benchpress",
+        "@ngdeps//@types/fs-extra",
+        "@ngdeps//@types/selenium-webdriver",
+        "@ngdeps//fs-extra",
+        "@ngdeps//protractor",
+        "@ngdeps//selenium-webdriver",
+    ],
+)

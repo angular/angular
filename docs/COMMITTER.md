@@ -8,7 +8,7 @@ Someone with committer access will do the rest.
 
 # Change approvals
 
-Change approvals in our monorepo are managed via [pullapprove.com](https://about.pullapprove.com/) and are configured via the `.pullapprove.yaml` file.
+Change approvals in our monorepo are managed via [GitHub CODEOWNERS](https://help.github.com/articles/about-codeowners/) and are configured via the `.github/CODEOWNERS` file.
 
 
 # Merging

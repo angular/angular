@@ -1,9 +1,3 @@
-/*
-Copyright 2016 Google Inc. All Rights Reserved.
-Use of this source code is governed by an MIT-style license that
-can be found in the LICENSE file at http://angular.io/license
-*/
-
 import { NgZone, Injectable } from '@angular/core';
 import { ConnectableObservable, Observable, race, ReplaySubject, timer } from 'rxjs';
 import { concatMap, first, publishReplay } from 'rxjs/operators';

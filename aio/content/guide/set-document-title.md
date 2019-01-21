@@ -22,7 +22,7 @@ The HTML `<title>` is in the document `<head>`, outside the body, making it inac
 You could grab the browser `document` object and set the title manually.
 That's dirty and undermines your chances of running the app outside of a browser someday.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   Running your app outside a browser means that you can take advantage of server-side
   pre-rendering for near-instant first app render times and for SEO.  It means you could run from
@@ -43,7 +43,7 @@ for getting and setting the current HTML document title:
 You can inject the `Title` service into the root `AppComponent` and expose a bindable `setTitle` method that calls it:
 
 
-<code-example path="set-document-title/src/app/app.component.ts" region="class" title="src/app/app.component.ts (class)" linenums="false"></code-example>
+<code-example path="set-document-title/src/app/app.component.ts" region="class" header="src/app/app.component.ts (class)" linenums="false"></code-example>
 
 Bind that method to three anchor tags and voilà!
 
@@ -54,9 +54,9 @@ Bind that method to three anchor tags and voilà!
 Here's the complete solution:
 
 <code-tabs>
-  <code-pane title="src/main.ts" path="set-document-title/src/main.ts"></code-pane>
-  <code-pane title="src/app/app.module.ts" path="set-document-title/src/app/app.module.ts"></code-pane>
-  <code-pane title="src/app/app.component.ts" path="set-document-title/src/app/app.component.ts"></code-pane>
+  <code-pane header="src/main.ts" path="set-document-title/src/main.ts"></code-pane>
+  <code-pane header="src/app/app.module.ts" path="set-document-title/src/app/app.module.ts"></code-pane>
+  <code-pane header="src/app/app.component.ts" path="set-document-title/src/app/app.component.ts"></code-pane>
 </code-tabs>
 
 ## Why provide the `Title` service in `bootstrap`

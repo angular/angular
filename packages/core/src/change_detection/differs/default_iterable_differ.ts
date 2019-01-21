@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {looseIdentical, stringify} from '../../util';
+import {looseIdentical} from '../../util/comparison';
+import {stringify} from '../../util/stringify';
 import {isListLikeIterable, iterateListLike} from '../change_detection_util';
+
 import {IterableChangeRecord, IterableChanges, IterableDiffer, IterableDifferFactory, NgIterable, TrackByFunction} from './iterable_differs';
 
 
@@ -24,10 +26,12 @@ const trackByIdentity = (index: number, item: any) => item;
 
 /**
  * @deprecated v4.0.0 - Should not be part of public API.
+ * @publicApi
  */
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
   public readonly length: number = 0;
-  public readonly collection: V[]|Iterable<V>|null;
+  // TODO(issue/24571): remove '!'.
+  public readonly collection !: V[] | Iterable<V>| null;
   // Keeps track of the used records at any point in time (during & across `_check()` calls)
   private _linkedRecords: _DuplicateMap<V>|null = null;
   // Keeps track of the removed records at any point in time during `_check()` calls.
@@ -557,9 +561,6 @@ export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChan
   }
 }
 
-/**
- *
- */
 export class IterableChangeRecord_<V> implements IterableChangeRecord<V> {
   currentIndex: number|null = null;
   previousIndex: number|null = null;

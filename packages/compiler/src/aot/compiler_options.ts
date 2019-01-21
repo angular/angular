@@ -11,6 +11,7 @@ import {MissingTranslationStrategy} from '../core';
 export interface AotCompilerOptions {
   locale?: string;
   i18nFormat?: string;
+  i18nUseExternalIds?: boolean;
   translations?: string;
   missingTranslation?: MissingTranslationStrategy;
   enableSummariesForJit?: boolean;
@@ -18,5 +19,5 @@ export interface AotCompilerOptions {
   fullTemplateTypeCheck?: boolean;
   allowEmptyCodegenFiles?: boolean;
   strictInjectionParameters?: boolean;
-  enableIvy?: boolean|'ngtsc';
+  enableIvy?: boolean|'ngtsc'|'tsc';
 }

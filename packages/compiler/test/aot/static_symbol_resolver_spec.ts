@@ -11,8 +11,6 @@ import {CollectorOptions, METADATA_VERSION} from '@angular/compiler-cli';
 import {MetadataCollector} from '@angular/compiler-cli/src/metadata/collector';
 import * as ts from 'typescript';
 
-
-
 // This matches .ts files but not .d.ts files.
 const TS_EXT = /(^.|(?!\.d)..)\.ts$/;
 
@@ -424,7 +422,7 @@ export class MockSummaryResolver implements SummaryResolver<StaticSymbol> {
   }[] = []) {}
   addSummary(summary: Summary<StaticSymbol>) { this.summaries.push(summary); }
   resolveSummary(reference: StaticSymbol): Summary<StaticSymbol> {
-    return this.summaries.find(summary => summary.symbol === reference);
+    return this.summaries.find(summary => summary.symbol === reference) !;
   }
   getSymbolsOf(filePath: string): StaticSymbol[]|null {
     const symbols = this.summaries.filter(summary => summary.symbol.filePath === filePath)

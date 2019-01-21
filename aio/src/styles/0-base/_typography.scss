@@ -28,7 +28,7 @@ h2 {
 h3 {
   font-size: 20px;
   font-weight: 400;
-  margin: 24px 0px;
+  margin: 24px 0px 12px;
   clear: both;
 }
 
@@ -55,6 +55,10 @@ h6 {
 }
 
 h2, h3, h4, h5, h6 {
+  a {
+    font-size: inherit;
+  }
+
   @media screen and (max-width: 600px) {
     margin: 8px 0;
   }
@@ -72,6 +76,14 @@ p, ol, ul, ol, li, input, a  {
   & > em {
     letter-spacing: 0.30px;
   }
+}
+
+p {
+  margin: 14px 0 0;
+}
+
+p + ul {
+  margin-top: 4px;
 }
 
 ol {
@@ -105,7 +117,7 @@ table {
   border-collapse: collapse;
   border-radius: 2px;
   border-spacing: 0;
-  margin: 0 0 32px 0;
+  margin: 12px 0 32px;
 }
 
 table tbody th {
@@ -119,8 +131,13 @@ td {
   padding: 8px 30px;
   letter-spacing: 0.30px;
 
-  p {
-    margin: 0;
+  > p, ul {
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 
@@ -129,17 +146,6 @@ th {
   font-weight: 500;
   padding: 13px 32px;
   text-align: left;
-}
-
-p > code, li > code, td > code, th > code {
-  font-family: $code-font;
-  font-size: 85%;
-  color: $darkgray;
-  letter-spacing: 0;
-  line-height: 1;
-  padding: 2px 0;
-  background-color: $backgroundgray;
-  border-radius: 4px;
 }
 
 code {

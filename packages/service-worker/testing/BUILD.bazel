@@ -4,9 +4,8 @@ load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
     name = "testing",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*.ts"]),
-    module_name = "@angular/service-worker/testing",
     deps = [
         "//packages/core",
         "@rxjs",

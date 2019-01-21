@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "ng_package")
+load("//tools:defaults.bzl", "ng_package", "ts_library")
 
 ts_library(
     name = "compiler",
@@ -10,7 +10,6 @@ ts_library(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/compiler",
 )
 
 ng_package(
@@ -21,7 +20,14 @@ ng_package(
     ],
     entry_point = "packages/compiler/compiler.js",
     include_devmode_srcs = True,
-    tags = ["release-with-framework"],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//packages/language-service/test:__pkg__",
+    ],
     deps = [
         ":compiler",
         "//packages/compiler/testing",

@@ -8,21 +8,22 @@ other templates. Templates can also import macros from other template files.
 When extending a template, parent must declare blocks that can be overridden by the
 child. The template extension hierarchy looks like this (with declared blocks in parentheses):
 
-- layout/base.template.html (base)
-  - module.template.html
-  - layout/api-base.template.html (jumpNav, jumpNavLinks, whatItDoes, infoBar, securityConsiderations,
-    deprecationNotes, howToUse, details)
+- layout/base.template.html (bread-crumbs, header, embedded contents and body)
+  - package.template.html
+  - export-base.template.html (short-description, security-notes, deprecation, overview, see-also, details, usageNotes)
     - class.template.html
       - directive.template.html
-      - enum.template.html
+    - enum.template.html
     - var.template.html
       - const.template.html
       - let.template.html
     - decorator.template.html
     - function.template.html
     - interface.template.html
-      - type-alias.template.html
+      - value-module.template.html
+    - type-alias.template.html
     - pipe.template.html
+    - ngmodule.template.html
 
 # Doc Properties
 

@@ -6,45 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../di/provider';
-import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
-import {Type} from '../type';
-import {makeDecorator, makeParamDecorator} from '../util/decorators';
-import {EMPTY_ARRAY} from '../view/util';
+import {makeParamDecorator} from '../util/decorators';
+
 
 
 /**
  * Type of the Inject decorator / constructor function.
  *
- *
+ * @publicApi
  */
 export interface InjectDecorator {
   /**
+   * A constructor parameter decorator that specifies a
+   * custom provider of a dependency.
+   *
+   * @see ["Dependency Injection Guide"](guide/dependency-injection).
+   *
    * @usageNotes
-   * ```
-   * @Injectable()
-   * class Car {
-   *   constructor(@Inject("MyEngine") public engine:Engine) {}
-   * }
-   * ```
-   *
-   * @description
-   * A parameter decorator that specifies a dependency.
-   *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
-   *
-   * ### Example
+   * The following example shows a class constructor that specifies a
+   * custom provider of a dependency using the parameter decorator.
    *
    * {@example core/di/ts/metadata_spec.ts region='Inject'}
    *
-   * When `@Inject()` is not present, {@link Injector} will use the type annotation of the
-   * parameter.
-   *
-   * ### Example
+   * When `@Inject()` is not present, the `Injector` uses the type annotation of the
+   * parameter as the provider.
    *
    * {@example core/di/ts/metadata_spec.ts region='InjectWithoutDecorator'}
-   *
-   *
    */
   (token: any): any;
   new (token: any): Inject;
@@ -53,15 +40,20 @@ export interface InjectDecorator {
 /**
  * Type of the Inject metadata.
  *
- *
+ * @publicApi
  */
-export interface Inject { token: any; }
+export interface Inject {
+  /**
+   * Injector token that maps to the dependency to be injected.
+   */
+  token: any;
+}
 
 /**
  * Inject decorator and metadata.
  *
- *
  * @Annotation
+ * @publicApi
  */
 export const Inject: InjectDecorator = makeParamDecorator('Inject', (token: any) => ({token}));
 
@@ -69,29 +61,18 @@ export const Inject: InjectDecorator = makeParamDecorator('Inject', (token: any)
 /**
  * Type of the Optional decorator / constructor function.
  *
- *
+ * @publicApi
  */
 export interface OptionalDecorator {
   /**
-   * @usageNotes
-   * ```
-   * @Injectable()
-   * class Car {
-   *   constructor(@Optional() public engine:Engine) {}
-   * }
-   * ```
+   * A constructor parameter decorator that marks a dependency as optional.
    *
-   * @description
-   * A parameter metadata that marks a dependency as optional.
-   * {@link Injector} provides `null` if the dependency is not found.
-   *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
-   *
-   * ### Example
+   * The DI framework provides null if the dependency is not found.
+   * For example, the following code allows the possibility of a null result:
    *
    * {@example core/di/ts/metadata_spec.ts region='Optional'}
    *
-   *
+   * @see ["Dependency Injection Guide"](guide/dependency-injection).
    */
   (): any;
   new (): Optional;
@@ -100,41 +81,35 @@ export interface OptionalDecorator {
 /**
  * Type of the Optional metadata.
  *
- *
+ * @publicApi
  */
 export interface Optional {}
 
 /**
  * Optional decorator and metadata.
  *
- *
  * @Annotation
+ * @publicApi
  */
 export const Optional: OptionalDecorator = makeParamDecorator('Optional');
 
 /**
  * Type of the Self decorator / constructor function.
  *
- *
+ * @publicApi
  */
 export interface SelfDecorator {
   /**
-   * @usageNotes
-   * ```
-   * @Injectable()
-   * class Car {
-   *   constructor(@Self() public engine:Engine) {}
-   * }
-   * ```
+   * A constructor parameter decorator that tells the DI framework
+   * to retrieve a dependency only from the local injector.
    *
-   * @description
-   * Specifies that an {@link Injector} should retrieve a dependency only from itself.
-   *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
-   *
-   * ### Example
+   * In the following example, the dependency can be resolved
+   * by the local injector when instantiating the class itself, but not
+   * when instantiating a child.
    *
    * {@example core/di/ts/metadata_spec.ts region='Self'}
+   *
+   * @see ["Dependency Injection Guide"](guide/dependency-injection).
    *
    *
    */
@@ -145,15 +120,15 @@ export interface SelfDecorator {
 /**
  * Type of the Self metadata.
  *
- *
+ * @publicApi
  */
 export interface Self {}
 
 /**
  * Self decorator and metadata.
  *
- *
  * @Annotation
+ * @publicApi
  */
 export const Self: SelfDecorator = makeParamDecorator('Self');
 
@@ -161,26 +136,19 @@ export const Self: SelfDecorator = makeParamDecorator('Self');
 /**
  * Type of the SkipSelf decorator / constructor function.
  *
- *
+ * @publicApi
  */
 export interface SkipSelfDecorator {
   /**
-   * @usageNotes
-   * ```
-   * @Injectable()
-   * class Car {
-   *   constructor(@SkipSelf() public engine:Engine) {}
-   * }
-   * ```
+   * A constructor parameter decorator that tells the DI framework
+   * that dependency resolution should start from the parent injector.
    *
-   * @description
-   * Specifies that the dependency resolution should start from the parent injector.
-   *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
-   *
-   * ### Example
+   * In the following example, the dependency can be resolved when
+   * instantiating a child, but not when instantiating the class itself.
    *
    * {@example core/di/ts/metadata_spec.ts region='SkipSelf'}
+   *
+   * @see ["Dependency Injection Guide"](guide/dependency-injection).
    *
    *
    */
@@ -191,44 +159,34 @@ export interface SkipSelfDecorator {
 /**
  * Type of the SkipSelf metadata.
  *
- *
+ * @publicApi
  */
 export interface SkipSelf {}
 
 /**
  * SkipSelf decorator and metadata.
  *
- *
  * @Annotation
+ * @publicApi
  */
 export const SkipSelf: SkipSelfDecorator = makeParamDecorator('SkipSelf');
 
 /**
  * Type of the Host decorator / constructor function.
  *
- *
+ * @publicApi
  */
 export interface HostDecorator {
   /**
-   * @usageNotes
-   * ```
-   * @Injectable()
-   * class Car {
-   *   constructor(@Host() public engine:Engine) {}
-   * }
-   * ```
-   *
-   * @description
-   * Specifies that an injector should retrieve a dependency from any injector until
+   * A constructor parameter decorator that tells the DI framework
+   * to retrieve a dependency from any injector until
    * reaching the host element of the current component.
    *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   * @see ["Dependency Injection Guide"](guide/dependency-injection).
    *
-   * ### Example
+   * @usageNotes
    *
    * {@example core/di/ts/metadata_spec.ts region='Host'}
-   *
-   *
    */
   (): any;
   new (): Host;
@@ -237,14 +195,78 @@ export interface HostDecorator {
 /**
  * Type of the Host metadata.
  *
- *
+ * @publicApi
  */
 export interface Host {}
 
 /**
  * Host decorator and metadata.
  *
- *
  * @Annotation
+ * @publicApi
  */
 export const Host: HostDecorator = makeParamDecorator('Host');
+
+
+/**
+ * Type of the Attribute decorator / constructor function.
+ *
+ * @publicApi
+ */
+export interface AttributeDecorator {
+  /**
+   * Specifies that a constant attribute value should be injected.
+   *
+   * The directive can inject constant string literals of host element attributes.
+   *
+   * @usageNotes
+   * ### Example
+   *
+   * Suppose we have an `<input>` element and want to know its `type`.
+   *
+   * ```html
+   * <input type="text">
+   * ```
+   *
+   * A decorator can inject string literal `text` like so:
+   *
+   * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
+   *
+   * ### Example as TypeScript Decorator
+   *
+   * {@example core/ts/metadata/metadata.ts region='attributeFactory'}
+   *
+   * ### Example as ES5 annotation
+   *
+   * ```
+   * var MyComponent = function(title) {
+   *   ...
+   * };
+   *
+   * MyComponent.annotations = [
+   *   new ng.Component({...})
+   * ]
+   * MyComponent.parameters = [
+   *   [new ng.Attribute('title')]
+   * ]
+   * ```
+   */
+  (name: string): any;
+  new (name: string): Attribute;
+}
+
+/**
+ * Type of the Attribute metadata.
+ *
+ * @publicApi
+ */
+export interface Attribute { attributeName?: string; }
+
+/**
+ * Attribute decorator and metadata.
+ *
+ * @Annotation
+ * @publicApi
+ */
+export const Attribute: AttributeDecorator =
+    makeParamDecorator('Attribute', (attributeName?: string) => ({attributeName}));

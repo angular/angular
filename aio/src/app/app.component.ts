@@ -69,7 +69,7 @@ export class AppComponent implements OnInit {
   topMenuNodes: NavigationNode[];
   topMenuNarrowNodes: NavigationNode[];
 
-  hasFloatingToc = true;
+  hasFloatingToc = false;
   private showFloatingToc = new BehaviorSubject(false);
   private showFloatingTocWidth = 800;
   tocMaxHeight: string;
@@ -349,12 +349,17 @@ export class AppComponent implements OnInit {
   @HostListener('window:scroll')
   onScroll() {
     if (!this.tocMaxHeightOffset) {
-      // Must wait until now for mat-toolbar to be measurable.
+      // Must wait until `mat-toolbar` is measurable.
       const el = this.hostElement.nativeElement as Element;
-      this.tocMaxHeightOffset =
-          el.querySelector('footer')!.clientHeight +
-          el.querySelector('.app-toolbar')!.clientHeight +
-          24; //  fudge margin
+      const headerEl = el.querySelector('.app-toolbar');
+      const footerEl = el.querySelector('footer');
+
+      if (headerEl && footerEl) {
+        this.tocMaxHeightOffset =
+            headerEl.clientHeight +
+            footerEl.clientHeight +
+            24; //  fudge margin
+      }
     }
 
     this.tocMaxHeight = (document.body.scrollHeight - window.pageYOffset - this.tocMaxHeightOffset).toFixed(2);
@@ -384,6 +389,10 @@ export class AppComponent implements OnInit {
 
   hideSearchResults() {
     this.showSearchResults = false;
+    const oldSearch = this.locationService.search();
+    if (oldSearch.search !== undefined) {
+      this.locationService.setSearch('', { ...oldSearch, search: undefined });
+    }
   }
 
   focusSearchBox() {

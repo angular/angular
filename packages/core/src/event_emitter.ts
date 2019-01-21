@@ -9,12 +9,15 @@
 import {Subject, Subscription} from 'rxjs';
 
 /**
- * Use by directives and components to emit custom Events.
+ * Use in directives and components to emit custom events synchronously
+ * or asynchronously, and register handlers for those events by subscribing
+ * to an instance.
  *
- * ### Examples
+ * @usageNotes
  *
- * In the following example, `Zippy` alternatively emits `open` and `close` events when its
- * title gets clicked:
+ * In the following example, a component defines two output properties
+ * that create event emitters. When the title is clicked, the emitter
+ * emits an open or close event to toggle the current visibility state.
  *
  * ```
  * @Component({
@@ -42,42 +45,59 @@ import {Subject, Subscription} from 'rxjs';
  * }
  * ```
  *
- * The events payload can be accessed by the parameter `$event` on the components output event
+ * Access the event object with the `$event` argument passed to the output event
  * handler:
  *
  * ```
  * <zippy (open)="onOpen($event)" (close)="onClose($event)"></zippy>
  * ```
  *
+ * ### Notes
+ *
  * Uses Rx.Observable but provides an adapter to make it work as specified here:
  * https://github.com/jhusain/observable-spec
  *
  * Once a reference implementation of the spec is available, switch to it.
  *
+ * @publicApi
  */
 export class EventEmitter<T> extends Subject<T> {
   // TODO: mark this as internal once all the facades are gone
   // we can't mark it as internal now because EventEmitter exported via @angular/core would not
   // contain this property making it incompatible with all the code that uses EventEmitter via
   // facades, which are local to the code and do not have this property stripped.
-  // tslint:disable-next-line
-  __isAsync: boolean;
+  /**
+   * Internal
+   */
+  __isAsync: boolean;  // tslint:disable-line
 
   /**
-   * Creates an instance of {@link EventEmitter}, which depending on `isAsync`,
-   * delivers events synchronously or asynchronously.
+   * Creates an instance of this class that can
+   * deliver events synchronously or asynchronously.
    *
-   * @param isAsync By default, events are delivered synchronously (default value: `false`).
-   * Set to `true` for asynchronous event delivery.
+   * @param isAsync When true, deliver events asynchronously.
+   *
    */
   constructor(isAsync: boolean = false) {
     super();
     this.__isAsync = isAsync;
   }
 
+  /**
+   * Emits an event containing a given value.
+   * @param value The value to emit.
+   */
   emit(value?: T) { super.next(value); }
 
-  subscribe(generatorOrNext?: any, error?: any, complete?: any): any {
+  /**
+   * Registers handlers for events emitted by this instance.
+   * @param generatorOrNext When supplied, a custom handler for emitted events.
+   * @param error When supplied, a custom handler for an error notification
+   * from this emitter.
+   * @param complete When supplied, a custom handler for a completion
+   * notification from this emitter.
+   */
+  subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription {
     let schedulerFn: (t: any) => any;
     let errorFn = (err: any): any => null;
     let completeFn = (): any => null;

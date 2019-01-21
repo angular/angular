@@ -55,6 +55,7 @@ export function createTsConfig(options: TsConfigOptions) {
       // declaration in the same tsconfig.json, otherwise ts will error.
       'declaration': true,
       'declarationDir': options.outDir,
+      'skipLibCheck': true,
     },
     'bazelOptions': {
       ...result.bazelOptions,
@@ -70,7 +71,7 @@ export function createTsConfig(options: TsConfigOptions) {
       'tsickleExternsPath': '',
       // we don't copy the node_modules into our tmp dir, so we should look in
       // the original workspace directory for it
-      'nodeModulesPrefix': '../angular/node_modules',
+      'nodeModulesPrefix': '../ngdeps/node_modules',
     },
     'files': options.files,
     'angularCompilerOptions': {

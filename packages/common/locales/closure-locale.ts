@@ -949,7 +949,7 @@ export const locale_de_AT = [
   [['v. Chr.', 'n. Chr.'], u, u], 1, [6, 0],
   ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'um\' {0}', u],
-  [',', ' ', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':', '.'],
+  [',', ' ', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':', u, '.'],
   ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], '€', 'Euro', {
     'ATS': ['öS'],
     'AUD': ['AU$', '$'],
@@ -2166,7 +2166,7 @@ export const locale_hi = [
     ['जन॰', 'फ़र॰', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुल॰', 'अग॰', 'सित॰', 'अक्तू॰', 'नव॰', 'दिस॰'],
     [
       'जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्तूबर', 'नवंबर',
-      'द��संबर'
+      'दिसंबर'
     ]
   ],
   u, [['ईसा-पूर्व', 'ईस्वी'], u, ['ईसा-पूर्व', 'ईसवी सन']], 0, [0, 0],
@@ -2570,7 +2570,7 @@ export const locale_kk = [
   ],
   [
     ['Ж', 'Д', 'С', 'С', 'Б', 'Ж', 'С'], ['Жс', 'Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб'],
-    ['Жексенбі', 'Дүйсенбі', 'Сейсенбі', 'Сәрсенбі', 'Бейсенб��', 'Жұма', 'Сенбі'],
+    ['Жексенбі', 'Дүйсенбі', 'Сейсенбі', 'Сәрсенбі', 'Бейсенбі', 'Жұма', 'Сенбі'],
     ['Жс', 'Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб']
   ],
   [
@@ -2947,7 +2947,7 @@ export const locale_lv = [
 function plural_mk(n: number): number {
   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
       f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-  if (v === 0 && i % 10 === 1 || f % 10 === 1) return 1;
+  if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11)) return 1;
   return 5;
 }
 
@@ -3019,7 +3019,7 @@ export const locale_ml = [
       'ഞായറാഴ്\u200cച', 'തിങ്കളാഴ്\u200cച', 'ചൊവ്വാഴ്\u200cച', 'ബുധനാഴ്\u200cച', 'വ്യാഴാഴ്\u200cച',
       'വെള്ളിയാഴ്\u200cച', 'ശനിയാഴ്\u200cച'
     ],
-    ['ഞാ', 'തി', 'ചൊ', 'ബ��', 'വ്യാ', 'വെ', 'ശ']
+    ['ഞാ', 'തി', 'ചൊ', 'ബു', 'വ്യാ', 'വെ', 'ശ']
   ],
   [
     ['ജ', 'ഫെ', 'മാ', 'ഏ', 'മെ', 'ജൂൺ', 'ജൂ', 'ഓ', 'സെ', 'ഒ', 'ന', 'ഡി'],
@@ -3291,7 +3291,7 @@ export const locale_ne = [
     u
   ],
   [
-    ['ज���', 'फेेब', 'मार्च', 'अप्र', 'मे', 'जुन', 'जुल', 'अग', 'सेप', 'अक्टो', 'नोभे', 'डिसे'],
+    ['जन', 'फेेब', 'मार्च', 'अप्र', 'मे', 'जुन', 'जुल', 'अग', 'सेप', 'अक्टो', 'नोभे', 'डिसे'],
     [
       'जनवरी', 'फेब्रुअरी', 'मार्च', 'अप्रिल', 'मे', 'जुन', 'जुलाई', 'अगस्ट', 'सेप्टेम्बर', 'अक्टोबर', 'नोभेम्बर',
       'डिसेम्बर'
@@ -3694,7 +3694,7 @@ export const locale_ru = [
       'дек.'
     ],
     [
-      'января', 'февраля', 'марта', 'апреля', 'мая', 'ию��я', 'июля', 'августа', 'сентября',
+      'января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября',
       'октября', 'ноября', 'декабря'
     ]
   ],
@@ -3785,7 +3785,7 @@ export const locale_si = [
     ['ජන', 'පෙබ', 'මාර්තු', 'අප්\u200dරේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝ', 'සැප්', 'ඔක්', 'නොවැ', 'දෙසැ'],
     [
       'ජනවාරි', 'පෙබරවාරි', 'මාර්තු', 'අප්\u200dරේල්', 'මැයි', 'ජූනි', 'ජූලි', 'අගෝස්තු', 'සැප්තැම්බර්', 'ඔක්තෝබර්',
-      'නොවැම්බර්', 'දෙසැම්බ���්'
+      'නො��ැම්බර්', 'දෙසැම්බර්'
     ]
   ],
   [
@@ -4165,7 +4165,7 @@ export const locale_th = [
     ],
     u,
     [
-      'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนาย���', 'กรกฎาคม', 'สิงหาคม', 'กันยายน',
+      'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', '��ฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน',
       'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
     ]
   ],
@@ -4469,7 +4469,7 @@ export const locale_zh_CN = [
   [
     ['日', '一', '二', '三', '四', '五', '六'],
     ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
-    ['星期日', '星期一', '��期二', '星期三', '星期四', '星期五', '星期六'],
+    ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
     ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
   ],
   u,
@@ -4598,322 +4598,419 @@ export const locale_zu = [
 
 
 let l: any;
+let locales: string[] = [];
 
 switch (goog.LOCALE) {
   case 'af':
     l = locale_af;
+    locales = ['af'];
     break;
   case 'am':
     l = locale_am;
+    locales = ['am'];
     break;
   case 'ar':
     l = locale_ar;
+    locales = ['ar'];
     break;
   case 'ar-DZ':
   case 'ar_DZ':
     l = locale_ar_DZ;
+    locales = ['ar-DZ', 'ar_DZ'];
     break;
   case 'az':
     l = locale_az;
+    locales = ['az'];
     break;
   case 'be':
     l = locale_be;
+    locales = ['be'];
     break;
   case 'bg':
     l = locale_bg;
+    locales = ['bg'];
     break;
   case 'bn':
     l = locale_bn;
+    locales = ['bn'];
     break;
   case 'br':
     l = locale_br;
+    locales = ['br'];
     break;
   case 'bs':
     l = locale_bs;
+    locales = ['bs'];
     break;
   case 'ca':
     l = locale_ca;
+    locales = ['ca'];
     break;
   case 'chr':
     l = locale_chr;
+    locales = ['chr'];
     break;
   case 'cs':
     l = locale_cs;
+    locales = ['cs'];
     break;
   case 'cy':
     l = locale_cy;
+    locales = ['cy'];
     break;
   case 'da':
     l = locale_da;
+    locales = ['da'];
     break;
   case 'de':
     l = locale_de;
+    locales = ['de'];
     break;
   case 'de-AT':
   case 'de_AT':
     l = locale_de_AT;
+    locales = ['de-AT', 'de_AT'];
     break;
   case 'de-CH':
   case 'de_CH':
     l = locale_de_CH;
+    locales = ['de-CH', 'de_CH'];
     break;
   case 'el':
     l = locale_el;
+    locales = ['el'];
     break;
   case 'en-AU':
   case 'en_AU':
     l = locale_en_AU;
+    locales = ['en-AU', 'en_AU'];
     break;
   case 'en-CA':
   case 'en_CA':
     l = locale_en_CA;
+    locales = ['en-CA', 'en_CA'];
     break;
   case 'en-GB':
   case 'en_GB':
     l = locale_en_GB;
+    locales = ['en-GB', 'en_GB'];
     break;
   case 'en-IE':
   case 'en_IE':
     l = locale_en_IE;
+    locales = ['en-IE', 'en_IE'];
     break;
   case 'en-IN':
   case 'en_IN':
     l = locale_en_IN;
+    locales = ['en-IN', 'en_IN'];
     break;
   case 'en-SG':
   case 'en_SG':
     l = locale_en_SG;
+    locales = ['en-SG', 'en_SG'];
     break;
   case 'en-ZA':
   case 'en_ZA':
     l = locale_en_ZA;
+    locales = ['en-ZA', 'en_ZA'];
     break;
   case 'es':
     l = locale_es;
+    locales = ['es'];
     break;
   case 'es-419':
   case 'es_419':
     l = locale_es_419;
+    locales = ['es-419', 'es_419'];
     break;
   case 'es-MX':
   case 'es_MX':
     l = locale_es_MX;
+    locales = ['es-MX', 'es_MX'];
     break;
   case 'es-US':
   case 'es_US':
     l = locale_es_US;
+    locales = ['es-US', 'es_US'];
     break;
   case 'et':
     l = locale_et;
+    locales = ['et'];
     break;
   case 'eu':
     l = locale_eu;
+    locales = ['eu'];
     break;
   case 'fa':
     l = locale_fa;
+    locales = ['fa'];
     break;
   case 'fi':
     l = locale_fi;
+    locales = ['fi'];
     break;
   case 'fr':
     l = locale_fr;
+    locales = ['fr'];
     break;
   case 'fr-CA':
   case 'fr_CA':
     l = locale_fr_CA;
+    locales = ['fr-CA', 'fr_CA'];
     break;
   case 'ga':
     l = locale_ga;
+    locales = ['ga'];
     break;
   case 'gl':
     l = locale_gl;
+    locales = ['gl'];
     break;
   case 'gsw':
     l = locale_gsw;
+    locales = ['gsw'];
     break;
   case 'gu':
     l = locale_gu;
+    locales = ['gu'];
     break;
   case 'haw':
     l = locale_haw;
+    locales = ['haw'];
     break;
   case 'hi':
     l = locale_hi;
+    locales = ['hi'];
     break;
   case 'hr':
     l = locale_hr;
+    locales = ['hr'];
     break;
   case 'hu':
     l = locale_hu;
+    locales = ['hu'];
     break;
   case 'hy':
     l = locale_hy;
+    locales = ['hy'];
     break;
   case 'in':
   case 'id':
     l = locale_in;
+    locales = ['in', 'id'];
     break;
   case 'is':
     l = locale_is;
+    locales = ['is'];
     break;
   case 'it':
     l = locale_it;
+    locales = ['it'];
     break;
   case 'iw':
   case 'he':
     l = locale_iw;
+    locales = ['iw', 'he'];
     break;
   case 'ja':
     l = locale_ja;
+    locales = ['ja'];
     break;
   case 'ka':
     l = locale_ka;
+    locales = ['ka'];
     break;
   case 'kk':
     l = locale_kk;
+    locales = ['kk'];
     break;
   case 'km':
     l = locale_km;
+    locales = ['km'];
     break;
   case 'kn':
     l = locale_kn;
+    locales = ['kn'];
     break;
   case 'ko':
     l = locale_ko;
+    locales = ['ko'];
     break;
   case 'ky':
     l = locale_ky;
+    locales = ['ky'];
     break;
   case 'ln':
     l = locale_ln;
+    locales = ['ln'];
     break;
   case 'lo':
     l = locale_lo;
+    locales = ['lo'];
     break;
   case 'lt':
     l = locale_lt;
+    locales = ['lt'];
     break;
   case 'lv':
     l = locale_lv;
+    locales = ['lv'];
     break;
   case 'mk':
     l = locale_mk;
+    locales = ['mk'];
     break;
   case 'ml':
     l = locale_ml;
+    locales = ['ml'];
     break;
   case 'mn':
     l = locale_mn;
+    locales = ['mn'];
     break;
   case 'mo':
   case 'ro-MD':
   case 'ro_MD':
     l = locale_mo;
+    locales = ['mo', 'ro-MD', 'ro_MD'];
     break;
   case 'mr':
     l = locale_mr;
+    locales = ['mr'];
     break;
   case 'ms':
     l = locale_ms;
+    locales = ['ms'];
     break;
   case 'mt':
     l = locale_mt;
+    locales = ['mt'];
     break;
   case 'my':
     l = locale_my;
+    locales = ['my'];
     break;
   case 'ne':
     l = locale_ne;
+    locales = ['ne'];
     break;
   case 'nl':
     l = locale_nl;
+    locales = ['nl'];
     break;
   case 'no':
   case 'nb':
   case 'no-NO':
   case 'no_NO':
     l = locale_no;
+    locales = ['no', 'nb', 'no-NO', 'no_NO'];
     break;
   case 'or':
     l = locale_or;
+    locales = ['or'];
     break;
   case 'pa':
     l = locale_pa;
+    locales = ['pa'];
     break;
   case 'pl':
     l = locale_pl;
+    locales = ['pl'];
     break;
   case 'pt':
   case 'pt-BR':
   case 'pt_BR':
     l = locale_pt;
+    locales = ['pt', 'pt-BR', 'pt_BR'];
     break;
   case 'pt-PT':
   case 'pt_PT':
     l = locale_pt_PT;
+    locales = ['pt-PT', 'pt_PT'];
     break;
   case 'ro':
     l = locale_ro;
+    locales = ['ro'];
     break;
   case 'ru':
     l = locale_ru;
+    locales = ['ru'];
     break;
   case 'sh':
   case 'sr-Latn':
   case 'sr_Latn':
     l = locale_sh;
+    locales = ['sh', 'sr-Latn', 'sr_Latn'];
     break;
   case 'si':
     l = locale_si;
+    locales = ['si'];
     break;
   case 'sk':
     l = locale_sk;
+    locales = ['sk'];
     break;
   case 'sl':
     l = locale_sl;
+    locales = ['sl'];
     break;
   case 'sq':
     l = locale_sq;
+    locales = ['sq'];
     break;
   case 'sr':
     l = locale_sr;
+    locales = ['sr'];
     break;
   case 'sv':
     l = locale_sv;
+    locales = ['sv'];
     break;
   case 'sw':
     l = locale_sw;
+    locales = ['sw'];
     break;
   case 'ta':
     l = locale_ta;
+    locales = ['ta'];
     break;
   case 'te':
     l = locale_te;
+    locales = ['te'];
     break;
   case 'th':
     l = locale_th;
+    locales = ['th'];
     break;
   case 'tl':
   case 'fil':
     l = locale_tl;
+    locales = ['tl', 'fil'];
     break;
   case 'tr':
     l = locale_tr;
+    locales = ['tr'];
     break;
   case 'uk':
     l = locale_uk;
+    locales = ['uk'];
     break;
   case 'ur':
     l = locale_ur;
+    locales = ['ur'];
     break;
   case 'uz':
     l = locale_uz;
+    locales = ['uz'];
     break;
   case 'vi':
     l = locale_vi;
+    locales = ['vi'];
     break;
   case 'zh':
     l = locale_zh;
+    locales = ['zh'];
     break;
   case 'zh-CN':
   case 'zh_CN':
@@ -4922,12 +5019,14 @@ switch (goog.LOCALE) {
   case 'zh-Hans':
   case 'zh_Hans':
     l = locale_zh_CN;
+    locales = ['zh-CN', 'zh_CN', 'zh-Hans-CN', 'zh_Hans_CN', 'zh-Hans', 'zh_Hans'];
     break;
   case 'zh-HK':
   case 'zh_HK':
   case 'zh-Hant-HK':
   case 'zh_Hant_HK':
     l = locale_zh_HK;
+    locales = ['zh-HK', 'zh_HK', 'zh-Hant-HK', 'zh_Hant_HK'];
     break;
   case 'zh-TW':
   case 'zh_TW':
@@ -4936,12 +5035,14 @@ switch (goog.LOCALE) {
   case 'zh-Hant':
   case 'zh_Hant':
     l = locale_zh_TW;
+    locales = ['zh-TW', 'zh_TW', 'zh-Hant-TW', 'zh_Hant_TW', 'zh-Hant', 'zh_Hant'];
     break;
   case 'zu':
     l = locale_zu;
+    locales = ['zu'];
     break;
 }
 
 if (l) {
-  registerLocaleData(l, goog.LOCALE);
+  locales.forEach(locale => registerLocaleData(l, locale));
 }

@@ -11,7 +11,9 @@ export class User {
 let alice = new User('Alice', true);
 let bob = new User('Bob', false);
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class UserService {
   user = bob;  // initial user is Bob
 

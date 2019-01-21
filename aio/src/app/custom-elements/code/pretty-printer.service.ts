@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { from as fromPromise, Observable } from 'rxjs';
+import { from, Observable } from 'rxjs';
 import { first, map, share } from 'rxjs/operators';
 
 import { Logger } from 'app/shared/logger.service';
@@ -20,7 +20,7 @@ export class PrettyPrinter {
   private prettyPrintOne: Observable<PrettyPrintOne>;
 
   constructor(private logger: Logger) {
-    this.prettyPrintOne = fromPromise(this.getPrettyPrintOne()).pipe(share());
+    this.prettyPrintOne = from(this.getPrettyPrintOne()).pipe(share());
   }
 
   private getPrettyPrintOne(): Promise<PrettyPrintOne> {

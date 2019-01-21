@@ -19,7 +19,6 @@ describe('link inline-tag-def', function() {
   it('should be available as a service', () => {
     expect(tag).toBeDefined();
     expect(tag.name).toEqual('link');
-    expect(tag.aliases).toEqual(['linkDocs']);
   });
 
   it('should call getLinkInfo', () => {

@@ -98,6 +98,7 @@ class ExampleZipper {
       'src/favicon.ico',
       'src/karma.conf.js',
       'src/polyfills.ts',
+      'src/test.ts',
       'src/typings.d.ts',
       'src/environments/**/*',
       'src/tsconfig.*',
@@ -112,7 +113,6 @@ class ExampleZipper {
       '!**/package.json',
       '!**/example-config.json',
       '!**/wallaby.js',
-      '!**/package.webpack.json',
       // AoT related files
       '!**/aot/**/*.*',
       '!**/*-aot.*'

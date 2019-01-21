@@ -1,17 +1,23 @@
 // Imports
 import * as path from 'path';
+import {rm} from 'shelljs';
+import {AIO_BUILDS_DIR, AIO_NGINX_HOSTNAME, AIO_NGINX_PORT_HTTP, AIO_NGINX_PORT_HTTPS} from '../common/env-variables';
+import {computeShortSha} from '../common/utils';
+import {PrNums} from './constants';
 import {helper as h} from './helper';
+import {customMatchers} from './jasmine-custom-matchers';
 
 // Tests
 describe(`nginx`, () => {
 
-  beforeEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000);
+  beforeEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000);
+  beforeEach(() => jasmine.addMatchers(customMatchers));
   afterEach(() => h.cleanUp());
 
 
   it('should redirect HTTP to HTTPS', done => {
-    const httpHost = `${h.nginxHostname}:${h.nginxPortHttp}`;
-    const httpsHost = `${h.nginxHostname}:${h.nginxPortHttps}`;
+    const httpHost = `${AIO_NGINX_HOSTNAME}:${AIO_NGINX_PORT_HTTP}`;
+    const httpsHost = `${AIO_NGINX_HOSTNAME}:${AIO_NGINX_PORT_HTTPS}`;
     const urlMap = {
       [`http://${httpHost}/`]: `https://${httpsHost}/`,
       [`http://${httpHost}/foo`]: `https://${httpsHost}/foo`,
@@ -32,13 +38,13 @@ describe(`nginx`, () => {
 
 
   h.runForAllSupportedSchemes((scheme, port) => describe(`(on ${scheme.toUpperCase()})`, () => {
-    const hostname = h.nginxHostname;
+    const hostname = AIO_NGINX_HOSTNAME;
     const host = `${hostname}:${port}`;
-    const pr = '9';
+    const pr = 9;
     const sha9 = '9'.repeat(40);
     const sha0 = '0'.repeat(40);
-    const shortSha9 = h.getShordSha(sha9);
-    const shortSha0 = h.getShordSha(sha0);
+    const shortSha9 = computeShortSha(sha9);
+    const shortSha0 = computeShortSha(sha0);
 
 
     describe(`pr<pr>-<sha>.${host}/*`, () => {
@@ -48,6 +54,11 @@ describe(`nginx`, () => {
         beforeEach(() => {
           h.createDummyBuild(pr, sha9);
           h.createDummyBuild(pr, sha0);
+        });
+
+        afterEach(() => {
+          expect({ prNum: pr, sha: sha9 }).toExistAsABuild();
+          expect({ prNum: pr, sha: sha0 }).toExistAsABuild();
         });
 
 
@@ -63,17 +74,19 @@ describe(`nginx`, () => {
         });
 
 
-        it('should return /index.html (for legacy builds)', done => {
+        it('should return /index.html (for legacy builds)', async () => {
           const origin = `${scheme}://pr${pr}-${sha9}.${host}`;
           const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /index\\.html$`);
 
           h.createDummyBuild(pr, sha9, true, false, true);
 
-          Promise.all([
+          await Promise.all([
             h.runCmd(`curl -iL ${origin}/index.html`).then(h.verifyResponse(200, bodyRegex)),
             h.runCmd(`curl -iL ${origin}/`).then(h.verifyResponse(200, bodyRegex)),
             h.runCmd(`curl -iL ${origin}`).then(h.verifyResponse(200, bodyRegex)),
-          ]).then(done);
+          ]);
+
+          expect({ prNum: pr, sha: sha9, isLegacy: true }).toExistAsABuild();
         });
 
 
@@ -86,15 +99,15 @@ describe(`nginx`, () => {
         });
 
 
-        it('should return /foo/bar.js (for legacy builds)', done => {
+        it('should return /foo/bar.js (for legacy builds)', async () => {
           const origin = `${scheme}://pr${pr}-${sha9}.${host}`;
           const bodyRegex = new RegExp(`^PR: ${pr} | SHA: ${sha9} | File: /foo/bar\\.js$`);
 
           h.createDummyBuild(pr, sha9, true, false, true);
 
-          h.runCmd(`curl -iL ${origin}/foo/bar.js`).
-            then(h.verifyResponse(200, bodyRegex)).
-            then(done);
+          await h.runCmd(`curl -iL ${origin}/foo/bar.js`).then(h.verifyResponse(200, bodyRegex));
+
+          expect({ prNum: pr, sha: sha9, isLegacy: true }).toExistAsABuild();
         });
 
 
@@ -126,7 +139,7 @@ describe(`nginx`, () => {
 
         it('should respond with 404 for unknown PRs/SHAs', done => {
           const otherPr = 54321;
-          const otherShortSha = h.getShordSha('8'.repeat(40));
+          const otherShortSha = computeShortSha('8'.repeat(40));
 
           Promise.all([
             h.runCmd(`curl -iL ${scheme}://pr${pr}9-${shortSha9}.${host}`).then(h.verifyResponse(404)),
@@ -174,39 +187,41 @@ describe(`nginx`, () => {
 
       describe('(for hidden builds)', () => {
 
-        it('should respond with 404 for any file or directory', done => {
+        it('should respond with 404 for any file or directory', async () => {
           const origin = `${scheme}://pr${pr}-${shortSha9}.${host}`;
           const assert404 = h.verifyResponse(404);
 
           h.createDummyBuild(pr, sha9, false);
-          expect(h.buildExists(pr, sha9, false)).toBe(true);
 
-          Promise.all([
+          await Promise.all([
             h.runCmd(`curl -iL ${origin}/index.html`).then(assert404),
             h.runCmd(`curl -iL ${origin}/`).then(assert404),
             h.runCmd(`curl -iL ${origin}`).then(assert404),
             h.runCmd(`curl -iL ${origin}/foo/bar.js`).then(assert404),
             h.runCmd(`curl -iL ${origin}/foo/`).then(assert404),
             h.runCmd(`curl -iL ${origin}/foo`).then(assert404),
-          ]).then(done);
+          ]);
+
+          expect({ prNum: pr, sha: sha9, isPublic: false }).toExistAsABuild();
         });
 
 
-        it('should respond with 404 for any file or directory (for legacy builds)', done => {
+        it('should respond with 404 for any file or directory (for legacy builds)', async () => {
           const origin = `${scheme}://pr${pr}-${sha9}.${host}`;
           const assert404 = h.verifyResponse(404);
 
           h.createDummyBuild(pr, sha9, false, false, true);
-          expect(h.buildExists(pr, sha9, false, true)).toBe(true);
 
-          Promise.all([
+          await Promise.all([
             h.runCmd(`curl -iL ${origin}/index.html`).then(assert404),
             h.runCmd(`curl -iL ${origin}/`).then(assert404),
             h.runCmd(`curl -iL ${origin}`).then(assert404),
             h.runCmd(`curl -iL ${origin}/foo/bar.js`).then(assert404),
             h.runCmd(`curl -iL ${origin}/foo/`).then(assert404),
             h.runCmd(`curl -iL ${origin}/foo`).then(assert404),
-          ]).then(done);
+          ]);
+
+          expect({ prNum: pr, sha: sha9, isPublic: false, isLegacy: true }).toExistAsABuild();
         });
 
       });
@@ -238,10 +253,46 @@ describe(`nginx`, () => {
     });
 
 
-    describe(`${host}/create-build/<pr>/<sha>`, () => {
+    describe(`${host}/can-have-public-preview`, () => {
+      const baseUrl = `${scheme}://${host}/can-have-public-preview`;
+
+
+      it('should disallow non-GET requests', async () => {
+        await Promise.all([
+          h.runCmd(`curl -iLX POST ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX PUT ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX PATCH ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX DELETE ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
+        ]);
+      });
+
+
+      it('should pass requests through to the preview server', async () => {
+        await h.runCmd(`curl -iLX GET ${baseUrl}/${PrNums.CHANGED_FILES_ERROR}`).
+          then(h.verifyResponse(500, /CHANGED_FILES_ERROR/));
+      });
+
+
+      it('should respond with 404 for unknown paths', async () => {
+        const cmdPrefix = `curl -iLX GET ${baseUrl}`;
+
+        await Promise.all([
+          h.runCmd(`${cmdPrefix}/foo/42`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}-foo/42`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}nfoo/42`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/42/foo`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/f00`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/`).then(h.verifyResponse(404)),
+        ]);
+      });
+
+    });
+
+
+    describe(`${host}/circle-build`, () => {
 
       it('should disallow non-POST requests', done => {
-        const url = `${scheme}://${host}/create-build/${pr}/${sha9}`;
+        const url = `${scheme}://${host}/circle-build`;
 
         Promise.all([
           h.runCmd(`curl -iLX GET ${url}`).then(h.verifyResponse([405, 'Not Allowed'])),
@@ -252,31 +303,9 @@ describe(`nginx`, () => {
       });
 
 
-      it(`should reject files larger than ${h.uploadMaxSize}B (according to header)`, done => {
-        const headers = `--header "Content-Length: ${1.5 * h.uploadMaxSize}"`;
-        const url = `${scheme}://${host}/create-build/${pr}/${sha9}`;
-
-        h.runCmd(`curl -iLX POST ${headers} ${url}`).
-          then(h.verifyResponse([413, 'Request Entity Too Large'])).
-          then(done);
-      });
-
-
-      it(`should reject files larger than ${h.uploadMaxSize}B (without header)`, done => {
-        const filePath = path.join(h.buildsDir, 'snapshot.tar.gz');
-        const url = `${scheme}://${host}/create-build/${pr}/${sha9}`;
-
-        h.writeFile(filePath, {size: 1.5 * h.uploadMaxSize});
-
-        h.runCmd(`curl -iLX POST --data-binary "@${filePath}" ${url}`).
-          then(h.verifyResponse([413, 'Request Entity Too Large'])).
-          then(done);
-      });
-
-
-      it('should pass requests through to the upload server', done => {
-        h.runCmd(`curl -iLX POST ${scheme}://${host}/create-build/${pr}/${sha9}`).
-          then(h.verifyResponse(401, /Missing or empty 'AUTHORIZATION' header/)).
+      it('should pass requests through to the preview server', done => {
+        h.runCmd(`curl -iLX POST ${scheme}://${host}/circle-build`).
+          then(h.verifyResponse(400, /Incorrect body content. Expected JSON/)).
           then(done);
       });
 
@@ -285,32 +314,14 @@ describe(`nginx`, () => {
         const cmdPrefix = `curl -iLX POST ${scheme}://${host}`;
 
         Promise.all([
-          h.runCmd(`${cmdPrefix}/foo/create-build/${pr}/${sha9}`).then(h.verifyResponse(404)),
-          h.runCmd(`${cmdPrefix}/foo-create-build/${pr}/${sha9}`).then(h.verifyResponse(404)),
-          h.runCmd(`${cmdPrefix}/fooncreate-build/${pr}/${sha9}`).then(h.verifyResponse(404)),
-          h.runCmd(`${cmdPrefix}/create-build/foo/${pr}/${sha9}`).then(h.verifyResponse(404)),
-          h.runCmd(`${cmdPrefix}/create-build-foo/${pr}/${sha9}`).then(h.verifyResponse(404)),
-          h.runCmd(`${cmdPrefix}/create-buildnfoo/${pr}/${sha9}`).then(h.verifyResponse(404)),
-          h.runCmd(`${cmdPrefix}/create-build/pr${pr}/${sha9}`).then(h.verifyResponse(404)),
-          h.runCmd(`${cmdPrefix}/create-build/${pr}/${sha9}42`).then(h.verifyResponse(404)),
-        ]).then(done);
-      });
-
-
-      it('should reject PRs with leading zeros', done => {
-        h.runCmd(`curl -iLX POST ${scheme}://${host}/create-build/0${pr}/${sha9}`).
-          then(h.verifyResponse(404)).
-          then(done);
-      });
-
-
-      it('should accept SHAs with leading zeros (but not trim the zeros)', done => {
-        const cmdPrefix = `curl -iLX POST  ${scheme}://${host}/create-build/${pr}`;
-        const bodyRegex = /Missing or empty 'AUTHORIZATION' header/;
-
-        Promise.all([
-          h.runCmd(`${cmdPrefix}/0${sha9}`).then(h.verifyResponse(404)),
-          h.runCmd(`${cmdPrefix}/${sha0}`).then(h.verifyResponse(401, bodyRegex)),
+          h.runCmd(`${cmdPrefix}/foo/circle-build/`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/foo-circle-build/`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/fooncircle-build/`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/circle-build/foo/`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/circle-build-foo/`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/circle-buildnfoo/`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/circle-build/pr`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/circle-build/42`).then(h.verifyResponse(404)),
         ]).then(done);
       });
 
@@ -331,17 +342,13 @@ describe(`nginx`, () => {
       });
 
 
-      it('should pass requests through to the upload server', done => {
+      it('should pass requests through to the preview server', done => {
         const cmdPrefix = `curl -iLX POST --header "Content-Type: application/json"`;
 
         const cmd1 = `${cmdPrefix} ${url}`;
-        const cmd2 = `${cmdPrefix} --data '{"number":${pr}}' ${url}`;
-        const cmd3 = `${cmdPrefix} --data '{"number":${pr},"action":"foo"}' ${url}`;
 
         Promise.all([
           h.runCmd(cmd1).then(h.verifyResponse(400, /Missing or empty 'number' field/)),
-          h.runCmd(cmd2).then(h.verifyResponse(200)),
-          h.runCmd(cmd3).then(h.verifyResponse(200)),
         ]).then(done);
       });
 
@@ -364,13 +371,15 @@ describe(`nginx`, () => {
 
     describe(`${host}/*`, () => {
 
-      it('should respond with 404 for unknown URLs (even if the resource exists)', done => {
+      beforeEach(() => {
         ['index.html', 'foo.js', 'foo/index.html'].forEach(relFilePath => {
-          const absFilePath = path.join(h.buildsDir, relFilePath);
-          h.writeFile(absFilePath, {content: `File: /${relFilePath}`});
+          const absFilePath = path.join(AIO_BUILDS_DIR, relFilePath);
+          return h.writeFile(absFilePath, {content: `File: /${relFilePath}`});
         });
+      });
 
-        Promise.all([
+      it('should respond with 404 for unknown URLs (even if the resource exists)', async () => {
+        await Promise.all([
           h.runCmd(`curl -iL ${scheme}://${host}/index.html`).then(h.verifyResponse(404)),
           h.runCmd(`curl -iL ${scheme}://${host}/`).then(h.verifyResponse(404)),
           h.runCmd(`curl -iL ${scheme}://${host}`).then(h.verifyResponse(404)),
@@ -379,7 +388,14 @@ describe(`nginx`, () => {
           h.runCmd(`curl -iL ${scheme}://foo.${host}`).then(h.verifyResponse(404)),
           h.runCmd(`curl -iL ${scheme}://${host}/foo.js`).then(h.verifyResponse(404)),
           h.runCmd(`curl -iL ${scheme}://${host}/foo/index.html`).then(h.verifyResponse(404)),
-        ]).then(done);
+        ]);
+      });
+
+      afterEach(() => {
+        ['index.html', 'foo.js', 'foo/index.html', 'foo'].forEach(relFilePath => {
+          const absFilePath = path.join(AIO_BUILDS_DIR, relFilePath);
+          rm('-r', absFilePath);
+        });
       });
 
     });

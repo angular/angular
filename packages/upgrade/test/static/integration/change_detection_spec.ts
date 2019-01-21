@@ -10,6 +10,7 @@ import {Component, Directive, ElementRef, Injector, Input, NgModule, NgZone, Sim
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {fixmeIvy} from '@angular/private/testing';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 
@@ -76,11 +77,12 @@ withEachNg1Version(() => {
        }));
 
     it('should propagate changes to a downgraded component inside the ngZone', async(() => {
+         const element = html('<my-app></my-app>');
          let appComponent: AppComponent;
 
          @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
          class AppComponent {
-           value: number;
+           value?: number;
            constructor() { appComponent = this; }
          }
 
@@ -89,7 +91,7 @@ withEachNg1Version(() => {
            template: '<div>{{ valueFromPromise }}</div>',
          })
          class ChildComponent {
-           valueFromPromise: number;
+           valueFromPromise?: number;
            @Input()
            set value(v: number) { expect(NgZone.isInAngularZone()).toBe(true); }
 
@@ -101,6 +103,7 @@ withEachNg1Version(() => {
              this.zone.onMicrotaskEmpty.subscribe(
                  () => { expect(element.textContent).toEqual('5'); });
 
+             // Create a micro-task to update the value to be rendered asynchronously.
              Promise.resolve().then(() => this.valueFromPromise = changes['value'].currentValue);
            }
          }
@@ -116,9 +119,6 @@ withEachNg1Version(() => {
 
          const ng1Module = angular.module('ng1', []).directive(
              'myApp', downgradeComponent({component: AppComponent}));
-
-
-         const element = html('<my-app></my-app>');
 
          bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then((upgrade) => {
            appComponent.value = 5;

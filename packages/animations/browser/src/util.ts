@@ -8,6 +8,7 @@
 import {AnimateTimings, AnimationMetadata, AnimationMetadataType, AnimationOptions, sequence, ɵStyleData} from '@angular/animations';
 import {Ast as AnimationAst, AstVisitor as AnimationAstVisitor} from './dsl/animation_ast';
 import {AnimationDslVisitor} from './dsl/animation_dsl_visitor';
+import {isNode} from './render/shared';
 
 export const ONE_SECOND = 1000;
 
@@ -64,7 +65,7 @@ function parseTimeExpression(
 
     const delayMatch = matches[3];
     if (delayMatch != null) {
-      delay = _convertTimeValueToMS(Math.floor(parseFloat(delayMatch)), matches[4]);
+      delay = _convertTimeValueToMS(parseFloat(delayMatch), matches[4]);
     }
 
     const easingVal = matches[5];
@@ -125,12 +126,47 @@ export function copyStyles(
   return destination;
 }
 
+function getStyleAttributeString(element: any, key: string, value: string) {
+  // Return the key-value pair string to be added to the style attribute for the
+  // given CSS style key.
+  if (value) {
+    return key + ':' + value + ';';
+  } else {
+    return '';
+  }
+}
+
+function writeStyleAttribute(element: any) {
+  // Read the style property of the element and manually reflect it to the
+  // style attribute. This is needed because Domino on platform-server doesn't
+  // understand the full set of allowed CSS properties and doesn't reflect some
+  // of them automatically.
+  let styleAttrValue = '';
+  for (let i = 0; i < element.style.length; i++) {
+    const key = element.style.item(i);
+    styleAttrValue += getStyleAttributeString(element, key, element.style.getPropertyValue(key));
+  }
+  for (const key in element.style) {
+    // Skip internal Domino properties that don't need to be reflected.
+    if (!element.style.hasOwnProperty(key) || key.startsWith('_')) {
+      continue;
+    }
+    const dashKey = camelCaseToDashCase(key);
+    styleAttrValue += getStyleAttributeString(element, dashKey, element.style[key]);
+  }
+  element.setAttribute('style', styleAttrValue);
+}
+
 export function setStyles(element: any, styles: ɵStyleData) {
   if (element['style']) {
     Object.keys(styles).forEach(prop => {
       const camelProp = dashCaseToCamelCase(prop);
       element.style[camelProp] = styles[prop];
     });
+    // On the server set the 'style' attribute since it's not automatically reflected.
+    if (isNode()) {
+      writeStyleAttribute(element);
+    }
   }
 }
 
@@ -140,6 +176,10 @@ export function eraseStyles(element: any, styles: ɵStyleData) {
       const camelProp = dashCaseToCamelCase(prop);
       element.style[camelProp] = '';
     });
+    // On the server set the 'style' attribute since it's not automatically reflected.
+    if (isNode()) {
+      writeStyleAttribute(element);
+    }
   }
 }
 
@@ -229,6 +269,10 @@ export function mergeAnimationOptions(
 const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
 export function dashCaseToCamelCase(input: string): string {
   return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
+}
+
+function camelCaseToDashCase(input: string): string {
+  return input.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 }
 
 export function allowPreviousPlayerStylesMerge(duration: number, delay: number) {

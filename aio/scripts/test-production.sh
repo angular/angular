@@ -6,7 +6,7 @@ set +x -eu -o pipefail
   readonly aioDir="$(realpath $thisDir/..)"
 
   readonly protractorConf="$aioDir/tests/deployment/e2e/protractor.conf.js"
-  readonly minPwaScore="95"
+  readonly minPwaScore="$1"
   readonly urls=(
     "https://angular.io/"
     "https://next.angular.io/"
@@ -16,7 +16,7 @@ set +x -eu -o pipefail
 
   # Install dependencies.
   echo -e "\nInstalling dependencies in '$aioDir'...\n-----"
-  yarn install --frozen-lockfile
+  yarn install --frozen-lockfile --non-interactive
   yarn update-webdriver
 
   # Run checks for all URLs.

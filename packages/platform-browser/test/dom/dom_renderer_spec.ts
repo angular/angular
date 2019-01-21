@@ -8,9 +8,9 @@
 import {Component, Renderer2, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
+import {NAMESPACE_URIS} from '@angular/platform-browser/src/dom/dom_renderer';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
 
 {
   describe('DefaultDomRendererV2', () => {
@@ -20,7 +20,8 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [
-          TestCmp, SomeApp, CmpEncapsulationEmulated, CmpEncapsulationNative, CmpEncapsulationNone
+          TestCmp, SomeApp, CmpEncapsulationEmulated, CmpEncapsulationNative, CmpEncapsulationNone,
+          CmpEncapsulationNative
         ]
       });
       renderer = TestBed.createComponent(TestCmp).componentInstance.renderer;
@@ -86,8 +87,7 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
       });
     });
 
-    // other browsers don't support shadow dom
-    if (browserDetection.isChromeDesktop) {
+    if (browserDetection.supportsDeprecatedShadowDomV0) {
       it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM',
          () => {
            const fixture = TestBed.createComponent(SomeApp);
@@ -133,6 +133,15 @@ class CmpEncapsulationEmulated {
   encapsulation: ViewEncapsulation.None
 })
 class CmpEncapsulationNone {
+}
+
+@Component({
+  selector: 'cmp-shadow',
+  template: `<div class="shadow"></div><cmp-emulated></cmp-emulated><cmp-none></cmp-none>`,
+  styles: [`.native { color: red; }`],
+  encapsulation: ViewEncapsulation.ShadowDom
+})
+class CmpEncapsulationShadow {
 }
 
 @Component({

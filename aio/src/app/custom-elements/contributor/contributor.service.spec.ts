@@ -44,7 +44,7 @@ describe('ContributorService', () => {
     it('contributors observable should complete', () => {
       let completed = false;
       contribService.contributors.subscribe(undefined, undefined, () => completed = true);
-      expect(true).toBe(true, 'observable completed');
+      expect(completed).toBe(true, 'observable completed');
     });
 
     it('should reshape the contributor json to expected result', () => {

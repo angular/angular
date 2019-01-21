@@ -22,12 +22,13 @@ function paramParser(rawParams: string = ''): Map<string, string[]> {
   return map;
 }
 /**
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  **/
 export class QueryEncoder {
-  encodeKey(k: string): string { return standardEncoding(k); }
+  encodeKey(key: string): string { return standardEncoding(key); }
 
-  encodeValue(v: string): string { return standardEncoding(v); }
+  encodeValue(value: string): string { return standardEncoding(value); }
 }
 
 function standardEncoding(v: string): string {
@@ -76,7 +77,8 @@ function standardEncoding(v: string): string {
  *
  * let params = new URLSearchParams('', new MyQueryEncoder());
  * ```
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class URLSearchParams {
   paramsMap: Map<string, string[]>;

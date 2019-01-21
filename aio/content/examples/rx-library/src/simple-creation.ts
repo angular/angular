@@ -1,10 +1,10 @@
 
 // #docregion promise
 
-import { fromPromise } from 'rxjs';
+import { from } from 'rxjs';
 
 // Create an Observable out of a promise
-const data = fromPromise(fetch('/api/endpoint'));
+const data = from(fetch('/api/endpoint'));
 // Subscribe to begin listening for async result
 data.subscribe({
  next(response) { console.log(response); },

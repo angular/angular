@@ -156,10 +156,28 @@ export class MockCache {
         headers: {},
       } as DehydratedResponse;
 
-      resp.headers.forEach((value, name) => { dehydratedResp.headers[name] = value; });
+      resp.headers.forEach(
+          (value: string, name: string) => { dehydratedResp.headers[name] = value; });
 
       dehydrated[url] = dehydratedResp;
     });
     return dehydrated;
   }
+}
+
+// This can be used to simulate a situation (bug?), where the user clears the caches from DevTools,
+// while the SW is still running (e.g. serving another tab) and keeps references to the deleted
+// caches.
+export async function clearAllCaches(caches: CacheStorage): Promise<void> {
+  const cacheNames = await caches.keys();
+  const cacheInstances = await Promise.all(cacheNames.map(name => caches.open(name)));
+
+  // Delete all cache instances from `CacheStorage`.
+  await Promise.all(cacheNames.map(name => caches.delete(name)));
+
+  // Delete all entries from each cache instance.
+  await Promise.all(cacheInstances.map(async cache => {
+    const keys = await cache.keys();
+    await Promise.all(keys.map(key => cache.delete(key)));
+  }));
 }

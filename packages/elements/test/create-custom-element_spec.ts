@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Injector, Input, NgModule, Output, destroyPlatform} from '@angular/core';
+import {Component, DoBootstrap, EventEmitter, Injector, Input, NgModule, Output, destroyPlatform} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {Subject} from 'rxjs';
 
 import {NgElementConstructor, createCustomElement} from '../src/create-custom-element';
@@ -19,7 +20,7 @@ type WithFooBar = {
   barBar: string
 };
 
-if (typeof customElements !== 'undefined') {
+if (browserDetection.supportsCustomElements) {
   describe('createCustomElement', () => {
     let NgElementCtor: NgElementConstructor<WithFooBar>;
     let strategy: TestStrategy;
@@ -103,18 +104,18 @@ if (typeof customElements !== 'undefined') {
 })
 class TestComponent {
   @Input() fooFoo: string = 'foo';
-  @Input('barbar') barBar: string;
+  // TODO(issue/24571): remove '!'.
+  @Input('barbar') barBar !: string;
 
   @Output() bazBaz = new EventEmitter<boolean>();
   @Output('quxqux') quxQux = new EventEmitter<Object>();
 }
-
 @NgModule({
   imports: [BrowserModule],
   declarations: [TestComponent],
   entryComponents: [TestComponent],
 })
-class TestModule {
+class TestModule implements DoBootstrap {
   ngDoBootstrap() {}
 }
 

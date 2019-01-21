@@ -1,0 +1,23 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+# Either loads reflect-metadata or is a no-op, depending on whether compilation is in JIT mode.
+ts_library(
+    name = "reflect_metadata",
+    srcs = [
+        "src/reflect_metadata_aot.ts",
+        "src/reflect_metadata_jit.ts",
+        "src/reflect_metadata_legacy.ts",
+        ":metadata_switch",
+    ],
+    module_name = "@angular/core/test/bundling/util/src/reflect_metadata",
+    deps = ["@ngdeps//reflect-metadata"],
+)
+
+# See packages/core/BUILD.bazel.
+genrule(
+    name = "metadata_switch",
+    outs = ["src/reflect_metadata.ts"],
+    cmd = "echo import \"'./reflect_metadata_$(compile)';\" > $@",
+)

@@ -11,7 +11,7 @@ import {RenderStore} from './render_store';
 
 
 /**
- * @experimental WebWorker support in Angular is currently experimental.
+ * @publicApi
  */
 export const enum SerializerTypes {
   // RendererType2

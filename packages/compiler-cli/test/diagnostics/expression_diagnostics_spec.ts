@@ -29,13 +29,13 @@ describe('expression diagnostics', () => {
     registry = ts.createDocumentRegistry(false, '/src');
     host = new MockLanguageServiceHost(['app/app.component.ts'], FILES, '/src');
     service = ts.createLanguageService(host, registry);
-    const program = service.getProgram();
+    const program = service.getProgram() !;
     const checker = program.getTypeChecker();
     const options: CompilerOptions = Object.create(host.getCompilationSettings());
     options.genDir = '/dist';
     options.basePath = '/src';
-    const symbolResolverHost = new ReflectorHost(() => program, host, options);
-    context = new DiagnosticContext(service, program, checker, symbolResolverHost);
+    const symbolResolverHost = new ReflectorHost(() => program !, host, options);
+    context = new DiagnosticContext(service, program !, checker, symbolResolverHost);
     type = context.getStaticSymbol('app/app.component.ts', 'AppComponent');
   });
 
@@ -76,7 +76,7 @@ describe('expression diagnostics', () => {
     }
   }
 
-  function reject(template: string, expected: string | RegExp) {
+  function reject(template: string, expected: string) {
     const info = getDiagnosticTemplateInfo(context, type, 'app/app.component.html', template);
     if (info) {
       const diagnostics = getTemplateExpressionDiagnostics(info);

@@ -1,6 +1,6 @@
 <h1 class="no-toc">What is Angular?</h1>
 
-Angular is a platform that makes it easy to build applications with the web. Angular combines declarative templates, dependency injection, end to end tooling, and integrated best practices to solve development challenges. Angular empowers developers to build applications that live on the web, mobile, or the desktop
+Angular is a platform that makes it easy to build applications with the web. Angular combines declarative templates, dependency injection, end to end tooling, and integrated best practices to solve development challenges. Angular empowers developers to build applications that live on the web, mobile, or the desktop.
 
 <div class="card-container">
   <a href="generated/live-examples/toh-pt1/stackblitz.html" target="_blank" class="docs-card"
@@ -10,9 +10,9 @@ Angular is a platform that makes it easy to build applications with the web. Ang
       <p class="card-footer">Angular in Action</p>
   </a>
 
-  <a href="guide/quickstart" class="docs-card" title="Angular Quickstart">
+  <a href="guide/quickstart" class="docs-card" title="Angular Getting Started">
       <section>Get Going with Angular</section>
-      <p>Get going on your own environment with the Quickstart.</p>
+      <p>Get going on your own environment with the Getting Started.</p>
       <p class="card-footer">Quickstart</p>
   </a>
 

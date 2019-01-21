@@ -78,6 +78,10 @@ export class CompilerImpl implements Compiler {
   }
   clearCache(): void { this._delegate.clearCache(); }
   clearCacheFor(type: Type<any>) { this._delegate.clearCacheFor(type); }
+  getModuleId(moduleType: Type<any>): string|undefined {
+    const meta = this._metadataResolver.getNgModuleMetadata(moduleType);
+    return meta && meta.id || undefined;
+  }
 }
 
 /**
@@ -151,7 +155,7 @@ export const COMPILER_PROVIDERS = <StaticProvider[]>[
 ];
 
 /**
- * @experimental
+ * @publicApi
  */
 export class JitCompilerFactory implements CompilerFactory {
   private _defaultOptions: CompilerOptions[];

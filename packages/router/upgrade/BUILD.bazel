@@ -6,10 +6,16 @@ load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
     name = "upgrade",
-    srcs = glob(["**/*.ts"]),
-    module_name = "@angular/router/upgrade",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
     deps = [
+        "//packages/common",
         "//packages/core",
         "//packages/router",
+        "//packages/upgrade/static",
     ],
 )

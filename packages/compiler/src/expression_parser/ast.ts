@@ -705,7 +705,7 @@ export class ParsedVariable {
   constructor(public name: string, public value: string, public sourceSpan: ParseSourceSpan) {}
 }
 
-export const enum BoundElementBindingType {
+export const enum BindingType {
   // A regular binding to a property (e.g. `[property]="expression"`).
   Property,
   // A binding to an element attribute (e.g. `[attr.name]="expression"`).
@@ -720,7 +720,6 @@ export const enum BoundElementBindingType {
 
 export class BoundElementProperty {
   constructor(
-      public name: string, public type: BoundElementBindingType,
-      public securityContext: SecurityContext, public value: AST, public unit: string|null,
-      public sourceSpan: ParseSourceSpan) {}
+      public name: string, public type: BindingType, public securityContext: SecurityContext,
+      public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan) {}
 }

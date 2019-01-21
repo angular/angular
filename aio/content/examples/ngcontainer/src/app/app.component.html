@@ -132,7 +132,7 @@
 <!-- #docregion select-span -->
 <select [(ngModel)]="hero">
   <span *ngFor="let h of heroes">
-    <span *ngIf="showSad || h?.emotion != 'sad'">
+    <span *ngIf="showSad || h?.emotion !== 'sad'">
       <option [ngValue]="h">{{h.name}} ({{h?.emotion}})</option>
     </span>
   </span>
@@ -147,7 +147,7 @@
 <!-- #docregion select-ngcontainer -->
 <select [(ngModel)]="hero">
   <ng-container *ngFor="let h of heroes">
-    <ng-container *ngIf="showSad || h?.emotion != 'sad'">
+    <ng-container *ngIf="showSad || h?.emotion !== 'sad'">
       <option [ngValue]="h">{{h.name}} ({{h?.emotion}})</option>
     </ng-container>
   </ng-container>

@@ -21,6 +21,7 @@ export function isPromise(obj: any): obj is Promise<any> {
  * Determine if the argument is an Observable
  */
 export function isObservable(obj: any | Observable<any>): obj is Observable<any> {
-  // TODO: use Symbol.observable when https://github.com/ReactiveX/rxjs/issues/2415 will be resolved
+  // TODO: use isObservable once we update pass rxjs 6.1
+  // https://github.com/ReactiveX/rxjs/blob/master/CHANGELOG.md#610-2018-05-03
   return !!obj && typeof obj.subscribe === 'function';
 }

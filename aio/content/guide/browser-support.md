@@ -95,7 +95,7 @@ Angular supports most recent browsers. This includes the following specific vers
 
 </table>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Angular's continuous integration process runs unit tests of the framework on all of these browsers for every pull request,
 using <a href="https://saucelabs.com/">SauceLabs</a> and
@@ -122,7 +122,7 @@ Note that polyfills cannot magically transform an old, slow browser into a moder
 
 ## Enabling polyfills
 
-[Angular CLI](https://github.com/angular/angular-cli/wiki) users enable polyfills through the `src/polyfills.ts` file that
+[Angular CLI](cli) users enable polyfills through the `src/polyfills.ts` file that
 the CLI created with your project.
 
 This file incorporates the mandatory and many of the optional polyfills as JavaScript `import` statements.
@@ -140,7 +140,7 @@ For example, [if you need the web animations polyfill](http://caniuse.com/#feat=
 
 Then open the `polyfills.ts` file and un-comment the corresponding `import` statement as in the following example:
 
-<code-example title="src/polyfills.ts">
+<code-example header="src/polyfills.ts">
   /**
   * Required to support Web Animations `@angular/platform-browser/animations`.
   * Needed for: All but Chrome, Firefox and Opera. http://caniuse.com/#feat=web-animation
@@ -154,7 +154,7 @@ add it yourself, following the same pattern:
 1. install the npm package
 1. `import` the file in `polyfills.ts`
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Non-CLI users should follow the instructions [below](#non-cli).
 </div>
@@ -372,6 +372,27 @@ Here are the features which may require additional polyfills:
 
   </tr>
 
+  <tr style="vertical-align: top">
+
+    <td>
+
+      [Router](guide/router) 
+      
+      when using [hash-based routing](guide/router#appendix-locationstrategy-and-browser-url-styles)
+    </td>
+
+    <td>
+
+      [ES7/array](guide/browser-support#core-es7-array)
+
+    </td>
+
+    <td>
+      IE 11
+    </td>
+
+  </tr>
+
 </table>
 
 
@@ -402,7 +423,7 @@ Below are the polyfills which are used to test the framework itself. They are a 
 
     <td>
 
-      <a id='core-es7-reflect' href="https://github.com/zloirock/core-js/blob/master/es7/reflect.js">ES7/reflect</a>
+      <a id='core-es7-reflect' href="https://github.com/zloirock/core-js/tree/v2/fn/reflect">ES7/reflect</a>
 
     </td>
 
@@ -412,6 +433,24 @@ Below are the polyfills which are used to test the framework itself. They are a 
 
     <td>
       0.5KB
+    </td>
+
+  </tr>
+
+  <tr>
+
+    <td>
+
+      <a id='core-es7-array' href="https://github.com/zloirock/core-js/tree/v2/fn/array">ES7/array</a>
+
+    </td>
+
+    <td>
+      MIT
+    </td>
+
+    <td>
+      0.1KB
     </td>
 
   </tr>
@@ -553,7 +592,7 @@ computed with the <a href="http://closure-compiler.appspot.com/home">closure com
 
 If you are not using the CLI, you should add your polyfill scripts directly to the host web page (`index.html`), perhaps like this.
 
-<code-example title="src/index.html">
+<code-example header="src/index.html">
   &lt;!-- pre-zone polyfills -->
   &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
   &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>

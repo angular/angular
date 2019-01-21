@@ -1,16 +1,37 @@
-// Using the values below, we can fake the response of the corresponding methods in tests. This is
-// necessary, because the test upload-server will be running as a separate node process, so we will
-// not have direct access to the code (e.g. for mocking).
-// (See also 'lib/verify-setup/start-test-upload-server.ts'.)
+export const enum BuildNums {
+  BUILD_INFO_ERROR = 1,
+  BUILD_INFO_404,
+  BUILD_INFO_BUILD_FAILED,
+  BUILD_INFO_INVALID_GH_ORG,
+  BUILD_INFO_INVALID_GH_REPO,
+  CHANGED_FILES_ERROR,
+  CHANGED_FILES_404,
+  CHANGED_FILES_NONE,
+  BUILD_ARTIFACTS_ERROR,
+  BUILD_ARTIFACTS_404,
+  BUILD_ARTIFACTS_EMPTY,
+  BUILD_ARTIFACTS_MISSING,
+  DOWNLOAD_ARTIFACT_ERROR,
+  DOWNLOAD_ARTIFACT_404,
+  DOWNLOAD_ARTIFACT_TOO_BIG,
+  TRUST_CHECK_ERROR,
+  TRUST_CHECK_UNTRUSTED,
+  TRUST_CHECK_TRUSTED_LABEL,
+  TRUST_CHECK_ACTIVE_TRUSTED_USER,
+  TRUST_CHECK_INACTIVE_TRUSTED_USER,
+}
 
-/* tslint:disable: variable-name */
+export const enum PrNums {
+  CHANGED_FILES_ERROR = 1,
+  CHANGED_FILES_404,
+  CHANGED_FILES_NONE,
+  TRUST_CHECK_ERROR,
+  TRUST_CHECK_UNTRUSTED,
+  TRUST_CHECK_TRUSTED_LABEL,
+  TRUST_CHECK_ACTIVE_TRUSTED_USER,
+  TRUST_CHECK_INACTIVE_TRUSTED_USER,
+}
 
-// Special values to be used as `authHeader` in `BuildVerifier#verify()`.
-export const BV_verify_error = 'FAKE_VERIFICATION_ERROR';
-export const BV_verify_verifiedNotTrusted = 'FAKE_VERIFIED_NOT_TRUSTED';
-
-// Special values to be used as `pr` in `BuildVerifier#getPrIsTrusted()`.
-export const BV_getPrIsTrusted_error = 32203;
-export const BV_getPrIsTrusted_notTrusted = 72457;
-
-/* tslint:enable: variable-name */
+export const SHA = '1234567890'.repeat(4);
+export const ALT_SHA = 'abcde'.repeat(8);
+export const SIMILAR_SHA = SHA.slice(0, -1) + 'A';

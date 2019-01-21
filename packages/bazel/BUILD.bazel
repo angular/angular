@@ -1,24 +1,28 @@
 load("//tools:defaults.bzl", "npm_package")
 
-genrule(
-    name = "workspace",
-    outs = ["WORKSPACE"],
-    cmd = "echo 'workspace(name=\"angular\")' > $@",
-)
-
 npm_package(
     name = "npm_package",
     srcs = [
-        "BUILD.bazel",
-        "index.bzl",
+        "check_version.js",
         "package.json",
+        "protractor-utils.js",
         "//packages/bazel/src:package_assets",
+        "//packages/bazel/src/builders:package_assets",
+        "//packages/bazel/src/schematics:package_assets",
     ],
-    # Re-host //packages/bazel/ which is just // in the public distro
-    replacements = {
-        "//packages/bazel/": "//",
-        "angular/packages/bazel/": "angular/",
-    },
+    packages = [
+        "//packages/bazel/docs",
+    ],
     tags = ["release-with-framework"],
-    deps = [":workspace"],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
+    deps = [
+        "//packages/bazel/src/builders",
+        "//packages/bazel/src/ng_package:lib",
+        "//packages/bazel/src/ngc-wrapped:ngc_lib",
+        "//packages/bazel/src/protractor/utils",
+        "//packages/bazel/src/schematics/bazel-workspace",
+        "//packages/bazel/src/schematics/ng-new",
+    ],
 )

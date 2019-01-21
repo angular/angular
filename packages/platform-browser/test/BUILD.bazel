@@ -1,9 +1,13 @@
-load("//tools:defaults.bzl", "ts_library", "ts_web_test")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
+
+exports_files([
+    "browser/static_assets/200.html",
+    "static_assets/test.html",
+])
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages:types",
@@ -18,6 +22,7 @@ ts_library(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
         "@rxjs",
     ],
 )
@@ -25,18 +30,17 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    # dissable since tests are running but not yet passing
-    tags = ["manual"],
     deps = [
         ":test_lib",
         "//tools/testing:node",
     ],
 )
 
-ts_web_test(
+ts_web_test_suite(
     name = "test_web",
-    # disable since tests are running but not yet passing
-    tags = ["manual"],
+    static_files = [
+        ":static_assets/test.html",
+    ],
     deps = [
         ":test_lib",
     ],

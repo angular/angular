@@ -28,7 +28,7 @@ Most apps do so in the root `AppModule`.
 <code-example 
   path="http/src/app/app.module.ts"
   region="sketch"
-  title="app/app.module.ts (excerpt)" linenums="false">
+  header="app/app.module.ts (excerpt)" linenums="false">
 </code-example>
 
 Having imported `HttpClientModule` into the `AppModule`, you can inject the `HttpClient`
@@ -37,7 +37,7 @@ into an application class as shown in the following `ConfigService` example.
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="proto"
-  title="app/config/config.service.ts (excerpt)" linenums="false">
+  header="app/config/config.service.ts (excerpt)" linenums="false">
 </code-example>
 
 ## Getting JSON data
@@ -48,7 +48,7 @@ that specifies resource URLs.
 
 <code-example 
   path="http/src/assets/config.json"
-  title="assets/config.json" linenums="false">
+  header="assets/config.json" linenums="false">
 </code-example>
 
 The `ConfigService` fetches this file with a `get()` method on `HttpClient`.
@@ -56,7 +56,7 @@ The `ConfigService` fetches this file with a `get()` method on `HttpClient`.
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="getConfig_1"
-  title="app/config/config.service.ts (getConfig v.1)" linenums="false">
+  header="app/config/config.service.ts (getConfig v.1)" linenums="false">
 </code-example>
 
 A component, such as `ConfigComponent`, injects the `ConfigService` and calls
@@ -65,7 +65,7 @@ the `getConfig` service method.
 <code-example 
   path="http/src/app/config/config.component.ts"
   region="v1"
-  title="app/config/config.component.ts (showConfig v.1)" linenums="false">
+  header="app/config/config.component.ts (showConfig v.1)" linenums="false">
 </code-example>
 
 Because the service method returns an `Observable` of configuration data,
@@ -116,7 +116,7 @@ Then, specify that interface as the `HttpClient.get()` call's type parameter in 
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="getConfig_2" 
-  title="app/config/config.service.ts (getConfig v.2)" linenums="false">
+  header="app/config/config.service.ts (getConfig v.2)" linenums="false">
 </code-example>
 
 The callback in the updated component method receives a typed data object, which is
@@ -125,7 +125,7 @@ easier and safer to consume:
 <code-example 
   path="http/src/app/config/config.component.ts"
   region="v2"
-  title="app/config/config.component.ts (showConfig v.2)" linenums="false">
+  header="app/config/config.component.ts (showConfig v.2)" linenums="false">
 </code-example>
 
 ### Reading the full response
@@ -146,7 +146,7 @@ The component's `showConfigResponse()` method displays the response headers as w
 <code-example 
   path="http/src/app/config/config.component.ts"
   region="showConfigResponse" 
-  title="app/config/config.component.ts (showConfigResponse)"
+  header="app/config/config.component.ts (showConfigResponse)"
   linenums="false">
 </code-example>
 
@@ -161,7 +161,7 @@ You _could_ handle in the component by adding a second callback to the `.subscri
 <code-example 
   path="http/src/app/config/config.component.ts"
   region="v3" 
-  title="app/config/config.component.ts (showConfig v.3 with error handling)"
+  header="app/config/config.component.ts (showConfig v.3 with error handling)"
   linenums="false">
 </code-example>
 
@@ -188,7 +188,7 @@ You might first devise an error handler like this one:
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="handleError" 
-  title="app/config/config.service.ts (handleError)" linenums="false">
+  header="app/config/config.service.ts (handleError)" linenums="false">
 </code-example>
 
 Notice that this handler returns an RxJS [`ErrorObservable`](#rxjs) with a user-friendly error message.
@@ -201,7 +201,7 @@ and _pipe them through_ to the error handler.
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="getConfig_3" 
-  title="app/config/config.service.ts (getConfig v.3 with error handler)" linenums="false">
+  header="app/config/config.service.ts (getConfig v.3 with error handler)" linenums="false">
 </code-example>
 
 ### `retry()`
@@ -218,7 +218,7 @@ _Pipe_ it onto the `HttpClient` method result just before the error handler.
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="getConfig" 
-  title="app/config/config.service.ts (getConfig with retry)" linenums="false">
+  header="app/config/config.service.ts (getConfig with retry)" linenums="false">
 </code-example>
 
 {@a rxjs}
@@ -239,7 +239,7 @@ If you're following along with these code snippets, note that you must import th
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="rxjs-imports" 
-  title="app/config/config.service.ts (RxJS imports)" linenums="false">
+  header="app/config/config.service.ts (RxJS imports)" linenums="false">
 </code-example>
 
 ## Requesting non-JSON data
@@ -252,7 +252,7 @@ as an `Observable<string>`.
 <code-example 
   path="http/src/app/downloader/downloader.service.ts"
   region="getTextFile" 
-  title="app/downloader/downloader.service.ts (getTextFile)" linenums="false">
+  header="app/downloader/downloader.service.ts (getTextFile)" linenums="false">
 </code-example>
 
 `HttpClient.get()` returns a string rather than the default JSON because of the `responseType` option.
@@ -264,7 +264,7 @@ A `download()` method in the `DownloaderComponent` initiates the request by subs
 <code-example 
   path="http/src/app/downloader/downloader.component.ts"
   region="download" 
-  title="app/downloader/downloader.component.ts (download)" linenums="false">
+  header="app/downloader/downloader.component.ts (download)" linenums="false">
 </code-example>
 
 ## Sending data to the server
@@ -289,7 +289,7 @@ to every `HttpClient` save method.
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
   region="http-options" 
-  title="app/heroes/heroes.service.ts (httpOptions)" linenums="false">
+  header="app/heroes/heroes.service.ts (httpOptions)" linenums="false">
 </code-example>
 
 ### Making a POST request
@@ -300,7 +300,7 @@ In the following example, the `HeroesService` posts when adding a hero to the da
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
   region="addHero" 
-  title="app/heroes/heroes.service.ts (addHero)" linenums="false">
+  header="app/heroes/heroes.service.ts (addHero)" linenums="false">
 </code-example>
 
 The `HttpClient.post()` method is similar to `get()` in that it has a type parameter
@@ -320,7 +320,7 @@ the `Observable` returned by this service method.
 <code-example 
   path="http/src/app/heroes/heroes.component.ts"
   region="add-hero-subscribe" 
-  title="app/heroes/heroes.component.ts (addHero)" linenums="false">
+  header="app/heroes/heroes.component.ts (addHero)" linenums="false">
 </code-example>
 
 When the server responds successfully with the newly added hero, the component adds
@@ -334,7 +334,7 @@ in the request URL.
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
   region="deleteHero" 
-  title="app/heroes/heroes.service.ts (deleteHero)" linenums="false">
+  header="app/heroes/heroes.service.ts (deleteHero)" linenums="false">
 </code-example>
 
 The `HeroesComponent` initiates the actual DELETE operation by subscribing to 
@@ -343,7 +343,7 @@ the `Observable` returned by this service method.
 <code-example 
   path="http/src/app/heroes/heroes.component.ts"
   region="delete-hero-subscribe" 
-  title="app/heroes/heroes.component.ts (deleteHero)" linenums="false">
+  header="app/heroes/heroes.component.ts (deleteHero)" linenums="false">
 </code-example>
 
 The component isn't expecting a result from the delete operation, so it subscribes without a callback. Even though you are not using the result, you still have to subscribe. Calling the `subscribe()` method _executes_ the observable, which is what initiates the DELETE request. 
@@ -403,7 +403,7 @@ The following `HeroesService` example is just like the POST example.
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
   region="updateHero" 
-  title="app/heroes/heroes.service.ts (updateHero)" linenums="false">
+  header="app/heroes/heroes.service.ts (updateHero)" linenums="false">
 </code-example>
 
 For the reasons [explained above](#always-subscribe), the caller (`HeroesComponent.update()` in this case) must `subscribe()` to the observable returned from the `HttpClient.put()`
@@ -450,7 +450,7 @@ Here is a `searchHeroes` method that queries for heroes whose names contain the 
 
 If there is a search term, the code constructs an options object with an HTML URL-encoded search parameter. If the term were "foo", the GET request URL would be `api/heroes/?name=foo`.
 
-The `HttpParms` are immutable so you'll have to use the `set()` method to update the options.
+The `HttpParams` are immutable so you'll have to use the `set()` method to update the options.
 
 ### Debouncing requests
 
@@ -464,7 +464,7 @@ Here's a pertinent excerpt from the template:
 <code-example 
   path="http/src/app/package-search/package-search.component.html"
   region="search" 
-  title="app/package-search/package-search.component.html (search)">
+  header="app/package-search/package-search.component.html (search)">
 </code-example>
 
 The `(keyup)` event binding sends every keystroke to the component's `search()` method.
@@ -476,7 +476,7 @@ That's easy to implement with RxJS operators, as shown in this excerpt.
 <code-example 
   path="http/src/app/package-search/package-search.component.ts"
   region="debounce" 
-  title="app/package-search/package-search.component.ts (excerpt))">
+  header="app/package-search/package-search.component.ts (excerpt))">
 </code-example>
 
 The `searchText$` is the sequence of search-box values coming from the user.
@@ -497,7 +497,7 @@ and displays search results as they arrive.
 
 A search value reaches the service only if it's a new value and the user has stopped typing.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `withRefresh` option is explained [below](#cache-refresh).
 
@@ -517,7 +517,7 @@ it cancels that request and sends a new one.
 server returns them out of order. 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 If you think you'll reuse this debouncing logic,
 consider moving it to a utility function or into the `PackageSearchService` itself.
@@ -543,7 +543,7 @@ To implement an interceptor, declare a class that implements the `intercept()` m
  Here is a do-nothing _noop_ interceptor that simply passes the request through without touching it:
 <code-example 
   path="http/src/app/http-interceptors/noop-interceptor.ts"
-  title="app/http-interceptors/noop-interceptor.ts"
+  header="app/http-interceptors/noop-interceptor.ts"
   linenums="false">
 </code-example>
 
@@ -608,7 +608,7 @@ Consider creating a "barrel" file that gathers all the interceptor providers int
 <code-example 
   path="http/src/app/http-interceptors/index.ts"
   region="interceptor-providers"
-  title="app/http-interceptors/index.ts" linenums="false">
+  header="app/http-interceptors/index.ts" linenums="false">
 </code-example>
 
 Then import and add it to the `AppModule` _providers array_ like this:
@@ -616,13 +616,13 @@ Then import and add it to the `AppModule` _providers array_ like this:
 <code-example 
   path="http/src/app/app.module.ts"
   region="interceptor-providers"
-  title="app/app.module.ts (interceptor providers)" linenums="false">
+  header="app/app.module.ts (interceptor providers)" linenums="false">
 </code-example>
 
 As you create new interceptors, add them to the `httpInterceptorProviders` array and
 you won't have to revisit the `AppModule`.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 There are many more interceptors in the complete sample code.
 
@@ -672,7 +672,7 @@ You can clone and modify the request in a single step as in this example.
 <code-example 
   path="http/src/app/http-interceptors/ensure-https-interceptor.ts"
   region="excerpt" 
-  title="app/http-interceptors/ensure-https-interceptor.ts (excerpt)" linenums="false">
+  header="app/http-interceptors/ensure-https-interceptor.ts (excerpt)" linenums="false">
 </code-example>
 
 The `clone()` method's hash argument allows you to mutate specific properties of the request while copying the others.
@@ -692,7 +692,7 @@ If you must mutate the request body, copy it first, change the copy,
 <code-example 
   path="http/src/app/http-interceptors/trim-name-interceptor.ts"
   region="excerpt" 
-  title="app/http-interceptors/trim-name-interceptor.ts (excerpt)" linenums="false">
+  header="app/http-interceptors/trim-name-interceptor.ts (excerpt)" linenums="false">
 </code-example>
 
 ##### Clearing the request body
@@ -718,7 +718,7 @@ adds an authorization header with that token to every outgoing request:
 
 <code-example 
   path="http/src/app/http-interceptors/auth-interceptor.ts"
-  title="app/http-interceptors/auth-interceptor.ts">
+  header="app/http-interceptors/auth-interceptor.ts">
 </code-example>
 
 The practice of cloning a request to set new headers is so common that 
@@ -747,7 +747,7 @@ with the injected `MessageService`.
 <code-example 
   path="http/src/app/http-interceptors/logging-interceptor.ts"
   region="excerpt" 
-  title="app/http-interceptors/logging-interceptor.ts)">
+  header="app/http-interceptors/logging-interceptor.ts)">
 </code-example>
 
 The RxJS `tap` operator captures whether the request succeed or failed.
@@ -768,7 +768,7 @@ The `CachingInterceptor` demonstrates this approach.
 <code-example 
   path="http/src/app/http-interceptors/caching-interceptor.ts"
   region="v1" 
-  title="app/http-interceptors/caching-interceptor.ts)" linenums="false">
+  header="app/http-interceptors/caching-interceptor.ts)" linenums="false">
 </code-example>
 
 The `isCachable()` function determines if the request is cachable.
@@ -824,7 +824,7 @@ and emits again later with the updated search results.
 
 The _cache-then-refresh_ option is triggered by the presence of a **custom `x-refresh` header**.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 A checkbox on the `PackageSearchComponent` toggles a `withRefresh` flag,
 which is one of the arguments to `PackageSearchService.search()`.
@@ -858,7 +858,7 @@ with the `reportProgress` option set true to enable tracking of progress events.
 <code-example 
   path="http/src/app/uploader/uploader.service.ts"
   region="upload-request" 
-  title="app/uploader/uploader.service.ts (upload request)">
+  header="app/uploader/uploader.service.ts (upload request)">
 </code-example>
 
 <div class="alert is-important">
@@ -873,7 +873,7 @@ returns an `Observable` of `HttpEvents`, the same events processed by intercepto
 <code-example 
   path="http/src/app/uploader/uploader.service.ts"
   region="upload-body" 
-  title="app/uploader/uploader.service.ts (upload body)" linenums="false">
+  header="app/uploader/uploader.service.ts (upload body)" linenums="false">
 </code-example>
 
 The `getEventMessage` method interprets each type of `HttpEvent` in the event stream.
@@ -881,7 +881,7 @@ The `getEventMessage` method interprets each type of `HttpEvent` in the event st
 <code-example 
   path="http/src/app/uploader/uploader.service.ts"
   region="getEventMessage" 
-  title="app/uploader/uploader.service.ts (getEventMessage)" linenums="false">
+  header="app/uploader/uploader.service.ts (getEventMessage)" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
@@ -936,7 +936,7 @@ setting up such mocking straightforward.
 ### Mocking philosophy
 
 Angular's HTTP testing library is designed for a pattern of testing wherein 
-the the app executes code and makes requests first.
+the app executes code and makes requests first.
 
 Then a test expects that certain requests have or have not been made, 
 performs assertions against those requests, 
@@ -964,7 +964,7 @@ along with the other symbols your tests require.
 <code-example 
   path="http/src/testing/http-client.spec.ts"
   region="imports" 
-  title="app/testing/http-client.spec.ts (imports)" linenums="false">
+  header="app/testing/http-client.spec.ts (imports)" linenums="false">
 </code-example>
 
 Then add the `HttpClientTestingModule` to the `TestBed` and continue with
@@ -973,7 +973,7 @@ the setup of the _service-under-test_.
 <code-example 
   path="http/src/testing/http-client.spec.ts"
   region="setup" 
-  title="app/testing/http-client.spec.ts(setup)" linenums="false">
+  header="app/testing/http-client.spec.ts(setup)" linenums="false">
 </code-example>
 
 Now requests made in the course of your tests will hit the testing backend instead of the normal backend.
@@ -988,7 +988,7 @@ Now you can write a test that expects a GET Request to occur and provides a mock
 <code-example 
   path="http/src/testing/http-client.spec.ts"
   region="get-test" 
-  title="app/testing/http-client.spec.ts(httpClient.get)" linenums="false">
+  header="app/testing/http-client.spec.ts(httpClient.get)" linenums="false">
 </code-example>
 
 The last step, verifying that no requests remain outstanding, is common enough for you to move it into an `afterEach()` step:
@@ -1034,7 +1034,7 @@ Call `request.flush()` with an error message, as seen in the following example.
 
 <code-example 
   path="http/src/testing/http-client.spec.ts"
-  region="404" 
+  region="404"
   linenums="false">
 </code-example>
 

@@ -20,16 +20,14 @@ export function throwMultipleComponentError(tNode: TNode): never {
 
 /** Throws an ExpressionChangedAfterChecked error if checkNoChanges mode is on. */
 export function throwErrorIfNoChangesMode(
-    creationMode: boolean, checkNoChangesMode: boolean, oldValue: any, currValue: any): never|void {
-  if (checkNoChangesMode) {
-    let msg =
-        `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
-    if (creationMode) {
-      msg +=
-          ` It seems like the view has been created after its parent and its children have been dirty checked.` +
-          ` Has it been created in a change detection hook ?`;
-    }
-    // TODO: include debug context
-    throw new Error(msg);
+    creationMode: boolean, oldValue: any, currValue: any): never|void {
+  let msg =
+      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value: '${oldValue}'. Current value: '${currValue}'.`;
+  if (creationMode) {
+    msg +=
+        ` It seems like the view has been created after its parent and its children have been dirty checked.` +
+        ` Has it been created in a change detection hook ?`;
   }
+  // TODO: include debug context
+  throw new Error(msg);
 }

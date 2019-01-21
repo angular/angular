@@ -11,7 +11,7 @@ import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, Event
 import * as angular from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
-import {getAttributesAsArray, getComponentName, hookupNgModel, strictEquals} from './util';
+import {getTypeName, hookupNgModel, strictEquals} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -22,10 +22,13 @@ export class DowngradeComponentAdapter {
   private inputChangeCount: number = 0;
   private inputChanges: SimpleChanges = {};
   private componentScope: angular.IScope;
-  private componentRef: ComponentRef<any>;
+  // TODO(issue/24571): remove '!'.
+  private componentRef !: ComponentRef<any>;
   private component: any;
-  private changeDetector: ChangeDetectorRef;
-  private viewChangeDetector: ChangeDetectorRef;
+  // TODO(issue/24571): remove '!'.
+  private changeDetector !: ChangeDetectorRef;
+  // TODO(issue/24571): remove '!'.
+  private viewChangeDetector !: ChangeDetectorRef;
 
   constructor(
       private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
@@ -78,7 +81,7 @@ export class DowngradeComponentAdapter {
     hookupNgModel(this.ngModel, this.component);
   }
 
-  setupInputs(needsNgZone: boolean, propagateDigest = true): void {
+  setupInputs(manuallyAttachView: boolean, propagateDigest = true): void {
     const attrs = this.attrs;
     const inputs = this.componentFactory.inputs || [];
     for (let i = 0; i < inputs.length; i++) {
@@ -156,7 +159,7 @@ export class DowngradeComponentAdapter {
 
     // If necessary, attach the view so that it will be dirty-checked.
     // (Allow time for the initial input values to be set and `ngOnChanges()` to be called.)
-    if (needsNgZone || !propagateDigest) {
+    if (manuallyAttachView || !propagateDigest) {
       let unwatch: Function|null = this.componentScope.$watch(() => {
         unwatch !();
         unwatch = null;
@@ -205,11 +208,12 @@ export class DowngradeComponentAdapter {
       });
     } else {
       throw new Error(
-          `Missing emitter '${output.prop}' on component '${getComponentName(this.componentFactory.componentType)}'!`);
+          `Missing emitter '${output.prop}' on component '${getTypeName(this.componentFactory.componentType)}'!`);
     }
   }
 
   registerCleanup() {
+    const testabilityRegistry = this.componentRef.injector.get(TestabilityRegistry);
     const destroyComponentRef = this.wrapCallback(() => this.componentRef.destroy());
     let destroyed = false;
 
@@ -217,8 +221,7 @@ export class DowngradeComponentAdapter {
     this.componentScope.$on('$destroy', () => {
       if (!destroyed) {
         destroyed = true;
-        this.componentRef.injector.get(TestabilityRegistry)
-            .unregisterApplication(this.componentRef.location.nativeElement);
+        testabilityRegistry.unregisterApplication(this.componentRef.location.nativeElement);
         destroyComponentRef();
       }
     });

@@ -51,20 +51,20 @@ export class ChromeDriverExtension extends WebDriverExtension {
 
   gc() { return this._driver.executeScript('window.gc()'); }
 
-  timeBegin(name: string): Promise<any> {
+  async timeBegin(name: string): Promise<any> {
     if (this._firstRun) {
       this._firstRun = false;
       // Before the first run, read out the existing performance logs
       // so that the chrome buffer does not fill up.
-      this._driver.logs('performance');
+      await this._driver.logs('performance');
     }
-    return this._driver.executeScript(`console.time('${name}');`);
+    return this._driver.executeScript(`performance.mark('${name}-bpstart');`);
   }
 
   timeEnd(name: string, restartName: string|null = null): Promise<any> {
-    let script = `console.timeEnd('${name}');`;
+    let script = `performance.mark('${name}-bpend');`;
     if (restartName) {
-      script += `console.time('${restartName}');`;
+      script += `performance.mark('${restartName}-bpstart');`;
     }
     return this._driver.executeScript(script);
   }
@@ -108,6 +108,8 @@ export class ChromeDriverExtension extends WebDriverExtension {
     const name = event['name'];
     const args = event['args'];
     if (this._isEvent(categories, name, ['blink.console'])) {
+      return normalizeEvent(event, {'name': name});
+    } else if (this._isEvent(categories, name, ['blink.user_timing'])) {
       return normalizeEvent(event, {'name': name});
     } else if (this._isEvent(
                    categories, name, ['benchmark'],
@@ -201,6 +203,15 @@ function normalizeEvent(chromeEvent: {[key: string]: any}, data: PerfLogEvent): 
   } else if (ph === 'R') {
     // mark events from navigation timing
     ph = 'I';
+    // Chrome 65+ doesn't allow user timing measurements across page loads.
+    // Instead, we use performance marks with special names.
+    if (chromeEvent['name'].match(/-bpstart/)) {
+      data['name'] = chromeEvent['name'].slice(0, -8);
+      ph = 'B';
+    } else if (chromeEvent['name'].match(/-bpend$/)) {
+      data['name'] = chromeEvent['name'].slice(0, -6);
+      ph = 'E';
+    }
   }
   const result: {[key: string]: any} =
       {'pid': chromeEvent['pid'], 'ph': ph, 'cat': 'timeline', 'ts': chromeEvent['ts'] / 1000};

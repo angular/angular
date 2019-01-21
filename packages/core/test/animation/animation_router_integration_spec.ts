@@ -11,12 +11,13 @@ import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/brow
 import {Component, HostBinding} from '@angular/core';
 import {TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {fixmeIvy} from '@angular/private/testing';
 import {ActivatedRoute, Router, RouterOutlet} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
 (function() {
   // these tests are only mean't to be run within the DOM (for now)
-  if (typeof Element == 'undefined') return;
+  if (isNode) return;
 
   describe('Animation Router Tests', function() {
     function getLog(): MockAnimationPlayer[] {

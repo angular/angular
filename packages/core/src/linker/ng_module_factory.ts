@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
-import {Type} from '../type';
+import {Type} from '../interface/type';
 
 import {ComponentFactoryResolver} from './component_factory_resolver';
 
@@ -18,7 +18,7 @@ import {ComponentFactoryResolver} from './component_factory_resolver';
  * `NgModuleRef` provides access to the NgModule Instance as well other objects related to this
  * NgModule Instance.
  *
- *
+ * @publicApi
  */
 export abstract class NgModuleRef<T> {
   /**
@@ -55,7 +55,7 @@ export interface InternalNgModuleRef<T> extends NgModuleRef<T> {
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export abstract class NgModuleFactory<T> {
   abstract get moduleType(): Type<T>;

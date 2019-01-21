@@ -8,10 +8,10 @@
 
 import {Compiler, Component, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
 import {TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
+import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '@angular/router';
 
 import {Route, RouteConfigLoadEnd, RouteConfigLoadStart, Router, RouterModule} from '../index';
 import {LoadedRouterConfig} from '../src/config';
-import {PreloadAllModules, PreloadingStrategy, RouterPreloader} from '../src/router_preloader';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('RouterPreloader', () => {
@@ -34,6 +34,7 @@ describe('RouterPreloader', () => {
         providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
       });
     });
+
 
     it('should work',
        fakeAsync(inject(
@@ -195,6 +196,7 @@ describe('RouterPreloader', () => {
       });
     });
 
+
     it('should work',
        fakeAsync(inject(
            [NgModuleFactoryLoader, RouterPreloader, Router],
@@ -223,6 +225,7 @@ describe('RouterPreloader', () => {
         providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
       });
     });
+
 
     it('should work',
        fakeAsync(inject(

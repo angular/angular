@@ -9,7 +9,6 @@
 import {CommonModule} from '@angular/common';
 import {Component, ContentChild, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
@@ -73,8 +72,10 @@ describe('Integration', () => {
         `
          })
          class ComponentWithRouterLink {
-           @ViewChild(TemplateRef) templateRef: TemplateRef<any>;
-           @ViewChild('container', {read: ViewContainerRef}) container: ViewContainerRef;
+           // TODO(issue/24571): remove '!'.
+           @ViewChild(TemplateRef) templateRef !: TemplateRef<any>;
+           // TODO(issue/24571): remove '!'.
+           @ViewChild('container', {read: ViewContainerRef}) container !: ViewContainerRef;
 
            addLink() {
              this.container.createEmbeddedView(this.templateRef, {$implicit: '/simple'});

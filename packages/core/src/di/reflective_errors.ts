@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {wrappedError} from '../error_handler';
-import {ERROR_ORIGINAL_ERROR, getOriginalError} from '../errors';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {Type} from '../interface/type';
+import {ERROR_ORIGINAL_ERROR, wrappedError} from '../util/errors';
+import {stringify} from '../util/stringify';
 
 import {ReflectiveInjector} from './reflective_injector';
 import {ReflectiveKey} from './reflective_key';
@@ -70,7 +69,8 @@ function addKey(this: InjectionError, injector: ReflectiveInjector, key: Reflect
  * Thrown when trying to retrieve a dependency by key from {@link Injector}, but the
  * {@link Injector} does not have a {@link Provider} for the given key.
  *
- * ### Example ([live demo](http://plnkr.co/edit/vq8D3FRB9aGbnWJqtEPE?p=preview))
+ * @usageNotes
+ * ### Example
  *
  * ```typescript
  * class A {
@@ -90,7 +90,8 @@ export function noProviderError(injector: ReflectiveInjector, key: ReflectiveKey
 /**
  * Thrown when dependencies form a cycle.
  *
- * ### Example ([live demo](http://plnkr.co/edit/wYQdNos0Tzql3ei1EV9j?p=info))
+ * @usageNotes
+ * ### Example
  *
  * ```typescript
  * var injector = Injector.resolveAndCreate([
@@ -116,7 +117,8 @@ export function cyclicDependencyError(
  * The `InstantiationError` class contains the original error plus the dependency graph which caused
  * this object to be instantiated.
  *
- * ### Example ([live demo](http://plnkr.co/edit/7aWYdcqTQsP0eNqEdUAf?p=preview))
+ * @usageNotes
+ * ### Example
  *
  * ```typescript
  * class A {
@@ -149,7 +151,8 @@ export function instantiationError(
  * Thrown when an object other then {@link Provider} (or `Type`) is passed to {@link Injector}
  * creation.
  *
- * ### Example ([live demo](http://plnkr.co/edit/YatCFbPAMCL0JSSQ4mvH?p=preview))
+ * @usageNotes
+ * ### Example
  *
  * ```typescript
  * expect(() => Injector.resolveAndCreate(["not a type"])).toThrowError();
@@ -166,7 +169,8 @@ export function invalidProviderError(provider: any) {
  * Lack of annotation information prevents the {@link Injector} from determining which dependencies
  * need to be injected into the constructor.
  *
- * ### Example ([live demo](http://plnkr.co/edit/rHnZtlNS7vJOPQ6pcVkm?p=preview))
+ * @usageNotes
+ * ### Example
  *
  * ```typescript
  * class A {
@@ -209,7 +213,8 @@ export function noAnnotationError(typeOrFunc: Type<any>| Function, params: any[]
 /**
  * Thrown when getting an object by index.
  *
- * ### Example ([live demo](http://plnkr.co/edit/bRs0SX2OTQiJzqvjgl8P?p=preview))
+ * @usageNotes
+ * ### Example
  *
  * ```typescript
  * class A {}
@@ -228,6 +233,7 @@ export function outOfBoundsError(index: number) {
 /**
  * Thrown when a multi provider and a regular provider are bound to the same token.
  *
+ * @usageNotes
  * ### Example
  *
  * ```typescript

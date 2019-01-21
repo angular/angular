@@ -48,14 +48,14 @@ lines</p>`;
 <!ELEMENT ex (#PCDATA)>
 ]>
 <messagebundle>
-  <msg id="7056919470098446707"><source>file.ts:3</source>translatable element <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>with placeholders<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> <ph name="INTERPOLATION"><ex>{{ interpolation}}</ex></ph></msg>
-  <msg id="2981514368455622387"><source>file.ts:4</source>{VAR_PLURAL, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} }</msg>
+  <msg id="7056919470098446707"><source>file.ts:3</source>translatable element <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>with placeholders<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph> <ph name="INTERPOLATION"><ex>{{ interpolation}}</ex>{{ interpolation}}</ph></msg>
+  <msg id="2981514368455622387"><source>file.ts:4</source>{VAR_PLURAL, plural, =0 {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex>&lt;p&gt;</ph>test<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex>&lt;/p&gt;</ph>} }</msg>
   <msg id="7999024498831672133" desc="d" meaning="m"><source>file.ts:5</source>foo</msg>
   <msg id="i" desc="d" meaning="m"><source>file.ts:6</source>foo</msg>
   <msg id="bar"><source>file.ts:7</source>foo</msg>
-  <msg id="baz"><source>file.ts:8</source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} } } }</msg>
-  <msg id="6997386649824869937"><source>file.ts:9</source>Test: <ph name="ICU"><ex>{ count, plural, =0 {...} =other {...}}</ex></ph></msg>
-  <msg id="5229984852258993423"><source>file.ts:9</source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex></ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex></ph>} } } =other {a lot} }</msg>
+  <msg id="baz"><source>file.ts:8</source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex>&lt;p&gt;</ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex>&lt;/p&gt;</ph>} } } }</msg>
+  <msg id="6997386649824869937"><source>file.ts:9</source>Test: <ph name="ICU"><ex>{ count, plural, =0 {...} =other {...}}</ex>{ count, plural, =0 {...} =other {...}}</ph></msg>
+  <msg id="5229984852258993423"><source>file.ts:9</source>{VAR_PLURAL, plural, =0 {{VAR_SELECT, select, other {<ph name="START_PARAGRAPH"><ex>&lt;p&gt;</ex>&lt;p&gt;</ph>deeply nested<ph name="CLOSE_PARAGRAPH"><ex>&lt;/p&gt;</ex>&lt;/p&gt;</ph>} } } =other {a lot} }</msg>
   <msg id="2340165783990709777"><source>file.ts:10,11</source>multi
 lines</msg>
 </messagebundle>

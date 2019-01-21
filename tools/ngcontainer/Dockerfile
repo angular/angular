@@ -1,25 +1,12 @@
-FROM circleci/node:8.9.2-browsers
+FROM circleci/node:10.9.0-browsers
 
 USER root
 
 ###
-# Java install
-# See https://github.com/docker-library/openjdk/blob/415b0cc42d91ef5d70597d8a24d942967728242b/8-jdk/Dockerfile
-# see https://bugs.debian.org/775775
-# and https://github.com/docker-library/java/issues/19#issuecomment-70546872
-RUN JAVA_DEBIAN_VERSION="8u131-b11-1~bpo8+1" \
- && CA_CERTIFICATES_JAVA_VERSION="20161107~bpo8+1" \
- && echo 'deb http://deb.debian.org/debian jessie-backports main' > /etc/apt/sources.list.d/jessie-backports.list \
- && apt-get update \
- && apt-get install -y \
-    openjdk-8-jre-headless="$JAVA_DEBIAN_VERSION" \
-    ca-certificates-java="$CA_CERTIFICATES_JAVA_VERSION" \
- && rm -rf /var/lib/apt/lists/*
-
-###
 # Bazel install
 # See https://bazel.build/versions/master/docs/install-ubuntu.html#using-bazel-custom-apt-repository-recommended
-RUN BAZEL_VERSION="0.13.0" \
+# Note, only the latest release is available, see https://github.com/bazelbuild/bazel/issues/4947
+RUN BAZEL_VERSION="0.18.0" \
  && wget -q -O - https://bazel.build/bazel-release.pub.gpg | apt-key add - \
  && echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" > /etc/apt/sources.list.d/bazel.list \
  && apt-get update \
@@ -36,6 +23,7 @@ RUN echo "deb http://deb.debian.org/debian stretch main contrib" > /etc/apt/sour
 
 ###
 # Buildifier
+# TODO(alexeagle): remove this when all users use their locally built buildifier
 # BUILD file formatter
 # 'bazel clean --expunge' conserves size of the image
 RUN git clone https://github.com/bazelbuild/buildtools.git \
@@ -47,6 +35,7 @@ RUN git clone https://github.com/bazelbuild/buildtools.git \
 
 ###
 # Skylint
+# TODO(alexeagle): remove this when all users use their locally built skylint
 # .bzl file linter
 # Follows readme at https://github.com/bazelbuild/bazel/blob/master/site/docs/skylark/skylint.md#building-the-linter
 # 'bazel clean --expunge' conserves size of the image
@@ -71,7 +60,7 @@ RUN mkdir ~/.npm-global \
 # in the circleci/*-browsers base image above.
 # This variable is intended to be used by passing it as an argument to
 # "postinstall": "webdriver-manager update ..."
-ENV CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.33"
+ENV CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.41"
 
 WORKDIR /home/circleci
 ENTRYPOINT ["/bin/bash", "--login"]

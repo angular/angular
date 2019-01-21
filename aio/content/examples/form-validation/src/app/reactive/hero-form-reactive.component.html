@@ -7,33 +7,48 @@
 
     <div [hidden]="formDir.submitted">
 
-      <div class="form-group">
+      <div class="cross-validation" [class.cross-validation-error]="heroForm.errors?.identityRevealed && (heroForm.touched || heroForm.dirty)">
+        <div class="form-group">
 
-        <label for="name">Name</label>
-        <!-- #docregion name-with-error-msg -->
-        <input id="name" class="form-control"
-               formControlName="name" required >
+          <label for="name">Name</label>
+          <!-- #docregion name-with-error-msg -->
+          <input id="name" class="form-control"
+                formControlName="name" required >
 
-        <div *ngIf="name.invalid && (name.dirty || name.touched)"
-             class="alert alert-danger">
+          <div *ngIf="name.invalid && (name.dirty || name.touched)"
+              class="alert alert-danger">
 
-          <div *ngIf="name.errors.required">
-            Name is required.
+            <div *ngIf="name.errors.required">
+              Name is required.
+            </div>
+            <div *ngIf="name.errors.minlength">
+              Name must be at least 4 characters long.
+            </div>
+            <div *ngIf="name.errors.forbiddenName">
+              Name cannot be Bob.
+            </div>
           </div>
-          <div *ngIf="name.errors.minlength">
-            Name must be at least 4 characters long.
-          </div>
-          <div *ngIf="name.errors.forbiddenName">
-            Name cannot be Bob.
+          <!-- #enddocregion name-with-error-msg -->
+        </div>
+
+        <div class="form-group">
+          <label for="alterEgo">Alter Ego</label>
+          <input id="alterEgo" class="form-control"
+              formControlName="alterEgo"  >
+
+          <div *ngIf="alterEgo.pending">Validating...</div>
+          <div *ngIf="alterEgo.invalid" class="alert alert-danger alter-ego-errors">
+            <div *ngIf="alterEgo.errors?.uniqueAlterEgo">
+              Alter ego is already taken.
+            </div>
           </div>
         </div>
-        <!-- #enddocregion name-with-error-msg -->
-      </div>
 
-      <div class="form-group">
-        <label for="alterEgo">Alter Ego</label>
-        <input id="alterEgo" class="form-control"
-            formControlName="alterEgo"  >
+        <!-- #docregion cross-validation-error-message -->
+        <div *ngIf="heroForm.errors?.identityRevealed && (heroForm.touched || heroForm.dirty)" class="cross-validation-error-message alert alert-danger">
+            Name cannot match alter ego.
+        </div>
+        <!-- #enddocregion cross-validation-error-message -->
       </div>
 
       <div class="form-group">

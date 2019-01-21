@@ -36,7 +36,7 @@ The following is an example of specifying a bootstrapped component,
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule,
+    HttpClientModule,
     AppRoutingModule
   ],
   providers: [],

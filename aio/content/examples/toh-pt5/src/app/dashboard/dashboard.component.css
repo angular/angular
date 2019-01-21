@@ -16,7 +16,8 @@ a {
   box-sizing: border-box;
 }
 h3 {
-  text-align: center; margin-bottom: 0;
+  text-align: center;
+  margin-bottom: 0;
 }
 h4 {
   position: relative;
@@ -33,11 +34,11 @@ h4 {
   color: #eee;
   max-height: 120px;
   min-width: 120px;
-  background-color: #607D8B;
+  background-color: #607d8b;
   border-radius: 2px;
 }
 .module:hover {
-  background-color: #EEE;
+  background-color: #eee;
   cursor: pointer;
   color: #607d8b;
 }

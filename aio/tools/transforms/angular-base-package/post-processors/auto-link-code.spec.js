@@ -79,6 +79,13 @@ describe('autoLinkCode post-processor', () => {
                                         '</code>');
   });
 
+  it('should ignore code items that match an internal API doc', () => {
+    aliasMap.addDoc({ docType: 'class', id: 'MyClass', aliases: ['MyClass'], path: 'a/b/myclass', internal: true });
+    const doc = { docType: 'test-doc', renderedContent: '<code>MyClass</code>' };
+    processor.$process([doc]);
+    expect(doc.renderedContent).toEqual('<code>MyClass</code>');
+  });
+
   it('should insert anchors for individual text nodes within a code block', () => {
     aliasMap.addDoc({ docType: 'class', id: 'MyClass', aliases: ['MyClass'], path: 'a/b/myclass' });
     const doc = { docType: 'test-doc', renderedContent: '<code><span>MyClass</span><span>MyClass</span></code>' };
@@ -101,5 +108,12 @@ describe('autoLinkCode post-processor', () => {
     const doc = { docType: 'test-doc', renderedContent: '<code-example>MyClass</code-example>' };
     processor.$process([doc]);
     expect(doc.renderedContent).toEqual('<code-example><a href="a/b/myclass" class="code-anchor">MyClass</a></code-example>');
+  });
+
+  it('should ignore code blocks that are marked with a `no-auto-link` class', () => {
+    aliasMap.addDoc({ docType: 'class', id: 'MyClass', aliases: ['MyClass'], path: 'a/b/myclass' });
+    const doc = { docType: 'test-doc', renderedContent: '<code class="no-auto-link">MyClass</code>' };
+    processor.$process([doc]);
+    expect(doc.renderedContent).toEqual('<code class="no-auto-link">MyClass</code>');
   });
 });

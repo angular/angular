@@ -10,9 +10,10 @@ import {Component, Directive, ElementRef, ErrorHandler, EventEmitter, Inject, In
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {fixmeIvy} from '@angular/private/testing';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
-import {$SCOPE} from '@angular/upgrade/static/src/common/constants';
+import {$EXCEPTION_HANDLER, $SCOPE} from '@angular/upgrade/static/src/common/constants';
 
 import {$digest, bootstrap, html, multiTrim, withEachNg1Version} from '../test_helpers';
 
@@ -476,8 +477,10 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             @Input('inputAttrA') inputA: string;
-             @Input() inputB: string;
+             // TODO(issue/24571): remove '!'.
+             @Input('inputAttrA') inputA !: string;
+             // TODO(issue/24571): remove '!'.
+             @Input() inputB !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
                super('ng1', elementRef, injector);
@@ -551,8 +554,10 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             @Input('inputAttrA') inputA: string;
-             @Input() inputB: string;
+             // TODO(issue/24571): remove '!'.
+             @Input('inputAttrA') inputA !: string;
+             // TODO(issue/24571): remove '!'.
+             @Input() inputB !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
                super('ng1', elementRef, injector);
@@ -626,10 +631,14 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             @Input('inputAttrA') inputA: string;
-             @Output('inputAttrAChange') inputAChange: EventEmitter<any>;
-             @Input() inputB: string;
-             @Output() inputBChange: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Input('inputAttrA') inputA !: string;
+             // TODO(issue/24571): remove '!'.
+             @Output('inputAttrAChange') inputAChange !: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Input() inputB !: string;
+             // TODO(issue/24571): remove '!'.
+             @Output() inputBChange !: EventEmitter<any>;
 
              constructor(elementRef: ElementRef, injector: Injector) {
                super('ng1', elementRef, injector);
@@ -701,8 +710,10 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             @Output('outputAttrA') outputA: EventEmitter<any>;
-             @Output() outputB: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Output('outputAttrA') outputA !: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Output() outputB !: EventEmitter<any>;
 
              constructor(elementRef: ElementRef, injector: Injector) {
                super('ng1', elementRef, injector);
@@ -783,13 +794,17 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             @Input() fullName: string;
+             // TODO(issue/24571): remove '!'.
+             @Input() fullName !: string;
              @Input('dataA') modelA: any;
              @Input('dataB') modelB: any;
-             @Output('dataBChange') modelBChange: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Output('dataBChange') modelBChange !: EventEmitter<any>;
              @Input() modelC: any;
-             @Output() modelCChange: EventEmitter<any>;
-             @Output() event: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Output() modelCChange !: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Output() event !: EventEmitter<any>;
 
              constructor(elementRef: ElementRef, injector: Injector) {
                super('ng1', elementRef, injector);
@@ -862,12 +877,18 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             @Input('inputAttrA') inputA: string;
-             @Output('inputAttrAChange') inputAChange: EventEmitter<any>;
-             @Input() inputB: string;
-             @Output() inputBChange: EventEmitter<any>;
-             @Output('outputAttrA') outputA: EventEmitter<any>;
-             @Output() outputB: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Input('inputAttrA') inputA !: string;
+             // TODO(issue/24571): remove '!'.
+             @Output('inputAttrAChange') inputAChange !: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Input() inputB !: string;
+             // TODO(issue/24571): remove '!'.
+             @Output() inputBChange !: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Output('outputAttrA') outputA !: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Output() outputB !: EventEmitter<any>;
 
              constructor(elementRef: ElementRef, injector: Injector) {
                super('ng1', elementRef, injector);
@@ -957,9 +978,12 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: '[ng1]'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             @Input() inputA: string;
-             @Output() inputAChange: EventEmitter<any>;
-             @Output() outputA: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Input() inputA !: string;
+             // TODO(issue/24571): remove '!'.
+             @Output() inputAChange !: EventEmitter<any>;
+             // TODO(issue/24571): remove '!'.
+             @Output() outputA !: EventEmitter<any>;
 
              constructor(elementRef: ElementRef, injector: Injector) {
                super('ng1', elementRef, injector);
@@ -1319,7 +1343,9 @@ withEachNg1Version(() => {
              scope: true,
              controllerAs: 'vm',
              controller: class {
-               hasElement: string; isClass: string; scope: string;
+               hasElement: string;  // TODO(issue/24571): remove '!'.
+               isClass !: string;
+               scope: string;
 
                constructor(public $element: angular.IAugmentedJQuery, $scope: angular.IScope) {
                  this.hasElement = $element[0].nodeName;
@@ -1393,7 +1419,8 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1A'})
            class Ng1ComponentAFacade extends UpgradeComponent {
-             @Input() title: string;
+             // TODO(issue/24571): remove '!'.
+             @Input() title !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
                super('ng1A', elementRef, injector);
@@ -1402,7 +1429,8 @@ withEachNg1Version(() => {
 
            @Directive({selector: 'ng1B'})
            class Ng1ComponentBFacade extends UpgradeComponent {
-             @Input() title: string;
+             // TODO(issue/24571): remove '!'.
+             @Input() title !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
                super('ng1B', elementRef, injector);
@@ -1459,7 +1487,8 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             @Input() title: string;
+             // TODO(issue/24571): remove '!'.
+             @Input() title !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
                super('ng1', elementRef, injector);
@@ -1508,7 +1537,8 @@ withEachNg1Version(() => {
            // Define `Ng1ComponentFacade`
            @Directive({selector: 'ng1'})
            class Ng1ComponentFacade extends UpgradeComponent {
-             @Input() title: string;
+             // TODO(issue/24571): remove '!'.
+             @Input() title !: string;
 
              constructor(elementRef: ElementRef, injector: Injector) {
                super('ng1', elementRef, injector);
@@ -1748,7 +1778,7 @@ withEachNg1Version(() => {
              }
 
              // Define `ng1Module`
-             const mockExceptionHandler = jasmine.createSpy('$exceptionHandler');
+             const mockExceptionHandler = jasmine.createSpy($EXCEPTION_HANDLER);
              const ng1Module =
                  angular.module('ng1Module', [])
                      .component('ng1A', ng1ComponentA)
@@ -1757,7 +1787,7 @@ withEachNg1Version(() => {
                      .directive('ng2A', downgradeComponent({component: Ng2ComponentA}))
                      .directive('ng2B', downgradeComponent({component: Ng2ComponentB}))
                      .directive('ng2C', downgradeComponent({component: Ng2ComponentC}))
-                     .value('$exceptionHandler', mockExceptionHandler);
+                     .value($EXCEPTION_HANDLER, mockExceptionHandler);
 
              // Define `Ng2Module`
              @NgModule({
@@ -1820,11 +1850,11 @@ withEachNg1Version(() => {
              }
 
              // Define `ng1Module`
-             const mockExceptionHandler = jasmine.createSpy('$exceptionHandler');
+             const mockExceptionHandler = jasmine.createSpy($EXCEPTION_HANDLER);
              const ng1Module = angular.module('ng1Module', [])
                                    .component('ng1', ng1Component)
                                    .directive('ng2', downgradeComponent({component: Ng2Component}))
-                                   .value('$exceptionHandler', mockExceptionHandler);
+                                   .value($EXCEPTION_HANDLER, mockExceptionHandler);
 
              // Define `Ng2Module`
              @NgModule({
@@ -2473,7 +2503,7 @@ withEachNg1Version(() => {
            // Define `ng1Module`
            const ng1Module =
                angular.module('ng1Module', [])
-                   .value('$exceptionHandler', (error: Error) => errorMessage = error.message)
+                   .value($EXCEPTION_HANDLER, (error: Error) => errorMessage = error.message)
                    .component('ng1', ng1Component)
                    .directive('ng2', downgradeComponent({component: Ng2Component}));
 
@@ -3336,7 +3366,8 @@ withEachNg1Version(() => {
            @Component(
                {selector: 'ng2', template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>'})
            class Ng2Component {
-             @Input() show: boolean;
+             // TODO(issue/24571): remove '!'.
+             @Input() show !: boolean;
            }
 
            // Define `ng1Module`
@@ -3436,7 +3467,8 @@ withEachNg1Version(() => {
            @Component(
                {selector: 'ng2', template: '<div *ngIf="show"><ng1A></ng1A> | <ng1B></ng1B></div>'})
            class Ng2Component {
-             @Input() show: boolean;
+             // TODO(issue/24571): remove '!'.
+             @Input() show !: boolean;
            }
 
            // Define `ng1Module`
@@ -3598,7 +3630,211 @@ withEachNg1Version(() => {
              ng2ComponentAInstance.destroyIt = true;
              $digest(adapter);
 
-             expect(scopeDestroyListener).toHaveBeenCalled();
+             expect(scopeDestroyListener).toHaveBeenCalledTimes(1);
+           });
+         }));
+
+      it('should emit `$destroy` on `$element` and descendants', async(() => {
+           const elementDestroyListener = jasmine.createSpy('elementDestroyListener');
+           const descendantDestroyListener = jasmine.createSpy('descendantDestroyListener');
+           let ng2ComponentAInstance: Ng2ComponentA;
+
+           // Define `ng1Component`
+           const ng1Component: angular.IComponent = {
+             controller: class {
+               constructor($element: angular.IAugmentedJQuery) {
+                 $element.on !('$destroy', elementDestroyListener);
+                 $element.contents !().on !('$destroy', descendantDestroyListener);
+               }
+             },
+             template: '<div></div>'
+           };
+
+           // Define `Ng1ComponentFacade`
+           @Directive({selector: 'ng1'})
+           class Ng1ComponentFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+           class Ng2ComponentA {
+             destroyIt = false;
+
+             constructor() { ng2ComponentAInstance = this; }
+           }
+
+           @Component({selector: 'ng2B', template: '<ng1></ng1>'})
+           class Ng2ComponentB {
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1Module', [])
+                                 .component('ng1', ng1Component)
+                                 .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
+             entryComponents: [Ng2ComponentA],
+             imports: [BrowserModule, UpgradeModule]
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2-a></ng2-a>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+             expect(elementDestroyListener).not.toHaveBeenCalled();
+             expect(descendantDestroyListener).not.toHaveBeenCalled();
+
+             ng2ComponentAInstance.destroyIt = true;
+             $digest(adapter);
+
+             expect(elementDestroyListener).toHaveBeenCalledTimes(1);
+             expect(descendantDestroyListener).toHaveBeenCalledTimes(1);
+           });
+         }));
+
+      it('should clear data on `$element` and descendants`', async(() => {
+           let ng1ComponentElement: angular.IAugmentedJQuery;
+           let ng2ComponentAInstance: Ng2ComponentA;
+
+           // Define `ng1Component`
+           const ng1Component: angular.IComponent = {
+             controller: class {
+               constructor($element: angular.IAugmentedJQuery) {
+                 $element.data !('test', 1);
+                 $element.contents !().data !('test', 2);
+
+                 ng1ComponentElement = $element;
+               }
+             },
+             template: '<div></div>'
+           };
+
+           // Define `Ng1ComponentFacade`
+           @Directive({selector: 'ng1'})
+           class Ng1ComponentFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+           class Ng2ComponentA {
+             destroyIt = false;
+
+             constructor() { ng2ComponentAInstance = this; }
+           }
+
+           @Component({selector: 'ng2B', template: '<ng1></ng1>'})
+           class Ng2ComponentB {
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1Module', [])
+                                 .component('ng1', ng1Component)
+                                 .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
+             entryComponents: [Ng2ComponentA],
+             imports: [BrowserModule, UpgradeModule]
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2-a></ng2-a>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+             expect(ng1ComponentElement.data !('test')).toBe(1);
+             expect(ng1ComponentElement.contents !().data !('test')).toBe(2);
+
+             ng2ComponentAInstance.destroyIt = true;
+             $digest(adapter);
+
+             expect(ng1ComponentElement.data !('test')).toBeUndefined();
+             expect(ng1ComponentElement.contents !().data !('test')).toBeUndefined();
+           });
+         }));
+
+      it('should clear dom listeners on `$element` and descendants`', async(() => {
+           const elementClickListener = jasmine.createSpy('elementClickListener');
+           const descendantClickListener = jasmine.createSpy('descendantClickListener');
+           let ng1DescendantElement: angular.IAugmentedJQuery;
+           let ng2ComponentAInstance: Ng2ComponentA;
+
+           // Define `ng1Component`
+           const ng1Component: angular.IComponent = {
+             controller: class {
+               constructor($element: angular.IAugmentedJQuery) {
+                 ng1DescendantElement = $element.contents !();
+
+                 $element.on !('click', elementClickListener);
+                 ng1DescendantElement.on !('click', descendantClickListener);
+               }
+             },
+             template: '<div></div>'
+           };
+
+           // Define `Ng1ComponentFacade`
+           @Directive({selector: 'ng1'})
+           class Ng1ComponentFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+           class Ng2ComponentA {
+             destroyIt = false;
+
+             constructor() { ng2ComponentAInstance = this; }
+           }
+
+           @Component({selector: 'ng2B', template: '<ng1></ng1>'})
+           class Ng2ComponentB {
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1Module', [])
+                                 .component('ng1', ng1Component)
+                                 .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
+             entryComponents: [Ng2ComponentA],
+             imports: [BrowserModule, UpgradeModule]
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2-a></ng2-a>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+             (ng1DescendantElement[0] as HTMLElement).click();
+             expect(elementClickListener).toHaveBeenCalledTimes(1);
+             expect(descendantClickListener).toHaveBeenCalledTimes(1);
+
+             ng2ComponentAInstance.destroyIt = true;
+             $digest(adapter);
+
+             (ng1DescendantElement[0] as HTMLElement).click();
+             expect(elementClickListener).toHaveBeenCalledTimes(1);
+             expect(descendantClickListener).toHaveBeenCalledTimes(1);
            });
          }));
 
@@ -3720,7 +3956,8 @@ withEachNg1Version(() => {
 
          // Define `ng1Component`
          class Ng1ControllerX {
-           ng1XInputA: string;
+           // TODO(issue/24571): remove '!'.
+           ng1XInputA !: string;
            ng1XInputB: any;
            ng1XInputC: any;
 
@@ -3748,12 +3985,16 @@ withEachNg1Version(() => {
          // Define `Ng1ComponentFacade`
          @Directive({selector: 'ng1X'})
          class Ng1ComponentXFacade extends UpgradeComponent {
-           @Input() ng1XInputA: string;
+           // TODO(issue/24571): remove '!'.
+           @Input() ng1XInputA !: string;
            @Input() ng1XInputB: any;
            @Input() ng1XInputC: any;
-           @Output() ng1XInputCChange: EventEmitter<any>;
-           @Output() ng1XOutputA: EventEmitter<any>;
-           @Output() ng1XOutputB: EventEmitter<any>;
+           // TODO(issue/24571): remove '!'.
+           @Output() ng1XInputCChange !: EventEmitter<any>;
+           // TODO(issue/24571): remove '!'.
+           @Output() ng1XOutputA !: EventEmitter<any>;
+           // TODO(issue/24571): remove '!'.
+           @Output() ng1XOutputB !: EventEmitter<any>;
 
            constructor(elementRef: ElementRef, injector: Injector) {
              super('ng1X', elementRef, injector);
@@ -3866,7 +4107,8 @@ withEachNg1Version(() => {
                .toBe('ng2A(foo, bar, baz6) | ng1X(foo4, bar4, baz6) | ng2B(foo4, baz6)');
 
            // Emit from `ng1XOutputA`.
-           // (Should propagate upwards to `ng1ADataA` and back all the way down to `ng2BInputA`.)
+           // (Should propagate upwards to `ng1ADataA` and back all the way down to
+           // `ng2BInputA`.)
            (ng1ControllerXInstance as any).ng1XOutputA({value: 'foo7'});
            $digest(adapter);
            tick();

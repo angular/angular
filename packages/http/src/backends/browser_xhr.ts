@@ -13,7 +13,8 @@ import {Injectable} from '@angular/core';
  *
  * Take care not to evaluate this in non-browser contexts.
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 @Injectable()
 export class BrowserXhr {

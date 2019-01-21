@@ -1,7 +1,7 @@
 module.exports = function generateApiListDoc() {
 
   return {
-    $runAfter: ['extra-docs-added'],
+    $runAfter: ['extra-docs-added', 'computeStability'],
     $runBefore: ['rendering-docs'],
     outputFolder: null,
     $validate: {outputFolder: {presence: true}},
@@ -12,19 +12,20 @@ module.exports = function generateApiListDoc() {
         path: this.outputFolder + '/api-list.json',
         outputPath: this.outputFolder + '/api-list.json',
         data: docs
-          .filter(doc => doc.docType === 'module')
-          .map(getModuleInfo)
+          .filter(doc => doc.docType === 'package')
+          .map(getPackageInfo)
       });
     }
   };
 };
 
-function getModuleInfo(moduleDoc) {
-  const moduleName = moduleDoc.id.replace(/\/index$/, '');
+function getPackageInfo(packageDoc) {
+  const packageName = packageDoc.id.replace(/\/index$/, '');
   return {
-    name: moduleName.toLowerCase(),
-    title: moduleName,
-    items: moduleDoc.exports
+    name: packageName.toLowerCase(),
+    title: packageName,
+    path: packageDoc.path,
+    items: packageDoc.exports
                   // Ignore internals and private exports (indicated by the ɵ prefix)
                   .filter(doc => !doc.internal && !doc.privateExport)
                   .map(getExportInfo)

@@ -327,7 +327,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              const fixture = initTest(NgModelSelectWithNullForm);
              const comp = fixture.componentInstance;
              comp.cities = [{'name': 'SF'}, {'name': 'NYC'}];
-             comp.selectedCity = null !;
+             comp.selectedCity = null;
              fixture.detectChanges();
 
              const select = fixture.debugElement.query(By.css('select'));
@@ -336,7 +336,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              dispatchEvent(select.nativeElement, 'change');
              fixture.detectChanges();
              tick();
-             expect(comp.selectedCity['name']).toEqual('NYC');
+             expect(comp.selectedCity !['name']).toEqual('NYC');
 
              select.nativeElement.value = '0: null';
              dispatchEvent(select.nativeElement, 'change');
@@ -1425,7 +1425,6 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
                });
              });
            }));
-
       });
 
     });
@@ -1435,7 +1434,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
 @Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 export class FormControlComp {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({
@@ -1446,10 +1446,14 @@ export class FormControlComp {
     </form>`
 })
 export class FormGroupComp {
-  control: FormControl;
-  form: FormGroup;
-  myGroup: FormGroup;
-  event: Event;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  myGroup !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  event !: Event;
 }
 
 @Component({
@@ -1457,7 +1461,8 @@ export class FormGroupComp {
   template: `<input type="number" [formControl]="control">`
 })
 class FormControlNumberInput {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({
@@ -1572,7 +1577,7 @@ class NgModelSelectForm {
   `
 })
 class NgModelSelectWithNullForm {
-  selectedCity: {[k: string]: string} = {};
+  selectedCity: {[k: string]: string}|null = {};
   cities: any[] = [];
 }
 
@@ -1616,7 +1621,8 @@ class NgModelSelectMultipleWithCustomCompareFnForm {
   `
 })
 class NgModelSelectMultipleForm {
-  selectedCities: any[];
+  // TODO(issue/24571): remove '!'.
+  selectedCities !: any[];
   cities: any[] = [];
 }
 
@@ -1625,7 +1631,8 @@ class NgModelSelectMultipleForm {
   template: `<input type="range" [formControl]="control">`
 })
 class FormControlRangeInput {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({selector: 'ng-model-range-form', template: '<input type="range" [(ngModel)]="val">'})
@@ -1646,7 +1653,8 @@ class NgModelRangeForm {
     <input type="radio" [formControl]="showRadio" value="no">`
 })
 export class FormControlRadioButtons {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
   showRadio = new FormControl('yes');
 }
 
@@ -1663,8 +1671,10 @@ export class FormControlRadioButtons {
   `
 })
 class NgModelRadioForm {
-  food: string;
-  drink: string;
+  // TODO(issue/24571): remove '!'.
+  food !: string;
+  // TODO(issue/24571): remove '!'.
+  drink !: string;
 }
 
 @Directive({
@@ -1677,7 +1687,8 @@ class NgModelRadioForm {
 })
 class WrappedValue implements ControlValueAccessor {
   value: any;
-  onChange: Function;
+  // TODO(issue/24571): remove '!'.
+  onChange !: Function;
 
   writeValue(value: any) { this.value = `!${value}!`; }
 
@@ -1692,7 +1703,8 @@ class WrappedValue implements ControlValueAccessor {
 @Component({selector: 'my-input', template: ''})
 export class MyInput implements ControlValueAccessor {
   @Output('input') onInput = new EventEmitter();
-  value: string;
+  // TODO(issue/24571): remove '!'.
+  value !: string;
 
   constructor(cd: NgControl) { cd.valueAccessor = this; }
 
@@ -1713,7 +1725,8 @@ export class MyInput implements ControlValueAccessor {
     </div>`
 })
 export class MyInputForm {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }
 
 @Component({
@@ -1724,7 +1737,8 @@ export class MyInputForm {
     </div>`
 })
 class WrappedValueForm {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }
 
 @Component({
@@ -1735,9 +1749,11 @@ class WrappedValueForm {
   providers: [{provide: NG_VALUE_ACCESSOR, multi: true, useExisting: NgModelCustomComp}]
 })
 export class NgModelCustomComp implements ControlValueAccessor {
-  model: string;
+  // TODO(issue/24571): remove '!'.
+  model !: string;
   @Input('disabled') isDisabled: boolean = false;
-  changeFn: (value: any) => void;
+  // TODO(issue/24571): remove '!'.
+  changeFn !: (value: any) => void;
 
   writeValue(value: any) { this.model = value; }
 
@@ -1757,6 +1773,7 @@ export class NgModelCustomComp implements ControlValueAccessor {
   `
 })
 export class NgModelCustomWrapper {
-  name: string;
+  // TODO(issue/24571): remove '!'.
+  name !: string;
   isDisabled = false;
 }

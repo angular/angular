@@ -10,7 +10,8 @@ import {WrappedValue, devModeEqual} from '../change_detection/change_detection';
 import {SOURCE} from '../di/injector';
 import {ViewEncapsulation} from '../metadata/view';
 import {RendererType2} from '../render/api';
-import {looseIdentical, stringify} from '../util';
+import {looseIdentical} from '../util/comparison';
+import {stringify} from '../util/stringify';
 import {expressionChangedAfterItHasBeenCheckedError} from './errors';
 import {BindingDef, BindingFlags, Definition, DefinitionFactory, DepDef, DepFlags, ElementData, NodeDef, NodeFlags, QueryValueType, Services, ViewData, ViewDefinition, ViewDefinitionFactory, ViewFlags, ViewState, asElementData, asTextData} from './types';
 

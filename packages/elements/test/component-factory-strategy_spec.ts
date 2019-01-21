@@ -26,6 +26,8 @@ describe('ComponentFactoryNgElementStrategy', () => {
     componentRef = factory.componentRef;
 
     applicationRef = jasmine.createSpyObj('applicationRef', ['attachView']);
+    injector = jasmine.createSpyObj('injector', ['get']);
+    injector.get.and.returnValue(applicationRef);
 
     strategy = new ComponentNgElementStrategy(factory, injector);
   });
@@ -33,7 +35,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
   it('should create a new strategy from the factory', () => {
     const factoryResolver = jasmine.createSpyObj('factoryResolver', ['resolveComponentFactory']);
     factoryResolver.resolveComponentFactory.and.returnValue(factory);
-    injector = jasmine.createSpyObj('injector', ['get']);
     injector.get.and.returnValue(factoryResolver);
 
     const strategyFactory = new ComponentNgElementStrategyFactory(FakeComponent, injector);
@@ -44,7 +45,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
     beforeEach(() => {
       // Set up an initial value to make sure it is passed to the component
       strategy.setInputValue('fooFoo', 'fooFoo-1');
-      injector.get.and.returnValue(applicationRef);
       strategy.connect(document.createElement('div'));
     });
 

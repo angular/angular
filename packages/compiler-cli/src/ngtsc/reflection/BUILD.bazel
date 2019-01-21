@@ -1,0 +1,12 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "reflection",
+    srcs = glob([
+        "index.ts",
+        "src/**/*.ts",
+    ]),
+    deps = ["@ngdeps//typescript"],
+)

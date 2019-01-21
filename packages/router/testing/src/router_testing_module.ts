@@ -40,7 +40,7 @@ import {ChildrenOutletContexts, ExtraOptions, NoPreloading, PreloadingStrategy, 
  * router.navigateByUrl('/lazy/loaded');
  * ```
  *
- *
+ * @publicApi
  */
 @Injectable()
 export class SpyNgModuleFactoryLoader implements NgModuleFactoryLoader {
@@ -86,7 +86,7 @@ function isUrlHandlingStrategy(opts: ExtraOptions | UrlHandlingStrategy):
 /**
  * Router setup factory function used for testing.
  *
- *
+ * @publicApi
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -98,6 +98,7 @@ export function setupTestingRouter(
  *
  * @deprecated As of v5.2. The 2nd-to-last argument should be `ExtraOptions`, not
  * `UrlHandlingStrategy`
+ * @publicApi
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -107,7 +108,7 @@ export function setupTestingRouter(
 /**
  * Router setup factory function used for testing.
  *
- *
+ * @publicApi
  */
 export function setupTestingRouter(
     urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location,
@@ -115,12 +116,20 @@ export function setupTestingRouter(
     opts?: ExtraOptions | UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy) {
   const router = new Router(
       null !, urlSerializer, contexts, location, injector, loader, compiler, flatten(routes));
-  // Handle deprecated argument ordering.
   if (opts) {
+    // Handle deprecated argument ordering.
     if (isUrlHandlingStrategy(opts)) {
       router.urlHandlingStrategy = opts;
-    } else if (opts.paramsInheritanceStrategy) {
-      router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
+    } else {
+      // Handle ExtraOptions
+
+      if (opts.malformedUriErrorHandler) {
+        router.malformedUriErrorHandler = opts.malformedUriErrorHandler;
+      }
+
+      if (opts.paramsInheritanceStrategy) {
+        router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
+      }
     }
   }
 
@@ -139,6 +148,7 @@ export function setupTestingRouter(
  * It provides spy implementations of `Location`, `LocationStrategy`, and {@link
  * NgModuleFactoryLoader}.
  *
+ * @usageNotes
  * ### Example
  *
  * ```
@@ -153,7 +163,7 @@ export function setupTestingRouter(
  * });
  * ```
  *
- *
+ * @publicApi
  */
 @NgModule({
   exports: [RouterModule],
@@ -172,7 +182,8 @@ export function setupTestingRouter(
   ]
 })
 export class RouterTestingModule {
-  static withRoutes(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
+  static withRoutes(routes: Routes, config?: ExtraOptions):
+      ModuleWithProviders<RouterTestingModule> {
     return {
       ngModule: RouterTestingModule,
       providers: [

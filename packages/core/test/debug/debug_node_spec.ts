@@ -141,10 +141,13 @@ class LocalsComp {
  `
 })
 class BankAccount {
-  @Input() bank: string;
-  @Input('account') id: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() bank !: string;
+  // TODO(issue/24571): remove '!'.
+  @Input('account') id !: string;
 
-  normalizedBankName: string;
+  // TODO(issue/24571): remove '!'.
+  normalizedBankName !: string;
 }
 
 @Component({
@@ -334,7 +337,6 @@ class TestApp {
 
       expect(fixture.debugElement.children[0].listeners.length).toEqual(1);
       expect(fixture.debugElement.children[1].listeners.length).toEqual(1);
-
     });
 
     it('should trigger event handlers', () => {

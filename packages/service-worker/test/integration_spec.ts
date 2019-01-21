@@ -6,19 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgswCommChannel} from '@angular/service-worker/src/low_level';
+import {SwPush} from '@angular/service-worker/src/push';
+import {SwUpdate} from '@angular/service-worker/src/update';
+import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '@angular/service-worker/testing/mock';
+import {CacheDatabase} from '@angular/service-worker/worker/src/db-cache';
+import {Driver} from '@angular/service-worker/worker/src/driver';
+import {Manifest} from '@angular/service-worker/worker/src/manifest';
+import {MockRequest} from '@angular/service-worker/worker/testing/fetch';
+import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '@angular/service-worker/worker/testing/mock';
+import {SwTestHarness, SwTestHarnessBuilder} from '@angular/service-worker/worker/testing/scope';
 import {Observable} from 'rxjs';
 import {take} from 'rxjs/operators';
-
-import {NgswCommChannel} from '../src/low_level';
-import {SwPush} from '../src/push';
-import {SwUpdate} from '../src/update';
-import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../testing/mock';
-import {CacheDatabase} from '../worker/src/db-cache';
-import {Driver} from '../worker/src/driver';
-import {Manifest} from '../worker/src/manifest';
-import {MockRequest} from '../worker/testing/fetch';
-import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../worker/testing/mock';
-import {SwTestHarness, SwTestHarnessBuilder} from '../worker/testing/scope';
 
 import {async_beforeEach, async_fit, async_it} from './async';
 
@@ -80,7 +79,7 @@ const serverUpdate =
     async_beforeEach(async() => {
       // Fire up the client.
       mock = new MockServiceWorkerContainer();
-      comm = new NgswCommChannel(mock as any, 'browser');
+      comm = new NgswCommChannel(mock as any);
       scope = new SwTestHarnessBuilder().withServerState(server).build();
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
@@ -88,9 +87,10 @@ const serverUpdate =
       scope.clients.getMock('default') !.queue.subscribe(msg => { mock.sendMessage(msg); });
 
       mock.messages.subscribe(msg => { scope.handleMessage(msg, 'default'); });
+      mock.notificationClicks.subscribe(msg => { scope.handleMessage(msg, 'default'); });
 
       mock.setupSw();
-      reg = await mock.mockRegistration;
+      reg = mock.mockRegistration !;
 
       await Promise.all(scope.handleFetch(new MockRequest('/only.txt'), 'default'));
       await driver.initialized;
@@ -127,6 +127,20 @@ const serverUpdate =
         test: 'success',
       });
       await gotPushNotice;
+    });
+
+    async_it('receives push message click events', async() => {
+      const push = new SwPush(comm);
+      scope.updateServerState(serverUpdate);
+
+      const gotNotificationClick = (async() => {
+        const event: any = await obsToSinglePromise(push.notificationClicks);
+        expect(event.action).toEqual('clicked');
+        expect(event.notification.title).toEqual('This is a test');
+      })();
+
+      await scope.handleClick({title: 'This is a test'}, 'clicked');
+      await gotNotificationClick;
     });
   });
 })();

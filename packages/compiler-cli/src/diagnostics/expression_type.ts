@@ -23,7 +23,8 @@ export class TypeDiagnostic {
 
 // AstType calculatetype of the ast given AST element.
 export class AstType implements AstVisitor {
-  public diagnostics: TypeDiagnostic[];
+  // TODO(issue/24571): remove '!'.
+  public diagnostics !: TypeDiagnostic[];
 
   constructor(
       private scope: SymbolTable, private query: SymbolQuery,
@@ -334,7 +335,8 @@ export class AstType implements AstVisitor {
     return this.resolvePropertyRead(this.query.getNonNullableType(this.getType(ast.receiver)), ast);
   }
 
-  private _anyType: Symbol;
+  // TODO(issue/24571): remove '!'.
+  private _anyType !: Symbol;
   private get anyType(): Symbol {
     let result = this._anyType;
     if (!result) {
@@ -343,7 +345,8 @@ export class AstType implements AstVisitor {
     return result;
   }
 
-  private _undefinedType: Symbol;
+  // TODO(issue/24571): remove '!'.
+  private _undefinedType !: Symbol;
   private get undefinedType(): Symbol {
     let result = this._undefinedType;
     if (!result) {

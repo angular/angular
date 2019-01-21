@@ -8,7 +8,7 @@ This document contains the practices that we follow to provide you with a leadin
 
 See [Updating your projects](guide/updating "Updating your projects") for information about how to update your apps and libraries to the latest version of Angular.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The practices described in this document apply to Angular 2.0 and later. If you are currently using AngularJS, see [Upgrading from AngularJS](guide/upgrade "Upgrading from Angular JS"). _AngularJS_ is the name for all v1.x versions of Angular.
 
@@ -57,7 +57,7 @@ This cadence of releases gives you access to new beta features as soon as they a
 {@a schedule}
 ## Release schedule
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Disclaimer: The dates are offered as general guidance and may be adjusted by us when necessary to ensure delivery of a high-quality platform. 
 
@@ -65,32 +65,34 @@ Disclaimer: The dates are offered as general guidance and may be adjusted by us 
 
 The following table contains our current target release dates for the next two major versions of Angular: 
 
- Date                   | Stable Release | Compatibility
- ---------------------- | -------------- | ----------------
- September/October 2018 | 7.0.0          | ^6.0.0
+ Date                   | Stable Release | Compatibility 
+ ---------------------- | -------------- | -------------
  March/April 2019       | 8.0.0          | ^7.0.0
+ September/October 2019 | 9.0.0          | ^8.0.0
 
- Compatiblity note: The primary goal of the backwards compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
+ Compatibility note: The primary goal of the backward compatibility promise is to ensure that changes in the core framework and tooling don't break the existing ecosystem of components and applications and don't put undue upgrade/migration burden on Angular application and component authors.
 
 
 {@a lts}
-## Long-term support
+{@a support}
+## Support policy and schedule
 
-All of our releases are supported actively for about 6 months (until the next major release), and then they are supported through long-term support (LTS) for another 12 months.
+All of our major releases are supported for 18 months. 
 
-During the LTS period, only critical fixes and security patches will be merged and released.
+* 6 months of *active support*, during which regularly-scheduled updates and patches are released.
 
-The LTS state of one major version starts on the day of the next major release. LTS status ends approximately one year later, when we release another major version. 
+* 12 months of *long-term support (LTS)*, during which only critical fixes and security patches are released.
 
-
-
- Version     | LTS Start Date | LTS End Date
- ----------- | -------------- | ------------
- ^4.0.0      | October 2017   | October 2018
- ^5.0.0      | April 2018     | April 2019
- ^6.0.0      | October 2018   | October 2019
+The following table provides the support status and key dates for Angular version 5.0.0 and higher. 
 
 
+Version | Status | Released     | Active Ends  | LTS Ends
+------- | ------ | ------------ | ------------ | ------------ 
+^7.0.0  | Active | Oct 18, 2018 | Apr 18, 2019 | Apr 18, 2020
+^6.0.0  | LTS    | May 3, 2018  | Nov 3, 2018  | Nov 3, 2019
+^5.0.0  | LTS    | Nov 1, 2017  | May 1, 2018  | May 1, 2019
+
+LTS for Angular version ^4.0.0 ended on September 23, 2018.
 
 
 {@a deprecation}
@@ -106,7 +108,7 @@ To make these transitions as easy as possible, we make two commitments to you:
 
 To help ensure that you have sufficient time and a clear path to update, this is our deprecation policy:
 
-* When announce deprecated features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log").
+* We announce deprecated features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log").
 
 * When we announce a deprecation, we also announce a recommended update path.
 
@@ -127,8 +129,6 @@ Any changes to the public API surface will be done using the versioning, support
 {@a labs}
 ## Angular Labs
 
-Angular Labs is an initiative to cultivate new features and iterate on them quickly. Angular Labs provides a safe place for exploration and experimentation by the Angular team. 
+Angular Labs is an initiative to cultivate new features and iterate on them quickly. Angular Labs provides a safe place for exploration and experimentation by the Angular team.
 
-Angular Labs projects are are not ready for production use, and no commitment is made to bring them to production. The policies and practices that are described in this document do not apply to Angular Labs projects. 
-
-Angular Labs projects typically are in separate branches in the Angular repo, clearly separated from the main Angular codebase. 
+Angular Labs projects are not ready for production use, and no commitment is made to bring them to production. The policies and practices that are described in this document do not apply to Angular Labs projects.

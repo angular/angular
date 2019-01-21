@@ -11,6 +11,7 @@ import {getDebugContext} from '@angular/core/src/errors';
 import {BindingFlags, NodeFlags, Services, ViewData, ViewDefinition, asElementData, elementDef} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
+import {fixmeIvy} from '@angular/private/testing';
 
 import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDynamic, compViewDef, createAndGetRootNodes, isBrowser, recordNodeToRemove} from './helper';
 
@@ -20,8 +21,8 @@ import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDy
  * We map addEventListener to the Zones internal name. This is because we want to be fast
  * and bypass the zone bookkeeping. We know that we can do the bookkeeping faster.
  */
-const addEventListener = '__zone_symbol__addEventListener';
-const removeEventListener = '__zone_symbol__removeEventListener';
+const addEventListener = '__zone_symbol__addEventListener' as 'addEventListener';
+const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEventListener';
 
 {
   describe(`View Elements`, () => {
@@ -184,6 +185,7 @@ const removeEventListener = '__zone_symbol__removeEventListener';
           return result;
         }
 
+
         it('should listen to DOM events', () => {
           const handleEventSpy = jasmine.createSpy('handleEvent');
           const removeListenerSpy =
@@ -251,6 +253,7 @@ const removeEventListener = '__zone_symbol__removeEventListener';
           expect(removeListenerSpy).toHaveBeenCalled();
         });
 
+
         it('should preventDefault only if the handler returns false', () => {
           let eventHandlerResult: any;
           let preventDefaultSpy: jasmine.Spy = undefined !;
@@ -278,6 +281,7 @@ const removeEventListener = '__zone_symbol__removeEventListener';
           rootNodes[0].click();
           expect(preventDefaultSpy).toHaveBeenCalled();
         });
+
 
         it('should report debug info on event errors', () => {
           const handleErrorSpy = spyOn(TestBed.get(ErrorHandler), 'handleError');

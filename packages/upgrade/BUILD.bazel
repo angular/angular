@@ -7,14 +7,15 @@ ng_module(
     srcs = glob(
         [
             "*.ts",
-            "src/**/*.ts",
+            "src/common/**/*.ts",
+            "src/dynamic/**/*.ts",
         ],
     ),
-    module_name = "@angular/upgrade",
     deps = [
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
+        "@ngdeps//zone.js",
     ],
 )
 
@@ -25,7 +26,12 @@ ng_package(
         "//packages/upgrade/static:package.json",
     ],
     entry_point = "packages/upgrade/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":upgrade",
         "//packages/upgrade/static",

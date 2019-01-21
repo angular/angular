@@ -5,20 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {animate, group, query, state, style, transition, trigger} from '@angular/animations';
+import {animate, query, state, style, transition, trigger} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine, ɵWebAnimationsDriver, ɵWebAnimationsPlayer, ɵsupportsWebAnimations} from '@angular/animations/browser';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_group_player';
 import {Component} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-
-import {TestBed} from '../../testing';
+import {fixmeIvy} from '@angular/private/testing';
 
 (function() {
   // these tests are only mean't to be run within the DOM (for now)
   // Buggy in Chromium 39, see https://github.com/angular/angular/issues/15793
-  if (typeof Element == 'undefined' || !ɵsupportsWebAnimations()) return;
+  if (isNode || !ɵsupportsWebAnimations()) return;
 
   describe('animation integration tests using web animations', function() {
 
@@ -138,7 +138,8 @@ import {TestBed} from '../../testing';
             [transition('* => *', [style({height: '!'}), animate(1000, style({height: '*'}))])])]
       })
       class Cmp {
-        public exp: number;
+        // TODO(issue/24571): remove '!'.
+        public exp !: number;
         public items = [0, 1, 2, 3, 4];
       }
 
@@ -358,7 +359,8 @@ import {TestBed} from '../../testing';
         ]
       })
       class Cmp {
-        public exp: string;
+        // TODO(issue/24571): remove '!'.
+        public exp !: string;
       }
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -411,7 +413,8 @@ import {TestBed} from '../../testing';
            ]
          })
          class Cmp {
-           public exp: string;
+           // TODO(issue/24571): remove '!'.
+           public exp !: string;
            public items: any[] = [];
          }
 

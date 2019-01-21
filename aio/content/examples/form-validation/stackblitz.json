@@ -2,6 +2,7 @@
   "description": "Validation",
   "files":[
     "!**/*.d.ts",
-    "!**/*.js"
+    "!**/*.js",
+    "!**/*.[1].*"
   ]
 }

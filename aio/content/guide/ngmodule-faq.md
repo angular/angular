@@ -71,7 +71,7 @@ as well as dynamically loaded in a pop-up dialog.
 This error often means that you haven't declared the directive "x"
 or haven't imported the NgModule to which "x" belongs.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Perhaps you declared "x" in an application sub-module but forgot to export it.
 The "x" class isn't visible to other modules until you add it to the `exports` list.
@@ -95,7 +95,7 @@ if your components have `[(ngModel)]` two-way binding expressions.
 Import _shared_ and _feature_ modules when this module's components incorporate their
 components, directives, and pipes.
 
-Import only [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module) in the root `AppModule`.
+Import [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module) only in the root `AppModule`.
 
 <hr/>
 
@@ -219,7 +219,7 @@ configure services in root and feature modules respectively.
 
 Angular doesn't recognize these names but Angular developers do.
 Follow this convention when you write similar modules with configurable service providers.
-<!--KW--I don't understand how Angular doesn't understand these methods...-->
+
 
 <hr/>
 
@@ -233,9 +233,8 @@ When you import an NgModule,
 Angular adds the module's service providers (the contents of its `providers` list)
 to the application root injector.
 
-This makes the provider visible to every class in the application that knows the provider's lookup token, or knows its name.
+This makes the provider visible to every class in the application that knows the provider's lookup token, or name.
 
-This is by design.
 Extensibility through NgModule imports is a primary goal of the NgModule system.
 Merging NgModule providers into the application injector
 makes it easy for a module library to enrich the entire application with new services.
@@ -246,6 +245,8 @@ to be visible only to the components declared by that feature module.
 If the `HeroModule` provides the `HeroService` and the root `AppModule` imports `HeroModule`,
 any class that knows the `HeroService` _type_ can inject that service,
 not just the classes declared in the `HeroModule`.
+
+To limit access to a service, consider lazy loading the NgModule that provides that service. See [How do I restrict service scope to a module?](guide/ngmodule-faq#service-scope) for more information.
 
 <hr/>
 
@@ -288,6 +289,7 @@ The `AppModule` always wins.
 
 <hr/>
 
+{@a service-scope}
 
 ## How do I restrict service scope to a module?
 
@@ -334,6 +336,8 @@ Be sure to create module components as children of this module's top component.
 You can embed the child components in the top component's template.
 Alternatively, make the top component a routing host by giving it a `<router-outlet>`.
 Define child routes and let the router load module components into that outlet.
+
+Though you can limit access to a service by providing it in a lazy loaded module or providing it in a component, providing services in a component can lead to multiple instances of those services. Thus, the lazy loading is preferable.
 
 <hr/>
 
@@ -476,7 +480,7 @@ You can throw an error or take other remedial action.
 Certain NgModules, such as `BrowserModule`, implement such a guard.
 Here is a custom constructor for an NgModule called `CoreModule`.
 
-<code-example path="ngmodule-faq/src/app/core/core.module.ts" region="ctor" title="src/app/core/core.module.ts (Constructor)" linenums="false">
+<code-example path="ngmodule-faq/src/app/core/core.module.ts" region="ctor" header="src/app/core/core.module.ts (Constructor)" linenums="false">
 </code-example>
 
 <hr/>

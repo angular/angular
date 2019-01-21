@@ -84,7 +84,8 @@ export function getPipesTable(
 
 class TypeScriptSymbolQuery implements SymbolQuery {
   private typeCache = new Map<BuiltinType, Symbol>();
-  private pipesCache: SymbolTable;
+  // TODO(issue/24571): remove '!'.
+  private pipesCache !: SymbolTable;
 
   constructor(
       private program: ts.Program, private checker: ts.TypeChecker, private source: ts.SourceFile,
@@ -283,8 +284,10 @@ class TypeWrapper implements Symbol {
 
 class SymbolWrapper implements Symbol {
   private symbol: ts.Symbol;
-  private _tsType: ts.Type;
-  private _members: SymbolTable;
+  // TODO(issue/24571): remove '!'.
+  private _tsType !: ts.Type;
+  // TODO(issue/24571): remove '!'.
+  private _members !: SymbolTable;
 
   public readonly nullable: boolean = false;
   public readonly language: string = 'typescript';
@@ -529,7 +532,8 @@ class PipesTable implements SymbolTable {
 const INDEX_PATTERN = /[\\/]([^\\/]+)[\\/]\1\.d\.ts$/;
 
 class PipeSymbol implements Symbol {
-  private _tsType: ts.Type;
+  // TODO(issue/24571): remove '!'.
+  private _tsType !: ts.Type;
   public readonly kind: DeclarationKind = 'pipe';
   public readonly language: string = 'typescript';
   public readonly container: Symbol|undefined = undefined;
@@ -714,13 +718,20 @@ function getBuiltinTypeFromTs(kind: BuiltinType, context: TypeContext): ts.Type 
           checker.getTypeAtLocation(setParents(<ts.Node>{kind: ts.SyntaxKind.NullKeyword}, node));
       break;
     case BuiltinType.Number:
-      const numeric = <ts.Node>{kind: ts.SyntaxKind.NumericLiteral};
+      const numeric = <ts.LiteralLikeNode>{
+        kind: ts.SyntaxKind.NumericLiteral,
+        text: node.getText(),
+      };
       setParents(<any>{kind: ts.SyntaxKind.ExpressionStatement, expression: numeric}, node);
       type = checker.getTypeAtLocation(numeric);
       break;
     case BuiltinType.String:
-      type = checker.getTypeAtLocation(
-          setParents(<ts.Node>{kind: ts.SyntaxKind.NoSubstitutionTemplateLiteral}, node));
+      type = checker.getTypeAtLocation(setParents(
+          <ts.LiteralLikeNode>{
+            kind: ts.SyntaxKind.NoSubstitutionTemplateLiteral,
+            text: node.getText(),
+          },
+          node));
       break;
     case BuiltinType.Undefined:
       type = checker.getTypeAtLocation(setParents(

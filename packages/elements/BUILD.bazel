@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/elements",
     deps = [
         "//packages/core",
         "//packages/platform-browser",
@@ -28,7 +27,12 @@ ng_package(
     packages = [
         "//packages/elements/schematics:npm_package",
     ],
-    tags = ["release-with-framework"],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":elements",
     ],

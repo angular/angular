@@ -18,7 +18,7 @@ import {createCustomEvent, getComponentInputs, getDefaultAttributeToPropertyInpu
  * that can be used for custom element registration. Implemented and returned
  * by the {@link createCustomElement createCustomElement() function}.
  *
- * @experimental
+ * @publicApi
  */
 export interface NgElementConstructor<P> {
   /**
@@ -37,13 +37,14 @@ export interface NgElementConstructor<P> {
 /**
  * Implements the functionality needed for a custom element.
  *
- * @experimental
+ * @publicApi
  */
 export abstract class NgElement extends HTMLElement {
   /**
    * The strategy that controls how a component is transformed in a custom element.
    */
-  protected ngElementStrategy: NgElementStrategy;
+  // TODO(issue/24571): remove '!'.
+  protected ngElementStrategy !: NgElementStrategy;
   /**
    * A subscription to change, connect, and disconnect events in the custom element.
    */
@@ -76,7 +77,7 @@ export abstract class NgElement extends HTMLElement {
  * for properties that are added based
  * on the inputs and methods of the underlying component.
  *
- * @experimental
+ * @publicApi
  */
 export type WithProperties<P> = {
   [property in keyof P]: P[property]
@@ -87,7 +88,7 @@ export type WithProperties<P> = {
  * dependencies and strategy it needs to transform a component into
  * a custom element class.
  *
- * @experimental
+ * @publicApi
  */
 export interface NgElementConfig {
   /**
@@ -96,7 +97,7 @@ export interface NgElementConfig {
   injector: Injector;
   /**
    * An optional custom strategy factory to use instead of the default.
-   * The strategy controls how the tranformation is performed.
+   * The strategy controls how the transformation is performed.
    */
   strategyFactory?: NgElementStrategyFactory;
 }
@@ -119,7 +120,7 @@ export interface NgElementConfig {
  * @returns The custom-element construction class, which can be registered with
  * a browser's `CustomElementRegistry`.
  *
- * @experimental
+ * @publicApi
  */
 export function createCustomElement<P>(
     component: Type<any>, config: NgElementConfig): NgElementConstructor<P> {
@@ -131,31 +132,48 @@ export function createCustomElement<P>(
   const attributeToPropertyInputs = getDefaultAttributeToPropertyInputs(inputs);
 
   class NgElementImpl extends NgElement {
-    static readonly observedAttributes = Object.keys(attributeToPropertyInputs);
+    // Work around a bug in closure typed optimizations(b/79557487) where it is not honoring static
+    // field externs. So using quoted access to explicitly prevent renaming.
+    static readonly['observedAttributes'] = Object.keys(attributeToPropertyInputs);
 
     constructor(injector?: Injector) {
       super();
+
+      // Note that some polyfills (e.g. document-register-element) do not call the constructor.
+      // Do not assume this strategy has been created.
+      // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
+      // now this is tested using a Google internal test suite.
       this.ngElementStrategy = strategyFactory.create(injector || config.injector);
     }
 
     attributeChangedCallback(
         attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
+      if (!this.ngElementStrategy) {
+        this.ngElementStrategy = strategyFactory.create(config.injector);
+      }
+
       const propName = attributeToPropertyInputs[attrName] !;
       this.ngElementStrategy.setInputValue(propName, newValue);
     }
 
     connectedCallback(): void {
+      if (!this.ngElementStrategy) {
+        this.ngElementStrategy = strategyFactory.create(config.injector);
+      }
+
       this.ngElementStrategy.connect(this);
 
       // Listen for events from the strategy and dispatch them as custom events
       this.ngElementEventsSubscription = this.ngElementStrategy.events.subscribe(e => {
-        const customEvent = createCustomEvent(this.ownerDocument, e.name, e.value);
+        const customEvent = createCustomEvent(this.ownerDocument !, e.name, e.value);
         this.dispatchEvent(customEvent);
       });
     }
 
     disconnectedCallback(): void {
-      this.ngElementStrategy.disconnect();
+      if (this.ngElementStrategy) {
+        this.ngElementStrategy.disconnect();
+      }
 
       if (this.ngElementEventsSubscription) {
         this.ngElementEventsSubscription.unsubscribe();

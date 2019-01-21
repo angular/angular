@@ -125,41 +125,41 @@ describe('RouterState & Snapshot', () => {
     }
 
     it('should return false when params are different', () => {
-      expect(equalParamsAndUrlSegments(createSnapshot({a: 1}, []), createSnapshot({a: 2}, [])))
+      expect(equalParamsAndUrlSegments(createSnapshot({a: '1'}, []), createSnapshot({a: '2'}, [])))
           .toEqual(false);
     });
 
     it('should return false when urls are different', () => {
       expect(equalParamsAndUrlSegments(
-                 createSnapshot({a: 1}, [new UrlSegment('a', {})]),
-                 createSnapshot({a: 1}, [new UrlSegment('b', {})])))
+                 createSnapshot({a: '1'}, [new UrlSegment('a', {})]),
+                 createSnapshot({a: '1'}, [new UrlSegment('b', {})])))
           .toEqual(false);
     });
 
     it('should return true othewise', () => {
       expect(equalParamsAndUrlSegments(
-                 createSnapshot({a: 1}, [new UrlSegment('a', {})]),
-                 createSnapshot({a: 1}, [new UrlSegment('a', {})])))
+                 createSnapshot({a: '1'}, [new UrlSegment('a', {})]),
+                 createSnapshot({a: '1'}, [new UrlSegment('a', {})])))
           .toEqual(true);
     });
 
     it('should return false when upstream params are different', () => {
       const [snapshot1, snapshot2] =
-          createSnapshotPairWithParent([{a: 1}, {a: 1}], [{b: 1}, {c: 1}], ['a', 'a']);
+          createSnapshotPairWithParent([{a: '1'}, {a: '1'}], [{b: '1'}, {c: '1'}], ['a', 'a']);
 
       expect(equalParamsAndUrlSegments(snapshot1, snapshot2)).toEqual(false);
     });
 
     it('should return false when upstream urls are different', () => {
       const [snapshot1, snapshot2] =
-          createSnapshotPairWithParent([{a: 1}, {a: 1}], [{b: 1}, {b: 1}], ['a', 'b']);
+          createSnapshotPairWithParent([{a: '1'}, {a: '1'}], [{b: '1'}, {b: '1'}], ['a', 'b']);
 
       expect(equalParamsAndUrlSegments(snapshot1, snapshot2)).toEqual(false);
     });
 
     it('should return true when upstream urls and params are equal', () => {
       const [snapshot1, snapshot2] =
-          createSnapshotPairWithParent([{a: 1}, {a: 1}], [{b: 1}, {b: 1}], ['a', 'a']);
+          createSnapshotPairWithParent([{a: '1'}, {a: '1'}], [{b: '1'}, {b: '1'}], ['a', 'a']);
 
       expect(equalParamsAndUrlSegments(snapshot1, snapshot2)).toEqual(true);
     });
@@ -184,8 +184,8 @@ describe('RouterState & Snapshot', () => {
     }
 
     it('should call change observers', () => {
-      const firstPlace = createSnapshot({a: 1}, []);
-      const secondPlace = createSnapshot({a: 2}, []);
+      const firstPlace = createSnapshot({a: '1'}, []);
+      const secondPlace = createSnapshot({a: '2'}, []);
       route.snapshot = firstPlace;
       (route as any)._futureSnapshot = secondPlace;
 

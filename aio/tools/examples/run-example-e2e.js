@@ -18,8 +18,6 @@ const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 const IGNORED_EXAMPLES = [ // temporary ignores
   'quickstart',
   'setup',
-  'webpack',
-  'upgrade-p'
 ];
 
 /**
@@ -70,7 +68,7 @@ function runE2e() {
 // that they should run under. Then run each app/spec collection sequentially.
 function findAndRunE2eTests(filter, outputFile, shard) {
 
-  const shardParts = shard ? shard.split('/') : [0,1];
+  const shardParts = shard ? shard.split('/') : [0, 1];
   const shardModulo = parseInt(shardParts[0], 10);
   const shardDivider = parseInt(shardParts[1], 10);
 
@@ -84,10 +82,16 @@ function findAndRunE2eTests(filter, outputFile, shard) {
   const status = { passed: [], failed: [] };
   return getE2eSpecs(EXAMPLES_PATH, filter)
     .then(e2eSpecPaths => {
+      console.log('All e2e specs:');
+      logSpecs(e2eSpecPaths);
+
       Object.keys(e2eSpecPaths).forEach(key => {
         const value = e2eSpecPaths[key];
         e2eSpecPaths[key] = value.filter((p, index) => index % shardDivider === shardModulo);
       });
+
+      console.log(`E2e specs for shard ${shardParts.join('/')}:`);
+      logSpecs(e2eSpecPaths);
 
       return e2eSpecPaths.systemjs.reduce((promise, specPath) => {
         return promise.then(() => {
@@ -200,20 +204,22 @@ function runProtractorAoT(appDir, outputFile) {
 // CLI version
 function runE2eTestsCLI(appDir, outputFile) {
   console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
-  // `--preserve-symlinks` is needed due the symlinked `node_modules/` in each example.
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
-  const args = ['e2e', '--no-webdriver-update'];
-  const e2eSpawn = spawnExt('yarn', args, { cwd: appDir });
-  return e2eSpawn.promise.then(
-    function () {
-      fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`);
-      return finish(e2eSpawn.proc.pid, true);
-    },
-    function () {
-      fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`);
-      return finish(e2eSpawn.proc.pid, false);
-    }
-  );
+  const config = loadExampleConfig(appDir);
+  const commands = config.e2e || [{ cmd: 'yarn', args: ['e2e', '--no-webdriver-update'] }];
+
+  const e2eSpawnPromise = commands.reduce((prevSpawnPromise, { cmd, args }) => {
+    return prevSpawnPromise.then(() => {
+      const currSpawn = spawnExt(cmd, args, { cwd: appDir });
+      return currSpawn.promise.then(
+          () => Promise.resolve(finish(currSpawn.proc.pid, true)),
+          () => Promise.reject(finish(currSpawn.proc.pid, false)));
+    });
+  }, Promise.resolve());
+
+  return e2eSpawnPromise.then(
+      () => { fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`); return true; },
+      () => { fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`); return false; });
 }
 
 // Report final status.
@@ -313,6 +319,18 @@ function loadExampleConfig(exampleFolder) {
   } catch (e) { }
 
   return config;
+}
+
+// Log the specs (for debugging purposes).
+// `e2eSpecPaths` is of type: `{[type: string]: string[]}`
+// (where `type` is `systemjs`, `cli, etc.)
+function logSpecs(e2eSpecPaths) {
+  Object.keys(e2eSpecPaths).forEach(type => {
+    const paths = e2eSpecPaths[type];
+
+    console.log(`  ${type.toUpperCase()}:`);
+    console.log(paths.map(p => `    ${p}`).join('\n'));
+  });
 }
 
 runE2e();

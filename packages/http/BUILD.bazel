@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/http",
     deps = [
         "//packages/core",
         "//packages/platform-browser",
@@ -25,7 +24,12 @@ ng_package(
         "//packages/http/testing:package.json",
     ],
     entry_point = "packages/http/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":http",
         "//packages/http/testing",

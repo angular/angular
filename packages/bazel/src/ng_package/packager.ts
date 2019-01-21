@@ -73,6 +73,9 @@ function main(args: string[]): number {
       // List of all files in the ng_package rule's srcs.
       srcsArg,
 
+      // List of all type definitions that need to packaged into the ng_package.
+      typeDefinitionsArg,
+
       // List of all files in the ng_package rule's data.
       dataArg,
 
@@ -85,6 +88,7 @@ function main(args: string[]): number {
   const esm2015 = esm2015Arg.split(',').filter(s => !!s);
   const esm5 = esm5Arg.split(',').filter(s => !!s);
   const bundles = bundlesArg.split(',').filter(s => !!s);
+  const typeDefinitions = typeDefinitionsArg.split(',').filter(s => !!s);
   const srcs = srcsArg.split(',').filter(s => !!s);
   const dataFiles: string[] = dataArg.split(',').filter(s => !!s);
   const modulesManifest = JSON.parse(modulesManifestArg);
@@ -134,7 +138,8 @@ function main(args: string[]): number {
    * @param outDir path where we copy the file, relative to the out
    */
   function writeEsmFile(file: string, suffix: string, outDir: string) {
-    const root = file.substr(0, file.lastIndexOf(suffix + path.sep) + suffix.length + 1);
+    // Note that the specified file path is always using the posix path delimiter.
+    const root = file.substr(0, file.lastIndexOf(`${suffix}/`) + suffix.length + 1);
     const rel = path.dirname(path.relative(path.join(root, srcDir), file));
     if (!rel.startsWith('..')) {
       copyFile(file, path.join(out, outDir), rel);
@@ -148,11 +153,12 @@ function main(args: string[]): number {
   fesm2015.forEach(file => { copyFile(file, out, 'fesm2015'); });
   fesm5.forEach(file => { copyFile(file, out, 'fesm5'); });
 
-  const allsrcs = shx.find('-R', binDir);
-  allsrcs.filter(hasFileExtension('.d.ts')).forEach((f: string) => {
+  // Copy all type definitions into the package. This is necessary so that developers can use
+  // the package with type definitions.
+  typeDefinitions.forEach((f: string) => {
     const content = fs.readFileSync(f, 'utf-8')
                         // Strip the named AMD module for compatibility with non-bazel users
-                        .replace(/^\/\/\/ <amd-module name=.*\/>\n/, '');
+                        .replace(/^\/\/\/ <amd-module name=.*\/>[\r\n]+/gm, '');
     writeFileFromInputPath(f, content);
   });
 
@@ -211,7 +217,8 @@ function main(args: string[]): number {
     const entryPointName = entryPointPackageName.substr(rootPackageName.length + 1);
     if (!entryPointName) return;
 
-    createMetadataReexportFile(entryPointName, modulesManifest[entryPointPackageName]['metadata']);
+    createMetadataReexportFile(
+        entryPointName, modulesManifest[entryPointPackageName]['metadata'], entryPointPackageName);
     createTypingsReexportFile(
         entryPointName, licenseBanner, modulesManifest[entryPointPackageName]['typings']);
 
@@ -228,16 +235,10 @@ function main(args: string[]): number {
    * @param file path to a file under the binDir, like bazel-bin/core/testing/generated.js
    */
   function srcDirRelative(from: string, file: string) {
-    const result =
-        path.relative(path.dirname(from), path.join(srcDir, path.relative(binDir, file)));
+    const result = normalizeSeparators(
+        path.relative(path.dirname(from), path.join(srcDir, path.relative(binDir, file))));
     if (result.startsWith('..')) return result;
     return `./${result}`;
-  }
-
-  /** Gets a predicate function to filter non-generated files with a specified extension. */
-  function hasFileExtension(ext: string): (path: string) => boolean {
-    return f => f.endsWith(ext) && !f.endsWith(`.ngfactory${ext}`) &&
-        !f.endsWith(`.ngsummary${ext}`);
   }
 
   function copyFile(file: string, baseDir: string, relative = '.') {
@@ -252,6 +253,12 @@ function main(args: string[]): number {
       const outputPath = path.join(dir, ...path.basename(file).split('__'));
       shx.mkdir('-p', path.dirname(outputPath));
       shx.mv(path.join(dir, path.basename(file)), outputPath);
+
+      // if we are renaming the .js file, we'll also need to update the sourceMappingURL in the file
+      if (file.endsWith('.js')) {
+        shx.chmod('+w', outputPath);
+        shx.sed('-i', `${path.basename(file)}.map`, `${path.basename(outputPath)}.map`, outputPath);
+      }
     }
   }
 
@@ -274,6 +281,8 @@ function main(args: string[]): number {
       // So ignore package.json files when we are missing data.
       console.error('WARNING: no module metadata for package', packageName);
       console.error('   Not updating the package.json file to point to it');
+      console.error(
+          '   The ng_module for this package is possibly missing the module_name attribute ');
       return JSON.stringify(parsedPackage, null, 2);
     }
 
@@ -316,7 +325,8 @@ function main(args: string[]): number {
   }
 
   /** Creates metadata re-export file for a secondary entry-point. */
-  function createMetadataReexportFile(entryPointName: string, metadataFile: string) {
+  function createMetadataReexportFile(
+      entryPointName: string, metadataFile: string, packageName: string) {
     const inputPath = path.join(srcDir, `${entryPointName}.metadata.json`);
     writeFileFromInputPath(inputPath, JSON.stringify({
       '__symbolic': 'module',
@@ -325,6 +335,7 @@ function main(args: string[]): number {
       'exports':
           [{'from': `${srcDirRelative(inputPath, metadataFile.replace(/.metadata.json$/, ''))}`}],
       'flatModuleIndexRedirect': true,
+      'importAs': packageName
     }) + '\n');
   }
 
@@ -335,8 +346,8 @@ function main(args: string[]): number {
   function createTypingsReexportFile(entryPointName: string, license: string, typingsFile: string) {
     const inputPath = path.join(srcDir, `${entryPointName}.d.ts`);
     const content = `${license}
-  export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, ''))}';
-  `;
+export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, ''))}';
+`;
     writeFileFromInputPath(inputPath, content);
   }
 
@@ -351,6 +362,12 @@ function main(args: string[]): number {
     const content = amendPackageJson(pkgJson, {name: entryPointPackageName});
     writeFileFromInputPath(pkgJson, content);
   }
+
+  /**
+   * Normalizes the specified path by replacing backslash separators with Posix
+   * forward slash separators.
+   */
+  function normalizeSeparators(path: string): string { return path.replace(/\\/g, '/'); }
 }
 
 if (require.main === module) {

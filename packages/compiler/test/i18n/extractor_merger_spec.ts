@@ -14,7 +14,7 @@ import {extractMessages, mergeTranslations} from '../../src/i18n/extractor_merge
 import * as i18n from '../../src/i18n/i18n_ast';
 import {TranslationBundle} from '../../src/i18n/translation_bundle';
 import * as html from '../../src/ml_parser/ast';
-import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_spec';
+import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
 
 {
   describe('Extractor', () => {
@@ -547,7 +547,7 @@ function fakeNoTranslate(
 
 function extract(
     html: string, implicitTags: string[] = [],
-    implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string][] {
+    implicitAttrs: {[k: string]: string[]} = {}): [string[], string, string, string][] {
   const result =
       extractMessages(parseHtml(html), DEFAULT_INTERPOLATION_CONFIG, implicitTags, implicitAttrs);
 
@@ -558,7 +558,7 @@ function extract(
   // clang-format off
   // https://github.com/angular/clang-format/issues/35
   return result.messages.map(
-    message => [serializeI18nNodes(message.nodes), message.meaning, message.description, message.id]) as [string[], string, string][];
+    message => [serializeI18nNodes(message.nodes), message.meaning, message.description, message.id]) as [string[], string, string, string][];
   // clang-format on
 }
 

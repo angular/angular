@@ -24,7 +24,7 @@ if (msgFile) {
     isValid = checkMsg(firstLine);
 
     if (!isValid) {
-        console.error('\nCheck CONTRIBUTING.md at the root of the repo for more information.')
+        console.error('\nCheck CONTRIBUTING.md at the root of the repo for more information.');
     }
 }
 

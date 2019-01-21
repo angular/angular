@@ -12,7 +12,6 @@ describe('LiveExampleComponent', () => {
   let liveExampleComponent: LiveExampleComponent;
   let fixture: ComponentFixture<HostComponent>;
   let testPath: string;
-  let liveExampleContent: string|null;
 
   //////// test helpers ////////
 
@@ -41,12 +40,7 @@ describe('LiveExampleComponent', () => {
     liveExampleDe = fixture.debugElement.children[0];
     liveExampleComponent = liveExampleDe.componentInstance;
 
-    // Copy the LiveExample's innerHTML (content)
-    // into the `liveExampleContent` property as the DocViewer does
-    liveExampleDe.nativeElement.liveExampleContent = liveExampleContent;
-
-    fixture.detectChanges();
-    liveExampleComponent.onResize(1033); // wide by default
+    // Trigger `ngAfterContentInit()`.
     fixture.detectChanges();
 
     testFn();
@@ -64,7 +58,6 @@ describe('LiveExampleComponent', () => {
     .overrideComponent(EmbeddedStackblitzComponent, {set: {template: 'NO IFRAME'}});
 
     testPath = defaultTestPath;
-    liveExampleContent = null;
   });
 
   describe('when not embedded', () => {
@@ -100,15 +93,6 @@ describe('LiveExampleComponent', () => {
         const hrefs = getHrefs();
         expect(hrefs[0]).toContain('/toh-pt1/stackblitz.html');
         expect(hrefs[1]).toContain('/toh-pt1/toh-pt1.zip');
-      });
-    });
-
-    it('should have expected flat-style stackblitz when has `flat-style`', () => {
-      testPath = '/tutorial/toh-pt1';
-      setHostTemplate('<live-example flat-style></live-example>');
-      testComponent(() => {
-        // The file should be "stackblitz.html", not "stackblitz.html"
-        expect(getLiveExampleAnchor().href).toContain('/stackblitz.html');
       });
     });
 
@@ -150,15 +134,7 @@ describe('LiveExampleComponent', () => {
       });
     });
 
-    it('should be flat style when flat-style requested', () => {
-      setHostTemplate('<live-example flat-style></live-example>');
-      testComponent(() => {
-        const hrefs = getHrefs();
-        expect(hrefs[0]).toContain(defaultTestPath + '/stackblitz.html');
-      });
-    });
-
-    it('should not have a download link when `noDownload` atty present', () => {
+    it('should not have a download link when `noDownload` attr present', () => {
       setHostTemplate('<live-example noDownload></live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
@@ -167,7 +143,7 @@ describe('LiveExampleComponent', () => {
       });
     });
 
-    it('should only have a download link when `downloadOnly` atty present', () => {
+    it('should only have a download link when `downloadOnly` attr present', () => {
       setHostTemplate('<live-example downloadOnly>download this</live-example>');
       testComponent(() => {
         const hrefs = getHrefs();
@@ -196,12 +172,12 @@ describe('LiveExampleComponent', () => {
     });
 
     it('should add title from <live-example> body', () => {
-      liveExampleContent = 'The Greatest Example';
-      setHostTemplate('<live-example title="ignore this title"></live-example>');
+      const expectedTitle = 'The Greatest Example';
+      setHostTemplate(`<live-example title="ignore this title">${expectedTitle}</live-example>`);
       testComponent(() => {
         const anchor = getLiveExampleAnchor();
-        expect(anchor.textContent).toBe(liveExampleContent, 'anchor content');
-        expect(anchor.getAttribute('title')).toBe(liveExampleContent, 'title');
+        expect(anchor.textContent).toBe(expectedTitle, 'anchor content');
+        expect(anchor.getAttribute('title')).toBe(expectedTitle, 'title');
       });
     });
 
@@ -248,29 +224,6 @@ describe('LiveExampleComponent', () => {
       setHostTemplate('<live-example embedded nodownload></live-example>');
       testComponent(() => {
         expect(getDownloadAnchor()).toBeNull();
-      });
-    });
-  });
-
-  describe('when narrow display (mobile)', () => {
-
-    it('should be embedded style when no style defined', () => {
-      setHostTemplate('<live-example></live-example>');
-      testComponent(() => {
-        liveExampleComponent.onResize(600); // narrow
-        fixture.detectChanges();
-        const hrefs = getHrefs();
-        expect(hrefs[0]).toContain(defaultTestPath + '/stackblitz.html');
-      });
-    });
-
-    it('should be embedded style even when flat-style requested', () => {
-      setHostTemplate('<live-example flat-style></live-example>');
-      testComponent(() => {
-        liveExampleComponent.onResize(600); // narrow
-        fixture.detectChanges();
-        const hrefs = getHrefs();
-        expect(hrefs[0]).toContain(defaultTestPath + '/stackblitz.html');
       });
     });
   });

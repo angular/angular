@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "npm_package")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "npm_package", "ts_library")
 
 ts_library(
     name = "ng-add",
@@ -14,13 +13,14 @@ ts_library(
     deps = [
         "//packages/common",
         "//packages/core",
+        "@ngdeps//@angular-devkit/schematics",
         "@rxjs",
     ],
 )
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(
         [
             "index_spec.ts",
@@ -30,6 +30,7 @@ ts_library(
         ":ng-add",
         "//packages/common",
         "//packages/core",
+        "@ngdeps//@angular-devkit/schematics",
         "@rxjs",
         "@rxjs//operators",
     ],
@@ -37,10 +38,9 @@ ts_library(
 
 jasmine_node_test(
     name = "test",
-    data = [
-        "//packages/elements/schematics:collection.json",
-    ],
     deps = [
         ":test_lib",
+        "//packages/elements/schematics:collection",
+        "@ngdeps//@schematics/angular",
     ],
 )

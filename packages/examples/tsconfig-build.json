@@ -11,13 +11,12 @@
       "rxjs/*": ["../../node_modules/rxjs/*"]
     },
     "outDir": "../../dist/examples",
-    "types": ["jasmine", "node", "angularjs", "systemjs"]
+    "types": ["angular"]
   },
 
   "include": [
-    "./**/*.ts",
-    "../../node_modules/zone.js/dist/zone.js.d.ts",
-    // TODO(i): we can't use protractor's built-in typings because they contain lots of ambient definitions
-    "../../node_modules/@types/protractor/index.d.ts"
+    "../../node_modules/@types/jasminewd2/index.d.ts",
+    "../types.d.ts",
+    "**/*.ts"
   ]
 }

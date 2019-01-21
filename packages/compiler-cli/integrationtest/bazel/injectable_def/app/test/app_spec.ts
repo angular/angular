@@ -143,6 +143,23 @@ describe('ngInjectableDef Bazel Integration', () => {
     expect(TestBed.get(Service).value).toEqual(true);
   });
 
+  it('does not override existing ngInjectableDef in case of inheritance', () => {
+    @Injectable({
+      providedIn: 'root',
+      useValue: new ParentService(false),
+    })
+    class ParentService {
+      constructor(public value: boolean) {}
+    }
+
+    // ChildServices exteds ParentService but does not have @Injectable
+    class ChildService extends ParentService {}
+
+    TestBed.configureTestingModule({});
+    // We are asserting that system throws an error, rather than taking the inherited annotation.
+    expect(() => TestBed.get(ChildService).value).toThrowError(/ChildService/);
+  });
+
   it('NgModule injector understands requests for INJECTABLE', () => {
     TestBed.configureTestingModule({
       providers: [{provide: 'foo', useValue: 'bar'}],

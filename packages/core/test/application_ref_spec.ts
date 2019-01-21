@@ -15,6 +15,8 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy, ivyEnabled, modifiedInIvy} from '@angular/private/testing';
+
 import {NoopNgZone} from '../src/zone/ng_zone';
 import {ComponentFixtureNoNgZone, TestBed, async, inject, withModule} from '../testing';
 
@@ -72,61 +74,63 @@ class SomeComponent {
       return MyModule;
     }
 
-    it('should bootstrap a component from a child module',
-       async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-         @Component({
-           selector: 'bootstrap-app',
-           template: '',
-         })
-         class SomeComponent {
-         }
+    fixmeIvy('FW-776: Cannot bootstrap as there are still asynchronous initializers running')
+        .it('should bootstrap a component from a child module',
+            async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+              @Component({
+                selector: 'bootstrap-app',
+                template: '',
+              })
+              class SomeComponent {
+              }
 
-         @NgModule({
-           providers: [{provide: 'hello', useValue: 'component'}],
-           declarations: [SomeComponent],
-           entryComponents: [SomeComponent],
-         })
-         class SomeModule {
-         }
+              @NgModule({
+                providers: [{provide: 'hello', useValue: 'component'}],
+                declarations: [SomeComponent],
+                entryComponents: [SomeComponent],
+              })
+              class SomeModule {
+              }
 
-         createRootEl();
-         const modFactory = compiler.compileModuleSync(SomeModule);
-         const module = modFactory.create(TestBed);
-         const cmpFactory =
-             module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
-         const component = app.bootstrap(cmpFactory);
+              createRootEl();
+              const modFactory = compiler.compileModuleSync(SomeModule);
+              const module = modFactory.create(TestBed);
+              const cmpFactory =
+                  module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
+              const component = app.bootstrap(cmpFactory);
 
-         // The component should see the child module providers
-         expect(component.injector.get('hello')).toEqual('component');
-       })));
+              // The component should see the child module providers
+              expect(component.injector.get('hello')).toEqual('component');
+            })));
 
-    it('should bootstrap a component with a custom selector',
-       async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
-         @Component({
-           selector: 'bootstrap-app',
-           template: '',
-         })
-         class SomeComponent {
-         }
+    fixmeIvy('FW-776: Cannot bootstrap as there are still asynchronous initializers running')
+        .it('should bootstrap a component with a custom selector',
+            async(inject([ApplicationRef, Compiler], (app: ApplicationRef, compiler: Compiler) => {
+              @Component({
+                selector: 'bootstrap-app',
+                template: '',
+              })
+              class SomeComponent {
+              }
 
-         @NgModule({
-           providers: [{provide: 'hello', useValue: 'component'}],
-           declarations: [SomeComponent],
-           entryComponents: [SomeComponent],
-         })
-         class SomeModule {
-         }
+              @NgModule({
+                providers: [{provide: 'hello', useValue: 'component'}],
+                declarations: [SomeComponent],
+                entryComponents: [SomeComponent],
+              })
+              class SomeModule {
+              }
 
-         createRootEl('custom-selector');
-         const modFactory = compiler.compileModuleSync(SomeModule);
-         const module = modFactory.create(TestBed);
-         const cmpFactory =
-             module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
-         const component = app.bootstrap(cmpFactory, 'custom-selector');
+              createRootEl('custom-selector');
+              const modFactory = compiler.compileModuleSync(SomeModule);
+              const module = modFactory.create(TestBed);
+              const cmpFactory =
+                  module.componentFactoryResolver.resolveComponentFactory(SomeComponent) !;
+              const component = app.bootstrap(cmpFactory, 'custom-selector');
 
-         // The component should see the child module providers
-         expect(component.injector.get('hello')).toEqual('component');
-       })));
+              // The component should see the child module providers
+              expect(component.injector.get('hello')).toEqual('component');
+            })));
 
     describe('ApplicationRef', () => {
       beforeEach(() => { TestBed.configureTestingModule({imports: [createModule()]}); });
@@ -356,14 +360,16 @@ class SomeComponent {
 
       @Component({template: '<ng-container #vc></ng-container>'})
       class ContainerComp {
+        // TODO(issue/24571): remove '!'.
         @ViewChild('vc', {read: ViewContainerRef})
-        vc: ViewContainerRef;
+        vc !: ViewContainerRef;
       }
 
       @Component({template: '<ng-template #t>Dynamic content</ng-template>'})
       class EmbeddedViewComp {
+        // TODO(issue/24571): remove '!'.
         @ViewChild(TemplateRef)
-        tplRef: TemplateRef<Object>;
+        tplRef !: TemplateRef<Object>;
       }
 
       beforeEach(() => {
@@ -415,6 +421,11 @@ class SomeComponent {
       it('should detach attached embedded views if they are destroyed', () => {
         const comp = TestBed.createComponent(EmbeddedViewComp);
         const appRef: ApplicationRef = TestBed.get(ApplicationRef);
+
+        // In Ivy, change detection needs to run before the ViewQuery for tplRef will resolve.
+        // Keeping this test enabled since we still want to test this destroy logic in Ivy.
+        if (ivyEnabled) comp.detectChanges();
+
         const embeddedViewRef = comp.componentInstance.tplRef.createEmbeddedView({});
 
         appRef.attachView(embeddedViewRef);
@@ -422,6 +433,7 @@ class SomeComponent {
 
         expect(appRef.viewCount).toBe(0);
       });
+
 
       it('should not allow to attach a view to both, a view container and the ApplicationRef',
          () => {

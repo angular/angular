@@ -49,6 +49,33 @@ export interface TestSupport {
 }
 
 function createTestSupportFor(basePath: string) {
+  // Typescript uses identity comparison on `paths` and other arrays in order to determine
+  // if program structure can be reused for incremental compilation, so we reuse the default
+  // values unless overriden, and freeze them so that they can't be accidentaly changed somewhere
+  // in tests.
+  const defaultCompilerOptions = {
+    basePath,
+    'experimentalDecorators': true,
+    'skipLibCheck': true,
+    'strict': true,
+    'strictPropertyInitialization': false,
+    'types': Object.freeze<string>([]) as string[],
+    'outDir': path.resolve(basePath, 'built'),
+    'rootDir': basePath,
+    'baseUrl': basePath,
+    'declaration': true,
+    'target': ts.ScriptTarget.ES5,
+    'module': ts.ModuleKind.ES2015,
+    'moduleResolution': ts.ModuleResolutionKind.NodeJs,
+    'lib': Object.freeze([
+      path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
+    ]) as string[],
+    // clang-format off
+    'paths': Object.freeze({'@angular/*': ['./node_modules/@angular/*']}) as {[index: string]: string[]}
+    // clang-format on
+  };
+
+
   return {basePath, write, writeFiles, createCompilerOptions, shouldExist, shouldNotExist};
 
   function write(fileName: string, content: string) {
@@ -66,25 +93,7 @@ function createTestSupportFor(basePath: string) {
   }
 
   function createCompilerOptions(overrideOptions: ng.CompilerOptions = {}): ng.CompilerOptions {
-    return {
-      basePath,
-      'experimentalDecorators': true,
-      'skipLibCheck': true,
-      'strict': true,
-      'strictPropertyInitialization': false,
-      'types': [],
-      'outDir': path.resolve(basePath, 'built'),
-      'rootDir': basePath,
-      'baseUrl': basePath,
-      'declaration': true,
-      'target': ts.ScriptTarget.ES5,
-      'module': ts.ModuleKind.ES2015,
-      'moduleResolution': ts.ModuleResolutionKind.NodeJs,
-      'lib': [
-        path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
-      ],
-      ...overrideOptions,
-    };
+    return {...defaultCompilerOptions, ...overrideOptions};
   }
 
   function shouldExist(fileName: string) {
@@ -101,6 +110,9 @@ function createTestSupportFor(basePath: string) {
 }
 
 export function setupBazelTo(basePath: string) {
+  if (!process.env.TEST_SRCDIR) {
+    throw new Error('`setupBazelTo()` must only be called from in a Bazel job.');
+  }
   const sources = process.env.TEST_SRCDIR;
   const packages = path.join(sources, 'angular/packages');
   const nodeModulesPath = path.join(basePath, 'node_modules');
@@ -124,7 +136,7 @@ export function setupBazelTo(basePath: string) {
   }
 
   // Link typescript
-  const typescriptSource = path.join(sources, 'angular/node_modules/typescript');
+  const typescriptSource = path.join(sources, 'ngdeps/node_modules/typescript');
   const typescriptDest = path.join(nodeModulesPath, 'typescript');
   if (fs.existsSync(typescriptSource)) {
     fs.symlinkSync(typescriptSource, typescriptDest);

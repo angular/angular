@@ -131,7 +131,7 @@ function checkActivatedRoute(
   if (actual === null) {
     expect(actual).toBeDefined();
   } else {
-    expect(actual.component).toBe(cmp);
+    expect(actual.component as any).toBe(cmp);
     expect(actual.outlet).toEqual(outlet);
   }
 }

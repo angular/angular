@@ -6,21 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgForOf as NgForOfDef, NgIf as NgIfDef} from '@angular/common';
-import {InjectFlags, IterableDiffers} from '@angular/core';
+import {NgForOf as NgForOfDef, NgIf as NgIfDef, NgTemplateOutlet as NgTemplateOutletDef} from '@angular/common';
+import {IterableDiffers, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {defaultIterableDiffers} from '../../src/change_detection/change_detection';
-import {DirectiveType, NgOnChangesFeature, defineDirective, directiveInject, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {DirectiveType, defineDirective, directiveInject} from '../../src/render3/index';
 
 export const NgForOf: DirectiveType<NgForOfDef<any>> = NgForOfDef as any;
 export const NgIf: DirectiveType<NgIfDef> = NgIfDef as any;
+export const NgTemplateOutlet: DirectiveType<NgTemplateOutletDef> = NgTemplateOutletDef as any;
 
 NgForOf.ngDirectiveDef = defineDirective({
   type: NgForOfDef,
   selectors: [['', 'ngForOf', '']],
   factory: () => new NgForOfDef(
-               injectViewContainerRef(), injectTemplateRef(), directiveInject(IterableDiffers)),
-  features: [NgOnChangesFeature()],
+               directiveInject(ViewContainerRef as any), directiveInject(TemplateRef as any),
+               directiveInject(IterableDiffers)),
   inputs: {
     ngForOf: 'ngForOf',
     ngForTrackBy: 'ngForTrackBy',
@@ -31,6 +31,15 @@ NgForOf.ngDirectiveDef = defineDirective({
 (NgIf as any).ngDirectiveDef = defineDirective({
   type: NgIfDef,
   selectors: [['', 'ngIf', '']],
-  factory: () => new NgIfDef(injectViewContainerRef(), injectTemplateRef()),
+  factory: () => new NgIfDef(
+               directiveInject(ViewContainerRef as any), directiveInject(TemplateRef as any)),
   inputs: {ngIf: 'ngIf', ngIfThen: 'ngIfThen', ngIfElse: 'ngIfElse'}
+});
+
+(NgTemplateOutlet as any).ngDirectiveDef = defineDirective({
+  type: NgTemplateOutletDef,
+  selectors: [['', 'ngTemplateOutlet', '']],
+  factory: () => new NgTemplateOutletDef(directiveInject(ViewContainerRef as any)),
+  inputs:
+      {ngTemplateOutlet: 'ngTemplateOutlet', ngTemplateOutletContext: 'ngTemplateOutletContext'}
 });

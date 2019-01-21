@@ -123,20 +123,26 @@ describe('config', () => {
          }).toThrowError(/Invalid configuration of route '{path: "", redirectTo: "b"}'/);
        });
 
-    it('should throw when pathPatch is invalid', () => {
+    it('should throw when pathMatch is invalid', () => {
       expect(() => { validateConfig([{path: 'a', pathMatch: 'invalid', component: ComponentB}]); })
           .toThrowError(
               /Invalid configuration of route 'a': pathMatch can only be set to 'prefix' or 'full'/);
     });
 
-    it('should throw when pathPatch is invalid', () => {
-      expect(() => { validateConfig([{path: 'a', outlet: 'aux', children: []}]); })
+    it('should throw when path/outlet combination is invalid', () => {
+      expect(() => { validateConfig([{path: 'a', outlet: 'aux'}]); })
           .toThrowError(
-              /Invalid configuration of route 'a': a componentless route cannot have a named outlet set/);
-
+              /Invalid configuration of route 'a': a componentless route without children or loadChildren cannot have a named outlet set/);
       expect(() => validateConfig([{path: 'a', outlet: '', children: []}])).not.toThrow();
       expect(() => validateConfig([{path: 'a', outlet: PRIMARY_OUTLET, children: []}]))
           .not.toThrow();
+    });
+
+    it('should not throw when path/outlet combination is valid', () => {
+      expect(() => { validateConfig([{path: 'a', outlet: 'aux', children: []}]); }).not.toThrow();
+      expect(() => {
+        validateConfig([{path: 'a', outlet: 'aux', loadChildren: 'child'}]);
+      }).not.toThrow();
     });
   });
 });

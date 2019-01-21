@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable} from '@angular/core';
+import {Inject, Injectable, inject} from '@angular/core';
 
 import {DomAdapter, getDOM} from '../dom/dom_adapter';
 import {DOCUMENT} from '../dom/dom_tokens';
 
 
+
 /**
  * Represents a meta element.
  *
- * @experimental
+ * @publicApi
  */
 export type MetaDefinition = {
   charset?: string; content?: string; httpEquiv?: string; id?: string; itemprop?: string;
@@ -30,11 +31,18 @@ export type MetaDefinition = {
 };
 
 /**
+ * Factory to create Meta service.
+ */
+export function createMeta() {
+  return new Meta(inject(DOCUMENT));
+}
+
+/**
  * A service that can be used to get and add meta tags.
  *
- * @experimental
+ * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: 'root', useFactory: createMeta, deps: []})
 export class Meta {
   private _dom: DomAdapter;
   constructor(@Inject(DOCUMENT) private _doc: any) { this._dom = getDOM(); }

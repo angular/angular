@@ -10,7 +10,7 @@ import {AnimationPlayer, ɵStyleData} from '@angular/animations';
 import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, copyStyles} from '../../util';
 import {AnimationDriver} from '../animation_driver';
 import {CssKeyframesDriver} from '../css_keyframes/css_keyframes_driver';
-import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from '../shared';
+import {containsElement, invokeQuery, isBrowser, matchesElement, validateStyleProperty} from '../shared';
 
 import {WebAnimationsPlayer} from './web_animations_player';
 
@@ -75,5 +75,5 @@ export function supportsWebAnimations() {
 }
 
 function getElementAnimateFn(): any {
-  return (typeof Element !== 'undefined' && (<any>Element).prototype['animate']) || {};
+  return (isBrowser() && (<any>Element).prototype['animate']) || {};
 }

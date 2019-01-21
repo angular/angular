@@ -70,7 +70,7 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  *
  * @ngModule RouterModule
  *
- *
+ * @publicApi
  */
 @Directive({
   selector: '[routerLinkActive]',
@@ -78,9 +78,12 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
 })
 export class RouterLinkActive implements OnChanges,
     OnDestroy, AfterContentInit {
-  @ContentChildren(RouterLink, {descendants: true}) links: QueryList<RouterLink>;
+  // TODO(issue/24571): remove '!'.
+  @ContentChildren(RouterLink, {descendants: true})
+  links !: QueryList<RouterLink>;
+  // TODO(issue/24571): remove '!'.
   @ContentChildren(RouterLinkWithHref, {descendants: true})
-  linksWithHrefs: QueryList<RouterLinkWithHref>;
+  linksWithHrefs !: QueryList<RouterLinkWithHref>;
 
   private classes: string[] = [];
   private subscription: Subscription;

@@ -44,7 +44,7 @@ describe('ResourceService', () => {
     it('categories observable should complete', () => {
       let completed = false;
       resourceService.categories.subscribe(undefined, undefined, () => completed = true);
-      expect(true).toBe(true, 'observable completed');
+      expect(completed).toBe(true, 'observable completed');
     });
 
     it('should reshape contributors.json to sorted category array', () => {

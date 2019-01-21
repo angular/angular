@@ -13,7 +13,7 @@ import {NgZone} from '@angular/core/src/zone/ng_zone';
 import {async, fakeAsync, flush, tick} from '@angular/core/testing';
 import {SpyObject, beforeEach, describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
-import {scheduleMicroTask} from '../../src/util';
+import {scheduleMicroTask} from '../../src/util/microtask';
 
 // Schedules a microtasks (using a resolved promise .then())
 function microTask(fn: Function): void {
@@ -143,9 +143,9 @@ class MockNgZone extends NgZone {
              const tasks = execute.calls.mostRecent().args[1] as PendingMacrotask[];
 
              expect(tasks.length).toEqual(1);
-             expect(tasks[0].delay).toEqual(1000);
+             expect(tasks[0].data.delay).toEqual(1000);
              expect(tasks[0].source).toEqual('setTimeout');
-             expect(tasks[0].isPeriodic).toEqual(false);
+             expect(tasks[0].data.isPeriodic).toEqual(false);
 
              clearTimeout(id);
            }));
@@ -207,11 +207,11 @@ class MockNgZone extends NgZone {
              expect(execute).toHaveBeenCalled();
 
              const update1 = updateCallback.calls.all()[0].args[0] as PendingMacrotask[];
-             expect(update1[0].delay).toEqual(500);
+             expect(update1[0].data.delay).toEqual(500);
 
              const update2 = updateCallback.calls.all()[1].args[0] as PendingMacrotask[];
-             expect(update2[0].delay).toEqual(500);
-             expect(update2[1].delay).toEqual(300);
+             expect(update2[0].data.delay).toEqual(500);
+             expect(update2[1].data.delay).toEqual(300);
            }));
 
         it('cancels the done callback if the update callback returns true', fakeAsync(() => {

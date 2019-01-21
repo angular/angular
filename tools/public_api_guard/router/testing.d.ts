@@ -1,5 +1,5 @@
 export declare class RouterTestingModule {
-    static withRoutes(routes: Routes, config?: ExtraOptions): ModuleWithProviders;
+    static withRoutes(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterTestingModule>;
 }
 
 export declare function setupTestingRouter(urlSerializer: UrlSerializer, contexts: ChildrenOutletContexts, location: Location, loader: NgModuleFactoryLoader, compiler: Compiler, injector: Injector, routes: Route[][], opts?: ExtraOptions, urlHandlingStrategy?: UrlHandlingStrategy): Router;

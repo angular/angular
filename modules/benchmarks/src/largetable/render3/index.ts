@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import 'reflect-metadata';
 import {ɵrenderComponent as renderComponent} from '@angular/core';
 
 import {bindAction, profile} from '../../util';
@@ -26,3 +26,5 @@ export function main() {
         profile(() => createDom(component), () => destroyDom(component), 'create'));
   }
 }
+
+main();

@@ -12,7 +12,7 @@ The owner of the component is then responsible for the secondary / component-lev
 The caretaker should be able to determine which component the issue belongs to.
 The components have a clear piece of source code associated with it within the `/packages/` folder of this repo.
 
-* `comp: aio` - the angular.io application
+* `comp: docs-infra` - the angular.io application
 * `comp: animations`
 * `comp: bazel` - @angular/bazel rules
 * `comp: benchpress`
@@ -21,6 +21,7 @@ The components have a clear piece of source code associated with it within the `
 * `comp: core & compiler` - because core, compiler, compiler-cli and
   browser-platforms are very intertwined, we will be treating them as one
 * `comp: ivy` - a subset of core representing the new Ivy renderer.
+* `comp: elements`
 * `comp: forms`
 * `comp: http`
 * `comp: i18n`
@@ -64,6 +65,7 @@ What kind of problem is this?
 ## Caretaker Triage Process (Primary Triage)
 
 It is the caretaker's responsibility to assign `comp:  *` to each new issue as they come in.
+Issues that haven't been triaged can be found by selecting the issues with no milestone.
 
 If it's obvious that the issue or PR is related to a release regression, the caretaker is also responsible for assigning the `severity(5): regression` label to make the issue or PR highly visible.
 
@@ -71,16 +73,20 @@ The primary triage should be done on a daily basis so that the issues become ava
 
 The reason why we limit the responsibility of the caretaker to this one label is that it is likely that without domain knowledge the caretaker could mislabel issues or lack knowledge of duplicate issues.
 
+Once the primary triage is done, the ng-bot automatically adds the milestone `needsTriage`.
+
 
 ## Component's owner Triage Process
 
-The component owner is responsible for assigning one of the labels from each of these categories:
+The component owner is responsible for assigning one of the labels from each of these categories to the issues that have the milestone `needsTriage`:
 
 - `type: *`
 - `frequency: *`
 - `severity: *`
 
 We've adopted the issue categorization based on [user pain](http://www.lostgarden.com/2008/05/improving-bug-triage-with-user-pain.html) used by AngularJS. In this system every issue is assigned frequency and severity based on which the total user pain score is calculated.
+
+The issues with type `type: feature`, `type: refactor` and `type: RFC / Discussion / question` do not require a frequency and severity.
 
 Following is the definition of various frequency and severity levels:
 
@@ -104,10 +110,16 @@ These criteria are then used to calculate a "user pain" score as follows:
 
 This score can then be used to estimate the impact of the issue which helps with prioritization.
 
+Once the component's owner triage is done, the ng-bot automatically changes the milestone from `needsTriage` to `Backlog`.
+
 
 ## Triaging PRs
 
-Triaging PRs is the same as triaging issues, except that PRs have additional label categories that should be used to signal their state.
+Triaging PRs is the same as triaging issues, except that the labels `frequency: *` and `severity: *` are replaced by:
+- `effort*`
+- `risk: *`
+
+PRs also have additional label categories that should be used to signal their state.
 
 Every triaged PR must have a `pr_action` label assigned to it:
 
@@ -137,14 +149,14 @@ To communicate the target we use the following labels:
 * `PR target: LTS-only`: the PR should be merged only into the active LTS branch(es). Only security and critical fixes are allowed in these branches. Always send a new PR targeting just the LTS branch and request review approval from @IgorMinar.
 * `PR target: TBD`: the target is yet to be determined.
 
-If a PR is missing the "PR target: *" label, or if the label is set to "TBD" when the PR is sent to the caretaker, the caretaker should reject the PR and request the appropriate target label to be applied before the PR is merged.
+If a PR is missing the `PR target: *` label, or if the label is set to "TBD" when the PR is sent to the caretaker, the caretaker should reject the PR and request the appropriate target label to be applied before the PR is merged.
 
 
 ## PR Approvals
 
 Before a PR can be merged it must be approved by the appropriate reviewer(s).
 
-To ensure that there right people review each change, we configured [PullApprove bot](https://about.pullapprove.com/) via (`.pullapprove.yaml`) to provide aggregate approval state via the GitHub PR Status API.
+To ensure that the right people review each change, we configured [GitHub CODEOWNERS](https://help.github.com/articles/about-codeowners/) (via `.github/CODEOWNERS`) and require that each PR has at least one approval from the appropriate code owner.
 
 Note that approved state does not mean a PR is ready to be merged.
 For example, a reviewer might approve the PR but request a minor tweak that doesn't need further review, e.g., a rebase or small uncontroversial change.
@@ -160,3 +172,10 @@ Only issues with `cla:yes` should be merged into master.
 
 ### `aio: preview`
 Applying this label to a PR makes the angular.io preview available regardless of the author. [More info](../aio/aio-builds-setup/docs/overview--security-model.md)
+
+### `PR action: merge-assistance`
+This label can be added to let the caretaker know that the PR needs special attention.
+There should always be a comment added to the PR to explain why the caretaker's assistance is needed.
+The comment should be formatted like this: `merge-assistance: <explain what kind of assistance you need, and if not obvious why>`
+
+For example, the PR owner might not be a Googler and needs help to run g3sync; or one of the checks is failing due to external causes and the PR should still be merged.

@@ -1,0 +1,19 @@
+# Make TypeScript and Angular compilation fast, by keeping a few copies of the
+# compiler running as daemons, and cache SourceFile AST's to reduce parse time.
+build --strategy=TypeScriptCompile=worker
+build --strategy=AngularTemplateCompile=worker
+
+# Don't create bazel-* symlinks in the WORKSPACE directory, except `bazel-out`,
+# which is mandatory.
+# These require .gitignore and may scare users.
+# Also, it's a workaround for https://github.com/bazelbuild/rules_typescript/issues/12
+# which affects the common case of having `tsconfig.json` in the WORKSPACE directory.
+#
+# Instead, the output will appear in `dist/bin`. You'll need to ignore the
+# `bazel-out` directory that is created in the workspace root.
+build --symlink_prefix=dist/
+
+test --test_output=errors
+
+# Use the Angular 6 compiler
+build --define=compile=legacy

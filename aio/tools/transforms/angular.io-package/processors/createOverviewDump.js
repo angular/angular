@@ -14,7 +14,7 @@ module.exports = function createOverviewDump() {
         modules: []
       };
       _.forEach(docs, function(doc) {
-        if (doc.docType === 'module') {
+        if (doc.docType === 'package') {
           overviewDoc.modules.push(doc);
         }
       });

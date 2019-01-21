@@ -3,7 +3,7 @@
 import { ActivatedRoute } from '@angular/router';
 
 // #enddocregion activatedroute
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 import { async, TestBed } from '@angular/core/testing';
 
@@ -21,7 +21,7 @@ function xyzPhoneData(): PhoneData {
 
 class MockPhone {
   get(id: string): Observable<PhoneData> {
-    return Observable.of(xyzPhoneData());
+    return of(xyzPhoneData());
   }
 }
 

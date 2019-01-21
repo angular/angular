@@ -14,7 +14,7 @@ const fakeAsyncTestModule = _Zone && _Zone[_Zone.__symbol__('fakeAsyncTest')];
  * Clears out the shared fake async zone for a test.
  * To be called in a global `beforeEach`.
  *
- * @experimental
+ * @publicApi
  */
 export function resetFakeAsyncZone(): void {
   if (fakeAsyncTestModule) {
@@ -33,14 +33,15 @@ export function resetFakeAsyncZone(): void {
  *
  * Can be used to wrap inject() calls.
  *
- * ## Example
+ * @usageNotes
+ * ### Example
  *
  * {@example core/testing/ts/fake_async.ts region='basic'}
  *
  * @param fn
  * @returns The function wrapped to be executed in the fakeAsync zone
  *
- * @experimental
+ * @publicApi
  */
 export function fakeAsync(fn: Function): (...args: any[]) => any {
   if (fakeAsyncTestModule) {
@@ -56,11 +57,12 @@ export function fakeAsync(fn: Function): (...args: any[]) => any {
  * The microtasks queue is drained at the very start of this function and after any timer callback
  * has been executed.
  *
- * ## Example
+ * @usageNotes
+ * ### Example
  *
  * {@example core/testing/ts/fake_async.ts region='basic'}
  *
- * @experimental
+ * @publicApi
  */
 export function tick(millis: number = 0): void {
   if (fakeAsyncTestModule) {
@@ -78,7 +80,7 @@ export function tick(millis: number = 0): void {
  * @param maxTurns
  * @returns The simulated time elapsed, in millis.
  *
- * @experimental
+ * @publicApi
  */
 export function flush(maxTurns?: number): number {
   if (fakeAsyncTestModule) {
@@ -91,7 +93,7 @@ export function flush(maxTurns?: number): number {
 /**
  * Discard all remaining periodic tasks.
  *
- * @experimental
+ * @publicApi
  */
 export function discardPeriodicTasks(): void {
   if (fakeAsyncTestModule) {
@@ -104,7 +106,7 @@ export function discardPeriodicTasks(): void {
 /**
  * Flush any pending microtasks.
  *
- * @experimental
+ * @publicApi
  */
 export function flushMicrotasks(): void {
   if (fakeAsyncTestModule) {

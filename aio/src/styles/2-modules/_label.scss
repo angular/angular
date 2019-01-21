@@ -49,7 +49,7 @@ label.raised, .api-header label {
     &.api-status-label {
         background-color: $mediumgray;
 
-        &.impure-pipe {
+        &.deprecated, &.security, &.impure-pipe {
             background-color: $brightred;
         }
     }

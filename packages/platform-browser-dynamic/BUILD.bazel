@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/platform-browser-dynamic",
     deps = [
         "//packages:types",
         "//packages/common",
@@ -27,7 +26,12 @@ ng_package(
         "//packages/platform-browser-dynamic/testing:package.json",
     ],
     entry_point = "packages/platform-browser-dynamic/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":platform-browser-dynamic",
         "//packages/platform-browser-dynamic/testing",

@@ -1,3 +1,5 @@
+const {mergeProperties} = require('../../helpers/utils');
+
 /**
  * Decorators in the Angular code base are made up from three code items:
  *
@@ -40,69 +42,68 @@
  *
  * Finally we want to capture the documentation attached to the call signature interface of the
  * associated decorator (1). We copy across the properties that we care about from this call
- * signature (e.g. description, whatItDoes and howToUse).
+ * signature (e.g. `description` and `usageNotes`).
  */
 
 module.exports = function mergeDecoratorDocs(log) {
   return {
     $runAfter: ['processing-docs'],
-    $runBefore: ['docs-processed'],
+    $runBefore: ['docs-processed', 'checkContentRules'],
+    propertiesToMerge: [],
     makeDecoratorCalls: [
       {type: '', description: 'toplevel', functionName: 'makeDecorator'},
       {type: 'Prop', description: 'property', functionName: 'makePropDecorator'},
       {type: 'Param', description: 'parameter', functionName: 'makeParamDecorator'},
     ],
-    $process: function(docs) {
+    $process(docs) {
 
-      var makeDecoratorCalls = this.makeDecoratorCalls;
-      var docsToMerge = Object.create(null);
+      const decoratorDocs = Object.create(null);
 
-      docs.forEach(function(doc) {
+      // find all the decorators, signified by a call to `make...Decorator<Decorator>(metadata)`
+      docs.forEach(doc => {
         const initializer = getInitializer(doc);
         if (initializer) {
-          makeDecoratorCalls.forEach(function(call) {
-            // find all the decorators, signified by a call to `make...Decorator<Decorator>(metadata)`
+          this.makeDecoratorCalls.forEach(function(call) {
             if (initializer.expression && initializer.expression.text === call.functionName) {
-              log.debug('mergeDecoratorDocs: found decorator', doc.docType, doc.name);
-              doc.docType = 'decorator';
-              doc.decoratorLocation = call.description;
               // Get the type of the decorator metadata from the first "type" argument of the call.
               // For example the `X` of `createDecorator<X>(...)`.
-              doc.decoratorType = initializer.arguments[0].text;
-              // clear the symbol type named since it is not needed
-              doc.symbolTypeName = undefined;
+              const decoratorType = initializer.arguments[0].text;
 
-              // keep track of the names of the metadata interface that will need to be merged into this decorator doc
-              docsToMerge[doc.name + 'Decorator'] = doc;
+              log.debug('mergeDecoratorDocs: found decorator', doc.docType, doc.name, decoratorType);
+
+              doc.docType = 'decorator';
+              doc.decoratorLocation = call.description;
+              doc.decoratorType = decoratorType;
+
+              decoratorDocs[doc.name + 'Decorator'] = doc;
             }
           });
         }
       });
 
-      // merge the metadata docs into the decorator docs
-      docs = docs.filter(function(doc) {
-        if (docsToMerge[doc.name]) {
+      // merge the info from the associated metadata interfaces into the decorator docs
+      docs = docs.filter(doc => {
+        if (decoratorDocs[doc.name]) {
+
           // We have found an `XxxDecorator` document that will hold the call signature of the decorator
-          var decoratorDoc = docsToMerge[doc.name];
-          var callMember = doc.members.filter(function(member) { return member.isCallMember; })[0];
+          var decoratorDoc = decoratorDocs[doc.name];
+          var callMember = doc.members.find(member => member.isCallMember);
+
           log.debug(
               'mergeDecoratorDocs: merging', doc.name, 'into', decoratorDoc.name,
               callMember.description.substring(0, 50));
+
           // Merge the documentation found in this call signature into the original decorator
-          decoratorDoc.description = callMember.description;
-          decoratorDoc.howToUse = callMember.howToUse;
-          decoratorDoc.whatItDoes = callMember.whatItDoes;
+          mergeProperties(decoratorDoc, callMember, this.propertiesToMerge);
 
           // remove doc from its module doc's exports
-          doc.moduleDoc.exports =
-              doc.moduleDoc.exports.filter(function(exportDoc) { return exportDoc !== doc; });
-
-
-          // remove from the overall list of docs to be rendered
-          return false;
+          doc.moduleDoc.exports = doc.moduleDoc.exports.filter(exportDoc => exportDoc !== doc);
         }
-        return true;
+
+        return !decoratorDocs[doc.name];
       });
+
+      return docs;
     }
   };
 };

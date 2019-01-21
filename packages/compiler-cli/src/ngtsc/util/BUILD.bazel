@@ -1,0 +1,16 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "util",
+    srcs = glob([
+        "index.ts",
+        "src/**/*.ts",
+    ]),
+    deps = [
+        "//packages:types",
+        "@ngdeps//@types/node",
+        "@ngdeps//typescript",
+    ],
+)

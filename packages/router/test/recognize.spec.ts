@@ -452,6 +452,45 @@ describe('recognize', () => {
             });
       });
 
+      it('should set url segment and index properly with the "corrected" option for nested empty-path segments',
+         () => {
+           const url = tree('a/b') as any;
+           recognize(
+               RootComponent, [{
+                 path: 'a',
+                 children: [{
+                   path: 'b',
+                   component: ComponentB,
+                   children: [{
+                     path: '',
+                     component: ComponentC,
+                     children: [{path: '', component: ComponentD}]
+                   }]
+                 }]
+               }],
+               url, 'a/b', 'emptyOnly', 'corrected')
+               .forEach((s: any) => {
+                 expect(s.root._urlSegment).toBe(url.root);
+                 expect(s.root._lastPathIndex).toBe(-1);
+
+                 const a = s.firstChild(s.root) !;
+                 expect(a._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+                 expect(a._lastPathIndex).toBe(0);
+
+                 const b = s.firstChild(a) !;
+                 expect(b._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+                 expect(b._lastPathIndex).toBe(1);
+
+                 const c = s.firstChild(b) !;
+                 expect(c._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+                 expect(c._lastPathIndex).toBe(1);
+
+                 const d = s.firstChild(c) !;
+                 expect(d._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+                 expect(d._lastPathIndex).toBe(1);
+               });
+         });
+
       it('should set url segment and index properly when nested empty-path segments (2)', () => {
         const url = tree('');
         recognize(
@@ -748,6 +787,14 @@ describe('recognize', () => {
         expect(Object.isFrozen(s.root.queryParams)).toBeTruthy();
       });
     });
+
+    it('should not freeze UrlTree query params', () => {
+      const url = tree('a?q=11');
+      recognize(RootComponent, [{path: 'a', component: ComponentA}], url, 'a?q=11')
+          .subscribe((s: RouterStateSnapshot) => {
+            expect(Object.isFrozen(url.queryParams)).toBe(false);
+          });
+    });
   });
 
   describe('fragment', () => {
@@ -791,7 +838,7 @@ function checkActivatedRoute(
   } else {
     expect(actual.url.map(s => s.path).join('/')).toEqual(url);
     expect(actual.params).toEqual(params);
-    expect(actual.component).toBe(cmp);
+    expect(actual.component as any).toBe(cmp);
     expect(actual.outlet).toEqual(outlet);
   }
 }

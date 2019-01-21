@@ -29,8 +29,6 @@ following products on your development machine:
 * [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
   to execute the selenium standalone server for e2e testing.
 
-* (Optional for now) [Bazel](https://bazel.build/), please follow instructions in [Bazel.md]
-
 ## Getting the Sources
 
 Fork and clone the Angular repository:
@@ -84,43 +82,41 @@ Before submitting a PR, do not forget to remove them:
 To build Angular run:
 
 ```shell
-./build.sh
+./scripts/build-packages-dist.sh
 ```
 
-* Results are put in the dist folder.
+* Results are put in the `dist/packages-dist` folder.
 
 ## Running Tests Locally
 
-To run tests:
+Bazel is used as the primary tool for building and testing Angular. Building and testing is
+incremental with Bazel, and it's possible to only run tests for an individual package instead
+of for all packages.
 
-```shell
-$ ./test.sh node             # Run all angular tests on node
+Read more about this in the [BAZEL.md](./BAZEL.md) document. You should execute all test suites
+before submitting a PR to Github.
 
-$ ./test.sh browser          # Run all angular tests in browser
-
-$ ./test.sh browserNoRouter  # Optionally run all angular tests without router in browser
-
-$ ./test.sh router           # Optionally run only the router tests in browser
-```
-
-You should execute the 3 test suites before submitting a PR to github.
-
-See [DEBUG.md](DEBUG.md) for information on debugging the code while running the unit tests.
-
-All the tests are executed on our Continuous Integration infrastructure and a PR could only be merged once the tests pass.
-
-- CircleCI fails if your code is not formatted properly,
-- Travis CI fails if any of the test suites described above fails.
+All the tests are executed on our Continuous Integration infrastructure and a PR could only be
+merged if the code is formatted properly and all tests are passing.
 
 ## <a name="clang-format"></a> Formatting your source code
 
-Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code. If the source code
-is not properly formatted, the CI will fail and the PR can not be merged.
+Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code.
+If the source code is not properly formatted, the CI will fail and the PR can not be merged.
 
 You can automatically format your code by running:
+- `gulp format`: format all source code
+- `gulp format:changed`: re-format only edited source code.
 
-``` shell
-$ gulp format
+A better way is to set up your IDE to format the changed file on each file save.
+
+### VS Code
+1. Install [Clang-Format](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format) extension for VS Code.
+2. Open `settings.json` in your workspace and add these lines:
+```json
+  "files.autoSave": "onFocusChange",
+  "editor.formatOnSave": true,
+  "clang-format.executable": "PATH_TO_YOUR_WORKSPACE/angular/node_modules/.bin/clang-format",
 ```
 
 ## Linting/verifying your source code
@@ -140,13 +136,13 @@ http://github.com/angular/core-builds.
 
 You may find that your un-merged change needs some validation from external participants.
 Rather than requiring them to pull your Pull Request and build Angular locally, you can
-publish the `*-builds` snapshots just like our Travis build does.
+publish the `*-builds` snapshots just like our CircleCI build does.
 
 First time, you need to create the github repositories:
 
 ``` shell
 $ export TOKEN=[get one from https://github.com/settings/tokens]
-$ CREATE_REPOS=1 TRAVIS= ./scripts/ci/publish-build-artifacts.sh [github username]
+$ CREATE_REPOS=1 ./scripts/ci/publish-build-artifacts.sh [github username]
 ```
 
 For subsequent snapshots, just run
@@ -157,3 +153,32 @@ $ ./scripts/publish/publish-build-artifacts.sh [github username]
 
 The script will publish the build snapshot to a branch with the same name as your current branch,
 and create it if it doesn't exist.
+
+## Bazel support
+### VS Code
+
+1. Install [Bazel](https://marketplace.visualstudio.com/items?itemName=DevonDCarew.bazel-code) extension for VS Code.
+2. Open `settings.json` in your workspace and add these lines:
+```json
+  "files.associations": {
+    "*.bazel": "bazel"
+  },
+```
+
+## General IDE settings
+### VS Code
+
+1. Open `settings.json` in your workspace and add these lines:
+```json
+  "editor.tabSize": 2,
+  "files.exclude": {
+    "bazel-out": true,
+    ".idea": true,
+    ".circleci": true,
+    ".github": true,
+    "dist/**": true,
+    "node_modules/**": true,
+    ".rpt2_cache": true,
+    ".vscode": true
+  },
+```

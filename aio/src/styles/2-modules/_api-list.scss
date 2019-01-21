@@ -198,6 +198,10 @@ aio-api-list {
         background: $blue-grey-50;
         color: $blue-500;
       }
+
+      &.deprecated-api-item {
+        text-decoration: line-through;
+      }
     }
   }
 }
@@ -280,6 +284,7 @@ p {
 .code-anchor {
   cursor: pointer;
   text-decoration: none;
+  font-size: inherit;
 
   &:hover {
     text-decoration: underline;

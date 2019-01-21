@@ -8,7 +8,9 @@
 
 import {ApplicationRef} from '../application_ref';
 import {ChangeDetectorRef} from '../change_detection/change_detection';
-import {InjectFlags, Injector} from '../di/injector';
+import {Injector} from '../di/injector';
+import {InjectFlags} from '../di/interface/injector';
+import {Type} from '../interface/type';
 import {ComponentFactory, ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef} from '../linker/element_ref';
@@ -17,8 +19,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, InternalViewRef, ViewRef} from '../linker/view_ref';
 import {Renderer as RendererV1, Renderer2} from '../render/api';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {stringify} from '../util/stringify';
 import {VERSION} from '../version';
 
 import {callNgModuleLifecycle, initNgModule, resolveNgModuleDep} from './ng_module';
@@ -138,6 +139,7 @@ class ViewContainerRef_ implements ViewContainerData {
 
   get injector(): Injector { return new Injector_(this._view, this._elDef); }
 
+  /** @deprecated No replacement */
   get parentInjector(): Injector {
     let view = this._view;
     let elDef = this._elDef.parent;
@@ -311,7 +313,8 @@ class TemplateRef_ extends TemplateRef<any> implements TemplateData {
   /**
    * @internal
    */
-  _projectedViews: ViewData[];
+  // TODO(issue/24571): remove '!'.
+  _projectedViews !: ViewData[];
 
   constructor(private _parentView: ViewData, private _def: NodeDef) { super(); }
 
@@ -431,7 +434,7 @@ class RendererAdapter implements RendererV1 {
     this.delegate.setProperty(renderElement, propertyName, propertyValue);
   }
 
-  setElementAttribute(renderElement: Element, namespaceAndName: string, attributeValue: string):
+  setElementAttribute(renderElement: Element, namespaceAndName: string, attributeValue?: string):
       void {
     const [ns, name] = splitNamespace(namespaceAndName);
     if (attributeValue != null) {
@@ -451,7 +454,7 @@ class RendererAdapter implements RendererV1 {
     }
   }
 
-  setElementStyle(renderElement: HTMLElement, styleName: string, styleValue: string): void {
+  setElementStyle(renderElement: HTMLElement, styleName: string, styleValue?: string): void {
     if (styleValue != null) {
       this.delegate.setStyle(renderElement, styleName, styleValue);
     } else {
@@ -479,9 +482,11 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
   private _destroyListeners: (() => void)[] = [];
   private _destroyed: boolean = false;
   /** @internal */
-  _providers: any[];
+  // TODO(issue/24571): remove '!'.
+  _providers !: any[];
   /** @internal */
-  _modules: any[];
+  // TODO(issue/24571): remove '!'.
+  _modules !: any[];
 
   readonly injector: Injector = this;
 

@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="jasmine" />
+
 /**
  * @module
  * @description

@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "npm_package")
+load("//tools:defaults.bzl", "npm_package", "ts_library")
 
 ts_library(
     name = "language-service",
@@ -10,12 +10,13 @@ ts_library(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/language-service",
     deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/core",
+        "@ngdeps//@types/node",
+        "@ngdeps//typescript",
     ],
 )
 
@@ -25,6 +26,9 @@ npm_package(
     tags = [
         "release-with-framework",
     ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":language-service",
         "//packages/language-service/bundles:language-service",

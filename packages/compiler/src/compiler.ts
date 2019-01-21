@@ -6,6 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+//////////////////////////////////////
+// THIS FILE HAS GLOBAL SIDE EFFECT //
+//       (see bottom of file)       //
+//////////////////////////////////////
+
 /**
  * @module
  * @description
@@ -23,6 +28,8 @@
  */
 
 import * as core from './core';
+import {publishFacade} from './jit_compiler_facade';
+import {global} from './util';
 
 export {core};
 
@@ -50,6 +57,7 @@ export {JitCompiler} from './jit/compiler';
 export * from './compile_reflector';
 export * from './url_resolver';
 export * from './resource_loader';
+export {ConstantPool} from './constant_pool';
 export {DirectiveResolver} from './directive_resolver';
 export {PipeResolver} from './pipe_resolver';
 export {NgModuleResolver} from './ng_module_resolver';
@@ -67,7 +75,7 @@ export * from './ml_parser/html_tags';
 export * from './ml_parser/interpolation_config';
 export * from './ml_parser/tags';
 export {NgModuleCompiler} from './ng_module_compiler';
-export {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinType, BuiltinTypeName, BuiltinVar, CastExpr, ClassField, ClassMethod, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, StatementVisitor, ThrowStmt, TryCatchStmt, Type, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr, StmtModifier, Statement, collectExternalReferences} from './output/output_ast';
+export {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinType, BuiltinTypeName, BuiltinVar, CastExpr, ClassField, ClassMethod, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, StatementVisitor, ThrowStmt, TryCatchStmt, Type, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr, StmtModifier, Statement, TypeofExpr, collectExternalReferences} from './output/output_ast';
 export {EmitterVisitorContext} from './output/abstract_emitter';
 export * from './output/ts_emitter';
 export * from './parse_util';
@@ -79,4 +87,20 @@ export {ViewCompiler} from './view_compiler/view_compiler';
 export {getParseErrors, isSyntaxError, syntaxError, Version} from './util';
 export {SourceMap} from './output/source_map';
 export * from './injectable_compiler_2';
+export * from './render3/view/api';
+export {BoundAttribute as TmplAstBoundAttribute, BoundEvent as TmplAstBoundEvent, BoundText as TmplAstBoundText, Content as TmplAstContent, Element as TmplAstElement, Node as TmplAstNode, Reference as TmplAstReference, Template as TmplAstTemplate, Text as TmplAstText, TextAttribute as TmplAstTextAttribute, Variable as TmplAstVariable,} from './render3/r3_ast';
+export * from './render3/view/t2_api';
+export * from './render3/view/t2_binder';
+export {jitExpression} from './render3/r3_jit';
+export {R3DependencyMetadata, R3FactoryMetadata, R3ResolvedDependencyType} from './render3/r3_factory';
+export {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata} from './render3/r3_module_compiler';
+export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
+export {makeBindingParser, parseTemplate} from './render3/view/template';
+export {R3Reference} from './render3/util';
+export {compileBaseDefFromMetadata, R3BaseRefMetaData, compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings} from './render3/view/compiler';
+export {publishFacade} from './jit_compiler_facade';
 // This file only reexports content of the `src` folder. Keep it that way.
+
+// This function call has a global side effects and publishes the compiler into global namespace for
+// the late binding of the Compiler to the @angular/core for jit compilation.
+publishFacade(global);

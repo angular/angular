@@ -65,7 +65,6 @@ module.exports = new Package('angular-base', [
   // Where do we write the output files?
   .config(function(writeFilesProcessor) { writeFilesProcessor.outputFolder = DOCS_OUTPUT_PATH; })
 
-
   // Target environments
   .config(function(targetEnvironments) {
     const ALLOWED_LANGUAGES = ['ts', 'js', 'dart'];

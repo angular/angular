@@ -65,6 +65,11 @@ describe('NgCompilerHost', () => {
           .toBe('@angular/core');
     });
 
+    it('should allow an import o a package whose name contains dot (e.g. @angular.io)', () => {
+      expect(host.fileNameToModuleName('/tmp/node_modules/@angular.io/core.d.ts', '/tmp/main.ts'))
+          .toBe('@angular.io/core');
+    });
+
     it('should use a package import when accessing a package from another package', () => {
       expect(host.fileNameToModuleName(
                  '/tmp/node_modules/mod1/index.d.ts', '/tmp/node_modules/mod2/index.d.ts'))
@@ -191,7 +196,21 @@ describe('NgCompilerHost', () => {
       const host = createHost({ngHost});
       expect(host.resourceNameToFileName('a', 'b')).toBe('someResult');
     });
-
+    it('should resolve Sass imports to generated .css files', () => {
+      const host = createHost({files: {'tmp': {'src': {'a': {'style.css': 'h1: bold'}}}}});
+      expect(host.resourceNameToFileName('./a/style.scss', '/tmp/src/index.ts'))
+          .toBe('/tmp/src/a/style.css');
+    });
+    it('should resolve Less imports to generated .css files', () => {
+      const host = createHost({files: {'tmp': {'src': {'a': {'style.css': 'h1: bold'}}}}});
+      expect(host.resourceNameToFileName('./a/style.less', '/tmp/src/index.ts'))
+          .toBe('/tmp/src/a/style.css');
+    });
+    it('should resolve Stylus imports to generated .css files', () => {
+      const host = createHost({files: {'tmp': {'src': {'a': {'style.css': 'h1: bold'}}}}});
+      expect(host.resourceNameToFileName('./a/style.styl', '/tmp/src/index.ts'))
+          .toBe('/tmp/src/a/style.css');
+    });
   });
 
   describe('getSourceFile', () => {

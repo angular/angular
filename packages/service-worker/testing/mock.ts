@@ -8,13 +8,27 @@
 
 import {Subject} from 'rxjs';
 
+export const patchDecodeBase64 = (proto: {decodeBase64: typeof atob}) => {
+  let unpatch: () => void = () => undefined;
+
+  if ((typeof atob === 'undefined') && (typeof Buffer === 'function')) {
+    const oldDecodeBase64 = proto.decodeBase64;
+    const newDecodeBase64 = (input: string) => Buffer.from(input, 'base64').toString('binary');
+
+    proto.decodeBase64 = newDecodeBase64;
+    unpatch = () => { proto.decodeBase64 = oldDecodeBase64; };
+  }
+
+  return unpatch;
+};
+
 export class MockServiceWorkerContainer {
   private onControllerChange: Function[] = [];
   private onMessage: Function[] = [];
-  private registration: MockServiceWorkerRegistration|null = null;
+  mockRegistration: MockServiceWorkerRegistration|null = null;
   controller: MockServiceWorker|null = null;
-
   messages = new Subject();
+  notificationClicks = new Subject();
 
   addEventListener(event: 'controllerchange'|'message', handler: Function) {
     if (event === 'controllerchange') {
@@ -34,16 +48,14 @@ export class MockServiceWorkerContainer {
 
   async register(url: string): Promise<void> { return; }
 
-  async getRegistration(): Promise<ServiceWorkerRegistration> { return this.registration as any; }
-
-  setupSw(url: string = '/ngsw-worker.js'): void {
-    this.registration = new MockServiceWorkerRegistration();
-    this.controller = new MockServiceWorker(this, url);
-    this.onControllerChange.forEach(onChange => onChange(this.controller));
+  async getRegistration(): Promise<ServiceWorkerRegistration> {
+    return this.mockRegistration as any;
   }
 
-  get mockRegistration(): Promise<MockServiceWorkerRegistration> {
-    return Promise.resolve(this.registration !);
+  setupSw(url: string = '/ngsw-worker.js'): void {
+    this.mockRegistration = new MockServiceWorkerRegistration();
+    this.controller = new MockServiceWorker(this, url);
+    this.onControllerChange.forEach(onChange => onChange(this.controller));
   }
 
   sendMessage(value: Object): void {
@@ -59,4 +71,21 @@ export class MockServiceWorker {
   postMessage(value: Object) { this.mock.messages.next(value); }
 }
 
-export class MockServiceWorkerRegistration {}
+export class MockServiceWorkerRegistration {
+  pushManager: PushManager = new MockPushManager() as any;
+}
+
+export class MockPushManager {
+  private subscription: PushSubscription|null = null;
+
+  getSubscription(): Promise<PushSubscription|null> { return Promise.resolve(this.subscription); }
+
+  subscribe(options?: PushSubscriptionOptionsInit): Promise<PushSubscription> {
+    this.subscription = new MockPushSubscription() as any;
+    return Promise.resolve(this.subscription !);
+  }
+}
+
+export class MockPushSubscription {
+  unsubscribe(): Promise<boolean> { return Promise.resolve(true); }
+}

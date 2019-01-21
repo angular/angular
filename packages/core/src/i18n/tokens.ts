@@ -13,8 +13,9 @@ import {InjectionToken} from '../di/injection_token';
  * It is used for i18n extraction, by i18n pipes (DatePipe, I18nPluralPipe, CurrencyPipe,
  * DecimalPipe and PercentPipe) and by ICU expressions.
  *
- * See the {@linkDocs guide/i18n#setting-up-locale i18n guide} for more information.
+ * See the [i18n guide](guide/i18n#setting-up-locale) for more information.
  *
+ * @usageNotes
  * ### Example
  *
  * ```typescript
@@ -27,7 +28,7 @@ import {InjectionToken} from '../di/injection_token';
  * });
  * ```
  *
- * @experimental i18n support is experimental.
+ * @publicApi
  */
 export const LOCALE_ID = new InjectionToken<string>('LocaleId');
 
@@ -35,8 +36,9 @@ export const LOCALE_ID = new InjectionToken<string>('LocaleId');
  * Use this token at bootstrap to provide the content of your translation file (`xtb`,
  * `xlf` or `xlf2`) when you want to translate your application in another language.
  *
- * See the {@linkDocs guide/i18n#merge i18n guide} for more information.
+ * See the [i18n guide](guide/i18n#merge) for more information.
  *
+ * @usageNotes
  * ### Example
  *
  * ```typescript
@@ -52,7 +54,7 @@ export const LOCALE_ID = new InjectionToken<string>('LocaleId');
  * });
  * ```
  *
- * @experimental i18n support is experimental.
+ * @publicApi
  */
 export const TRANSLATIONS = new InjectionToken<string>('Translations');
 
@@ -60,8 +62,9 @@ export const TRANSLATIONS = new InjectionToken<string>('Translations');
  * Provide this token at bootstrap to set the format of your {@link TRANSLATIONS}: `xtb`,
  * `xlf` or `xlf2`.
  *
- * See the {@linkDocs guide/i18n#merge i18n guide} for more information.
+ * See the [i18n guide](guide/i18n#merge) for more information.
  *
+ * @usageNotes
  * ### Example
  *
  * ```typescript
@@ -74,7 +77,7 @@ export const TRANSLATIONS = new InjectionToken<string>('Translations');
  * });
  * ```
  *
- * @experimental i18n support is experimental.
+ * @publicApi
  */
 export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsFormat');
 
@@ -85,8 +88,9 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsForma
  * - Warning (default): show a warning in the console and/or shell.
  * - Ignore: do nothing.
  *
- * See the {@linkDocs guide/i18n#missing-translation i18n guide} for more information.
+ * See the [i18n guide](guide/i18n#missing-translation) for more information.
  *
+ * @usageNotes
  * ### Example
  * ```typescript
  * import { MissingTranslationStrategy } from '@angular/core';
@@ -98,7 +102,7 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsForma
  * });
  * ```
  *
- * @experimental i18n support is experimental.
+ * @publicApi
  */
 export enum MissingTranslationStrategy {
   Error = 0,

@@ -13,6 +13,12 @@ function _notImplemented(methodName: string) {
   return new Error('This method is not implemented in DominoAdapter: ' + methodName);
 }
 
+function setDomTypes() {
+  // Make all Domino types available as types in the global env.
+  Object.assign(global, domino.impl);
+  (global as any)['KeyboardEvent'] = domino.impl.Event;
+}
+
 /**
  * Parses a document string to a Document object.
  */
@@ -33,7 +39,10 @@ export function serializeDocument(doc: Document): string {
  * DOM Adapter for the server platform based on https://github.com/fgnass/domino.
  */
 export class DominoAdapter extends BrowserDomAdapter {
-  static makeCurrent() { setRootDomAdapter(new DominoAdapter()); }
+  static makeCurrent() {
+    setDomTypes();
+    setRootDomAdapter(new DominoAdapter());
+  }
 
   private static defaultDoc: Document;
 
@@ -126,7 +135,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   }
 
   getBaseHref(doc: Document): string {
-    const base = this.querySelector(doc.documentElement, 'base');
+    const base = this.querySelector(doc.documentElement !, 'base');
     let href = '';
     if (base) {
       href = this.getHref(base);

@@ -18,40 +18,59 @@ import {PlaceholderRegistry} from './serializers/placeholder';
 
 const _expParser = new ExpressionParser(new ExpressionLexer());
 
+type VisitNodeFn = (html: html.Node, i18n: i18n.Node) => void;
+
 /**
  * Returns a function converting html nodes to an i18n Message given an interpolationConfig
  */
 export function createI18nMessageFactory(interpolationConfig: InterpolationConfig): (
-    nodes: html.Node[], meaning: string, description: string, id: string) => i18n.Message {
+    nodes: html.Node[], meaning: string, description: string, id: string,
+    visitNodeFn?: VisitNodeFn) => i18n.Message {
   const visitor = new _I18nVisitor(_expParser, interpolationConfig);
 
-  return (nodes: html.Node[], meaning: string, description: string, id: string) =>
-             visitor.toI18nMessage(nodes, meaning, description, id);
+  return (nodes: html.Node[], meaning: string, description: string, id: string,
+          visitNodeFn?: VisitNodeFn) =>
+             visitor.toI18nMessage(nodes, meaning, description, id, visitNodeFn);
 }
 
 class _I18nVisitor implements html.Visitor {
-  private _isIcu: boolean;
-  private _icuDepth: number;
-  private _placeholderRegistry: PlaceholderRegistry;
-  private _placeholderToContent: {[phName: string]: string};
-  private _placeholderToMessage: {[phName: string]: i18n.Message};
+  // TODO(issue/24571): remove '!'.
+  private _isIcu !: boolean;
+  // TODO(issue/24571): remove '!'.
+  private _icuDepth !: number;
+  // TODO(issue/24571): remove '!'.
+  private _placeholderRegistry !: PlaceholderRegistry;
+  // TODO(issue/24571): remove '!'.
+  private _placeholderToContent !: {[phName: string]: string};
+  // TODO(issue/24571): remove '!'.
+  private _placeholderToMessage !: {[phName: string]: i18n.Message};
+  private _visitNodeFn: VisitNodeFn|undefined;
 
   constructor(
       private _expressionParser: ExpressionParser,
       private _interpolationConfig: InterpolationConfig) {}
 
-  public toI18nMessage(nodes: html.Node[], meaning: string, description: string, id: string):
-      i18n.Message {
+  public toI18nMessage(
+      nodes: html.Node[], meaning: string, description: string, id: string,
+      visitNodeFn?: VisitNodeFn): i18n.Message {
     this._isIcu = nodes.length == 1 && nodes[0] instanceof html.Expansion;
     this._icuDepth = 0;
     this._placeholderRegistry = new PlaceholderRegistry();
     this._placeholderToContent = {};
     this._placeholderToMessage = {};
+    this._visitNodeFn = visitNodeFn;
 
     const i18nodes: i18n.Node[] = html.visitAll(this, nodes, {});
 
     return new i18n.Message(
         i18nodes, this._placeholderToContent, this._placeholderToMessage, meaning, description, id);
+  }
+
+  private _visitNode(html: html.Node, i18n: i18n.Node): i18n.Node {
+    if (this._visitNodeFn) {
+      this._visitNodeFn(html, i18n);
+    }
+    return i18n;
   }
 
   visitElement(el: html.Element, context: any): i18n.Node {
@@ -74,16 +93,19 @@ class _I18nVisitor implements html.Visitor {
       this._placeholderToContent[closePhName] = `</${el.name}>`;
     }
 
-    return new i18n.TagPlaceholder(
+    const node = new i18n.TagPlaceholder(
         el.name, attrs, startPhName, closePhName, children, isVoid, el.sourceSpan !);
+    return this._visitNode(el, node);
   }
 
   visitAttribute(attribute: html.Attribute, context: any): i18n.Node {
-    return this._visitTextWithInterpolation(attribute.value, attribute.sourceSpan);
+    const node = this._visitTextWithInterpolation(attribute.value, attribute.sourceSpan);
+    return this._visitNode(attribute, node);
   }
 
   visitText(text: html.Text, context: any): i18n.Node {
-    return this._visitTextWithInterpolation(text.value, text.sourceSpan !);
+    const node = this._visitTextWithInterpolation(text.value, text.sourceSpan !);
+    return this._visitNode(text, node);
   }
 
   visitComment(comment: html.Comment, context: any): i18n.Node|null { return null; }
@@ -105,8 +127,7 @@ class _I18nVisitor implements html.Visitor {
       const expPh = this._placeholderRegistry.getUniquePlaceholder(`VAR_${icu.type}`);
       i18nIcu.expressionPlaceholder = expPh;
       this._placeholderToContent[expPh] = icu.switchValue;
-
-      return i18nIcu;
+      return this._visitNode(icu, i18nIcu);
     }
 
     // Else returns a placeholder
@@ -117,7 +138,8 @@ class _I18nVisitor implements html.Visitor {
     const phName = this._placeholderRegistry.getPlaceholderName('ICU', icu.sourceSpan.toString());
     const visitor = new _I18nVisitor(this._expressionParser, this._interpolationConfig);
     this._placeholderToMessage[phName] = visitor.toI18nMessage([icu], '', '', '');
-    return new i18n.IcuPlaceholder(i18nIcu, phName, icu.sourceSpan);
+    const node = new i18n.IcuPlaceholder(i18nIcu, phName, icu.sourceSpan);
+    return this._visitNode(icu, node);
   }
 
   visitExpansionCase(icuCase: html.ExpansionCase, context: any): i18n.Node {

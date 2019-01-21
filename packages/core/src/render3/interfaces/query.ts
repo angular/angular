@@ -6,44 +6,60 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../../interface/type';
 import {QueryList} from '../../linker';
-import {Type} from '../../type';
-import {LNode} from './node';
+
+import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './node';
+
 
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */
 export interface LQueries {
   /**
-   * Used to ask queries if those should be cloned to the child element.
+   * The parent LQueries instance.
    *
-   * For example in the case of deep queries the `child()` returns
-   * queries for the child node. In case of shallow queries it returns
-   * `null`.
+   * When there is a content query, a new LQueries instance is created to avoid mutating any
+   * existing LQueries. After we are done searching content children, the parent property allows
+   * us to traverse back up to the original LQueries instance to continue to search for matches
+   * in the main view.
    */
-  child(): LQueries|null;
+  parent: LQueries|null;
 
   /**
-   * Notify `LQueries` that a new `LNode` has been created and needs to be added to query results
-   * if matching query predicate.
+   * Ask queries to prepare copy of itself. This assures that tracking new queries on content nodes
+   * doesn't mutate list of queries tracked on a parent node. We will clone LQueries before
+   * constructing content queries.
    */
-  addNode(node: LNode): void;
+  clone(): LQueries;
 
   /**
-   * Notify `LQueries` that a  `LNode` has been created and needs to be added to query results
+   * Notify `LQueries` that a new `TNode` has been created and needs to be added to query results
    * if matching query predicate.
+   */
+  addNode(tNode: TElementNode|TContainerNode|TElementContainerNode): LQueries|null;
+
+  /**
+   * Notify `LQueries` that a new LContainer was added to ivy data structures. As a result we need
+   * to prepare room for views that might be inserted into this container.
    */
   container(): LQueries|null;
 
   /**
-   * Notify `LQueries` that a new view was created and is being entered in the creation mode.
-   * This allow queries to prepare space for matching nodes from views.
+   * Notify `LQueries` that a new `LView` has been created. As a result we need to prepare room
+   * and collect nodes that match query predicate.
    */
-  enterView(newViewIndex: number): LQueries|null;
+  createView(): LQueries|null;
 
   /**
-   * Notify `LQueries` that an `LViewNode` has been removed from `LContainerNode`. As a result all
+   * Notify `LQueries` that a new `LView` has been added to `LContainer`. As a result all
+   * the matching nodes from this view should be added to container's queries.
+   */
+  insertView(newViewIndex: number): void;
+
+  /**
+   * Notify `LQueries` that an `LView` has been removed from `LContainer`. As a result all
    * the matching nodes from this view should be removed from container's queries.
    */
-  removeView(removeIndex: number): void;
+  removeView(): void;
 
   /**
    * Add additional `QueryList` to track.
@@ -55,10 +71,8 @@ export interface LQueries {
    */
   track<T>(
       queryList: QueryList<T>, predicate: Type<any>|string[], descend?: boolean,
-      read?: QueryReadType<T>|Type<T>): void;
+      read?: Type<T>): void;
 }
-
-export class QueryReadType<T> { private defeatStructuralTyping: any; }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

@@ -113,7 +113,7 @@ export function performWatchCompilation(host: PerformWatchHost):
   let cachedOptions: ParsedConfiguration|undefined;  // CompilerOptions cached from last compilation
   let timerHandleForRecompilation: any;  // Handle for 0.25s wait timer to trigger recompilation
 
-  const ingoreFilesForWatch = new Set<string>();
+  const ignoreFilesForWatch = new Set<string>();
   const fileCache = new Map<string, CacheEntry>();
 
   const firstCompileResult = doCompilation();
@@ -162,7 +162,7 @@ export function performWatchCompilation(host: PerformWatchHost):
       cachedCompilerHost.writeFile = function(
           fileName: string, data: string, writeByteOrderMark: boolean,
           onError?: (message: string) => void, sourceFiles: ReadonlyArray<ts.SourceFile> = []) {
-        ingoreFilesForWatch.add(path.normalize(fileName));
+        ignoreFilesForWatch.add(path.normalize(fileName));
         return originalWriteFileCallback(fileName, data, writeByteOrderMark, onError, sourceFiles);
       };
       const originalFileExists = cachedCompilerHost.fileExists;
@@ -191,7 +191,7 @@ export function performWatchCompilation(host: PerformWatchHost):
         return ce.content !;
       };
     }
-    ingoreFilesForWatch.clear();
+    ignoreFilesForWatch.clear();
     const oldProgram = cachedProgram;
     // We clear out the `cachedProgram` here as a
     // program can only be used as `oldProgram` 1x
@@ -200,7 +200,7 @@ export function performWatchCompilation(host: PerformWatchHost):
       rootNames: cachedOptions.rootNames,
       options: cachedOptions.options,
       host: cachedCompilerHost,
-      oldProgram: cachedProgram,
+      oldProgram: oldProgram,
       emitCallback: host.createEmitCallback(cachedOptions.options)
     });
 
@@ -253,7 +253,7 @@ export function performWatchCompilation(host: PerformWatchHost):
       fileCache.delete(path.normalize(fileName));
     }
 
-    if (!ingoreFilesForWatch.has(path.normalize(fileName))) {
+    if (!ignoreFilesForWatch.has(path.normalize(fileName))) {
       // Ignore the file if the file is one that was written by the compiler.
       startTimerForRecompilation();
     }

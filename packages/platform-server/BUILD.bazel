@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/platform-server",
     deps = [
         "//packages/animations/browser",
         "//packages/common",
@@ -21,6 +20,8 @@ ng_module(
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
+        "@ngdeps//@types/node",
+        "@ngdeps//zone.js",
         "@rxjs",
     ],
 )
@@ -32,7 +33,12 @@ ng_package(
         "//packages/platform-server/testing:package.json",
     ],
     entry_point = "packages/platform-server/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":platform-server",
         "//packages/platform-server/testing",

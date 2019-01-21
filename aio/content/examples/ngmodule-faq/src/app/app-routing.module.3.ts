@@ -5,8 +5,8 @@ import { ContactModule } from './contact/contact.module.3';
 
 const routes: Routes = [
   { path: '', redirectTo: 'contact', pathMatch: 'full'},
-  { path: 'crisis', loadChildren: 'app/crisis/crisis.module#CrisisModule' },
-  { path: 'heroes', loadChildren: 'app/hero/hero.module.3#HeroModule' }
+  { path: 'crisis', loadChildren: './crisis/crisis.module#CrisisModule' },
+  { path: 'heroes', loadChildren: './hero/hero.module.3#HeroModule' }
 ];
 
 @NgModule({

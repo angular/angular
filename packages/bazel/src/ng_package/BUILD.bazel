@@ -1,24 +1,30 @@
 package(default_visibility = ["//visibility:public"])
 
-filegroup(
-    name = "package_assets",
-    srcs = glob(["*"]),
-    visibility = ["//packages/bazel:__subpackages__"],
-)
-
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
 
-exports_files(["rollup.config.js"])
+exports_files([
+    "rollup.config.js",
+    "ng_package.bzl",
+])
 
 ts_library(
     name = "lib",
     srcs = glob(["*.ts"]),
+    node_modules = "@ngdeps//typescript:typescript__typings",
     tsconfig = ":tsconfig.json",
+    deps = [
+        "@ngdeps//@types/node",
+        "@ngdeps//@types/shelljs",
+    ],
 )
 
 nodejs_binary(
     name = "packager",
-    data = ["lib"],
+    data = [
+        "lib",
+        "@ngdeps//shelljs",
+    ],
     entry_point = "angular/packages/bazel/src/ng_package/packager.js",
+    install_source_map_support = False,
 )

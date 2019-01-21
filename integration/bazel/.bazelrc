@@ -1,3 +1,15 @@
+# Make TypeScript and Angular compilation fast, by keeping a few copies of the
+# compiler running as daemons, and cache SourceFile AST's to reduce parse time.
+build --strategy=TypeScriptCompile=worker
+build --strategy=AngularTemplateCompile=worker
+
+test --test_output=errors
+
 # Workaround https://github.com/bazelbuild/bazel/issues/3645
-# Limit Bazel to consuming 3072K of RAM
-build --local_resources=3072,2.0,1.0
+# Bazel doesn't calculate the memory ceiling correctly when running under Docker.
+# Limit Bazel to consuming resources that fit in CircleCI "xlarge" class
+# https://circleci.com/docs/2.0/configuration-reference/#resource_class
+build --local_resources=14336,8.0,1.0
+
+# Use the Angular 6 compiler
+build --define=compile=legacy

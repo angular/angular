@@ -6,6 +6,7 @@
     "module": "es2015",
     "moduleResolution": "node",
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "outDir": "../../../dist/all/@angular/service-worker/cli-custom",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
@@ -16,7 +17,10 @@
     "inlineSourceMap": true,
     "lib": ["es2015"],
     "target": "es5",
-    "typeRoots": []
+    "typeRoots": [],
+    "types": [
+      "node"
+    ]
   },
   "files": [
     "main.ts",

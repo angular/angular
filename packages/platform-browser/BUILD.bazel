@@ -10,11 +10,12 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/platform-browser",
     deps = [
         "//packages:types",
         "//packages/common",
         "//packages/core",
+        "@ngdeps//@types/hammerjs",
+        "@ngdeps//zone.js",
     ],
 )
 
@@ -26,7 +27,14 @@ ng_package(
         "//packages/platform-browser/testing:package.json",
     ],
     entry_point = "packages/platform-browser/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//packages/compiler-cli/test:__pkg__",
+    ],
     deps = [
         ":platform-browser",
         "//packages/platform-browser/animations",

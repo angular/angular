@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/animations",
     deps = [
         "//packages/core",
     ],
@@ -24,7 +23,14 @@ ng_package(
         "//packages/animations/browser/testing:package.json",
     ],
     entry_point = "packages/animations/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//packages/compiler/test:__pkg__",
+    ],
     deps = [
         ":animations",
         "//packages/animations/browser",

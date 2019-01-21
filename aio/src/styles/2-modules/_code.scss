@@ -3,8 +3,9 @@ code-example, code-tabs {
     display: block;
 }
 
-code-example,
-code-tabs mat-tab-body {
+code-example {
+
+
   &:not(.no-box) {
     background-color: rgba($backgroundgray, 0.2);
     border: 0.5px solid $lightgray;
@@ -22,6 +23,16 @@ code-tabs mat-tab-body {
     }
   }
 
+  code {
+    overflow: auto;
+  }
+}
+
+code-example, code-tabs {
+  .mat-card {
+    padding: 0;
+    border-radius: 5px;
+  }
   code {
     overflow: auto;
   }
@@ -86,8 +97,9 @@ aio-code pre {
 
 .copy-button {
   position: absolute;
-  top: -8px;
-  right: -32px;
+  top: -7px;
+  right: -19px;
+  padding: 0;
 
   color: $blue-grey-200;
   background-color: transparent;
@@ -106,6 +118,9 @@ aio-code pre {
 }
 
 .code-tab-group .mat-tab-label {
+  &:hover {
+    background: rgba(black, 0.04);
+  }
   white-space: nowrap;
 }
 
@@ -122,6 +137,7 @@ aio-code pre {
 .sidenav-content code a {
   color: inherit;
   font-size: inherit;
+  font-weight: inherit;
 }
 
 /* PRETTY PRINTING STYLES for prettify.js. */

@@ -4,18 +4,14 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as path from 'path';
 import * as shell from 'shelljs';
-import {HIDDEN_DIR_PREFIX, SHORT_SHA_LEN} from '../common/constants';
-import {getEnvVar} from '../common/utils';
-
-// Constans
-const TEST_AIO_BUILDS_DIR = getEnvVar('TEST_AIO_BUILDS_DIR');
-const TEST_AIO_NGINX_HOSTNAME = getEnvVar('TEST_AIO_NGINX_HOSTNAME');
-const TEST_AIO_NGINX_PORT_HTTP = +getEnvVar('TEST_AIO_NGINX_PORT_HTTP');
-const TEST_AIO_NGINX_PORT_HTTPS = +getEnvVar('TEST_AIO_NGINX_PORT_HTTPS');
-const TEST_AIO_UPLOAD_HOSTNAME = getEnvVar('TEST_AIO_UPLOAD_HOSTNAME');
-const TEST_AIO_UPLOAD_MAX_SIZE = +getEnvVar('TEST_AIO_UPLOAD_MAX_SIZE');
-const TEST_AIO_UPLOAD_PORT = +getEnvVar('TEST_AIO_UPLOAD_PORT');
-const WWW_USER = getEnvVar('AIO_WWW_USER');
+import {AIO_DOWNLOADS_DIR, HIDDEN_DIR_PREFIX} from '../common/constants';
+import {
+  AIO_BUILDS_DIR,
+  AIO_NGINX_PORT_HTTP,
+  AIO_NGINX_PORT_HTTPS,
+  AIO_WWW_USER,
+} from '../common/env-variables';
+import {computeShortSha, Logger} from '../common/utils';
 
 // Interfaces - Types
 export interface CmdResult { success: boolean; err: Error | null; stdout: string; stderr: string; }
@@ -27,61 +23,50 @@ export type VerifyCmdResultFn = (result: CmdResult) => void;
 
 // Classes
 class Helper {
-  // Properties - Public
-  public get buildsDir() { return TEST_AIO_BUILDS_DIR; }
-  public get nginxHostname() { return TEST_AIO_NGINX_HOSTNAME; }
-  public get nginxPortHttp() { return TEST_AIO_NGINX_PORT_HTTP; }
-  public get nginxPortHttps() { return TEST_AIO_NGINX_PORT_HTTPS; }
-  public get uploadHostname() { return TEST_AIO_UPLOAD_HOSTNAME; }
-  public get uploadPort() { return TEST_AIO_UPLOAD_PORT; }
-  public get uploadMaxSize() { return TEST_AIO_UPLOAD_MAX_SIZE; }
-  public get wwwUser() { return WWW_USER; }
 
   // Properties - Protected
   protected cleanUpFns: CleanUpFn[] = [];
   protected portPerScheme: {[scheme: string]: number} = {
-    http: this.nginxPortHttp,
-    https: this.nginxPortHttps,
+    http: AIO_NGINX_PORT_HTTP,
+    https: AIO_NGINX_PORT_HTTPS,
   };
+
+  private logger = new Logger('TestHelper');
 
   // Constructor
   constructor() {
-    shell.mkdir('-p', this.buildsDir);
-    shell.exec(`chown -R ${this.wwwUser} ${this.buildsDir}`);
+    shell.mkdir('-p', AIO_BUILDS_DIR);
+    shell.exec(`chown -R ${AIO_WWW_USER} ${AIO_BUILDS_DIR}`);
+    shell.mkdir('-p', AIO_DOWNLOADS_DIR);
+    shell.exec(`chown -R ${AIO_WWW_USER} ${AIO_DOWNLOADS_DIR}`);
   }
 
   // Methods - Public
-  public buildExists(pr: string, sha = '', isPublic = true, legacy = false): boolean {
-    const prDir = this.getPrDir(pr, isPublic);
-    const dir = !sha ? prDir : this.getShaDir(prDir, sha, legacy);
-    return fs.existsSync(dir);
-  }
-
-  public cleanUp() {
+  public cleanUp(): void {
     while (this.cleanUpFns.length) {
       // Clean-up fns remove themselves from the list.
       this.cleanUpFns[0]();
     }
 
-    if (fs.readdirSync(this.buildsDir).length) {
-      throw new Error(`Directory '${this.buildsDir}' is not empty after clean-up.`);
+    const leftoverDownloads = fs.readdirSync(AIO_DOWNLOADS_DIR);
+    const leftoverBuilds = fs.readdirSync(AIO_BUILDS_DIR);
+
+    if (leftoverDownloads.length) {
+      this.logger.log(`Downloads directory '${AIO_DOWNLOADS_DIR}' is not empty after clean-up.`, leftoverDownloads);
+      shell.rm('-rf', `${AIO_DOWNLOADS_DIR}/*`);
+    }
+
+    if (leftoverBuilds.length) {
+      this.logger.log(`Builds directory '${AIO_BUILDS_DIR}' is not empty after clean-up.`, leftoverBuilds);
+      shell.rm('-rf', `${AIO_BUILDS_DIR}/*`);
+    }
+
+    if (leftoverBuilds.length || leftoverDownloads.length) {
+      throw new Error(`Unexpected test files not cleaned up.`);
     }
   }
 
-  public createDummyArchive(pr: string, sha: string, archivePath: string): CleanUpFn {
-    const inputDir = this.getShaDir(this.getPrDir(`uploaded/${pr}`, true), sha);
-    const cmd1 = `tar --create --gzip --directory "${inputDir}" --file "${archivePath}" .`;
-    const cmd2 = `chown ${this.wwwUser} ${archivePath}`;
-
-    const cleanUpTemp = this.createDummyBuild(`uploaded/${pr}`, sha, true, true);
-    shell.exec(cmd1);
-    shell.exec(cmd2);
-    cleanUpTemp();
-
-    return this.createCleanUpFn(() => shell.rm('-rf', archivePath));
-  }
-
-  public createDummyBuild(pr: string, sha: string, isPublic = true, force = false, legacy = false): CleanUpFn {
+  public createDummyBuild(pr: number, sha: string, isPublic = true, force = false, legacy = false): CleanUpFn {
     const prDir = this.getPrDir(pr, isPublic);
     const shaDir = this.getShaDir(prDir, sha, legacy);
     const idxPath = path.join(shaDir, 'index.html');
@@ -89,35 +74,21 @@ class Helper {
 
     this.writeFile(idxPath, {content: `PR: ${pr} | SHA: ${sha} | File: /index.html`}, force);
     this.writeFile(barPath, {content: `PR: ${pr} | SHA: ${sha} | File: /foo/bar.js`}, force);
-    shell.exec(`chown -R ${this.wwwUser} ${prDir}`);
+    shell.exec(`chown -R ${AIO_WWW_USER} ${prDir}`);
 
     return this.createCleanUpFn(() => shell.rm('-rf', prDir));
   }
 
-  public deletePrDir(pr: string, isPublic = true) {
-    const prDir = this.getPrDir(pr, isPublic);
-
-    if (fs.existsSync(prDir)) {
-      // Undocumented signature (see https://github.com/shelljs/shelljs/pull/663).
-      (shell as any).chmod('-R', 'a+w', prDir);
-      shell.rm('-rf', prDir);
-    }
-  }
-
-  public getPrDir(pr: string, isPublic: boolean): string {
-    const prDirName = isPublic ? pr : HIDDEN_DIR_PREFIX + pr;
-    return path.join(this.buildsDir, prDirName);
+  public getPrDir(pr: number, isPublic: boolean): string {
+    const prDirName = isPublic ? '' + pr : HIDDEN_DIR_PREFIX + pr;
+    return path.join(AIO_BUILDS_DIR, prDirName);
   }
 
   public getShaDir(prDir: string, sha: string, legacy = false): string {
-    return path.join(prDir, legacy ? sha : this.getShordSha(sha));
+    return path.join(prDir, legacy ? sha : computeShortSha(sha));
   }
 
-  public getShordSha(sha: string): string {
-    return sha.substr(0, SHORT_SHA_LEN);
-  }
-
-  public readBuildFile(pr: string, sha: string, relFilePath: string, isPublic = true, legacy = false): string {
+  public readBuildFile(pr: number, sha: string, relFilePath: string, isPublic = true, legacy = false): string {
     const shaDir = this.getShaDir(this.getPrDir(pr, isPublic), sha, legacy);
     const absFilePath = path.join(shaDir, relFilePath);
     return fs.readFileSync(absFilePath, 'utf8');
@@ -130,11 +101,11 @@ class Helper {
     });
   }
 
-  public runForAllSupportedSchemes(suiteFactory: TestSuiteFactory) {
+  public runForAllSupportedSchemes(suiteFactory: TestSuiteFactory): void {
     Object.keys(this.portPerScheme).forEach(scheme => suiteFactory(scheme, this.portPerScheme[scheme]));
   }
 
-  public verifyResponse(status: number | [number, string], regex = /^/): VerifyCmdResultFn {
+  public verifyResponse(status: number | [number, string], regex: string | RegExp = /^/): VerifyCmdResultFn {
     let statusCode: number;
     let statusText: string;
 
@@ -154,9 +125,9 @@ class Helper {
                      // Only keep the last to sections (final headers and body).
 
       if (!result.success) {
-        console.log('Stdout:', result.stdout);
-        console.log('Stderr:', result.stderr);
-        console.log('Error:', result.err);
+        this.logger.log('Stdout:', result.stdout);
+        this.logger.error('Stderr:', result.stderr);
+        this.logger.error('Error:', result.err);
       }
 
       expect(result.success).toBe(true);
@@ -165,14 +136,14 @@ class Helper {
     };
   }
 
-  public writeBuildFile(pr: string, sha: string, relFilePath: string, content: string, isPublic = true,
-                        legacy = false): CleanUpFn {
+  public writeBuildFile(pr: number, sha: string, relFilePath: string, content: string, isPublic = true,
+                        legacy = false): void {
     const shaDir = this.getShaDir(this.getPrDir(pr, isPublic), sha, legacy);
     const absFilePath = path.join(shaDir, relFilePath);
-    return this.writeFile(absFilePath, {content}, true);
+    this.writeFile(absFilePath, {content}, true);
   }
 
-  public writeFile(filePath: string, {content, size}: FileSpecs, force = false): CleanUpFn {
+  public writeFile(filePath: string, {content, size}: FileSpecs, force = false): void {
     if (!force && fs.existsSync(filePath)) {
       throw new Error(`Refusing to overwrite existing file '${filePath}'.`);
     }
@@ -190,9 +161,7 @@ class Helper {
       // Create a file with the specified content.
       fs.writeFileSync(filePath, content || '');
     }
-    shell.exec(`chown ${this.wwwUser} ${filePath}`);
-
-    return this.createCleanUpFn(() => shell.rm('-rf', cleanUpTarget));
+    shell.exec(`chown ${AIO_WWW_USER} ${filePath}`);
   }
 
   // Methods - Protected
@@ -210,6 +179,71 @@ class Helper {
     return cleanUpFn;
   }
 }
+
+interface DefaultCurlOptions {
+  defaultMethod?: CurlOptions['method'];
+  defaultOptions?: CurlOptions['options'];
+  defaultHeaders?: CurlOptions['headers'];
+  defaultData?: CurlOptions['data'];
+  defaultExtraPath?: CurlOptions['extraPath'];
+}
+
+interface CurlOptions {
+  method?: string;
+  options?: string;
+  headers?: string[];
+  data?: any;
+  url?: string;
+  extraPath?: string;
+}
+
+export function makeCurl(baseUrl: string, {
+  defaultMethod = 'POST',
+  defaultOptions = '',
+  defaultHeaders = ['Content-Type: application/json'],
+  defaultData = {},
+  defaultExtraPath = '',
+}: DefaultCurlOptions = {}) {
+  return function curl({
+    method = defaultMethod,
+    options = defaultOptions,
+    headers = defaultHeaders,
+    data = defaultData,
+    url = baseUrl,
+    extraPath = defaultExtraPath,
+  }: CurlOptions) {
+    const dataString = data ? JSON.stringify(data) : '';
+    const cmd = `curl -iLX ${method} ` +
+                `${options} ` +
+                headers.map(header => `--header "${header}" `).join('') +
+                `--data '${dataString}' ` +
+                `${url}${extraPath}`;
+    return helper.runCmd(cmd);
+  };
+}
+
+export interface PayloadData {
+  data: {
+    payload: {
+      build_num: number,
+      build_parameters: {
+        CIRCLE_JOB: string;
+      };
+    };
+  };
+}
+
+export function payload(buildNum: number): PayloadData {
+  return {
+    data: {
+      payload: {
+        build_num: buildNum,
+        build_parameters: { CIRCLE_JOB: 'aio_preview' },
+      },
+    },
+  };
+}
+
 
 // Exports
 export const helper = new Helper();

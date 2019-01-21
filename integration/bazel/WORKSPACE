@@ -1,41 +1,84 @@
 workspace(name = "bazel_integration_test")
 
-http_archive(
-    name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.8.0.zip",
-    strip_prefix = "rules_nodejs-0.8.0",
-    sha256 = "4e40dd49ae7668d245c3107645f2a138660fcfd975b9310b91eda13f0c973953",
-)
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "node_repositories")
-node_repositories(package_json = ["//:package.json"])
+#
+# Download Bazel toolchain dependencies as needed by build actions
+#
 
 local_repository(
-    name = "build_bazel_rules_typescript",
-    path = "node_modules/@bazel/typescript",
+    name = "angular",
+    path = "../..",
+)
+
+http_archive(
+    name = "rxjs",
+    sha256 = "72b0b4e517f43358f554c125e40e39f67688cd2738a8998b4a266981ed32f403",
+    strip_prefix = "package/src",
+    url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
+)
+
+load("@angular//packages/bazel:package.bzl", "rules_angular_dependencies")
+
+rules_angular_dependencies()
+
+load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
+
+rules_typescript_dependencies()
+
+load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
+
+rules_nodejs_dependencies()
+
+http_archive(
+    name = "io_bazel_rules_sass",
+    sha256 = "dbe9fb97d5a7833b2a733eebc78c9c1e3880f676ac8af16e58ccf2139cbcad03",
+    strip_prefix = "rules_sass-1.11.0",
+    url = "https://github.com/bazelbuild/rules_sass/archive/1.11.0.zip",
+)
+
+#
+# Setup dependencies loaded above
+#
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
+
+check_bazel_version("0.17.0")
+
+node_repositories(
+    node_version = "10.9.0",
+    yarn_version = "1.12.1",
+)
+
+yarn_install(
+    name = "npm",
+    package_json = "//src:package.json",
+    yarn_lock = "//src:yarn.lock",
+)
+
+load("@io_bazel_rules_go//go:def.bzl", "go_register_toolchains", "go_rules_dependencies")
+
+go_rules_dependencies()
+
+go_register_toolchains()
+
+load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories", "web_test_repositories")
+
+web_test_repositories()
+
+browser_repositories(
+    chromium = True,
+    firefox = True,
 )
 
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
 
 ts_setup_workspace()
 
-local_repository(
-    name = "angular",
-    path = "node_modules/@angular/bazel",
-)
-
-local_repository(
-    name = "rxjs",
-    path = "node_modules/rxjs/src",
-)
-
-http_archive(
-    name = "io_bazel_rules_sass",
-    url = "https://github.com/bazelbuild/rules_sass/archive/0.0.3.zip",
-    strip_prefix = "rules_sass-0.0.3",
-    sha256 = "8fa98e7b48a5837c286a1ea254b5a5c592fced819ee9fe4fdd759768d97be868",
-)
-
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_repositories")
+load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 
 sass_repositories()
+
+load("@angular//:index.bzl", "ng_setup_workspace")
+
+ng_setup_workspace()

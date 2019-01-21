@@ -1,16 +1,17 @@
 {
   "scripts": [
-    { "name": "start", "command": "ng serve --aot" },
-    { "name": "start:fr", "command": "ng serve --aot --i18nFile=src/locale/messages.fr.xlf --i18nFormat=xlf --locale=fr" },
+    { "name": "start", "command": "ng serve" },
+    { "name": "start:fr", "command": "ng serve --configuration=fr" },
     { "name": "build", "command": "ng build --prod" },
-    { "name": "build:fr", "command": "ng build --prod --i18nFile=src/locale/messages.fr.xlf --i18nFormat=xlf --locale=fr" },
+    { "name": "build:fr", "command": "ng build --configuration=production-fr" },
     { "name": "test", "command": "ng test" },
     { "name": "lint", "command": "ng lint" },
-    { "name": "e2e", "command": "ng e2e --aot --i18nFile=src/locale/messages.fr.xlf --i18nFormat=xlf --locale=fr" },
-    { "name": "extract", "command": "ng xi18n --outputPath=src/locale" }
+    { "name": "e2e", "command": "ng e2e" },
+    { "name": "extract", "command": "ng xi18n --output-path=locale" }
   ],
   "dependencies": [],
   "devDependencies": [
+    "@angular-devkit/build-angular",
     "@angular/cli",
     "@types/jasminewd2",
     "jasmine-spec-reporter",

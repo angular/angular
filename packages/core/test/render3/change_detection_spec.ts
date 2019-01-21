@@ -6,17 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {withBody} from '@angular/core/testing';
+import {EmbeddedViewRef, TemplateRef, ViewContainerRef} from '@angular/core';
+import {withBody} from '@angular/private/testing';
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck} from '../../src/core';
-import {getRenderedText, whenRendered} from '../../src/render3/component';
-import {LifecycleHooksFeature, defineComponent, defineDirective, injectChangeDetectorRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, text, textBinding, tick} from '../../src/render3/instructions';
+import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, RendererType2} from '../../src/core';
+import {whenRendered} from '../../src/render3/component';
+import {LifecycleHooksFeature, defineComponent, defineDirective, getRenderedText, templateRefExtractor} from '../../src/render3/index';
+
+import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, reference, text, template, textBinding, tick} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {containerEl, createComponent, renderComponent, requestAnimationFrame} from './render_util';
+import {RElement, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
+
+import {ComponentFixture, containerEl, createComponent, renderComponent, requestAnimationFrame} from './render_util';
 
 describe('change detection', () => {
-
   describe('markDirty, detectChanges, whenRendered, getRenderedText', () => {
     class MyComponent implements DoCheck {
       value: string = 'works';
@@ -27,6 +30,8 @@ describe('change detection', () => {
         type: MyComponent,
         selectors: [['my-comp']],
         factory: () => new MyComponent(),
+        consts: 2,
+        vars: 1,
         template: (rf: RenderFlags, ctx: MyComponent) => {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
@@ -100,6 +105,8 @@ describe('change detection', () => {
         type: MyComponent,
         selectors: [['my-comp']],
         factory: () => comp = new MyComponent(),
+        consts: 2,
+        vars: 2,
         /**
          * {{ doCheckCount }} - {{ name }}
          * <button (click)="onClick()"></button>
@@ -113,7 +120,9 @@ describe('change detection', () => {
             }
             elementEnd();
           }
-          textBinding(0, interpolation2('', ctx.doCheckCount, ' - ', ctx.name, ''));
+          if (rf & RenderFlags.Update) {
+            textBinding(0, interpolation2('', ctx.doCheckCount, ' - ', ctx.name, ''));
+          }
         },
         changeDetection: ChangeDetectionStrategy.OnPush,
         inputs: {name: 'name'}
@@ -127,11 +136,12 @@ describe('change detection', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: () => new MyApp(),
+        consts: 1,
+        vars: 1,
         /** <my-comp [name]="name"></my-comp> */
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'my-comp');
-            elementEnd();
+            element(0, 'my-comp');
           }
           if (rf & RenderFlags.Update) {
             elementProperty(0, 'name', bind(ctx.name));
@@ -183,93 +193,121 @@ describe('change detection', () => {
       expect(getRenderedText(myApp)).toEqual('3 - George');
     });
 
-    it('should check OnPush components in update mode when component events occur', () => {
-      const myApp = renderComponent(MyApp);
-      expect(getRenderedText(myApp)).toEqual('1 - Nancy');
+    it('should not check OnPush components in update mode when component events occur, unless marked dirty',
+       () => {
+         const myApp = renderComponent(MyApp);
+         expect(comp.doCheckCount).toEqual(1);
+         expect(getRenderedText(myApp)).toEqual('1 - Nancy');
 
-      const button = containerEl.querySelector('button') !;
-      button.click();
-      requestAnimationFrame.flush();
-      expect(getRenderedText(myApp)).toEqual('2 - Nancy');
+         const button = containerEl.querySelector('button') !;
+         button.click();
+         requestAnimationFrame.flush();
+         // No ticks should have been scheduled.
+         expect(comp.doCheckCount).toEqual(1);
+         expect(getRenderedText(myApp)).toEqual('1 - Nancy');
 
-      tick(myApp);
-      expect(getRenderedText(myApp)).toEqual('2 - Nancy');
-    });
+         tick(myApp);
+         // The comp should still be clean. So doCheck will run, but the view should display 1.
+         expect(comp.doCheckCount).toEqual(2);
+         expect(getRenderedText(myApp)).toEqual('1 - Nancy');
+
+         markDirty(comp);
+         requestAnimationFrame.flush();
+         // Now that markDirty has been manually called, the view should be dirty and a tick
+         // should be scheduled to check the view.
+         expect(comp.doCheckCount).toEqual(3);
+         expect(getRenderedText(myApp)).toEqual('3 - Nancy');
+       });
 
     it('should not check OnPush components in update mode when parent events occur', () => {
       function noop() {}
 
       const ButtonParent = createComponent('button-parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'my-comp');
-          elementEnd();
+          element(0, 'my-comp');
           elementStart(1, 'button', ['id', 'parent']);
           { listener('click', () => noop()); }
           elementEnd();
         }
-      }, [MyComponent]);
+      }, 2, 0, [MyComponent]);
 
       const buttonParent = renderComponent(ButtonParent);
       expect(getRenderedText(buttonParent)).toEqual('1 - Nancy');
 
       const button = containerEl.querySelector('button#parent') !;
       (button as HTMLButtonElement).click();
-      requestAnimationFrame.flush();
+      tick(buttonParent);
+      // The comp should still be clean. So doCheck will run, but the view should display 1.
       expect(getRenderedText(buttonParent)).toEqual('1 - Nancy');
     });
 
-    it('should check parent OnPush components in update mode when child events occur', () => {
-      let parent: ButtonParent;
+    it('should not check parent OnPush components in update mode when child events occur, unless marked dirty',
+       () => {
+         let parent: ButtonParent;
 
-      class ButtonParent implements DoCheck {
-        doCheckCount = 0;
-        ngDoCheck(): void { this.doCheckCount++; }
+         class ButtonParent implements DoCheck {
+           doCheckCount = 0;
+           ngDoCheck(): void { this.doCheckCount++; }
 
-        static ngComponentDef = defineComponent({
-          type: ButtonParent,
-          selectors: [['button-parent']],
-          factory: () => parent = new ButtonParent(),
-          /** {{ doCheckCount }} - <my-comp></my-comp> */
-          template: (rf: RenderFlags, ctx: ButtonParent) => {
-            if (rf & RenderFlags.Create) {
-              text(0);
-              elementStart(1, 'my-comp');
-              elementEnd();
-            }
-            if (rf & RenderFlags.Update) {
-              textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
-            }
-          },
-          directives: () => [MyComponent],
-          changeDetection: ChangeDetectionStrategy.OnPush
-        });
-      }
+           static ngComponentDef = defineComponent({
+             type: ButtonParent,
+             selectors: [['button-parent']],
+             factory: () => parent = new ButtonParent(),
+             consts: 2,
+             vars: 1,
+             /** {{ doCheckCount }} - <my-comp></my-comp> */
+             template: (rf: RenderFlags, ctx: ButtonParent) => {
+               if (rf & RenderFlags.Create) {
+                 text(0);
+                 element(1, 'my-comp');
+               }
+               if (rf & RenderFlags.Update) {
+                 textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
+               }
+             },
+             directives: () => [MyComponent],
+             changeDetection: ChangeDetectionStrategy.OnPush
+           });
+         }
 
-      const MyButtonApp = createComponent('my-button-app', function(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          elementStart(0, 'button-parent');
-          elementEnd();
-        }
-      }, [ButtonParent]);
+         const MyButtonApp = createComponent('my-button-app', function(rf: RenderFlags, ctx: any) {
+           if (rf & RenderFlags.Create) {
+             element(0, 'button-parent');
+           }
+         }, 1, 0, [ButtonParent]);
 
-      const myButtonApp = renderComponent(MyButtonApp);
-      expect(parent !.doCheckCount).toEqual(1);
-      expect(comp !.doCheckCount).toEqual(1);
-      expect(getRenderedText(myButtonApp)).toEqual('1 - 1 - Nancy');
+         const myButtonApp = renderComponent(MyButtonApp);
+         expect(parent !.doCheckCount).toEqual(1);
+         expect(comp !.doCheckCount).toEqual(1);
+         expect(getRenderedText(myButtonApp)).toEqual('1 - 1 - Nancy');
 
-      tick(myButtonApp);
-      expect(parent !.doCheckCount).toEqual(2);
-      // parent isn't checked, so child doCheck won't run
-      expect(comp !.doCheckCount).toEqual(1);
-      expect(getRenderedText(myButtonApp)).toEqual('1 - 1 - Nancy');
+         tick(myButtonApp);
+         expect(parent !.doCheckCount).toEqual(2);
+         // parent isn't checked, so child doCheck won't run
+         expect(comp !.doCheckCount).toEqual(1);
+         expect(getRenderedText(myButtonApp)).toEqual('1 - 1 - Nancy');
 
-      const button = containerEl.querySelector('button');
-      button !.click();
-      requestAnimationFrame.flush();
-      expect(parent !.doCheckCount).toEqual(3);
-      expect(comp !.doCheckCount).toEqual(2);
-      expect(getRenderedText(myButtonApp)).toEqual('3 - 2 - Nancy');
-    });
+         const button = containerEl.querySelector('button');
+         button !.click();
+         requestAnimationFrame.flush();
+         // No ticks should have been scheduled.
+         expect(parent !.doCheckCount).toEqual(2);
+         expect(comp !.doCheckCount).toEqual(1);
+
+         tick(myButtonApp);
+         expect(parent !.doCheckCount).toEqual(3);
+         // parent isn't checked, so child doCheck won't run
+         expect(comp !.doCheckCount).toEqual(1);
+         expect(getRenderedText(myButtonApp)).toEqual('1 - 1 - Nancy');
+
+         markDirty(comp);
+         requestAnimationFrame.flush();
+         // Now that markDirty has been manually called, both views should be dirty and a tick
+         // should be scheduled to check the view.
+         expect(parent !.doCheckCount).toEqual(4);
+         expect(comp !.doCheckCount).toEqual(2);
+         expect(getRenderedText(myButtonApp)).toEqual('4 - 2 - Nancy');
+       });
   });
 
   describe('ChangeDetectorRef', () => {
@@ -289,7 +327,9 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: MyComp,
           selectors: [['my-comp']],
-          factory: () => myComp = new MyComp(injectChangeDetectorRef()),
+          factory: () => myComp = new MyComp(directiveInject(ChangeDetectorRef as any)),
+          consts: 1,
+          vars: 1,
           /** {{ name }} */
           template: (rf: RenderFlags, ctx: MyComp) => {
             if (rf & RenderFlags.Create) {
@@ -313,7 +353,9 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: ParentComp,
           selectors: [['parent-comp']],
-          factory: () => new ParentComp(injectChangeDetectorRef()),
+          factory: () => new ParentComp(directiveInject(ChangeDetectorRef as any)),
+          consts: 2,
+          vars: 1,
           /**
            * {{ doCheckCount}} -
            * <my-comp></my-comp>
@@ -321,8 +363,7 @@ describe('change detection', () => {
           template: (rf: RenderFlags, ctx: ParentComp) => {
             if (rf & RenderFlags.Create) {
               text(0);
-              elementStart(1, 'my-comp');
-              elementEnd();
+              element(1, 'my-comp');
             }
             if (rf & RenderFlags.Update) {
               textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
@@ -338,7 +379,7 @@ describe('change detection', () => {
         static ngDirectiveDef = defineDirective({
           type: Dir,
           selectors: [['', 'dir', '']],
-          factory: () => dir = new Dir(injectChangeDetectorRef())
+          factory: () => dir = new Dir(directiveInject(ChangeDetectorRef as any))
         });
       }
 
@@ -400,10 +441,9 @@ describe('change detection', () => {
         /** <my-comp dir></my-comp> */
         const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'my-comp', ['dir', '']);
-            elementEnd();
+            element(0, 'my-comp', ['dir', '']);
           }
-        }, [MyComp, Dir]);
+        }, 1, 0, [MyComp, Dir]);
 
         const app = renderComponent(MyApp);
         expect(getRenderedText(app)).toEqual('Nancy');
@@ -421,13 +461,12 @@ describe('change detection', () => {
         const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             text(0);
-            elementStart(1, 'div', ['dir', '']);
-            elementEnd();
+            element(1, 'div', ['dir', '']);
           }
           if (rf & RenderFlags.Update) {
             textBinding(1, bind(ctx.value));
           }
-        }, [Dir]);
+        }, 2, 1, [Dir]);
 
         const app = renderComponent(MyApp);
         app.value = 'Frank';
@@ -449,7 +488,9 @@ describe('change detection', () => {
           static ngComponentDef = defineComponent({
             type: MyApp,
             selectors: [['my-app']],
-            factory: () => new MyApp(injectChangeDetectorRef()),
+            factory: () => new MyApp(directiveInject(ChangeDetectorRef as any)),
+            consts: 2,
+            vars: 1,
             /**
              * {{ name}}
              * % if (showing) {
@@ -466,10 +507,9 @@ describe('change detection', () => {
                 containerRefreshStart(1);
                 {
                   if (ctx.showing) {
-                    let rf0 = embeddedViewStart(0);
+                    let rf0 = embeddedViewStart(0, 1, 0);
                     if (rf0 & RenderFlags.Create) {
-                      elementStart(0, 'div', ['dir', '']);
-                      elementEnd();
+                      element(0, 'div', ['dir', '']);
                     }
                   }
                   embeddedViewEnd();
@@ -503,7 +543,9 @@ describe('change detection', () => {
           static ngComponentDef = defineComponent({
             type: DetectChangesComp,
             selectors: [['detect-changes-comp']],
-            factory: () => new DetectChangesComp(injectChangeDetectorRef()),
+            factory: () => new DetectChangesComp(directiveInject(ChangeDetectorRef as any)),
+            consts: 1,
+            vars: 1,
             /** {{ value }} */
             template: (rf: RenderFlags, ctx: DetectChangesComp) => {
               if (rf & RenderFlags.Create) {
@@ -534,7 +576,9 @@ describe('change detection', () => {
           static ngComponentDef = defineComponent({
             type: DetectChangesComp,
             selectors: [['detect-changes-comp']],
-            factory: () => new DetectChangesComp(injectChangeDetectorRef()),
+            factory: () => new DetectChangesComp(directiveInject(ChangeDetectorRef as any)),
+            consts: 1,
+            vars: 1,
             /** {{ doCheckCount }} */
             template: (rf: RenderFlags, ctx: DetectChangesComp) => {
               if (rf & RenderFlags.Create) {
@@ -551,6 +595,117 @@ describe('change detection', () => {
         expect(getRenderedText(comp)).toEqual('1');
       });
 
+      describe('dynamic views', () => {
+        let structuralComp: StructuralComp|null = null;
+
+        beforeEach(() => structuralComp = null);
+
+        class StructuralComp {
+          tmp !: TemplateRef<any>;
+          value = 'one';
+
+          constructor(public vcr: ViewContainerRef) {}
+
+          create() { return this.vcr.createEmbeddedView(this.tmp, this); }
+
+          static ngComponentDef = defineComponent({
+            type: StructuralComp,
+            selectors: [['structural-comp']],
+            factory: () => structuralComp =
+                         new StructuralComp(directiveInject(ViewContainerRef as any)),
+            inputs: {tmp: 'tmp'},
+            consts: 1,
+            vars: 1,
+            template: function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                text(0);
+              }
+              if (rf & RenderFlags.Update) {
+                textBinding(0, bind(ctx.value));
+              }
+            }
+          });
+        }
+
+        it('should support ViewRef.detectChanges()', () => {
+          function FooTemplate(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              text(0);
+            }
+            if (rf & RenderFlags.Update) {
+              textBinding(0, bind(ctx.value));
+            }
+          }
+
+          /**
+           * <ng-template #foo>{{ value }}</ng-template>
+           * <structural-comp [tmp]="foo"></structural-comp>
+           */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              template(
+                  0, FooTemplate, 1, 1, 'ng-template', null, ['foo', ''], templateRefExtractor);
+              element(2, 'structural-comp');
+            }
+            if (rf & RenderFlags.Update) {
+              const foo = reference(1) as any;
+              elementProperty(2, 'tmp', bind(foo));
+            }
+          }, 3, 1, [StructuralComp]);
+
+          const fixture = new ComponentFixture(App);
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>');
+
+          const viewRef: EmbeddedViewRef<any> = structuralComp !.create();
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>one');
+
+          // check embedded view update
+          structuralComp !.value = 'two';
+          viewRef.detectChanges();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>two');
+
+          // check root view update
+          structuralComp !.value = 'three';
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>three</structural-comp>three');
+        });
+
+        it('should support ViewRef.detectChanges() directly after creation', () => {
+          function FooTemplate(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              text(0, 'Template text');
+            }
+          }
+
+          /**
+           * <ng-template #foo>Template text</ng-template>
+           * <structural-comp [tmp]="foo"></structural-comp>
+           */
+          const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              template(
+                  0, FooTemplate, 1, 0, 'ng-template', null, ['foo', ''], templateRefExtractor);
+              element(2, 'structural-comp');
+            }
+            if (rf & RenderFlags.Update) {
+              const foo = reference(1) as any;
+              elementProperty(2, 'tmp', bind(foo));
+            }
+          }, 3, 1, [StructuralComp]);
+
+          const fixture = new ComponentFixture(App);
+          fixture.update();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>');
+
+          const viewRef: EmbeddedViewRef<any> = structuralComp !.create();
+          viewRef.detectChanges();
+          expect(fixture.html).toEqual('<structural-comp>one</structural-comp>Template text');
+        });
+
+      });
+
     });
 
     describe('attach/detach', () => {
@@ -562,12 +717,13 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: MyApp,
           selectors: [['my-app']],
-          factory: () => new MyApp(injectChangeDetectorRef()),
+          factory: () => new MyApp(directiveInject(ChangeDetectorRef as any)),
+          consts: 1,
+          vars: 0,
           /** <detached-comp></detached-comp> */
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'detached-comp');
-              elementEnd();
+              element(0, 'detached-comp');
             }
           },
           directives: () => [DetachedComp]
@@ -585,7 +741,9 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: DetachedComp,
           selectors: [['detached-comp']],
-          factory: () => comp = new DetachedComp(injectChangeDetectorRef()),
+          factory: () => comp = new DetachedComp(directiveInject(ChangeDetectorRef as any)),
+          consts: 1,
+          vars: 1,
           /** {{ value }} */
           template: (rf: RenderFlags, ctx: DetachedComp) => {
             if (rf & RenderFlags.Create) {
@@ -676,14 +834,17 @@ describe('change detection', () => {
 
         class OnPushComp {
           /** @Input() */
-          value: string;
+          // TODO(issue/24571): remove '!'.
+          value !: string;
 
           constructor(public cdr: ChangeDetectorRef) {}
 
           static ngComponentDef = defineComponent({
             type: OnPushComp,
             selectors: [['on-push-comp']],
-            factory: () => onPushComp = new OnPushComp(injectChangeDetectorRef()),
+            factory: () => onPushComp = new OnPushComp(directiveInject(ChangeDetectorRef as any)),
+            consts: 1,
+            vars: 1,
             /** {{ value }} */
             template: (rf: RenderFlags, ctx: any) => {
               if (rf & RenderFlags.Create) {
@@ -701,13 +862,12 @@ describe('change detection', () => {
         /** <on-push-comp [value]="value"></on-push-comp> */
         const OnPushApp = createComponent('on-push-app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'on-push-comp');
-            elementEnd();
+            element(0, 'on-push-comp');
           }
           if (rf & RenderFlags.Update) {
             elementProperty(0, 'value', bind(ctx.value));
           }
-        }, [OnPushComp]);
+        }, 1, 1, [OnPushComp]);
 
         const app = renderComponent(OnPushApp);
         app.value = 'one';
@@ -743,7 +903,9 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: OnPushComp,
           selectors: [['on-push-comp']],
-          factory: () => comp = new OnPushComp(injectChangeDetectorRef()),
+          factory: () => comp = new OnPushComp(directiveInject(ChangeDetectorRef as any)),
+          consts: 1,
+          vars: 1,
           /** {{ value }} */
           template: (rf: RenderFlags, ctx: OnPushComp) => {
             if (rf & RenderFlags.Create) {
@@ -764,6 +926,8 @@ describe('change detection', () => {
           type: OnPushParent,
           selectors: [['on-push-parent']],
           factory: () => new OnPushParent(),
+          consts: 2,
+          vars: 1,
           /**
            * {{ value }} -
            * <on-push-comp></on-push-comp>
@@ -771,8 +935,7 @@ describe('change detection', () => {
           template: (rf: RenderFlags, ctx: OnPushParent) => {
             if (rf & RenderFlags.Create) {
               text(0);
-              elementStart(1, 'on-push-comp');
-              elementEnd();
+              element(1, 'on-push-comp');
             }
             if (rf & RenderFlags.Update) {
               textBinding(0, interpolation1('', ctx.value, ' - '));
@@ -783,48 +946,50 @@ describe('change detection', () => {
         });
       }
 
-      it('should schedule check on OnPush components', () => {
-        const parent = renderComponent(OnPushParent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+      it('should ensure OnPush components are checked', () => {
+        const fixture = new ComponentFixture(OnPushParent);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('one - two');
+
+        // Change detection should not have run yet, since markForCheck
+        // does not itself schedule change detection.
+        expect(fixture.hostElement.textContent).toEqual('one - one');
+
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - two');
       });
 
-      it('should only run change detection once with multiple calls to markForCheck', () => {
-        renderComponent(OnPushParent);
+      it('should never schedule change detection on its own', () => {
+        const fixture = new ComponentFixture(OnPushParent);
         expect(comp.doCheckCount).toEqual(1);
 
         comp.cdr.markForCheck();
         comp.cdr.markForCheck();
-        comp.cdr.markForCheck();
-        comp.cdr.markForCheck();
-        comp.cdr.markForCheck();
         requestAnimationFrame.flush();
 
-        expect(comp.doCheckCount).toEqual(2);
+        expect(comp.doCheckCount).toEqual(1);
       });
 
-      it('should schedule check on ancestor OnPush components', () => {
-        const parent = renderComponent(OnPushParent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+      it('should ensure ancestor OnPush components are checked', () => {
+        const fixture = new ComponentFixture(OnPushParent);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
-        parent.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        fixture.component.value = 'two';
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('two - one');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('two - one');
 
       });
 
-      it('should schedule check on OnPush components in embedded views', () => {
+      it('should ensure OnPush components in embedded views are checked', () => {
         class EmbeddedViewParent {
           value = 'one';
           showing = true;
@@ -833,6 +998,8 @@ describe('change detection', () => {
             type: EmbeddedViewParent,
             selectors: [['embedded-view-parent']],
             factory: () => new EmbeddedViewParent(),
+            consts: 2,
+            vars: 1,
             /**
              * {{ value }} -
              * % if (ctx.showing) {
@@ -849,10 +1016,9 @@ describe('change detection', () => {
                 containerRefreshStart(1);
                 {
                   if (ctx.showing) {
-                    let rf0 = embeddedViewStart(0);
+                    let rf0 = embeddedViewStart(0, 1, 0);
                     if (rf0 & RenderFlags.Create) {
-                      elementStart(0, 'on-push-comp');
-                      elementEnd();
+                      element(0, 'on-push-comp');
                     }
                     embeddedViewEnd();
                   }
@@ -865,24 +1031,27 @@ describe('change detection', () => {
           });
         }
 
-        const parent = renderComponent(EmbeddedViewParent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        const fixture = new ComponentFixture(EmbeddedViewParent);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - one');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('one - two');
+        // markForCheck should not trigger change detection on its own.
+        expect(fixture.hostElement.textContent).toEqual('one - one');
 
-        parent.value = 'two';
-        tick(parent);
-        expect(getRenderedText(parent)).toEqual('one - two');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - two');
+
+        fixture.component.value = 'two';
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('one - two');
 
         comp.cdr.markForCheck();
-        requestAnimationFrame.flush();
-        expect(getRenderedText(parent)).toEqual('two - two');
+        tick(fixture.component);
+        expect(fixture.hostElement.textContent).toEqual('two - two');
       });
 
       // TODO(kara): add test for dynamic views once bug fix is in
@@ -908,7 +1077,9 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: NoChangesComp,
           selectors: [['no-changes-comp']],
-          factory: () => comp = new NoChangesComp(injectChangeDetectorRef()),
+          factory: () => comp = new NoChangesComp(directiveInject(ChangeDetectorRef as any)),
+          consts: 1,
+          vars: 1,
           template: (rf: RenderFlags, ctx: NoChangesComp) => {
             if (rf & RenderFlags.Create) {
               text(0);
@@ -928,7 +1099,9 @@ describe('change detection', () => {
         static ngComponentDef = defineComponent({
           type: AppComp,
           selectors: [['app-comp']],
-          factory: () => new AppComp(injectChangeDetectorRef()),
+          factory: () => new AppComp(directiveInject(ChangeDetectorRef as any)),
+          consts: 2,
+          vars: 1,
           /**
            * {{ value }} -
            * <no-changes-comp></no-changes-comp>
@@ -936,8 +1109,7 @@ describe('change detection', () => {
           template: (rf: RenderFlags, ctx: AppComp) => {
             if (rf & RenderFlags.Create) {
               text(0);
-              elementStart(1, 'no-changes-comp');
-              elementEnd();
+              element(1, 'no-changes-comp');
             }
             if (rf & RenderFlags.Update) {
               textBinding(0, interpolation1('', ctx.value, ' - '));
@@ -990,7 +1162,9 @@ describe('change detection', () => {
           static ngComponentDef = defineComponent({
             type: EmbeddedViewApp,
             selectors: [['embedded-view-app']],
-            factory: () => new EmbeddedViewApp(injectChangeDetectorRef()),
+            factory: () => new EmbeddedViewApp(directiveInject(ChangeDetectorRef as any)),
+            consts: 1,
+            vars: 0,
             /**
              * % if (showing) {
              *  {{ value }}
@@ -1004,7 +1178,7 @@ describe('change detection', () => {
                 containerRefreshStart(0);
                 {
                   if (ctx.showing) {
-                    let rf0 = embeddedViewStart(0);
+                    let rf0 = embeddedViewStart(0, 1, 1);
                     if (rf0 & RenderFlags.Create) {
                       text(0);
                     }
@@ -1052,6 +1226,44 @@ describe('change detection', () => {
 
     });
 
+  });
+
+  it('should call begin and end when the renderer factory implements them', () => {
+    const log: string[] = [];
+
+    const testRendererFactory: RendererFactory3 = {
+      createRenderer: (hostElement: RElement | null, rendererType: RendererType2 | null):
+                          Renderer3 => { return document; },
+      begin: () => log.push('begin'),
+      end: () => log.push('end'),
+    };
+
+    class MyComponent {
+      get value(): string {
+        log.push('detect changes');
+        return 'works';
+      }
+
+      static ngComponentDef = defineComponent({
+        type: MyComponent,
+        selectors: [['my-comp']],
+        factory: () => new MyComponent(),
+        consts: 1,
+        vars: 1,
+        template: (rf: RenderFlags, ctx: MyComponent) => {
+          if (rf & RenderFlags.Create) {
+            text(0);
+          }
+          if (rf & RenderFlags.Update) {
+            textBinding(0, bind(ctx.value));
+          }
+        }
+      });
+    }
+
+    const myComp = renderComponent(MyComponent, {rendererFactory: testRendererFactory});
+    expect(getRenderedText(myComp)).toEqual('works');
+    expect(log).toEqual(['begin', 'detect changes', 'end']);
   });
 
 });

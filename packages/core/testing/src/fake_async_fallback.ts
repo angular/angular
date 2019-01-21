@@ -24,7 +24,7 @@ let _fakeAsyncTestZoneSpec: any = null;
  * Clears out the shared fake async zone for a test.
  * To be called in a global `beforeEach`.
  *
- * @experimental
+ * @publicApi
  */
 export function resetFakeAsyncZoneFallback() {
   _fakeAsyncTestZoneSpec = null;
@@ -43,14 +43,15 @@ let _inFakeAsyncCall = false;
  *
  * Can be used to wrap inject() calls.
  *
- * ## Example
+ * @usageNotes
+ * ### Example
  *
  * {@example core/testing/ts/fake_async.ts region='basic'}
  *
  * @param fn
  * @returns The function wrapped to be executed in the fakeAsync zone
  *
- * @experimental
+ * @publicApi
  */
 export function fakeAsyncFallback(fn: Function): (...args: any[]) => any {
   // Not using an arrow function to preserve context passed from call site
@@ -110,11 +111,12 @@ function _getFakeAsyncZoneSpec(): any {
  * The microtasks queue is drained at the very start of this function and after any timer callback
  * has been executed.
  *
- * ## Example
+ * @usageNotes
+ * ### Example
  *
  * {@example core/testing/ts/fake_async.ts region='basic'}
  *
- * @experimental
+ * @publicApi
  */
 export function tickFallback(millis: number = 0): void {
   _getFakeAsyncZoneSpec().tick(millis);
@@ -128,7 +130,7 @@ export function tickFallback(millis: number = 0): void {
  * @param maxTurns
  * @returns The simulated time elapsed, in millis.
  *
- * @experimental
+ * @publicApi
  */
 export function flushFallback(maxTurns?: number): number {
   return _getFakeAsyncZoneSpec().flush(maxTurns);
@@ -137,18 +139,17 @@ export function flushFallback(maxTurns?: number): number {
 /**
  * Discard all remaining periodic tasks.
  *
- * @experimental
+ * @publicApi
  */
 export function discardPeriodicTasksFallback(): void {
   const zoneSpec = _getFakeAsyncZoneSpec();
-  const pendingTimers = zoneSpec.pendingPeriodicTimers;
   zoneSpec.pendingPeriodicTimers.length = 0;
 }
 
 /**
  * Flush any pending microtasks.
  *
- * @experimental
+ * @publicApi
  */
 export function flushMicrotasksFallback(): void {
   _getFakeAsyncZoneSpec().flushMicrotasks();

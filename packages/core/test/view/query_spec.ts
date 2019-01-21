@@ -20,7 +20,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
     class AService {}
 
     class QueryService {
-      a: QueryList<AService>;
+      // TODO(issue/24571): remove '!'.
+      a !: QueryList<AService>;
     }
 
     function contentQueryProviders(checkIndex: number) {
@@ -247,7 +248,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
     describe('QueryBindingType', () => {
       it('should query all matches', () => {
         class QueryService {
-          a: QueryList<AService>;
+          // TODO(issue/24571): remove '!'.
+          a !: QueryList<AService>;
         }
 
         const {view} = createAndGetRootNodes(compViewDef([
@@ -272,7 +274,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
       it('should query the first match', () => {
         class QueryService {
-          a: AService;
+          // TODO(issue/24571): remove '!'.
+          a !: AService;
         }
 
         const {view} = createAndGetRootNodes(compViewDef([
@@ -295,7 +298,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
     describe('query builtins', () => {
       it('should query ElementRef', () => {
         class QueryService {
-          a: ElementRef;
+          // TODO(issue/24571): remove '!'.
+          a !: ElementRef;
         }
 
         const {view} = createAndGetRootNodes(compViewDef([
@@ -314,7 +318,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
       it('should query TemplateRef', () => {
         class QueryService {
-          a: TemplateRef<any>;
+          // TODO(issue/24571): remove '!'.
+          a !: TemplateRef<any>;
         }
 
         const {view} = createAndGetRootNodes(compViewDef([
@@ -335,7 +340,8 @@ import {compViewDef, compViewDefFactory, createAndGetRootNodes, createEmbeddedVi
 
       it('should query ViewContainerRef', () => {
         class QueryService {
-          a: ViewContainerRef;
+          // TODO(issue/24571): remove '!'.
+          a !: ViewContainerRef;
         }
 
         const {view} = createAndGetRootNodes(compViewDef([

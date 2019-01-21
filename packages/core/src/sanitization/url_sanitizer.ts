@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../application_ref';
+import {isDevMode} from '../util/is_dev_mode';
 
 /**
  * A pattern that recognizes a commonly useful subset of URLs that are safe.

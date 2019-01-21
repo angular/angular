@@ -47,6 +47,7 @@ function mergeOptions(
  * `request` returns an `Observable` which will emit a single {@link Response} when a
  * response is received.
  *
+ * @usageNotes
  * ### Example
  *
  * ```typescript
@@ -99,7 +100,8 @@ function mergeOptions(
  * http.get('request-from-mock-backend.json').subscribe((res:Response) => doSomething(res));
  * ```
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 @Injectable()
 export class Http {
@@ -187,7 +189,8 @@ export class Http {
 
 
 /**
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 @Injectable()
 export class Jsonp extends Http {

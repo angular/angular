@@ -3,7 +3,9 @@
 import { NgModule }       from '@angular/core';
 import { BrowserModule }  from '@angular/platform-browser';
 import { FormsModule }    from '@angular/forms';
+// #docregion import-http-client
 import { HttpClientModule }    from '@angular/common/http';
+// #enddocregion import-http-client
 
 // #docregion import-in-mem-stuff
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';

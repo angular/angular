@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import '@angular/compiler';
 import {ɵwhenRendered as whenRendered} from '@angular/core';
-import {withBody} from '@angular/core/testing';
-import * as fs from 'fs';
+import {getComponent} from '@angular/core/src/render3';
+import {withBody} from '@angular/private/testing';
 import * as path from 'path';
 
 const UTF8 = {
@@ -22,8 +23,7 @@ describe('functional test for todo', () => {
     describe(bundle, () => {
       it('should render todo', withBody('<todo-app></todo-app>', async() => {
            require(path.join(PACKAGE, bundle));
-           // TODO(misko): have cleaner way to do this for tests.
-           const toDoAppComponent = (window as any).toDoAppComponent;
+           const toDoAppComponent = getComponent(document.querySelector('todo-app') !);
            expect(document.body.textContent).toContain('todos');
            expect(document.body.textContent).toContain('Demonstrate Components');
            expect(document.body.textContent).toContain('4 items left');

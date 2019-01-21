@@ -1,351 +1,251 @@
 'use strict'; // necessary for es6 output in node
 
-import { browser, element, by, ElementFinder } from 'protractor';
-import { logging, promise } from 'selenium-webdriver';
+import { browser, ExpectedConditions as EC } from 'protractor';
+import { logging } from 'selenium-webdriver';
+import * as openClose from './open-close.po';
+import * as statusSlider from './status-slider.po';
+import * as toggle from './toggle.po';
+import * as enterLeave from './enter-leave.po';
+import * as auto from './auto.po';
+import * as filterStagger from './filter-stagger.po';
+import * as heroGroups from './hero-groups';
+import { getLinkById, sleepFor } from './util';
 
-/**
- * The tests here basically just checking that the end styles
- * of each animation are in effect.
- *
- * Relies on the Angular testability only becoming stable once
- * animation(s) have finished.
- *
- * Ideally we'd use https://developer.mozilla.org/en-US/docs/Web/API/Document/getAnimations
- * but they're not supported in Chrome at the moment. The upcoming nganimate polyfill
- * may also add some introspection support.
- */
 describe('Animation Tests', () => {
+  const openCloseHref = getLinkById('open-close');
+  const statusSliderHref = getLinkById('status');
+  const toggleHref = getLinkById('toggle');
+  const enterLeaveHref = getLinkById('enter-leave');
+  const autoHref = getLinkById('auto');
+  const filterHref = getLinkById('heroes');
+  const heroGroupsHref = getLinkById('hero-groups');
 
-  const INACTIVE_COLOR = 'rgba(238, 238, 238, 1)';
-  const ACTIVE_COLOR = 'rgba(207, 216, 220, 1)';
-  const NO_TRANSFORM_MATRIX_REGEX = /matrix\(1,\s*0,\s*0,\s*1,\s*0,\s*0\)/;
-
-  beforeEach(() => {
+  beforeAll(() => {
     browser.get('');
   });
 
-  describe('basic states', () => {
+  describe('Open/Close Component', () => {
+    const closedHeight = '100px';
+    const openHeight = '200px';
 
-    let host: ElementFinder;
-
-    beforeEach(() => {
-      host = element(by.css('app-hero-list-basic'));
+    beforeAll(async () => {
+      await openCloseHref.click();
+      sleepFor();
     });
 
-    it('animates between active and inactive', () => {
-      addInactiveHero();
+    it('should be open', async () => {
+      const toggleButton = openClose.getToggleButton();
+      const container = openClose.getComponentContainer();
+      let text = await container.getText();
 
-      let li = host.element(by.css('li'));
+      if (text.includes('Closed')) {
+        await toggleButton.click();
+        await browser.wait(async () => await container.getCssValue('height') === openHeight, 2000);
+      }
 
-      expect(getScaleX(li)).toBe(1.0);
-      expect(li.getCssValue('backgroundColor')).toBe(INACTIVE_COLOR);
+      text = await container.getText();
+      const containerHeight = await container.getCssValue('height');
 
-      li.click();
-      browser.driver.sleep(300);
-      expect(getScaleX(li)).toBe(1.1);
-      expect(li.getCssValue('backgroundColor')).toBe(ACTIVE_COLOR);
-
-      li.click();
-      browser.driver.sleep(300);
-      expect(getScaleX(li)).toBe(1.0);
-      expect(li.getCssValue('backgroundColor')).toBe(INACTIVE_COLOR);
+      expect(text).toContain('The box is now Open!');
+      expect(containerHeight).toBe(openHeight);
     });
 
-  });
+    it('should be closed', async () => {
+      const toggleButton = openClose.getToggleButton();
+      const container = openClose.getComponentContainer();
+      let text = await container.getText();
 
-  describe('styles inline in transitions', () => {
+      if (text.includes('Open')) {
+        await toggleButton.click();
+        await browser.wait(async () => await container.getCssValue('height') === closedHeight, 2000);
+      }
 
-    let host: ElementFinder;
+      text = await container.getText();
+      const containerHeight = await container.getCssValue('height');
 
-    beforeEach(function() {
-      host = element(by.css('app-hero-list-inline-styles'));
+      expect(text).toContain('The box is now Closed!');
+      expect(containerHeight).toBe(closedHeight);
     });
 
-    it('are not kept after animation', () => {
-      addInactiveHero();
-
-      let li = host.element(by.css('li'));
-
-      li.click();
-      browser.driver.sleep(300);
-      expect(getScaleX(li)).toBe(1.0);
-      expect(li.getCssValue('backgroundColor')).toBe(INACTIVE_COLOR);
-    });
-
-  });
-
-  describe('combined transition syntax', () => {
-
-    let host: ElementFinder;
-
-    beforeEach(() => {
-      host = element(by.css('app-hero-list-combined-transitions'));
-    });
-
-    it('animates between active and inactive', () => {
-      addInactiveHero();
-
-      let li = host.element(by.css('li'));
-
-      expect(getScaleX(li)).toBe(1.0);
-      expect(li.getCssValue('backgroundColor')).toBe(INACTIVE_COLOR);
-
-      li.click();
-      browser.driver.sleep(300);
-      expect(getScaleX(li)).toBe(1.1);
-      expect(li.getCssValue('backgroundColor')).toBe(ACTIVE_COLOR);
-
-      li.click();
-      browser.driver.sleep(300);
-      expect(getScaleX(li)).toBe(1.0);
-      expect(li.getCssValue('backgroundColor')).toBe(INACTIVE_COLOR);
-    });
-
-  });
-
-  describe('two-way transition syntax', () => {
-
-    let host: ElementFinder;
-
-    beforeEach(() => {
-      host = element(by.css('app-hero-list-twoway'));
-    });
-
-    it('animates between active and inactive', () => {
-      addInactiveHero();
-
-      let li = host.element(by.css('li'));
-
-      expect(getScaleX(li)).toBe(1.0);
-      expect(li.getCssValue('backgroundColor')).toBe(INACTIVE_COLOR);
-
-      li.click();
-      browser.driver.sleep(300);
-      expect(getScaleX(li)).toBe(1.1);
-      expect(li.getCssValue('backgroundColor')).toBe(ACTIVE_COLOR);
-
-      li.click();
-      browser.driver.sleep(300);
-      expect(getScaleX(li)).toBe(1.0);
-      expect(li.getCssValue('backgroundColor')).toBe(INACTIVE_COLOR);
-    });
-
-  });
-
-  describe('enter & leave', () => {
-
-    let host: ElementFinder;
-
-    beforeEach(() => {
-      host = element(by.css('app-hero-list-enter-leave'));
-    });
-
-    it('adds and removes element', () => {
-      addInactiveHero();
-
-      let li = host.element(by.css('li'));
-      expect(li.getCssValue('transform')).toMatch(NO_TRANSFORM_MATRIX_REGEX);
-
-      removeHero();
-      expect(li.isPresent()).toBe(false);
-    });
-
-  });
-
-  describe('enter & leave & states', () => {
-
-    let host: ElementFinder;
-
-    beforeEach(function() {
-      host = element(by.css('app-hero-list-enter-leave-states'));
-    });
-
-    it('adds and removes and animates between active and inactive', () => {
-      addInactiveHero();
-
-      let li = host.element(by.css('li'));
-
-      expect(li.getCssValue('transform')).toMatch(NO_TRANSFORM_MATRIX_REGEX);
-
-      li.click();
-      browser.driver.sleep(300);
-      expect(getScaleX(li)).toBe(1.1);
-
-      li.click();
-      browser.driver.sleep(300);
-      expect(li.getCssValue('transform')).toMatch(NO_TRANSFORM_MATRIX_REGEX);
-
-      removeHero();
-      expect(li.isPresent()).toBe(false);
-    });
-
-  });
-
-  describe('auto style calc', () => {
-
-    let host: ElementFinder;
-
-    beforeEach(function() {
-      host = element(by.css('app-hero-list-auto'));
-    });
-
-    it('adds and removes element', () => {
-      addInactiveHero();
-
-      let li = host.element(by.css('li'));
-      expect(li.getCssValue('height')).toBe('50px');
-
-      removeHero();
-      expect(li.isPresent()).toBe(false);
-    });
-
-  });
-
-  describe('different timings', () => {
-
-    let host: ElementFinder;
-
-    beforeEach(() => {
-      host = element(by.css('app-hero-list-timings'));
-    });
-
-    it('adds and removes element', () => {
-      addInactiveHero();
-
-      let li = host.element(by.css('li'));
-      expect(li.getCssValue('transform')).toMatch(NO_TRANSFORM_MATRIX_REGEX);
-      expect(li.getCssValue('opacity')).toMatch('1');
-
-      removeHero();
-      expect(li.isPresent()).toBe(false);
-    });
-
-  });
-
-  describe('multiple keyframes', () => {
-
-    let host: ElementFinder;
-
-    beforeEach(() => {
-      host = element(by.css('app-hero-list-multistep'));
-    });
-
-    it('adds and removes element', () => {
-      addInactiveHero();
-
-      let li = host.element(by.css('li'));
-      expect(li.getCssValue('transform')).toMatch(NO_TRANSFORM_MATRIX_REGEX);
-      expect(li.getCssValue('opacity')).toMatch('1');
-
-      removeHero();
-      expect(li.isPresent()).toBe(false);
-    });
-
-  });
-
-  describe('parallel groups', () => {
-
-    let host: ElementFinder;
-
-    beforeEach(() => {
-      host = element(by.css('app-hero-list-groups'));
-    });
-
-    it('adds and removes element', () => {
-      addInactiveHero();
-
-      let li = host.element(by.css('li'));
-      expect(li.getCssValue('transform')).toMatch(NO_TRANSFORM_MATRIX_REGEX);
-      expect(li.getCssValue('opacity')).toMatch('1');
-
-      removeHero(700);
-      expect(li.isPresent()).toBe(false);
-    });
-
-  });
-
-  describe('adding active heroes', () => {
-
-    let host: ElementFinder;
-
-    beforeEach(() => {
-      host = element(by.css('app-hero-list-basic'));
-    });
-
-    it('animates between active and inactive', () => {
-      addActiveHero();
-
-      let li = host.element(by.css('li'));
-
-      expect(getScaleX(li)).toBe(1.1);
-      expect(li.getCssValue('backgroundColor')).toBe(ACTIVE_COLOR);
-
-      li.click();
-      browser.driver.sleep(300);
-      expect(getScaleX(li)).toBe(1.0);
-      expect(li.getCssValue('backgroundColor')).toBe(INACTIVE_COLOR);
-
-      li.click();
-      browser.driver.sleep(300);
-      expect(getScaleX(li)).toBe(1.1);
-      expect(li.getCssValue('backgroundColor')).toBe(ACTIVE_COLOR);
+    it('should log animation events', async () => {
+      const toggleButton = openClose.getToggleButton();
+      const loggingCheckbox = openClose.getLoggingCheckbox();
+      await loggingCheckbox.click();
+      await toggleButton.click();
+
+      const logs = await browser.manage().logs().get(logging.Type.BROWSER);
+      const animationMessages = logs.filter(({ message }) => message.includes('Animation'));
+
+      expect(animationMessages.length).toBeGreaterThan(0);
     });
   });
 
-  describe('callbacks', () => {
-    it('fires a callback on start and done', () => {
-      addActiveHero();
-      browser.manage().logs().get(logging.Type.BROWSER)
-        .then((logs: logging.Entry[]) => {
-          const animationMessages = logs.filter((log) => {
-            return log.message.indexOf('Animation') !== -1 ? true : false;
-          });
+  describe('Status Slider Component', () => {
+    const activeColor = 'rgba(255, 165, 0, 1)';
+    const inactiveColor = 'rgba(0, 0, 255, 1)';
 
-          expect(animationMessages.length).toBeGreaterThan(0);
-        });
+    beforeAll(async () => {
+      await statusSliderHref.click();
+      sleepFor(2000);
+    });
+
+    it('should be inactive with an orange background', async () => {
+      const toggleButton = statusSlider.getToggleButton();
+      const container = statusSlider.getComponentContainer();
+      let text = await container.getText();
+
+      if (text === 'Active') {
+        await toggleButton.click();
+        await browser.wait(async () => await container.getCssValue('backgroundColor') === inactiveColor, 2000);
+      }
+
+      text = await container.getText();
+      const bgColor = await container.getCssValue('backgroundColor');
+
+      expect(text).toBe('Inactive');
+      expect(bgColor).toBe(inactiveColor);
+    });
+
+    it('should be active with a blue background', async () => {
+      const toggleButton = statusSlider.getToggleButton();
+      const container = statusSlider.getComponentContainer();
+      let text = await container.getText();
+
+      if (text === 'Inactive') {
+        await toggleButton.click();
+        await browser.wait(async () => await container.getCssValue('backgroundColor') === activeColor, 2000);
+      }
+
+      text = await container.getText();
+      const bgColor = await container.getCssValue('backgroundColor');
+
+      expect(text).toBe('Active');
+      expect(bgColor).toBe(activeColor);
     });
   });
 
-  function addActiveHero(sleep?: number) {
-    sleep = sleep || 500;
-    element(by.buttonText('Add active hero')).click();
-    browser.driver.sleep(sleep);
-  }
-
-  function addInactiveHero(sleep?: number) {
-    sleep = sleep || 500;
-    element(by.buttonText('Add inactive hero')).click();
-    browser.driver.sleep(sleep);
-  }
-
-  function removeHero(sleep?: number) {
-    sleep = sleep || 500;
-    element(by.buttonText('Remove hero')).click();
-    browser.driver.sleep(sleep);
-  }
-
-  function getScaleX(el: ElementFinder) {
-    return Promise.all([
-      getBoundingClientWidth(el),
-      getOffsetWidth(el)
-    ]).then(function(promiseResolutions) {
-      let clientWidth = promiseResolutions[0];
-      let offsetWidth = promiseResolutions[1];
-      return clientWidth / offsetWidth;
+  describe('Toggle Animations Component', () => {
+    beforeAll(async () => {
+      await toggleHref.click();
+      sleepFor();
     });
-  }
 
-  function getBoundingClientWidth(el: ElementFinder) {
-    return browser.executeScript(
-      'return arguments[0].getBoundingClientRect().width',
-      el.getWebElement()
-    ) as PromiseLike<number>;
-  }
+    it('should disabled animations on the child element', async () => {
+      const toggleButton = toggle.getToggleAnimationsButton();
 
-  function getOffsetWidth(el: ElementFinder) {
-    return browser.executeScript(
-      'return arguments[0].offsetWidth',
-      el.getWebElement()
-    ) as PromiseLike<number>;
-  }
+      await toggleButton.click();
+
+      const container = toggle.getComponentContainer();
+      const cssClasses = await container.getAttribute('class');
+
+      expect(cssClasses).toContain('ng-animate-disabled');
+    });
+  });
+
+  describe('Enter/Leave Component', () => {
+    beforeAll(async () => {
+      await enterLeaveHref.click();
+      sleepFor(100);
+    });
+
+    it('should attach a flyInOut trigger to the list of items', async () => {
+      const heroesList = enterLeave.getHeroesList();
+      const hero = heroesList.get(0);
+      const cssClasses = await hero.getAttribute('class');
+      const transform = await hero.getCssValue('transform');
+
+      expect(cssClasses).toContain('ng-trigger-flyInOut');
+      expect(transform).toBe('matrix(1, 0, 0, 1, 0, 0)');
+    });
+
+    it('should remove the hero from the list when clicked', async () => {
+      const heroesList = enterLeave.getHeroesList();
+      const total = await heroesList.count();
+      const hero = heroesList.get(0);
+
+      await hero.click();
+      await browser.wait(async () => await heroesList.count() < total, 2000);
+    });
+  });
+
+  describe('Auto Calculation Component', () => {
+    beforeAll(async () => {
+      await autoHref.click();
+      sleepFor(0);
+    });
+
+    it('should attach a shrinkOut trigger to the list of items', async () => {
+      const heroesList = auto.getHeroesList();
+      const hero = heroesList.get(0);
+      const cssClasses = await hero.getAttribute('class');
+
+      expect(cssClasses).toContain('ng-trigger-shrinkOut');
+    });
+
+    it('should remove the hero from the list when clicked', async () => {
+      const heroesList = auto.getHeroesList();
+      const total = await heroesList.count();
+      const hero = heroesList.get(0);
+
+      await hero.click();
+      await browser.wait(async () => await heroesList.count() < total, 2000);
+    });
+  });
+
+  describe('Filter/Stagger Component', () => {
+    beforeAll(async () => {
+      await filterHref.click();
+      sleepFor();
+    });
+
+    it('should attach a filterAnimations trigger to the list container', async () => {
+      const heroesList = filterStagger.getComponentContainer();
+      const cssClasses = await heroesList.getAttribute('class');
+
+      expect(cssClasses).toContain('ng-trigger-filterAnimation');
+    });
+
+    it('should filter down the list when a search is performed', async () => {
+      const heroesList = filterStagger.getHeroesList();
+      const total = await heroesList.count();
+
+      const formInput = filterStagger.getFormInput();
+      await formInput.sendKeys('Mag');
+
+      await browser.wait(async () => await heroesList.count() === 2, 2000);
+
+      const newTotal = await heroesList.count();
+      expect(newTotal).toBeLessThan(total);
+    });
+  });
+
+  describe('Hero Groups Component', () => {
+    beforeAll(async () => {
+      await heroGroupsHref.click();
+      sleepFor(300);
+    });
+
+    it('should attach a flyInOut trigger to the list of items', async () => {
+      const heroesList = heroGroups.getHeroesList();
+      const hero = heroesList.get(0);
+      const cssClasses = await hero.getAttribute('class');
+      const transform = await hero.getCssValue('transform');
+      const opacity = await hero.getCssValue('opacity');
+
+      expect(cssClasses).toContain('ng-trigger-flyInOut');
+      expect(transform).toBe('matrix(1, 0, 0, 1, 0, 0)');
+      expect(opacity).toBe('1');
+    });
+
+    it('should remove the hero from the list when clicked', async () => {
+      const heroesList = heroGroups.getHeroesList();
+      const total = await heroesList.count();
+      const hero = heroesList.get(0);
+
+      await hero.click();
+      await browser.wait(async () => await heroesList.count() < total, 2000);
+    });
+  });
 });
+
+

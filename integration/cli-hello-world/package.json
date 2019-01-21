@@ -3,13 +3,13 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "build": "ng build --prod --progress false",
-    "e2e": "ng e2e",
+    "build": "ng build --prod --progress=false",
+    "e2e": "ng e2e --webdriver-update=false",
     "lint": "ng lint",
     "ng": "ng",
-    "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG",
+    "postinstall": "webdriver-manager update --gecko=false --standalone=false $CHROMEDRIVER_VERSION_ARG",
     "start": "ng serve",
-    "test": "ng test && ng e2e --webdriver-update=false && ng e2e --prod --webdriver-update=false"
+    "test": "ng test --progress=false --watch=false && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production"
   },
   "private": true,
   "dependencies": {
@@ -27,12 +27,12 @@
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~0.5.0",
-    "@angular/cli": "^6.0.0-rc.5",
+    "@angular-devkit/build-angular": "~0.10.3",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../../dist/packages-dist/language-service",
     "@types/jasmine": "~2.8.3",
-    "@types/jasminewd2": "~2.0.2",
+    "@types/jasminewd2": "~2.0.4",
     "@types/node": "~6.0.60",
     "codelyzer": "^4.3.0",
     "jasmine-core": "~2.8.0",

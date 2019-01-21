@@ -10,5 +10,8 @@ ls_rollup_bundle(
     },
     license_banner = "banner.js.txt",
     visibility = ["//packages/language-service:__pkg__"],
-    deps = ["//packages/language-service"],
+    deps = [
+        "//packages/language-service",
+        "@ngdeps//tslib",
+    ],
 )

@@ -7,14 +7,15 @@
 <mat-toolbar color="primary" class="app-toolbar no-print" [class.transitioning]="isTransitioning">
   <mat-toolbar-row class="notification-container">
     <aio-notification
-      icon="insert_comment"
-      iconLabel="Announcement"
-      buttonText="Learn More"
-      actionUrl="https://blog.angular.io/version-6-0-0-of-angular-now-available-cc56b0efa7a4"
       notificationId="angular-v6-announcement"
       expirationDate="2018-07-01"
+      [dismissOnContentClick]="true"
       (dismissed)="notificationDismissed()">
-      Version 6 of Angular Now Available!
+      <a href="https://blog.angular.io/version-6-0-0-of-angular-now-available-cc56b0efa7a4">
+        <mat-icon class="icon" svgIcon="insert_comment" aria-label="Announcement"></mat-icon>
+        <span class="message">Version 6 of Angular Now Available!</span>
+        <span class="action-button">Learn More</span>
+      </a>
     </aio-notification>
   </mat-toolbar-row>
   <mat-toolbar-row>
@@ -27,6 +28,14 @@
     </a>
     <aio-top-menu *ngIf="isSideBySide" [nodes]="topMenuNodes"></aio-top-menu>
     <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
+    <div class="toolbar-external-icons-container">
+      <a href="https://twitter.com/angular" title="Twitter" aria-label="Angular on twitter">
+        <mat-icon svgIcon="logos:twitter"></mat-icon>
+      </a>
+      <a href="https://github.com/angular/angular" title="GitHub" aria-label="Angular on github">
+        <mat-icon svgIcon="logos:github"></mat-icon>
+      </a>
+    </div>
   </mat-toolbar-row>
 </mat-toolbar>
 
@@ -43,7 +52,7 @@
     </div>
   </mat-sidenav>
 
-  <section class="sidenav-content" [id]="pageId" role="content">
+  <main class="sidenav-content" [id]="pageId" role="main">
     <aio-mode-banner [mode]="deployment.mode" [version]="versionInfo"></aio-mode-banner>
     <aio-doc-viewer [class.no-animations]="isStarting"
         [doc]="currentDocument"
@@ -53,15 +62,22 @@
         (docRendered)="onDocRendered()">
     </aio-doc-viewer>
     <aio-dt [on]="dtOn" [(doc)]="currentDocument"></aio-dt>
-  </section>
+  </main>
 
 </mat-sidenav-container>
 
 <div *ngIf="hasFloatingToc" class="toc-container no-print" [style.max-height.px]="tocMaxHeight" (mousewheel)="restrainScrolling($event)">
-  <aio-toc></aio-toc>
+  <aio-lazy-ce selector="aio-toc"></aio-lazy-ce>
 </div>
 
 <footer class="no-print">
   <aio-footer [nodes]="footerNodes" [versionInfo]="versionInfo" ></aio-footer>
 </footer>
 
+<!--
+  Work-around to ensure that the `.woff2` file for the 'Material Icons' font will always be fetched.
+  This allows the SW to cache the file (even if there are no icons in the current page) and ensure
+  material icons on other pages are displayed correctly in offline mode.
+  (Note: Instantiate lazily to avoid affecting the initial rendering.)
+-->
+<mat-icon class="cdk-visually-hidden" *ngIf="!isStarting">&nbsp;</mat-icon>

@@ -1,5 +1,4 @@
-load("//tools:defaults.bzl", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test", "nodejs_binary")
+load("//tools:defaults.bzl", "jasmine_node_test", "nodejs_binary", "ts_library")
 
 exports_files(["package.json"])
 
@@ -11,7 +10,11 @@ ts_library(
     name = "core_spec_lib",
     testonly = True,
     srcs = ["core_package.spec.ts"],
-    deps = ["//packages:types"],
+    deps = [
+        "//packages:types",
+        "//packages/private/testing",
+        "@ngdeps//@types/shelljs",
+    ],
 )
 
 jasmine_node_test(
@@ -19,6 +22,8 @@ jasmine_node_test(
     srcs = [":core_spec_lib"],
     data = [
         "//packages/core:npm_package",
+        "@ngdeps//@types/shelljs",
+        "@ngdeps//shelljs",
     ],
 )
 
@@ -26,19 +31,30 @@ ts_library(
     name = "common_spec_lib",
     testonly = True,
     srcs = ["common_package.spec.ts"],
-    deps = ["//packages:types"],
+    deps = [
+        "//packages:types",
+        "//packages/private/testing",
+        "@ngdeps//@types/shelljs",
+    ],
 )
 
 jasmine_node_test(
     name = "common_package",
     srcs = [":common_spec_lib"],
-    data = ["//packages/common:npm_package"],
+    data = [
+        "//packages/common:npm_package",
+        "@ngdeps//shelljs",
+    ],
 )
 
 ts_library(
     name = "example_spec_lib",
+    testonly = True,
     srcs = ["example_package.spec.ts"],
-    deps = ["//packages:types"],
+    deps = [
+        "//packages:types",
+        "@ngdeps//@types/diff",
+    ],
 )
 
 jasmine_node_test(
@@ -48,17 +64,21 @@ jasmine_node_test(
         "example_package.golden",
         "//packages/bazel/test/ng_package/example:npm_package",
     ],
-    # TODO(alexeagle): re-enable this test
-    # see https://github.com/angular/angular/pull/22933
-    tags = ["manual"],
+    # We don't want to run the example_package golden test with Ivy yet. Currently the golden
+    # file is based on non-ivy output and therefore won't work for ngc and Ivy at the same time.
+    # TODO: We should be able to have another golden for ivy-aot as well.
+    tags = ["no-ivy-aot"],
+    deps = ["@ngdeps//diff"],
 )
 
 nodejs_binary(
     name = "example_package.accept",
+    testonly = True,
     data = [
         "example_package.golden",
         ":example_spec_lib",
         "//packages/bazel/test/ng_package/example:npm_package",
+        "@ngdeps//diff",
     ],
     entry_point = "angular/packages/bazel/test/ng_package/example_package.spec.js",
     templated_args = ["--accept"],

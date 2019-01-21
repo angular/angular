@@ -1,7 +1,10 @@
 {
   "compilerOptions": {
     "outDir": "../dist/e2e",
-    "types": ["jasmine"],
+    "types": [
+      "jasmine",
+      "jasminewd2"
+    ],
     "skipLibCheck": true
   }
 }

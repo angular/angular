@@ -10,10 +10,10 @@ ng_module(
         ["**/*.ts"],
         exclude = ["testing.ts"],
     ),
-    module_name = "@angular/compiler/testing",
     deps = [
         "//packages:types",
         "//packages/compiler",
         "//packages/core",
+        "@ngdeps//@types/node",
     ],
 )

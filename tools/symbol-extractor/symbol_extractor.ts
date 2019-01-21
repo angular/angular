@@ -47,23 +47,19 @@ export class SymbolExtractor {
         case ts.SyntaxKind.VariableDeclaration:
           const varDecl = child as ts.VariableDeclaration;
           if (varDecl.initializer && fnRecurseDepth !== 0) {
-            symbols.push({name: varDecl.name.getText()});
+            symbols.push({name: stripSuffix(varDecl.name.getText())});
           }
-          if (fnRecurseDepth == 0 &&
-              isRollupExportSymbol(child.parent as ts.VariableDeclarationList)) {
+          if (fnRecurseDepth == 0 && isRollupExportSymbol(varDecl)) {
             ts.forEachChild(child, visitor);
           }
           break;
         case ts.SyntaxKind.FunctionDeclaration:
           const funcDecl = child as ts.FunctionDeclaration;
-          funcDecl.name && symbols.push({name: funcDecl.name.getText()});
+          funcDecl.name && symbols.push({name: stripSuffix(funcDecl.name.getText())});
           break;
         default:
           // Left for easier debugging.
           // console.log('###', ts.SyntaxKind[child.kind], child.getText());
-      }
-      if (symbols.length && symbols[symbols.length - 1].name == 'type') {
-        debugger;
       }
     }
     visitor(source);
@@ -113,6 +109,11 @@ export class SymbolExtractor {
   }
 }
 
+function stripSuffix(text: string): string {
+  const index = text.lastIndexOf('$');
+  return index > -1 ? text.substring(0, index) : text;
+}
+
 function toSymbol(v: string | Symbol): Symbol {
   return typeof v == 'string' ? {'name': v} : v as Symbol;
 }
@@ -122,13 +123,12 @@ function toName(symbol: Symbol): string {
 }
 
 /**
- * Detects if VariableDeclarationList is format `var x = function(){}()`;
+ * Detects if VariableDeclarationList is format `var ..., bundle = function(){}()`;
  *
  * Rollup produces this format when it wants to export symbols from a bundle.
  * @param child
  */
-function isRollupExportSymbol(child: ts.VariableDeclarationList): boolean {
-  if (child.declarations.length !== 1) return false;
-  const decl: ts.VariableDeclaration = child.declarations[0];
-  return !!(decl.initializer && decl.initializer.kind == ts.SyntaxKind.CallExpression);
+function isRollupExportSymbol(decl: ts.VariableDeclaration): boolean {
+  return !!(decl.initializer && decl.initializer.kind == ts.SyntaxKind.CallExpression) &&
+      ts.isIdentifier(decl.name) && decl.name.text === 'bundle';
 }

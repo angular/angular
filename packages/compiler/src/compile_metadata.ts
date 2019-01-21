@@ -188,6 +188,8 @@ export class CompileStylesheetMetadata {
 export interface CompileTemplateSummary {
   ngContentSelectors: string[];
   encapsulation: ViewEncapsulation|null;
+  styles: string[];
+  animations: any[]|null;
 }
 
 /**
@@ -243,6 +245,8 @@ export class CompileTemplateMetadata {
     return {
       ngContentSelectors: this.ngContentSelectors,
       encapsulation: this.encapsulation,
+      styles: this.styles,
+      animations: this.animations
     };
   }
 }
@@ -528,7 +532,8 @@ export interface CompileNgModuleSummary extends CompileTypeSummary {
 }
 
 export class CompileShallowModuleMetadata {
-  type: CompileTypeMetadata;
+  // TODO(issue/24571): remove '!'.
+  type !: CompileTypeMetadata;
 
   rawExports: any;
   rawImports: any;

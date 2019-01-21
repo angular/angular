@@ -9,7 +9,7 @@ export interface TabInfo {
   linenums: any;
   path: string;
   region: string;
-  title: string|null;
+  header: string|null;
 }
 
 /**
@@ -25,20 +25,22 @@ export interface TabInfo {
     <!-- Use content projection so that the provided HTML's code-panes can be split into tabs -->
     <div #content style="display: none"><ng-content></ng-content></div>
 
-    <mat-tab-group class="code-tab-group" disableRipple>
-      <mat-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
-        <ng-template mat-tab-label>
-          <span class="{{ tab.class }}">{{ tab.title }}</span>
-        </ng-template>
-        <aio-code class="{{ tab.class }}"
-                  [language]="tab.language"
-                  [linenums]="tab.linenums"
-                  [path]="tab.path"
-                  [region]="tab.region"
-                  [title]="tab.title">
-        </aio-code>
-      </mat-tab>
-    </mat-tab-group>
+    <mat-card>
+      <mat-tab-group class="code-tab-group" disableRipple>
+        <mat-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
+          <ng-template mat-tab-label>
+            <span class="{{ tab.class }}">{{ tab.header }}</span>
+          </ng-template>
+          <aio-code class="{{ tab.class }}"
+                    [language]="tab.language"
+                    [linenums]="tab.linenums"
+                    [path]="tab.path"
+                    [region]="tab.region"
+                    [header]="tab.header">
+          </aio-code>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card>
   `,
 })
 export class CodeTabsComponent implements OnInit, AfterViewInit {
@@ -75,7 +77,7 @@ export class CodeTabsComponent implements OnInit, AfterViewInit {
       linenums: tabContent.getAttribute('linenums') || this.linenums,
       path: tabContent.getAttribute('path') || '',
       region: tabContent.getAttribute('region') || '',
-      title: tabContent.getAttribute('title')
+      header: tabContent.getAttribute('header')
     };
   }
 }

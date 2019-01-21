@@ -16,9 +16,7 @@ import {assertElementExistsInDom, createElement, findKeyframeDefinition, forceRe
 const CSS_KEYFRAME_RULE_TYPE = 7;
 
 describe('CssKeyframesDriver tests', () => {
-  if (typeof Element == 'undefined' || typeof document == 'undefined' ||
-      typeof(window as any)['AnimationEvent'] == 'undefined')
-    return;
+  if (isNode || typeof(window as any)['AnimationEvent'] == 'undefined') return;
 
   describe('building keyframes', () => {
     it('should build CSS keyframe style object containing the keyframe styles', () => {

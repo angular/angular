@@ -5,53 +5,52 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "node_modules_filegroup")
 exports_files([
     "tsconfig.json",
     "LICENSE",
+    "protractor-perf.conf.js",
 ])
-
-# Developers should always run `bazel run :install`
-# This ensures that package.json in subdirectories get installed as well.
-alias(
-    name = "install",
-    actual = "@yarn//:yarn",
-)
-
-node_modules_filegroup(
-    name = "node_modules",
-    packages = [
-        "bytebuffer",
-        "hammerjs",
-        "jasmine",
-        "minimist",
-        "protobufjs",
-        "reflect-metadata",
-        "source-map-support",
-        "tsickle",
-        "tslib",
-        "tsutils",
-        "typescript",
-        "zone.js",
-        "@angular-devkit/core",
-        "@angular-devkit/schematics",
-        "@types",
-        "@webcomponents/custom-elements",
-    ],
-)
 
 filegroup(
     name = "web_test_bootstrap_scripts",
     # do not sort
     srcs = [
-        "//:node_modules/reflect-metadata/Reflect.js",
-        "//:node_modules/zone.js/dist/zone.js",
-        "//:node_modules/zone.js/dist/zone-testing.js",
-        "//:node_modules/zone.js/dist/task-tracking.js",
+        "@ngdeps//node_modules/reflect-metadata:Reflect.js",
+        "@ngdeps//node_modules/zone.js:dist/zone.js",
+        "@ngdeps//node_modules/zone.js:dist/zone-testing.js",
+        "@ngdeps//node_modules/zone.js:dist/task-tracking.js",
+        "//:test-events.js",
     ],
 )
 
 filegroup(
-    name = "angularjs",
-    # do not sort
+    name = "angularjs_scripts",
     srcs = [
-        "//:node_modules/angular/angular.js",
-        "//:node_modules/angular-mocks/angular-mocks.js",
+        # We also declare the unminfied AngularJS files since these can be used for
+        # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
+        "@ngdeps//node_modules/angular:angular.js",
+        "@ngdeps//node_modules/angular:angular.min.js",
+        "@ngdeps//node_modules/angular-1.5:angular.js",
+        "@ngdeps//node_modules/angular-1.5:angular.min.js",
+        "@ngdeps//node_modules/angular-1.6:angular.js",
+        "@ngdeps//node_modules/angular-1.6:angular.min.js",
+        "@ngdeps//node_modules/angular-mocks:angular-mocks.js",
+        "@ngdeps//node_modules/angular-mocks-1.5:angular-mocks.js",
+        "@ngdeps//node_modules/angular-mocks-1.6:angular-mocks.js",
     ],
+)
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+# A nodejs_binary for @angular/bazel/ngc-wrapped to use by default in
+# ng_module that depends on @npm//@angular/bazel instead of the
+# output of the //packages/bazel/src/ngc-wrapped ts_library rule. This
+# default is for downstream users that depend on the @angular/bazel npm
+# package. The generated @npm//@angular/bazel/ngc-wrapped target
+# does not work because it does not have the node `--expose-gc` flag
+# set which is required to support the call to `global.gc()`.
+nodejs_binary(
+    name = "@angular/bazel/ngc-wrapped",
+    configuration_env_vars = ["compile"],
+    data = ["@npm//@angular/bazel"],
+    entry_point = "@angular/bazel/src/ngc-wrapped/index.js",
+    install_source_map_support = False,
+    templated_args = ["--node_options=--expose-gc"],
 )

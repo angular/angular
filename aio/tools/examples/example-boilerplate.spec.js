@@ -11,7 +11,7 @@ describe('example-boilerplate tool', () => {
     const sharedNodeModulesDir = path.resolve(sharedDir, 'node_modules');
     const BPFiles = {
       cli: 19,
-      i18n: 1,
+      i18n: 2,
       universal: 2,
       systemjs: 7,
       common: 1

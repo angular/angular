@@ -7,95 +7,102 @@
  */
 
 import {InjectFlags} from './core';
+import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
-import {Identifiers} from './render3/r3_identifiers';
-
-
-type MapEntry = {
-  key: string; quoted: boolean; value: o.Expression;
-};
-
-function mapToMapExpression(map: {[key: string]: o.Expression}): o.LiteralMapExpr {
-  const result = Object.keys(map).map(key => ({key, value: map[key], quoted: false}));
-  return o.literalMap(result);
-}
+import {R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata, compileFactoryFunction} from './render3/r3_factory';
+import {mapToMapExpression, typeWithParameters} from './render3/util';
 
 export interface InjectableDef {
   expression: o.Expression;
   type: o.Type;
+  statements: o.Statement[];
 }
 
-export interface IvyInjectableDep {
-  token: o.Expression;
-  optional: boolean;
-  self: boolean;
-  skipSelf: boolean;
-}
-
-export interface IvyInjectableMetadata {
+export interface R3InjectableMetadata {
   name: string;
   type: o.Expression;
+  typeArgumentCount: number;
+  ctorDeps: R3DependencyMetadata[]|null;
   providedIn: o.Expression;
-  useType?: IvyInjectableDep[];
   useClass?: o.Expression;
-  useFactory?: {factory: o.Expression; deps: IvyInjectableDep[];};
+  useFactory?: o.Expression;
   useExisting?: o.Expression;
   useValue?: o.Expression;
+  userDeps?: R3DependencyMetadata[];
 }
 
-export function compileIvyInjectable(meta: IvyInjectableMetadata): InjectableDef {
-  let ret: o.Expression = o.NULL_EXPR;
-  if (meta.useType !== undefined) {
-    const args = meta.useType.map(dep => injectDep(dep));
-    ret = new o.InstantiateExpr(meta.type, args);
-  } else if (meta.useClass !== undefined) {
-    const factory =
-        new o.ReadPropExpr(new o.ReadPropExpr(meta.useClass, 'ngInjectableDef'), 'factory');
-    ret = new o.InvokeFunctionExpr(factory, []);
-  } else if (meta.useValue !== undefined) {
-    ret = meta.useValue;
-  } else if (meta.useExisting !== undefined) {
-    ret = o.importExpr(Identifiers.inject).callFn([meta.useExisting]);
+export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
+  let result: {factory: o.Expression, statements: o.Statement[]}|null = null;
+
+  const factoryMeta = {
+    name: meta.name,
+    type: meta.type,
+    deps: meta.ctorDeps,
+    injectFn: Identifiers.inject,
+  };
+
+  if (meta.useClass !== undefined) {
+    // meta.useClass has two modes of operation. Either deps are specified, in which case `new` is
+    // used to instantiate the class with dependencies injected, or deps are not specified and
+    // the factory of the class is used to instantiate it.
+    //
+    // A special case exists for useClass: Type where Type is the injectable type itself, in which
+    // case omitting deps just uses the constructor dependencies instead.
+
+    const useClassOnSelf = meta.useClass.isEquivalent(meta.type);
+    const deps = meta.userDeps || (useClassOnSelf && meta.ctorDeps) || undefined;
+
+    if (deps !== undefined) {
+      // factory: () => new meta.useClass(...deps)
+      result = compileFactoryFunction({
+        ...factoryMeta,
+        delegate: meta.useClass,
+        delegateDeps: deps,
+        delegateType: R3FactoryDelegateType.Class,
+      });
+    } else {
+      result = compileFactoryFunction({
+        ...factoryMeta,
+        delegate: meta.useClass,
+        delegateType: R3FactoryDelegateType.Factory,
+      });
+    }
   } else if (meta.useFactory !== undefined) {
-    const args = meta.useFactory.deps.map(dep => injectDep(dep));
-    ret = new o.InvokeFunctionExpr(meta.useFactory.factory, args);
+    result = compileFactoryFunction({
+      ...factoryMeta,
+      delegate: meta.useFactory,
+      delegateDeps: meta.userDeps || [],
+      delegateType: R3FactoryDelegateType.Function,
+    });
+  } else if (meta.useValue !== undefined) {
+    // Note: it's safe to use `meta.useValue` instead of the `USE_VALUE in meta` check used for
+    // client code because meta.useValue is an Expression which will be defined even if the actual
+    // value is undefined.
+    result = compileFactoryFunction({
+      ...factoryMeta,
+      expression: meta.useValue,
+    });
+  } else if (meta.useExisting !== undefined) {
+    // useExisting is an `inject` call on the existing token.
+    result = compileFactoryFunction({
+      ...factoryMeta,
+      expression: o.importExpr(Identifiers.inject).callFn([meta.useExisting]),
+    });
   } else {
-    throw new Error('No instructions for injectable compiler!');
+    result = compileFactoryFunction(factoryMeta);
   }
 
   const token = meta.type;
   const providedIn = meta.providedIn;
-  const factory =
-      o.fn([], [new o.ReturnStatement(ret)], undefined, undefined, `${meta.name}_Factory`);
 
-  const expression = o.importExpr({
-                        moduleName: '@angular/core',
-                        name: 'defineInjectable',
-                      }).callFn([mapToMapExpression({token, factory, providedIn})]);
+  const expression = o.importExpr(Identifiers.defineInjectable).callFn([mapToMapExpression(
+      {token, factory: result.factory, providedIn})]);
   const type = new o.ExpressionType(o.importExpr(
-      {
-        moduleName: '@angular/core',
-        name: 'InjectableDef',
-      },
-      [new o.ExpressionType(meta.type)]));
+      Identifiers.InjectableDef, [typeWithParameters(meta.type, meta.typeArgumentCount)]));
 
   return {
-      expression, type,
+    expression,
+    type,
+    statements: result.statements,
   };
-}
-
-function injectDep(dep: IvyInjectableDep): o.Expression {
-  const defaultValue = dep.optional ? o.NULL_EXPR : o.literal(undefined);
-  const flags = o.literal(
-      InjectFlags.Default | (dep.self && InjectFlags.Self || 0) |
-      (dep.skipSelf && InjectFlags.SkipSelf || 0));
-  if (!dep.optional && !dep.skipSelf && !dep.self) {
-    return o.importExpr(Identifiers.inject).callFn([dep.token]);
-  } else {
-    return o.importExpr(Identifiers.inject).callFn([
-      dep.token,
-      defaultValue,
-      flags,
-    ]);
-  }
 }

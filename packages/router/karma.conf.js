@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var browserProvidersConf = require('../../browser-providers.conf.js');
+const browserProvidersConf = require('../../browser-providers.conf');
+const {generateSeed} = require('../../tools/jasmine-seed-generator');
 
 // Karma configuration
 module.exports = function(config) {
@@ -15,6 +16,13 @@ module.exports = function(config) {
     basePath: '../../',
 
     frameworks: ['jasmine'],
+
+    client: {
+      jasmine: {
+        random: true,
+        seed: generateSeed('router/karma.conf'),
+      },
+    },
 
     files: [
       // Polyfills.
@@ -53,20 +61,25 @@ module.exports = function(config) {
       {
         pattern: 'dist/all/@angular/platform-browser/testing/**/*.js',
         included: false,
-        watched: false,
+        watched: false
       },
 
       {pattern: 'dist/all/@angular/platform-browser-dynamic/*.js', included: false, watched: false},
       {
         pattern: 'dist/all/@angular/platform-browser-dynamic/src/**/*.js',
         included: false,
-        watched: false,
+        watched: false
       },
       {
         pattern: 'dist/all/@angular/platform-browser-dynamic/testing/**/*.js',
         included: false,
-        watched: false,
+        watched: false
       },
+
+      {pattern: 'dist/all/@angular/private/testing/**/*.js', included: false, watched: false},
+
+      {pattern: 'dist/all/@angular/upgrade/static/*.js', included: false, watched: false},
+      {pattern: 'dist/all/@angular/upgrade/static/src/**/*.js', included: false, watched: false},
 
       // Router
       {pattern: 'dist/all/@angular/router/**/*.js', included: false, watched: true}

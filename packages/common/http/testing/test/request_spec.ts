@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ddescribe, describe, iit, it} from '@angular/core/testing/src/testing_internal';
-
-import {HttpClient} from '../../src/client';
-import {HttpClientTestingBackend} from '../src/backend';
+import {HttpClient} from '@angular/common/http';
+import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
 
 describe('HttpClient TestRequest', () => {
   it('accepts a null body', () => {

@@ -7,8 +7,8 @@
  */
 
 import {InjectionToken} from '../di/injection_token';
-import {Type} from '../type';
-import {makeParamDecorator, makePropDecorator} from '../util/decorators';
+import {Type} from '../interface/type';
+import {makePropDecorator} from '../util/decorators';
 
 /**
  * This token can be used to create a virtual provider that will populate the
@@ -16,6 +16,7 @@ import {makeParamDecorator, makePropDecorator} from '../util/decorators';
  * All components that are referenced in the `useValue` value (either directly
  * or in a nested array or map) will be added to the `entryComponents` property.
  *
+ * @usageNotes
  * ### Example
  * The following example shows how the router can populate the `entryComponents`
  * field of an NgModule based on the router configuration which refers
@@ -42,77 +43,15 @@ import {makeParamDecorator, makePropDecorator} from '../util/decorators';
  * class ModuleWithRoutes {}
  * ```
  *
- * @experimental
+ * @publicApi
  */
 export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForEntryComponents');
 
-/**
- * Type of the Attribute decorator / constructor function.
- *
- *
- */
-export interface AttributeDecorator {
-  /**
-   * Specifies that a constant attribute value should be injected.
-   *
-   * The directive can inject constant string literals of host element attributes.
-   *
-   * ### Example
-   *
-   * Suppose we have an `<input>` element and want to know its `type`.
-   *
-   * ```html
-   * <input type="text">
-   * ```
-   *
-   * A decorator can inject string literal `text` like so:
-   *
-   * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
-   *
-   * ### Example as TypeScript Decorator
-   *
-   * {@example core/ts/metadata/metadata.ts region='attributeFactory'}
-   *
-   * ### Example as ES5 annotation
-   *
-   * ```
-   * var MyComponent = function(title) {
-   *   ...
-   * };
-   *
-   * MyComponent.annotations = [
-   *   new ng.Component({...})
-   * ]
-   * MyComponent.parameters = [
-   *   [new ng.Attribute('title')]
-   * ]
-   * ```
-   *
-   *
-   */
-  (name: string): any;
-  new (name: string): Attribute;
-}
-
-
-/**
- * Type of the Attribute metadata.
- */
-export interface Attribute { attributeName?: string; }
-
-/**
- * Attribute decorator and metadata.
- *
- *
- * @Annotation
- */
-export const Attribute: AttributeDecorator =
-    makeParamDecorator('Attribute', (attributeName?: string) => ({attributeName}));
 
 /**
  * Type of the Query metadata.
  *
- *
+ * @publicApi
  */
 export interface Query {
   descendants: boolean;
@@ -125,34 +64,28 @@ export interface Query {
 /**
  * Base class for query metadata.
  *
- * See {@link ContentChildren}, {@link ContentChild}, {@link ViewChildren}, {@link ViewChild} for
- * more information.
+ * @see `ContentChildren`.
+ * @see `ContentChild`.
+ * @see `ViewChildren`.
+ * @see `ViewChild`.
  *
- *
+ * @publicApi
  */
 export abstract class Query {}
 
 /**
  * Type of the ContentChildren decorator / constructor function.
  *
- * See {@link ContentChildren}.
- *
- *
+ * @see `ContentChildren`.
+ * @publicApi
  */
 export interface ContentChildrenDecorator {
   /**
-   *
-   * @usageNotes
-   *
-   * {@example core/di/ts/contentChildren/content_children_howto.ts region='HowTo'}
-   *
-   * @description
    * Configures a content query.
    *
-   * You can use ContentChildren to get the {@link QueryList} of elements or directives from the
+   * You can use ContentChildren to get the `QueryList` of elements or directives from the
    * content DOM. Any time a child element is added, removed, or moved, the query list will be
-   * updated,
-   * and the changes observable of the query list will emit a new value.
+   * updated, and the changes observable of the query list will emit a new value.
    *
    * Content queries are set before the `ngAfterContentInit` callback is called.
    *
@@ -162,12 +95,19 @@ export interface ContentChildrenDecorator {
    * * **descendants** - include only direct children or all descendants.
    * * **read** - read a different token from the queried elements.
    *
-   * Let's look at an example:
+   * @usageNotes
+   * ### Basic Example
+   *
+   * Here is a simple demonstration of how the `ContentChildren` decorator can be used.
+   *
+   * {@example core/di/ts/contentChildren/content_children_howto.ts region='HowTo'}
+   *
+   * ### Tab-pane Example
+   *
+   * Here is a slightly more realistic example that shows how `ContentChildren` decorators
+   * can be used to implement a tab pane component.
    *
    * {@example core/di/ts/contentChildren/content_children_example.ts region='Component'}
-   *
-   * **npm package**: `@angular/core`
-   *
    *
    * @Annotation
    */
@@ -180,6 +120,7 @@ export interface ContentChildrenDecorator {
  *
  *
  * @Annotation
+ * @publicApi
  */
 export type ContentChildren = Query;
 
@@ -187,7 +128,8 @@ export type ContentChildren = Query;
  * ContentChildren decorator and metadata.
  *
  *
- *  @Annotation
+ * @Annotation
+ * @publicApi
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
     'ContentChildren',
@@ -198,17 +140,10 @@ export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
 /**
  * Type of the ContentChild decorator / constructor function.
  *
- *
- *
+ * @publicApi
  */
 export interface ContentChildDecorator {
   /**
-   *
-   * @usageNotes
-   *
-   * {@example core/di/ts/contentChild/content_child_howto.ts region='HowTo'}
-   *
-   * @description
    * Configures a content query.
    *
    * You can use ContentChild to get the first element or the directive matching the selector from
@@ -222,12 +157,14 @@ export interface ContentChildDecorator {
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried element.
    *
-   * Let's look at an example:
+   * @usageNotes
+   * ### Example
+   *
+   * {@example core/di/ts/contentChild/content_child_howto.ts region='HowTo'}
+   *
+   * ### Example
    *
    * {@example core/di/ts/contentChild/content_child_example.ts region='Component'}
-   *
-   * **npm package**: `@angular/core`
-   *
    *
    * @Annotation
    */
@@ -238,9 +175,9 @@ export interface ContentChildDecorator {
 /**
  * Type of the ContentChild metadata.
  *
- * See {@link ContentChild}.
+ * @see `ContentChild`.
  *
- *
+ * @publicApi
  */
 export type ContentChild = Query;
 
@@ -249,6 +186,8 @@ export type ContentChild = Query;
  *
  *
  * @Annotation
+ *
+ * @publicApi
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
     'ContentChild', (selector?: any, data: any = {}) =>
@@ -258,21 +197,15 @@ export const ContentChild: ContentChildDecorator = makePropDecorator(
 /**
  * Type of the ViewChildren decorator / constructor function.
  *
- * See {@link ViewChildren}.
+ * @see `ViewChildren`.
  *
- *
+ * @publicApi
  */
 export interface ViewChildrenDecorator {
   /**
-   *
-   * @usageNotes
-   *
-   * {@example core/di/ts/viewChildren/view_children_howto.ts region='HowTo'}
-   *
-   * @description
    * Configures a view query.
    *
-   * You can use ViewChildren to get the {@link QueryList} of elements or directives from the
+   * You can use ViewChildren to get the `QueryList` of elements or directives from the
    * view DOM. Any time a child element is added, removed, or moved, the query list will be updated,
    * and the changes observable of the query list will emit a new value.
    *
@@ -283,12 +216,15 @@ export interface ViewChildrenDecorator {
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried elements.
    *
-   * Let's look at an example:
+   * @usageNotes
+   *
+   * ### Example
+   *
+   * {@example core/di/ts/viewChildren/view_children_howto.ts region='HowTo'}
+   *
+   * ### Example
    *
    * {@example core/di/ts/viewChildren/view_children_example.ts region='Component'}
-   *
-   * **npm package**: `@angular/core`
-   *
    *
    * @Annotation
    */
@@ -299,15 +235,15 @@ export interface ViewChildrenDecorator {
 /**
  * Type of the ViewChildren metadata.
  *
- *
+ * @publicApi
  */
 export type ViewChildren = Query;
 
 /**
  * ViewChildren decorator and metadata.
  *
- *
  * @Annotation
+ * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
     'ViewChildren', (selector?: any, data: any = {}) =>
@@ -317,23 +253,16 @@ export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
 /**
  * Type of the ViewChild decorator / constructor function.
  *
- * See {@link ViewChild}
- *
- *
+ * @see `ViewChild`.
+ * @publicApi
  */
 export interface ViewChildDecorator {
   /**
-   *
-   * @usageNotes
-   *
-   * {@example core/di/ts/viewChild/view_child_howto.ts region='HowTo'}
-   *
    * @description
-   * Configures a view query.
-   *
-   * You can use ViewChild to get the first element or the directive matching the selector from the
-   * view DOM. If the view DOM changes, and a new child matches the selector,
-   * the property will be updated.
+   * Property decorator that configures a view query.
+   * The change detector looks for the first element or the directive matching the selector
+   * in the view DOM. If the view DOM changes, and a new child matches the selector,
+   * the property is updated.
    *
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
@@ -342,10 +271,28 @@ export interface ViewChildDecorator {
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried elements.
    *
+   * Supported selectors include:
+   *   * any class with the `@Component` or `@Directive` decorator
+   *   * a template reference variable as a string (e.g. query `<my-component #cmp></my-component>`
+   * with `@ViewChild('cmp')`)
+   *   * any provider defined in the child component tree of the current component (e.g.
+   * `@ViewChild(SomeService) someService: SomeService`)
+   *   * any provider defined through a string token (e.g. `@ViewChild('someToken') someTokenVal:
+   * any`)
+   *   * a `TemplateRef` (e.g. query `<ng-template></ng-template>` with `@ViewChild(TemplateRef)
+   * template;`)
+   *
+   * @usageNotes
+   *
    * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
    *
-   * **npm package**: `@angular/core`
+   * ### Example
    *
+   * {@example core/di/ts/viewChild/view_child_howto.ts region='HowTo'}
+   *
+   * ### Example
+   *
+   * {@example core/di/ts/viewChild/view_child_example.ts region='Component'}
    *
    * @Annotation
    */
@@ -356,15 +303,15 @@ export interface ViewChildDecorator {
 /**
  * Type of the ViewChild metadata.
  *
- *
+ * @publicApi
  */
 export type ViewChild = Query;
 
 /**
  * ViewChild decorator and metadata.
  *
- *
  * @Annotation
+ * @publicApi
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
     'ViewChild', (selector: any, data: any) =>

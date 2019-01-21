@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Optional, SkipSelf, StaticProvider} from '../../di';
+import {Optional, SkipSelf, StaticProvider, defineInjectable} from '../../di';
+import {DefaultKeyValueDifferFactory} from './default_keyvalue_differ';
 
 
 /**
  * A differ that tracks changes made to an object over time.
  *
- *
+ * @publicApi
  */
 export interface KeyValueDiffer<K, V> {
   /**
@@ -22,7 +23,7 @@ export interface KeyValueDiffer<K, V> {
    * @returns an object describing the difference. The return value is only valid until the next
    * `diff()` invocation.
    */
-  diff(object: Map<K, V>): KeyValueChanges<K, V>;
+  diff(object: Map<K, V>): KeyValueChanges<K, V>|null;
 
   /**
    * Compute a difference between the previous state and the new `object` state.
@@ -31,7 +32,7 @@ export interface KeyValueDiffer<K, V> {
    * @returns an object describing the difference. The return value is only valid until the next
    * `diff()` invocation.
    */
-  diff(object: {[key: string]: V}): KeyValueChanges<string, V>;
+  diff(object: {[key: string]: V}): KeyValueChanges<string, V>|null;
   // TODO(TS2.1): diff<KP extends string>(this: KeyValueDiffer<KP, V>, object: Record<KP, V>):
   // KeyValueDiffer<KP, V>;
 }
@@ -40,7 +41,7 @@ export interface KeyValueDiffer<K, V> {
  * An object describing the changes in the `Map` or `{[k:string]: string}` since last time
  * `KeyValueDiffer#diff()` was invoked.
  *
- *
+ * @publicApi
  */
 export interface KeyValueChanges<K, V> {
   /**
@@ -74,7 +75,7 @@ export interface KeyValueChanges<K, V> {
 /**
  * Record representing the item change information.
  *
- *
+ * @publicApi
  */
 export interface KeyValueChangeRecord<K, V> {
   /**
@@ -96,7 +97,7 @@ export interface KeyValueChangeRecord<K, V> {
 /**
  * Provides a factory for {@link KeyValueDiffer}.
  *
- *
+ * @publicApi
  */
 export interface KeyValueDifferFactory {
   /**
@@ -113,8 +114,15 @@ export interface KeyValueDifferFactory {
 /**
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
  *
+ * @publicApi
  */
 export class KeyValueDiffers {
+  /** @nocollapse */
+  static ngInjectableDef = defineInjectable({
+    providedIn: 'root',
+    factory: () => new KeyValueDiffers([new DefaultKeyValueDifferFactory()])
+  });
+
   /**
    * @deprecated v4.0.0 - Should be private.
    */
@@ -135,11 +143,12 @@ export class KeyValueDiffers {
    * inherited {@link KeyValueDiffers} instance with the provided factories and return a new
    * {@link KeyValueDiffers} instance.
    *
+   * @usageNotes
+   * ### Example
+   *
    * The following example shows how to extend an existing list of factories,
    * which will only be applied to the injector for this component and its children.
    * This step is all that's required to make a new {@link KeyValueDiffer} available.
-   *
-   * ### Example
    *
    * ```
    * @Component({

@@ -52,7 +52,7 @@ describe('Format date', () => {
 
     // Check the transformation of a date into a pattern
     function expectDateFormatAs(date: Date | string, pattern: any, output: string): void {
-      expect(formatDate(date, pattern, defaultLocale)).toEqual(output);
+      expect(formatDate(date, pattern, defaultLocale)).toEqual(output, `pattern: "${pattern}"`);
     }
 
     beforeAll(() => {
@@ -105,7 +105,7 @@ describe('Format date', () => {
         mm: '03',
         s: '1',
         ss: '01',
-        S: '6',
+        S: '5',
         SS: '55',
         SSS: '550',
         a: 'AM',
@@ -233,7 +233,6 @@ describe('Format date', () => {
       Object.keys(dateFixtures).forEach((pattern: string) => {
         expectDateFormatAs(date, pattern, dateFixtures[pattern]);
       });
-
     });
 
     it('should format with pattern aliases', () => {
@@ -266,14 +265,13 @@ describe('Format date', () => {
        () => expect(formatDate('2017-01-20T12:00:00+0000', defaultFormat, defaultLocale))
                  .toEqual('Jan 20, 2017'));
 
-    // test for the following bugs:
     // https://github.com/angular/angular/issues/9524
     // https://github.com/angular/angular/issues/9524
     it('should format correctly with iso strings that contain time',
        () => expect(formatDate('2017-05-07T22:14:39', 'dd-MM-yyyy HH:mm', defaultLocale))
                  .toMatch(/07-05-2017 \d{2}:\d{2}/));
 
-    // test for issue https://github.com/angular/angular/issues/21491
+    // https://github.com/angular/angular/issues/21491
     it('should not assume UTC for iso strings in Safari if the timezone is not defined', () => {
       // this test only works if the timezone is not in UTC
       // which is the case for BrowserStack when we test Safari
@@ -283,7 +281,6 @@ describe('Format date', () => {
       }
     });
 
-    // test for the following bugs:
     // https://github.com/angular/angular/issues/16624
     // https://github.com/angular/angular/issues/17478
     it('should show the correct time when the timezone is fixed', () => {
@@ -310,6 +307,22 @@ describe('Format date', () => {
     it('should throw if we use getExtraDayPeriods without loading extra locale data', () => {
       expect(() => formatDate(date, 'b', 'de'))
           .toThrowError(/Missing extra locale data for the locale "de"/);
+    });
+
+    // https://github.com/angular/angular/issues/24384
+    it('should not round fractional seconds', () => {
+      expect(formatDate(3999, 'm:ss', 'en')).toEqual('0:03');
+      expect(formatDate(3999, 'm:ss.S', 'en')).toEqual('0:03.9');
+      expect(formatDate(3999, 'm:ss.SS', 'en')).toEqual('0:03.99');
+      expect(formatDate(3999, 'm:ss.SSS', 'en')).toEqual('0:03.999');
+      expect(formatDate(3000, 'm:ss', 'en')).toEqual('0:03');
+      expect(formatDate(3000, 'm:ss.S', 'en')).toEqual('0:03.0');
+      expect(formatDate(3000, 'm:ss.SS', 'en')).toEqual('0:03.00');
+      expect(formatDate(3000, 'm:ss.SSS', 'en')).toEqual('0:03.000');
+      expect(formatDate(3001, 'm:ss', 'en')).toEqual('0:03');
+      expect(formatDate(3001, 'm:ss.S', 'en')).toEqual('0:03.0');
+      expect(formatDate(3001, 'm:ss.SS', 'en')).toEqual('0:03.00');
+      expect(formatDate(3001, 'm:ss.SSS', 'en')).toEqual('0:03.001');
     });
   });
 });

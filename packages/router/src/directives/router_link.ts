@@ -77,6 +77,27 @@ import {UrlTree} from '../url_tree';
  * </a>
  * ```
  *
+ * You can provide a `state` value to be persisted to the browser's History.state
+ * property (See https://developer.mozilla.org/en-US/docs/Web/API/History#Properties). It's
+ * used as follows:
+ *
+ * ```
+ * <a [routerLink]="['/user/bob']" [state]="{tracingId: 123}">
+ *   link to user component
+ * </a>
+ * ```
+ *
+ * And later the value can be read from the router through `router.getCurrentNavigation`.
+ * For example, to capture the `tracingId` above during the `NavigationStart` event:
+ *
+ * ```
+ * // Get NavigationStart events
+ * router.events.pipe(filter(e => e instanceof NavigationStart)).subscribe(e => {
+ *   const navigation = router.getCurrentNavigation();
+ *   tracingService.trace({id: navigation.extras.state.tracingId});
+ * });
+ * ```
+ *
  * The router link directive always treats the provided input as a delta to the current url.
  *
  * For instance, if the current url is `/user/(box//aux:team)`.
@@ -88,18 +109,26 @@ import {UrlTree} from '../url_tree';
  *
  * @ngModule RouterModule
  *
- *
+ * @publicApi
  */
 @Directive({selector: ':not(a)[routerLink]'})
 export class RouterLink {
-  @Input() queryParams: {[k: string]: any};
-  @Input() fragment: string;
-  @Input() queryParamsHandling: QueryParamsHandling;
-  @Input() preserveFragment: boolean;
-  @Input() skipLocationChange: boolean;
-  @Input() replaceUrl: boolean;
+  // TODO(issue/24571): remove '!'.
+  @Input() queryParams !: {[k: string]: any};
+  // TODO(issue/24571): remove '!'.
+  @Input() fragment !: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() queryParamsHandling !: QueryParamsHandling;
+  // TODO(issue/24571): remove '!'.
+  @Input() preserveFragment !: boolean;
+  // TODO(issue/24571): remove '!'.
+  @Input() skipLocationChange !: boolean;
+  // TODO(issue/24571): remove '!'.
+  @Input() replaceUrl !: boolean;
+  @Input() state?: {[k: string]: any};
   private commands: any[] = [];
-  private preserve: boolean;
+  // TODO(issue/24571): remove '!'.
+  private preserve !: boolean;
 
   constructor(
       private router: Router, private route: ActivatedRoute,
@@ -160,23 +189,33 @@ export class RouterLink {
  *
  * @ngModule RouterModule
  *
- *
+ * @publicApi
  */
 @Directive({selector: 'a[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
-  @HostBinding('attr.target') @Input() target: string;
-  @Input() queryParams: {[k: string]: any};
-  @Input() fragment: string;
-  @Input() queryParamsHandling: QueryParamsHandling;
-  @Input() preserveFragment: boolean;
-  @Input() skipLocationChange: boolean;
-  @Input() replaceUrl: boolean;
+  // TODO(issue/24571): remove '!'.
+  @HostBinding('attr.target') @Input() target !: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() queryParams !: {[k: string]: any};
+  // TODO(issue/24571): remove '!'.
+  @Input() fragment !: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() queryParamsHandling !: QueryParamsHandling;
+  // TODO(issue/24571): remove '!'.
+  @Input() preserveFragment !: boolean;
+  // TODO(issue/24571): remove '!'.
+  @Input() skipLocationChange !: boolean;
+  // TODO(issue/24571): remove '!'.
+  @Input() replaceUrl !: boolean;
+  @Input() state?: {[k: string]: any};
   private commands: any[] = [];
   private subscription: Subscription;
-  private preserve: boolean;
+  // TODO(issue/24571): remove '!'.
+  private preserve !: boolean;
 
   // the url displayed on the anchor element.
-  @HostBinding() href: string;
+  // TODO(issue/24571): remove '!'.
+  @HostBinding() href !: string;
 
   constructor(
       private router: Router, private route: ActivatedRoute,
@@ -221,6 +260,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
+      state: this.state
     };
     this.router.navigateByUrl(this.urlTree, extras);
     return false;

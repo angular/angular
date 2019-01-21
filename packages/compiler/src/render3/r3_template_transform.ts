@@ -7,6 +7,7 @@
  */
 
 import {ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
+import * as i18n from '../i18n/i18n_ast';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
 import {isNgTemplate} from '../ml_parser/tags';
@@ -14,8 +15,10 @@ import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {isStyleUrlResolvable} from '../style_url_resolver';
 import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
+import {syntaxError} from '../util';
 
 import * as t from './r3_ast';
+import {I18N_ICU_VAR_PREFIX} from './view/i18n/util';
 
 const BIND_NAME_REGEXP =
     /^(?:(?:(?:(bind-)|(let-)|(ref-|#)|(on-)|(bindon-)|(@))(.+))|\[\(([^\)]+)\)\]|\[([^\]]+)\]|\(([^\)]+)\))$/;
@@ -42,17 +45,34 @@ const IDENT_PROPERTY_IDX = 9;
 const IDENT_EVENT_IDX = 10;
 
 const TEMPLATE_ATTR_PREFIX = '*';
-const CLASS_ATTR = 'class';
-// Default selector used by `<ng-content>` if none specified
-const DEFAULT_CONTENT_SELECTOR = '*';
 
-export class HtmlToTemplateTransform implements html.Visitor {
-  errors: ParseError[];
+// Result of the html AST to Ivy AST transformation
+export type Render3ParseResult = {
+  nodes: t.Node[]; errors: ParseError[];
+};
 
-  // Selectors for the `ng-content` tags. Only non `*` selectors are recorded here
-  ngContentSelectors: string[] = [];
-  // Any `<ng-content>` in the template ?
-  hasNgContent = false;
+export function htmlAstToRender3Ast(
+    htmlNodes: html.Node[], bindingParser: BindingParser): Render3ParseResult {
+  const transformer = new HtmlAstToIvyAst(bindingParser);
+  const ivyNodes = html.visitAll(transformer, htmlNodes);
+
+  // Errors might originate in either the binding parser or the html to ivy transformer
+  const allErrors = bindingParser.errors.concat(transformer.errors);
+  const errors: ParseError[] = allErrors.filter(e => e.level === ParseErrorLevel.ERROR);
+
+  if (errors.length > 0) {
+    const errorString = errors.join('\n');
+    throw syntaxError(`Template parse errors:\n${errorString}`, errors);
+  }
+
+  return {
+    nodes: ivyNodes,
+    errors: allErrors,
+  };
+}
+
+class HtmlAstToIvyAst implements html.Visitor {
+  errors: ParseError[] = [];
 
   constructor(private bindingParser: BindingParser) {}
 
@@ -76,15 +96,13 @@ export class HtmlToTemplateTransform implements html.Visitor {
     // Whether the element is a `<ng-template>`
     const isTemplateElement = isNgTemplate(element.name);
 
-    const matchableAttributes: [string, string][] = [];
     const parsedProperties: ParsedProperty[] = [];
     const boundEvents: t.BoundEvent[] = [];
     const variables: t.Variable[] = [];
     const references: t.Reference[] = [];
     const attributes: t.TextAttribute[] = [];
+    const i18nAttrsMeta: {[key: string]: i18n.AST} = {};
 
-    const templateMatchableAttributes: [string, string][] = [];
-    let inlineTemplateSourceSpan: ParseSourceSpan;
     const templateParsedProperties: ParsedProperty[] = [];
     const templateVariables: t.Variable[] = [];
 
@@ -98,7 +116,12 @@ export class HtmlToTemplateTransform implements html.Visitor {
       // `*attr` defines template bindings
       let isTemplateBinding = false;
 
+      if (attribute.i18n) {
+        i18nAttrsMeta[attribute.name] = attribute.i18n;
+      }
+
       if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
+        // *-attributes
         if (elementHasInlineTemplate) {
           this.reportError(
               `Can't have multiple template bindings on one element. Use only one attribute prefixed with *`,
@@ -109,22 +132,21 @@ export class HtmlToTemplateTransform implements html.Visitor {
         const templateValue = attribute.value;
         const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
 
-        inlineTemplateSourceSpan = attribute.valueSpan || attribute.sourceSpan;
-
+        const parsedVariables: ParsedVariable[] = [];
         this.bindingParser.parseInlineTemplateBinding(
-            templateKey, templateValue, attribute.sourceSpan, templateMatchableAttributes,
-            templateParsedProperties, templateVariables);
+            templateKey, templateValue, attribute.sourceSpan, [], templateParsedProperties,
+            parsedVariables);
+        templateVariables.push(
+            ...parsedVariables.map(v => new t.Variable(v.name, v.value, v.sourceSpan)));
       } else {
         // Check for variables, events, property bindings, interpolation
         hasBinding = this.parseAttribute(
-            isTemplateElement, attribute, matchableAttributes, parsedProperties, boundEvents,
-            variables, references);
+            isTemplateElement, attribute, [], parsedProperties, boundEvents, variables, references);
       }
 
       if (!hasBinding && !isTemplateBinding) {
         // don't include the bindings as attributes as well in the AST
         attributes.push(this.visitAttribute(attribute) as t.TextAttribute);
-        matchableAttributes.push([attribute.name, attribute.value]);
       }
     }
 
@@ -134,73 +156,100 @@ export class HtmlToTemplateTransform implements html.Visitor {
     let parsedElement: t.Node|undefined;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       // `<ng-content>`
-      this.hasNgContent = true;
-
       if (element.children && !element.children.every(isEmptyTextNode)) {
         this.reportError(`<ng-content> element cannot have content.`, element.sourceSpan);
       }
-
       const selector = preparsedElement.selectAttr;
-
-      let attributes: t.TextAttribute[] = element.attrs.map(attribute => {
-        return new t.TextAttribute(
-            attribute.name, attribute.value, attribute.sourceSpan, attribute.valueSpan);
-      });
-
-      const selectorIndex =
-          selector === DEFAULT_CONTENT_SELECTOR ? 0 : this.ngContentSelectors.push(selector);
-      parsedElement = new t.Content(selectorIndex, attributes, element.sourceSpan);
+      const attrs: t.TextAttribute[] = element.attrs.map(attr => this.visitAttribute(attr));
+      parsedElement = new t.Content(selector, attrs, element.sourceSpan, element.i18n);
     } else if (isTemplateElement) {
       // `<ng-template>`
-      const boundAttributes = this.createBoundAttributes(element.name, parsedProperties);
-      parsedElement = new t.Template(
-          attributes, boundAttributes, children, references, variables, element.sourceSpan,
-          element.startSourceSpan, element.endSourceSpan);
-    } else {
-      const boundAttributes = this.createBoundAttributes(element.name, parsedProperties);
+      const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
 
+      parsedElement = new t.Template(
+          element.name, attributes, attrs.bound, boundEvents, children, references, variables,
+          element.sourceSpan, element.startSourceSpan, element.endSourceSpan, element.i18n);
+    } else {
+      const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
       parsedElement = new t.Element(
-          element.name, attributes, boundAttributes, boundEvents, children, references,
-          element.sourceSpan, element.startSourceSpan, element.endSourceSpan);
+          element.name, attributes, attrs.bound, boundEvents, children, references,
+          element.sourceSpan, element.startSourceSpan, element.endSourceSpan, element.i18n);
     }
 
     if (elementHasInlineTemplate) {
-      const attributes: t.TextAttribute[] = [];
-
-      templateMatchableAttributes.forEach(
-          ([name, value]) =>
-              attributes.push(new t.TextAttribute(name, value, inlineTemplateSourceSpan)));
-
-      const boundAttributes = this.createBoundAttributes('ng-template', templateParsedProperties);
+      const attrs = this.extractAttributes('ng-template', templateParsedProperties, i18nAttrsMeta);
+      // TODO(pk): test for this case
       parsedElement = new t.Template(
-          attributes, boundAttributes, [parsedElement], [], templateVariables, element.sourceSpan,
-          element.startSourceSpan, element.endSourceSpan);
+          (parsedElement as t.Element).name, attrs.literal, attrs.bound, [], [parsedElement], [],
+          templateVariables, element.sourceSpan, element.startSourceSpan, element.endSourceSpan,
+          element.i18n);
     }
     return parsedElement;
   }
 
-  visitAttribute(attribute: html.Attribute): t.Node {
+  visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
-        attribute.name, attribute.value, attribute.sourceSpan, attribute.valueSpan);
+        attribute.name, attribute.value, attribute.sourceSpan, attribute.valueSpan, attribute.i18n);
   }
 
   visitText(text: html.Text): t.Node {
-    const valueNoNgsp = replaceNgsp(text.value);
-    const expr = this.bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan);
-    return expr ? new t.BoundText(expr, text.sourceSpan) : new t.Text(valueNoNgsp, text.sourceSpan);
+    return this._visitTextWithInterpolation(text.value, text.sourceSpan, text.i18n);
   }
 
-  visitComment(comment: html.Comment): null { return null; }
-
-  visitExpansion(expansion: html.Expansion): null { return null; }
+  visitExpansion(expansion: html.Expansion): t.Icu|null {
+    const meta = expansion.i18n as i18n.Message;
+    // do not generate Icu in case it was created
+    // outside of i18n block in a template
+    if (!meta) {
+      return null;
+    }
+    const vars: {[name: string]: t.BoundText} = {};
+    const placeholders: {[name: string]: t.Text | t.BoundText} = {};
+    // extract VARs from ICUs - we process them separately while
+    // assembling resulting message via goog.getMsg function, since
+    // we need to pass them to top-level goog.getMsg call
+    Object.keys(meta.placeholders).forEach(key => {
+      const value = meta.placeholders[key];
+      if (key.startsWith(I18N_ICU_VAR_PREFIX)) {
+        const config = this.bindingParser.interpolationConfig;
+        // ICU expression is a plain string, not wrapped into start
+        // and end tags, so we wrap it before passing to binding parser
+        const wrapped = `${config.start}${value}${config.end}`;
+        vars[key] = this._visitTextWithInterpolation(wrapped, expansion.sourceSpan) as t.BoundText;
+      } else {
+        placeholders[key] = this._visitTextWithInterpolation(value, expansion.sourceSpan);
+      }
+    });
+    return new t.Icu(vars, placeholders, expansion.sourceSpan, meta);
+  }
 
   visitExpansionCase(expansionCase: html.ExpansionCase): null { return null; }
 
-  private createBoundAttributes(elementName: string, properties: ParsedProperty[]):
-      t.BoundAttribute[] {
-    return properties.filter(prop => !prop.isLiteral)
-        .map(prop => this.bindingParser.createBoundElementProperty(elementName, prop))
-        .map(prop => t.BoundAttribute.fromBoundElementProperty(prop));
+  visitComment(comment: html.Comment): null { return null; }
+
+  // convert view engine `ParsedProperty` to a format suitable for IVY
+  private extractAttributes(
+      elementName: string, properties: ParsedProperty[], i18nPropsMeta: {[key: string]: i18n.AST}):
+      {bound: t.BoundAttribute[], literal: t.TextAttribute[]} {
+    const bound: t.BoundAttribute[] = [];
+    const literal: t.TextAttribute[] = [];
+
+    properties.forEach(prop => {
+      const i18n = i18nPropsMeta[prop.name];
+      if (prop.isLiteral) {
+        literal.push(new t.TextAttribute(
+            prop.name, prop.expression.source || '', prop.sourceSpan, undefined, i18n));
+      } else {
+        // we skip validation here, since we do this check at runtime due to the fact that we need
+        // to make sure a given prop is not an input of some Directive (thus should not be a subject
+        // of this check) and Directive matching happens at runtime
+        const bep = this.bindingParser.createBoundElementProperty(
+            elementName, prop, /* skipValidation */ true);
+        bound.push(t.BoundAttribute.fromBoundElementProperty(bep, i18n));
+      }
+    });
+
+    return {bound, literal};
   }
 
   private parseAttribute(
@@ -272,6 +321,12 @@ export class HtmlToTemplateTransform implements html.Visitor {
     return hasBinding;
   }
 
+  private _visitTextWithInterpolation(value: string, sourceSpan: ParseSourceSpan, i18n?: i18n.AST):
+      t.Text|t.BoundText {
+    const valueNoNgsp = replaceNgsp(value);
+    const expr = this.bindingParser.parseInterpolation(valueNoNgsp, sourceSpan);
+    return expr ? new t.BoundText(expr, sourceSpan, i18n) : new t.Text(valueNoNgsp, sourceSpan);
+  }
 
   private parseVariable(
       identifier: string, value: string, sourceSpan: ParseSourceSpan, variables: t.Variable[]) {
@@ -328,7 +383,8 @@ class NonBindableVisitor implements html.Visitor {
   visitComment(comment: html.Comment): any { return null; }
 
   visitAttribute(attribute: html.Attribute): t.TextAttribute {
-    return new t.TextAttribute(attribute.name, attribute.value, attribute.sourceSpan);
+    return new t.TextAttribute(
+        attribute.name, attribute.value, attribute.sourceSpan, undefined, attribute.i18n);
   }
 
   visitText(text: html.Text): t.Text { return new t.Text(text.value, text.sourceSpan); }

@@ -28,7 +28,7 @@ in which two or more components share information.
 typically adorned with [@Input decorations](guide/template-syntax#inputs-outputs).
 
 
-<code-example path="component-interaction/src/app/hero-child.component.ts" title="component-interaction/src/app/hero-child.component.ts">
+<code-example path="component-interaction/src/app/hero-child.component.ts" header="component-interaction/src/app/hero-child.component.ts">
 
 </code-example>
 
@@ -41,7 +41,7 @@ binding its `master` string property to the child's `master` alias,
 and each iteration's `hero` instance to the child's `hero` property.
 
 
-<code-example path="component-interaction/src/app/hero-parent.component.ts" title="component-interaction/src/app/hero-parent.component.ts">
+<code-example path="component-interaction/src/app/hero-parent.component.ts" header="component-interaction/src/app/hero-parent.component.ts">
 
 </code-example>
 
@@ -61,7 +61,7 @@ The running application displays three heroes:
 E2E test that all children were instantiated and displayed as expected:
 
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -79,7 +79,7 @@ The setter of the `name` input property in the child `NameChildComponent`
 trims the whitespace from a name and replaces an empty value with default text.
 
 
-<code-example path="component-interaction/src/app/name-child.component.ts" title="component-interaction/src/app/name-child.component.ts">
+<code-example path="component-interaction/src/app/name-child.component.ts" header="component-interaction/src/app/name-child.component.ts">
 
 </code-example>
 
@@ -88,7 +88,7 @@ trims the whitespace from a name and replaces an empty value with default text.
 Here's the `NameParentComponent` demonstrating name variations including a name with all spaces:
 
 
-<code-example path="component-interaction/src/app/name-parent.component.ts" title="component-interaction/src/app/name-parent.component.ts">
+<code-example path="component-interaction/src/app/name-parent.component.ts" header="component-interaction/src/app/name-parent.component.ts">
 
 </code-example>
 
@@ -105,7 +105,7 @@ Here's the `NameParentComponent` demonstrating name variations including a name 
 E2E tests of input property setter with empty and non-empty names:
 
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child-setter" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child-setter" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -119,7 +119,7 @@ E2E tests of input property setter with empty and non-empty names:
 
 Detect and act upon changes to input property values with the `ngOnChanges()` method of the `OnChanges` lifecycle hook interface.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -134,7 +134,7 @@ Learn about `ngOnChanges()` in the [LifeCycle Hooks](guide/lifecycle-hooks) chap
 This `VersionChildComponent` detects changes to the `major` and `minor` input properties and composes a log message reporting these changes:
 
 
-<code-example path="component-interaction/src/app/version-child.component.ts" title="component-interaction/src/app/version-child.component.ts">
+<code-example path="component-interaction/src/app/version-child.component.ts" header="component-interaction/src/app/version-child.component.ts">
 
 </code-example>
 
@@ -143,7 +143,7 @@ This `VersionChildComponent` detects changes to the `major` and `minor` input pr
 The `VersionParentComponent` supplies the `minor` and `major` values and binds buttons to methods that change them.
 
 
-<code-example path="component-interaction/src/app/version-parent.component.ts" title="component-interaction/src/app/version-parent.component.ts">
+<code-example path="component-interaction/src/app/version-parent.component.ts" header="component-interaction/src/app/version-parent.component.ts">
 
 </code-example>
 
@@ -164,7 +164,7 @@ Test that ***both*** input properties are set initially and that button clicks t
 the expected `ngOnChanges` calls and values:
 
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child-onchanges" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="parent-to-child-onchanges" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -184,7 +184,7 @@ The child's `EventEmitter` property is an ***output property***,
   as seen in this `VoterComponent`:
 
 
-<code-example path="component-interaction/src/app/voter.component.ts" title="component-interaction/src/app/voter.component.ts">
+<code-example path="component-interaction/src/app/voter.component.ts" header="component-interaction/src/app/voter.component.ts">
 
 </code-example>
 
@@ -196,7 +196,7 @@ The parent `VoteTakerComponent` binds an event handler called `onVoted()` that r
 payload `$event` and updates a counter.
 
 
-<code-example path="component-interaction/src/app/votetaker.component.ts" title="component-interaction/src/app/votetaker.component.ts">
+<code-example path="component-interaction/src/app/votetaker.component.ts" header="component-interaction/src/app/votetaker.component.ts">
 
 </code-example>
 
@@ -217,7 +217,7 @@ and the method processes it:
 Test that clicking the *Agree* and *Disagree* buttons update the appropriate counters:
 
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="child-to-parent" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="child-to-parent" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -240,7 +240,7 @@ The following is a child `CountdownTimerComponent` that repeatedly counts down t
 It has `start` and `stop` methods that control the clock and it displays a
 countdown status message in its own template.
 
-<code-example path="component-interaction/src/app/countdown-timer.component.ts" title="component-interaction/src/app/countdown-timer.component.ts">
+<code-example path="component-interaction/src/app/countdown-timer.component.ts" header="component-interaction/src/app/countdown-timer.component.ts">
 
 </code-example>
 
@@ -249,7 +249,7 @@ countdown status message in its own template.
 The `CountdownLocalVarParentComponent` that hosts the timer component is as follows:
 
 
-<code-example path="component-interaction/src/app/countdown-parent.component.ts" region="lv" title="component-interaction/src/app/countdown-parent.component.ts">
+<code-example path="component-interaction/src/app/countdown-parent.component.ts" region="lv" header="component-interaction/src/app/countdown-parent.component.ts">
 
 </code-example>
 
@@ -284,7 +284,7 @@ match the seconds displayed in the child's status message.
 Test also that clicking the *Stop* button pauses the countdown timer:
 
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="countdown-timer-tests" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="countdown-timer-tests" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 
@@ -311,7 +311,7 @@ The following example illustrates this technique with the same
 Neither its appearance nor its behavior will change.
 The child [CountdownTimerComponent](guide/component-interaction#countdown-timer-example) is the same as well.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -324,7 +324,7 @@ is solely for the purpose of demonstration.
 
 Here is the parent, `CountdownViewChildParentComponent`:
 
-<code-example path="component-interaction/src/app/countdown-parent.component.ts" region="vc" title="component-interaction/src/app/countdown-parent.component.ts">
+<code-example path="component-interaction/src/app/countdown-parent.component.ts" region="vc" header="component-interaction/src/app/countdown-parent.component.ts">
 
 </code-example>
 
@@ -374,7 +374,7 @@ Components outside this component subtree have no access to the service or their
 This `MissionService` connects the `MissionControlComponent` to multiple `AstronautComponent` children.
 
 
-<code-example path="component-interaction/src/app/mission.service.ts" title="component-interaction/src/app/mission.service.ts">
+<code-example path="component-interaction/src/app/mission.service.ts" header="component-interaction/src/app/mission.service.ts">
 
 </code-example>
 
@@ -384,7 +384,7 @@ The `MissionControlComponent` both provides the instance of the service that it 
 (through the `providers` metadata array) and injects that instance into itself through its constructor:
 
 
-<code-example path="component-interaction/src/app/missioncontrol.component.ts" title="component-interaction/src/app/missioncontrol.component.ts">
+<code-example path="component-interaction/src/app/missioncontrol.component.ts" header="component-interaction/src/app/missioncontrol.component.ts">
 
 </code-example>
 
@@ -394,13 +394,13 @@ The `AstronautComponent` also injects the service in its constructor.
 Each `AstronautComponent` is a child of the `MissionControlComponent` and therefore receives its parent's service instance:
 
 
-<code-example path="component-interaction/src/app/astronaut.component.ts" title="component-interaction/src/app/astronaut.component.ts">
+<code-example path="component-interaction/src/app/astronaut.component.ts" header="component-interaction/src/app/astronaut.component.ts">
 
 </code-example>
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -433,7 +433,7 @@ Tests click buttons of both the parent `MissionControlComponent` and the `Astron
 and verify that the history meets expectations:
 
 
-<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="bidirectional-service" title="component-interaction/e2e/src/app.e2e-spec.ts">
+<code-example path="component-interaction/e2e/src/app.e2e-spec.ts" region="bidirectional-service" header="component-interaction/e2e/src/app.e2e-spec.ts">
 
 </code-example>
 

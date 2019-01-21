@@ -1,10 +1,8 @@
-load("//tools:defaults.bzl", "ts_library")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_web_test")
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library", "ts_web_test_suite")
 
 ts_library(
     name = "test_lib",
-    testonly = 1,
+    testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages:types",
@@ -22,24 +20,23 @@ ts_library(
 
 filegroup(
     name = "elements_test_bootstrap_scripts",
+    testonly = True,
     # do not sort
     srcs = [
-        "//:node_modules/@webcomponents/custom-elements/src/native-shim.js",
-        "//:node_modules/reflect-metadata/Reflect.js",
-        "//:node_modules/zone.js/dist/zone.js",
-        "//:node_modules/zone.js/dist/zone-testing.js",
+        "@ngdeps//node_modules/@webcomponents/custom-elements:src/native-shim.js",
+        "@ngdeps//node_modules/reflect-metadata:Reflect.js",
+        "@ngdeps//node_modules/zone.js:dist/zone.js",
+        "@ngdeps//node_modules/zone.js:dist/zone-testing.js",
     ],
 )
 
-ts_web_test(
+ts_web_test_suite(
     name = "test",
     bootstrap = [
         ":elements_test_bootstrap_scripts",
     ],
     # do not sort
     deps = [
-        "//:node_modules/tslib/tslib.js",
-        "//tools/testing:browser",
         ":test_lib",
     ],
 )

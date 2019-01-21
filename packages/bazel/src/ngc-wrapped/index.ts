@@ -7,7 +7,7 @@
  */
 
 import * as ng from '@angular/compiler-cli';
-import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, fixUmdModuleDeclarations, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop} from '@bazel/typescript';
+import {BazelOptions, CachedFileLoader, CompilerHost, FileCache, FileLoader, UncachedFileLoader, constructManifest, debug, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
@@ -21,9 +21,6 @@ const NGC_ASSETS = /\.(css|html|ngsummary\.json)$/;
 
 const BAZEL_BIN = /\b(blaze|bazel)-out\b.*?\bbin\b/;
 
-// TODO(alexeagle): probably not needed, see
-// https://github.com/bazelbuild/rules_typescript/issues/28
-const ALLOW_NON_HERMETIC_READS = true;
 // Note: We compile the content of node_modules with plain ngc command line.
 const ALL_DEPS_COMPILED_WITH_BAZEL = false;
 
@@ -58,7 +55,6 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
   const compilerOpts = ng.createNgCompilerOptions(basePath, config, tsOptions);
   const tsHost = ts.createCompilerHost(compilerOpts, true);
   const {diagnostics} = compile({
-    allowNonHermeticReads: ALLOW_NON_HERMETIC_READS,
     allDepsCompiledWithBazel: ALL_DEPS_COMPILED_WITH_BAZEL,
     compilerOpts,
     tsHost,
@@ -76,16 +72,16 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
 export function relativeToRootDirs(filePath: string, rootDirs: string[]): string {
   if (!filePath) return filePath;
   // NB: the rootDirs should have been sorted longest-first
-  for (const dir of rootDirs || []) {
+  for (let i = 0; i < rootDirs.length; i++) {
+    const dir = rootDirs[i];
     const rel = path.posix.relative(dir, filePath);
     if (rel.indexOf('.') != 0) return rel;
   }
   return filePath;
 }
 
-export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true, compilerOpts,
-                         tsHost, bazelOpts, files, inputs, expectedOuts, gatherDiagnostics}: {
-  allowNonHermeticReads: boolean,
+export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, bazelOpts, files,
+                         inputs, expectedOuts, gatherDiagnostics}: {
   allDepsCompiledWithBazel?: boolean,
   compilerOpts: ng.CompilerOptions,
   tsHost: ts.CompilerHost, inputs?: {[path: string]: string},
@@ -103,10 +99,12 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   }
 
   if (inputs) {
-    fileLoader = new CachedFileLoader(fileCache, allowNonHermeticReads);
+    fileLoader = new CachedFileLoader(fileCache);
     // Resolve the inputs to absolute paths to match TypeScript internals
     const resolvedInputs: {[path: string]: string} = {};
-    for (const key of Object.keys(inputs)) {
+    const inputKeys = Object.keys(inputs);
+    for (let i = 0; i < inputKeys.length; i++) {
+      const key = inputKeys[i];
       resolvedInputs[resolveNormalizedPath(key)] = inputs[key];
     }
     fileCache.updateCache(resolvedInputs);
@@ -117,6 +115,19 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   if (!bazelOpts.es5Mode) {
     compilerOpts.annotateForClosureCompiler = true;
     compilerOpts.annotationsAs = 'static fields';
+  }
+
+  // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.
+  const isInIvyMode = compilerOpts.enableIvy === 'ngtsc' || compilerOpts.enableIvy === 'tsc';
+
+  // Disable downleveling and Closure annotation if in Ivy mode.
+  if (isInIvyMode) {
+    // In pass-through mode for TypeScript, we want to turn off decorator transpilation entirely.
+    // This causes ngc to be have exactly like tsc.
+    if (compilerOpts.enableIvy === 'tsc') {
+      compilerOpts.annotateForClosureCompiler = false;
+    }
+    compilerOpts.annotationsAs = 'decorators';
   }
 
   if (!compilerOpts.rootDirs) {
@@ -170,8 +181,13 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   }
 
   const bazelHost = new CompilerHost(
-      files, compilerOpts, bazelOpts, tsHost, fileLoader, allowNonHermeticReads,
-      generatedFileModuleResolver);
+      files, compilerOpts, bazelOpts, tsHost, fileLoader, generatedFileModuleResolver);
+
+  // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
+  if (isInIvyMode) {
+    bazelHost.transformDecorators = false;
+  }
+
   // Prevent tsickle adding any types at all if we don't want closure compiler annotations.
   bazelHost.transformTypesToClosure = compilerOpts.annotateForClosureCompiler;
   const origBazelHostFileExist = bazelHost.fileExists;
@@ -183,21 +199,55 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   };
   const origBazelHostShouldNameModule = bazelHost.shouldNameModule.bind(bazelHost);
   bazelHost.shouldNameModule = (fileName: string) => {
+    const flatModuleOutPath =
+        path.posix.join(bazelOpts.package, compilerOpts.flatModuleOutFile + '.ts');
+
     // The bundle index file is synthesized in bundle_index_host so it's not in the
     // compilationTargetSrc.
     // However we still want to give it an AMD module name for devmode.
     // We can't easily tell which file is the synthetic one, so we build up the path we expect
-    // it to have
-    // and compare against that.
-    if (fileName ===
-        path.join(compilerOpts.baseUrl, bazelOpts.package, compilerOpts.flatModuleOutFile + '.ts'))
+    // it to have and compare against that.
+    if (fileName === path.posix.join(compilerOpts.baseUrl, flatModuleOutPath)) return true;
+
+    // Also handle the case the target is in an external repository.
+    // Pull the workspace name from the target which is formatted as `@wksp//package:target`
+    // if it the target is from an external workspace. If the target is from the local
+    // workspace then it will be formatted as `//package:target`.
+    const targetWorkspace = bazelOpts.target.split('/')[0].replace(/^@/, '');
+
+    if (targetWorkspace &&
+        fileName ===
+            path.posix.join(compilerOpts.baseUrl, 'external', targetWorkspace, flatModuleOutPath))
       return true;
+
     return origBazelHostShouldNameModule(fileName) || NGC_GEN_FILES.test(fileName);
   };
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
-
+  const fileNameToModuleNameCache = new Map<string, string>();
   ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) => {
+    // Memoize this lookup to avoid expensive re-parses of the same file
+    // When run as a worker, the actual ts.SourceFile is cached
+    // but when we don't run as a worker, there is no cache.
+    // For one example target in g3, we saw a cache hit rate of 7590/7695
+    if (fileNameToModuleNameCache.has(importedFilePath)) {
+      return fileNameToModuleNameCache.get(importedFilePath);
+    }
+    const result = doFileNameToModuleName(importedFilePath);
+    fileNameToModuleNameCache.set(importedFilePath, result);
+    return result;
+  };
+
+  function doFileNameToModuleName(importedFilePath: string): string {
+    try {
+      const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
+      if (sourceFile && sourceFile.moduleName) {
+        return sourceFile.moduleName;
+      }
+    } catch (err) {
+      // File does not exist or parse error. Ignore this case and continue onto the
+      // other methods of resolving the module below.
+    }
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
       return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
@@ -207,7 +257,8 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
       return result.substr(NODE_MODULES.length);
     }
     return bazelOpts.workspaceName + '/' + result;
-  };
+  }
+
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.posix.join(
       bazelOpts.workspaceName,
       relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, ''));
@@ -240,10 +291,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
           program, bazelHost, bazelHost, compilerOpts, targetSourceFile, writeFile,
           cancellationToken, emitOnlyDtsFiles, {
             beforeTs: customTransformers.before,
-            afterTs: [
-              ...(customTransformers.after || []),
-              fixUmdModuleDeclarations((sf: ts.SourceFile) => bazelHost.amdModuleName(sf)),
-            ],
+            afterTs: customTransformers.after,
           });
 
   if (!gatherDiagnostics) {
@@ -285,8 +333,8 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     fs.writeFileSync(bazelOpts.tsickleExternsPath, externs);
   }
 
-  for (const missing of writtenExpectedOuts) {
-    originalWriteFile(missing, '', false);
+  for (let i = 0; i < writtenExpectedOuts.length; i++) {
+    originalWriteFile(writtenExpectedOuts[i], '', false);
   }
 
   return {program, diagnostics};
@@ -302,7 +350,8 @@ function generateMetadataJson(
     program: ts.Program, files: string[], rootDirs: string[], bazelBin: string,
     tsHost: ts.CompilerHost) {
   const collector = new ng.MetadataCollector();
-  for (const file of files) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
     const sourceFile = program.getSourceFile(file);
     if (sourceFile) {
       const metadata = collector.getMetadata(sourceFile);
@@ -332,7 +381,9 @@ function gatherDiagnosticsForInputsOnly(
   // program.getDeclarationDiagnostics() it somehow corrupts the emit.
   diagnostics.push(...tsProgram.getOptionsDiagnostics());
   diagnostics.push(...tsProgram.getGlobalDiagnostics());
-  for (const sf of tsProgram.getSourceFiles().filter(f => isCompilationTarget(bazelOpts, f))) {
+  const programFiles = tsProgram.getSourceFiles().filter(f => isCompilationTarget(bazelOpts, f));
+  for (let i = 0; i < programFiles.length; i++) {
+    const sf = programFiles[i];
     // Note: We only get the diagnostics for individual files
     // to e.g. not check libraries.
     diagnostics.push(...tsProgram.getSyntacticDiagnostics(sf));

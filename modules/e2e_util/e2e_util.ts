@@ -20,8 +20,10 @@ export function readCommandLine(extraOptions?: {[key: string]: any}) {
   const options: {[key: string]: any} = {
     'bundles': {describe: 'Whether to use the angular bundles or not.', default: false}
   };
-  for (const key in extraOptions) {
-    options[key] = extraOptions[key];
+  if (extraOptions) {
+    for (const key in extraOptions) {
+      options[key] = extraOptions[key];
+    }
   }
 
   cmdArgs = yargs.usage('Angular e2e test options.').options(options).help('ng-help').wrap(40).argv;

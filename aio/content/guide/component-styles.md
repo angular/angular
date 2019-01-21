@@ -21,7 +21,7 @@ One way to do this is to set the `styles` property in the component metadata.
 The `styles` property takes an array of strings that contain CSS code.
 Usually you give it one string, as in the following example:
 
-<code-example path="component-styles/src/app/hero-app.component.ts" title="src/app/hero-app.component.ts" linenums="false">
+<code-example path="component-styles/src/app/hero-app.component.ts" header="src/app/hero-app.component.ts" linenums="false">
 </code-example>
 
 ## Style scope
@@ -71,7 +71,7 @@ Use the `:host` pseudo-class selector to target styles in the element that *host
 targeting elements *inside* the component's template).
 
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="host" title="src/app/hero-details.component.css" linenums="false">
+<code-example path="component-styles/src/app/hero-details.component.css" region="host" header="src/app/hero-details.component.css" linenums="false">
 </code-example>
 
 The `:host` selector is the only way to target the host element. You can't reach
@@ -83,7 +83,7 @@ including another selector inside parentheses after `:host`.
 
 The next example targets the host element again, but only when it also has the `active` CSS class.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" title="src/app/hero-details.component.css" linenums="false">
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" header="src/app/hero-details.component.css" linenums="false">
 </code-example>
 
 ### :host-context
@@ -99,7 +99,7 @@ up to the document root. The `:host-context()` selector is useful when combined 
 The following example applies a `background-color` style to all `<h2>` elements *inside* the component, only
 if some ancestor element has the CSS class `theme-light`.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" title="src/app/hero-details.component.css" linenums="false">
+<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css" linenums="false">
 </code-example>
 
 ### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
@@ -114,7 +114,7 @@ children and content children of the component.
 The following example targets all `<h3>` elements, from the host element down
 through this component to all of its child elements in the DOM.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="deep" title="src/app/hero-details.component.css" linenums="false">
+<code-example path="component-styles/src/app/hero-details.component.css" region="deep" header="src/app/hero-details.component.css" linenums="false">
 
 </code-example>
 
@@ -154,7 +154,7 @@ You can add a `styles` array property to the `@Component` decorator.
 
 Each string in the array defines some CSS for this component.
 
-<code-example path="component-styles/src/app/hero-app.component.ts" title="src/app/hero-app.component.ts (CSS inline)">
+<code-example path="component-styles/src/app/hero-app.component.ts" header="src/app/hero-app.component.ts (CSS inline)">
 </code-example>
 
 <div class="alert is-critical">
@@ -164,7 +164,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-The CLI defines an empty `styles` array when you create the component with the `--inline-styles` flag.
+The Angular CLI command [`ng generate component`](cli/generate) defines an empty `styles` array when you create the component with the `--inline-style` flag.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app --inline-style
@@ -176,8 +176,8 @@ You can load styles from external CSS files by adding a `styleUrls` property
 to a component's `@Component` decorator:
 
 <code-tabs>
-  <code-pane title="src/app/hero-app.component.ts (CSS in file)" path="component-styles/src/app/hero-app.component.1.ts"></code-pane>
-  <code-pane title="src/app/hero-app.component.css" path="component-styles/src/app/hero-app.component.css"></code-pane>
+  <code-pane header="src/app/hero-app.component.ts (CSS in file)" path="component-styles/src/app/hero-app.component.1.ts"></code-pane>
+  <code-pane header="src/app/hero-app.component.css" path="component-styles/src/app/hero-app.component.css"></code-pane>
 </code-tabs>
 
 <div class="alert is-critical">
@@ -187,13 +187,13 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
-  You can specify more than one styles file or even a combination of `style` and `styleUrls`.
+  You can specify more than one styles file or even a combination of `styles` and `styleUrls`.
 
 </div>
 
-The CLI creates an empty styles file for you by default and references that file in the component's generated `styleUrls`.
+When you use the Angular CLI command [`ng generate component`](cli/generate) without the `--inline-style` flag, it creates an empty styles file for you and references that file in the component's generated `styleUrls`.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app
@@ -204,22 +204,22 @@ ng generate component hero-app
 You can embed CSS styles directly into the HTML template by putting them
 inside `<style>` tags.
 
-<code-example path="component-styles/src/app/hero-controls.component.ts" region="inlinestyles" title="src/app/hero-controls.component.ts">
+<code-example path="component-styles/src/app/hero-controls.component.ts" region="inlinestyles" header="src/app/hero-controls.component.ts">
 </code-example>
 
 ### Template link tags
 
 You can also write `<link>` tags into the component's HTML template.
 
-<code-example path="component-styles/src/app/hero-team.component.ts" region="stylelink" title="src/app/hero-team.component.ts">
+<code-example path="component-styles/src/app/hero-team.component.ts" region="stylelink" header="src/app/hero-team.component.ts">
 </code-example>
 
 <div class="alert is-critical">
 
-The link tag's `href` URL must be relative to the
-_**application root**_, not relative to the component file.
+When building with the CLI, be sure to include the linked style file among the assets to be copied to the server as described in the [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-asset-configuration).
+<!-- 2018-10-16: The link above is still the best source for this information. -->
 
-When building with the CLI, be sure to include the linked style file among the assets to be copied to the server as described in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-asset-configuration).
+Once included, the CLI will include the stylesheet, whether the link tag's href URL is relative to the application root or the component file.
 
 </div>
 
@@ -231,7 +231,7 @@ on the [MDN](https://developer.mozilla.org) site.
 
 In this case, the URL is relative to the CSS file into which you're importing.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="import" title="src/app/hero-details.component.css (excerpt)">
+<code-example path="component-styles/src/app/hero-details.component.css" region="import" header="src/app/hero-details.component.css (excerpt)">
 </code-example>
 
 ### External and global style files
@@ -240,7 +240,9 @@ When building with the CLI, you must configure the `angular.json` to include _al
 
 Register **global** style files in the `styles` section which, by default, is pre-configured with the global `styles.css` file.
 
-See the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-global-styles) to learn more.
+See the [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-global-styles) to learn more.
+<!-- 2018-10-16: The link above is still the best source for this information. -->
+
 
 ### Non-CSS style files
 
@@ -260,8 +262,10 @@ The CLI build process runs the pertinent CSS preprocessor.
 
 When generating a component file with `ng generate component`, the CLI emits an empty CSS styles file (`.css`) by default.
 You can configure the CLI to default to your preferred CSS preprocessor
-as explained in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors
+as explained in the [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-css-preprocessors
 "CSS Preprocessor integration").
+<!-- 2018-10-16: The link above is still the best source for this information. -->
+
 
 <div class="alert is-important">
 
@@ -280,11 +284,13 @@ To control how this encapsulation happens on a *per
 component* basis, you can set the *view encapsulation mode* in the component metadata.
 Choose from the following modes:
 
-* `Native` view encapsulation uses the browser's native shadow DOM implementation (see
+* `ShadowDom` view encapsulation uses the browser's native shadow DOM implementation (see
   [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM)
   on the [MDN](https://developer.mozilla.org) site)
   to attach a shadow DOM to the component's host element, and then puts the component
   view inside that shadow DOM. The component's styles are included within the shadow DOM.
+
+* `Native` view encapsulation uses a now deprecated version of the browser's native shadow DOM implementation - [learn about the changes](https://hayato.io/2016/shadowdomv1/).
 
 * `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
   (and renaming) the CSS code to effectively scope the CSS to the component's view.
@@ -297,11 +303,11 @@ Choose from the following modes:
 
 To set the components encapsulation mode, use the `encapsulation` property in the component metadata:
 
-<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" title="src/app/quest-summary.component.ts" linenums="false">
+<code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" header="src/app/quest-summary.component.ts" linenums="false">
 </code-example>
 
-`Native` view encapsulation only works on browsers that have native support
-for shadow DOM (see [Shadow DOM v0](http://caniuse.com/#feat=shadowdom) on the
+`ShadowDom` view encapsulation only works on browsers that have native support
+for shadow DOM (see [Shadow DOM v1](https://caniuse.com/#feat=shadowdomv1) on the
 [Can I use](http://caniuse.com) site). The support is still limited,
 which is why `Emulated` view encapsulation is the default mode and recommended
 in most cases.

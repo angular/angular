@@ -8,8 +8,12 @@
 
 import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
 import {Observable} from 'rxjs';
+
+import {EmptyOutletComponent} from './components/empty_outlet';
+import {ActivatedRouteSnapshot} from './router_state';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
+
 
 /**
  * @description
@@ -19,7 +23,8 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * `Routes` is an array of route configurations. Each one has the following properties:
  *
  * - `path` is a string that uses the route matcher DSL.
- * - `pathMatch` is a string that specifies the matching strategy.
+ * - `pathMatch` is a string that specifies the matching strategy. Options are `prefix` (default)
+ *   and `full`. See [Matching Strategy](#matching-strategy) below for more information.
  * - `matcher` defines a custom strategy for path matching and supersedes `path` and `pathMatch`.
  * - `component` is a component type.
  * - `redirectTo` is the url fragment which will replace the current matched segment.
@@ -36,12 +41,26 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `resolve` is a map of DI tokens used to look up data resolvers. See `Resolve` for more
  *   info.
  * - `runGuardsAndResolvers` defines when guards and resolvers will be run. By default they run only
- *    when the matrix parameters of the route change. When set to `paramsOrQueryParamsChange` they
- *    will also run when query params change. And when set to `always`, they will run every time.
+ *    when the matrix parameters of the route change. Options include:
+ *    - `paramsChange` (default) - Run guards and resolvers when path or matrix params change. This
+ *      mode ignores query param changes.
+ *    - `paramsOrQueryParamsChange` - Guards and resolvers will run when any parameters change. This
+ *      includes path, matrix, and query params.
+ *    - `pathParamsChange` - Run guards and resolvers path or any path params change. This mode is
+ *      useful if you want to ignore changes to all optional parameters such as query *and* matrix
+ *      params.
+ *    - `pathParamsOrQueryParamsChange` - Same as `pathParamsChange`, but also rerun when any query
+ *      param changes
+ *    - `always` - Run guards and resolvers on every navigation.
+ *    - (from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean - Use a predicate
+ *      function when none of the pre-configured modes fit the needs of the application. An example
+ *      might be when you need to ignore updates to a param such as `sortDirection`, but need to
+ *      reload guards and resolvers when changing the `searchRoot` param.
  * - `children` is an array of child route definitions.
  * - `loadChildren` is a reference to lazy loaded child routes. See `LoadChildren` for more
  *   info.
  *
+ * @usageNotes
  * ### Simple Configuration
  *
  * ```
@@ -251,7 +270,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * Then it will extract the set of routes defined in that NgModule, and will transparently add
  * those routes to the main configuration.
  *
- *  use Routes
+ * @publicApi
  */
 export type Routes = Route[];
 
@@ -261,7 +280,7 @@ export type Routes = Route[];
  * * `consumed` is an array of the consumed URL segments.
  * * `posParams` is a map of positional parameters.
  *
- * @experimental
+ * @publicApi
  */
 export type UrlMatchResult = {
   consumed: UrlSegment[]; posParams?: {[name: string]: UrlSegment};
@@ -285,7 +304,7 @@ export type UrlMatchResult = {
  * export const routes = [{ matcher: htmlFiles, component: AnyComponent }];
  * ```
  *
- * @experimental
+ * @publicApi
  */
 export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) =>
     UrlMatchResult;
@@ -297,6 +316,7 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type Data = {
   [name: string]: any
@@ -309,6 +329,7 @@ export type Data = {
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type ResolveData = {
   [name: string]: any
@@ -321,6 +342,7 @@ export type ResolveData = {
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type LoadChildrenCallback = () =>
     Type<any>| NgModuleFactory<any>| Promise<Type<any>>| Observable<Type<any>>;
@@ -332,6 +354,7 @@ export type LoadChildrenCallback = () =>
  *
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export type LoadChildren = string | LoadChildrenCallback;
 
@@ -351,13 +374,16 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
  * The type of `runGuardsAndResolvers`.
  *
  * See `Routes` for more details.
- * @experimental
+ * @publicApi
  */
-export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParamsChange' |
+    'paramsChange' | 'paramsOrQueryParamsChange' | 'always' |
+    ((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
 
 /**
  * See `Routes` for more details.
  *
+ * @publicApi
  */
 export interface Route {
   path?: string;
@@ -412,9 +438,10 @@ function validateNode(route: Route, fullPath: string): void {
   if (Array.isArray(route)) {
     throw new Error(`Invalid configuration of route '${fullPath}': Array cannot be specified`);
   }
-  if (!route.component && (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
+  if (!route.component && !route.children && !route.loadChildren &&
+      (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
     throw new Error(
-        `Invalid configuration of route '${fullPath}': a componentless route cannot have a named outlet set`);
+        `Invalid configuration of route '${fullPath}': a componentless route without children or loadChildren cannot have a named outlet set`);
   }
   if (route.redirectTo && route.children) {
     throw new Error(
@@ -477,8 +504,14 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
   }
 }
 
-
-export function copyConfig(r: Route): Route {
-  const children = r.children && r.children.map(copyConfig);
-  return children ? {...r, children} : {...r};
+/**
+ * Makes a copy of the config and adds any default required properties.
+ */
+export function standardizeConfig(r: Route): Route {
+  const children = r.children && r.children.map(standardizeConfig);
+  const c = children ? {...r, children} : {...r};
+  if (!c.component && (children || c.loadChildren) && (c.outlet && c.outlet !== PRIMARY_OUTLET)) {
+    c.component = EmptyOutletComponent;
+  }
+  return c;
 }

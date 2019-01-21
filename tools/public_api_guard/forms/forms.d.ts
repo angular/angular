@@ -30,8 +30,9 @@ export declare abstract class AbstractControl {
         emitEvent?: boolean;
     }): void;
     get(path: Array<string | number> | string): AbstractControl | null;
-    getError(errorCode: string, path?: string[]): any;
-    hasError(errorCode: string, path?: string[]): boolean;
+    getError(errorCode: string, path?: Array<string | number> | string): any;
+    hasError(errorCode: string, path?: Array<string | number> | string): boolean;
+    markAllAsTouched(): void;
     markAsDirty(opts?: {
         onlySelf?: boolean;
     }): void;
@@ -64,7 +65,7 @@ export declare abstract class AbstractControl {
 }
 
 export declare abstract class AbstractControlDirective {
-    readonly abstract control: AbstractControl | null;
+    abstract readonly control: AbstractControl | null;
     readonly dirty: boolean | null;
     readonly disabled: boolean | null;
     readonly enabled: boolean | null;
@@ -80,12 +81,11 @@ export declare abstract class AbstractControlDirective {
     readonly valid: boolean | null;
     readonly value: any;
     readonly valueChanges: Observable<any> | null;
-    getError(errorCode: string, path?: string[]): any;
-    hasError(errorCode: string, path?: string[]): boolean;
+    getError(errorCode: string, path?: Array<string | number> | string): any;
+    hasError(errorCode: string, path?: Array<string | number> | string): boolean;
     reset(value?: any): void;
 }
 
-/** @experimental */
 export interface AbstractControlOptions {
     asyncValidators?: AsyncValidatorFn | AsyncValidatorFn[] | null;
     updateOn?: 'change' | 'blur' | 'submit';
@@ -102,13 +102,12 @@ export declare class AbstractFormGroupDirective extends ControlContainer impleme
     ngOnInit(): void;
 }
 
-/** @experimental */
 export interface AsyncValidator extends Validator {
-    validate(c: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
+    validate(control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
 
 export interface AsyncValidatorFn {
-    (c: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
+    (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
 
 export declare class CheckboxControlValueAccessor implements ControlValueAccessor {
@@ -121,12 +120,10 @@ export declare class CheckboxControlValueAccessor implements ControlValueAccesso
     writeValue(value: any): void;
 }
 
-/** @experimental */
 export declare class CheckboxRequiredValidator extends RequiredValidator {
-    validate(c: AbstractControl): ValidationErrors | null;
+    validate(control: AbstractControl): ValidationErrors | null;
 }
 
-/** @experimental */
 export declare const COMPOSITION_BUFFER_MODE: InjectionToken<boolean>;
 
 export declare abstract class ControlContainer extends AbstractControlDirective {
@@ -152,11 +149,10 @@ export declare class DefaultValueAccessor implements ControlValueAccessor {
     writeValue(value: any): void;
 }
 
-/** @experimental */
 export declare class EmailValidator implements Validator {
     email: boolean | string;
     registerOnValidatorChange(fn: () => void): void;
-    validate(c: AbstractControl): ValidationErrors | null;
+    validate(control: AbstractControl): ValidationErrors | null;
 }
 
 export interface Form {
@@ -206,11 +202,11 @@ export declare class FormArrayName extends ControlContainer implements OnInit, O
 }
 
 export declare class FormBuilder {
-    array(controlsConfig: any[], validator?: ValidatorFn | ValidatorFn[] | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray;
-    control(formState: any, validator?: ValidatorFn | ValidatorFn[] | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
+    array(controlsConfig: any[], validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormArray;
+    control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
     group(controlsConfig: {
         [key: string]: any;
-    }, extra?: {
+    }, options?: AbstractControlOptions | {
         [key: string]: any;
     } | null): FormGroup;
 }
@@ -330,20 +326,22 @@ export declare class FormGroupName extends AbstractFormGroupDirective implements
 }
 
 export declare class FormsModule {
+    static withConfig(opts: { warnOnDeprecatedNgFormSelector?: 'never' | 'once' | 'always';
+    }): ModuleWithProviders<FormsModule>;
 }
 
 export declare class MaxLengthValidator implements Validator, OnChanges {
     maxlength: string;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
-    validate(c: AbstractControl): ValidationErrors | null;
+    validate(control: AbstractControl): ValidationErrors | null;
 }
 
 export declare class MinLengthValidator implements Validator, OnChanges {
     minlength: string;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
-    validate(c: AbstractControl): ValidationErrors | null;
+    validate(control: AbstractControl): ValidationErrors | null;
 }
 
 export declare const NG_ASYNC_VALIDATORS: InjectionToken<(Function | Validator)[]>;
@@ -398,6 +396,11 @@ export declare class NgForm extends ControlContainer implements Form, AfterViewI
     updateModel(dir: NgControl, value: any): void;
 }
 
+/** @deprecated */
+export declare class NgFormSelectorWarning {
+    constructor(ngFormWarning: string | null);
+}
+
 export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     readonly asyncValidator: AsyncValidatorFn | null;
     readonly control: FormControl;
@@ -433,11 +436,21 @@ export declare class NgSelectOption implements OnDestroy {
     ngOnDestroy(): void;
 }
 
+export declare class NumberValueAccessor implements ControlValueAccessor {
+    onChange: (_: any) => void;
+    onTouched: () => void;
+    constructor(_renderer: Renderer2, _elementRef: ElementRef);
+    registerOnChange(fn: (_: number | null) => void): void;
+    registerOnTouched(fn: () => void): void;
+    setDisabledState(isDisabled: boolean): void;
+    writeValue(value: number): void;
+}
+
 export declare class PatternValidator implements Validator, OnChanges {
     pattern: string | RegExp;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
-    validate(c: AbstractControl): ValidationErrors | null;
+    validate(control: AbstractControl): ValidationErrors | null;
 }
 
 export declare class RadioControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
@@ -456,15 +469,25 @@ export declare class RadioControlValueAccessor implements ControlValueAccessor, 
     writeValue(value: any): void;
 }
 
+export declare class RangeValueAccessor implements ControlValueAccessor {
+    onChange: (_: any) => void;
+    onTouched: () => void;
+    constructor(_renderer: Renderer2, _elementRef: ElementRef);
+    registerOnChange(fn: (_: number | null) => void): void;
+    registerOnTouched(fn: () => void): void;
+    setDisabledState(isDisabled: boolean): void;
+    writeValue(value: any): void;
+}
+
 export declare class ReactiveFormsModule {
     static withConfig(opts: { warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
-    }): ModuleWithProviders;
+    }): ModuleWithProviders<ReactiveFormsModule>;
 }
 
 export declare class RequiredValidator implements Validator {
     required: boolean | string;
     registerOnValidatorChange(fn: () => void): void;
-    validate(c: AbstractControl): ValidationErrors | null;
+    validate(control: AbstractControl): ValidationErrors | null;
 }
 
 export declare class SelectControlValueAccessor implements ControlValueAccessor {
@@ -491,18 +514,17 @@ export declare class SelectMultipleControlValueAccessor implements ControlValueA
     writeValue(value: any): void;
 }
 
-/** @experimental */
 export declare type ValidationErrors = {
     [key: string]: any;
 };
 
 export interface Validator {
     registerOnValidatorChange?(fn: () => void): void;
-    validate(c: AbstractControl): ValidationErrors | null;
+    validate(control: AbstractControl): ValidationErrors | null;
 }
 
 export interface ValidatorFn {
-    (c: AbstractControl): ValidationErrors | null;
+    (control: AbstractControl): ValidationErrors | null;
 }
 
 export declare class Validators {
@@ -514,7 +536,7 @@ export declare class Validators {
     static maxLength(maxLength: number): ValidatorFn;
     static min(min: number): ValidatorFn;
     static minLength(minLength: number): ValidatorFn;
-    static nullValidator(c: AbstractControl): ValidationErrors | null;
+    static nullValidator(control: AbstractControl): ValidationErrors | null;
     static pattern(pattern: string | RegExp): ValidatorFn;
     static required(control: AbstractControl): ValidationErrors | null;
     static requiredTrue(control: AbstractControl): ValidationErrors | null;

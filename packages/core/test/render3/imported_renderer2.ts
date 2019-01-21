@@ -9,12 +9,11 @@
 import {ɵAnimationEngine, ɵNoopAnimationStyleNormalizer} from '@angular/animations/browser';
 import {MockAnimationDriver} from '@angular/animations/browser/testing';
 import {NgZone, RendererFactory2} from '@angular/core';
+import {NoopNgZone} from '@angular/core/src/zone/ng_zone';
 import {EventManager, ɵDomRendererFactory2, ɵDomSharedStylesHost} from '@angular/platform-browser';
 import {ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {EventManagerPlugin} from '@angular/platform-browser/src/dom/events/event_manager';
-
-import {NoopNgZone} from '../../src/zone/ng_zone';
 
 export class SimpleDomEventsPlugin extends EventManagerPlugin {
   constructor(doc: any) { super(doc); }
@@ -35,14 +34,23 @@ export class SimpleDomEventsPlugin extends EventManagerPlugin {
 export function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
-  return new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document));
+  const rendererFactory =
+      new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document));
+  const origCreateRenderer = rendererFactory.createRenderer;
+  rendererFactory.createRenderer = function() {
+    const renderer = origCreateRenderer.apply(this, arguments);
+    renderer.destroyNode = () => {};
+    return renderer;
+  };
+  return rendererFactory;
 }
 
 export function getAnimationRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   return new ɵAnimationRendererFactory(
       getRendererFactory2(document),
-      new ɵAnimationEngine(new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
+      new ɵAnimationEngine(
+          document.body, new MockAnimationDriver(), new ɵNoopAnimationStyleNormalizer()),
       fakeNgZone);
 }
 

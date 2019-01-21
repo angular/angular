@@ -57,4 +57,57 @@ describe('pipe', () => {
       expect(element.all(by.css('titlecase-pipe p')).get(5).getText()).toEqual('Foo-vs-bar');
     });
   });
+
+  describe('keyvalue', () => {
+    it('should work properly', () => {
+      browser.get(URL);
+      waitForElement('keyvalue-pipe');
+      expect(element.all(by.css('keyvalue-pipe div')).get(0).getText()).toEqual('1:bar');
+      expect(element.all(by.css('keyvalue-pipe div')).get(1).getText()).toEqual('2:foo');
+      expect(element.all(by.css('keyvalue-pipe div')).get(2).getText()).toEqual('1:bar');
+      expect(element.all(by.css('keyvalue-pipe div')).get(3).getText()).toEqual('2:foo');
+    });
+  });
+
+  describe('number', () => {
+    it('should work properly', () => {
+      browser.get(URL);
+      waitForElement('number-pipe');
+      const examples = element.all(by.css('number-pipe p'));
+      expect(examples.get(0).getText()).toEqual('e (no formatting): 2.718');
+      expect(examples.get(1).getText()).toEqual('e (3.1-5): 002.71828');
+      expect(examples.get(2).getText()).toEqual('e (4.5-5): 0,002.71828');
+      expect(examples.get(3).getText()).toEqual('e (french): 0 002,71828');
+      expect(examples.get(4).getText()).toEqual('pi (no formatting): 3.14');
+      expect(examples.get(5).getText()).toEqual('pi (3.1-5): 003.14');
+      expect(examples.get(6).getText()).toEqual('pi (3.5-5): 003.14000');
+      expect(examples.get(7).getText()).toEqual('-2.5 (1.0-0): -3');
+    });
+  });
+
+  describe('percent', () => {
+    it('should work properly', () => {
+      browser.get(URL);
+      waitForElement('percent-pipe');
+      const examples = element.all(by.css('percent-pipe p'));
+      expect(examples.get(0).getText()).toEqual('A: 26%');
+      expect(examples.get(1).getText()).toEqual('B: 0,134.950%');
+      expect(examples.get(2).getText()).toEqual('B: 0 134,950 %');
+    });
+  });
+
+  describe('currency', () => {
+    it('should work properly', () => {
+      browser.get(URL);
+      waitForElement('currency-pipe');
+      const examples = element.all(by.css('currency-pipe p'));
+      expect(examples.get(0).getText()).toEqual('A: $0.26');
+      expect(examples.get(1).getText()).toEqual('A: CA$0.26');
+      expect(examples.get(2).getText()).toEqual('A: CAD0.26');
+      expect(examples.get(3).getText()).toEqual('B: CA$0,001.35');
+      expect(examples.get(4).getText()).toEqual('B: $0,001.35');
+      expect(examples.get(5).getText()).toEqual('B: 0 001,35 CA$');
+      expect(examples.get(6).getText()).toEqual('B: CLP1');
+    });
+  });
 });

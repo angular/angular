@@ -75,7 +75,8 @@ export interface Component extends Directive {
 export enum ViewEncapsulation {
   Emulated = 0,
   Native = 1,
-  None = 2
+  None = 2,
+  ShadowDom = 3
 }
 
 export enum ChangeDetectionStrategy {
@@ -357,7 +358,82 @@ function parserSelectorToR3Selector(selector: CssSelector): R3CssSelector {
   return positive.concat(...negative);
 }
 
-export function parseSelectorToR3Selector(selector: string): R3CssSelectorList {
-  const selectors = CssSelector.parse(selector);
-  return selectors.map(parserSelectorToR3Selector);
+export function parseSelectorToR3Selector(selector: string | null): R3CssSelectorList {
+  return selector ? CssSelector.parse(selector).map(parserSelectorToR3Selector) : [];
+}
+
+// Pasted from render3/interfaces/definition since it cannot be referenced directly
+/**
+ * Flags passed into template functions to determine which blocks (i.e. creation, update)
+ * should be executed.
+ *
+ * Typically, a template runs both the creation block and the update block on initialization and
+ * subsequent runs only execute the update block. However, dynamically created views require that
+ * the creation block be executed separately from the update block (for backwards compat).
+ */
+export const enum RenderFlags {
+  /* Whether to run the creation block (e.g. create elements and directives) */
+  Create = 0b01,
+
+  /* Whether to run the update block (e.g. refresh bindings) */
+  Update = 0b10
+}
+
+// Pasted from render3/interfaces/node.ts
+/**
+ * A set of marker values to be used in the attributes arrays. These markers indicate that some
+ * items are not regular attributes and the processing should be adapted accordingly.
+ */
+export const enum AttributeMarker {
+  /**
+   * Marker indicates that the following 3 values in the attributes array are:
+   * namespaceUri, attributeName, attributeValue
+   * in that order.
+   */
+  NamespaceURI = 0,
+
+  /**
+   * Signals class declaration.
+   *
+   * Each value following `Classes` designates a class name to include on the element.
+   * ## Example:
+   *
+   * Given:
+   * ```
+   * <div class="foo bar baz">...<d/vi>
+   * ```
+   *
+   * the generated code is:
+   * ```
+   * var _c1 = [AttributeMarker.Classes, 'foo', 'bar', 'baz'];
+   * ```
+   */
+  Classes = 1,
+
+  /**
+   * Signals style declaration.
+   *
+   * Each pair of values following `Styles` designates a style name and value to include on the
+   * element.
+   * ## Example:
+   *
+   * Given:
+   * ```
+   * <div style="width:100px; height:200px; color:red">...</div>
+   * ```
+   *
+   * the generated code is:
+   * ```
+   * var _c1 = [AttributeMarker.Styles, 'width', '100px', 'height'. '200px', 'color', 'red'];
+   * ```
+   */
+  Styles = 2,
+
+  /**
+   * This marker indicates that the following attribute names were extracted from bindings (ex.:
+   * [foo]="exp") and / or event handlers (ex. (bar)="doSth()").
+   * Taking the above bindings and outputs as an example an attributes array could look as follows:
+   * ['class', 'fade in', AttributeMarker.SelectOnly, 'foo', 'bar']
+   */
+  SelectOnly = 3,
 }

@@ -78,6 +78,28 @@ describe('ng program', () => {
     return {emitResult, program};
   }
 
+  function createWatchModeHost(): ng.CompilerHost {
+    const options = testSupport.createCompilerOptions();
+    const host = ng.createCompilerHost({options});
+
+    const originalGetSourceFile = host.getSourceFile;
+    const cache = new Map<string, ts.SourceFile>();
+    host.getSourceFile = function(fileName: string): ts.SourceFile {
+      const sf = originalGetSourceFile.call(host, fileName) as ts.SourceFile;
+      if (sf) {
+        if (cache.has(sf.fileName)) {
+          const oldSf = cache.get(sf.fileName) !;
+          if (oldSf.getFullText() === sf.getFullText()) {
+            return oldSf;
+          }
+        }
+        cache.set(sf.fileName, sf);
+      }
+      return sf;
+    };
+    return host;
+  }
+
   function resolveFiles(rootNames: string[]) {
     const preOptions = testSupport.createCompilerOptions();
     const preHost = ts.createCompilerHost(preOptions);
@@ -267,58 +289,65 @@ describe('ng program', () => {
           .toBe(false);
     });
 
-    if (!isInBazel()) {
-      it('should reuse the old ts program completely if nothing changed', () => {
-        testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
-        // Note: the second compile drops factories for library files,
-        // and therefore changes the structure again
-        const p1 = compile().program;
-        const p2 = compile(p1).program;
-        compile(p2);
-        expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
-      });
+    describe(
+        'verify that program structure is reused within tsc in order to speed up incremental compilation',
+        () => {
 
-      it('should reuse the old ts program completely if a template or a ts file changed', () => {
-        testSupport.writeFiles({
-          'src/main.ts': createModuleAndCompSource('main', 'main.html'),
-          'src/main.html': `Some template`,
-          'src/util.ts': `export const x = 1`,
-          'src/index.ts': `
+          it('should reuse the old ts program completely if nothing changed', () => {
+            testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
+            const host = createWatchModeHost();
+            // Note: the second compile drops factories for library files,
+            // and therefore changes the structure again
+            const p1 = compile(undefined, undefined, undefined, host).program;
+            const p2 = compile(p1, undefined, undefined, host).program;
+            compile(p2, undefined, undefined, host);
+            expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+          });
+
+          it('should reuse the old ts program completely if a template or a ts file changed',
+             () => {
+               const host = createWatchModeHost();
+               testSupport.writeFiles({
+                 'src/main.ts': createModuleAndCompSource('main', 'main.html'),
+                 'src/main.html': `Some template`,
+                 'src/util.ts': `export const x = 1`,
+                 'src/index.ts': `
             export * from './main';
             export * from './util';
           `
-        });
-        // Note: the second compile drops factories for library files,
-        // and therefore changes the structure again
-        const p1 = compile().program;
-        const p2 = compile(p1).program;
-        testSupport.writeFiles({
-          'src/main.html': `Another template`,
-          'src/util.ts': `export const x = 2`,
-        });
-        compile(p2);
-        expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
-      });
+               });
+               // Note: the second compile drops factories for library files,
+               // and therefore changes the structure again
+               const p1 = compile(undefined, undefined, undefined, host).program;
+               const p2 = compile(p1, undefined, undefined, host).program;
+               testSupport.writeFiles({
+                 'src/main.html': `Another template`,
+                 'src/util.ts': `export const x = 2`,
+               });
+               compile(p2, undefined, undefined, host);
+               expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+             });
 
-      it('should not reuse the old ts program if an import changed', () => {
-        testSupport.writeFiles({
-          'src/main.ts': createModuleAndCompSource('main'),
-          'src/util.ts': `export const x = 1`,
-          'src/index.ts': `
+          it('should not reuse the old ts program if an import changed', () => {
+            const host = createWatchModeHost();
+            testSupport.writeFiles({
+              'src/main.ts': createModuleAndCompSource('main'),
+              'src/util.ts': `export const x = 1`,
+              'src/index.ts': `
             export * from './main';
             export * from './util';
           `
+            });
+            // Note: the second compile drops factories for library files,
+            // and therefore changes the structure again
+            const p1 = compile(undefined, undefined, undefined, host).program;
+            const p2 = compile(p1, undefined, undefined, host).program;
+            testSupport.writeFiles(
+                {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
+            compile(p2, undefined, undefined, host);
+            expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
+          });
         });
-        // Note: the second compile drops factories for library files,
-        // and therefore changes the structure again
-        const p1 = compile().program;
-        const p2 = compile(p1).program;
-        testSupport.writeFiles(
-            {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
-        compile(p2);
-        expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
-      });
-    }
 
   });
 
@@ -373,8 +402,8 @@ describe('ng program', () => {
         {rootNames: [path.resolve(testSupport.basePath, 'src/main.ts')], options, host});
     program.loadNgStructureAsync().then(() => {
       program.emit();
-      const factory =
-          fs.readFileSync(path.resolve(testSupport.basePath, 'built/src/main.ngfactory.js'));
+      const ngFactoryPath = path.resolve(testSupport.basePath, 'built/src/main.ngfactory.js');
+      const factory = fs.readFileSync(ngFactoryPath, 'utf8');
       expect(factory).toContain('Hello world!');
       done();
     });
@@ -575,13 +604,13 @@ describe('ng program', () => {
     it('should work on windows with normalized paths', () => {
       const mapper =
           createSrcToOutPathMapper('c:/tmp/out', 'c:/tmp/a/x.ts', 'c:/tmp/out/a/x.js', path.win32);
-      expect(mapper('c:/tmp/b/y.js')).toBe('c:\\tmp\\out\\b\\y.js');
+      expect(mapper('c:/tmp/b/y.js')).toBe('c:/tmp/out/b/y.js');
     });
 
     it('should work on windows with non-normalized paths', () => {
       const mapper = createSrcToOutPathMapper(
           'c:\\tmp\\out', 'c:\\tmp\\a\\x.ts', 'c:\\tmp\\out\\a\\x.js', path.win32);
-      expect(mapper('c:\\tmp\\b\\y.js')).toBe('c:\\tmp\\out\\b\\y.js');
+      expect(mapper('c:\\tmp\\b\\y.js')).toBe('c:/tmp/out/b/y.js');
     });
   });
 
@@ -677,8 +706,9 @@ describe('ng program', () => {
       program.listLazyRoutes();
       program.emit();
 
-      const lazyNgFactory =
-          fs.readFileSync(path.resolve(testSupport.basePath, 'built/src/lazy/lazy.ngfactory.js'));
+      const ngFactoryPath = path.resolve(testSupport.basePath, 'built/src/lazy/lazy.ngfactory.js');
+      const lazyNgFactory = fs.readFileSync(ngFactoryPath, 'utf8');
+
       expect(lazyNgFactory).toContain('import * as i1 from "./lazy";');
     });
 
@@ -735,8 +765,10 @@ describe('ng program', () => {
       expect(normalizeRoutes(program.listLazyRoutes('src/main#MainModule'))).toEqual([
         {
           module: {name: 'MainModule', filePath: path.resolve(testSupport.basePath, 'src/main.ts')},
-          referencedModule:
-              {name: undefined, filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
+          referencedModule: {
+            name: undefined as any as string,  // TODO: Review use of `any` here (#19904)
+            filePath: path.resolve(testSupport.basePath, 'src/child.ts')
+          },
           route: './child'
         },
       ]);

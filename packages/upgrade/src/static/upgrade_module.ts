@@ -9,8 +9,8 @@
 import {Injector, NgModule, NgZone, Testability} from '@angular/core';
 
 import * as angular from '../common/angular1';
-import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_MODULE_NAME} from '../common/constants';
-import {LazyModuleRef, controllerKey} from '../common/util';
+import {$$TESTABILITY, $DELEGATE, $INJECTOR, $INTERVAL, $PROVIDE, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
+import {LazyModuleRef, UpgradeAppType, controllerKey} from '../common/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
@@ -22,13 +22,14 @@ import {NgAdapterInjector} from './util';
  * An `NgModule`, which you import to provide AngularJS core services,
  * and has an instance method used to bootstrap the hybrid upgrade application.
  *
- * *Part of the [upgrade/static](api?query=upgrade%2Fstatic)
+ * *Part of the [upgrade/static](api?query=upgrade/static)
  * library for hybrid upgrade apps that support AoT compilation*
  *
  * The `upgrade/static` package contains helpers that allow AngularJS and Angular components
  * to be used together inside a hybrid upgrade application, which supports AoT compilation.
  *
  * Specifically, the classes and functions in the `upgrade/static` module allow the following:
+ *
  * 1. Creation of an Angular directive that wraps and exposes an AngularJS component so
  *    that it can be used in an Angular template. See `UpgradeComponent`.
  * 2. Creation of an AngularJS directive that wraps and exposes an Angular component so
@@ -39,8 +40,15 @@ import {NgAdapterInjector} from './util';
  * 4. Creation of an AngularJS service that wraps and exposes an Angular injectable
  *    so that it can be injected into an AngularJS context. See `downgradeInjectable`.
  * 3. Bootstrapping of a hybrid Angular application which contains both of the frameworks
- *    coexisting in a single application. See the
- *    {@link UpgradeModule#examples example} below.
+ *    coexisting in a single application.
+ *
+ * @usageNotes
+ *
+ * ```ts
+ * import {UpgradeModule} from '@angular/upgrade/static';
+ * ```
+ *
+ * See also the {@link UpgradeModule#examples examples} below.
  *
  * ### Mental Model
  *
@@ -59,51 +67,59 @@ import {NgAdapterInjector} from './util';
  * 5. An AngularJS component can be "upgraded"" to an Angular component. This is achieved by
  *    defining an Angular directive, which bootstraps the AngularJS component at its location
  *    in the DOM. See `UpgradeComponent`.
- * 6. An Angular component can be "downgraded"" to an AngularJS component. This is achieved by
+ * 6. An Angular component can be "downgraded" to an AngularJS component. This is achieved by
  *    defining an AngularJS directive, which bootstraps the Angular component at its location
  *    in the DOM. See `downgradeComponent`.
  * 7. Whenever an "upgraded"/"downgraded" component is instantiated the host element is owned by
  *    the framework doing the instantiation. The other framework then instantiates and owns the
  *    view for that component.
- *    a. This implies that the component bindings will always follow the semantics of the
+ *    1. This implies that the component bindings will always follow the semantics of the
  *       instantiation framework.
- *    b. The DOM attributes are parsed by the framework that owns the current template. So
- *       attributes in AngularJS templates must use kebab-case, while AngularJS templates must
- *       use camelCase.
- *    c. However the template binding syntax will always use the Angular style, e.g. square
+ *    2. The DOM attributes are parsed by the framework that owns the current template. So
+ *       attributes in AngularJS templates must use kebab-case, while AngularJS templates must use
+ *       camelCase.
+ *    3. However the template binding syntax will always use the Angular style, e.g. square
  *       brackets (`[...]`) for property binding.
  * 8. Angular is bootstrapped first; AngularJS is bootstrapped second. AngularJS always owns the
  *    root component of the application.
- * 9. The new application is running in an Angular zone, and therefore it no longer needs calls
- *    to `$apply()`.
+ * 9. The new application is running in an Angular zone, and therefore it no longer needs calls to
+ *    `$apply()`.
  *
- * ### Core AngularJS services
- * Importing this `NgModule` will add providers for the core
- * [AngularJS services](https://docs.angularjs.org/api/ng/service) to the root injector.
+ * ### The `UpgradeModule` class
  *
- * ### Bootstrap
- * The runtime instance of this class contains a {@link UpgradeModule#bootstrap `bootstrap()`}
- * method, which you use to bootstrap the top level AngularJS module onto an element in the
- * DOM for the hybrid upgrade app.
+ * This class is an `NgModule`, which you import to provide AngularJS core services,
+ * and has an instance method used to bootstrap the hybrid upgrade application.
  *
- * It also contains properties to access the {@link UpgradeModule#injector root injector}, the
- * bootstrap `NgZone` and the
- * [AngularJS $injector](https://docs.angularjs.org/api/auto/service/$injector).
+ * * Core AngularJS services
+ *   Importing this `NgModule` will add providers for the core
+ *   [AngularJS services](https://docs.angularjs.org/api/ng/service) to the root injector.
+ *
+ * * Bootstrap
+ *   The runtime instance of this class contains a {@link UpgradeModule#bootstrap `bootstrap()`}
+ *   method, which you use to bootstrap the top level AngularJS module onto an element in the
+ *   DOM for the hybrid upgrade app.
+ *
+ *   It also contains properties to access the {@link UpgradeModule#injector root injector}, the
+ *   bootstrap `NgZone` and the
+ *   [AngularJS $injector](https://docs.angularjs.org/api/auto/service/$injector).
  *
  * ### Examples
  *
  * Import the `UpgradeModule` into your top level {@link NgModule Angular `NgModule`}.
  *
- * {@example upgrade/static/ts/module.ts region='ng2-module'}
+ * {@example upgrade/static/ts/full/module.ts region='ng2-module'}
  *
- * Then bootstrap the hybrid upgrade app's module, get hold of the `UpgradeModule` instance
- * and use it to bootstrap the top level [AngularJS
- * module](https://docs.angularjs.org/api/ng/type/angular.Module).
+ * Then inject `UpgradeModule` into your Angular `NgModule` and use it to bootstrap the top level
+ * [AngularJS module](https://docs.angularjs.org/api/ng/type/angular.Module) in the
+ * `ngDoBootstrap()` method.
  *
- * {@example upgrade/static/ts/module.ts region='bootstrap'}
+ * {@example upgrade/static/ts/full/module.ts region='bootstrap-ng1'}
+ *
+ * Finally, kick off the whole process, by bootstraping your top level Angular `NgModule`.
+ *
+ * {@example upgrade/static/ts/full/module.ts region='bootstrap-ng2'}
  *
  * {@a upgrading-an-angular-1-service}
- *
  * ### Upgrading an AngularJS service
  *
  * There is no specific API for upgrading an AngularJS service. Instead you should just follow the
@@ -111,19 +127,19 @@ import {NgAdapterInjector} from './util';
  *
  * Let's say you have an AngularJS service:
  *
- * {@example upgrade/static/ts/module.ts region="ng1-title-case-service"}
+ * {@example upgrade/static/ts/full/module.ts region="ng1-text-formatter-service"}
  *
  * Then you should define an Angular provider to be included in your `NgModule` `providers`
  * property.
  *
- * {@example upgrade/static/ts/module.ts region="upgrade-ng1-service"}
+ * {@example upgrade/static/ts/full/module.ts region="upgrade-ng1-service"}
  *
  * Then you can use the "upgraded" AngularJS service by injecting it into an Angular component
  * or service.
  *
- * {@example upgrade/static/ts/module.ts region="use-ng1-upgraded-service"}
+ * {@example upgrade/static/ts/full/module.ts region="use-ng1-upgraded-service"}
  *
- * @experimental
+ * @publicApi
  */
 @NgModule({providers: [angular1Providers]})
 export class UpgradeModule {
@@ -157,14 +173,13 @@ export class UpgradeModule {
         angular
             .module(INIT_MODULE_NAME, [])
 
+            .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Static)
+
             .value(INJECTOR_KEY, this.injector)
 
             .factory(
                 LAZY_MODULE_REF,
-                [
-                  INJECTOR_KEY,
-                  (injector: Injector) => ({ injector, needsNgZone: false } as LazyModuleRef)
-                ])
+                [INJECTOR_KEY, (injector: Injector) => ({ injector } as LazyModuleRef)])
 
             .config([
               $PROVIDE, $INJECTOR,

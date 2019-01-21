@@ -1,3 +1,5 @@
+package(default_visibility = ["//visibility:public"])
+
 load("@angular//:index.bzl", "ng_module")
 
 # Allow targets under sub-packages to reference the tsconfig.json file
@@ -6,6 +8,62 @@ exports_files(["tsconfig.json"])
 ng_module(
     name = "src",
     srcs = glob(["*.ts"]),
-    tsconfig = ":tsconfig.json",
-    deps = ["//src/hello-world"],
+    deps = [
+        "//src/hello-world",
+        "@angular//packages/common/http",
+        "@angular//packages/core",
+        "@angular//packages/platform-browser",
+        "@npm//@types",
+    ],
+)
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+
+ts_devserver(
+    name = "devserver",
+    additional_root_paths = [
+        "npm/node_modules/tslib",
+        "npm/node_modules/zone.js/dist",
+    ],
+    entry_module = "bazel_integration_test/src/main",
+    serving_path = "/bundle.min.js",
+    static_files = [
+        "@npm//node_modules/tslib:tslib.js",
+        "@npm//node_modules/zone.js:dist/zone.min.js",
+        "index.html",
+    ],
+    deps = ["//src"],
+)
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "rollup_bundle")
+
+filegroup(
+    name = "empty_node_modules",
+)
+
+rollup_bundle(
+    name = "bundle",
+    entry_point = "src/main",
+    node_modules = ":empty_node_modules",
+    deps = ["//src"],
+)
+
+# Needed because the prodserver only loads static files that appear under this
+# package.
+genrule(
+    name = "zone.js",
+    srcs = ["@npm//node_modules/zone.js:dist/zone.min.js"],
+    outs = ["zone.min.js"],
+    cmd = "cp $< $@",
+)
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "http_server")
+
+http_server(
+    name = "prodserver",
+    data = [
+        "index.html",
+        ":bundle",
+        ":zone.js",
+    ],
 )

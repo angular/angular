@@ -23,8 +23,10 @@ import {supportsState} from './history';
  */
 @Injectable()
 export class BrowserPlatformLocation extends PlatformLocation {
-  public readonly location: Location;
-  private _history: History;
+  // TODO(issue/24571): remove '!'.
+  public readonly location !: Location;
+  // TODO(issue/24571): remove '!'.
+  private _history !: History;
 
   constructor(@Inject(DOCUMENT) private _doc: any) {
     super();

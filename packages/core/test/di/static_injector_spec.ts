@@ -10,7 +10,7 @@ import {Inject, InjectionToken, Injector, Optional, ReflectiveKey, Self, SkipSel
 import {getOriginalError} from '@angular/core/src/errors';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-import {stringify} from '../../src/util';
+import {stringify} from '../../src/util/stringify';
 
 class Engine {
   static PROVIDER = {provide: Engine, useClass: Engine, deps: []};
@@ -217,7 +217,7 @@ function factoryFn(a: any){}
       const injector = Injector.create([CarWithOptionalEngine.PROVIDER]);
 
       const car = injector.get<CarWithOptionalEngine>(CarWithOptionalEngine);
-      expect(car.engine).toEqual(null);
+      expect(car.engine).toBeNull();
     });
 
     it('should flatten passed-in providers', () => {
@@ -288,8 +288,8 @@ function factoryFn(a: any){}
           Injector.create([CarWithDashboard.PROVIDER, Engine.PROVIDER, Dashboard.PROVIDER]);
       expect(() => injector.get(CarWithDashboard))
           .toThrowError(
-              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]: 
-  NullInjectorError: No provider for DashboardSoftware!`);
+              `StaticInjectorError[${stringify(CarWithDashboard)} -> ${stringify(Dashboard)} -> DashboardSoftware]: \n` +
+              '  NullInjectorError: No provider for DashboardSoftware!');
     });
 
     it('should throw when trying to instantiate a cyclic dependency', () => {
@@ -397,7 +397,7 @@ function factoryFn(a: any){}
     });
   });
 
-  describe('depedency resolution', () => {
+  describe('dependency resolution', () => {
     describe('@Self()', () => {
       it('should return a dependency from self', () => {
         const inj = Injector.create([
@@ -415,8 +415,9 @@ function factoryFn(a: any){}
             parent);
 
         expect(() => child.get(Car))
-            .toThrowError(`StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)}]: 
-  NullInjectorError: No provider for Engine!`);
+            .toThrowError(
+                `StaticInjectorError[${stringify(Car)} -> ${stringify(Engine)}]: \n` +
+                '  NullInjectorError: No provider for Engine!');
       });
     });
 

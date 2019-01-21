@@ -61,7 +61,6 @@ function publishRepo {
   rm -rf $REPO_DIR/*
   cp -R $ARTIFACTS_DIR/* $REPO_DIR/
 
-  BUILD_VER="${LATEST_TAG}+${SHORT_SHA}"
   if [[ ${CI} ]]; then
     (
       # The file ~/.git_credentials is created in /.circleci/config.yml
@@ -88,6 +87,7 @@ function publishPackages {
   GIT_SCHEME=$1
   PKGS_DIST=$2
   BRANCH=$3
+  BUILD_VER=$4
 
   for dir in $PKGS_DIST/*/
   do
@@ -104,12 +104,6 @@ function publishPackages {
     else
       die "Don't have a way to publish to scheme $GIT_SCHEME"
     fi
-    SHA=`git rev-parse HEAD`
-    SHORT_SHA=`git rev-parse --short HEAD`
-    COMMIT_MSG=`git log --oneline -1`
-    COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
-    COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
-    LATEST_TAG=`getLatestTag`
 
     publishRepo "${COMPONENT}" "${JS_BUILD_ARTIFACTS_DIR}"
   done
@@ -117,12 +111,31 @@ function publishPackages {
   echo "Finished publishing build artifacts"
 }
 
+function publishAllBuilds() {
+  GIT_SCHEME="$1"
+
+  SHA=`git rev-parse HEAD`
+  COMMIT_MSG=`git log --oneline -1`
+  COMMITTER_USER_NAME=`git --no-pager show -s --format='%cN' HEAD`
+  COMMITTER_USER_EMAIL=`git --no-pager show -s --format='%cE' HEAD`
+
+  local shortSha=`git rev-parse --short HEAD`
+  local latestTag=`getLatestTag`
+
+  publishPackages $GIT_SCHEME dist/packages-dist $CUR_BRANCH "${latestTag}+${shortSha}"
+
+  # don't publish ivy builds on non-master branch
+  if [[ "${CI_BRANCH-}" == "master" ]]; then
+    publishPackages $GIT_SCHEME dist/packages-dist-ivy-aot "${CUR_BRANCH}-ivy-aot" "${latestTag}-ivy-aot+${shortSha}"
+  fi
+}
+
 # See docs/DEVELOPER.md for help
-CUR_BRANCH=${CIRCLE_BRANCH:-$(git symbolic-ref --short HEAD)}
+CUR_BRANCH=${CI_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
-  publishPackages "ssh" dist/packages-dist $CUR_BRANCH
+  publishAllBuilds "ssh"
 else
   ORG="angular"
-  publishPackages "http" dist/packages-dist $CUR_BRANCH
+  publishAllBuilds "http"
 fi

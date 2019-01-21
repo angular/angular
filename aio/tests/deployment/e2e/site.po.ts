@@ -1,6 +1,9 @@
 import { browser, by, element, ExpectedConditions } from 'protractor';
 
 export class SitePage {
+  /** The base URL with the trailing `/` stripped off (if any). */
+  baseUrl = browser.baseUrl.replace(/\/$/, '');
+
   /** All URLs found in the app's `sitemap.xml` (i.e. valid URLs tha should not be redirected). */
   sitemapUrls: string[] = browser.params.sitemapUrls;
 
@@ -44,7 +47,7 @@ export class SitePage {
         .then(regs => Promise.all(regs.map(reg => reg.unregister())))
         .then(cb);
 
-    await browser.get(url || browser.baseUrl);
+    await browser.get(url || this.baseUrl);
     await browser.executeScript('document.body.classList.add(\'no-animations\')');
     await browser.executeAsyncScript(unregisterServiceWorker);
     await browser.waitForAngular();

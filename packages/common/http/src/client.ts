@@ -42,9 +42,6 @@ function addBody<T>(
   };
 }
 
-/**
- *
- */
 export type HttpObserve = 'body' | 'events' | 'response';
 
 /**
@@ -54,7 +51,7 @@ export type HttpObserve = 'body' | 'events' | 'response';
  * Each request method has multiple signatures, and the return type varies according to which
  * signature is called (mainly the values of `observe` and `responseType`).
  *
- *
+ * @publicApi
  */
 @Injectable()
 export class HttpClient {
@@ -920,7 +917,7 @@ export class HttpClient {
   }): Observable<string>;
 
   /**
-   * Construct a GET request which interprets the body as an `ArrayBuffer` and returns the full event stream.
+   * Construct a HEAD request which interprets the body as an `ArrayBuffer` and returns the full event stream.
    *
    * @return an `Observable` of all `HttpEvent`s for the request, with a body type of `ArrayBuffer`.
    */
@@ -1154,7 +1151,7 @@ export class HttpClient {
   }): Observable<Blob>;
 
   /**
-   * Construct a OPTIONS request which interprets the body as text and returns it.
+   * Construct an OPTIONS request which interprets the body as text and returns it.
    *
    * @return an `Observable` of the body as a `string`.
    */
@@ -1601,7 +1598,7 @@ export class HttpClient {
   }): Observable<string>;
 
   /**
-   * Construct a PATCH request which interprets the body as an `ArrayBuffer` and returns the full event stream.
+   * Construct a POST request which interprets the body as an `ArrayBuffer` and returns the full event stream.
    *
    * @return an `Observable` of all `HttpEvent`s for the request, with a body type of `ArrayBuffer`.
    */
@@ -1977,8 +1974,8 @@ export class HttpClient {
 
   /**
    * Constructs an `Observable` which, when subscribed, will cause the configured
-   * POST request to be executed on the server. See the individual overloads for
-   * details of `post()`'s return type based on the provided options.
+   * PUT request to be executed on the server. See the individual overloads for
+   * details of `put()`'s return type based on the provided options.
    */
   put(url: string, body: any|null, options: {
     headers?: HttpHeaders | {[header: string]: string | string[]},

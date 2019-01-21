@@ -3,7 +3,7 @@
 set -eux -o pipefail
 exec 3>&1
 
-echo "\n\n[`date`] - Updating the preview server..."
+echo -e "\n\n[`date`] - Updating the preview server..."
 
 # Input
 readonly HOST_REPO_DIR=$1

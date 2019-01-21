@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {WrappedValue} from '../change_detection/change_detection_util';
 import {PipeTransform} from '../change_detection/pipe_transform';
 
-import {getTView, load, store} from './instructions';
+import {load, store} from './instructions';
 import {PipeDef, PipeDefList} from './interfaces/definition';
+import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
+import {getLView} from './state';
+import {NO_CHANGE} from './tokens';
+
 
 /**
  * Create a pipe.
@@ -20,20 +25,21 @@ import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction
  * @returns T the instance of the pipe.
  */
 export function pipe(index: number, pipeName: string): any {
-  const tView = getTView();
+  const tView = getLView()[TVIEW];
   let pipeDef: PipeDef<any>;
+  const adjustedIndex = index + HEADER_OFFSET;
 
   if (tView.firstTemplatePass) {
     pipeDef = getPipeDef(pipeName, tView.pipeRegistry);
-    tView.data[index] = pipeDef;
+    tView.data[adjustedIndex] = pipeDef;
     if (pipeDef.onDestroy) {
-      (tView.pipeDestroyHooks || (tView.pipeDestroyHooks = [])).push(index, pipeDef.onDestroy);
+      (tView.destroyHooks || (tView.destroyHooks = [])).push(adjustedIndex, pipeDef.onDestroy);
     }
   } else {
-    pipeDef = tView.data[index] as PipeDef<any>;
+    pipeDef = tView.data[adjustedIndex] as PipeDef<any>;
   }
 
-  const pipeInstance = pipeDef.n();
+  const pipeInstance = pipeDef.factory(null);
   store(index, pipeInstance);
   return pipeInstance;
 }
@@ -48,14 +54,14 @@ export function pipe(index: number, pipeName: string): any {
  */
 function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
   if (registry) {
-    for (let i = 0; i < registry.length; i++) {
+    for (let i = registry.length - 1; i >= 0; i--) {
       const pipeDef = registry[i];
       if (name === pipeDef.name) {
         return pipeDef;
       }
     }
   }
-  throw new Error(`Pipe with name '${name}' not found!`);
+  throw new Error(`The pipe '${name}' could not be found!`);
 }
 
 /**
@@ -65,12 +71,14 @@ function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
+ * @param slotOffset the offset in the reserved slot space
  * @param v1 1st argument to {@link PipeTransform#transform}.
  */
-export function pipeBind1(index: number, v1: any): any {
+export function pipeBind1(index: number, slotOffset: number, v1: any): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ? pureFunction1(pipeInstance.transform, v1, pipeInstance) :
-                         pipeInstance.transform(v1);
+  return unwrapValue(
+      isPure(index) ? pureFunction1(slotOffset, pipeInstance.transform, v1, pipeInstance) :
+                      pipeInstance.transform(v1));
 }
 
 /**
@@ -80,13 +88,15 @@ export function pipeBind1(index: number, v1: any): any {
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
+ * @param slotOffset the offset in the reserved slot space
  * @param v1 1st argument to {@link PipeTransform#transform}.
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  */
-export function pipeBind2(index: number, v1: any, v2: any): any {
+export function pipeBind2(index: number, slotOffset: number, v1: any, v2: any): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ? pureFunction2(pipeInstance.transform, v1, v2, pipeInstance) :
-                         pipeInstance.transform(v1, v2);
+  return unwrapValue(
+      isPure(index) ? pureFunction2(slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
+                      pipeInstance.transform(v1, v2));
 }
 
 /**
@@ -96,14 +106,16 @@ export function pipeBind2(index: number, v1: any, v2: any): any {
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
+ * @param slotOffset the offset in the reserved slot space
  * @param v1 1st argument to {@link PipeTransform#transform}.
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  * @param v3 4rd argument to {@link PipeTransform#transform}.
  */
-export function pipeBind3(index: number, v1: any, v2: any, v3: any): any {
+export function pipeBind3(index: number, slotOffset: number, v1: any, v2: any, v3: any): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ? pureFunction3(pipeInstance.transform.bind(pipeInstance), v1, v2, v3) :
-                         pipeInstance.transform(v1, v2, v3);
+  return unwrapValue(
+      isPure(index) ? pureFunction3(slotOffset, pipeInstance.transform, v1, v2, v3, pipeInstance) :
+                      pipeInstance.transform(v1, v2, v3));
 }
 
 /**
@@ -113,15 +125,19 @@ export function pipeBind3(index: number, v1: any, v2: any, v3: any): any {
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
+ * @param slotOffset the offset in the reserved slot space
  * @param v1 1st argument to {@link PipeTransform#transform}.
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  * @param v3 3rd argument to {@link PipeTransform#transform}.
  * @param v4 4th argument to {@link PipeTransform#transform}.
  */
-export function pipeBind4(index: number, v1: any, v2: any, v3: any, v4: any): any {
+export function pipeBind4(
+    index: number, slotOffset: number, v1: any, v2: any, v3: any, v4: any): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ? pureFunction4(pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
-                         pipeInstance.transform(v1, v2, v3, v4);
+  return unwrapValue(
+      isPure(index) ?
+          pureFunction4(slotOffset, pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
+          pipeInstance.transform(v1, v2, v3, v4));
 }
 
 /**
@@ -131,14 +147,35 @@ export function pipeBind4(index: number, v1: any, v2: any, v3: any, v4: any): an
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
+ * @param slotOffset the offset in the reserved slot space
  * @param values Array of arguments to pass to {@link PipeTransform#transform} method.
  */
-export function pipeBindV(index: number, values: any[]): any {
+export function pipeBindV(index: number, slotOffset: number, values: any[]): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ? pureFunctionV(pipeInstance.transform, values, pipeInstance) :
-                         pipeInstance.transform.apply(pipeInstance, values);
+  return unwrapValue(
+      isPure(index) ? pureFunctionV(slotOffset, pipeInstance.transform, values, pipeInstance) :
+                      pipeInstance.transform.apply(pipeInstance, values));
 }
 
 function isPure(index: number): boolean {
-  return (<PipeDef<any>>getTView().data[index]).pure;
+  return (<PipeDef<any>>getLView()[TVIEW].data[index + HEADER_OFFSET]).pure;
+}
+
+/**
+ * Unwrap the output of a pipe transformation.
+ * In order to trick change detection into considering that the new value is always different from
+ * the old one, the old value is overwritten by NO_CHANGE.
+ *
+ * @param newValue the pipe transformation output.
+ */
+function unwrapValue(newValue: any): any {
+  if (WrappedValue.isWrapped(newValue)) {
+    newValue = WrappedValue.unwrap(newValue);
+    const lView = getLView();
+    // The NO_CHANGE value needs to be written at the index where the impacted binding value is
+    // stored
+    const bindingToInvalidateIdx = lView[BINDING_INDEX];
+    lView[bindingToInvalidateIdx] = NO_CHANGE;
+  }
+  return newValue;
 }

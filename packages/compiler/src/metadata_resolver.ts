@@ -115,16 +115,13 @@ export class CompileMetadataResolver {
     return this.getGeneratedClass(dirType, cpl.hostViewClassName(dirType));
   }
 
-  getHostComponentType(dirType: any): StaticSymbol|Type {
+  getHostComponentType(dirType: any): StaticSymbol|cpl.ProxyClass {
     const name = `${cpl.identifierName({reference: dirType})}_Host`;
     if (dirType instanceof StaticSymbol) {
       return this._staticSymbolCache.get(dirType.filePath, name);
-    } else {
-      const HostClass = <any>function HostClass() {};
-      HostClass.overriddenName = name;
-
-      return HostClass;
     }
+
+    return this._createProxyClass(dirType, name);
   }
 
   private getRendererType(dirType: any): StaticSymbol|object {
@@ -993,7 +990,7 @@ export class CompileMetadataResolver {
           providerMeta = new cpl.ProviderMeta(provider, {useClass: provider});
         } else if (provider === void 0) {
           this._reportError(syntaxError(
-              `Encountered undefined provider! Usually this means you have a circular dependencies (might be caused by using 'barrel' index.ts files.`));
+              `Encountered undefined provider! Usually this means you have a circular dependencies. This might be caused by using 'barrel' index.ts files.`));
           return;
         } else {
           const providersInfo =

@@ -125,7 +125,7 @@ Open a terminal window in the project folder and enter the following commands fo
 The **QuickStart seed** contains the same application as the QuickStart playground.
 But its true purpose is to provide a solid foundation for _local_ development.
 Consequently, there are _many more files_ in the project folder on your machine,
-most of which you can [learn about later](guide/setup-systemjs-anatomy "Setup Anatomy").
+most of which you can [learn about later](guide/file-structure).
 
 
 
@@ -171,15 +171,15 @@ Focus on the following three TypeScript (`.ts`) files in the **`/src`** folder.
 
 <code-tabs>
 
-  <code-pane title="src/app/app.component.ts" path="setup/src/app/app.component.ts">
+  <code-pane header="src/app/app.component.ts" path="setup/src/app/app.component.ts">
 
   </code-pane>
 
-  <code-pane title="src/app/app.module.ts" path="setup/src/app/app.module.ts">
+  <code-pane header="src/app/app.module.ts" path="setup/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="src/main.ts" path="setup/src/main.ts">
+  <code-pane header="src/main.ts" path="setup/src/main.ts">
 
   </code-pane>
 
@@ -284,7 +284,7 @@ The following are all in `src/`
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -330,7 +330,7 @@ You may need [nvm](https://github.com/creationix/nvm) if you already have projec
 Links on almost every documentation page open completed samples in the browser.
 You can play with the sample code, share your changes with friends, and download and run the code on your own machine.
 
-The [QuickStart](guide/quickstart "Angular QuickStart Playground") shows just the `AppComponent` file.
+The [Getting Started](guide/quickstart "Angular QuickStart Playground") shows just the `AppComponent` file.
 It creates the equivalent of `app.module.ts` and `main.ts` internally _for the playground only_.
 so the reader can discover Angular without distraction.
 The other samples are based on the QuickStart seed.
@@ -356,3 +356,24 @@ If you develop angular locally with `ng serve`, there will be `websocket` connec
 
 In windows, by default one application can only have 6 websocket connections, <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket Settings</a>.
 So if IE was refreshed manunally or automatically by `ng serve`, sometimes, the websocket will not close properly, when websocket connections exceed limitations, `SecurityError` will be thrown, this error will not affect the angular application, you can just restart IE to clear this error, or modify the windows registry to update the limitations.
+
+## Appendix: test using `fakeAsync()/async()`
+
+If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read [testing guide](guide/testing#async-test-with-fakeasync)), you need to import `zone.js/dist/zone-testing` in your test setup file.
+
+<div class="alert is-important">
+If you create project with `Angular/CLI`, it is already imported in `src/test.ts`.
+</div>
+
+And in the earlier versions of `Angular`, the following files were imported or added in your html file:
+
+```
+import 'zone.js/dist/long-stack-trace-zone';
+import 'zone.js/dist/proxy';
+import 'zone.js/dist/sync-test';
+import 'zone.js/dist/jasmine-patch';
+import 'zone.js/dist/async-test';
+import 'zone.js/dist/fake-async-test';
+```
+
+You can still load those files separately, but the order is important, you must import `proxy` before `sync-test`, `async-test`, `fake-async-test` and `jasmine-patch`. And you also need to import `sync-test` before `jasmine-patch`, so it is recommended to just import `zone-testing` instead of loading those separated files.

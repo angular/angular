@@ -83,6 +83,7 @@ export class DomRendererFactory2 implements RendererFactory2 {
         return renderer;
       }
       case ViewEncapsulation.Native:
+      case ViewEncapsulation.ShadowDom:
         return new ShadowDomRenderer(this.eventManager, this.sharedStylesHost, element, type);
       default: {
         if (!this.rendererByCompId.has(type.id)) {
@@ -110,7 +111,9 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string): any {
     if (namespace) {
-      return document.createElementNS(NAMESPACE_URIS[namespace], name);
+      // In cases where Ivy (not ViewEngine) is giving us the actual namespace, the look up by key
+      // will result in undefined, so we just return the namespace here.
+      return document.createElementNS(NAMESPACE_URIS[namespace] || namespace, name);
     }
 
     return document.createElement(name);
@@ -134,13 +137,15 @@ class DefaultDomRenderer2 implements Renderer2 {
     }
   }
 
-  selectRootElement(selectorOrNode: string|any): any {
+  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
     let el: any = typeof selectorOrNode === 'string' ? document.querySelector(selectorOrNode) :
                                                        selectorOrNode;
     if (!el) {
       throw new Error(`The selector "${selectorOrNode}" did not match any elements`);
     }
-    el.textContent = '';
+    if (!preserveContent) {
+      el.textContent = '';
+    }
     return el;
   }
 
@@ -151,6 +156,8 @@ class DefaultDomRenderer2 implements Renderer2 {
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
       name = `${namespace}:${name}`;
+      // TODO(benlesh): Ivy may cause issues here because it's passing around
+      // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
         el.setAttributeNS(namespaceUri, name, value);
@@ -164,10 +171,15 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   removeAttribute(el: any, name: string, namespace?: string): void {
     if (namespace) {
+      // TODO(benlesh): Ivy may cause issues here because it's passing around
+      // full URIs for namespaces, therefore this lookup will fail.
       const namespaceUri = NAMESPACE_URIS[namespace];
       if (namespaceUri) {
         el.removeAttributeNS(namespaceUri, name);
       } else {
+        // TODO(benlesh): Since ivy is passing around full URIs for namespaces
+        // this could result in properties like `http://www.w3.org/2000/svg:cx="123"`,
+        // which is wrong.
         el.removeAttribute(`${namespace}:${name}`);
       }
     } else {
@@ -256,7 +268,11 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
       private hostEl: any, private component: RendererType2) {
     super(eventManager);
-    this.shadowRoot = (hostEl as any).createShadowRoot();
+    if (component.encapsulation === ViewEncapsulation.ShadowDom) {
+      this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+    } else {
+      this.shadowRoot = (hostEl as any).createShadowRoot();
+    }
     this.sharedStylesHost.addHost(this.shadowRoot);
     const styles = flattenStyles(component.id, component.styles, []);
     for (let i = 0; i < styles.length; i++) {

@@ -22,32 +22,39 @@ export const modelGroupProvider: any = {
 
 /**
  * @description
- *
  * Creates and binds a `FormGroup` instance to a DOM element.
  *
- * This directive can only be used as a child of `NgForm` (or in other words,
- * within `<form>` tags).
+ * This directive can only be used as a child of `NgForm` (within `<form>` tags).
  *
- * Use this directive if you'd like to create a sub-group within a form. This can
- * come in handy if you want to validate a sub-group of your form separately from
- * the rest of your form, or if some values in your domain model make more sense to
- * consume together in a nested object.
+ * Use this directive to validate a sub-group of your form separately from the
+ * rest of your form, or if some values in your domain model make more sense
+ * to consume together in a nested object.
  *
- * Pass in the name you'd like this sub-group to have and it will become the key
- * for the sub-group in the form's full value. You can also export the directive into
+ * Provide a name for the sub-group and it will become the key
+ * for the sub-group in the form's full value. If you need direct access, export the directive into
  * a local template variable using `ngModelGroup` (ex: `#myGroup="ngModelGroup"`).
+ *
+ * @usageNotes
+ *
+ * ### Consuming controls in a grouping
+ *
+ * The following example shows you how to combine controls together in a sub-group
+ * of the form.
  *
  * {@example forms/ts/ngModelGroup/ng_model_group_example.ts region='Component'}
  *
- * * **npm package**: `@angular/forms`
- *
- * * **NgModule**: `FormsModule`
- *
- *
+ * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({selector: '[ngModelGroup]', providers: [modelGroupProvider], exportAs: 'ngModelGroup'})
 export class NgModelGroup extends AbstractFormGroupDirective implements OnInit, OnDestroy {
-  @Input('ngModelGroup') name: string;
+  /**
+   * @description
+   * Tracks the name of the `NgModelGroup` bound to the directive. The name corresponds
+   * to a key in the parent `NgForm`.
+   */
+  // TODO(issue/24571): remove '!'.
+  @Input('ngModelGroup') name !: string;
 
   constructor(
       @Host() @SkipSelf() parent: ControlContainer,

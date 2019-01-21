@@ -38,6 +38,9 @@ registerLocaleData(localeFr);
 
     <!--output '003.14000'-->
     <p>pi (3.5-5): {{pi | number:'3.5-5'}}</p>
+
+    <!--output '-3' / unlike '-2' by Math.round()-->
+    <p>-2.5 (1.0-0): {{-2.5 | number:'1.0-0'}}</p>
   </div>`
 })
 export class NumberPipeComponent {

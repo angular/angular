@@ -36,8 +36,6 @@ export const Benchmarks: Benchmark[] = [
     url: 'all/benchmarks/src/tree/ng2_next/index.html',
     buttons: CreateDestroyDetectChangesButtons,
     ignoreBrowserSynchronization: true,
-    // Can't use bundles as we use non exported code
-    extraParams: [{name: 'bundles', value: false}]
   },
   {
     id: `deepTree.ng2.static`,
@@ -48,12 +46,6 @@ export const Benchmarks: Benchmark[] = [
     id: `deepTree.ng2_switch`,
     url: 'all/benchmarks/src/tree/ng2_switch/index.html',
     buttons: CreateDestroyButtons,
-  },
-  {
-    id: `deepTree.ng2.render3`,
-    url: 'all/benchmarks/src/tree/render3/index.html',
-    buttons: CreateDestroyDetectChangesButtons,
-    ignoreBrowserSynchronization: true,
   },
   {
     id: `deepTree.ng2.render3_function`,
@@ -76,18 +68,6 @@ export const Benchmarks: Benchmark[] = [
   {
     id: `deepTree.incremental_dom`,
     url: 'all/benchmarks/src/tree/incremental_dom/index.html',
-    buttons: CreateDestroyButtons,
-    ignoreBrowserSynchronization: true,
-  },
-  {
-    id: `deepTree.polymer`,
-    url: 'all/benchmarks/src/tree/polymer/index.html',
-    buttons: CreateDestroyButtons,
-    ignoreBrowserSynchronization: true,
-  },
-  {
-    id: `deepTree.polymer_leaves`,
-    url: 'all/benchmarks/src/tree/polymer_leaves/index.html',
     buttons: CreateDestroyButtons,
     ignoreBrowserSynchronization: true,
   },

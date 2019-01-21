@@ -9,6 +9,6 @@ import { HeroService } from './heroes';
       <toh-heroes></toh-heroes>
     `,
   styleUrls: ['./app.component.css'],
-  providers: [ HeroService ]
+  providers: [HeroService]
 })
-export class AppComponent { }
+export class AppComponent {}

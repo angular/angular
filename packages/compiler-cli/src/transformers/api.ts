@@ -151,6 +151,9 @@ export interface CompilerOptions extends ts.CompilerOptions {
   i18nInFile?: string;
   // How to handle missing messages
   i18nInMissingTranslations?: 'error'|'warning'|'ignore';
+  // Whether translation variable name should contain external message id
+  // (used by Closure Compiler's output of `goog.getMsg` for transition period)
+  i18nUseExternalIds?: boolean;
 
   // Whether to remove blank text nodes from compiled templates. It is `false` by default starting
   // from Angular 6.
@@ -182,9 +185,17 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * Not all features are supported with this option enabled. It is only supported
    * for experimentation and testing of Render3 style code generation.
    *
-   * @experimental
+   * Acceptable values are as follows:
+   *
+   * `false` - run ngc normally
+   * `true` - run ngc with its usual global analysis, but compile decorators to Ivy fields instead
+   *  of running the View Engine compilers
+   * `ngtsc` - run the ngtsc compiler instead of the normal ngc compiler
+   * `tsc` - behave like plain tsc as much as possible (used for testing JIT code)
+   *
+   * @publicApi
    */
-  enableIvy?: boolean|'ngtsc';
+  enableIvy?: boolean|'ngtsc'|'tsc';
 
   /** @internal */
   collectAllErrors?: boolean;
@@ -296,7 +307,8 @@ export interface Program {
   /**
    * Retrieve options diagnostics for the Angular options used to create the program.
    */
-  getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken): ReadonlyArray<Diagnostic>;
+  getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken):
+      ReadonlyArray<ts.Diagnostic|Diagnostic>;
 
   /**
    * Retrieve the syntax diagnostics from TypeScript. This is faster than calling
@@ -312,7 +324,7 @@ export interface Program {
    * and CSS.
    *
    * Note it is important to displaying TypeScript semantic diagnostics along with Angular
-   * structural diagnostics as an error in the program strucutre might cause errors detected in
+   * structural diagnostics as an error in the program structure might cause errors detected in
    * semantic analysis and a semantic error might cause errors in specifying the program structure.
    *
    * Angular structural information is required to produce these diagnostics.
@@ -332,7 +344,7 @@ export interface Program {
    * Angular structural information is required to produce these diagnostics.
    */
   getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
-      ReadonlyArray<Diagnostic>;
+      ReadonlyArray<ts.Diagnostic|Diagnostic>;
 
   /**
    * Load Angular structural information asynchronously. If this method is not called then the

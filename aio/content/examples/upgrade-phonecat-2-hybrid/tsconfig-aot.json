@@ -9,10 +9,8 @@
     "lib": ["es2015", "dom"],
     "removeComments": false,
     "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "typeRoots": [
-      "./node_modules/@types/"
-    ]
+    "skipLibCheck": true,
+    "suppressImplicitAnyIndexErrors": true
   },
 
   "files": [
@@ -21,7 +19,6 @@
   ],
 
   "angularCompilerOptions": {
-   "genDir": "aot",
-   "skipMetadataEmit" : true
+    "skipMetadataEmit" : true
  }
 }

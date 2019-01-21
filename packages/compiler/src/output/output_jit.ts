@@ -68,15 +68,12 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
   }
 
   visitExternalExpr(ast: o.ExternalExpr, ctx: EmitterVisitorContext): any {
-    const value = this.reflector.resolveExternalReference(ast.value);
-    let id = this._evalArgValues.indexOf(value);
-    if (id === -1) {
-      id = this._evalArgValues.length;
-      this._evalArgValues.push(value);
-      const name = identifierName({reference: value}) || 'val';
-      this._evalArgNames.push(`jit_${name}_${id}`);
-    }
-    ctx.print(ast, this._evalArgNames[id]);
+    this._emitReferenceToExternal(ast, this.reflector.resolveExternalReference(ast.value), ctx);
+    return null;
+  }
+
+  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
+    this._emitReferenceToExternal(ast, ast.node, ctx);
     return null;
   }
 
@@ -99,5 +96,17 @@ export class JitEmitterVisitor extends AbstractJsEmitterVisitor {
       this._evalExportedVars.push(stmt.name);
     }
     return super.visitDeclareClassStmt(stmt, ctx);
+  }
+
+  private _emitReferenceToExternal(ast: o.Expression, value: any, ctx: EmitterVisitorContext):
+      void {
+    let id = this._evalArgValues.indexOf(value);
+    if (id === -1) {
+      id = this._evalArgValues.length;
+      this._evalArgValues.push(value);
+      const name = identifierName({reference: value}) || 'val';
+      this._evalArgNames.push(`jit_${name}_${id}`);
+    }
+    ctx.print(ast, this._evalArgNames[id]);
   }
 }

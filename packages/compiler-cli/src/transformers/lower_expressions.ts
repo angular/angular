@@ -224,7 +224,8 @@ function isEligibleForLowering(node: ts.Node | undefined): boolean {
         return false;
       case ts.SyntaxKind.VariableDeclaration:
         // Avoid lowering expressions already in an exported variable declaration
-        return (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) == 0;
+        return (ts.getCombinedModifierFlags(node as ts.VariableDeclaration) &
+                ts.ModifierFlags.Export) == 0;
     }
     return isEligibleForLowering(node.parent);
   }
@@ -252,7 +253,8 @@ function isLiteralFieldNamed(node: ts.Node, names: Set<string>): boolean {
 }
 
 export class LowerMetadataTransform implements RequestsMap, MetadataTransformer {
-  private cache: MetadataCache;
+  // TODO(issue/24571): remove '!'.
+  private cache !: MetadataCache;
   private requests = new Map<string, RequestLocationMap>();
   private lowerableFieldNames: Set<string>;
 
@@ -369,7 +371,7 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
       case ts.SyntaxKind.ClassDeclaration:
       case ts.SyntaxKind.FunctionDeclaration:
       case ts.SyntaxKind.InterfaceDeclaration:
-        if ((ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) != 0) {
+        if ((ts.getCombinedModifierFlags(node as ts.Declaration) & ts.ModifierFlags.Export) != 0) {
           const classDeclaration =
               node as(ts.ClassDeclaration | ts.FunctionDeclaration | ts.InterfaceDeclaration);
           const name = classDeclaration.name;
@@ -384,7 +386,7 @@ function createExportTableFor(sourceFile: ts.SourceFile): Set<string> {
         break;
       case ts.SyntaxKind.VariableDeclaration:
         const variableDeclaration = node as ts.VariableDeclaration;
-        if ((ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) != 0 &&
+        if ((ts.getCombinedModifierFlags(variableDeclaration) & ts.ModifierFlags.Export) != 0 &&
             variableDeclaration.name.kind == ts.SyntaxKind.Identifier) {
           const name = variableDeclaration.name as ts.Identifier;
           exportTable.add(name.text);

@@ -19,7 +19,9 @@ export class MockAotContext {
 
   fileExists(fileName: string): boolean { return typeof this.getEntry(fileName) === 'string'; }
 
-  directoryExists(path: string): boolean { return typeof this.getEntry(path) === 'object'; }
+  directoryExists(path: string): boolean {
+    return path === this.currentDirectory || typeof this.getEntry(path) === 'object';
+  }
 
   readFile(fileName: string): string {
     const data = this.getEntry(fileName);

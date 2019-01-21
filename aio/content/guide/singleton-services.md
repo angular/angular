@@ -17,9 +17,9 @@ There are two ways to make a service a singleton in Angular:
 * Declare that the service should be provided in the application root.
 * Include the service in the `AppModule` or in a module that is only imported by the `AppModule`.
 
-Beginning with Angular 6.0, the preferred way to create a singleton services is to specify on the service that it should be provided in the application root. This is done by setting `providedIn` to `root` on the service's `@Injectable` decorator:
+Beginning with Angular 6.0, the preferred way to create a singleton service is to specify on the service that it should be provided in the application root. This is done by setting `providedIn` to `root` on the service's `@Injectable` decorator:
 
-<code-example path="providers/src/app/user.service.0.ts"  title="src/app/user.service.0.ts" linenums="false"> </code-example>
+<code-example path="providers/src/app/user.service.0.ts"  header="src/app/user.service.0.ts" linenums="false"> </code-example>
 
 
 For more detailed information on services, see the [Services](tutorial/toh-pt4) chapter of the
@@ -69,19 +69,19 @@ the core `UserService`.
 In the following example, the optional, injected `UserServiceConfig`
 extends the core `UserService`. If a `UserServiceConfig` exists, the `UserService` sets the user name from that config.
 
-<code-example path="ngmodules/src/app/core/user.service.ts" region="ctor" title="src/app/core/user.service.ts (constructor)" linenums="false">
+<code-example path="ngmodules/src/app/core/user.service.ts" region="ctor" header="src/app/core/user.service.ts (constructor)" linenums="false">
 
 </code-example>
 
 Here's `forRoot()` that takes a `UserServiceConfig` object:
 
-<code-example path="ngmodules/src/app/core/core.module.ts" region="for-root" title="src/app/core/core.module.ts (forRoot)" linenums="false">
+<code-example path="ngmodules/src/app/core/core.module.ts" region="for-root" header="src/app/core/core.module.ts (forRoot)" linenums="false">
 
 </code-example>
 
 Lastly, call it within the `imports` list of the `AppModule`.
 
-<code-example path="ngmodules/src/app/app.module.ts" region="import-for-root" title="src/app/app.module.ts (imports)" linenums="false">
+<code-example path="ngmodules/src/app/app.module.ts" region="import-for-root" header="src/app/app.module.ts (imports)" linenums="false">
 
 </code-example>
 
@@ -99,7 +99,7 @@ lazy-loaded module imports it too, the app can generate
 
 To guard against a lazy-loaded module re-importing `CoreModule`, add the following `CoreModule` constructor.
 
-<code-example path="ngmodules/src/app/core/core.module.ts" region="ctor" title="src/app/core/core.module.ts" linenums="false">
+<code-example path="ngmodules/src/app/core/core.module.ts" region="ctor" header="src/app/core/core.module.ts" linenums="false">
 
 </code-example>
 
@@ -130,11 +130,11 @@ Here are the two files in their entirety for reference:
 
 <code-tabs linenums="false">
  <code-pane
-   title="app.module.ts"
+   header="app.module.ts"
    path="ngmodules/src/app/app.module.ts">
  </code-pane>
  <code-pane
-   title="core.module.ts"
+   header="core.module.ts"
    region="whole-core-module"
    path="ngmodules/src/app/core/core.module.ts">
  </code-pane>

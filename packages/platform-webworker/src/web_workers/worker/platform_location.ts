@@ -21,7 +21,8 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
   private _location: LocationType = null !;
   private _channelSource: EventEmitter<Object>;
   public initialized: Promise<any>;
-  private initializedResolve: () => void;
+  // TODO(issue/24571): remove '!'.
+  private initializedResolve !: () => void;
 
   constructor(
       brokerFactory: ClientMessageBrokerFactory, bus: MessageBus, private _serializer: Serializer) {

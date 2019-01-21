@@ -22,10 +22,10 @@ import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
-import {compileNgModule as compileIvyModule} from '../render3/r3_module_compiler';
-import {compilePipe as compileIvyPipe} from '../render3/r3_pipe_compiler';
-import {HtmlToTemplateTransform} from '../render3/r3_template_transform';
-import {compileComponent as compileIvyComponent, compileDirective as compileIvyDirective} from '../render3/r3_view_compiler_local';
+import {compileNgModuleFromRender2 as compileR3Module} from '../render3/r3_module_compiler';
+import {compilePipeFromRender2 as compileR3Pipe} from '../render3/r3_pipe_compiler';
+import {htmlAstToRender3Ast} from '../render3/r3_template_transform';
+import {compileComponentFromRender2 as compileR3Component, compileDirectiveFromRender2 as compileR3Directive} from '../render3/view/compiler';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
@@ -318,10 +318,12 @@ export class AotCompiler {
       });
       compMetas.forEach(compMeta => {
         const html = compMeta.template !.template !;
+        // Template URL points to either an HTML or TS file depending on whether
+        // the file is used with `templateUrl:` or `template:`, respectively.
+        const templateUrl = compMeta.template !.templateUrl !;
         const interpolationConfig =
             InterpolationConfig.fromArray(compMeta.template !.interpolation);
-        errors.push(
-            ...messageBundle.updateFromTemplate(html, file.fileName, interpolationConfig) !);
+        errors.push(...messageBundle.updateFromTemplate(html, templateUrl, interpolationConfig) !);
       });
     });
 
@@ -362,7 +364,7 @@ export class AotCompiler {
   private _compileShallowModules(
       fileName: string, shallowModules: CompileShallowModuleMetadata[],
       context: OutputContext): void {
-    shallowModules.forEach(module => compileIvyModule(context, module, this._injectableCompiler));
+    shallowModules.forEach(module => compileR3Module(context, module, this._injectableCompiler));
   }
 
   private _compilePartialModule(
@@ -391,10 +393,7 @@ export class AotCompiler {
         if (!preserveWhitespaces) {
           htmlAst = removeWhitespaces(htmlAst);
         }
-        const transform = new HtmlToTemplateTransform(hostBindingParser);
-        const nodes = html.visitAll(transform, htmlAst.rootNodes, null);
-        const hasNgContent = transform.hasNgContent;
-        const ngContentSelectors = transform.ngContentSelectors;
+        const render3Ast = htmlAstToRender3Ast(htmlAst.rootNodes, hostBindingParser);
 
         // Map of StaticType by directive selectors
         const directiveTypeBySel = new Map<string, any>();
@@ -416,18 +415,18 @@ export class AotCompiler {
 
         pipes.forEach(pipe => { pipeTypeByName.set(pipe.name, pipe.type.reference); });
 
-        compileIvyComponent(
-            context, directiveMetadata, nodes, hasNgContent, ngContentSelectors, this.reflector,
-            hostBindingParser, directiveTypeBySel, pipeTypeByName);
+        compileR3Component(
+            context, directiveMetadata, render3Ast, this.reflector, hostBindingParser,
+            directiveTypeBySel, pipeTypeByName);
       } else {
-        compileIvyDirective(context, directiveMetadata, this.reflector, hostBindingParser);
+        compileR3Directive(context, directiveMetadata, this.reflector, hostBindingParser);
       }
     });
 
     pipes.forEach(pipeType => {
       const pipeMetadata = this._metadataResolver.getPipeMetadata(pipeType);
       if (pipeMetadata) {
-        compileIvyPipe(context, pipeMetadata, this.reflector);
+        compileR3Pipe(context, pipeMetadata, this.reflector);
       }
     });
 

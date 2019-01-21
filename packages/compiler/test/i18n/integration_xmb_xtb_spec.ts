@@ -91,32 +91,32 @@ const XTB = `
 const XMB = `<msg id="615790887472569365"><source>file.ts:3</source>i18n attribute on tags</msg>
   <msg id="3707494640264351337"><source>file.ts:5</source>nested</msg>
   <msg id="5539162898278769904" meaning="different meaning"><source>file.ts:7</source>nested</msg>
-  <msg id="3780349238193953556"><source>file.ts:9</source><source>file.ts:10</source><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex></ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex></ph></msg>
-  <msg id="5415448997399451992"><source>file.ts:11</source><ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex></ph>with <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex></ph>nested<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph> placeholders<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph></msg>
+  <msg id="3780349238193953556"><source>file.ts:9</source><source>file.ts:10</source><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex>&lt;i&gt;</ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex>&lt;/i&gt;</ph></msg>
+  <msg id="5415448997399451992"><source>file.ts:11</source><ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex>&lt;div&gt;</ph>with <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex>&lt;div&gt;</ph>nested<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex>&lt;/div&gt;</ph> placeholders<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex>&lt;/div&gt;</ph></msg>
   <msg id="5525133077318024839"><source>file.ts:14</source>on not translatable node</msg>
   <msg id="2174788525135228764"><source>file.ts:14</source>&lt;b&gt;bold&lt;/b&gt;</msg>
   <msg id="8670732454866344690"><source>file.ts:15</source>on translatable node</msg>
-  <msg id="4593805537723189714"><source>file.ts:20</source><source>file.ts:37</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
+  <msg id="4593805537723189714"><source>file.ts:20</source><source>file.ts:37</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph>} }</msg>
   <msg id="703464324060964421"><source>file.ts:22,24</source>
-        <ph name="ICU"><ex>{sex, select, male {...} female {...} other {...}}</ex></ph>
+        <ph name="ICU"><ex>{sex, select, male {...} female {...} other {...}}</ex>{sex, select, male {...} female {...} other {...}}</ph>
     </msg>
   <msg id="5430374139308914421"><source>file.ts:23</source>{VAR_SELECT, select, male {m} female {f} other {other} }</msg>
   <msg id="1300564767229037107"><source>file.ts:25,27</source>
-        <ph name="ICU"><ex>{sexB, select, male {...} female {...}}</ex></ph>
+        <ph name="ICU"><ex>{sexB, select, male {...} female {...}}</ex>{sexB, select, male {...} female {...}}</ph>
     </msg>
   <msg id="2500580913783245106"><source>file.ts:26</source>{VAR_SELECT, select, male {m} female {f} }</msg>
-  <msg id="4851788426695310455"><source>file.ts:29</source><ph name="INTERPOLATION"><ex>{{ &quot;count = &quot; + count }}</ex></ph></msg>
-  <msg id="9013357158046221374"><source>file.ts:30</source>sex = <ph name="INTERPOLATION"><ex>{{ sex }}</ex></ph></msg>
-  <msg id="8324617391167353662"><source>file.ts:31</source><ph name="CUSTOM_NAME"><ex>{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}</ex></ph></msg>
+  <msg id="4851788426695310455"><source>file.ts:29</source><ph name="INTERPOLATION"><ex>{{ &quot;count = &quot; + count }}</ex>{{ &quot;count = &quot; + count }}</ph></msg>
+  <msg id="9013357158046221374"><source>file.ts:30</source>sex = <ph name="INTERPOLATION"><ex>{{ sex }}</ex>{{ sex }}</ph></msg>
+  <msg id="8324617391167353662"><source>file.ts:31</source><ph name="CUSTOM_NAME"><ex>{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}</ex>{{ &quot;custom name&quot; //i18n(ph=&quot;CUSTOM_NAME&quot;) }}</ph></msg>
   <msg id="7685649297917455806"><source>file.ts:36</source><source>file.ts:54</source>in a translatable section</msg>
   <msg id="2329001734457059408"><source>file.ts:34,38</source>
-    <ph name="START_HEADING_LEVEL1"><ex>&lt;h1&gt;</ex></ph>Markers in html comments<ph name="CLOSE_HEADING_LEVEL1"><ex>&lt;/h1&gt;</ex></ph>
-    <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex></ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
-    <ph name="START_TAG_DIV_1"><ex>&lt;div&gt;</ex></ph><ph name="ICU"><ex>{count, plural, =0 {...} =1 {...} =2 {...} other {...}}</ex></ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph>
+    <ph name="START_HEADING_LEVEL1"><ex>&lt;h1&gt;</ex>&lt;h1&gt;</ph>Markers in html comments<ph name="CLOSE_HEADING_LEVEL1"><ex>&lt;/h1&gt;</ex>&lt;/h1&gt;</ph>
+    <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex>&lt;div&gt;</ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex>&lt;/div&gt;</ph>
+    <ph name="START_TAG_DIV_1"><ex>&lt;div&gt;</ex>&lt;div&gt;</ph><ph name="ICU"><ex>{count, plural, =0 {...} =1 {...} =2 {...} other {...}}</ex>{count, plural, =0 {...} =1 {...} =2 {...} other {...}}</ph><ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex>&lt;/div&gt;</ph>
 </msg>
-  <msg id="1491627405349178954"><source>file.ts:40</source>it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph> work</msg>
+  <msg id="1491627405349178954"><source>file.ts:40</source>it <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>should<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph> work</msg>
   <msg id="i18n16"><source>file.ts:42</source>with an explicit ID</msg>
-  <msg id="i18n17"><source>file.ts:43</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
-  <msg id="4085484936881858615" desc="desc"><source>file.ts:46,52</source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>{{response.getItemsList().length}}</ex></ph> results} }</msg>
-  <msg id="4035252431381981115"><source>file.ts:54</source>foo<ph name="START_LINK"><ex>&lt;a&gt;</ex></ph>bar<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex></ph></msg>
-  <msg id="5339604010413301604"><source>file.ts:56</source><ph name="MAP_NAME"><ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ex></ph></msg>`;
+  <msg id="i18n17"><source>file.ts:43</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex>&lt;/b&gt;</ph>} }</msg>
+  <msg id="4085484936881858615" desc="desc"><source>file.ts:46,52</source>{VAR_PLURAL, plural, =0 {Found no results} =1 {Found one result} other {Found <ph name="INTERPOLATION"><ex>{{response.getItemsList().length}}</ex>{{response.getItemsList().length}}</ph> results} }</msg>
+  <msg id="4035252431381981115"><source>file.ts:54</source>foo<ph name="START_LINK"><ex>&lt;a&gt;</ex>&lt;a&gt;</ph>bar<ph name="CLOSE_LINK"><ex>&lt;/a&gt;</ex>&lt;/a&gt;</ph></msg>
+  <msg id="5339604010413301604"><source>file.ts:56</source><ph name="MAP_NAME"><ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ex>{{ &apos;test&apos; //i18n(ph=&quot;map name&quot;) }}</ph></msg>`;

@@ -52,7 +52,8 @@ import {URLSearchParams} from './url_search_params';
  * });
  * ```
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
+ * @publicApi
  */
 export class Request extends Body {
   /**

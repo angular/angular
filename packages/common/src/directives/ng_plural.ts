@@ -42,12 +42,14 @@ import {SwitchView} from './ng_switch';
  *
  * See http://cldr.unicode.org/index/cldr-spec/plural-rules
  *
- * @experimental
+ * @publicApi
  */
 @Directive({selector: '[ngPlural]'})
 export class NgPlural {
-  private _switchValue: number;
-  private _activeView: SwitchView;
+  // TODO(issue/24571): remove '!'.
+  private _switchValue !: number;
+  // TODO(issue/24571): remove '!'.
+  private _activeView !: SwitchView;
   private _caseViews: {[k: string]: SwitchView} = {};
 
   constructor(private _localization: NgLocalization) {}
@@ -98,7 +100,7 @@ export class NgPlural {
  *
  * See {@link NgPlural} for more details and example.
  *
- * @experimental
+ * @publicApi
  */
 @Directive({selector: '[ngPluralCase]'})
 export class NgPluralCase {

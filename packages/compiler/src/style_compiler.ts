@@ -14,8 +14,8 @@ import {UrlResolver} from './url_resolver';
 import {OutputContext} from './util';
 
 const COMPONENT_VARIABLE = '%COMP%';
-const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
-const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
+export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
+export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
 
 export class StylesCompileDependency {
   constructor(

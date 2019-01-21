@@ -15,13 +15,13 @@ RxJS provides an implementation of the `Observable` type, which is needed until 
 RxJS offers a number of functions that can be used to create new observables. These functions can simplify the process of creating observables from things such as events, timers, promises, and so on. For example:
 
 
-<code-example path="rx-library/src/simple-creation.ts" region="promise" title="Create an observable from a promise"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="promise" header="Create an observable from a promise"></code-example>
 
-<code-example path="rx-library/src/simple-creation.ts" region="interval" title="Create an observable from a counter"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="interval" header="Create an observable from a counter"></code-example>
 
-<code-example path="rx-library/src/simple-creation.ts" region="event" title="Create an observable from an event"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="event" header="Create an observable from an event"></code-example>
 
-<code-example path="rx-library/src/simple-creation.ts" region="ajax" title="Create an observable that creates an AJAX request"></code-example>
+<code-example path="rx-library/src/simple-creation.ts" region="ajax" header="Create an observable that creates an AJAX request"></code-example>
 
 ## Operators
 
@@ -29,7 +29,7 @@ Operators are functions that build on the observables foundation to enable sophi
 
 Operators take configuration options, and they return a function that takes a source observable. When executing this returned function, the operator observes the source observable’s emitted values, transforms them, and returns a new observable of those transformed values. Here is a simple example:
 
-<code-example path="rx-library/src/operators.ts" title="Map operator"></code-example>
+<code-example path="rx-library/src/operators.ts" header="Map operator"></code-example>
 
 You can use _pipes_ to link operators together. Pipes let you combine multiple functions into a single function. The `pipe()` function takes as its arguments the functions you want to combine, and returns a new function that, when executed, runs the composed functions in sequence.
 
@@ -37,23 +37,23 @@ A set of operators applied to an observable is a recipe&mdash;that is, a set of 
 
 Here’s an example:
 
-<code-example path="rx-library/src/operators.1.ts" title="Standalone pipe function"></code-example>
+<code-example path="rx-library/src/operators.1.ts" header="Standalone pipe function"></code-example>
 
 The `pipe()` function is also a method on the RxJS `Observable`, so you use this shorter form to define the same operation:
 
-<code-example path="rx-library/src/operators.2.ts" title="Observable.pipe function"></code-example>
+<code-example path="rx-library/src/operators.2.ts" header="Observable.pipe function"></code-example>
 
 ### Common operators
 
-RxJS provides many operators (over 150 of them), but only a handful are used frequently. Here is a list of common operators; for usage examples, see  [RxJS 5 Operators By Example](https://github.com/btroncone/learn-rxjs/blob/master/operators/complete.md) in RxJS documentation.
+RxJS provides many operators, but only a handful are used frequently. For a list of operators and usage samples, visit the [RxJS API Documentation](https://rxjs-dev.firebaseapp.com/api).
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
   Note that, for Angular apps, we prefer combining operators with pipes, rather than chaining. Chaining is used in many RxJS examples.
 </div>
 
 | Area | Operators |
 | :------------| :----------|
-| Creation |  `from`, `fromPromise`,`fromEvent`, `of` |
+| Creation |  `from`,`fromEvent`, `of` |
 | Combination | `combineLatest`, `concat`, `merge`, `startWith` , `withLatestFrom`, `zip` |
 | Filtering | `debounceTime`, `distinctUntilChanged`, `filter`, `take`, `takeUntil` |
 | Transformation | `bufferTime`, `concatMap`, `map`, `mergeMap`, `scan`, `switchMap` |
@@ -68,7 +68,7 @@ For instance, suppose you have an observable that makes an API request and maps 
 
 Here's an example of using the `catchError` operator to do this:
 
-<code-example path="rx-library/src/error-handling.ts" title="catchError operator"></code-example>
+<code-example path="rx-library/src/error-handling.ts" header="catchError operator"></code-example>
 
 ### Retry failed observable
 
@@ -78,9 +78,9 @@ Use the `retry` operator before the `catchError` operator. It resubscribes to th
 
 The following converts the previous example to retry the request before catching the error:
 
-<code-example path="rx-library/src/retry-on-error.ts" title="retry operator"></code-example>
+<code-example path="rx-library/src/retry-on-error.ts" header="retry operator"></code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
    Do not retry **authentication** requests, since these should only be initiated by user action. We don't want to lock out user accounts with repeated login requests that the user has not initiated.
 
@@ -94,4 +94,4 @@ This can be useful when scanning through code and looking for observable values.
 
 For example:
 
-<code-example path="rx-library/src/naming-convention.ts" title="Naming observables"></code-example>
+<code-example path="rx-library/src/naming-convention.ts" header="Naming observables"></code-example>

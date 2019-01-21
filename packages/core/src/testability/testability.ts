@@ -7,14 +7,14 @@
  */
 
 import {Injectable} from '../di';
-import {scheduleMicroTask} from '../util';
+import {scheduleMicroTask} from '../util/microtask';
 import {NgZone} from '../zone/ng_zone';
 
 /**
  * Testability API.
  * `declare` keyword causes tsickle to generate externs, so these methods are
  * not renamed by Closure Compiler.
- * @experimental
+ * @publicApi
  */
 export declare interface PublicTestability {
   isStable(): boolean;
@@ -25,10 +25,15 @@ export declare interface PublicTestability {
 // Angular internal, not intended for public API.
 export interface PendingMacrotask {
   source: string;
-  isPeriodic: boolean;
-  delay?: number;
   creationLocation: Error;
-  xhr?: XMLHttpRequest;
+  runCount?: number;
+  data: TaskData;
+}
+
+export interface TaskData {
+  target?: XMLHttpRequest;
+  delay?: number;
+  isPeriodic?: boolean;
 }
 
 // Angular internal, not intended for public API.
@@ -47,7 +52,7 @@ interface WaitCallback {
  * The Testability service provides testing hooks that can be accessed from
  * the browser and by services such as Protractor. Each bootstrapped Angular
  * application on the page will have an instance of Testability.
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class Testability implements PublicTestability {
@@ -62,11 +67,14 @@ export class Testability implements PublicTestability {
   private _didWork: boolean = false;
   private _callbacks: WaitCallback[] = [];
 
-  private taskTrackingZone: any;
+  private taskTrackingZone: {macroTasks: Task[]}|null = null;
 
   constructor(private _ngZone: NgZone) {
     this._watchAngularEvents();
-    _ngZone.run(() => { this.taskTrackingZone = Zone.current.get('TaskTrackingZone'); });
+    _ngZone.run(() => {
+      this.taskTrackingZone =
+          typeof Zone == 'undefined' ? null : Zone.current.get('TaskTrackingZone');
+    });
   }
 
   private _watchAngularEvents(): void {
@@ -152,17 +160,14 @@ export class Testability implements PublicTestability {
       return [];
     }
 
+    // Copy the tasks data so that we don't leak tasks.
     return this.taskTrackingZone.macroTasks.map((t: Task) => {
       return {
         source: t.source,
-        isPeriodic: t.data.isPeriodic,
-        delay: t.data.delay,
         // From TaskTrackingZone:
         // https://github.com/angular/zone.js/blob/master/lib/zone-spec/task-tracking.ts#L40
         creationLocation: (t as any).creationLocation as Error,
-        // Added by Zones for XHRs
-        // https://github.com/angular/zone.js/blob/master/lib/browser/browser.ts#L133
-        xhr: (t.data as any).target
+        data: t.data
       };
     });
   }
@@ -221,7 +226,7 @@ export class Testability implements PublicTestability {
 
 /**
  * A global registry of {@link Testability} instances for specific elements.
- * @experimental
+ * @publicApi
  */
 @Injectable()
 export class TestabilityRegistry {
@@ -281,8 +286,7 @@ export class TestabilityRegistry {
  * Adapter interface for retrieving the `Testability` service associated for a
  * particular context.
  *
- * @experimental Testability apis are primarily intended to be used by e2e test tool vendors like
- * the Protractor team.
+ * @publicApi
  */
 export interface GetTestability {
   addToWindow(registry: TestabilityRegistry): void;
@@ -300,7 +304,7 @@ class _NoopGetTestability implements GetTestability {
 
 /**
  * Set the {@link GetTestability} implementation used by the Angular testing framework.
- * @experimental
+ * @publicApi
  */
 export function setTestabilityGetter(getter: GetTestability): void {
   _testabilityGetter = getter;

@@ -4,22 +4,13 @@
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
-    "@angular/animations": "file:../../dist/packages-dist/animations",
-    "@angular/common": "file:../../dist/packages-dist/common",
-    "@angular/compiler": "file:../../dist/packages-dist/compiler",
-    "@angular/core": "file:../../dist/packages-dist/core",
-    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
-    "rxjs": "file:../../node_modules/rxjs",
-    "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@angular/bazel": "file:../../dist/packages-dist/bazel",
-    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "typescript": "file:../../node_modules/typescript",
-    "@types/source-map": "0.5.1"
+    "@bazel/bazel": "file:../../node_modules/@bazel/bazel"
   },
   "scripts": {
-    "postinstall": "ngc -p angular.tsconfig.json",
-    "test": "bazel build //... --noshow_progress"
+    "//": "deps are listed in src/package.json which is used by yarn_install",
+    "//": "this package.json file is only here so that `yarn test` can be called by /integration/run_tests.sh",
+    "test": "bazel build ... --noshow_progress && bazel test ..."
   }
 }

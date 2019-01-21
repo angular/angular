@@ -34,11 +34,13 @@ import {LocationChangeListener, PlatformLocation} from './platform_location';
  * `location.go('/foo')`, the browser's URL will become
  * `example.com/my/app/foo`.
  *
+ * @usageNotes
+ *
  * ### Example
  *
  * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
  *
- *
+ * @publicApi
  */
 @Injectable()
 export class PathLocationStrategy extends LocationStrategy {

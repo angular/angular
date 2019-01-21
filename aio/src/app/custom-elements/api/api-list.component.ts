@@ -14,6 +14,7 @@ import { LocationService } from 'app/shared/location.service';
 import { ApiSection, ApiService } from './api.service';
 
 import { Option } from 'app/shared/select/select.component';
+import { map } from 'rxjs/operators';
 
 class SearchCriteria {
   query ? = '';
@@ -49,14 +50,14 @@ export class ApiListComponent implements OnInit {
     { value: 'function', title: 'Function' },
     { value: 'interface', title: 'Interface' },
     { value: 'pipe', title: 'Pipe'},
-    { value: 'type-alias', title: 'Type Alias' }
+    { value: 'ngmodule', title: 'NgModule'},
+    { value: 'type-alias', title: 'Type alias' },
+    { value: 'package', title: 'Package'}
   ];
 
   statuses: Option[] = [
     { value: 'all', title: 'All' },
-    { value: 'stable', title: 'Stable' },
     { value: 'deprecated', title: 'Deprecated' },
-    { value: 'experimental', title: 'Experimental' },
     { value: 'security-risk', title: 'Security Risk' }
   ];
 
@@ -67,13 +68,17 @@ export class ApiListComponent implements OnInit {
     private locationService: LocationService) { }
 
   ngOnInit() {
-    this.filteredSections = combineLatest(
-      this.apiService.sections,
-      this.criteriaSubject,
-      (sections, criteria) => {
-        return sections.filter(section => this.filterSection(section, criteria));
-      }
-    );
+    this.filteredSections =
+        combineLatest(
+          this.apiService.sections,
+          this.criteriaSubject
+        ).pipe(
+          map( results => ({ sections: results[0], criteria: results[1]})),
+          map( results => (
+               results.sections
+                  .map(section => ({ ...section, items: this.filterSection(section, results.criteria) }))
+          ))
+        );
 
     this.initializeSearchCriteria();
   }
@@ -107,13 +112,8 @@ export class ApiListComponent implements OnInit {
   //////// Private //////////
 
   private filterSection(section: ApiSection, { query, status, type }: SearchCriteria) {
-    let showSection = false;
-
-    section.items.forEach(item => {
-      item.show =  matchesType() && matchesStatus() && matchesQuery();
-
-      // show section if any of its items will be shown
-      showSection = showSection || item.show;
+    const items = section.items!.filter(item => {
+      return matchesType() && matchesStatus() && matchesQuery();
 
       function matchesQuery() {
         return !query ||
@@ -132,8 +132,8 @@ export class ApiListComponent implements OnInit {
       }
     });
 
-    return showSection;
-
+    // If there are no items we still return an empty array if the section name matches and the type is 'package'
+    return items.length ? items : (type === 'package' && (!query || section.name.indexOf(query) !== -1)) ? [] : null;
   }
 
   // Get initial search criteria from URL search params

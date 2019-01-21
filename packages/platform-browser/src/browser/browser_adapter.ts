@@ -118,7 +118,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   get attrToPropMap(): any { return _attrToPropMap; }
 
   contains(nodeA: any, nodeB: any): boolean { return nodeContains.call(nodeA, nodeB); }
-  querySelector(el: Element, selector: string): any { return el.querySelector(selector); }
+  querySelector(el: HTMLElement, selector: string): any { return el.querySelector(selector); }
   querySelectorAll(el: any, selector: string): any[] { return el.querySelectorAll(selector); }
   on(el: Node, evt: any, listener: any) { el.addEventListener(evt, listener, false); }
   onAndCancel(el: Node, evt: any, listener: any): Function {
@@ -276,7 +276,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getAttribute(element: Element, attribute: string): string|null {
     return element.getAttribute(attribute);
   }
-  getAttributeNS(element: Element, ns: string, name: string): string {
+  getAttributeNS(element: Element, ns: string, name: string): string|null {
     return element.getAttributeNS(ns, name);
   }
   setAttribute(element: Element, name: string, value: string) { element.setAttribute(name, value); }
@@ -295,7 +295,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
   getBoundingClientRect(el: Element): any {
     try {
       return el.getBoundingClientRect();
-    } catch (e) {
+    } catch {
       return {top: 0, bottom: 0, left: 0, right: 0, width: 0, height: 0};
     }
   }

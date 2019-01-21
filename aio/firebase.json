@@ -9,13 +9,13 @@
       //////////////////////////////////////////////////////////////////////////////////////////////
       // README:
       //   Redirects must also be handled by the ServiceWorker. If you add a redirect rule here,
-      //   make sure the routing RegExp in `ngsw-manifest.json` is updated accordingly.
+      //   make sure it is compatible with the configuration in `ngsw-config.json`.
       //////////////////////////////////////////////////////////////////////////////////////////////
 
       // A random bad indexed page that used `api/api`
       {"type": 301, "source": "/api/api/:rest*", "destination": "/api/:rest*"},
 
-      // Guide renames
+      // Guide renames/removals
       {"type": 301, "source": "/docs/*/latest/cli-quickstart.html", "destination": "/guide/quickstart"},
       {"type": 301, "source": "/docs/*/latest/glossary.html", "destination": "/guide/glossary"},
       {"type": 301, "source": "/docs/*/latest/quickstart.html", "destination": "/guide/quickstart"},
@@ -25,6 +25,8 @@
       {"type": 301, "source": "/guide/service-worker-getstart", "destination": "/guide/service-worker-getting-started"},
       {"type": 301, "source": "/guide/service-worker-comm", "destination": "/guide/service-worker-communications"},
       {"type": 301, "source": "/guide/service-worker-configref", "destination": "/guide/service-worker-config"},
+      {"type": 301, "source": "/guide/webpack", "destination": "https://v5.angular.io/guide/webpack"},
+      {"type": 301, "source": "/guide/setup-systemjs-anatomy", "destination": "/guide/file-structure"},
 
       // some top level guide pages on old site were moved below the guide folder
       {"type": 301, "source": "/styleguide", "destination": "/guide/styleguide"},
@@ -103,7 +105,12 @@
       {"type": 301, "source": "/guide/ngmodule", "destination": "/guide/ngmodules"},
       {"type": 301, "source": "/guide/learning-angular*", "destination": "/guide/quickstart"},
       {"type": 301, "source": "/testing", "destination": "/guide/testing"},
-      {"type": 301, "source": "/testing/**", "destination": "/guide/testing"}
+      {"type": 301, "source": "/testing/**", "destination": "/guide/testing"},
+
+      // Strip off the `.html` extension, because Firebase will not do this automatically any more
+      // (unless the new URL points to an existing file, which is not necessarily the case here).
+      {"type": 301, "source": "/:somePath*/:file.html", "destination": "/:somePath*/:file"},
+      {"type": 301, "source": "/:topLevelFile.html", "destination": "/:topLevelFile"}
     ],
     "rewrites": [
       {

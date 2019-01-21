@@ -28,48 +28,57 @@ export const formGroupNameProvider: any = {
  *
  * Syncs a nested `FormGroup` to a DOM element.
  *
- * This directive can only be used with a parent `FormGroupDirective` (selector:
- * `[formGroup]`).
+ * This directive can only be used with a parent `FormGroupDirective`.
  *
- * It accepts the string name of the nested `FormGroup` you want to link, and
- * will look for a `FormGroup` registered with that name in the parent
+ * It accepts the string name of the nested `FormGroup` to link, and
+ * looks for a `FormGroup` registered with that name in the parent
  * `FormGroup` instance you passed into `FormGroupDirective`.
  *
- * Nested form groups can come in handy when you want to validate a sub-group of a
- * form separately from the rest or when you'd like to group the values of certain
+ * Use nested form groups to validate a sub-group of a
+ * form separately from the rest or to group the values of certain
  * controls into their own nested object.
+ * 
+ * @see [Reactive Forms Guide](guide/reactive-forms)
  *
- * **Access the group**: You can access the associated `FormGroup` using the
- * {@link AbstractControl#get get} method. Ex: `this.form.get('name')`.
+ * @usageNotes
+ * 
+ * ### Access the group by name
+ * 
+ * The following example uses the {@link AbstractControl#get get} method to access the 
+ * associated `FormGroup`
  *
- * You can also access individual controls within the group using dot syntax.
- * Ex: `this.form.get('name.first')`
+ * ```ts
+ *   this.form.get('name');
+ * ```
+ * 
+ * ### Access individual controls in the group
+ * 
+ * The following example uses the {@link AbstractControl#get get} method to access 
+ * individual controls within the group using dot syntax.
  *
- * **Get the value**: the `value` property is always synced and available on the
- * `FormGroup`. See a full list of available properties in `AbstractControl`.
+ * ```ts
+ *   this.form.get('name.first');
+ * ```
  *
- * **Set the value**: You can set an initial value for each child control when instantiating
- * the `FormGroup`, or you can set it programmatically later using
- * {@link AbstractControl#setValue setValue} or {@link AbstractControl#patchValue patchValue}.
- *
- * **Listen to value**: If you want to listen to changes in the value of the group, you can
- * subscribe to the {@link AbstractControl#valueChanges valueChanges} event.  You can also listen to
- * {@link AbstractControl#statusChanges statusChanges} to be notified when the validation status is
- * re-calculated.
- *
- * ### Example
+ * ### Register a nested `FormGroup`.
+ * 
+ * The following example registers a nested *name* `FormGroup` within an existing `FormGroup`,
+ * and provides methods to retrieve the nested `FormGroup` and individual controls.
  *
  * {@example forms/ts/nestedFormGroup/nested_form_group_example.ts region='Component'}
  *
- * * **npm package**: `@angular/forms`
- *
- * * **NgModule**: `ReactiveFormsModule`
- *
- *
+ * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({selector: '[formGroupName]', providers: [formGroupNameProvider]})
 export class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
-  @Input('formGroupName') name: string;
+  /**
+   * @description
+   * Tracks the name of the `FormGroup` bound to the directive. The name corresponds
+   * to a key in the parent `FormGroup` or `FormArray`.
+   */
+  // TODO(issue/24571): remove '!'.
+  @Input('formGroupName') name !: string;
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
@@ -105,41 +114,18 @@ export const formArrayNameProvider: any = {
  * It accepts the string name of the nested `FormArray` you want to link, and
  * will look for a `FormArray` registered with that name in the parent
  * `FormGroup` instance you passed into `FormGroupDirective`.
+ * 
+ * @see [Reactive Forms Guide](guide/reactive-forms)
+ * @see `AbstractControl`
  *
- * Nested form arrays can come in handy when you have a group of form controls but
- * you're not sure how many there will be. Form arrays allow you to create new
- * form controls dynamically.
- *
- * **Access the array**: You can access the associated `FormArray` using the
- * {@link AbstractControl#get get} method on the parent `FormGroup`.
- * Ex: `this.form.get('cities')`.
- *
- * **Get the value**: the `value` property is always synced and available on the
- * `FormArray`. See a full list of available properties in `AbstractControl`.
- *
- * **Set the value**: You can set an initial value for each child control when instantiating
- * the `FormArray`, or you can set the value programmatically later using the
- * `FormArray`'s {@link AbstractControl#setValue setValue} or
- * {@link AbstractControl#patchValue patchValue} methods.
- *
- * **Listen to value**: If you want to listen to changes in the value of the array, you can
- * subscribe to the `FormArray`'s {@link AbstractControl#valueChanges valueChanges} event.
- * You can also listen to its {@link AbstractControl#statusChanges statusChanges} event to be
- * notified when the validation status is re-calculated.
- *
- * **Add new controls**: You can add new controls to the `FormArray` dynamically by calling
- * its {@link FormArray#push push} method.
- * Ex: `this.form.get('cities').push(new FormControl());`
+ * @usageNotes
  *
  * ### Example
  *
  * {@example forms/ts/nestedFormArray/nested_form_array_example.ts region='Component'}
  *
- * * **npm package**: `@angular/forms`
- *
- * * **NgModule**: `ReactiveFormsModule`
- *
- *
+ * @ngModule ReactiveFormsModule
+ * @publicApi
  */
 @Directive({selector: '[formArrayName]', providers: [formArrayNameProvider]})
 export class FormArrayName extends ControlContainer implements OnInit, OnDestroy {
@@ -152,7 +138,13 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
   /** @internal */
   _asyncValidators: any[];
 
-  @Input('formArrayName') name: string;
+  /**
+   * @description
+   * Tracks the name of the `FormArray` bound to the directive. The name corresponds
+   * to a key in the parent `FormGroup` or `FormArray`.
+   */
+  // TODO(issue/24571): remove '!'.
+  @Input('formArrayName') name !: string;
 
   constructor(
       @Optional() @Host() @SkipSelf() parent: ControlContainer,
@@ -164,27 +156,59 @@ export class FormArrayName extends ControlContainer implements OnInit, OnDestroy
     this._asyncValidators = asyncValidators;
   }
 
+  /**
+   * @description
+   * A lifecycle method called when the directive's inputs are initialized. For internal use only.
+   *
+   * @throws If the directive does not have a valid parent.
+   */
   ngOnInit(): void {
     this._checkParentType();
     this.formDirective !.addFormArray(this);
   }
 
+  /**
+   * @description
+   * A lifecycle method called before the directive's instance is destroyed. For internal use only.
+   */
   ngOnDestroy(): void {
     if (this.formDirective) {
       this.formDirective.removeFormArray(this);
     }
   }
 
+  /**
+   * @description
+   * The `FormArray` bound to this directive.
+   */
   get control(): FormArray { return this.formDirective !.getFormArray(this); }
 
+  /**
+   * @description
+   * The top-level directive for this group if present, otherwise null.
+   */
   get formDirective(): FormGroupDirective|null {
     return this._parent ? <FormGroupDirective>this._parent.formDirective : null;
   }
 
+  /**
+   * @description
+   * Returns an array that represents the path from the top-level form to this control.
+   * Each index is the string name of the control on that level.
+   */
   get path(): string[] { return controlPath(this.name, this._parent); }
 
+  /**
+   * @description
+   * Synchronous validator function composed of all the synchronous validators registered with this
+   * directive.
+   */
   get validator(): ValidatorFn|null { return composeValidators(this._validators); }
 
+  /**
+   * @description
+   * Async validator function composed of all the async validators registered with this directive.
+   */
   get asyncValidator(): AsyncValidatorFn|null {
     return composeAsyncValidators(this._asyncValidators);
   }

@@ -1,8 +1,17 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
-cd `dirname $0`
-./build.sh
+set -u -e -o pipefail
 
-gulp serve-examples &
+(
+  cd `dirname $0`
+  ./build.sh
 
-(cd ../../ && NODE_PATH=$NODE_PATH:dist/all $(npm bin)/protractor protractor-examples-e2e.conf.js --bundles=true)
+  gulp serve-examples &
+  trap "kill $!" EXIT
+
+  (
+    cd ../../
+    NODE_PATH=${NODE_PATH:-}:dist/all
+    $(npm bin)/protractor protractor-examples-e2e.conf.js --bundles=true
+  )
+)

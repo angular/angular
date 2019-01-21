@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/service-worker",
     deps = [
         "//packages/common",
         "//packages/core",
@@ -30,7 +29,9 @@ genrule(
     name = "ngsw_worker_renamed",
     srcs = ["//packages/service-worker/worker:ngsw_worker.es6.js"],
     outs = ["ngsw-worker.js"],
-    cmd = "cp $< $@",
+    # Remove sourcemap since this file will be served in production site
+    # See https://github.com/angular/angular/issues/23596
+    cmd = "grep -v '//# sourceMappingURL' < $< > $@",
 )
 
 ng_package(
@@ -49,6 +50,9 @@ ng_package(
     tags = [
         "release-with-framework",
     ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":service-worker",
         "//packages/service-worker/config",

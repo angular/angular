@@ -11,7 +11,7 @@ import {Observable} from 'rxjs';
 /**
  * Interface for the events emitted through the NgElementStrategy.
  *
- * @experimental
+ * @publicApi
  */
 export interface NgElementStrategyEvent {
   name: string;
@@ -22,7 +22,7 @@ export interface NgElementStrategyEvent {
  * Underlying strategy used by the NgElement to create/destroy the component and react to input
  * changes.
  *
- * @experimental
+ * @publicApi
  */
 export interface NgElementStrategy {
   events: Observable<NgElementStrategyEvent>;
@@ -36,7 +36,7 @@ export interface NgElementStrategy {
 /**
  * Factory used to create new strategies for each NgElement instance.
  *
- * @experimental
+ * @publicApi
  */
 export interface NgElementStrategyFactory {
   /** Creates a new instance to be used for an NgElement. */

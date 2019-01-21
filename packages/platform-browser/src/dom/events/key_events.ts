@@ -13,7 +13,14 @@ import {DOCUMENT} from '../dom_tokens';
 
 import {EventManagerPlugin} from './event_manager';
 
+/**
+ * Defines supported modifiers for key events.
+ */
 const MODIFIER_KEYS = ['alt', 'control', 'meta', 'shift'];
+
+/**
+ * Retrieves modifiers from key-event objects.
+ */
 const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} = {
   'alt': (event: KeyboardEvent) => event.altKey,
   'control': (event: KeyboardEvent) => event.ctrlKey,
@@ -22,14 +29,32 @@ const MODIFIER_KEY_GETTERS: {[key: string]: (event: KeyboardEvent) => boolean} =
 };
 
 /**
- * @experimental
+ * @publicApi
+ * A browser plug-in that provides support for handling of key events in Angular.
  */
 @Injectable()
 export class KeyEventsPlugin extends EventManagerPlugin {
+  /**
+   * Initializes an instance of the browser plug-in.
+   * @param doc The document in which key events will be detected.
+   */
   constructor(@Inject(DOCUMENT) doc: any) { super(doc); }
 
+  /**
+    * Reports whether a named key event is supported.
+    * @param eventName The event name to query.
+    * @return True if the named key event is supported.
+   */
   supports(eventName: string): boolean { return KeyEventsPlugin.parseEventName(eventName) != null; }
 
+  /**
+   * Registers a handler for a specific element and key event.
+   * @param element The HTML element to receive event notifications.
+   * @param eventName The name of the key event to listen for.
+   * @param handler A function to call when the notification occurs. Receives the
+   * event object as an argument.
+   * @returns The key event that was registered.
+  */
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     const parsedEvent = KeyEventsPlugin.parseEventName(eventName) !;
 
@@ -93,6 +118,13 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     return fullKey;
   }
 
+  /**
+   * Configures a handler callback for a key event.
+   * @param fullKey The event name that combines all simultaneous keystrokes.
+   * @param handler The function that responds to the key event.
+   * @param zone The zone in which the event occurred.
+   * @returns A callback function.
+   */
   static eventCallback(fullKey: any, handler: Function, zone: NgZone): Function {
     return (event: any /** TODO #9100 */) => {
       if (KeyEventsPlugin.getEventFullKey(event) === fullKey) {

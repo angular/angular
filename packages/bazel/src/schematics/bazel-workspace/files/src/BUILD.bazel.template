@@ -1,0 +1,126 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@angular//:index.bzl", "ng_module")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library", "ts_web_test_suite")
+load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle", "history_server")
+load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_package")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+<% if (sass) { %>load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+
+[
+sass_binary(
+    name = "style_" + x,
+    src = x,
+    deps = [],
+)
+for x in glob(["**/*.scss"])
+]
+<% } %>
+ng_module(
+    name = "src",
+    srcs = glob(
+        include = ["**/*.ts"],
+        exclude = [
+            "**/*.spec.ts",
+            "main.ts",
+            "test.ts",
+            "initialize_testbed.ts",
+        ],
+    ),
+    assets = glob([
+      "**/*.css",
+      "**/*.html",
+    ])<% if (sass) { %> + [":style_" + x for x in glob(["**/*.scss"])]<% } %>,
+    deps = [
+        "@angular//packages/core",
+        "@angular//packages/platform-browser",<% if (routing) { %>
+        "@angular//packages/router",<% } %>
+        "@npm//@types",
+    ],
+)
+
+rollup_bundle(
+    name = "bundle",
+    entry_point = "src/main.prod",
+    deps = ["//src"],
+)
+
+web_package(
+    name = "prodapp",
+    assets = [
+        # do not sort
+        "@npm//node_modules/zone.js:dist/zone.min.js",
+        ":bundle.min.js",
+    ],
+    data = [
+        ":bundle",
+    ],
+    index_html = "index.html",
+)
+
+history_server(
+    name = "prodserver",
+    data = [":prodapp"],
+    templated_args = ["src/prodapp"],
+)
+
+ts_devserver(
+    name = "devserver",
+    port = 4200,
+    additional_root_paths = [
+        "npm/node_modules/zone.js/dist",
+        "npm/node_modules/tslib",
+    ],
+    entry_module = "<%= utils.underscore(name) %>/src/main.dev",
+    serving_path = "/bundle.min.js",
+    static_files = [
+        "@npm//node_modules/zone.js:dist/zone.min.js",
+        "@npm//node_modules/tslib:tslib.js",
+    ],
+    index_html = "index.html",
+    deps = [":src"],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":src",
+        "@angular//packages/core/testing",
+        "@npm//@types",
+    ],
+)
+
+ts_library(
+    name = "initialize_testbed",
+    testonly = 1,
+    srcs = [
+        "initialize_testbed.ts",
+    ],
+    deps = [
+        "@angular//packages/core/testing",
+        "@angular//packages/platform-browser-dynamic/testing",
+        "@npm//@types",
+    ],
+)
+
+ts_web_test_suite(
+    name = "test",
+    srcs = ["@npm//node_modules/tslib:tslib.js"],
+    runtime_deps = [
+        ":initialize_testbed",
+    ],
+    # do not sort
+    bootstrap = [
+        "@npm//node_modules/zone.js:dist/zone-testing-bundle.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
+    ],
+    browsers = [
+        "@io_bazel_rules_webtesting//browsers:chromium-local",
+    ],
+    deps = [
+        ":test_lib",
+        "@npm//karma-jasmine",
+    ],
+)

@@ -8,7 +8,19 @@ describe('Api pages', function() {
 
   it('should show direct and indirect subclasses of a class', () => {
     const page = new ApiPage('api/forms/AbstractControlDirective');
-    expect(page.getDescendants('class')).toEqual(['ControlContainer', 'AbstractFormGroupDirective', 'NgControl']);
+    expect(page.getDescendants('class')).toEqual([
+      'ControlContainer',
+      'AbstractFormGroupDirective',
+      'NgModelGroup',
+      'FormGroupName',
+      'NgForm',
+      'FormGroupDirective',
+      'FormArrayName',
+      'NgControl',
+      'NgModel',
+      'FormControlDirective',
+      'FormControlName'
+    ]);
   });
 
   it('should show child interfaces that extend an interface', () => {
@@ -26,14 +38,9 @@ describe('Api pages', function() {
     expect(page.getOverview('type-alias').getText()).toContain('type HttpEvent<T>');
   });
 
-  it('should show readonly properties as getters', () => {
-    const page = new ApiPage('api/common/http/HttpRequest');
-    expect(page.getOverview('class').getText()).toContain('get body: T | null');
-  });
-
   it('should not show parenthesis for getters', () => {
     const page = new ApiPage('api/core/NgModuleRef');
-    expect(page.getOverview('class').getText()).toContain('get injector: Injector');
+    expect(page.getOverview('class').getText()).toContain('injector: Injector');
   });
 
   it('should show both type and initializer if set', () => {

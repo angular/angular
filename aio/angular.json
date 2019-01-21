@@ -2,7 +2,10 @@
   "$schema": "./node_modules/@angular-devkit/core/src/workspace/workspace-schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "yarn"
+    "packageManager": "yarn",
+    "warnings": {
+      "typescriptMismatch": false
+    }
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -33,7 +36,6 @@
               "src/assets",
               "src/generated",
               "src/app/search/search-worker.js",
-              "src/favicon.ico",
               "src/pwa-manifest.json",
               "src/google385281288605d160.html",
               {
@@ -62,7 +64,8 @@
                   "src": "src/environments/environment.ts",
                   "replaceWith": "src/environments/environment.next.ts"
                 }
-              ]
+              ],
+              "serviceWorker": true
             },
             "stable": {
               "fileReplacements": [
@@ -70,7 +73,8 @@
                   "src": "src/environments/environment.ts",
                   "replaceWith": "src/environments/environment.stable.ts"
                 }
-              ]
+              ],
+              "serviceWorker": true
             },
             "archive": {
               "fileReplacements": [
@@ -78,7 +82,8 @@
                   "src": "src/environments/environment.ts",
                   "replaceWith": "src/environments/environment.archive.ts"
                 }
-              ]
+              ],
+              "serviceWorker": true
             }
           }
         },
@@ -123,7 +128,6 @@
               "src/assets",
               "src/generated",
               "src/app/search/search-worker.js",
-              "src/favicon.ico",
               "src/pwa-manifest.json",
               "src/google385281288605d160.html",
               {

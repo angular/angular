@@ -10,7 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/platform-webworker",
     deps = [
         "//packages:types",
         "//packages/common",
@@ -24,7 +23,12 @@ ng_package(
     name = "npm_package",
     srcs = ["package.json"],
     entry_point = "packages/platform-webworker/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//visibility:private"],
     deps = [
         ":platform-webworker",
     ],

@@ -7,11 +7,11 @@
  */
 
 import {ɵAnimationEngine} from '@angular/animations/browser';
-import {PlatformLocation, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
+import {PlatformLocation, ViewportScroller, ɵNullViewportScroller as NullViewportScroller, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
 import {Injectable, InjectionToken, Injector, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, StaticProvider, Testability, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
 import {HttpModule} from '@angular/http';
-import {BrowserModule, DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {BrowserModule, DOCUMENT, EVENT_MANAGER_PLUGINS, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID, ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
 import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
@@ -19,6 +19,7 @@ import {DominoAdapter, parseDocument} from './domino_adapter';
 import {SERVER_HTTP_PROVIDERS} from './http';
 import {ServerPlatformLocation} from './location';
 import {PlatformState} from './platform_state';
+import {ServerEventManagerPlugin} from './server_events';
 import {ServerRendererFactory2} from './server_renderer';
 import {ServerStylesHost} from './styles_host';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
@@ -58,12 +59,13 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
   },
   ServerStylesHost,
   {provide: SharedStylesHost, useExisting: ServerStylesHost},
+  {provide: EVENT_MANAGER_PLUGINS, multi: true, useClass: ServerEventManagerPlugin},
 ];
 
 /**
  * The ng module for the server.
  *
- * @experimental
+ * @publicApi
  */
 @NgModule({
   exports: [BrowserModule],
@@ -72,6 +74,7 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
     SERVER_RENDER_PROVIDERS,
     SERVER_HTTP_PROVIDERS,
     {provide: Testability, useValue: null},
+    {provide: ViewportScroller, useClass: NullViewportScroller},
   ],
 })
 export class ServerModule {
@@ -87,7 +90,7 @@ function _document(injector: Injector) {
 }
 
 /**
- * @experimental
+ * @publicApi
  */
 export const platformServer =
     createPlatformFactory(platformCore, 'server', INTERNAL_SERVER_PLATFORM_PROVIDERS);
@@ -95,7 +98,7 @@ export const platformServer =
 /**
  * The server platform that supports the runtime compiler.
  *
- * @experimental
+ * @publicApi
  */
 export const platformDynamicServer =
     createPlatformFactory(platformCoreDynamic, 'serverDynamic', INTERNAL_SERVER_PLATFORM_PROVIDERS);

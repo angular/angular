@@ -15,7 +15,7 @@ import {ɵINTERNAL_SERVER_PLATFORM_PROVIDERS as INTERNAL_SERVER_PLATFORM_PROVIDE
 /**
  * Platform for testing
  *
- * @experimental API related to bootstrapping are still under review.
+ * @publicApi
  */
 export const platformServerTesting = createPlatformFactory(
     platformCoreDynamicTesting, 'serverTesting', INTERNAL_SERVER_PLATFORM_PROVIDERS);
@@ -23,7 +23,7 @@ export const platformServerTesting = createPlatformFactory(
 /**
  * NgModule for testing.
  *
- * @experimental API related to bootstrapping are still under review.
+ * @publicApi
  */
 @NgModule({
   exports: [BrowserDynamicTestingModule],

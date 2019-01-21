@@ -6,14 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, Component, ComponentFactoryResolver, ɵivyEnabled as ivyEnabled} from '@angular/core';
+import {Console} from '@angular/core/src/console';
 import {noComponentFactoryError} from '@angular/core/src/linker/component_factory_resolver';
 import {TestBed} from '@angular/core/testing';
+import {fixmeIvy} from '@angular/private/testing';
 
-import {Console} from '../../src/console';
 
-
-{
+if (ivyEnabled) {
+  describe('ivy', () => { declareTests(); });
+} else {
   describe('jit', () => { declareTests({useJit: true}); });
   describe('no jit', () => { declareTests({useJit: false}); });
 }
@@ -25,13 +27,12 @@ class DummyConsole implements Console {
   warn(message: string) { this.warnings.push(message); }
 }
 
-function declareTests({useJit}: {useJit: boolean}) {
+function declareTests(config?: {useJit: boolean}) {
   describe('@Component.entryComponents', function() {
     let console: DummyConsole;
     beforeEach(() => {
       console = new DummyConsole();
-      TestBed.configureCompiler(
-          {useJit: useJit, providers: [{provide: Console, useValue: console}]});
+      TestBed.configureCompiler({...config, providers: [{provide: Console, useValue: console}]});
       TestBed.configureTestingModule({declarations: [MainComp, ChildComp, NestedChildComp]});
     });
 
@@ -68,18 +69,22 @@ function declareTests({useJit}: {useJit: boolean}) {
       expect(childComp.cfr.resolveComponentFactory(ChildComp) !.componentType).toBe(ChildComp);
     });
 
-    it('should not be able to get components from a parent component (content hierarchy)', () => {
-      TestBed.overrideComponent(MainComp, {set: {template: '<child><nested></nested></child>'}});
-      TestBed.overrideComponent(ChildComp, {set: {template: '<ng-content></ng-content>'}});
+    fixmeIvy(
+        'FW-805: Ivy\'s implementation of ComponentFactoryResolver doesn\'t have checks present in the view engine')
+        .it('should not be able to get components from a parent component (content hierarchy)',
+            () => {
+              TestBed.overrideComponent(
+                  MainComp, {set: {template: '<child><nested></nested></child>'}});
+              TestBed.overrideComponent(ChildComp, {set: {template: '<ng-content></ng-content>'}});
 
-      const compFixture = TestBed.createComponent(MainComp);
-      const nestedChildCompEl = compFixture.debugElement.children[0].children[0];
-      const nestedChildComp: NestedChildComp = nestedChildCompEl.componentInstance;
-      expect(nestedChildComp.cfr.resolveComponentFactory(ChildComp) !.componentType)
-          .toBe(ChildComp);
-      expect(() => nestedChildComp.cfr.resolveComponentFactory(NestedChildComp))
-          .toThrow(noComponentFactoryError(NestedChildComp));
-    });
+              const compFixture = TestBed.createComponent(MainComp);
+              const nestedChildCompEl = compFixture.debugElement.children[0].children[0];
+              const nestedChildComp: NestedChildComp = nestedChildCompEl.componentInstance;
+              expect(nestedChildComp.cfr.resolveComponentFactory(ChildComp) !.componentType)
+                  .toBe(ChildComp);
+              expect(() => nestedChildComp.cfr.resolveComponentFactory(NestedChildComp))
+                  .toThrow(noComponentFactoryError(NestedChildComp));
+            });
 
   });
 }

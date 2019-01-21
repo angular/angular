@@ -1,9 +1,9 @@
 {
   "name": "ts-api-guardian",
-  "version": "0.3.0",
+  "version": "0.4.1",
   "description": "Guards the API of TypeScript libraries!",
-  "main": "build/lib/main.js",
-  "typings": "build/definitions/main.d.ts",
+  "main": "lib/main.js",
+  "typings": "lib/main.d.ts",
   "bin": {
     "ts-api-guardian": "./bin/ts-api-guardian"
   },
@@ -11,7 +11,7 @@
     "test": "test"
   },
   "peerDependencies": {
-    "typescript": "^2.6.1"
+    "typescript": "~3.2.2"
   },
   "dependencies": {
     "chalk": "^2.3.1",
@@ -19,9 +19,15 @@
     "minimist": "^1.2.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.2",
+    "@types/diff": "^3.5.1",
+    "@types/jasmine": "^2.8.8",
+    "@types/minimist": "^1.2.0",
+    "@types/node": "^10.9.2",
     "chai": "^4.1.2",
     "jasmine": "^3.1.0",
-    "typescript": "~2.6.2"
+    "source-map-support": "^0.5.9",
+    "typescript": "~3.2.2"
   },
   "repository": {},
   "keywords": [
@@ -31,8 +37,8 @@
     "Alan Agius <alan.agius4@gmail.com> (https://github.com/alan-agius4/)",
     "Alex Eagle <alexeagle@google.com> (https://angular.io/)",
     "Martin Probst <martinprobst@google.com> (https://angular.io/)",
-    "Victor Savkin<vsavkin@google.com> (https://victorsavkin.com)",
-    "Igor Minar<iminar@google.com> (https://angular.io/)"
+    "Victor Savkin <vsavkin@google.com> (https://victorsavkin.com)",
+    "Igor Minar <iminar@google.com> (https://angular.io/)"
   ],
   "license": "MIT",
   "bugs": {

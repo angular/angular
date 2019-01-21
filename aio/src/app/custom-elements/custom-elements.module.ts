@@ -6,8 +6,11 @@ import {
   ELEMENT_MODULE_PATHS_AS_ROUTES,
   ELEMENT_MODULE_PATHS_TOKEN
 } from './element-registry';
+import { LazyCustomElementComponent } from './lazy-custom-element.component';
 
 @NgModule({
+  declarations: [ LazyCustomElementComponent ],
+  exports: [ LazyCustomElementComponent ],
   providers: [
     ElementsLoader,
     { provide: NgModuleFactoryLoader, useClass: SystemJsNgModuleLoader },

@@ -6,12 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {fixmeIvy, ivyEnabled, obsoleteInIvy} from '@angular/private/testing';
 import * as path from 'path';
 import * as shx from 'shelljs';
 
-const corePackagePath =
-    path.join(process.env['TEST_SRCDIR'], 'angular', 'packages', 'core', 'npm_package');
-shx.cd(corePackagePath);
+// Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
+// resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
+// file, which is not necessarily at the root of the "npm_package".
+shx.cd(path.dirname(require.resolve('angular/packages/core/npm_package/package.json')));
 
 /**
  * Utility functions that allows me to create fs paths
@@ -72,9 +74,9 @@ describe('@angular/core ng_package', () => {
 
 
     describe('typescript support', () => {
-
-      it('should have an index.d.ts file',
+      it('should have an index d.ts file',
          () => { expect(shx.cat('core.d.ts')).toContain(`export *`); });
+
       it('should not have amd module names',
          () => { expect(shx.cat('public_api.d.ts')).not.toContain('<amd-module name'); });
     });
@@ -87,11 +89,12 @@ describe('@angular/core ng_package', () => {
     });
 
 
-    describe('angular metadata', () => {
+    obsoleteInIvy('metadata files are no longer needed or produced in Ivy')
+        .describe('angular metadata', () => {
 
-      it('should have metadata.json files',
-         () => { expect(shx.cat('core.metadata.json')).toContain(`"__symbolic":"module"`); });
-    });
+          it('should have metadata.json files',
+             () => { expect(shx.cat('core.metadata.json')).toContain(`"__symbolic":"module"`); });
+        });
 
 
     describe('fesm2015', () => {
@@ -108,8 +111,10 @@ describe('@angular/core ng_package', () => {
             .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
       });
 
-      it('should have been built from the generated bundle index',
-         () => { expect(shx.cat('fesm2015/core.js')).toMatch('export {.*makeParamDecorator'); });
+      obsoleteInIvy('we no longer need to export private symbols')
+          .it('should have been built from the generated bundle index', () => {
+            expect(shx.cat('fesm2015/core.js')).toMatch('export {.*makeParamDecorator');
+          });
     });
 
 
@@ -126,16 +131,24 @@ describe('@angular/core ng_package', () => {
         expect(shx.cat('fesm5/core.js')).not.toContain('@fileoverview added by tsickle');
       });
 
-      it('should have annotations rather than decorators',
-         () => { expect(shx.cat('fesm5/core.js')).not.toContain('__decorate'); });
+      if (ivyEnabled) {
+        it('should have decorators downleveled to static props e.g. ngInjectableDef', () => {
+          expect(shx.cat('fesm5/core.js')).not.toContain('__decorate');
+          expect(shx.cat('fesm5/core.js')).toContain('.ngInjectableDef = ');
+        });
+      } else {
+        it('should have decorators',
+           () => { expect(shx.cat('fesm5/core.js')).toContain('__decorate'); });
+      }
 
       it('should load tslib from external bundle', () => {
         expect(shx.cat('fesm5/core.js')).not.toContain('function __extends');
         expect(shx.cat('fesm5/core.js')).toMatch('import {.*__extends');
       });
 
-      it('should have been built from the generated bundle index',
-         () => { expect(shx.cat('fesm5/core.js')).toMatch('export {.*makeParamDecorator'); });
+      obsoleteInIvy('we no longer need to export private symbols')
+          .it('should have been built from the generated bundle index',
+              () => { expect(shx.cat('fesm5/core.js')).toMatch('export {.*makeParamDecorator'); });
     });
 
 
@@ -211,31 +224,23 @@ describe('@angular/core ng_package', () => {
     describe('typings', () => {
       const typingsFile = p `testing/index.d.ts`;
       it('should have a typings file',
-         () => { expect(shx.cat(typingsFile)).toContain('export * from \'./public_api\';'); });
-    });
-    describe('typescript support', () => {
+         () => { expect(shx.cat(typingsFile)).toContain(`export * from './public_api';`); });
 
-      // TODO(i): why in the parent dir?
-      it('should have an \'redirect\' d.ts file in the parent dir',
-         () => { expect(shx.cat('testing.d.ts')).toContain(`export *`); });
-
-      it('should have a \'actual\' d.ts file in the parent dir', () => {
-        expect(shx.cat('testing/index.d.ts')).toContain(`export * from './public_api';`);
-      });
+      obsoleteInIvy(
+          'now that we don\'t need metadata files, we don\'t need these redirects to help resolve paths to them')
+          .it('should have an \'redirect\' d.ts file in the parent dir', () => {
+            expect(shx.cat('testing.d.ts')).toContain(`export * from './testing/testing';`);
+          });
     });
 
-    describe('angular metadata file', () => {
-      it('should have a \'redirect\' metadata.json file next to the d.ts file', () => {
-        expect(shx.cat('testing.metadata.json'))
-            .toContain(`"exports":[{"from":"./testing/testing"}],"flatModuleIndexRedirect":true`);
-      });
-
-      it('should have an \'actual\' metadata.json file', () => {
-        expect(shx.cat('testing/testing.metadata.json'))
-            .toContain(`"metadata":{"async":{"__symbolic":"function"},`);
-      });
-    });
-
+    obsoleteInIvy('metadata files are no longer needed or produced in Ivy')
+        .describe('angular metadata file', () => {
+          it('should have a \'redirect\' metadata.json file next to the d.ts file', () => {
+            expect(shx.cat('testing.metadata.json'))
+                .toContain(
+                    `"exports":[{"from":"./testing/testing"}],"flatModuleIndexRedirect":true`);
+          });
+        });
 
     describe('fesm2015', () => {
       it('should have a fesm15 file in the /fesm2015 directory',

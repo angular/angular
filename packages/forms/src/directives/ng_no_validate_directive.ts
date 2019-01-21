@@ -21,7 +21,9 @@ import {Directive} from '@angular/core';
  * <form ngNativeValidate></form>
  * ```
  *
- * @experimental
+ * @publicApi
+ * @ngModule ReactiveFormsModule
+ * @ngModule FormsModule
  */
 @Directive({
   selector: 'form:not([ngNoForm]):not([ngNativeValidate])',

@@ -31,7 +31,7 @@ Structural directives are easy to recognize.
 An asterisk (*) precedes the directive attribute name as in this example.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif)" region="ngif">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif)" region="ngif">
 
 </code-example>
 
@@ -52,7 +52,7 @@ described in the [_Template Syntax_](guide/template-syntax) guide and seen in sa
 Here's an example of them in a template:
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (built-in)" region="built-in">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (built-in)" region="built-in">
 
 </code-example>
 
@@ -88,7 +88,7 @@ you apply the directive to an element in the HTML template.
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -121,7 +121,7 @@ You can [only apply one](guide/structural-directives#one-per-element) _structura
 It takes a boolean expression and makes an entire chunk of the DOM appear or disappear.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-true)" region="ngif-true">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-true)" region="ngif-true">
 
 </code-example>
 
@@ -150,7 +150,7 @@ The component and DOM nodes can be garbage-collected and free up memory.
 A directive could hide the unwanted paragraph instead by setting its `display` style to `none`.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (display-none)" region="display-none">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (display-none)" region="display-none">
 
 </code-example>
 
@@ -201,7 +201,7 @@ and wondered why it is necessary and what it does.
 Here is `*ngIf` displaying the hero's name if `hero` exists.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (asterisk)" region="asterisk">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (asterisk)" region="asterisk">
 
 </code-example>
 
@@ -211,7 +211,7 @@ The asterisk is "syntactic sugar" for something a bit more complicated.
 Internally, Angular translates the `*ngIf` _attribute_ into a `<ng-template>` _element_, wrapped around the host element, like this.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-template)" region="ngif-template">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-template)" region="ngif-template">
 
 </code-example>
 
@@ -246,7 +246,7 @@ Angular transforms the `*ngFor` in similar fashion from asterisk (*) syntax to `
 Here's a full-featured application of `NgFor`, written both ways:
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (inside-ngfor)" region="inside-ngfor">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (inside-ngfor)" region="inside-ngfor">
 
 </code-example>
 
@@ -373,7 +373,7 @@ The Angular _NgSwitch_ is actually a set of cooperating directives: `NgSwitch`, 
 Here's an example.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch)" region="ngswitch">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngswitch)" region="ngswitch">
 
 </code-example>
 
@@ -392,7 +392,7 @@ An `NgSwitchCase` displays its host element when its value matches the switch va
 The `NgSwitchDefault` displays its host element when no sibling `NgSwitchCase` matches the switch value.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -409,7 +409,7 @@ As with other structural directives, the `NgSwitchCase` and `NgSwitchDefault`
 can be desugared into the `<ng-template>` element form.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngswitch-template)" region="ngswitch-template">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngswitch-template)" region="ngswitch-template">
 
 </code-example>
 
@@ -444,7 +444,7 @@ those elements disappear.
 That's the fate of the middle "Hip!" in the phrase "Hip! Hip! Hooray!".
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (template-tag)" region="template-tag">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (template-tag)" region="template-tag">
 
 </code-example>
 
@@ -476,7 +476,7 @@ There's often a _root_ element that can and should host the structural directive
 The list element (`<li>`) is a typical host element of an `NgFor` repeater.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngfor-li)" region="ngfor-li">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngfor-li)" region="ngfor-li">
 
 </code-example>
 
@@ -486,7 +486,7 @@ When there isn't a host element, you can usually wrap the content in a native HT
 such as a `<div>`, and attach the directive to that wrapper.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif)" region="ngif">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif)" region="ngif">
 
 </code-example>
 
@@ -501,7 +501,7 @@ neither expect nor accommodate the new layout.
 For example, suppose you have the following paragraph layout.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-span)" region="ngif-span">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-span)" region="ngif-span">
 
 </code-example>
 
@@ -510,7 +510,7 @@ For example, suppose you have the following paragraph layout.
 You also have a CSS style rule that happens to apply to a `<span>` within a `<p>`aragraph.
 
 
-<code-example path="structural-directives/src/app/app.component.css" linenums="false" title="src/app/app.component.css (p-span)" region="p-span">
+<code-example path="structural-directives/src/app/app.component.css" linenums="false" header="src/app/app.component.css (p-span)" region="p-span">
 
 </code-example>
 
@@ -534,7 +534,7 @@ You can't wrap the _options_ in a conditional `<div>` or a `<span>`.
 When you try this,
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (select-span)" region="select-span">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (select-span)" region="select-span">
 
 </code-example>
 
@@ -559,7 +559,7 @@ because Angular _doesn't put it in the DOM_.
 Here's the conditional paragraph again, this time using `<ng-container>`.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (ngif-ngcontainer)" region="ngif-ngcontainer">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (ngif-ngcontainer)" region="ngif-ngcontainer">
 
 </code-example>
 
@@ -577,7 +577,7 @@ It renders properly.
 Now conditionally exclude a _select_ `<option>` with `<ng-container>`.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (select-ngcontainer)" region="select-ngcontainer">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (select-ngcontainer)" region="select-ngcontainer">
 
 </code-example>
 
@@ -625,7 +625,7 @@ that does the opposite of `NgIf`.
 `UnlessDirective` displays the content when the condition is ***false***.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (appUnless-1)" region="appUnless-1">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (appUnless-1)" region="appUnless-1">
 
 </code-example>
 
@@ -644,7 +644,7 @@ Creating a directive is similar to creating a component.
 Here's how you might begin:
 
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (skeleton)" region="skeleton">
+<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (skeleton)" region="skeleton">
 
 </code-example>
 
@@ -679,7 +679,7 @@ and access the _view container_ through a
 You inject both in the directive constructor as private variables of the class.
 
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (ctor)" region="ctor">
+<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (ctor)" region="ctor">
 
 </code-example>
 
@@ -691,7 +691,7 @@ The directive consumer expects to bind a true/false condition to `[appUnless]`.
 That means the directive needs an `appUnless` property, decorated with `@Input`
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -702,7 +702,7 @@ Read about `@Input` in the [_Template Syntax_](guide/template-syntax#inputs-outp
 
 
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (set)" region="set">
+<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (set)" region="set">
 
 </code-example>
 
@@ -722,7 +722,7 @@ Nobody reads the `appUnless` property so it doesn't need a getter.
 The completed directive code looks like this:
 
 
-<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" title="src/app/unless.directive.ts (excerpt)" region="no-docs">
+<code-example path="structural-directives/src/app/unless.directive.ts" linenums="false" header="src/app/unless.directive.ts (excerpt)" region="no-docs">
 
 </code-example>
 
@@ -733,7 +733,7 @@ Add this directive to the `declarations` array of the AppModule.
 Then create some HTML to try it.
 
 
-<code-example path="structural-directives/src/app/app.component.html" linenums="false" title="src/app/app.component.html (appUnless)" region="appUnless">
+<code-example path="structural-directives/src/app/app.component.html" linenums="false" header="src/app/app.component.html (appUnless)" region="appUnless">
 
 </code-example>
 
@@ -762,31 +762,31 @@ Here is the source from the `src/app/` folder.
 
 <code-tabs>
 
-  <code-pane title="app.component.ts" path="structural-directives/src/app/app.component.ts">
+  <code-pane header="app.component.ts" path="structural-directives/src/app/app.component.ts">
 
   </code-pane>
 
-  <code-pane title="app.component.html" path="structural-directives/src/app/app.component.html">
+  <code-pane header="app.component.html" path="structural-directives/src/app/app.component.html">
 
   </code-pane>
 
-  <code-pane title="app.component.css" path="structural-directives/src/app/app.component.css">
+  <code-pane header="app.component.css" path="structural-directives/src/app/app.component.css">
 
   </code-pane>
 
-  <code-pane title="app.module.ts" path="structural-directives/src/app/app.module.ts">
+  <code-pane header="app.module.ts" path="structural-directives/src/app/app.module.ts">
 
   </code-pane>
 
-  <code-pane title="hero.ts" path="structural-directives/src/app/hero.ts">
+  <code-pane header="hero.ts" path="structural-directives/src/app/hero.ts">
 
   </code-pane>
 
-  <code-pane title="hero-switch.components.ts" path="structural-directives/src/app/hero-switch.components.ts">
+  <code-pane header="hero-switch.components.ts" path="structural-directives/src/app/hero-switch.components.ts">
 
   </code-pane>
 
-  <code-pane title="unless.directive.ts" path="structural-directives/src/app/unless.directive.ts">
+  <code-pane header="unless.directive.ts" path="structural-directives/src/app/unless.directive.ts">
 
   </code-pane>
 

@@ -12,14 +12,14 @@ Every application has at least one Angular module, the _root_ module
 that you bootstrap to launch the application.
 By convention, it is usually called `AppModule`.
 
-If you use the CLI to generate an app, the default `AppModule` is as follows:
+If you use the [Angular CLI](cli) to generate an app, the default `AppModule` is as follows:
 
 ```typescript
 /* JavaScript imports */
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 
@@ -31,7 +31,7 @@ import { AppComponent } from './app.component';
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
@@ -52,7 +52,7 @@ The `@NgModule` decorator identifies `AppModule` as an `NgModule` class.
 * **_bootstrap_**&mdash;the _root_ component that Angular creates and inserts
 into the `index.html` host web page.
 
-The default CLI application only has one component, `AppComponent`, so it
+The default application created by the Angular CLI only has one component, `AppComponent`, so it
 is in both the `declarations` and the `bootstrap` arrays.
 
 {@a declarations}
@@ -106,18 +106,18 @@ To use a directive, component, or pipe in a module, you must do a few things:
 Those three steps look like the following. In the file where you create your directive, export it.
 The following example, named `ItemDirective` is the default directive structure that the CLI generates in its own file, `item.directive.ts`:
 
-<code-example path="bootstrapping/src/app/item.directive.ts" region="directive" title="src/app/item.directive.ts" linenums="false">
+<code-example path="bootstrapping/src/app/item.directive.ts" region="directive" header="src/app/item.directive.ts" linenums="false">
 </code-example>
 
 The key point here is that you have to export it so you can import it elsewhere. Next, import it
 into the NgModule, in this example `app.module.ts`, with a JavaScript import statement:
 
-<code-example path="bootstrapping/src/app/app.module.ts" region="directive-import" title="src/app/app.module.ts" linenums="false">
+<code-example path="bootstrapping/src/app/app.module.ts" region="directive-import" header="src/app/app.module.ts" linenums="false">
 </code-example>
 
 And in the same file, add it to the `@NgModule` `declarations` array:
 
-<code-example path="bootstrapping/src/app/app.module.ts" region="declarations" title="src/app/app.module.ts" linenums="false">
+<code-example path="bootstrapping/src/app/app.module.ts" region="declarations" header="src/app/app.module.ts" linenums="false">
 </code-example>
 
 
@@ -138,13 +138,10 @@ It tells Angular about other NgModules that this particular module needs to func
 This list of modules are those that export components, directives, or pipes
 that the component templates in this module reference. In this case, the component is
 `AppComponent`, which references components, directives, or pipes in `BrowserModule`,
-`FormsModule`, or  `HttpModule`.
+`FormsModule`, or  `HttpClientModule`.
 A component template can reference another component, directive,
 or pipe when the referenced class is declared in this module or
 the class was imported from another module.
-
-You don't have any services to provide yet.
-But you will create some before long and you may chose to provide many of them here.
 
 {@a bootstrap-array}
 

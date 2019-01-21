@@ -47,61 +47,86 @@ const resolvedPromise = Promise.resolve(null);
 
 /**
  * @description
- *
  * Creates a `FormControl` instance from a domain model and binds it
  * to a form control element.
  *
- * The `FormControl` instance will track the value, user interaction, and
- * validation status of the control and keep the view synced with the model. If used
- * within a parent form, the directive will also register itself with the form as a child
+ * The `FormControl` instance tracks the value, user interaction, and
+ * validation status of the control and keeps the view synced with the model. If used
+ * within a parent form, the directive also registers itself with the form as a child
  * control.
  *
- * This directive can be used by itself or as part of a larger form. All you need is the
+ * This directive is used by itself or as part of a larger form. Use the
  * `ngModel` selector to activate it.
  *
  * It accepts a domain model as an optional `Input`. If you have a one-way binding
  * to `ngModel` with `[]` syntax, changing the value of the domain model in the component
- * class will set the value in the view. If you have a two-way binding with `[()]` syntax
- * (also known as 'banana-box syntax'), the value in the UI will always be synced back to
- * the domain model in your class as well.
+ * class sets the value in the view. If you have a two-way binding with `[()]` syntax
+ * (also known as 'banana-box syntax'), the value in the UI always syncs back to
+ * the domain model in your class.
  *
- * If you wish to inspect the properties of the associated `FormControl` (like
- * validity state), you can also export the directive into a local template variable using
- * `ngModel` as the key (ex: `#myVar="ngModel"`). You can then access the control using the
- * directive's `control` property, but most properties you'll need (like `valid` and `dirty`)
- * will fall through to the control anyway, so you can access them directly. You can see a
- * full list of properties directly available in `AbstractControlDirective`.
+ * To inspect the properties of the associated `FormControl` (like validity state), 
+ * export the directive into a local template variable using `ngModel` as the key (ex: `#myVar="ngModel"`).
+ * You then access the control using the directive's `control` property, 
+ * but most properties used (like `valid` and `dirty`) fall through to the control anyway for direct access. 
+ * See a full list of properties directly available in `AbstractControlDirective`.
  *
- * The following is an example of a simple standalone control using `ngModel`:
+ * @see `RadioControlValueAccessor` 
+ * @see `SelectControlValueAccessor`
+ * 
+ * @usageNotes
+ * 
+ * ### Using ngModel on a standalone control
+ *
+ * The following examples show a simple standalone control using `ngModel`:
  *
  * {@example forms/ts/simpleNgModel/simple_ng_model_example.ts region='Component'}
  *
  * When using the `ngModel` within `<form>` tags, you'll also need to supply a `name` attribute
  * so that the control can be registered with the parent form under that name.
  *
- * It's worth noting that in the context of a parent form, you often can skip one-way or
- * two-way binding because the parent form will sync the value for you. You can access
- * its properties by exporting it into a local template variable using `ngForm` (ex:
- * `#f="ngForm"`). Then you can pass it where it needs to go on submit.
+ * In the context of a parent form, it's often unnecessary to include one-way or two-way binding, 
+ * as the parent form syncs the value for you. You access its properties by exporting it into a 
+ * local template variable using `ngForm` such as (`#f="ngForm"`). Use the variable where 
+ * needed on form submission.
  *
  * If you do need to populate initial values into your form, using a one-way binding for
  * `ngModel` tends to be sufficient as long as you use the exported form's value rather
  * than the domain model's value on submit.
+ * 
+ * ### Using ngModel within a form
  *
- * Take a look at an example of using `ngModel` within a form:
+ * The following example shows controls using `ngModel` within a form:
  *
  * {@example forms/ts/simpleForm/simple_form_example.ts region='Component'}
+ * 
+ * ### Using a standalone ngModel within a group
+ * 
+ * The following example shows you how to use a standalone ngModel control
+ * within a form. This controls the display of the form, but doesn't contain form data.
  *
- * To see `ngModel` examples with different form control types, see:
+ * ```html
+ * <form>
+ *   <input name="login" ngModel placeholder="Login">
+ *   <input type="checkbox" ngModel [ngModelOptions]="{standalone: true}"> Show more options?
+ * </form>
+ * <!-- form value: {login: ''} -->
+ * ```
+ * 
+ * ### Setting the ngModel name attribute through options
+ * 
+ * The following example shows you an alternate way to set the name attribute. The name attribute is used
+ * within a custom form component, and the name `@Input` property serves a different purpose.
  *
- * * Radio buttons: `RadioControlValueAccessor`
- * * Selects: `SelectControlValueAccessor`
+ * ```html
+ * <form>
+ *   <my-person-control name="Nancy" ngModel [ngModelOptions]="{name: 'user'}">
+ *   </my-person-control>
+ * </form>
+ * <!-- form value: {user: ''} -->
+ * ```
  *
- * **npm package**: `@angular/forms`
- *
- * **NgModule**: `FormsModule`
- *
- *
+ * @ngModule FormsModule
+ * @publicApi
  */
 @Directive({
   selector: '[ngModel]:not([formControlName]):not([formControl])',
@@ -113,51 +138,58 @@ export class NgModel extends NgControl implements OnChanges,
   public readonly control: FormControl = new FormControl();
   /** @internal */
   _registered = false;
+
+  /**
+   * @description
+   * Internal reference to the view model value.
+   */
   viewModel: any;
 
-  @Input() name: string;
-  @Input('disabled') isDisabled: boolean;
+  /**
+   * @description
+   * Tracks the name bound to the directive. The parent form
+   * uses this name as a key to retrieve this control's value.
+   */
+  // TODO(issue/24571): remove '!'.
+  @Input() name !: string;
+
+  /**
+   * @description
+   * Tracks whether the control is disabled.
+   */
+  // TODO(issue/24571): remove '!'.
+  @Input('disabled') isDisabled !: boolean;
+
+  /**
+   * @description
+   * Tracks the value bound to this directive.
+   */
   @Input('ngModel') model: any;
 
   /**
-   * Options object for this `ngModel` instance. You can configure the following properties:
+   * @description
+   * Tracks the configuration options for this `ngModel` instance.
    *
-   * **name**: An alternative to setting the name attribute on the form control element.
-   * Sometimes, especially with custom form components, the name attribute might be used
-   * as an `@Input` property for a different purpose. In cases like these, you can configure
-   * the `ngModel` name through this option.
+   * **name**: An alternative to setting the name attribute on the form control element. See
+   * the [example](api/forms/NgModel#using-ngmodel-on-a-standalone-control) for using `NgModel`
+   * as a standalone control.
    *
-   * ```html
-   * <form>
-   *   <my-person-control name="Nancy" ngModel [ngModelOptions]="{name: 'user'}">
-   *   </my-person-control>
-   * </form>
-   * <!-- form value: {user: ''} -->
-   * ```
+   * **standalone**: When set to true, the `ngModel` will not register itself with its parent form,
+   * and acts as if it's not in the form. Defaults to false.
    *
-   * **standalone**: Defaults to false. If this is set to true, the `ngModel` will not
-   * register itself with its parent form, and will act as if it's not in the form. This
-   * can be handy if you have form meta-controls, a.k.a. form elements nested in
-   * the `<form>` tag that control the display of the form, but don't contain form data.
-   *
-   * ```html
-   * <form>
-   *   <input name="login" ngModel placeholder="Login">
-   *   <input type="checkbox" ngModel [ngModelOptions]="{standalone: true}"> Show more options?
-   * </form>
-   * <!-- form value: {login: ''} -->
-   * ```
-   *
-   * **updateOn**: Defaults to `'change'`. Defines the event upon which the form control
-   * value and validity will update. Also accepts `'blur'` and `'submit'`.
-   *
-   * ```html
-   * <input [(ngModel)]="firstName" [ngModelOptions]="{updateOn: 'blur'}">
-   * ```
+   * **updateOn**: Defines the event upon which the form control value and validity update.
+   * Defaults to 'change'. Possible values: `'change'` | `'blur'` | `'submit'`.
    *
    */
-  @Input('ngModelOptions') options: {name?: string, standalone?: boolean, updateOn?: FormHooks};
+  // TODO(issue/24571): remove '!'.
+  @Input('ngModelOptions')
+  options !: {name?: string, standalone?: boolean, updateOn?: FormHooks};
 
+  /**
+   * @description
+   * Event emitter for producing the `ngModelChange` event after
+   * the view model updates.
+   */
   @Output('ngModelChange') update = new EventEmitter();
 
   constructor(@Optional() @Host() parent: ControlContainer,
@@ -172,6 +204,13 @@ export class NgModel extends NgControl implements OnChanges,
                 this.valueAccessor = selectValueAccessor(this, valueAccessors);
               }
 
+              /**
+               * @description
+               * A lifecycle method called when the directive's inputs change. For internal use
+               * only.
+               *
+               * @param changes A object of key/value pairs for the set of changed inputs.
+               */
               ngOnChanges(changes: SimpleChanges) {
                 this._checkForErrors();
                 if (!this._registered) this._setUpControl();
@@ -185,20 +224,50 @@ export class NgModel extends NgControl implements OnChanges,
                 }
               }
 
+              /**
+               * @description
+               * Lifecycle method called before the directive's instance is destroyed. For internal
+               * use only.
+               */
               ngOnDestroy(): void { this.formDirective && this.formDirective.removeControl(this); }
 
+              /**
+               * @description
+               * Returns an array that represents the path from the top-level form to this control.
+               * Each index is the string name of the control on that level.
+               */
               get path(): string[] {
                 return this._parent ? controlPath(this.name, this._parent) : [this.name];
               }
 
+              /**
+               * @description
+               * The top-level directive for this control if present, otherwise null.
+               */
               get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
+              /**
+               * @description
+               * Synchronous validator function composed of all the synchronous validators
+               * registered with this directive.
+               */
               get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
 
+              /**
+               * @description
+               * Async validator function composed of all the async validators registered with this
+               * directive.
+               */
               get asyncValidator(): AsyncValidatorFn|null {
                 return composeAsyncValidators(this._rawAsyncValidators);
               }
 
+              /**
+               * @description
+               * Sets the new value for the view model and emits an `ngModelChange` event.
+               *
+               * @param newValue The new value emitted by `ngModelChange`.
+               */
               viewToModelUpdate(newValue: any): void {
                 this.viewModel = newValue;
                 this.update.emit(newValue);

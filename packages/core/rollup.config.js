@@ -10,8 +10,9 @@ const resolve = require('rollup-plugin-node-resolve');
 const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {
+  '@angular/compiler': 'ng.compiler',
   'rxjs': 'rxjs',
-  'rxjs/operators': 'rxjs.operators'
+  'rxjs/operators': 'rxjs.operators',
 };
 
 module.exports = {

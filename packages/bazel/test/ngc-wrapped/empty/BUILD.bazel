@@ -6,5 +6,8 @@ ng_module(
     name = "empty",
     srcs = ["empty.ts"],
     tsconfig = ":tsconfig.json",
-    deps = ["//packages/core"],
+    deps = [
+        "//packages/core",
+        "@ngdeps//@types",
+    ],
 )

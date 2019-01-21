@@ -84,8 +84,10 @@ class _Tokenizer {
   private _index: number = -1;
   private _line: number = 0;
   private _column: number = -1;
-  private _currentTokenStart: ParseLocation;
-  private _currentTokenType: TokenType;
+  // TODO(issue/24571): remove '!'.
+  private _currentTokenStart !: ParseLocation;
+  // TODO(issue/24571): remove '!'.
+  private _currentTokenType !: TokenType;
   private _expansionCaseStack: TokenType[] = [];
   private _inInterpolation: boolean = false;
 
@@ -332,7 +334,7 @@ class _Tokenizer {
       try {
         const charCode = parseInt(strNum, isHex ? 16 : 10);
         return String.fromCharCode(charCode);
-      } catch (e) {
+      } catch {
         const entity = this._input.substring(start.offset + 1, this._index - 1);
         throw this._createError(_unknownEntityErrorMsg(entity), this._getSpan(start));
       }

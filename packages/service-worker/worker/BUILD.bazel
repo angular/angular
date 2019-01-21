@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
-load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
+load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
 
 ts_library(
     name = "worker",
@@ -13,6 +12,7 @@ ts_library(
         exclude = ["main.ts"],
     ),
     tsconfig = ":tsconfig.json",
+    deps = ["@ngdeps//@types/node"],
 )
 
 ts_library(

@@ -1,15 +1,11 @@
 # Getting started with service workers
 
 
-This document explains how to enable Angular service worker support in your CLI projects. It then uses a simple example to show you a service worker in action, demonstrating loading and basic caching. 
+This document explains how to enable Angular service worker support in projects that you created with the [Angular CLI](cli). It then uses a simple example to show you a service worker in action, demonstrating loading and basic caching. 
 
 #### Prerequisites
 
-A basic understanding of the following:
-* [Introduction to Angular service workers](guide/service-worker-intro).
-* Angular v6, including Angular CLI v6.
-
-<hr />
+A basic understanding of the information in [Introduction to Angular service workers](guide/service-worker-intro).
 
 
 ## Adding a service worker to your project
@@ -18,7 +14,7 @@ To set up the Angular service worker in your project, use the CLI command `ng ad
 with setting up the necessary support files.
 
 ```sh
-ng add  @angular/pwa --project *project-name* 
+ng add @angular/pwa --project *project-name* 
 ```
 
 The above command completes the following actions:
@@ -49,13 +45,12 @@ using an example application.
 
 ### Serving with `http-server`
 
-Because `ng serve` does not work with service workers, you must use a separate HTTP server to test your project locally. You can use any HTTP server. The example below uses the [http-server](https://www.npmjs.com/package/http-server) package from npm. To reduce the possibility of conflicts, test on a dedicated port.
+Because `ng serve` does not work with service workers, you must use a separate HTTP server to test your project locally. You can use any HTTP server. The example below uses the [http-server](https://www.npmjs.com/package/http-server) package from npm. To reduce the possibility of conflicts and avoid serving stale content, test on a dedicated port and disable caching.
 
-To serve with `http-server`, change to the directory containing your web files and start the web server: 
+To serve the directory containing your web files with `http-server`, run the following command:
 
 ```sh
-cd dist
-http-server -p 8080
+http-server -p 8080 -c-1 dist/<project-name>
 ```
 
 ### Initial load
@@ -99,6 +94,16 @@ Notice that all of the files the browser needs to render this application are ca
 * `favicon.ico`.
 * Build artifacts (JS and CSS bundles).
 * Anything under `assets`.
+* Images and fonts directly under the configured `outputPath` (by default `./dist/<project-name>/`) or `resourcesOutputPath`. See [`ng build`](cli/build) for more information about these options.
+
+
+<div class="alert is-helpful">
+Pay attention to two key points:
+
+1. The generated `ngsw-config.json` includes a limited list of cachable fonts and images extentions. In some cases, you might want to modify the glob pattern to suit your needs.
+
+1. If `resourcesOutputPath` or `assets` paths are modified after the generation of configuration file, you need to change the paths manually in `ngsw-config.json`.
+</div>
 
 ### Making changes to your application
 
@@ -121,8 +126,7 @@ next step is understanding how updates work.
 
 ```sh
 ng build --prod
-cd dist
-http-server -p 8080
+http-server -p 8080 -c-1 dist/<project-name>
 ```
 
 ### Updating your application in the browser

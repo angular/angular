@@ -10,7 +10,7 @@
 // and BrowserStack (BS).
 // If the target is set to null, then the browser is not run anywhere during CI.
 // If a category becomes empty (e.g. BS and required), then the corresponding job must be commented
-// out in Travis configuration.
+// out in the CI configuration.
 var CIconfiguration = {
   'Chrome': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
   'Firefox': {unitTest: {target: 'SL', required: true}, e2e: {target: null, required: true}},
@@ -43,10 +43,10 @@ var customLaunchers = {
   'DartiumWithWebPlatform':
       {base: 'Dartium', flags: ['--enable-experimental-web-platform-features']},
   'ChromeNoSandbox': {base: 'Chrome', flags: ['--no-sandbox']},
-  'SL_CHROME': {base: 'SauceLabs', browserName: 'chrome', version: '60'},
+  'SL_CHROME': {base: 'SauceLabs', browserName: 'chrome', version: '67'},
   'SL_CHROMEBETA': {base: 'SauceLabs', browserName: 'chrome', version: 'beta'},
   'SL_CHROMEDEV': {base: 'SauceLabs', browserName: 'chrome', version: 'dev'},
-  'SL_FIREFOX': {base: 'SauceLabs', browserName: 'firefox', version: '54'},
+  'SL_FIREFOX': {base: 'SauceLabs', browserName: 'firefox', version: '60'},
   'SL_FIREFOXBETA':
       {base: 'SauceLabs', platform: 'Windows 10', browserName: 'firefox', version: 'beta'},
   'SL_FIREFOXDEV':

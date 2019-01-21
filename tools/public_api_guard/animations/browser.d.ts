@@ -1,4 +1,3 @@
-/** @experimental */
 export declare abstract class AnimationDriver {
     abstract animate(element: any, keyframes: {
         [key: string]: string | number;

@@ -1,9 +1,9 @@
 load(
     "@build_bazel_rules_nodejs//:defs.bzl",
-    "nodejs_binary",
     "jasmine_node_test",
-    "npm_package",
     "node_modules_filegroup",
+    "nodejs_binary",
+    "npm_package",
 )
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
 
@@ -13,8 +13,17 @@ ts_library(
     name = "lib",
     srcs = glob(["lib/*.ts"]),
     module_name = "ts-api-guardian",
+    node_modules = "@ts-api-guardian_deps//typescript:typescript__typings",
     tsconfig = "//tools:tsconfig.json",
     visibility = ["//visibility:public"],
+    deps = [
+        "@ts-api-guardian_deps//@types/diff",
+        "@ts-api-guardian_deps//@types/minimist",
+        "@ts-api-guardian_deps//@types/node",
+        "@ts-api-guardian_deps//diff",
+        "@ts-api-guardian_deps//minimist",
+        "@ts-api-guardian_deps//typescript",
+    ],
 )
 
 # Copy Angular's license to govern ts-api-guardian as well.
@@ -46,7 +55,17 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["test/*.ts"]),
-    deps = [":lib"],
+    node_modules = "@ts-api-guardian_deps//typescript:typescript__typings",
+    tsconfig = "//tools:tsconfig-test",
+    deps = [
+        ":lib",
+        "@ts-api-guardian_deps//@types/chai",
+        "@ts-api-guardian_deps//@types/jasmine",
+        "@ts-api-guardian_deps//@types/node",
+        "@ts-api-guardian_deps//chai",
+        "@ts-api-guardian_deps//jasmine",
+        "@ts-api-guardian_deps//typescript",
+    ],
 )
 
 jasmine_node_test(
@@ -58,6 +77,10 @@ jasmine_node_test(
         "test/fixtures/*.patch",
     ]) + [
         ":ts-api-guardian",
+        "@ts-api-guardian_deps//chalk",
+        # TODO: remove this once the boostrap.js workaround has been removed.
+        ":package.json",
     ],
-    node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
+    node_modules = "@ts-api-guardian_deps//typescript:typescript__typings",
+    tags = ["local"],
 )

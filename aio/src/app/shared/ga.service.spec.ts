@@ -74,6 +74,13 @@ describe('GaService', () => {
     });
   });
 
+  describe('sendEvent', () => {
+    it('should send "event" with associated data', () => {
+      gaService.sendEvent('some source', 'some campaign', 'a label', 45);
+      expect(gaSpy).toHaveBeenCalledWith('send', 'event', 'some source', 'some campaign', 'a label', 45);
+    });
+  });
+
   it('should support replacing the `window.ga` function', () => {
     const gaSpy2 = jasmine.createSpy('new ga');
     mockWindow.ga = gaSpy2;

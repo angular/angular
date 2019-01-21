@@ -98,7 +98,7 @@ The following template binds the value of `htmlSnippet`, once by interpolating i
 content, and once by binding it to the `innerHTML` property of an element:
 
 
-<code-example path="security/src/app/inner-html-binding.component.html" title="src/app/inner-html-binding.component.html">
+<code-example path="security/src/app/inner-html-binding.component.html" header="src/app/inner-html-binding.component.html">
 
 </code-example>
 
@@ -112,14 +112,14 @@ a value that an attacker might control into `innerHTML` normally causes an XSS
 vulnerability. For example, code contained in a `<script>` tag is executed:
 
 
-<code-example path="security/src/app/inner-html-binding.component.ts" linenums="false" title="src/app/inner-html-binding.component.ts (class)" region="class">
+<code-example path="security/src/app/inner-html-binding.component.ts" linenums="false" header="src/app/inner-html-binding.component.ts (class)" region="class">
 
 </code-example>
 
 
 
 Angular recognizes the value as unsafe and automatically sanitizes it, which removes the `<script>`
-tag but keeps safe content such as the text content of the `<script>` tag and the `<b>` element.
+tag but keeps safe content such as the `<b>` element.
 
 
 <figure>
@@ -127,13 +127,19 @@ tag but keeps safe content such as the text content of the `<script>` tag and th
 </figure>
 
 
-
-### Avoid direct use of the DOM APIs
+### Direct use of the DOM APIs and explicit sanitization calls
 
 The built-in browser DOM APIs don't automatically protect you from security vulnerabilities.
 For example, `document`, the node available through `ElementRef`, and many third-party APIs
-contain unsafe methods. Avoid directly interacting with the DOM and instead use Angular
-templates where possible.
+contain unsafe methods. In the same way, if you interact with other libraries that manipulate
+the DOM, you likely won't have the same automatic sanitization as with Angular interpolations.
+Avoid directly interacting with the DOM and instead use Angular templates where possible.
+
+For cases where this is unavoidable, use the built-in Angular sanitization functions.
+Sanitize untrusted values with the [DomSanitizer.sanitize](api/platform-browser/DomSanitizer#sanitize)
+method and the appropriate `SecurityContext`. That function also accepts values that were
+marked as trusted using the `bypassSecurityTrust`... functions, and will not sanitize them,
+as [described below](#bypass-security-apis).
 
 ### Content security policy
 
@@ -194,7 +200,7 @@ your intended use of the value. Imagine that the following template needs to bin
 `javascript:alert(...)` call:
 
 
-<code-example path="security/src/app/bypass-security.component.html" linenums="false" title="src/app/bypass-security.component.html (URL)" region="URL">
+<code-example path="security/src/app/bypass-security.component.html" linenums="false" header="src/app/bypass-security.component.html (URL)" region="URL">
 
 </code-example>
 
@@ -205,7 +211,7 @@ in development mode, logs this action to the console. To prevent
 this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` call:
 
 
-<code-example path="security/src/app/bypass-security.component.ts" linenums="false" title="src/app/bypass-security.component.ts (trust-url)" region="trust-url">
+<code-example path="security/src/app/bypass-security.component.ts" linenums="false" header="src/app/bypass-security.component.ts (trust-url)" region="trust-url">
 
 </code-example>
 
@@ -225,13 +231,13 @@ could execute. So call a method on the controller to construct a trusted video U
 Angular to allow binding into `<iframe src>`:
 
 
-<code-example path="security/src/app/bypass-security.component.html" linenums="false" title="src/app/bypass-security.component.html (iframe)" region="iframe">
+<code-example path="security/src/app/bypass-security.component.html" linenums="false" header="src/app/bypass-security.component.html (iframe)" region="iframe">
 
 </code-example>
 
 
 
-<code-example path="security/src/app/bypass-security.component.ts" linenums="false" title="src/app/bypass-security.component.ts (trust-video-url)" region="trust-video-url">
+<code-example path="security/src/app/bypass-security.component.ts" linenums="false" header="src/app/bypass-security.component.ts (trust-video-url)" region="trust-video-url">
 
 </code-example>
 

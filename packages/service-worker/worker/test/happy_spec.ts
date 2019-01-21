@@ -9,8 +9,9 @@
 import {processNavigationUrls} from '../../config/src/generator';
 import {CacheDatabase} from '../src/db-cache';
 import {Driver, DriverReadyState} from '../src/driver';
-import {Manifest} from '../src/manifest';
+import {AssetGroupConfig, DataGroupConfig, Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
+import {MockCache, clearAllCaches} from '../testing/cache';
 import {MockRequest} from '../testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '../testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '../testing/scope';
@@ -24,7 +25,11 @@ const dist =
         .addFile('/baz.txt', 'this is baz')
         .addFile('/qux.txt', 'this is qux')
         .addFile('/quux.txt', 'this is quux')
+        .addFile('/quuux.txt', 'this is quuux')
+        .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
+        .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
         .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
+        .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
         .build();
 
 const distUpdate =
@@ -34,6 +39,9 @@ const distUpdate =
         .addFile('/baz.txt', 'this is baz v2')
         .addFile('/qux.txt', 'this is qux v2')
         .addFile('/quux.txt', 'this is quux v2')
+        .addFile('/quuux.txt', 'this is quuux v2')
+        .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
+        .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
         .addUnhashedFile('/unhashed/a.txt', 'this is unhashed v2', {'Cache-Control': 'max-age=10'})
         .addUnhashedFile('/ignored/file1', 'this is not handled by the SW')
         .addUnhashedFile('/ignored/dir/file2', 'this is not handled by the SW either')
@@ -56,6 +64,24 @@ const brokenManifest: Manifest = {
   dataGroups: [],
   navigationUrls: processNavigationUrls(''),
   hashTable: tmpHashTableForFs(brokenFs, {'/foo.txt': true}),
+};
+
+// Manifest without navigation urls to test backward compatibility with
+// versions < 6.0.0.
+export interface ManifestV5 {
+  configVersion: number;
+  appData?: {[key: string]: string};
+  index: string;
+  assetGroups?: AssetGroupConfig[];
+  dataGroups?: DataGroupConfig[];
+  hashTable: {[url: string]: string};
+}
+
+// To simulate versions < 6.0.0
+const manifestOld: ManifestV5 = {
+  configVersion: 1,
+  index: '/foo.txt',
+  hashTable: tmpHashTableForFs(dist),
 };
 
 const manifest: Manifest = {
@@ -92,7 +118,12 @@ const manifest: Manifest = {
       name: 'lazy_prefetch',
       installMode: 'lazy',
       updateMode: 'prefetch',
-      urls: ['/quux.txt'],
+      urls: [
+        '/quux.txt',
+        '/quuux.txt',
+        '/lazy/unchanged1.txt',
+        '/lazy/unchanged2.txt',
+      ],
       patterns: [],
     }
   ],
@@ -134,7 +165,12 @@ const manifestUpdate: Manifest = {
       name: 'lazy_prefetch',
       installMode: 'lazy',
       updateMode: 'prefetch',
-      urls: ['/quux.txt'],
+      urls: [
+        '/quux.txt',
+        '/quuux.txt',
+        '/lazy/unchanged1.txt',
+        '/lazy/unchanged2.txt',
+      ],
       patterns: [],
     }
   ],
@@ -192,10 +228,56 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
     });
 
-    async_it('initializes prefetched content correctly, after activation', async() => {
-      expect(await scope.startup(true)).toEqual(true);
+    async_it('activates without waiting', async() => {
+      const skippedWaiting = await scope.startup(true);
+      expect(skippedWaiting).toBe(true);
+    });
+
+    async_it('claims all clients, after activation', async() => {
+      const claimSpy = spyOn(scope.clients, 'claim');
+
+      await scope.startup(true);
+      expect(claimSpy).toHaveBeenCalledTimes(1);
+    });
+
+    async_it('cleans up old `@angular/service-worker` caches, after activation', async() => {
+      const claimSpy = spyOn(scope.clients, 'claim');
+      const cleanupOldSwCachesSpy = spyOn(driver, 'cleanupOldSwCaches');
+
+      // Automatically advance time to trigger idle tasks as they are added.
+      scope.autoAdvanceTime = true;
+      await scope.startup(true);
       await scope.resolveSelfMessages();
-      await driver.initialized;
+      scope.autoAdvanceTime = false;
+
+      expect(cleanupOldSwCachesSpy).toHaveBeenCalledTimes(1);
+      expect(claimSpy).toHaveBeenCalledBefore(cleanupOldSwCachesSpy);
+    });
+
+    async_it(
+        'does not blow up if cleaning up old `@angular/service-worker` caches fails', async() => {
+          spyOn(driver, 'cleanupOldSwCaches').and.callFake(() => Promise.reject('Ooops'));
+
+          // Automatically advance time to trigger idle tasks as they are added.
+          scope.autoAdvanceTime = true;
+          await scope.startup(true);
+          await scope.resolveSelfMessages();
+          scope.autoAdvanceTime = false;
+
+          server.clearRequests();
+
+          expect(driver.state).toBe(DriverReadyState.NORMAL);
+          expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+          server.assertNoOtherRequests();
+        });
+
+    async_it('initializes prefetched content correctly, after activation', async() => {
+      // Automatically advance time to trigger idle tasks as they are added.
+      scope.autoAdvanceTime = true;
+      await scope.startup(true);
+      await scope.resolveSelfMessages();
+      scope.autoAdvanceTime = false;
+
       server.assertSawRequestFor('ngsw.json');
       server.assertSawRequestFor('/foo.txt');
       server.assertSawRequestFor('/bar.txt');
@@ -318,6 +400,27 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       ]);
 
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo v2');
+    });
+
+    async_it('handles empty client ID', async() => {
+      const navRequest = (url: string, clientId: string | null) =>
+          makeRequest(scope, url, clientId, {
+            headers: {Accept: 'text/plain, text/html, text/css'},
+            mode: 'navigate',
+          });
+
+      // Initialize the SW.
+      expect(await navRequest('/foo/file1', '')).toEqual('this is foo');
+      expect(await navRequest('/bar/file2', null)).toEqual('this is foo');
+      await driver.initialized;
+
+      // Update to a new version.
+      scope.updateServerState(serverUpdate);
+      expect(await driver.checkForUpdate()).toEqual(true);
+
+      // Correctly handle navigation requests, even if `clientId` is null/empty.
+      expect(await navRequest('/foo/file1', '')).toEqual('this is foo v2');
+      expect(await navRequest('/bar/file2', null)).toEqual('this is foo v2');
     });
 
     async_it('checks for updates on restart', async() => {
@@ -483,7 +586,6 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
     async_it('shows notifications for push notifications', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
-      scope.clients.add('default');
       await scope.handlePush({
         notification: {
           title: 'This is a test',
@@ -492,7 +594,7 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       });
       expect(scope.notifications).toEqual([{
         title: 'This is a test',
-        options: {body: 'Test body'},
+        options: {title: 'This is a test', body: 'Test body'},
       }]);
       expect(scope.clients.getMock('default') !.messages).toEqual([{
         type: 'PUSH',
@@ -505,17 +607,74 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       }]);
     });
 
+    async_it('broadcasts notification click events with action', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      await scope.handleClick(
+          {title: 'This is a test with action', body: 'Test body with action'}, 'button');
+      const message: any = scope.clients.getMock('default') !.messages[0];
+
+      expect(message.type).toEqual('NOTIFICATION_CLICK');
+      expect(message.data.action).toEqual('button');
+      expect(message.data.notification.title).toEqual('This is a test with action');
+      expect(message.data.notification.body).toEqual('Test body with action');
+    });
+
+    async_it('broadcasts notification click events without action', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      await scope.handleClick(
+          {title: 'This is a test without action', body: 'Test body without action'});
+      const message: any = scope.clients.getMock('default') !.messages[0];
+
+      expect(message.type).toEqual('NOTIFICATION_CLICK');
+      expect(message.data.action).toBeUndefined();
+      expect(message.data.notification.title).toEqual('This is a test without action');
+      expect(message.data.notification.body).toEqual('Test body without action');
+    });
+
     async_it('prefetches updates to lazy cache when set', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
-      expect(await makeRequest(scope, '/quux.txt')).toEqual('this is quux');
 
+      // Fetch some files from the `lazy_prefetch` asset group.
+      expect(await makeRequest(scope, '/quux.txt')).toEqual('this is quux');
+      expect(await makeRequest(scope, '/lazy/unchanged1.txt')).toEqual('this is unchanged (1)');
+
+      // Install update.
       scope.updateServerState(serverUpdate);
-      expect(await driver.checkForUpdate()).toEqual(true);
+      expect(await driver.checkForUpdate()).toBe(true);
+
+      // Previously requested and changed: Fetch from network.
       serverUpdate.assertSawRequestFor('/quux.txt');
+      // Never requested and changed: Don't fetch.
+      serverUpdate.assertNoRequestFor('/quuux.txt');
+      // Previously requested and unchanged: Fetch from cache.
+      serverUpdate.assertNoRequestFor('/lazy/unchanged1.txt');
+      // Never requested and unchanged: Don't fetch.
+      serverUpdate.assertNoRequestFor('/lazy/unchanged2.txt');
+
       serverUpdate.clearRequests();
+
+      // Update client.
       await driver.updateClient(await scope.clients.get('default'));
-      expect(await makeRequest(scope, '/quux.txt')).toEqual('this is quux v2');
+
+      // Already cached.
+      expect(await makeRequest(scope, '/quux.txt')).toBe('this is quux v2');
+      serverUpdate.assertNoOtherRequests();
+
+      // Not cached: Fetch from network.
+      expect(await makeRequest(scope, '/quuux.txt')).toBe('this is quuux v2');
+      serverUpdate.assertSawRequestFor('/quuux.txt');
+
+      // Already cached (copied from old cache).
+      expect(await makeRequest(scope, '/lazy/unchanged1.txt')).toBe('this is unchanged (1)');
+      serverUpdate.assertNoOtherRequests();
+
+      // Not cached: Fetch from network.
+      expect(await makeRequest(scope, '/lazy/unchanged2.txt')).toBe('this is unchanged (2)');
+      serverUpdate.assertSawRequestFor('/lazy/unchanged2.txt');
+
       serverUpdate.assertNoOtherRequests();
     });
 
@@ -551,6 +710,13 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
         server.assertSawRequestFor('/unhashed/a.txt');
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
+        server.assertNoOtherRequests();
+      });
+
+      async_it(`doesn't error when 'Cache-Control' is 'no-cache'`, async() => {
+        expect(await makeRequest(scope, '/unhashed/b.txt')).toEqual('this is unhashed b');
+        server.assertSawRequestFor('/unhashed/b.txt');
+        expect(await makeRequest(scope, '/unhashed/b.txt')).toEqual('this is unhashed b');
         server.assertNoOtherRequests();
       });
 
@@ -665,7 +831,7 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         server.assertSawRequestFor('/baz');
       });
 
-      async_it('does not redirect to index on a request that does not expect HTML', async() => {
+      async_it('does not redirect to index on a request that does not accept HTML', async() => {
         expect(await navRequest('/baz', {headers: {}})).toBeNull();
         server.assertSawRequestFor('/baz');
 
@@ -749,6 +915,41 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       });
     });
 
+    describe('cleanupOldSwCaches()', () => {
+      async_it('should delete the correct caches', async() => {
+        const oldSwCacheNames = ['ngsw:active', 'ngsw:staged', 'ngsw:manifest:a1b2c3:super:duper'];
+        const otherCacheNames = [
+          'ngsuu:active',
+          'not:ngsw:active',
+          'ngsw:staged:not',
+          'NgSw:StAgEd',
+          'ngsw:manifest',
+        ];
+        const allCacheNames = oldSwCacheNames.concat(otherCacheNames);
+
+        await Promise.all(allCacheNames.map(name => scope.caches.open(name)));
+        expect(await scope.caches.keys()).toEqual(allCacheNames);
+
+        await driver.cleanupOldSwCaches();
+        expect(await scope.caches.keys()).toEqual(otherCacheNames);
+      });
+
+      async_it('should delete other caches even if deleting one of them fails', async() => {
+        const oldSwCacheNames = ['ngsw:active', 'ngsw:staged', 'ngsw:manifest:a1b2c3:super:duper'];
+        const deleteSpy = spyOn(scope.caches, 'delete')
+                              .and.callFake(
+                                  (cacheName: string) =>
+                                      Promise.reject(`Failed to delete cache '${cacheName}'.`));
+
+        await Promise.all(oldSwCacheNames.map(name => scope.caches.open(name)));
+        const error = await driver.cleanupOldSwCaches().catch(err => err);
+
+        expect(error).toBe('Failed to delete cache \'ngsw:active\'.');
+        expect(deleteSpy).toHaveBeenCalledTimes(3);
+        oldSwCacheNames.forEach(name => expect(deleteSpy).toHaveBeenCalledWith(name));
+      });
+    });
+
     describe('bugs', () => {
       async_it('does not crash with bad index hash', async() => {
         scope = new SwTestHarnessBuilder().withServerState(brokenServer).build();
@@ -776,6 +977,28 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         expect(driver.state).toEqual(DriverReadyState.EXISTING_CLIENTS_ONLY);
       });
 
+      async_it('enters degraded mode when failing to write to cache', async() => {
+        // Initialize the SW.
+        await makeRequest(scope, '/foo.txt');
+        await driver.initialized;
+        expect(driver.state).toBe(DriverReadyState.NORMAL);
+
+        server.clearRequests();
+
+        // Operate normally.
+        expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+        server.assertNoOtherRequests();
+
+        // Clear the caches and make them unwritable.
+        await clearAllCaches(scope.caches);
+        spyOn(MockCache.prototype, 'put').and.throwError('Can\'t touch this');
+
+        // Enter degraded mode and serve from network.
+        expect(await makeRequest(scope, '/foo.txt')).toBe('this is foo');
+        expect(driver.state).toBe(DriverReadyState.EXISTING_CLIENTS_ONLY);
+        server.assertSawRequestFor('/foo.txt');
+      });
+
       async_it('ignores invalid `only-if-cached` requests ', async() => {
         const requestFoo = (cache: RequestCache | 'only-if-cached', mode: RequestMode) =>
             makeRequest(scope, '/foo.txt', undefined, {cache, mode});
@@ -784,16 +1007,38 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         expect(await requestFoo('only-if-cached', 'same-origin')).toBe('this is foo');
         expect(await requestFoo('only-if-cached', 'no-cors')).toBeNull();
       });
+
+      describe('Backwards compatibility with v5', () => {
+        beforeEach(() => {
+          const serverV5 = new MockServerStateBuilder()
+                               .withStaticFiles(dist)
+                               .withManifest(<Manifest>manifestOld)
+                               .build();
+
+          scope = new SwTestHarnessBuilder().withServerState(serverV5).build();
+          driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
+        });
+
+        // Test this bug: https://github.com/angular/angular/issues/27209
+        async_it(
+            'Fill previous versions of manifests with default navigation urls for backwards compatibility',
+            async() => {
+              expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+              await driver.initialized;
+              scope.updateServerState(serverUpdate);
+              expect(await driver.checkForUpdate()).toEqual(true);
+            });
+      });
     });
   });
 })();
 
 async function makeRequest(
-    scope: SwTestHarness, url: string, clientId = 'default', init?: Object): Promise<string|null> {
+    scope: SwTestHarness, url: string, clientId: string | null = 'default',
+    init?: Object): Promise<string|null> {
   const [resPromise, done] = scope.handleFetch(new MockRequest(url, init), clientId);
   await done;
   const res = await resPromise;
-  scope.clients.add(clientId);
   if (res !== undefined && res.ok) {
     return res.text();
   }

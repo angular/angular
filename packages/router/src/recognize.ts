@@ -20,26 +20,31 @@ class NoMatch {}
 
 export function recognize(
     rootComponentType: Type<any>| null, config: Routes, urlTree: UrlTree, url: string,
-    paramsInheritanceStrategy: ParamsInheritanceStrategy =
-        'emptyOnly'): Observable<RouterStateSnapshot> {
-  return new Recognizer(rootComponentType, config, urlTree, url, paramsInheritanceStrategy)
+    paramsInheritanceStrategy: ParamsInheritanceStrategy = 'emptyOnly',
+    relativeLinkResolution: 'legacy' | 'corrected' = 'legacy'): Observable<RouterStateSnapshot> {
+  return new Recognizer(
+             rootComponentType, config, urlTree, url, paramsInheritanceStrategy,
+             relativeLinkResolution)
       .recognize();
 }
 
 class Recognizer {
   constructor(
       private rootComponentType: Type<any>|null, private config: Routes, private urlTree: UrlTree,
-      private url: string, private paramsInheritanceStrategy: ParamsInheritanceStrategy) {}
+      private url: string, private paramsInheritanceStrategy: ParamsInheritanceStrategy,
+      private relativeLinkResolution: 'legacy'|'corrected') {}
 
   recognize(): Observable<RouterStateSnapshot> {
     try {
-      const rootSegmentGroup = split(this.urlTree.root, [], [], this.config).segmentGroup;
+      const rootSegmentGroup =
+          split(this.urlTree.root, [], [], this.config, this.relativeLinkResolution).segmentGroup;
 
       const children = this.processSegmentGroup(this.config, rootSegmentGroup, PRIMARY_OUTLET);
 
       const root = new ActivatedRouteSnapshot(
-          [], Object.freeze({}), Object.freeze(this.urlTree.queryParams), this.urlTree.fragment !,
-          {}, PRIMARY_OUTLET, this.rootComponentType, null, this.urlTree.root, -1, {});
+          [], Object.freeze({}), Object.freeze({...this.urlTree.queryParams}),
+          this.urlTree.fragment !, {}, PRIMARY_OUTLET, this.rootComponentType, null,
+          this.urlTree.root, -1, {});
 
       const rootNode = new TreeNode<ActivatedRouteSnapshot>(root, children);
       const routeState = new RouterStateSnapshot(this.url, rootNode);
@@ -116,7 +121,7 @@ class Recognizer {
     if (route.path === '**') {
       const params = segments.length > 0 ? last(segments) !.parameters : {};
       snapshot = new ActivatedRouteSnapshot(
-          segments, params, Object.freeze(this.urlTree.queryParams), this.urlTree.fragment !,
+          segments, params, Object.freeze({...this.urlTree.queryParams}), this.urlTree.fragment !,
           getData(route), outlet, route.component !, route, getSourceSegmentGroup(rawSegment),
           getPathIndexShift(rawSegment) + segments.length, getResolve(route));
     } else {
@@ -125,7 +130,7 @@ class Recognizer {
       rawSlicedSegments = segments.slice(result.lastChild);
 
       snapshot = new ActivatedRouteSnapshot(
-          consumedSegments, result.parameters, Object.freeze(this.urlTree.queryParams),
+          consumedSegments, result.parameters, Object.freeze({...this.urlTree.queryParams}),
           this.urlTree.fragment !, getData(route), outlet, route.component !, route,
           getSourceSegmentGroup(rawSegment),
           getPathIndexShift(rawSegment) + consumedSegments.length, getResolve(route));
@@ -133,8 +138,8 @@ class Recognizer {
 
     const childConfig: Route[] = getChildConfig(route);
 
-    const {segmentGroup, slicedSegments} =
-        split(rawSegment, consumedSegments, rawSlicedSegments, childConfig);
+    const {segmentGroup, slicedSegments} = split(
+        rawSegment, consumedSegments, rawSlicedSegments, childConfig, this.relativeLinkResolution);
 
     if (slicedSegments.length === 0 && segmentGroup.hasChildren()) {
       const children = this.processChildren(childConfig, segmentGroup);
@@ -231,7 +236,7 @@ function getPathIndexShift(segmentGroup: UrlSegmentGroup): number {
 
 function split(
     segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], slicedSegments: UrlSegment[],
-    config: Route[]) {
+    config: Route[], relativeLinkResolution: 'legacy' | 'corrected') {
   if (slicedSegments.length > 0 &&
       containsEmptyPathMatchesWithNamedOutlets(segmentGroup, slicedSegments, config)) {
     const s = new UrlSegmentGroup(
@@ -247,7 +252,8 @@ function split(
       containsEmptyPathMatches(segmentGroup, slicedSegments, config)) {
     const s = new UrlSegmentGroup(
         segmentGroup.segments, addEmptyPathsToChildrenIfNeeded(
-                                   segmentGroup, slicedSegments, config, segmentGroup.children));
+                                   segmentGroup, consumedSegments, slicedSegments, config,
+                                   segmentGroup.children, relativeLinkResolution));
     s._sourceSegment = segmentGroup;
     s._segmentIndexShift = consumedSegments.length;
     return {segmentGroup: s, slicedSegments};
@@ -260,14 +266,19 @@ function split(
 }
 
 function addEmptyPathsToChildrenIfNeeded(
-    segmentGroup: UrlSegmentGroup, slicedSegments: UrlSegment[], routes: Route[],
-    children: {[name: string]: UrlSegmentGroup}): {[name: string]: UrlSegmentGroup} {
+    segmentGroup: UrlSegmentGroup, consumedSegments: UrlSegment[], slicedSegments: UrlSegment[],
+    routes: Route[], children: {[name: string]: UrlSegmentGroup},
+    relativeLinkResolution: 'legacy' | 'corrected'): {[name: string]: UrlSegmentGroup} {
   const res: {[name: string]: UrlSegmentGroup} = {};
   for (const r of routes) {
     if (emptyPathMatch(segmentGroup, slicedSegments, r) && !children[getOutlet(r)]) {
       const s = new UrlSegmentGroup([], {});
       s._sourceSegment = segmentGroup;
-      s._segmentIndexShift = segmentGroup.segments.length;
+      if (relativeLinkResolution === 'legacy') {
+        s._segmentIndexShift = segmentGroup.segments.length;
+      } else {
+        s._segmentIndexShift = consumedSegments.length;
+      }
       res[getOutlet(r)] = s;
     }
   }

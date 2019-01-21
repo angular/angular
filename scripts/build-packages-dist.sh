@@ -12,30 +12,58 @@ cd "$(dirname "$0")"
 
 # basedir is the workspace root
 readonly basedir=$(pwd)/..
+# We need to resolve the Bazel binary in the node modules because running Bazel
+# through `yarn bazel` causes additional output that throws off command stdout.
+readonly bazelBin=$(yarn bin)/bazel
+readonly bin=$(${bazelBin} info bazel-bin)
 
-echo "##################################"
-echo "scripts/build-packages-dist.sh:"
-echo "  building @angular/* npm packages"
-echo "##################################"
+function buildTargetPackages() {
+  targets="$1"
+  destPath="$2"
+  compileMode="$3"
+  desc="$4"
+
+  echo "##################################"
+  echo "scripts/build-packages-dist.sh:"
+  echo "  building @angular/* npm packages"
+  echo "  mode: ${desc}"
+  echo "##################################"
+
+  # Use --config=release so that snapshot builds get published with embedded version info
+  echo "$targets" | xargs ${bazelBin} build --config=release --define=compile=$compileMode
+
+  [ -d "${basedir}/${destPath}" ] || mkdir -p $basedir/${destPath}
+
+  dirs=`echo "$targets" | sed -e 's/\/\/packages\/\(.*\):npm_package/\1/'`
+
+  for pkg in $dirs; do
+    # Skip any that don't have an "npm_package" target
+    srcDir="${bin}/packages/${pkg}/npm_package"
+    destDir="${basedir}/${destPath}/${pkg}"
+    if [ -d $srcDir ]; then
+      echo "# Copy artifacts to ${destDir}"
+      rm -rf $destDir
+      cp -R $srcDir $destDir
+      chmod -R u+w $destDir
+    fi
+  done
+}
+
 # Ideally these integration tests should run under bazel, and just list the npm
 # packages in their deps[].
 # Until then, we have to manually run bazel first to create the npm packages we
 # want to test.
-bazel query --output=label 'kind(.*_package, //packages/...)' \
-  | xargs bazel build
-readonly bin=$(bazel info bazel-bin)
+BAZEL_TARGETS=`${bazelBin} query --output=label 'attr("tags", "\[.*release-with-framework.*\]", //packages/...) intersect kind(".*_package", //packages/...)'`
+buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist" "legacy" "Production"
 
-# Create the legacy dist/packages-dist folder
-[ -d "${basedir}/dist/packages-dist" ] || mkdir -p $basedir/dist/packages-dist
-# Each package is a subdirectory of bazel-bin/packages/
-for pkg in $(ls ${bin}/packages); do
-  # Skip any that don't have an "npm_package" target
-  srcDir="${bin}/packages/${pkg}/npm_package"
-  destDir="${basedir}/dist/packages-dist/${pkg}"
-  if [ -d $srcDir ]; then
-    echo "# Copy artifacts to ${destDir}"
-    rm -rf $destDir
-    cp -R $srcDir $destDir
-    chmod -R u+w $destDir
-  fi
-done
+# We don't use the ivy build in the integration tests, only when publishing
+# snapshots.
+# This logic matches what we use in the .circleci/config.yml file to short-
+# circuit execution of the publish-packages job.
+[[  "${CI_PULL_REQUEST-}" != "false"
+    || "${CI_REPO_OWNER-}" != "angular"
+    || "${CI_REPO_NAME-}" != "angular"
+    || "${CI_BRANCH}" != "master"
+]] && exit 0
+
+buildTargetPackages "$BAZEL_TARGETS" "dist/packages-dist-ivy-aot" "aot" "Ivy AOT"

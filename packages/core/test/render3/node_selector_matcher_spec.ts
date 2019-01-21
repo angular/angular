@@ -6,26 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TNode} from '../../src/render3/interfaces/node';
+import {AttributeMarker, TAttributes, TNode, TNodeType} from '../../src/render3/interfaces/node';
+
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags,} from '../../src/render3/interfaces/projection';
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isNodeMatchingSelector} from '../../src/render3/node_selector_matcher';
+import {initializeStaticContext} from '../../src/render3/styling/class_and_style_bindings';
+import {createTNode} from '@angular/core/src/render3/instructions';
+import {getLView} from '@angular/core/src/render3/state';
 
-function testLStaticData(tagName: string, attrs: string[] | null): TNode {
-  return {
-    flags: 0,
-    tagName,
-    attrs,
-    localNames: null,
-    initialInputs: undefined,
-    inputs: undefined,
-    outputs: undefined,
-    tViews: null,
-  };
+function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
+  return createTNode(getLView(), TNodeType.Element, 0, tagName, attrs, null);
 }
 
 describe('css selector matching', () => {
-  function isMatching(tagName: string, attrs: string[] | null, selector: CssSelector): boolean {
-    return isNodeMatchingSelector(testLStaticData(tagName, attrs), selector);
+  function isMatching(
+      tagName: string, attrsOrTNode: TAttributes | TNode | null, selector: CssSelector): boolean {
+    const tNode = (!attrsOrTNode || Array.isArray(attrsOrTNode)) ?
+        createTNode(getLView(), TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes, null) :
+        (attrsOrTNode as TNode);
+    return isNodeMatchingSelector(tNode, selector, false);
   }
 
   describe('isNodeMatchingSimpleSelector', () => {
@@ -42,7 +41,7 @@ describe('css selector matching', () => {
       });
 
       /**
-       * We assume that compiler will lower-case tag names both in LNode
+       * We assume that compiler will lower-case tag names both in node
        * and in a selector.
        */
       it('should match element name case-sensitively', () => {
@@ -52,6 +51,9 @@ describe('css selector matching', () => {
             .toBeFalsy(`Selector 'span' should NOT match <SPAN>'`);
       });
 
+      it('should never match empty string selector', () => {
+        expect(isMatching('span', null, [''])).toBeFalsy(`Selector '' should NOT match <span>`);
+      });
     });
 
     describe('attributes matching', () => {
@@ -79,6 +81,12 @@ describe('css selector matching', () => {
         expect(isMatching('span', ['title', ''], [
           '', 'other', ''
         ])).toBeFalsy(`Selector '[other]' should NOT match <span title="">'`);
+      });
+
+      it('should match namespaced attributes', () => {
+        expect(isMatching(
+            'span', [AttributeMarker.NamespaceURI, 'http://some/uri', 'title', 'name'],
+            ['', 'title', '']));
       });
 
       it('should match selector with one attribute without value when element has several attributes',
@@ -172,6 +180,28 @@ describe('css selector matching', () => {
           '', 'class', 'foo'
         ])).toBeTruthy(`Selector '[class="foo"]' should match <span class="foo">`);
       });
+
+      it('should take optional binding attribute names into account', () => {
+        expect(isMatching('span', [AttributeMarker.SelectOnly, 'directive'], [
+          '', 'directive', ''
+        ])).toBeTruthy(`Selector '[directive]' should match <span [directive]="exp">`);
+      });
+
+      it('should not match optional binding attribute names if attribute selector has value',
+         () => {
+           expect(isMatching('span', [AttributeMarker.SelectOnly, 'directive'], [
+             '', 'directive', 'value'
+           ])).toBeFalsy(`Selector '[directive=value]' should not match <span [directive]="exp">`);
+         });
+
+      it('should not match optional binding attribute names if attribute selector has value and next name equals to value',
+         () => {
+           expect(isMatching(
+                      'span', [AttributeMarker.SelectOnly, 'directive', 'value'],
+                      ['', 'directive', 'value']))
+               .toBeFalsy(
+                   `Selector '[directive=value]' should not match <span [directive]="exp" [value]="otherExp">`);
+         });
     });
 
     describe('class matching', () => {
@@ -272,6 +302,26 @@ describe('css selector matching', () => {
         // <div class="foo">
         expect(isMatching('div', ['class', 'foo'], selector)).toBeFalsy();
       });
+
+      it('should match against a class value before and after the styling context is created',
+         () => {
+           // selector: 'div.abc'
+           const selector = ['div', SelectorFlags.CLASS, 'abc'];
+           const tNode = createTNode(getLView(), TNodeType.Element, 0, 'div', [], null);
+
+           // <div> (without attrs or styling context)
+           expect(isMatching('div', tNode, selector)).toBeFalsy();
+
+           // <div class="abc"> (with attrs but without styling context)
+           tNode.attrs = ['class', 'abc'];
+           tNode.stylingTemplate = null;
+           expect(isMatching('div', tNode, selector)).toBeTruthy();
+
+           // <div class="abc"> (with styling context but without attrs)
+           tNode.stylingTemplate = initializeStaticContext([AttributeMarker.Classes, 'abc']);
+           tNode.attrs = null;
+           expect(isMatching('div', tNode, selector)).toBeTruthy();
+         });
     });
   });
 
@@ -391,7 +441,7 @@ describe('css selector matching', () => {
 
     function isAnyMatching(
         tagName: string, attrs: string[] | null, selector: CssSelectorList): boolean {
-      return isNodeMatchingSelectorList(testLStaticData(tagName, attrs), selector);
+      return isNodeMatchingSelectorList(testLStaticData(tagName, attrs), selector, false);
     }
 
     it('should match when there is only one simple selector without negations', () => {

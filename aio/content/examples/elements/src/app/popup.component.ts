@@ -1,14 +1,14 @@
-// #docregion
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { AnimationEvent } from '@angular/animations';
 import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'my-popup',
-  template: 'Popup: {{message}}',
+  template: `
+    <span>Popup: {{message}}</span>
+    <button (click)="closed.next()">&#x2716;</button>
+  `,
   host: {
     '[@state]': 'state',
-    '(@state.done)': 'onAnimationDone($event)',
   },
   animations: [
     trigger('state', [
@@ -27,13 +27,17 @@ import { animate, state, style, transition, trigger } from '@angular/animations'
       height: 48px;
       padding: 16px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
       border-top: 1px solid black;
       font-size: 24px;
     }
+
+    button {
+      border-radius: 50%;
+    }
   `]
 })
-
 export class PopupComponent {
   private state: 'opened' | 'closed' = 'closed';
 
@@ -41,18 +45,10 @@ export class PopupComponent {
   set message(message: string) {
     this._message = message;
     this.state = 'opened';
-
-    setTimeout(() => this.state = 'closed', 2000);
   }
   get message(): string { return this._message; }
   _message: string;
 
   @Output()
   closed = new EventEmitter();
-
-  onAnimationDone(e: AnimationEvent) {
-    if (e.toState === 'closed') {
-      this.closed.next();
-    }
-  }
 }

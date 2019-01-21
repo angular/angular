@@ -6,36 +6,62 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {injectTemplateRef as render3InjectTemplateRef} from '../render3/view_engine_compatibility';
+import {noop} from '../util/noop';
+
 import {ElementRef} from './element_ref';
 import {EmbeddedViewRef} from './view_ref';
 
 
 /**
- * Represents an Embedded Template that can be used to instantiate Embedded Views.
+ * Represents an embedded template that can be used to instantiate embedded views.
+ * To instantiate embedded views based on a template, use the `ViewContainerRef`
+ * method `createEmbeddedView()`.
  *
- * You can access a `TemplateRef`, in two ways. Via a directive placed on a `<ng-template>` element
- * (or directive prefixed with `*`) and have the `TemplateRef` for this Embedded View injected into
- * the constructor of the directive using the `TemplateRef` Token. Alternatively you can query for
- * the `TemplateRef` from a Component or a Directive via {@link Query}.
+ * Access a `TemplateRef` instance by placing a directive on an `<ng-template>`
+ * element (or directive prefixed with `*`). The `TemplateRef` for the embedded view
+ * is injected into the constructor of the directive,
+ * using the `TemplateRef` token.
  *
- * To instantiate Embedded Views based on a Template, use {@link ViewContainerRef#
- * createEmbeddedView}, which will create the View and attach it to the View Container.
+ * You can also use a `Query` to find a `TemplateRef` associated with
+ * a component or a directive.
  *
+ * @see `ViewContainerRef`
+ * @see [Navigate the Component Tree with DI](guide/dependency-injection-navtree)
+ *
+ * @publicApi
  */
 export abstract class TemplateRef<C> {
   /**
-   * The location in the View where the Embedded View logically belongs to.
+   * The anchor element in the parent view for this embedded view.
    *
-   * The data-binding and injection contexts of Embedded Views created from this `TemplateRef`
+   * The data-binding and injection contexts of embedded views created from this `TemplateRef`
    * inherit from the contexts of this location.
    *
-   * Typically new Embedded Views are attached to the View Container of this location, but in
-   * advanced use-cases, the View can be attached to a different container while keeping the
+   * Typically new embedded views are attached to the view container of this location, but in
+   * advanced use-cases, the view can be attached to a different container while keeping the
    * data-binding and injection context from the original location.
    *
    */
   // TODO(i): rename to anchor or location
   abstract get elementRef(): ElementRef;
 
+  /**
+   * Creates a view object and attaches it to the view container of the parent view.
+   * @param context The context for the new view, inherited from the anchor element.
+   * @returns The new view object.
+   */
   abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
+
+  /**
+   * @internal
+   * @nocollapse
+   */
+  static __NG_ELEMENT_ID__:
+      () => TemplateRef<any>| null = () => SWITCH_TEMPLATE_REF_FACTORY(TemplateRef, ElementRef)
 }
+
+export const SWITCH_TEMPLATE_REF_FACTORY__POST_R3__ = render3InjectTemplateRef;
+const SWITCH_TEMPLATE_REF_FACTORY__PRE_R3__ = noop;
+const SWITCH_TEMPLATE_REF_FACTORY: typeof render3InjectTemplateRef =
+    SWITCH_TEMPLATE_REF_FACTORY__PRE_R3__;

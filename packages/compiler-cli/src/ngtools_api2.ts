@@ -109,14 +109,15 @@ export interface LazyRoute {
 export interface Program {
   getTsProgram(): ts.Program;
   getTsOptionDiagnostics(cancellationToken?: ts.CancellationToken): ReadonlyArray<ts.Diagnostic>;
-  getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken): ReadonlyArray<Diagnostic>;
+  getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken):
+      ReadonlyArray<ts.Diagnostic|Diagnostic>;
   getTsSyntacticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
       ReadonlyArray<ts.Diagnostic>;
   getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken): ReadonlyArray<Diagnostic>;
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
       ReadonlyArray<ts.Diagnostic>;
   getNgSemanticDiagnostics(fileName?: string, cancellationToken?: ts.CancellationToken):
-      ReadonlyArray<Diagnostic>;
+      ReadonlyArray<ts.Diagnostic|Diagnostic>;
   loadNgStructureAsync(): Promise<void>;
   listLazyRoutes(entryRoute?: string): LazyRoute[];
   emit({emitFlags, cancellationToken, customTransformers, emitCallback}: {

@@ -71,8 +71,10 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
     indexFile = files[0];
   } else {
     for (const f of files) {
-      // Assume the shortest file path called index.ts is the entry point
-      if (f.endsWith(path.sep + 'index.ts')) {
+      // Assume the shortest file path called index.ts is the entry point. Note that we
+      // need to use the posix path delimiter here because TypeScript internally only
+      // passes posix paths.
+      if (f.endsWith('/index.ts')) {
         if (!indexFile || indexFile.length > f.length) {
           indexFile = f;
         }
@@ -103,7 +105,7 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
   // etc.
   const getMetadataBundle = (cache: MetadataCache | null) => {
     const bundler = new MetadataBundler(
-        indexModule, ngOptions.flatModuleId, new CompilerHostAdapter(host, cache),
+        indexModule, ngOptions.flatModuleId, new CompilerHostAdapter(host, cache, ngOptions),
         ngOptions.flatModulePrivateSymbolPrefix);
     return bundler.getMetadataBundle();
   };

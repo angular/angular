@@ -8,7 +8,7 @@
 
 import {CompileDirectiveSummary, CompilePipeSummary} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {ASTWithSource, BindingPipe, BoundElementBindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
+import {ASTWithSource, BindingPipe, BindingType, BoundElementProperty, EmptyExpr, ParsedEvent, ParsedEventType, ParsedProperty, ParsedPropertyType, ParsedVariable, ParserError, RecursiveAstVisitor, TemplateBinding} from '../expression_parser/ast';
 import {Parser} from '../expression_parser/parser';
 import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {mergeNsAndName} from '../ml_parser/tags';
@@ -16,8 +16,6 @@ import {ParseError, ParseErrorLevel, ParseSourceSpan} from '../parse_util';
 import {ElementSchemaRegistry} from '../schema/element_schema_registry';
 import {CssSelector} from '../selector';
 import {splitAtColon, splitAtPeriod} from '../util';
-
-import {BoundElementPropertyAst, PropertyBindingType} from './template_ast';
 
 const PROPERTY_PARTS_SEPARATOR = '.';
 const ATTRIBUTE_PREFIX = 'attr';
@@ -31,12 +29,13 @@ const ANIMATE_PROP_PREFIX = 'animate-';
  */
 export class BindingParser {
   pipesByName: Map<string, CompilePipeSummary>|null = null;
+
   private _usedPipes: Map<string, CompilePipeSummary> = new Map();
 
   constructor(
       private _exprParser: Parser, private _interpolationConfig: InterpolationConfig,
       private _schemaRegistry: ElementSchemaRegistry, pipes: CompilePipeSummary[]|null,
-      private _targetErrors: ParseError[]) {
+      public errors: ParseError[]) {
     // When the `pipes` parameter is `null`, do not check for used pipes
     // This is used in IVY when we might not know the available pipes at compile time
     if (pipes) {
@@ -45,6 +44,8 @@ export class BindingParser {
       this.pipesByName = pipesByName;
     }
   }
+
+  get interpolationConfig(): InterpolationConfig { return this._interpolationConfig; }
 
   getUsedPipes(): CompilePipeSummary[] { return Array.from(this._usedPipes.values()); }
 
@@ -222,7 +223,7 @@ export class BindingParser {
 
   private _parseBinding(value: string, isHostBinding: boolean, sourceSpan: ParseSourceSpan):
       ASTWithSource {
-    const sourceInfo = sourceSpan.start.toString();
+    const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown)').toString();
 
     try {
       const ast = isHostBinding ?
@@ -237,25 +238,28 @@ export class BindingParser {
     }
   }
 
-  createBoundElementProperty(elementSelector: string, boundProp: ParsedProperty):
-      BoundElementProperty {
+  createBoundElementProperty(
+      elementSelector: string, boundProp: ParsedProperty,
+      skipValidation: boolean = false): BoundElementProperty {
     if (boundProp.isAnimation) {
       return new BoundElementProperty(
-          boundProp.name, BoundElementBindingType.Animation, SecurityContext.NONE,
-          boundProp.expression, null, boundProp.sourceSpan);
+          boundProp.name, BindingType.Animation, SecurityContext.NONE, boundProp.expression, null,
+          boundProp.sourceSpan);
     }
 
     let unit: string|null = null;
-    let bindingType: BoundElementBindingType = undefined !;
+    let bindingType: BindingType = undefined !;
     let boundPropertyName: string|null = null;
     const parts = boundProp.name.split(PROPERTY_PARTS_SEPARATOR);
     let securityContexts: SecurityContext[] = undefined !;
 
-    // Check check for special cases (prefix style, attr, class)
+    // Check for special cases (prefix style, attr, class)
     if (parts.length > 1) {
       if (parts[0] == ATTRIBUTE_PREFIX) {
         boundPropertyName = parts[1];
-        this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, true);
+        if (!skipValidation) {
+          this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, true);
+        }
         securityContexts = calcPossibleSecurityContexts(
             this._schemaRegistry, elementSelector, boundPropertyName, true);
 
@@ -266,15 +270,15 @@ export class BindingParser {
           boundPropertyName = mergeNsAndName(ns, name);
         }
 
-        bindingType = BoundElementBindingType.Attribute;
+        bindingType = BindingType.Attribute;
       } else if (parts[0] == CLASS_PREFIX) {
         boundPropertyName = parts[1];
-        bindingType = BoundElementBindingType.Class;
+        bindingType = BindingType.Class;
         securityContexts = [SecurityContext.NONE];
       } else if (parts[0] == STYLE_PREFIX) {
         unit = parts.length > 2 ? parts[2] : null;
         boundPropertyName = parts[1];
-        bindingType = BoundElementBindingType.Style;
+        bindingType = BindingType.Style;
         securityContexts = [SecurityContext.STYLE];
       }
     }
@@ -284,8 +288,10 @@ export class BindingParser {
       boundPropertyName = this._schemaRegistry.getMappedPropName(boundProp.name);
       securityContexts = calcPossibleSecurityContexts(
           this._schemaRegistry, elementSelector, boundPropertyName, false);
-      bindingType = BoundElementBindingType.Property;
-      this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, false);
+      bindingType = BindingType.Property;
+      if (!skipValidation) {
+        this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, false);
+      }
     }
 
     return new BoundElementProperty(
@@ -302,6 +308,12 @@ export class BindingParser {
     } else {
       this._parseRegularEvent(name, expression, sourceSpan, targetMatchableAttrs, targetEvents);
     }
+  }
+
+  calcPossibleSecurityContexts(selector: string, propName: string, isAttribute: boolean):
+      SecurityContext[] {
+    const prop = this._schemaRegistry.getMappedPropName(propName);
+    return calcPossibleSecurityContexts(this._schemaRegistry, selector, prop, isAttribute);
   }
 
   private _parseAnimationEvent(
@@ -344,7 +356,7 @@ export class BindingParser {
   }
 
   private _parseAction(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
-    const sourceInfo = sourceSpan.start.toString();
+    const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown').toString();
 
     try {
       const ast = this._exprParser.parseAction(value, sourceInfo, this._interpolationConfig);
@@ -366,7 +378,7 @@ export class BindingParser {
   private _reportError(
       message: string, sourceSpan: ParseSourceSpan,
       level: ParseErrorLevel = ParseErrorLevel.ERROR) {
-    this._targetErrors.push(new ParseError(sourceSpan, message, level));
+    this.errors.push(new ParseError(sourceSpan, message, level));
   }
 
   private _reportExpressionParserErrors(errors: ParserError[], sourceSpan: ParseSourceSpan) {

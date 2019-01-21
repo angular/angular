@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, ElementRef, EventEmitter, Inject, Injector, OnChanges, OnInit, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {Directive, DoCheck, ElementRef, EventEmitter, Inject, Injector, OnChanges, OnDestroy, OnInit, SimpleChange, SimpleChanges, Type} from '@angular/core';
 
 import * as angular from '../common/angular1';
 import {$SCOPE} from '../common/constants';
@@ -22,7 +22,8 @@ const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
 
 
 export class UpgradeNg1ComponentAdapterBuilder {
-  type: Type<any>;
+  // TODO(issue/24571): remove '!'.
+  type !: Type<any>;
   inputs: string[] = [];
   inputsRename: string[] = [];
   outputs: string[] = [];
@@ -31,7 +32,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
   checkProperties: string[] = [];
   propertyMap: {[name: string]: string} = {};
   directive: angular.IDirective|null = null;
-  template: string;
+  // TODO(issue/24571): remove '!'.
+  template !: string;
 
   constructor(public name: string) {
     const selector =
@@ -43,23 +45,15 @@ export class UpgradeNg1ComponentAdapterBuilder {
     // TODO(tbosch): find or file a bug against TypeScript for this.
     const directive = {selector: selector, inputs: this.inputsRename, outputs: this.outputsRename};
 
-    @Directive(directive)
-    class MyClass {
-      directive: angular.IDirective;
+    @Directive({jit: true, ...directive})
+    class MyClass extends UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck,
+        OnDestroy {
       constructor(
           @Inject($SCOPE) scope: angular.IScope, injector: Injector, elementRef: ElementRef) {
-        const helper = new UpgradeHelper(injector, name, elementRef, this.directive);
-        return new UpgradeNg1ComponentAdapter(
-            helper, scope, self.template, self.inputs, self.outputs, self.propertyOutputs,
-            self.checkProperties, self.propertyMap) as any;
-      }
-      ngOnInit() { /* needs to be here for ng2 to properly detect it */
-      }
-      ngOnChanges() { /* needs to be here for ng2 to properly detect it */
-      }
-      ngDoCheck() { /* needs to be here for ng2 to properly detect it */
-      }
-      ngOnDestroy() { /* needs to be here for ng2 to properly detect it */
+        super(
+            new UpgradeHelper(injector, name, elementRef, self.directive || undefined), scope,
+            self.template, self.inputs, self.outputs, self.propertyOutputs, self.checkProperties,
+            self.propertyMap) as any;
       }
     }
     this.type = MyClass;
@@ -146,7 +140,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
   private controllerInstance: IControllerInstance|null = null;
   destinationObj: IBindingDestination|null = null;
   checkLastValues: any[] = [];
-  private directive: angular.IDirective;
+  directive: angular.IDirective;
   element: Element;
   $element: any = null;
   componentScope: angular.IScope;
@@ -259,13 +253,7 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     }
   }
 
-  ngOnDestroy() {
-    if (this.controllerInstance && isFunction(this.controllerInstance.$onDestroy)) {
-      this.controllerInstance.$onDestroy();
-    }
-
-    this.componentScope.$destroy();
-  }
+  ngOnDestroy() { this.helper.onDestroy(this.componentScope, this.controllerInstance); }
 
   setComponentProperty(name: string, value: any) {
     this.destinationObj ![this.propertyMap[name]] = value;

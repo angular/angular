@@ -15,11 +15,48 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * @ngModule CommonModule
  * @description
  *
- * Uses the function {@link formatDate} to format a date according to locale rules.
+ * Formats a date value according to locale rules.
  *
- * The following tabled describes the formatting options.
+ * Only the `en-US` locale data comes with Angular. To localize dates
+ * in another language, you must import the corresponding locale data.
+ * See the [I18n guide](guide/i18n#i18n-pipes) for more information.
  *
- *  | Field Type         | Format      | Description                                                   | Example Value                                              |
+ * @see `formatDate()`
+ *
+ *
+ * @usageNotes
+ *
+ * The result of this pipe is not reevaluated when the input is mutated. To avoid the need to
+ * reformat the date on every change-detection cycle, treat the date as an immutable object
+ * and change the reference when the pipe needs to run again.
+ *
+ * ### Pre-defined format options
+ *
+ * Examples are given in `en-US` locale.
+ *
+ * - `'short'`: equivalent to `'M/d/yy, h:mm a'` (`6/15/15, 9:03 AM`).
+ * - `'medium'`: equivalent to `'MMM d, y, h:mm:ss a'` (`Jun 15, 2015, 9:03:01 AM`).
+ * - `'long'`: equivalent to `'MMMM d, y, h:mm:ss a z'` (`June 15, 2015 at 9:03:01 AM
+ * GMT+1`).
+ * - `'full'`: equivalent to `'EEEE, MMMM d, y, h:mm:ss a zzzz'` (`Monday, June 15, 2015 at
+ * 9:03:01 AM GMT+01:00`).
+ * - `'shortDate'`: equivalent to `'M/d/yy'` (`6/15/15`).
+ * - `'mediumDate'`: equivalent to `'MMM d, y'` (`Jun 15, 2015`).
+ * - `'longDate'`: equivalent to `'MMMM d, y'` (`June 15, 2015`).
+ * - `'fullDate'`: equivalent to `'EEEE, MMMM d, y'` (`Monday, June 15, 2015`).
+ * - `'shortTime'`: equivalent to `'h:mm a'` (`9:03 AM`).
+ * - `'mediumTime'`: equivalent to `'h:mm:ss a'` (`9:03:01 AM`).
+ * - `'longTime'`: equivalent to `'h:mm:ss a z'` (`9:03:01 AM GMT+1`).
+ * - `'fullTime'`: equivalent to `'h:mm:ss a zzzz'` (`9:03:01 AM GMT+01:00`).
+ *
+ * ### Custom format options
+ *
+ * You can construct a format string using symbols to specify the components
+ * of a date-time value, as described in the following table.
+ * Format details depend on the locale.
+ * Fields marked with (*) are only available in the extra data set for the given locale.
+ *
+ *  | Field type         | Format      | Description                                                   | Example Value                                              |
  *  |--------------------|-------------|---------------------------------------------------------------|------------------------------------------------------------|
  *  | Era                | G, GG & GGG | Abbreviated                                                   | AD                                                         |
  *  |                    | GGGG        | Wide                                                          | Anno Domini                                                |
@@ -75,31 +112,42 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *  |                    | O, OO & OOO | Short localized GMT format                                    | GMT-8                                                      |
  *  |                    | OOOO        | Long localized GMT format                                     | GMT-08:00                                                  |
  *
+ * Note that timezone correction is not applied to an ISO string that has no time component, such as "2016-09-19"
  *
- * When the expression is a ISO string without time (e.g. 2016-09-19) the time zone offset is not
- * applied and the formatted text will have the same day, month and year of the expression.
+ * ### Format examples
  *
- * WARNINGS:
- * - this pipe has only access to en-US locale data by default. If you want to localize the dates
- *   in another language, you will have to import data for other locales.
- *   See the {@linkDocs guide/i18n#i18n-pipes "I18n guide"} to know how to import additional locale
- *   data.
- * - Fields suffixed with * are only available in the extra dataset.
- *   See the {@linkDocs guide/i18n#i18n-pipes "I18n guide"} to know how to import extra locale
- *   data.
- * - this pipe is marked as pure hence it will not be re-evaluated when the input is mutated.
- *   Instead users should treat the date as an immutable object and change the reference when the
- *   pipe needs to re-run (this is to avoid reformatting the date on every change detection run
- *   which would be an expensive operation).
+ * These examples transform a date into various formats,
+ * assuming that `dateObj` is a JavaScript `Date` object for
+ * year: 2015, month: 6, day: 15, hour: 21, minute: 43, second: 11,
+ * given in the local time for the `en-US` locale.
  *
- * ### Examples
+ * ```
+ * {{ dateObj | date }}               // output is 'Jun 15, 2015'
+ * {{ dateObj | date:'medium' }}      // output is 'Jun 15, 2015, 9:43:11 PM'
+ * {{ dateObj | date:'shortTime' }}   // output is '9:43 PM'
+ * {{ dateObj | date:'mmss' }}        // output is '43:11'
+ * ```
  *
- * Assuming `dateObj` is (year: 2015, month: 6, day: 15, hour: 21, minute: 43, second: 11)
- * in the _local_ time and locale is 'en-US':
+ * ### Usage example
  *
- * {@example common/pipes/ts/date_pipe.ts region='DatePipe'}
+ * The following component uses a date pipe to display the current date in different formats.
  *
+ * ```
+ * @Component({
+ *  selector: 'date-pipe',
+ *  template: `<div>
+ *    <p>Today is {{today | date}}</p>
+ *    <p>Or if you prefer, {{today | date:'fullDate'}}</p>
+ *    <p>The time is {{today | date:'h:mm a z'}}</p>
+ *  </div>`
+ * })
+ * // Get the current date and time as a date-time value.
+ * export class DatePipeComponent {
+ *   today: number = Date.now();
+ * }
+ * ```
  *
+ * @publicApi
  */
 // clang-format on
 @Pipe({name: 'date', pure: true})
@@ -107,29 +155,17 @@ export class DatePipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private locale: string) {}
 
   /**
-   * @param value a date object or a number (milliseconds since UTC epoch) or an ISO string
-   * (https://www.w3.org/TR/NOTE-datetime).
-   * @param format indicates which date/time components to include. The format can be predefined as
-   *   shown below (all examples are given for `en-US`) or custom as shown in the table.
-   *   - `'short'`: equivalent to `'M/d/yy, h:mm a'` (e.g. `6/15/15, 9:03 AM`).
-   *   - `'medium'`: equivalent to `'MMM d, y, h:mm:ss a'` (e.g. `Jun 15, 2015, 9:03:01 AM`).
-   *   - `'long'`: equivalent to `'MMMM d, y, h:mm:ss a z'` (e.g. `June 15, 2015 at 9:03:01 AM
-   * GMT+1`).
-   *   - `'full'`: equivalent to `'EEEE, MMMM d, y, h:mm:ss a zzzz'` (e.g. `Monday, June 15, 2015 at
-   * 9:03:01 AM GMT+01:00`).
-   *   - `'shortDate'`: equivalent to `'M/d/yy'` (e.g. `6/15/15`).
-   *   - `'mediumDate'`: equivalent to `'MMM d, y'` (e.g. `Jun 15, 2015`).
-   *   - `'longDate'`: equivalent to `'MMMM d, y'` (e.g. `June 15, 2015`).
-   *   - `'fullDate'`: equivalent to `'EEEE, MMMM d, y'` (e.g. `Monday, June 15, 2015`).
-   *   - `'shortTime'`: equivalent to `'h:mm a'` (e.g. `9:03 AM`).
-   *   - `'mediumTime'`: equivalent to `'h:mm:ss a'` (e.g. `9:03:01 AM`).
-   *   - `'longTime'`: equivalent to `'h:mm:ss a z'` (e.g. `9:03:01 AM GMT+1`).
-   *   - `'fullTime'`: equivalent to `'h:mm:ss a zzzz'` (e.g. `9:03:01 AM GMT+01:00`).
-   * @param timezone to be used for formatting the time. It understands UTC/GMT and the continental
-   * US time zone
-   *  abbreviations, but for general use, use a time zone offset (e.g. `'+0430'`).
-   * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
-   * default).
+   * @param value The date expression: a `Date` object,  a number
+   * (milliseconds since UTC epoch), or an ISO string (https://www.w3.org/TR/NOTE-datetime).
+   * @param format The date/time components to include, using predefined options or a
+   * custom format string.
+   * @param timezone A timezone offset (such as `'+0430'`), or a standard
+   * UTC/GMT or continental US timezone abbreviation. Default is
+   * the local system timezone of the end-user's machine.
+   * @param locale A locale code for the locale format rules to use.
+   * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
+   * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
+   * @returns A date string in the desired format.
    */
   transform(value: any, format = 'mediumDate', timezone?: string, locale?: string): string|null {
     if (value == null || value === '' || value !== value) return null;

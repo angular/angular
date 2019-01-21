@@ -8,11 +8,12 @@
 
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
-import {MappingItem, RawSourceMap, SourceMapConsumer} from 'source-map';
 import * as ts from 'typescript';
 
 import {TypeScriptNodeEmitter} from '../../src/transformers/node_emitter';
 import {Directory, MockAotContext, MockCompilerHost} from '../mocks';
+
+const sourceMap = require('source-map');
 
 const someGenFilePath = '/somePackage/someGenFile';
 const someGenFileName = someGenFilePath + '.ts';
@@ -469,16 +470,16 @@ describe('TypeScriptNodeEmitter', () => {
       return result;
     }
 
-    function mappingItemsOf(text: string): MappingItem[] {
+    function mappingItemsOf(text: string) {
       // find the source map:
       const sourceMapMatch = /sourceMappingURL\=data\:application\/json;base64,(.*)$/.exec(text);
       const sourceMapBase64 = sourceMapMatch ![1];
       const sourceMapBuffer = Buffer.from(sourceMapBase64, 'base64');
       const sourceMapText = sourceMapBuffer.toString('utf8');
-      const sourceMap: RawSourceMap = JSON.parse(sourceMapText);
-      const consumer = new SourceMapConsumer(sourceMap);
-      const mappings: MappingItem[] = [];
-      consumer.eachMapping(mapping => { mappings.push(mapping); });
+      const sourceMapParsed = JSON.parse(sourceMapText);
+      const consumer = new sourceMap.SourceMapConsumer(sourceMapParsed);
+      const mappings: any[] = [];
+      consumer.eachMapping((mapping: any) => { mappings.push(mapping); });
       return mappings;
     }
 
@@ -502,7 +503,7 @@ describe('TypeScriptNodeEmitter', () => {
           generatedColumn: 0,
           originalLine: 1,
           originalColumn: 0,
-          name: null
+          name: null !  // TODO: Review use of `!` here (#19904)
         },
         {
           source: sourceUrl,
@@ -510,7 +511,7 @@ describe('TypeScriptNodeEmitter', () => {
           generatedColumn: 16,
           originalLine: 1,
           originalColumn: 26,
-          name: null
+          name: null !  // TODO: Review use of `!` here (#19904)
         }
       ]);
     });

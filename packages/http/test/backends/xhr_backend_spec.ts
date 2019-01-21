@@ -32,14 +32,20 @@ class MockBrowserXHR extends BrowserXhr {
   open: any;
   response: any;
   responseType: string;
-  responseText: string;
+  // TODO(issue/24571): remove '!'.
+  responseText !: string;
   setRequestHeader: any;
   callbacks = new Map<string, Function>();
-  status: number;
-  responseHeaders: string;
-  responseURL: string;
-  statusText: string;
-  withCredentials: boolean;
+  // TODO(issue/24571): remove '!'.
+  status !: number;
+  // TODO(issue/24571): remove '!'.
+  responseHeaders !: string;
+  // TODO(issue/24571): remove '!'.
+  responseURL !: string;
+  // TODO(issue/24571): remove '!'.
+  statusText !: string;
+  // TODO(issue/24571): remove '!'.
+  withCredentials !: boolean;
 
   constructor() {
     super();
@@ -321,7 +327,7 @@ class MockBrowserXHR extends BrowserXhr {
           let newBlob: Blob;
           try {
             newBlob = new Blob(data || [], datatype ? {type: datatype} : {});
-          } catch (e) {
+          } catch {
             const BlobBuilder = (<any>global).BlobBuilder || (<any>global).WebKitBlobBuilder ||
                 (<any>global).MozBlobBuilder || (<any>global).MSBlobBuilder;
             const builder = new BlobBuilder();

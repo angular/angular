@@ -20,7 +20,7 @@ function createDiv() {
 {
   describe('Animation', () => {
     // these tests are only mean't to be run within the DOM (for now)
-    if (typeof Element == 'undefined') return;
+    if (isNode) return;
 
     let rootElement: any;
     let subElement1: any;

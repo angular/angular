@@ -15,7 +15,7 @@ module.exports = function getExampleRegion(exampleMap, createDocMessage, collect
     // If still no file then we error
     if (!exampleFile) {
       const gitIgnoreFile = collectExamples.isExampleIgnored(relativePath);
-      if( gitIgnoreFile) {
+      if (gitIgnoreFile) {
         const message = createDocMessage('Ignored example file... relativePath: "' + relativePath + '"', doc) + '\n' +
         'This example file exists but has been ignored by a rule, in "' + gitIgnoreFile + '".';
         throw new Error(message);

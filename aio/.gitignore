@@ -44,6 +44,3 @@ protractor-results*.txt
 # System Files
 .DS_Store
 Thumbs.db
-
-# copied dependencies
-src/assets/js/lunr*

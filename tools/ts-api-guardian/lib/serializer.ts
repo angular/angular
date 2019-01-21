@@ -15,11 +15,28 @@ const baseTsOptions: ts.CompilerOptions = {
   moduleResolution: ts.ModuleResolutionKind.Classic
 };
 
+export interface JsDocTagOptions {
+  /**
+   * An array of names of jsdoc tags that must exist.
+   */
+  required?: string[];
+
+  /**
+   * An array of names of jsdoc tags that must not exist.
+   */
+  banned?: string[];
+
+  /**
+   * An array of names of jsdoc tags that will be copied to the serialized code.
+   */
+  toCopy?: string[];
+}
+
 export interface SerializationOptions {
   /**
    * Removes all exports matching the regular expression.
    */
-  stripExportPattern?: RegExp;
+  stripExportPattern?: RegExp|RegExp[];
   /**
    * Whitelists these identifiers as modules in the output. For example,
    * ```
@@ -31,6 +48,15 @@ export interface SerializationOptions {
    * whitelisting angular.
    */
   allowModuleIdentifiers?: string[];
+
+  /** The jsdoc tag options for top level exports */
+  exportTags?: JsDocTagOptions;
+
+  /** The jsdoc tag options for properties/methods/etc of exports */
+  memberTags?: JsDocTagOptions;
+
+  /** The jsdoc tag options for parameters of members/functions */
+  paramTags?: JsDocTagOptions;
 }
 
 export type DiagnosticSeverity = 'warn' | 'error' | 'none';
@@ -42,7 +68,17 @@ export function publicApi(fileName: string, options: SerializationOptions = {}):
 export function publicApiInternal(
     host: ts.CompilerHost, fileName: string, tsOptions: ts.CompilerOptions,
     options: SerializationOptions = {}): string {
-  const entrypoint = path.normalize(fileName);
+  // Since the entry point will be compared with the source files from the TypeScript program,
+  // the path needs to be normalized with forward slashes in order to work within Windows.
+  const entrypoint = path.normalize(fileName).replace(/\\/g, '/');
+
+  // Setup default tag options
+  options = {
+    ...options,
+    exportTags: applyDefaultTagOptions(options.exportTags),
+    memberTags: applyDefaultTagOptions(options.memberTags),
+    paramTags: applyDefaultTagOptions(options.paramTags)
+  };
 
   if (!entrypoint.match(/\.d\.ts$/)) {
     throw new Error(`Source file "${fileName}" is not a declaration file`);
@@ -79,56 +115,30 @@ class ResolvedDeclarationEmitter {
       throw new Error(`Source file "${this.fileName}" not found`);
     }
 
-    let output = '';
+    let output: string[] = [];
 
     const resolvedSymbols = this.getResolvedSymbols(sourceFile);
     // Sort all symbols so that the output is more deterministic
     resolvedSymbols.sort(symbolCompareFunction);
 
     for (const symbol of resolvedSymbols) {
-      if (this.options.stripExportPattern && symbol.name.match(this.options.stripExportPattern)) {
+      if (this.isExportPatternStripped(symbol.name)) {
         continue;
       }
 
-      let decl: ts.Node|undefined =
-          symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
-      if (!decl) {
+      const typeDecl = symbol.declarations && symbol.declarations[0];
+      const valDecl = symbol.valueDeclaration;
+      if (!typeDecl && !valDecl) {
         this.diagnostics.push({
           type: 'warn',
           message: `${sourceFile.fileName}: error: No declaration found for symbol "${symbol.name}"`
         });
         continue;
       }
-
-      // The declaration node may not be a complete statement, e.g. for var/const
-      // symbols. We need to find the complete export statement by traversing
-      // upwards.
-      while (!hasModifier(decl, ts.SyntaxKind.ExportKeyword) && decl.parent) {
-        decl = decl.parent;
-      }
-
-      if (hasModifier(decl, ts.SyntaxKind.ExportKeyword)) {
-        // Make an empty line between two exports
-        if (output) {
-          output += '\n';
-        }
-
-        // Print stability annotation
-        const sourceText = decl.getSourceFile().text;
-        const trivia = sourceText.substr(decl.pos, decl.getLeadingTriviaWidth());
-        const match = stabilityAnnotationPattern.exec(trivia);
-        if (match) {
-          output += `/** @${match[1]} */\n`;
-        }
-
-        output += stripEmptyLines(this.emitNode(decl)) + '\n';
-      } else {
-        // This may happen for symbols re-exported from external modules.
-        this.diagnostics.push({
-          type: 'warn',
-          message:
-              createErrorMessage(decl, `No export declaration found for symbol "${symbol.name}"`)
-        });
+      typeDecl && this.emitDeclaration(symbol, typeDecl, output);
+      if (valDecl && typeDecl.kind === ts.SyntaxKind.InterfaceDeclaration) {
+        // Only generate value declarations in case of interfaces.
+        valDecl && this.emitDeclaration(symbol, valDecl, output);
       }
     }
 
@@ -140,7 +150,40 @@ class ResolvedDeclarationEmitter {
       }
     }
 
-    return output;
+    return output.join('');
+  }
+
+  emitDeclaration(symbol: ts.Symbol, decl: ts.Node, output: string[]) {
+    // The declaration node may not be a complete statement, e.g. for var/const
+    // symbols. We need to find the complete export statement by traversing
+    // upwards.
+    while (!hasModifier(decl, ts.SyntaxKind.ExportKeyword) && decl.parent) {
+      decl = decl.parent;
+    }
+
+    if (hasModifier(decl, ts.SyntaxKind.ExportKeyword)) {
+      // Make an empty line between two exports
+      if (output.length) {
+        output.push('\n');
+      }
+
+      const jsdocComment = this.processJsDocTags(decl, this.options.exportTags);
+      if (jsdocComment) {
+        output.push(jsdocComment + '\n');
+      }
+
+      output.push(stripEmptyLines(this.emitNode(decl)) + '\n');
+    } else {
+      // This may happen for symbols re-exported from external modules.
+      this.diagnostics.push({
+        type: 'warn',
+        message: createErrorMessage(decl, `No export declaration found for symbol "${symbol.name}"`)
+      });
+    }
+  }
+
+  private isExportPatternStripped(symbolName: string): boolean {
+    return [].concat(this.options.stripExportPattern).some(p => !!(p && symbolName.match(p)));
   }
 
   private getResolvedSymbols(sourceFile: ts.SourceFile): ts.Symbol[] {
@@ -155,7 +198,7 @@ class ResolvedDeclarationEmitter {
           return s;
         }
         if (resolvedSymbol.name !== s.name) {
-          if (this.options.stripExportPattern && s.name.match(this.options.stripExportPattern)) {
+          if (this.isExportPatternStripped(s.name)) {
             return s;
           }
           throw new Error(
@@ -248,13 +291,13 @@ class ResolvedDeclarationEmitter {
                                .map(n => this.emitNode(n))
                                .join('');
 
-      // Print stability annotation for fields
+      // Print stability annotation for fields and parmeters
       if (ts.isParameter(node) || node.kind in memberDeclarationOrder) {
-        const trivia = sourceText.substr(node.pos, node.getLeadingTriviaWidth());
-        const match = stabilityAnnotationPattern.exec(trivia);
-        if (match) {
+        const tagOptions = ts.isParameter(node) ? this.options.paramTags : this.options.memberTags;
+        const jsdocComment = this.processJsDocTags(node, tagOptions);
+        if (jsdocComment) {
           // Add the annotation after the leading whitespace
-          output = output.replace(/^(\n\s*)/, `$1/** @${match[1]} */ `);
+          output = output.replace(/^(\n\s*)/, `$1${jsdocComment} `);
         }
       }
 
@@ -270,6 +313,56 @@ class ResolvedDeclarationEmitter {
       return sourceText.substring(tail, node.end);
     }
   }
+
+  private processJsDocTags(node: ts.Node, tagOptions: JsDocTagOptions) {
+    const jsDocTags = getJsDocTags(node);
+    const missingRequiredTags =
+        tagOptions.required.filter(requiredTag => jsDocTags.every(tag => tag !== requiredTag));
+    if (missingRequiredTags.length) {
+      this.diagnostics.push({
+        type: 'error',
+        message: createErrorMessage(
+            node, 'Required jsdoc tags - ' +
+                missingRequiredTags.map(tag => `"@${tag}"`).join(', ') +
+                ` - are missing on ${getName(node)}.`)
+      });
+    }
+    const bannedTagsFound =
+        tagOptions.banned.filter(bannedTag => jsDocTags.some(tag => tag === bannedTag));
+    if (bannedTagsFound.length) {
+      this.diagnostics.push({
+        type: 'error',
+        message: createErrorMessage(
+            node, 'Banned jsdoc tags - ' + bannedTagsFound.map(tag => `"@${tag}"`).join(', ') +
+                ` - were found on ${getName(node)}.`)
+      });
+    }
+    const tagsToCopy =
+        jsDocTags.filter(tag => tagOptions.toCopy.some(tagToCopy => tag === tagToCopy));
+
+    if (tagsToCopy.length === 1) {
+      return `/** @${tagsToCopy[0]} */`;
+    } else if (tagsToCopy.length > 1) {
+      return '/**\n' + tagsToCopy.map(tag => ` * @${tag}`).join('\n') + ' */\n';
+    } else {
+      return '';
+    }
+  }
+}
+
+const tagRegex = /@(\w+)/g;
+
+function getJsDocTags(node: ts.Node): string[] {
+  const sourceText = node.getSourceFile().text;
+  const trivia = sourceText.substr(node.pos, node.getLeadingTriviaWidth());
+  // We use a hash so that we don't collect duplicate jsdoc tags
+  // (e.g. if a property has a getter and setter with the same tag).
+  const jsdocTags: {[key: string]: boolean} = {};
+  let match: RegExpExecArray;
+  while (match = tagRegex.exec(trivia)) {
+    jsdocTags[match[1]] = true;
+  }
+  return Object.keys(jsdocTags);
 }
 
 function symbolCompareFunction(a: ts.Symbol, b: ts.Symbol) {
@@ -293,10 +386,8 @@ const memberDeclarationOrder: {[key: number]: number} = {
   [ts.SyntaxKind.MethodDeclaration]: 4
 };
 
-const stabilityAnnotationPattern = /@(experimental|stable|deprecated)\b/;
-
 function stripEmptyLines(text: string): string {
-  return text.split('\n').filter(x => !!x.length).join('\n');
+  return text.split(/\r?\n/).filter(x => !!x.length).join('\n');
 }
 
 /**
@@ -342,4 +433,12 @@ function createErrorMessage(node: ts.Node, message: string): string {
 
 function hasModifier(node: ts.Node, modifierKind: ts.SyntaxKind): boolean {
   return !!node.modifiers && node.modifiers.some(x => x.kind === modifierKind);
+}
+
+function applyDefaultTagOptions(tagOptions: JsDocTagOptions | undefined): JsDocTagOptions {
+  return {required: [], banned: [], toCopy: [], ...tagOptions};
+}
+
+function getName(node: any) {
+  return '`' + (node.name && node.name.text ? node.name.text : node.getText()) + '`';
 }

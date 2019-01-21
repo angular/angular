@@ -8,7 +8,7 @@
 
 import {Component, Directive, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm, NgModel} from '@angular/forms';
+import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, FormControl, FormsModule, NG_ASYNC_VALIDATORS, NgForm, NgFormSelectorWarning, NgModel} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
@@ -460,7 +460,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const values: string[] = [];
+             const values: any[] = [];
              const form = fixture.debugElement.children[0].injector.get(NgForm);
 
              const sub = merge(form.valueChanges !, form.statusChanges !)
@@ -748,7 +748,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
         it('should reset properly', fakeAsync(() => {
              const fixture = initTest(NgModelForm);
-             fixture.componentInstance.name = 'Nancy';
+             fixture.componentInstance.name = 'Nancy' as string | null;
              fixture.componentInstance.options = {updateOn: 'submit'};
              fixture.detectChanges();
              tick();
@@ -792,7 +792,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const values: string[] = [];
+             const values: any[] = [];
              const form = fixture.debugElement.children[0].injector.get(NgForm);
 
              const sub = merge(form.valueChanges !, form.statusChanges !)
@@ -1028,7 +1028,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
       it('should reset the form to empty when reset event is fired', fakeAsync(() => {
            const fixture = initTest(NgModelForm);
-           fixture.componentInstance.name = 'should be cleared';
+           fixture.componentInstance.name = 'should be cleared' as string | null;
            fixture.detectChanges();
            tick();
 
@@ -1630,6 +1630,61 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
          }));
     });
 
+    describe('ngForm deprecation warnings', () => {
+      let warnSpy: jasmine.Spy;
+
+      @Component({selector: 'ng-form-deprecated', template: `<ngForm></ngForm><ngForm></ngForm>`})
+      class ngFormDeprecated {
+      }
+
+      beforeEach(() => {
+        (NgFormSelectorWarning as any)._ngFormWarning = false;
+
+        warnSpy = spyOn(console, 'warn');
+      });
+
+      describe(`when using the deprecated 'ngForm' selector`, () => {
+        it(`should only warn once when global provider is provided with "once"`, () => {
+          TestBed.configureTestingModule({
+            declarations: [ngFormDeprecated],
+            imports: [FormsModule.withConfig({warnOnDeprecatedNgFormSelector: 'once'})]
+          });
+          TestBed.createComponent(ngFormDeprecated);
+          expect(warnSpy).toHaveBeenCalledTimes(1);
+          expect(warnSpy.calls.mostRecent().args[0])
+              .toMatch(/It looks like you're using 'ngForm'/gi);
+        });
+
+        it(`should only warn once by default`, () => {
+          initTest(ngFormDeprecated);
+          expect(warnSpy).toHaveBeenCalledTimes(1);
+          expect(warnSpy.calls.mostRecent().args[0])
+              .toMatch(/It looks like you're using 'ngForm'/gi);
+        });
+
+        it(`should not warn when global provider is provided with "never"`, () => {
+          TestBed.configureTestingModule({
+            declarations: [ngFormDeprecated],
+            imports: [FormsModule.withConfig({warnOnDeprecatedNgFormSelector: 'never'})]
+          });
+          TestBed.createComponent(ngFormDeprecated);
+          expect(warnSpy).not.toHaveBeenCalled();
+        });
+
+        it(`should only warn for each instance when global provider is provided with "always"`,
+           () => {
+             TestBed.configureTestingModule({
+               declarations: [ngFormDeprecated],
+               imports: [FormsModule.withConfig({warnOnDeprecatedNgFormSelector: 'always'})]
+             });
+
+             TestBed.createComponent(ngFormDeprecated);
+             expect(warnSpy).toHaveBeenCalledTimes(2);
+             expect(warnSpy.calls.mostRecent().args[0])
+                 .toMatch(/It looks like you're using 'ngForm'/gi);
+           });
+      });
+    });
   });
 }
 
@@ -1640,7 +1695,8 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
   `
 })
 class StandaloneNgModel {
-  name: string;
+  // TODO(issue/24571): remove '!'.
+  name !: string;
 }
 
 @Component({
@@ -1652,8 +1708,10 @@ class StandaloneNgModel {
   `
 })
 class NgModelForm {
-  name: string;
-  event: Event;
+  // TODO(issue/24571): remove '!'.
+  name !: string | null;
+  // TODO(issue/24571): remove '!'.
+  event !: Event;
   options = {};
 
   onReset() {}
@@ -1676,10 +1734,14 @@ class NgModelNativeValidateForm {
   `
 })
 class NgModelGroupForm {
-  first: string;
-  last: string;
-  email: string;
-  isDisabled: boolean;
+  // TODO(issue/24571): remove '!'.
+  first !: string;
+  // TODO(issue/24571): remove '!'.
+  last !: string;
+  // TODO(issue/24571): remove '!'.
+  email !: string;
+  // TODO(issue/24571): remove '!'.
+  isDisabled !: boolean;
   options = {updateOn: 'change'};
 }
 
@@ -1695,7 +1757,8 @@ class NgModelGroupForm {
   `
 })
 class NgModelValidBinding {
-  first: string;
+  // TODO(issue/24571): remove '!'.
+  first !: string;
 }
 
 
@@ -1711,10 +1774,12 @@ class NgModelValidBinding {
   `
 })
 class NgModelNgIfForm {
-  first: string;
+  // TODO(issue/24571): remove '!'.
+  first !: string;
   groupShowing = true;
   emailShowing = true;
-  email: string;
+  // TODO(issue/24571): remove '!'.
+  email !: string;
 }
 
 @Component({
@@ -1749,8 +1814,10 @@ class InvalidNgModelNoName {
   `
 })
 class NgModelOptionsStandalone {
-  one: string;
-  two: string;
+  // TODO(issue/24571): remove '!'.
+  one !: string;
+  // TODO(issue/24571): remove '!'.
+  two !: string;
   options: {name?: string, standalone?: boolean, updateOn?: string} = {standalone: true};
   formOptions = {};
 }
@@ -1767,10 +1834,14 @@ class NgModelOptionsStandalone {
   `
 })
 class NgModelValidationBindings {
-  required: boolean;
-  minLen: number;
-  maxLen: number;
-  pattern: string;
+  // TODO(issue/24571): remove '!'.
+  required !: boolean;
+  // TODO(issue/24571): remove '!'.
+  minLen !: number;
+  // TODO(issue/24571): remove '!'.
+  maxLen !: number;
+  // TODO(issue/24571): remove '!'.
+  pattern !: string;
 }
 
 @Component({
@@ -1782,9 +1853,12 @@ class NgModelValidationBindings {
   `
 })
 class NgModelMultipleValidators {
-  required: boolean;
-  minLen: number;
-  pattern: string|RegExp;
+  // TODO(issue/24571): remove '!'.
+  required !: boolean;
+  // TODO(issue/24571): remove '!'.
+  minLen !: number;
+  // TODO(issue/24571): remove '!'.
+  pattern !: string | RegExp;
 }
 
 @Component({
@@ -1826,13 +1900,14 @@ class NgModelAsyncValidation {
   selector: 'ng-model-changes-form',
   template: `
     <form>
-      <input name="async" [ngModel]="name" (ngModelChange)="log()" 
+      <input name="async" [ngModel]="name" (ngModelChange)="log()"
              [ngModelOptions]="options">
     </form>
   `
 })
 class NgModelChangesForm {
-  name: string;
+  // TODO(issue/24571): remove '!'.
+  name !: string;
   events: string[] = [];
   options: any;
 

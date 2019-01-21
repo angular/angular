@@ -10,6 +10,7 @@ import {Component, Directive, ElementRef, Injector, Input, NgModule, destroyPlat
 import {async} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {fixmeIvy} from '@angular/private/testing';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 
@@ -29,7 +30,8 @@ withEachNg1Version(() => {
          // component
          @Directive({selector: 'ng1'})
          class Ng1Component extends UpgradeComponent {
-           @Input() title: string;
+           // TODO(issue/24571): remove '!'.
+           @Input() title !: string;
 
            constructor(elementRef: ElementRef, injector: Injector) {
              super('ng1', elementRef, injector);
@@ -42,7 +44,8 @@ withEachNg1Version(() => {
            template: 'ng2[<ng1 [title]="nameProp">transclude</ng1>](<ng-content></ng-content>)'
          })
          class Ng2Component {
-           @Input('name') nameProp: string;
+           // TODO(issue/24571): remove '!'.
+           @Input('name') nameProp !: string;
          }
 
          // This module represents the Angular pieces of the application
@@ -52,7 +55,8 @@ withEachNg1Version(() => {
            imports: [BrowserModule, UpgradeModule]
          })
          class Ng2Module {
-           ngDoBootstrap() { /* this is a placeholder to stop the bootstrapper from complaining */
+           ngDoBootstrap() { /* this is a placeholder to stop the bootstrapper from
+                                complaining */
            }
          }
 
@@ -70,7 +74,8 @@ withEachNg1Version(() => {
                          template: 'ng1[Hello {{title}}!](<span ng-transclude></span>)'
                        };
                      })
-                 // This is wrapping (downgrading) an Angular component to be used in AngularJS
+                 // This is wrapping (downgrading) an Angular component to be used in
+                 // AngularJS
                  .directive('ng2', downgradeComponent({component: Ng2Component}));
 
          // This is the (AngularJS) application bootstrap element

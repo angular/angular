@@ -10,6 +10,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Compiler, Component, Compone
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {fixmeIvy} from '@angular/private/testing';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 
@@ -22,18 +23,15 @@ withEachNg1Version(() => {
     afterEach(() => destroyPlatform());
 
     it('should bind properties, events', async(() => {
-         const ng1Module =
-             angular.module('ng1', []).value('$exceptionHandler', (err: any) => {
-                                        throw err;
-                                      }).run(($rootScope: angular.IScope) => {
-               $rootScope['name'] = 'world';
-               $rootScope['dataA'] = 'A';
-               $rootScope['dataB'] = 'B';
-               $rootScope['modelA'] = 'initModelA';
-               $rootScope['modelB'] = 'initModelB';
-               $rootScope['eventA'] = '?';
-               $rootScope['eventB'] = '?';
-             });
+         const ng1Module = angular.module('ng1', []).run(($rootScope: angular.IScope) => {
+           $rootScope['name'] = 'world';
+           $rootScope['dataA'] = 'A';
+           $rootScope['dataB'] = 'B';
+           $rootScope['modelA'] = 'initModelA';
+           $rootScope['modelB'] = 'initModelB';
+           $rootScope['eventA'] = '?';
+           $rootScope['eventB'] = '?';
+         });
 
          @Component({
            selector: 'ng2',
@@ -149,12 +147,8 @@ withEachNg1Version(() => {
        }));
 
     it('should bind properties to onpush components', async(() => {
-         const ng1Module =
-             angular.module('ng1', []).value('$exceptionHandler', (err: any) => {
-                                        throw err;
-                                      }).run(($rootScope: angular.IScope) => {
-               $rootScope['dataB'] = 'B';
-             });
+         const ng1Module = angular.module('ng1', []).run(
+             ($rootScope: angular.IScope) => { $rootScope['dataB'] = 'B'; });
 
          @Component({
            selector: 'ng2',
@@ -418,8 +412,10 @@ withEachNg1Version(() => {
          class Ng2Component implements OnChanges {
            ngOnChangesCount = 0;
            firstChangesCount = 0;
-           initialValue: string;
-           @Input() foo: string;
+           // TODO(issue/24571): remove '!'.
+           initialValue !: string;
+           // TODO(issue/24571): remove '!'.
+           @Input() foo !: string;
 
            ngOnChanges(changes: SimpleChanges) {
              this.ngOnChangesCount++;
@@ -709,44 +705,92 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should respect hierarchical dependency injection for ng2', async(() => {
-         @Component({selector: 'parent', template: 'parent(<ng-content></ng-content>)'})
-         class ParentComponent {
-         }
+    fixmeIvy('FW-873: projected component injector hierarchy not wired up correctly')
+        .it('should respect hierarchical dependency injection for ng2', async(() => {
+              @Component({selector: 'parent', template: 'parent(<ng-content></ng-content>)'})
+              class ParentComponent {
+              }
 
-         @Component({selector: 'child', template: 'child'})
-         class ChildComponent {
-           constructor(parent: ParentComponent) {}
-         }
+              @Component({selector: 'child', template: 'child'})
+              class ChildComponent {
+                constructor(parent: ParentComponent) {}
+              }
 
-         @NgModule({
-           declarations: [ParentComponent, ChildComponent],
-           entryComponents: [ParentComponent, ChildComponent],
-           imports: [BrowserModule, UpgradeModule]
-         })
-         class Ng2Module {
-           ngDoBootstrap() {}
-         }
+              @NgModule({
+                declarations: [ParentComponent, ChildComponent],
+                entryComponents: [ParentComponent, ChildComponent],
+                imports: [BrowserModule, UpgradeModule]
+              })
+              class Ng2Module {
+                ngDoBootstrap() {}
+              }
 
-         const ng1Module =
-             angular.module('ng1', [])
-                 .directive('parent', downgradeComponent({component: ParentComponent}))
-                 .directive('child', downgradeComponent({component: ChildComponent}));
+              const ng1Module =
+                  angular.module('ng1', [])
+                      .directive('parent', downgradeComponent({component: ParentComponent}))
+                      .directive('child', downgradeComponent({component: ChildComponent}));
 
-         const element = html('<parent><child></child></parent>');
+              const element = html('<parent><child></child></parent>');
 
-         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
-           expect(multiTrim(document.body.textContent)).toBe('parent(child)');
-         });
-       }));
+              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+                expect(multiTrim(document.body.textContent)).toBe('parent(child)');
+              });
+            }));
 
-    it('should work with ng2 lazy loaded components', async(() => {
+    fixmeIvy(
+        'FW-717: Injector on lazy loaded components are not the same as their NgModule\'s injector')
+        .it('should work with ng2 lazy loaded components', async(() => {
+              let componentInjector: Injector;
 
-         let componentInjector: Injector;
+              @Component({selector: 'ng2', template: ''})
+              class Ng2Component {
+                constructor(injector: Injector) { componentInjector = injector; }
+              }
 
+              @NgModule({
+                declarations: [Ng2Component],
+                entryComponents: [Ng2Component],
+                imports: [BrowserModule, UpgradeModule],
+              })
+              class Ng2Module {
+                ngDoBootstrap() {}
+              }
+
+              @Component({template: ''})
+              class LazyLoadedComponent {
+                constructor(public module: NgModuleRef<any>) {}
+              }
+
+              @NgModule({
+                declarations: [LazyLoadedComponent],
+                entryComponents: [LazyLoadedComponent],
+              })
+              class LazyLoadedModule {
+              }
+
+              const ng1Module = angular.module('ng1', []).directive(
+                  'ng2', downgradeComponent({component: Ng2Component}));
+
+              const element = html('<ng2></ng2>');
+
+              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+                const modInjector = upgrade.injector;
+                // Emulate the router lazy loading a module and creating a component
+                const compiler = modInjector.get(Compiler);
+                const modFactory = compiler.compileModuleSync(LazyLoadedModule);
+                const childMod = modFactory.create(modInjector);
+                const cmpFactory = childMod.componentFactoryResolver.resolveComponentFactory(
+                    LazyLoadedComponent) !;
+                const lazyCmp = cmpFactory.create(componentInjector);
+
+                expect(lazyCmp.instance.module.injector === childMod.injector).toBe(true);
+              });
+
+            }));
+
+    it('should throw if `downgradedModule` is specified', async(() => {
          @Component({selector: 'ng2', template: ''})
          class Ng2Component {
-           constructor(injector: Injector) { componentInjector = injector; }
          }
 
          @NgModule({
@@ -758,36 +802,22 @@ withEachNg1Version(() => {
            ngDoBootstrap() {}
          }
 
-         @Component({template: ''})
-         class LazyLoadedComponent {
-           constructor(public module: NgModuleRef<any>) {}
-         }
-
-         @NgModule({
-           declarations: [LazyLoadedComponent],
-           entryComponents: [LazyLoadedComponent],
-         })
-         class LazyLoadedModule {
-         }
 
          const ng1Module = angular.module('ng1', []).directive(
-             'ng2', downgradeComponent({component: Ng2Component}));
+             'ng2', downgradeComponent({component: Ng2Component, downgradedModule: 'foo'}));
 
          const element = html('<ng2></ng2>');
 
-         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
-           const modInjector = upgrade.injector;
-           // Emulate the router lazy loading a module and creating a component
-           const compiler = modInjector.get(Compiler);
-           const modFactory = compiler.compileModuleSync(LazyLoadedModule);
-           const childMod = modFactory.create(modInjector);
-           const cmpFactory =
-               childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent) !;
-           const lazyCmp = cmpFactory.create(componentInjector);
-
-           expect(lazyCmp.instance.module).toBe(childMod.injector);
-         });
-
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module)
+             .then(
+                 () => { throw new Error('Expected bootstraping to fail.'); },
+                 err =>
+                     expect(err.message)
+                         .toBe(
+                             'Error while instantiating component \'Ng2Component\': \'downgradedModule\' ' +
+                             'unexpectedly specified.\n' +
+                             'You should not specify a value for \'downgradedModule\', unless you are ' +
+                             'downgrading more than one Angular module (via \'downgradeModule()\').'));
        }));
   });
 });

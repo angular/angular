@@ -1,10 +1,9 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "ivy_ng_module")
-load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_library")
 load("//tools/http-server:http_server.bzl", "http_server")
 
-ivy_ng_module(
+ng_module(
     name = "hello_world_i18n",
     srcs = ["index.ts"],
     deps = [
@@ -21,6 +20,7 @@ ng_rollup_bundle(
     # has an "external" directory for external dependencies.
     # This should probably start with "angular/" and let the rule deal with it.
     entry_point = "packages/core/test/bundling/hello_world_i18n/index.js",
+    tags = ["ivy-only"],
     deps = [
         ":hello_world_i18n",
         "//packages/core",
@@ -34,4 +34,5 @@ http_server(
         ":bundle.min.js",
         ":bundle.min_debug.js",
     ],
+    tags = ["ivy-only"],
 )

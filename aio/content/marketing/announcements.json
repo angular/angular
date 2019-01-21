@@ -12,5 +12,19 @@
     "message": "Watch ng-conf live stream <br/>Apr 18th-20th, 2018",
     "imageUrl": "generated/images/marketing/home/ng-conf.png",
     "linkUrl": "https://www.ng-conf.org/livestream/"
+  },
+  {
+    "startDate": "2018-06-01",
+    "endDate": "2018-08-15",
+    "message": "Join us for Angular Mix<br/>October 10th-12th, 2018",
+    "imageUrl": "generated/images/marketing/home/angular-mix.png",
+    "linkUrl": "https://angularmix.com/"
+  },
+  {
+    "startDate": "2018-08-15",
+    "endDate": "2018-11-06",
+    "message": "Join us for Angular Connect<br/>November 6th-7th, 2018",
+    "imageUrl": "generated/images/marketing/home/angular-connect.png",
+    "linkUrl": "https://angularconnect.com/"
   }
 ]

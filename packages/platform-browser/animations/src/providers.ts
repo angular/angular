@@ -8,7 +8,8 @@
 
 import {AnimationBuilder} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine as AnimationEngine, ɵAnimationStyleNormalizer as AnimationStyleNormalizer, ɵCssKeyframesDriver as CssKeyframesDriver, ɵNoopAnimationDriver as NoopAnimationDriver, ɵWebAnimationsDriver as WebAnimationsDriver, ɵWebAnimationsStyleNormalizer as WebAnimationsStyleNormalizer, ɵsupportsWebAnimations as supportsWebAnimations} from '@angular/animations/browser';
-import {Injectable, InjectionToken, NgZone, Provider, RendererFactory2} from '@angular/core';
+import {DOCUMENT} from '@angular/common';
+import {Inject, Injectable, InjectionToken, NgZone, Provider, RendererFactory2} from '@angular/core';
 import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 
 import {BrowserAnimationBuilder} from './animation_builder';
@@ -16,8 +17,9 @@ import {AnimationRendererFactory} from './animation_renderer';
 
 @Injectable()
 export class InjectableAnimationEngine extends AnimationEngine {
-  constructor(driver: AnimationDriver, normalizer: AnimationStyleNormalizer) {
-    super(driver, normalizer);
+  constructor(
+      @Inject(DOCUMENT) doc: any, driver: AnimationDriver, normalizer: AnimationStyleNormalizer) {
+    super(doc.body, driver, normalizer);
   }
 }
 
@@ -35,7 +37,7 @@ export function instantiateRendererFactory(
 }
 
 /**
- * @experimental Animation support is experimental.
+ * @publicApi
  */
 export const ANIMATION_MODULE_TYPE =
     new InjectionToken<'NoopAnimations'|'BrowserAnimations'>('AnimationModuleType');

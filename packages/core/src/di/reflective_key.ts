@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {stringify} from '../util';
+import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
 
 
@@ -24,7 +24,9 @@ import {resolveForwardRef} from './forward_ref';
  * `Key` should not be created directly. {@link ReflectiveInjector} creates keys automatically when
  * resolving
  * providers.
+ *
  * @deprecated No replacement
+ * @publicApi
  */
 export class ReflectiveKey {
   public readonly displayName: string;

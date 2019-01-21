@@ -1,12 +1,14 @@
-# The Ahead-of-Time (AOT) Compiler
+# The Ahead-of-Time (AOT) compiler
 
-The Angular Ahead-of-Time (AOT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code.
+An Angular application consists mainly of components and their HTML templates. Because the components and templates provided by Angular cannot be understood by the browser directly, Angular applications require a compilation process before they can run in a browser.
 
-This guide explains how to build with the AOT compiler using different compiler options and how to write Angular metadata that AOT can compile.
+The Angular Ahead-of-Time (AOT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code. Compiling your application during the build process provides a faster rendering in the browser.
 
-<div class="l-sub-section">
+This guide explains how to specify metadata and apply available compiler options to compile your applications efficiently using the AOT compiler.
 
-  <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular Compiler</a> at AngularConnect 2016.
+<div class="alert is-helpful"
+
+  <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular compiler</a> at AngularConnect 2016.
 
 </div>
 
@@ -14,16 +16,12 @@ This guide explains how to build with the AOT compiler using different compiler 
 
 ## Angular compilation
 
-An Angular application consists largely of components and their HTML templates.
-Before the browser can render the application,
-the components and templates must be converted to executable JavaScript by an _Angular compiler_.
-
 Angular offers two ways to compile your application:
 
-1. **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime
+1. **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime.
 1. **_Ahead-of-Time_ (AOT)**, which compiles your app at build time.
 
-JIT compilation is the default when you run the _build-only_ or the _build-and-serve-locally_ CLI commands:
+JIT compilation is the default when you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve)  (build and serve locally) CLI commands: 
 
 <code-example language="sh" class="code-shell">
   ng build
@@ -32,18 +30,18 @@ JIT compilation is the default when you run the _build-only_ or the _build-and-s
 
 {@a compile}
 
-For AOT compilation, append the `--aot` flags to the _build-only_ or the _build-and-serve-locally_ CLI commands:
+For AOT compilation, include the `--aot` option with the `ng build` or `ng serve` command:
 
 <code-example language="sh" class="code-shell">
   ng build --aot
   ng serve --aot
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
-The `--prod` meta-flag compiles with AOT by default.
+The `ng build` command with the `--prod` meta-flag (`ng build --prod`) compiles with AOT by default.
 
-See the [CLI documentation](https://github.com/angular/angular-cli/wiki) for details, especially the [`build` topic](https://github.com/angular/angular-cli/wiki/build).
+See the [CLI command reference](cli) and [Building and serving Angular apps](guide/build) for more information.
 
 </div>
 
@@ -77,183 +75,24 @@ AOT compiles HTML templates and components into JavaScript files long before the
 With no templates to read and no risky client-side HTML or JavaScript evaluation,
 there are fewer opportunities for injection attacks.
 
-{@a compiler-options}
+## Controlling app compilation
 
-## Angular Compiler Options
+When you use the Angular AOT compiler, you can control your app compilation in two ways:
 
-You can control your app compilation by providing template compiler options in the `tsconfig.json` file along with the options supplied to the TypeScript compiler. The template compiler options are specified as members of
-`"angularCompilerOptions"` object as shown below:
+* By providing template compiler options in the `tsconfig.json` file.
 
-```json
-{
-  "compilerOptions": {
-    "experimentalDecorators": true,
-    ...
-  },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "preserveWhitespaces": true,
-    ...
-  }
-}
-```
+      For more information, see [Angular template compiler options](#compiler-options).
 
-### *skipMetadataEmit*
-
-This option tells the compiler not to produce `.metadata.json` files.
-The option is `false` by default.
-
-`.metadata.json` files contain information needed by the template compiler from a `.ts`
-file that is not included in the `.d.ts` file produced by the TypeScript compiler. This information contains,
-for example, the content of annotations (such as a component's template) which TypeScript
-emits to the `.js` file but not to the `.d.ts` file.
-
-This option should be set to `true` if using TypeScript's `--outFile` option, as the metadata files
-are not valid for this style of TypeScript output. It is not recommeded to use `--outFile` with
-Angular. Use a bundler, such as [webpack](https://webpack.js.org/), instead.
-
-This option can also be set to `true` when using factory summaries as the factory summaries
-include a copy of the information that is in the `.metadata.json` file.
-
-### *strictMetadataEmit*
-
-This option tells the template compiler to report an error to the `.metadata.json`
-file if `"skipMetadataEmit"` is `false` . This option is `false` by default. This should only be used when `"skipMetadataEmit"` is `false` and `"skipTemplateCodegen"` is `true`.
-
-It is intended to validate the `.metadata.json` files emitted for bundling with an `npm` package. The validation is overly strict and can emit errors for metadata that would never produce an error when used by the template compiler. You can choose to suppress the error emitted by this option for an exported symbol by including `@dynamic` in the comment documenting the symbol.
-
-It is valid for `.metadata.json` files to contain errors. The template compiler reports these errors
-if the metadata is used to determine the contents of an annotation. The metadata
-collector cannot predict the symbols that are designed to use in an annotation, so it will preemptively
-include error nodes in the metadata for the exported symbols. The template compiler can then use the error
-nodes to report an error if these symbols are used. If the client of a library intends to use a symbol in an annotation, the template compiler will not normally report
-this until the client uses the symbol. This option allows detecting these errors during the build phase of
-the library and is used, for example, in producing Angular libraries themselves.
-
-### *skipTemplateCodegen*
-
-This option tells the compiler to suppress emitting `.ngfactory.js` and `.ngstyle.js` files. When set,
-this turns off most of the template compiler and disables reporting template diagnostics.
-This option can be used to instruct the
-template compiler to produce `.metadata.json` files for distribution with an `npm` package while
-avoiding the production of `.ngfactory.js` and `.ngstyle.js` files that cannot be distributed to
-`npm`.
-
-### *strictInjectionParameters*
-
-When set to `true`, this options tells the compiler to report an error for a parameter supplied
-whose injection type cannot be determined. When this value option is not provided or is `false`, constructor parameters of classes marked with `@Injectable` whose type cannot be resolved will
-produce a warning.
-
-*Note*: It is recommended to change this option explicitly to `true` as this option will default to `true` in the future.
-
-### *flatModuleOutFile*
-
-When set to `true`, this option tells the template compiler to generate a flat module
-index of the given file name and the corresponding flat module metadata. Use this option when creating
-flat modules that are packaged similarly to `@angular/core` and `@angular/common`. When this option
-is used, the `package.json` for the library should refer
-to the generated flat module index instead of the library index file. With this
-option only one `.metadata.json` file is produced that contains all the metadata necessary
-for symbols exported from the library index. In the generated `.ngfactory.js` files, the flat
-module index is used to import symbols that includes both the public API from the library index
-as well as shrowded internal symbols.
-
-By default the `.ts` file supplied in the `files` field is assumed to be library index.
-If more than one `.ts` file is specified, `libraryIndex` is used to select the file to use.
-If more than one `.ts` file is supplied without a `libraryIndex`, an error is produced. A flat module
-index `.d.ts` and `.js` will be created with the given `flatModuleOutFile` name in the same
-location as the library index `.d.ts` file. For example, if a library uses
-`public_api.ts` file as the library index of the module, the `tsconfig.json` `files` field
-would be `["public_api.ts"]`. The `flatModuleOutFile` options could then be set to, for
-example `"index.js"`, which produces `index.d.ts` and  `index.metadata.json` files. The
-library's `package.json`'s `module` field would be `"index.js"` and the `typings` field
-would be `"index.d.ts"`.
-
-### *flatModuleId*
-
-This option specifies the preferred module id to use for importing a flat module.
-References generated by the template compiler will use this module name when importing symbols
-from the flat module.
-This is only meaningful when `flatModuleOutFile` is also supplied. Otherwise the compiler ignores
-this option.
-
-### *generateCodeForLibraries*
-
-This option tells the template compiler to generate factory files (`.ngfactory.js` and `.ngstyle.js`)
-for `.d.ts` files with a corresponding `.metadata.json` file. This option defaults to
-`true`. When this option is `false`, factory files are generated only for `.ts` files.
-
-This option should be set to `false` when using factory summaries.
-
-### *fullTemplateTypeCheck*
-
-This option tells the compiler to enable the [binding expression validation](#binding-expression-validation)
-phase of the template compiler which uses TypeScript to validate binding expressions.
-
-This option is `false` by default.
-
-*Note*: It is recommended to set this to `true` as this option will default to `true` in the future.
-
-### *annotateForClosureCompiler*
-
-This option tells the compiler to use [Tsickle](https://github.com/angular/tsickle) to annotate the emitted
-JavaScript with [JsDoc](http://usejsdoc.org/) comments needed by the
-[Closure Compiler](https://github.com/google/closure-compiler). This option defaults to `false`.
-
-### *annotationsAs*
-
-Use this option to modify how the Angular specific annotations are emitted to improve tree-shaking. Non-Angular
-annotations and decorators are unaffected. Default is `static fields`.
-
-value           | description
-----------------|-------------------------------------------------------------
-`decorators`    | Leave the Decorators in-place. This makes compilation faster. TypeScript will emit calls to the __decorate helper.  Use `--emitDecoratorMetadata` for runtime reflection.  However, the resulting code will not properly tree-shake.
-`static fields` | Replace decorators with a static field in the class. Allows advanced tree-shakers like [Closure Compiler](https://github.com/google/closure-compiler) to remove unused classes.
-
-### *trace*
-
-This tells the compiler to print extra information while compiling templates.
-
-### *disableExpressionLowering*
-
-The Angular template compiler transforms code that is used, or could be used, in an annotation
-to allow it to be imported from template factory modules. See
-[metadata rewriting](#metadata-rewriting) for more information.
-
-Setting this option to `false` disables this rewriting, requiring the rewriting to be
-done manually.
-
-### *preserveWhitespaces*
-
-This option tells the compiler whether to remove blank text nodes from compiled templates.
-As of v6, this option is `false` by default, which results in smaller emitted template factory modules.
-
-### *allowEmptyCodegenFiles*
-
-Tells the compiler to generate all the possible generated files even if they are empty. This option is
-`false` by default. This is an option used by `bazel` build rules and is needed to simplify
-how `bazel` rules track file dependencies. It is not recommended to use this option outside of the `bazel`
-rules.
-
-  ### *enableIvy*
-
-  Tells the compiler to generate definitions using the Render3 style code generation. This option defaults to `false`.
-
-  Not all features are supported with this option enabled. It is only supported
-  for experimentation and testing of Render3 style code generation.
-
-  *Note*: Is it not recommended to use this option as it is not yet feature complete with the Render2 code generation.
+* By [specifying Angular metadata](#metadata-aot).
 
 
-## Angular Metadata and AOT
-
-The Angular **AOT compiler** extracts and interprets **metadata** about the parts of the application that Angular is supposed to manage.
+{@a metadata-aot}
+## Specifying Angular metadata
 
 Angular metadata tells Angular how to construct instances of your application classes and interact with them at runtime.
+The Angular **AOT compiler** extracts **metadata** to interpret the parts of the application that Angular is supposed to manage.
 
-You specify the metadata with **decorators** such as `@Component()` and `@Input()`.
-You also specify metadata implicitly in the constructor declarations of these decorated classes.
+You can specify the metadata with **decorators** such as `@Component()` and `@Input()` or implicitly in the constructor declarations of these decorated classes.
 
 In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
 
@@ -294,7 +133,7 @@ At the same time, the AOT **_collector_** analyzes the metadata recorded in the 
 
 You can think of `.metadata.json` as a diagram of the overall structure of a decorator's metadata, represented as an [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Angular's [schema.ts](https://github.com/angular/angular/blob/master/packages/compiler-cli/src/metadata/schema.ts)
 describes the JSON format as a collection of TypeScript interfaces.
@@ -307,30 +146,89 @@ describes the JSON format as a collection of TypeScript interfaces.
 The _collector_ only understands a subset of JavaScript.
 Define metadata objects with the following limited syntax:
 
-Syntax                             | Example
------------------------------------|-----------------------------------
-Literal object                     | `{cherry: true, apple: true, mincemeat: false}`
-Literal array                      | `['cherries', 'flour', 'sugar']`
-Spread in literal array            | `['apples', 'flour', ...the_rest]`
-Calls                              | `bake(ingredients)`
-New                                | `new Oven()`
-Property access                    | `pie.slice`
-Array index                        | `ingredients[0]`
-Identifier reference               | `Component`
-A template string                  | <code>&#96;pie is ${multiplier} times better than cake&#96;</code>
-Literal string                     | `'pi'`
-Literal number                     | `3.14153265`
-Literal boolean                    | `true`
-Literal null                       | `null`
-Supported prefix operator          | `!cake`
-Supported Binary operator          | `a + b`
-Conditional operator               | `a ? b : c`
-Parentheses                        | `(a + b)`
+<style>
+  td, th {vertical-align: top}
+</style>
+
+<table>
+  <tr>
+    <th>Syntax</th>
+    <th>Example</th>
+  </tr>
+  <tr>
+    <td>Literal object </td>
+    <td><code>{cherry: true, apple: true, mincemeat: false}</code></td>
+  </tr>
+  <tr>
+    <td>Literal array  </td>
+    <td><code>['cherries', 'flour', 'sugar']</code></td>
+  </tr>
+  <tr>
+    <td>Spread in literal array</td>
+    <td><code>['apples', 'flour', ...the_rest]</code></td>
+  </tr>
+   <tr>
+    <td>Calls</td>
+    <td><code>bake(ingredients)</code></td>
+  </tr>
+   <tr>
+    <td>New</td>
+    <td><code>new Oven()</code></td>
+  </tr>
+   <tr>
+    <td>Property access</td>
+    <td><code>pie.slice</code></td>
+  </tr>
+   <tr>
+    <td>Array index</td>
+    <td><code>ingredients[0]</code></td>
+  </tr>
+   <tr>
+    <td>Identity reference</td>
+    <td><code>Component</code></td>
+  </tr>
+   <tr>
+    <td>A template string</td>
+    <td><code>`pie is ${multiplier} times better than cake`</code></td>
+   <tr>
+    <td>Literal string</td>
+    <td><code>pi</code></td>
+  </tr>
+   <tr>
+    <td>Literal number</td>
+    <td><code>3.14153265</code></td>
+  </tr>
+   <tr>
+    <td>Literal boolean</td>
+    <td><code>true</code></td>
+  </tr>
+   <tr>
+    <td>Literal null</td>
+    <td><code>null</code></td>
+  </tr>
+   <tr>
+    <td>Supported prefix operator </td>
+    <td><code>!cake</code></td>
+  </tr>
+   <tr>
+    <td>Supported binary operator </td>
+    <td><code>a+b</code></td>
+  </tr>
+   <tr>
+    <td>Conditional operator</td>
+    <td><code>a ? b : c</code></td>
+  </tr>
+   <tr>
+    <td>Parentheses</td>
+    <td><code>(a+b)</code></td>
+  </tr>
+</table>
+
 
 If an expression uses unsupported syntax, the _collector_ writes an error node to the `.metadata.json` file. The compiler later reports the error if it needs that
 piece of metadata to generate the application code.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
  If you want `ngc` to report syntax errors immediately rather than produce a `.metadata.json` file with errors, set the `strictMetadataEmit` option in `tsconfig`.
 
@@ -458,26 +356,89 @@ The _collector_ reduces this expression to its equivalent _folded_ string:
 
 The following table describes which expressions the _collector_ can and cannot fold:
 
-Syntax                             | Foldable
------------------------------------|-----------------------------------
-Literal object                     | yes
-Literal array                      | yes
-Spread in literal array            | no
-Calls                              | no
-New                                | no
-Property access                    | yes, if target is foldable
-Array index                        | yes, if target and index are foldable
-Identifier reference               | yes, if it is a reference to a local
-A template with no substitutions   | yes
-A template with substitutions      | yes, if the substitutions are foldable
-Literal string                     | yes
-Literal number                     | yes
-Literal boolean                    | yes
-Literal null                       | yes
-Supported prefix operator          | yes, if operand is foldable
-Supported binary operator          | yes, if both left and right are foldable
-Conditional operator               | yes, if condition is foldable
-Parentheses                        | yes, if the expression is foldable
+<style>
+  td, th {vertical-align: top}
+</style>
+
+<table>
+  <tr>
+    <th>Syntax</th>
+    <th>Foldable</th>
+  </tr>
+  <tr>
+    <td>Literal object </td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Literal array  </td>
+    <td>Yes</td>
+  </tr>
+  <tr>
+    <td>Spread in literal array</td>
+    <td>no</td>
+  </tr>
+   <tr>
+    <td>Calls</td>
+    <td>no</td>
+  </tr>
+   <tr>
+    <td>New</td>
+    <td>no</td>
+  </tr>
+   <tr>
+    <td>Property access</td>
+    <td>yes, if target is foldable</td>
+  </tr>
+   <tr>
+    <td>Array index</td>
+    <td> yes, if target and index are foldable</td>
+  </tr>
+   <tr>
+    <td>Identity reference</td>
+    <td>yes, if it is a reference to a local</td>
+  </tr>
+   <tr>
+    <td>A template with no substitutions</td>
+    <td>yes</td>
+  </tr>
+   <tr>
+    <td>A template with substitutions</td>
+    <td>yes, if the substitutions are foldable</td>
+  </tr>
+   <tr>
+    <td>Literal string</td>
+    <td>yes</td>
+  </tr>
+   <tr>
+    <td>Literal number</td>
+    <td>yes</td>
+  </tr>
+   <tr>
+    <td>Literal boolean</td>
+    <td>yes</td>
+  </tr>
+   <tr>
+    <td>Literal null</td>
+    <td>yes</td>
+  </tr>
+   <tr>
+    <td>Supported prefix operator </td>
+    <td>yes, if operand is foldable</td>
+  </tr>
+   <tr>
+    <td>Supported binary operator </td>
+    <td>yes, if both left and right are foldable</td>
+  </tr>
+   <tr>
+    <td>Conditional operator</td>
+    <td>yes, if condition is foldable </td>
+  </tr>
+   <tr>
+    <td>Parentheses</td>
+    <td>yes, if the expression is foldable</td>
+  </tr>
+</table>
+
 
 If an expression is not foldable, the collector writes it to `.metadata.json` as an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) for the compiler to resolve.
 
@@ -519,26 +480,90 @@ The compiler only allows metadata that create instances of the class `InjectionT
 
 The compiler only supports metadata for these Angular decorators.
 
-Decorator         | Module
-------------------|--------------
-`Attribute`       | `@angular/core`
-`Component`       | `@angular/core`
-`ContentChild`    | `@angular/core`
-`ContentChildren` | `@angular/core`
-`Directive`       | `@angular/core`
-`Host`            | `@angular/core`
-`HostBinding`     | `@angular/core`
-`HostListener`    | `@angular/core`
-`Inject`          | `@angular/core`
-`Injectable`      | `@angular/core`
-`Input`           | `@angular/core`
-`NgModule`        | `@angular/core`
-`Optional`        | `@angular/core`
-`Output`          | `@angular/core`
-`Pipe`            | `@angular/core`
-`Self`            | `@angular/core`
-`SkipSelf`        | `@angular/core`
-`ViewChild`       | `@angular/core`
+<style>
+  td, th {vertical-align: top}
+</style>
+
+<table>
+  <tr>
+    <th>Decorator</th>
+    <th>Module</th>
+  </tr>
+    <tr>
+    <td><code>Attribute</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>Component</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>ContentChild</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>ContentChildren</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>Directive</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>Host</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>HostBinding</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>HostListner</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>Inject</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>Injectable</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>Input</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>NgModule</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>Optional</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>Output</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>Pipe</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>Self</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>SkipSelf</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+  <tr>
+    <td><code>ViewChild</code></td>
+    <td><code>@angular/core</code></td>
+  </tr>
+
+  </table>
+
 
 
 ### Macro-functions and macro-static methods
@@ -626,7 +651,7 @@ factory without having to know what the value of `ɵ0` contains.
 The compiler does the rewriting during the emit of the `.js` file. This doesn't rewrite the `.d.ts` file, however, so TypeScript doesn't recognize it as being an export. Thus, it does not pollute the ES module's exported API.
 
 
-## Metadata Errors
+## Metadata errors
 
 The following are metadata errors you may encounter, with explanations and suggested corrections.
 
@@ -1133,8 +1158,8 @@ This error can occur if you use an expression in the `extends` clause of a class
 Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](https://github.com/angular/angular/pull/17712#discussion_r132025495).
 
 -->
-{@a binding-expression-validation}
 
+{@a binding-expression-validation}
   ## Phase 3: binding expression validation
 
   In the validation phase, the Angular template compiler uses the TypeScript compiler to validate the
@@ -1216,7 +1241,7 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
   ### Non-null type assertion operator
 
   Use the [non-null type assertion operator](guide/template-syntax#non-null-assertion-operator)
-  to suppress the `Object is possibly 'undefined'` error when it is incovienent to use
+  to suppress the `Object is possibly 'undefined'` error when it is inconvenient to use
   `*ngIf` or when some constraint in the component ensures that the expression is always
   non-null when the binding expression is interpolated.
 
@@ -1282,12 +1307,220 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
     person?: Person;
   }
   ```
-## Summary
 
-* What the AOT compiler does and why it is important.
-* Why metadata must be written in a subset of JavaScript.
-* What that subset is.
-* Other restrictions on metadata definition.
-* Macro-functions and macro-static methods.
-* Compiler errors related to metadata.
-* Validation of binding expressions
+{@a tsconfig-extends}
+## Configuration inheritance with extends
+Similar to TypeScript Compiler, Angular Compiler also supports `extends` in the `tsconfig.json` on `angularCompilerOptions`. A tsconfig file can inherit configurations from another file using the `extends` property.
+ The `extends` is a top level property parallel to `compilerOptions` and `angularCompilerOptions`. 
+ The configuration from the base file are loaded first, then overridden by those in the inheriting config file.
+ Example:
+```json
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    ...
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "preserveWhitespaces": true,
+    ...
+  }
+}
+```
+ More information about tsconfig extends can be found in the [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
+
+{@a compiler-options}
+## Angular template compiler options
+
+The template compiler options are specified as members of the `"angularCompilerOptions"` object in the `tsconfig.json` file. Specify template compiler options along with the options supplied to the TypeScript compiler as shown here:
+
+    ```json
+    {
+      "compilerOptions": {
+        "experimentalDecorators": true,
+                  ...
+      },
+      "angularCompilerOptions": {
+        "fullTemplateTypeCheck": true,
+        "preserveWhitespaces": true,
+                  ...
+      }
+  }
+  ```
+
+The following section describes the Angular's template compiler options.
+
+### *enableResourceInlining*
+This option instructs the compiler to replace the `templateUrl` and `styleUrls` property in all `@Component` decorators with inlined contents in `template` and `styles` properties.
+When enabled, the `.js` output of `ngc` will have no lazy-loaded `templateUrl` or `styleUrls`.
+
+### *skipMetadataEmit*
+
+This option tells the compiler not to produce `.metadata.json` files.
+The option is `false` by default.
+
+`.metadata.json` files contain information needed by the template compiler from a `.ts`
+file that is not included in the `.d.ts` file produced by the TypeScript compiler. This information contains,
+for example, the content of annotations (such as a component's template), which TypeScript
+emits to the `.js` file but not to the `.d.ts` file.
+
+This option should be set to `true` if you are using TypeScript's `--outFile` option, because the metadata files
+are not valid for this style of TypeScript output. It is not recommended to use `--outFile` with
+Angular. Use a bundler, such as [webpack](https://webpack.js.org/), instead.
+
+This option can also be set to `true` when using factory summaries because the factory summaries
+include a copy of the information that is in the `.metadata.json` file.
+
+### *strictMetadataEmit*
+
+This option tells the template compiler to report an error to the `.metadata.json`
+file if `"skipMetadataEmit"` is `false`. This option is `false` by default. This should only be used when `"skipMetadataEmit"` is `false` and `"skipTemplateCodeGen"` is `true`.
+
+This option is intended to validate the `.metadata.json` files emitted for bundling with an `npm` package. The validation is strict and can emit errors for metadata that would never produce an error when used by the template compiler. You can choose to suppress the error emitted by this option for an exported symbol by including `@dynamic` in the comment documenting the symbol.
+
+It is valid for `.metadata.json` files to contain errors. The template compiler reports these errors
+if the metadata is used to determine the contents of an annotation. The metadata
+collector cannot predict the symbols that are designed for use in an annotation, so it will preemptively
+include error nodes in the metadata for the exported symbols. The template compiler can then use the error
+nodes to report an error if these symbols are used. If the client of a library intends to use a symbol in an annotation, the template compiler will not normally report
+this until the client uses the symbol. This option allows detecting these errors during the build phase of
+the library and is used, for example, in producing Angular libraries themselves.
+
+### *skipTemplateCodegen*
+
+This option tells the compiler to suppress emitting `.ngfactory.js` and `.ngstyle.js` files. When set,
+this turns off most of the template compiler and disables reporting template diagnostics.
+This option can be used to instruct the
+template compiler to produce `.metadata.json` files for distribution with an `npm` package while
+avoiding the production of `.ngfactory.js` and `.ngstyle.js` files that cannot be distributed to
+`npm`.
+
+### *strictInjectionParameters*
+
+When set to `true`, this options tells the compiler to report an error for a parameter supplied
+whose injection type cannot be determined. When this option is not provided or is `false`, constructor parameters of classes marked with `@Injectable` whose type cannot be resolved will
+produce a warning.
+
+*Note*: It is recommended to change this option explicitly to `true` as this option will default to `true` in the future.
+
+### *flatModuleOutFile*
+
+When set to `true`, this option tells the template compiler to generate a flat module
+index of the given file name and the corresponding flat module metadata. Use this option when creating
+flat modules that are packaged similarly to `@angular/core` and `@angular/common`. When this option
+is used, the `package.json` for the library should refer
+to the generated flat module index instead of the library index file. With this
+option only one `.metadata.json` file is produced, which contains all the metadata necessary
+for symbols exported from the library index. In the generated `.ngfactory.js` files, the flat
+module index is used to import symbols that includes both the public API from the library index
+as well as shrowded internal symbols.
+
+By default the `.ts` file supplied in the `files` field is assumed to be the library index.
+If more than one `.ts` file is specified, `libraryIndex` is used to select the file to use.
+If more than one `.ts` file is supplied without a `libraryIndex`, an error is produced. A flat module
+index `.d.ts` and `.js` will be created with the given `flatModuleOutFile` name in the same
+location as the library index `.d.ts` file. For example, if a library uses the
+`public_api.ts` file as the library index of the module, the `tsconfig.json` `files` field
+would be `["public_api.ts"]`. The `flatModuleOutFile` options could then be set to, for
+example `"index.js"`, which produces `index.d.ts` and  `index.metadata.json` files. The
+library's `package.json`'s `module` field would be `"index.js"` and the `typings` field
+would be `"index.d.ts"`.
+
+### *flatModuleId*
+
+This option specifies the preferred module id to use for importing a flat module.
+References generated by the template compiler will use this module name when importing symbols
+from the flat module.
+This is only meaningful when `flatModuleOutFile` is also supplied. Otherwise the compiler ignores
+this option.
+
+### *generateCodeForLibraries*
+
+This option tells the template compiler to generate factory files (`.ngfactory.js` and `.ngstyle.js`)
+for `.d.ts` files with a corresponding `.metadata.json` file. This option defaults to
+`true`. When this option is `false`, factory files are generated only for `.ts` files.
+
+This option should be set to `false` when using factory summaries.
+
+### *fullTemplateTypeCheck*
+
+This option tells the compiler to enable the [binding expression validation](#binding-expression-validation)
+phase of the template compiler which uses TypeScript to validate binding expressions.
+
+This option is `false` by default.
+
+*Note*: It is recommended to set this to `true` because this option will default to `true` in the future.
+
+### *annotateForClosureCompiler*
+
+This option tells the compiler to use [Tsickle](https://github.com/angular/tsickle) to annotate the emitted
+JavaScript with [JSDoc](http://usejsdoc.org/) comments needed by the
+[Closure Compiler](https://github.com/google/closure-compiler). This option defaults to `false`.
+
+### *annotationsAs*
+
+Use this option to modify how the Angular specific annotations are emitted to improve tree-shaking. Non-Angular
+annotations and decorators are unaffected. Default is `static fields`.
+
+<style>
+  td, th {vertical-align: top}
+</style>
+
+<table>
+  <tr>
+    <th>Value</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td><code>decorators</code></td>
+    <td>Leave the decorators in place. This makes compilation faster. TypeScript will emit calls to the __decorate helper.  Use <code>--emitDecoratorMetadata</code> for runtime reflection.  However, the resulting code will not properly tree-shake.</td>
+  </tr>
+  <tr>
+    <td><code>static fields</code></td>
+    <td>Replace decorators with a static field in the class. Allows advanced tree-shakers like
+    <a href="https://github.com/google/closure-compiler">Closure compiler</a> to remove unused classes.</td>
+  </tr>
+  </table>
+
+
+### *trace*
+
+This tells the compiler to print extra information while compiling templates.
+
+### *enableLegacyTemplate*
+
+Use of  the `<template>` element was deprecated starting in Angular 4.0 in favor of using
+`<ng-template>` to avoid colliding with the DOM's element of the same name. Setting this option to
+`true` enables the use of the deprecated `<template>` element. This option
+is `false` by default. This option might be required by some third-party Angular libraries.
+
+### *disableExpressionLowering*
+
+The Angular template compiler transforms code that is used, or could be used, in an annotation
+to allow it to be imported from template factory modules. See
+[metadata rewriting](#metadata-rewriting) for more information.
+
+Setting this option to `false` disables this rewriting, requiring the rewriting to be
+done manually.
+
+### *disableTypeScriptVersionCheck*
+
+When `true`, this option tells the compiler not to check the TypeScript version.
+The compiler will skip checking and will not error out when an unsupported version of TypeScript is used.
+Setting this option to `true` is not recommended because unsupported versions of TypeScript might have undefined behaviour.
+
+This option is `false` by default.
+
+### *preserveWhitespaces*
+
+This option tells the compiler whether to remove blank text nodes from compiled templates.
+As of v6, this option is `false` by default, which results in smaller emitted template factory modules.
+
+### *allowEmptyCodegenFiles*
+
+Tells the compiler to generate all the possible generated files even if they are empty. This option is
+`false` by default. This is an option used by the Bazel build rules and is needed to simplify
+how Bazel rules track file dependencies. It is not recommended to use this option outside of the Bazel
+rules.
+

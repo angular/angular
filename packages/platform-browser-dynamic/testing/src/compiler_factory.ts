@@ -8,9 +8,9 @@
 
 import {CompileReflector, DirectiveResolver, ERROR_COMPONENT_TYPE, NgModuleResolver, PipeResolver} from '@angular/compiler';
 import {MockDirectiveResolver, MockNgModuleResolver, MockPipeResolver} from '@angular/compiler/testing';
-import {Compiler, CompilerFactory, CompilerOptions, Component, ComponentFactory, Directive, Injectable, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, Pipe, PlatformRef, StaticProvider, Type, createPlatformFactory, ɵstringify} from '@angular/core';
+import {CompilerFactory, CompilerOptions, Component, ComponentFactory, Directive, Injector, ModuleWithComponentFactories, NgModule, NgModuleFactory, Pipe, StaticProvider, Type, ɵstringify as stringify} from '@angular/core';
 import {MetadataOverride, ɵTestingCompiler as TestingCompiler, ɵTestingCompilerFactory as TestingCompilerFactory} from '@angular/core/testing';
-import {ɵCompilerImpl as CompilerImpl, ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
+import {ɵCompilerImpl as CompilerImpl} from '@angular/platform-browser-dynamic';
 
 import {MetadataOverrider} from './metadata_overrider';
 
@@ -63,7 +63,7 @@ export class TestingCompilerImpl implements TestingCompiler {
 
   checkOverrideAllowed(type: Type<any>) {
     if (this._compiler.hasAotSummary(type)) {
-      throw new Error(`${ɵstringify(type)} was AOT compiled, so its metadata cannot be changed.`);
+      throw new Error(`${stringify(type)} was AOT compiled, so its metadata cannot be changed.`);
     }
   }
 
@@ -99,4 +99,8 @@ export class TestingCompilerImpl implements TestingCompiler {
   clearCacheFor(type: Type<any>) { this._compiler.clearCacheFor(type); }
 
   getComponentFromError(error: Error) { return (error as any)[ERROR_COMPONENT_TYPE] || null; }
+
+  getModuleId(moduleType: Type<any>): string|undefined {
+    return this._moduleResolver.resolve(moduleType, true).id;
+  }
 }

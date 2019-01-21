@@ -7,10 +7,11 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {Component} from '@angular/core';
+import {Compiler, Component, NgModule} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 
-import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
+import {ResourceLoaderImpl} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_impl';
+import {fixmeIvy} from '@angular/private/testing';
 
 
 
@@ -26,7 +27,7 @@ class FancyService {
 
 @Component({
   selector: 'external-template-comp',
-  templateUrl: '/base/packages/platform-browser/test/static_assets/test.html'
+  templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
 })
 class ExternalTemplateComp {
 }
@@ -37,7 +38,7 @@ class BadTemplateUrl {
 
 // Tests for angular/testing bundle specific to the browser environment.
 // For general tests, see test/testing/testing_public_spec.ts.
-{
+if (isBrowser) {
   describe('test APIs for the browser', () => {
     describe('using the async helper', () => {
       let actuallyDone: boolean;
@@ -48,7 +49,8 @@ class BadTemplateUrl {
 
       it('should run async tests with ResourceLoaders', async(() => {
            const resourceLoader = new ResourceLoaderImpl();
-           resourceLoader.get('/base/packages/platform-browser/test/static_assets/test.html')
+           resourceLoader
+               .get('/base/angular/packages/platform-browser/test/static_assets/test.html')
                .then(() => { actuallyDone = true; });
          }),
          10000);  // Long timeout here because this test makes an actual ResourceLoader.
@@ -61,10 +63,11 @@ class BadTemplateUrl {
               {providers: [{provide: FancyService, useValue: new FancyService()}]});
         });
 
-        it('provides a real ResourceLoader instance',
-           inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
-             expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
-           }));
+        fixmeIvy('FW-919: TestBed.get should be able to retrieve tokens from Compiler\'s injector')
+            .it('provides a real ResourceLoader instance',
+                inject([ResourceLoader], (resourceLoader: ResourceLoader) => {
+                  expect(resourceLoader instanceof ResourceLoaderImpl).toBeTruthy();
+                }));
 
         it('should allow the use of fakeAsync',
            fakeAsync(inject([FancyService], (service: any /** TODO #9100 */) => {
@@ -73,6 +76,22 @@ class BadTemplateUrl {
              tick();
              expect(value).toEqual('async value');
            })));
+      });
+    });
+
+    describe('Compiler', () => {
+      it('should return NgModule id when asked', () => {
+        @NgModule({
+          id: 'test-module',
+        })
+        class TestModule {
+        }
+
+        TestBed.configureTestingModule({
+          imports: [TestModule],
+        });
+        const compiler = TestBed.get(Compiler) as Compiler;
+        expect(compiler.getModuleId(TestModule)).toBe('test-module');
       });
     });
 
@@ -87,9 +106,9 @@ class BadTemplateUrl {
           reject = rej;
         });
         originalJasmineIt = jasmine.getEnv().it;
-        jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */): any => {
-          const done = () => { resolve(null); };
-          (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
+        jasmine.getEnv().it = (description: string, fn: (done: DoneFn) => void): any => {
+          const done = (() => resolve(null)) as DoneFn;
+          done.fail = reject;
           fn(done);
           return null;
         };
@@ -98,37 +117,41 @@ class BadTemplateUrl {
 
       const restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
 
-      it('should fail when an ResourceLoader fails', (done: any /** TODO #9100 */) => {
-        const itPromise = patchJasmineIt();
+      fixmeIvy('FW-553: TestBed is unaware of async compilation')
+          .it('should fail when an ResourceLoader fails', done => {
+            const itPromise = patchJasmineIt();
 
-        it('should fail with an error from a promise', async(() => {
-             TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
-             TestBed.compileComponents();
-           }));
+            it('should fail with an error from a promise', async(() => {
+                 TestBed.configureTestingModule({declarations: [BadTemplateUrl]});
+                 TestBed.compileComponents();
+               }));
 
-        itPromise.then(
-            () => { done.fail('Expected test to fail, but it did not'); },
-            (err: any) => {
-              expect(err.message)
-                  .toEqual('Uncaught (in promise): Failed to load non-existent.html');
-              done();
-            });
-        restoreJasmineIt();
-      }, 10000);
+            itPromise.then(
+                () => { done.fail('Expected test to fail, but it did not'); },
+                (err: any) => {
+                  expect(err.message)
+                      .toEqual('Uncaught (in promise): Failed to load non-existent.html');
+                  done();
+                });
+            restoreJasmineIt();
+          }, 10000);
     });
 
     describe('TestBed createComponent', function() {
-      it('should allow an external templateUrl', async(() => {
-           TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
-           TestBed.compileComponents().then(() => {
-             const componentFixture = TestBed.createComponent(ExternalTemplateComp);
-             componentFixture.detectChanges();
-             expect(componentFixture.nativeElement.textContent).toEqual('from external template');
-           });
-         }),
-         10000);  // Long timeout here because this test makes an actual ResourceLoader request, and
-                  // is slow
-                  // on Edge.
+      fixmeIvy('FW-553: TestBed is unaware of async compilation')
+          .it('should allow an external templateUrl', async(() => {
+                TestBed.configureTestingModule({declarations: [ExternalTemplateComp]});
+                TestBed.compileComponents().then(() => {
+                  const componentFixture = TestBed.createComponent(ExternalTemplateComp);
+                  componentFixture.detectChanges();
+                  expect(componentFixture.nativeElement.textContent)
+                      .toEqual('from external template');
+                });
+              }),
+              10000);  // Long timeout here because this test makes an actual ResourceLoader
+                       // request, and
+                       // is slow
+                       // on Edge.
     });
   });
 }

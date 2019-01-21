@@ -12,12 +12,13 @@ import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, iit, inject, it} from '@angular/core/testing/src/testing_internal';
+import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, fit, inject, it} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {fixmeIvy} from '@angular/private/testing';
 
 @Component({selector: 'non-existent', template: ''})
 class NonExistentComp {
@@ -79,8 +80,9 @@ class HelloUrlCmp {
 
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
 class SomeDirective {
+  // TODO(issue/24571): remove '!'.
   @Input()
-  someDir: string;
+  someDir !: string;
 }
 
 @Pipe({name: 'somePipe'})
@@ -158,17 +160,21 @@ function bootstrap(
 
     afterEach(destroyPlatform);
 
-    it('should throw if bootstrapped Directive is not a Component',
-       inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
-         const logger = new MockConsole();
-         const errorHandler = new ErrorHandler();
-         (errorHandler as any)._console = logger as any;
-         expect(
-             () => bootstrap(
-                 HelloRootDirectiveIsNotCmp, [{provide: ErrorHandler, useValue: errorHandler}]))
-             .toThrowError(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`);
-         done.done();
-       }));
+    // TODO(misko): can't use `fixmeIvy.it` because the `it` is somehow special here.
+    fixmeIvy(
+        'FW-876: Bootstrap factory method should throw if bootstrapped Directive is not a Component')
+            .isEnabled &&
+        it('should throw if bootstrapped Directive is not a Component',
+           inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
+             const logger = new MockConsole();
+             const errorHandler = new ErrorHandler();
+             (errorHandler as any)._console = logger as any;
+             expect(
+                 () => bootstrap(
+                     HelloRootDirectiveIsNotCmp, [{provide: ErrorHandler, useValue: errorHandler}]))
+                 .toThrowError(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`);
+             done.done();
+           }));
 
     it('should throw if no element is found',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
@@ -185,39 +191,44 @@ function bootstrap(
          });
        }));
 
-    it('should throw if no provider', inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         const logger = new MockConsole();
-         const errorHandler = new ErrorHandler();
-         (errorHandler as any)._console = logger as any;
+    // TODO(misko): can't use `fixmeIvy.it` because the `it` is somehow special here.
+    fixmeIvy('FW-875: The source of the error is missing in the `StaticInjectorError` message')
+            .isEnabled &&
+        it('should throw if no provider',
+           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+             const logger = new MockConsole();
+             const errorHandler = new ErrorHandler();
+             (errorHandler as any)._console = logger as any;
 
-         class IDontExist {}
+             class IDontExist {}
 
-         @Component({selector: 'cmp', template: 'Cmp'})
-         class CustomCmp {
-           constructor(iDontExist: IDontExist) {}
-         }
+             @Component({selector: 'cmp', template: 'Cmp'})
+             class CustomCmp {
+               constructor(iDontExist: IDontExist) {}
+             }
 
-         @Component({
-           selector: 'hello-app',
-           template: '<cmp></cmp>',
-         })
-         class RootCmp {
-         }
+             @Component({
+               selector: 'hello-app',
+               template: '<cmp></cmp>',
+             })
+             class RootCmp {
+             }
 
-         @NgModule({declarations: [CustomCmp], exports: [CustomCmp]})
-         class CustomModule {
-         }
+             @NgModule({declarations: [CustomCmp], exports: [CustomCmp]})
+             class CustomModule {
+             }
 
-         bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
-           CustomModule
-         ]).then(null, (e: Error) => {
-           expect(e.message).toContain(`StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: 
-  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: 
-    NullInjectorError: No provider for IDontExist!`);
-           async.done();
-           return null;
-         });
-       }));
+             bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
+               CustomModule
+             ]).then(null, (e: Error) => {
+               expect(e.message).toContain(
+                   'StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: \n' +
+                   '  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: \n' +
+                   '    NullInjectorError: No provider for IDontExist!');
+               async.done();
+               return null;
+             });
+           }));
 
     if (getDOM().supportsDOMEvents()) {
       it('should forward the error to promise when bootstrap fails',
@@ -254,7 +265,7 @@ function bootstrap(
 
     it('should create an injector promise', () => {
       const refPromise = bootstrap(HelloRootCmp, testProviders);
-      expect(refPromise).not.toBe(null);
+      expect(refPromise).toEqual(jasmine.any(Promise));
     });
 
     it('should set platform name to browser',

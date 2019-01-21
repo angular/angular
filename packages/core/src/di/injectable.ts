@@ -6,23 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
-import {Type} from '../type';
-import {makeDecorator, makeParamDecorator} from '../util/decorators';
-import {getClosureSafeProperty} from '../util/property';
+import {Type} from '../interface/type';
+import {TypeDecorator, makeDecorator} from '../util/decorators';
+import {InjectableDef, InjectableType, defineInjectable, getInjectableDef} from './interface/defs';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './interface/provider';
+import {compileInjectable as render3CompileInjectable} from './jit/injectable';
+import {convertInjectableProviderToFactory} from './util';
 
-import {InjectableDef, InjectableType, defineInjectable} from './defs';
-import {inject, injectArgs} from './injector';
-import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
 
-const GET_PROPERTY_NAME = {} as any;
-const USE_VALUE = getClosureSafeProperty<ValueProvider>(
-    {provide: String, useValue: GET_PROPERTY_NAME}, GET_PROPERTY_NAME);
 
 /**
  * Injectable providers used in `@Injectable` decorator.
  *
- * @experimental
+ * @publicApi
  */
 export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
     StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
@@ -30,34 +26,27 @@ export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
 /**
  * Type of the Injectable decorator / constructor function.
  *
- *
+ * @publicApi
  */
 export interface InjectableDecorator {
   /**
+   * A marker metadata that marks a class as available to `Injector` for creation.
+   *
+   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
+   *
    * @usageNotes
-   * ```
-   * @Injectable()
-   * class Car {}
-   * ```
-   *
-   * @description
-   * A marker metadata that marks a class as available to {@link Injector} for creation.
-   *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
-   *
    * ### Example
    *
    * {@example core/di/ts/metadata_spec.ts region='Injectable'}
    *
-   * {@link Injector} will throw an error when trying to instantiate a class that
+   * `Injector` will throw an error when trying to instantiate a class that
    * does not have `@Injectable` marker, as shown in the example below.
    *
    * {@example core/di/ts/metadata_spec.ts region='InjectableThrows'}
    *
-   *
    */
-  (): any;
-  (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): any;
+  (): TypeDecorator;
+  (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): TypeDecorator;
   new (): Injectable;
   new (options?: {providedIn: Type<any>| 'root' | null}&InjectableProvider): Injectable;
 }
@@ -65,73 +54,42 @@ export interface InjectableDecorator {
 /**
  * Type of the Injectable metadata.
  *
- * @experimental
+ * @publicApi
  */
-export interface Injectable {
-  providedIn?: Type<any>|'root'|null;
-  factory: () => any;
-}
-
-const EMPTY_ARRAY: any[] = [];
-
-export function convertInjectableProviderToFactory(
-    type: Type<any>, provider?: InjectableProvider): () => any {
-  if (!provider) {
-    const reflectionCapabilities = new ReflectionCapabilities();
-    const deps = reflectionCapabilities.parameters(type);
-    // TODO - convert to flags.
-    return () => new type(...injectArgs(deps as any[]));
-  }
-
-  if (USE_VALUE in provider) {
-    const valueProvider = (provider as ValueSansProvider);
-    return () => valueProvider.useValue;
-  } else if ((provider as ExistingSansProvider).useExisting) {
-    const existingProvider = (provider as ExistingSansProvider);
-    return () => inject(existingProvider.useExisting);
-  } else if ((provider as FactorySansProvider).useFactory) {
-    const factoryProvider = (provider as FactorySansProvider);
-    return () => factoryProvider.useFactory(...injectArgs(factoryProvider.deps || EMPTY_ARRAY));
-  } else if ((provider as StaticClassSansProvider | ClassSansProvider).useClass) {
-    const classProvider = (provider as StaticClassSansProvider | ClassSansProvider);
-    let deps = (provider as StaticClassSansProvider).deps;
-    if (!deps) {
-      const reflectionCapabilities = new ReflectionCapabilities();
-      deps = reflectionCapabilities.parameters(type);
-    }
-    return () => new classProvider.useClass(...injectArgs(deps));
-  } else {
-    let deps = (provider as ConstructorSansProvider).deps;
-    if (!deps) {
-      const reflectionCapabilities = new ReflectionCapabilities();
-      deps = reflectionCapabilities.parameters(type);
-    }
-    return () => new type(...injectArgs(deps !));
-  }
-}
+export interface Injectable { providedIn?: Type<any>|'root'|null; }
 
 /**
-* Injectable decorator and metadata.
-*
-*
-* @Annotation
-*/
+ * Injectable decorator and metadata.
+ *
+ * @Annotation
+ * @publicApi
+ */
 export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
-    (injectableType: InjectableType<any>,
-     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider) => {
-      if (options && options.providedIn !== undefined &&
-          injectableType.ngInjectableDef === undefined) {
-        injectableType.ngInjectableDef = defineInjectable({
-          providedIn: options.providedIn,
-          factory: convertInjectableProviderToFactory(injectableType, options)
-        });
-      }
-    });
+    (type: Type<any>, meta: Injectable) => SWITCH_COMPILE_INJECTABLE(type as any, meta));
 
 /**
  * Type representing injectable service.
  *
- * @experimental
+ * @publicApi
  */
 export interface InjectableType<T> extends Type<T> { ngInjectableDef: InjectableDef<T>; }
+
+/**
+ * Supports @Injectable() in JIT mode for Render2.
+ */
+function render2CompileInjectable(
+    injectableType: InjectableType<any>,
+    options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
+  if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
+    injectableType.ngInjectableDef = defineInjectable({
+      providedIn: options.providedIn,
+      factory: convertInjectableProviderToFactory(injectableType, options),
+    });
+  }
+}
+
+export const SWITCH_COMPILE_INJECTABLE__POST_R3__ = render3CompileInjectable;
+const SWITCH_COMPILE_INJECTABLE__PRE_R3__ = render2CompileInjectable;
+const SWITCH_COMPILE_INJECTABLE: typeof render3CompileInjectable =
+    SWITCH_COMPILE_INJECTABLE__PRE_R3__;

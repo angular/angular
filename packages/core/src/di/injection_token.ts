@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
+import {Type} from '../interface/type';
 
-import {InjectableDef, defineInjectable} from './defs';
+import {defineInjectable} from './interface/defs';
 
 /**
  * Creates a token that can be used in a DI Provider.
  *
  * Use an `InjectionToken` whenever the type you are injecting is not reified (does not have a
  * runtime representation) such as when injecting an interface, callable type, array or
- * parametrized type.
+ * parameterized type.
  *
  * `InjectionToken` is parameterized on `T` which is the type of object which will be returned by
  * the `Injector`. This provides additional level of type safety.
@@ -36,17 +36,19 @@ import {InjectableDef, defineInjectable} from './defs';
  * overrides the above behavior and marks the token as belonging to a particular `@NgModule`. As
  * mentioned above, `'root'` is the default value for `providedIn`.
  *
- * ### Example
+ * @usageNotes
+ * ### Basic Example
  *
- * #### Tree-shakeable InjectionToken
- *
- * {@example core/di/ts/injector_spec.ts region='ShakeableInjectionToken'}
- *
- * #### Plain InjectionToken
+ * ### Plain InjectionToken
  *
  * {@example core/di/ts/injector_spec.ts region='InjectionToken'}
  *
+ * ### Tree-shakable InjectionToken
  *
+ * {@example core/di/ts/injector_spec.ts region='ShakableInjectionToken'}
+ *
+ *
+ * @publicApi
  */
 export class InjectionToken<T> {
   /** @internal */
@@ -58,13 +60,17 @@ export class InjectionToken<T> {
     providedIn?: Type<any>| 'root' | null,
     factory: () => T
   }) {
-    if (options !== undefined) {
+    this.ngInjectableDef = undefined;
+    if (typeof options == 'number') {
+      // This is a special hack to assign __NG_ELEMENT_ID__ to this instance.
+      // __NG_ELEMENT_ID__ is Used by Ivy to determine bloom filter id.
+      // We are using it to assign `-1` which is used to identify `Injector`.
+      (this as any).__NG_ELEMENT_ID__ = options;
+    } else if (options !== undefined) {
       this.ngInjectableDef = defineInjectable({
         providedIn: options.providedIn || 'root',
         factory: options.factory,
       });
-    } else {
-      this.ngInjectableDef = undefined;
     }
   }
 

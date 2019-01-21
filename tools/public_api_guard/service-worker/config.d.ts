@@ -1,16 +1,14 @@
-/** @experimental */
 export interface AssetGroup {
     installMode?: 'prefetch' | 'lazy';
     name: string;
     resources: {
         files?: Glob[];
-        versionedFiles?: Glob[];
+        /** @deprecated */ versionedFiles?: Glob[];
         urls?: Glob[];
     };
     updateMode?: 'prefetch' | 'lazy';
 }
 
-/** @experimental */
 export interface Config {
     appData?: {};
     assetGroups?: AssetGroup[];
@@ -19,7 +17,6 @@ export interface Config {
     navigationUrls?: string[];
 }
 
-/** @experimental */
 export interface DataGroup {
     cacheConfig: {
         maxSize: number;
@@ -32,10 +29,8 @@ export interface DataGroup {
     version?: number;
 }
 
-/** @experimental */
 export declare type Duration = string;
 
-/** @experimental */
 export interface Filesystem {
     hash(file: string): Promise<string>;
     list(dir: string): Promise<string[]>;
@@ -43,12 +38,10 @@ export interface Filesystem {
     write(file: string, contents: string): Promise<void>;
 }
 
-/** @experimental */
 export declare class Generator {
     readonly fs: Filesystem;
     constructor(fs: Filesystem, baseHref: string);
     process(config: Config): Promise<Object>;
 }
 
-/** @experimental */
 export declare type Glob = string;

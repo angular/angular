@@ -11,7 +11,7 @@ ng_module(
     ),
     deps = [
         "//modules/benchmarks/src/tree:util_lib",
-        "//modules/benchmarks/src/tree/render3:render3_lib",
+        "//modules/benchmarks/src/tree/render3:tree_lib",
         "//packages:types",
         "//packages/core",
         "@rxjs",

@@ -12,7 +12,7 @@ import {Serializer, SerializerTypes} from '../shared/serializer';
 
 
 /**
- * @experimental WebWorker support in Angular is currently experimental.
+ * @publicApi
  */
 @Injectable()
 export class ServiceMessageBrokerFactory {
@@ -39,7 +39,7 @@ export class ServiceMessageBrokerFactory {
  * the UIMessageBroker deserializes its arguments and calls the registered method.
  * If that method returns a promise, the UIMessageBroker returns the result to the worker.
  *
- * @experimental WebWorker support in Angular is currently experimental.
+ * @publicApi
  */
 export class ServiceMessageBroker {
   private _sink: EventEmitter<any>;
@@ -90,7 +90,7 @@ export class ServiceMessageBroker {
 }
 
 /**
- * @experimental WebWorker support in Angular is currently experimental.
+ * @publicApi
  */
 export interface ReceivedMessage {
   method: string;

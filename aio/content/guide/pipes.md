@@ -3,7 +3,7 @@
 Every application starts out with what seems like a simple task: get data, transform them, and show them to users.
 Getting data could be as simple as creating a local variable or as complex as streaming data over a WebSocket.
 
-Once data arrive, you could push their raw `toString` values directly to the view,
+Once data arrives, you could push their raw `toString` values directly to the view,
 but that rarely makes for a good user experience.
 For example, in most use cases, users prefer to see a date in a simple format like
 <samp>April 15, 1988</samp> rather than the raw string format
@@ -26,7 +26,7 @@ In this page, you'll use pipes to transform a component's birthday property into
 a human-friendly date.
 
 
-<code-example path="pipes/src/app/hero-birthday1.component.ts" title="src/app/hero-birthday1.component.ts" linenums="false">
+<code-example path="pipes/src/app/hero-birthday1.component.ts" header="src/app/hero-birthday1.component.ts" linenums="false">
 
 </code-example>
 
@@ -35,7 +35,7 @@ a human-friendly date.
 Focus on the component's template.
 
 
-<code-example path="pipes/src/app/app.component.html" region="hero-birthday-template" title="src/app/app.component.html" linenums="false">
+<code-example path="pipes/src/app/app.component.html" region="hero-birthday-template" header="src/app/app.component.html" linenums="false">
 
 </code-example>
 
@@ -54,7 +54,7 @@ Angular comes with a stock of pipes such as
 They are all available for use in any template.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -79,7 +79,7 @@ Modify the birthday template to give the date pipe a format parameter.
 After formatting the hero's April 15th birthday, it renders as **<samp>04/15/88</samp>**:
 
 
-<code-example path="pipes/src/app/app.component.html" region="format-birthday" title="src/app/app.component.html" linenums="false">
+<code-example path="pipes/src/app/app.component.html" region="format-birthday" header="src/app/app.component.html" linenums="false">
 
 </code-example>
 
@@ -95,7 +95,7 @@ Write a second component that *binds* the pipe's format parameter
 to the component's `format` property. Here's the template for that component:
 
 
-<code-example path="pipes/src/app/hero-birthday2.component.ts" region="template" title="src/app/hero-birthday2.component.ts (template)" linenums="false">
+<code-example path="pipes/src/app/hero-birthday2.component.ts" region="template" header="src/app/hero-birthday2.component.ts (template)" linenums="false">
 
 </code-example>
 
@@ -106,7 +106,7 @@ That method toggles the component's `format` property between a short form
 (`'shortDate'`) and a longer form (`'fullDate'`).
 
 
-<code-example path="pipes/src/app/hero-birthday2.component.ts" region="class" title="src/app/hero-birthday2.component.ts (class)" linenums="false">
+<code-example path="pipes/src/app/hero-birthday2.component.ts" region="class" header="src/app/hero-birthday2.component.ts (class)" linenums="false">
 
 </code-example>
 
@@ -123,7 +123,7 @@ As you click the button, the displayed date alternates between
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -143,7 +143,7 @@ the birthday is chained to the `DatePipe` and on to the `UpperCasePipe`.
 The birthday displays as **<samp>APR 15, 1988</samp>**.
 
 
-<code-example path="pipes/src/app/app.component.html" region="chained-birthday" title="src/app/app.component.html" linenums="false">
+<code-example path="pipes/src/app/app.component.html" region="chained-birthday" header="src/app/app.component.html" linenums="false">
 
 </code-example>
 
@@ -153,7 +153,7 @@ This example&mdash;which displays **<samp>FRIDAY, APRIL 15, 1988</samp>**&mdash;
 the same pipes as above, but passes in a parameter to `date` as well.
 
 
-<code-example path="pipes/src/app/app.component.html" region="chained-parameter-birthday" title="src/app/app.component.html" linenums="false">
+<code-example path="pipes/src/app/app.component.html" region="chained-parameter-birthday" header="src/app/app.component.html" linenums="false">
 
 </code-example>
 
@@ -166,7 +166,7 @@ You can write your own custom pipes.
 Here's a custom pipe named `ExponentialStrengthPipe` that can boost a hero's powers:
 
 
-<code-example path="pipes/src/app/exponential-strength.pipe.ts" title="src/app/exponential-strength.pipe.ts" linenums="false">
+<code-example path="pipes/src/app/exponential-strength.pipe.ts" header="src/app/exponential-strength.pipe.ts" linenums="false">
 
 </code-example>
 
@@ -186,7 +186,7 @@ Your pipe has one such parameter: the `exponent`.
    Your pipe's name is `exponentialStrength`.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -200,7 +200,7 @@ Technically, it's optional; Angular looks for and executes the `transform` metho
 
 Now you need a component to demonstrate the pipe.
 
-<code-example path="pipes/src/app/power-booster.component.ts" title="src/app/power-booster.component.ts" linenums="false">
+<code-example path="pipes/src/app/power-booster.component.ts" header="src/app/power-booster.component.ts" linenums="false">
 </code-example>
 
 <figure>
@@ -223,7 +223,7 @@ Note the following:
 
 You must register custom pipes.
 If you don't, Angular reports an error.
-Angular CLI's generator registers the pipe automatically.
+The [Angular CLI's](cli) generator registers the pipe automatically.
 
 
 </div>
@@ -240,7 +240,7 @@ Upgrade the example to a "Power Boost Calculator" that combines
 your pipe and two-way data binding with `ngModel`.
 
 
-<code-example path="pipes/src/app/power-boost-calculator.component.ts" title="src/app/power-boost-calculator.component.ts">
+<code-example path="pipes/src/app/power-boost-calculator.component.ts" header="src/app/power-boost-calculator.component.ts">
 
 </code-example>
 
@@ -270,7 +270,7 @@ In the next example, the component uses the default, aggressive change detection
 its display of every hero in the `heroes` array. Here's the template:
 
 
-<code-example path="pipes/src/app/flying-heroes.component.html" region="template-1" title="src/app/flying-heroes.component.html (v1)" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.component.html" region="template-1" header="src/app/flying-heroes.component.html (v1)" linenums="false">
 
 </code-example>
 
@@ -278,7 +278,7 @@ its display of every hero in the `heroes` array. Here's the template:
 
 The companion component class provides heroes, adds heroes into the array, and can reset the array.
 
-<code-example path="pipes/src/app/flying-heroes.component.ts" region="v1" title="src/app/flying-heroes.component.ts (v1)" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.component.ts" region="v1" header="src/app/flying-heroes.component.ts (v1)" linenums="false">
 
 </code-example>
 
@@ -292,7 +292,7 @@ If you added the ability to remove or change a hero, Angular would detect those 
 
 Add a `FlyingHeroesPipe` to the `*ngFor` repeater that filters the list of heroes to just those heroes who can fly.
 
-<code-example path="pipes/src/app/flying-heroes.component.html" region="template-flying-heroes" title="src/app/flying-heroes.component.html (flyers)" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.component.html" region="template-flying-heroes" header="src/app/flying-heroes.component.html (flyers)" linenums="false">
 
 </code-example>
 
@@ -300,7 +300,7 @@ Add a `FlyingHeroesPipe` to the `*ngFor` repeater that filters the list of heroe
 
 Here's the `FlyingHeroesPipe` implementation, which follows the pattern for custom pipes described earlier.
 
-<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pure" title="src/app/flying-heroes.pipe.ts" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pure" header="src/app/flying-heroes.pipe.ts" linenums="false">
 
 </code-example>
 
@@ -314,7 +314,7 @@ It's just using a different change-detection algorithm that ignores changes to t
 
 Notice how a hero is added:
 
-<code-example path="pipes/src/app/flying-heroes.component.ts" region="push" title="src/app/flying-heroes.component.ts" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.component.ts" region="push" header="src/app/flying-heroes.component.ts" linenums="false">
 
 </code-example>
 
@@ -340,11 +340,11 @@ code with checkbox switches and additional displays to help you experience these
 
 
 Replacing the array is an efficient way to signal Angular to update the display.
-When do you replace the array? When the data change.
+When do you replace the array? When the data changes.
 That's an easy rule to follow in *this* example
 where the only way to change the data is by adding a hero.
 
-More often, you don't know when the data have changed,
+More often, you don't know when the data has changed,
 especially in applications that mutate data in many ways,
 perhaps in application locations far away.
 A component in such an application usually can't know about those changes.
@@ -364,7 +364,7 @@ You make a pipe impure by setting its pure flag to false. You could make the `Fl
 impure like this:
 
 
-<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pipe-decorator" title="src/app/flying-heroes.pipe.ts" linenums="false">
+<code-example path="pipes/src/app/flying-heroes.pipe.ts" region="pipe-decorator" header="src/app/flying-heroes.pipe.ts" linenums="false">
 
 </code-example>
 
@@ -390,7 +390,7 @@ For this reason, a pure pipe is preferable when you can live with the change det
 When you can't, you *can* use the impure pipe.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -422,11 +422,11 @@ The complete implementation is as follows:
 
 <code-tabs>
 
-  <code-pane title="FlyingHeroesImpurePipe" path="pipes/src/app/flying-heroes.pipe.ts" region="impure">
+  <code-pane header="FlyingHeroesImpurePipe" path="pipes/src/app/flying-heroes.pipe.ts" region="impure">
 
   </code-pane>
 
-  <code-pane title="FlyingHeroesPipe" path="pipes/src/app/flying-heroes.pipe.ts" region="pure">
+  <code-pane header="FlyingHeroesPipe" path="pipes/src/app/flying-heroes.pipe.ts" region="pure">
 
   </code-pane>
 
@@ -440,7 +440,7 @@ The only difference is the `pure` flag in the pipe metadata.
 This is a good candidate for an impure pipe because the `transform` function is trivial and fast.
 
 
-<code-example path="pipes/src/app/flying-heroes.pipe.ts" linenums="false" title="src/app/flying-heroes.pipe.ts (filter)" region="filter">
+<code-example path="pipes/src/app/flying-heroes.pipe.ts" linenums="false" header="src/app/flying-heroes.pipe.ts (filter)" region="filter">
 
 </code-example>
 
@@ -449,7 +449,7 @@ This is a good candidate for an impure pipe because the `transform` function is 
 You can derive a `FlyingHeroesImpureComponent` from `FlyingHeroesComponent`.
 
 
-<code-example path="pipes/src/app/flying-heroes-impure.component.html" linenums="false" title="src/app/flying-heroes-impure.component.html (excerpt)" region="template-flying-heroes">
+<code-example path="pipes/src/app/flying-heroes-impure.component.html" linenums="false" header="src/app/flying-heroes-impure.component.html (excerpt)" region="template-flying-heroes">
 
 </code-example>
 
@@ -476,7 +476,7 @@ This next example binds an `Observable` of message strings
 (`message$`) to a view with the `async` pipe.
 
 
-<code-example path="pipes/src/app/hero-async-message.component.ts" title="src/app/hero-async-message.component.ts">
+<code-example path="pipes/src/app/hero-async-message.component.ts" header="src/app/hero-async-message.component.ts">
 
 </code-example>
 
@@ -495,11 +495,11 @@ Write one more impure pipe, a pipe that makes an HTTP request.
 Remember that impure pipes are called every few milliseconds.
 If you're not careful, this pipe will punish the server with requests.
 
-In the following code, the pipe only calls the server when the request URL changes and it caches the server response.
+In the following code, the pipe only calls the server when the requested URL changes and it caches the server response.
 The code uses the [Angular http](guide/http) client to retrieve data:
 
 
-<code-example path="pipes/src/app/fetch-json.pipe.ts" title="src/app/fetch-json.pipe.ts">
+<code-example path="pipes/src/app/fetch-json.pipe.ts" header="src/app/fetch-json.pipe.ts">
 
 </code-example>
 
@@ -509,7 +509,7 @@ Now demonstrate it in a harness component whose template defines two bindings to
 both requesting the heroes from the `heroes.json` file.
 
 
-<code-example path="pipes/src/app/hero-list.component.ts" title="src/app/hero-list.component.ts">
+<code-example path="pipes/src/app/hero-list.component.ts" header="src/app/hero-list.component.ts">
 
 </code-example>
 

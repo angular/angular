@@ -29,7 +29,7 @@ describe('Evaluator', () => {
       'newExpression.ts', 'errors.ts', 'declared.ts'
     ]);
     service = ts.createLanguageService(host, documentRegistry);
-    program = service.getProgram();
+    program = service.getProgram() !;
     typeChecker = program.getTypeChecker();
     symbols = new Symbols(null as any as ts.SourceFile);
     evaluator = new Evaluator(symbols, new Map());

@@ -29,7 +29,7 @@ describe('largeform benchmark perf', () => {
 
   [CreateAndDestroyWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it('should run for ng2', (done) => {
+      it('should run for ng2', done => {
         runLargeFormBenchmark({
           id: `largeform.ng2.${worker.id}`,
           url: 'all/benchmarks/src/largeform/ng2/index.html',

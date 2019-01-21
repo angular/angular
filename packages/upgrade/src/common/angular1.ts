@@ -10,7 +10,12 @@ export type Ng1Token = string;
 
 export type Ng1Expression = string | Function;
 
-export interface IAnnotatedFunction extends Function { $inject?: Ng1Token[]; }
+export interface IAnnotatedFunction extends Function {
+  // Older versions of `@types/angular` typings extend the global `Function` interface with
+  // `$inject?: string[]`, which is not compatible with `$inject?: ReadonlyArray<string>` (used in
+  // latest versions).
+  $inject?: Function extends{$inject?: string[]}? Ng1Token[]: ReadonlyArray<Ng1Token>;
+}
 
 export type IInjectable = (Ng1Token | Function)[] | IAnnotatedFunction;
 
@@ -127,6 +132,7 @@ export type IAugmentedJQuery = Node[] & {
   controller?: (name: string) => any;
   isolateScope?: () => IScope;
   injector?: () => IInjectorService;
+  triggerHandler?: (eventTypeOrObject: string | Event, extraParameters?: any[]) => IAugmentedJQuery;
   remove?: () => void;
   removeData?: () => void;
 };
@@ -213,24 +219,29 @@ export interface INgModelController {
   $name: string;
 }
 
-function noNg() {
+function noNg(): never {
   throw new Error('AngularJS v1.x is not loaded!');
 }
 
+const noNgElement: typeof angular.element = (() => noNg()) as any;
+noNgElement.cleanData = noNg;
 
 let angular: {
   bootstrap: (e: Element, modules: (string | IInjectable)[], config?: IAngularBootstrapConfig) =>
                  IInjectorService,
   module: (prefix: string, dependencies?: string[]) => IModule,
-  element: (e: Element | string) => IAugmentedJQuery,
+  element: {
+    (e: string | Element | Document | IAugmentedJQuery): IAugmentedJQuery;
+    cleanData: (nodes: Node[] | NodeList) => void;
+  },
   version: {major: number},
   resumeBootstrap: () => void,
   getTestability: (e: Element) => ITestabilityService
-} = <any>{
+} = {
   bootstrap: noNg,
   module: noNg,
-  element: noNg,
-  version: undefined,
+  element: noNgElement,
+  version: undefined as any,
   resumeBootstrap: noNg,
   getTestability: noNg
 };
@@ -239,12 +250,14 @@ try {
   if (window.hasOwnProperty('angular')) {
     angular = (<any>window).angular;
   }
-} catch (e) {
+} catch {
   // ignore in CJS mode.
 }
 
 /**
  * @deprecated Use `setAngularJSGlobal` instead.
+ *
+ * @publicApi
  */
 export function setAngularLib(ng: any): void {
   setAngularJSGlobal(ng);
@@ -252,6 +265,8 @@ export function setAngularLib(ng: any): void {
 
 /**
  * @deprecated Use `getAngularJSGlobal` instead.
+ *
+ * @publicApi
  */
 export function getAngularLib(): any {
   return getAngularJSGlobal();
@@ -262,7 +277,7 @@ export function getAngularLib(): any {
  *
  * Used when AngularJS is loaded lazily, and not available on `window`.
  *
- *
+ * @publicApi
  */
 export function setAngularJSGlobal(ng: any): void {
   angular = ng;
@@ -272,23 +287,23 @@ export function setAngularJSGlobal(ng: any): void {
 /**
  * Returns the current AngularJS global.
  *
- *
+ * @publicApi
  */
 export function getAngularJSGlobal(): any {
   return angular;
 }
 
-export const bootstrap =
-    (e: Element, modules: (string | IInjectable)[], config?: IAngularBootstrapConfig) =>
-        angular.bootstrap(e, modules, config);
+export const bootstrap: typeof angular.bootstrap = (e, modules, config?) =>
+    angular.bootstrap(e, modules, config);
 
-export const module = (prefix: string, dependencies?: string[]) =>
+export const module: typeof angular.module = (prefix, dependencies?) =>
     angular.module(prefix, dependencies);
 
-export const element = (e: Element | string) => angular.element(e);
+export const element: typeof angular.element = (e => angular.element(e)) as typeof angular.element;
+element.cleanData = nodes => angular.element.cleanData(nodes);
 
-export const resumeBootstrap = () => angular.resumeBootstrap();
+export const resumeBootstrap: typeof angular.resumeBootstrap = () => angular.resumeBootstrap();
 
-export const getTestability = (e: Element) => angular.getTestability(e);
+export const getTestability: typeof angular.getTestability = e => angular.getTestability(e);
 
 export let version = angular.version;
