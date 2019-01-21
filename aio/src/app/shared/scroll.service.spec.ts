@@ -55,7 +55,7 @@ describe('ScrollService', () => {
   });
 
   it('should set `scrollRestoration` to `manual` if supported', () => {
-    if (scrollService.supportManualScrollRestoration()) {
+    if (scrollService.supportManualScrollRestoration) {
       expect(window.history.scrollRestoration).toBe('manual');
     } else {
       expect(window.history.scrollRestoration).toBeUndefined();
@@ -246,7 +246,7 @@ describe('ScrollService', () => {
     it('should return true when popState event was fired after a back navigation if the browser supports ' +
       'scrollRestoration`. Otherwise, needToFixScrollPosition() returns false', () => {
 
-      if (scrollService.supportManualScrollRestoration()) {
+      if (scrollService.supportManualScrollRestoration) {
         location.go('/initial-url1');
         // We simulate a scroll down
         location.replaceState('/initial-url1', 'hack', {scrollPosition: [2000, 0]});
@@ -271,7 +271,7 @@ describe('ScrollService', () => {
     it('should return true when popState event was fired after a forward navigation if the browser supports ' +
       'scrollRestoration`. Otherwise, needToFixScrollPosition() returns false', () => {
 
-      if (scrollService.supportManualScrollRestoration()) {
+      if (scrollService.supportManualScrollRestoration) {
         location.go('/initial-url1');
         location.go('/initial-url2');
         // We simulate a scroll down
@@ -348,10 +348,8 @@ describe('ScrollService', () => {
 
       scrollService.scrollAfterRender(scrollDelay);
 
-      expect(viewportScrollerStub.scrollToPosition).not.toHaveBeenCalled();
-      expect(getStoredScrollPositionSpy).toHaveBeenCalled();
-      tick(scrollDelay);
       expect(viewportScrollerStub.scrollToPosition).toHaveBeenCalled();
+      expect(getStoredScrollPositionSpy).toHaveBeenCalled();
     }));
 
     it('should call `scrollToPosition` after a popState', fakeAsync(() => {

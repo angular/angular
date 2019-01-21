@@ -127,7 +127,7 @@ export class AppComponent implements OnInit {
       }
       if (path === this.currentPath) {
         // scroll only if on same page (most likely a change to the hash)
-        this.autoScroll();
+        this.scrollService.scroll();
       } else {
         // don't scroll; leave that to `onDocRendered`
         this.currentPath = path;
@@ -185,11 +185,6 @@ export class AppComponent implements OnInit {
       this.navigationService.currentNodes)   // ...needed to determine `sidenav` state
       .pipe(first())
       .subscribe(() => this.updateShell());
-  }
-
-  // Scroll to the anchor in the hash fragment or top of doc.
-  autoScroll() {
-    this.scrollService.scroll();
   }
 
   onDocReady() {
@@ -253,7 +248,7 @@ export class AppComponent implements OnInit {
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
   onClick(eventTarget: HTMLElement, button: number, ctrlKey: boolean, metaKey: boolean, altKey: boolean): boolean {
-
+    // We update the scroll position in the case there is no scroll event on the page before
     this.scrollService.updateScrollPositionInHistory();
 
     // Hide the search results if we clicked outside both the "search box" and the "search results"
