@@ -56,14 +56,14 @@ export class NgStyle implements DoCheck {
 
   @Input()
   set ngStyle(
-    /**
-     * An array of style properties, specified as colon-separated
-     * key-value pairs.
-     * * The key is a style name, with an optional `.<unit>` suffix
-     *    (such as 'top.px', 'font-style.em').
-     * * The value is an expression to be evaluated.
-     */
-    values: {[key: string]: string}) {
+      /**
+       * An array of style properties, specified as colon-separated
+       * key-value pairs.
+       * * The key is a style name, with an optional `.<unit>` suffix
+       *    (such as 'top.px', 'font-style.em').
+       * * The value is an expression to be evaluated.
+       */
+      values: {[key: string]: string}) {
     this._ngStyle = values;
     if (!this._differ && values) {
       this._differ = this._differs.find(values).create();
