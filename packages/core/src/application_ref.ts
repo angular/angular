@@ -350,6 +350,7 @@ function optionsReducer<T extends Object>(dst: any, objs: T | T[]): T {
  *
  * @usageNotes
  *
+ * {@a is-stable-examples}
  * ### isStable examples and caveats
  *
  * Note two important points about `isStable`, demonstrated in the examples below:
@@ -461,7 +462,7 @@ export class ApplicationRef {
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    *
-   * @see  [Usage notes](#usage-notes) for examples and caveats when using this API.
+   * @see  [Usage notes](#is-stable-examples) for examples and caveats when using this API.
    */
   // TODO(issue/24571): remove '!'.
   public readonly isStable !: Observable<boolean>;
