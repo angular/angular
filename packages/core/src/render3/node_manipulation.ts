@@ -9,7 +9,7 @@
 import {attachPatchData} from './context_discovery';
 import {callHooks} from './hooks';
 import {LContainer, NATIVE, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
@@ -109,14 +109,22 @@ function walkTNodeTree(
       const head: TNode|null =
           (componentHost.projection as(TNode | null)[])[tNode.projection as number];
 
-      // Must store both the TNode and the view because this projection node could be nested
-      // deeply inside embedded views, and we need to get back down to this particular nested view.
-      projectionNodeStack[++projectionNodeIndex] = tNode;
-      projectionNodeStack[++projectionNodeIndex] = currentView !;
-      if (head) {
-        currentView = componentView[PARENT] !;
-        nextTNode = currentView[TVIEW].data[head.index] as TNode;
+      if (Array.isArray(head)) {
+        for (let nativeNode of head) {
+          executeNodeAction(action, renderer, renderParent, nativeNode, tNode, beforeNode);
+        }
+      } else {
+        // Must store both the TNode and the view because this projection node could be nested
+        // deeply inside embedded views, and we need to get back down to this particular nested
+        // view.
+        projectionNodeStack[++projectionNodeIndex] = tNode;
+        projectionNodeStack[++projectionNodeIndex] = currentView !;
+        if (head) {
+          currentView = componentView[PARENT] !;
+          nextTNode = currentView[TVIEW].data[head.index] as TNode;
+        }
       }
+
     } else {
       // Otherwise, this is a View or an ElementContainer
       nextTNode = tNode.child;
@@ -548,6 +556,23 @@ export function nativeInsertBefore(
   }
 }
 
+function nativeAppendChild(renderer: Renderer3, parent: RElement, child: RNode): void {
+  if (isProceduralRenderer(renderer)) {
+    renderer.appendChild(parent, child);
+  } else {
+    parent.appendChild(child);
+  }
+}
+
+function nativeAppendOrInsertBefore(
+    renderer: Renderer3, parent: RElement, child: RNode, beforeNode: RNode | null) {
+  if (beforeNode) {
+    nativeInsertBefore(renderer, parent, child, beforeNode);
+  } else {
+    nativeAppendChild(renderer, parent, child);
+  }
+}
+
 /**
  * Removes a native child node from a given native parent node.
  */
@@ -572,35 +597,47 @@ export function nativeNextSibling(renderer: Renderer3, node: RNode): RNode|null 
 }
 
 /**
- * Appends the `child` element to the `parent`.
+ * Finds a native "anchor" node for cases where we can't append a native child directly
+ * (`appendChild`) and need to use a reference (anchor) node for the `insertBefore` operation.
+ * @param parentTNode
+ * @param lView
+ */
+function getNativeAnchorNode(parentTNode: TNode, lView: LView): RNode|null {
+  if (parentTNode.type === TNodeType.View) {
+    const lContainer = getLContainer(parentTNode as TViewNode, lView) !;
+    const views = lContainer[VIEWS];
+    const index = views.indexOf(lView);
+    return getBeforeNodeForView(index, views, lContainer[NATIVE]);
+  } else if (
+      parentTNode.type === TNodeType.ElementContainer ||
+      parentTNode.type === TNodeType.IcuContainer) {
+    return getNativeByTNode(parentTNode, lView);
+  }
+  return null;
+}
+
+/**
+ * Appends the `child` native node (or a collection of nodes) to the `parent`.
  *
  * The element insertion might be delayed {@link canInsertNativeNode}.
  *
- * @param childEl The child that should be appended
+ * @param childEl The native child (or children) that should be appended
  * @param childTNode The TNode of the child element
  * @param currentView The current LView
  * @returns Whether or not the child was appended
  */
-export function appendChild(childEl: RNode, childTNode: TNode, currentView: LView): void {
+export function appendChild(childEl: RNode | RNode[], childTNode: TNode, currentView: LView): void {
   const renderParent = getRenderParent(childTNode, currentView);
   if (renderParent != null) {
     const renderer = currentView[RENDERER];
     const parentTNode: TNode = childTNode.parent || currentView[HOST_NODE] !;
-
-    if (parentTNode.type === TNodeType.View) {
-      const lContainer = getLContainer(parentTNode as TViewNode, currentView) !;
-      const views = lContainer[VIEWS];
-      const index = views.indexOf(currentView);
-      nativeInsertBefore(
-          renderer, renderParent, childEl, getBeforeNodeForView(index, views, lContainer[NATIVE]));
-    } else if (
-        parentTNode.type === TNodeType.ElementContainer ||
-        parentTNode.type === TNodeType.IcuContainer) {
-      const anchorNode = getNativeByTNode(parentTNode, currentView);
-      nativeInsertBefore(renderer, renderParent, childEl, anchorNode);
+    const anchorNode = getNativeAnchorNode(parentTNode, currentView);
+    if (Array.isArray(childEl)) {
+      for (let nativeNode of childEl) {
+        nativeAppendOrInsertBefore(renderer, renderParent, nativeNode, anchorNode);
+      }
     } else {
-      isProceduralRenderer(renderer) ? renderer.appendChild(renderParent, childEl) :
-                                       renderParent.appendChild(childEl);
+      nativeAppendOrInsertBefore(renderer, renderParent, childEl, anchorNode);
     }
   }
 }

@@ -13,7 +13,6 @@ import {RendererType2, ViewEncapsulation} from '../../src/core';
 import {defineComponent} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text, tick} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {createRendererType2} from '../../src/view/index';
 
 import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';
 import {TemplateFixture, containerEl, document, renderComponent, renderToHtml, toHtml} from './render_util';

@@ -120,6 +120,9 @@
     "name": "__self"
   },
   {
+    "name": "__values"
+  },
+  {
     "name": "__window"
   },
   {
@@ -255,6 +258,9 @@
     "name": "getLViewChild"
   },
   {
+    "name": "getNativeAnchorNode"
+  },
+  {
     "name": "getNativeByTNode"
   },
   {
@@ -343,6 +349,12 @@
   },
   {
     "name": "namespaceHTML"
+  },
+  {
+    "name": "nativeAppendChild"
+  },
+  {
+    "name": "nativeAppendOrInsertBefore"
   },
   {
     "name": "nativeInsertBefore"

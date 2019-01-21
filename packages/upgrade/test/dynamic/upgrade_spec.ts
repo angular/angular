@@ -10,7 +10,6 @@ import {ChangeDetectorRef, Component, EventEmitter, Input, NO_ERRORS_SCHEMA, NgM
 import {async, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {fixmeIvy} from '@angular/private/testing';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {$EXCEPTION_HANDLER} from '@angular/upgrade/src/common/constants';
 import {UpgradeAdapter, UpgradeAdapterRef} from '@angular/upgrade/src/dynamic/upgrade_adapter';
@@ -3098,33 +3097,31 @@ withEachNg1Version(() => {
            });
          }));
 
-      fixmeIvy('FW-873: projected component injector hierarchy not wired up correctly')
-          .it('should respect hierarchical dependency injection for ng2', async(() => {
-                const ng1Module = angular.module('ng1', []);
+      it('should respect hierarchical dependency injection for ng2', async(() => {
+           const ng1Module = angular.module('ng1', []);
 
-                @Component(
-                    {selector: 'ng2-parent', template: `ng2-parent(<ng-content></ng-content>)`})
-                class Ng2Parent {
-                }
-                @Component({selector: 'ng2-child', template: `ng2-child`})
-                class Ng2Child {
-                  constructor(parent: Ng2Parent) {}
-                }
+           @Component({selector: 'ng2-parent', template: `ng2-parent(<ng-content></ng-content>)`})
+           class Ng2Parent {
+           }
+           @Component({selector: 'ng2-child', template: `ng2-child`})
+           class Ng2Child {
+             constructor(parent: Ng2Parent) {}
+           }
 
-                @NgModule({declarations: [Ng2Parent, Ng2Child], imports: [BrowserModule]})
-                class Ng2Module {
-                }
+           @NgModule({declarations: [Ng2Parent, Ng2Child], imports: [BrowserModule]})
+           class Ng2Module {
+           }
 
-                const element = html('<ng2-parent><ng2-child></ng2-child></ng2-parent>');
+           const element = html('<ng2-parent><ng2-child></ng2-child></ng2-parent>');
 
-                const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2Module);
-                ng1Module.directive('ng2Parent', adapter.downgradeNg2Component(Ng2Parent))
-                    .directive('ng2Child', adapter.downgradeNg2Component(Ng2Child));
-                adapter.bootstrap(element, ['ng1']).ready((ref) => {
-                  expect(document.body.textContent).toEqual('ng2-parent(ng2-child)');
-                  ref.dispose();
-                });
-              }));
+           const adapter: UpgradeAdapter = new UpgradeAdapter(Ng2Module);
+           ng1Module.directive('ng2Parent', adapter.downgradeNg2Component(Ng2Parent))
+               .directive('ng2Child', adapter.downgradeNg2Component(Ng2Child));
+           adapter.bootstrap(element, ['ng1']).ready((ref) => {
+             expect(document.body.textContent).toEqual('ng2-parent(ng2-child)');
+             ref.dispose();
+           });
+         }));
     });
 
     describe('testability', () => {

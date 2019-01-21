@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {RNode} from './renderer';
 import {StylingContext} from './styling';
 import {LView, TView} from './view';
 
@@ -333,8 +334,11 @@ export interface TNode {
    *     `getHost(currentTNode).projection[currentTNode.projection]`.
    * - When projecting nodes the parent node retrieved may be a `<ng-content>` node, in which case
    *   the process is recursive in nature (not implementation).
+   *
+   * If `projection` is of type `RNode[][]` than we have a collection of native nodes passed as
+   * projectable nodes during dynamic component creation.
    */
-  projection: (TNode|null)[]|number|null;
+  projection: (TNode|RNode[])[]|number|null;
 }
 
 /** Static data for an element  */
@@ -352,10 +356,10 @@ export interface TElementNode extends TNode {
 
   /**
    * If this is a component TNode with projection, this will be an array of projected
-   * TNodes (see TNode.projection for more info). If it's a regular element node or a
-   * component without projection, it will be null.
+   * TNodes or native nodes (see TNode.projection for more info). If it's a regular element node or
+   * a component without projection, it will be null.
    */
-  projection: (TNode|null)[]|null;
+  projection: (TNode|RNode[])[]|null;
 }
 
 /** Static data for a text node */
