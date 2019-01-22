@@ -217,6 +217,7 @@ knows that the route list is only responsible for providing additional routes an
 
 `forRoot()` contains injector configuration which is global; such as configuring the Router. `forChild()` has no injector configuration, only directives such as `RouterOutlet` and `RouterLink`.
 
+For more information, see the [`forRoot()` deep dive](guide/singleton-services#forRoot) section of the [Singleton Services](guide/singleton-services) guide.
 
 <hr>
 

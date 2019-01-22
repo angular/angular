@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
-import { UserService }      from '../core/user.service';
+import { UserService }      from '../greeting/user.service';
 
 @Component({
-  selector: 'app-title',
-  templateUrl: './title.component.html',
+  selector: 'app-greeting',
+  templateUrl: './greeting.component.html',
 })
-export class TitleComponent {
+export class GreetingComponent {
   title = 'NgModules';
   user = '';
 
