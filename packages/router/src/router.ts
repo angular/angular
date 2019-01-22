@@ -505,8 +505,10 @@ export class Router {
 
                       // Update URL if in `eager` update mode
                       tap(t => {
-                        if (this.urlUpdateStrategy === 'eager' && !t.extras.skipLocationChange) {
-                          this.setBrowserUrl(t.urlAfterRedirects, !!t.extras.replaceUrl, t.id);
+                        if (this.urlUpdateStrategy === 'eager') {
+                          if (!t.extras.skipLocationChange) {
+                            this.setBrowserUrl(t.urlAfterRedirects, !!t.extras.replaceUrl, t.id);
+                          }
                           this.browserUrlTree = t.urlAfterRedirects;
                         }
                       }),
@@ -669,8 +671,11 @@ export class Router {
 
                 (this as{routerState: RouterState}).routerState = t.targetRouterState !;
 
-                if (this.urlUpdateStrategy === 'deferred' && !t.extras.skipLocationChange) {
-                  this.setBrowserUrl(this.rawUrlTree, !!t.extras.replaceUrl, t.id, t.extras.state);
+                if (this.urlUpdateStrategy === 'deferred') {
+                  if (!t.extras.skipLocationChange) {
+                    this.setBrowserUrl(
+                        this.rawUrlTree, !!t.extras.replaceUrl, t.id, t.extras.state);
+                  }
                   this.browserUrlTree = t.urlAfterRedirects;
                 }
               }),

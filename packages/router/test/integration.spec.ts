@@ -575,6 +575,27 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
      })));
 
+  it('should navigate after navigation with skipLocationChange',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       const fixture = TestBed.createComponent(RootCmpWithNamedOutlet);
+       advance(fixture);
+
+       router.resetConfig([{path: 'show', outlet: 'main', component: SimpleCmp}]);
+
+       router.navigate([{outlets: {main: 'show'}}], {skipLocationChange: true});
+       advance(fixture);
+       expect(location.path()).toEqual('');
+
+       expect(fixture.nativeElement).toHaveText('main [simple]');
+
+       router.navigate([{outlets: {main: null}}], {skipLocationChange: true});
+       advance(fixture);
+
+       expect(location.path()).toEqual('');
+
+       expect(fixture.nativeElement).toHaveText('main []');
+     })));
+
   describe('"eager" urlUpdateStrategy', () => {
     beforeEach(() => {
       const serializer = new DefaultUrlSerializer();
@@ -4890,6 +4911,10 @@ class RootCmpWithOnInit {
 class RootCmpWithTwoOutlets {
 }
 
+@Component({selector: 'root-cmp', template: `main [<router-outlet name="main"></router-outlet>]`})
+class RootCmpWithNamedOutlet {
+}
+
 @Component({selector: 'throwing-cmp', template: ''})
 class ThrowingCmp {
   constructor() { throw new Error('Throwing Cmp'); }
@@ -4941,6 +4966,7 @@ class LazyComponent {
     RootCmp,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
+    RootCmpWithNamedOutlet,
     EmptyQueryParamsCmp,
     ThrowingCmp
   ],
@@ -4971,6 +4997,7 @@ class LazyComponent {
     RootCmpWithOnInit,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
+    RootCmpWithNamedOutlet,
     EmptyQueryParamsCmp,
     ThrowingCmp
   ],
@@ -5002,6 +5029,7 @@ class LazyComponent {
     RootCmpWithOnInit,
     RelativeLinkInIfCmp,
     RootCmpWithTwoOutlets,
+    RootCmpWithNamedOutlet,
     EmptyQueryParamsCmp,
     ThrowingCmp
   ]
