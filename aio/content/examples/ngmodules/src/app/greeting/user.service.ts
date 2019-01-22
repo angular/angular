@@ -1,9 +1,3 @@
-// Crazy copy of the app/user.service
-// Proves that UserService is an app-wide singleton and only instantiated once
-// IFF shared.module follows the `forRoot` pattern
-//
-// If it didn't, a new instance of UserService would be created
-// after each lazy load and the userName would double up.
 
 import { Injectable, Optional } from '@angular/core';
 
@@ -13,7 +7,9 @@ export class UserServiceConfig {
   userName = 'Philip Marlowe';
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class UserService {
   id = nextId++;
   private _userName = 'Sherlock Holmes';

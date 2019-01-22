@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 @Component({
   selector: 'app-root',
   template: `
-    <app-title></app-title>
+    <app-greeting></app-greeting>
     <nav>
       <a routerLink="contact" routerLinkActive="active">Contact</a>
       <a routerLink="items" routerLinkActive="active">Items</a>
