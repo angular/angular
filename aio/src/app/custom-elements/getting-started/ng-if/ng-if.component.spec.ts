@@ -46,6 +46,6 @@ describe('Getting Started NgIf Component', () => {
 
     component.parseError$.subscribe(error => {
       expect(error).toBeTruthy();
-    })
+    });
   });
 });

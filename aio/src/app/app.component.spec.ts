@@ -52,7 +52,7 @@ describe('AppComponent', () => {
     await newDocPromise;       // Wait for the new document to be fetched.
     fixture.detectChanges();   // Propagate document change to the view (i.e to `DocViewer`).
     await docRenderedPromise;  // Wait for the `docRendered` event.
-  };
+  }
 
   function initializeTest(waitForDoc = true) {
     fixture = TestBed.createComponent(AppComponent);
@@ -73,7 +73,7 @@ describe('AppComponent', () => {
     tocService = de.injector.get<TocService>(TocService);
 
     return waitForDoc && awaitDocRendered();
-  };
+  }
 
 
   describe('with proper DocViewer', () => {
