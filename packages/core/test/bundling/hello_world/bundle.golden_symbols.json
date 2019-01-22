@@ -18,7 +18,16 @@
     "name": "CONTEXT"
   },
   {
+    "name": "ChangeDetectionStrategy"
+  },
+  {
     "name": "DECLARATION_VIEW"
+  },
+  {
+    "name": "EMPTY_ARRAY"
+  },
+  {
+    "name": "EMPTY_OBJ"
   },
   {
     "name": "EmptyErrorImpl"
@@ -48,19 +57,31 @@
     "name": "MONKEY_PATCH_KEY_NAME"
   },
   {
+    "name": "NATIVE"
+  },
+  {
     "name": "NEXT"
   },
   {
     "name": "NG_COMPONENT_DEF"
   },
   {
+    "name": "NG_DIRECTIVE_DEF"
+  },
+  {
     "name": "NG_ELEMENT_ID"
+  },
+  {
+    "name": "NG_PIPE_DEF"
   },
   {
     "name": "NO_CHANGE"
   },
   {
     "name": "NO_PARENT_INJECTOR"
+  },
+  {
+    "name": "NgOnChangesFeature"
   },
   {
     "name": "NodeInjectorFactory"
@@ -84,6 +105,12 @@
     "name": "SANITIZER"
   },
   {
+    "name": "SIMPLE_CHANGES_STORE"
+  },
+  {
+    "name": "SimpleChange"
+  },
+  {
     "name": "TVIEW"
   },
   {
@@ -93,6 +120,9 @@
     "name": "VIEWS"
   },
   {
+    "name": "ViewEncapsulation"
+  },
+  {
     "name": "__self"
   },
   {
@@ -100,6 +130,12 @@
   },
   {
     "name": "_global"
+  },
+  {
+    "name": "_renderCompCount"
+  },
+  {
+    "name": "appendChild"
   },
   {
     "name": "attachPatchData"
@@ -144,6 +180,9 @@
     "name": "createTView"
   },
   {
+    "name": "createTextNode"
+  },
+  {
     "name": "createViewBlueprint"
   },
   {
@@ -151,6 +190,9 @@
   },
   {
     "name": "defaultScheduler"
+  },
+  {
+    "name": "defineComponent"
   },
   {
     "name": "diPublicInInjector"
@@ -168,7 +210,16 @@
     "name": "executeInitHooks"
   },
   {
+    "name": "extractDirectiveDef"
+  },
+  {
+    "name": "extractPipeDef"
+  },
+  {
     "name": "generateExpandoInstructionBlock"
+  },
+  {
+    "name": "getBeforeNodeForView"
   },
   {
     "name": "getCheckNoChangesMode"
@@ -183,10 +234,25 @@
     "name": "getComponentViewByIndex"
   },
   {
+    "name": "getContainerRenderParent"
+  },
+  {
+    "name": "getDirectiveDef"
+  },
+  {
+    "name": "getHighestElementOrICUContainer"
+  },
+  {
+    "name": "getHostNative"
+  },
+  {
     "name": "getInjectorIndex"
   },
   {
     "name": "getIsParent"
+  },
+  {
+    "name": "getLContainer"
   },
   {
     "name": "getLView"
@@ -219,16 +285,25 @@
     "name": "getParentInjectorViewOffset"
   },
   {
+    "name": "getPipeDef"
+  },
+  {
     "name": "getPreviousOrParentTNode"
   },
   {
     "name": "getRenderFlags"
   },
   {
+    "name": "getRenderParent"
+  },
+  {
     "name": "getRootContext"
   },
   {
     "name": "getRootView"
+  },
+  {
+    "name": "getSimpleChangesStore"
   },
   {
     "name": "hasParentInjector"
@@ -246,6 +321,9 @@
     "name": "instantiateRootComponent"
   },
   {
+    "name": "invertObject"
+  },
+  {
     "name": "isComponentDef"
   },
   {
@@ -258,6 +336,9 @@
     "name": "isProceduralRenderer"
   },
   {
+    "name": "isRootView"
+  },
+  {
     "name": "leaveView"
   },
   {
@@ -267,7 +348,19 @@
     "name": "namespaceHTML"
   },
   {
+    "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nativeParentNode"
+  },
+  {
     "name": "nextNgElementId"
+  },
+  {
+    "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "noSideEffects"
   },
   {
     "name": "postProcessBaseDirective"
@@ -315,6 +408,9 @@
     "name": "setBindingRoot"
   },
   {
+    "name": "setCurrentDirectiveDef"
+  },
+  {
     "name": "setFirstTemplatePass"
   },
   {
@@ -333,10 +429,16 @@
     "name": "setPreviousOrParentTNode"
   },
   {
+    "name": "setSimpleChangesStore"
+  },
+  {
     "name": "setTNodeAndViewData"
   },
   {
     "name": "syncViewWithBlueprint"
+  },
+  {
+    "name": "text"
   },
   {
     "name": "tickRootContext"
@@ -346,5 +448,8 @@
   },
   {
     "name": "viewAttached"
+  },
+  {
+    "name": "wrapOnChanges"
   }
 ]
