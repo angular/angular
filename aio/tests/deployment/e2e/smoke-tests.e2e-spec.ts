@@ -7,7 +7,11 @@ describe(browser.baseUrl, () => {
   beforeAll(() => page.init());
 
   beforeEach(() => browser.waitForAngularEnabled(false));
-  afterEach(() => browser.waitForAngularEnabled(true));
+
+  afterEach(async () => {
+    await page.unregisterSw();
+    await browser.waitForAngularEnabled(true);
+  });
 
   describe('(smoke tests)', () => {
     it('should show the home page', () => {
