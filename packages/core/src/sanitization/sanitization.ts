@@ -139,8 +139,7 @@ export function sanitizeScript(unsafeScript: any): string {
 export const defaultStyleSanitizer = (function(prop: string, value?: string): string | boolean {
   if (value === undefined) {
     return prop === 'background-image' || prop === 'background' || prop === 'border-image' ||
-        prop === 'filter' || prop === 'filter' || prop === 'list-style' ||
-        prop === 'list-style-image';
+        prop === 'filter' || prop === 'list-style' || prop === 'list-style-image';
   }
 
   return sanitizeStyle(value);
