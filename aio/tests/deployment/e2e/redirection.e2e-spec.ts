@@ -38,7 +38,7 @@ describe(browser.baseUrl, () => {
         const actualUrl = await getCurrentUrl();
 
         expect(actualUrl).toBe(expectedUrl);
-      }, 60000);
+      }, 120000);
     });
   });
 
