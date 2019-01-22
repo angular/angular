@@ -1050,9 +1050,11 @@ export function elementEnd(): void {
  * @param value value The attribute is removed when value is `null` or `undefined`.
  *                  Otherwise the attribute value is set to the stringified value.
  * @param sanitizer An optional function used to sanitize the value.
+ * @param namespace Optional namespace to use when setting the attribute.
  */
 export function elementAttribute(
-    index: number, name: string, value: any, sanitizer?: SanitizerFn | null): void {
+    index: number, name: string, value: any, sanitizer?: SanitizerFn | null,
+    namespace?: string): void {
   if (value !== NO_CHANGE) {
     ngDevMode && validateAttribute(name);
     const lView = getLView();
@@ -1060,15 +1062,21 @@ export function elementAttribute(
     const element = getNativeByIndex(index, lView);
     if (value == null) {
       ngDevMode && ngDevMode.rendererRemoveAttribute++;
-      isProceduralRenderer(renderer) ? renderer.removeAttribute(element, name) :
+      isProceduralRenderer(renderer) ? renderer.removeAttribute(element, name, namespace) :
                                        element.removeAttribute(name);
     } else {
       ngDevMode && ngDevMode.rendererSetAttribute++;
       const tNode = getTNode(index, lView);
       const strValue =
           sanitizer == null ? renderStringify(value) : sanitizer(value, tNode.tagName || '', name);
-      isProceduralRenderer(renderer) ? renderer.setAttribute(element, name, strValue) :
-                                       element.setAttribute(name, strValue);
+
+
+      if (isProceduralRenderer(renderer)) {
+        renderer.setAttribute(element, name, strValue, namespace);
+      } else {
+        namespace ? element.setAttributeNS(namespace, name, strValue) :
+                    element.setAttribute(name, strValue);
+      }
     }
   }
 }

@@ -579,15 +579,14 @@ class HiddenModule {
            });
          })));
 
-      fixmeIvy('FW-672: SVG xlink:href is sanitized to :xlink:href (extra ":")')
-          .it('works with SVG elements', async(() => {
-                renderModule(SVGServerModule, {document: doc}).then(output => {
-                  expect(output).toBe(
-                      '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                      '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
-                  called = true;
-                });
-              }));
+      it('works with SVG elements', async(() => {
+           renderModule(SVGServerModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<svg><use xlink:href="#clear"></use></svg></app></body></html>');
+             called = true;
+           });
+         }));
 
       it('works with animation', async(() => {
            renderModule(AnimationServerModule, {document: doc}).then(output => {

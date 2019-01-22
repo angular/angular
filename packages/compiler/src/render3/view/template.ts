@@ -10,7 +10,7 @@ import {flatten, sanitizeIdentifier} from '../../compile_metadata';
 import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
-import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEvent, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
+import {AST, AstMemoryEfficientTransformer, BindingPipe, BindingType, FunctionCall, ImplicitReceiver, Interpolation, LiteralArray, LiteralMap, LiteralPrimitive, ParsedEventType, PropertyRead} from '../../expression_parser/ast';
 import {Lexer} from '../../expression_parser/lexer';
 import {Parser} from '../../expression_parser/parser';
 import * as i18n from '../../i18n/i18n_ast';
@@ -567,7 +567,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     });
 
-    outputAttrs.forEach(attr => attributes.push(o.literal(attr.name), o.literal(attr.value)));
+    outputAttrs.forEach(attr => {
+      attributes.push(...getAttributeNameLiterals(attr.name), o.literal(attr.value));
+    });
 
     // this will build the instructions so that they fall into the following syntax
     // add attributes for directive matching purposes
@@ -719,13 +721,25 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         const value = input.value.visit(this._valueConverter);
         if (value !== undefined) {
           const params: any[] = [];
+          const [attrNamespace, attrName] = splitNsName(input.name);
           const isAttributeBinding = input.type === BindingType.Attribute;
           const sanitizationRef = resolveSanitizationFn(input.securityContext, isAttributeBinding);
           if (sanitizationRef) params.push(sanitizationRef);
+          if (attrNamespace) {
+            const namespaceLiteral = o.literal(attrNamespace);
+
+            if (sanitizationRef) {
+              params.push(namespaceLiteral);
+            } else {
+              // If there wasn't a sanitization ref, we need to add
+              // an extra param so that we can pass in the namespace.
+              params.push(o.literal(null), namespaceLiteral);
+            }
+          }
           this.allocateBindingSlots(value);
           this.updateInstruction(input.sourceSpan, instruction, () => {
             return [
-              o.literal(elementIndex), o.literal(input.name),
+              o.literal(elementIndex), o.literal(attrName),
               this.convertPropertyBinding(implicit, value), ...params
             ];
           });
@@ -1038,10 +1052,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     function addAttrExpr(key: string | number, value?: o.Expression): void {
       if (typeof key === 'string') {
         if (!alreadySeen.has(key)) {
-          attrExprs.push(o.literal(key));
-          if (value !== undefined) {
-            attrExprs.push(value);
-          }
+          attrExprs.push(...getAttributeNameLiterals(key));
+          value !== undefined && attrExprs.push(value);
           alreadySeen.add(key);
         }
       } else {
@@ -1262,6 +1274,26 @@ function getLiteralFactory(
   }
 
   return o.importExpr(identifier).callFn(args);
+}
+
+/**
+ * Gets an array of literals that can be added to an expression
+ * to represent the name and namespace of an attribute. E.g.
+ * `:xlink:href` turns into `[AttributeMarker.NamespaceURI, 'xlink', 'href']`.
+ *
+ * @param name Name of the attribute, including the namespace.
+ */
+function getAttributeNameLiterals(name: string): o.LiteralExpr[] {
+  const [attributeNamespace, attributeName] = splitNsName(name);
+  const nameLiteral = o.literal(attributeName);
+
+  if (attributeNamespace) {
+    return [
+      o.literal(core.AttributeMarker.NamespaceURI), o.literal(attributeNamespace), nameLiteral
+    ];
+  }
+
+  return [nameLiteral];
 }
 
 /**
