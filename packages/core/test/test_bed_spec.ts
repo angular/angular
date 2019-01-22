@@ -52,6 +52,15 @@ export class WithRefsCmp {
 export class InheritedCmp extends SimpleCmp {
 }
 
+@Directive({selector: '[dir]', host: {'[id]': 'id'}})
+export class HostBindingDir {
+  id = 'one';
+}
+
+@Component({selector: 'host-binding-parent', template: '<div dir></div>'})
+export class HostBindingParent {
+}
+
 @Component({
   selector: 'simple-app',
   template: `
@@ -62,7 +71,9 @@ export class SimpleApp {
 }
 
 @NgModule({
-  declarations: [HelloWorld, SimpleCmp, WithRefsCmp, InheritedCmp, SimpleApp],
+  declarations: [
+    HelloWorld, SimpleCmp, WithRefsCmp, InheritedCmp, SimpleApp, HostBindingParent, HostBindingDir
+  ],
   imports: [GreetingModule],
   providers: [
     {provide: NAME, useValue: 'World!'},
@@ -110,6 +121,14 @@ describe('TestBed', () => {
     greetingByCss.componentInstance.name = 'TestBed!';
     hello.detectChanges();
     expect(greetingByCss.nativeElement).toHaveText('Hello TestBed!');
+  });
+
+  it('should give the ability to access host properties', () => {
+    const fixture = TestBed.createComponent(HostBindingParent);
+    fixture.detectChanges();
+
+    const divElement = fixture.debugElement.children[0];
+    expect(divElement.properties).toEqual({id: 'one'});
   });
 
   it('should give access to the node injector', () => {

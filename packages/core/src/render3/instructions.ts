@@ -1154,6 +1154,14 @@ function elementPropertyInternal<T>(
       validateProperty(propName);
       ngDevMode.rendererSetProperty++;
     }
+    const tView = lView[TVIEW];
+    const lastBindingIndex = lView[BINDING_INDEX] - 1;
+    if (nativeOnly && tView.data[lastBindingIndex] == null) {
+      // We need to store the host property name so it can be accessed by DebugElement.properties.
+      // Host properties cannot have interpolations, so using the last binding index is
+      // sufficient.
+      tView.data[lastBindingIndex] = propName;
+    }
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     // It is assumed that the sanitizer is only added when the compiler determines that the property
     // is risky, so sanitization can be done without further checks.

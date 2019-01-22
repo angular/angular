@@ -556,11 +556,14 @@ export type HookData = (number | (() => void))[];
  * Each pipe's definition is stored here at the same index as its pipe instance in
  * the data array.
  *
+ * Each host property's name is stored here at the same index as its value in the
+ * data array.
+ *
  * Injector bloom filters are also stored here.
  */
 export type TData =
     (TNode | PipeDef<any>| DirectiveDef<any>| ComponentDef<any>| number | Type<any>|
-     InjectionToken<any>| TI18n | I18nUpdateOpCodes | null)[];
+     InjectionToken<any>| TI18n | I18nUpdateOpCodes | null | string)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
