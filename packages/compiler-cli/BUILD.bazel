@@ -53,7 +53,9 @@ npm_package(
     ],
     # Do not add more to this list.
     # Dependencies on the full npm_package cause long re-builds.
-    visibility = ["//visibility:private"],
+    visibility = [
+        "//packages/compiler-cli/integrationtest:__pkg__",
+    ],
     deps = [
         ":compiler-cli",
         "//packages/compiler-cli/src/ngcc",
