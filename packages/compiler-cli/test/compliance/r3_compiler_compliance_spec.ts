@@ -2206,9 +2206,6 @@ describe('compiler compliance', () => {
         }
       };
 
-      // TODO(akushnir): tag name generated for <g> element inside <svg> is incorrect.
-      // It's generated as ":svg:g", when it should be just "g". Potentially related to
-      // the issue described in FW-672.
       it('should support embedded views in the SVG namespace', () => {
         const files = {
           app: {
@@ -2266,7 +2263,7 @@ describe('compiler compliance', () => {
                   if (rf & 1) {
                     $r3$.ɵnamespaceSVG();
                     $r3$.ɵelementStart(0,"svg");
-                    $r3$.ɵtemplate(1, MyComponent__svg_g_1_Template, 2, 0, ":svg:g", $t1_attrs$);
+                    $r3$.ɵtemplate(1, MyComponent__svg_g_1_Template, 2, 0, "g", $t1_attrs$);
                     $r3$.ɵelementEnd();
                   }
                   if (rf & 2) { $r3$.ɵelementProperty(1,"forOf",$r3$.ɵbind(ctx.items)); }
