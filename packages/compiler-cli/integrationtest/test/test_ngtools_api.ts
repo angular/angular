@@ -13,7 +13,7 @@ import 'reflect-metadata';
 import * as path from 'path';
 import * as ts from 'typescript';
 import * as assert from 'assert';
-import {__NGTOOLS_PRIVATE_API_2, readConfiguration} from '@angular/compiler-cli';
+import {createProgram, readConfiguration} from '@angular/compiler-cli';
 
 /* tslint:disable:no-console  */
 /**
@@ -22,19 +22,10 @@ import {__NGTOOLS_PRIVATE_API_2, readConfiguration} from '@angular/compiler-cli'
  * properly read and wrote.
  */
 function main() {
-  console.log(`testing ngtools API...`);
-
-  Promise.resolve()
-      .then(() => lazyRoutesTest())
-      .then(() => {
-        console.log('All done!');
-        process.exit(0);
-      })
-      .catch((err) => {
-        console.error(err.stack);
-        console.error('Test failed');
-        process.exit(1);
-      });
+  Promise.resolve().then(() => lazyRoutesTest()).then(() => { process.exit(0); }).catch((err) => {
+    console.error(err.stack);
+    process.exit(1);
+  });
 }
 
 function lazyRoutesTest() {
@@ -43,13 +34,15 @@ function lazyRoutesTest() {
 
   const config = readConfiguration(project);
   const host = ts.createCompilerHost(config.options, true);
-  const program = ts.createProgram(config.rootNames, config.options, host);
+  const program = createProgram({
+    rootNames: config.rootNames,
+    options: config.options, host,
+  });
 
   config.options.basePath = basePath;
+  config.options.rootDir = basePath;
 
-  const lazyRoutes = __NGTOOLS_PRIVATE_API_2.listLazyRoutes(
-      {program, host, angularCompilerOptions: config.options, entryModule: 'app.module#AppModule'});
-
+  const lazyRoutes = program.listLazyRoutes('app.module#AppModule');
   const expectations: {[route: string]: string} = {
     './lazy.module#LazyModule': 'lazy.module.ts',
     './feature/feature.module#FeatureModule': 'feature/feature.module.ts',
@@ -61,17 +54,25 @@ function lazyRoutesTest() {
     'feature/feature.module#FeatureModule': 'feature/feature.module.ts'
   };
 
-  Object.keys(lazyRoutes).forEach((route: string) => {
-    assert(route in expectations, `Found a route that was not expected: "${route}".`);
+  lazyRoutes.forEach(lazyRoute => {
+    const routeName = lazyRoute.route;
+
+    // Normalize the module path and the expected module path so that these can be compared
+    // on Windows where path separators are not consistent with TypeScript internal paths.
+    const modulePath = path.normalize(lazyRoute.referencedModule.filePath);
+    const expectedModulePath = path.normalize(path.join(basePath, expectations[routeName]));
+
+    assert(routeName in expectations, `Found a route that was not expected: "${routeName}".`);
     assert(
-        lazyRoutes[route] == path.join(basePath, expectations[route]),
-        `Route "${route}" does not point to the expected absolute path ` +
-            `"${path.join(basePath, expectations[route])}". It points to "${lazyRoutes[route]}"`);
+        modulePath === expectedModulePath,
+        `Route "${routeName}" does not point to the expected absolute path ` +
+            `"${expectedModulePath}". It points to "${modulePath}"`);
   });
 
   // Verify that all expectations were met.
   assert.deepEqual(
-      Object.keys(lazyRoutes), Object.keys(expectations), `Expected routes listed to be: \n` +
+      lazyRoutes.map(lazyRoute => lazyRoute.route), Object.keys(expectations),
+      `Expected routes listed to be: \n` +
           `  ${JSON.stringify(Object.keys(expectations))}\n` +
           `Actual:\n` +
           `  ${JSON.stringify(Object.keys(lazyRoutes))}\n`);
