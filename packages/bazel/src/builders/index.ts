@@ -11,7 +11,7 @@
 import {BuildEvent, Builder, BuilderConfiguration, BuilderContext} from '@angular-devkit/architect';
 import {getSystemPath, resolve} from '@angular-devkit/core';
 import {Observable, of } from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 
 import {checkInstallation, runBazel} from './bazel';
 import {Schema} from './schema';
@@ -28,7 +28,8 @@ class BazelBuilder implements Builder<Schema> {
     if (!checkInstallation(executable, projectRoot)) {
       throw new Error(
           `Could not run ${executable}. Please make sure that the ` +
-          `"${executable}" command is available in the $PATH.`);
+          `"${executable}" command is installed by running ` +
+          `"npm install" or "yarn install".`);
     }
 
     // TODO: Support passing flags.

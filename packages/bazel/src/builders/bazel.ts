@@ -8,6 +8,7 @@
 
 /// <reference types='node'/>
 import {spawn, spawnSync} from 'child_process';
+import {join} from 'path';
 import {Observable, Subject} from 'rxjs';
 
 export type Executable = 'bazel' | 'ibazel';
@@ -17,7 +18,8 @@ export function runBazel(
     projectDir: string, executable: Executable, command: Command, workspaceTarget: string,
     flags: string[]): Observable<void> {
   const doneSubject = new Subject<void>();
-  const buildProcess = spawn(executable, [command, workspaceTarget, ...flags], {
+  const bin = join(projectDir, 'node_modules', '.bin', executable);
+  const buildProcess = spawn(bin, [command, workspaceTarget, ...flags], {
     cwd: projectDir,
     stdio: 'inherit',
     shell: false,
@@ -35,7 +37,8 @@ export function runBazel(
 }
 
 export function checkInstallation(executable: Executable, projectDir: string) {
-  const child = spawnSync(executable, ['version'], {
+  const bin = join(projectDir, 'node_modules', '.bin', executable);
+  const child = spawnSync(bin, ['version'], {
     cwd: projectDir,
     shell: false,
   });
