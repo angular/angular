@@ -35,11 +35,18 @@ type OnChangesExpando = OnChanges & {
  * static ngComponentDef = defineComponent({
  *   ...
  *   inputs: {name: 'publicName'},
- *   features: [NgOnChangesFeature]
+ *   features: [NgOnChangesFeature()]
  * });
  * ```
  */
-export function NgOnChangesFeature<T>(definition: DirectiveDef<T>): void {
+export function NgOnChangesFeature<T>(): DirectiveDefFeature {
+  // This option ensures that the ngOnChanges lifecycle hook will be inherited
+  // from superclasses (in InheritDefinitionFeature).
+  (NgOnChangesFeatureImpl as DirectiveDefFeature).ngInherit = true;
+  return NgOnChangesFeatureImpl;
+}
+
+function NgOnChangesFeatureImpl<T>(definition: DirectiveDef<T>): void {
   if (definition.type.prototype.ngOnChanges) {
     definition.setInput = ngOnChangesSetInput;
 
@@ -90,11 +97,6 @@ function getSimpleChangesStore(instance: any): null|NgSimpleChangesStore {
 function setSimpleChangesStore(instance: any, store: NgSimpleChangesStore): NgSimpleChangesStore {
   return instance[SIMPLE_CHANGES_STORE] = store;
 }
-
-// This option ensures that the ngOnChanges lifecycle hook will be inherited
-// from superclasses (in InheritDefinitionFeature).
-(NgOnChangesFeature as DirectiveDefFeature).ngInherit = true;
-
 
 interface NgSimpleChangesStore {
   previous: SimpleChanges;

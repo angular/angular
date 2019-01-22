@@ -2008,7 +2008,7 @@ describe('lifecycles', () => {
           vars: vars,
           inputs: {a: 'val1', b: ['publicVal2', 'val2']}, template,
           directives: directives,
-          features: [NgOnChangesFeature],
+          features: [NgOnChangesFeature()],
         });
       };
     }
@@ -2027,7 +2027,7 @@ describe('lifecycles', () => {
         selectors: [['', 'dir', '']],
         factory: () => new Directive(),
         inputs: {a: 'val1', b: ['publicVal2', 'val2']},
-        features: [NgOnChangesFeature],
+        features: [NgOnChangesFeature()],
       });
     }
 
@@ -2732,7 +2732,7 @@ describe('lifecycles', () => {
           vars: vars,
           inputs: {val: 'val'}, template,
           directives: directives,
-          features: [NgOnChangesFeature],
+          features: [NgOnChangesFeature()],
         });
       };
     }

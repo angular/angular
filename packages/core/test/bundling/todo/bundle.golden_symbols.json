@@ -144,9 +144,6 @@
     "name": "NgModuleRef"
   },
   {
-    "name": "NgOnChangesFeature"
-  },
-  {
     "name": "NodeInjector"
   },
   {
@@ -186,9 +183,6 @@
     "name": "SANITIZER"
   },
   {
-    "name": "SIMPLE_CHANGES_STORE"
-  },
-  {
     "name": "SWITCH_ELEMENT_REF_FACTORY"
   },
   {
@@ -196,9 +190,6 @@
   },
   {
     "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
-  },
-  {
-    "name": "SimpleChange"
   },
   {
     "name": "SkipSelf"
@@ -786,9 +777,6 @@
     "name": "getRootView"
   },
   {
-    "name": "getSimpleChangesStore"
-  },
-  {
     "name": "getSinglePropIndexValue"
   },
   {
@@ -1017,9 +1005,6 @@
     "name": "nextNgElementId"
   },
   {
-    "name": "ngOnChangesSetInput"
-  },
-  {
     "name": "noSideEffects"
   },
   {
@@ -1188,9 +1173,6 @@
     "name": "setSanitizeFlag"
   },
   {
-    "name": "setSimpleChangesStore"
-  },
-  {
     "name": "setStyle"
   },
   {
@@ -1255,8 +1237,5 @@
   },
   {
     "name": "wrapListenerWithPreventDefault"
-  },
-  {
-    "name": "wrapOnChanges"
   }
 ]

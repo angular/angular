@@ -125,7 +125,7 @@ function baseDirectiveFields(
  */
 function addFeatures(
     definitionMap: DefinitionMap, meta: R3DirectiveMetadata | R3ComponentMetadata) {
-  // e.g. `features: [NgOnChangesFeature]`
+  // e.g. `features: [NgOnChangesFeature()]`
   const features: o.Expression[] = [];
 
   const providers = meta.providers;
@@ -142,7 +142,7 @@ function addFeatures(
     features.push(o.importExpr(R3.InheritDefinitionFeature));
   }
   if (meta.lifecycle.usesOnChanges) {
-    features.push(o.importExpr(R3.NgOnChangesFeature));
+    features.push(o.importExpr(R3.NgOnChangesFeature).callFn(EMPTY_ARRAY));
   }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));

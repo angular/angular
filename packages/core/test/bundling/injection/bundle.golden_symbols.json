@@ -9,9 +9,6 @@
     "name": "EMPTY_ARRAY"
   },
   {
-    "name": "EMPTY_OBJ"
-  },
-  {
     "name": "EmptyErrorImpl"
   },
   {
@@ -39,9 +36,6 @@
     "name": "NULL_INJECTOR"
   },
   {
-    "name": "NgOnChangesFeature"
-  },
-  {
     "name": "NullInjector"
   },
   {
@@ -57,16 +51,10 @@
     "name": "R3Injector"
   },
   {
-    "name": "SIMPLE_CHANGES_STORE"
-  },
-  {
     "name": "ScopedService"
   },
   {
     "name": "Self"
-  },
-  {
-    "name": "SimpleChange"
   },
   {
     "name": "SkipSelf"
@@ -126,9 +114,6 @@
     "name": "getNullInjector"
   },
   {
-    "name": "getSimpleChangesStore"
-  },
-  {
     "name": "hasDeps"
   },
   {
@@ -171,9 +156,6 @@
     "name": "makeRecord"
   },
   {
-    "name": "ngOnChangesSetInput"
-  },
-  {
     "name": "providerToFactory"
   },
   {
@@ -186,12 +168,6 @@
     "name": "setCurrentInjector"
   },
   {
-    "name": "setSimpleChangesStore"
-  },
-  {
     "name": "stringify"
-  },
-  {
-    "name": "wrapOnChanges"
   }
 ]
