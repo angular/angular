@@ -1631,7 +1631,7 @@ describe('ViewContainerRef', () => {
             textBinding(0, interpolation1('', cmp.name, ''));
           }
         },
-        features: [NgOnChangesFeature],
+        features: [NgOnChangesFeature()],
         inputs: {name: 'name'}
       });
     }
@@ -1678,7 +1678,7 @@ describe('ViewContainerRef', () => {
             }
           },
           directives: [ComponentWithHooks, DirectiveWithVCRef],
-          features: [NgOnChangesFeature],
+          features: [NgOnChangesFeature()],
         });
       }
 
@@ -1771,7 +1771,7 @@ describe('ViewContainerRef', () => {
             }
           },
           directives: [ComponentWithHooks, DirectiveWithVCRef],
-          features: [NgOnChangesFeature],
+          features: [NgOnChangesFeature()],
         });
       }
 
