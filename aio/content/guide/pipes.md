@@ -212,7 +212,8 @@ Now you need a component to demonstrate the pipe.
 Note the following:
 
 * You use your custom pipe the same way you use built-in pipes.
-* You must include your pipe in the `declarations` array of the `AppModule`.
+* You must include your pipe in the `declarations` array of the `AppModule`
+* If you choose to inject your pipe into a class, you must provide it in the `providers` array of your `NgModule`.
 
 <div class="callout is-helpful">
 
