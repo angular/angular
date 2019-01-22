@@ -10,7 +10,11 @@ describe(browser.baseUrl, () => {
   beforeAll(() => page.init());
 
   beforeEach(() => browser.waitForAngularEnabled(false));
-  afterEach(() => browser.waitForAngularEnabled(true));
+
+  afterEach(async () => {
+    await page.unregisterSw();
+    await browser.waitForAngularEnabled(true);
+  });
 
   describe('(with sitemap URLs)', () => {
     page.sitemapUrls.forEach((path, i) => {
