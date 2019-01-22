@@ -239,14 +239,35 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 
   get name(): string { return this.nativeElement !.nodeName; }
 
+  /**
+   *  Returns a map of property names to property values for an element.
+   *
+   *  This map includes:
+   *  - Regular property bindings (e.g. `[id]="id"`) - TODO
+   *  - Host property bindings (e.g. `host: { '[id]': "id" }`)
+   *  - Interpolated property bindings (e.g. `id="{{ value }}") - TODO
+   *
+   *  It should NOT include input property bindings or attribute bindings.
+   */
   get properties(): {[key: string]: any;} {
     const context = loadLContext(this.nativeNode) !;
     const lView = context.lView;
-    const tView = lView[TVIEW];
-    const tNode = tView.data[context.nodeIndex] as TNode;
-    const properties = {};
-    // TODO: https://angular-team.atlassian.net/browse/FW-681
-    // Missing implementation here...
+    const tData = lView[TVIEW].data;
+    const tNode = tData[context.nodeIndex] as TNode;
+
+    // TODO(kara): include regular property binding values (not just host properties)
+    const properties: {[key: string]: string} = {};
+
+    // Host binding values for a node are stored after directives on that node
+    let index = tNode.directiveEnd;
+    let propertyName = tData[index];
+
+    // When we reach a value in TView.data that is not a string, we know we've
+    // hit the next node's providers and directives and should stop copying data.
+    while (typeof propertyName === 'string') {
+      properties[propertyName] = lView[index];
+      propertyName = tData[++index];
+    }
     return properties;
   }
 

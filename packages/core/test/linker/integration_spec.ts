@@ -924,26 +924,24 @@ function declareTests(config?: {useJit: boolean}) {
         expect(getDOM().getProperty(tc.nativeElement, 'id')).toEqual('newId');
       });
 
-      fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-          .it('should not use template variables for expressions in hostProperties', () => {
-            @Directive(
-                {selector: '[host-properties]', host: {'[id]': 'id', '[title]': 'unknownProp'}})
-            class DirectiveWithHostProps {
-              id = 'one';
-            }
+      it('should not use template variables for expressions in hostProperties', () => {
+        @Directive({selector: '[host-properties]', host: {'[id]': 'id', '[title]': 'unknownProp'}})
+        class DirectiveWithHostProps {
+          id = 'one';
+        }
 
-            const fixture =
-                TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]})
-                    .overrideComponent(MyComp, {
-                      set: {template: `<div *ngFor="let id of ['forId']" host-properties></div>`}
-                    })
-                    .createComponent(MyComp);
-            fixture.detectChanges();
+        const fixture =
+            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]})
+                .overrideComponent(
+                    MyComp,
+                    {set: {template: `<div *ngFor="let id of ['forId']" host-properties></div>`}})
+                .createComponent(MyComp);
+        fixture.detectChanges();
 
-            const tc = fixture.debugElement.children[0];
-            expect(tc.properties['id']).toBe('one');
-            expect(tc.properties['title']).toBe(undefined);
-          });
+        const tc = fixture.debugElement.children[0];
+        expect(tc.properties['id']).toBe('one');
+        expect(tc.properties['title']).toBe(undefined);
+      });
 
       fixmeIvy('FW-725: Pipes in host bindings fail with a cryptic error')
           .it('should not allow pipes in hostProperties', () => {

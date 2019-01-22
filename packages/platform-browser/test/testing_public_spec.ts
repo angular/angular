@@ -251,14 +251,13 @@ class CompWithUrlTemplate {
           expect(compFixture.componentInstance).toBeAnInstanceOf(CompUsingModuleDirectiveAndPipe);
         });
 
-        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-            .it('should use set up directives and pipes', () => {
-              const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
-              const el = compFixture.debugElement;
+        it('should use set up directives and pipes', () => {
+          const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
+          const el = compFixture.debugElement;
 
-              compFixture.detectChanges();
-              expect(el.children[0].properties['title']).toBe('transformed someValue');
-            });
+          compFixture.detectChanges();
+          expect(el.children[0].properties['title']).toBe('transformed someValue');
+        });
 
         it('should use set up imported modules',
            inject([SomeLibModule], (libModule: SomeLibModule) => {
@@ -289,14 +288,13 @@ class CompWithUrlTemplate {
              expect(service.value).toEqual('real value');
            }));
 
-        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-            .it('should use set up directives and pipes', withModule(moduleConfig, () => {
-                  const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
-                  const el = compFixture.debugElement;
+        it('should use set up directives and pipes', withModule(moduleConfig, () => {
+             const compFixture = TestBed.createComponent(CompUsingModuleDirectiveAndPipe);
+             const el = compFixture.debugElement;
 
-                  compFixture.detectChanges();
-                  expect(el.children[0].properties['title']).toBe('transformed someValue');
-                }));
+             compFixture.detectChanges();
+             expect(el.children[0].properties['title']).toBe('transformed someValue');
+           }));
 
         it('should use set up library modules',
            withModule(moduleConfig).inject([SomeLibModule], (libModule: SomeLibModule) => {
@@ -371,12 +369,11 @@ class CompWithUrlTemplate {
                 .overrideDirective(
                     SomeDirective, {set: {selector: '[someDir]', host: {'[title]': 'someProp'}}});
           });
-          fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-              .it('should work', () => {
-                const compFixture = TestBed.createComponent(SomeComponent);
-                compFixture.detectChanges();
-                expect(compFixture.debugElement.children[0].properties['title']).toEqual('hello');
-              });
+          it('should work', () => {
+            const compFixture = TestBed.createComponent(SomeComponent);
+            compFixture.detectChanges();
+            expect(compFixture.debugElement.children[0].properties['title']).toEqual('hello');
+          });
         });
 
         describe('pipe', () => {
