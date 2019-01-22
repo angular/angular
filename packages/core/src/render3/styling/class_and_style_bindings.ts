@@ -951,12 +951,12 @@ export function setStyle(
     ngDevMode && ngDevMode.rendererSetStyle++;
     isProceduralRenderer(renderer) ?
         renderer.setStyle(native, prop, value, RendererStyleFlags3.DashCase) :
-        native['style'].setProperty(prop, value);
+        native.style[prop] = value;
   } else {
     ngDevMode && ngDevMode.rendererRemoveStyle++;
     isProceduralRenderer(renderer) ?
         renderer.removeStyle(native, prop, RendererStyleFlags3.DashCase) :
-        native['style'].removeProperty(prop);
+        native.style[prop] = '';
   }
 }
 
