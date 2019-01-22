@@ -380,6 +380,41 @@ describe('style and class based bindings', () => {
             .toEqual(
                 '<svg style="height: 100px; width: 100px;"><circle fill="yellow" stroke="green"></circle></svg>');
       });
+
+      it('should support binding to camelCased style properties', () => {
+        // <div [style.borderWidth]="borderWidth"></div>
+        class Comp {
+          borderWidth: string = '3px';
+
+          static ngComponentDef = defineComponent({
+            type: Comp,
+            selectors: [['comp']],
+            factory: () => new Comp(),
+            consts: 1,
+            vars: 0,
+            template: (rf: RenderFlags, ctx: Comp) => {
+              if (rf & RenderFlags.Create) {
+                elementStart(0, 'div');
+                elementStyling(null, ['borderWidth']);
+                elementEnd();
+              }
+              if (rf & RenderFlags.Update) {
+                elementStyleProp(0, 0, ctx.borderWidth);
+                elementStylingApply(0);
+              }
+            }
+          });
+        }
+
+        const fixture = new ComponentFixture(Comp);
+        fixture.update();
+
+        const target = fixture.hostElement.querySelector('div') !as any;
+
+        expect(target.style.borderWidth).toEqual('3px');
+        expect(fixture.html).toEqual('<div style="border-width: 3px;"></div>');
+      });
+
     });
 
     describe('dynamic styling properties within a styling context', () => {
