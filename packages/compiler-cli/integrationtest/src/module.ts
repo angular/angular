@@ -8,7 +8,6 @@
 
 import {ApplicationRef, NgModule, forwardRef} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {MATERIAL_SANITY_CHECKS, MdButtonModule} from '@angular/material';
 import {ServerModule} from '@angular/platform-server';
 import {FlatModule} from 'flat_module';
 // Note: don't refer to third_party_src as we want to test that
@@ -60,7 +59,6 @@ export {SomeModule as JitSummariesSomeModule} from './jit_summaries';
   imports: [
     ServerModule,
     FormsModule,
-    MdButtonModule,
     ModuleUsingCustomElements,
     SomeLibModule.withProviders(),
     ThirdpartyModule,
@@ -69,9 +67,6 @@ export {SomeModule as JitSummariesSomeModule} from './jit_summaries';
   providers: [
     SomeService,
     {provide: CUSTOM, useValue: forwardRef(() => ({name: 'some name'}))},
-    // disable sanity check for material because it throws an error when used server-side
-    // see https://github.com/angular/material2/issues/6292
-    {provide: MATERIAL_SANITY_CHECKS, useValue: false},
   ],
   entryComponents: [
     AnimateCmp,
