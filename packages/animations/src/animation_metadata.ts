@@ -671,8 +671,8 @@ export function animate(
  *
  * ```typescript
  * group([
- *   animate("1s", { background: "black" }))
- *   animate("2s", { color: "white" }))
+ *   animate("1s", style({ background: "black" })),
+ *   animate("2s", style({ color: "white" }))
  * ])
  * ```
  *
@@ -708,7 +708,7 @@ export function group(
  * ```typescript
  * sequence([
  *   style({ opacity: 0 })),
- *   animate("1s", { opacity: 1 }))
+ *   animate("1s", style({ opacity: 1 }))
  * ])
  * ```
  *
