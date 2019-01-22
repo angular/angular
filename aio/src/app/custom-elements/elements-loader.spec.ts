@@ -245,7 +245,7 @@ class FakeComponentFactory extends ComponentFactory<any> {
          rootSelectorOrNode?: string | any,
          ngModule?: NgModuleRef<any>): ComponentRef<any> {
     return jasmine.createSpy('ComponentRef') as any;
-  };
+  }
 }
 
 class FakeComponentFactoryResolver extends ComponentFactoryResolver {
