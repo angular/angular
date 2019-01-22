@@ -38,7 +38,7 @@ export class SitePage {
   }
 
   /**
-   * Navigate to a URL, disable animations, unregister the ServiceWorker, and wait for Angular.
+   * Navigate to a URL, disable animations, wait for Angular and unregister the ServiceWorker.
    * (The SW is unregistered to ensure that subsequent requests are passed through to the server.)
    */
   async goTo(url: string) {
@@ -49,8 +49,8 @@ export class SitePage {
 
     await browser.get(url || this.baseUrl);
     await browser.executeScript('document.body.classList.add(\'no-animations\')');
-    await browser.executeAsyncScript(unregisterServiceWorker);
     await browser.waitForAngular();
+    await browser.executeAsyncScript(unregisterServiceWorker);
   };
 
   /**
