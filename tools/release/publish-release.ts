@@ -100,7 +100,8 @@ class PublishReleaseTask extends BaseReleaseTask {
     }
 
     // Create and push the release tag before publishing to NPM.
-    this.createAndPushReleaseTag(newVersionName, releaseNotes);
+    this.createReleaseTag(newVersionName, releaseNotes);
+    this.pushReleaseTag(newVersionName);
 
     // Ensure that we are authenticated before running "npm publish" for each package.
     this.checkNpmAuthentication();
@@ -157,7 +158,6 @@ class PublishReleaseTask extends BaseReleaseTask {
       process.exit(0);
     }
   }
-
 
   /**
    * Prompts the user whether he is sure that the script should continue publishing
@@ -221,15 +221,45 @@ class PublishReleaseTask extends BaseReleaseTask {
     console.info(green(`  ✓   Successfully published "${packageName}"`));
   }
 
-  /** Creates a specified tag and pushes it to the remote repository */
-  private createAndPushReleaseTag(tagName: string, releaseNotes: string) {
-    if (!this.git.createTag('HEAD', tagName, releaseNotes)) {
+  /** Creates the specified release tag locally. */
+  private createReleaseTag(tagName: string, releaseNotes: string) {
+    if (this.git.hasLocalTag(tagName)) {
+      const expectedSha = this.git.getLocalCommitSha('HEAD');
+
+      if (this.git.getShaOfLocalTag(tagName) !== expectedSha) {
+        console.error(red(`  ✘   Tag "${tagName}" already exists locally, but does not refer ` +
+          `to the version bump commit. Please delete the tag if you want to proceed.`));
+        process.exit(1);
+      }
+
+      console.info(green(`  ✓   Release tag already exists: "${italic(tagName)}"`));
+    } else if (this.git.createTag('HEAD', tagName, releaseNotes)) {
+      console.info(green(`  ✓   Created release tag: "${italic(tagName)}"`));
+    } else {
       console.error(red(`  ✘   Could not create the "${tagName}" tag.`));
       console.error(red(`      Please make sure there is no existing tag with the same name.`));
       process.exit(1);
     }
 
-    console.info(green(`  ✓   Created release tag: "${italic(tagName)}"`));
+  }
+
+  /** Pushes the release tag to the remote repository. */
+  private pushReleaseTag(tagName: string) {
+    const remoteTagSha = this.git.getShaOfRemoteTag(tagName);
+    const expectedSha = this.git.getLocalCommitSha('HEAD');
+
+    // The remote tag SHA is empty if the tag does not exist in the remote repository.
+    if (remoteTagSha) {
+      if (remoteTagSha !== expectedSha) {
+        console.error(red(`  ✘   Tag "${tagName}" already exists on the remote, but does not ` +
+          `refer to the version bump commit.`));
+        console.error(red(`      Please delete the tag on the remote if you want to proceed.`));
+        process.exit(1);
+      }
+
+      console.info(green(`  ✓   Release tag already exists remotely: "${italic(tagName)}"`));
+      return;
+    }
 
     if (!this.git.pushTagToRemote(tagName)) {
       console.error(red(`  ✘   Could not push the "${tagName} "tag upstream.`));
