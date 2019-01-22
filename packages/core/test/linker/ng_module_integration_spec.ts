@@ -423,163 +423,155 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('directives and pipes', () => {
-      fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-          .describe('declarations', () => {
-            it('should be supported in root modules', () => {
-              @NgModule({
-                declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe],
-                entryComponents: [CompUsingModuleDirectiveAndPipe]
-              })
-              class SomeModule {
-              }
+      describe('declarations', () => {
+        it('should be supported in root modules', () => {
+          @NgModule({
+            declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe],
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
+          })
+          class SomeModule {
+          }
 
-              const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
+          const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
 
-              compFixture.detectChanges();
-              expect(compFixture.debugElement.children[0].properties['title'])
-                  .toBe('transformed someValue');
-            });
+          compFixture.detectChanges();
+          expect(compFixture.debugElement.children[0].properties['title'])
+              .toBe('transformed someValue');
+        });
 
-            it('should be supported in imported modules', () => {
-              @NgModule({
-                declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe],
-                entryComponents: [CompUsingModuleDirectiveAndPipe]
-              })
-              class SomeImportedModule {
-              }
+        it('should be supported in imported modules', () => {
+          @NgModule({
+            declarations: [CompUsingModuleDirectiveAndPipe, SomeDirective, SomePipe],
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
+          })
+          class SomeImportedModule {
+          }
 
-              @NgModule({imports: [SomeImportedModule]})
-              class SomeModule {
-              }
+          @NgModule({imports: [SomeImportedModule]})
+          class SomeModule {
+          }
 
-              const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
-              compFixture.detectChanges();
-              expect(compFixture.debugElement.children[0].properties['title'])
-                  .toBe('transformed someValue');
-            });
+          const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
+          compFixture.detectChanges();
+          expect(compFixture.debugElement.children[0].properties['title'])
+              .toBe('transformed someValue');
+        });
 
 
-            it('should be supported in nested components', () => {
-              @Component({
-                selector: 'parent',
-                template: '<comp></comp>',
-              })
-              class ParentCompUsingModuleDirectiveAndPipe {
-              }
+        it('should be supported in nested components', () => {
+          @Component({
+            selector: 'parent',
+            template: '<comp></comp>',
+          })
+          class ParentCompUsingModuleDirectiveAndPipe {
+          }
 
-              @NgModule({
-                declarations: [
-                  ParentCompUsingModuleDirectiveAndPipe, CompUsingModuleDirectiveAndPipe,
-                  SomeDirective, SomePipe
-                ],
-                entryComponents: [ParentCompUsingModuleDirectiveAndPipe]
-              })
-              class SomeModule {
-              }
+          @NgModule({
+            declarations: [
+              ParentCompUsingModuleDirectiveAndPipe, CompUsingModuleDirectiveAndPipe, SomeDirective,
+              SomePipe
+            ],
+            entryComponents: [ParentCompUsingModuleDirectiveAndPipe]
+          })
+          class SomeModule {
+          }
 
-              const compFixture = createComp(ParentCompUsingModuleDirectiveAndPipe, SomeModule);
-              compFixture.detectChanges();
-              expect(compFixture.debugElement.children[0].children[0].properties['title'])
-                  .toBe('transformed someValue');
-            });
-          });
+          const compFixture = createComp(ParentCompUsingModuleDirectiveAndPipe, SomeModule);
+          compFixture.detectChanges();
+          expect(compFixture.debugElement.children[0].children[0].properties['title'])
+              .toBe('transformed someValue');
+        });
+      });
 
       describe('import/export', () => {
 
-        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-            .it('should support exported directives and pipes', () => {
-              @NgModule(
-                  {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
-              class SomeImportedModule {
-              }
+        it('should support exported directives and pipes', () => {
+          @NgModule({declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
+          class SomeImportedModule {
+          }
 
-              @NgModule({
-                declarations: [CompUsingModuleDirectiveAndPipe],
-                imports: [SomeImportedModule],
-                entryComponents: [CompUsingModuleDirectiveAndPipe]
-              })
-              class SomeModule {
-              }
+          @NgModule({
+            declarations: [CompUsingModuleDirectiveAndPipe],
+            imports: [SomeImportedModule],
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
+          })
+          class SomeModule {
+          }
 
 
-              const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
-              compFixture.detectChanges();
-              expect(compFixture.debugElement.children[0].properties['title'])
-                  .toBe('transformed someValue');
-            });
+          const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
+          compFixture.detectChanges();
+          expect(compFixture.debugElement.children[0].properties['title'])
+              .toBe('transformed someValue');
+        });
 
-        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-            .it('should support exported directives and pipes if the module is wrapped into an `ModuleWithProviders`',
-                () => {
-                  @NgModule(
-                      {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
-                  class SomeImportedModule {
-                  }
+        it('should support exported directives and pipes if the module is wrapped into an `ModuleWithProviders`',
+           () => {
+             @NgModule(
+                 {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
+             class SomeImportedModule {
+             }
 
-                  @NgModule({
-                    declarations: [CompUsingModuleDirectiveAndPipe],
-                    imports: [{ngModule: SomeImportedModule}],
-                    entryComponents: [CompUsingModuleDirectiveAndPipe]
-                  })
-                  class SomeModule {
-                  }
+             @NgModule({
+               declarations: [CompUsingModuleDirectiveAndPipe],
+               imports: [{ngModule: SomeImportedModule}],
+               entryComponents: [CompUsingModuleDirectiveAndPipe]
+             })
+             class SomeModule {
+             }
 
 
-                  const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
-                  compFixture.detectChanges();
-                  expect(compFixture.debugElement.children[0].properties['title'])
-                      .toBe('transformed someValue');
-                });
+             const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
+             compFixture.detectChanges();
+             expect(compFixture.debugElement.children[0].properties['title'])
+                 .toBe('transformed someValue');
+           });
 
-        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-            .it('should support reexported modules', () => {
-              @NgModule(
-                  {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
-              class SomeReexportedModule {
-              }
+        it('should support reexported modules', () => {
+          @NgModule({declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
+          class SomeReexportedModule {
+          }
 
-              @NgModule({exports: [SomeReexportedModule]})
-              class SomeImportedModule {
-              }
+          @NgModule({exports: [SomeReexportedModule]})
+          class SomeImportedModule {
+          }
 
-              @NgModule({
-                declarations: [CompUsingModuleDirectiveAndPipe],
-                imports: [SomeImportedModule],
-                entryComponents: [CompUsingModuleDirectiveAndPipe]
-              })
-              class SomeModule {
-              }
+          @NgModule({
+            declarations: [CompUsingModuleDirectiveAndPipe],
+            imports: [SomeImportedModule],
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
+          })
+          class SomeModule {
+          }
 
-              const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
-              compFixture.detectChanges();
-              expect(compFixture.debugElement.children[0].properties['title'])
-                  .toBe('transformed someValue');
-            });
+          const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
+          compFixture.detectChanges();
+          expect(compFixture.debugElement.children[0].properties['title'])
+              .toBe('transformed someValue');
+        });
 
-        fixmeIvy('FW-681: not possible to retrieve host property bindings from TView')
-            .it('should support exporting individual directives of an imported module', () => {
-              @NgModule(
-                  {declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
-              class SomeReexportedModule {
-              }
+        it('should support exporting individual directives of an imported module', () => {
+          @NgModule({declarations: [SomeDirective, SomePipe], exports: [SomeDirective, SomePipe]})
+          class SomeReexportedModule {
+          }
 
-              @NgModule({imports: [SomeReexportedModule], exports: [SomeDirective, SomePipe]})
-              class SomeImportedModule {
-              }
+          @NgModule({imports: [SomeReexportedModule], exports: [SomeDirective, SomePipe]})
+          class SomeImportedModule {
+          }
 
-              @NgModule({
-                declarations: [CompUsingModuleDirectiveAndPipe],
-                imports: [SomeImportedModule],
-                entryComponents: [CompUsingModuleDirectiveAndPipe]
-              })
-              class SomeModule {
-              }
+          @NgModule({
+            declarations: [CompUsingModuleDirectiveAndPipe],
+            imports: [SomeImportedModule],
+            entryComponents: [CompUsingModuleDirectiveAndPipe]
+          })
+          class SomeModule {
+          }
 
-              const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
-              compFixture.detectChanges();
-              expect(compFixture.debugElement.children[0].properties['title'])
-                  .toBe('transformed someValue');
-            });
+          const compFixture = createComp(CompUsingModuleDirectiveAndPipe, SomeModule);
+          compFixture.detectChanges();
+          expect(compFixture.debugElement.children[0].properties['title'])
+              .toBe('transformed someValue');
+        });
 
         it('should not use non exported pipes of an imported module', () => {
           @NgModule({
