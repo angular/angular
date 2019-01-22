@@ -54,7 +54,7 @@ export class ApiService implements OnDestroy {
             section.items.every(item => item.stability === 'deprecated');
       });
     }));
-  };
+  }
 
   constructor(private http: HttpClient, private logger: Logger) { }
 
