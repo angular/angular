@@ -81,9 +81,6 @@
     "name": "NO_PARENT_INJECTOR"
   },
   {
-    "name": "NgOnChangesFeature"
-  },
-  {
     "name": "NodeInjectorFactory"
   },
   {
@@ -103,12 +100,6 @@
   },
   {
     "name": "SANITIZER"
-  },
-  {
-    "name": "SIMPLE_CHANGES_STORE"
-  },
-  {
-    "name": "SimpleChange"
   },
   {
     "name": "TVIEW"
@@ -309,9 +300,6 @@
     "name": "getRootView"
   },
   {
-    "name": "getSimpleChangesStore"
-  },
-  {
     "name": "hasParentInjector"
   },
   {
@@ -367,9 +355,6 @@
   },
   {
     "name": "nextNgElementId"
-  },
-  {
-    "name": "ngOnChangesSetInput"
   },
   {
     "name": "noSideEffects"
@@ -441,9 +426,6 @@
     "name": "setPreviousOrParentTNode"
   },
   {
-    "name": "setSimpleChangesStore"
-  },
-  {
     "name": "setTNodeAndViewData"
   },
   {
@@ -460,8 +442,5 @@
   },
   {
     "name": "viewAttached"
-  },
-  {
-    "name": "wrapOnChanges"
   }
 ]

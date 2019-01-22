@@ -357,7 +357,7 @@ describe('host bindings', () => {
         template: (rf: RenderFlags, ctx: InitHookComp) => {},
         consts: 0,
         vars: 0,
-        features: [NgOnChangesFeature],
+        features: [NgOnChangesFeature()],
         hostBindings: (rf: RenderFlags, ctx: InitHookComp, elIndex: number) => {
           if (rf & RenderFlags.Create) {
             allocHostVars(1);

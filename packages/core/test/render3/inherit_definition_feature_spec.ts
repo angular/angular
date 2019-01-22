@@ -501,7 +501,7 @@ describe('InheritDefinitionFeature', () => {
         type: SuperDirective,
         selectors: [['', 'superDir', '']],
         factory: () => new SuperDirective(),
-        features: [NgOnChangesFeature],
+        features: [NgOnChangesFeature()],
         inputs: {someInput: 'someInput'}
       });
     }
