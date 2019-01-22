@@ -112,7 +112,7 @@ Inject `HttpClient` into the constructor in a private property called `http`.
 </code-example>
 
 Keep injecting the `MessageService`. You'll call it so frequently that
-you'll wrap it in private `log` method.
+you'll wrap it in a private `log()` method.
 
 <code-example 
   path="toh-pt6/src/app/hero.service.ts" 
