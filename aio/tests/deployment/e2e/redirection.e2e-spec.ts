@@ -7,7 +7,7 @@ describe(browser.baseUrl, () => {
   const stripQuery = (url: string) => url.replace(/\?.*$/, '');
   const stripTrailingSlash = (url: string) => url.replace(/\/$/, '');
 
-  beforeAll(done => page.init().then(done));
+  beforeAll(() => page.init());
 
   beforeEach(() => browser.waitForAngularEnabled(false));
   afterEach(() => browser.waitForAngularEnabled(true));
