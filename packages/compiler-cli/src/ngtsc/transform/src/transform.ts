@@ -9,9 +9,9 @@
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator, ReflectionHost} from '../../host';
+import {ImportRewriter} from '../../imports';
+import {Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateStatement} from '../../translator';
-import {relativePathBetween} from '../../util/src/path';
 import {VisitListEntryResult, Visitor, visit} from '../../util/src/visitor';
 
 import {CompileResult} from './api';
@@ -20,11 +20,11 @@ import {IvyCompilation} from './compilation';
 const NO_DECORATORS = new Set<ts.Decorator>();
 
 export function ivyTransformFactory(
-    compilation: IvyCompilation, reflector: ReflectionHost,
-    coreImportsFrom: ts.SourceFile | null): ts.TransformerFactory<ts.SourceFile> {
+    compilation: IvyCompilation, reflector: ReflectionHost, importRewriter: ImportRewriter,
+    isCore: boolean): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     return (file: ts.SourceFile): ts.SourceFile => {
-      return transformIvySourceFile(compilation, context, reflector, coreImportsFrom, file);
+      return transformIvySourceFile(compilation, context, reflector, importRewriter, isCore, file);
     };
   };
 }
@@ -189,13 +189,12 @@ class IvyVisitor extends Visitor {
  */
 function transformIvySourceFile(
     compilation: IvyCompilation, context: ts.TransformationContext, reflector: ReflectionHost,
-    coreImportsFrom: ts.SourceFile | null, file: ts.SourceFile): ts.SourceFile {
+    importRewriter: ImportRewriter, isCore: boolean, file: ts.SourceFile): ts.SourceFile {
   const constantPool = new ConstantPool();
-  const importManager = new ImportManager(coreImportsFrom !== null);
+  const importManager = new ImportManager(importRewriter);
 
   // Recursively scan through the AST and perform any updates requested by the IvyCompilation.
-  const visitor =
-      new IvyVisitor(compilation, reflector, importManager, coreImportsFrom !== null, constantPool);
+  const visitor = new IvyVisitor(compilation, reflector, importManager, isCore, constantPool);
   const sf = visit(file, visitor, context);
 
   // Generate the constant statements first, as they may involve adding additional imports
@@ -203,7 +202,7 @@ function transformIvySourceFile(
   const constants = constantPool.statements.map(stmt => translateStatement(stmt, importManager));
 
   // Generate the import statements to prepend.
-  const addedImports = importManager.getAllImports(file.fileName, coreImportsFrom).map(i => {
+  const addedImports = importManager.getAllImports(file.fileName).map(i => {
     return ts.createImportDeclaration(
         undefined, undefined,
         ts.createImportClause(undefined, ts.createNamespaceImport(ts.createIdentifier(i.as))),

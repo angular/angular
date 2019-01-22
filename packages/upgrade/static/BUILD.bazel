@@ -15,7 +15,6 @@ ng_module(
             "src/static/**/*.ts",
         ],
     ),
-    module_name = "@angular/upgrade/static",
     deps = [
         "//packages/core",
         "//packages/platform-browser",

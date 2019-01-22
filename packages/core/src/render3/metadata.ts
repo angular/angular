@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../type';
+import {Type} from '../interface/type';
 
 interface TypeWithMetadata extends Type<any> {
   decorators?: any[];
@@ -28,7 +28,7 @@ export function setClassMetadata(
     propDecorators: {[field: string]: any} | null): void {
   const clazz = type as TypeWithMetadata;
   if (decorators !== null) {
-    if (clazz.decorators !== undefined) {
+    if (clazz.hasOwnProperty('decorators') && clazz.decorators !== undefined) {
       clazz.decorators.push(...decorators);
     } else {
       clazz.decorators = decorators;

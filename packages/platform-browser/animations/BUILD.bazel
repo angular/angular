@@ -12,7 +12,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/platform-browser/animations",
     deps = [
         "//packages/animations",
         "//packages/animations/browser",

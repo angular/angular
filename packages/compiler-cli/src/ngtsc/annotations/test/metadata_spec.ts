@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Statement} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {TypeScriptReflectionHost} from '../../metadata';
+import {NoopImportRewriter} from '../../imports';
+import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {ImportManager, translateStatement} from '../../translator';
+
 import {generateSetClassMetadataCall} from '../src/metadata';
 
 const CORE = {
@@ -87,7 +88,7 @@ function compileAndPrint(contents: string): string {
     return '';
   }
   const sf = program.getSourceFile('index.ts') !;
-  const im = new ImportManager(false, 'i');
+  const im = new ImportManager(new NoopImportRewriter(), 'i');
   const tsStatement = translateStatement(call, im);
   const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tsStatement, sf);
   return res.replace(/\s+/g, ' ');

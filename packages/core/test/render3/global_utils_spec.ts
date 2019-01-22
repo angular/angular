@@ -10,7 +10,7 @@ import {ɵmarkDirty as markDirty} from '@angular/core';
 import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getRootComponents, getViewComponent} from '../../src/render3/discovery_utils';
 import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/global_utils';
 import {getPlayers} from '../../src/render3/players';
-import {global} from '../../src/util';
+import {global} from '../../src/util/global';
 
 describe('global utils', () => {
   describe('publishGlobalUtil', () => {

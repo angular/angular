@@ -7,21 +7,21 @@
  */
 
 import {ComponentType} from '..';
+import {R3DirectiveMetadataFacade, getCompilerFacade} from '../../compiler/compiler_facade';
+import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from '../../compiler/compiler_facade_interface';
 import {resolveForwardRef} from '../../di/forward_ref';
+import {getReflect, reflectDependencies} from '../../di/jit/util';
+import {Type} from '../../interface/type';
 import {Query} from '../../metadata/di';
 import {Component, Directive} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
-import {Type} from '../../type';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from '../fields';
-import {stringify} from '../util';
+import {renderStringify} from '../util';
 
-import {R3DirectiveMetadataFacade, getCompilerFacade} from './compiler_facade';
-import {R3ComponentMetadataFacade, R3QueryMetadataFacade} from './compiler_facade_interface';
 import {angularCoreEnv} from './environment';
 import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, transitiveScopesFor} from './module';
-import {getReflect, reflectDependencies} from './util';
 
 
 
@@ -43,9 +43,9 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
       const compiler = getCompilerFacade();
       if (ngComponentDef === null) {
         if (componentNeedsResolution(metadata)) {
-          const error = [`Component '${stringify(type)}' is not resolved:`];
+          const error = [`Component '${renderStringify(type)}' is not resolved:`];
           if (metadata.templateUrl) {
-            error.push(` - templateUrl: ${stringify(metadata.templateUrl)}`);
+            error.push(` - templateUrl: ${renderStringify(metadata.templateUrl)}`);
           }
           if (metadata.styleUrls && metadata.styleUrls.length) {
             error.push(` - styleUrls: ${JSON.stringify(metadata.styleUrls)}`);
@@ -69,7 +69,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           viewProviders: metadata.viewProviders || null,
         };
         ngComponentDef = compiler.compileComponent(
-            angularCoreEnv, `ng://${stringify(type)}/template.html`, meta);
+            angularCoreEnv, `ng://${renderStringify(type)}/template.html`, meta);
 
         // When NgModule decorator executed, we enqueued the module definition such that
         // it would only dequeue and add itself as module scope to all of its declarations,
@@ -145,12 +145,9 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     inputs: metadata.inputs || EMPTY_ARRAY,
     outputs: metadata.outputs || EMPTY_ARRAY,
     queries: extractQueriesMetadata(type, propMetadata, isContentQuery),
-    lifecycle: {
-      usesOnChanges: type.prototype.ngOnChanges !== undefined,
-    },
     typeSourceSpan: null !,
     usesInheritance: !extendsDirectlyFromObject(type),
-    exportAs: metadata.exportAs || null,
+    exportAs: extractExportAs(metadata.exportAs),
     providers: metadata.providers || null,
   };
 }
@@ -179,7 +176,7 @@ function extractQueriesMetadata(
           if (!ann.selector) {
             throw new Error(
                 `Can't construct a query for the property "${field}" of ` +
-                `"${stringify(type)}" since the query selector wasn't defined.`);
+                `"${renderStringify(type)}" since the query selector wasn't defined.`);
           }
           queriesMeta.push(convertToR3QueryMetadata(field, ann));
         }
@@ -187,6 +184,14 @@ function extractQueriesMetadata(
     }
   }
   return queriesMeta;
+}
+
+function extractExportAs(exportAs: string | undefined): string[]|null {
+  if (exportAs === undefined) {
+    return null;
+  }
+
+  return exportAs.split(',').map(part => part.trim());
 }
 
 function isContentQuery(value: any): value is Query {

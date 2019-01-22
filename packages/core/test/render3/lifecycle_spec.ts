@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactoryResolver, OnDestroy, SimpleChanges, ViewContainerRef} from '../../src/core';
-import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, injectComponentFactoryResolver} from '../../src/render3/index';
+import {ComponentFactoryResolver, OnDestroy, SimpleChange, SimpleChanges, ViewContainerRef} from '../../src/core';
+import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, defineComponent, defineDirective, injectComponentFactoryResolver} from '../../src/render3/index';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -1941,10 +1941,15 @@ describe('lifecycles', () => {
   });
 
   describe('onChanges', () => {
-    let events: string[];
+    let events: ({type: string, name: string, [key: string]: any})[];
 
     beforeEach(() => { events = []; });
 
+    /**
+     * <div>
+     *  <ng-content/>
+     * </div>
+     */
     const Comp = createOnChangesComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
         projectionDef();
@@ -1953,15 +1958,20 @@ describe('lifecycles', () => {
         elementEnd();
       }
     }, 2);
+
+    /**
+     * <comp [val1]="a" [publicVal2]="b"/>
+     */
     const Parent = createOnChangesComponent('parent', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
         element(0, 'comp');
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'val1', bind(ctx.a));
-        elementProperty(0, 'publicName', bind(ctx.b));
+        elementProperty(0, 'publicVal2', bind(ctx.b));
       }
     }, 1, 2, [Comp]);
+
     const ProjectedComp = createOnChangesComponent('projected', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
         text(0, 'content');
@@ -1974,22 +1984,28 @@ describe('lifecycles', () => {
         directives: any[] = []) {
       return class Component {
         // @Input() val1: string;
-        // @Input('publicName') val2: string;
+        // @Input('publicVal2') val2: string;
         a: string = 'wasVal1BeforeMinification';
         b: string = 'wasVal2BeforeMinification';
-        ngOnChanges(simpleChanges: SimpleChanges) {
-          events.push(
-              `comp=${name} val1=${this.a} val2=${this.b} - changed=[${Object.getOwnPropertyNames(simpleChanges).join(',')}]`);
+        ngOnChanges(changes: SimpleChanges) {
+          if (changes.a && this.a !== changes.a.currentValue) {
+            throw Error(
+                `SimpleChanges invalid expected this.a ${this.a} to equal currentValue ${changes.a.currentValue}`);
+          }
+          if (changes.b && this.b !== changes.b.currentValue) {
+            throw Error(
+                `SimpleChanges invalid expected this.b ${this.b} to equal currentValue ${changes.b.currentValue}`);
+          }
+          events.push({type: 'onChanges', name: 'comp - ' + name, changes});
         }
 
         static ngComponentDef = defineComponent({
           type: Component,
           selectors: [[name]],
           factory: () => new Component(),
-          features: [NgOnChangesFeature],
           consts: consts,
           vars: vars,
-          inputs: {a: 'val1', b: ['publicName', 'val2']}, template,
+          inputs: {a: 'val1', b: ['publicVal2', 'val2']}, template,
           directives: directives
         });
       };
@@ -1997,49 +2013,64 @@ describe('lifecycles', () => {
 
     class Directive {
       // @Input() val1: string;
-      // @Input('publicName') val2: string;
+      // @Input('publicVal2') val2: string;
       a: string = 'wasVal1BeforeMinification';
       b: string = 'wasVal2BeforeMinification';
-      ngOnChanges(simpleChanges: SimpleChanges) {
-        events.push(
-            `dir - val1=${this.a} val2=${this.b} - changed=[${Object.getOwnPropertyNames(simpleChanges).join(',')}]`);
+      ngOnChanges(changes: SimpleChanges) {
+        events.push({type: 'onChanges', name: 'dir - dir', changes});
       }
 
       static ngDirectiveDef = defineDirective({
         type: Directive,
         selectors: [['', 'dir', '']],
         factory: () => new Directive(),
-        features: [NgOnChangesFeature],
-        inputs: {a: 'val1', b: ['publicName', 'val2']}
+        inputs: {a: 'val1', b: ['publicVal2', 'val2']}
       });
     }
 
     const defs = [Comp, Parent, Directive, ProjectedComp];
 
     it('should call onChanges method after inputs are set in creation and update mode', () => {
-      /** <comp [val1]="val1" [publicName]="val2"></comp> */
+      /** <comp [val1]="val1" [publicVal2]="val2"></comp> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'comp');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(ctx.val1));
-          elementProperty(0, 'publicName', bind(ctx.val2));
+          elementProperty(0, 'publicVal2', bind(ctx.val2));
         }
       }, 1, 2, defs);
 
+      // First changes happen here.
       const fixture = new ComponentFixture(App);
+
       events = [];
       fixture.component.val1 = '1';
       fixture.component.val2 = 'a';
       fixture.update();
-      expect(events).toEqual(['comp=comp val1=1 val2=a - changed=[val1,val2]']);
+      expect(events).toEqual([{
+        type: 'onChanges',
+        name: 'comp - comp',
+        changes: {
+          'val1': new SimpleChange(
+              undefined, '1', false),  // we cleared `events` above, this is the second change
+          'val2': new SimpleChange(undefined, 'a', false),
+        }
+      }]);
 
       events = [];
       fixture.component.val1 = '2';
       fixture.component.val2 = 'b';
       fixture.update();
-      expect(events).toEqual(['comp=comp val1=2 val2=b - changed=[val1,val2]']);
+      expect(events).toEqual([{
+        type: 'onChanges',
+        name: 'comp - comp',
+        changes: {
+          'val1': new SimpleChange('1', '2', false),
+          'val2': new SimpleChange('a', 'b', false),
+        }
+      }]);
     });
 
     it('should call parent onChanges before child onChanges', () => {
@@ -2053,28 +2084,42 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(ctx.val1));
-          elementProperty(0, 'publicName', bind(ctx.val2));
+          elementProperty(0, 'publicVal2', bind(ctx.val2));
         }
       }, 1, 2, defs);
 
       const fixture = new ComponentFixture(App);
+
+      // We're clearing events after the first change here
       events = [];
       fixture.component.val1 = '1';
       fixture.component.val2 = 'a';
       fixture.update();
 
       expect(events).toEqual([
-        'comp=parent val1=1 val2=a - changed=[val1,val2]',
-        'comp=comp val1=1 val2=a - changed=[val1,val2]'
+        {
+          type: 'onChanges',
+          name: 'comp - parent',
+          changes: {
+            'val1': new SimpleChange(undefined, '1', false),
+            'val2': new SimpleChange(undefined, 'a', false),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, '1', false),
+            'val2': new SimpleChange(undefined, 'a', false),
+          }
+        },
       ]);
     });
 
     it('should call all parent onChanges across view before calling children onChanges', () => {
       /**
-       * <parent [val]="1"></parent>
-       * <parent [val]="2"></parent>
-       *
-       * parent temp: <comp [val]="val"></comp>
+       * <parent [val1]="1"></parent>
+       * <parent [val1]="2"></parent>
        */
 
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
@@ -2084,18 +2129,46 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
-          elementProperty(0, 'publicName', bind(1));
+          elementProperty(0, 'publicVal2', bind(1));
           elementProperty(1, 'val1', bind(2));
-          elementProperty(1, 'publicName', bind(2));
+          elementProperty(1, 'publicVal2', bind(2));
         }
       }, 2, 4, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
-        'comp=parent val1=1 val2=1 - changed=[val1,val2]',
-        'comp=parent val1=2 val2=2 - changed=[val1,val2]',
-        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
-        'comp=comp val1=2 val2=2 - changed=[val1,val2]'
+        {
+          type: 'onChanges',
+          name: 'comp - parent',
+          changes: {
+            'val1': new SimpleChange(undefined, 1, true),
+            'val2': new SimpleChange(undefined, 1, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - parent',
+          changes: {
+            'val1': new SimpleChange(undefined, 2, true),
+            'val2': new SimpleChange(undefined, 2, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 1, true),
+            'val2': new SimpleChange(undefined, 1, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 2, true),
+            'val2': new SimpleChange(undefined, 2, true),
+          }
+        },
       ]);
     });
 
@@ -2121,7 +2194,7 @@ describe('lifecycles', () => {
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val1', bind(1));
-                elementProperty(0, 'publicName', bind(1));
+                elementProperty(0, 'publicVal2', bind(1));
               }
               embeddedViewEnd();
             }
@@ -2131,19 +2204,51 @@ describe('lifecycles', () => {
       }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
+
+      // Show the `comp` component, causing it to initialize. (first change is true)
       fixture.component.condition = true;
       fixture.update();
-      expect(events).toEqual(['comp=comp val1=1 val2=1 - changed=[val1,val2]']);
+      expect(events).toEqual([{
+        type: 'onChanges',
+        name: 'comp - comp',
+        changes: {
+          'val1': new SimpleChange(undefined, 1, true),
+          'val2': new SimpleChange(undefined, 1, true),
+        }
+      }]);
 
+      // Hide the `comp` component, no onChanges should fire
       fixture.component.condition = false;
       fixture.update();
-      expect(events).toEqual(['comp=comp val1=1 val2=1 - changed=[val1,val2]']);
+      expect(events).toEqual([{
+        type: 'onChanges',
+        name: 'comp - comp',
+        changes: {
+          'val1': new SimpleChange(undefined, 1, true),
+          'val2': new SimpleChange(undefined, 1, true),
+        }
+      }]);
 
+      // Show the `comp` component, it initializes again. (first change is true)
       fixture.component.condition = true;
       fixture.update();
       expect(events).toEqual([
-        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
-        'comp=comp val1=1 val2=1 - changed=[val1,val2]'
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 1, true),
+            'val2': new SimpleChange(undefined, 1, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 1, true),
+            'val2': new SimpleChange(undefined, 1, true),
+          }
+        }
       ]);
     });
 
@@ -2161,26 +2266,40 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
-          elementProperty(0, 'publicName', bind(1));
+          elementProperty(0, 'publicVal2', bind(1));
           elementProperty(1, 'val1', bind(2));
-          elementProperty(1, 'publicName', bind(2));
+          elementProperty(1, 'publicVal2', bind(2));
         }
       }, 2, 4, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
-        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
-        'comp=projected val1=2 val2=2 - changed=[val1,val2]'
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 1, true),
+            'val2': new SimpleChange(undefined, 1, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - projected',
+          changes: {
+            'val1': new SimpleChange(undefined, 2, true),
+            'val2': new SimpleChange(undefined, 2, true),
+          }
+        },
       ]);
     });
 
     it('should call onChanges in host and its content children before next host', () => {
       /**
-       * <comp [val]="1">
-       *   <projected [val]="1"></projected>
+       * <comp [val1]="1" [publicVal2]="1">
+       *   <projected [val1]="2" [publicVal2]="2"></projected>
        * </comp>
-       * <comp [val]="2">
-       *   <projected [val]="1"></projected>
+       * <comp [val1]="3" [publicVal2]="3">
+       *   <projected [val1]="4" [publicVal2]="4"></projected>
        * </comp>
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
@@ -2194,75 +2313,130 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
-          elementProperty(0, 'publicName', bind(1));
+          elementProperty(0, 'publicVal2', bind(1));
           elementProperty(1, 'val1', bind(2));
-          elementProperty(1, 'publicName', bind(2));
+          elementProperty(1, 'publicVal2', bind(2));
           elementProperty(2, 'val1', bind(3));
-          elementProperty(2, 'publicName', bind(3));
+          elementProperty(2, 'publicVal2', bind(3));
           elementProperty(3, 'val1', bind(4));
-          elementProperty(3, 'publicName', bind(4));
+          elementProperty(3, 'publicVal2', bind(4));
         }
       }, 4, 8, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
-        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
-        'comp=projected val1=2 val2=2 - changed=[val1,val2]',
-        'comp=comp val1=3 val2=3 - changed=[val1,val2]',
-        'comp=projected val1=4 val2=4 - changed=[val1,val2]'
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 1, true),
+            'val2': new SimpleChange(undefined, 1, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - projected',
+          changes: {
+            'val1': new SimpleChange(undefined, 2, true),
+            'val2': new SimpleChange(undefined, 2, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 3, true),
+            'val2': new SimpleChange(undefined, 3, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - projected',
+          changes: {
+            'val1': new SimpleChange(undefined, 4, true),
+            'val2': new SimpleChange(undefined, 4, true),
+          }
+        },
       ]);
     });
 
     it('should be called on directives after component', () => {
-      /** <comp directive></comp> */
+      /**
+       * <comp dir [val1]="1" [publicVal2]="1"></comp>
+       */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'comp', ['dir', '']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
-          elementProperty(0, 'publicName', bind(1));
+          elementProperty(0, 'publicVal2', bind(1));
         }
       }, 1, 2, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
-        'comp=comp val1=1 val2=1 - changed=[val1,val2]', 'dir - val1=1 val2=1 - changed=[val1,val2]'
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 1, true),
+            'val2': new SimpleChange(undefined, 1, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'dir - dir',
+          changes: {
+            'val1': new SimpleChange(undefined, 1, true),
+            'val2': new SimpleChange(undefined, 1, true),
+          }
+        },
       ]);
 
+      // Update causes no changes to be fired, since the bindings didn't change.
+      events = [];
       fixture.update();
-      expect(events).toEqual([
-        'comp=comp val1=1 val2=1 - changed=[val1,val2]', 'dir - val1=1 val2=1 - changed=[val1,val2]'
-      ]);
+      expect(events).toEqual([]);
 
     });
 
     it('should be called on directives on an element', () => {
-      /** <div directive></div> */
+      /**
+       * <div dir [val]="1" [publicVal2]="1"></div>
+       */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['dir', '']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
-          elementProperty(0, 'publicName', bind(1));
+          elementProperty(0, 'publicVal2', bind(1));
         }
       }, 1, 2, defs);
 
       const fixture = new ComponentFixture(App);
-      expect(events).toEqual(['dir - val1=1 val2=1 - changed=[val1,val2]']);
+      expect(events).toEqual([{
+        type: 'onChanges',
+        name: 'dir - dir',
+        changes: {
+          'val1': new SimpleChange(undefined, 1, true),
+          'val2': new SimpleChange(undefined, 1, true),
+        }
+      }]);
 
+      events = [];
       fixture.update();
-      expect(events).toEqual(['dir - val1=1 val2=1 - changed=[val1,val2]']);
+      expect(events).toEqual([]);
     });
 
     it('should call onChanges properly in for loop', () => {
       /**
-       *  <comp [val]="1"></comp>
+       *  <comp [val1]="1" [publicVal2]="1"></comp>
        * % for (let j = 2; j < 5; j++) {
-       *   <comp [val]="j"></comp>
+       *   <comp [val1]="j" [publicVal2]="j"></comp>
        * % }
-       *  <comp [val]="5"></comp>
+       *  <comp [val1]="5" [publicVal2]="5"></comp>
        */
 
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
@@ -2273,9 +2447,9 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
-          elementProperty(0, 'publicName', bind(1));
+          elementProperty(0, 'publicVal2', bind(1));
           elementProperty(2, 'val1', bind(5));
-          elementProperty(2, 'publicName', bind(5));
+          elementProperty(2, 'publicVal2', bind(5));
           containerRefreshStart(1);
           {
             for (let j = 2; j < 5; j++) {
@@ -2285,7 +2459,7 @@ describe('lifecycles', () => {
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val1', bind(j));
-                elementProperty(0, 'publicName', bind(j));
+                elementProperty(0, 'publicVal2', bind(j));
               }
               embeddedViewEnd();
             }
@@ -2299,21 +2473,56 @@ describe('lifecycles', () => {
       // onChanges is called top to bottom, so top level comps (1 and 5) are called
       // before the comps inside the for loop's embedded view (2, 3, and 4)
       expect(events).toEqual([
-        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
-        'comp=comp val1=5 val2=5 - changed=[val1,val2]',
-        'comp=comp val1=2 val2=2 - changed=[val1,val2]',
-        'comp=comp val1=3 val2=3 - changed=[val1,val2]',
-        'comp=comp val1=4 val2=4 - changed=[val1,val2]'
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 1, true),
+            'val2': new SimpleChange(undefined, 1, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 5, true),
+            'val2': new SimpleChange(undefined, 5, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 2, true),
+            'val2': new SimpleChange(undefined, 2, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 3, true),
+            'val2': new SimpleChange(undefined, 3, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 4, true),
+            'val2': new SimpleChange(undefined, 4, true),
+          }
+        },
       ]);
     });
 
     it('should call onChanges properly in for loop with children', () => {
       /**
-       *  <parent [val]="1"></parent>
+       *  <parent [val1]="1" [publicVal2]="1"></parent>
        * % for (let j = 2; j < 5; j++) {
-       *   <parent [val]="j"></parent>
+       *   <parent [val1]="j" [publicVal2]="j"></parent>
        * % }
-       *  <parent [val]="5"></parent>
+       *  <parent [val1]="5" [publicVal2]="5"></parent>
        */
 
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
@@ -2324,9 +2533,9 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
-          elementProperty(0, 'publicName', bind(1));
+          elementProperty(0, 'publicVal2', bind(1));
           elementProperty(2, 'val1', bind(5));
-          elementProperty(2, 'publicName', bind(5));
+          elementProperty(2, 'publicVal2', bind(5));
           containerRefreshStart(1);
           {
             for (let j = 2; j < 5; j++) {
@@ -2336,7 +2545,7 @@ describe('lifecycles', () => {
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val1', bind(j));
-                elementProperty(0, 'publicName', bind(j));
+                elementProperty(0, 'publicVal2', bind(j));
               }
               embeddedViewEnd();
             }
@@ -2350,17 +2559,142 @@ describe('lifecycles', () => {
       // onChanges is called top to bottom, so top level comps (1 and 5) are called
       // before the comps inside the for loop's embedded view (2, 3, and 4)
       expect(events).toEqual([
-        'comp=parent val1=1 val2=1 - changed=[val1,val2]',
-        'comp=parent val1=5 val2=5 - changed=[val1,val2]',
-        'comp=parent val1=2 val2=2 - changed=[val1,val2]',
-        'comp=comp val1=2 val2=2 - changed=[val1,val2]',
-        'comp=parent val1=3 val2=3 - changed=[val1,val2]',
-        'comp=comp val1=3 val2=3 - changed=[val1,val2]',
-        'comp=parent val1=4 val2=4 - changed=[val1,val2]',
-        'comp=comp val1=4 val2=4 - changed=[val1,val2]',
-        'comp=comp val1=1 val2=1 - changed=[val1,val2]',
-        'comp=comp val1=5 val2=5 - changed=[val1,val2]'
+        {
+          type: 'onChanges',
+          name: 'comp - parent',
+          changes: {
+            'val1': new SimpleChange(undefined, 1, true),
+            'val2': new SimpleChange(undefined, 1, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - parent',
+          changes: {
+            'val1': new SimpleChange(undefined, 5, true),
+            'val2': new SimpleChange(undefined, 5, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - parent',
+          changes: {
+            'val1': new SimpleChange(undefined, 2, true),
+            'val2': new SimpleChange(undefined, 2, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 2, true),
+            'val2': new SimpleChange(undefined, 2, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - parent',
+          changes: {
+            'val1': new SimpleChange(undefined, 3, true),
+            'val2': new SimpleChange(undefined, 3, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 3, true),
+            'val2': new SimpleChange(undefined, 3, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - parent',
+          changes: {
+            'val1': new SimpleChange(undefined, 4, true),
+            'val2': new SimpleChange(undefined, 4, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 4, true),
+            'val2': new SimpleChange(undefined, 4, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 1, true),
+            'val2': new SimpleChange(undefined, 1, true),
+          }
+        },
+        {
+          type: 'onChanges',
+          name: 'comp - comp',
+          changes: {
+            'val1': new SimpleChange(undefined, 5, true),
+            'val2': new SimpleChange(undefined, 5, true),
+          }
+        },
       ]);
+    });
+
+    it('should not call onChanges if props are set directly', () => {
+      let events: SimpleChanges[] = [];
+      let compInstance: MyComp;
+      class MyComp {
+        value = 0;
+
+        ngOnChanges(changes: SimpleChanges) { events.push(changes); }
+
+        static ngComponentDef = defineComponent({
+          type: MyComp,
+          factory: () => {
+            // Capture the instance so we can test setting the property directly
+            compInstance = new MyComp();
+            return compInstance;
+          },
+          template: (rf: RenderFlags, ctx: any) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div');
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(0, 'data-a', bind(ctx.a));
+            }
+          },
+          selectors: [['mycomp']],
+          inputs: {
+            value: 'value',
+          },
+          consts: 1,
+          vars: 1,
+        });
+      }
+
+      /**
+       *  <my-comp [value]="1"></my-comp>
+       */
+
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'mycomp');
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'value', bind(1));
+        }
+      }, 1, 1, [MyComp]);
+
+      const fixture = new ComponentFixture(App);
+      events = [];
+
+      // Try setting the property directly
+      compInstance !.value = 2;
+
+      fixture.update();
+      expect(events).toEqual([]);
     });
 
   });
@@ -2394,7 +2728,6 @@ describe('lifecycles', () => {
           consts: consts,
           vars: vars,
           inputs: {val: 'val'}, template,
-          features: [NgOnChangesFeature],
           directives: directives
         });
       };
@@ -2412,6 +2745,11 @@ describe('lifecycles', () => {
           element(0, 'comp');
           element(1, 'comp');
         }
+        // This template function is a little weird in that the `elementProperty` calls
+        // below are directly setting values `1` and `2`, where normally there would be
+        // a call to `bind()` that would do the work of seeing if something changed.
+        // This means when `fixture.update()` is called below, ngOnChanges should fire,
+        // even though the *value* itself never changed.
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
           elementProperty(1, 'val', 2);
@@ -2426,7 +2764,7 @@ describe('lifecycles', () => {
       ]);
 
       events = [];
-      fixture.update();
+      fixture.update();  // Changes are made due to lack of `bind()` call in template fn.
       expect(events).toEqual([
         'changes comp1', 'check comp1', 'changes comp2', 'check comp2', 'contentCheck comp1',
         'contentCheck comp2', 'viewCheck comp1', 'viewCheck comp2'

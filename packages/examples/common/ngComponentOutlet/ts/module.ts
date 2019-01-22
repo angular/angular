@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Compiler, Component, Injectable, Injector, NgModule, NgModuleFactory, ReflectiveInjector} from '@angular/core';
+import {Compiler, Component, Injectable, Injector, NgModule, NgModuleFactory} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 
 
@@ -56,7 +56,8 @@ class NgTemplateOutletCompleteExample {
   myContent = [[document.createTextNode('Ahoj')], [document.createTextNode('Svet')]];
 
   constructor(injector: Injector) {
-    this.myInjector = ReflectiveInjector.resolveAndCreate([Greeter], injector);
+    this.myInjector =
+        Injector.create({providers: [{provide: Greeter, deps: []}], parent: injector});
   }
 }
 // #enddocregion

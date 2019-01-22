@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ElementRef, Host, Inject, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, createInjector, defineInjectable, defineInjector} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ElementRef, Host, INJECTOR, Inject, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, createInjector, defineInjectable, defineInjector} from '@angular/core';
 import {ComponentType, RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
@@ -36,7 +36,7 @@ describe('di', () => {
           type: Directive,
           selectors: [['', 'dir', '']],
           factory: () => new Directive,
-          exportAs: 'dir'
+          exportAs: ['dir']
         });
       }
 
@@ -89,7 +89,7 @@ describe('di', () => {
           type: DirC,
           selectors: [['', 'dirC', '']],
           factory: () => new DirC(directiveInject(DirA), directiveInject(DirB)),
-          exportAs: 'dirC'
+          exportAs: ['dirC']
         });
       }
 
@@ -427,7 +427,7 @@ describe('di', () => {
           type: DirA,
           selectors: [['', 'dirA', '']],
           factory: () => new DirA(directiveInject(DirB), directiveInject(ViewContainerRef as any)),
-          exportAs: 'dirA'
+          exportAs: ['dirA']
         });
       }
 
@@ -1460,6 +1460,36 @@ describe('di', () => {
         expect(injectorDir.injector).not.toBe(otherInjectorDir.injector);
       });
 
+      it('should inject INJECTOR', () => {
+        let injectorDir !: INJECTORDir;
+        let divElement !: HTMLElement;
+
+        class INJECTORDir {
+          constructor(public injector: Injector) {}
+
+          static ngDirectiveDef = defineDirective({
+            type: INJECTORDir,
+            selectors: [['', 'injectorDir', '']],
+            factory: () => injectorDir = new INJECTORDir(directiveInject(INJECTOR as any))
+          });
+        }
+
+
+        /** <div injectorDir otherInjectorDir></div> */
+        const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            element(0, 'div', ['injectorDir', '']);
+          }
+          // testing only
+          divElement = load(0);
+        }, 1, 0, [INJECTORDir]);
+
+        const fixture = new ComponentFixture(App);
+        expect(injectorDir.injector.get(ElementRef).nativeElement).toBe(divElement);
+        expect(injectorDir.injector.get(Injector).get(ElementRef).nativeElement).toBe(divElement);
+        expect(injectorDir.injector.get(INJECTOR).get(ElementRef).nativeElement).toBe(divElement);
+      });
+
     });
 
     describe('ElementRef', () => {
@@ -1478,7 +1508,7 @@ describe('di', () => {
             type: Directive,
             selectors: [['', 'dir', '']],
             factory: () => dir = new Directive(directiveInject(ElementRef)),
-            exportAs: 'dir'
+            exportAs: ['dir']
           });
         }
 
@@ -1492,7 +1522,7 @@ describe('di', () => {
             selectors: [['', 'dirSame', '']],
             factory: () => dirSameInstance = new DirectiveSameInstance(
                          directiveInject(ElementRef), directiveInject(Directive)),
-            exportAs: 'dirSame'
+            exportAs: ['dirSame']
           });
         }
 
@@ -1528,7 +1558,7 @@ describe('di', () => {
                type: Directive,
                selectors: [['', 'dir', '']],
                factory: () => dir = new Directive(directiveInject(ElementRef)),
-               exportAs: 'dir'
+               exportAs: ['dir']
              });
            }
 
@@ -1556,7 +1586,7 @@ describe('di', () => {
           type: Directive,
           selectors: [['', 'dir', '']],
           factory: () => new Directive(directiveInject(TemplateRef as any)),
-          exportAs: 'dir'
+          exportAs: ['dir']
         });
       }
 
@@ -1571,7 +1601,7 @@ describe('di', () => {
             selectors: [['', 'dirSame', '']],
             factory: () => new DirectiveSameInstance(
                          directiveInject(TemplateRef as any), directiveInject(Directive)),
-            exportAs: 'dirSame'
+            exportAs: ['dirSame']
           });
         }
 
@@ -1633,7 +1663,7 @@ describe('di', () => {
             selectors: [['', 'dir', '']],
             factory: () => dir = new OptionalDirective(
                          directiveInject(TemplateRef as any, InjectFlags.Optional)),
-            exportAs: 'dir'
+            exportAs: ['dir']
           });
         }
 
@@ -1661,7 +1691,7 @@ describe('di', () => {
             type: Directive,
             selectors: [['', 'dir', '']],
             factory: () => new Directive(directiveInject(ViewContainerRef as any)),
-            exportAs: 'dir'
+            exportAs: ['dir']
           });
         }
 
@@ -1675,7 +1705,7 @@ describe('di', () => {
             selectors: [['', 'dirSame', '']],
             factory: () => new DirectiveSameInstance(
                          directiveInject(ViewContainerRef as any), directiveInject(Directive)),
-            exportAs: 'dirSame'
+            exportAs: ['dirSame']
           });
         }
 
@@ -1737,7 +1767,7 @@ describe('di', () => {
           type: Directive,
           selectors: [['', 'dir', '']],
           factory: () => dir = new Directive(directiveInject(ChangeDetectorRef as any)),
-          exportAs: 'dir'
+          exportAs: ['dir']
         });
       }
 
@@ -2223,7 +2253,7 @@ describe('di', () => {
           type: ChildDirective,
           selectors: [['', 'childDir', '']],
           factory: () => new ChildDirective(directiveInject(ParentDirective)),
-          exportAs: 'childDir'
+          exportAs: ['childDir']
         });
       }
 
@@ -2235,7 +2265,7 @@ describe('di', () => {
           type: Child2Directive,
           factory: () => new Child2Directive(
                        directiveInject(ParentDirective), directiveInject(ChildDirective)),
-          exportAs: 'child2Dir'
+          exportAs: ['child2Dir']
         });
       }
 

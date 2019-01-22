@@ -8,7 +8,6 @@ ts_library(
         ["**/*.ts"],
         exclude = ["closure-locale.ts"],
     ),
-    module_name = "@angular/common/locales",
 )
 
 npm_package(

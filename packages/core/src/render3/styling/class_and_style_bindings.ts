@@ -6,7 +6,7 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {assertNotEqual} from '../assert';
+import {assertNotEqual} from '../../util/assert';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerIndex} from '../interfaces/player';
@@ -18,6 +18,7 @@ import {getRootContext} from '../util';
 
 import {BoundPlayerFactory} from './player_factory';
 import {addPlayerInternal, allocPlayerContext, createEmptyStylingContext, getPlayerContext} from './util';
+
 
 
 /**
@@ -74,7 +75,7 @@ export function initializeStaticContext(attrs: TAttributes) {
  * @param directive the directive instance with which static data is associated with.
  */
 export function patchContextWithStaticAttrs(
-    context: StylingContext, attrs: TAttributes, directive: any): void {
+    context: StylingContext, attrs: TAttributes, startingIndex: number, directive: any): void {
   // If the styling context has already been patched with the given directive's bindings,
   // then there is no point in doing it again. The reason why this may happen (the directive
   // styling being patched twice) is because the `stylingBinding` function is called each time
@@ -88,7 +89,7 @@ export function patchContextWithStaticAttrs(
     let initialStyles: InitialStylingValues|null = null;
 
     let mode = -1;
-    for (let i = 0; i < attrs.length; i++) {
+    for (let i = startingIndex; i < attrs.length; i++) {
       const attr = attrs[i];
       if (typeof attr == 'number') {
         mode = attr;

@@ -136,13 +136,13 @@ http://github.com/angular/core-builds.
 
 You may find that your un-merged change needs some validation from external participants.
 Rather than requiring them to pull your Pull Request and build Angular locally, you can
-publish the `*-builds` snapshots just like our Travis build does.
+publish the `*-builds` snapshots just like our CircleCI build does.
 
 First time, you need to create the github repositories:
 
 ``` shell
 $ export TOKEN=[get one from https://github.com/settings/tokens]
-$ CREATE_REPOS=1 TRAVIS= ./scripts/ci/publish-build-artifacts.sh [github username]
+$ CREATE_REPOS=1 ./scripts/ci/publish-build-artifacts.sh [github username]
 ```
 
 For subsequent snapshots, just run

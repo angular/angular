@@ -6,17 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {global} from '../util';
+import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
+import {global} from '../util/global';
 
-import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from './assert';
 import {ACTIVE_INDEX, LCONTAINER_LENGTH, LContainer} from './interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
 import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {RComment, RElement, RText} from './interfaces/renderer';
+import {GlobalTargetName, GlobalTargetResolver, RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
+import {isOnChangesDirectiveWrapper} from './onchanges_util';
+
 
 /**
  * Returns whether the values are different from a change detection stand point.
@@ -29,7 +31,10 @@ export function isDifferent(a: any, b: any): boolean {
   return !(a !== a && b !== b) && a !== b;
 }
 
-export function stringify(value: any): string {
+/**
+ * Used for stringify render output in Ivy.
+ */
+export function renderStringify(value: any): string {
   if (typeof value == 'function') return value.name || value;
   if (typeof value == 'string') return value;
   if (value == null) return '';
@@ -66,8 +71,13 @@ export function flatten(list: any[]): any[] {
 /** Retrieves a value from any `LView` or `TData`. */
 export function loadInternal<T>(view: LView | TData, index: number): T {
   ngDevMode && assertDataInRange(view, index + HEADER_OFFSET);
-  return view[index + HEADER_OFFSET];
+  const record = view[index + HEADER_OFFSET];
+  // If we're storing an array because of a directive or component with ngOnChanges,
+  // return the directive or component instance.
+  return isOnChangesDirectiveWrapper(record) ? record.instance : record;
 }
+
+
 
 /**
  * Takes the value of a slot in `LView` and returns the element node.
@@ -275,4 +285,16 @@ export function findComponentView(lView: LView): LView {
   }
 
   return lView;
+}
+
+export function resolveWindow(element: RElement & {ownerDocument: Document}) {
+  return {name: 'window', target: element.ownerDocument.defaultView};
+}
+
+export function resolveDocument(element: RElement & {ownerDocument: Document}) {
+  return {name: 'document', target: element.ownerDocument};
+}
+
+export function resolveBody(element: RElement & {ownerDocument: Document}) {
+  return {name: 'body', target: element.ownerDocument.body};
 }

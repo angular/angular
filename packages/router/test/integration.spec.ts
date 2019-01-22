@@ -12,7 +12,6 @@ import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactor
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, Navigation, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {Observable, Observer, Subscription, of } from 'rxjs';
 import {filter, first, map, tap} from 'rxjs/operators';
@@ -497,9 +496,6 @@ describe('Integration', () => {
        fixture.componentInstance.cond = true;
        advance(fixture);
        expect(fixture.nativeElement).toHaveText('[simple]');
-
-       // TODO: remove extra tick for Ivy?
-       tick();
      }));
 
   it('should update location when navigating', fakeAsync(() => {
@@ -2030,7 +2026,6 @@ describe('Integration', () => {
 
              router.navigateByUrl('/team/22');
              advance(fixture);
-
              expect(location.path()).toEqual('/team/22');
            })));
       });
@@ -4028,27 +4023,26 @@ describe('Integration', () => {
         });
       });
 
-      fixmeIvy('FW-887: JIT: compilation of NgModule')
-          .it('should use the injector of the lazily-loaded configuration',
-              fakeAsync(inject(
-                  [Router, Location, NgModuleFactoryLoader],
-                  (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
-                    loader.stubbedModules = {expected: LoadedModule};
+      it('should use the injector of the lazily-loaded configuration',
+         fakeAsync(inject(
+             [Router, Location, NgModuleFactoryLoader],
+             (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+               loader.stubbedModules = {expected: LoadedModule};
 
-                    const fixture = createRoot(router, RootCmp);
+               const fixture = createRoot(router, RootCmp);
 
-                    router.resetConfig([{
-                      path: 'eager-parent',
-                      component: EagerParentComponent,
-                      children: [{path: 'lazy', loadChildren: 'expected'}]
-                    }]);
+               router.resetConfig([{
+                 path: 'eager-parent',
+                 component: EagerParentComponent,
+                 children: [{path: 'lazy', loadChildren: 'expected'}]
+               }]);
 
-                    router.navigateByUrl('/eager-parent/lazy/lazy-parent/lazy-child');
-                    advance(fixture);
+               router.navigateByUrl('/eager-parent/lazy/lazy-parent/lazy-child');
+               advance(fixture);
 
-                    expect(location.path()).toEqual('/eager-parent/lazy/lazy-parent/lazy-child');
-                    expect(fixture.nativeElement).toHaveText('eager-parent lazy-parent lazy-child');
-                  })));
+               expect(location.path()).toEqual('/eager-parent/lazy/lazy-parent/lazy-child');
+               expect(fixture.nativeElement).toHaveText('eager-parent lazy-parent lazy-child');
+             })));
     });
 
     it('works when given a callback',
@@ -4371,43 +4365,41 @@ describe('Integration', () => {
       class LazyLoadedModule {
       }
 
-      fixmeIvy('FW-887: JIT: compilation of NgModule')
-          .it('should not ignore empty path when in legacy mode',
-              fakeAsync(inject(
-                  [Router, NgModuleFactoryLoader],
-                  (router: Router, loader: SpyNgModuleFactoryLoader) => {
-                    router.relativeLinkResolution = 'legacy';
-                    loader.stubbedModules = {expected: LazyLoadedModule};
+      it('should not ignore empty path when in legacy mode',
+         fakeAsync(inject(
+             [Router, NgModuleFactoryLoader],
+             (router: Router, loader: SpyNgModuleFactoryLoader) => {
+               router.relativeLinkResolution = 'legacy';
+               loader.stubbedModules = {expected: LazyLoadedModule};
 
-                    const fixture = createRoot(router, RootCmp);
+               const fixture = createRoot(router, RootCmp);
 
-                    router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+               router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
 
-                    router.navigateByUrl('/lazy/foo/bar');
-                    advance(fixture);
+               router.navigateByUrl('/lazy/foo/bar');
+               advance(fixture);
 
-                    const link = fixture.nativeElement.querySelector('a');
-                    expect(link.getAttribute('href')).toEqual('/lazy/foo/bar/simple');
-                  })));
+               const link = fixture.nativeElement.querySelector('a');
+               expect(link.getAttribute('href')).toEqual('/lazy/foo/bar/simple');
+             })));
 
-      fixmeIvy('FW-887: JIT: compilation of NgModule')
-          .it('should ignore empty path when in corrected mode',
-              fakeAsync(inject(
-                  [Router, NgModuleFactoryLoader],
-                  (router: Router, loader: SpyNgModuleFactoryLoader) => {
-                    router.relativeLinkResolution = 'corrected';
-                    loader.stubbedModules = {expected: LazyLoadedModule};
+      it('should ignore empty path when in corrected mode',
+         fakeAsync(inject(
+             [Router, NgModuleFactoryLoader],
+             (router: Router, loader: SpyNgModuleFactoryLoader) => {
+               router.relativeLinkResolution = 'corrected';
+               loader.stubbedModules = {expected: LazyLoadedModule};
 
-                    const fixture = createRoot(router, RootCmp);
+               const fixture = createRoot(router, RootCmp);
 
-                    router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+               router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
 
-                    router.navigateByUrl('/lazy/foo/bar');
-                    advance(fixture);
+               router.navigateByUrl('/lazy/foo/bar');
+               advance(fixture);
 
-                    const link = fixture.nativeElement.querySelector('a');
-                    expect(link.getAttribute('href')).toEqual('/lazy/foo/simple');
-                  })));
+               const link = fixture.nativeElement.querySelector('a');
+               expect(link.getAttribute('href')).toEqual('/lazy/foo/simple');
+             })));
     });
   });
 
@@ -4589,9 +4581,6 @@ describe('Integration', () => {
          router.navigate([{outlets: {toolpanel: 'b'}}]);
          advance(fixture);
          expect(fixture).toContainComponent(Tool2Component, '(e)');
-
-         // TODO: remove extra tick for Ivy?
-         tick();
        }));
   });
 });

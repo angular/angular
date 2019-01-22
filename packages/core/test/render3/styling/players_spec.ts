@@ -230,7 +230,7 @@ function buildElementWithStyling() {
 class Comp {
   static ngComponentDef = defineComponent({
     type: Comp,
-    exportAs: 'child',
+    exportAs: ['child'],
     selectors: [['child-comp']],
     factory: () => new Comp(),
     consts: 1,
@@ -250,7 +250,7 @@ class Comp {
 class CompWithStyling {
   static ngComponentDef = defineComponent({
     type: CompWithStyling,
-    exportAs: 'child-styled',
+    exportAs: ['child-styled'],
     selectors: [['child-styled-comp']],
     factory: () => new CompWithStyling(),
     consts: 1,

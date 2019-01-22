@@ -81,22 +81,35 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('');
   });
 
-  fixmeIvy('FW-833: Directive / projected node matching against class name')
-      .it('should support multiple content tags', () => {
-        TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
-        TestBed.overrideComponent(MainComp, {
-          set: {
-            template: '<multiple-content-tags>' +
-                '<div>B</div>' +
-                '<div>C</div>' +
-                '<div class="left">A</div>' +
-                '</multiple-content-tags>'
-          }
-        });
-        const main = TestBed.createComponent(MainComp);
+  it('should project a single class-based tag', () => {
+    TestBed.configureTestingModule({declarations: [SingleContentTagComponent]});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: '<single-content-tag>' +
+            '<div class="target">I AM PROJECTED</div>' +
+            '</single-content-tag>'
+      }
+    });
+    const main = TestBed.createComponent(MainComp);
 
-        expect(main.nativeElement).toHaveText('(A, BC)');
-      });
+    expect(main.nativeElement).toHaveText('I AM PROJECTED');
+  });
+
+  it('should support multiple content tags', () => {
+    TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: '<multiple-content-tags>' +
+            '<div>B</div>' +
+            '<div>C</div>' +
+            '<div class="left">A</div>' +
+            '</multiple-content-tags>'
+      }
+    });
+    const main = TestBed.createComponent(MainComp);
+
+    expect(main.nativeElement).toHaveText('(A, BC)');
+  });
 
   it('should redistribute only direct children', () => {
     TestBed.configureTestingModule({declarations: [MultipleContentTagsComponent]});
@@ -182,35 +195,34 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('OUTER(INNER(INNERINNER(A,BC)))');
   });
 
-  fixmeIvy('FW-833: Directive / projected node matching against class name')
-      .it('should redistribute when the shadow dom changes', () => {
-        TestBed.configureTestingModule(
-            {declarations: [ConditionalContentComponent, ManualViewportDirective]});
-        TestBed.overrideComponent(MainComp, {
-          set: {
-            template: '<conditional-content>' +
-                '<div class="left">A</div>' +
-                '<div>B</div>' +
-                '<div>C</div>' +
-                '</conditional-content>'
-          }
-        });
-        const main = TestBed.createComponent(MainComp);
+  it('should redistribute when the shadow dom changes', () => {
+    TestBed.configureTestingModule(
+        {declarations: [ConditionalContentComponent, ManualViewportDirective]});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: '<conditional-content>' +
+            '<div class="left">A</div>' +
+            '<div>B</div>' +
+            '<div>C</div>' +
+            '</conditional-content>'
+      }
+    });
+    const main = TestBed.createComponent(MainComp);
 
-        const viewportDirective =
-            main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
-                ManualViewportDirective);
+    const viewportDirective =
+        main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
+            ManualViewportDirective);
 
-        expect(main.nativeElement).toHaveText('(, BC)');
+    expect(main.nativeElement).toHaveText('(, BC)');
 
-        viewportDirective.show();
-        main.detectChanges();
-        expect(main.nativeElement).toHaveText('(A, BC)');
+    viewportDirective.show();
+    main.detectChanges();
+    expect(main.nativeElement).toHaveText('(A, BC)');
 
-        viewportDirective.hide();
-        main.detectChanges();
-        expect(main.nativeElement).toHaveText('(, BC)');
-      });
+    viewportDirective.hide();
+    main.detectChanges();
+    expect(main.nativeElement).toHaveText('(, BC)');
+  });
 
   // GH-2095 - https://github.com/angular/angular/issues/2095
   // important as we are removing the ng-content element during compilation,
@@ -290,38 +302,36 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('SIMPLE()START(A)END');
   });
 
-  fixmeIvy('FW-833: Directive / projected node matching against class name')
-      .it('should support moving ng-content around', () => {
-        TestBed.configureTestingModule({
-          declarations: [ConditionalContentComponent, ProjectDirective, ManualViewportDirective]
-        });
-        TestBed.overrideComponent(MainComp, {
-          set: {
-            template: '<conditional-content>' +
-                '<div class="left">A</div>' +
-                '<div>B</div>' +
-                '</conditional-content>' +
-                'START(<div project></div>)END'
-          }
-        });
-        const main = TestBed.createComponent(MainComp);
+  it('should support moving ng-content around', () => {
+    TestBed.configureTestingModule(
+        {declarations: [ConditionalContentComponent, ProjectDirective, ManualViewportDirective]});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: '<conditional-content>' +
+            '<div class="left">A</div>' +
+            '<div>B</div>' +
+            '</conditional-content>' +
+            'START(<div project></div>)END'
+      }
+    });
+    const main = TestBed.createComponent(MainComp);
 
-        const sourceDirective: ManualViewportDirective =
-            main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
-                ManualViewportDirective);
-        const projectDirective: ProjectDirective =
-            main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
-                ProjectDirective);
-        expect(main.nativeElement).toHaveText('(, B)START()END');
+    const sourceDirective: ManualViewportDirective =
+        main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
+            ManualViewportDirective);
+    const projectDirective: ProjectDirective =
+        main.debugElement.queryAllNodes(By.directive(ProjectDirective))[0].injector.get(
+            ProjectDirective);
+    expect(main.nativeElement).toHaveText('(, B)START()END');
 
-        projectDirective.show(sourceDirective.templateRef);
-        expect(main.nativeElement).toHaveText('(, B)START(A)END');
+    projectDirective.show(sourceDirective.templateRef);
+    expect(main.nativeElement).toHaveText('(, B)START(A)END');
 
-        // Stamping ng-content multiple times should not produce the content multiple
-        // times...
-        projectDirective.show(sourceDirective.templateRef);
-        expect(main.nativeElement).toHaveText('(, B)START(A)END');
-      });
+    // Stamping ng-content multiple times should not produce the content multiple
+    // times...
+    projectDirective.show(sourceDirective.templateRef);
+    expect(main.nativeElement).toHaveText('(, B)START(A)END');
+  });
 
   // Note: This does not use a ng-content element, but
   // is still important as we are merging proto views independent of
@@ -533,7 +543,32 @@ describe('projection', () => {
     expect(main.nativeElement).toHaveText('B(A)');
   });
 
-  fixmeIvy('FW-833: Directive / projected node matching against class name')
+  it('should project view containers', () => {
+    TestBed.configureTestingModule(
+        {declarations: [SingleContentTagComponent, ManualViewportDirective]});
+    TestBed.overrideComponent(MainComp, {
+      set: {
+        template: '<single-content-tag>' +
+            '<div class="target">A</div>' +
+            '<ng-template manual class="target">B</ng-template>' +
+            '<div class="target">C</div>' +
+            '</single-content-tag>'
+      }
+    });
+
+    const main = TestBed.createComponent(MainComp);
+    const manualDirective =
+        main.debugElement.queryAllNodes(By.directive(ManualViewportDirective))[0].injector.get(
+            ManualViewportDirective);
+
+    expect(main.nativeElement).toHaveText('AC');
+
+    manualDirective.show();
+    main.detectChanges();
+    expect(main.nativeElement).toHaveText('ABC');
+  });
+
+  fixmeIvy('FW-869: debugElement.queryAllNodes returns nodes in the wrong order')
       .it('should project filled view containers into a view container', () => {
         TestBed.configureTestingModule(
             {declarations: [ConditionalContentComponent, ManualViewportDirective]});
@@ -624,6 +659,13 @@ class Empty {
   template: '(<ng-content SELECT=".left"></ng-content>, <ng-content></ng-content>)',
 })
 class MultipleContentTagsComponent {
+}
+
+@Component({
+  selector: 'single-content-tag',
+  template: '<ng-content SELECT=".target"></ng-content>',
+})
+class SingleContentTagComponent {
 }
 
 @Directive({selector: '[manual]'})

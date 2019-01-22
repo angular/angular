@@ -8,7 +8,6 @@ ts_library(
         "index.ts",
         "src/**/*.ts",
     ]),
-    module_name = "@angular/compiler-cli/src/ngtsc/util",
     deps = [
         "//packages:types",
         "@ngdeps//@types/node",

@@ -8,8 +8,8 @@
 
 import * as ts from 'typescript';
 import {ReferencesRegistry} from '../../../ngtsc/annotations';
-import {Declaration, ReflectionHost} from '../../../ngtsc/host';
-import {Reference, ResolvedReference} from '../../../ngtsc/metadata';
+import {Reference, ResolvedReference} from '../../../ngtsc/imports';
+import {Declaration, ReflectionHost} from '../../../ngtsc/reflection';
 import {hasNameIdentifier} from '../utils';
 
 /**
@@ -29,7 +29,7 @@ export class NgccReferencesRegistry implements ReferencesRegistry {
    * Only `ResolveReference` references are stored. Other types are ignored.
    * @param references A collection of references to register.
    */
-  add(...references: Reference<ts.Declaration>[]): void {
+  add(source: ts.Declaration, ...references: Reference<ts.Declaration>[]): void {
     references.forEach(ref => {
       // Only store resolved references. We are not interested in literals.
       if (ref instanceof ResolvedReference && hasNameIdentifier(ref.node)) {

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectableDef, getInjectableDef} from '../di/defs';
 import {resolveForwardRef} from '../di/forward_ref';
 import {INJECTOR, Injector} from '../di/injector';
 import {setCurrentInjector} from '../di/injector_compatibility';
+import {InjectableDef, getInjectableDef} from '../di/interface/defs';
 import {APP_ROOT} from '../di/scope';
 import {NgModuleRef} from '../linker/ng_module_factory';
-import {stringify} from '../util';
+import {stringify} from '../util/stringify';
 
 import {DepDef, DepFlags, NgModuleData, NgModuleDefinition, NgModuleProviderDef, NodeFlags} from './types';
 import {splitDepsDsl, tokenKey} from './util';

@@ -15,7 +15,7 @@ import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef as ViewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Renderer2} from '../render/api';
-import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
+import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
 import {NodeInjector, getParentInjectorLocation} from './di';
 import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions';
 import {ACTIVE_INDEX, LContainer, NATIVE, VIEWS} from './interfaces/container';
@@ -317,7 +317,7 @@ export function createContainerRef(
     }
 
     hostView[hostTNode.index] = lContainer =
-        createLContainer(slotValue, hostTNode, hostView, commentNode, true);
+        createLContainer(slotValue, hostView, commentNode, true);
 
     addToViewTree(hostView, hostTNode.index as number, lContainer);
   }

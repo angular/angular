@@ -9,7 +9,7 @@
 import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, Type, TypeVisitor, TypeofExpr, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {relativePathBetween} from '../../util/src/path';
+import {ImportRewriter, NoopImportRewriter} from '../../imports';
 
 export class Context {
   constructor(readonly isStatement: boolean) {}
@@ -38,60 +38,41 @@ const BINARY_OPERATORS = new Map<BinaryOperator, ts.BinaryOperator>([
   [BinaryOperator.Plus, ts.SyntaxKind.PlusToken],
 ]);
 
-const CORE_SUPPORTED_SYMBOLS = new Map<string, string>([
-  ['defineInjectable', 'defineInjectable'],
-  ['defineInjector', 'defineInjector'],
-  ['ɵdefineNgModule', 'defineNgModule'],
-  ['inject', 'inject'],
-  ['ɵsetClassMetadata', 'setClassMetadata'],
-  ['ɵInjectableDef', 'InjectableDef'],
-  ['ɵInjectorDef', 'InjectorDef'],
-  ['ɵNgModuleDefWithMeta', 'NgModuleDefWithMeta'],
-  ['ɵNgModuleFactory', 'NgModuleFactory'],
-]);
+
 
 export class ImportManager {
   private moduleToIndex = new Map<string, string>();
+  private importedModules = new Set<string>();
   private nextIndex = 0;
 
-  constructor(protected isCore: boolean, private prefix = 'i') {}
+  constructor(protected rewriter: ImportRewriter = new NoopImportRewriter(), private prefix = 'i') {
+  }
 
-  generateNamedImport(moduleName: string, symbol: string):
+  generateNamedImport(moduleName: string, originalSymbol: string):
       {moduleImport: string | null, symbol: string} {
+    // First, rewrite the symbol name.
+    const symbol = this.rewriter.rewriteSymbol(originalSymbol, moduleName);
+
+    // Ask the rewriter if this symbol should be imported at all. If not, it can be referenced
+    // directly (moduleImport: null).
+    if (!this.rewriter.shouldImportSymbol(symbol, moduleName)) {
+      // The symbol should be referenced directly.
+      return {moduleImport: null, symbol};
+    }
+
+    // If not, this symbol will be imported. Allocate a prefix for the imported module if needed.
     if (!this.moduleToIndex.has(moduleName)) {
       this.moduleToIndex.set(moduleName, `${this.prefix}${this.nextIndex++}`);
     }
+    const moduleImport = this.moduleToIndex.get(moduleName) !;
 
-    return {
-      moduleImport: this.moduleToIndex.get(moduleName) !,
-      symbol: this.rewriteSymbol(moduleName, symbol)
-    };
+    return {moduleImport, symbol};
   }
 
-  protected rewriteSymbol(moduleName: string, symbol: string): string {
-    if (this.isCore && moduleName === '@angular/core') {
-      if (!CORE_SUPPORTED_SYMBOLS.has(symbol)) {
-        throw new Error(`Importing unexpected symbol ${symbol} while compiling core`);
-      }
-
-      symbol = CORE_SUPPORTED_SYMBOLS.get(symbol) !;
-    }
-
-    return symbol;
-  }
-
-  getAllImports(contextPath: string, rewriteCoreImportsTo: ts.SourceFile|null):
-      {name: string, as: string}[] {
+  getAllImports(contextPath: string): {name: string, as: string}[] {
     return Array.from(this.moduleToIndex.keys()).map(name => {
-      const as: string|null = this.moduleToIndex.get(name) !;
-      if (rewriteCoreImportsTo !== null && name === '@angular/core') {
-        const relative = relativePathBetween(contextPath, rewriteCoreImportsTo.fileName);
-        if (relative === null) {
-          throw new Error(
-              `Failed to rewrite import inside core: ${contextPath} -> ${rewriteCoreImportsTo.fileName}`);
-        }
-        name = relative;
-      }
+      const as = this.moduleToIndex.get(name) !;
+      name = this.rewriter.rewriteSpecifier(name, contextPath);
       return {name, as};
     });
   }

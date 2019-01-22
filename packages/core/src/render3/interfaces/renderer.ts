@@ -26,6 +26,12 @@ export enum RendererStyleFlags3 {
 
 export type Renderer3 = ObjectOrientedRenderer3 | ProceduralRenderer3;
 
+export type GlobalTargetName = 'document' | 'window' | 'body';
+
+export type GlobalTargetResolver = (element: any) => {
+  name: GlobalTargetName, target: EventTarget
+};
+
 /**
  * Object Oriented style of API needed to create elements and text nodes.
  *
@@ -68,7 +74,7 @@ export interface ProceduralRenderer3 {
   destroyNode?: ((node: RNode) => void)|null;
   appendChild(parent: RElement, newChild: RNode): void;
   insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void;
-  removeChild(parent: RElement, oldChild: RNode): void;
+  removeChild(parent: RElement, oldChild: RNode, isHostElement?: boolean): void;
   selectRootElement(selectorOrNode: string|any): RElement;
 
   parentNode(node: RNode): RElement|null;
@@ -86,7 +92,9 @@ export interface ProceduralRenderer3 {
   setValue(node: RText|RComment, value: string): void;
 
   // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
-  listen(target: RNode, eventName: string, callback: (event: any) => boolean | void): () => void;
+  listen(
+      target: GlobalTargetName|RNode, eventName: string,
+      callback: (event: any) => boolean | void): () => void;
 }
 
 export interface RendererFactory3 {

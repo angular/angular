@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineInjectable, defineInjector,} from '../../di/defs';
+import {defineInjectable, defineInjector,} from '../../di/interface/defs';
 import {inject} from '../../di/injector_compatibility';
 import * as r3 from '../index';
 import * as sanitization from '../../sanitization/sanitization';
@@ -31,7 +31,6 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'inject': inject,
   'ɵinjectAttribute': r3.injectAttribute,
   'ɵtemplateRefExtractor': r3.templateRefExtractor,
-  'ɵNgOnChangesFeature': r3.NgOnChangesFeature,
   'ɵProvidersFeature': r3.ProvidersFeature,
   'ɵInheritDefinitionFeature': r3.InheritDefinitionFeature,
   'ɵelementAttribute': r3.elementAttribute,
@@ -79,6 +78,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵprojection': r3.projection,
   'ɵelementProperty': r3.elementProperty,
   'ɵcomponentHostSyntheticProperty': r3.componentHostSyntheticProperty,
+  'ɵcomponentHostSyntheticListener': r3.componentHostSyntheticListener,
   'ɵpipeBind1': r3.pipeBind1,
   'ɵpipeBind2': r3.pipeBind2,
   'ɵpipeBind3': r3.pipeBind3,
@@ -107,11 +107,15 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵi18nEnd': r3.i18nEnd,
   'ɵi18nApply': r3.i18nApply,
   'ɵi18nPostprocess': r3.i18nPostprocess,
+  'ɵresolveWindow': r3.resolveWindow,
+  'ɵresolveDocument': r3.resolveDocument,
+  'ɵresolveBody': r3.resolveBody,
 
   'ɵsanitizeHtml': sanitization.sanitizeHtml,
   'ɵsanitizeStyle': sanitization.sanitizeStyle,
   'ɵdefaultStyleSanitizer': sanitization.defaultStyleSanitizer,
   'ɵsanitizeResourceUrl': sanitization.sanitizeResourceUrl,
   'ɵsanitizeScript': sanitization.sanitizeScript,
-  'ɵsanitizeUrl': sanitization.sanitizeUrl
+  'ɵsanitizeUrl': sanitization.sanitizeUrl,
+  'ɵsanitizeUrlOrResourceUrl': sanitization.sanitizeUrlOrResourceUrl
 };

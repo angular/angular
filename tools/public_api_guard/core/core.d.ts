@@ -53,6 +53,11 @@ export interface Attribute {
 
 export declare const Attribute: AttributeDecorator;
 
+export interface AttributeDecorator {
+    (name: string): any;
+    new (name: string): Attribute;
+}
+
 export declare enum ChangeDetectionStrategy {
     OnPush = 0,
     Default = 1
@@ -313,7 +318,7 @@ export declare class EventEmitter<T> extends Subject<T> {
     __isAsync: boolean;
     constructor(isAsync?: boolean);
     emit(value?: T): void;
-    subscribe(generatorOrNext?: any, error?: any, complete?: any): any;
+    subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
 }
 
 export interface ExistingProvider extends ExistingSansProvider {
@@ -765,7 +770,7 @@ export declare abstract class Renderer2 {
     abstract nextSibling(node: any): any;
     abstract parentNode(node: any): any;
     abstract removeAttribute(el: any, name: string, namespace?: string | null): void;
-    abstract removeChild(parent: any, oldChild: any): void;
+    abstract removeChild(parent: any, oldChild: any, isHostElement?: boolean): void;
     abstract removeClass(el: any, name: string): void;
     abstract removeStyle(el: any, style: string, flags?: RendererStyleFlags2): void;
     abstract selectRootElement(selectorOrNode: string | any, preserveContent?: boolean): any;

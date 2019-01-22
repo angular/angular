@@ -122,7 +122,7 @@ describe('r3_view_compiler', () => {
   });
 
   describe('animations', () => {
-    it('should keep @attr but suppress [@attr]', () => {
+    it('should not register any @attr attributes as static attributes', () => {
       const files: MockDirectory = {
         app: {
           'example.ts': `
@@ -130,7 +130,7 @@ describe('r3_view_compiler', () => {
 
           @Component({
             selector: 'my-app',
-            template: '<div @attrOnly [@myAnimation]="exp"></div>'
+            template: '<div @attr [@binding]="exp"></div>'
           })
           export class MyApp {
           }
@@ -141,14 +141,14 @@ describe('r3_view_compiler', () => {
       };
 
       const template = `
-      const _c0 = ["@attrOnly", ""];
-      // ...
       template: function MyApp_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelement(0, "div", _c0);
-          // ...
+          $i0$.ɵelement(0, "div");
         }
-        // ...
+        if (rf & 2) {
+          $i0$.ɵelementProperty(0, "@attr", …);
+          $i0$.ɵelementProperty(0, "@binding", …);
+        }
       }`;
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect initialization attributes');
@@ -173,14 +173,12 @@ describe('r3_view_compiler', () => {
       };
 
       const template = `
-      const _c0 = [3, "@mySelector"];
-      // ...
       template: function MyApp_Template(rf, ctx) {
         if (rf & 1) {
-          $i0$.ɵelementStart(0, "div", _c0);
-          // ...
+          $i0$.ɵelementStart(0, "div");
+          …
+          $i0$.ɵelementProperty(0, "@mySelector", …);
         }
-        // ...
       }`;
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect initialization attributes');

@@ -35,7 +35,7 @@ Make a note of the user name and project name in GitHub.
 
 1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
    <code-example language="none" class="code-shell">
-     ng build --prod --output-path docs --base-href <project_name>
+     ng build --prod --output-path docs --base-href /<project_name>/
     </code-example>
 
 1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
@@ -46,9 +46,9 @@ Make a note of the user name and project name in GitHub.
 
 You can see your deployed page at `https://<user_name>.github.io/<project_name>/`.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
- Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
+Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
 
 </div>
 

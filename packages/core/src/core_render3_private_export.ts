@@ -28,7 +28,6 @@ export {
   templateRefExtractor as ɵtemplateRefExtractor,
   ProvidersFeature as ɵProvidersFeature,
   InheritDefinitionFeature as ɵInheritDefinitionFeature,
-  NgOnChangesFeature as ɵNgOnChangesFeature,
   LifecycleHooksFeature as ɵLifecycleHooksFeature,
   NgModuleType as ɵNgModuleType,
   NgModuleRef as ɵRender3NgModuleRef,
@@ -84,6 +83,7 @@ export {
   elementEnd as ɵelementEnd,
   elementProperty as ɵelementProperty,
   componentHostSyntheticProperty as ɵcomponentHostSyntheticProperty,
+  componentHostSyntheticListener as ɵcomponentHostSyntheticListener,
   projectionDef as ɵprojectionDef,
   reference as ɵreference,
   enableBindings as ɵenableBindings,
@@ -120,6 +120,9 @@ export {
   i18nApply as ɵi18nApply,
   i18nPostprocess as ɵi18nPostprocess,
   setClassMetadata as ɵsetClassMetadata,
+  resolveWindow as ɵresolveWindow,
+  resolveDocument as ɵresolveDocument,
+  resolveBody as ɵresolveBody,
 } from './render3/index';
 
 
@@ -132,6 +135,8 @@ export {
   compileNgModuleDefs as ɵcompileNgModuleDefs,
   patchComponentDefWithScope as ɵpatchComponentDefWithScope,
   resetCompiledComponents as ɵresetCompiledComponents,
+  flushModuleScopingQueueAsMuchAsPossible as ɵflushModuleScopingQueueAsMuchAsPossible,
+  transitiveScopesFor as ɵtransitiveScopesFor,
 } from './render3/jit/module';
 export {
   compilePipe as ɵcompilePipe,
@@ -148,6 +153,7 @@ export {
   sanitizeStyle as ɵsanitizeStyle,
   sanitizeUrl as ɵsanitizeUrl,
   sanitizeResourceUrl as ɵsanitizeResourceUrl,
+  sanitizeUrlOrResourceUrl as ɵsanitizeUrlOrResourceUrl,
 } from './sanitization/sanitization';
 
 export {
@@ -166,12 +172,15 @@ export {
   NG_ELEMENT_ID as ɵNG_ELEMENT_ID,
   NG_COMPONENT_DEF as ɵNG_COMPONENT_DEF,
   NG_DIRECTIVE_DEF as ɵNG_DIRECTIVE_DEF,
-  NG_INJECTABLE_DEF as ɵNG_INJECTABLE_DEF,
-  NG_INJECTOR_DEF as ɵNG_INJECTOR_DEF,
   NG_PIPE_DEF as ɵNG_PIPE_DEF,
   NG_MODULE_DEF as ɵNG_MODULE_DEF,
   NG_BASE_DEF as ɵNG_BASE_DEF
 } from './render3/fields';
+
+export {
+  NG_INJECTABLE_DEF as ɵNG_INJECTABLE_DEF,
+  NG_INJECTOR_DEF as ɵNG_INJECTOR_DEF,
+} from './di/interface/defs';
 
 export {
   Player as ɵPlayer,
@@ -245,8 +254,5 @@ export {
   publishGlobalUtil as ɵpublishGlobalUtil,
   publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
 } from './render3/global_utils';
-export {
-  SWITCH_INJECTOR_FACTORY__POST_R3__ as ɵSWITCH_INJECTOR_FACTORY__POST_R3__,
-} from './di/injector';
 
 // clang-format on

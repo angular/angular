@@ -9,7 +9,6 @@ import {LifecycleHooksFeature, renderComponent, whenRendered} from './component'
 import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
 import {getComponent, getHostElement, getRenderedText} from './discovery_utils';
 import {InheritDefinitionFeature} from './features/inherit_definition_feature';
-import {NgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ProvidersFeature} from './features/providers_feature';
 import {BaseDef, ComponentDef, ComponentDefWithMeta, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefWithMeta, DirectiveType, PipeDef, PipeDefWithMeta} from './interfaces/definition';
 
@@ -45,6 +44,7 @@ export {
   elementEnd,
   elementProperty,
   componentHostSyntheticProperty,
+  componentHostSyntheticListener,
   elementStart,
 
   elementContainerStart,
@@ -144,6 +144,7 @@ export {
 
 export {templateRefExtractor} from './view_engine_compatibility_prebound';
 
+export {resolveWindow, resolveDocument, resolveBody} from './util';
 
 // clang-format on
 
@@ -157,7 +158,6 @@ export {
   DirectiveDefFlags,
   DirectiveDefWithMeta,
   DirectiveType,
-  NgOnChangesFeature,
   InheritDefinitionFeature,
   ProvidersFeature,
   PipeDef,

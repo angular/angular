@@ -53,7 +53,10 @@ export abstract class TemplateRef<C> {
    */
   abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 
-  /** @internal */
+  /**
+   * @internal
+   * @nocollapse
+   */
   static __NG_ELEMENT_ID__:
       () => TemplateRef<any>| null = () => SWITCH_TEMPLATE_REF_FACTORY(TemplateRef, ElementRef)
 }

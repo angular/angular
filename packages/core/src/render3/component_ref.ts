@@ -10,15 +10,17 @@ import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detec
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {inject} from '../di/injector_compatibility';
+import {Type} from '../interface/type';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/security';
-import {Type} from '../type';
+import {assertDefined} from '../util/assert';
 import {VERSION} from '../version';
-import {assertComponentType, assertDefined} from './assert';
+
+import {assertComponentType} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
@@ -119,7 +121,10 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     super();
     this.componentType = componentDef.type;
     this.selector = componentDef.selectors[0][0] as string;
-    this.ngContentSelectors = [];
+    // The component definition does not include the wildcard ('*') selector in its list.
+    // It is implicitly expected as the first item in the projectable nodes array.
+    this.ngContentSelectors =
+        componentDef.ngContentSelectors ? ['*', ...componentDef.ngContentSelectors] : [];
   }
 
   create(
@@ -164,8 +169,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     let component: T;
     let tElementNode: TElementNode;
     try {
-      if (rendererFactory.begin) rendererFactory.begin();
-
       const componentView = createRootComponentView(
           hostRNode, this.componentDef, rootLView, rendererFactory, renderer);
 
@@ -211,7 +214,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       refreshDescendantViews(rootLView);
     } finally {
       leaveView(oldLView);
-      if (rendererFactory.end) rendererFactory.end();
     }
 
     const componentRef = new ComponentRef(
@@ -271,7 +273,7 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');
     this.destroyCbs !.forEach(fn => fn());
     this.destroyCbs = null;
-    this.hostView.destroy();
+    !this.hostView.destroyed && this.hostView.destroy();
   }
   onDestroy(callback: () => void): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');

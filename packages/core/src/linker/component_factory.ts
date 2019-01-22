@@ -8,7 +8,7 @@
 
 import {ChangeDetectorRef} from '../change_detection/change_detection';
 import {Injector} from '../di/injector';
-import {Type} from '../type';
+import {Type} from '../interface/type';
 
 import {ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';

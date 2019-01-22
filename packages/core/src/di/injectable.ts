@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileInjectable as render3CompileInjectable} from '../render3/jit/injectable';
-import {Type} from '../type';
+import {Type} from '../interface/type';
 import {TypeDecorator, makeDecorator} from '../util/decorators';
-
-import {InjectableDef, InjectableType, defineInjectable, getInjectableDef} from './defs';
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './provider';
+import {InjectableDef, InjectableType, defineInjectable, getInjectableDef} from './interface/defs';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './interface/provider';
+import {compileInjectable as render3CompileInjectable} from './jit/injectable';
 import {convertInjectableProviderToFactory} from './util';
+
 
 
 /**

@@ -19,6 +19,8 @@ import * as ts from 'typescript';
 */
 export interface BundleProgram {
   program: ts.Program;
+  options: ts.CompilerOptions;
+  host: ts.CompilerHost;
   path: string;
   file: ts.SourceFile;
   r3SymbolsPath: string|null;
@@ -37,7 +39,7 @@ export function makeBundleProgram(
   const file = program.getSourceFile(path) !;
   const r3SymbolsFile = r3SymbolsPath && program.getSourceFile(r3SymbolsPath) || null;
 
-  return {program, path, file, r3SymbolsPath, r3SymbolsFile};
+  return {program, options, host, path, file, r3SymbolsPath, r3SymbolsFile};
 }
 
 /**

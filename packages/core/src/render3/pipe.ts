@@ -11,9 +11,9 @@ import {PipeTransform} from '../change_detection/pipe_transform';
 
 import {load, store} from './instructions';
 import {PipeDef, PipeDefList} from './interfaces/definition';
-import {HEADER_OFFSET, TVIEW} from './interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
-import {getBindingRoot, getLView} from './state';
+import {getLView} from './state';
 import {NO_CHANGE} from './tokens';
 
 
@@ -171,7 +171,11 @@ function isPure(index: number): boolean {
 function unwrapValue(newValue: any): any {
   if (WrappedValue.isWrapped(newValue)) {
     newValue = WrappedValue.unwrap(newValue);
-    getLView()[getBindingRoot()] = NO_CHANGE;
+    const lView = getLView();
+    // The NO_CHANGE value needs to be written at the index where the impacted binding value is
+    // stored
+    const bindingToInvalidateIdx = lView[BINDING_INDEX];
+    lView[bindingToInvalidateIdx] = NO_CHANGE;
   }
   return newValue;
 }

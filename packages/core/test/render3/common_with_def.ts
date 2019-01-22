@@ -9,7 +9,7 @@
 import {NgForOf as NgForOfDef, NgIf as NgIfDef, NgTemplateOutlet as NgTemplateOutletDef} from '@angular/common';
 import {IterableDiffers, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {DirectiveType, NgOnChangesFeature, defineDirective, directiveInject} from '../../src/render3/index';
+import {DirectiveType, defineDirective, directiveInject} from '../../src/render3/index';
 
 export const NgForOf: DirectiveType<NgForOfDef<any>> = NgForOfDef as any;
 export const NgIf: DirectiveType<NgIfDef> = NgIfDef as any;
@@ -40,7 +40,6 @@ NgForOf.ngDirectiveDef = defineDirective({
   type: NgTemplateOutletDef,
   selectors: [['', 'ngTemplateOutlet', '']],
   factory: () => new NgTemplateOutletDef(directiveInject(ViewContainerRef as any)),
-  features: [NgOnChangesFeature],
   inputs:
       {ngTemplateOutlet: 'ngTemplateOutlet', ngTemplateOutletContext: 'ngTemplateOutletContext'}
 });

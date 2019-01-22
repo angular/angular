@@ -123,7 +123,7 @@ You can define and name additional alternate configurations (such as `stage`, fo
 
 The configurable options for a default or targeted build generally correspond to the options available for the [`ng build`](cli/build), [`ng serve`](cli/serve), and [`ng test`](cli/test) commands. For details of those options and their possible values, see the [CLI Reference](cli). 
 
-Some additional options (listed below) can only be set through the configuration file, either by direct editing or with the `ng config` command.
+Some additional options (listed below) can only be set through the configuration file, either by direct editing or with the [`ng config`](cli/config) command.
 
 | OPTIONS PROPERTIES | DESCRIPTION |
 | :------------------------- | :---------------------------- |

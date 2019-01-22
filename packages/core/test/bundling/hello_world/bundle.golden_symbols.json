@@ -3,9 +3,6 @@
     "name": "ACTIVE_INDEX"
   },
   {
-    "name": "ANIMATION_PROP_PREFIX"
-  },
-  {
     "name": "BINDING_INDEX"
   },
   {
@@ -78,16 +75,10 @@
     "name": "NG_PIPE_DEF"
   },
   {
-    "name": "NG_PROJECT_AS_ATTR_NAME"
-  },
-  {
     "name": "NO_CHANGE"
   },
   {
     "name": "NO_PARENT_INJECTOR"
-  },
-  {
-    "name": "NgOnChangesFeature"
   },
   {
     "name": "NodeInjectorFactory"
@@ -96,13 +87,13 @@
     "name": "ObjectUnsubscribedErrorImpl"
   },
   {
+    "name": "OnChangesDirectiveWrapper"
+  },
+  {
     "name": "PARENT"
   },
   {
     "name": "PARENT_INJECTOR"
-  },
-  {
-    "name": "PRIVATE_PREFIX"
   },
   {
     "name": "RENDERER"
@@ -111,13 +102,7 @@
     "name": "RENDERER_FACTORY"
   },
   {
-    "name": "RENDER_PARENT"
-  },
-  {
     "name": "SANITIZER"
-  },
-  {
-    "name": "SimpleChange"
   },
   {
     "name": "TVIEW"
@@ -157,15 +142,6 @@
   },
   {
     "name": "callHooks"
-  },
-  {
-    "name": "canInsertNativeChildOfElement"
-  },
-  {
-    "name": "canInsertNativeChildOfView"
-  },
-  {
-    "name": "canInsertNativeNode"
   },
   {
     "name": "checkNoChangesMode"
@@ -303,9 +279,6 @@
     "name": "getParentInjectorViewOffset"
   },
   {
-    "name": "getParentNative"
-  },
-  {
     "name": "getPipeDef"
   },
   {
@@ -342,16 +315,19 @@
     "name": "invertObject"
   },
   {
-    "name": "isAnimationProp"
-  },
-  {
     "name": "isComponentDef"
   },
   {
     "name": "isCreationMode"
   },
   {
+    "name": "isExactInstanceOf"
+  },
+  {
     "name": "isFactory"
+  },
+  {
+    "name": "isOnChangesDirectiveWrapper"
   },
   {
     "name": "isProceduralRenderer"
@@ -379,9 +355,6 @@
   },
   {
     "name": "noSideEffects"
-  },
-  {
-    "name": "onChangesWrapper"
   },
   {
     "name": "postProcessBaseDirective"
@@ -420,6 +393,9 @@
     "name": "renderEmbeddedTemplate"
   },
   {
+    "name": "renderStringify"
+  },
+  {
     "name": "resetComponentState"
   },
   {
@@ -450,12 +426,6 @@
     "name": "setTNodeAndViewData"
   },
   {
-    "name": "setUpAttributes"
-  },
-  {
-    "name": "stringify$1"
-  },
-  {
     "name": "syncViewWithBlueprint"
   },
   {
@@ -463,6 +433,9 @@
   },
   {
     "name": "tickRootContext"
+  },
+  {
+    "name": "unwrapOnChangesDirectiveWrapper"
   },
   {
     "name": "updateViewQuery"

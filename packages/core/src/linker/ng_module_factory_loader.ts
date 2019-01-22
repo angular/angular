@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interface/type';
 import {NgModuleFactory as R3NgModuleFactory, NgModuleType} from '../render3/ng_module_ref';
-import {Type} from '../type';
-import {stringify} from '../util';
+import {stringify} from '../util/stringify';
+
 import {NgModuleFactory} from './ng_module_factory';
+
 
 /**
  * Used to load ng module factories.
@@ -33,12 +35,12 @@ const modules = new Map<string, NgModuleFactory<any>|NgModuleType>();
  */
 export function registerModuleFactory(id: string, factory: NgModuleFactory<any>) {
   const existing = modules.get(id) as NgModuleFactory<any>;
-  assertNotExisting(id, existing && existing.moduleType);
+  assertSameOrNotExisting(id, existing && existing.moduleType, factory.moduleType);
   modules.set(id, factory);
 }
 
-function assertNotExisting(id: string, type: Type<any>| null): void {
-  if (type) {
+function assertSameOrNotExisting(id: string, type: Type<any>| null, incoming: Type<any>): void {
+  if (type && type !== incoming) {
     throw new Error(
         `Duplicate module registered for ${id} - ${stringify(type)} vs ${stringify(type.name)}`);
   }
@@ -46,7 +48,7 @@ function assertNotExisting(id: string, type: Type<any>| null): void {
 
 export function registerNgModuleType(id: string, ngModuleType: NgModuleType) {
   const existing = modules.get(id) as NgModuleType | null;
-  assertNotExisting(id, existing);
+  assertSameOrNotExisting(id, existing, ngModuleType);
   modules.set(id, ngModuleType);
 }
 

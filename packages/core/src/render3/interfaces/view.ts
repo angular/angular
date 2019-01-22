@@ -8,9 +8,11 @@
 
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
+import {SimpleChanges} from '../../interface/simple_change';
+import {Type} from '../../interface/type';
 import {QueryList} from '../../linker';
 import {Sanitizer} from '../../sanitization/security';
-import {Type} from '../../type';
+
 import {LContainer} from './container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList} from './definition';
 import {I18nUpdateOpCodes, TI18n} from './i18n';
@@ -19,6 +21,7 @@ import {PlayerHandler} from './player';
 import {LQueries} from './query';
 import {RElement, Renderer3, RendererFactory3} from './renderer';
 import {StylingContext} from './styling';
+
 
 
 // Below are constants for LView indices to help us look up LView members
@@ -446,7 +449,11 @@ export interface TView {
    *
    * If it's a native DOM listener or output subscription being stored:
    * 1st index is: event name  `name = tView.cleanup[i+0]`
-   * 2nd index is: index of native element `element = lView[tView.cleanup[i+1]]`
+   * 2nd index is: index of native element or a function that retrieves global target (window,
+   *               document or body) reference based on the native element:
+   *    `typeof idxOrTargetGetter === 'function'`: global target getter function
+   *    `typeof idxOrTargetGetter === 'number'`: index of native element
+   *
    * 3rd index is: index of listener function `listener = lView[CLEANUP][tView.cleanup[i+2]]`
    * 4th index is: `useCaptureOrIndx = tView.cleanup[i+3]`
    *    `typeof useCaptureOrIndx == 'boolean' : useCapture boolean
@@ -527,7 +534,7 @@ export interface RootContext {
  * Even indices: Directive index
  * Odd indices: Hook function
  */
-export type HookData = (number | (() => void))[];
+export type HookData = (number | (() => void) | ((changes: SimpleChanges) => void))[];
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.

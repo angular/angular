@@ -10,8 +10,7 @@ import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3R
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Decorator, ReflectionHost} from '../../host';
-import {reflectObjectLiteral} from '../../metadata';
+import {Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
@@ -109,9 +108,6 @@ function extractInjectableMetadata(
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_NOT_LITERAL, depsExpr,
             `In Ivy, deps metadata must be an inline array.`);
-      }
-      if (depsExpr.elements.length > 0) {
-        throw new Error(`deps not yet supported`);
       }
       userDeps = depsExpr.elements.map(dep => getDep(dep, reflector));
     }

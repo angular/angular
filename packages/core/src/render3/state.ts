@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from './assert';
+import {assertDefined} from '../util/assert';
 import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TViewNode} from './interfaces/node';
@@ -175,8 +175,9 @@ export function getOrCreateCurrentQueries(
     QueryType: {new (parent: null, shallow: null, deep: null): LQueries}): LQueries {
   const lView = getLView();
   let currentQueries = lView[QUERIES];
-  // if this is the first content query on a node, any existing LQueries needs to be cloned
-  // in subsequent template passes, the cloning occurs before directive instantiation.
+  // If this is the first content query on a node, any existing LQueries needs to be cloned.
+  // In subsequent template passes, the cloning occurs before directive instantiation
+  // in `createDirectivesAndLocals`.
   if (previousOrParentTNode && previousOrParentTNode !== lView[HOST_NODE] &&
       !isContentQueryHost(previousOrParentTNode)) {
     currentQueries && (currentQueries = lView[QUERIES] = currentQueries.clone());
@@ -319,11 +320,14 @@ export function leaveView(newView: LView): void {
   if (isCreationMode(lView)) {
     lView[FLAGS] &= ~LViewFlags.CreationMode;
   } else {
-    executeHooks(lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode);
-    // Views are clean and in update mode after being checked, so these bits are cleared
-    lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
-    lView[FLAGS] |= LViewFlags.RunInit;
-    lView[BINDING_INDEX] = tView.bindingStartIndex;
+    try {
+      executeHooks(lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode);
+    } finally {
+      // Views are clean and in update mode after being checked, so these bits are cleared
+      lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);
+      lView[FLAGS] |= LViewFlags.RunInit;
+      lView[BINDING_INDEX] = tView.bindingStartIndex;
+    }
   }
   enterView(newView, null);
 }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '../../type';
+import {Type} from '../../interface/type';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../interfaces/definition';
@@ -60,7 +60,6 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
     }
 
     if (baseDef) {
-      // Merge inputs and outputs
       fillProperties(definition.inputs, baseDef.inputs);
       fillProperties(definition.declaredInputs, baseDef.declaredInputs);
       fillProperties(definition.outputs, baseDef.outputs);
@@ -125,7 +124,6 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
         }
       }
 
-
       // Merge inputs and outputs
       fillProperties(definition.inputs, superDef.inputs);
       fillProperties(definition.declaredInputs, superDef.declaredInputs);
@@ -141,6 +139,7 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
       definition.doCheck = definition.doCheck || superDef.doCheck;
       definition.onDestroy = definition.onDestroy || superDef.onDestroy;
       definition.onInit = definition.onInit || superDef.onInit;
+      definition.onChanges = definition.onChanges || superDef.onChanges;
 
       // Run parent features
       const features = superDef.features;
@@ -156,18 +155,18 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
     } else {
       // Even if we don't have a definition, check the type for the hooks and use those if need be
       const superPrototype = superType.prototype;
-
       if (superPrototype) {
         definition.afterContentChecked =
-            definition.afterContentChecked || superPrototype.afterContentChecked;
+            definition.afterContentChecked || superPrototype.ngAfterContentChecked;
         definition.afterContentInit =
-            definition.afterContentInit || superPrototype.afterContentInit;
+            definition.afterContentInit || superPrototype.ngAfterContentInit;
         definition.afterViewChecked =
-            definition.afterViewChecked || superPrototype.afterViewChecked;
-        definition.afterViewInit = definition.afterViewInit || superPrototype.afterViewInit;
-        definition.doCheck = definition.doCheck || superPrototype.doCheck;
-        definition.onDestroy = definition.onDestroy || superPrototype.onDestroy;
-        definition.onInit = definition.onInit || superPrototype.onInit;
+            definition.afterViewChecked || superPrototype.ngAfterViewChecked;
+        definition.afterViewInit = definition.afterViewInit || superPrototype.ngAfterViewInit;
+        definition.doCheck = definition.doCheck || superPrototype.ngDoCheck;
+        definition.onDestroy = definition.onDestroy || superPrototype.ngOnDestroy;
+        definition.onInit = definition.onInit || superPrototype.ngOnInit;
+        definition.onChanges = definition.onChanges || superPrototype.ngOnChanges;
       }
     }
 

@@ -5,9 +5,9 @@
 
 # VM creation:
 # In Google Cloud Platform, create a Compute Engine instance.
-# We recommend machine type n1-highcpu-16 (16 vCPUs, 14.4 GB memory).
-# Use a windows boot disk with container support such as
-# "Windows Server version 1803 Datacenter Core for Containers".
+# We recommend machine type n1-standard-16 (16 vCPUs, 60 GB memory).
+# Use a recent windows boot disk with container support such as
+# "Windows Server version 1803 Datacenter Core for Containers", and add a 128GB disk.
 # Give it a name, then click "Create".
 
 # VM setup:
@@ -54,6 +54,8 @@ Write-Host "Installing Git for Windows."
 Invoke-WebRequest -Uri https://github.com/git-for-windows/git/releases/download/v2.19.1.windows.1/Git-2.19.1-64-bit.exe -OutFile git.exe
 .\git.exe /VERYSILENT /NORESTART /NOCANCEL /SP- /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /COMPONENTS="icons,ext\reg\shellhere,assoc,assoc_sh" /DIR="C:\git"
 Add-Path "C:\git\bin"
+# Sleep for 15s while git is installed. Trying to remove the git.exe before it finishes install causes an error.
+Start-Sleep -s 15
 Remove-Item git.exe
 
 # Download NSSM (https://nssm.cc/) to run the BuildKite agent as a service.

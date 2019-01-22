@@ -8,8 +8,8 @@
 import * as ts from 'typescript';
 
 import {ReferencesRegistry} from '../../../ngtsc/annotations';
-import {Declaration} from '../../../ngtsc/host';
-import {ResolvedReference} from '../../../ngtsc/metadata';
+import {ResolvedReference} from '../../../ngtsc/imports';
+import {Declaration} from '../../../ngtsc/reflection';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {isDefined} from '../utils';
 
@@ -62,7 +62,8 @@ export class ModuleWithProvidersAnalyzer {
                   `The referenced NgModule in ${fn.declaration.getText()} is not a class declaration in the typings program; instead we get ${dtsNgModule.getText()}`);
             }
             // Record the usage of the internal module as it needs to become an exported symbol
-            this.referencesRegistry.add(new ResolvedReference(ngModule.node, fn.ngModule));
+            this.referencesRegistry.add(
+                ngModule.node, new ResolvedReference(ngModule.node, fn.ngModule));
 
             ngModule = {node: dtsNgModule, viaModule: null};
           }

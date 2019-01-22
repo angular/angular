@@ -10,7 +10,6 @@ ts_library(
             "src/**/*.ts",
         ],
     ),
-    module_name = "@angular/language-service",
     deps = [
         "//packages:types",
         "//packages/compiler",

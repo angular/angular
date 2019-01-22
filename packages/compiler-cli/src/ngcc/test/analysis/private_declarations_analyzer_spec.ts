@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ResolvedReference} from '@angular/compiler-cli/src/ngtsc/metadata';
 import * as ts from 'typescript';
 
+import {ResolvedReference} from '../../../ngtsc/imports';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
@@ -137,15 +137,18 @@ describe('PrivateDeclarationsAnalyzer', () => {
          const publicComponentDeclaration =
              getDeclaration(program, '/src/a.js', 'PublicComponent', ts.isClassDeclaration);
          referencesRegistry.add(
+             null !,
              new ResolvedReference(publicComponentDeclaration, publicComponentDeclaration.name !));
          const privateComponentDeclaration =
              getDeclaration(program, '/src/b.js', 'PrivateComponent', ts.isClassDeclaration);
-         referencesRegistry.add(new ResolvedReference(
-             privateComponentDeclaration, privateComponentDeclaration.name !));
+         referencesRegistry.add(
+             null !, new ResolvedReference(
+                         privateComponentDeclaration, privateComponentDeclaration.name !));
          const internalComponentDeclaration =
              getDeclaration(program, '/src/c.js', 'InternalComponent', ts.isClassDeclaration);
-         referencesRegistry.add(new ResolvedReference(
-             internalComponentDeclaration, internalComponentDeclaration.name !));
+         referencesRegistry.add(
+             null !, new ResolvedReference(
+                         internalComponentDeclaration, internalComponentDeclaration.name !));
 
          const analyses = analyzer.analyzeProgram(program);
          expect(analyses.length).toEqual(2);

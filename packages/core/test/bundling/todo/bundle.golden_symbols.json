@@ -144,9 +144,6 @@
     "name": "NgModuleRef"
   },
   {
-    "name": "NgOnChangesFeature"
-  },
-  {
     "name": "NodeInjector"
   },
   {
@@ -154,6 +151,9 @@
   },
   {
     "name": "ObjectUnsubscribedErrorImpl"
+  },
+  {
+    "name": "OnChangesDirectiveWrapper"
   },
   {
     "name": "Optional"
@@ -168,9 +168,6 @@
     "name": "PARENT_INJECTOR"
   },
   {
-    "name": "PRIVATE_PREFIX"
-  },
-  {
     "name": "QUERIES"
   },
   {
@@ -178,9 +175,6 @@
   },
   {
     "name": "RENDERER_FACTORY"
-  },
-  {
-    "name": "RENDER_PARENT"
   },
   {
     "name": "RecordViewTuple"
@@ -412,15 +406,6 @@
   },
   {
     "name": "callHooks"
-  },
-  {
-    "name": "canInsertNativeChildOfElement"
-  },
-  {
-    "name": "canInsertNativeChildOfView"
-  },
-  {
-    "name": "canInsertNativeNode"
   },
   {
     "name": "checkNoChanges"
@@ -753,9 +738,6 @@
     "name": "getParentInjectorViewOffset"
   },
   {
-    "name": "getParentNative"
-  },
-  {
     "name": "getParentState"
   },
   {
@@ -813,10 +795,10 @@
     "name": "getTViewCleanup"
   },
   {
-    "name": "getTypeNameForDebugging"
+    "name": "getTypeName"
   },
   {
-    "name": "getTypeNameForDebugging$1"
+    "name": "getTypeNameForDebugging"
   },
   {
     "name": "getValue"
@@ -897,6 +879,9 @@
     "name": "isComponentDef"
   },
   {
+    "name": "isContentQueryHost"
+  },
+  {
     "name": "isContextDirty"
   },
   {
@@ -918,6 +903,9 @@
     "name": "isDirty"
   },
   {
+    "name": "isExactInstanceOf"
+  },
+  {
     "name": "isFactory"
   },
   {
@@ -934,6 +922,9 @@
   },
   {
     "name": "isNodeMatchingSelectorList"
+  },
+  {
+    "name": "isOnChangesDirectiveWrapper"
   },
   {
     "name": "isPositive"
@@ -958,6 +949,9 @@
   },
   {
     "name": "listener"
+  },
+  {
+    "name": "listenerInternal"
   },
   {
     "name": "loadInternal"
@@ -1014,9 +1008,6 @@
     "name": "noSideEffects"
   },
   {
-    "name": "onChangesWrapper"
-  },
-  {
     "name": "pointers"
   },
   {
@@ -1035,19 +1026,7 @@
     "name": "queueComponentIndexForCheck"
   },
   {
-    "name": "queueContentHooks"
-  },
-  {
-    "name": "queueDestroyHooks"
-  },
-  {
-    "name": "queueInitHooks"
-  },
-  {
-    "name": "queueLifecycleHooks"
-  },
-  {
-    "name": "queueViewHooks"
+    "name": "readClassValueFromTNode"
   },
   {
     "name": "readElementValue"
@@ -1057,6 +1036,12 @@
   },
   {
     "name": "readPatchedLView"
+  },
+  {
+    "name": "recordChange"
+  },
+  {
+    "name": "recordChangeAndUpdateProperty"
   },
   {
     "name": "reference"
@@ -1072,6 +1057,12 @@
   },
   {
     "name": "refreshDynamicEmbeddedViews"
+  },
+  {
+    "name": "registerPostOrderHooks"
+  },
+  {
+    "name": "registerPreOrderHooks"
   },
   {
     "name": "removeListeners"
@@ -1093,6 +1084,9 @@
   },
   {
     "name": "renderInitialStylingValues"
+  },
+  {
+    "name": "renderStringify"
   },
   {
     "name": "renderStyling"
@@ -1206,9 +1200,6 @@
     "name": "stringify"
   },
   {
-    "name": "stringify$1"
-  },
-  {
     "name": "syncViewWithBlueprint"
   },
   {
@@ -1228,6 +1219,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "unwrapOnChangesDirectiveWrapper"
   },
   {
     "name": "updateClassProp"

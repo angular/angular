@@ -13,7 +13,7 @@ import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, ivyEnabled, modifiedInIvy} from '@angular/private/testing';
+import {fixmeIvy, ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();
@@ -444,14 +444,13 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
          }));
 
 
-      fixmeIvy('FW-814: Bindings with an empty value should be ignored in the compiler')
-          .it('should ignore empty bindings', fakeAsync(() => {
-                const ctx = _bindSimpleProp('[someProp]', TestData);
-                ctx.componentInstance.a = 'value';
-                ctx.detectChanges(false);
+      it('should ignore empty bindings', fakeAsync(() => {
+           const ctx = _bindSimpleProp('[someProp]', TestData);
+           ctx.componentInstance.a = 'value';
+           ctx.detectChanges(false);
 
-                expect(renderLog.log).toEqual([]);
-              }));
+           expect(renderLog.log).toEqual([]);
+         }));
 
       it('should support interpolation', fakeAsync(() => {
            const ctx = _bindSimpleProp('someProp="B{{a}}A"', TestData);
@@ -537,28 +536,27 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
              expect(renderLog.log).toEqual(['someProp=Megatron']);
            }));
 
-        fixmeIvy('FW-820: Pipes returning WrappedValue corrupt unrelated bindings ')
-            .it('should record unwrapped values via ngOnChanges', fakeAsync(() => {
-                  const ctx = createCompFixture(
-                      '<div [testDirective]="\'aName\' | wrappedPipe" [a]="1" [b]="2 | wrappedPipe"></div>');
-                  const dir: TestDirective = queryDirs(ctx.debugElement, TestDirective)[0];
-                  ctx.detectChanges(false);
-                  dir.changes = {};
-                  ctx.detectChanges(false);
+        it('should record unwrapped values via ngOnChanges', fakeAsync(() => {
+             const ctx = createCompFixture(
+                 '<div [testDirective]="\'aName\' | wrappedPipe" [a]="1" [b]="2 | wrappedPipe"></div>');
+             const dir: TestDirective = queryDirs(ctx.debugElement, TestDirective)[0];
+             ctx.detectChanges(false);
+             dir.changes = {};
+             ctx.detectChanges(false);
 
-                  // Note: the binding for `b` did not change and has no ValueWrapper,
-                  // and should therefore stay unchanged.
-                  expect(dir.changes).toEqual({
-                    'name': new SimpleChange('aName', 'aName', false),
-                    'b': new SimpleChange(2, 2, false)
-                  });
+             // Note: the binding for `a` did not change and has no ValueWrapper,
+             // and should therefore stay unchanged.
+             expect(dir.changes).toEqual({
+               'name': new SimpleChange('aName', 'aName', false),
+               'b': new SimpleChange(2, 2, false)
+             });
 
-                  ctx.detectChanges(false);
-                  expect(dir.changes).toEqual({
-                    'name': new SimpleChange('aName', 'aName', false),
-                    'b': new SimpleChange(2, 2, false)
-                  });
-                }));
+             ctx.detectChanges(false);
+             expect(dir.changes).toEqual({
+               'name': new SimpleChange('aName', 'aName', false),
+               'b': new SimpleChange(2, 2, false)
+             });
+           }));
 
         it('should call pure pipes only if the arguments change', fakeAsync(() => {
              const ctx = _bindSimpleValue('name | countingPipe', Person);
@@ -1023,33 +1021,31 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
              expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
            }));
 
-        fixmeIvy(
-            'FW-830: Exception thrown in ngAfterViewInit triggers ngAfterViewInit re-execution')
-            .it('should not call ngAfterViewInit again if it throws', fakeAsync(() => {
-                  const ctx = createCompFixture(
-                      '<div testDirective="dir" throwOn="ngAfterViewInit"></div>');
+        it('should not call ngAfterViewInit again if it throws', fakeAsync(() => {
+             const ctx =
+                 createCompFixture('<div testDirective="dir" throwOn="ngAfterViewInit"></div>');
 
-                  let errored = false;
-                  // First pass fails, but ngAfterViewInit should be called.
-                  try {
-                    ctx.detectChanges(false);
-                  } catch (e) {
-                    errored = true;
-                  }
-                  expect(errored).toBe(true);
+             let errored = false;
+             // First pass fails, but ngAfterViewInit should be called.
+             try {
+               ctx.detectChanges(false);
+             } catch (e) {
+               errored = true;
+             }
+             expect(errored).toBe(true);
 
-                  expect(directiveLog.filter(['ngAfterViewInit'])).toEqual(['dir.ngAfterViewInit']);
-                  directiveLog.clear();
+             expect(directiveLog.filter(['ngAfterViewInit'])).toEqual(['dir.ngAfterViewInit']);
+             directiveLog.clear();
 
-                  // Second change detection also fails, but this time ngAfterViewInit should not be
-                  // called.
-                  try {
-                    ctx.detectChanges(false);
-                  } catch (e) {
-                    throw new Error('Second detectChanges() should not have run detection.');
-                  }
-                  expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
-                }));
+             // Second change detection also fails, but this time ngAfterViewInit should not be
+             // called.
+             try {
+               ctx.detectChanges(false);
+             } catch (e) {
+               throw new Error('Second detectChanges() should not have run detection.');
+             }
+             expect(directiveLog.filter(['ngAfterViewInit'])).toEqual([]);
+           }));
       });
 
       describe('ngAfterViewChecked', () => {
@@ -1187,7 +1183,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
     });
 
     describe('enforce no new changes', () => {
-      fixmeIvy('FW-823: ComponentFixture.checkNoChanges doesn\'t throw under TestBed')
+      modifiedInIvy('checkNoChanges has no effect before first change detection run')
           .it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
                 @Directive({selector: '[changed]'})
                 class ChangingDirective {
@@ -1203,6 +1199,30 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
                 expect(() => ctx.checkNoChanges())
                     .toThrowError(
                         /Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g);
+              }));
+
+
+      onlyInIvy('checkNoChanges has no effect before first change detection run')
+          .it('should throw when a record gets changed after the first change detection pass',
+              fakeAsync(() => {
+                @Directive({selector: '[changed]'})
+                class ChangingDirective {
+                  @Input() changed: any;
+                }
+
+                TestBed.configureTestingModule({declarations: [ChangingDirective]});
+
+                const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
+
+                ctx.componentInstance.b = 1;
+                // should not throw here as change detection didn't run yet
+                ctx.checkNoChanges();
+
+                ctx.detectChanges();
+
+                ctx.componentInstance.b = 2;
+                expect(() => ctx.checkNoChanges())
+                    .toThrowError(/Previous value: '1'\. Current value: '2'/g);
               }));
 
       fixmeIvy('FW-831: Views created in a cd hooks throw in view engine')
@@ -1222,7 +1242,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            expect(() => ctx.checkNoChanges()).not.toThrow();
          }));
 
-      fixmeIvy('FW-823: ComponentFixture.checkNoChanges doesn\'t throw under TestBed')
+      modifiedInIvy('checkNoChanges has no effect before first change detection run')
           .it('should not break the next run', fakeAsync(() => {
                 const ctx = _bindSimpleValue('a', TestData);
                 ctx.componentInstance.a = 'value';
@@ -1231,6 +1251,19 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
                 ctx.detectChanges();
                 expect(renderLog.loggedValues).toEqual(['value']);
               }));
+
+      it('should not break the next run (view engine and ivy)', fakeAsync(() => {
+           const ctx = _bindSimpleValue('a', TestData);
+
+           ctx.detectChanges();
+           renderLog.clear();
+
+           ctx.componentInstance.a = 'value';
+           expect(() => ctx.checkNoChanges()).toThrow();
+
+           ctx.detectChanges();
+           expect(renderLog.loggedValues).toEqual(['value']);
+         }));
     });
 
     describe('mode', () => {
@@ -1316,7 +1349,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
     });
 
     describe('multi directive order', () => {
-      fixmeIvy('FW-822: Order of bindings to directive inputs different in ivy')
+      modifiedInIvy('order of bindings to directive inputs is different in ivy')
           .it('should follow the DI order for the same element', fakeAsync(() => {
                 const ctx = createCompFixture(
                     '<div orderCheck2="2" orderCheck0="0" orderCheck1="1"></div>');

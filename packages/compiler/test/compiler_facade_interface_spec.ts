@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as core from '../../core/src/render3/jit/compiler_facade_interface';
+import * as core from '../../core/src/compiler/compiler_facade_interface';
 import {R3ResolvedDependencyType} from '../public_api';
 import * as compiler from '../src/compiler_facade_interface';
 

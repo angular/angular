@@ -48,8 +48,21 @@ export class SimpleCmp {
 export class WithRefsCmp {
 }
 
+@Component({selector: 'inherited-cmp', template: 'inherited'})
+export class InheritedCmp extends SimpleCmp {
+}
+
+@Component({
+  selector: 'simple-app',
+  template: `
+    <simple-cmp></simple-cmp> - <inherited-cmp></inherited-cmp>
+  `
+})
+export class SimpleApp {
+}
+
 @NgModule({
-  declarations: [HelloWorld, SimpleCmp, WithRefsCmp],
+  declarations: [HelloWorld, SimpleCmp, WithRefsCmp, InheritedCmp, SimpleApp],
   imports: [GreetingModule],
   providers: [
     {provide: NAME, useValue: 'World!'},
@@ -172,6 +185,13 @@ describe('TestBed', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
     expect(hello.nativeElement).toHaveText('Hello injected World !');
+  });
+
+  it('should resolve components that are extended by other components', () => {
+    // SimpleApp uses SimpleCmp in its template, which is extended by InheritedCmp
+    const simpleApp = TestBed.createComponent(SimpleApp);
+    simpleApp.detectChanges();
+    expect(simpleApp.nativeElement).toHaveText('simple - inherited');
   });
 
   onlyInIvy('patched ng defs should be removed after resetting TestingModule')

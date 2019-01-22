@@ -11,7 +11,7 @@ import {AfterContentInit, AfterViewInit, Component, ContentChildren, Directive, 
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, modifiedInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
+import {modifiedInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
 
 if (ivyEnabled) {
   describe('ivy', () => { declareTests(); });
@@ -136,7 +136,7 @@ function declareTests(config?: {useJit: boolean}) {
       expect(dir.text).toEqual('container');
     });
 
-    fixmeIvy('FW-795: Queries with descendants: true don\'t descent into <ng-container>')
+    modifiedInIvy('Queries with descendants: true don\'t descent into <ng-container>')
         .it('should contain all direct child directives in a <ng-container> (content dom)', () => {
           const template =
               '<needs-content-children #q><ng-container><div text="foo"></div></ng-container></needs-content-children>';

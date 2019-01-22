@@ -169,7 +169,7 @@ describe('compiler compliance', () => {
     });
 
     // TODO(https://github.com/angular/angular/issues/24426): We need to support the parser actually
-    // building the proper attributes based off of xmlns atttribuates.
+    // building the proper attributes based off of xmlns attributes.
     xit('should support namspaced attributes', () => {
       const files = {
         app: {
@@ -640,9 +640,6 @@ describe('compiler compliance', () => {
           'spec.ts': `
             import {Component, Directive, NgModule} from '@angular/core';
 
-            @Directive({})
-            export class EmptyOutletDirective {}
-
             @Component({template: '<router-outlet></router-outlet>'})
             export class EmptyOutletComponent {}
 
@@ -651,16 +648,6 @@ describe('compiler compliance', () => {
           `
         }
       };
-
-      // EmptyOutletDirective definition should be:
-      const EmptyOutletDirectiveDefinition = `
-        …
-        EmptyOutletDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
-          type: EmptyOutletDirective,
-          selectors: [],
-          factory: function EmptyOutletDirective_Factory(t) { return new (t || EmptyOutletDirective)(); }
-        });
-      `;
 
       // EmptyOutletComponent definition should be:
       const EmptyOutletComponentDefinition = `
@@ -684,10 +671,45 @@ describe('compiler compliance', () => {
       const source = result.source;
 
       expectEmit(
-          source, EmptyOutletDirectiveDefinition,
-          'Incorrect EmptyOutletDirective.ngDirectiveDefDef');
-      expectEmit(
           source, EmptyOutletComponentDefinition, 'Incorrect EmptyOutletComponent.ngComponentDef');
+    });
+
+    it('should not support directives without selector', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, Directive, NgModule} from '@angular/core';
+
+            @Directive({})
+            export class EmptyOutletDirective {}
+
+            @NgModule({declarations: [EmptyOutletDirective]})
+            export class MyModule{}
+          `
+        }
+      };
+
+      expect(() => compile(files, angularFiles))
+          .toThrowError('Directive EmptyOutletDirective has no selector, please add it!');
+    });
+
+    it('should not support directives with empty selector', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, Directive, NgModule} from '@angular/core';
+
+            @Directive({selector: ''})
+            export class EmptyOutletDirective {}
+
+            @NgModule({declarations: [EmptyOutletDirective]})
+            export class MyModule{}
+          `
+        }
+      };
+
+      expect(() => compile(files, angularFiles))
+          .toThrowError('Directive EmptyOutletDirective has no selector, please add it!');
     });
 
     it('should not treat ElementRef, ViewContainerRef, or ChangeDetectorRef specially when injecting',
@@ -1122,6 +1144,7 @@ describe('compiler compliance', () => {
             type: SimpleComponent,
             selectors: [["simple"]],
             factory: function SimpleComponent_Factory(t) { return new (t || SimpleComponent)(); },
+            ngContentSelectors: _c0,
             consts: 2,
             vars: 0,
             template:  function SimpleComponent_Template(rf, ctx) {
@@ -1145,6 +1168,7 @@ describe('compiler compliance', () => {
             type: ComplexComponent,
             selectors: [["complex"]],
             factory: function ComplexComponent_Factory(t) { return new (t || ComplexComponent)(); },
+            ngContentSelectors: _c4,
             consts: 4,
             vars: 0,
             template:  function ComplexComponent_Template(rf, ctx) {
@@ -1539,6 +1563,7 @@ describe('compiler compliance', () => {
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && ($instance$.someDir = $tmp$.first));
               ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && ($instance$.someDirList = $tmp$));
             },
+            ngContentSelectors: _c0,
             consts: 2,
             vars: 0,
             template:  function ContentQueryComponent_Template(rf, ctx) {
@@ -2092,7 +2117,6 @@ describe('compiler compliance', () => {
             selectors: [["lifecycle-comp"]],
             factory: function LifecycleComp_Factory(t) { return new (t || LifecycleComp)(); },
             inputs: {nameMin: ["name", "nameMin"]},
-            features: [$r3$.ɵNgOnChangesFeature],
             consts: 0,
             vars: 0,
             template:  function LifecycleComp_Template(rf, ctx) {},
@@ -2217,7 +2241,6 @@ describe('compiler compliance', () => {
                 factory: function ForOfDirective_Factory(t) {
                   return new (t || ForOfDirective)($r3$.ɵdirectiveInject(ViewContainerRef), $r3$.ɵdirectiveInject(TemplateRef));
                 },
-                features: [$r3$.ɵNgOnChangesFeature],
                 inputs: {forOf: "forOf"}
               });
             `;
@@ -2293,7 +2316,6 @@ describe('compiler compliance', () => {
             factory: function ForOfDirective_Factory(t) {
               return new (t || ForOfDirective)($r3$.ɵdirectiveInject(ViewContainerRef), $r3$.ɵdirectiveInject(TemplateRef));
             },
-            features: [$r3$.ɵNgOnChangesFeature],
             inputs: {forOf: "forOf"}
           });
         `;
@@ -2511,6 +2533,38 @@ describe('compiler compliance', () => {
       const source = result.source;
       expectEmit(source, MyAppDefinition, 'Invalid component definition');
     });
+
+    it('should split multiple `exportAs` values into an array', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Directive, NgModule} from '@angular/core';
+
+            @Directive({selector: '[some-directive]', exportAs: 'someDir, otherDir'})
+            export class SomeDirective {}
+
+            @NgModule({declarations: [SomeDirective, MyComponent]})
+            export class MyModule{}
+          `
+        }
+      };
+
+      // SomeDirective definition should be:
+      const SomeDirectiveDefinition = `
+        SomeDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
+          type: SomeDirective,
+          selectors: [["", "some-directive", ""]],
+          factory: function SomeDirective_Factory(t) {return new (t || SomeDirective)(); },
+          exportAs: ["someDir", "otherDir"]
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+
+      expectEmit(source, SomeDirectiveDefinition, 'Incorrect SomeDirective.ngDirectiveDef');
+    });
+
   });
 
   describe('inherited base classes', () => {

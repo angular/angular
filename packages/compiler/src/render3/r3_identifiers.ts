@@ -34,6 +34,9 @@ export class Identifiers {
   static componentHostSyntheticProperty:
       o.ExternalReference = {name: 'ɵcomponentHostSyntheticProperty', moduleName: CORE};
 
+  static componentHostSyntheticListener:
+      o.ExternalReference = {name: 'ɵcomponentHostSyntheticListener', moduleName: CORE};
+
   static elementAttribute: o.ExternalReference = {name: 'ɵelementAttribute', moduleName: CORE};
 
   static elementClassProp: o.ExternalReference = {name: 'ɵelementClassProp', moduleName: CORE};
@@ -131,6 +134,10 @@ export class Identifiers {
   static templateRefExtractor:
       o.ExternalReference = {name: 'ɵtemplateRefExtractor', moduleName: CORE};
 
+  static resolveWindow: o.ExternalReference = {name: 'ɵresolveWindow', moduleName: CORE};
+  static resolveDocument: o.ExternalReference = {name: 'ɵresolveDocument', moduleName: CORE};
+  static resolveBody: o.ExternalReference = {name: 'ɵresolveBody', moduleName: CORE};
+
   static defineBase: o.ExternalReference = {name: 'ɵdefineBase', moduleName: CORE};
 
   static BaseDef: o.ExternalReference = {
@@ -181,8 +188,6 @@ export class Identifiers {
   static registerContentQuery:
       o.ExternalReference = {name: 'ɵregisterContentQuery', moduleName: CORE};
 
-  static NgOnChangesFeature: o.ExternalReference = {name: 'ɵNgOnChangesFeature', moduleName: CORE};
-
   static InheritDefinitionFeature:
       o.ExternalReference = {name: 'ɵInheritDefinitionFeature', moduleName: CORE};
 
@@ -209,4 +214,6 @@ export class Identifiers {
       o.ExternalReference = {name: 'ɵsanitizeResourceUrl', moduleName: CORE};
   static sanitizeScript: o.ExternalReference = {name: 'ɵsanitizeScript', moduleName: CORE};
   static sanitizeUrl: o.ExternalReference = {name: 'ɵsanitizeUrl', moduleName: CORE};
+  static sanitizeUrlOrResourceUrl:
+      o.ExternalReference = {name: 'ɵsanitizeUrlOrResourceUrl', moduleName: CORE};
 }

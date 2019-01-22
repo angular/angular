@@ -19,19 +19,18 @@ def rules_angular_dependencies():
     #
     # Download Bazel toolchain dependencies as needed by build actions
     # Use a SHA to get fix for needing symlink_prefix during npm publishing
-    # TODO(alexeagle): update to release later than 0.16.4
     _maybe(
         http_archive,
         name = "build_bazel_rules_nodejs",
-        url = "https://github.com/bazelbuild/rules_nodejs/archive/bbf31af8aafad8dd5193356081c6b233ba143aa3.zip",
-        strip_prefix = "rules_nodejs-bbf31af8aafad8dd5193356081c6b233ba143aa3",
+        url = "https://github.com/bazelbuild/rules_nodejs/archive/0.16.5.zip",
+        strip_prefix = "rules_nodejs-0.16.5",
     )
 
     _maybe(
         http_archive,
         name = "build_bazel_rules_typescript",
-        url = "https://github.com/bazelbuild/rules_typescript/archive/0.22.0.zip",
-        strip_prefix = "rules_typescript-0.22.0",
+        url = "https://github.com/bazelbuild/rules_typescript/archive/0.22.1.zip",
+        strip_prefix = "rules_typescript-0.22.1",
     )
 
     # Needed for Remote Execution
@@ -53,19 +52,6 @@ def rules_angular_dev_dependencies():
     These are in this file to keep version information in one place, and make the WORKSPACE
     shorter.
     """
-
-    # We have a source dependency on the Devkit repository, because it's built with
-    # Bazel.
-    # This allows us to edit sources and have the effect appear immediately without
-    # re-packaging or "npm link"ing.
-    # Even better, things like aspects will visit the entire graph including
-    # ts_library rules in the devkit repository.
-    http_archive(
-        name = "angular_cli",
-        sha256 = "8cf320ea58c321e103f39087376feea502f20eaf79c61a4fdb05c7286c8684fd",
-        strip_prefix = "angular-cli-6.1.0-rc.0",
-        url = "https://github.com/angular/angular-cli/archive/v6.1.0-rc.0.zip",
-    )
 
     http_archive(
         name = "org_brotli",

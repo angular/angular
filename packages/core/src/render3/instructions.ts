@@ -6,22 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InjectFlags, InjectionToken, Injector} from '../di';
 import {resolveForwardRef} from '../di/forward_ref';
-import {InjectionToken} from '../di/injection_token';
-import {Injector} from '../di/injector';
-import {InjectFlags} from '../di/injector_compatibility';
+import {Type} from '../interface/type';
 import {QueryList} from '../linker';
+import {validateAttribute, validateProperty} from '../sanitization/sanitization';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
-import {Type} from '../type';
+import {assertDataInRange, assertDefined, assertEqual, assertLessThan, assertNotEqual} from '../util/assert';
+import {isObservable} from '../util/lang';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
 
-import {assertDataInRange, assertDefined, assertEqual, assertHasParent, assertLessThan, assertNotEqual, assertPreviousIsParent} from './assert';
+import {assertHasParent, assertPreviousIsParent} from './assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from './bindings';
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
 import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreateNodeInjectorForNode, injectAttributeImpl} from './di';
 import {throwMultipleComponentError} from './errors';
-import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
+import {executeHooks, executeInitHooks, registerPostOrderHooks, registerPreOrderHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
 import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from './interfaces/injector';
@@ -29,18 +30,19 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {PlayerFactory} from './interfaces/player';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {GlobalTargetResolver, ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {appendChild, appendProjectedNode, createTextNode, getLViewChild, getRenderParent, insertView, removeView} from './node_manipulation';
+import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
+import {OnChangesDirectiveWrapper, isOnChangesDirectiveWrapper, recordChange, unwrapOnChangesDirectiveWrapper} from './onchanges_util';
 import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
 import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
-import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, loadInternal, readElementValue, readPatchedLView, stringify} from './util';
+import {findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isContentQueryHost, loadInternal, readElementValue, readPatchedLView, renderStringify} from './util';
 
 
 
@@ -119,7 +121,7 @@ export function setHostBindings(tView: TView, viewData: LView): void {
         if (instruction !== null) {
           viewData[BINDING_INDEX] = bindingRootIndex;
           instruction(
-              RenderFlags.Update, readElementValue(viewData[currentDirectiveIndex]),
+              RenderFlags.Update, unwrapOnChangesDirectiveWrapper(viewData[currentDirectiveIndex]),
               currentElementIndex);
         }
         currentDirectiveIndex++;
@@ -346,8 +348,6 @@ export function createEmbeddedViewAndNode<T>(
 export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, context: T) {
   const _isParent = getIsParent();
   const _previousOrParentTNode = getPreviousOrParentTNode();
-  setIsParent(true);
-  setPreviousOrParentTNode(null !);
   let oldView: LView;
   if (viewToRender[FLAGS] & LViewFlags.IsRoot) {
     // This is a root view inside the view tree
@@ -395,12 +395,13 @@ function renderComponentOrTemplate<T>(
   const rendererFactory = hostView[RENDERER_FACTORY];
   const oldView = enterView(hostView, hostView[HOST_NODE]);
   const normalExecutionPath = !getCheckNoChangesMode();
+  const creationModeIsActive = isCreationMode(hostView);
   try {
-    if (normalExecutionPath && rendererFactory.begin) {
+    if (normalExecutionPath && !creationModeIsActive && rendererFactory.begin) {
       rendererFactory.begin();
     }
 
-    if (isCreationMode(hostView)) {
+    if (creationModeIsActive) {
       // creation mode pass
       if (templateFn) {
         namespaceHTML();
@@ -415,7 +416,7 @@ function renderComponentOrTemplate<T>(
     templateFn && templateFn(RenderFlags.Update, context !);
     refreshDescendantViews(hostView);
   } finally {
-    if (normalExecutionPath && rendererFactory.end) {
+    if (normalExecutionPath && !creationModeIsActive && rendererFactory.end) {
       rendererFactory.end();
     }
     leaveView(oldView);
@@ -521,7 +522,7 @@ export function elementContainerEnd(): void {
     lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TElementContainerNode);
   }
 
-  queueLifecycleHooks(tView, previousOrParentTNode);
+  registerPostOrderHooks(tView, previousOrParentTNode);
 }
 
 /**
@@ -623,7 +624,7 @@ export function elementCreate(name: string, overriddenRenderer?: Renderer3): REl
  * @param localRefExtractor mapping function that extracts local ref value from TNode
  */
 function createDirectivesAndLocals(
-    tView: TView, viewData: LView, localRefs: string[] | null | undefined,
+    tView: TView, lView: LView, localRefs: string[] | null | undefined,
     localRefExtractor: LocalRefExtractor = getNativeByTNode) {
   if (!getBindingsEnabled()) return;
   const previousOrParentTNode = getPreviousOrParentTNode();
@@ -631,12 +632,19 @@ function createDirectivesAndLocals(
     ngDevMode && ngDevMode.firstTemplatePass++;
 
     resolveDirectives(
-        tView, viewData, findDirectiveMatches(tView, viewData, previousOrParentTNode),
+        tView, lView, findDirectiveMatches(tView, lView, previousOrParentTNode),
         previousOrParentTNode, localRefs || null);
+  } else {
+    // During first template pass, queries are created or cloned when first requested
+    // using `getOrCreateCurrentQueries`. For subsequent template passes, we clone
+    // any current LQueries here up-front if the current node hosts a content query.
+    if (isContentQueryHost(getPreviousOrParentTNode()) && lView[QUERIES]) {
+      lView[QUERIES] = lView[QUERIES] !.clone();
+    }
   }
-  instantiateAllDirectives(tView, viewData, previousOrParentTNode);
-  invokeDirectivesHostBindings(tView, viewData, previousOrParentTNode);
-  saveResolvedLocalsInData(viewData, previousOrParentTNode, localRefExtractor);
+  instantiateAllDirectives(tView, lView, previousOrParentTNode);
+  invokeDirectivesHostBindings(tView, lView, previousOrParentTNode);
+  saveResolvedLocalsInData(lView, previousOrParentTNode, localRefExtractor);
 }
 
 /**
@@ -718,6 +726,7 @@ export function createTView(
     expandoStartIndex: initialViewLength,
     expandoInstructions: null,
     firstTemplatePass: true,
+    changesHooks: null,
     initHooks: null,
     checkHooks: null,
     contentHooks: null,
@@ -743,31 +752,62 @@ function createViewBlueprint(bindingStartIndex: number, initialViewLength: numbe
   return blueprint;
 }
 
-function setUpAttributes(native: RElement, attrs: TAttributes): void {
+/**
+ * Assigns all attribute values to the provided element via the inferred renderer.
+ *
+ * This function accepts two forms of attribute entries:
+ *
+ * default: (key, value):
+ *  attrs = [key1, value1, key2, value2]
+ *
+ * namespaced: (NAMESPACE_MARKER, uri, name, value)
+ *  attrs = [NAMESPACE_MARKER, uri, name, value, NAMESPACE_MARKER, uri, name, value]
+ *
+ * The `attrs` array can contain a mix of both the default and namespaced entries.
+ * The "default" values are set without a marker, but if the function comes across
+ * a marker value then it will attempt to set a namespaced value. If the marker is
+ * not of a namespaced value then the function will quit and return the index value
+ * where it stopped during the iteration of the attrs array.
+ *
+ * See [AttributeMarker] to understand what the namespace marker value is.
+ *
+ * Note that this instruction does not support assigning style and class values to
+ * an element. See `elementStart` and `elementHostAttrs` to learn how styling values
+ * are applied to an element.
+ *
+ * @param native The element that the attributes will be assigned to
+ * @param attrs The attribute array of values that will be assigned to the element
+ * @returns the index value that was last accessed in the attributes array
+ */
+function setUpAttributes(native: RElement, attrs: TAttributes): number {
   const renderer = getLView()[RENDERER];
   const isProc = isProceduralRenderer(renderer);
-  let i = 0;
 
+  let i = 0;
   while (i < attrs.length) {
-    const attrName = attrs[i++];
-    if (typeof attrName == 'number') {
-      if (attrName === AttributeMarker.NamespaceURI) {
-        // Namespaced attributes
-        const namespaceURI = attrs[i++] as string;
-        const attrName = attrs[i++] as string;
-        const attrVal = attrs[i++] as string;
-        ngDevMode && ngDevMode.rendererSetAttribute++;
-        isProc ?
-            (renderer as ProceduralRenderer3)
-                .setAttribute(native, attrName, attrVal, namespaceURI) :
-            native.setAttributeNS(namespaceURI, attrName, attrVal);
-      } else {
-        // All other `AttributeMarker`s are ignored here.
+    const value = attrs[i];
+    if (typeof value === 'number') {
+      // only namespaces are supported. Other value types (such as style/class
+      // entries) are not supported in this function.
+      if (value !== AttributeMarker.NamespaceURI) {
         break;
       }
+
+      // we just landed on the marker value ... therefore
+      // we should skip to the next entry
+      i++;
+
+      const namespaceURI = attrs[i++] as string;
+      const attrName = attrs[i++] as string;
+      const attrVal = attrs[i++] as string;
+      ngDevMode && ngDevMode.rendererSetAttribute++;
+      isProc ?
+          (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal, namespaceURI) :
+          native.setAttributeNS(namespaceURI, attrName, attrVal);
     } else {
       /// attrName is string;
-      const attrVal = attrs[i++];
+      const attrName = value as string;
+      const attrVal = attrs[++i];
       if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
         // Standard attributes
         ngDevMode && ngDevMode.rendererSetAttribute++;
@@ -782,12 +822,19 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
               native.setAttribute(attrName as string, attrVal as string);
         }
       }
+      i++;
     }
   }
+
+  // another piece of code may iterate over the same attributes array. Therefore
+  // it may be helpful to return the exact spot where the attributes array exited
+  // whether by running into an unsupported marker or if all the static values were
+  // iterated over.
+  return i;
 }
 
 export function createError(text: string, token: any) {
-  return new Error(`Renderer: ${text} [${stringify(token)}]`);
+  return new Error(`Renderer: ${text} [${renderStringify(token)}]`);
 }
 
 
@@ -822,10 +869,45 @@ export function locateHostElement(
  *
  * @param eventName Name of the event
  * @param listenerFn The function to be called when event emits
- * @param useCapture Whether or not to use capture in event listener.
+ * @param useCapture Whether or not to use capture in event listener
+ * @param eventTargetResolver Function that returns global target information in case this listener
+ * should be attached to a global object like window, document or body
  */
 export function listener(
-    eventName: string, listenerFn: (e?: any) => any, useCapture = false): void {
+    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
+    eventTargetResolver?: GlobalTargetResolver): void {
+  listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver);
+}
+
+/**
+ * Registers a synthetic host listener (e.g. `(@foo.start)`) on a component.
+ *
+ * This instruction is for compatibility purposes and is designed to ensure that a
+ * synthetic host listener (e.g. `@HostListener('@foo.start')`) properly gets rendered
+ * in the component's renderer. Normally all host listeners are evaluated with the
+ * parent component's renderer, but, in the case of animation @triggers, they need
+ * to be evaluated with the sub component's renderer (because that's where the
+ * animation triggers are defined).
+ *
+ * Do not use this instruction as a replacement for `listener`. This instruction
+ * only exists to ensure compatibility with the ViewEngine's host binding behavior.
+ *
+ * @param eventName Name of the event
+ * @param listenerFn The function to be called when event emits
+ * @param useCapture Whether or not to use capture in event listener
+ * @param eventTargetResolver Function that returns global target information in case this listener
+ * should be attached to a global object like window, document or body
+ */
+export function componentHostSyntheticListener<T>(
+    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
+    eventTargetResolver?: GlobalTargetResolver): void {
+  listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver, loadComponentRenderer);
+}
+
+function listenerInternal(
+    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
+    eventTargetResolver?: GlobalTargetResolver,
+    loadRendererFn?: ((tNode: TNode, lView: LView) => Renderer3) | null): void {
   const lView = getLView();
   const tNode = getPreviousOrParentTNode();
   const tView = lView[TVIEW];
@@ -837,8 +919,10 @@ export function listener(
   // add native event listener - applicable to elements only
   if (tNode.type === TNodeType.Element) {
     const native = getNativeByTNode(tNode, lView) as RElement;
+    const resolved = eventTargetResolver ? eventTargetResolver(native) : {} as any;
+    const target = resolved.target || native;
     ngDevMode && ngDevMode.rendererAddEventListener++;
-    const renderer = lView[RENDERER];
+    const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     const lCleanup = getCleanup(lView);
     const lCleanupIndex = lCleanup.length;
     let useCaptureOrSubIdx: boolean|number = useCapture;
@@ -846,15 +930,22 @@ export function listener(
     // In order to match current behavior, native DOM event listeners must be added for all
     // events (including outputs).
     if (isProceduralRenderer(renderer)) {
-      const cleanupFn = renderer.listen(native, eventName, listenerFn);
+      // The first argument of `listen` function in Procedural Renderer is:
+      // - either a target name (as a string) in case of global target (window, document, body)
+      // - or element reference (in all other cases)
+      const cleanupFn = renderer.listen(resolved.name || target, eventName, listenerFn);
       lCleanup.push(listenerFn, cleanupFn);
       useCaptureOrSubIdx = lCleanupIndex + 1;
     } else {
       const wrappedListener = wrapListenerWithPreventDefault(listenerFn);
-      native.addEventListener(eventName, wrappedListener, useCapture);
+      target.addEventListener(eventName, wrappedListener, useCapture);
       lCleanup.push(wrappedListener);
     }
-    tCleanup && tCleanup.push(eventName, tNode.index, lCleanupIndex, useCaptureOrSubIdx);
+
+    const idxOrTargetGetter = eventTargetResolver ?
+        (_lView: LView) => eventTargetResolver(readElementValue(_lView[tNode.index])).target :
+        tNode.index;
+    tCleanup && tCleanup.push(eventName, idxOrTargetGetter, lCleanupIndex, useCaptureOrSubIdx);
   }
 
   // subscribe to directive outputs
@@ -870,9 +961,21 @@ export function listener(
     const propsLength = props.length;
     if (propsLength) {
       const lCleanup = getCleanup(lView);
-      for (let i = 0; i < propsLength; i += 2) {
-        ngDevMode && assertDataInRange(lView, props[i] as number);
-        const subscription = lView[props[i] as number][props[i + 1]].subscribe(listenerFn);
+      // Subscribe to listeners for each output, and setup clean up for each.
+      for (let i = 0; i < propsLength;) {
+        const directiveIndex = props[i++] as number;
+        const minifiedName = props[i++] as string;
+        const declaredName = props[i++] as string;
+        ngDevMode && assertDataInRange(lView, directiveIndex as number);
+        const directive = unwrapOnChangesDirectiveWrapper(lView[directiveIndex]);
+        const output = directive[minifiedName];
+
+        if (ngDevMode && !isObservable(output)) {
+          throw new Error(
+              `@Output ${minifiedName} not initialized in '${directive.constructor.name}'.`);
+        }
+
+        const subscription = output.subscribe(listenerFn);
         const idx = lCleanup.length;
         lCleanup.push(listenerFn, subscription);
         tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
@@ -930,7 +1033,7 @@ export function elementEnd(): void {
     lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TElementNode);
   }
 
-  queueLifecycleHooks(getLView()[TVIEW], previousOrParentTNode);
+  registerPostOrderHooks(getLView()[TVIEW], previousOrParentTNode);
   decreaseElementDepthCount();
 
   // this is fired at the end of elementEnd because ALL of the stylingBindings code
@@ -939,7 +1042,7 @@ export function elementEnd(): void {
   if (hasClassInput(previousOrParentTNode)) {
     const stylingContext = getStylingContext(previousOrParentTNode.index, lView);
     setInputsForProperty(
-        lView, previousOrParentTNode.inputs !['class'] !, getInitialClassNameValue(stylingContext));
+        lView, previousOrParentTNode.inputs !, 'class', getInitialClassNameValue(stylingContext));
   }
 }
 
@@ -955,6 +1058,7 @@ export function elementEnd(): void {
 export function elementAttribute(
     index: number, name: string, value: any, sanitizer?: SanitizerFn | null): void {
   if (value !== NO_CHANGE) {
+    ngDevMode && validateAttribute(name);
     const lView = getLView();
     const renderer = lView[RENDERER];
     const element = getNativeByIndex(index, lView);
@@ -964,7 +1068,9 @@ export function elementAttribute(
                                        element.removeAttribute(name);
     } else {
       ngDevMode && ngDevMode.rendererSetAttribute++;
-      const strValue = sanitizer == null ? stringify(value) : sanitizer(value);
+      const tNode = getTNode(index, lView);
+      const strValue =
+          sanitizer == null ? renderStringify(value) : sanitizer(value, tNode.tagName || '', name);
       isProceduralRenderer(renderer) ? renderer.setAttribute(element, name, strValue) :
                                        element.setAttribute(name, strValue);
     }
@@ -999,7 +1105,7 @@ export function elementProperty<T>(
  * synthetic host binding (e.g. `@HostBinding('@foo')`) properly gets rendered in
  * the component's renderer. Normally all host bindings are evaluated with the parent
  * component's renderer, but, in the case of animation @triggers, they need to be
- * evaluated with the sub components renderer (because that's where the animation
+ * evaluated with the sub component's renderer (because that's where the animation
  * triggers are defined).
  *
  * Do not use this instruction as a replacement for `elementProperty`. This instruction
@@ -1019,11 +1125,6 @@ export function componentHostSyntheticProperty<T>(
   elementPropertyInternal(index, propName, value, sanitizer, nativeOnly, loadComponentRenderer);
 }
 
-function loadComponentRenderer(tNode: TNode, lView: LView): Renderer3 {
-  const componentLView = lView[tNode.index] as LView;
-  return componentLView[RENDERER];
-}
-
 function elementPropertyInternal<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean,
@@ -1036,7 +1137,7 @@ function elementPropertyInternal<T>(
   let dataValue: PropertyAliasValue|undefined;
   if (!nativeOnly && (inputData = initializeTNodeInputs(tNode)) &&
       (dataValue = inputData[propName])) {
-    setInputsForProperty(lView, dataValue, value);
+    setInputsForProperty(lView, inputData, propName, value);
     if (isComponent(tNode)) markDirtyIfOnPush(lView, index + HEADER_OFFSET);
     if (ngDevMode) {
       if (tNode.type === TNodeType.Element || tNode.type === TNodeType.Container) {
@@ -1044,11 +1145,14 @@ function elementPropertyInternal<T>(
       }
     }
   } else if (tNode.type === TNodeType.Element) {
+    if (ngDevMode) {
+      validateProperty(propName);
+      ngDevMode.rendererSetProperty++;
+    }
     const renderer = loadRendererFn ? loadRendererFn(tNode, lView) : lView[RENDERER];
     // It is assumed that the sanitizer is only added when the compiler determines that the property
     // is risky, so sanitization can be done without further checks.
-    value = sanitizer != null ? (sanitizer(value) as any) : value;
-    ngDevMode && ngDevMode.rendererSetProperty++;
+    value = sanitizer != null ? (sanitizer(value, tNode.tagName || '', propName) as any) : value;
     if (isProceduralRenderer(renderer)) {
       renderer.setProperty(element as RElement, propName, value);
     } else if (!isAnimationProp(propName)) {
@@ -1106,22 +1210,35 @@ export function createTNode(
 }
 
 /**
- * Given a list of directive indices and minified input names, sets the
- * input properties on the corresponding directives.
+ * Set the inputs of directives at the current node to corresponding value.
+ *
+ * @param lView the `LView` which contains the directives.
+ * @param inputAliases mapping between the public "input" name and privately-known,
+ * possibly minified, property names to write to.
+ * @param publicName public binding name. (This is the `<div [publicName]=value>`)
+ * @param value Value to set.
  */
-function setInputsForProperty(lView: LView, inputs: PropertyAliasValue, value: any): void {
-  for (let i = 0; i < inputs.length; i += 2) {
-    ngDevMode && assertDataInRange(lView, inputs[i] as number);
-    lView[inputs[i] as number][inputs[i + 1]] = value;
+function setInputsForProperty(
+    lView: LView, inputAliases: PropertyAliases, publicName: string, value: any): void {
+  const inputs = inputAliases[publicName];
+  for (let i = 0; i < inputs.length;) {
+    const directiveIndex = inputs[i++] as number;
+    const privateName = inputs[i++] as string;
+    const declaredName = inputs[i++] as string;
+    ngDevMode && assertDataInRange(lView, directiveIndex);
+    recordChangeAndUpdateProperty(lView[directiveIndex], declaredName, privateName, value);
   }
 }
 
 function setNgReflectProperties(
     lView: LView, element: RElement | RComment, type: TNodeType, inputs: PropertyAliasValue,
     value: any) {
-  for (let i = 0; i < inputs.length; i += 2) {
+  for (let i = 0; i < inputs.length;) {
+    const directiveIndex = inputs[i++] as number;
+    const privateName = inputs[i++] as string;
+    const declaredName = inputs[i++] as string;
     const renderer = lView[RENDERER];
-    const attrName = normalizeDebugBindingName(inputs[i + 1] as string);
+    const attrName = normalizeDebugBindingName(privateName);
     const debugValue = normalizeDebugBindingValue(value);
     if (type === TNodeType.Element) {
       isProceduralRenderer(renderer) ?
@@ -1157,15 +1274,20 @@ function generatePropertyAliases(tNode: TNode, direction: BindingDirection): Pro
 
     for (let i = start; i < end; i++) {
       const directiveDef = defs[i] as DirectiveDef<any>;
-      const propertyAliasMap: {[publicName: string]: string} =
+      const publicToMinifiedNames: {[publicName: string]: string} =
           isInput ? directiveDef.inputs : directiveDef.outputs;
-      for (let publicName in propertyAliasMap) {
-        if (propertyAliasMap.hasOwnProperty(publicName)) {
+      const publicToDeclaredNames: {[publicName: string]: string}|null =
+          isInput ? directiveDef.declaredInputs : null;
+      for (let publicName in publicToMinifiedNames) {
+        if (publicToMinifiedNames.hasOwnProperty(publicName)) {
           propStore = propStore || {};
-          const internalName = propertyAliasMap[publicName];
-          const hasProperty = propStore.hasOwnProperty(publicName);
-          hasProperty ? propStore[publicName].push(i, internalName) :
-                        (propStore[publicName] = [i, internalName]);
+          const minifiedName = publicToMinifiedNames[publicName];
+          const declaredName =
+              publicToDeclaredNames ? publicToDeclaredNames[publicName] : minifiedName;
+          const aliases: PropertyAliasValue = propStore.hasOwnProperty(publicName) ?
+              propStore[publicName] :
+              propStore[publicName] = [];
+          aliases.push(i, minifiedName, declaredName);
         }
       }
     }
@@ -1207,19 +1329,41 @@ export function elementStyling(
 }
 
 /**
- * Assign static styling values to a host element.
+ * Assign static attribute values to a host element.
+ *
+ * This instruction will assign static attribute values as well as class and style
+ * values to an element within the host bindings function. Since attribute values
+ * can consist of different types of values, the `attrs` array must include the values in
+ * the following format:
+ *
+ * attrs = [
+ *   // static attributes (like `title`, `name`, `id`...)
+ *   attr1, value1, attr2, value,
+ *
+ *   // a single namespace value (like `x:id`)
+ *   NAMESPACE_MARKER, namespaceUri1, name1, value1,
+ *
+ *   // another single namespace value (like `x:name`)
+ *   NAMESPACE_MARKER, namespaceUri2, name2, value2,
+ *
+ *   // a series of CSS classes that will be applied to the element (no spaces)
+ *   CLASSES_MARKER, class1, class2, class3,
+ *
+ *   // a series of CSS styles (property + value) that will be applied to the element
+ *   STYLES_MARKER, prop1, value1, prop2, value2
+ * ]
+ *
+ * All non-class and non-style attributes must be defined at the start of the list
+ * first before all class and style values are set. When there is a change in value
+ * type (like when classes and styles are introduced) a marker must be used to separate
+ * the entries. The marker values themselves are set via entries found in the
+ * [AttributeMarker] enum.
  *
  * NOTE: This instruction is meant to used from `hostBindings` function only.
  *
  * @param directive A directive instance the styling is associated with.
- * @param attrs An array containing class and styling information. The values must be marked with
- *              `AttributeMarker`.
- *
- *        ```
- *        var attrs = [AttributeMarker.Classes, 'foo', 'bar',
- *                     AttributeMarker.Styles, 'width', '100px', 'height, '200px']
- *        elementHostAttrs(directive, attrs);
- *        ```
+ * @param attrs An array of static values (attributes, classes and styles) with the correct marker
+ * values.
  *
  * @publicApi
  */
@@ -1228,7 +1372,10 @@ export function elementHostAttrs(directive: any, attrs: TAttributes) {
   if (!tNode.stylingTemplate) {
     tNode.stylingTemplate = initializeStaticStylingContext(attrs);
   }
-  patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, directive);
+  const lView = getLView();
+  const native = getNativeByTNode(tNode, lView) as RElement;
+  const i = setUpAttributes(native, attrs);
+  patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, i, directive);
 }
 
 /**
@@ -1291,7 +1438,7 @@ export function elementStyleProp(
     if (suffix) {
       // when a suffix is applied then it will bypass
       // sanitization entirely (b/c a new string is created)
-      valueToAdd = stringify(value) + suffix;
+      valueToAdd = renderStringify(value) + suffix;
     } else {
       // sanitization happens by dealing with a String value
       // this means that the string value will be passed through
@@ -1367,7 +1514,7 @@ export function elementStylingMap<T>(
     const initialClasses = getInitialClassNameValue(stylingContext);
     const classInputVal =
         (initialClasses.length ? (initialClasses + ' ') : '') + (classes as string);
-    setInputsForProperty(lView, tNode.inputs !['class'] !, classInputVal);
+    setInputsForProperty(lView, tNode.inputs !, 'class', classInputVal);
   } else {
     updateStylingMap(stylingContext, classes, styles);
   }
@@ -1420,8 +1567,8 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
     ngDevMode && assertDefined(element, 'native element should exist');
     ngDevMode && ngDevMode.rendererSetText++;
     const renderer = lView[RENDERER];
-    isProceduralRenderer(renderer) ? renderer.setValue(element, stringify(value)) :
-                                     element.textContent = stringify(value);
+    isProceduralRenderer(renderer) ? renderer.setValue(element, renderStringify(value)) :
+                                     element.textContent = renderStringify(value);
   }
 }
 
@@ -1478,7 +1625,7 @@ function resolveDirectives(
 
       // Init hooks are queued now so ngOnInit is called in host components before
       // any projected components.
-      queueInitHooks(directiveDefIdx, def.onInit, def.doCheck, tView);
+      registerPreOrderHooks(directiveDefIdx, def, tView);
     }
   }
   if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
@@ -1500,6 +1647,7 @@ function instantiateAllDirectives(tView: TView, lView: LView, tNode: TNode) {
       addComponentLogic(lView, tNode, def as ComponentDef<any>);
     }
     const directive = getNodeInjectable(tView.data, lView !, i, tNode as TElementNode);
+
     postProcessDirective(lView, directive, def, i);
   }
 }
@@ -1511,7 +1659,7 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
   const firstTemplatePass = getFirstTemplatePass();
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
-    const directive = viewData[i];
+    const directive = unwrapOnChangesDirectiveWrapper(viewData[i]);
     if (def.hostBindings) {
       const previousExpandoLength = expando.length;
       setCurrentDirectiveDef(def);
@@ -1568,12 +1716,17 @@ function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): voi
  * Process a directive on the current node after its creation.
  */
 function postProcessDirective<T>(
-    viewData: LView, directive: T, def: DirectiveDef<T>, directiveDefIdx: number): void {
+    lView: LView, directive: T, def: DirectiveDef<T>, directiveDefIdx: number): void {
+  if (def.onChanges) {
+    // We have onChanges, wrap it so that we can track changes.
+    lView[directiveDefIdx] = new OnChangesDirectiveWrapper(lView[directiveDefIdx]);
+  }
+
   const previousOrParentTNode = getPreviousOrParentTNode();
-  postProcessBaseDirective(viewData, previousOrParentTNode, directive, def);
+  postProcessBaseDirective(lView, previousOrParentTNode, directive, def);
   ngDevMode && assertDefined(previousOrParentTNode, 'previousOrParentTNode');
   if (previousOrParentTNode && previousOrParentTNode.attrs) {
-    setInputsFromAttrs(directiveDefIdx, directive, def.inputs, previousOrParentTNode);
+    setInputsFromAttrs(lView, directiveDefIdx, def, previousOrParentTNode);
   }
 
   if (def.contentQueries) {
@@ -1581,7 +1734,7 @@ function postProcessDirective<T>(
   }
 
   if (isComponentDef(def)) {
-    const componentView = getComponentViewByIndex(previousOrParentTNode.index, viewData);
+    const componentView = getComponentViewByIndex(previousOrParentTNode.index, lView);
     componentView[CONTEXT] = directive;
   }
 }
@@ -1601,11 +1754,6 @@ function postProcessBaseDirective<T>(
   attachPatchData(directive, lView);
   if (native) {
     attachPatchData(native, lView);
-  }
-
-  // TODO(misko): setUpAttributes should be a feature for better treeshakability.
-  if (def.attributes != null && previousOrParentTNode.type == TNodeType.Element) {
-    setUpAttributes(native as RElement, def.attributes as string[]);
   }
 }
 
@@ -1701,7 +1849,11 @@ function saveNameToExportMap(
     index: number, def: DirectiveDef<any>| ComponentDef<any>,
     exportsMap: {[key: string]: number} | null) {
   if (exportsMap) {
-    if (def.exportAs) exportsMap[def.exportAs] = index;
+    if (def.exportAs) {
+      for (let i = 0; i < def.exportAs.length; i++) {
+        exportsMap[def.exportAs[i]] = index;
+      }
+    }
     if ((def as ComponentDef<any>).template) exportsMap[''] = index;
   }
 }
@@ -1775,18 +1927,51 @@ function addComponentLogic<T>(
  * @param tNode The static data for this node
  */
 function setInputsFromAttrs<T>(
-    directiveIndex: number, instance: T, inputs: {[P in keyof T]: string;}, tNode: TNode): void {
+    lView: LView, directiveIndex: number, def: DirectiveDef<any>, tNode: TNode): void {
   let initialInputData = tNode.initialInputs as InitialInputData | undefined;
   if (initialInputData === undefined || directiveIndex >= initialInputData.length) {
-    initialInputData = generateInitialInputs(directiveIndex, inputs, tNode);
+    initialInputData = generateInitialInputs(directiveIndex, def, tNode);
   }
 
   const initialInputs: InitialInputs|null = initialInputData[directiveIndex];
   if (initialInputs) {
-    for (let i = 0; i < initialInputs.length; i += 2) {
-      (instance as any)[initialInputs[i]] = initialInputs[i + 1];
+    const directiveOrWrappedDirective = lView[directiveIndex];
+
+    for (let i = 0; i < initialInputs.length;) {
+      const privateName = initialInputs[i++];
+      const declaredName = initialInputs[i++];
+      const attrValue = initialInputs[i++];
+      recordChangeAndUpdateProperty(
+          directiveOrWrappedDirective, declaredName, privateName, attrValue);
     }
   }
+}
+
+/**
+ * Checks to see if the instanced passed as `directiveOrWrappedDirective` is wrapped in {@link
+ * OnChangesDirectiveWrapper} or not.
+ * If it is, it will update the related {@link SimpleChanges} object with the change to signal
+ * `ngOnChanges` hook
+ * should fire, then it will unwrap the instance. After that, it will set the property with the key
+ * provided
+ * in `privateName` on the instance with the passed value.
+ * @param directiveOrWrappedDirective The directive instance or a directive instance wrapped in
+ * {@link OnChangesDirectiveWrapper}
+ * @param declaredName The original, declared name of the property to update.
+ * @param privateName The private, possibly minified name of the property to update.
+ * @param value The value to update the property with.
+ */
+function recordChangeAndUpdateProperty<T, K extends keyof T>(
+    directiveOrWrappedDirective: OnChangesDirectiveWrapper<T>| T, declaredName: string,
+    privateName: K, value: any) {
+  let instance: T;
+  if (isOnChangesDirectiveWrapper(directiveOrWrappedDirective)) {
+    instance = unwrapOnChangesDirectiveWrapper(directiveOrWrappedDirective);
+    recordChange(directiveOrWrappedDirective, declaredName, value);
+  } else {
+    instance = directiveOrWrappedDirective;
+  }
+  instance[privateName] = value;
 }
 
 /**
@@ -1805,7 +1990,7 @@ function setInputsFromAttrs<T>(
  * @param tNode The static data on this node
  */
 function generateInitialInputs(
-    directiveIndex: number, inputs: {[key: string]: string}, tNode: TNode): InitialInputData {
+    directiveIndex: number, directiveDef: DirectiveDef<any>, tNode: TNode): InitialInputData {
   const initialInputData: InitialInputData = tNode.initialInputs || (tNode.initialInputs = []);
   initialInputData[directiveIndex] = null;
 
@@ -1813,19 +1998,23 @@ function generateInitialInputs(
   let i = 0;
   while (i < attrs.length) {
     const attrName = attrs[i];
-    if (attrName === AttributeMarker.SelectOnly) break;
+    // If we hit Select-Only, Classes or Styles, we're done anyway. None of those are valid inputs.
+    if (attrName === AttributeMarker.SelectOnly || attrName === AttributeMarker.Classes ||
+        attrName === AttributeMarker.Styles)
+      break;
     if (attrName === AttributeMarker.NamespaceURI) {
       // We do not allow inputs on namespaced attributes.
       i += 4;
       continue;
     }
-    const minifiedInputName = inputs[attrName];
+    const privateName = directiveDef.inputs[attrName];
+    const declaredName = directiveDef.declaredInputs[attrName];
     const attrValue = attrs[i + 1];
 
-    if (minifiedInputName !== undefined) {
+    if (privateName !== undefined) {
       const inputsToStore: InitialInputs =
           initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);
-      inputsToStore.push(minifiedInputName, attrValue as string);
+      inputsToStore.push(privateName, declaredName, attrValue as string);
     }
 
     i += 2;
@@ -1848,18 +2037,16 @@ function generateInitialInputs(
  * @returns LContainer
  */
 export function createLContainer(
-    hostNative: RElement | RComment,
-    hostTNode: TElementNode | TContainerNode | TElementContainerNode, currentView: LView,
-    native: RComment, isForViewContainerRef?: boolean): LContainer {
+    hostNative: RElement | RComment, currentView: LView, native: RComment,
+    isForViewContainerRef?: boolean): LContainer {
   return [
-    isForViewContainerRef ? -1 : 0,          // active index
-    [],                                      // views
-    currentView,                             // parent
-    null,                                    // next
-    null,                                    // queries
-    hostNative,                              // host native
-    native,                                  // native
-    getRenderParent(hostTNode, currentView)  // renderParent
+    isForViewContainerRef ? -1 : 0,  // active index
+    [],                              // views
+    currentView,                     // parent
+    null,                            // next
+    null,                            // queries
+    hostNative,                      // host native
+    native,                          // native
   ];
 }
 
@@ -1902,7 +2089,7 @@ export function template(
   if (currentQueries) {
     lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TContainerNode);
   }
-  queueLifecycleHooks(tView, tNode);
+  registerPostOrderHooks(tView, tNode);
   setIsParent(false);
 }
 
@@ -1932,8 +2119,7 @@ function containerInternal(
   const comment = lView[RENDERER].createComment(ngDevMode ? 'container' : '');
   ngDevMode && ngDevMode.rendererCreateComment++;
   const tNode = createNodeAtIndex(index, TNodeType.Container, comment, tagName, attrs);
-  const lContainer = lView[adjustedIndex] =
-      createLContainer(lView[adjustedIndex], tNode, lView, comment);
+  const lContainer = lView[adjustedIndex] = createLContainer(lView[adjustedIndex], lView, comment);
 
   appendChild(comment, tNode, lView);
 
@@ -2240,8 +2426,8 @@ export function projectionDef(selectors?: CssSelectorList[], textSelectors?: str
         tails[bucketIndex] !.next = componentChild;
       } else {
         pData[bucketIndex] = componentChild;
-        componentChild.next = null;
       }
+      componentChild.next = null;
       tails[bucketIndex] = componentChild;
 
       componentChild = nextNode;
@@ -2365,17 +2551,24 @@ function wrapListenerWithPreventDefault(listenerFn: (e?: any) => any): EventList
   };
 }
 
-/** Marks current view and all ancestors dirty */
-export function markViewDirty(lView: LView): void {
+/**
+ * Marks current view and all ancestors dirty.
+ *
+ * Returns the root view because it is found as a byproduct of marking the view tree
+ * dirty, and can be used by methods that consume markViewDirty() to easily schedule
+ * change detection. Otherwise, such methods would need to traverse up the view tree
+ * an additional time to get the root view and schedule a tick on it.
+ *
+ * @param lView The starting LView to mark dirty
+ * @returns the root LView
+ */
+export function markViewDirty(lView: LView): LView {
   while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
     lView[FLAGS] |= LViewFlags.Dirty;
     lView = lView[PARENT] !;
   }
   lView[FLAGS] |= LViewFlags.Dirty;
-  ngDevMode && assertDefined(lView[CONTEXT], 'rootContext should be defined');
-
-  const rootContext = lView[CONTEXT] as RootContext;
-  scheduleTick(rootContext, RootContextFlags.DetectChanges);
+  return lView;
 }
 
 /**
@@ -2564,7 +2757,10 @@ function updateViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, co
  */
 export function markDirty<T>(component: T) {
   ngDevMode && assertDefined(component, 'component');
-  markViewDirty(getComponentViewByInstance(component));
+  const rootView = markViewDirty(getComponentViewByInstance(component));
+
+  ngDevMode && assertDefined(rootView[CONTEXT], 'rootContext should be defined');
+  scheduleTick(rootView[CONTEXT] as RootContext, RootContextFlags.DetectChanges);
 }
 
 ///////////////////////////////
@@ -2626,7 +2822,7 @@ export function interpolationV(values: any[]): string|NO_CHANGE {
   // Build the updated content
   let content = values[0];
   for (let i = 1; i < values.length; i += 2) {
-    content += stringify(values[i]) + values[i + 1];
+    content += renderStringify(values[i]) + values[i + 1];
   }
 
   return content;
@@ -2643,7 +2839,7 @@ export function interpolation1(prefix: string, v0: any, suffix: string): string|
   const lView = getLView();
   const different = bindingUpdated(lView, lView[BINDING_INDEX], v0);
   lView[BINDING_INDEX] += 1;
-  return different ? prefix + stringify(v0) + suffix : NO_CHANGE;
+  return different ? prefix + renderStringify(v0) + suffix : NO_CHANGE;
 }
 
 /** Creates an interpolation binding with 2 expressions. */
@@ -2653,7 +2849,7 @@ export function interpolation2(
   const different = bindingUpdated2(lView, lView[BINDING_INDEX], v0, v1);
   lView[BINDING_INDEX] += 2;
 
-  return different ? prefix + stringify(v0) + i0 + stringify(v1) + suffix : NO_CHANGE;
+  return different ? prefix + renderStringify(v0) + i0 + renderStringify(v1) + suffix : NO_CHANGE;
 }
 
 /** Creates an interpolation binding with 3 expressions. */
@@ -2664,8 +2860,9 @@ export function interpolation3(
   const different = bindingUpdated3(lView, lView[BINDING_INDEX], v0, v1, v2);
   lView[BINDING_INDEX] += 3;
 
-  return different ? prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + suffix :
-                     NO_CHANGE;
+  return different ?
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + suffix :
+      NO_CHANGE;
 }
 
 /** Create an interpolation binding with 4 expressions. */
@@ -2677,8 +2874,8 @@ export function interpolation4(
   lView[BINDING_INDEX] += 4;
 
   return different ?
-      prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) +
-          suffix :
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
+          renderStringify(v3) + suffix :
       NO_CHANGE;
 }
 
@@ -2693,8 +2890,8 @@ export function interpolation5(
   lView[BINDING_INDEX] += 5;
 
   return different ?
-      prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
-          stringify(v4) + suffix :
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
+          renderStringify(v3) + i3 + renderStringify(v4) + suffix :
       NO_CHANGE;
 }
 
@@ -2709,8 +2906,8 @@ export function interpolation6(
   lView[BINDING_INDEX] += 6;
 
   return different ?
-      prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
-          stringify(v4) + i4 + stringify(v5) + suffix :
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
+          renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + suffix :
       NO_CHANGE;
 }
 
@@ -2726,8 +2923,9 @@ export function interpolation7(
   lView[BINDING_INDEX] += 7;
 
   return different ?
-      prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
-          stringify(v4) + i4 + stringify(v5) + i5 + stringify(v6) + suffix :
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
+          renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + i5 +
+          renderStringify(v6) + suffix :
       NO_CHANGE;
 }
 
@@ -2743,8 +2941,9 @@ export function interpolation8(
   lView[BINDING_INDEX] += 8;
 
   return different ?
-      prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
-          stringify(v4) + i4 + stringify(v5) + i5 + stringify(v6) + i6 + stringify(v7) + suffix :
+      prefix + renderStringify(v0) + i0 + renderStringify(v1) + i1 + renderStringify(v2) + i2 +
+          renderStringify(v3) + i3 + renderStringify(v4) + i4 + renderStringify(v5) + i5 +
+          renderStringify(v6) + i6 + renderStringify(v7) + suffix :
       NO_CHANGE;
 }
 
@@ -2855,7 +3054,7 @@ export function registerContentQuery<Q>(
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
 
-function initializeTNodeInputs(tNode: TNode | null) {
+function initializeTNodeInputs(tNode: TNode | null): PropertyAliases|null {
   // If tNode.inputs is undefined, a listener has created outputs, but inputs haven't
   // yet been checked.
   if (tNode) {
@@ -2887,4 +3086,13 @@ function getCleanup(view: LView): any[] {
 
 function getTViewCleanup(view: LView): any[] {
   return view[TVIEW].cleanup || (view[TVIEW].cleanup = []);
+}
+
+/**
+ * There are cases where the sub component's renderer needs to be included
+ * instead of the current renderer (see the componentSyntheticHost* instructions).
+ */
+function loadComponentRenderer(tNode: TNode, lView: LView): Renderer3 {
+  const componentLView = lView[tNode.index] as LView;
+  return componentLView[RENDERER];
 }

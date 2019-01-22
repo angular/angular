@@ -107,7 +107,10 @@ export abstract class ChangeDetectorRef {
    */
   abstract reattach(): void;
 
-  /** @internal */
+  /**
+   * @internal
+   * @nocollapse
+   */
   static __NG_ELEMENT_ID__: () => ChangeDetectorRef = () => SWITCH_CHANGE_DETECTOR_REF_FACTORY();
 }
 
