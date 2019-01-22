@@ -1,0 +1,59 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_test")
+load("//tools:defaults.bzl", "nodejs_binary")
+
+nodejs_binary(
+    name = "ngc_bin",
+    data = [
+        "//packages/compiler-cli",
+        "@ngdeps//chokidar",
+        "@ngdeps//reflect-metadata",
+    ],
+    entry_point = "angular/packages/compiler-cli/src/main.js",
+)
+
+nodejs_binary(
+    name = "ng_xi18n",
+    data = [
+        "//packages/compiler-cli",
+        "@ngdeps//chokidar",
+        "@ngdeps//reflect-metadata",
+    ],
+    entry_point = "angular/packages/compiler-cli/src/extract_i18n.js",
+)
+
+nodejs_test(
+    name = "integrationtest",
+    data = [
+        ":ngc_bin",
+        ":ng_xi18n",
+        "@nodejs//:node",
+        "@ngdeps//domino",
+        "@ngdeps//chokidar",
+        "@ngdeps//source-map-support",
+        "@ngdeps//shelljs",
+        "@ngdeps//typescript",
+        "@ngdeps//reflect-metadata",
+        "@ngdeps//rxjs",
+        "@ngdeps//tslib",
+        "@ngdeps//jasmine/bin:jasmine",
+        "@ngdeps//zone.js",
+        "@ngdeps//xhr2",
+        "@ngdeps//@types/node",
+        "@ngdeps//@types/jasmine",
+        "//packages/animations:npm_package",
+        "//packages/common:npm_package",
+        "//packages/compiler:npm_package",
+        "//packages/compiler-cli:npm_package",
+        "//packages/core:npm_package",
+        "//packages/forms:npm_package",
+        "//packages/http:npm_package",
+        "//packages/platform-browser:npm_package",
+        "//packages/platform-browser-dynamic:npm_package",
+        "//packages/platform-server:npm_package",
+        "//packages/router:npm_package",
+    ] + glob(["**/*"]),
+    entry_point = "angular/packages/compiler-cli/integrationtest/test.js",
+    tags = ["no-ivy-aot"],
+)

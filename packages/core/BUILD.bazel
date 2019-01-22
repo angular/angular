@@ -37,6 +37,7 @@ ng_package(
     # Dependencies on the full npm_package cause long re-builds.
     visibility = [
         "//packages/bazel/test/ng_package:__pkg__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
         "//packages/compiler-cli/test:__pkg__",
         "//packages/compiler-cli/test/diagnostics:__pkg__",
         "//packages/compiler-cli/test/ngcc:__pkg__",
