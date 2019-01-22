@@ -394,7 +394,7 @@ class MockRenderer implements ProceduralRenderer3 {
   destroy(): void {}
   createComment(value: string): RComment { return document.createComment(value); }
   createElement(name: string, namespace?: string|null): RElement {
-    return document.createElement(name);
+    return namespace ? document.createElementNS(namespace, name) : document.createElement(name);
   }
   createText(value: string): RText { return document.createTextNode(value); }
   appendChild(parent: RElement, newChild: RNode): void { parent.appendChild(newChild); }
