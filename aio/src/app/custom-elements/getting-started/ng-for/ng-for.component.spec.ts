@@ -37,6 +37,6 @@ describe('Getting Started NgFor Component', () => {
 
     component.parseError$.subscribe(error => {
       expect(error).toBeTruthy();
-    })
+    });
   });
 });

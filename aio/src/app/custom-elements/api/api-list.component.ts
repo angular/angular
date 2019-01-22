@@ -125,7 +125,7 @@ export class ApiListComponent implements OnInit {
         return status === 'all' ||
           status === item.stability ||
           (status === 'security-risk' && item.securityRisk);
-      };
+      }
 
       function matchesType() {
         return type === 'all' || type === item.docType;
