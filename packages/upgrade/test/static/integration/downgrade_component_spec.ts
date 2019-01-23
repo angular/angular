@@ -736,56 +736,54 @@ withEachNg1Version(() => {
          });
        }));
 
-    fixmeIvy(
-        'FW-717: Injector on lazy loaded components are not the same as their NgModule\'s injector')
-        .it('should work with ng2 lazy loaded components', async(() => {
-              let componentInjector: Injector;
+    it('should work with ng2 lazy loaded components', async(() => {
+         let componentInjector: Injector;
 
-              @Component({selector: 'ng2', template: ''})
-              class Ng2Component {
-                constructor(injector: Injector) { componentInjector = injector; }
-              }
+         @Component({selector: 'ng2', template: ''})
+         class Ng2Component {
+           constructor(injector: Injector) { componentInjector = injector; }
+         }
 
-              @NgModule({
-                declarations: [Ng2Component],
-                entryComponents: [Ng2Component],
-                imports: [BrowserModule, UpgradeModule],
-              })
-              class Ng2Module {
-                ngDoBootstrap() {}
-              }
+         @NgModule({
+           declarations: [Ng2Component],
+           entryComponents: [Ng2Component],
+           imports: [BrowserModule, UpgradeModule],
+         })
+         class Ng2Module {
+           ngDoBootstrap() {}
+         }
 
-              @Component({template: ''})
-              class LazyLoadedComponent {
-                constructor(public module: NgModuleRef<any>) {}
-              }
+         @Component({template: ''})
+         class LazyLoadedComponent {
+           constructor(public module: NgModuleRef<any>) {}
+         }
 
-              @NgModule({
-                declarations: [LazyLoadedComponent],
-                entryComponents: [LazyLoadedComponent],
-              })
-              class LazyLoadedModule {
-              }
+         @NgModule({
+           declarations: [LazyLoadedComponent],
+           entryComponents: [LazyLoadedComponent],
+         })
+         class LazyLoadedModule {
+         }
 
-              const ng1Module = angular.module('ng1', []).directive(
-                  'ng2', downgradeComponent({component: Ng2Component}));
+         const ng1Module = angular.module('ng1', []).directive(
+             'ng2', downgradeComponent({component: Ng2Component}));
 
-              const element = html('<ng2></ng2>');
+         const element = html('<ng2></ng2>');
 
-              bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
-                const modInjector = upgrade.injector;
-                // Emulate the router lazy loading a module and creating a component
-                const compiler = modInjector.get(Compiler);
-                const modFactory = compiler.compileModuleSync(LazyLoadedModule);
-                const childMod = modFactory.create(modInjector);
-                const cmpFactory = childMod.componentFactoryResolver.resolveComponentFactory(
-                    LazyLoadedComponent) !;
-                const lazyCmp = cmpFactory.create(componentInjector);
+         bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(upgrade => {
+           const modInjector = upgrade.injector;
+           // Emulate the router lazy loading a module and creating a component
+           const compiler = modInjector.get(Compiler);
+           const modFactory = compiler.compileModuleSync(LazyLoadedModule);
+           const childMod = modFactory.create(modInjector);
+           const cmpFactory =
+               childMod.componentFactoryResolver.resolveComponentFactory(LazyLoadedComponent) !;
+           const lazyCmp = cmpFactory.create(componentInjector);
 
-                expect(lazyCmp.instance.module.injector === childMod.injector).toBe(true);
-              });
+           expect(lazyCmp.instance.module.injector === childMod.injector).toBe(true);
+         });
 
-            }));
+       }));
 
     it('should throw if `downgradedModule` is specified', async(() => {
          @Component({selector: 'ng2', template: ''})
