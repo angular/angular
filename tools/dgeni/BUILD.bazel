@@ -19,7 +19,6 @@ ts_library(
   srcs = glob(["**/*.ts"]),
   deps = [
     "@matdeps//@types/node",
-    "@matdeps//@types/glob",
     "@matdeps//dgeni",
     "@matdeps//dgeni-packages",
     "//tools/highlight-files:sources",

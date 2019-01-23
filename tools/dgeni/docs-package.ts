@@ -8,30 +8,12 @@ import {FilterDuplicateExports} from './processors/filter-duplicate-exports';
 import {MergeInheritedProperties} from './processors/merge-inherited-properties';
 import {EntryPointGrouper} from './processors/entry-point-grouper';
 import {ReadTypeScriptModules} from 'dgeni-packages/typescript/processors/readTypeScriptModules';
-import {TsParser} from 'dgeni-packages/typescript/services/TsParser';
 import {TypeFormatFlags} from 'dgeni-packages/node_modules/typescript';
-import {sync as globSync} from 'glob';
-import * as path from 'path';
 
 // Dgeni packages that the Material docs package depends on.
 const jsdocPackage = require('dgeni-packages/jsdoc');
 const nunjucksPackage = require('dgeni-packages/nunjucks');
 const typescriptPackage = require('dgeni-packages/typescript');
-
-// Project configuration.
-const projectRootDir = path.resolve(__dirname, '../..');
-const sourceDir = path.resolve(projectRootDir, 'src');
-const outputDir = path.resolve(projectRootDir, 'dist/docs/api');
-const templateDir = path.resolve(__dirname, './templates');
-
-/** List of CDK packages that need to be documented. */
-const cdkPackages = globSync(path.join(sourceDir, 'cdk', '*/'))
-  .filter(packagePath => !packagePath.endsWith('testing/'))
-  .map(packagePath => path.basename(packagePath));
-
-/** List of Material packages that need to be documented. */
-const materialPackages = globSync(path.join(sourceDir, 'lib', '*/'))
-  .map(packagePath => path.basename(packagePath));
 
 /**
  * Dgeni package for the Angular Material docs. This just defines the package, but doesn't
@@ -71,11 +53,9 @@ apiDocsPackage.processor(new EntryPointGrouper());
 apiDocsPackage.config((log: any) => log.level = 'info');
 
 // Configure the processor for reading files from the file system.
-apiDocsPackage.config((readFilesProcessor: any, writeFilesProcessor: any) => {
-  readFilesProcessor.basePath = sourceDir;
-  readFilesProcessor.$enabled = false; // disable for now as we are using readTypeScriptModules
-
-  writeFilesProcessor.outputFolder = outputDir;
+apiDocsPackage.config((readFilesProcessor: any) => {
+  // Disable we currently only use the "readTypeScriptModules" processor
+  readFilesProcessor.$enabled = false;
 });
 
 // Patches Dgeni's log service to not print warnings about unresolved mixin base symbols.
@@ -104,32 +84,9 @@ apiDocsPackage.config((checkAnchorLinksProcessor: any) => {
 });
 
 // Configure the processor for understanding TypeScript.
-apiDocsPackage.config((readTypeScriptModules: ReadTypeScriptModules, tsParser: TsParser) => {
-  readTypeScriptModules.basePath = sourceDir;
+apiDocsPackage.config((readTypeScriptModules: ReadTypeScriptModules) => {
   readTypeScriptModules.ignoreExportsMatching = [/^_/];
   readTypeScriptModules.hidePrivateMembers = true;
-
-  const typescriptPathMap: any = {};
-
-  cdkPackages.forEach(packageName => {
-    typescriptPathMap[`@angular/cdk/${packageName}`] = [`./cdk/${packageName}/index.ts`];
-  });
-
-  materialPackages.forEach(packageName => {
-    typescriptPathMap[`@angular/material/${packageName}`] = [`./lib/${packageName}/index.ts`];
-  });
-
-  // Add proper path mappings to the TSParser service of Dgeni. This ensures that properties
-  // from mixins (e.g. color, disabled) are showing up properly in the docs.
-  tsParser.options.paths = typescriptPathMap;
-  tsParser.options.baseUrl = sourceDir;
-
-  // Entry points for docs generation. All publicly exported symbols found through these
-  // files will have docs generated.
-  readTypeScriptModules.sourceFiles = [
-    ...cdkPackages.map(packageName => `./cdk/${packageName}/index.ts`),
-    ...materialPackages.map(packageName => `./lib/${packageName}/index.ts`)
-  ];
 });
 
 apiDocsPackage.config((tsHost: Host) => {
@@ -148,9 +105,6 @@ apiDocsPackage.config((tsHost: Host) => {
 
 // Configure processor for finding nunjucks templates.
 apiDocsPackage.config((templateFinder: any, templateEngine: any) => {
-  // Where to find the templates for the doc rendering
-  templateFinder.templateFolders = [templateDir];
-
   // Standard patterns for matching docs to templates
   templateFinder.templatePatterns = [
     '${ doc.template }',

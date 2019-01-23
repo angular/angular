@@ -3,7 +3,7 @@ import {ReadTypeScriptModules} from 'dgeni-packages/typescript/processors/readTy
 import {TsParser} from 'dgeni-packages/typescript/services/TsParser';
 import {readFileSync} from 'fs';
 import {join, relative} from 'path';
-import {apiDocsPackage} from './index';
+import {apiDocsPackage} from './docs-package';
 
 /**
  * Determines the command line arguments for the current Bazel action. Since this action can
@@ -51,6 +51,10 @@ if (require.main === module) {
     // all sources (also known as the path to the current Bazel target). This makes it easier for
     // custom processors (such as the `entry-point-grouper) to compute entry-point paths.
     readTypeScriptModules.basePath = packagePath;
+
+    // Initialize the "tsParser" path mappings. These will be passed to the TypeScript program
+    // and therefore use the same syntax as the "paths" option in a tsconfig.
+    tsParser.options.paths = {};
 
     // For each package we want to setup all entry points in Dgeni so that their API
     // will be generated. Packages and their associated entry points are passed in pairs.
