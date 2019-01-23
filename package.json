@@ -42,7 +42,7 @@
     "systemjs": "0.19.43",
     "tsickle": "^0.34.0",
     "tslib": "^1.9.3",
-    "zone.js": "^0.8.26"
+    "zone.js": "^0.8.29"
   },
   "devDependencies": {
     "@angular-devkit/core": "^7.1.2",
