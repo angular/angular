@@ -41,7 +41,7 @@ import { PhoneDetailComponent } from './phone-detail/phone-detail.component';
     FormsModule,
   // #docregion bare, upgrademodule, httpclientmodule, phone
   ],
-  // #enddocregion bare, upgrademodule, httpclientcmodule, phone
+  // #enddocregion bare, upgrademodule, httpclientmodule, phone
   declarations: [
     PhoneListComponent,
     // #enddocregion phonelist
