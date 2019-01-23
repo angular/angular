@@ -109,7 +109,6 @@
 // Element that overlays the button to show focus and hover effects.
 .mat-button-focus-overlay {
   opacity: 0;
-
   transition: $mat-button-focus-transition;
 
   ._mat-animation-noopable & {
@@ -120,7 +119,14 @@
     // Note that IE will render this in the same way, no
     // matter whether the theme is light or dark. This helps
     // with the readability of focused buttons.
-    background-color: rgba(white, 0.5);
+    background-color: #fff;
+  }
+
+  @include cdk-high-contrast(black-on-white) {
+    // For the black-on-white high contrast mode, the browser will set this element
+    // to white, making it blend in with the background, hence why we need to set
+    // it explicitly to black.
+    background-color: #000;
   }
 }
 
