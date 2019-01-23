@@ -39,9 +39,9 @@ import { PhoneDetailComponent } from './phone-detail/phone-detail.component';
     HttpClientModule,
     // #enddocregion httpclientmodule, phone
     FormsModule,
-  // #docregion bare, upgrademodule, httpmodule, phone
+  // #docregion bare, upgrademodule, httpclientmodule, phone
   ],
-  // #enddocregion bare, upgrademodule, httpmodule, phone
+  // #enddocregion bare, upgrademodule, httpclientcmodule, phone
   declarations: [
     PhoneListComponent,
     // #enddocregion phonelist
@@ -63,7 +63,7 @@ import { PhoneDetailComponent } from './phone-detail/phone-detail.component';
     // #docregion phone
   ]
   // #enddocregion routeparams
-// #docregion bare, upgrademodule, httpmodule, phonelist
+// #docregion bare, upgrademodule, httpclientmodule, phonelist
 })
 export class AppModule {
   // #enddocregion bare
@@ -73,4 +73,4 @@ export class AppModule {
   }
   // #docregion bare
 }
-// #enddocregion bare, upgrademodule, httpmodule, phone, phonelist, phonedetail, checkmarkpipe
+// #enddocregion bare, upgrademodule, httpclientmodule, phone, phonelist, phonedetail, checkmarkpipe
