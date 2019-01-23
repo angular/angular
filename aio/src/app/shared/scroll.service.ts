@@ -60,7 +60,6 @@ export class ScrollService {
         // the type is `hashchange` when the fragment identifier of the URL has changed. It allows us to go to position
         // just before a click on an anchor
         if (event.type === 'hashchange') {
-          this.popStateFired = false;
           this.scrollToPosition();
         } else {
           // The popstate event is always triggered by doing a browser action such as a click on the back or forward button.
@@ -94,17 +93,23 @@ export class ScrollService {
   }
 
   /**
-   * When we load a document, we have to scroll to the correct position depending on whether this is a new location
-   * , a back/forward in the history, or a refresh
+   * When we load a document, we have to scroll to the correct position depending on whether this is a new location,
+   * a back/forward in the history, or a refresh
    * @param delay before we scroll to the good position
    */
   scrollAfterRender(delay: number) {
-    // If we do rendering following a refresh, we use the scroll Position from the storage.
-   if (this.getStoredScrollPosition()) {
-      this.viewportScroller.scrollToPosition(this.getStoredScrollPosition() !);
+    // If we do rendering following a refresh, we use the scroll position from the storage.
+    const storedScrollPosition = this.getStoredScrollPosition();
+    if (storedScrollPosition) {
+      this.viewportScroller.scrollToPosition(storedScrollPosition);
     } else {
-      if (!this.needToFixScrollPosition()) {
-        // The document was reloaded following a link. If the location contains a hash, we have to wait for async
+      if (this.needToFixScrollPosition()) {
+        // The document was reloaded following a popState `event` (called by the forward/back button), so we manage
+        // the scroll position
+        this.scrollToPosition();
+      } else {
+        // The document was loaded either of the following cases: a direct navigation via typing the URL in the
+        // address bar or a click on a link. If the location contains a hash, we have to wait for async
         // layout.
         if (this.isLocationWithHash()) {
           // Scroll 500ms after the new document has been inserted into the doc-viewer.
@@ -114,9 +119,6 @@ export class ScrollService {
           // If the location doesn't contain a hash, we scroll to the top of the page.
           this.scrollToTop();
         }
-      } else {
-        // The document was reloaded following a popState `event`, so we manage the scroll scrollPosition
-        this.scrollToPosition();
       }
     }
   }

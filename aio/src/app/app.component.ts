@@ -248,9 +248,6 @@ export class AppComponent implements OnInit {
 
   @HostListener('click', ['$event.target', '$event.button', '$event.ctrlKey', '$event.metaKey', '$event.altKey'])
   onClick(eventTarget: HTMLElement, button: number, ctrlKey: boolean, metaKey: boolean, altKey: boolean): boolean {
-    // We update the scroll position in the case there is no scroll event on the page before
-    this.scrollService.updateScrollPositionInHistory();
-
     // Hide the search results if we clicked outside both the "search box" and the "search results"
     if (!this.searchElements.some(element => element.nativeElement.contains(eventTarget))) {
       this.hideSearchResults();
