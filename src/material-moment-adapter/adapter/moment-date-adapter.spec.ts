@@ -66,7 +66,7 @@ describe('MomentDateAdapter', () => {
     ]);
   });
 
-  it('should get long month names', () => {
+  it('should get short month names', () => {
     expect(adapter.getMonthNames('short')).toEqual([
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ]);
@@ -93,10 +93,10 @@ describe('MomentDateAdapter', () => {
   });
 
   it('should get date names in a different locale', () => {
-    adapter.setLocale('ja-JP');
+    adapter.setLocale('ar-AE');
     expect(adapter.getDateNames()).toEqual([
-      '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17',
-      '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30', '31'
+      '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩', '١٠', '١١', '١٢', '١٣', '١٤', '١٥', '١٦',
+      '١٧', '١٨', '١٩', '٢٠', '٢١', '٢٢', '٢٣', '٢٤', '٢٥', '٢٦', '٢٧', '٢٨', '٢٩', '٣٠', '٣١'
     ]);
   });
 
@@ -130,8 +130,8 @@ describe('MomentDateAdapter', () => {
   });
 
   it('should get year name in a different locale', () => {
-    adapter.setLocale('ja-JP');
-    expect(adapter.getYearName(moment([2017,  JAN,  1]))).toBe('2017');
+    adapter.setLocale('ar-AE');
+    expect(adapter.getYearName(moment([2017,  JAN,  1]))).toBe('٢٠١٧');
   });
 
   it('should get first day of week', () => {

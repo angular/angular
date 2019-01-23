@@ -54,7 +54,7 @@ describe('NativeDateAdapter', () => {
     ]);
   });
 
-  it('should get long month names', () => {
+  it('should get short month names', () => {
     expect(adapter.getMonthNames('short')).toEqual([
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ]);
