@@ -982,14 +982,17 @@ function setClass(
     if (playerBuilder) {
       playerBuilder.setValue(className, add);
     }
-  } else if (add) {
-    ngDevMode && ngDevMode.rendererAddClass++;
-    isProceduralRenderer(renderer) ? renderer.addClass(native, className) :
-                                     native['classList'].add(className);
-  } else {
-    ngDevMode && ngDevMode.rendererRemoveClass++;
-    isProceduralRenderer(renderer) ? renderer.removeClass(native, className) :
-                                     native['classList'].remove(className);
+    // DOMTokenList will throw if we try to add or remove an empty string.
+  } else if (className !== '') {
+    if (add) {
+      ngDevMode && ngDevMode.rendererAddClass++;
+      isProceduralRenderer(renderer) ? renderer.addClass(native, className) :
+                                       native['classList'].add(className);
+    } else {
+      ngDevMode && ngDevMode.rendererRemoveClass++;
+      isProceduralRenderer(renderer) ? renderer.removeClass(native, className) :
+                                       native['classList'].remove(className);
+    }
   }
 }
 
