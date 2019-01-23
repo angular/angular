@@ -8,8 +8,6 @@
 
 import {Inject, InjectionToken, QueryList} from '../../src/core';
 import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, allocHostVars, bind, defineBase, defineComponent, defineDirective, directiveInject, element, elementProperty, loadViewQuery, queryRefresh, viewQuery} from '../../src/render3/index';
-import {getLView} from '../../src/render3/state';
-import {getNativeByIndex} from '../../src/render3/util';
 
 import {ComponentFixture, createComponent} from './render_util';
 
@@ -407,7 +405,6 @@ describe('InheritDefinitionFeature', () => {
   });
 
   it('should compose viewQuery (query logic check)', () => {
-    const elements: {sub?: any, super?: any} = {};
     /*
      * class SuperComponent {
      *  @ViewChildren('super') superQuery;
@@ -436,8 +433,8 @@ describe('InheritDefinitionFeature', () => {
     }
 
     /**
-     * <div #sub></div>
-     * <div #super></div>
+     * <div id="sub" #sub></div>
+     * <div id="super" #super></div>
      * class SubComponent extends SuperComponent {
      *  @ViewChildren('sub') subQuery;
      * }
@@ -449,12 +446,10 @@ describe('InheritDefinitionFeature', () => {
         template: (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
             element(0, 'div', ['id', 'sub'], ['sub', '']);
-            elements.sub = getNativeByIndex(0, getLView());
-            element(3, 'div', ['id', 'super'], ['super', '']);
-            elements.super = getNativeByIndex(3, getLView());
+            element(2, 'div', ['id', 'super'], ['super', '']);
           }
         },
-        consts: 5,
+        consts: 4,
         vars: 0,
         selectors: [['', 'subDir', '']],
         viewQuery: (rf: RenderFlags, ctx: any) => {
@@ -472,12 +467,12 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    const componentFixture = new ComponentFixture(SubComponent);
+    const fixture = new ComponentFixture(SubComponent);
 
     const check = (key: string): void => {
-      const qList = ((componentFixture.component as any)[`${key}Query`] as QueryList<any>);
+      const qList = (fixture.component as any)[`${key}Query`] as QueryList<any>;
       expect(qList.length).toBe(1);
-      expect(qList.first.nativeElement).toEqual((elements as any)[key]);
+      expect(qList.first.nativeElement).toEqual(fixture.hostElement.querySelector(`#${key}`));
       expect(qList.first.nativeElement.id).toEqual(key);
     };
 

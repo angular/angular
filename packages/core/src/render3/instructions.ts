@@ -2691,30 +2691,24 @@ export function checkView<T>(hostView: LView, component: T) {
   const hostTView = hostView[TVIEW];
   const oldView = enterView(hostView, hostView[HOST_NODE]);
   const templateFn = hostTView.template !;
-  const viewQuery = hostTView.viewQuery;
+  const creationMode = isCreationMode(hostView);
 
   try {
     namespaceHTML();
-    createViewQuery(viewQuery, hostView, component);
+    creationMode && executeViewQueryFn(hostView, hostTView, component);
     templateFn(getRenderFlags(hostView), component);
     refreshDescendantViews(hostView);
-    updateViewQuery(viewQuery, hostView, component);
+    !creationMode && executeViewQueryFn(hostView, hostTView, component);
   } finally {
     leaveView(oldView);
   }
 }
 
-function createViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
-  if (viewQuery && isCreationMode(view)) {
-    setCurrentViewQueryIndex(view[TVIEW].viewQueryStartIndex);
-    viewQuery(RenderFlags.Create, component);
-  }
-}
-
-function updateViewQuery<T>(viewQuery: ComponentQuery<{}>| null, view: LView, component: T): void {
-  if (viewQuery && !isCreationMode(view)) {
-    setCurrentViewQueryIndex(view[TVIEW].viewQueryStartIndex);
-    viewQuery(RenderFlags.Update, component);
+function executeViewQueryFn<T>(lView: LView, tView: TView, component: T): void {
+  const viewQuery = tView.viewQuery;
+  if (viewQuery) {
+    setCurrentViewQueryIndex(tView.viewQueryStartIndex);
+    viewQuery(getRenderFlags(lView), component);
   }
 }
 
