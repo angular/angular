@@ -19,6 +19,7 @@ import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/security';
 import {assertDefined} from '../util/assert';
 import {VERSION} from '../version';
+import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider';
 
 import {assertComponentType} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
@@ -73,8 +74,6 @@ export const SCHEDULER = new InjectionToken<((fn: () => void) => void)>('SCHEDUL
   providedIn: 'root',
   factory: () => defaultScheduler,
 });
-
-const NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR = {};
 
 function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injector): Injector {
   return {
