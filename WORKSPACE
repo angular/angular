@@ -53,8 +53,8 @@ local_repository(
 # Add sass rules
 http_archive(
   name = "io_bazel_rules_sass",
-  url = "https://github.com/bazelbuild/rules_sass/archive/1.15.2.zip",
-  strip_prefix = "rules_sass-1.15.2",
+  url = "https://github.com/bazelbuild/rules_sass/archive/1.16.1.zip",
+  strip_prefix = "rules_sass-1.16.1",
 )
 
 # Since we are explitly fetching @build_bazel_rules_typescript, we should explicitly ask for
