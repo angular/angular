@@ -1,8 +1,11 @@
 <div class="mat-tab-header-pagination mat-tab-header-pagination-before mat-elevation-z4"
+     #previousPaginator
      aria-hidden="true"
      mat-ripple [matRippleDisabled]="_disableScrollBefore || disableRipple"
      [class.mat-tab-header-pagination-disabled]="_disableScrollBefore"
-     (click)="_scrollHeader('before')">
+     (click)="_handlePaginatorClick('before')"
+     (mousedown)="_handlePaginatorPress('before')"
+     (touchend)="_stopInterval()">
   <div class="mat-tab-header-pagination-chevron"></div>
 </div>
 
@@ -17,9 +20,12 @@
 </div>
 
 <div class="mat-tab-header-pagination mat-tab-header-pagination-after mat-elevation-z4"
+     #nextPaginator
      aria-hidden="true"
      mat-ripple [matRippleDisabled]="_disableScrollAfter || disableRipple"
      [class.mat-tab-header-pagination-disabled]="_disableScrollAfter"
-     (click)="_scrollHeader('after')">
+     (mousedown)="_handlePaginatorPress('after')"
+     (click)="_handlePaginatorClick('after')"
+     (touchend)="_stopInterval()">
   <div class="mat-tab-header-pagination-chevron"></div>
 </div>

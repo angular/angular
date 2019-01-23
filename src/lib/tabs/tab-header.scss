@@ -1,5 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/layout-common';
+@import '../core/style/vendor-prefixes';
 @import './tabs-common';
 
 .mat-tab-header {
@@ -25,6 +26,7 @@
 }
 
 .mat-tab-header-pagination {
+  @include user-select(none);
   position: relative;
   display: none;
   justify-content: center;
@@ -32,6 +34,8 @@
   min-width: 32px;
   cursor: pointer;
   z-index: 2;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
 
   .mat-tab-header-pagination-controls-enabled & {
     display: flex;

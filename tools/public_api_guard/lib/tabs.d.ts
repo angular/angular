@@ -109,11 +109,13 @@ export declare class MatTabGroupBase {
     constructor(_elementRef: ElementRef);
 }
 
-export declare class MatTabHeader extends _MatTabHeaderMixinBase implements AfterContentChecked, AfterContentInit, OnDestroy, CanDisableRipple {
+export declare class MatTabHeader extends _MatTabHeaderMixinBase implements AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy, CanDisableRipple {
     _disableScrollAfter: boolean;
     _disableScrollBefore: boolean;
     _inkBar: MatInkBar;
     _labelWrappers: QueryList<MatTabLabelWrapper>;
+    _nextPaginator: ElementRef<HTMLElement>;
+    _previousPaginator: ElementRef<HTMLElement>;
     _showPaginationControls: boolean;
     _tabList: ElementRef;
     _tabListContainer: ElementRef;
@@ -129,14 +131,21 @@ export declare class MatTabHeader extends _MatTabHeaderMixinBase implements Afte
     _getLayoutDirection(): Direction;
     _getMaxScrollDistance(): number;
     _handleKeydown(event: KeyboardEvent): void;
+    _handlePaginatorClick(direction: ScrollDirection): void;
+    _handlePaginatorPress(direction: ScrollDirection): void;
     _isValidIndex(index: number): boolean;
     _onContentChanges(): void;
-    _scrollHeader(scrollDir: ScrollDirection): void;
+    _scrollHeader(direction: ScrollDirection): {
+        maxScrollDistance: number;
+        distance: number;
+    };
     _scrollToLabel(labelIndex: number): void;
     _setTabFocus(tabIndex: number): void;
+    _stopInterval(): void;
     _updateTabScrollPosition(): void;
     ngAfterContentChecked(): void;
     ngAfterContentInit(): void;
+    ngAfterViewInit(): void;
     ngOnDestroy(): void;
     updatePagination(): void;
 }

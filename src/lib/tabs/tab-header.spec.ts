@@ -329,6 +329,200 @@ describe('MatTabHeader', () => {
       });
     });
 
+    describe('scrolling when holding paginator', () => {
+      let nextButton: HTMLElement;
+      let prevButton: HTMLElement;
+      let header: MatTabHeader;
+      let headerElement: HTMLElement;
+
+      beforeEach(() => {
+        fixture = TestBed.createComponent(SimpleTabHeaderApp);
+        fixture.componentInstance.disableRipple = true;
+        fixture.detectChanges();
+
+        fixture.componentInstance.addTabsForScrolling(50);
+        fixture.detectChanges();
+
+        nextButton = fixture.nativeElement.querySelector('.mat-tab-header-pagination-after');
+        prevButton = fixture.nativeElement.querySelector('.mat-tab-header-pagination-before');
+        header = fixture.componentInstance.tabHeader;
+        headerElement = fixture.nativeElement.querySelector('.mat-tab-header');
+      });
+
+      it('should scroll towards the end while holding down the next button using a mouse',
+        fakeAsync(() => {
+          assertNextButtonScrolling('mousedown', 'click');
+        }));
+
+      it('should scroll towards the start while holding down the prev button using a mouse',
+        fakeAsync(() => {
+          assertPrevButtonScrolling('mousedown', 'click');
+        }));
+
+      it('should scroll towards the end while holding down the next button using touch',
+        fakeAsync(() => {
+          assertNextButtonScrolling('touchstart', 'touchend');
+        }));
+
+      it('should scroll towards the start while holding down the prev button using touch',
+        fakeAsync(() => {
+          assertPrevButtonScrolling('touchstart', 'touchend');
+        }));
+
+      it('should not scroll if the sequence is interrupted quickly', fakeAsync(() => {
+        expect(header.scrollDistance).toBe(0, 'Expected to start off not scrolled.');
+
+        dispatchFakeEvent(nextButton, 'mousedown');
+        fixture.detectChanges();
+
+        tick(100);
+
+        dispatchFakeEvent(headerElement, 'mouseleave');
+        fixture.detectChanges();
+
+        tick(3000);
+
+        expect(header.scrollDistance).toBe(0, 'Expected not to have scrolled after a while.');
+      }));
+
+      it('should clear the timeouts on destroy', fakeAsync(() => {
+        dispatchFakeEvent(nextButton, 'mousedown');
+        fixture.detectChanges();
+        fixture.destroy();
+
+        // No need to assert. If fakeAsync doesn't throw, it means that the timers were cleared.
+      }));
+
+      it('should clear the timeouts on click', fakeAsync(() => {
+        dispatchFakeEvent(nextButton, 'mousedown');
+        fixture.detectChanges();
+
+        dispatchFakeEvent(nextButton, 'click');
+        fixture.detectChanges();
+
+        // No need to assert. If fakeAsync doesn't throw, it means that the timers were cleared.
+      }));
+
+      it('should clear the timeouts on touchend', fakeAsync(() => {
+        dispatchFakeEvent(nextButton, 'touchstart');
+        fixture.detectChanges();
+
+        dispatchFakeEvent(nextButton, 'touchend');
+        fixture.detectChanges();
+
+        // No need to assert. If fakeAsync doesn't throw, it means that the timers were cleared.
+      }));
+
+      it('should clear the timeouts when reaching the end', fakeAsync(() => {
+        dispatchFakeEvent(nextButton, 'mousedown');
+        fixture.detectChanges();
+
+        // Simulate a very long timeout.
+        tick(60000);
+
+        // No need to assert. If fakeAsync doesn't throw, it means that the timers were cleared.
+      }));
+
+      it('should clear the timeouts when reaching the start', fakeAsync(() => {
+        header.scrollDistance = Infinity;
+        fixture.detectChanges();
+
+        dispatchFakeEvent(prevButton, 'mousedown');
+        fixture.detectChanges();
+
+        // Simulate a very long timeout.
+        tick(60000);
+
+        // No need to assert. If fakeAsync doesn't throw, it means that the timers were cleared.
+      }));
+
+      it('should stop scrolling if the pointer leaves the header', fakeAsync(() => {
+        expect(header.scrollDistance).toBe(0, 'Expected to start off not scrolled.');
+
+        dispatchFakeEvent(nextButton, 'mousedown');
+        fixture.detectChanges();
+        tick(300);
+
+        expect(header.scrollDistance).toBe(0, 'Expected not to scroll after short amount of time.');
+
+        tick(1000);
+
+        expect(header.scrollDistance).toBeGreaterThan(0, 'Expected to scroll after some time.');
+
+        let previousDistance = header.scrollDistance;
+
+        dispatchFakeEvent(headerElement, 'mouseleave');
+        fixture.detectChanges();
+        tick(100);
+
+        expect(header.scrollDistance).toBe(previousDistance);
+      }));
+
+      /**
+       * Asserts that auto scrolling using the next button works.
+       * @param startEventName Name of the event that is supposed to start the scrolling.
+       * @param endEventName Name of the event that is supposed to end the scrolling.
+       */
+      function assertNextButtonScrolling(startEventName: string, endEventName: string) {
+        expect(header.scrollDistance).toBe(0, 'Expected to start off not scrolled.');
+
+        dispatchFakeEvent(nextButton, startEventName);
+        fixture.detectChanges();
+        tick(300);
+
+        expect(header.scrollDistance).toBe(0, 'Expected not to scroll after short amount of time.');
+
+        tick(1000);
+
+        expect(header.scrollDistance).toBeGreaterThan(0, 'Expected to scroll after some time.');
+
+        let previousDistance = header.scrollDistance;
+
+        tick(100);
+
+        expect(header.scrollDistance)
+            .toBeGreaterThan(previousDistance, 'Expected to scroll again after some more time.');
+
+        dispatchFakeEvent(nextButton, endEventName);
+      }
+
+      /**
+       * Asserts that auto scrolling using the previous button works.
+       * @param startEventName Name of the event that is supposed to start the scrolling.
+       * @param endEventName Name of the event that is supposed to end the scrolling.
+       */
+      function assertPrevButtonScrolling(startEventName: string, endEventName: string) {
+        header.scrollDistance = Infinity;
+        fixture.detectChanges();
+
+        let currentScroll = header.scrollDistance;
+
+        expect(currentScroll).toBeGreaterThan(0, 'Expected to start off scrolled.');
+
+        dispatchFakeEvent(prevButton, startEventName);
+        fixture.detectChanges();
+        tick(300);
+
+        expect(header.scrollDistance)
+            .toBe(currentScroll, 'Expected not to scroll after short amount of time.');
+
+        tick(1000);
+
+        expect(header.scrollDistance)
+            .toBeLessThan(currentScroll, 'Expected to scroll after some time.');
+
+        currentScroll = header.scrollDistance;
+
+        tick(100);
+
+        expect(header.scrollDistance)
+            .toBeLessThan(currentScroll, 'Expected to scroll again after some more time.');
+
+        dispatchFakeEvent(nextButton, endEventName);
+      }
+
+    });
+
     it('should re-align the ink bar when the direction changes', fakeAsync(() => {
       fixture = TestBed.createComponent(SimpleTabHeaderApp);
 
@@ -453,7 +647,9 @@ class SimpleTabHeaderApp {
     this.tabs[this.disabledTabIndex].disabled = true;
   }
 
-  addTabsForScrolling() {
-    this.tabs.push({label: 'new'}, {label: 'new'}, {label: 'new'}, {label: 'new'});
+  addTabsForScrolling(amount = 4) {
+    for (let i = 0; i < amount; i++) {
+      this.tabs.push({label: 'new'});
+    }
   }
 }
