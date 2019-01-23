@@ -13,9 +13,9 @@ import {EventEmitter} from '../..';
 import {AttributeMarker, ProvidersFeature, defineComponent, defineDirective, detectChanges} from '../../src/render3/index';
 import {getNativeByIndex} from '../../src/render3/util';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadQueryList, reference, registerContentQuery, template, text} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, reference, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {query, queryRefresh, viewQuery, loadViewQuery} from '../../src/render3/query';
+import {queryRefresh, viewQuery, loadViewQuery, contentQuery, loadContentQuery} from '../../src/render3/query';
 import {getLView} from '../../src/render3/state';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 
@@ -2282,12 +2282,11 @@ describe('query', () => {
         type: WithContentDirective,
         selectors: [['', 'with-content', '']],
         factory: () => new WithContentDirective(),
-        contentQueries: (dirIndex) => { registerContentQuery(query(['foo'], true), dirIndex); },
-        contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+        contentQueries: (dirIndex: number) => { contentQuery(dirIndex, ['foo'], true); },
+        contentQueriesRefresh: (dirIndex: number) => {
           let tmp: any;
           withContentInstance = load<WithContentDirective>(dirIndex);
-          queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
-              (withContentInstance.foos = tmp);
+          queryRefresh(tmp = loadContentQuery<ElementRef>()) && (withContentInstance.foos = tmp);
         }
       });
     }
@@ -2303,12 +2302,11 @@ describe('query', () => {
         template: function(rf: RenderFlags, ctx: any) {},
         consts: 0,
         vars: 0,
-        contentQueries: (dirIndex) => { registerContentQuery(query(['foo'], false), dirIndex); },
-        contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+        contentQueries: (dirIndex: number) => { contentQuery(dirIndex, ['foo'], false); },
+        contentQueriesRefresh: (dirIndex: number) => {
           let tmp: any;
           shallowCompInstance = load<ShallowComp>(dirIndex);
-          queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
-              (shallowCompInstance.foos = tmp);
+          queryRefresh(tmp = loadContentQuery<ElementRef>()) && (shallowCompInstance.foos = tmp);
         }
       });
     }
@@ -2527,16 +2525,15 @@ describe('query', () => {
           selectors: [['', 'query', '']],
           exportAs: ['query'],
           factory: () => new QueryDirective(),
-          contentQueries: (dirIndex) => {
+          contentQueries: (dirIndex: number) => {
             // @ContentChildren('foo, bar, baz', {descendants: true}) fooBars:
             // QueryList<ElementRef>;
-            registerContentQuery(query(['foo', 'bar', 'baz'], true), dirIndex);
+            contentQuery(dirIndex, ['foo', 'bar', 'baz'], true);
           },
-          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+          contentQueriesRefresh: (dirIndex: number) => {
             let tmp: any;
             const instance = load<QueryDirective>(dirIndex);
-            queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
-                (instance.fooBars = tmp);
+            queryRefresh(tmp = loadContentQuery<ElementRef>()) && (instance.fooBars = tmp);
           },
         });
       }
@@ -2591,16 +2588,15 @@ describe('query', () => {
           selectors: [['', 'query', '']],
           exportAs: ['query'],
           factory: () => new QueryDirective(),
-          contentQueries: (dirIndex) => {
+          contentQueries: (dirIndex: number) => {
             // @ContentChildren('foo, bar, baz', {descendants: true}) fooBars:
             // QueryList<ElementRef>;
-            registerContentQuery(query(['foo'], false), dirIndex);
+            contentQuery(dirIndex, ['foo'], false);
           },
-          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+          contentQueriesRefresh: (dirIndex: number) => {
             let tmp: any;
             const instance = load<QueryDirective>(dirIndex);
-            queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
-                (instance.fooBars = tmp);
+            queryRefresh(tmp = loadContentQuery<ElementRef>()) && (instance.fooBars = tmp);
           },
         });
       }
@@ -2647,16 +2643,15 @@ describe('query', () => {
           selectors: [['', 'query', '']],
           exportAs: ['query'],
           factory: () => new QueryDirective(),
-          contentQueries: (dirIndex) => {
+          contentQueries: (dirIndex: number) => {
             // @ContentChildren('foo', {descendants: true}) fooBars:
             // QueryList<ElementRef>;
-            registerContentQuery(query(['foo'], false), dirIndex);
+            contentQuery(dirIndex, ['foo'], false);
           },
-          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+          contentQueriesRefresh: (dirIndex: number) => {
             let tmp: any;
             const instance = load<QueryDirective>(dirIndex);
-            queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
-                (instance.fooBars = tmp);
+            queryRefresh(tmp = loadContentQuery<ElementRef>()) && (instance.fooBars = tmp);
           },
         });
       }
@@ -2703,15 +2698,14 @@ describe('query', () => {
              selectors: [['', 'shallow-query', '']],
              exportAs: ['shallow-query'],
              factory: () => new ShallowQueryDirective(),
-             contentQueries: (dirIndex) => {
+             contentQueries: (dirIndex: number) => {
                // @ContentChildren('foo', {descendants: false}) foos: QueryList<ElementRef>;
-               registerContentQuery(query(['foo'], false), dirIndex);
+               contentQuery(dirIndex, ['foo'], false);
              },
-             contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+             contentQueriesRefresh: (dirIndex: number) => {
                let tmp: any;
                const instance = load<ShallowQueryDirective>(dirIndex);
-               queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
-                   (instance.foos = tmp);
+               queryRefresh(tmp = loadContentQuery<ElementRef>()) && (instance.foos = tmp);
              },
            });
          }
@@ -2723,15 +2717,14 @@ describe('query', () => {
              selectors: [['', 'deep-query', '']],
              exportAs: ['deep-query'],
              factory: () => new DeepQueryDirective(),
-             contentQueries: (dirIndex) => {
+             contentQueries: (dirIndex: number) => {
                // @ContentChildren('foo', {descendants: false}) foos: QueryList<ElementRef>;
-               registerContentQuery(query(['foo'], true), dirIndex);
+               contentQuery(dirIndex, ['foo'], true);
              },
-             contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+             contentQueriesRefresh: (dirIndex: number) => {
                let tmp: any;
                const instance = load<DeepQueryDirective>(dirIndex);
-               queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
-                   (instance.foos = tmp);
+               queryRefresh(tmp = loadContentQuery<ElementRef>()) && (instance.foos = tmp);
              },
            });
          }

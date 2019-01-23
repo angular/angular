@@ -509,9 +509,6 @@ export interface TView {
 
   /**
    * A list of indices for child directives that have content queries.
-   *
-   * Even indices: Directive indices
-   * Odd indices: Starting index of content queries (stored in CONTENT_QUERIES) for this directive
    */
   contentQueries: number[]|null;
 }

@@ -408,7 +408,7 @@
     "name": "setCurrentDirectiveDef"
   },
   {
-    "name": "setCurrentViewQueryIndex"
+    "name": "setCurrentQueryIndex"
   },
   {
     "name": "setFirstTemplatePass"

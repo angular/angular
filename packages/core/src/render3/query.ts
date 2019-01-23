@@ -13,7 +13,7 @@ import {Type} from '../interface/type';
 import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
-import {assertDefined, assertEqual} from '../util/assert';
+import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
 
 import {assertPreviousIsParent} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
@@ -23,8 +23,8 @@ import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition'
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
-import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
-import {getCurrentViewQueryIndex, getIsParent, getLView, getOrCreateCurrentQueries, setCurrentViewQueryIndex} from './state';
+import {CONTENT_QUERIES, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
+import {getCurrentQueryIndex, getFirstTemplatePass, getIsParent, getLView, getOrCreateCurrentQueries, setCurrentQueryIndex} from './state';
 import {isContentQueryHost} from './util';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
@@ -405,10 +405,10 @@ export function viewQuery<T>(
   if (tView.firstTemplatePass) {
     tView.expandoStartIndex++;
   }
-  const index = getCurrentViewQueryIndex();
+  const index = getCurrentQueryIndex();
   const viewQuery: QueryList<T> = query<T>(predicate, descend, read);
   store(index - HEADER_OFFSET, viewQuery);
-  setCurrentViewQueryIndex(index + 1);
+  setCurrentQueryIndex(index + 1);
   return viewQuery;
 }
 
@@ -416,7 +416,49 @@ export function viewQuery<T>(
 * Loads current View Query and moves the pointer/index to the next View Query in LView.
 */
 export function loadViewQuery<T>(): T {
-  const index = getCurrentViewQueryIndex();
-  setCurrentViewQueryIndex(index + 1);
+  const index = getCurrentQueryIndex();
+  setCurrentQueryIndex(index + 1);
   return load<T>(index - HEADER_OFFSET);
+}
+
+/**
+ * Registers a QueryList, associated with a content query, for later refresh (part of a view
+ * refresh).
+ *
+ * @param directiveIndex Current directive index
+ * @param predicate The type for which the query will search
+ * @param descend Whether or not to descend into children
+ * @param read What to save in the query
+ * @returns QueryList<T>
+ */
+export function contentQuery<T>(
+    directiveIndex: number, predicate: Type<any>| string[], descend?: boolean,
+    // TODO: "read" should be an AbstractType (FW-486)
+    read?: any): QueryList<T> {
+  const lView = getLView();
+  const tView = lView[TVIEW];
+  const contentQuery: QueryList<T> = query<T>(predicate, descend, read);
+  (lView[CONTENT_QUERIES] || (lView[CONTENT_QUERIES] = [])).push(contentQuery);
+  if (getFirstTemplatePass()) {
+    const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
+    const lastSavedDirectiveIndex =
+        tView.contentQueries.length ? tView.contentQueries[tView.contentQueries.length - 1] : -1;
+    if (directiveIndex !== lastSavedDirectiveIndex) {
+      tViewContentQueries.push(directiveIndex);
+    }
+  }
+  return contentQuery;
+}
+
+export function loadContentQuery<T>(): QueryList<T> {
+  const lView = getLView();
+  ngDevMode &&
+      assertDefined(
+          lView[CONTENT_QUERIES], 'Content QueryList array should be defined if reading a query.');
+
+  const index = getCurrentQueryIndex();
+  ngDevMode && assertDataInRange(lView[CONTENT_QUERIES] !, index);
+
+  setCurrentQueryIndex(index + 1);
+  return lView[CONTENT_QUERIES] ![index];
 }

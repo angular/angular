@@ -136,7 +136,7 @@ export function defineComponent<T>(componentDefinition: {
   contentQueries?: ((dirIndex: number) => void);
 
   /** Refreshes content queries associated with directives in a given view */
-  contentQueriesRefresh?: ((directiveIndex: number, queryIndex: number) => void);
+  contentQueriesRefresh?: ((directiveIndex: number) => void);
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.

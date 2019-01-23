@@ -36,7 +36,7 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLA
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getCurrentViewQueryIndex, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentViewQueryIndex, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
+import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getCurrentQueryIndex, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
 import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
@@ -137,12 +137,11 @@ export function setHostBindings(tView: TView, viewData: LView): void {
 /** Refreshes content queries for all directives in the given view. */
 function refreshContentQueries(tView: TView): void {
   if (tView.contentQueries != null) {
-    for (let i = 0; i < tView.contentQueries.length; i += 2) {
+    setCurrentQueryIndex(0);
+    for (let i = 0; i < tView.contentQueries.length; i++) {
       const directiveDefIdx = tView.contentQueries[i];
       const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
-
-      directiveDef.contentQueriesRefresh !(
-          directiveDefIdx - HEADER_OFFSET, tView.contentQueries[i + 1]);
+      directiveDef.contentQueriesRefresh !(directiveDefIdx - HEADER_OFFSET);
     }
   }
 }
@@ -2762,7 +2761,7 @@ export function checkView<T>(hostView: LView, component: T) {
 function executeViewQueryFn<T>(lView: LView, tView: TView, component: T): void {
   const viewQuery = tView.viewQuery;
   if (viewQuery) {
-    setCurrentViewQueryIndex(tView.viewQueryStartIndex);
+    setCurrentQueryIndex(tView.viewQueryStartIndex);
     viewQuery(getRenderFlags(lView), component);
   }
 }
@@ -3111,16 +3110,6 @@ export function reference<T>(index: number) {
   return loadInternal<T>(contextLView, index);
 }
 
-export function loadQueryList<T>(queryListIdx: number): QueryList<T> {
-  const lView = getLView();
-  ngDevMode &&
-      assertDefined(
-          lView[CONTENT_QUERIES], 'Content QueryList array should be defined if reading a query.');
-  ngDevMode && assertDataInRange(lView[CONTENT_QUERIES] !, queryListIdx);
-
-  return lView[CONTENT_QUERIES] ![queryListIdx];
-}
-
 /** Retrieves a value from current `viewData`. */
 export function load<T>(index: number): T {
   return loadInternal<T>(getLView(), index);
@@ -3168,26 +3157,6 @@ export function directiveInject<T>(
  */
 export function injectAttribute(attrNameToInject: string): string|null {
   return injectAttributeImpl(getPreviousOrParentTNode(), attrNameToInject);
-}
-
-/**
- * Registers a QueryList, associated with a content query, for later refresh (part of a view
- * refresh).
- */
-export function registerContentQuery<Q>(
-    queryList: QueryList<Q>, currentDirectiveIndex: number): void {
-  const viewData = getLView();
-  const tView = viewData[TVIEW];
-  const savedContentQueriesLength =
-      (viewData[CONTENT_QUERIES] || (viewData[CONTENT_QUERIES] = [])).push(queryList);
-  if (getFirstTemplatePass()) {
-    const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
-    const lastSavedDirectiveIndex =
-        tView.contentQueries.length ? tView.contentQueries[tView.contentQueries.length - 2] : -1;
-    if (currentDirectiveIndex !== lastSavedDirectiveIndex) {
-      tViewContentQueries.push(currentDirectiveIndex, savedContentQueriesLength - 1);
-    }
-  }
 }
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
