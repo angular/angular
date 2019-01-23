@@ -148,7 +148,7 @@ export class CdkStep implements OnChanges {
   /** State of the step. */
   @Input() state: StepState;
 
-  /** Whether the user can return to this step once it has been marked as complted. */
+  /** Whether the user can return to this step once it has been marked as completed. */
   @Input()
   get editable(): boolean { return this._editable; }
   set editable(value: boolean) {
