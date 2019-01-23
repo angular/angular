@@ -131,7 +131,8 @@ import {RouterTestingModule} from '@angular/router/testing';
          engine.flush();
 
          const player = engine.players[0] !;
-         const groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
+         // tslint:disable-next-line:no-any testing private method
+         const groupPlayer = (player as any).getRealPlayer() as AnimationGroupPlayer;
          const players = groupPlayer.players as MockAnimationPlayer[];
 
          expect(players.length).toEqual(2);
@@ -238,7 +239,8 @@ import {RouterTestingModule} from '@angular/router/testing';
          engine.flush();
 
          const player = engine.players[0] !;
-         const groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
+         // tslint:disable-next-line:no-any testing private method
+         const groupPlayer = (player as any).getRealPlayer() as AnimationGroupPlayer;
          const players = groupPlayer.players as MockAnimationPlayer[];
 
          expect(players.length).toEqual(2);
@@ -342,7 +344,8 @@ import {RouterTestingModule} from '@angular/router/testing';
          engine.flush();
 
          const player = engine.players[0] !;
-         const groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
+         // tslint:disable-next-line:no-any testing private method
+         const groupPlayer = (player as any).getRealPlayer() as AnimationGroupPlayer;
          const players = groupPlayer.players as MockAnimationPlayer[];
 
          expect(players.length).toEqual(2);
@@ -438,7 +441,8 @@ import {RouterTestingModule} from '@angular/router/testing';
          expect(players.length).toEqual(1);
          const [p1] = players;
 
-         const innerPlayers = p1.getRealPlayer().players;
+         // tslint:disable-next-line:no-any testing private method
+         const innerPlayers = (p1 as any).getRealPlayer().players;
          expect(innerPlayers.length).toEqual(2);
 
          const [ip1, ip2] = innerPlayers;

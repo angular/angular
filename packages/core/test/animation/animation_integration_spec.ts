@@ -1444,7 +1444,7 @@ const DEFAULT_COMPONENT_ID = '1';
         fixture.detectChanges();
         engine.flush();
 
-        const player = engine.players.pop();
+        const player = engine.players.pop() !;
         player.finish();
 
         expect(getDOM().hasStyle(cmp.element.nativeElement, 'background-color', 'green'))
@@ -2510,7 +2510,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
            expect(cmp.event).toBeFalsy();
 
-           const player = engine.players.pop();
+           const player = engine.players.pop() !;
            player.finish();
            flushMicrotasks();
 

@@ -2733,7 +2733,8 @@ import {HostListener} from '../../src/metadata/directives';
         expect(players.length).toEqual(2);
         expect(engine.players.length).toEqual(1);
 
-        expect(engine.players[0].getRealPlayer()).toBe(players[1]);
+        // tslint:disable-next-line:no-any testing private method
+        expect((engine.players[0] as any).getRealPlayer()).toBe(players[1]);
       });
 
       it('should fire and synchronize the start/done callbacks on sub triggers even if they are not allowed to animate within the animation',
@@ -2972,7 +2973,8 @@ import {HostListener} from '../../src/metadata/directives';
            engine.flush();
 
            expect(engine.players.length).toEqual(1);  // child player, parent cover, parent player
-           const groupPlayer = engine.players[0].getRealPlayer() as AnimationGroupPlayer;
+           // tslint:disable-next-line:no-any testing private method
+           const groupPlayer = (engine.players[0] as any).getRealPlayer() as AnimationGroupPlayer;
            const childPlayer = groupPlayer.players.find(player => {
              if (player instanceof MockAnimationPlayer) {
                return matchesElement(player.element, '.child');

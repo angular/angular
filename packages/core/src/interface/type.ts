@@ -24,6 +24,8 @@ export function isType(v: any): v is Type<any> {
 
 export interface Type<T> extends Function { new (...args: any[]): T; }
 
+export type AbstractType<T> = T extends{prototype: infer U} ? Exclude<U, Type<any>>: never;
+
 export type Mutable<T extends{[x: string]: any}, K extends string> = {
   [P in K]: T[P];
 };

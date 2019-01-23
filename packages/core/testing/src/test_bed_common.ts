@@ -8,9 +8,15 @@
 
 import {Component, Directive, InjectionToken, NgModule, Pipe, PlatformRef, SchemaMetadata, Type} from '@angular/core';
 
+import {AbstractType} from '../../src/interface/type';
+
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {TestBed} from './test_bed';
+
+type InjectorReturnValue<T> = T extends InjectionToken<infer U>?
+    U :
+    T extends Type<any>? InstanceType<T>: T extends string ? unknown : AbstractType<T>;
 
 /**
  * An abstract class for inserting the root test component element in a platform independent way.
@@ -130,7 +136,8 @@ export interface TestBedStatic {
     deps?: any[],
   }): TestBedStatic;
 
-  get(token: any, notFoundValue?: any): any;
+  get<T>(token: T): InjectorReturnValue<T>;
+  get<T1, T2>(token: T1, notFoundValue: T2): InjectorReturnValue<T1>|T2;
 
   createComponent<T>(component: Type<T>): ComponentFixture<T>;
 }

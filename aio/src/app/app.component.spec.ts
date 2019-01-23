@@ -775,14 +775,16 @@ describe('AppComponent', () => {
 
       describe('showing search results', () => {
         it('should not display search results when query is empty', () => {
-          const searchService: MockSearchService = TestBed.get(SearchService);
+          // tslint:disable-next-line:no-any forcing assignment of incompatible type
+          const searchService: MockSearchService = TestBed.get(SearchService) as any;
           searchService.searchResults.next({ query: '', results: [] });
           fixture.detectChanges();
           expect(component.showSearchResults).toBe(false);
         });
 
         it('should hide the results when a search result is selected', () => {
-          const searchService: MockSearchService = TestBed.get(SearchService);
+          // tslint:disable-next-line:no-any forcing assignment of incompatible type
+          const searchService: MockSearchService = TestBed.get(SearchService) as any;
 
           const results = [
             { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false }

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, destroyPlatform} from '@angular/core';
+import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, Type, destroyPlatform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -70,9 +70,9 @@ let lastCreatedRenderer: Renderer2;
           {provide: RenderStore, useValue: wwRenderStore},
           {
             provide: RendererFactory2,
-            useFactory:
-                (wwSerializer: Serializer) => createWebWorkerRendererFactory2(
-                    wwSerializer, uiSerializer, domRendererFactory, uiRenderStore, wwRenderStore),
+            useFactory: (wwSerializer: Serializer) => createWebWorkerRendererFactory2(
+                            wwSerializer, uiSerializer, domRendererFactory as DomRendererFactory2,
+                            uiRenderStore, wwRenderStore),
             deps: [Serializer],
           },
         ],

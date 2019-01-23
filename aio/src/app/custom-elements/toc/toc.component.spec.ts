@@ -48,7 +48,8 @@ describe('TocComponent', () => {
       fixture = TestBed.createComponent(HostEmbeddedTocComponent);
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
-      tocService = TestBed.get(TocService);
+      // tslint:disable-next-line:no-any forcing assignment of incompatible type
+      tocService = TestBed.get(TocService) as any;
     });
 
     it('should create tocComponent', () => {
@@ -134,7 +135,8 @@ describe('TocComponent', () => {
       beforeEach(() => {
         fixture.detectChanges();
         page = setPage();
-        scrollToTopSpy = TestBed.get(ScrollService).scrollToTop;
+        // tslint:disable-next-line:no-any forcing assignment of incompatible type
+        scrollToTopSpy = TestBed.get(ScrollService).scrollToTop as any;
       });
 
       it('should have more than 4 displayed items', () => {
@@ -248,7 +250,8 @@ describe('TocComponent', () => {
 
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
-      tocService = TestBed.get(TocService);
+      // tslint:disable-next-line:no-any forcing assignment of incompatible type
+      tocService = TestBed.get(TocService) as any;
 
       fixture.detectChanges();
       page = setPage();

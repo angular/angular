@@ -1100,7 +1100,7 @@ describe('Integration', () => {
   ['deferred', 'eager'].forEach((strat: any) => {
     it('should dispatch NavigationError after the url has been reset back', fakeAsync(() => {
          const router: Router = TestBed.get(Router);
-         const location: SpyLocation = TestBed.get(Location);
+         const location = TestBed.get(Location) as SpyLocation;
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig(
@@ -1127,7 +1127,7 @@ describe('Integration', () => {
 
     it('should reset the url with the right state when navigation errors', fakeAsync(() => {
          const router: Router = TestBed.get(Router);
-         const location: SpyLocation = TestBed.get(Location);
+         const location = TestBed.get(Location) as SpyLocation;
          const fixture = createRoot(router, RootCmp);
 
          router.resetConfig([
@@ -1194,7 +1194,7 @@ describe('Integration', () => {
            {providers: [{provide: 'returnsFalse', useValue: () => false}]});
 
        const router: Router = TestBed.get(Router);
-       const location: SpyLocation = TestBed.get(Location);
+       const location = TestBed.get(Location) as SpyLocation;
 
        const fixture = createRoot(router, RootCmp);
 

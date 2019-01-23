@@ -128,8 +128,10 @@ describe('DocViewerComponent', () => {
     };
 
     beforeEach(() => {
-      titleService = TestBed.get(Title);
-      tocService = TestBed.get(TocService);
+      // tslint:disable-next-line:no-any forcing assignment of incompatible type
+      titleService = TestBed.get(Title) as any;
+      // tslint:disable-next-line:no-any forcing assignment of incompatible type
+      tocService = TestBed.get(TocService) as any;
 
       targetEl = document.createElement('div');
       document.body.appendChild(targetEl);  // Required for `innerText` to work as expected.
@@ -299,7 +301,8 @@ describe('DocViewerComponent', () => {
       docViewer.render({contents, id}).toPromise();
 
     beforeEach(() => {
-      const elementsLoader = TestBed.get(ElementsLoader) as MockElementsLoader;
+      // tslint:disable-next-line:no-any forcing assignment of incompatible type
+      const elementsLoader: MockElementsLoader = TestBed.get(ElementsLoader) as any;
       loadElementsSpy = elementsLoader.loadContainedCustomElements.and.returnValue(of(undefined));
       prepareTitleAndTocSpy = spyOn(docViewer, 'prepareTitleAndToc');
       swapViewsSpy = spyOn(docViewer, 'swapViews').and.returnValue(of(undefined));
@@ -454,7 +457,10 @@ describe('DocViewerComponent', () => {
     describe('(on error) should clean up, log the error and recover', () => {
       let logger: MockLogger;
 
-      beforeEach(() => logger = TestBed.get(Logger));
+      beforeEach(() => {
+        // tslint:disable-next-line:no-any forcing assignment of incompatible type
+        logger = TestBed.get(Logger) as any;
+      });
 
       it('when `prepareTitleAndTocSpy()` fails', async () => {
         const error = Error('Typical `prepareTitleAndToc()` error');

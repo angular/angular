@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus, CompilerOptions, Component, Directive, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵAPP_ROOT as APP_ROOT, ɵDepFlags as DepFlags, ɵInjectableDef as InjectableDef, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetInjectableDef as getInjectableDef, ɵivyEnabled as ivyEnabled, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
+import {ApplicationInitStatus, CompilerOptions, Component, Directive, InjectionToken, Injector, NgModule, NgModuleFactory, NgModuleRef, NgZone, Optional, Pipe, PlatformRef, Provider, SchemaMetadata, SkipSelf, StaticProvider, Type, ɵAPP_ROOT as APP_ROOT, ɵDepFlags as DepFlags, ɵInjectableDef as InjectableDef, ɵNodeFlags as NodeFlags, ɵclearOverrides as clearOverrides, ɵgetInjectableDef as getInjectableDef, ɵivyEnabled as ivyEnabled, ɵoverrideComponentView as overrideComponentView, ɵoverrideProvider as overrideProvider, ɵstringify as stringify} from '@angular/core';
+
+import {AbstractType} from '../../src/interface/type';
 
 import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
@@ -18,8 +20,11 @@ import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 
 const UNDEFINED = new Object();
 
-
 let _nextRootElementId = 0;
+
+type InjectorReturnValue<T> = T extends InjectionToken<infer U>?
+    U :
+    T extends Type<any>? InstanceType<T>: T extends string ? unknown : AbstractType<T>;
 
 /**
  * @publicApi
@@ -56,7 +61,8 @@ export interface TestBed {
 
   compileComponents(): Promise<any>;
 
-  get(token: any, notFoundValue?: any): any;
+  get<T>(token: T): InjectorReturnValue<T>;
+  get<T1, T2>(token: T1, notFoundValue: T2): InjectorReturnValue<T1>|T2;
 
   execute(tokens: any[], fn: Function, context?: any): any;
 
@@ -239,7 +245,10 @@ export class TestBedViewEngine implements Injector, TestBed {
     return TestBedViewEngine as any as TestBedStatic;
   }
 
-  static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
+  static get<T>(token: T): InjectorReturnValue<T>;
+  static get<T1, T2>(token: T1, notFoundValue: T2): InjectorReturnValue<T1>|T2;
+  static get<T1, T2>(token: T1, notFoundValue = Injector.THROW_IF_NOT_FOUND as T2):
+      InjectorReturnValue<T1>|T2 {
     return _getTestBedViewEngine().get(token, notFoundValue);
   }
 
@@ -469,10 +478,12 @@ export class TestBedViewEngine implements Injector, TestBed {
     }
   }
 
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+  get<T>(token: T): InjectorReturnValue<T>;
+  get<T1, T2>(token: T1, notFoundValue: T2): InjectorReturnValue<T1>|T2;
+  get<T1, T2>(token: T1, notFoundValue = Injector.THROW_IF_NOT_FOUND): InjectorReturnValue<T1>|T2 {
     this._initIfNeeded();
-    if (token === TestBed) {
-      return this;
+    if (token as unknown === TestBed) {
+      return this as any;
     }
     // Tests can inject things from the ng module and from the compiler,
     // but the ng module can't inject things from the compiler and vice versa.
@@ -599,9 +610,11 @@ export class TestBedViewEngine implements Injector, TestBed {
           `Cannot create the component ${stringify(component)} as it was not imported into the testing module!`);
     }
 
-    const noNgZone = this.get(ComponentFixtureNoNgZone, false);
-    const autoDetect: boolean = this.get(ComponentFixtureAutoDetect, false);
-    const ngZone: NgZone = noNgZone ? null : this.get(NgZone, null);
+    // TODO: Stop casting to boolean, return type is boolean[]|false
+    const noNgZone = this.get(ComponentFixtureNoNgZone, false) as boolean;
+    // TODO: Stop casting to boolean, return type is boolean[]|false
+    const autoDetect = this.get(ComponentFixtureAutoDetect, false) as boolean;
+    const ngZone = noNgZone ? null : this.get(NgZone, null);
     const testComponentRenderer: TestComponentRenderer = this.get(TestComponentRenderer);
     const rootElId = `root${_nextRootElementId++}`;
     testComponentRenderer.insertRootElement(rootElId);
@@ -680,7 +693,7 @@ export function inject(tokens: any[], fn: Function): () => any {
       // Return an async test method that returns a Promise if AsyncTestCompleter is one of
       // the injected tokens.
       return testBed.compileComponents().then(() => {
-        const completer: AsyncTestCompleter = testBed.get(AsyncTestCompleter);
+        const completer = testBed.get(AsyncTestCompleter);
         testBed.execute(tokens, fn, this);
         return completer.promise;
       });

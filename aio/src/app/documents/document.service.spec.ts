@@ -32,9 +32,11 @@ describe('DocumentService', () => {
     const injector = createInjector(initialUrl);
     httpMock = injector.get(HttpTestingController) as HttpTestingController;
     return {
-      locationService: injector.get(LocationService) as MockLocationService,
+      // tslint:disable-next-line:no-any forcing assignment of incompatible type
+      locationService: injector.get(LocationService) as any as MockLocationService,
       docService: injector.get(DocumentService) as DocumentService,
-      logger: injector.get(Logger) as MockLogger
+      // tslint:disable-next-line:no-any forcing assignment of incompatible type
+      logger: injector.get(Logger) as any as MockLogger
     };
   }
 

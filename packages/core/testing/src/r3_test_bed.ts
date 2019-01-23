@@ -51,6 +51,7 @@ import {
   CompilerOptions,
   StaticProvider,
   COMPILER_OPTIONS,
+  InjectionToken,
 } from '@angular/core';
 // clang-format on
 import {ResourceLoader} from '@angular/compiler';
@@ -61,6 +62,7 @@ import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
 import {TestBed} from './test_bed';
 import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
+import {AbstractType} from '../../src/interface/type';
 
 let _nextRootElementId = 0;
 
@@ -75,6 +77,10 @@ type Resolvers = {
   directive: Resolver<Component>,
   pipe: Resolver<Pipe>,
 };
+
+type InjectorReturnValue<T> = T extends InjectionToken<infer U>?
+    U :
+    T extends Type<any>? InstanceType<T>: T extends string ? unknown : AbstractType<T>;
 
 /**
  * @description
@@ -213,7 +219,10 @@ export class TestBedRender3 implements Injector, TestBed {
     throw new Error('Render3TestBed.deprecatedOverrideProvider is not implemented');
   }
 
-  static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+  static get<T>(token: T): InjectorReturnValue<T>;
+  static get<T1, T2>(token: T1, notFoundValue: T2): InjectorReturnValue<T1>|T2;
+  static get<T1, T2>(token: T1, notFoundValue = Injector.THROW_IF_NOT_FOUND as T2):
+      InjectorReturnValue<T1>|T2 {
     return _getTestBedRender3().get(token, notFoundValue);
   }
 
@@ -426,10 +435,13 @@ export class TestBedRender3 implements Injector, TestBed {
     }
   }
 
-  get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
+  get<T>(token: T): InjectorReturnValue<T>;
+  get<T1, T2>(token: T1, notFoundValue: T2): InjectorReturnValue<T1>|T2;
+  get<T1, T2>(token: T1, notFoundValue = Injector.THROW_IF_NOT_FOUND as T2):
+      InjectorReturnValue<T1>|T2 {
     this._initIfNeeded();
-    if (token === TestBedRender3) {
-      return this;
+    if (token as unknown === TestBedRender3) {
+      return this as any;
     }
     const result = this._moduleRef.injector.get(token, UNDEFINED);
     return result === UNDEFINED ? this.compilerInjector.get(token, notFoundValue) : result;
@@ -512,9 +524,11 @@ export class TestBedRender3 implements Injector, TestBed {
           `It looks like '${stringify(type)}' has not been IVY compiled - it has no 'ngComponentDef' field`);
     }
 
-    const noNgZone: boolean = this.get(ComponentFixtureNoNgZone, false);
-    const autoDetect: boolean = this.get(ComponentFixtureAutoDetect, false);
-    const ngZone: NgZone = noNgZone ? null : this.get(NgZone, null);
+    // TODO: Stop casting to boolean, return type is boolean[]|false
+    const noNgZone = this.get(ComponentFixtureNoNgZone, false) as boolean;
+    // TODO: Stop casting to boolean, return type is boolean[]|false
+    const autoDetect = this.get(ComponentFixtureAutoDetect, false) as boolean;
+    const ngZone = noNgZone ? null : this.get(NgZone, null);
     const componentFactory = new ComponentFactory(componentDef);
     const initComponent = () => {
       const componentRef =

@@ -23,7 +23,8 @@ describe('LazyCustomElementComponent', () => {
       ],
     });
 
-    mockLogger = injector.get(Logger);
+    // tslint:disable-next-line:no-any forcing assignment of incompatible type
+    mockLogger = injector.get(Logger) as any;
     fixture = TestBed.createComponent(LazyCustomElementComponent);
   });
 

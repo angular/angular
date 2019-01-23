@@ -22,7 +22,8 @@ describe('ReportingErrorHandler service', () => {
   });
 
   it('should be registered on the AppModule', () => {
-    handler = TestBed.configureTestingModule({ imports: [AppModule] }).get(ErrorHandler);
+    // tslint:disable-next-line:no-any forcing assignment of incompatible type
+    handler = TestBed.configureTestingModule({ imports: [AppModule] }).get(ErrorHandler) as any;
     expect(handler).toEqual(jasmine.any(ReportingErrorHandler));
   });
 

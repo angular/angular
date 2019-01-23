@@ -62,7 +62,8 @@ import {fixmeIvy} from '@angular/private/testing';
       fixture.detectChanges();
 
       expect(engine.players.length).toEqual(1);
-      let webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
+      // tslint:disable-next-line:no-any testing private method
+      let webPlayer = (engine.players[0] as any).getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
         {height: '0px', offset: 0}, {height: '100px', offset: 1}
@@ -76,7 +77,8 @@ import {fixmeIvy} from '@angular/private/testing';
         engine.flush();
 
         expect(engine.players.length).toEqual(1);
-        webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
+        // tslint:disable-next-line:no-any testing private method
+        webPlayer = (engine.players[0] as any).getRealPlayer() as ɵWebAnimationsPlayer;
 
         expect(webPlayer.keyframes).toEqual([
           {height: '100px', offset: 0}, {height: '0px', offset: 1}
@@ -116,7 +118,8 @@ import {fixmeIvy} from '@angular/private/testing';
       engine.flush();
 
       expect(engine.players.length).toEqual(1);
-      let webPlayer = engine.players[0].getRealPlayer() as ɵWebAnimationsPlayer;
+      // tslint:disable-next-line:no-any testing private method
+      let webPlayer = (engine.players[0] as any).getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
         {height: '100px', offset: 0}, {height: '120px', offset: 1}
@@ -155,7 +158,8 @@ import {fixmeIvy} from '@angular/private/testing';
 
       expect(engine.players.length).toEqual(1);
       let player = engine.players[0];
-      let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      // tslint:disable-next-line:no-any testing private method
+      let webPlayer = (player as any).getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
         {height: '0px', offset: 0}, {height: '100px', offset: 1}
@@ -173,7 +177,8 @@ import {fixmeIvy} from '@angular/private/testing';
 
       expect(engine.players.length).toEqual(1);
       player = engine.players[0];
-      webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      // tslint:disable-next-line:no-any testing private method
+      webPlayer = (player as any).getRealPlayer() as ɵWebAnimationsPlayer;
 
       expect(webPlayer.keyframes).toEqual([
         {height: '100px', offset: 0}, {height: '80px', offset: 1}
@@ -224,7 +229,8 @@ import {fixmeIvy} from '@angular/private/testing';
       fixture.detectChanges();
 
       let player = engine.players[0] !;
-      let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      // tslint:disable-next-line:no-any testing private method
+      let webPlayer = (player as any).getRealPlayer() as ɵWebAnimationsPlayer;
       expect(webPlayer.keyframes).toEqual([
         {height: '0px', offset: 0},
         {height: '300px', offset: 1},
@@ -235,7 +241,8 @@ import {fixmeIvy} from '@angular/private/testing';
       fixture.detectChanges();
 
       player = engine.players[0] !;
-      webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      // tslint:disable-next-line:no-any testing private method
+      webPlayer = (player as any).getRealPlayer() as ɵWebAnimationsPlayer;
       expect(webPlayer.keyframes).toEqual([
         {height: '300px', offset: 0},
         {height: '0px', offset: 1},
@@ -245,8 +252,8 @@ import {fixmeIvy} from '@angular/private/testing';
     it('should treat * styles as ! for queried items that are collected in a container that is being removed',
        () => {
          @Component({
-            selector: 'my-app',
-            styles: [`
+          selector: 'my-app',
+          styles: [`
               .list .outer {
                 overflow:hidden;
               }
@@ -254,7 +261,7 @@ import {fixmeIvy} from '@angular/private/testing';
                 line-height:50px;
               }
             `],
-            template: `
+          template: `
               <button (click)="empty()">Empty</button>
               <button (click)="middle()">Middle</button>
               <button (click)="full()">Full</button>
@@ -267,22 +274,22 @@ import {fixmeIvy} from '@angular/private/testing';
                 </div>
               </div>
             `,
-            animations: [
-              trigger('list', [
-                transition(':enter', []),
-                transition('* => empty', [
-                  query(':leave', [
-                    animate(500, style({ height: '0px' }))
-                  ])
-                ]),
-                transition('* => full', [
-                  query(':enter', [
-                    style({ height: '0px' }),
-                    animate(500, style({ height: '*' }))
-                  ])
-                ]),
-              ])
-            ]
+          animations: [
+            trigger('list', [
+              transition(':enter', []),
+              transition('* => empty', [
+                query(':leave', [
+                  animate(500, style({ height: '0px' }))
+                ])
+              ]),
+              transition('* => full', [
+                query(':enter', [
+                  style({ height: '0px' }),
+                  animate(500, style({ height: '*' }))
+                ])
+              ]),
+            ])
+          ]
         })
         class Cmp {
            items: any[] = [];
@@ -373,14 +380,16 @@ import {fixmeIvy} from '@angular/private/testing';
       fixture.detectChanges();
 
       let player = engine.players[0] !;
-      let webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      // tslint:disable-next-line:no-any testing private method
+      let webPlayer = (player as any).getRealPlayer() as ɵWebAnimationsPlayer;
       webPlayer.setPosition(0.5);
 
       cmp.exp = 'b';
       fixture.detectChanges();
 
       player = engine.players[0] !;
-      webPlayer = player.getRealPlayer() as ɵWebAnimationsPlayer;
+      // tslint:disable-next-line:no-any testing private method
+      webPlayer = (player as any).getRealPlayer() as ɵWebAnimationsPlayer;
       expect(approximate(parseFloat(webPlayer.keyframes[0]['width'] as string), 150))
           .toBeLessThan(0.05);
       expect(approximate(parseFloat(webPlayer.keyframes[0]['height'] as string), 300))
@@ -429,7 +438,8 @@ import {fixmeIvy} from '@angular/private/testing';
          fixture.detectChanges();
 
          let player = engine.players[0] !;
-         let groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
+         // tslint:disable-next-line:no-any testing private method
+         let groupPlayer = (player as any).getRealPlayer() as AnimationGroupPlayer;
          let players = groupPlayer.players;
          expect(players.length).toEqual(5);
 
@@ -443,7 +453,8 @@ import {fixmeIvy} from '@angular/private/testing';
          fixture.detectChanges();
 
          player = engine.players[0];
-         groupPlayer = player.getRealPlayer() as AnimationGroupPlayer;
+         // tslint:disable-next-line:no-any testing private method
+         groupPlayer = (player as any).getRealPlayer() as AnimationGroupPlayer;
          players = groupPlayer.players;
 
          expect(players.length).toEqual(5);

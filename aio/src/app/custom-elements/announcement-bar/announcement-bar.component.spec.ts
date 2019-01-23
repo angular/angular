@@ -19,14 +19,15 @@ describe('AnnouncementBarComponent', () => {
   let mockLogger: MockLogger;
 
   beforeEach(() => {
-    const injector = TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       declarations: [AnnouncementBarComponent],
       providers: [{ provide: Logger, useClass: MockLogger }]
     });
 
-    httpMock = injector.get(HttpTestingController);
-    mockLogger = injector.get(Logger);
+    httpMock = TestBed.get(HttpTestingController);
+    // tslint:disable-next-line:no-any forcing assignment of incompatible type
+    mockLogger = TestBed.get(Logger) as any;
     fixture = TestBed.createComponent(AnnouncementBarComponent);
     component = fixture.componentInstance;
     element = fixture.nativeElement;
