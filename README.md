@@ -49,7 +49,7 @@ High level stuff planned for Q4 2018 (October - Dec):
 | datepicker       |                                                        |   [Docs][25] |
 | dialog           |                                                        |   [Docs][22] |
 | divider          |                                                        |   [Docs][35] |
-| drag-drop        |                                          Landing in v7 |              |
+| drag-drop        |                                                        |   [Docs][39] |
 | expansion-panel  |                                                        |   [Docs][32] |
 | grid-list        |                                                        |   [Docs][9]  |
 | icon             |                                                        |   [Docs][10] |
@@ -73,7 +73,7 @@ High level stuff planned for Q4 2018 (October - Dec):
 | toolbar          |                                                        |   [Docs][7]  |
 | tooltip          |                                                        |   [Docs][18] |
 | tree             |                                                        |   [Docs][36] |
-| virtual-scroll   |                                          Landing in v7 |              |
+| virtual-scroll   |                                                        |   [Docs][40] |
 | ---------------- | ------------------------------------------------------ | ------------ |
 | theming          |                                                        |  [Guide][20] |
 | typography       |                                                        |  [Guide][27] |
@@ -128,6 +128,8 @@ High level stuff planned for Q4 2018 (October - Dec):
 [36]: https://material.angular.io/components/tree/overview
 [37]: https://material.angular.io/components/badge/overview
 [38]: https://material.angular.io/components/bottom-sheet/overview
+[39]: https://material.angular.io/cdk/drag-drop/overview
+[40]: https://material.angular.io/cdk/scrolling/overview#virtual-scrolling
 
 [0107]: https://github.com/angular/material2/issues/107
 [0119]: https://github.com/angular/material2/issues/119
