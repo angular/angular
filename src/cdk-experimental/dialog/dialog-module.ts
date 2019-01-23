@@ -31,6 +31,9 @@ import {
     A11yModule,
   ],
   exports: [
+    // Re-export the PortalModule so that people extending the `CdkDialogContainer`
+    // don't have to remember to import it or be faced with an unhelpful error.
+    PortalModule,
     CdkDialogContainer,
   ],
   declarations: [
