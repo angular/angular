@@ -500,6 +500,11 @@ export function elementContainerStart(
   appendChild(native, tNode, lView);
   createDirectivesAndLocals(tView, lView, localRefs);
   attachPatchData(native, lView);
+
+  const currentQueries = lView[QUERIES];
+  if (currentQueries) {
+    currentQueries.addNode(tNode);
+  }
 }
 
 /** Mark the end of the <ng-container>. */
@@ -518,7 +523,8 @@ export function elementContainerEnd(): void {
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.ElementContainer);
   const currentQueries = lView[QUERIES];
   if (currentQueries) {
-    lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TElementContainerNode);
+    lView[QUERIES] =
+        isContentQueryHost(previousOrParentTNode) ? currentQueries.parent : currentQueries;
   }
 
   registerPostOrderHooks(tView, previousOrParentTNode);
@@ -591,6 +597,11 @@ export function elementStart(
   // it will take that over for us (this will be removed once #FW-882 is in).
   if (tNode.stylingTemplate && (tNode.flags & TNodeFlags.hasClassInput) === 0) {
     renderInitialStylesAndClasses(native, tNode.stylingTemplate, lView[RENDERER]);
+  }
+
+  const currentQueries = lView[QUERIES];
+  if (currentQueries) {
+    currentQueries.addNode(tNode);
   }
 }
 
@@ -1027,7 +1038,8 @@ export function elementEnd(): void {
   const lView = getLView();
   const currentQueries = lView[QUERIES];
   if (currentQueries) {
-    lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TElementNode);
+    lView[QUERIES] =
+        isContentQueryHost(previousOrParentTNode) ? currentQueries.parent : currentQueries;
   }
 
   registerPostOrderHooks(getLView()[TVIEW], previousOrParentTNode);
