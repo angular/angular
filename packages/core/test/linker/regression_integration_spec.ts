@@ -317,6 +317,13 @@ function declareTests(config?: {useJit: boolean}) {
       expect(ctx.componentInstance.viewContainers.first).toBe(vc);
     });
 
+    it('should not throw when encountering an empty class attribute', () => {
+      const template = '<div class=""></div>';
+      TestBed.overrideComponent(MyComp1, {set: {template}});
+
+      expect(() => TestBed.createComponent(MyComp1)).not.toThrow();
+    });
+
     describe('empty templates - #15143', () => {
       it('should allow empty components', () => {
         @Component({template: ''})
