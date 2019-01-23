@@ -1,4 +1,4 @@
-`<mat-radio>` provides the same functionality as a native `<input type="radio">` enhanced with
+`<mat-radio-button>` provides the same functionality as a native `<input type="radio">` enhanced with
 Material Design styling and animations.
 
 <!-- example(radio-overview) -->
