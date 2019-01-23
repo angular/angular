@@ -381,22 +381,21 @@ describe('projection', () => {
   });
 
   if (getDOM().supportsNativeShadowDOM()) {
-    fixmeIvy('FW-841: Content projection with ShadovDom v0 doesn\'t work')
-        .it('should support native content projection and isolate styles per component', () => {
-          TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
-          TestBed.overrideComponent(MainComp, {
-            set: {
-              template: '<simple-native1><div>A</div></simple-native1>' +
-                  '<simple-native2><div>B</div></simple-native2>'
-            }
-          });
-          const main = TestBed.createComponent(MainComp);
+    it('should support native content projection and isolate styles per component', () => {
+      TestBed.configureTestingModule({declarations: [SimpleNative1, SimpleNative2]});
+      TestBed.overrideComponent(MainComp, {
+        set: {
+          template: '<simple-native1><div>A</div></simple-native1>' +
+              '<simple-native2><div>B</div></simple-native2>'
+        }
+      });
+      const main = TestBed.createComponent(MainComp);
 
-          const childNodes = getDOM().childNodes(main.nativeElement);
-          expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
-          expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
-          main.destroy();
-        });
+      const childNodes = getDOM().childNodes(main.nativeElement);
+      expect(childNodes[0]).toHaveText('div {color: red}SIMPLE1(A)');
+      expect(childNodes[1]).toHaveText('div {color: blue}SIMPLE2(B)');
+      main.destroy();
+    });
   }
 
   if (getDOM().supportsDOMEvents()) {

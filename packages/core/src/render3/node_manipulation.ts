@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ViewEncapsulation} from '../core';
+
 import {attachPatchData} from './context_discovery';
 import {callHooks} from './hooks';
 import {LContainer, NATIVE, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
+import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
@@ -486,7 +489,7 @@ function executeOnDestroys(view: LView): void {
  *   `<component><content>delayed due to projection</content></component>`
  * - Parent container is disconnected: This can happen when we are inserting a view into
  *   parent container, which itself is disconnected. For example the parent container is part
- *   of a View which has not be inserted or is mare for projection but has not been inserted
+ *   of a View which has not be inserted or is made for projection but has not been inserted
  *   into destination.
  */
 function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
@@ -519,15 +522,24 @@ function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
     }
   } else {
     ngDevMode && assertNodeType(parent, TNodeType.Element);
-    // We've got a parent which is an element in the current view. We just need to verify if the
-    // parent element is not a component. Component's content nodes are not inserted immediately
-    // because they will be projected, and so doing insert at this point would be wasteful.
-    // Since the projection would then move it to its final destination.
     if (parent.flags & TNodeFlags.isComponent) {
-      return null;
-    } else {
-      return getNativeByTNode(parent, currentView) as RElement;
+      const tData = currentView[TVIEW].data;
+      const tNode = tData[parent.index] as TNode;
+      const encapsulation = (tData[tNode.directiveStart] as ComponentDef<any>).encapsulation;
+
+      // We've got a parent which is an element in the current view. We just need to verify if the
+      // parent element is not a component. Component's content nodes are not inserted immediately
+      // because they will be projected, and so doing insert at this point would be wasteful.
+      // Since the projection would then move it to its final destination. Note that we can't
+      // make this assumption when using the Shadow DOM, because the native projection placeholders
+      // (<content> or <slot>) have to be in place as elements are being inserted.
+      if (encapsulation !== ViewEncapsulation.ShadowDom &&
+          encapsulation !== ViewEncapsulation.Native) {
+        return null;
+      }
     }
+
+    return getNativeByTNode(parent, currentView) as RElement;
   }
 }
 
