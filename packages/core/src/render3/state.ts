@@ -257,18 +257,18 @@ export function setBindingRoot(value: number) {
 }
 
 /**
- * Current index of a View Query which needs to be processed next.
- * We iterate over the list of View Queries stored in LView and increment current query index.
+ * Current index of a View or Content Query which needs to be processed next.
+ * We iterate over the list of Queries and increment current query index at every step.
  */
-let viewQueryIndex: number = 0;
+let currentQueryIndex: number = 0;
 
-export function getCurrentViewQueryIndex(): number {
+export function getCurrentQueryIndex(): number {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return viewQueryIndex;
+  return currentQueryIndex;
 }
 
-export function setCurrentViewQueryIndex(value: number): void {
-  viewQueryIndex = value;
+export function setCurrentQueryIndex(value: number): void {
+  currentQueryIndex = value;
 }
 
 /**

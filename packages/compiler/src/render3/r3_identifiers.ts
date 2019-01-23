@@ -116,7 +116,6 @@ export class Identifiers {
   static i18nPostprocess: o.ExternalReference = {name: 'ɵi18nPostprocess', moduleName: CORE};
 
   static load: o.ExternalReference = {name: 'ɵload', moduleName: CORE};
-  static loadQueryList: o.ExternalReference = {name: 'ɵloadQueryList', moduleName: CORE};
 
   static pipe: o.ExternalReference = {name: 'ɵpipe', moduleName: CORE};
 
@@ -185,12 +184,11 @@ export class Identifiers {
 
   static definePipe: o.ExternalReference = {name: 'ɵdefinePipe', moduleName: CORE};
 
-  static query: o.ExternalReference = {name: 'ɵquery', moduleName: CORE};
   static queryRefresh: o.ExternalReference = {name: 'ɵqueryRefresh', moduleName: CORE};
   static viewQuery: o.ExternalReference = {name: 'ɵviewQuery', moduleName: CORE};
   static loadViewQuery: o.ExternalReference = {name: 'ɵloadViewQuery', moduleName: CORE};
-  static registerContentQuery:
-      o.ExternalReference = {name: 'ɵregisterContentQuery', moduleName: CORE};
+  static contentQuery: o.ExternalReference = {name: 'ɵcontentQuery', moduleName: CORE};
+  static loadContentQuery: o.ExternalReference = {name: 'ɵloadContentQuery', moduleName: CORE};
 
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵNgOnChangesFeature', moduleName: CORE};
 
