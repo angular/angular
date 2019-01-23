@@ -2774,4 +2774,124 @@ describe('query', () => {
          expect(deepInstance !.foos.length).toBe(2);
        });
   });
+
+  describe('order', () => {
+    class TextDirective {
+      value !: string;
+
+      static ngDirectiveDef = defineDirective({
+        type: TextDirective,
+        selectors: [['', 'text', '']],
+        factory: () => new TextDirective(),
+        inputs: {value: 'text'}
+      });
+    }
+
+    it('should register content matches from top to bottom', () => {
+      let contentQueryDirective: ContentQueryDirective;
+
+      class ContentQueryDirective {
+        // @ContentChildren(TextDirective)
+        texts !: QueryList<TextDirective>;
+
+        static ngComponentDef = defineDirective({
+          type: ContentQueryDirective,
+          selectors: [['', 'content-query', '']],
+          factory: () => contentQueryDirective = new ContentQueryDirective(),
+          contentQueries:
+              (dirIndex) => { registerContentQuery(query(TextDirective, true), dirIndex); },
+          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+            let tmp: any;
+            const instance = load<ContentQueryDirective>(dirIndex);
+            queryRefresh(tmp = loadQueryList<TextDirective>(queryStartIdx)) &&
+                (instance.texts = tmp);
+          }
+        });
+      }
+
+      const AppComponent = createComponent(
+          'app-component',
+          /**
+          * <div content-query>
+          *    <span text="A"></span>
+          *    <div text="B">
+          *       <span text="C">
+          *         <span text="D"></span>
+          *       </span>
+          *    </div>
+          *    <span text="E"></span>
+          * </div>
+          */
+          function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div', ['content-query']);
+              {
+                element(1, 'span', ['text', 'A']);
+                elementStart(2, 'div', ['text', 'B']);
+                elementStart(3, 'span', ['text', 'C']);
+                { element(4, 'span', ['text', 'D']); }
+                elementEnd();
+                elementEnd();
+                element(5, 'span', ['text', 'E']);
+              }
+              elementEnd();
+            }
+          },
+          6, 0, [TextDirective, ContentQueryDirective]);
+
+      new ComponentFixture(AppComponent);
+      expect(contentQueryDirective !.texts.map(item => item.value)).toEqual([
+        'A', 'B', 'C', 'D', 'E'
+      ]);
+    });
+
+    it('should register view matches from top to bottom', () => {
+      /**
+        *    <span text="A"></span>
+        *    <div text="B">
+        *       <span text="C">
+        *         <span text="D"></span>
+        *       </span>
+        *    </div>
+        *    <span text="E"></span>
+        */
+      class ViewQueryComponent {
+        // @ViewChildren(TextDirective)
+        texts !: QueryList<TextDirective>;
+
+        static ngComponentDef = defineComponent({
+          type: ViewQueryComponent,
+          selectors: [['view-query']],
+          factory: () => new ViewQueryComponent(),
+          template: function(rf: RenderFlags, ctx: ViewQueryComponent) {
+            if (rf & RenderFlags.Create) {
+              element(0, 'span', ['text', 'A']);
+              elementStart(1, 'div', ['text', 'B']);
+              elementStart(2, 'span', ['text', 'C']);
+              { element(3, 'span', ['text', 'D']); }
+              elementEnd();
+              elementEnd();
+              element(4, 'span', ['text', 'E']);
+            }
+          },
+          consts: 5,
+          vars: 0,
+          viewQuery: function(rf: RenderFlags, ctx: ViewQueryComponent) {
+            let tmp: any;
+            if (rf & RenderFlags.Create) {
+              viewQuery(TextDirective, true);
+            }
+            if (rf & RenderFlags.Update) {
+              queryRefresh(tmp = loadViewQuery<QueryList<TextDirective>>()) &&
+                  (ctx.texts = tmp as QueryList<TextDirective>);
+            }
+          },
+          directives: [TextDirective]
+        });
+      }
+
+      const fixture = new ComponentFixture(ViewQueryComponent);
+      expect(fixture.component.texts.map(item => item.value)).toEqual(['A', 'B', 'C', 'D', 'E']);
+    });
+  });
 });
