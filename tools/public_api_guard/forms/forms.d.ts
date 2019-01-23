@@ -61,6 +61,10 @@ export declare abstract class AbstractControl {
         onlySelf?: boolean;
         emitEvent?: boolean;
     }): void;
+    static readonly disabled = "DISABLED";
+    static readonly invalid = "INVALID";
+    static readonly pending = "PENDING";
+    static readonly valid = "VALID";
 }
 
 export declare abstract class AbstractControlDirective {

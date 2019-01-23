@@ -133,6 +133,34 @@ function isOptionsObj(
  * @publicApi
  */
 export abstract class AbstractControl {
+  /**
+   * The `disabled` form status.
+   * @see status
+   * @see DISABLED
+   */
+  static readonly disabled = DISABLED;
+
+  /**
+   * The `invalid` form status.
+   * @see status
+   * @see INVALID
+   */
+  static readonly invalid = INVALID;
+
+  /**
+   * The `pending` form status.
+   * @see status
+   * @see PENDING
+   */
+  static readonly pending = PENDING;
+
+  /**
+   * The `valid` form status.
+   * @see status
+   * @see VALID
+   */
+  static readonly valid = VALID;
+
   /** @internal */
   // TODO(issue/24571): remove '!'.
   _pendingDirty !: boolean;
