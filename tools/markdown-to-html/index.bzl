@@ -47,6 +47,7 @@ def _markdown_to_html(ctx):
     executable = ctx.executable._transform_markdown,
     outputs = expected_outputs,
     arguments = [args],
+    progress_message = "MarkdownToHtml",
   )
 
   return DefaultInfo(files = depset(expected_outputs))

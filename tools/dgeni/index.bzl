@@ -60,6 +60,7 @@ def _dgeni_api_docs(ctx):
     executable = ctx.executable._dgeni_bin,
     outputs = expected_outputs,
     arguments = [args],
+    progress_message = "Dgeni (%s)" % (output_dir_path),
   )
 
   return DefaultInfo(files = depset(expected_outputs))

@@ -53,6 +53,7 @@ def _package_docs_content(ctx):
     executable = ctx.executable._packager,
     outputs = expected_outputs,
     arguments = [args],
+    progress_message = "PackageDocsContent",
   )
 
   return DefaultInfo(files = depset(expected_outputs))

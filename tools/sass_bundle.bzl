@@ -24,6 +24,7 @@ def _sass_bundle(ctx):
     executable = ctx.executable._sass_bundle,
     outputs = [ctx.outputs.output_name],
     arguments = [args],
+    progress_message = "SassBundle (%s)" % ctx.attr.output_name,
   )
 
   output_depset = depset([ctx.outputs.output_name])

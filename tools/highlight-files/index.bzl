@@ -59,6 +59,7 @@ def _highlight_files(ctx):
     executable = ctx.executable._highlight_files,
     outputs = expected_outputs,
     arguments = [args],
+    progress_message = "HighlightFiles",
   )
 
   return DefaultInfo(files = depset(expected_outputs))
