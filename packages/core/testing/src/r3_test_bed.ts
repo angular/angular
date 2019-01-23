@@ -54,7 +54,7 @@ import {
 // clang-format on
 import {ResourceLoader} from '@angular/compiler';
 
-import {clearResolutionOfComponentResourcesQueue, resolveComponentResources} from '../../src/metadata/resource_loading';
+import {clearResolutionOfComponentResourcesQueue, componentNeedsResolution, resolveComponentResources} from '../../src/metadata/resource_loading';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
@@ -374,6 +374,8 @@ export class TestBedRender3 implements Injector, TestBed {
     const declarations: Type<any>[] = flatten(this._declarations || EMPTY_ARRAY, resolveForwardRef);
 
     const componentOverrides: [Type<any>, Component][] = [];
+    let hasAsyncResources = false;
+
     // Compile the components declared by this module
     declarations.forEach(declaration => {
       const component = resolvers.component.resolve(declaration);
@@ -382,25 +384,34 @@ export class TestBedRender3 implements Injector, TestBed {
         const metadata = {...component};
         compileComponent(declaration, metadata);
         componentOverrides.push([declaration, metadata]);
+        hasAsyncResources = hasAsyncResources || componentNeedsResolution(component);
       }
     });
 
-    let resourceLoader: ResourceLoader;
+    const overrideComponents = () => {
+      componentOverrides.forEach((override: [Type<any>, Component]) => {
+        // Override the existing metadata, ensuring that the resolved resources
+        // are only available until the next TestBed reset (when `resetTestingModule` is called)
+        this.overrideComponent(override[0], {set: override[1]});
+      });
+    };
 
-    return resolveComponentResources(url => {
-             if (!resourceLoader) {
-               resourceLoader = this.compilerInjector.get(ResourceLoader);
-             }
-             return Promise.resolve(resourceLoader.get(url));
-           })
-        .then(() => {
-          componentOverrides.forEach((override: [Type<any>, Component]) => {
-            // Once resolved, we override the existing metadata, ensuring that the resolved
-            // resources
-            // are only available until the next TestBed reset (when `resetTestingModule` is called)
-            this.overrideComponent(override[0], {set: override[1]});
-          });
-        });
+    // If the component has no async resources (templateUrl, styleUrls), we can finish
+    // synchronously. This is important so that users who mistakenly treat `compileComponents`
+    // as synchronous don't encounter an error, as ViewEngine was tolerant of this.
+    if (!hasAsyncResources) {
+      overrideComponents();
+      return Promise.resolve();
+    } else {
+      let resourceLoader: ResourceLoader;
+      return resolveComponentResources(url => {
+               if (!resourceLoader) {
+                 resourceLoader = this.compilerInjector.get(ResourceLoader);
+               }
+               return Promise.resolve(resourceLoader.get(url));
+             })
+          .then(overrideComponents);
+    }
   }
 
   get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {

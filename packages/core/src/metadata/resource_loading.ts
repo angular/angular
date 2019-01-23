@@ -91,8 +91,8 @@ export function maybeQueueResolutionOfComponentResources(metadata: Component) {
   }
 }
 
-export function componentNeedsResolution(component: Component) {
-  return component.templateUrl || component.styleUrls && component.styleUrls.length;
+export function componentNeedsResolution(component: Component): boolean {
+  return !!(component.templateUrl || component.styleUrls && component.styleUrls.length);
 }
 export function clearResolutionOfComponentResourcesQueue() {
   componentResourceResolutionQueue.clear();
