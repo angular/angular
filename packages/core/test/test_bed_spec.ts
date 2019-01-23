@@ -79,6 +79,10 @@ export class ComponentWithPropBindings {
 export class SimpleApp {
 }
 
+@Component({selector: 'inline-template', template: '<p>Hello</p>'})
+export class ComponentWithInlineTemplate {
+}
+
 @NgModule({
   declarations: [
     HelloWorld, SimpleCmp, WithRefsCmp, InheritedCmp, SimpleApp, ComponentWithPropBindings,
@@ -230,6 +234,26 @@ describe('TestBed', () => {
     const simpleApp = TestBed.createComponent(SimpleApp);
     simpleApp.detectChanges();
     expect(simpleApp.nativeElement).toHaveText('simple - inherited');
+  });
+
+  it('should resolve components without async resources synchronously', (done) => {
+    TestBed
+        .configureTestingModule({
+          declarations: [ComponentWithInlineTemplate],
+        })
+        .compileComponents()
+        .then(done)
+        .catch(error => {
+          // This should not throw any errors. If an error is thrown, the test will fail.
+          // Specifically use `catch` here to mark the test as done and *then* throw the error
+          // so that the test isn't treated as a timeout.
+          done();
+          throw error;
+        });
+
+    // Intentionally call `createComponent` before `compileComponents` is resolved. We want this to
+    // work for components that don't have any async resources (templateUrl, styleUrls).
+    TestBed.createComponent(ComponentWithInlineTemplate);
   });
 
   onlyInIvy('patched ng defs should be removed after resetting TestingModule')
