@@ -82,6 +82,7 @@ export interface MatTooltipDefaultOptions {
   showDelay: number;
   hideDelay: number;
   touchendHideDelay: number;
+  position?: TooltipPosition;
 }
 
 /** Injection token to be used to override the default options for `matTooltip`. */
@@ -254,6 +255,10 @@ export class MatTooltip implements OnDestroy {
         _ngZone.run(() => this.show());
       }
     });
+
+    if (_defaultOptions && _defaultOptions.position) {
+      this.position = _defaultOptions.position;
+    }
   }
 
   /**

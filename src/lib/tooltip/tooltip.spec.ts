@@ -204,6 +204,33 @@ describe('MatTooltip', () => {
       expect(tooltipDirective._isTooltipVisible()).toBe(false);
     }));
 
+    it('should be able to override the default position', fakeAsync(() => {
+      TestBed
+        .resetTestingModule()
+        .configureTestingModule({
+          imports: [MatTooltipModule, OverlayModule, NoopAnimationsModule],
+          declarations: [TooltipDemoWithoutPositionBinding],
+          providers: [{
+            provide: MAT_TOOLTIP_DEFAULT_OPTIONS,
+            useValue: {position: 'right'}
+          }]
+        })
+        .compileComponents();
+
+      const newFixture = TestBed.createComponent(TooltipDemoWithoutPositionBinding);
+      newFixture.detectChanges();
+      tooltipDirective = newFixture.debugElement.query(By.css('button'))
+          .injector.get<MatTooltip>(MatTooltip);
+
+      tooltipDirective.show();
+      newFixture.detectChanges();
+      tick();
+
+      expect(tooltipDirective.position).toBe('right');
+      expect(tooltipDirective._getOverlayPosition().main.overlayX).toBe('start');
+      expect(tooltipDirective._getOverlayPosition().fallback.overlayX).toBe('end');
+    }));
+
     it('should set a css class on the overlay panel element', fakeAsync(() => {
       tooltipDirective.show();
       fixture.detectChanges();
@@ -995,6 +1022,15 @@ class TooltipOnDraggableElement {
   @ViewChild('button') button: ElementRef;
 }
 
+@Component({
+  selector: 'app',
+  template: `<button #button [matTooltip]="message">Button</button>`
+})
+class TooltipDemoWithoutPositionBinding {
+  message: any = initialTooltipMessage;
+  @ViewChild(MatTooltip) tooltip: MatTooltip;
+  @ViewChild('button') button: ElementRef<HTMLButtonElement>;
+}
 
 /** Asserts whether a tooltip directive has a tooltip instance. */
 function assertTooltipInstance(tooltip: MatTooltip, shouldExist: boolean): void {

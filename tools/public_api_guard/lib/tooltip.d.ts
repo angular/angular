@@ -49,6 +49,7 @@ export declare const matTooltipAnimations: {
 
 export interface MatTooltipDefaultOptions {
     hideDelay: number;
+    position?: TooltipPosition;
     showDelay: number;
     touchendHideDelay: number;
 }
