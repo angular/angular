@@ -122,6 +122,9 @@ describe('BlockScrollStrategy', () => {
 
     expect(root.style.top).toBe('13px');
     expect(root.style.left).toBe('37px');
+
+    root.style.top = '';
+    root.style.left = '';
   }));
 
   it(`should't do anything if the page isn't scrollable`, skipIOS(() => {
