@@ -12,7 +12,6 @@ import {TestBed, async, fakeAsync, tick} from '@angular/core/testing';
 import {CachedResourceLoader} from '@angular/platform-browser-dynamic/src/resource_loader/resource_loader_cache';
 import {setTemplateCache} from '@angular/platform-browser-dynamic/test/resource_loader/resource_loader_cache_setter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy} from '@angular/private/testing';
 
 if (isBrowser) {
   describe('CachedResourceLoader', () => {
@@ -54,20 +53,19 @@ if (isBrowser) {
              .catch((error) => {/** success */});
        }));
 
-    fixmeIvy('FW-553: TestBed is unaware of async compilation')
-        .it('should allow fakeAsync Tests to load components with templateUrl synchronously',
-            fakeAsync(() => {
-              TestBed.configureTestingModule({declarations: [TestComponent]});
-              TestBed.compileComponents();
-              tick();
+    it('should allow fakeAsync Tests to load components with templateUrl synchronously',
+       fakeAsync(() => {
+         TestBed.configureTestingModule({declarations: [TestComponent]});
+         TestBed.compileComponents();
+         tick();
 
-              const fixture = TestBed.createComponent(TestComponent);
+         const fixture = TestBed.createComponent(TestComponent);
 
-              // This should initialize the fixture.
-              tick();
+         // This should initialize the fixture.
+         tick();
 
-              expect(fixture.debugElement.children[0].nativeElement).toHaveText('Hello');
-            }));
+         expect(fixture.debugElement.children[0].nativeElement).toHaveText('Hello');
+       }));
   });
 }
 
