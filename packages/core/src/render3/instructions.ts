@@ -36,7 +36,7 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLA
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getCurrentViewQueryIndex, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentViewQueryIndex, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
+import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getCurrentViewQueryIndex, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentContentQueryIndex, setCurrentDirectiveDef, setCurrentViewQueryIndex, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
 import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
@@ -135,9 +135,8 @@ function refreshContentQueries(tView: TView): void {
     for (let i = 0; i < tView.contentQueries.length; i += 2) {
       const directiveDefIdx = tView.contentQueries[i];
       const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
-
-      directiveDef.contentQueriesRefresh !(
-          directiveDefIdx - HEADER_OFFSET, tView.contentQueries[i + 1]);
+      setCurrentContentQueryIndex(tView.contentQueries[i + 1]);
+      directiveDef.contentQueriesRefresh !(directiveDefIdx - HEADER_OFFSET);
     }
   }
 }
@@ -3005,26 +3004,6 @@ export function directiveInject<T>(
  */
 export function injectAttribute(attrNameToInject: string): string|null {
   return injectAttributeImpl(getPreviousOrParentTNode(), attrNameToInject);
-}
-
-/**
- * Registers a QueryList, associated with a content query, for later refresh (part of a view
- * refresh).
- */
-export function registerContentQuery<Q>(
-    queryList: QueryList<Q>, currentDirectiveIndex: number): void {
-  const viewData = getLView();
-  const tView = viewData[TVIEW];
-  const savedContentQueriesLength =
-      (viewData[CONTENT_QUERIES] || (viewData[CONTENT_QUERIES] = [])).push(queryList);
-  if (getFirstTemplatePass()) {
-    const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
-    const lastSavedDirectiveIndex =
-        tView.contentQueries.length ? tView.contentQueries[tView.contentQueries.length - 2] : -1;
-    if (currentDirectiveIndex !== lastSavedDirectiveIndex) {
-      tViewContentQueries.push(currentDirectiveIndex, savedContentQueriesLength - 1);
-    }
-  }
 }
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;

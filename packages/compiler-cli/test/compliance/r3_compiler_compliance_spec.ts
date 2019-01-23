@@ -1554,14 +1554,14 @@ describe('compiler compliance', () => {
               return new (t || ContentQueryComponent)();
             },
             contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(SomeDirective, true), dirIndex);
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(SomeDirective, false), dirIndex);
+              $r3$.ɵcontentQuery(dirIndex, SomeDirective, true);
+              $r3$.ɵcontentQuery(dirIndex, SomeDirective, false);
             },
-            contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
+            contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex) {
               const instance = $r3$.ɵload(dirIndex);
               var $tmp$;
-              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && ($instance$.someDir = $tmp$.first));
-              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && ($instance$.someDirList = $tmp$));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadContentQuery())) && ($instance$.someDir = $tmp$.first));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadContentQuery())) && ($instance$.someDirList = $tmp$));
             },
             ngContentSelectors: _c0,
             consts: 2,
@@ -1613,14 +1613,14 @@ describe('compiler compliance', () => {
           ContentQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
             …
             contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
-              $r3$.ɵregisterContentQuery($r3$.ɵquery($e0_attrs$, true), dirIndex);
-              $r3$.ɵregisterContentQuery($r3$.ɵquery($e1_attrs$, false), dirIndex);
+              $r3$.ɵcontentQuery(dirIndex, $e0_attrs$, true);
+              $r3$.ɵcontentQuery(dirIndex, $e1_attrs$, false);
             },
-            contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
+            contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex) {
               const instance = $r3$.ɵload(dirIndex);
               var $tmp$;
-              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && (instance.myRef = $tmp$.first));
-              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && (instance.myRefs = $tmp$));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadContentQuery())) && (instance.myRef = $tmp$.first));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadContentQuery())) && (instance.myRefs = $tmp$));
             },
             …
           });`;
@@ -1666,18 +1666,18 @@ describe('compiler compliance', () => {
           ContentQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
             …
             contentQueries: function ContentQueryComponent_ContentQueries(dirIndex) {
-              $r3$.ɵregisterContentQuery($r3$.ɵquery($e0_attrs$ , true, TemplateRef), dirIndex);
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(SomeDirective, true, ElementRef), dirIndex);
-              $r3$.ɵregisterContentQuery($r3$.ɵquery($e1_attrs$, false, ElementRef), dirIndex);
-              $r3$.ɵregisterContentQuery($r3$.ɵquery(SomeDirective, false, TemplateRef), dirIndex);
+              $r3$.ɵcontentQuery(dirIndex, $e0_attrs$ , true, TemplateRef);
+              $r3$.ɵcontentQuery(dirIndex, SomeDirective, true, ElementRef);
+              $r3$.ɵcontentQuery(dirIndex, $e1_attrs$, false, ElementRef);
+              $r3$.ɵcontentQuery(dirIndex, SomeDirective, false, TemplateRef);
             },
-            contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {
+            contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex) {
               const instance = $r3$.ɵload(dirIndex);
               var $tmp$;
-              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList(queryStartIndex))) && (instance.myRef = $tmp$.first));
-              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 1)))) && (instance.someDir = $tmp$.first));
-              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 2)))) && (instance.myRefs = $tmp$));
-              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadQueryList((queryStartIndex + 3)))) && (instance.someDirs = $tmp$));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadContentQuery())) && (instance.myRef = $tmp$.first));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadContentQuery())) && (instance.someDir = $tmp$.first));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadContentQuery())) && (instance.myRefs = $tmp$));
+              ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadContentQuery())) && (instance.someDirs = $tmp$));
             },
             …
           });`;

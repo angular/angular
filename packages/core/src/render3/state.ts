@@ -272,6 +272,21 @@ export function setCurrentViewQueryIndex(value: number): void {
 }
 
 /**
+ * Current index of a Content Query which needs to be processed next.
+ * We iterate over the list of Content Queries stored in LView and increment current query index.
+ */
+let contentQueryIndex: number = 0;
+
+export function getCurrentContentQueryIndex(): number {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  return contentQueryIndex;
+}
+
+export function setCurrentContentQueryIndex(value: number): void {
+  contentQueryIndex = value;
+}
+
+/**
  * Swap the current state with a new state.
  *
  * For performance reasons we store the state in the top level of the module.

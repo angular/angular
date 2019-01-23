@@ -122,15 +122,12 @@ export {
 } from './pipe';
 
 export {
-  query,
   queryRefresh,
   viewQuery,
   loadViewQuery,
+  contentQuery,
+  loadContentQuery,
 } from './query';
-export  {
-  registerContentQuery,
-  loadQueryList,
-} from './instructions';
 
 export {
   pureFunction0,

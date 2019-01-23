@@ -496,10 +496,6 @@ function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool):
   return parameters;
 }
 
-function createQueryDefinition(query: R3QueryMetadata, constantPool: ConstantPool): o.Expression {
-  return o.importExpr(R3.query).callFn(prepareQueryParams(query, constantPool));
-}
-
 // Turn a directive selector into an R3-compatible selector for directive def
 function createDirectiveSelector(selector: string | null): o.Expression {
   return asLiteral(core.parseSelectorToR3Selector(selector));
@@ -519,10 +515,8 @@ function createContentQueriesFunction(
     meta: R3DirectiveMetadata, constantPool: ConstantPool): o.Expression|null {
   if (meta.queries.length) {
     const statements: o.Statement[] = meta.queries.map((query: R3QueryMetadata) => {
-      const queryDefinition = createQueryDefinition(query, constantPool);
-      return o.importExpr(R3.registerContentQuery)
-          .callFn([queryDefinition, o.variable('dirIndex')])
-          .toStmt();
+      const args = [o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any];
+      return o.importExpr(R3.contentQuery).callFn(args).toStmt();
     });
     const typeName = meta.name;
     const parameters = [new o.FnParam('dirIndex', o.NUMBER_TYPE)];
@@ -539,10 +533,7 @@ function createContentQueriesRefreshFunction(meta: R3DirectiveMetadata): o.Expre
   if (meta.queries.length > 0) {
     const statements: o.Statement[] = [];
     const typeName = meta.name;
-    const parameters = [
-      new o.FnParam('dirIndex', o.NUMBER_TYPE),
-      new o.FnParam('queryStartIndex', o.NUMBER_TYPE),
-    ];
+    const parameters = [new o.FnParam('dirIndex', o.NUMBER_TYPE)];
     const directiveInstanceVar = o.variable('instance');
     // var $tmp$: any;
     const temporary = temporaryAllocator(statements, TEMPORARY_NAME);
@@ -551,11 +542,8 @@ function createContentQueriesRefreshFunction(meta: R3DirectiveMetadata): o.Expre
     statements.push(directiveInstanceVar.set(o.importExpr(R3.load).callFn([o.variable('dirIndex')]))
                         .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
 
-    meta.queries.forEach((query: R3QueryMetadata, idx: number) => {
-      const loadQLArg = o.variable('queryStartIndex');
-      const getQueryList = o.importExpr(R3.loadQueryList).callFn([
-        idx > 0 ? loadQLArg.plus(o.literal(idx)) : loadQLArg
-      ]);
+    meta.queries.forEach((query: R3QueryMetadata) => {
+      const getQueryList = o.importExpr(R3.loadContentQuery).callFn([]);
       const assignToTemporary = temporary().set(getQueryList);
       const callQueryRefresh = o.importExpr(R3.queryRefresh).callFn([assignToTemporary]);
 

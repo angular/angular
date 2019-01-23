@@ -18,13 +18,13 @@ import {assertDefined, assertEqual} from '../util/assert';
 import {assertPreviousIsParent} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {NG_ELEMENT_ID} from './fields';
-import {load, store, storeCleanupWithContext} from './instructions';
+import {load, loadQueryList, store, storeCleanupWithContext} from './instructions';
 import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
-import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
-import {getCurrentViewQueryIndex, getIsParent, getLView, getOrCreateCurrentQueries, setCurrentViewQueryIndex} from './state';
+import {CONTENT_QUERIES, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
+import {getCurrentContentQueryIndex, getCurrentViewQueryIndex, getFirstTemplatePass, getIsParent, getLView, getOrCreateCurrentQueries, setCurrentContentQueryIndex, setCurrentViewQueryIndex} from './state';
 import {isContentQueryHost} from './util';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
@@ -419,4 +419,40 @@ export function loadViewQuery<T>(): T {
   const index = getCurrentViewQueryIndex();
   setCurrentViewQueryIndex(index + 1);
   return load<T>(index - HEADER_OFFSET);
+}
+
+/**
+ * Registers a QueryList, associated with a content query, for later refresh (part of a view
+ * refresh).
+ *
+ * @param directiveIndex Current directive index
+ * @param predicate The type for which the query will search
+ * @param descend Whether or not to descend into children
+ * @param read What to save in the query
+ * @returns QueryList<T>
+ */
+export function contentQuery<T>(
+    directiveIndex: number, predicate: Type<any>| string[], descend?: boolean,
+    // TODO: "read" should be an AbstractType (FW-486)
+    read?: any): QueryList<T> {
+  const lView = getLView();
+  const tView = lView[TVIEW];
+  const contentQuery: QueryList<T> = query<T>(predicate, descend, read);
+  const savedContentQueriesLength =
+      (lView[CONTENT_QUERIES] || (lView[CONTENT_QUERIES] = [])).push(contentQuery);
+  if (getFirstTemplatePass()) {
+    const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
+    const lastSavedDirectiveIndex =
+        tView.contentQueries.length ? tView.contentQueries[tView.contentQueries.length - 2] : -1;
+    if (directiveIndex !== lastSavedDirectiveIndex) {
+      tViewContentQueries.push(directiveIndex, savedContentQueriesLength - 1);
+    }
+  }
+  return contentQuery;
+}
+
+export function loadContentQuery<T>(): QueryList<T> {
+  const index = getCurrentContentQueryIndex();
+  setCurrentContentQueryIndex(index + 1);
+  return loadQueryList(index);
 }
