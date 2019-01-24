@@ -437,8 +437,8 @@ describe('ngtsc behavioral tests', () => {
     const dtsContents = env.getContents('test.d.ts');
 
     expect(jsContents).toContain('import { Foo } from \'./foo\';');
-    expect(jsContents).not.toMatch(/as i[0-9] from '.\/foo'/);
-    expect(dtsContents).toContain('as i1 from \'./foo\';');
+    expect(jsContents).not.toMatch(/as i[0-9] from ".\/foo"/);
+    expect(dtsContents).toContain('as i1 from "./foo";');
   });
 
   it('should compile NgModules with references to absolute components', () => {
@@ -465,8 +465,8 @@ describe('ngtsc behavioral tests', () => {
     const dtsContents = env.getContents('test.d.ts');
 
     expect(jsContents).toContain('import { Foo } from \'foo\';');
-    expect(jsContents).not.toMatch(/as i[0-9] from 'foo'/);
-    expect(dtsContents).toContain('as i1 from \'foo\';');
+    expect(jsContents).not.toMatch(/as i[0-9] from "foo"/);
+    expect(dtsContents).toContain('as i1 from "foo";');
   });
 
   it('should compile Pipes without errors', () => {
@@ -591,7 +591,7 @@ describe('ngtsc behavioral tests', () => {
       expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
 
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain(`import * as i1 from 'router';`);
+      expect(dtsContents).toContain(`import * as i1 from "router";`);
       expect(dtsContents)
           .toContain('i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>');
     });
@@ -627,7 +627,7 @@ describe('ngtsc behavioral tests', () => {
       expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
 
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain(`import * as i1 from 'router';`);
+      expect(dtsContents).toContain(`import * as i1 from "router";`);
       expect(dtsContents)
           .toContain(
               'i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.InternalRouterModule], never>');
@@ -661,7 +661,7 @@ describe('ngtsc behavioral tests', () => {
        expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
 
        const dtsContents = env.getContents('test.d.ts');
-       expect(dtsContents).toContain(`import * as i1 from 'router';`);
+       expect(dtsContents).toContain(`import * as i1 from "router";`);
        expect(dtsContents)
            .toContain(
                'i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.RouterModule], never>');
