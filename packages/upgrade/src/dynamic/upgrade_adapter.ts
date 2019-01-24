@@ -598,8 +598,15 @@ export class UpgradeAdapter {
                   })
                   .then(() => this.ng2BootstrapDeferred.resolve(ng1Injector), onError)
                   .then(() => {
-                    let subscription =
-                        this.ngZone.onMicrotaskEmpty.subscribe({next: () => rootScope.$digest()});
+                    let subscription = this.ngZone.onMicrotaskEmpty.subscribe({
+                      next: () => {
+                        try {
+                          rootScope.$digest();
+                        } catch (error) {
+                          console.error(error);
+                        }
+                      }
+                    });
                     rootScope.$on('$destroy', () => { subscription.unsubscribe(); });
                   });
             })
