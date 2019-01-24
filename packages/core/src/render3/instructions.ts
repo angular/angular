@@ -205,17 +205,24 @@ export function createNodeAtIndex(
       assertLessThan(adjustedIndex, lView.length, `Slot should have been initialized with null`);
   lView[adjustedIndex] = native;
 
+  const previousOrParentTNode = getPreviousOrParentTNode();
+  const isParent = getIsParent();
   let tNode = tView.data[adjustedIndex] as TNode;
   if (tNode == null) {
-    // TODO(misko): Refactor createTNode so that it does not depend on LView.
-    tNode = tView.data[adjustedIndex] = createTNode(lView, type, adjustedIndex, name, attrs, null);
+    const parent =
+        isParent ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
+
+    // Parents cannot cross component boundaries because components will be used in multiple places,
+    // so it's only set if the view is the same.
+    const parentInSameView = parent && parent !== lView[HOST_NODE];
+    const tParentNode = parentInSameView ? parent as TElementNode | TContainerNode : null;
+
+    tNode = tView.data[adjustedIndex] = createTNode(tParentNode, type, adjustedIndex, name, attrs);
   }
 
   // Now link ourselves into the tree.
   // We need this even if tNode exists, otherwise we might end up pointing to unexisting tNodes when
   // we use i18n (especially with ICU expressions that update the DOM during the update phase).
-  const previousOrParentTNode = getPreviousOrParentTNode();
-  const isParent = getIsParent();
   if (previousOrParentTNode) {
     if (isParent && previousOrParentTNode.child == null &&
         (tNode.parent !== null || previousOrParentTNode.type === TNodeType.View)) {
@@ -236,14 +243,20 @@ export function createNodeAtIndex(
       TProjectionNode & TIcuContainerNode;
 }
 
-export function createViewNode(index: number, view: LView) {
+export function assignTViewNodeToLView(
+    tView: TView, tParentNode: TNode | null, index: number, lView: LView): TViewNode {
   // View nodes are not stored in data because they can be added / removed at runtime (which
   // would cause indices to change). Their TNodes are instead stored in tView.node.
-  if (view[TVIEW].node == null) {
-    view[TVIEW].node = createTNode(view, TNodeType.View, index, null, null, null) as TViewNode;
+  let tNode = tView.node;
+  if (tNode == null) {
+    ngDevMode && tParentNode &&
+        assertNodeOfPossibleTypes(tParentNode, TNodeType.Element, TNodeType.Container);
+    tView.node = tNode = createTNode(
+        tParentNode as TElementNode | TContainerNode | null,  //
+        TNodeType.View, index, null, null) as TViewNode;
   }
 
-  return view[HOST_NODE] = view[TVIEW].node as TViewNode;
+  return lView[HOST_NODE] = tNode as TViewNode;
 }
 
 
@@ -323,7 +336,7 @@ export function createEmbeddedViewAndNode<T>(
   if (queries) {
     lView[QUERIES] = queries.createView();
   }
-  createViewNode(-1, lView);
+  assignTViewNodeToLView(tView, null, -1, lView);
 
   if (tView.firstTemplatePass) {
     tView.node !.injectorIndex = injectorIndex;
@@ -1221,18 +1234,9 @@ function savePropertyDebugData(
  * @returns the TNode object
  */
 export function createTNode(
-    lView: LView, type: TNodeType, adjustedIndex: number, tagName: string | null,
-    attrs: TAttributes | null, tViews: TView[] | null): TNode {
-  const previousOrParentTNode = getPreviousOrParentTNode();
+    tParent: TElementNode | TContainerNode | null, type: TNodeType, adjustedIndex: number,
+    tagName: string | null, attrs: TAttributes | null): TNode {
   ngDevMode && ngDevMode.tNode++;
-  const parent =
-      getIsParent() ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
-
-  // Parents cannot cross component boundaries because components will be used in multiple places,
-  // so it's only set if the view is the same.
-  const parentInSameView = parent && lView && parent !== lView[HOST_NODE];
-  const tParent = parentInSameView ? parent as TElementNode | TContainerNode : null;
-
   return {
     type: type,
     index: adjustedIndex,
@@ -1249,7 +1253,7 @@ export function createTNode(
     initialInputs: undefined,
     inputs: undefined,
     outputs: undefined,
-    tViews: tViews,
+    tViews: null,
     next: null,
     child: null,
     parent: tParent,
@@ -2286,7 +2290,9 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
       viewToRender[QUERIES] = lContainer[QUERIES] !.createView();
     }
 
-    createViewNode(viewBlockId, viewToRender);
+    const tParentNode = getIsParent() ? previousOrParentTNode :
+                                        previousOrParentTNode && previousOrParentTNode.parent;
+    assignTViewNodeToLView(viewToRender[TVIEW], tParentNode, viewBlockId, viewToRender);
     enterView(viewToRender, viewToRender[TVIEW].node);
   }
   if (lContainer) {
