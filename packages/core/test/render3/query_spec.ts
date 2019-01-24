@@ -2799,7 +2799,7 @@ describe('query', () => {
           selectors: [['', 'content-query', '']],
           factory: () => contentQueryDirective = new ContentQueryDirective(),
           contentQueries:
-              (dirIndex) => { registerContentQuery(query(null, TextDirective, true), dirIndex); },
+              (dirIndex) => { registerContentQuery(query(TextDirective, true), dirIndex); },
           contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
             let tmp: any;
             const instance = load<ContentQueryDirective>(dirIndex);
@@ -2863,25 +2863,29 @@ describe('query', () => {
           type: ViewQueryComponent,
           selectors: [['view-query']],
           factory: () => new ViewQueryComponent(),
-          template: function(rf: RenderFlags, ctx: any) {
+          template: function(rf: RenderFlags, ctx: ViewQueryComponent) {
             if (rf & RenderFlags.Create) {
-              query(0, TextDirective, true);
-              element(1, 'span', ['text', 'A']);
-              elementStart(2, 'div', ['text', 'B']);
-              elementStart(3, 'span', ['text', 'C']);
-              { element(4, 'span', ['text', 'D']); }
+              element(0, 'span', ['text', 'A']);
+              elementStart(1, 'div', ['text', 'B']);
+              elementStart(2, 'span', ['text', 'C']);
+              { element(3, 'span', ['text', 'D']); }
               elementEnd();
               elementEnd();
-              element(5, 'span', ['text', 'E']);
+              element(4, 'span', ['text', 'E']);
+            }
+          },
+          consts: 5,
+          vars: 0,
+          viewQuery: function(rf: RenderFlags, ctx: ViewQueryComponent) {
+            let tmp: any;
+            if (rf & RenderFlags.Create) {
+              viewQuery(TextDirective, true);
             }
             if (rf & RenderFlags.Update) {
-              let tmp: any;
-              queryRefresh(tmp = load<QueryList<TextDirective>>(0)) &&
+              queryRefresh(tmp = loadViewQuery<QueryList<TextDirective>>()) &&
                   (ctx.texts = tmp as QueryList<TextDirective>);
             }
           },
-          consts: 6,
-          vars: 0,
           directives: [TextDirective]
         });
       }
