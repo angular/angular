@@ -1125,6 +1125,9 @@
     "name": "setContextPlayersDirty"
   },
   {
+    "name": "setCurrentContentQueryIndex"
+  },
+  {
     "name": "setCurrentDirectiveDef"
   },
   {

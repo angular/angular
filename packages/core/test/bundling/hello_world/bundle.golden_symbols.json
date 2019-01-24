@@ -405,6 +405,9 @@
     "name": "setBindingRoot"
   },
   {
+    "name": "setCurrentContentQueryIndex"
+  },
+  {
     "name": "setCurrentDirectiveDef"
   },
   {
