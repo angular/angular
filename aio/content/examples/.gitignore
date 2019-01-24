@@ -92,3 +92,6 @@ upgrade-phonecat-3-final/tsconfig-aot.json
 upgrade-phonecat-3-final/rollup-config.js
 !upgrade-phonecat-*/**/karma.conf.js
 !upgrade-phonecat-*/**/karma-test-shim.js
+
+# schematics
+!schematics-for-libraries/projects/my-lib/package.json

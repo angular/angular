@@ -93,7 +93,6 @@
     "classlist.js": "^1.1.20150312",
     "core-js": "^2.4.1",
     "rxjs": "^6.3.0",
-    "tslib": "^1.9.0",
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
@@ -156,6 +155,7 @@
     "shelljs": "^0.7.7",
     "tree-kill": "^1.1.0",
     "ts-node": "^3.3.0",
+    "tslib": "^1.9.0",
     "tslint": "~5.9.1",
     "typescript": "~3.3.3333",
     "uglify-js": "^3.0.15",
