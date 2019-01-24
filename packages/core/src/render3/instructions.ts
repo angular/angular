@@ -2930,6 +2930,7 @@ export function store<T>(index: number, value: T): void {
   const adjustedIndex = index + HEADER_OFFSET;
   if (adjustedIndex >= tView.data.length) {
     tView.data[adjustedIndex] = null;
+    tView.blueprint[adjustedIndex] = null;
   }
   lView[adjustedIndex] = value;
 }
