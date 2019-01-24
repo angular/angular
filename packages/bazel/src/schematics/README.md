@@ -12,7 +12,16 @@ GitHub and ping [@mgechev](https://github.com/mgechev) or
 To create a new Angular project that builds with Bazel, all you need to do is install the `@angular/bazel` package.
 
 The example below assumes that you have a global installation of Angular CLI.
-If not, please run `yarn global add @angular/cli`.
+If not, please run `yarn global add @angular/cli@next`.
+
+Note, it is very *important* to install the **cutting-edge** (`@next`) version of
+`@angular/cli` because the Bazel schematics relies on some of the new APIs in
+`@angular-devkit/schematics`. There is currently no way for a schematic to
+mandate a minimum "schematic runtime" version. The version of
+`@angular-devkit/schematics` that is installed with the CLI is used to run the
+schematic even though a different version is used in the schematic itself.
+Invoking `@angular/bazel` schematics with an older version of CLI would very
+likely result in unexpected errors.
 
 Install the latest `@angular/bazel` for generating Bazel schematics.
 
