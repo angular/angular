@@ -1,4 +1,7 @@
 {
+  "editor.formatOnSave": true,
+  // Please install http://clang.llvm.org/docs/ClangFormat.html in VSCode to take advantage of clang-format
+  "clang-format.executable": "${workspaceRoot}/node_modules/.bin/clang-format",
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
