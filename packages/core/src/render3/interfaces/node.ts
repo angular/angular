@@ -170,6 +170,18 @@ export interface TNode {
   directiveEnd: number;
 
   /**
+   * Stores the first index where property binding metadata is stored for
+   * this node.
+   */
+  propertyMetadataStartIndex: number;
+
+  /**
+   * Stores the exclusive final index where property binding metadata is
+   * stored for this node.
+   */
+  propertyMetadataEndIndex: number;
+
+  /**
    * Stores if Node isComponent, isProjected, hasContentQuery and hasClassInput
    */
   flags: TNodeFlags;
@@ -475,7 +487,6 @@ export type PropertyAliases = {
  * e.g. [0, 'change', 'change-minified']
  */
 export type PropertyAliasValue = (number | string)[];
-
 
 /**
  * This array contains information about input properties that

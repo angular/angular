@@ -559,6 +559,18 @@ export type HookData = (number | (() => void))[];
  * Each host property's name is stored here at the same index as its value in the
  * data array.
  *
+ * Each property binding name is stored here at the same index as its value in
+ * the data array. If the binding is an interpolation, the static string values
+ * are stored parallel to the dynamic values. Example:
+ *
+ * id="prefix {{ v0 }} a {{ v1 }} b {{ v2 }} suffix"
+ *
+ * LView       |   TView.data
+ *------------------------
+ *  v0 value   |   'a'
+ *  v1 value   |   'b'
+ *  v2 value   |   id � prefix � suffix
+ *
  * Injector bloom filters are also stored here.
  */
 export type TData =

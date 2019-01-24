@@ -292,3 +292,17 @@ export function resolveDocument(element: RElement & {ownerDocument: Document}) {
 export function resolveBody(element: RElement & {ownerDocument: Document}) {
   return {name: 'body', target: element.ownerDocument.body};
 }
+
+/**
+ * The special delimiter we use to separate property names, prefixes, and suffixes
+ * in property binding metadata. See storeBindingMetadata().
+ */
+export const INTERPOLATION_DELIMITER = `�`;
+
+/**
+ * Returns whether or not the given string is a property metadata string.
+ * See storeBindingMetadata().
+ */
+export function isPropMetadataString(str: string): boolean {
+  return new RegExp(/�/).test(str);
+}
