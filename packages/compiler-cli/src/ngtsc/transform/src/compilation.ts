@@ -220,17 +220,21 @@ export class IvyCompilation {
   }
 
   /**
-   * Process a .d.ts source string and return a transformed version that incorporates the changes
+   * Process a declaration file and return a transformed version that incorporates the changes
    * made to the source file.
    */
-  transformedDtsFor(tsFileName: string, dtsOriginalSource: string): string {
-    // No need to transform if no changes have been requested to the input file.
-    if (!this.dtsMap.has(tsFileName)) {
-      return dtsOriginalSource;
+  transformedDtsFor(file: ts.SourceFile, context: ts.TransformationContext): ts.SourceFile {
+    // No need to transform if it's not a declarations file, or if no changes have been requested
+    // to the input file.
+    // Due to the way TypeScript afterDeclarations transformers work, the SourceFile path is the
+    // same as the original .ts.
+    // The only way we know it's actually a declaration file is via the isDeclarationFile property.
+    if (!file.isDeclarationFile || !this.dtsMap.has(file.fileName)) {
+      return file;
     }
 
-    // Return the transformed .d.ts source.
-    return this.dtsMap.get(tsFileName) !.transform(dtsOriginalSource, tsFileName);
+    // Return the transformed source.
+    return this.dtsMap.get(file.fileName) !.transform(file, context);
   }
 
   get diagnostics(): ReadonlyArray<ts.Diagnostic> { return this._diagnostics; }

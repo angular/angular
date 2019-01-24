@@ -24,7 +24,7 @@ import {HostResourceLoader} from './resource_loader';
 import {NgModuleRouteAnalyzer} from './routing';
 import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
-import {IvyCompilation, ivyTransformFactory} from './transform';
+import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
 import {TypeCheckContext, TypeCheckProgramHost} from './typecheck';
 import {normalizeSeparators} from './util/src/path';
 import {isDtsPath} from './util/src/typescript';
@@ -231,17 +231,13 @@ export class NgtscProgram implements api.Program {
   }): ts.EmitResult {
     const emitCallback = opts && opts.emitCallback || defaultEmitCallback;
 
-    this.ensureAnalyzed();
+    const compilation = this.ensureAnalyzed();
 
-    // Since there is no .d.ts transformation API, .d.ts files are transformed during write.
     const writeFile: ts.WriteFileCallback =
         (fileName: string, data: string, writeByteOrderMark: boolean,
          onError: ((message: string) => void) | undefined,
          sourceFiles: ReadonlyArray<ts.SourceFile>) => {
-          if (fileName.endsWith('.d.ts')) {
-            data = sourceFiles.reduce(
-                (data, sf) => this.compilation !.transformedDtsFor(sf.fileName, data), data);
-          } else if (this.closureCompilerEnabled && fileName.endsWith('.js')) {
+          if (this.closureCompilerEnabled && fileName.endsWith('.js')) {
             data = nocollapseHack(data);
           }
           this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
@@ -249,7 +245,8 @@ export class NgtscProgram implements api.Program {
 
     const customTransforms = opts && opts.customTransformers;
     const beforeTransforms =
-        [ivyTransformFactory(this.compilation !, this.reflector, this.importRewriter, this.isCore)];
+        [ivyTransformFactory(compilation, this.reflector, this.importRewriter, this.isCore)];
+    const afterDeclarationsTransforms = [declarationTransformFactory(compilation)];
 
     if (this.factoryToSourceInfo !== null) {
       beforeTransforms.push(
@@ -271,6 +268,7 @@ export class NgtscProgram implements api.Program {
       customTransformers: {
         before: beforeTransforms,
         after: customTransforms && customTransforms.afterTs,
+        afterDeclarations: afterDeclarationsTransforms,
       },
     });
     return emitResult;
