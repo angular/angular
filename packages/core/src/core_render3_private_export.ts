@@ -129,6 +129,13 @@ export {
   resolveBody as ɵresolveBody,
 } from './render3/index';
 
+export {
+  injectChangeDetectorRef as erender3InjectChangeDetectorRef,
+  injectElementRef as erender3InjectElementRef,
+  injectTemplateRef as erender3InjectTemplateRef,
+  injectViewContainerRef as erender3InjectViewContainerRef,
+  injectRenderer2 as erender3InjectRenderer2,
+} from './render3/view_engine_compatibility';
 
 export {
   compileComponent as ɵcompileComponent,
@@ -227,6 +234,9 @@ export {
 export {
   getDebugNode__POST_R3__ as ɵgetDebugNode__POST_R3__,
 } from './debug/debug_node';
+export {
+  compileInjectable as erender3CompileInjectable
+} from './di/jit/injectable';
 export {
   SWITCH_COMPILE_INJECTABLE__POST_R3__ as ɵSWITCH_COMPILE_INJECTABLE__POST_R3__,
 } from './di/injectable';
