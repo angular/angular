@@ -12,6 +12,7 @@ ts_library(
       "@npm//@types/node",
       "@npm//jasmine",
       "@npm//protractor",
+      "@npm//tslib",
     ],
     data = [
       "//:tsconfig.json",
