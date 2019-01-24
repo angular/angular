@@ -6,6 +6,7 @@ Such a solution can be built as Angular *libraries* and these libraries can be p
 
 An Angular library is an Angular [project](guide/glossary#project) that differs from an app in that it cannot run on its own.
 A library must be imported and used in an app.
+Angular Libraries are intended for usage in Angular Apps and can only be used with additional effort in other projects. If the intention is to create a library in a framework-agnostic way, then [Angular Elements](guide/elements) would be the right approach.
 
 Libraries extend Angular's base functionality. For example, to add [reactive forms](guide/reactive-forms) to an app, add the library package using `ng add @angular/forms`, then import the `ReactiveFormsModule` from the `@angular/forms` library in your application code.
 Similarly, adding the [service worker](guide/service-worker-intro) library to an Angular application is one of the steps for turning an application into a [Progressive Web App](https://developers.google.com/web/progressive-web-apps/) (PWA).
