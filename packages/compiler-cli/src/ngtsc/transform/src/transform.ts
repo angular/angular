@@ -16,6 +16,7 @@ import {VisitListEntryResult, Visitor, visit} from '../../util/src/visitor';
 
 import {CompileResult} from './api';
 import {IvyCompilation} from './compilation';
+import {addImports} from './utils';
 
 const NO_DECORATORS = new Set<ts.Decorator>();
 
@@ -201,25 +202,8 @@ function transformIvySourceFile(
   // to the ImportManager.
   const constants = constantPool.statements.map(stmt => translateStatement(stmt, importManager));
 
-  // Generate the import statements to prepend.
-  const addedImports = importManager.getAllImports(file.fileName).map(i => {
-    return ts.createImportDeclaration(
-        undefined, undefined,
-        ts.createImportClause(undefined, ts.createNamespaceImport(ts.createIdentifier(i.as))),
-        ts.createLiteral(i.name));
-  });
-
-  // Filter out the existing imports and the source file body. All new statements
-  // will be inserted between them.
-  const existingImports = sf.statements.filter(stmt => isImportStatement(stmt));
-  const body = sf.statements.filter(stmt => !isImportStatement(stmt));
-
-  // Prepend imports if needed.
-  if (addedImports.length > 0) {
-    sf.statements =
-        ts.createNodeArray([...existingImports, ...addedImports, ...constants, ...body]);
-  }
-  return sf;
+  // Add new imports for this file.
+  return addImports(importManager, sf, constants);
 }
 
 function maybeFilterDecorator(
@@ -237,9 +221,4 @@ function maybeFilterDecorator(
 
 function isFromAngularCore(decorator: Decorator): boolean {
   return decorator.import !== null && decorator.import.from === '@angular/core';
-}
-
-function isImportStatement(stmt: ts.Statement): boolean {
-  return ts.isImportDeclaration(stmt) || ts.isImportEqualsDeclaration(stmt) ||
-      ts.isNamespaceImport(stmt);
 }
