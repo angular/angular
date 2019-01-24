@@ -1305,14 +1305,14 @@ describe('query', () => {
                     0, Cmpt_Template_1, 2, 0, 'ng-template', null, ['foo', ''],
                     templateRefExtractor);
                 template(
-                    1, Cmpt_Template_1, 2, 0, 'ng-template', null, ['bar', ''],
+                    2, Cmpt_Template_1, 2, 0, 'ng-template', null, ['bar', ''],
                     templateRefExtractor);
                 template(
-                    2, Cmpt_Template_1, 2, 0, 'ng-template', null, ['baz', ''],
+                    4, Cmpt_Template_1, 2, 0, 'ng-template', null, ['baz', ''],
                     templateRefExtractor);
               }
             },
-            3, 0, [], [],
+            6, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 viewQuery(TemplateRef as any, false);
@@ -2160,7 +2160,7 @@ describe('query', () => {
               element(0, 'div', null, ['foo', '']);
             }
           },
-          1, 0, [], [],
+          2, 0, [], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               viewQuery(['foo'], false);

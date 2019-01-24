@@ -279,8 +279,8 @@ class SuperComp {
     vars: 0,
     template: (rf: RenderFlags, ctx: SuperComp) => {
       if (rf & RenderFlags.Create) {
-        elementStart(1, 'div');
-        element(2, 'child-comp', ['child', ''], ['child', 'child']);
+        elementStart(0, 'div');
+        element(1, 'child-comp', ['child', ''], ['child', 'child']);
         elementEnd();
       }
     },
