@@ -9,7 +9,7 @@
 import {Inject, InjectionToken, QueryList} from '../../src/core';
 import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, allocHostVars, bind, defineBase, defineComponent, defineDirective, directiveInject, element, elementProperty, loadViewQuery, queryRefresh, viewQuery} from '../../src/render3/index';
 
-import {ComponentFixture, createComponent} from './render_util';
+import {ComponentFixture, createComponent, getDirectiveOnNode} from './render_util';
 
 describe('InheritDefinitionFeature', () => {
   it('should inherit lifecycle hooks', () => {
@@ -363,48 +363,10 @@ describe('InheritDefinitionFeature', () => {
     expect(divEl.title).toEqual('new-title');
   });
 
-  it('should compose viewQuery (basic mechanics check)', () => {
-    const log: Array<[string, RenderFlags, any]> = [];
+  describe('view query', () => {
 
-    class SuperComponent {
-      static ngComponentDef = defineComponent({
-        type: SuperComponent,
-        template: () => {},
-        consts: 0,
-        vars: 0,
-        selectors: [['', 'superDir', '']],
-        viewQuery: <T>(rf: RenderFlags, ctx: T) => {
-          log.push(['super', rf, ctx]);
-        },
-        factory: () => new SuperComponent(),
-      });
-    }
+    const SomeComp = createComponent('some-comp', (rf: RenderFlags, ctx: any) => {});
 
-    class SubComponent extends SuperComponent {
-      static ngComponentDef = defineComponent({
-        type: SubComponent,
-        template: () => {},
-        consts: 0,
-        vars: 0,
-        selectors: [['', 'subDir', '']],
-        viewQuery: (directiveIndex: number, elementIndex: number) => {
-          log.push(['sub', directiveIndex, elementIndex]);
-        },
-        factory: () => new SubComponent(),
-        features: [InheritDefinitionFeature]
-      });
-    }
-
-    const subDef = SubComponent.ngComponentDef as ComponentDef<any>;
-
-    const context = {foo: 'bar'};
-
-    subDef.viewQuery !(1, context);
-
-    expect(log).toEqual([['super', 1, context], ['sub', 1, context]]);
-  });
-
-  it('should compose viewQuery (query logic check)', () => {
     /*
      * class SuperComponent {
      *  @ViewChildren('super') superQuery;
@@ -417,7 +379,7 @@ describe('InheritDefinitionFeature', () => {
         template: () => {},
         consts: 0,
         vars: 0,
-        selectors: [['', 'superDir', '']],
+        selectors: [['super-comp']],
         viewQuery: <T>(rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
             viewQuery(['super'], false);
@@ -435,6 +397,7 @@ describe('InheritDefinitionFeature', () => {
     /**
      * <div id="sub" #sub></div>
      * <div id="super" #super></div>
+     * <some-comp></some-comp>
      * class SubComponent extends SuperComponent {
      *  @ViewChildren('sub') subQuery;
      * }
@@ -447,11 +410,12 @@ describe('InheritDefinitionFeature', () => {
           if (rf & RenderFlags.Create) {
             element(0, 'div', ['id', 'sub'], ['sub', '']);
             element(2, 'div', ['id', 'super'], ['super', '']);
+            element(4, 'some-comp');
           }
         },
-        consts: 4,
+        consts: 5,
         vars: 0,
-        selectors: [['', 'subDir', '']],
+        selectors: [['sub-comp']],
         viewQuery: (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
             viewQuery(['sub'], false);
@@ -463,22 +427,97 @@ describe('InheritDefinitionFeature', () => {
           }
         },
         factory: () => new SubComponent(),
-        features: [InheritDefinitionFeature]
+        features: [InheritDefinitionFeature],
+        directives: [SomeComp]
       });
     }
 
-    const fixture = new ComponentFixture(SubComponent);
 
-    const check = (key: string): void => {
-      const qList = (fixture.component as any)[`${key}Query`] as QueryList<any>;
-      expect(qList.length).toBe(1);
-      expect(qList.first.nativeElement).toEqual(fixture.hostElement.querySelector(`#${key}`));
-      expect(qList.first.nativeElement.id).toEqual(key);
-    };
+    it('should compose viewQuery (basic mechanics check)', () => {
+      const log: Array<[string, RenderFlags, any]> = [];
 
-    check('sub');
-    check('super');
+      class SuperComponent {
+        static ngComponentDef = defineComponent({
+          type: SuperComponent,
+          template: () => {},
+          consts: 0,
+          vars: 0,
+          selectors: [['', 'superDir', '']],
+          viewQuery: <T>(rf: RenderFlags, ctx: T) => {
+            log.push(['super', rf, ctx]);
+          },
+          factory: () => new SuperComponent(),
+        });
+      }
+
+      class SubComponent extends SuperComponent {
+        static ngComponentDef = defineComponent({
+          type: SubComponent,
+          template: () => {},
+          consts: 0,
+          vars: 0,
+          selectors: [['', 'subDir', '']],
+          viewQuery: (directiveIndex: number, elementIndex: number) => {
+            log.push(['sub', directiveIndex, elementIndex]);
+          },
+          factory: () => new SubComponent(),
+          features: [InheritDefinitionFeature]
+        });
+      }
+
+      const subDef = SubComponent.ngComponentDef as ComponentDef<any>;
+
+      const context = {foo: 'bar'};
+
+      subDef.viewQuery !(1, context);
+
+      expect(log).toEqual([['super', 1, context], ['sub', 1, context]]);
+    });
+
+
+
+    it('should compose viewQuery (query logic check)', () => {
+      const fixture = new ComponentFixture(SubComponent);
+
+      const check = (key: string): void => {
+        const qList = (fixture.component as any)[`${key}Query`] as QueryList<any>;
+        expect(qList.length).toBe(1);
+        expect(qList.first.nativeElement).toEqual(fixture.hostElement.querySelector(`#${key}`));
+        expect(qList.first.nativeElement.id).toEqual(key);
+      };
+
+      check('sub');
+      check('super');
+    });
+
+    it('should work with multiple viewQuery comps', () => {
+      let subCompOne !: SubComponent;
+      let subCompTwo !: SubComponent;
+
+      const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
+        if (rf & RenderFlags.Create) {
+          element(0, 'sub-comp');
+          element(1, 'sub-comp');
+        }
+        subCompOne = getDirectiveOnNode(0);
+        subCompTwo = getDirectiveOnNode(1);
+      }, 2, 0, [SubComponent, SuperComponent]);
+
+      const fixture = new ComponentFixture(App);
+
+      const check = (comp: SubComponent): void => {
+        const qList = comp.subQuery as QueryList<any>;
+        expect(qList.length).toBe(1);
+        expect(qList.first.nativeElement).toEqual(fixture.hostElement.querySelector('#sub'));
+        expect(qList.first.nativeElement.id).toEqual('sub');
+      };
+
+      check(subCompOne);
+      check(subCompTwo);
+    });
+
   });
+
 
   it('should compose contentQueries', () => {
     const log: string[] = [];

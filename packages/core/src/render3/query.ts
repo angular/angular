@@ -23,7 +23,7 @@ import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition'
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
-import {LView, TVIEW} from './interfaces/view';
+import {HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
 import {getCurrentViewQueryIndex, getIsParent, getLView, getOrCreateCurrentQueries, setCurrentViewQueryIndex} from './state';
 import {isContentQueryHost} from './util';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
@@ -407,7 +407,7 @@ export function viewQuery<T>(
   }
   const index = getCurrentViewQueryIndex();
   const viewQuery: QueryList<T> = query<T>(predicate, descend, read);
-  store(index, viewQuery);
+  store(index - HEADER_OFFSET, viewQuery);
   setCurrentViewQueryIndex(index + 1);
   return viewQuery;
 }
@@ -418,5 +418,5 @@ export function viewQuery<T>(
 export function loadViewQuery<T>(): T {
   const index = getCurrentViewQueryIndex();
   setCurrentViewQueryIndex(index + 1);
-  return load<T>(index);
+  return load<T>(index - HEADER_OFFSET);
 }

@@ -2060,10 +2060,10 @@ describe('ViewContainerRef', () => {
           vars: 0,
           template: (rf: RenderFlags, ctx: DynamicCompWithViewQueries) => {
             if (rf & RenderFlags.Create) {
-              element(1, 'div', ['bar', ''], ['foo', '']);
+              element(0, 'div', ['bar', ''], ['foo', '']);
             }
             // testing only
-            fooEl = getNativeByIndex(1, getLView());
+            fooEl = getNativeByIndex(0, getLView());
           },
           viewQuery: function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
