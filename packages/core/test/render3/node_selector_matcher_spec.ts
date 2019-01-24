@@ -12,17 +12,16 @@ import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags,} f
 import {getProjectAsAttrValue, isNodeMatchingSelectorList, isNodeMatchingSelector} from '../../src/render3/node_selector_matcher';
 import {initializeStaticContext} from '../../src/render3/styling/class_and_style_bindings';
 import {createTNode} from '@angular/core/src/render3/instructions';
-import {getLView} from '@angular/core/src/render3/state';
 
 function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
-  return createTNode(getLView(), TNodeType.Element, 0, tagName, attrs, null);
+  return createTNode(null, TNodeType.Element, 0, tagName, attrs);
 }
 
 describe('css selector matching', () => {
   function isMatching(
       tagName: string, attrsOrTNode: TAttributes | TNode | null, selector: CssSelector): boolean {
     const tNode = (!attrsOrTNode || Array.isArray(attrsOrTNode)) ?
-        createTNode(getLView(), TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes, null) :
+        createTNode(null, TNodeType.Element, 0, tagName, attrsOrTNode as TAttributes) :
         (attrsOrTNode as TNode);
     return isNodeMatchingSelector(tNode, selector, false);
   }
@@ -307,7 +306,7 @@ describe('css selector matching', () => {
          () => {
            // selector: 'div.abc'
            const selector = ['div', SelectorFlags.CLASS, 'abc'];
-           const tNode = createTNode(getLView(), TNodeType.Element, 0, 'div', [], null);
+           const tNode = createTNode(null, TNodeType.Element, 0, 'div', []);
 
            // <div> (without attrs or styling context)
            expect(isMatching('div', tNode, selector)).toBeFalsy();

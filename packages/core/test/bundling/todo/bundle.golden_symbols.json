@@ -381,6 +381,9 @@
     "name": "assertTemplate"
   },
   {
+    "name": "assignTViewNodeToLView"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -481,9 +484,6 @@
   },
   {
     "name": "createViewBlueprint"
-  },
-  {
-    "name": "createViewNode"
   },
   {
     "name": "decreaseElementDepthCount"

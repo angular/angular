@@ -25,11 +25,11 @@ import {assertComponentType} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
-import {addToViewTree, createLView, createTView, createViewNode, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
+import {addToViewTree, assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
 import {RNode, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
-import {HEADER_OFFSET, LView, LViewFlags, RootContext} from './interfaces/view';
+import {HEADER_OFFSET, LView, LViewFlags, RootContext, TVIEW} from './interfaces/view';
 import {enterView, leaveView} from './state';
 import {defaultScheduler, getTNode} from './util';
 import {createElementRef} from './view_engine_compatibility';
@@ -242,7 +242,7 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
     super();
     this.instance = instance;
     this.hostView = this.changeDetectorRef = new RootViewRef<T>(_rootLView);
-    this.hostView._tViewNode = createViewNode(-1, _rootLView);
+    this.hostView._tViewNode = assignTViewNodeToLView(_rootLView[TVIEW], null, -1, _rootLView);
     this.componentType = componentType;
   }
 
