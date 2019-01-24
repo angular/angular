@@ -88,6 +88,11 @@ BOILERPLATE_PATHS.ivy = {
   ]
 };
 
+BOILERPLATE_PATHS.schematics = [
+  ...cliRelativePath,
+  'angular.json'
+];
+
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 
 class ExampleBoilerPlate {
