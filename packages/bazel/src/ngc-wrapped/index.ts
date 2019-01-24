@@ -292,6 +292,7 @@ export function compile({allDepsCompiledWithBazel = true, compilerOpts, tsHost, 
           cancellationToken, emitOnlyDtsFiles, {
             beforeTs: customTransformers.before,
             afterTs: customTransformers.after,
+            afterDeclarations: customTransformers.afterDeclarations,
           });
 
   if (!gatherDiagnostics) {
