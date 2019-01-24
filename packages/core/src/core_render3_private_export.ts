@@ -156,6 +156,8 @@ export {
 export {
   sanitizeHtml as ɵsanitizeHtml,
   sanitizeStyle as ɵsanitizeStyle,
+  defaultStyleSanitizer as ɵdefaultStyleSanitizer,
+  sanitizeScript as ɵsanitizeScript,
   sanitizeUrl as ɵsanitizeUrl,
   sanitizeResourceUrl as ɵsanitizeResourceUrl,
   sanitizeUrlOrResourceUrl as ɵsanitizeUrlOrResourceUrl,
