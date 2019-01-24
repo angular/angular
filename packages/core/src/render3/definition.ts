@@ -18,7 +18,8 @@ import {stringify} from '../util/stringify';
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
-import {CssSelectorList} from './interfaces/projection';
+// while SelectorFlags is unused here, it's required so that types don't get resolved lazily
+import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 let _renderCompCount = 0;
 
