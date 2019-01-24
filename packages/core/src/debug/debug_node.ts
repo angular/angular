@@ -10,9 +10,10 @@ import {Injector} from '../di';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/discovery_utils';
 import {TNode} from '../render3/interfaces/node';
 import {StylingIndex} from '../render3/interfaces/styling';
-import {TVIEW} from '../render3/interfaces/view';
+import {LView, TData, TVIEW} from '../render3/interfaces/view';
 import {getProp, getValue, isClassBasedValue} from '../render3/styling/class_and_style_bindings';
 import {getStylingContext} from '../render3/styling/util';
+import {INTERPOLATION_DELIMITER, isPropMetadataString, renderStringify} from '../render3/util';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
 
@@ -240,14 +241,16 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   get name(): string { return this.nativeElement !.nodeName; }
 
   /**
-   *  Returns a map of property names to property values for an element.
+   *  Gets a map of property names to property values for an element.
    *
    *  This map includes:
-   *  - Regular property bindings (e.g. `[id]="id"`) - TODO
+   *  - Regular property bindings (e.g. `[id]="id"`)
    *  - Host property bindings (e.g. `host: { '[id]': "id" }`)
-   *  - Interpolated property bindings (e.g. `id="{{ value }}") - TODO
+   *  - Interpolated property bindings (e.g. `id="{{ value }}")
    *
-   *  It should NOT include input property bindings or attribute bindings.
+   *  It does not include:
+   *  - input property bindings (e.g. `[myCustomInput]="value"`)
+   *  - attribute bindings (e.g. `[attr.role]="menu"`)
    */
   get properties(): {[key: string]: any;} {
     const context = loadLContext(this.nativeNode) !;
@@ -255,20 +258,9 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     const tData = lView[TVIEW].data;
     const tNode = tData[context.nodeIndex] as TNode;
 
-    // TODO(kara): include regular property binding values (not just host properties)
-    const properties: {[key: string]: string} = {};
-
-    // Host binding values for a node are stored after directives on that node
-    let index = tNode.directiveEnd;
-    let propertyName = tData[index];
-
-    // When we reach a value in TView.data that is not a string, we know we've
-    // hit the next node's providers and directives and should stop copying data.
-    while (typeof propertyName === 'string') {
-      properties[propertyName] = lView[index];
-      propertyName = tData[++index];
-    }
-    return properties;
+    const properties = collectPropertyBindings(tNode, lView, tData);
+    const hostProperties = collectHostPropertyBindings(tNode, lView, tData);
+    return {...properties, ...hostProperties};
   }
 
   get attributes(): {[key: string]: string | null;} {
@@ -408,6 +400,89 @@ function _queryNodeChildrenR3(
       }
     });
   }
+}
+
+/**
+ * Iterates through the property bindings for a given node and generates
+ * a map of property names to values. This map only contains property bindings
+ * defined in templates, not in host bindings.
+ */
+function collectPropertyBindings(
+    tNode: TNode, lView: LView, tData: TData): {[key: string]: string} {
+  const properties: {[key: string]: string} = {};
+  let bindingIndex = getFirstBindingIndex(tNode.propertyMetadataStartIndex, tData);
+
+  while (bindingIndex < tNode.propertyMetadataEndIndex) {
+    let value = '';
+    let propMetadata = tData[bindingIndex] as string;
+    while (!isPropMetadataString(propMetadata)) {
+      // This is the first value for an interpolation. We need to build up
+      // the full interpolation by combining runtime values in LView with
+      // the static interstitial values stored in TData.
+      value += renderStringify(lView[bindingIndex]) + tData[bindingIndex];
+      propMetadata = tData[++bindingIndex] as string;
+    }
+    value += lView[bindingIndex];
+    // Property metadata string has 3 parts: property name, prefix, and suffix
+    const metadataParts = propMetadata.split(INTERPOLATION_DELIMITER);
+    const propertyName = metadataParts[0];
+    // Attr bindings don't have property names and should be skipped
+    if (propertyName) {
+      // Wrap value with prefix and suffix (will be '' for normal bindings)
+      properties[propertyName] = metadataParts[1] + value + metadataParts[2];
+    }
+    bindingIndex++;
+  }
+  return properties;
+}
+
+/**
+ * Retrieves the first binding index that holds values for this property
+ * binding.
+ *
+ * For normal bindings (e.g. `[id]="id"`), the binding index is the
+ * same as the metadata index. For interpolations (e.g. `id="{{id}}-{{name}}"`),
+ * there can be multiple binding values, so we might have to loop backwards
+ * from the metadata index until we find the first one.
+ *
+ * @param metadataIndex The index of the first property metadata string for
+ * this node.
+ * @param tData The data array for the current TView
+ * @returns The first binding index for this binding
+ */
+function getFirstBindingIndex(metadataIndex: number, tData: TData): number {
+  let currentBindingIndex = metadataIndex - 1;
+
+  // If the slot before the metadata holds a string, we know that this
+  // metadata applies to an interpolation with at least 2 bindings, and
+  // we need to search further to access the first binding value.
+  let currentValue = tData[currentBindingIndex];
+
+  // We need to iterate until we hit either a:
+  // - TNode (it is an element slot marking the end of `consts` section), OR a
+  // - metadata string (slot is attribute metadata or a previous node's property metadata)
+  while (typeof currentValue === 'string' && !isPropMetadataString(currentValue)) {
+    currentValue = tData[--currentBindingIndex];
+  }
+  return currentBindingIndex + 1;
+}
+
+function collectHostPropertyBindings(
+    tNode: TNode, lView: LView, tData: TData): {[key: string]: string} {
+  const properties: {[key: string]: string} = {};
+
+  // Host binding values for a node are stored after directives on that node
+  let hostPropIndex = tNode.directiveEnd;
+  let propMetadata = tData[hostPropIndex] as any;
+
+  // When we reach a value in TView.data that is not a string, we know we've
+  // hit the next node's providers and directives and should stop copying data.
+  while (typeof propMetadata === 'string') {
+    const propertyName = propMetadata.split(INTERPOLATION_DELIMITER)[0];
+    properties[propertyName] = lView[hostPropIndex];
+    propMetadata = tData[++hostPropIndex];
+  }
+  return properties;
 }
 
 

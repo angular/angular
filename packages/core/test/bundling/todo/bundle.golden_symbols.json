@@ -78,6 +78,9 @@
     "name": "INJECTOR_BLOOM_PARENT_SIZE"
   },
   {
+    "name": "INTERPOLATION_DELIMITER"
+  },
+  {
     "name": "InjectFlags"
   },
   {
@@ -1101,6 +1104,9 @@
     "name": "saveNameToExportMap"
   },
   {
+    "name": "savePropertyDebugData"
+  },
+  {
     "name": "saveResolvedLocalsInData"
   },
   {
@@ -1189,6 +1195,9 @@
   },
   {
     "name": "shouldSearchParent"
+  },
+  {
+    "name": "storeBindingMetadata"
   },
   {
     "name": "storeCleanupFn"
