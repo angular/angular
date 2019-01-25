@@ -12,7 +12,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {main, mainDiagnosticsForTest} from '../../src/main';
-import {TestSupport, isInBazel, setup} from '../test_support';
+import {TestSupport, setup} from '../test_support';
 
 function setupFakeCore(support: TestSupport): void {
   if (!process.env.TEST_SRCDIR) {
@@ -40,10 +40,6 @@ export class NgtscTestEnvironment {
    * Set up a new testing environment.
    */
   static setup(): NgtscTestEnvironment {
-    if (!NgtscTestEnvironment.supported) {
-      throw new Error(`Attempting to setup ngtsc tests in an unsupported environment`);
-    }
-
     const support = setup();
     const outDir = path.join(support.basePath, 'built');
     process.chdir(support.basePath);
@@ -126,6 +122,4 @@ export class NgtscTestEnvironment {
     // Cast is safe as ngtsc mode only produces ts.Diagnostics.
     return mainDiagnosticsForTest(['-p', this.basePath]) as ReadonlyArray<ts.Diagnostic>;
   }
-
-  static get supported(): boolean { return isInBazel(); }
 }
