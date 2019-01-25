@@ -851,7 +851,6 @@ describe('ngtsc behavioral tests', () => {
         class FooCmp {}
     `);
     const errors = env.driveDiagnostics();
-    debugger;
     expect(trim(errors[0].messageText as string))
         .toContain('Cannot have a pipe in an action expression');
   });

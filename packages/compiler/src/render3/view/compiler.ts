@@ -877,8 +877,9 @@ const enum HostBindingGroup {
 }
 
 interface ParsedHostBindings {
-  attributes: {[key: string]: string}, listeners: {[key: string]: string},
-      properties: {[key: string]: string},
+  attributes: {[key: string]: string};
+  listeners: {[key: string]: string};
+  properties: {[key: string]: string};
 }
 
 export function parseHostBindings(host: {[key: string]: string}): ParsedHostBindings {

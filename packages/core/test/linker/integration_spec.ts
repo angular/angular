@@ -953,13 +953,6 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]});
         const template = '<div host-properties></div>';
         TestBed.overrideComponent(MyComp, {set: {template}});
-
-        try {
-          TestBed.createComponent(MyComp);
-        } catch (e) {
-          debugger;
-        }
-
         expect(() => TestBed.createComponent(MyComp))
             .toThrowError(/Host binding expression cannot contain pipes/);
       });
