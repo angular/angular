@@ -34,11 +34,6 @@ describe('ScrollService', () => {
     'viewportScroller',
     ['getScrollPosition', 'scrollToPosition']);
 
-
-  beforeEach(() => {
-    spyOn(window, 'scrollBy');
-  });
-
   beforeEach(() => {
     injector = ReflectiveInjector.resolveAndCreate([
         ScrollService,
@@ -52,7 +47,23 @@ describe('ScrollService', () => {
     document = injector.get(DOCUMENT);
     scrollService = injector.get(ScrollService);
     location = injector.get(Location);
+
+    spyOn(window, 'scrollBy');
   });
+
+  it('should debounce `updateScrollPositonInHistory()` after 500ms', fakeAsync(() => {
+    const updateScrollPositionInHistorySpy = spyOn(scrollService, 'updateScrollPositionInHistory');
+
+    window.dispatchEvent(new Event('scroll'));
+    tick(249);
+    window.dispatchEvent(new Event('scroll'));
+    tick(249);
+    window.dispatchEvent(new Event('scroll'));
+    tick(249);
+    expect(updateScrollPositionInHistorySpy).not.toHaveBeenCalled();
+    tick(1);
+    expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);
+  }));
 
   it('should set `scrollRestoration` to `manual` if supported', () => {
     if (scrollService.supportManualScrollRestoration) {

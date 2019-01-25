@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { Location, PlatformLocation, ViewportScroller } from '@angular/common';
 import { DOCUMENT } from '@angular/common';
 import { fromEvent } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 export const topMargin = 16;
 /**
@@ -44,6 +45,9 @@ export class ScrollService {
       private location: Location) {
     // On resize, the toolbar might change height, so "invalidate" the top offset.
     fromEvent(window, 'resize').subscribe(() => this._topOffset = null);
+
+    fromEvent(window, 'scroll')
+      .pipe(debounceTime(250)).subscribe(() => this.updateScrollPositionInHistory());
 
     try {
       this.supportManualScrollRestoration = !!window && !!window.scrollTo && 'scrollX' in window
