@@ -101,4 +101,17 @@ export class MatStepHeader extends CdkStepHeader implements OnDestroy {
       optional: this.optional
     };
   }
+
+  _getDefaultTextForState(state: StepState): string {
+    if (state == 'number') {
+      return `${this.index + 1}`;
+    }
+    if (state == 'edit') {
+      return 'create';
+    }
+    if (state == 'error') {
+      return 'warning';
+    }
+    return state;
+  }
 }

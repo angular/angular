@@ -29,6 +29,7 @@ export declare class MatStepHeader extends CdkStepHeader implements OnDestroy {
     selected: boolean;
     state: StepState;
     constructor(_intl: MatStepperIntl, _focusMonitor: FocusMonitor, _elementRef: ElementRef<HTMLElement>, changeDetectorRef: ChangeDetectorRef);
+    _getDefaultTextForState(state: StepState): string;
     _getHostElement(): HTMLElement;
     _getIconContext(): MatStepperIconContext;
     _stringLabel(): string | null;
