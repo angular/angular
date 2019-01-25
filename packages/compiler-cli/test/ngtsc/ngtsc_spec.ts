@@ -827,6 +827,44 @@ describe('ngtsc behavioral tests', () => {
             `Unexpected global target 'UnknownTarget' defined for 'click' event. Supported list of global targets: window,document,body.`);
   });
 
+  it('should throw in case pipes are used in host listeners', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '...',
+          host: {
+            '(click)': 'doSmth() | myPipe'
+          }
+        })
+        class FooCmp {}
+    `);
+    const errors = env.driveDiagnostics();
+    expect(trim(errors[0].messageText as string))
+        .toContain('Cannot have a pipe in an action expression');
+  });
+
+  it('should throw in case pipes are used in host listeners', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '...',
+          host: {
+            '[id]': 'id | myPipe'
+          }
+        })
+        class FooCmp {}
+    `);
+    const errors = env.driveDiagnostics();
+    expect(trim(errors[0].messageText as string))
+        .toContain('Host binding expression cannot contain pipes');
+  });
+
   it('should generate host bindings for directives', () => {
     env.tsconfig();
     env.write(`test.ts`, `

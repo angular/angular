@@ -943,18 +943,17 @@ function declareTests(config?: {useJit: boolean}) {
         expect(tc.properties['title']).toBe(undefined);
       });
 
-      fixmeIvy('FW-725: Pipes in host bindings fail with a cryptic error')
-          .it('should not allow pipes in hostProperties', () => {
-            @Directive({selector: '[host-properties]', host: {'[id]': 'id | uppercase'}})
-            class DirectiveWithHostProps {
-            }
+      it('should not allow pipes in hostProperties', () => {
+        @Directive({selector: '[host-properties]', host: {'[id]': 'id | uppercase'}})
+        class DirectiveWithHostProps {
+        }
 
-            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]});
-            const template = '<div host-properties></div>';
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            expect(() => TestBed.createComponent(MyComp))
-                .toThrowError(/Host binding expression cannot contain pipes/);
-          });
+        TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostProps]});
+        const template = '<div host-properties></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        expect(() => TestBed.createComponent(MyComp))
+            .toThrowError(/Host binding expression cannot contain pipes/);
+      });
 
       it('should not use template variables for expressions in hostListeners', () => {
         @Directive({selector: '[host-listener]', host: {'(click)': 'doIt(id, unknownProp)'}})
@@ -979,18 +978,17 @@ function declareTests(config?: {useJit: boolean}) {
         expect(dir.receivedArgs).toEqual(['one', undefined]);
       });
 
-      fixmeIvy('FW-742: Pipes in host listeners should throw a descriptive error')
-          .it('should not allow pipes in hostListeners', () => {
-            @Directive({selector: '[host-listener]', host: {'(click)': 'doIt() | somePipe'}})
-            class DirectiveWithHostListener {
-            }
+      it('should not allow pipes in hostListeners', () => {
+        @Directive({selector: '[host-listener]', host: {'(click)': 'doIt() | somePipe'}})
+        class DirectiveWithHostListener {
+        }
 
-            TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostListener]});
-            const template = '<div host-listener></div>';
-            TestBed.overrideComponent(MyComp, {set: {template}});
-            expect(() => TestBed.createComponent(MyComp))
-                .toThrowError(/Cannot have a pipe in an action expression/);
-          });
+        TestBed.configureTestingModule({declarations: [MyComp, DirectiveWithHostListener]});
+        const template = '<div host-listener></div>';
+        TestBed.overrideComponent(MyComp, {set: {template}});
+        expect(() => TestBed.createComponent(MyComp))
+            .toThrowError(/Cannot have a pipe in an action expression/);
+      });
 
 
 
