@@ -99,6 +99,25 @@ describe('ngc transformer command-line', () => {
     expect(exitCode).toBe(0);
   });
 
+  it('should respect the "newLine" compiler option when printing diagnostics', () => {
+    writeConfig(`{
+      "extends": "./tsconfig-base.json",
+      "compilerOptions": {
+        "newLine": "CRLF",
+      }
+    }`);
+    write('test.ts', 'export NOT_VALID = true;');
+
+    // Stub the error spy because we don't want to call through and print the
+    // expected error diagnostic.
+    errorSpy.and.stub();
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).toHaveBeenCalledWith(
+        `test.ts(1,1): error TS1128: Declaration or statement expected.\r\n`);
+    expect(exitCode).toBe(1);
+  });
+
   describe('errors', () => {
 
     beforeEach(() => { errorSpy.and.stub(); });
