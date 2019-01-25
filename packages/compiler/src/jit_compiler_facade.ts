@@ -13,7 +13,7 @@ import {HostBinding, HostListener, Input, Output, Type} from './core';
 import {compileInjectable} from './injectable_compiler_2';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config';
 import {Expression, LiteralExpr, WrappedNodeExpr} from './output/output_ast';
-import {ParseError} from './parse_util';
+import {ParseError, ParseSourceSpan, r3TypeSourceSpan} from './parse_util';
 import {R3DependencyMetadata, R3ResolvedDependencyType} from './render3/r3_factory';
 import {jitExpression} from './render3/r3_jit';
 import {R3InjectorMetadata, R3NgModuleMetadata, compileInjector, compileNgModule} from './render3/r3_module_compiler';
@@ -94,7 +94,8 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const constantPool = new ConstantPool();
     const bindingParser = makeBindingParser();
 
-    const meta: R3DirectiveMetadata = convertDirectiveFacadeToMetadata(facade);
+    const typeSourceSpan = r3TypeSourceSpan('Directive', facade.name, sourceMapUrl);
+    const meta: R3DirectiveMetadata = convertDirectiveFacadeToMetadata(facade, typeSourceSpan);
     const res = compileDirectiveFromMetadata(meta, constantPool, bindingParser);
     const preStatements = [...constantPool.statements, ...res.statements];
     return jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
@@ -120,10 +121,11 @@ export class CompilerFacadeImpl implements CompilerFacade {
 
     // Compile the component metadata, including template, into an expression.
     // TODO(alxhub): implement inputs, outputs, queries, etc.
+    const typeSourceSpan = r3TypeSourceSpan('Component', facade.name, sourceMapUrl);
     const res = compileComponentFromMetadata(
         {
           ...facade as R3ComponentMetadataFacadeNoPropAndWhitespace,
-          ...convertDirectiveFacadeToMetadata(facade),
+          ...convertDirectiveFacadeToMetadata(facade, typeSourceSpan),
           selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
           template,
           viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
@@ -169,7 +171,8 @@ function convertToR3QueryMetadata(facade: R3QueryMetadataFacade): R3QueryMetadat
   };
 }
 
-function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3DirectiveMetadata {
+function convertDirectiveFacadeToMetadata(
+    facade: R3DirectiveMetadataFacade, typeSourceSpan: ParseSourceSpan): R3DirectiveMetadata {
   const inputsFromMetadata = parseInputOutputs(facade.inputs || []);
   const outputsFromMetadata = parseInputOutputs(facade.outputs || []);
   const propMetadata = facade.propMetadata;
@@ -190,10 +193,10 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
 
   return {
     ...facade as R3DirectiveMetadataFacadeNoPropAndWhitespace,
-    typeSourceSpan: null !,
+    typeSourceSpan,
     type: new WrappedNodeExpr(facade.type),
     deps: convertR3DependencyMetadataArray(facade.deps),
-    host: extractHostBindings(facade.host, facade.propMetadata),
+    host: extractHostBindings(facade.host, facade.propMetadata, typeSourceSpan),
     inputs: {...inputsFromMetadata, ...inputsFromType},
     outputs: {...outputsFromMetadata, ...outputsFromType},
     queries: facade.queries.map(convertToR3QueryMetadata),
@@ -245,7 +248,9 @@ function convertR3DependencyMetadataArray(facades: R3DependencyMetadataFacade[] 
   return facades == null ? null : facades.map(convertR3DependencyMetadata);
 }
 
-function extractHostBindings(host: {[key: string]: string}, propMetadata: {[key: string]: any[]}): {
+function extractHostBindings(
+    host: {[key: string]: string}, propMetadata: {[key: string]: any[]},
+    sourceSpan: ParseSourceSpan): {
   attributes: StringMap,
   listeners: StringMap,
   properties: StringMap,
@@ -254,7 +259,7 @@ function extractHostBindings(host: {[key: string]: string}, propMetadata: {[key:
   const bindings = parseHostBindings(host || {});
 
   // After that check host bindings for errors
-  const errors = verifyHostBindings(bindings);
+  const errors = verifyHostBindings(bindings, sourceSpan);
   if (errors.length) {
     throw new Error(errors.map((error: ParseError) => error.msg).join('\n'));
   }

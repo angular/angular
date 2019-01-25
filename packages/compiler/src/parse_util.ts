@@ -139,3 +139,11 @@ export function typeSourceSpan(kind: string, type: CompileIdentifierMetadata): P
   return new ParseSourceSpan(
       new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
 }
+
+export function r3TypeSourceSpan(
+    kind: string, typeName: string, moduleUrl: string): ParseSourceSpan {
+  const sourceFileName = `in ${kind} ${typeName} in ${moduleUrl}`;
+  const sourceFile = new ParseSourceFile('', sourceFileName);
+  return new ParseSourceSpan(
+      new ParseLocation(sourceFile, -1, -1, -1), new ParseLocation(sourceFile, -1, -1, -1));
+}

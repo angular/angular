@@ -16,7 +16,7 @@ import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expressio
 import {LifecycleHooks} from '../../lifecycle_reflector';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
-import {ParseError, typeSourceSpan} from '../../parse_util';
+import {ParseError, ParseSourceSpan, typeSourceSpan} from '../../parse_util';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
 import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
@@ -665,11 +665,12 @@ function createHostBindingsFunction(
 
   // Calculate the host property bindings
   const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
+
   const bindingFn = (implicit: any, value: AST) => {
     return convertPropertyBinding(
         null, implicit, value, 'b', BindingForm.TrySimple, () => error('Unexpected interpolation'));
   };
-  if (bindings && bindings.length) {
+  if (bindings) {
     const hostVarsCountFn = (numSlots: number): number => {
       const originalVarsCount = totalHostVarsCount;
       totalHostVarsCount += numSlots;
@@ -905,15 +906,14 @@ export function parseHostBindings(host: {[key: string]: string}): ParsedHostBind
   return {attributes, listeners, properties};
 }
 
-export function verifyHostBindings(bindings: ParsedHostBindings): ParseError[] {
+export function verifyHostBindings(
+    bindings: ParsedHostBindings, sourceSpan: ParseSourceSpan): ParseError[] {
   const summary = metadataAsSummary({ host: bindings } as any);
-  // Further improvements for the code block below:
-  // - create and provide proper sourceSpans to make error message more descriptive (FW-995)
-  // - abstract out host bindings verification logic and use it instead of creating events and
-  // properties ASTs to detect errors (FW-996)
+  // Abstract out host bindings verification logic and use it instead of
+  // creating events and properties ASTs to detect errors (FW-996)
   const bindingParser = makeBindingParser();
-  bindingParser.createDirectiveHostEventAsts(summary, null !);
-  bindingParser.createBoundHostProperties(summary, null !);
+  bindingParser.createDirectiveHostEventAsts(summary, sourceSpan);
+  bindingParser.createBoundHostProperties(summary, sourceSpan);
   return bindingParser.errors;
 }
 
