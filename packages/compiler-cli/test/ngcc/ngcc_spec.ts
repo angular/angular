@@ -14,11 +14,6 @@ const Module = require('module');
 import {mainNgcc} from '../../src/ngcc/src/main';
 
 describe('ngcc main()', () => {
-  if (!isInBazel()) {
-    // These tests should be excluded from the non-Bazel build.
-    return;
-  }
-
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
@@ -98,10 +93,6 @@ function loadDirectory(directoryPath: string): Directory {
 
 interface Directory {
   [pathSegment: string]: string|Directory;
-}
-
-function isInBazel() {
-  return process.env.TEST_SRCDIR != null;
 }
 
 function mockResolve(p: string): string|null {

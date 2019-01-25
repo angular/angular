@@ -42,11 +42,6 @@ export declare class CommonModule {
 }
 
 describe('ngtsc type checking', () => {
-  if (!NgtscTestEnvironment.supported) {
-    // These tests should be excluded from the non-Bazel build.
-    return;
-  }
-
   let env !: NgtscTestEnvironment;
 
   beforeEach(() => {
