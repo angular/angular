@@ -799,7 +799,7 @@ function createHostBindingsFunction(
 function bindingFn(implicit: any, value: AST) {
   return convertPropertyBinding(
       null, implicit, value, 'b', BindingForm.TrySimple, () => error('Unexpected interpolation'));
-};
+}
 
 function createStylingStmt(
     instruction: Instruction, bindingContext: any, bindingFn: Function): o.Statement {
