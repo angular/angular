@@ -1,14 +1,24 @@
 <cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">
-  <cdk-tree-node *cdkTreeNodeDef="let node" cdkTreeNodePadding class="example-tree-node">
+  <!-- This is the tree node template for leaf nodes -->
+  <cdk-tree-node *cdkTreeNodeDef="let node" cdkTreeNodePadding
+                 [style.display]="shouldRender(node) ? 'flex' : 'none'"
+                 class="example-tree-node">
+    <!-- use a disabled button to provide padding for tree leaf -->
     <button mat-icon-button disabled></button>
-    {{node.filename}}:  {{node.type}}
+    {{node.name}}
   </cdk-tree-node>
-  <cdk-tree-node *cdkTreeNodeDef="let node; when: hasChild" cdkTreeNodePadding class="example-tree-node">
-    <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename" cdkTreeNodeToggle>
+  <!-- This is the tree node template for expandable nodes -->
+  <cdk-tree-node *cdkTreeNodeDef="let node; when: hasChild" cdkTreeNodePadding
+                 [style.display]="shouldRender(node) ? 'flex' : 'none'"
+                 class="example-tree-node">
+    <button mat-icon-button cdkTreeNodeToggle
+            [attr.aria-label]="'toggle ' + node.filename"
+            (click)="node.isExpanded = !node.isExpanded"
+            [style.visibility]="node.expandable ? 'visible' : 'hidden'">
       <mat-icon class="mat-icon-rtl-mirror">
         {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
       </mat-icon>
     </button>
-    {{node.filename}}:  {{node.type}}
+    {{node.name}}
   </cdk-tree-node>
 </cdk-tree>

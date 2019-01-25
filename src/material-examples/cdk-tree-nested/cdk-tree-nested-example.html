@@ -1,16 +1,19 @@
-<cdk-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl">
+<cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">
+  <!-- This is the tree node template for leaf nodes -->
   <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="example-tree-node">
+    <!-- use a disabled button to provide padding for tree leaf -->
     <button mat-icon-button disabled></button>
-    {{node.filename}}:  {{node.type}}
+    {{node.name}}
   </cdk-nested-tree-node>
-  <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasNestedChild" class="example-tree-node">
-    <button mat-icon-button [attr.aria-label]="'toggle ' + node.filename" cdkTreeNodeToggle>
+  <!-- This is the tree node template for expandable nodes -->
+  <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="example-tree-node">
+    <button mat-icon-button [attr.aria-label]="'toggle ' + node.name" cdkTreeNodeToggle>
       <mat-icon class="mat-icon-rtl-mirror">
-        {{nestedTreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
       </mat-icon>
     </button>
-    {{node.filename}}:  {{node.type}}
-    <div [class.example-tree-invisible]="!nestedTreeControl.isExpanded(node)">
+    {{node.name}}
+    <div [class.example-tree-invisible]="!treeControl.isExpanded(node)">
       <ng-container cdkTreeNodeOutlet></ng-container>
     </div>
   </cdk-nested-tree-node>

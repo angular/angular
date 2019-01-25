@@ -1,23 +1,25 @@
-<mat-tree [dataSource]="nestedDataSource" [treeControl]="nestedTreeControl" class="example-tree">
+<mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="example-tree">
+  <!-- This is the tree node template for leaf nodes -->
   <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle>
     <li class="mat-tree-node">
+      <!-- use a disabled button to provide padding for tree leaf -->
       <button mat-icon-button disabled></button>
-      {{node.filename}}:  {{node.type}}
+      {{node.name}}
     </li>
   </mat-tree-node>
-
-  <mat-nested-tree-node *matTreeNodeDef="let node; when: hasNestedChild">
+  <!-- This is the tree node template for expandable nodes -->
+  <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
     <li>
       <div class="mat-tree-node">
         <button mat-icon-button matTreeNodeToggle
-                [attr.aria-label]="'toggle ' + node.filename">
+                [attr.aria-label]="'toggle ' + node.name">
           <mat-icon class="mat-icon-rtl-mirror">
-            {{nestedTreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
           </mat-icon>
         </button>
-        {{node.filename}}
+        {{node.name}}
       </div>
-      <ul [class.example-tree-invisible]="!nestedTreeControl.isExpanded(node)">
+      <ul [class.example-tree-invisible]="!treeControl.isExpanded(node)">
         <ng-container matTreeNodeOutlet></ng-container>
       </ul>
     </li>
