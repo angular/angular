@@ -11,7 +11,7 @@ import {
 } from '@angular/cdk/testing';
 import {Component, FactoryProvider, Type, ValueProvider, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
-import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {MAT_DATE_LOCALE, MatNativeDateModule, NativeDateModule} from '@angular/material/core';
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {DEC, JAN, JUL, JUN, SEP} from '@angular/material/testing';
@@ -1189,6 +1189,36 @@ describe('MatDatepicker', () => {
         expect(fixture.debugElement.query(By.css('input')).nativeElement.classList)
             .not.toContain('ng-invalid');
       }));
+
+      it('should update validity when switching between null and invalid', fakeAsync(() => {
+        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        inputEl.value = '';
+        dispatchFakeEvent(inputEl, 'input');
+
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(testComponent.model.valid).toBe(true);
+
+        inputEl.value = 'abcdefg';
+        dispatchFakeEvent(inputEl, 'input');
+
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(testComponent.model.valid).toBe(false);
+
+        inputEl.value = '';
+        dispatchFakeEvent(inputEl, 'input');
+
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(testComponent.model.valid).toBe(true);
+      }));
     });
 
     describe('datepicker with filter and validation', () => {
@@ -1805,6 +1835,7 @@ class FormFieldDatepicker {
 })
 class DatepickerWithMinAndMaxValidation {
   @ViewChild('d') datepicker: MatDatepicker<Date>;
+  @ViewChild(NgModel) model: NgModel;
   date: Date | null;
   minDate = new Date(2010, JAN, 1);
   maxDate = new Date(2020, JAN, 1);
