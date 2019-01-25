@@ -834,7 +834,7 @@ export abstract class AbstractControl {
    *
    * @internal
    */
-  _parentMarkedDirty(onlySelf?: boolean): boolean {
+  private _parentMarkedDirty(onlySelf?: boolean): boolean {
     const parentDirty = this._parent && this._parent.dirty;
     return !onlySelf && parentDirty && !this._parent._anyControlsDirty();
   }
