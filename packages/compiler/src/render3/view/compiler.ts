@@ -643,6 +643,23 @@ function createHostBindingsFunction(
   const hostBindingSourceSpan = meta.typeSourceSpan;
   const directiveSummary = metadataAsSummary(meta);
 
+  let valueConverter: ValueConverter;
+  const getValueConverter = () => {
+    if (!valueConverter) {
+      const hostVarsCountFn = (numSlots: number): number => {
+        const originalVarsCount = totalHostVarsCount;
+        totalHostVarsCount += numSlots;
+        return originalVarsCount;
+      };
+      valueConverter = new ValueConverter(
+          constantPool,
+          () => error('Unexpected node'),  // new nodes are illegal here
+          hostVarsCountFn,
+          () => error('Unexpected pipe'));  // pipes are illegal here
+    }
+    return valueConverter;
+  };
+
   // Calculate host event bindings
   const eventBindings =
       bindingParser.createDirectiveHostEventAsts(directiveSummary, hostBindingSourceSpan);
@@ -653,111 +670,93 @@ function createHostBindingsFunction(
 
   // Calculate the host property bindings
   const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
+  (bindings || []).forEach((binding: ParsedProperty) => {
+    const name = binding.name;
+    const stylePrefix = getStylingPrefix(name);
+    if (stylePrefix === 'style') {
+      const {propertyName, unit} = parseNamedProperty(name);
+      styleBuilder.registerStyleInput(propertyName, binding.expression, unit, binding.sourceSpan);
+    } else if (stylePrefix === 'class') {
+      styleBuilder.registerClassInput(
+          parseNamedProperty(name).propertyName, binding.expression, binding.sourceSpan);
+    } else {
+      // resolve literal arrays and literal objects
+      const value = binding.expression.visit(getValueConverter());
+      const bindingExpr = bindingFn(bindingContext, value);
 
-  const bindingFn = (implicit: any, value: AST) => {
-    return convertPropertyBinding(
-        null, implicit, value, 'b', BindingForm.TrySimple, () => error('Unexpected interpolation'));
-  };
-  if (bindings) {
-    const hostVarsCountFn = (numSlots: number): number => {
-      const originalVarsCount = totalHostVarsCount;
-      totalHostVarsCount += numSlots;
-      return originalVarsCount;
-    };
-    const valueConverter = new ValueConverter(
-        constantPool,
-        /* new nodes are illegal here */ () => error('Unexpected node'), hostVarsCountFn,
-        /* pipes are illegal here */ () => error('Unexpected pipe'));
+      const {bindingName, instruction, isAttribute} = getBindingNameAndInstruction(binding);
 
-    for (const binding of bindings) {
-      const name = binding.name;
-      const stylePrefix = getStylingPrefix(name);
-      if (stylePrefix === 'style') {
-        const {propertyName, unit} = parseNamedProperty(name);
-        styleBuilder.registerStyleInput(propertyName, binding.expression, unit, binding.sourceSpan);
-      } else if (stylePrefix === 'class') {
-        styleBuilder.registerClassInput(
-            parseNamedProperty(name).propertyName, binding.expression, binding.sourceSpan);
-      } else {
-        // resolve literal arrays and literal objects
-        const value = binding.expression.visit(valueConverter);
-        const bindingExpr = bindingFn(bindingContext, value);
+      const securityContexts =
+          bindingParser.calcPossibleSecurityContexts(meta.selector || '', bindingName, isAttribute)
+              .filter(context => context !== core.SecurityContext.NONE);
 
-        const {bindingName, instruction, isAttribute} = getBindingNameAndInstruction(binding);
-
-        const securityContexts =
-            bindingParser
-                .calcPossibleSecurityContexts(meta.selector || '', bindingName, isAttribute)
-                .filter(context => context !== core.SecurityContext.NONE);
-
-        let sanitizerFn: o.ExternalExpr|null = null;
-        if (securityContexts.length) {
-          if (securityContexts.length === 2 &&
-              securityContexts.indexOf(core.SecurityContext.URL) > -1 &&
-              securityContexts.indexOf(core.SecurityContext.RESOURCE_URL) > -1) {
-            // Special case for some URL attributes (such as "src" and "href") that may be a part of
-            // different security contexts. In this case we use special santitization function and
-            // select the actual sanitizer at runtime based on a tag name that is provided while
-            // invoking sanitization function.
-            sanitizerFn = o.importExpr(R3.sanitizeUrlOrResourceUrl);
-          } else {
-            sanitizerFn = resolveSanitizationFn(securityContexts[0], isAttribute);
-          }
+      let sanitizerFn: o.ExternalExpr|null = null;
+      if (securityContexts.length) {
+        if (securityContexts.length === 2 &&
+            securityContexts.indexOf(core.SecurityContext.URL) > -1 &&
+            securityContexts.indexOf(core.SecurityContext.RESOURCE_URL) > -1) {
+          // Special case for some URL attributes (such as "src" and "href") that may be a part
+          // of different security contexts. In this case we use special santitization function and
+          // select the actual sanitizer at runtime based on a tag name that is provided while
+          // invoking sanitization function.
+          sanitizerFn = o.importExpr(R3.sanitizeUrlOrResourceUrl);
+        } else {
+          sanitizerFn = resolveSanitizationFn(securityContexts[0], isAttribute);
         }
-
-        const instructionParams: o.Expression[] = [
-          elVarExp, o.literal(bindingName), o.importExpr(R3.bind).callFn([bindingExpr.currValExpr])
-        ];
-        if (sanitizerFn) {
-          instructionParams.push(sanitizerFn);
-        }
-        if (!isAttribute) {
-          if (!sanitizerFn) {
-            // append `null` in front of `nativeOnly` flag if no sanitizer fn defined
-            instructionParams.push(o.literal(null));
-          }
-          // host bindings must have nativeOnly prop set to true
-          instructionParams.push(o.literal(true));
-        }
-
-        updateStatements.push(...bindingExpr.stmts);
-        updateStatements.push(o.importExpr(instruction).callFn(instructionParams).toStmt());
-      }
-    }
-
-    // since we're dealing with directives/components and both have hostBinding
-    // functions, we need to generate a special hostAttrs instruction that deals
-    // with both the assignment of styling as well as static attributes to the host
-    // element. The instruction below will instruct all initial styling (styling
-    // that is inside of a host binding within a directive/component) to be attached
-    // to the host element alongside any of the provided host attributes that were
-    // collected earlier.
-    const hostAttrs = convertAttributesToExpressions(staticAttributesAndValues);
-    const hostInstruction = styleBuilder.buildHostAttrsInstruction(null, hostAttrs, constantPool);
-    if (hostInstruction) {
-      createStatements.push(createStylingStmt(hostInstruction, bindingContext, bindingFn));
-    }
-
-    if (styleBuilder.hasBindings) {
-      // singular style/class bindings (things like `[style.prop]` and `[class.name]`)
-      // MUST be registered on a given element within the component/directive
-      // templateFn/hostBindingsFn functions. The instruction below will figure out
-      // what all the bindings are and then generate the statements required to register
-      // those bindings to the element via `elementStyling`.
-      const elementStylingInstruction =
-          styleBuilder.buildElementStylingInstruction(null, constantPool);
-      if (elementStylingInstruction) {
-        createStatements.push(
-            createStylingStmt(elementStylingInstruction, bindingContext, bindingFn));
       }
 
-      // finally each binding that was registered in the statement above will need to be added to
-      // the update block of a component/directive templateFn/hostBindingsFn so that the bindings
-      // are evaluated and updated for the element.
-      styleBuilder.buildUpdateLevelInstructions(valueConverter).forEach(instruction => {
-        updateStatements.push(createStylingStmt(instruction, bindingContext, bindingFn));
-      });
+      const instructionParams: o.Expression[] = [
+        elVarExp, o.literal(bindingName), o.importExpr(R3.bind).callFn([bindingExpr.currValExpr])
+      ];
+      if (sanitizerFn) {
+        instructionParams.push(sanitizerFn);
+      }
+      if (!isAttribute) {
+        if (!sanitizerFn) {
+          // append `null` in front of `nativeOnly` flag if no sanitizer fn defined
+          instructionParams.push(o.literal(null));
+        }
+        // host bindings must have nativeOnly prop set to true
+        instructionParams.push(o.literal(true));
+      }
+
+      updateStatements.push(...bindingExpr.stmts);
+      updateStatements.push(o.importExpr(instruction).callFn(instructionParams).toStmt());
     }
+  });
+
+  // since we're dealing with directives/components and both have hostBinding
+  // functions, we need to generate a special hostAttrs instruction that deals
+  // with both the assignment of styling as well as static attributes to the host
+  // element. The instruction below will instruct all initial styling (styling
+  // that is inside of a host binding within a directive/component) to be attached
+  // to the host element alongside any of the provided host attributes that were
+  // collected earlier.
+  const hostAttrs = convertAttributesToExpressions(staticAttributesAndValues);
+  const hostInstruction = styleBuilder.buildHostAttrsInstruction(null, hostAttrs, constantPool);
+  if (hostInstruction) {
+    createStatements.push(createStylingStmt(hostInstruction, bindingContext, bindingFn));
+  }
+
+  if (styleBuilder.hasBindings) {
+    // singular style/class bindings (things like `[style.prop]` and `[class.name]`)
+    // MUST be registered on a given element within the component/directive
+    // templateFn/hostBindingsFn functions. The instruction below will figure out
+    // what all the bindings are and then generate the statements required to register
+    // those bindings to the element via `elementStyling`.
+    const elementStylingInstruction =
+        styleBuilder.buildElementStylingInstruction(null, constantPool);
+    if (elementStylingInstruction) {
+      createStatements.push(
+          createStylingStmt(elementStylingInstruction, bindingContext, bindingFn));
+    }
+
+    // finally each binding that was registered in the statement above will need to be added to
+    // the update block of a component/directive templateFn/hostBindingsFn so that the bindings
+    // are evaluated and updated for the element.
+    styleBuilder.buildUpdateLevelInstructions(getValueConverter()).forEach(instruction => {
+      updateStatements.push(createStylingStmt(instruction, bindingContext, bindingFn));
+    });
   }
 
   if (totalHostVarsCount) {
@@ -783,6 +782,11 @@ function createHostBindingsFunction(
   }
 
   return null;
+}
+
+function bindingFn(implicit: any, value: AST) {
+  return convertPropertyBinding(
+      null, implicit, value, 'b', BindingForm.TrySimple, () => error('Unexpected interpolation'));
 }
 
 function createStylingStmt(
