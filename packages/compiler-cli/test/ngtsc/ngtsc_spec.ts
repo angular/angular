@@ -11,11 +11,6 @@ import {NgtscTestEnvironment} from './env';
 const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();
 
 describe('ngtsc behavioral tests', () => {
-  if (!NgtscTestEnvironment.supported) {
-    // These tests should be excluded from the non-Bazel build.
-    return;
-  }
-
   let env !: NgtscTestEnvironment;
 
   beforeEach(() => { env = NgtscTestEnvironment.setup(); });
