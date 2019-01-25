@@ -208,24 +208,69 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   /**
    * Reflect over a symbol and extract the member information, combining it with the
    * provided decorator information, and whether it is a static member.
+   *
+   * If a class member uses accessors (e.g getters and/or setters) then it gets downleveled
+   * in ES5 to a single `Object.defineProperty()` call. In that case we must parse this
+   * call to extract the one or two ClassMember objects that represent the accessors.
+   *
    * @param symbol the symbol for the member to reflect over.
    * @param decorators an array of decorators associated with the member.
    * @param isStatic true if this member is static, false if it is an instance property.
    * @returns the reflected member information, or null if the symbol is not a member.
    */
-  protected reflectMember(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
-      ClassMember|null {
-    const member = super.reflectMember(symbol, decorators, isStatic);
-    if (member && member.kind === ClassMemberKind.Method && member.isStatic && member.node &&
-        ts.isPropertyAccessExpression(member.node) && member.node.parent &&
-        ts.isBinaryExpression(member.node.parent) &&
-        ts.isFunctionExpression(member.node.parent.right)) {
-      // Recompute the implementation for this member:
-      // ES5 static methods are variable declarations so the declaration is actually the
-      // initializer of the variable assignment
-      member.implementation = member.node.parent.right;
+  protected reflectMembers(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
+      ClassMember[]|null {
+    const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
+    const propertyDefinition = getPropertyDefinition(node);
+    if (propertyDefinition) {
+      const members: ClassMember[] = [];
+      if (propertyDefinition.setter) {
+        members.push({
+          node,
+          implementation: propertyDefinition.setter,
+          kind: ClassMemberKind.Setter,
+          type: null,
+          name: symbol.name,
+          nameNode: null,
+          value: null,
+          isStatic: isStatic || false,
+          decorators: decorators || [],
+        });
+
+        // Prevent attaching the decorators to a potential getter. In ES5, we can't tell where the
+        // decorators were originally attached to, however we only want to attach them to a single
+        // `ClassMember` as otherwise ngtsc would handle the same decorators twice.
+        decorators = undefined;
+      }
+      if (propertyDefinition.getter) {
+        members.push({
+          node,
+          implementation: propertyDefinition.getter,
+          kind: ClassMemberKind.Getter,
+          type: null,
+          name: symbol.name,
+          nameNode: null,
+          value: null,
+          isStatic: isStatic || false,
+          decorators: decorators || [],
+        });
+      }
+      return members;
     }
-    return member;
+
+    const members = super.reflectMembers(symbol, decorators, isStatic);
+    members && members.forEach(member => {
+      if (member && member.kind === ClassMemberKind.Method && member.isStatic && member.node &&
+          ts.isPropertyAccessExpression(member.node) && member.node.parent &&
+          ts.isBinaryExpression(member.node.parent) &&
+          ts.isFunctionExpression(member.node.parent.right)) {
+        // Recompute the implementation for this member:
+        // ES5 static methods are variable declarations so the declaration is actually the
+        // initializer of the variable assignment
+        member.implementation = member.node.parent.right;
+      }
+    });
+    return members;
   }
 
   /**
@@ -245,6 +290,62 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
 }
 
 ///////////// Internal Helpers /////////////
+
+/**
+ * Represents the details about property definitions that were set using `Object.defineProperty`.
+ */
+interface PropertyDefinition {
+  setter: ts.FunctionExpression|null;
+  getter: ts.FunctionExpression|null;
+}
+
+/**
+ * In ES5, getters and setters have been downleveled into call expressions of
+ * `Object.defineProperty`, such as
+ *
+ * ```
+ * Object.defineProperty(Clazz.prototype, "property", {
+ *   get: function () {
+ *       return 'value';
+ *   },
+ *   set: function (value) {
+ *       this.value = value;
+ *   },
+ *   enumerable: true,
+ *   configurable: true
+ * });
+ * ```
+ *
+ * This function inspects the given node to determine if it corresponds with such a call, and if so
+ * extracts the `set` and `get` function expressions from the descriptor object, if they exist.
+ *
+ * @param node The node to obtain the property definition from.
+ * @returns The property definition if the node corresponds with accessor, null otherwise.
+ */
+function getPropertyDefinition(node: ts.Node): PropertyDefinition|null {
+  if (!ts.isCallExpression(node)) return null;
+
+  const fn = node.expression;
+  if (!ts.isPropertyAccessExpression(fn) || !ts.isIdentifier(fn.expression) ||
+      fn.expression.text !== 'Object' || fn.name.text !== 'defineProperty')
+    return null;
+
+  const descriptor = node.arguments[2];
+  if (!descriptor || !ts.isObjectLiteralExpression(descriptor)) return null;
+
+  return {
+    setter: readPropertyFunctionExpression(descriptor, 'set'),
+    getter: readPropertyFunctionExpression(descriptor, 'get'),
+  };
+}
+
+function readPropertyFunctionExpression(object: ts.ObjectLiteralExpression, name: string) {
+  const property = object.properties.find(
+      (p): p is ts.PropertyAssignment =>
+          ts.isPropertyAssignment(p) && ts.isIdentifier(p.name) && p.name.text === name);
+
+  return property && ts.isFunctionExpression(property.initializer) && property.initializer || null;
+}
 
 function getIifeBody(declaration: ts.VariableDeclaration): ts.Block|undefined {
   if (!declaration.initializer || !ts.isParenthesizedExpression(declaration.initializer)) {

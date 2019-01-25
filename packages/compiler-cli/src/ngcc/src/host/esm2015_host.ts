@@ -103,9 +103,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (symbol.members) {
       symbol.members.forEach((value, key) => {
         const decorators = removeFromMap(decoratorsMap, key);
-        const member = this.reflectMember(value, decorators);
-        if (member) {
-          members.push(member);
+        const reflectedMembers = this.reflectMembers(value, decorators);
+        if (reflectedMembers) {
+          members.push(...reflectedMembers);
         }
       });
     }
@@ -114,9 +114,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (symbol.exports) {
       symbol.exports.forEach((value, key) => {
         const decorators = removeFromMap(decoratorsMap, key);
-        const member = this.reflectMember(value, decorators, true);
-        if (member) {
-          members.push(member);
+        const reflectedMembers = this.reflectMembers(value, decorators, true);
+        if (reflectedMembers) {
+          members.push(...reflectedMembers);
         }
       });
     }
@@ -135,9 +135,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       if (variableSymbol && variableSymbol.exports) {
         variableSymbol.exports.forEach((value, key) => {
           const decorators = removeFromMap(decoratorsMap, key);
-          const member = this.reflectMember(value, decorators, true);
-          if (member) {
-            members.push(member);
+          const reflectedMembers = this.reflectMembers(value, decorators, true);
+          if (reflectedMembers) {
+            members.push(...reflectedMembers);
           }
         });
       }
@@ -724,8 +724,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param isStatic true if this member is static, false if it is an instance property.
    * @returns the reflected member information, or null if the symbol is not a member.
    */
-  protected reflectMember(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
-      ClassMember|null {
+  protected reflectMembers(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
+      ClassMember[]|null {
     let kind: ClassMemberKind|null = null;
     let value: ts.Expression|null = null;
     let name: string|null = null;
@@ -783,11 +783,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     const type: ts.TypeNode = (node as any).type || null;
-    return {
+    return [{
       node,
       implementation: node, kind, type, name, nameNode, value, isStatic,
       decorators: decorators || []
-    };
+    }];
   }
 
   /**
