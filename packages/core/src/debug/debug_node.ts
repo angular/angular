@@ -241,14 +241,16 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   get name(): string { return this.nativeElement !.nodeName; }
 
   /**
-   *  Returns a map of property names to property values for an element.
+   *  Gets a map of property names to property values for an element.
    *
    *  This map includes:
    *  - Regular property bindings (e.g. `[id]="id"`)
    *  - Host property bindings (e.g. `host: { '[id]': "id" }`)
    *  - Interpolated property bindings (e.g. `id="{{ value }}")
    *
-   *  It should NOT include input property bindings or attribute bindings.
+   *  It does not include:
+   *  - input property bindings (e.g. `[myCustomInput]="value"`)
+   *  - attribute bindings (e.g. `[attr.role]="menu"`)
    */
   get properties(): {[key: string]: any;} {
     const context = loadLContext(this.nativeNode) !;
