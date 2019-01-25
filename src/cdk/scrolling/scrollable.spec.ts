@@ -27,10 +27,12 @@ describe('CdkScrollable', () => {
       imports: [ScrollingModule],
       declarations: [ScrollableViewport],
     }).compileComponents();
+  }));
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(ScrollableViewport);
     testComponent = fixture.componentInstance;
-  }));
+  });
 
   describe('in LTR context', () => {
     beforeEach(() => {

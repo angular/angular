@@ -15,7 +15,7 @@ import {
   ViewContainerRef,
   ViewEncapsulation
 } from '@angular/core';
-import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
+import {async, ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
 import {animationFrameScheduler, Subject} from 'rxjs';
 
 
@@ -25,12 +25,14 @@ describe('CdkVirtualScrollViewport', () => {
     let testComponent: FixedSizeVirtualScroll;
     let viewport: CdkVirtualScrollViewport;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
       TestBed.configureTestingModule({
         imports: [ScrollingModule],
         declarations: [FixedSizeVirtualScroll],
       }).compileComponents();
+    }));
 
+    beforeEach(() => {
       fixture = TestBed.createComponent(FixedSizeVirtualScroll);
       testComponent = fixture.componentInstance;
       viewport = testComponent.viewport;
