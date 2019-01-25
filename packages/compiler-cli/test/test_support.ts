@@ -7,26 +7,12 @@
  */
 
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import * as ts from 'typescript';
 import * as ng from '../index';
 
-// TEST_TMPDIR is set by bazel.
-const tmpdir = process.env.TEST_TMPDIR || os.tmpdir();
-
-function getNgRootDir() {
-  const moduleFilename = module.filename.replace(/\\/g, '/');
-  const distIndex = moduleFilename.indexOf('/dist/all');
-  return moduleFilename.substr(0, distIndex);
-}
-
-export function writeTempFile(name: string, contents: string): string {
-  const id = (Math.random() * 1000000).toFixed(0);
-  const fn = path.join(tmpdir, `tmp.${id}.${name}`);
-  fs.writeFileSync(fn, contents);
-  return fn;
-}
+// TEST_TMPDIR is always set by Bazel.
+const tmpdir = process.env.TEST_TMPDIR!;
 
 export function makeTempDir(): string {
   let dir: string;
@@ -143,36 +129,10 @@ export function setupBazelTo(basePath: string) {
   }
 }
 
-function setupBazel(): TestSupport {
-  const basePath = makeTempDir();
-  setupBazelTo(basePath);
-  return createTestSupportFor(basePath);
-}
-
-function setupTestSh(): TestSupport {
-  const basePath = makeTempDir();
-
-  const ngRootDir = getNgRootDir();
-  const nodeModulesPath = path.resolve(basePath, 'node_modules');
-  fs.mkdirSync(nodeModulesPath);
-  fs.symlinkSync(
-      path.resolve(ngRootDir, 'dist', 'all', '@angular'),
-      path.resolve(nodeModulesPath, '@angular'));
-  fs.symlinkSync(
-      path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
-  fs.symlinkSync(
-      path.resolve(ngRootDir, 'node_modules', 'typescript'),
-      path.resolve(nodeModulesPath, 'typescript'));
-
-  return createTestSupportFor(basePath);
-}
-
-export function isInBazel() {
-  return process.env.TEST_SRCDIR != null;
-}
-
 export function setup(): TestSupport {
-  return isInBazel() ? setupBazel() : setupTestSh();
+  const tmpDirPath = makeTempDir();
+  setupBazelTo(tmpDirPath);
+  return createTestSupportFor(tmpDirPath);
 }
 
 export function expectNoDiagnostics(options: ng.CompilerOptions, diags: ng.Diagnostics) {
