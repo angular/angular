@@ -10,7 +10,6 @@ function testBazel() {
   ng new demo --collection=@angular/bazel --defaults --skip-git
   node replace_angular_repo.js "./demo/WORKSPACE"
   cd demo
-  yarn install
   cp ../package.json.replace ./package.json
   ng build
   ng test
