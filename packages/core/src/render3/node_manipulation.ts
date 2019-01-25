@@ -369,12 +369,6 @@ export function removeView(lContainer: LContainer, removeIndex: number) {
   destroyLView(view);
 }
 
-/** Gets the child of the given LView */
-export function getLViewChild(lView: LView): LView|LContainer|null {
-  const childIndex = lView[TVIEW].childIndex;
-  return childIndex === -1 ? null : lView[childIndex];
-}
-
 /**
  * A standalone function which destroys an LView,
  * conducting cleanup (e.g. removing listeners, calling onDestroys).

@@ -101,9 +101,7 @@ export function getViewComponent<T = {}>(element: Element | {}): T|null {
   ngDevMode && assertLView(lView);
   while (lView[HOST] === null && (parent = getLViewParent(lView) !)) {
     // As long as lView[HOST] is null we know we are part of sub-template such as `*ngIf`
-    if (parent) {
-      lView = parent;
-    }
+    lView = parent;
   }
   return lView[FLAGS] & LViewFlags.IsRoot ? null : lView[CONTEXT] as T;
 }

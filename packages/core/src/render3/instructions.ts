@@ -36,7 +36,7 @@ import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
+import {appendChild, appendProjectedNode, createTextNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode,} from './state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
@@ -788,7 +788,6 @@ export function createTView(
     viewQuery: viewQuery,
     node: null !,
     data: blueprint.slice().fill(null, bindingStartIndex),
-    childIndex: -1,  // Children set in addToViewTree(), if any
     bindingStartIndex: bindingStartIndex,
     viewQueryStartIndex: initialViewLength,
     expandoStartIndex: initialViewLength,
@@ -2373,7 +2372,7 @@ export function containerRefreshEnd(): void {
  * by executing an associated template function.
  */
 function refreshDynamicEmbeddedViews(lView: LView) {
-  for (let current = getLViewChild(lView); current !== null; current = current[NEXT]) {
+  for (let current = lView[CHILD_HEAD]; current !== null; current = current[NEXT]) {
     // Note: current can be an LView or an LContainer instance, but here we are only interested
     // in LContainer. We can tell it's an LContainer because its length is less than the LView
     // header.
@@ -2704,13 +2703,14 @@ export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?:
  *
  * @param lView The view where LView or LContainer should be added
  * @param adjustedHostIndex Index of the view's host node in LView[], adjusted for header
- * @param state The LView or LContainer to add to the view tree
+ * @param lViewOrLContainer The LView or LContainer to add to the view tree
  * @returns The state passed in
  */
 export function addToViewTree<T extends LView|LContainer>(lView: LView, lViewOrLContainer: T): T {
   // TODO(benlesh/misko): This implementation is incorrect, because it always adds the LContainer to
-  // the end of the queue, which means if the developer asks for the LContainers out of order, the
-  // change detection will run out of order.
+  // the end of the queue, which means if the developer retrieves the LContainers from RNodes out of
+  // order, the change detection will run out of order, as the act of retrieving the the LContainer
+  // from the RNode is what adds it to the queue.
   if (lView[CHILD_HEAD]) {
     lView[CHILD_TAIL] ![NEXT] = lViewOrLContainer;
   } else {
