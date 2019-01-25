@@ -619,7 +619,7 @@ describe('InheritDefinitionFeature', () => {
     }
 
     /**
-     * <div with-content>
+     * <div sub-dir>
      *   <span #foo></span>
      *   <span #bar></span>
      * </div>

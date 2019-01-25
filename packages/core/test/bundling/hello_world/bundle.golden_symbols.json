@@ -405,13 +405,10 @@
     "name": "setBindingRoot"
   },
   {
-    "name": "setCurrentContentQueryIndex"
-  },
-  {
     "name": "setCurrentDirectiveDef"
   },
   {
-    "name": "setCurrentViewQueryIndex"
+    "name": "setCurrentQueryIndex"
   },
   {
     "name": "setFirstTemplatePass"
