@@ -169,13 +169,6 @@ describe('AppComponent', () => {
 
         expect(component.tocMaxHeight).toMatch(/^\d+\.\d{2}$/);
       });
-
-      it('should update `scrollService.updateScrollPositonInHistory()`', () => {
-        const scrollService = fixture.debugElement.injector.get<ScrollService>(ScrollService);
-        spyOn(scrollService, 'updateScrollPositionInHistory');
-        component.onScroll();
-        expect(scrollService.updateScrollPositionInHistory).toHaveBeenCalled();
-      });
     });
 
     describe('SideNav', () => {
