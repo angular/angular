@@ -111,7 +111,7 @@ function scanForLazyRoutes(routes: ResolvedValue[]): string[] {
       } else if (route.has('children')) {
         const children = route.get('children');
         if (Array.isArray(children)) {
-          recursivelyScanRoutes(routes);
+          recursivelyScanRoutes(children);
         }
       }
     }
