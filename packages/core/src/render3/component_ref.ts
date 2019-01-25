@@ -190,7 +190,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       component = createRootComponent(
           componentView, this.componentDef, rootLView, rootContext, [LifecycleHooksFeature]);
 
-      addToViewTree(rootLView, HEADER_OFFSET, componentView);
+      addToViewTree(rootLView, componentView);
       refreshDescendantViews(rootLView);
     } finally {
       leaveView(oldLView);
