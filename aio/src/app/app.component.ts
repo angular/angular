@@ -339,9 +339,6 @@ export class AppComponent implements OnInit {
   // Dynamically change height of table of contents container
   @HostListener('window:scroll')
   onScroll() {
-
-    this.scrollService.updateScrollPositionInHistory();
-
     if (!this.tocMaxHeightOffset) {
       // Must wait until `mat-toolbar` is measurable.
       const el = this.hostElement.nativeElement as Element;
