@@ -169,7 +169,7 @@ describe('ngtsc behavioral tests', () => {
     const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents)
         .toContain(
-            'static ngComponentDef: i0.ɵComponentDefWithMeta<TestCmp, \'test-cmp\', never, {}, {}, never>');
+            'static ngComponentDef: i0.ɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
   });
 
   it('should compile Components without errors', () => {
@@ -280,7 +280,7 @@ describe('ngtsc behavioral tests', () => {
     const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents)
         .toContain(
-            'static ngComponentDef: i0.ɵComponentDefWithMeta<TestCmp, \'test-cmp\', never, {}, {}, never>');
+            'static ngComponentDef: i0.ɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
     expect(dtsContents)
         .toContain(
             'static ngModuleDef: i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestCmp], never, never>');
@@ -490,8 +490,7 @@ describe('ngtsc behavioral tests', () => {
         .toContain(
             'TestPipe.ngPipeDef = i0.ɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
             'factory: function TestPipe_Factory(t) { return new (t || TestPipe)(); }, pure: false })');
-    expect(dtsContents)
-        .toContain('static ngPipeDef: i0.ɵPipeDefWithMeta<TestPipe, \'test-pipe\'>;');
+    expect(dtsContents).toContain('static ngPipeDef: i0.ɵPipeDefWithMeta<TestPipe, "test-pipe">;');
   });
 
   it('should compile pure Pipes without errors', () => {
@@ -514,8 +513,7 @@ describe('ngtsc behavioral tests', () => {
         .toContain(
             'TestPipe.ngPipeDef = i0.ɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
             'factory: function TestPipe_Factory(t) { return new (t || TestPipe)(); }, pure: true })');
-    expect(dtsContents)
-        .toContain('static ngPipeDef: i0.ɵPipeDefWithMeta<TestPipe, \'test-pipe\'>;');
+    expect(dtsContents).toContain('static ngPipeDef: i0.ɵPipeDefWithMeta<TestPipe, "test-pipe">;');
   });
 
   it('should compile Pipes with dependencies', () => {
