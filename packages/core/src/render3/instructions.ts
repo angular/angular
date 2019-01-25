@@ -2947,16 +2947,6 @@ export function reference<T>(index: number) {
   return loadInternal<T>(contextLView, index);
 }
 
-export function loadQueryList<T>(queryListIdx: number): QueryList<T> {
-  const lView = getLView();
-  ngDevMode &&
-      assertDefined(
-          lView[CONTENT_QUERIES], 'Content QueryList array should be defined if reading a query.');
-  ngDevMode && assertDataInRange(lView[CONTENT_QUERIES] !, queryListIdx);
-
-  return lView[CONTENT_QUERIES] ![queryListIdx];
-}
-
 /** Retrieves a value from current `viewData`. */
 export function load<T>(index: number): T {
   return loadInternal<T>(getLView(), index);

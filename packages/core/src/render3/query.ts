@@ -13,12 +13,12 @@ import {Type} from '../interface/type';
 import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
-import {assertDefined, assertEqual} from '../util/assert';
+import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
 
 import {assertPreviousIsParent} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {NG_ELEMENT_ID} from './fields';
-import {load, loadQueryList, store, storeCleanupWithContext} from './instructions';
+import {load, store, storeCleanupWithContext} from './instructions';
 import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
@@ -452,7 +452,14 @@ export function contentQuery<T>(
 }
 
 export function loadContentQuery<T>(): QueryList<T> {
+  const lView = getLView();
+  ngDevMode &&
+      assertDefined(
+          lView[CONTENT_QUERIES], 'Content QueryList array should be defined if reading a query.');
+
   const index = getCurrentQueryIndex();
+  ngDevMode && assertDataInRange(lView[CONTENT_QUERIES] !, index);
+
   setCurrentQueryIndex(index + 1);
-  return loadQueryList(index);
+  return lView[CONTENT_QUERIES] ![index];
 }
