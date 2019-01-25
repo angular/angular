@@ -25,11 +25,6 @@ const contentQueryRegExp = (predicate: string, descend: boolean, ref?: string): 
 };
 
 describe('ngtsc behavioral tests', () => {
-  if (!NgtscTestEnvironment.supported) {
-    // These tests should be excluded from the non-Bazel build.
-    return;
-  }
-
   let env !: NgtscTestEnvironment;
 
   beforeEach(() => { env = NgtscTestEnvironment.setup(); });

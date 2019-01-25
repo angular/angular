@@ -6,27 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver} from '@angular/compiler';
+import {AotSummaryResolver, CompileMetadataResolver, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, I18NHtmlParser, InterpolationConfig, JitSummaryResolver, Lexer, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, Parser, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, StaticSymbolResolverHost, SummaryResolver, TemplateParser, analyzeNgModules, createOfflineCompileUrlResolver} from '@angular/compiler';
 import {ViewEncapsulation, ɵConsole as Console} from '@angular/core';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {DiagnosticTemplateInfo} from '../../src/diagnostics/expression_diagnostics';
-import {getClassFromStaticSymbol, getClassMembers, getPipesTable, getSymbolQuery} from '../../src/diagnostics/typescript_symbols';
+import {getClassMembers, getPipesTable, getSymbolQuery} from '../../src/diagnostics/typescript_symbols';
 import {Directory, MockAotContext} from '../mocks';
-import {isInBazel, setup} from '../test_support';
-
-function calculateAngularPath() {
-  if (isInBazel()) {
-    const support = setup();
-    return path.join(support.basePath, 'node_modules/@angular/*');
-  } else {
-    const moduleFilename = module.filename.replace(/\\/g, '/');
-    const distIndex = moduleFilename.indexOf('/dist/all');
-    return moduleFilename.substr(0, distIndex) + '/packages/*';
-  }
-}
+import {setup} from '../test_support';
 
 const realFiles = new Map<string, string>();
 
@@ -36,6 +25,8 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost {
   private assumedExist = new Set<string>();
 
   constructor(private scripts: string[], files: Directory, currentDirectory: string = '/') {
+    const support = setup();
+
     this.options = {
       target: ts.ScriptTarget.ES5,
       module: ts.ModuleKind.CommonJS,
@@ -49,7 +40,7 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost {
       strictNullChecks: true,
       baseUrl: currentDirectory,
       lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
-      paths: {'@angular/*': [calculateAngularPath()]}
+      paths: {'@angular/*': [path.join(support.basePath, 'node_modules/@angular/*')]}
     };
     this.context = new MockAotContext(currentDirectory, files);
   }
