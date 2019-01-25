@@ -50,7 +50,7 @@ export class SummaryGenerator implements ShimGenerator {
     if (varLines.length === 0) {
       // In the event there are no other exports, add an empty export to ensure the generated
       // summary file is still an ES module.
-      varLines.push(`export const ɵempty = null;`);
+      varLines.push(`export const ɵempty: any = null;`);
     }
     const sourceText = varLines.join('\n');
     const genFile = ts.createSourceFile(
