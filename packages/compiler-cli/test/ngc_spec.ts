@@ -54,6 +54,7 @@ describe('ngc transformer command-line', () => {
         "baseUrl": ".",
         "declaration": true,
         "target": "es5",
+        "newLine": "lf",
         "module": "es2015",
         "moduleResolution": "node",
         "lib": ["es6", "dom"],
@@ -102,7 +103,7 @@ describe('ngc transformer command-line', () => {
 
       const exitCode = main(['-p', basePath], errorSpy);
       expect(errorSpy).toHaveBeenCalledWith(
-          `error TS6053: File '` + path.join(basePath, 'test.ts') + `' not found.` +
+          `error TS6053: File '` + path.posix.join(basePath, 'test.ts') + `' not found.` +
           '\n');
       expect(exitCode).toEqual(1);
     });

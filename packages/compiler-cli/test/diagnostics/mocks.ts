@@ -75,11 +75,11 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost {
   private internalReadFile(fileName: string): string|undefined {
     let basename = path.basename(fileName);
     if (/^lib.*\.d\.ts$/.test(basename)) {
-      let libPath = path.dirname(ts.getDefaultLibFilePath(this.getCompilationSettings()));
-      fileName = path.join(libPath, basename);
+      let libPath = path.posix.dirname(ts.getDefaultLibFilePath(this.getCompilationSettings()));
+      fileName = path.posix.join(libPath, basename);
     }
     if (fileName.startsWith('app/')) {
-      fileName = path.join(this.context.currentDirectory, fileName);
+      fileName = path.posix.join(this.context.currentDirectory, fileName);
     }
     if (this.context.fileExists(fileName)) {
       return this.context.readFile(fileName);
