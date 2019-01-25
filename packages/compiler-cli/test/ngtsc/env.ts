@@ -12,19 +12,21 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {main, mainDiagnosticsForTest} from '../../src/main';
+import {resolveNpmTreeArtifact} from '../runfile_helpers';
 import {TestSupport, setup} from '../test_support';
 
 function setupFakeCore(support: TestSupport): void {
   if (!process.env.TEST_SRCDIR) {
     throw new Error('`setupFakeCore` must be run within a Bazel test');
   }
-  const fakeCore = path.join(
-      process.env.TEST_SRCDIR, 'angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package');
+
+  const fakeNpmPackageDir =
+      resolveNpmTreeArtifact('angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package');
 
   const nodeModulesPath = path.join(support.basePath, 'node_modules');
   const angularCoreDirectory = path.join(nodeModulesPath, '@angular/core');
 
-  fs.symlinkSync(fakeCore, angularCoreDirectory);
+  fs.symlinkSync(fakeNpmPackageDir, angularCoreDirectory, 'dir');
 }
 
 /**
@@ -59,6 +61,7 @@ export class NgtscTestEnvironment {
         "baseUrl": ".",
         "declaration": true,
         "target": "es5",
+        "newLine": "lf",
         "module": "es2015",
         "moduleResolution": "node",
         "lib": ["es6", "dom"],
