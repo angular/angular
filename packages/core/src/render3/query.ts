@@ -438,14 +438,13 @@ export function contentQuery<T>(
   const lView = getLView();
   const tView = lView[TVIEW];
   const contentQuery: QueryList<T> = query<T>(predicate, descend, read);
-  const savedContentQueriesLength =
-      (lView[CONTENT_QUERIES] || (lView[CONTENT_QUERIES] = [])).push(contentQuery);
+  (lView[CONTENT_QUERIES] || (lView[CONTENT_QUERIES] = [])).push(contentQuery);
   if (getFirstTemplatePass()) {
     const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
     const lastSavedDirectiveIndex =
-        tView.contentQueries.length ? tView.contentQueries[tView.contentQueries.length - 2] : -1;
+        tView.contentQueries.length ? tView.contentQueries[tView.contentQueries.length - 1] : -1;
     if (directiveIndex !== lastSavedDirectiveIndex) {
-      tViewContentQueries.push(directiveIndex, savedContentQueriesLength - 1);
+      tViewContentQueries.push(directiveIndex);
     }
   }
   return contentQuery;

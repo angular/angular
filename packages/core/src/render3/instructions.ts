@@ -132,10 +132,10 @@ export function setHostBindings(tView: TView, viewData: LView): void {
 /** Refreshes content queries for all directives in the given view. */
 function refreshContentQueries(tView: TView): void {
   if (tView.contentQueries != null) {
-    for (let i = 0; i < tView.contentQueries.length; i += 2) {
+    setCurrentQueryIndex(0);
+    for (let i = 0; i < tView.contentQueries.length; i++) {
       const directiveDefIdx = tView.contentQueries[i];
       const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
-      setCurrentQueryIndex(tView.contentQueries[i + 1]);
       directiveDef.contentQueriesRefresh !(directiveDefIdx - HEADER_OFFSET);
     }
   }
