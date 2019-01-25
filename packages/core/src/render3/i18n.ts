@@ -31,7 +31,7 @@ const PH_REGEXP = /�(\/?[#*]\d+):?\d*�/gi;
 const BINDING_REGEXP = /�(\d+):?\d*�/gi;
 const ICU_REGEXP = /({\s*�\d+:?\d*�\s*,\s*\S{6}\s*,[\s\S]*})/gi;
 
-// i18nPostproocess consts
+// i18nPostprocess consts
 const ROOT_TEMPLATE_ID = 0;
 const PP_MULTI_VALUE_PLACEHOLDERS_REGEXP = /\[(�.+?�?)\]/;
 const PP_PLACEHOLDERS_REGEXP = /\[(�.+?�?)\]|(�\/?\*\d+:\d+�)/g;
@@ -552,12 +552,14 @@ export function i18nPostprocess(
           break;
         }
       }
+      // update template id stack based on the current tag extracted
       const [templateId, isCloseTemplateTag, placeholder] = placeholders[idx];
       if (isCloseTemplateTag) {
         templateIdsStack.pop();
       } else if (currentTemplateId !== templateId) {
         templateIdsStack.push(templateId);
       }
+      // remove processed tag from the list
       placeholders.splice(idx, 1);
       return placeholder;
     });
