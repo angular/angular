@@ -243,15 +243,17 @@ export function createNodeAtIndex(
       TProjectionNode & TIcuContainerNode;
 }
 
-export function assignTViewNode(
+export function assignTViewNodeToLView(
     tView: TView, tParentNode: TNode | null, index: number, lView: LView): TViewNode {
   // View nodes are not stored in data because they can be added / removed at runtime (which
   // would cause indices to change). Their TNodes are instead stored in tView.node.
   let tNode = tView.node;
   if (tNode == null) {
+    ngDevMode && tParentNode &&
+        assertNodeOfPossibleTypes(tParentNode, TNodeType.Element, TNodeType.Container);
     tView.node = tNode = createTNode(
-        tParentNode as TElementNode | TContainerNode | null, TNodeType.View, index, null, null)
-        as TViewNode;
+        tParentNode as TElementNode | TContainerNode | null,  //
+        TNodeType.View, index, null, null) as TViewNode;
   }
 
   return lView[HOST_NODE] = tNode as TViewNode;
@@ -334,7 +336,7 @@ export function createEmbeddedViewAndNode<T>(
   if (queries) {
     lView[QUERIES] = queries.createView();
   }
-  assignTViewNode(tView, null, -1, lView);
+  assignTViewNodeToLView(tView, null, -1, lView);
 
   if (tView.firstTemplatePass) {
     tView.node !.injectorIndex = injectorIndex;
@@ -2245,7 +2247,7 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
 
     const tParentNode = getIsParent() ? previousOrParentTNode :
                                         previousOrParentTNode && previousOrParentTNode.parent;
-    assignTViewNode(viewToRender[TVIEW], tParentNode, viewBlockId, viewToRender);
+    assignTViewNodeToLView(viewToRender[TVIEW], tParentNode, viewBlockId, viewToRender);
     enterView(viewToRender, viewToRender[TVIEW].node);
   }
   if (lContainer) {
