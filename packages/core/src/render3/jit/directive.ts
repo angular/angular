@@ -54,8 +54,11 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           throw new Error(error.join('\n'));
         }
 
+        const sourceMapUrl = `ng://${renderStringify(type)}/template.html`;
         const meta: R3ComponentMetadataFacade = {
           ...directiveMetadata(type, metadata),
+          typeSourceSpan:
+              compiler.createParseSourceSpan('Component', renderStringify(type), sourceMapUrl),
           template: metadata.template || '',
           preserveWhitespaces: metadata.preserveWhitespaces || false,
           styles: metadata.styles || EMPTY_ARRAY,
@@ -68,8 +71,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           interpolation: metadata.interpolation,
           viewProviders: metadata.viewProviders || null,
         };
-        ngComponentDef = compiler.compileComponent(
-            angularCoreEnv, `ng://${renderStringify(type)}/template.html`, meta);
+        ngComponentDef = compiler.compileComponent(angularCoreEnv, sourceMapUrl, meta);
 
         // When NgModule decorator executed, we enqueued the module definition such that
         // it would only dequeue and add itself as module scope to all of its declarations,
@@ -111,9 +113,13 @@ export function compileDirective(type: Type<any>, directive: Directive): void {
   Object.defineProperty(type, NG_DIRECTIVE_DEF, {
     get: () => {
       if (ngDirectiveDef === null) {
+        const name = type && type.name;
+        const sourceMapUrl = `ng://${name}/ngDirectiveDef.js`;
+        const compiler = getCompilerFacade();
         const facade = directiveMetadata(type as ComponentType<any>, directive);
-        ngDirectiveDef = getCompilerFacade().compileDirective(
-            angularCoreEnv, `ng://${type && type.name}/ngDirectiveDef.js`, facade);
+        facade.typeSourceSpan =
+            compiler.createParseSourceSpan('Directive', renderStringify(type), sourceMapUrl);
+        ngDirectiveDef = compiler.compileDirective(angularCoreEnv, sourceMapUrl, facade);
       }
       return ngDirectiveDef;
     },
