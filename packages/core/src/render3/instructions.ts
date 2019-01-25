@@ -904,7 +904,7 @@ export function componentHostSyntheticListener<T>(
 }
 
 function listenerInternal(
-    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
+    eventName: string, callback: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver,
     loadRendererFn?: ((tNode: TNode, lView: LView) => Renderer3) | null): void {
   const lView = getLView();
@@ -912,6 +912,7 @@ function listenerInternal(
   const tView = lView[TVIEW];
   const firstTemplatePass = tView.firstTemplatePass;
   const tCleanup: false|any[] = firstTemplatePass && (tView.cleanup || (tView.cleanup = []));
+  const listenerFn = wrapListenerWithMarkDirty(tNode, lView, callback);
   ngDevMode && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
 
@@ -2540,12 +2541,14 @@ function wrapListenerWithPreventDefault(listenerFn: (e?: any) => any): EventList
  * @param lView The starting LView to mark dirty
  * @returns the root LView
  */
-export function markViewDirty(lView: LView): LView {
+export function markViewDirty(lView: LView): LView|null {
   while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
     lView[FLAGS] |= LViewFlags.Dirty;
     lView = lView[PARENT] !;
   }
-  lView[FLAGS] |= LViewFlags.Dirty;
+  if (lView) {
+    lView[FLAGS] |= LViewFlags.Dirty;
+  }
   return lView;
 }
 
@@ -2731,7 +2734,7 @@ function executeViewQueryFn<T>(lView: LView, tView: TView, component: T): void {
  */
 export function markDirty<T>(component: T) {
   ngDevMode && assertDefined(component, 'component');
-  const rootView = markViewDirty(getComponentViewByInstance(component));
+  const rootView = markViewDirty(getComponentViewByInstance(component)) !;
 
   ngDevMode && assertDefined(rootView[CONTEXT], 'rootContext should be defined');
   scheduleTick(rootView[CONTEXT] as RootContext, RootContextFlags.DetectChanges);
@@ -3070,4 +3073,18 @@ function getTViewCleanup(view: LView): any[] {
 function loadComponentRenderer(tNode: TNode, lView: LView): Renderer3 {
   const componentLView = lView[tNode.index] as LView;
   return componentLView[RENDERER];
+}
+
+/**
+ * Wraps an event listener with a call that marks the
+ * associated view and all of its ancestors as dirty.
+ */
+function wrapListenerWithMarkDirty(
+    tNode: TNode, lView: LView, listenerFn: (e?: any) => any): EventListener {
+  return function wrapListenerIn_markDirty(e: Event) {
+    const startView =
+        tNode.flags & TNodeFlags.isComponent ? getComponentViewByIndex(tNode.index, lView) : lView;
+    markViewDirty(startView);
+    return listenerFn(e);
+  };
 }
