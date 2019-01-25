@@ -47,7 +47,7 @@ const EXPORTED_DECLARATIONS = [
   MatCell,
   MatFooterCell,
 
-  // Row directions
+  // Row directives
   MatHeaderRow,
   MatRow,
   MatFooterRow,
