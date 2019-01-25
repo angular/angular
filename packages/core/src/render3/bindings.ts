@@ -7,11 +7,10 @@
  */
 
 import {devModeEqual} from '../change_detection/change_detection_util';
-
 import {assertDataInRange, assertLessThan, assertNotEqual} from '../util/assert';
 import {throwErrorIfNoChangesMode} from './errors';
-import {BINDING_INDEX, LView} from './interfaces/view';
-import {getCheckNoChangesMode, isCreationMode} from './state';
+import {LView} from './interfaces/view';
+import {getCheckNoChangesMode} from './state';
 import {NO_CHANGE} from './tokens';
 import {isDifferent} from './util';
 
@@ -38,20 +37,21 @@ export function bindingUpdated(lView: LView, bindingIndex: number, value: any): 
   ngDevMode &&
       assertLessThan(bindingIndex, lView.length, `Slot should have been initialized to NO_CHANGE`);
 
-  if (lView[bindingIndex] === NO_CHANGE) {
-    // initial pass
-    lView[bindingIndex] = value;
-  } else if (isDifferent(lView[bindingIndex], value)) {
+  const oldValue = lView[bindingIndex];
+  if (isDifferent(oldValue, value)) {
     if (ngDevMode && getCheckNoChangesMode()) {
-      if (!devModeEqual(lView[bindingIndex], value)) {
-        throwErrorIfNoChangesMode(isCreationMode(lView), lView[bindingIndex], value);
+      // View engine didn't report undefined values as changed on the first checkNoChanges pass
+      // (before the change detection was run).
+      const oldValueToCompare = oldValue !== NO_CHANGE ? oldValue : undefined;
+      if (!devModeEqual(oldValueToCompare, value)) {
+        throwErrorIfNoChangesMode(oldValue === NO_CHANGE, oldValueToCompare, value);
       }
     }
     lView[bindingIndex] = value;
-  } else {
-    return false;
+    return true;
   }
-  return true;
+
+  return false;
 }
 
 /** Updates 2 bindings if changed, then returns whether either was updated. */

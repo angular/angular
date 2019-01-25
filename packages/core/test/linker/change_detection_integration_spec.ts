@@ -13,7 +13,7 @@ import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
+import {fixmeIvy, ivyEnabled, modifiedInIvy} from '@angular/private/testing';
 
 export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();
@@ -1183,56 +1183,55 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
     });
 
     describe('enforce no new changes', () => {
-      modifiedInIvy('checkNoChanges has no effect before first change detection run')
-          .it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
-                @Directive({selector: '[changed]'})
-                class ChangingDirective {
-                  @Input() changed: any;
-                }
+      it('should throw when a record gets changed after it has been checked', fakeAsync(() => {
+           @Directive({selector: '[changed]'})
+           class ChangingDirective {
+             @Input() changed: any;
+           }
 
-                TestBed.configureTestingModule({declarations: [ChangingDirective]});
+           TestBed.configureTestingModule({declarations: [ChangingDirective]});
 
-                const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
+           const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
 
-                ctx.componentInstance.b = 1;
+           ctx.componentInstance.b = 1;
+           const errMsgRegExp = ivyEnabled ?
+               /Previous value: 'undefined'\. Current value: '1'/g :
+               /Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g;
+           expect(() => ctx.checkNoChanges()).toThrowError(errMsgRegExp);
+         }));
 
-                expect(() => ctx.checkNoChanges())
-                    .toThrowError(
-                        /Previous value: 'changed: undefined'\. Current value: 'changed: 1'/g);
-              }));
 
+      it('should throw when a record gets changed after the first change detection pass',
+         fakeAsync(() => {
+           @Directive({selector: '[changed]'})
+           class ChangingDirective {
+             @Input() changed: any;
+           }
 
-      onlyInIvy('checkNoChanges has no effect before first change detection run')
-          .it('should throw when a record gets changed after the first change detection pass',
-              fakeAsync(() => {
-                @Directive({selector: '[changed]'})
-                class ChangingDirective {
-                  @Input() changed: any;
-                }
+           TestBed.configureTestingModule({declarations: [ChangingDirective]});
 
-                TestBed.configureTestingModule({declarations: [ChangingDirective]});
+           const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
 
-                const ctx = createCompFixture('<div [someProp]="a" [changed]="b"></div>', TestData);
+           ctx.componentInstance.b = 1;
+           ctx.detectChanges();
 
-                ctx.componentInstance.b = 1;
-                // should not throw here as change detection didn't run yet
-                ctx.checkNoChanges();
+           ctx.componentInstance.b = 2;
+           const errMsgRegExp = ivyEnabled ?
+               /Previous value: '1'\. Current value: '2'/g :
+               /Previous value: 'changed: 1'\. Current value: 'changed: 2'/g;
+           expect(() => ctx.checkNoChanges()).toThrowError(errMsgRegExp);
+         }));
 
-                ctx.detectChanges();
+      it('should warn when the view has been created in a cd hook', fakeAsync(() => {
+           const ctx = createCompFixture('<div *gh9882>{{ a }}</div>', TestData);
+           ctx.componentInstance.a = 1;
+           expect(() => ctx.detectChanges())
+               .toThrowError(
+                   /It seems like the view has been created after its parent and its children have been dirty checked/);
 
-                ctx.componentInstance.b = 2;
-                expect(() => ctx.checkNoChanges())
-                    .toThrowError(/Previous value: '1'\. Current value: '2'/g);
-              }));
-
-      fixmeIvy('FW-831: Views created in a cd hooks throw in view engine')
-          .it('should warn when the view has been created in a cd hook', fakeAsync(() => {
-                const ctx = createCompFixture('<div *gh9882>{{ a }}</div>', TestData);
-                ctx.componentInstance.a = 1;
-                expect(() => ctx.detectChanges())
-                    .toThrowError(
-                        /It seems like the view has been created after its parent and its children have been dirty checked/);
-              }));
+           // subsequent change detection should run without issues
+           ctx.detectChanges();
+         }));
 
       it('should not throw when two arrays are structurally the same', fakeAsync(() => {
            const ctx = _bindSimpleValue('a', TestData);
@@ -1242,15 +1241,14 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
            expect(() => ctx.checkNoChanges()).not.toThrow();
          }));
 
-      modifiedInIvy('checkNoChanges has no effect before first change detection run')
-          .it('should not break the next run', fakeAsync(() => {
-                const ctx = _bindSimpleValue('a', TestData);
-                ctx.componentInstance.a = 'value';
-                expect(() => ctx.checkNoChanges()).toThrow();
+      it('should not break the next run', fakeAsync(() => {
+           const ctx = _bindSimpleValue('a', TestData);
+           ctx.componentInstance.a = 'value';
+           expect(() => ctx.checkNoChanges()).toThrow();
 
-                ctx.detectChanges();
-                expect(renderLog.loggedValues).toEqual(['value']);
-              }));
+           ctx.detectChanges();
+           expect(renderLog.loggedValues).toEqual(['value']);
+         }));
 
       it('should not break the next run (view engine and ivy)', fakeAsync(() => {
            const ctx = _bindSimpleValue('a', TestData);
