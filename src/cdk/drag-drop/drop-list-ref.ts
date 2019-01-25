@@ -8,7 +8,7 @@
 
 import {ElementRef} from '@angular/core';
 import {DragDropRegistry} from './drag-drop-registry';
-import {Directionality} from '@angular/cdk/bidi';
+import {Direction} from '@angular/cdk/bidi';
 import {Subject} from 'rxjs';
 import {moveItemInArray} from './drag-utils';
 import {DragRefInternal as DragRef} from './drag-ref';
@@ -49,6 +49,9 @@ export interface DropListRefInternal extends DropListRef {}
  */
 export class DropListRef<T = any> {
   private _document: Document;
+
+  /** Element that the drop list is attached to. */
+  readonly element: HTMLElement;
 
   /**
    * Unique ID for the drop list.
@@ -138,13 +141,16 @@ export class DropListRef<T = any> {
   /** Connected siblings that currently have a dragged item. */
   private _activeSiblings = new Set<DropListRef>();
 
+  /** Layout direction of the drop list. */
+  private _direction: Direction = 'ltr';
+
   constructor(
-    public element: ElementRef<HTMLElement>,
+    element: ElementRef<HTMLElement> | HTMLElement,
     private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>,
-    _document: any,
-    private _dir?: Directionality) {
+    _document: any) {
     _dragDropRegistry.registerDropContainer(this);
     this._document = _document;
+    this.element = element instanceof ElementRef ? element.nativeElement : element;
   }
 
   /** Removes the drop list functionality from the DOM element. */
@@ -203,7 +209,7 @@ export class DropListRef<T = any> {
       element.parentElement!.insertBefore(placeholder, element);
       this._activeDraggables.splice(newIndex, 0, item);
     } else {
-      this.element.nativeElement.appendChild(placeholder);
+      this.element.appendChild(placeholder);
       this._activeDraggables.push(item);
     }
 
@@ -251,6 +257,13 @@ export class DropListRef<T = any> {
    */
   withItems(items: DragRef[]): this {
     this._draggables = items.slice();
+    items.forEach(item => item._withDropContainer(this));
+    return this;
+  }
+
+  /** Sets the layout direction of the drop list. */
+  withDirection(direction: Direction): this {
+    this._direction = direction;
     return this;
   }
 
@@ -285,7 +298,7 @@ export class DropListRef<T = any> {
     // Items are sorted always by top/left in the cache, however they flow differently in RTL.
     // The rest of the logic still stands no matter what orientation we're in, however
     // we need to invert the array when determining the index.
-    const items = this._orientation === 'horizontal' && this._dir && this._dir.value === 'rtl' ?
+    const items = this._orientation === 'horizontal' && this._direction === 'rtl' ?
         this._itemPositions.slice().reverse() : this._itemPositions;
 
     return findIndex(items, currentItem => currentItem.drag === item);
@@ -382,7 +395,7 @@ export class DropListRef<T = any> {
 
   /** Caches the position of the drop list. */
   private _cacheOwnPosition() {
-    this._clientRect = this.element.nativeElement.getBoundingClientRect();
+    this._clientRect = this.element.getBoundingClientRect();
   }
 
   /** Refreshes the position cache of the items and sibling containers. */
@@ -574,15 +587,13 @@ export class DropListRef<T = any> {
       return false;
     }
 
-    const element = this.element.nativeElement;
-
     // The `ClientRect`, that we're using to find the container over which the user is
     // hovering, doesn't give us any information on whether the element has been scrolled
     // out of the view or whether it's overlapping with other containers. This means that
     // we could end up transferring the item into a container that's invisible or is positioned
     // below another one. We use the result from `elementFromPoint` to get the top-most element
     // at the pointer position and to find whether it's one of the intersecting drop containers.
-    return elementFromPoint === element || element.contains(elementFromPoint);
+    return elementFromPoint === this.element || this.element.contains(elementFromPoint);
   }
 
   /**

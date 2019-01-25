@@ -50,6 +50,7 @@ import {CDK_DRAG_PARENT} from '../drag-parent';
 import {DragRef, DragRefConfig} from '../drag-ref';
 import {DropListRef} from '../drop-list-ref';
 import {CdkDropListInternal as CdkDropList} from './drop-list';
+import {DragDrop} from '../drag-drop';
 
 /** Injection token that can be used to configure the behavior of `CdkDrag`. */
 export const CDK_DRAG_CONFIG = new InjectionToken<DragRefConfig>('CDK_DRAG_CONFIG', {
@@ -167,18 +168,30 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     @Inject(DOCUMENT) private _document: any,
     private _ngZone: NgZone,
     private _viewContainerRef: ViewContainerRef,
-    private _viewportRuler: ViewportRuler,
-    private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>,
-    @Inject(CDK_DRAG_CONFIG) private _config: DragRefConfig,
-    @Optional() private _dir: Directionality) {
+    viewportRuler: ViewportRuler,
+    dragDropRegistry: DragDropRegistry<DragRef, DropListRef>,
+    @Inject(CDK_DRAG_CONFIG) config: DragRefConfig,
+    @Optional() private _dir: Directionality,
 
-    const ref = this._dragRef = new DragRef(element, this._document, this._ngZone,
-      this._viewContainerRef, this._viewportRuler, this._dragDropRegistry,
-      this._config, this.dropContainer ? this.dropContainer._dropListRef : undefined,
-      this._dir);
-    ref.data = this;
-    this._syncInputs(ref);
-    this._proxyEvents(ref);
+    /**
+     * @deprecated `viewportRuler` and `dragDropRegistry` parameters
+     * to be removed. Also `dragDrop` parameter to be made required.
+     * @breaking-change 8.0.0.
+     */
+    dragDrop?: DragDrop) {
+
+
+    // @breaking-change 8.0.0 Remove null check once the paramter is made required.
+    if (dragDrop) {
+      this._dragRef = dragDrop.createDrag(element, config);
+    } else {
+      this._dragRef = new DragRef(element, config, _document, _ngZone, viewportRuler,
+          dragDropRegistry);
+    }
+
+    this._dragRef.data = this;
+    this._syncInputs(this._dragRef);
+    this._proxyEvents(this._dragRef);
   }
 
   /**
@@ -273,15 +286,28 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   private _syncInputs(ref: DragRef<CdkDrag<T>>) {
     ref.beforeStarted.subscribe(() => {
       if (!ref.isDragging()) {
-        const {_placeholderTemplate: placeholder, _previewTemplate: preview} = this;
+        const dir = this._dir;
+        const placeholder = this._placeholderTemplate ? {
+          template: this._placeholderTemplate.templateRef,
+          context: this._placeholderTemplate.data,
+          viewContainer: this._viewContainerRef
+        } : null;
+        const preview = this._previewTemplate ? {
+          template: this._previewTemplate.templateRef,
+          context: this._previewTemplate.data,
+          viewContainer: this._viewContainerRef
+        } : null;
 
         ref.disabled = this.disabled;
         ref.lockAxis = this.lockAxis;
-        ref.withBoundaryElement(this._getBoundaryElement());
-        placeholder ? ref.withPlaceholderTemplate(placeholder.templateRef, placeholder.data) :
-                      ref.withPlaceholderTemplate(null);
-        preview ? ref.withPreviewTemplate(preview.templateRef, preview.data) :
-                  ref.withPreviewTemplate(null);
+        ref
+          .withBoundaryElement(this._getBoundaryElement())
+          .withPlaceholderTemplate(placeholder)
+          .withPreviewTemplate(preview);
+
+        if (dir) {
+          ref.withDirection(dir.value);
+        }
       }
     });
   }

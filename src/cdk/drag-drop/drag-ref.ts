@@ -8,7 +8,7 @@
 
 import {EmbeddedViewRef, ElementRef, NgZone, ViewContainerRef, TemplateRef} from '@angular/core';
 import {ViewportRuler} from '@angular/cdk/scrolling';
-import {Directionality} from '@angular/cdk/bidi';
+import {Direction} from '@angular/cdk/bidi';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {coerceBooleanProperty, coerceElement} from '@angular/cdk/coercion';
 import {Subscription, Subject, Observable, Observer} from 'rxjs';
@@ -56,6 +56,13 @@ const MOUSE_EVENT_IGNORE_TIME = 800;
  * @docs-private
  */
 export interface DragRefInternal extends DragRef {}
+
+/** Template that can be used to create a drag helper element (e.g. a preview or a placeholder). */
+interface DragHelperTemplate<T = any> {
+  template: TemplateRef<T> | null;
+  viewContainer: ViewContainerRef;
+  context: T;
+}
 
 /**
  * Reference to a draggable item. Used to manipulate or dispose of the item.
@@ -173,10 +180,10 @@ export class DragRef<T = any> {
   private _boundaryRect?: ClientRect;
 
   /** Element that will be used as a template to create the draggable item's preview. */
-  private _previewTemplate?: {template: TemplateRef<any> | null, context?: any};
+  private _previewTemplate?: DragHelperTemplate | null;
 
   /** Template for placeholder element rendered to show where a draggable would be dropped. */
-  private _placeholderTemplate?: {template: TemplateRef<any> | null, context?: any};
+  private _placeholderTemplate?: DragHelperTemplate | null;
 
   /** Elements that can be used to drag the draggable item. */
   private _handles: HTMLElement[] = [];
@@ -184,12 +191,18 @@ export class DragRef<T = any> {
   /** Registered handles that are currently disabled. */
   private _disabledHandles = new Set<HTMLElement>();
 
+  /** Droppable container that the draggable is a part of. */
+  private _dropContainer?: DropListRef;
+
+  /** Layout direction of the item. */
+  private _direction: Direction = 'ltr';
+
   /** Axis along which dragging is locked. */
   lockAxis: 'x' | 'y';
 
   /** Whether starting to drag this element is disabled. */
   get disabled(): boolean {
-    return this._disabled || !!(this.dropContainer && this.dropContainer.disabled);
+    return this._disabled || !!(this._dropContainer && this._dropContainer.disabled);
   }
   set disabled(value: boolean) {
     const newValue = coerceBooleanProperty(value);
@@ -253,15 +266,11 @@ export class DragRef<T = any> {
 
   constructor(
     element: ElementRef<HTMLElement> | HTMLElement,
+    private _config: DragRefConfig,
     private _document: Document,
     private _ngZone: NgZone,
-    private _viewContainerRef: ViewContainerRef,
     private _viewportRuler: ViewportRuler,
-    private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>,
-    private _config: DragRefConfig,
-    /** Droppable container that the draggable is a part of. */
-    public dropContainer?: DropListRef,
-    private _dir?: Directionality) {
+    private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>) {
 
     this.withRootElement(element);
     _dragDropRegistry.registerDragItem(this);
@@ -291,20 +300,18 @@ export class DragRef<T = any> {
   /**
    * Registers the template that should be used for the drag preview.
    * @param template Template that from which to stamp out the preview.
-   * @param context Variables to add to the template's context.
    */
-  withPreviewTemplate(template: TemplateRef<any> | null, context?: any): this {
-    this._previewTemplate = {template, context};
+  withPreviewTemplate(template: DragHelperTemplate | null): this {
+    this._previewTemplate = template;
     return this;
   }
 
   /**
    * Registers the template that should be used for the drag placeholder.
    * @param template Template that from which to stamp out the placeholder.
-   * @param context Variables to add to the template's context.
    */
-  withPlaceholderTemplate(template: TemplateRef<any> | null, context?: any): this {
-    this._placeholderTemplate = {template, context};
+  withPlaceholderTemplate(template: DragHelperTemplate | null): this {
+    this._placeholderTemplate = template;
     return this;
   }
 
@@ -364,6 +371,7 @@ export class DragRef<T = any> {
     this._moveEvents.complete();
     this._handles = [];
     this._disabledHandles.clear();
+    this._dropContainer = undefined;
     this._boundaryElement = this._rootElement = this._placeholderTemplate =
         this._previewTemplate = this._nextSibling = null!;
   }
@@ -396,6 +404,17 @@ export class DragRef<T = any> {
    */
   enableHandle(handle: HTMLElement) {
     this._disabledHandles.delete(handle);
+  }
+
+  /** Sets the layout direction of the draggable item. */
+  withDirection(direction: Direction): this {
+    this._direction = direction;
+    return this;
+  }
+
+  /** Sets the container that the item is part of. */
+  _withDropContainer(container: DropListRef) {
+    this._dropContainer = container;
   }
 
   /** Unsubscribes from the global subscriptions. */
@@ -482,7 +501,7 @@ export class DragRef<T = any> {
     event.preventDefault();
     this._updatePointerDirectionDelta(constrainedPointerPosition);
 
-    if (this.dropContainer) {
+    if (this._dropContainer) {
       this._updateActiveDropContainer(constrainedPointerPosition);
     } else {
       const activeTransform = this._activeTransform;
@@ -543,7 +562,7 @@ export class DragRef<T = any> {
 
     this.released.next({source: this});
 
-    if (!this.dropContainer) {
+    if (!this._dropContainer) {
       // Convert the active transform into a passive one. This means that next time
       // the user starts dragging the item, its position will be calculated relatively
       // to the new passive transform.
@@ -569,7 +588,7 @@ export class DragRef<T = any> {
       this._lastTouchEventTime = Date.now();
     }
 
-    if (this.dropContainer) {
+    if (this._dropContainer) {
       const element = this._rootElement;
 
       // Grab the `nextSibling` before the preview and placeholder
@@ -585,7 +604,7 @@ export class DragRef<T = any> {
       element.style.display = 'none';
       this._document.body.appendChild(element.parentNode!.replaceChild(placeholder, element));
       this._document.body.appendChild(preview);
-      this.dropContainer.start();
+      this._dropContainer.start();
     }
   }
 
@@ -639,7 +658,7 @@ export class DragRef<T = any> {
 
     this._toggleNativeDragInteractions();
     this._hasStartedDragging = this._hasMoved = false;
-    this._initialContainer = this.dropContainer!;
+    this._initialContainer = this._dropContainer!;
     this._pointerMoveSubscription = this._dragDropRegistry.pointerMove.subscribe(this._pointerMove);
     this._pointerUpSubscription = this._dragDropRegistry.pointerUp.subscribe(this._pointerUp);
     this._scrollPosition = this._viewportRuler.getViewportScrollPosition();
@@ -670,7 +689,7 @@ export class DragRef<T = any> {
     if (this._nextSibling) {
       this._nextSibling.parentNode!.insertBefore(this._rootElement, this._nextSibling);
     } else {
-      this._initialContainer.element.nativeElement.appendChild(this._rootElement);
+      this._initialContainer.element.appendChild(this._rootElement);
     }
 
     this._destroyPreview();
@@ -679,7 +698,7 @@ export class DragRef<T = any> {
 
     // Re-enter the NgZone since we bound `document` events on the outside.
     this._ngZone.run(() => {
-      const container = this.dropContainer!;
+      const container = this._dropContainer!;
       const currentIndex = container.getItemIndex(this);
       const {x, y} = this._getPointerPositionOnPage(event);
       const isPointerOverContainer = container._isOverContainer(x, y);
@@ -694,7 +713,7 @@ export class DragRef<T = any> {
         isPointerOverContainer
       });
       container.drop(this, currentIndex, this._initialContainer, isPointerOverContainer);
-      this.dropContainer = this._initialContainer;
+      this._dropContainer = this._initialContainer;
     });
   }
 
@@ -704,31 +723,31 @@ export class DragRef<T = any> {
    */
   private _updateActiveDropContainer({x, y}: Point) {
     // Drop container that draggable has been moved into.
-    let newContainer = this.dropContainer!._getSiblingContainerFromPosition(this, x, y) ||
+    let newContainer = this._dropContainer!._getSiblingContainerFromPosition(this, x, y) ||
         this._initialContainer._getSiblingContainerFromPosition(this, x, y);
 
     // If we couldn't find a new container to move the item into, and the item has left it's
     // initial container, check whether the it's over the initial container. This handles the
     // case where two containers are connected one way and the user tries to undo dragging an
     // item into a new container.
-    if (!newContainer && this.dropContainer !== this._initialContainer &&
+    if (!newContainer && this._dropContainer !== this._initialContainer &&
         this._initialContainer._isOverContainer(x, y)) {
       newContainer = this._initialContainer;
     }
 
-    if (newContainer && newContainer !== this.dropContainer) {
+    if (newContainer && newContainer !== this._dropContainer) {
       this._ngZone.run(() => {
         // Notify the old container that the item has left.
-        this.exited.next({item: this, container: this.dropContainer!});
-        this.dropContainer!.exit(this);
+        this.exited.next({item: this, container: this._dropContainer!});
+        this._dropContainer!.exit(this);
         // Notify the new container that the item has entered.
         this.entered.next({item: this, container: newContainer!});
-        this.dropContainer = newContainer!;
-        this.dropContainer.enter(this, x, y);
+        this._dropContainer = newContainer!;
+        this._dropContainer.enter(this, x, y);
       });
     }
 
-    this.dropContainer!._sortItem(this, x, y, this._pointerDirectionDelta);
+    this._dropContainer!._sortItem(this, x, y, this._pointerDirectionDelta);
     this._preview.style.transform =
         getTransform(x - this._pickupPositionInElement.x, y - this._pickupPositionInElement.y);
   }
@@ -738,12 +757,13 @@ export class DragRef<T = any> {
    * and will be used as a preview of the element that is being dragged.
    */
   private _createPreviewElement(): HTMLElement {
-    const previewTemplate = this._previewTemplate;
+    const previewConfig = this._previewTemplate;
+    const previewTemplate = previewConfig ? previewConfig.template : null;
     let preview: HTMLElement;
 
-    if (previewTemplate && previewTemplate.template) {
-      const viewRef = this._viewContainerRef.createEmbeddedView(previewTemplate.template,
-                                                                previewTemplate.context);
+    if (previewTemplate) {
+      const viewRef = previewConfig!.viewContainer.createEmbeddedView(previewTemplate,
+                                                                      previewConfig!.context);
       preview = viewRef.rootNodes[0];
       this._previewRef = viewRef;
       preview.style.transform =
@@ -771,7 +791,7 @@ export class DragRef<T = any> {
     toggleNativeDragInteractions(preview, false);
 
     preview.classList.add('cdk-drag-preview');
-    preview.setAttribute('dir', this._dir ? this._dir.value : 'ltr');
+    preview.setAttribute('dir', this._direction);
 
     return preview;
   }
@@ -825,13 +845,14 @@ export class DragRef<T = any> {
 
   /** Creates an element that will be shown instead of the current element while dragging. */
   private _createPlaceholderElement(): HTMLElement {
-    const placeholderTemplate = this._placeholderTemplate;
+    const placeholderConfig = this._placeholderTemplate;
+    const placeholderTemplate = placeholderConfig ? placeholderConfig.template : null;
     let placeholder: HTMLElement;
 
-    if (placeholderTemplate && placeholderTemplate.template) {
-      this._placeholderRef = this._viewContainerRef.createEmbeddedView(
-        placeholderTemplate.template,
-        placeholderTemplate.context
+    if (placeholderTemplate) {
+      this._placeholderRef = placeholderConfig!.viewContainer.createEmbeddedView(
+        placeholderTemplate,
+        placeholderConfig!.context
       );
       placeholder = this._placeholderRef.rootNodes[0];
     } else {
@@ -877,7 +898,7 @@ export class DragRef<T = any> {
   /** Gets the pointer position on the page, accounting for any position constraints. */
   private _getConstrainedPointerPosition(event: MouseEvent | TouchEvent): Point {
     const point = this._getPointerPositionOnPage(event);
-    const dropContainerLock = this.dropContainer ? this.dropContainer.lockAxis : null;
+    const dropContainerLock = this._dropContainer ? this._dropContainer.lockAxis : null;
 
     if (this.lockAxis === 'x' || dropContainerLock === 'x') {
       point.y = this._pickupPositionOnPage.y;

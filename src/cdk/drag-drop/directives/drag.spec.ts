@@ -21,6 +21,7 @@ import {
   createTouchEvent,
 } from '@angular/cdk/testing';
 import {Directionality} from '@angular/cdk/bidi';
+import {of as observableOf} from 'rxjs';
 import {CdkDrag, CDK_DRAG_CONFIG} from './drag';
 import {CdkDragDrop} from '../drag-events';
 import {moveItemInArray} from '../drag-utils';
@@ -1140,7 +1141,7 @@ describe('CdkDrag', () => {
     it('should dispatch the correct `dropped` event in RTL horizontal drop zone', fakeAsync(() => {
       const fixture = createComponent(DraggableInHorizontalDropZone, [{
         provide: Directionality,
-        useValue: ({value: 'rtl'})
+        useValue: ({value: 'rtl', change: observableOf()})
       }]);
 
       fixture.nativeElement.setAttribute('dir', 'rtl');
@@ -1296,7 +1297,7 @@ describe('CdkDrag', () => {
     it('should pass the proper direction to the preview in rtl', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone, [{
         provide: Directionality,
-        useValue: ({value: 'rtl'})
+        useValue: ({value: 'rtl', change: observableOf()})
       }]);
 
       fixture.detectChanges();
