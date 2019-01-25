@@ -49,12 +49,8 @@ export class ScrollService {
     fromEvent(window, 'scroll')
       .pipe(debounceTime(250)).subscribe(() => this.updateScrollPositionInHistory());
 
-    try {
-      this.supportManualScrollRestoration = !!window && !!window.scrollTo && 'scrollX' in window
-        && 'scrollY' in window && !!history && !!history.scrollRestoration;
-    } catch {
-      this.supportManualScrollRestoration = false;
-    }
+    this.supportManualScrollRestoration = !!window && 'scrollTo' in window && 'scrollX' in window
+      && 'scrollY' in window && !!history && 'scrollRestoration' in history;
 
     // Change scroll restoration strategy to `manual` if it's supported
     if (this.supportManualScrollRestoration) {
