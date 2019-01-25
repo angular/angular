@@ -10,9 +10,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 import * as ng from '../index';
+import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from './runfile_helpers';
 
 // TEST_TMPDIR is always set by Bazel.
-const tmpdir = process.env.TEST_TMPDIR!;
+const tmpdir = process.env.TEST_TMPDIR !;
 
 export function makeTempDir(): string {
   let dir: string;
@@ -51,6 +52,7 @@ function createTestSupportFor(basePath: string) {
     'baseUrl': basePath,
     'declaration': true,
     'target': ts.ScriptTarget.ES5,
+    'newLine': ts.NewLineKind.LineFeed,
     'module': ts.ModuleKind.ES2015,
     'moduleResolution': ts.ModuleResolutionKind.NodeJs,
     'lib': Object.freeze([
@@ -62,7 +64,16 @@ function createTestSupportFor(basePath: string) {
   };
 
 
-  return {basePath, write, writeFiles, createCompilerOptions, shouldExist, shouldNotExist};
+  return {
+    // We normalize the basePath into a posix path, so that multiple assertions which compare
+    // paths don't need to normalize the path separators each time.
+    basePath: normalizeSeparators(basePath),
+    write,
+    writeFiles,
+    createCompilerOptions,
+    shouldExist,
+    shouldNotExist
+  };
 
   function write(fileName: string, content: string) {
     const dir = path.dirname(fileName);
@@ -95,37 +106,29 @@ function createTestSupportFor(basePath: string) {
   }
 }
 
-export function setupBazelTo(basePath: string) {
-  if (!process.env.TEST_SRCDIR) {
-    throw new Error('`setupBazelTo()` must only be called from in a Bazel job.');
-  }
-  const sources = process.env.TEST_SRCDIR;
-  const packages = path.join(sources, 'angular/packages');
-  const nodeModulesPath = path.join(basePath, 'node_modules');
+export function setupBazelTo(tmpDirPath: string) {
+  const nodeModulesPath = path.join(tmpDirPath, 'node_modules');
   const angularDirectory = path.join(nodeModulesPath, '@angular');
+
   fs.mkdirSync(nodeModulesPath);
-
-  // Link the built angular packages
   fs.mkdirSync(angularDirectory);
-  const packageNames = fs.readdirSync(packages).filter(
-      name => fs.statSync(path.join(packages, name)).isDirectory() &&
-          fs.existsSync(path.join(packages, name, 'npm_package')));
-  for (const pkg of packageNames) {
-    fs.symlinkSync(path.join(packages, `${pkg}/npm_package`), path.join(angularDirectory, pkg));
-  }
 
-  // Link rxjs
-  const rxjsSource = path.join(sources, 'rxjs');
-  const rxjsDest = path.join(nodeModulesPath, 'rxjs');
-  if (fs.existsSync(rxjsSource)) {
-    fs.symlinkSync(rxjsSource, rxjsDest);
-  }
+  getAngularPackagesFromRunfiles().forEach(
+      ({pkgPath, name}) => { fs.symlinkSync(pkgPath, path.join(angularDirectory, name), 'dir'); });
 
   // Link typescript
-  const typescriptSource = path.join(sources, 'ngdeps/node_modules/typescript');
+  const typeScriptSource = resolveNpmTreeArtifact('ngdeps/node_modules/typescript');
   const typescriptDest = path.join(nodeModulesPath, 'typescript');
-  if (fs.existsSync(typescriptSource)) {
-    fs.symlinkSync(typescriptSource, typescriptDest);
+  fs.symlinkSync(typeScriptSource, typescriptDest, 'dir');
+
+  // Link "rxjs" if it has been set up as a runfile. "rxjs" is linked optionally because
+  // not all compiler-cli tests need "rxjs" set up.
+  try {
+    const rxjsSource = resolveNpmTreeArtifact('rxjs', 'index.js');
+    const rxjsDest = path.join(nodeModulesPath, 'rxjs');
+    fs.symlinkSync(rxjsSource, rxjsDest, 'dir');
+  } catch (e) {
+    if (e.code !== 'MODULE_NOT_FOUND') throw e;
   }
 }
 
@@ -147,4 +150,8 @@ export function expectNoDiagnosticsInProgram(options: ng.CompilerOptions, p: ng.
     ...p.getNgStructuralDiagnostics(), ...p.getTsSemanticDiagnostics(),
     ...p.getNgSemanticDiagnostics()
   ]);
+}
+
+export function normalizeSeparators(path: string): string {
+  return path.replace(/\\/g, '/');
 }

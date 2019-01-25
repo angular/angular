@@ -12,6 +12,7 @@ import {join} from 'path';
 const Module = require('module');
 
 import {mainNgcc} from '../../src/ngcc/src/main';
+import {getAngularPackagesFromRunfiles} from '../runfile_helpers';
 
 describe('ngcc main()', () => {
   beforeEach(createMockFileSystem);
@@ -40,8 +41,7 @@ describe('ngcc main()', () => {
 
 
 function createMockFileSystem() {
-  const packagesPath = join(process.env.TEST_SRCDIR !, 'angular/packages');
-  mockFs({'/node_modules/@angular': loadPackages(packagesPath)});
+  mockFs({'/node_modules/@angular': loadAngularPackages()});
   spyOn(Module, '_resolveFilename').and.callFake(mockResolve);
 }
 
@@ -50,26 +50,15 @@ function restoreRealFileSystem() {
 }
 
 
-/**
- * Load the built Angular packages into an in-memory structure.
- * @param packagesPath the path to the folder containing the built packages.
- */
-function loadPackages(packagesPath: string): Directory {
+/** Load the built Angular packages into an in-memory structure. */
+function loadAngularPackages(): Directory {
   const packagesDirectory: Directory = {};
-  readdirSync(packagesPath).forEach(name => {
-    const packagePath = join(packagesPath, name);
-    if (!statSync(packagePath).isDirectory()) {
-      return;
-    }
-    const npmPackagePath = join(packagePath, 'npm_package');
-    if (!existsSync(npmPackagePath)) {
-      return;
-    }
-    packagesDirectory[name] = loadDirectory(npmPackagePath);
-  });
+
+  getAngularPackagesFromRunfiles().forEach(
+      ({name, pkgPath}) => { packagesDirectory[name] = loadDirectory(pkgPath); });
+
   return packagesDirectory;
 }
-
 
 /**
  * Load real files from the filesystem into an "in-memory" structure,
