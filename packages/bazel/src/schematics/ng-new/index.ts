@@ -201,10 +201,11 @@ export default function(options: Schema): Rule {
     validateProjectName(options.name);
 
     return chain([
-      externalSchematic('@schematics/angular', 'ng-new', {
-        ...options,
-        skipInstall: true,
-      }),
+      externalSchematic(
+          '@schematics/angular', 'ng-new',
+          {
+              ...options,
+          }),
       addDevDependenciesToPackageJson(options),
       addDevAndProdMainForAot(options),
       schematic('bazel-workspace', options),
