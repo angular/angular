@@ -304,5 +304,5 @@ export const INTERPOLATION_DELIMITER = `�`;
  * See storeBindingMetadata().
  */
 export function isPropMetadataString(str: string): boolean {
-  return new RegExp(/�/).test(str);
+  return str.indexOf(INTERPOLATION_DELIMITER) >= 0;
 }

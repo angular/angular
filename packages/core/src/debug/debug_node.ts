@@ -257,7 +257,8 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     const tNode = tData[context.nodeIndex] as TNode;
 
     const properties = collectPropertyBindings(tNode, lView, tData);
-    return collectHostPropertyBindings(tNode, lView, tData, properties);
+    const hostProperties = collectHostPropertyBindings(tNode, lView, tData);
+    return {...properties, ...hostProperties};
   }
 
   get attributes(): {[key: string]: string | null;} {
@@ -465,8 +466,9 @@ function getFirstBindingIndex(metadataIndex: number, tData: TData): number {
 }
 
 function collectHostPropertyBindings(
-    tNode: TNode, lView: LView, tData: TData,
-    properties: {[key: string]: string}): {[key: string]: string} {
+    tNode: TNode, lView: LView, tData: TData): {[key: string]: string} {
+  const properties: {[key: string]: string} = {};
+
   // Host binding values for a node are stored after directives on that node
   let hostPropIndex = tNode.directiveEnd;
   let propMetadata = tData[hostPropIndex] as any;
