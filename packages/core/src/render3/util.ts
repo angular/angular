@@ -9,7 +9,7 @@
 import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
 import {global} from '../util/global';
 
-import {ACTIVE_INDEX, LCONTAINER_LENGTH, LContainer} from './interfaces/container';
+import {LCONTAINER_LENGTH, LContainer} from './interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags} from './interfaces/injector';
