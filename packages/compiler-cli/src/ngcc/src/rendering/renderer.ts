@@ -169,6 +169,7 @@ export abstract class Renderer {
   renderDtsFile(dtsFile: ts.SourceFile, renderInfo: DtsRenderInfo): FileInfo[] {
     const input = this.extractSourceMap(dtsFile);
     const outputText = new MagicString(input.source);
+    const printer = ts.createPrinter();
     const importManager = new ImportManager(
         this.getImportRewriter(this.bundle.dts !.r3SymbolsFile, false), IMPORT_PREFIX);
 
@@ -176,7 +177,8 @@ export abstract class Renderer {
       const endOfClass = dtsClass.dtsDeclaration.getEnd();
       dtsClass.compilation.forEach(declaration => {
         const type = translateType(declaration.type, importManager);
-        const newStatement = `    static ${declaration.name}: ${type};\n`;
+        const typeStr = printer.printNode(ts.EmitHint.Unspecified, type, dtsFile);
+        const newStatement = `    static ${declaration.name}: ${typeStr};\n`;
         outputText.appendRight(endOfClass - 1, newStatement);
       });
     });

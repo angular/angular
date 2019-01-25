@@ -57,8 +57,7 @@ export class DtsFileTransformer {
         const decls = this.ivyFields.get(node.name.text) !;
         const newMembers = decls.map(decl => {
           const modifiers = [ts.createModifier(ts.SyntaxKind.StaticKeyword)];
-          const type = translateType(decl.type, this.imports);
-          const typeRef = ts.createTypeReferenceNode(ts.createIdentifier(type), undefined);
+          const typeRef = translateType(decl.type, this.imports);
           return ts.createProperty(undefined, modifiers, decl.name, undefined, typeRef, undefined);
         });
 
