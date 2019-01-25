@@ -70,8 +70,8 @@ describe('ngtools_api (deprecated)', () => {
       entryModule: 'src/main#MainModule',
     });
     expect(routes).toEqual({
-      './child#ChildModule': path.resolve(testSupport.basePath, 'src/child.ts'),
-      './child2#ChildModule2': path.resolve(testSupport.basePath, 'src/child2.ts'),
+      './child#ChildModule': path.posix.join(testSupport.basePath, 'src/child.ts'),
+      './child2#ChildModule2': path.posix.join(testSupport.basePath, 'src/child2.ts'),
     });
   });
 
