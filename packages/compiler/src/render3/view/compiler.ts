@@ -16,7 +16,7 @@ import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expressio
 import {LifecycleHooks} from '../../lifecycle_reflector';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
-import {typeSourceSpan} from '../../parse_util';
+import {ParseError, typeSourceSpan} from '../../parse_util';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
 import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
@@ -30,7 +30,7 @@ import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, type
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {Instruction, StylingBuilder} from './styling_builder';
-import {BindingScope, TemplateDefinitionBuilder, ValueConverter, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
+import {BindingScope, TemplateDefinitionBuilder, ValueConverter, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
 const EMPTY_ARRAY: any[] = [];
@@ -665,12 +665,11 @@ function createHostBindingsFunction(
 
   // Calculate the host property bindings
   const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
-
   const bindingFn = (implicit: any, value: AST) => {
     return convertPropertyBinding(
         null, implicit, value, 'b', BindingForm.TrySimple, () => error('Unexpected interpolation'));
   };
-  if (bindings) {
+  if (bindings && bindings.length) {
     const hostVarsCountFn = (numSlots: number): number => {
       const originalVarsCount = totalHostVarsCount;
       totalHostVarsCount += numSlots;
@@ -877,11 +876,12 @@ const enum HostBindingGroup {
   Event = 2,
 }
 
-export function parseHostBindings(host: {[key: string]: string}): {
-  attributes: {[key: string]: string},
-  listeners: {[key: string]: string},
-  properties: {[key: string]: string},
-} {
+interface ParsedHostBindings {
+  attributes: {[key: string]: string}, listeners: {[key: string]: string},
+      properties: {[key: string]: string},
+}
+
+export function parseHostBindings(host: {[key: string]: string}): ParsedHostBindings {
   const attributes: {[key: string]: string} = {};
   const listeners: {[key: string]: string} = {};
   const properties: {[key: string]: string} = {};
@@ -902,6 +902,18 @@ export function parseHostBindings(host: {[key: string]: string}): {
   });
 
   return {attributes, listeners, properties};
+}
+
+export function verifyHostBindings(bindings: ParsedHostBindings): ParseError[] {
+  const summary = metadataAsSummary({ host: bindings } as any);
+  // Further improvements for the code block below:
+  // - create and provide proper sourceSpans to make error message more descriptive (FW-995)
+  // - abstract out host bindings verification logic and use it instead of creating events and
+  // properties ASTs to detect errors (FW-996)
+  const bindingParser = makeBindingParser();
+  bindingParser.createDirectiveHostEventAsts(summary, null !);
+  bindingParser.createBoundHostProperties(summary, null !);
+  return bindingParser.errors;
 }
 
 function compileStyles(styles: string[], selector: string, hostSelector: string): string[] {

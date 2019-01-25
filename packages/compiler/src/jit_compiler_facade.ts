@@ -13,13 +13,14 @@ import {HostBinding, HostListener, Input, Output, Type} from './core';
 import {compileInjectable} from './injectable_compiler_2';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config';
 import {Expression, LiteralExpr, WrappedNodeExpr} from './output/output_ast';
+import {ParseError} from './parse_util';
 import {R3DependencyMetadata, R3ResolvedDependencyType} from './render3/r3_factory';
 import {jitExpression} from './render3/r3_jit';
 import {R3InjectorMetadata, R3NgModuleMetadata, compileInjector, compileNgModule} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata} from './render3/r3_pipe_compiler';
 import {R3Reference} from './render3/util';
 import {R3DirectiveMetadata, R3QueryMetadata} from './render3/view/api';
-import {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings} from './render3/view/compiler';
+import {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 
@@ -250,22 +251,28 @@ function extractHostBindings(host: {[key: string]: string}, propMetadata: {[key:
   properties: StringMap,
 } {
   // First parse the declarations from the metadata.
-  const {attributes, listeners, properties} = parseHostBindings(host || {});
+  const bindings = parseHostBindings(host || {});
+
+  // After that check host bindings for errors
+  const errors = verifyHostBindings(bindings);
+  if (errors.length) {
+    throw new Error(errors.map((error: ParseError) => error.msg).join('\n'));
+  }
 
   // Next, loop over the properties of the object, looking for @HostBinding and @HostListener.
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
       propMetadata[field].forEach(ann => {
         if (isHostBinding(ann)) {
-          properties[ann.hostPropertyName || field] = field;
+          bindings.properties[ann.hostPropertyName || field] = field;
         } else if (isHostListener(ann)) {
-          listeners[ann.eventName || field] = `${field}(${(ann.args || []).join(',')})`;
+          bindings.listeners[ann.eventName || field] = `${field}(${(ann.args || []).join(',')})`;
         }
       });
     }
   }
 
-  return {attributes, listeners, properties};
+  return bindings;
 }
 
 function isHostBinding(value: any): value is HostBinding {

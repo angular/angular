@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings} from '@angular/compiler';
+import {ConstantPool, Expression, ParseError, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -437,7 +437,14 @@ function extractHostBindings(
     });
   }
 
-  const {attributes, listeners, properties} = parseHostBindings(hostMetadata);
+  const bindings = parseHostBindings(hostMetadata);
+
+  const errors = verifyHostBindings(bindings);
+  if (errors.length) {
+    throw new FatalDiagnosticError(
+        ErrorCode.HOST_BINDING_PARSE_ERROR, metadata.get('host') !,
+        errors.map((error: ParseError) => error.msg).join('\n'));
+  }
 
   filterToMembersWithDecorator(members, 'HostBinding', coreModule)
       .forEach(({member, decorators}) => {
@@ -456,7 +463,7 @@ function extractHostBindings(
             hostPropertyName = resolved;
           }
 
-          properties[hostPropertyName] = member.name;
+          bindings.properties[hostPropertyName] = member.name;
         });
       });
 
@@ -492,10 +499,10 @@ function extractHostBindings(
             }
           }
 
-          listeners[eventName] = `${member.name}(${args.join(',')})`;
+          bindings.listeners[eventName] = `${member.name}(${args.join(',')})`;
         });
       });
-  return {attributes, properties, listeners};
+  return bindings;
 }
 
 const QUERY_TYPES = new Set([
