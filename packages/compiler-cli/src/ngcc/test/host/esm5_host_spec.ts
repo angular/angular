@@ -47,6 +47,51 @@ const SOME_DIRECTIVE_FILE = {
     }());
   `,
 };
+const ACCESSORS_FILE = {
+  name: '/accessors.js',
+  contents: `
+    import { Directive, Input, Output } from '@angular/core';
+
+    var SomeDirective = (function() {
+      function SomeDirective() {
+      }
+      Object.defineProperty(SomeDirective.prototype, "setter", {
+          set: function (value) { this.value = value; },
+          enumerable: true,
+          configurable: true
+      });
+      Object.defineProperty(SomeDirective.prototype, "getter", {
+          get: function () { return null; },
+          enumerable: true,
+          configurable: true
+      });
+      Object.defineProperty(SomeDirective.prototype, "setterAndGetter", {
+          get: function () { return null; },
+          set: function (value) { this.value = value; },
+          enumerable: true,
+          configurable: true
+      });
+      Object.defineProperty(SomeDirective, "staticSetter", {
+          set: function (value) { this.value = value; },
+          enumerable: true,
+          configurable: true
+      });
+      Object.defineProperty(SomeDirective.prototype, "none", {
+          enumerable: true,
+          configurable: true
+      });
+      SomeDirective.decorators = [
+        { type: Directive, args: [{ selector: '[someDirective]' },] }
+      ];
+      SomeDirective.propDecorators = {
+        "setter": [{ type: Input },],
+        "getter": [{ type: Output },],
+        "setterAndGetter": [{ type: Input },],
+      };
+      return SomeDirective;
+    }());
+  `,
+};
 
 const SIMPLE_CLASS_FILE = {
   name: '/simple_class.js',
@@ -627,7 +672,44 @@ describe('Esm5ReflectionHost', () => {
       const input2 = members.find(member => member.name === 'input2') !;
       expect(input2.kind).toEqual(ClassMemberKind.Property);
       expect(input2.isStatic).toEqual(false);
-      expect(input1.decorators !.map(d => d.name)).toEqual(['Input']);
+      expect(input2.decorators !.map(d => d.name)).toEqual(['Input']);
+    });
+
+    it('should find Object.defineProperty members on a class', () => {
+      const program = makeTestProgram(ACCESSORS_FILE);
+      const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+      const classNode =
+          getDeclaration(program, ACCESSORS_FILE.name, 'SomeDirective', ts.isVariableDeclaration);
+      const members = host.getMembersOfClass(classNode);
+
+      const setter = members.find(member => member.name === 'setter') !;
+      expect(setter.kind).toEqual(ClassMemberKind.Setter);
+      expect(setter.isStatic).toEqual(false);
+      expect(setter.decorators !.map(d => d.name)).toEqual(['Input']);
+
+      const getter = members.find(member => member.name === 'getter') !;
+      expect(getter.kind).toEqual(ClassMemberKind.Getter);
+      expect(getter.isStatic).toEqual(false);
+      expect(getter.decorators !.map(d => d.name)).toEqual(['Output']);
+
+      const [combinedSetter, combinedGetter] =
+          members.filter(member => member.name === 'setterAndGetter');
+      expect(combinedSetter.kind).toEqual(ClassMemberKind.Setter);
+      expect(combinedSetter.isStatic).toEqual(false);
+      expect(combinedSetter.decorators !.map(d => d.name)).toEqual(['Input']);
+      expect(combinedGetter.kind).toEqual(ClassMemberKind.Getter);
+      expect(combinedGetter.isStatic).toEqual(false);
+      // Decorators are applied to property descriptors, so both the getter
+      // and setter should have the @Input decorator.
+      expect(combinedGetter.decorators !.map(d => d.name)).toEqual(['Input']);
+
+      const staticSetter = members.find(member => member.name === 'staticSetter') !;
+      expect(staticSetter.kind).toEqual(ClassMemberKind.Setter);
+      expect(staticSetter.isStatic).toEqual(true);
+      expect(staticSetter.decorators !.map(d => d.name)).toEqual([]);
+
+      const none = members.find(member => member.name === 'none');
+      expect(none).toBeUndefined();
     });
 
     it('should find non decorated properties on a class', () => {
