@@ -314,7 +314,7 @@ export function createContainerRef(
     hostView[hostTNode.index] = lContainer =
         createLContainer(slotValue, hostView, commentNode, true);
 
-    addToViewTree(hostView, hostTNode.index as number, lContainer);
+    addToViewTree(hostView, lContainer);
   }
 
   return new R3ViewContainerRef(lContainer, hostTNode, hostView);
