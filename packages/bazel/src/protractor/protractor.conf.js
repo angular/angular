@@ -89,7 +89,7 @@ if (onPreparePath) {
 setConf(conf, 'framework', 'jasmine2', 'is set to jasmine2');
 
 const specs =
-    [TMPL_specs].map(s => require.resolve(s)).filter(s => /(\b|_)(spec|test)\.js$/.test(s));
+    [TMPL_specs].map(s => require.resolve(s)).filter(s => /(\b|_)(spec|test|e2e)\.js$/.test(s));
 
 setConf(conf, 'specs', specs, 'are determined by the srcs and deps attribute');
 

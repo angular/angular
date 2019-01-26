@@ -32,9 +32,9 @@ http_server(
 )
 
 ts_library(
-    name = "ts_spec",
+    name = "e2e_lib",
     testonly = True,
-    srcs = ["test.spec.ts"],
+    srcs = ["test.e2e.ts"],
     tsconfig = ":tsconfig.test.json",
     deps = [
         "@ngdeps//@types/selenium-webdriver",
@@ -49,7 +49,7 @@ protractor_web_test_suite(
     on_prepare = ":on-prepare.js",
     server = ":prodserver",
     deps = [
-        ":ts_spec",
+        ":e2e_lib",
         "@ngdeps//protractor",
     ],
 )
@@ -61,7 +61,7 @@ protractor_web_test_suite(
     on_prepare = ":on-prepare.js",
     server = ":devserver",
     deps = [
-        ":ts_spec",
+        ":e2e_lib",
         "@ngdeps//protractor",
     ],
 )
