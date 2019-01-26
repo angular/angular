@@ -46,7 +46,7 @@ export interface TabInfo {
 export class CodeTabsComponent implements OnInit, AfterViewInit {
   tabs: TabInfo[];
 
-  @Input('linenums') linenums: string;
+  @Input() linenums: string;
 
   @ViewChild('content') content;
 
