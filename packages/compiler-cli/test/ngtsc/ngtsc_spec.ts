@@ -275,7 +275,7 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents)
         .toContain(
             'i0.ɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp], ' +
-            'declarations: [TestCmp], imports: [], exports: [] })');
+            'declarations: [TestCmp] })');
 
     const dtsContents = env.getContents('test.d.ts');
     expect(dtsContents)
@@ -373,7 +373,7 @@ describe('ngtsc behavioral tests', () => {
     env.tsconfig();
     env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
-        
+
         export class Dep {}
 
         export class Token {
@@ -1562,11 +1562,11 @@ describe('ngtsc behavioral tests', () => {
       env.tsconfig();
       env.write('node_modules/external/index.d.ts', `
         import {ɵDirectiveDefWithMeta, ɵNgModuleDefWithMeta} from '@angular/core';
-  
+
         export declare class ExternalDir {
           static ngDirectiveDef: ɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
         }
-  
+
         export declare class ExternalModule {
           static ngModuleDef: ɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
         }
@@ -1574,12 +1574,12 @@ describe('ngtsc behavioral tests', () => {
       env.write('test.ts', `
         import {Component, Directive, NgModule} from '@angular/core';
         import {ExternalModule} from 'external';
-  
+
         @Component({
           template: '<div test></div>',
         })
         class Cmp {}
-  
+
         @NgModule({
           declarations: [Cmp],
           // Multiple imports of the same module used to result in duplicate directive references
