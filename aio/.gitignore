@@ -5,6 +5,7 @@
 /out-tsc
 /src/generated
 /tmp
+/src/content
 
 # dependencies
 /node_modules
