@@ -169,6 +169,7 @@ function verifySemanticsOfNgModuleDef(moduleType: NgModuleType): void {
     ngModule.imports &&
         flatten(ngModule.imports, unwrapModuleWithProvidersImports)
             .forEach(verifySemanticsOfNgModuleDef);
+    ngModule.bootstrap && ngModule.bootstrap.forEach(verifyCorrectBootstrapType);
     ngModule.bootstrap && ngModule.bootstrap.forEach(verifyComponentIsPartOfNgModule);
     ngModule.entryComponents && ngModule.entryComponents.forEach(verifyComponentIsPartOfNgModule);
   }
@@ -223,6 +224,13 @@ function verifySemanticsOfNgModuleDef(moduleType: NgModuleType): void {
     if (!existingModule) {
       errors.push(
           `Component ${renderStringify(type)} is not part of any NgModule or the module has not been imported into your module.`);
+    }
+  }
+
+  function verifyCorrectBootstrapType(type: Type<any>) {
+    type = resolveForwardRef(type);
+    if (!getComponentDef(type)) {
+      errors.push(`${renderStringify(type)} cannot be used as an entry component.`);
     }
   }
 
