@@ -62,6 +62,9 @@ export class ScrollService {
         if (event.type === 'hashchange') {
           this.scrollToPosition();
         } else {
+          // Navigating with forward/back, we have to remove the position from the session storage in order to avoid a
+          // race-condition
+          this.removeStoredScrollPosition();
           // The popstate event is always triggered by doing a browser action such as a click on the back or forward button.
           // It can be follow by a event of type `hashchange`.
           this.popStateFired = true;
