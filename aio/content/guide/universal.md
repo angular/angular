@@ -86,7 +86,7 @@ The sample web server for this guide is based on the popular [Express](https://e
 
 </div>
 
-The `platform-server` package, which provides server implementations 
+The `platform-server` package, provides server implementations 
 of the DOM, `XMLHttpRequest`, and other low-level features that don't rely on a browser.
 Compile the client application with the `platform-server` module (instead of the `platform-browser` module)
 and run the resulting Universal app on a web server.
@@ -116,7 +116,7 @@ ng add @nguniversal/express-engine --clientProject <project-name>
 
 </code-example>
 
-The command install the required dependencies and creates the following folder structure.
+The command installs the required dependencies and creates the following folder structure.
 
 <code-example format="." language="none" linenums="false">
 src/
@@ -137,7 +137,7 @@ webpack.server.config.js     <i>* webpack server configuration</i>
 
 The files marked with `*` are newly generated files.
 
-A few handy scripts will be added in the `scripts` section of the `package.json`.
+A few handy scripts are also added in the `scripts` section of the `package.json`.
 
 <code-example format="." language="none" linenums="false">
 compile:server                  <i>compile the `server.ts` file and bundle all dependencies</i>
