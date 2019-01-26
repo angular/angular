@@ -85,26 +85,25 @@ function addDevAndProdMainForAot(options: Schema) {
   };
 }
 
-function overwriteGitignore(options: Schema) {
+/**
+ * Append '/bazel-out' to the gitignore file.
+ */
+function updateGitignore(options: Schema) {
   return (host: Tree) => {
     const gitignore = `${options.name}/.gitignore`;
     if (!host.exists(gitignore)) {
       return host;
     }
-    const gitIgnoreContent = host.read(gitignore);
-    if (!gitIgnoreContent) {
-      throw new Error('Failed to read .gitignore content');
-    }
-
-    if (gitIgnoreContent.includes('/bazel-out\n')) {
+    const gitIgnoreContent = host.read(gitignore).toString();
+    if (gitIgnoreContent.includes('\n/bazel-out\n')) {
       return host;
     }
-    const lines = gitIgnoreContent.toString().split(/\n/g);
+    const compiledOutput = '# compiled output\n';
+    const index = gitIgnoreContent.indexOf(compiledOutput);
+    const insertionIndex = index >= 0 ? index + compiledOutput.length : gitIgnoreContent.length;
     const recorder = host.beginUpdate(gitignore);
-    const compileOutput = lines.findIndex((line: string) => line === '# compiled output');
-    recorder.insertRight(compileOutput, '\n/bazel-out');
+    recorder.insertRight(insertionIndex, '/bazel-out\n');
     host.commitUpdate(recorder);
-
     return host;
   };
 }
@@ -211,7 +210,7 @@ export default function(options: Schema): Rule {
       schematic('bazel-workspace', options, {
         scope: options.name,
       }),
-      overwriteGitignore(options),
+      updateGitignore(options),
       updateWorkspaceFileToUseBazelBuilder(options),
     ]);
   };

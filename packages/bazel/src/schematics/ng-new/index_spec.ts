@@ -10,7 +10,7 @@ import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 
 describe('Ng-new Schematic', () => {
   const schematicRunner =
-      new SchematicTestRunner('@angular/bazel', require.resolve('../collection.json'), );
+      new SchematicTestRunner('@angular/bazel', require.resolve('../collection.json'));
   const defaultOptions = {
     name: 'demo',
     version: '7.0.0',
@@ -94,7 +94,7 @@ describe('Ng-new Schematic', () => {
     const {files} = host;
     expect(files).toContain('/demo/.gitignore');
     const content = host.readContent('/demo/.gitignore');
-    expect(content).toMatch('/bazel-out');
+    expect(content).toMatch('\n# compiled output\n/bazel-out\n');
   });
 
   it('should update angular.json to use Bazel builder', () => {
