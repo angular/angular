@@ -15,7 +15,7 @@ import { DocumentContents } from 'app/documents/document.service';
 export class DtComponent {
 
   @Input() on = false;
-  @Input('doc') doc: DocumentContents;
+  @Input() doc: DocumentContents;
   @Output() docChange = new EventEmitter<DocumentContents>();
 
   @ViewChild('dt', { read: ElementRef })
