@@ -209,9 +209,9 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * Reflect over a symbol and extract the member information, combining it with the
    * provided decorator information, and whether it is a static member.
    *
-   * In ES5, a single member symbol may represent at most two class members; an accessor
-   * pair of both a getter and setter is downleveled to a single `Object.defineProperty`
-   * call, of which the call expression node is considered as valueDeclaration of the symbol.
+   * If a class member uses accessors (e.g getters and/or setters) then it gets downleveled
+   * in ES5 to a single `Object.defineProperty()` call. In that case we must parse this
+   * call to extract the one or two ClassMember objects that represent the accessors.
    *
    * @param symbol the symbol for the member to reflect over.
    * @param decorators an array of decorators associated with the member.
