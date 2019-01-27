@@ -726,30 +726,65 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected reflectMembers(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
       ClassMember[]|null {
-    let kind: ClassMemberKind|null = null;
-    let value: ts.Expression|null = null;
-    let name: string|null = null;
-    let nameNode: ts.Identifier|null = null;
+    if (symbol.flags & ts.SymbolFlags.Accessor) {
+      const members: ClassMember[] = [];
+      const setter = symbol.declarations && symbol.declarations.find(ts.isSetAccessor);
+      const getter = symbol.declarations && symbol.declarations.find(ts.isGetAccessor);
 
+      const setterMember =
+          setter && this.reflectMember(setter, ClassMemberKind.Setter, decorators, isStatic);
+      if (setterMember) {
+        members.push(setterMember);
 
-    const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
-    if (!node || !isClassMemberType(node)) {
-      return null;
+        // Prevent attaching the decorators to a potential getter. In ES2015, we can't tell where
+        // the decorators were originally attached to, however we only want to attach them to a
+        // single `ClassMember` as otherwise ngtsc would handle the same decorators twice.
+        decorators = undefined;
+      }
+
+      const getterMember =
+          getter && this.reflectMember(getter, ClassMemberKind.Getter, decorators, isStatic);
+      if (getterMember) {
+        members.push(getterMember);
+      }
+
+      return members;
     }
 
+    let kind: ClassMemberKind|null = null;
     if (symbol.flags & ts.SymbolFlags.Method) {
       kind = ClassMemberKind.Method;
     } else if (symbol.flags & ts.SymbolFlags.Property) {
       kind = ClassMemberKind.Property;
-    } else if (symbol.flags & ts.SymbolFlags.GetAccessor) {
-      kind = ClassMemberKind.Getter;
-    } else if (symbol.flags & ts.SymbolFlags.SetAccessor) {
-      kind = ClassMemberKind.Setter;
+    }
+
+    const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
+    if (!node) {
+      return null;
+    }
+
+    const member = this.reflectMember(node, kind, decorators, isStatic);
+    if (!member) {
+      return null;
+    }
+
+    return [member];
+  }
+
+  protected reflectMember(
+      node: ts.Declaration, kind: ClassMemberKind|null, decorators?: Decorator[],
+      isStatic?: boolean): ClassMember|null {
+    let value: ts.Expression|null = null;
+    let name: string|null = null;
+    let nameNode: ts.Identifier|null = null;
+
+    if (!isClassMemberType(node)) {
+      return null;
     }
 
     if (isStatic && isPropertyAccess(node)) {
       name = node.name.text;
-      value = symbol.flags & ts.SymbolFlags.Property ? node.parent.right : null;
+      value = node.parent.right;
     } else if (isThisAssignment(node)) {
       kind = ClassMemberKind.Property;
       name = node.left.name.text;
@@ -783,11 +818,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     const type: ts.TypeNode = (node as any).type || null;
-    return [{
+    return {
       node,
       implementation: node, kind, type, name, nameNode, value, isStatic,
       decorators: decorators || []
-    }];
+    };
   }
 
   /**
