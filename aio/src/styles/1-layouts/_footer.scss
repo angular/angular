@@ -5,12 +5,15 @@ footer {
   padding: 48px;
   z-index: 0;
   background-color: $blue;
-  color: $offwhite;
   font-weight: 300;
 
   aio-footer {
     position: relative;
     z-index: 0;
+
+    & > * {
+      color: $white;
+    }
   }
 
   .footer-block {
@@ -19,8 +22,7 @@ footer {
   }
 
   a {
-      color: $offwhite;
-      font-weight: 300;
+      color: $white;
       text-decoration: none;
       z-index: 20;
       position: relative;
@@ -39,6 +41,7 @@ footer {
     text-transform: uppercase;
     font-weight: 400;
     margin: 0 0 16px;
+    color: $white;
   }
   p {
     text-align: center;
