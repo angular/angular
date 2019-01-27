@@ -52,6 +52,24 @@ const SOME_DIRECTIVE_FILE = {
   `,
 };
 
+const ACCESSORS_FILE = {
+  name: '/accessors.js',
+  contents: `
+    import { Directive, Input, Output } from '@angular/core';
+
+    class SomeDirective {
+      set setterAndGetter(value) { this.value = value; }
+      get setterAndGetter() { return null; }
+    }
+    SomeDirective.decorators = [
+      { type: Directive, args: [{ selector: '[someDirective]' },] }
+    ];
+    SomeDirective.propDecorators = {
+      "setterAndGetter": [{ type: Input },],
+    };
+  `,
+};
+
 const SIMPLE_CLASS_FILE = {
   name: '/simple_class.js',
   contents: `
@@ -703,6 +721,27 @@ describe('Fesm2015ReflectionHost', () => {
       expect(instanceProperty.isStatic).toEqual(false);
       expect(ts.isBinaryExpression(instanceProperty.implementation !)).toEqual(true);
       expect(instanceProperty.value !.getText()).toEqual(`'instance'`);
+    });
+
+    it('should handle equally named getter/setter pairs correctly', () => {
+      const program = makeTestProgram(ACCESSORS_FILE);
+      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const classNode =
+          getDeclaration(program, ACCESSORS_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const members = host.getMembersOfClass(classNode);
+
+      const [combinedSetter, combinedGetter] =
+          members.filter(member => member.name === 'setterAndGetter');
+      expect(combinedSetter.kind).toEqual(ClassMemberKind.Setter);
+      expect(combinedSetter.isStatic).toEqual(false);
+      expect(ts.isSetAccessor(combinedSetter.implementation !)).toEqual(true);
+      expect(combinedSetter.value).toBeNull();
+      expect(combinedSetter.decorators !.map(d => d.name)).toEqual(['Input']);
+      expect(combinedGetter.kind).toEqual(ClassMemberKind.Getter);
+      expect(combinedGetter.isStatic).toEqual(false);
+      expect(ts.isGetAccessor(combinedGetter.implementation !)).toEqual(true);
+      expect(combinedGetter.value).toBeNull();
+      expect(combinedGetter.decorators !.map(d => d.name)).toEqual([]);
     });
 
     it('should find static methods on a class', () => {

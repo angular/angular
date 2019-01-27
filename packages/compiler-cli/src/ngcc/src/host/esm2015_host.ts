@@ -102,9 +102,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     // that are initialized in the class.
     if (symbol.members) {
       symbol.members.forEach((value, key) => {
-        const decorators = removeFromMap(decoratorsMap, key);
+        const decorators = decoratorsMap.get(key as string);
         const reflectedMembers = this.reflectMembers(value, decorators);
         if (reflectedMembers) {
+          decoratorsMap.delete(key as string);
           members.push(...reflectedMembers);
         }
       });
@@ -113,9 +114,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     // The static property map contains all the static properties
     if (symbol.exports) {
       symbol.exports.forEach((value, key) => {
-        const decorators = removeFromMap(decoratorsMap, key);
+        const decorators = decoratorsMap.get(key as string);
         const reflectedMembers = this.reflectMembers(value, decorators, true);
         if (reflectedMembers) {
+          decoratorsMap.delete(key as string);
           members.push(...reflectedMembers);
         }
       });
@@ -134,9 +136,10 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       const variableSymbol = this.checker.getSymbolAtLocation(symbol.valueDeclaration.parent.name);
       if (variableSymbol && variableSymbol.exports) {
         variableSymbol.exports.forEach((value, key) => {
-          const decorators = removeFromMap(decoratorsMap, key);
+          const decorators = decoratorsMap.get(key as string);
           const reflectedMembers = this.reflectMembers(value, decorators, true);
           if (reflectedMembers) {
+            decoratorsMap.delete(key as string);
             members.push(...reflectedMembers);
           }
         });
@@ -719,6 +722,18 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   /**
    * Reflect over a symbol and extract the member information, combining it with the
    * provided decorator information, and whether it is a static member.
+   *
+   * A single symbol may represent multiple class members in the case of accessors;
+   * an equally named getter/setter accessor pair is combined into a single symbol.
+   * When the symbol is recognized as representing an accessor, its declarations are
+   * analyzed such that both the setter and getter accessor are returned as separate
+   * class members.
+   *
+   * One difference wrt the TypeScript host is that in ES2015, we cannot see which
+   * accessor originally had any decorators applied to them, as decorators are applied
+   * to the property descriptor in general, not a specific accessor. If an accessor
+   * has both a setter and getter, any decorators are only attached to the setter member.
+   *
    * @param symbol the symbol for the member to reflect over.
    * @param decorators an array of decorators associated with the member.
    * @param isStatic true if this member is static, false if it is an instance property.
@@ -726,30 +741,74 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    */
   protected reflectMembers(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
       ClassMember[]|null {
-    let kind: ClassMemberKind|null = null;
-    let value: ts.Expression|null = null;
-    let name: string|null = null;
-    let nameNode: ts.Identifier|null = null;
+    if (symbol.flags & ts.SymbolFlags.Accessor) {
+      const members: ClassMember[] = [];
+      const setter = symbol.declarations && symbol.declarations.find(ts.isSetAccessor);
+      const getter = symbol.declarations && symbol.declarations.find(ts.isGetAccessor);
 
+      const setterMember =
+          setter && this.reflectMember(setter, ClassMemberKind.Setter, decorators, isStatic);
+      if (setterMember) {
+        members.push(setterMember);
 
-    const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
-    if (!node || !isClassMemberType(node)) {
-      return null;
+        // Prevent attaching the decorators to a potential getter. In ES2015, we can't tell where
+        // the decorators were originally attached to, however we only want to attach them to a
+        // single `ClassMember` as otherwise ngtsc would handle the same decorators twice.
+        decorators = undefined;
+      }
+
+      const getterMember =
+          getter && this.reflectMember(getter, ClassMemberKind.Getter, decorators, isStatic);
+      if (getterMember) {
+        members.push(getterMember);
+      }
+
+      return members;
     }
 
+    let kind: ClassMemberKind|null = null;
     if (symbol.flags & ts.SymbolFlags.Method) {
       kind = ClassMemberKind.Method;
     } else if (symbol.flags & ts.SymbolFlags.Property) {
       kind = ClassMemberKind.Property;
-    } else if (symbol.flags & ts.SymbolFlags.GetAccessor) {
-      kind = ClassMemberKind.Getter;
-    } else if (symbol.flags & ts.SymbolFlags.SetAccessor) {
-      kind = ClassMemberKind.Setter;
+    }
+
+    const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
+    if (!node) {
+      return null;
+    }
+
+    const member = this.reflectMember(node, kind, decorators, isStatic);
+    if (!member) {
+      return null;
+    }
+
+    return [member];
+  }
+
+  /**
+   * Reflect over a symbol and extract the member information, combining it with the
+   * provided decorator information, and whether it is a static member.
+   * @param node the declaration node for the member to reflect over.
+   * @param kind the assumed kind of the member, may become more accurate during reflection.
+   * @param decorators an array of decorators associated with the member.
+   * @param isStatic true if this member is static, false if it is an instance property.
+   * @returns the reflected member information, or null if the symbol is not a member.
+   */
+  protected reflectMember(
+      node: ts.Declaration, kind: ClassMemberKind|null, decorators?: Decorator[],
+      isStatic?: boolean): ClassMember|null {
+    let value: ts.Expression|null = null;
+    let name: string|null = null;
+    let nameNode: ts.Identifier|null = null;
+
+    if (!isClassMemberType(node)) {
+      return null;
     }
 
     if (isStatic && isPropertyAccess(node)) {
       name = node.name.text;
-      value = symbol.flags & ts.SymbolFlags.Property ? node.parent.right : null;
+      value = kind === ClassMemberKind.Property ? node.parent.right : null;
     } else if (isThisAssignment(node)) {
       kind = ClassMemberKind.Property;
       name = node.left.name.text;
@@ -783,11 +842,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
 
     const type: ts.TypeNode = (node as any).type || null;
-    return [{
+    return {
       node,
       implementation: node, kind, type, name, nameNode, value, isStatic,
       decorators: decorators || []
-    }];
+    };
   }
 
   /**
@@ -1167,15 +1226,6 @@ function getDecoratorArgs(node: ts.ObjectLiteralExpression): ts.Expression[] {
   return argsExpression && ts.isArrayLiteralExpression(argsExpression) ?
       Array.from(argsExpression.elements) :
       [];
-}
-
-function removeFromMap<T>(map: Map<string, T>, key: ts.__String): T|undefined {
-  const mapKey = key as string;
-  const value = map.get(mapKey);
-  if (value !== undefined) {
-    map.delete(mapKey);
-  }
-  return value;
 }
 
 function isPropertyAccess(node: ts.Node): node is ts.PropertyAccessExpression&
