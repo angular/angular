@@ -7,6 +7,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  color: $deepgray;
+}
+
 h1 {
   display: inline-block;
   font-size: 24px;
@@ -73,6 +77,7 @@ p, ol, ul, ol, li, input, a  {
   line-height: 24px;
   letter-spacing: 0.30px;
   font-weight: 400;
+  color: $darkgray;
   & > em {
     letter-spacing: 0.30px;
   }
@@ -103,7 +108,7 @@ a {
 .app-toolbar a {
   font-size: 16px;
   font-weight: 400;
-  color: white;
+  color: $white;
   font-family: $main-font;
   text-transform: uppercase;
   padding: 21px 0;

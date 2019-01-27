@@ -42,7 +42,7 @@ section#intro {
   height: 480px;
   margin: 0 auto -32px;
   padding: 48px 0 0;
-  color: white;
+  color: $white;
 
   @media (max-width: 780px) {
     flex-direction: column;
@@ -426,7 +426,7 @@ div[layout=row]{
     text-transform: uppercase;
     font-size: 24px;
     font-weight: 300;
-    color: white;
+    color: $white;
     margin: 0;
     -webkit-margin-before: 0;
     -webkit-margin-after: 0;
