@@ -1477,9 +1477,9 @@ export class FormGroup extends AbstractControl {
     this._forEachChild((control: AbstractControl, name: string) => {
       control.reset(value[name], {onlySelf: true, emitEvent: options.emitEvent});
     });
-    this.updateValueAndValidity(options);
     this._updatePristine(options);
     this._updateTouched(options);
+    this.updateValueAndValidity(options);
   }
 
   /**
@@ -1878,9 +1878,9 @@ export class FormArray extends AbstractControl {
     this._forEachChild((control: AbstractControl, index: number) => {
       control.reset(value[index], {onlySelf: true, emitEvent: options.emitEvent});
     });
-    this.updateValueAndValidity(options);
     this._updatePristine(options);
     this._updateTouched(options);
+    this.updateValueAndValidity(options);
   }
 
   /**
