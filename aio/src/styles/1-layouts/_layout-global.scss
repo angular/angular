@@ -2,8 +2,9 @@ html, body {
     height: 100%;
 }
 
-body {
-    background-color: $offwhite;
+body,
+.content {
+    background-color: $white;
 }
 
 .clearfix {
