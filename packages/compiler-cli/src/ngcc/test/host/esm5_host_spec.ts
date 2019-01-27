@@ -747,6 +747,7 @@ describe('Esm5ReflectionHost', () => {
       const staticMethod = members.find(member => member.name === 'staticMethod') !;
       expect(staticMethod.kind).toEqual(ClassMemberKind.Method);
       expect(staticMethod.isStatic).toEqual(true);
+      expect(staticMethod.value).toBeNull();
       expect(ts.isFunctionExpression(staticMethod.implementation !)).toEqual(true);
     });
 
