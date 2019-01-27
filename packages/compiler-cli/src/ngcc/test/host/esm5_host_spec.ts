@@ -80,6 +80,7 @@ const ACCESSORS_FILE = {
           enumerable: true,
           configurable: true
       });
+      Object.defineProperty(SomeDirective.prototype, "incomplete");
       SomeDirective.decorators = [
         { type: Directive, args: [{ selector: '[someDirective]' },] }
       ];
@@ -685,12 +686,20 @@ describe('Esm5ReflectionHost', () => {
       const setter = members.find(member => member.name === 'setter') !;
       expect(setter.kind).toEqual(ClassMemberKind.Setter);
       expect(setter.isStatic).toEqual(false);
+      expect(setter.value).toBeNull();
       expect(setter.decorators !.map(d => d.name)).toEqual(['Input']);
+      expect(ts.isFunctionExpression(setter.implementation !)).toEqual(true);
+      expect((setter.implementation as ts.FunctionExpression).body.statements[0].getText())
+          .toEqual('this.value = value;');
 
       const getter = members.find(member => member.name === 'getter') !;
       expect(getter.kind).toEqual(ClassMemberKind.Getter);
       expect(getter.isStatic).toEqual(false);
+      expect(getter.value).toBeNull();
       expect(getter.decorators !.map(d => d.name)).toEqual(['Output']);
+      expect(ts.isFunctionExpression(getter.implementation !)).toEqual(true);
+      expect((getter.implementation as ts.FunctionExpression).body.statements[0].getText())
+          .toEqual('return null;');
 
       const [combinedSetter, combinedGetter] =
           members.filter(member => member.name === 'setterAndGetter');
@@ -699,17 +708,19 @@ describe('Esm5ReflectionHost', () => {
       expect(combinedSetter.decorators !.map(d => d.name)).toEqual(['Input']);
       expect(combinedGetter.kind).toEqual(ClassMemberKind.Getter);
       expect(combinedGetter.isStatic).toEqual(false);
-      // Decorators are applied to property descriptors, so both the getter
-      // and setter should have the @Input decorator.
-      expect(combinedGetter.decorators !.map(d => d.name)).toEqual(['Input']);
+      expect(combinedGetter.decorators !.map(d => d.name)).toEqual([]);
 
       const staticSetter = members.find(member => member.name === 'staticSetter') !;
       expect(staticSetter.kind).toEqual(ClassMemberKind.Setter);
       expect(staticSetter.isStatic).toEqual(true);
+      expect(staticSetter.value).toBeNull();
       expect(staticSetter.decorators !.map(d => d.name)).toEqual([]);
 
       const none = members.find(member => member.name === 'none');
       expect(none).toBeUndefined();
+
+      const incomplete = members.find(member => member.name === 'incomplete');
+      expect(incomplete).toBeUndefined();
     });
 
     it('should find non decorated properties on a class', () => {

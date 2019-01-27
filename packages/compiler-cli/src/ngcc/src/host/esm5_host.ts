@@ -236,6 +236,11 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
           isStatic: isStatic || false,
           decorators: decorators || [],
         });
+
+        // Prevent attaching the decorators to a potential getter. In ES5, we can't tell where the
+        // decorators were originally attached to, however we only want to attach them to a single
+        // `ClassMember` as otherwise ngtsc would handle the same decorators twice.
+        decorators = undefined;
       }
       if (propertyDefinition.getter) {
         members.push({
@@ -326,7 +331,7 @@ function getPropertyDefinition(node: ts.Node): PropertyDefinition|null {
     return null;
 
   const descriptor = node.arguments[2];
-  if (!ts.isObjectLiteralExpression(descriptor)) return null;
+  if (!descriptor || !ts.isObjectLiteralExpression(descriptor)) return null;
 
   return {
     setter: readPropertyFunctionExpression(descriptor, 'set'),
