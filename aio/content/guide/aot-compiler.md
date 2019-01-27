@@ -3,15 +3,25 @@
 -->
 # Ahead-of-Time (AOT) 컴파일러
 
+<!--
 An Angular application consists mainly of components and their HTML templates. Because the components and templates provided by Angular cannot be understood by the browser directly, Angular applications require a compilation process before they can run in a browser.
 
 The Angular Ahead-of-Time (AOT) compiler converts your Angular HTML and TypeScript code into efficient JavaScript code during the build phase _before_ the browser downloads and runs that code. Compiling your application during the build process provides a faster rendering in the browser.
 
 This guide explains how to specify metadata and apply available compiler options to compile your applications efficiently using the AOT compiler.
+-->
+Angular 애플리케이션은 크게 컴포넌트와 컴포넌트 HTML 템플릿으로 구성됩니다. 그런데 이 컴포넌트와 템플릿은 브라우저가 바로 이해할 수 없기 때문에 Angular 애플리케이션은 브라우저에서 실행되기 전에 컴파일되어야 합니다.
 
-<div class="alert is-helpful"
+Angular Ahead-of-Time (AOT) 컴파일러를 사용하면 Angular 문법이 사용된 HTML과 TypeScript 코드를 JavaScript 코드로 변환할 수 있습니다. 이 때 애플리케이션은 브라우저가 다운받아 실행하기 전에 미리 컴파일되기 때문에 브라우저가 직접 처리하고 렌더링하는 시간을 줄일 수 있습니다.
 
+이 문서는 애플리케이션을 AOT 컴파일러로 컴파일 할 때 메타데이터를 어떻게 지정해야 하는지, 컴파일러에 사용할 수 있는 옵션은 어떤 것들이 있는지 설명합니다.
+
+<div class="alert is-helpful">
+
+  <!--
   <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular compiler</a> at AngularConnect 2016.
+  -->
+  컴파일러를 개발한 Tobias Bosch가 <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">AngularConnect 2016에서 발표한 내용</a>도 확인해 보세요.
 
 </div>
 
@@ -34,7 +44,10 @@ Angular는 두 종류의 컴파일 방식을 제공합니다:
 1. **_Just-in-Time_ (JIT)**: 브라우저에서 애플리케이션을 실행하면서 코드를 직접 컴파일하는 방식입니다.
 1. **_Ahead-of-Time_ (AOT)**: 브라우저에 애플리케이션 코드를 보내기 전에 미리 컴파일하는 방식입니다.
 
+<!--
 JIT compilation is the default when you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve)  (build and serve locally) CLI commands: 
+-->
+Angular CLI로 [`ng build`](cli/build) 명령이나 [`ng serve`](cli/serve) 명령을 실행하면 기본적으로 JIT 컴파일러가 실행됩니다:
 
 <code-example language="sh" class="code-shell">
   ng build
@@ -43,7 +56,10 @@ JIT compilation is the default when you run the [`ng build`](cli/build) (build o
 
 {@a compile}
 
+<!--
 For AOT compilation, include the `--aot` option with the `ng build` or `ng serve` command:
+-->
+그리고 AOT 컴파일러를 사용하려면 `ng build` 명령이나 `ng serve` 명령을 실행할 때 `--aot` 옵션을 사용하면 됩니다:
 
 <code-example language="sh" class="code-shell">
   ng build --aot
@@ -52,9 +68,14 @@ For AOT compilation, include the `--aot` option with the `ng build` or `ng serve
 
 <div class="alert is-helpful">
 
+<!--
 The `ng build` command with the `--prod` meta-flag (`ng build --prod`) compiles with AOT by default.
 
 See the [CLI command reference](cli) and [Building and serving Angular apps](guide/build) for more information.
+-->
+`ng build` 명령을 실행할 때 `--prod` 옵션을 사용하면 AOT 컴파일러가 기본으로 실행됩니다.
+
+더 자세한 내용은 [Angular CLI](cli) 문서와 [Angular 앱 빌드하고 실행하기](guide/build) 문서를 참고하세요.
 
 </div>
 
@@ -63,7 +84,7 @@ See the [CLI command reference](cli) and [Building and serving Angular apps](gui
 <!--
 ## Why compile with AOT?
 -->
-## 왜 AOT 컴파일 하나요?
+## 왜 AOT 방식으로 컴파일 하나요?
 
 <!--
 *Faster rendering*
@@ -114,10 +135,14 @@ there are fewer opportunities for injection attacks.
 *더 나은 보안*
 
 AOT 컴파일 방식을 사용하면 HTML 템플릿과 컴포넌트 코드가 모두 JavaScript로 변환되어 클라이언트에 제공됩니다.
-그래서 클라이언트에 존재하는 HTML 문서나 JavaScript가 없기 떄문에, 인젝션 공격의 기회를 상당수 차단할 수 있습니다.
+그래서 클라이언트에 존재하는 HTML 문서나 JavaScript가 없기 때문에, 인젝션 공격의 기회를 상당수 차단할 수 있습니다.
 
+<!--
 ## Controlling app compilation
+-->
+## 앱 컴파일 과정 제어하기
 
+<!--
 When you use the Angular AOT compiler, you can control your app compilation in two ways:
 
 * By providing template compiler options in the `tsconfig.json` file.
@@ -125,15 +150,31 @@ When you use the Angular AOT compiler, you can control your app compilation in t
       For more information, see [Angular template compiler options](#compiler-options).
 
 * By [specifying Angular metadata](#metadata-aot).
+-->
+Angular AOT 컴파일러를 사용하면 이 컴파일 과정을 두 가지 방법으로 제어할 수 있습니다:
 
+* 템플릿 컴파일러 옵션은 `tsconfig.json` 파일에 지정할 수 있습니다.
+
+      자세한 내용은 [Angular 템플릿 컴파일러 옵션](#compiler-options) 섹션을 참고하세요.
+
+* [Angular 메타데이터](#metadata-aot)로 옵션을 지정할 수 있습니다.
 
 {@a metadata-aot}
+<!--
 ## Specifying Angular metadata
+-->
+## Angular 메타데이터에 컴파일 옵션 지정하기
 
+<!--
 Angular metadata tells Angular how to construct instances of your application classes and interact with them at runtime.
 The Angular **AOT compiler** extracts **metadata** to interpret the parts of the application that Angular is supposed to manage.
 
 You can specify the metadata with **decorators** such as `@Component()` and `@Input()` or implicitly in the constructor declarations of these decorated classes.
+-->
+Angular 메타데이터는 Angular가 실행시점에 애플리케이션 클래스를 어떻게 인스턴스로 생성하고 조합할지 지정하기 위해 사용합니다.
+그래서 Angular **AOT 컴파일러**는 애플리케이션 코드에 있는 **메타데이터**를 추출해서 Angular가 처리할 수 있도록 변환합니다.
+
+클래스에 사용하는 `@Component()` 데코레이터나 클래스 멤버에 사용하는 `@Input()` 데코레이터가 이런 용도로 사용되는 메타데이터입니다.
 
 <!--
 In the following example, the `@Component()` metadata object and the class constructor tell Angular how to create and display an instance of `TypicalComponent`.
@@ -239,6 +280,7 @@ Angular _콜렉터(collector)_ 는 JavaScript의 하위집합이며 JavaScript �
   td, th {vertical-align: top}
 </style>
 
+<!--
 <table>
   <tr>
     <th>Syntax</th>
@@ -309,6 +351,80 @@ Angular _콜렉터(collector)_ 는 JavaScript의 하위집합이며 JavaScript �
   </tr>
    <tr>
     <td>Parentheses</td>
+    <td><code>(a+b)</code></td>
+  </tr>
+</table>
+-->
+<table>
+  <tr>
+    <th>문법</th>
+    <th>예</th>
+  </tr>
+  <tr>
+    <td>객체 리터럴</td>
+    <td><code>{cherry: true, apple: true, mincemeat: false}</code></td>
+  </tr>
+  <tr>
+    <td>배열 리터럴</td>
+    <td><code>['cherries', 'flour', 'sugar']</code></td>
+  </tr>
+  <tr>
+    <td>배열 안에 사용된 전개 연산자</td>
+    <td><code>['apples', 'flour', ...the_rest]</code></td>
+  </tr>
+   <tr>
+    <td>함수 실행</td>
+    <td><code>bake(ingredients)</code></td>
+  </tr>
+   <tr>
+    <td>New</td>
+    <td><code>new Oven()</code></td>
+  </tr>
+   <tr>
+    <td>프로퍼티 참조</td>
+    <td><code>pie.slice</code></td>
+  </tr>
+   <tr>
+    <td>배열 인덱스 참조</td>
+    <td><code>ingredients[0]</code></td>
+  </tr>
+   <tr>
+    <td>타입 참조</td>
+    <td><code>Component</code></td>
+  </tr>
+   <tr>
+    <td>템플릿 문자열</td>
+    <td><code>`pie is ${multiplier} times better than cake`</code></td>
+   <tr>
+    <td>문자열 리터럴</td>
+    <td><code>pi</code></td>
+  </tr>
+   <tr>
+    <td>숫자 리터럴</td>
+    <td><code>3.14153265</code></td>
+  </tr>
+   <tr>
+    <td>불리언 리터럴</td>
+    <td><code>true</code></td>
+  </tr>
+   <tr>
+    <td>null 리터럴</td>
+    <td><code>null</code></td>
+  </tr>
+   <tr>
+    <td>접두사 연산자</td>
+    <td><code>!cake</code></td>
+  </tr>
+   <tr>
+    <td>바이너리 연산자</td>
+    <td><code>a+b</code></td>
+  </tr>
+   <tr>
+    <td>조건 연산자</td>
+    <td><code>a ? b : c</code></td>
+  </tr>
+   <tr>
+    <td>괄호</td>
     <td><code>(a+b)</code></td>
   </tr>
 </table>
@@ -528,6 +644,7 @@ _콜렉터_ 가 폴딩할 수 있는 문법에는 어떤 것들이 있는지 확
   td, th {vertical-align: top}
 </style>
 
+<!--
 <table>
   <tr>
     <th>Syntax</th>
@@ -606,7 +723,85 @@ _콜렉터_ 가 폴딩할 수 있는 문법에는 어떤 것들이 있는지 확
     <td>yes, if the expression is foldable</td>
   </tr>
 </table>
-
+-->
+<table>
+  <tr>
+    <th>문법</th>
+    <th>폴딩 가능 여부</th>
+  </tr>
+  <tr>
+    <td>객체 리터럴</td>
+    <td>가능</td>
+  </tr>
+  <tr>
+    <td>배열 리터럴</td>
+    <td>가능</td>
+  </tr>
+  <tr>
+    <td>배열 안에 사용된 전개 연산자</td>
+    <td>불가</td>
+  </tr>
+   <tr>
+    <td>함수 실행</td>
+    <td>불가</td>
+  </tr>
+   <tr>
+    <td>New</td>
+    <td>불가</td>
+  </tr>
+   <tr>
+    <td>프로퍼티 참조</td>
+    <td>대상이 폴딩 가능한 경우에 가능</td>
+  </tr>
+   <tr>
+    <td>배열 인덱스 참조</td>
+    <td>대상과 인덱스가 폴딩 가능한 경우에 가능</td>
+  </tr>
+   <tr>
+    <td>타입 참조</td>
+    <td>로컬에서 참조하는 경우 가능</td>
+  </tr>
+   <tr>
+    <td>문자열 바인딩이 없는 템플릿 문자열</td>
+    <td>가능</td>
+  </tr>
+   <tr>
+    <td>문자열 바인딩이 있는 템플릿 문자열</td>
+    <td>삽입되는 템플릿이 폴딩 가능한 경우에 가능</td>
+  </tr>
+   <tr>
+    <td>문자열 리터럴</td>
+    <td>가능</td>
+  </tr>
+   <tr>
+    <td>숫자 리터럴</td>
+    <td>가능</td>
+  </tr>
+   <tr>
+    <td>불리언 리터럴</td>
+    <td>가능</td>
+  </tr>
+   <tr>
+    <td>null 리터럴</td>
+    <td>가능</td>
+  </tr>
+   <tr>
+    <td>접두사 연산자</td>
+    <td>연산자가 폴딩 가능한 경우에 가능</td>
+  </tr>
+   <tr>
+    <td>바이너리 연산자</td>
+    <td>연산자 양쪽 항목이 모두 폴딩 가능한 경우에 가능</td>
+  </tr>
+   <tr>
+    <td>조건 연산자</td>
+    <td>조건이 폴딩 가능한 경우에 가능</td>
+  </tr>
+   <tr>
+    <td>괄호</td>
+    <td>표현식이 폴딩 가능한 경우에 가능</td>
+  </tr>
+</table>
 
 <!--
 If an expression is not foldable, the collector writes it to `.metadata.json` as an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) for the compiler to resolve.
@@ -907,9 +1102,15 @@ The compiler does the rewriting during the emit of the `.js` file. This doesn't 
 -->
 메타데이터 재구축 과정은 컴파일러가 `.js` 파일을 생성할 때 이루어집니다. 그리고 이 과정은 `.d.ts` 파일을 수정하는 것이 아니기 때문에 TypeScript에서는 이 과정에 생성된 `export` 변수를 인식할 수 없습니다. 결과적으로 모듈이 제공하던 API도 영향을 받지 않습니다.
 
+<!--
 ## Metadata errors
+-->
+## 메타데이터 에러
 
+<!--
 The following are metadata errors you may encounter, with explanations and suggested corrections.
+-->
+메타데이터를 사용하다 보면 다음과 같은 에러가 발생할 수 있습니다. 자세한 내용과 해결 방법은 해당 섹션를 참고하세요.
 
 [Expression form not supported](#expression-form-not-supported)<br>
 [Reference to a local (non-exported) symbol](#reference-to-a-local-symbol)<br>
@@ -928,11 +1129,17 @@ The following are metadata errors you may encounter, with explanations and sugge
 
 <h3 class="no-toc">Expression form not supported</h3>
 
+<!--
 The compiler encountered an expression it didn't understand while evaluating Angular metadata.
 
 Language features outside of the compiler's [restricted expression syntax](#expression-syntax)
 can produce this error, as seen in the following example:
+-->
+Angular 메타데이터 안에 사용된 표현식을 처리할 수 없을 때 발생합니다.
 
+[컴파일러가 지원하는 표현식 문법](#expression-syntax)을 벗어난 경우에 이 에러가 발생할 수 있습니다:
+
+<!--
 ```
 // ERROR
 export class Fooish { ... }
@@ -943,13 +1150,31 @@ const prop = typeof Fooish; // typeof is not valid in metadata
   { provide: 'token', useValue: { [prop]: 'value' } };
   ...
 ```
+-->
+```
+// 에러
+export class Fooish { ... }
+...
+const prop = typeof Fooish; // 메타데이터에 typeof는 사용할 수 없습니다.
+  ...
+  // 메타데이터에 대괄호 참조는 사용할 수 없습니다.
+  { provide: 'token', useValue: { [prop]: 'value' } };
+  ...
+```
 
+<!--
 You can use `typeof` and bracket notation in normal application code.
 You just can't use those features within expressions that define Angular metadata.
 
 Avoid this error by sticking to the compiler's [restricted expression syntax](#expression-syntax)
 when writing Angular metadata
 and be wary of new or unusual TypeScript features.
+-->
+`typeof`나 대괄호 참조는 일반적인 애플리케이션 코드에 얼마든지 사용할 수 없습니다.
+하지만 이 문법들은 Angular 메타데이터 표현식에는 사용할 수 없습니다.
+
+이 에러를 해결하려면 [컴파일러가 지원하는 표현식 문법](#expression-syntax)으로만 메타데이터를 작성해야 합니다.
+새로 도입되거나 자주 사용하지 않는 TypeScript 문법을 사용할 때 주의하세요.
 
 <hr>
 
@@ -962,10 +1187,16 @@ _Reference to a local (non-exported) symbol 'symbol name'. Consider exporting th
 
 </div>
 
+<!--
 The compiler encountered a referenced to a locally defined symbol that either wasn't exported or wasn't initialized.
 
 Here's a `provider` example of the problem.
+-->
+`export` 키워드로 지정되지 않았거나 초기화되지 않은 로컬 심볼을 사용했을 때 발생합니다.
 
+아래 예제에서는 `provider`를 처리할 때 에러가 발생합니다.
+
+<!--
 ```
 // ERROR
 let foo: number; // neither exported nor initialized
@@ -979,15 +1210,44 @@ let foo: number; // neither exported nor initialized
 })
 export class MyComponent {}
 ```
+-->
+```
+// 에러
+let foo: number; // export 키워드로 지정하거나 초기화해야 합니다.
+
+@Component({
+  selector: 'my-component',
+  template: ... ,
+  providers: [
+    { provide: Foo, useValue: foo }
+  ]
+})
+export class MyComponent {}
+```
+
+<!--
 The compiler generates the component factory, which includes the `useValue` provider code, in a separate module. _That_ factory module can't reach back to _this_ source module to access the local (non-exported) `foo` variable.
 
 You could fix the problem by initializing `foo`.
+-->
+컴파일러는 컴포넌트를 컴파일하면서 컴포넌트 팩토리라는 별도 모듈을 생성합니다.
+그런데 이 팩토리 모듈은 원래 컴포넌트 파일과는 다르기 때문에 기존 코드에서 `export`로 지정되지 않은 지역 변수 `foo`는 참조할 수 없습니다.
 
+이 에러는 변수 `foo`를 초기화하는 방법으로 해결할 수 있습니다.
+
+<!--
 ```
 let foo = 42; // initialized
 ```
+-->
+```
+let foo = 42; // 초기화
+```
 
+<!--
 The compiler will [fold](#folding) the expression into the provider as if you had written this.
+-->
+그러면 컴파일러가 이 코드를 [폴딩](#folding)하면서 다음과 같이 변환합니다.
 
 ```
   providers: [
@@ -995,8 +1255,13 @@ The compiler will [fold](#folding) the expression into the provider as if you ha
   ]
 ```
 
+<!--
 Alternatively, you can fix it by exporting `foo` with the expectation that `foo` will be assigned at runtime when you actually know its value.
+-->
+이 방법 외에도 `foo` 변수에 `export` 키워드를 붙여서 모듈 외부로 공개해도 이 에러를 해결할 수 있습니다.
+변수 `foo`의 값이 실행시점에 정해진다면 이 방법을 사용하는 것이 좋습니다.
 
+<!--
 ```
 // CORRECTED
 export let foo: number; // exported
@@ -1010,13 +1275,35 @@ export let foo: number; // exported
 })
 export class MyComponent {}
 ```
+-->
+```
+// 수정된 코드
+export let foo: number; // 변수를 모듈 외부로 공개
 
+@Component({
+  selector: 'my-component',
+  template: ... ,
+  providers: [
+    { provide: Foo, useValue: foo }
+  ]
+})
+export class MyComponent {}
+```
+
+<!--
 Adding `export` often works for variables referenced in metadata such as `providers` and `animations` because the compiler can generate _references_ to the exported variables in these expressions. It doesn't need the _values_ of those variables.
 
 Adding `export` doesn't work when the compiler needs the _actual value_
 in order to generate code.
 For example, it doesn't work for the `template` property.
+-->
+컴파일러가 모듈 외부로 공개된 변수에 대한 _참조_ 를 생성할 수 있기 때문에 `export` 키워드를 붙이는 방식은 메타데이터의 `providers`나 `animations` 배열에 종종 사용됩니다.
+이 경우에 변수의 값은 컴파일 시점에 할당되지 않아도 됩니다.
 
+하지만 팩토리 코드를 생성하는 시점에 _실제 값_ 이 필요하다면 `export`를 붙이는 방식은 동작하지 않습니다.
+그래서 다음 코드는 동작하지 않습니다.
+
+<!--
 ```
 // ERROR
 export let someTemplate: string; // exported but not initialized
@@ -1027,10 +1314,26 @@ export let someTemplate: string; // exported but not initialized
 })
 export class MyComponent {}
 ```
+-->
+```
+// 에러
+export let someTemplate: string; // export가 지정되었지만 초기화되지 않았습니다.
 
+@Component({
+  selector: 'my-component',
+  template: someTemplate
+})
+export class MyComponent {}
+```
+
+<!--
 The compiler needs the value of the `template` property _right now_ to generate the component factory.
 The variable reference alone is insufficient.
 Prefixing the declaration with `export` merely produces a new error, "[`Only initialized variables and constants can be referenced`](#only-initialized-variables)".
+-->
+`template` 프로퍼티의 값은 컴포넌트 팩토리가 생성되는 시점에 필요합니다.
+이 변수를 참조하고 있는 것만으로는 부족합니다.
+그래서 이 경우에는 `Reference to a local (non-exported) symbol` 에러 대신 "[`Only initialized variables and constants can be referenced`](#only-initialized-variables)" 에러가 발생합니다.
 
 <hr>
 
