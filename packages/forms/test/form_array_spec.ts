@@ -586,6 +586,23 @@ import {of } from 'rxjs';
           a.reset();
           expect(logger).toEqual(['control1', 'control2', 'array', 'form']);
         });
+
+        it('should mark as pristine and not dirty before emitting valueChange and statusChange events when resetting',
+           () => {
+             const pristineAndNotDirty = () => {
+               expect(a.pristine).toBe(true);
+               expect(a.dirty).toBe(false);
+             };
+
+             c2.markAsDirty();
+             expect(a.pristine).toBe(false);
+             expect(a.dirty).toBe(true);
+
+             a.valueChanges.subscribe(pristineAndNotDirty);
+             a.statusChanges.subscribe(pristineAndNotDirty);
+
+             a.reset();
+           });
       });
     });
 

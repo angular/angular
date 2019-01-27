@@ -654,6 +654,23 @@ import {of } from 'rxjs';
           g.reset({'one': {value: '', disabled: true}});
           expect(logger).toEqual(['control1', 'control2', 'group', 'form']);
         });
+
+        it('should mark as pristine and not dirty before emitting valueChange and statusChange events when resetting',
+           () => {
+             const pristineAndNotDirty = () => {
+               expect(form.pristine).toBe(true);
+               expect(form.dirty).toBe(false);
+             };
+
+             c3.markAsDirty();
+             expect(form.pristine).toBe(false);
+             expect(form.dirty).toBe(true);
+
+             form.valueChanges.subscribe(pristineAndNotDirty);
+             form.statusChanges.subscribe(pristineAndNotDirty);
+
+             form.reset();
+           });
       });
 
     });
