@@ -808,7 +808,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     if (isStatic && isPropertyAccess(node)) {
       name = node.name.text;
-      value = node.parent.right;
+      value = kind === ClassMemberKind.Property ? node.parent.right : null;
     } else if (isThisAssignment(node)) {
       kind = ClassMemberKind.Property;
       name = node.left.name.text;
