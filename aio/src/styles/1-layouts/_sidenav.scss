@@ -28,7 +28,7 @@ mat-sidenav.mat-sidenav.sidenav {
   left: 0;
   padding: 0;
   min-width: 260px;
-  background-color: $offwhite;
+  background-color: $white;
   box-shadow: 6px 0 6px rgba(0,0,0,0.10);
 
   &.collapsed {
@@ -46,6 +46,11 @@ mat-sidenav-container.sidenav-container {
   &.has-floating-toc {
     max-width: 82%;
   }
+}
+
+mat-sidenav-container.sidenav-container.mat-drawer-container.mat-sidenav-container,
+mat-sidenav-container .sidenav-content {
+  background-color: $white;
 }
 
 mat-sidenav-container div.mat-sidenav-content {
