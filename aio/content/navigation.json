@@ -706,8 +706,10 @@
         },
         {
           "url": "guide/workspace-config",
-          "title": "Workspace Configuration",
-          "tooltip": "The \"angular.json\" file contains workspace and project configuration defaults for Angular CLI commands."
+          "!title": "Workspace Configuration",
+          "title": "워크스페이스 설정",
+          "!tooltip": "The \"angular.json\" file contains workspace and project configuration defaults for Angular CLI commands.",
+          "tooltip": "워크스페이스와 프로젝트에서 Angular CLI 명령을 실행할 때 적용되는 기본 설정은 \"angular.json\" 파일에 지정합니다."
         },
 
         {
