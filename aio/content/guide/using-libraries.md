@@ -17,9 +17,6 @@ For an example, see [Angular Material](https://material.angular.io/) docs.
 
 Library packages often include typings in `.d.ts` files; see examples in `node_modules/@angular/material`. If your library's package does not include typings and your IDE complains, you may need to install the library's associated `@types/<lib_name>` package.
 
-To configure a library that does not include typings in the same package, install the related `@types` package with npm.
-TypeScript looks for types in the `node_modules/@types` folder by default, so you don't have to add each type package individually.
-
 For example, suppose you have a library named `d3`:
 
 <code-example format="." language="bash">
@@ -27,15 +24,8 @@ npm install d3 --save
 npm install @types/d3 --save-dev
 </code-example>
 
-Types defined in the library need to be added to the TypeScript configuration for the project that uses it.
-
-* Add the library to the "types" array in `src/tsconfig.app.json`.
-
-```
-"types":[
-  "d3"
-]
-```
+Types defined in a `@types/` package for a library installed into the workspace are automatically added to the TypeScript configuration for the project that uses that library.
+TypeScript looks for types in the `node_modules/@types` folder by default, so you don't have to add each type package individually.
 
 If a library doesn't have typings available at `@types/`, you can still use it by manually adding typings for it.
 To do this:
