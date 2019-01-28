@@ -151,4 +151,8 @@ export interface R3QueryMetadataFacade {
   read: any|null;
 }
 
-export interface ParseSourceSpan { start: any, end: any, details: any }
+export interface ParseSourceSpan {
+  start: any;
+  end: any;
+  details: any;
+}
