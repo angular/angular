@@ -7,7 +7,7 @@
  */
 
 import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('selectControl example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -16,7 +16,7 @@ describe('selectControl example', () => {
   let p: ElementFinder;
 
   beforeEach(() => {
-    browser.get('/forms/ts/selectControl/index.html');
+    browser.get('/selectControl');
     select = element(by.css('select'));
     options = element.all(by.css('option'));
     p = element(by.css('p'));

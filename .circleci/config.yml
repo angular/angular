@@ -410,7 +410,6 @@ jobs:
       - *define_env_vars
       - *yarn_install
       - run: yarn tsc -p packages
-      - run: yarn tsc -p packages/examples
       - run: yarn tsc -p modules
       - run: yarn karma start ./karma-js.conf.js --single-run --browsers=ChromeNoSandbox
 
@@ -437,7 +436,6 @@ jobs:
           command: ./scripts/saucelabs/start-tunnel.sh
           background: true
       - run: yarn tsc -p packages
-      - run: yarn tsc -p packages/examples
       - run: yarn tsc -p modules
         # Waits for the Saucelabs tunnel to be ready. This ensures that we don't run tests
         # too early without Saucelabs not being ready.
@@ -465,10 +463,9 @@ jobs:
       - run: ./scripts/build-e2e-tests.sh --use-existing-packages-dist
       - run:
           name: Starting servers for e2e tests
-          command: yarn gulp serve serve-examples
+          command: yarn gulp serve
           background: true
       - run: NODE_PATH=$NODE_PATH:./dist/all yarn protractor ./protractor-e2e.conf.js --bundles=true
-      - run: NODE_PATH=$NODE_PATH:./dist/all yarn protractor ./protractor-examples-e2e.conf.js --bundles=true
       - run: NODE_PATH=$NODE_PATH:./dist/all yarn protractor ./protractor-perf.conf.js --bundles=true --dryrun
 
   legacy-misc-tests:
