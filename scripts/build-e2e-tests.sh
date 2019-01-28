@@ -34,7 +34,3 @@ mkdir -p ./dist/all
 # Build the modules which contain the playground and benchmark e2e tests. These
 # can be served by running "gulp serve".
 ./modules/build.sh
-
-# Build the examples package which also contains various e2e tests. These can be
-# served by running "gulp serve-examples".
-./packages/examples/build.sh
