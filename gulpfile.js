@@ -39,7 +39,6 @@ gulp.task('source-map-test', loadTask('source-map-test'));
 gulp.task('tools:build', loadTask('tools-build'));
 gulp.task('check-cycle', loadTask('check-cycle'));
 gulp.task('serve', loadTask('serve', 'default'));
-gulp.task('serve-examples', loadTask('serve', 'examples'));
 gulp.task('changelog', loadTask('changelog'));
 gulp.task('check-env', () => {/* this is a noop because the env test ran already above */});
 gulp.task('cldr:extract', loadTask('cldr', 'extract'));

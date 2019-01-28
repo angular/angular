@@ -15,3 +15,5 @@ import {Pane, ViewChildComp} from './view_child_example';
     {imports: [BrowserModule], declarations: [ViewChildComp, Pane], bootstrap: [ViewChildComp]})
 export class AppModule {
 }
+
+export {ViewChildComp as AppComponent};

@@ -7,7 +7,7 @@
  */
 
 import {$, ExpectedConditions, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 function waitForElement(selector: string) {
   const EC = ExpectedConditions;
@@ -16,7 +16,7 @@ function waitForElement(selector: string) {
 }
 
 describe('ngIf', () => {
-  const URL = 'common/ngIf/ts/';
+  const URL = '/ngIf';
   afterEach(verifyNoBrowserErrors);
 
   describe('ng-if-simple', () => {

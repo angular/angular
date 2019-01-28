@@ -8,7 +8,7 @@
 
 
 import {ElementFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
 describe('viewChildren example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -16,7 +16,7 @@ describe('viewChildren example', () => {
   let result: ElementFinder;
 
   beforeEach(() => {
-    browser.get('/core/di/ts/viewChildren/index.html');
+    browser.get('/di/viewChildren');
     button = element(by.css('button'));
     result = element(by.css('div'));
   });

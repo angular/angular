@@ -7,7 +7,7 @@
  */
 
 import {ElementArrayFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('simpleForm example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -15,7 +15,7 @@ describe('simpleForm example', () => {
   let paragraphs: ElementArrayFinder;
 
   beforeEach(() => {
-    browser.get('/forms/ts/simpleForm/index.html');
+    browser.get('/simpleForm');
     inputs = element.all(by.css('input'));
     paragraphs = element.all(by.css('p'));
   });
