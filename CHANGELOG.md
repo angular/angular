@@ -1,3 +1,48 @@
+# 7.3.0 "pyrite-pixie" (2019-01-28)
+
+
+### Bug Fixes
+
+* **autocomplete:** not updating origin if it changes after init ([#14677](https://github.com/angular/material2/issues/14677)) ([4913c36](https://github.com/angular/material2/commit/4913c36))
+* **bottom-sheet:** allow disableClose to be updated after opened ([#14711](https://github.com/angular/material2/issues/14711)) ([3d3179f](https://github.com/angular/material2/commit/3d3179f)), closes [#14708](https://github.com/angular/material2/issues/14708)
+* **button:** focus indication hard to see in high contrast mode ([#13259](https://github.com/angular/material2/issues/13259)) ([fffbcb1](https://github.com/angular/material2/commit/fffbcb1))
+* **button-toggle:** remove references to selected toggle on destroy ([#14627](https://github.com/angular/material2/issues/14627)) ([98f0142](https://github.com/angular/material2/commit/98f0142))
+* **datepicker:** update validation when switching from null to error input ([#14423](https://github.com/angular/material2/issues/14423)) ([5aefe60](https://github.com/angular/material2/commit/5aefe60))
+* **drag-drop:** apply translation transform before user transforms ([#14712](https://github.com/angular/material2/issues/14712)) ([349675a](https://github.com/angular/material2/commit/349675a)), closes [#14699](https://github.com/angular/material2/issues/14699)
+* **drag-drop:** dragging styling not being reset in some cases with OnPush change detection ([#14725](https://github.com/angular/material2/issues/14725)) ([1d4bb18](https://github.com/angular/material2/commit/1d4bb18))
+* **drag-drop:** incorrectly preserving transform if root element changes ([#14697](https://github.com/angular/material2/issues/14697)) ([3656a4e](https://github.com/angular/material2/commit/3656a4e))
+* **drag-drop:** restore initial transform when resetting ([#14701](https://github.com/angular/material2/issues/14701)) ([005fb46](https://github.com/angular/material2/commit/005fb46))
+* **drag-drop:** unable to move item into connected container by passing through another container ([#14651](https://github.com/angular/material2/issues/14651)) ([0bd93dd](https://github.com/angular/material2/commit/0bd93dd)), closes [#14645](https://github.com/angular/material2/issues/14645)
+* **focus-trap:** apply aria-hidden to focus trap tab anchors ([#14644](https://github.com/angular/material2/issues/14644)) ([f66302d](https://github.com/angular/material2/commit/f66302d))
+* **icon:** clean up cached references in icon registry on destroy ([#14801](https://github.com/angular/material2/issues/14801)) ([f6b4288](https://github.com/angular/material2/commit/f6b4288))
+* **list:** action list button outline not being reset on firefox ([#14693](https://github.com/angular/material2/issues/14693)) ([73d0fb9](https://github.com/angular/material2/commit/73d0fb9))
+* **list:** deselect option if value doesn't match up ([#14800](https://github.com/angular/material2/issues/14800)) ([551ded5](https://github.com/angular/material2/commit/551ded5)), closes [#14734](https://github.com/angular/material2/issues/14734)
+* **list:** disableRipple on list input not taking effect after init ([#14836](https://github.com/angular/material2/issues/14836)) ([463ac9e](https://github.com/angular/material2/commit/463ac9e)), closes [#14824](https://github.com/angular/material2/issues/14824)
+* **menu:** not unsubscribing from close stream if trigger is destroyed ([#14107](https://github.com/angular/material2/issues/14107)) ([80f510f](https://github.com/angular/material2/commit/80f510f))
+* **overlay:** not sizing flexible overlay correctly when opening downwards on a scrollable page ([#14672](https://github.com/angular/material2/issues/14672)) ([40f8b20](https://github.com/angular/material2/commit/40f8b20))
+* **overlay:** reset transform when disposing of position strategy ([#14660](https://github.com/angular/material2/issues/14660)) ([86c530e](https://github.com/angular/material2/commit/86c530e)), closes [#14657](https://github.com/angular/material2/issues/14657)
+* **overlay:** update size if dimensions change in overlay directives ([#14610](https://github.com/angular/material2/issues/14610)) ([c92d8c9](https://github.com/angular/material2/commit/c92d8c9)), closes [#7811](https://github.com/angular/material2/issues/7811)
+* **slide-toggle:** use default hue for thumb in dark theme ([#14230](https://github.com/angular/material2/issues/14230)) ([7d96ed3](https://github.com/angular/material2/commit/7d96ed3)), closes [#14192](https://github.com/angular/material2/issues/14192)
+* **sort:** extra Firefox focus outline not being reset ([#14733](https://github.com/angular/material2/issues/14733)) ([027d4f4](https://github.com/angular/material2/commit/027d4f4))
+* **stepper:** ensure step state is not minified ([#14933](https://github.com/angular/material2/issues/14933)) ([e7b0e40](https://github.com/angular/material2/commit/e7b0e40))
+* **table:** not re-rendering when switching to a smaller set of data than the current page ([#14665](https://github.com/angular/material2/issues/14665)) ([a31a2ff](https://github.com/angular/material2/commit/a31a2ff)), closes [#12586](https://github.com/angular/material2/issues/12586) [#14010](https://github.com/angular/material2/issues/14010)
+* **tabs:** better handling of animationDuration without units ([#14778](https://github.com/angular/material2/issues/14778)) ([6f49813](https://github.com/angular/material2/commit/6f49813)), closes [#13428](https://github.com/angular/material2/issues/13428)
+* **tabs:** don't handle keyboard events with modifier keys ([#14234](https://github.com/angular/material2/issues/14234)) ([76cb9d0](https://github.com/angular/material2/commit/76cb9d0))
+* **tabs:** pagination not working correctly on chrome in rtl mode ([#14690](https://github.com/angular/material2/issues/14690)) ([220e6b2](https://github.com/angular/material2/commit/220e6b2)), closes [#14689](https://github.com/angular/material2/issues/14689)
+* **tooltip:** afterHidden stream not being completed ([#14620](https://github.com/angular/material2/issues/14620)) ([0394d59](https://github.com/angular/material2/commit/0394d59))
+
+
+### Features
+
+* **dialog:** support adding and removing classes via dialogRef ([#14772](https://github.com/angular/material2/issues/14772)) ([b62f3f3](https://github.com/angular/material2/commit/b62f3f3)), closes [#6206](https://github.com/angular/material2/issues/6206)
+* **drag-drop:** add service for attaching drag&drop to arbitrary DOM nodes ([#14437](https://github.com/angular/material2/issues/14437)) ([5a18ea6](https://github.com/angular/material2/commit/5a18ea6))
+* **overlay:** allow for connected overlay to be positioned relative to a point ([#14616](https://github.com/angular/material2/issues/14616)) ([651549f](https://github.com/angular/material2/commit/651549f)), closes [#5007](https://github.com/angular/material2/issues/5007)
+* **ripples:** support updating global ripple options at runtime ([#14705](https://github.com/angular/material2/issues/14705)) ([4f755cf](https://github.com/angular/material2/commit/4f755cf)), closes [#9729](https://github.com/angular/material2/issues/9729)
+* **tabs:** add automatic scrolling when holding down paginator ([#14632](https://github.com/angular/material2/issues/14632)) ([e661317](https://github.com/angular/material2/commit/e661317)), closes [#6510](https://github.com/angular/material2/issues/6510)
+* **tooltip:** allow for default position to be configured ([#14872](https://github.com/angular/material2/issues/14872)) ([342e6f0](https://github.com/angular/material2/commit/342e6f0)), closes [#14862](https://github.com/angular/material2/issues/14862)
+
+
+
 ## 7.2.1 "acrylic-axolotl" (2019-01-07)
 
 
