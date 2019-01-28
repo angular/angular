@@ -8,7 +8,7 @@
       }
     }
   },
-  "cli-hello-world-ivy": {
+  "cli-hello-world-ivy-compat": {
     "master": {
       "uncompressed": {
         "runtime": 1440,

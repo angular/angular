@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "cli-hello-world-ivy": {
+    "cli-hello-world-ivy-compat": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -60,17 +60,17 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "cli-hello-world-ivy:build"
+            "browserTarget": "cli-hello-world-ivy-compat:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "cli-hello-world-ivy:build:production"
+              "browserTarget": "cli-hello-world-ivy-compat:build:production"
             },
             "ci": {
               "progress": false
             },
             "ci-production": {
-              "browserTarget": "cli-hello-world-ivy:build:production",
+              "browserTarget": "cli-hello-world-ivy-compat:build:production",
               "progress": false
             }
           }
@@ -78,7 +78,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "cli-hello-world-ivy:build"
+            "browserTarget": "cli-hello-world-ivy-compat:build"
           }
         },
         "test": {
@@ -112,7 +112,7 @@
         }
       }
     },
-    "cli-hello-world-ivy-e2e": {
+    "cli-hello-world-ivy-compat-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -121,17 +121,17 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "cli-hello-world-ivy:serve"
+            "devServerTarget": "cli-hello-world-ivy-compat:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "cli-hello-world-ivy:serve:production"
+              "devServerTarget": "cli-hello-world-ivy-compat:serve:production"
             },
             "ci": {
-              "devServerTarget": "cli-hello-world-ivy:serve:ci"
+              "devServerTarget": "cli-hello-world-ivy-compat:serve:ci"
             },
             "ci-production": {
-              "devServerTarget": "cli-hello-world-ivy:serve:ci-production"
+              "devServerTarget": "cli-hello-world-ivy-compat:serve:ci-production"
             }
           }
         },
@@ -147,5 +147,5 @@
       }
     }
   },
-  "defaultProject": "cli-hello-world-ivy"
+  "defaultProject": "cli-hello-world-ivy-compat"
 }
