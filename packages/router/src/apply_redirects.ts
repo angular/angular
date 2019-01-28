@@ -248,7 +248,9 @@ class ApplyRedirects {
               route._loadedConfig = cfg;
 
               // Destroy loadedConfig when module is destroyed
-              ngModule.onDestroy(() => route._loadedConfig = undefined);
+              if (typeof ngModule.onDestroy === "function") {
+                ngModule.onDestroy(() => route._loadedConfig = undefined);
+              }
 
               return new UrlSegmentGroup(segments, {});
             }));
@@ -309,7 +311,9 @@ class ApplyRedirects {
                     route._loadedConfig = cfg;
 
                     // Destroy loadedConfig when module is destroyed
-                    ngModule.onDestroy(() => route._loadedConfig = undefined);
+                    if (typeof ngModule.onDestroy === "function") {
+                      ngModule.onDestroy(() => route._loadedConfig = undefined);
+                    }
 
                     return cfg;
                   }));
