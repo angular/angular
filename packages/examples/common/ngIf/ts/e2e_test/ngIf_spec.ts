@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {fixmeIvy} from '@angular/private/testing';
 import {$, ExpectedConditions, browser, by, element} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
@@ -44,18 +45,21 @@ describe('ngIf', () => {
 
   describe('ng-if-then-else', () => {
     let comp = 'ng-if-then-else';
-    it('should hide/show content', () => {
-      browser.get(URL);
-      waitForElement(comp);
-      expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('hideSwitch Primary show = true\nPrimary text to show');
-      element.all(by.css(comp + ' button')).get(1).click();
-      expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('hideSwitch Primary show = true\nSecondary text to show');
-      element.all(by.css(comp + ' button')).get(0).click();
-      expect(element.all(by.css(comp)).get(0).getText())
-          .toEqual('showSwitch Primary show = false\nAlternate text while primary text is hidden');
-    });
+
+    fixmeIvy('unknown. Run "yarn bazel run packages/examples/common:devserver" to debug')
+        .it('should hide/show content', () => {
+          browser.get(URL);
+          waitForElement(comp);
+          expect(element.all(by.css(comp)).get(0).getText())
+              .toEqual('hideSwitch Primary show = true\nPrimary text to show');
+          element.all(by.css(comp + ' button')).get(1).click();
+          expect(element.all(by.css(comp)).get(0).getText())
+              .toEqual('hideSwitch Primary show = true\nSecondary text to show');
+          element.all(by.css(comp + ' button')).get(0).click();
+          expect(element.all(by.css(comp)).get(0).getText())
+              .toEqual(
+                  'showSwitch Primary show = false\nAlternate text while primary text is hidden');
+        });
   });
 
   describe('ng-if-let', () => {
