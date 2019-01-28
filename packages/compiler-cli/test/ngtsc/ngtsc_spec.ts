@@ -1999,7 +1999,7 @@ describe('ngtsc behavioral tests', () => {
     expect(routes[0].referencedModule.filePath.endsWith('/lazy.ts')).toBe(true);
   });
 
-  it('should detect no lazy routes for simple children routes', () => {
+  it('should detect lazy routes in simple children routes', () => {
     env.tsconfig();
     env.write('test.ts', `
     import {NgModule} from '@angular/core';
@@ -2015,12 +2015,20 @@ describe('ngtsc behavioral tests', () => {
       imports: [
         RouterModule.forRoot([
           {path: '', children: [
-            {path: 'foo', component: FooCmp}
+            {path: 'foo', component: FooCmp},
+            {path: 'lazy', loadChildren: './lazy#LazyModule'}
           ]},
         ]),
       ],
     })
     export class TestModule {}
+    `);
+    env.write('lazy.ts', `
+    import {NgModule} from '@angular/core';
+    import {RouterModule} from '@angular/router';
+
+    @NgModule({})
+    export class LazyModule {}
     `);
     env.write('node_modules/@angular/router/index.d.ts', `
     import {ModuleWithProviders} from '@angular/core';
@@ -2033,7 +2041,10 @@ describe('ngtsc behavioral tests', () => {
     `);
 
     const routes = env.driveRoutes();
-    expect(routes.length).toBe(0);
+    expect(routes.length).toBe(1);
+    expect(routes[0].route).toEqual('./lazy#LazyModule');
+    expect(routes[0].module.filePath.endsWith('/test.ts')).toBe(true);
+    expect(routes[0].referencedModule.filePath.endsWith('/lazy.ts')).toBe(true);
   });
 });
 
