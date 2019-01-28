@@ -246,6 +246,10 @@ class ApplyRedirects {
         return this.configLoader.load(ngModule.injector, route)
             .pipe(map((cfg: LoadedRouterConfig) => {
               route._loadedConfig = cfg;
+
+              // Destroy loadedConfig when module is destroyed
+              ngModule.onDestroy(() => route._loadedConfig = undefined);
+
               return new UrlSegmentGroup(segments, {});
             }));
       }
@@ -303,6 +307,10 @@ class ApplyRedirects {
               return this.configLoader.load(ngModule.injector, route)
                   .pipe(map((cfg: LoadedRouterConfig) => {
                     route._loadedConfig = cfg;
+
+                    // Destroy loadedConfig when module is destroyed
+                    ngModule.onDestroy(() => route._loadedConfig = undefined);
+
                     return cfg;
                   }));
             }
