@@ -1,0 +1,23 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "fake_async_lib",
+    srcs = [
+        "example_spec.ts",
+        "fake_async.ts",
+    ],
+    deps = [
+        "//packages/core/testing",
+        "@ngdeps//@types/jasmine",
+        "@ngdeps//@types/node",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    deps = [
+        ":fake_async_lib",
+        "//tools/testing:node",
+    ],
+)

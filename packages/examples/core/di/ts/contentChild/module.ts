@@ -17,3 +17,5 @@ import {ContentChildComp, Pane, Tab} from './content_child_example';
 })
 export class AppModule {
 }
+
+export {ContentChildComp as AppComponent};

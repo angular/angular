@@ -33,7 +33,12 @@
     "common/locales",
     "compiler-cli/integrationtest",
     "elements/schematics",
+    // Do not build the example e2e spec files since those require custom typings and
+    // aren't required to build all packages.
     "examples/**/e2e_test/*",
+    // Exclude the "main.ts" files for each example group because this file is used by
+    // Bazel to launch the devserver and uses AOT compilation.
+    "examples/*/main.ts",
     "platform-server/integrationtest",
     "router/test/aot_ngsummary_test",
   ]
