@@ -12,10 +12,13 @@
     "name": "BLOOM_MASK"
   },
   {
-    "name": "CLEAN_PROMISE"
+    "name": "CHILD_HEAD"
   },
   {
-    "name": "CONTAINER_INDEX"
+    "name": "CHILD_TAIL"
+  },
+  {
+    "name": "CLEAN_PROMISE"
   },
   {
     "name": "CONTEXT"
@@ -118,9 +121,6 @@
   },
   {
     "name": "SANITIZER"
-  },
-  {
-    "name": "TAIL"
   },
   {
     "name": "TVIEW"
@@ -351,7 +351,7 @@
     "name": "getLView"
   },
   {
-    "name": "getLViewChild"
+    "name": "getLViewParent"
   },
   {
     "name": "getNativeAnchorNode"
@@ -469,6 +469,12 @@
   },
   {
     "name": "isFactory"
+  },
+  {
+    "name": "isLContainer"
+  },
+  {
+    "name": "isLView"
   },
   {
     "name": "isNodeMatchingSelector"

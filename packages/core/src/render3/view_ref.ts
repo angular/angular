@@ -15,7 +15,7 @@ import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootVie
 import {TNode, TNodeType, TViewNode} from './interfaces/node';
 import {FLAGS, HOST, LView, LViewFlags, PARENT, T_HOST} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
-import {getNativeByTNode} from './util';
+import {getLViewParent, getNativeByTNode} from './util';
 
 
 
@@ -271,7 +271,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   }
 
   private _lookUpContext(): T {
-    return this._context = this._lView[PARENT] ![this._componentIndex] as T;
+    return this._context = getLViewParent(this._lView) ![this._componentIndex] as T;
   }
 }
 

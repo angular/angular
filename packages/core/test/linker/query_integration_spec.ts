@@ -319,7 +319,7 @@ describe('Query API', () => {
          const template = `<needs-content-children-shallow>
                           <ng-template [ngIf]="true">
                             <div #q></div>
-                          </ng-template>                          
+                          </ng-template>
                         </needs-content-children-shallow>`;
          const view = createTestCmpAndDetectChanges(MyComp0, template);
 
@@ -333,7 +333,7 @@ describe('Query API', () => {
          const template = `<needs-content-children-shallow>
                           <ng-template [ngIf]="true">
                             <div #q directive-needs-content-child></div>
-                          </ng-template>                          
+                          </ng-template>
                         </needs-content-children-shallow>`;
          const view = createTestCmpAndDetectChanges(MyComp0, template);
 
@@ -358,7 +358,7 @@ describe('Query API', () => {
           const template = `<needs-content-children-shallow>
                           <ng-container>
                             <div #q></div>
-                          </ng-container>                             
+                          </ng-container>
                         </needs-content-children-shallow>`;
           const view = createTestCmpAndDetectChanges(MyComp0, template);
 

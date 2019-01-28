@@ -8,11 +8,11 @@
 import '../util/ng_dev_mode';
 
 import {getLContext} from './context_discovery';
-import {getRootContext} from './discovery_utils';
 import {scheduleTick} from './instructions';
 import {ComponentInstance, DirectiveInstance, Player} from './interfaces/player';
-import {HEADER_OFFSET, RootContextFlags} from './interfaces/view';
+import {RootContextFlags} from './interfaces/view';
 import {addPlayerInternal, getOrCreatePlayerContext, getPlayerContext, getPlayersInternal, getStylingContext, throwInvalidRefError} from './styling/util';
+import {getRootContext} from './util';
 
 /**
  * Adds a player to an element, directive or component instance that will later be

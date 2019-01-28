@@ -110,11 +110,27 @@ export const domRendererFactory3: RendererFactory3 = {
 
 /** Subset of API needed for appending elements and text nodes. */
 export interface RNode {
+  /**
+   * Returns the parent Element, Document, or DocumentFragment
+   */
   parentNode: RNode|null;
 
+
+  /**
+   * Returns the parent Element if there is one
+   */
+  parentElement: RElement|null;
+
+  /**
+   * Gets the Node immediately following this one in the parent's childNodes
+   */
   nextSibling: RNode|null;
 
-  removeChild(oldChild: RNode): void;
+  /**
+   * Removes a child from the current node and returns the removed node
+   * @param oldChild the child node to remove
+   */
+  removeChild(oldChild: RNode): RNode;
 
   /**
    * Insert a child node.

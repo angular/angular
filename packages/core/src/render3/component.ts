@@ -134,7 +134,7 @@ export function renderComponent<T>(
     component = createRootComponent(
         componentView, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
-    addToViewTree(rootView, HEADER_OFFSET, componentView);
+    addToViewTree(rootView, componentView);
 
     refreshDescendantViews(rootView);  // creation mode pass
     rootView[FLAGS] &= ~LViewFlags.CreationMode;

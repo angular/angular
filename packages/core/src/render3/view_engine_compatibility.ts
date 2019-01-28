@@ -22,7 +22,7 @@ import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbedd
 import {ACTIVE_INDEX, LContainer, NATIVE, VIEWS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
-import {CONTAINER_INDEX, CONTEXT, LView, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
+import {CONTEXT, LView, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getLView, getPreviousOrParentTNode} from './state';
@@ -101,15 +101,13 @@ export function createTemplateRef<T>(
         super();
       }
 
-      createEmbeddedView(
-          context: T, container?: LContainer,
-          hostTNode?: TElementNode|TContainerNode|TElementContainerNode, hostView?: LView,
-          index?: number): viewEngine_EmbeddedViewRef<T> {
+      createEmbeddedView(context: T, container?: LContainer, index?: number):
+          viewEngine_EmbeddedViewRef<T> {
         const lView = createEmbeddedViewAndNode(
             this._tView, context, this._declarationParentView, this._hostLContainer[QUERIES],
             this._injectorIndex);
         if (container) {
-          insertView(lView, container, hostView !, index !, hostTNode !.index);
+          insertView(lView, container, index !);
         }
         renderEmbeddedTemplate(lView, this._tView, context);
         const viewRef = new ViewRef(lView, context, -1);
@@ -207,9 +205,7 @@ export function createContainerRef(
           viewEngine_EmbeddedViewRef<C> {
         const adjustedIdx = this._adjustIndex(index);
         const viewRef = (templateRef as any)
-                            .createEmbeddedView(
-                                context || <any>{}, this._lContainer, this._hostTNode,
-                                this._hostView, adjustedIdx);
+                            .createEmbeddedView(context || <any>{}, this._lContainer, adjustedIdx);
         (viewRef as ViewRef<any>).attachToViewContainerRef(this);
         this._viewRefs.splice(adjustedIdx, 0, viewRef);
         return viewRef;
@@ -237,7 +233,7 @@ export function createContainerRef(
         const lView = (viewRef as ViewRef<any>)._lView !;
         const adjustedIdx = this._adjustIndex(index);
 
-        insertView(lView, this._lContainer, this._hostView, adjustedIdx, this._hostTNode.index);
+        insertView(lView, this._lContainer, adjustedIdx);
 
         const beforeNode =
             getBeforeNodeForView(adjustedIdx, this._lContainer[VIEWS], this._lContainer[NATIVE]);
@@ -271,7 +267,7 @@ export function createContainerRef(
         const adjustedIdx = this._adjustIndex(index, -1);
         const view = detachView(this._lContainer, adjustedIdx);
         const wasDetached = this._viewRefs.splice(adjustedIdx, 1)[0] != null;
-        return wasDetached ? new ViewRef(view, view[CONTEXT], view[CONTAINER_INDEX]) : null;
+        return wasDetached ? new ViewRef(view, view[CONTEXT], -1) : null;
       }
 
       private _adjustIndex(index?: number, shift: number = 0) {
