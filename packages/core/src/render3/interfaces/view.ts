@@ -41,8 +41,8 @@ export const INJECTOR = 10;
 export const RENDERER_FACTORY = 11;
 export const RENDERER = 12;
 export const SANITIZER = 13;
-export const TAIL = 14;
-export const CONTAINER_INDEX = 15;
+export const CHILD_HEAD = 14;
+export const CHILD_TAIL = 15;
 export const CONTENT_QUERIES = 16;
 export const DECLARATION_VIEW = 17;
 /** Size of LView's header. Necessary to adjust for it when setting slots.  */
@@ -86,7 +86,7 @@ export interface LView extends Array<any> {
    * This is the "insertion" view for embedded views. This allows us to properly
    * destroy embedded views.
    */
-  [PARENT]: LView|null;
+  [PARENT]: LView|LContainer|null;
 
   /**
    *
@@ -168,17 +168,7 @@ export interface LView extends Array<any> {
    * The tail allows us to quickly add a new state to the end of the view list
    * without having to propagate starting from the first child.
    */
-  [TAIL]: LView|LContainer|null;
-
-  /**
-   * The index of the parent container's host node. Applicable only to embedded views that
-   * have been inserted dynamically. Will be -1 for component views and inline views.
-   *
-   * This is necessary to jump from dynamically created embedded views to their parent
-   * containers because their parent cannot be stored on the TViewNode (views may be inserted
-   * in multiple containers, so the parent cannot be shared between view instances).
-   */
-  [CONTAINER_INDEX]: number;
+  [CHILD_TAIL]: LView|LContainer|null;
 
   /**
    * Stores QueryLists associated with content queries of a directive. This data structure is

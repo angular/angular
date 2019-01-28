@@ -65,7 +65,10 @@ export function throwError(msg: string): never {
 }
 
 export function assertDomNode(node: any) {
-  assertEqual(node instanceof Node, true, 'The provided value must be an instance of a DOM Node');
+  assertEqual(
+      node instanceof Node ||
+          (typeof node === 'object' && node.constructor.name === 'WebWorkerRenderNode'),
+      true, 'The provided value must be an instance of a DOM Node');
 }
 
 

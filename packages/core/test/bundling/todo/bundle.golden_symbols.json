@@ -18,13 +18,16 @@
     "name": "BoundPlayerFactory"
   },
   {
+    "name": "CHILD_HEAD"
+  },
+  {
+    "name": "CHILD_TAIL"
+  },
+  {
     "name": "CLEANUP"
   },
   {
     "name": "CLEAN_PROMISE"
-  },
-  {
-    "name": "CONTAINER_INDEX"
   },
   {
     "name": "CONTEXT"
@@ -208,9 +211,6 @@
   },
   {
     "name": "SkipSelf"
-  },
-  {
-    "name": "TAIL"
   },
   {
     "name": "TNODE"
@@ -720,7 +720,7 @@
     "name": "getLView"
   },
   {
-    "name": "getLViewChild"
+    "name": "getLViewParent"
   },
   {
     "name": "getMatchingBindingIndex"
@@ -964,6 +964,9 @@
   },
   {
     "name": "isLContainer"
+  },
+  {
+    "name": "isLView"
   },
   {
     "name": "isListLikeIterable"
