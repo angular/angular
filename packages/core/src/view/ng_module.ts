@@ -158,7 +158,7 @@ function _createProviderInstance(ngModule: NgModuleData, providerDef: NgModulePr
   // avoided if possible. The sequence of checks here determines whether ngOnDestroy needs to be
   // checked. It might not if the `injectable` isn't an object or if NodeFlags.OnDestroy is already
   // set (ngOnDestroy was detected statically).
-  if (injectable !== UNDEFINED_VALUE && injectable != null && typeof injectable === 'object' &&
+  if (injectable !== UNDEFINED_VALUE && injectable !== null && typeof injectable === 'object' &&
       !(providerDef.flags & NodeFlags.OnDestroy) && typeof injectable.ngOnDestroy === 'function') {
     providerDef.flags |= NodeFlags.OnDestroy;
   }
