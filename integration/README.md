@@ -27,6 +27,9 @@ If the Angular CLI is modified to generate a render3 application this should be 
 If the render3 is updated to support the Angular 5 bootstrap a version of this project should be created that
 uses the Angular 5 bootstrap.
 
+The `cli-hello-world-ivy-minimal` contains a minimal ivy app that is meant to mimic the bazel 
+equivalent in `packages/core/test/bundling/hello_world`, and should be kept similar.
+
 ## Writing an integration test
 
 The API for each test is:
