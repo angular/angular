@@ -439,10 +439,12 @@ function extractHostBindings(
 
   const bindings = parseHostBindings(hostMetadata);
 
-  // Create and provide proper sourceSpan to make error message more descriptive (FW-995)
-  const errors = verifyHostBindings(bindings, null !);
-  if (errors.length) {
+  // TODO: create and provide proper sourceSpan to make error message more descriptive (FW-995)
+  const errors = verifyHostBindings(bindings, /* sourceSpan */ null !);
+  if (errors.length > 0) {
     throw new FatalDiagnosticError(
+        // TODO: provide more granular diagnostic and output specific host expression that triggered
+        // an error instead of the whole host object
         ErrorCode.HOST_BINDING_PARSE_ERROR, metadata.get('host') !,
         errors.map((error: ParseError) => error.msg).join('\n'));
   }

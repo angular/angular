@@ -25,6 +25,10 @@ export enum ErrorCode {
 
   CONFIG_FLAT_MODULE_NO_INDEX = 4001,
 
+  /**
+   * Raised when a host expression has a parse error, such as a host listener or host binding
+   * expression containing a pipe.
+   */
   HOST_BINDING_PARSE_ERROR = 5001,
 }
 

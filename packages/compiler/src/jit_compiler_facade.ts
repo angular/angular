@@ -13,7 +13,7 @@ import {HostBinding, HostListener, Input, Output, Type} from './core';
 import {compileInjectable} from './injectable_compiler_2';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config';
 import {Expression, LiteralExpr, WrappedNodeExpr} from './output/output_ast';
-import {ParseError, ParseSourceSpan, r3TypeSourceSpan} from './parse_util';
+import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
 import {R3DependencyMetadata, R3ResolvedDependencyType} from './render3/r3_factory';
 import {jitExpression} from './render3/r3_jit';
 import {R3InjectorMetadata, R3NgModuleMetadata, compileInjector, compileNgModule} from './render3/r3_module_compiler';
@@ -94,8 +94,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const constantPool = new ConstantPool();
     const bindingParser = makeBindingParser();
 
-    const typeSourceSpan = r3TypeSourceSpan('Directive', facade.name, sourceMapUrl);
-    const meta: R3DirectiveMetadata = convertDirectiveFacadeToMetadata(facade, typeSourceSpan);
+    const meta: R3DirectiveMetadata = convertDirectiveFacadeToMetadata(facade);
     const res = compileDirectiveFromMetadata(meta, constantPool, bindingParser);
     const preStatements = [...constantPool.statements, ...res.statements];
     return jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
@@ -121,11 +120,10 @@ export class CompilerFacadeImpl implements CompilerFacade {
 
     // Compile the component metadata, including template, into an expression.
     // TODO(alxhub): implement inputs, outputs, queries, etc.
-    const typeSourceSpan = r3TypeSourceSpan('Component', facade.name, sourceMapUrl);
     const res = compileComponentFromMetadata(
         {
           ...facade as R3ComponentMetadataFacadeNoPropAndWhitespace,
-          ...convertDirectiveFacadeToMetadata(facade, typeSourceSpan),
+          ...convertDirectiveFacadeToMetadata(facade),
           selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
           template,
           viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
@@ -144,6 +142,10 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const preStatements = [...constantPool.statements, ...res.statements];
 
     return jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
+  }
+
+  createTypeSourceSpan(kind: string, typeName: string, sourceUrl: string): any {
+    return r3JitTypeSourceSpan(kind, typeName, sourceUrl);
   }
 }
 
@@ -171,8 +173,7 @@ function convertToR3QueryMetadata(facade: R3QueryMetadataFacade): R3QueryMetadat
   };
 }
 
-function convertDirectiveFacadeToMetadata(
-    facade: R3DirectiveMetadataFacade, typeSourceSpan: ParseSourceSpan): R3DirectiveMetadata {
+function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3DirectiveMetadata {
   const inputsFromMetadata = parseInputOutputs(facade.inputs || []);
   const outputsFromMetadata = parseInputOutputs(facade.outputs || []);
   const propMetadata = facade.propMetadata;
@@ -193,10 +194,10 @@ function convertDirectiveFacadeToMetadata(
 
   return {
     ...facade as R3DirectiveMetadataFacadeNoPropAndWhitespace,
-    typeSourceSpan,
+    typeSourceSpan: facade.typeSourceSpan,
     type: new WrappedNodeExpr(facade.type),
     deps: convertR3DependencyMetadataArray(facade.deps),
-    host: extractHostBindings(facade.host, facade.propMetadata, typeSourceSpan),
+    host: extractHostBindings(facade.host, facade.propMetadata, facade.typeSourceSpan),
     inputs: {...inputsFromMetadata, ...inputsFromType},
     outputs: {...outputsFromMetadata, ...outputsFromType},
     queries: facade.queries.map(convertToR3QueryMetadata),

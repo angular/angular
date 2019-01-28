@@ -877,7 +877,9 @@ const enum HostBindingGroup {
   Event = 2,
 }
 
-interface ParsedHostBindings {
+// Defines Host Bindings structure that contains attributes, listeners, and properties,
+// parsed from the `host` object defined for a Type.
+export interface ParsedHostBindings {
   attributes: {[key: string]: string};
   listeners: {[key: string]: string};
   properties: {[key: string]: string};
@@ -906,10 +908,18 @@ export function parseHostBindings(host: {[key: string]: string}): ParsedHostBind
   return {attributes, listeners, properties};
 }
 
+/**
+ * Verifies host bindings and returns the list of errors (if any). Empty array indicates that a
+ * given set of host bindings has no errors.
+ *
+ * @param bindings set of host bindings to verify.
+ * @param sourceSpan source span where host bindings were defined.
+ * @returns array of errors associated with a given set of host bindings.
+ */
 export function verifyHostBindings(
     bindings: ParsedHostBindings, sourceSpan: ParseSourceSpan): ParseError[] {
   const summary = metadataAsSummary({ host: bindings } as any);
-  // Abstract out host bindings verification logic and use it instead of
+  // TODO: abstract out host bindings verification logic and use it instead of
   // creating events and properties ASTs to detect errors (FW-996)
   const bindingParser = makeBindingParser();
   bindingParser.createDirectiveHostEventAsts(summary, sourceSpan);
