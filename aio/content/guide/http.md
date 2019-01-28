@@ -164,8 +164,11 @@ As you can see, the response object has a `body` property of the correct type.
 
 ### Making a JSONP request
 
-An app can use JSONP request as a solution to get around the issue of cross domain `GET` requests. JSONP treats the API we need to access as a javascript file. Browser doesn't check CORS when downloading javascript files, so this works around the issue of CORS. An application makes a JSONP request by passing along a callback function that tells the server
-to wrap the response in that function. JSONP requests still returns an Observable.
+An app can use the Angular JSONP request as a workaround to make cross domain `GET` requests. JSONP treats the API we need to access as a javascript file. Browser doesn't check cross domain when executing javascript files, so by using the Angular JSONP, an app can access APIs without facing the cross-domain issue.
+
+An application makes a JSONP request by passing along a callback function that tells the server
+to wrap the response in that function. Angular JSONP requests returns an Observable. Follow the pattern for subscribing to observables and use the RxJS `map` property to manipulate the results.
+You can also use the async pipe to manipulate the results.
 
 <div class="alert is-important">
 
@@ -176,26 +179,18 @@ JSONP requests only works for `GET` requests, it doesn’t work for PUT/POST/DEL
 
 In Angular, use JSONP by importing the `JsonpModule` to the `NgModule` imports. Here is the `searchHeroes` method that queries for heroes whose names contain the search term using the JSONP request.
 
-Here we pass the function name as one of the query params.
+Here we pass the `heroesURL` as the first parameter and `callback` as the second parameter. The response is wrapped in the callback function. Next, we take the Observables returned by the JSONP method and pipe them through to the error handler.
 
 <code-example hideCopy language="typescript">
 /* GET heroes whose name contains search term */
 searchHeroes(term: string): Observable<Hero[]> {
   term = term.trim();
 
-  const httpOptions = {
-  params: new HttpParams({
-    'name':  'term',
-    'callback': 'JSONP_CALLBACK'
-  })
-};
-
-  return this.jsonp.request<Hero[]>(this.heroesUrl, httpOptions).pipe(
-
-      catchError(this.handleError) // then handle the error
+  let heroesURL = `${this.heroesURL}?${term}`;
+  return this.jsonp.request(heroesUrl, 'callback').pipe(
+      catchError(this.handleError<Hero[]>('searchHeroes', []) // then handle the error
     );
-
-}
+};
 </code-example>
 
 ### Requesting non-JSON data
