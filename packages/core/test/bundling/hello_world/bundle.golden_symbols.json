@@ -102,6 +102,9 @@
     "name": "SANITIZER"
   },
   {
+    "name": "TAIL"
+  },
+  {
     "name": "TVIEW"
   },
   {
@@ -127,6 +130,9 @@
   },
   {
     "name": "_renderCompCount"
+  },
+  {
+    "name": "addToViewTree"
   },
   {
     "name": "appendChild"
@@ -210,6 +216,9 @@
     "name": "extractPipeDef"
   },
   {
+    "name": "firstTemplatePass"
+  },
+  {
     "name": "generateExpandoInstructionBlock"
   },
   {
@@ -232,6 +241,9 @@
   },
   {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getFirstTemplatePass"
   },
   {
     "name": "getHighestElementOrICUContainer"

@@ -666,3 +666,41 @@ describe('recursive components', () => {
   });
 
 });
+
+describe('view destruction', () => {
+  let wasOnDestroyCalled = false;
+
+  class ComponentWithOnDestroy {
+    static ngComponentDef = defineComponent({
+      selectors: [['comp-with-destroy']],
+      type: ComponentWithOnDestroy,
+      consts: 0,
+      vars: 0,
+      factory: () => new ComponentWithOnDestroy(),
+      template: (rf: any, ctx: any) => {},
+    });
+
+    ngOnDestroy() { wasOnDestroyCalled = true; }
+  }
+
+  it('should invoke onDestroy when directly destroying a root view', () => {
+    // This test asserts that the view tree is set up correctly based on the knowledge that this
+    // tree is used during view destruction. If the child view is not correctly attached as a
+    // child of the root view, then the onDestroy hook on the child view will never be called
+    // when the view tree is torn down following the destruction of that root view.
+    const ComponentWithChildOnDestroy = createComponent('test-app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(0, 'comp-with-destroy');
+      }
+    }, 1, 0, [ComponentWithOnDestroy], [], null, [], []);
+
+    const fixture = new ComponentFixture(ComponentWithChildOnDestroy);
+    fixture.update();
+
+    fixture.destroy();
+    expect(wasOnDestroyCalled)
+        .toBe(
+            true,
+            'Expected component onDestroy method to be called when its parent view is destroyed');
+  });
+});
