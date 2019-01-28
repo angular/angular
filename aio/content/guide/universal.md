@@ -145,7 +145,7 @@ If your server handles HTTP requests, you'll have to add your own security plumb
 Install `@angular/platform-server` into your project. Use the same version as the other `@angular` packages in your project. You also need `ts-loader`, `webpack-cli` for your webpack build and `@nguniversal/module-map-ngfactory-loader` to handle lazy-loading in the context of a server-render.
 
 <code-example language="sh" class="code-shell">
-$ npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader webpack-cli
+$ npm install --save @angular/http @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader webpack-cli
 </code-example>
 
 ## Step 2: Prepare your app
