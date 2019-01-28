@@ -11,7 +11,6 @@ import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-import {fixmeIvy} from '@angular/private/testing';
 import {UpgradeComponent, downgradeComponent, downgradeModule} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 import {$EXCEPTION_HANDLER, $ROOT_SCOPE, INJECTOR_KEY, LAZY_MODULE_REF} from '@angular/upgrade/static/src/common/constants';
@@ -590,64 +589,63 @@ withEachNg1Version(() => {
            });
          }));
 
-      fixmeIvy('FW-718: upgraded service not being initialized correctly on the injector')
-          .it('should support using an upgraded service', async(() => {
-                class Ng2Service {
-                  constructor(@Inject('ng1Value') private ng1Value: string) {}
-                  getValue = () => `${this.ng1Value}-bar`;
-                }
+      it('should support using an upgraded service', async(() => {
+           @Injectable()
+           class Ng2Service {
+             constructor(@Inject('ng1Value') private ng1Value: string) {}
+             getValue = () => `${this.ng1Value}-bar`;
+           }
 
-                @Component({selector: 'ng2', template: '{{ value }}'})
-                class Ng2Component {
-                  value: string;
-                  constructor(ng2Service: Ng2Service) { this.value = ng2Service.getValue(); }
-                }
+           @Component({selector: 'ng2', template: '{{ value }}'})
+           class Ng2Component {
+             value: string;
+             constructor(ng2Service: Ng2Service) { this.value = ng2Service.getValue(); }
+           }
 
-                @NgModule({
-                  declarations: [Ng2Component],
-                  entryComponents: [Ng2Component],
-                  imports: [BrowserModule],
-                  providers: [
-                    Ng2Service,
-                    {
-                      provide: 'ng1Value',
-                      useFactory: (i: angular.IInjectorService) => i.get('ng1Value'),
-                      deps: ['$injector'],
-                    },
-                  ],
-                })
-                class Ng2Module {
-                  ngDoBootstrap() {}
-                }
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+             providers: [
+               Ng2Service,
+               {
+                 provide: 'ng1Value',
+                 useFactory: (i: angular.IInjectorService) => i.get('ng1Value'),
+                 deps: ['$injector'],
+               },
+             ],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
 
-                const bootstrapFn = (extraProviders: StaticProvider[]) =>
-                    platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
-                const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
-                const ng1Module =
-                    angular.module('ng1', [lazyModuleName])
-                        .directive(
-                            'ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
-                        .value('ng1Value', 'foo');
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module('ng1', [lazyModuleName])
+                   .directive('ng2', downgradeComponent({component: Ng2Component, propagateDigest}))
+                   .value('ng1Value', 'foo');
 
-                const element = html('<div><ng2 ng-if="loadNg2"></ng2></div>');
-                const $injector = angular.bootstrap(element, [ng1Module.name]);
-                const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+           const element = html('<div><ng2 ng-if="loadNg2"></ng2></div>');
+           const $injector = angular.bootstrap(element, [ng1Module.name]);
+           const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
 
-                expect(element.textContent).toBe('');
-                expect(() => $injector.get(INJECTOR_KEY)).toThrowError();
+           expect(element.textContent).toBe('');
+           expect(() => $injector.get(INJECTOR_KEY)).toThrowError();
 
-                $rootScope.$apply('loadNg2 = true');
-                expect(element.textContent).toBe('');
-                expect(() => $injector.get(INJECTOR_KEY)).toThrowError();
+           $rootScope.$apply('loadNg2 = true');
+           expect(element.textContent).toBe('');
+           expect(() => $injector.get(INJECTOR_KEY)).toThrowError();
 
-                // Wait for the module to be bootstrapped.
-                setTimeout(() => {
-                  expect(() => $injector.get(INJECTOR_KEY)).not.toThrow();
+           // Wait for the module to be bootstrapped.
+           setTimeout(() => {
+             expect(() => $injector.get(INJECTOR_KEY)).not.toThrow();
 
-                  // Wait for `$evalAsync()` to propagate inputs.
-                  setTimeout(() => expect(element.textContent).toBe('foo-bar'));
-                });
-              }));
+             // Wait for `$evalAsync()` to propagate inputs.
+             setTimeout(() => expect(element.textContent).toBe('foo-bar'));
+           });
+         }));
 
       it('should create components inside the Angular zone', async(() => {
            @Component({selector: 'ng2', template: 'In the zone: {{ inTheZone }}'})

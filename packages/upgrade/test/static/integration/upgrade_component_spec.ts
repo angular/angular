@@ -10,7 +10,6 @@ import {Component, Directive, ElementRef, ErrorHandler, EventEmitter, Inject, In
 import {async, fakeAsync, tick} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {fixmeIvy} from '@angular/private/testing';
 import {UpgradeComponent, UpgradeModule, downgradeComponent} from '@angular/upgrade/static';
 import * as angular from '@angular/upgrade/static/src/common/angular1';
 import {$EXCEPTION_HANDLER, $SCOPE} from '@angular/upgrade/static/src/common/constants';
