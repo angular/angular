@@ -29,17 +29,19 @@ describe('Bazel-workspace Schematic', () => {
     expect(files).toContain('/yarn.lock');
   });
 
-  it('should find existing Angular version', () => {
-    let host = new UnitTestTree(new HostTree);
-    host.create('/node_modules/@angular/core/package.json', JSON.stringify({
-      name: '@angular/core',
-      version: '6.6.6',
-    }));
-    const options = {...defaultOptions};
-    host = schematicRunner.runSchematic('bazel-workspace', options, host);
-    expect(host.files).toContain('/WORKSPACE');
-    const workspace = host.readContent('/WORKSPACE');
-    expect(workspace).toMatch('ANGULAR_VERSION = "6.6.6"');
+  it('should generate empty yarn.lock file', () => {
+    const host = schematicRunner.runSchematic('bazel-workspace', defaultOptions);
+    expect(host.files).toContain('/yarn.lock');
+    expect(host.readContent('/yarn.lock')).toBe('');
+  });
+
+  it('should not replace yarn.lock if it exists', () => {
+    let host = new UnitTestTree(new HostTree());
+    host.create('yarn.lock', 'some content');
+    expect(host.files).toContain('/yarn.lock');
+    host = schematicRunner.runSchematic('bazel-workspace', defaultOptions, host);
+    expect(host.files).toContain('/yarn.lock');
+    expect(host.readContent('/yarn.lock')).toBe('some content');
   });
 
   it('should have the correct entry_module for devserver', () => {
