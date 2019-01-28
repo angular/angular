@@ -86,6 +86,10 @@ export default function(options: BazelWorkspaceOptions): Rule {
       }
     });
 
+    if (!host.exists('yarn.lock')) {
+      host.create('yarn.lock', '');
+    }
+
     const workspaceVersions = {
       'RULES_NODEJS_VERSION': '0.16.5',
       'RULES_TYPESCRIPT_VERSION': '0.22.1',

@@ -23,6 +23,7 @@ npm_package(
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
         "//packages/bazel/src/protractor/utils",
         "//packages/bazel/src/schematics/bazel-workspace",
+        "//packages/bazel/src/schematics/ng-add",
         "//packages/bazel/src/schematics/ng-new",
     ],
 )
