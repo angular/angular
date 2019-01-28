@@ -26,7 +26,7 @@ import {BrowserModule} from '@angular/platform-browser';
     <ng-template #svk let-person="localSk"><span>Ahoj {{person}}!</span></ng-template>
 `
 })
-class NgTemplateOutletExample {
+export class NgTemplateOutletExample {
   myContext = {$implicit: 'World', localSk: 'Svet'};
 }
 // #enddocregion
@@ -36,13 +36,12 @@ class NgTemplateOutletExample {
   selector: 'example-app',
   template: `<ng-template-outlet-example></ng-template-outlet-example>`
 })
-class ExampleApp {
+export class AppComponent {
 }
 
 @NgModule({
   imports: [BrowserModule],
-  declarations: [ExampleApp, NgTemplateOutletExample],
-  bootstrap: [ExampleApp]
+  declarations: [AppComponent, NgTemplateOutletExample],
 })
 export class AppModule {
 }
