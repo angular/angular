@@ -374,13 +374,14 @@ export function getLViewChild(lView: LView): LView|LContainer|null {
  * @param view The view to be destroyed.
  */
 export function destroyLView(view: LView) {
-  const renderer = view[RENDERER];
-  if (isProceduralRenderer(renderer) && renderer.destroyNode) {
-    walkTNodeTree(view, WalkTNodeTreeAction.Destroy, renderer, null);
+  if (!(view[FLAGS] & LViewFlags.Destroyed)) {
+    const renderer = view[RENDERER];
+    if (isProceduralRenderer(renderer) && renderer.destroyNode) {
+      walkTNodeTree(view, WalkTNodeTreeAction.Destroy, renderer, null);
+    }
+
+    destroyViewTree(view);
   }
-  destroyViewTree(view);
-  // Sets the destroyed flag
-  view[FLAGS] |= LViewFlags.Destroyed;
 }
 
 /**
@@ -418,6 +419,14 @@ export function getParentState(state: LView | LContainer, rootView: LView): LVie
 function cleanUpView(viewOrContainer: LView | LContainer): void {
   if ((viewOrContainer as LView).length >= HEADER_OFFSET) {
     const view = viewOrContainer as LView;
+
+    // Mark the LView as destroyed *before* executing the onDestroy hooks. An onDestroy hook
+    // runs arbitrary user code, which could include its own `viewRef.destroy()` (or similar). If
+    // We don't flag the view as destroyed before the hooks, this could lead to an infinite loop.
+    // This also aligns with the ViewEngine behavior. It also means that the onDestroy hook is
+    // really more of an "afterDestroy" hook if you think about it.
+    view[FLAGS] |= LViewFlags.Destroyed;
+
     executeOnDestroys(view);
     removeListeners(view);
     const hostTNode = view[HOST_NODE];

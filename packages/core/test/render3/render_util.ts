@@ -180,7 +180,12 @@ export class ComponentFixture<T> extends BaseFixture {
   }
 
   destroy(): void {
-    this.containerElement.removeChild(this.hostElement);
+    // Skip removing the DOM element if it has already been removed (the view has already
+    // been destroyed).
+    if (this.hostElement.parentNode === this.containerElement) {
+      this.containerElement.removeChild(this.hostElement);
+    }
+
     destroyLView(getRootView(this.component));
   }
 }
