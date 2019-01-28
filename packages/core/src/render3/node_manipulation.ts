@@ -7,29 +7,33 @@
  */
 
 import {ViewEncapsulation} from '../metadata/view';
+import {assertDefined} from '../util/assert';
 
+import {assertLContainer, assertLView} from './assert';
 import {attachPatchData} from './context_discovery';
 import {LContainer, NATIVE, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {CHILD_HEAD, CLEANUP, FLAGS, HEADER_OFFSET, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {findComponentView, getNativeByTNode, isComponent, isLContainer, isRootView, readElementValue, renderStringify} from './util';
+import {findComponentView, getLViewParent, getNativeByTNode, isComponent, isLContainer, isLView, isRootView, readElementValue, renderStringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
 export function getLContainer(tNode: TViewNode, embeddedView: LView): LContainer|null {
+  ngDevMode && assertLView(embeddedView);
+  const container = embeddedView[PARENT] as LContainer;
   if (tNode.index === -1) {
     // This is a dynamically created view inside a dynamic container.
-    // If the host index is -1, the view has not yet been inserted, so it has no parent.
-    const containerHostIndex = embeddedView[CONTAINER_INDEX];
-    return containerHostIndex > -1 ? embeddedView[PARENT] ![containerHostIndex] : null;
+    // The parent isn't an LContainer if the embedded view hasn't been attached yet.
+    return isLContainer(container) ? container : null;
   } else {
+    ngDevMode && assertLContainer(container);
     // This is a inline view node (e.g. embeddedViewStart)
-    return embeddedView[PARENT] ![tNode.parent !.index] as LContainer;
+    return container;
   }
 }
 
@@ -123,7 +127,7 @@ function walkTNodeTree(
         projectionNodeStack[++projectionNodeIndex] = tNode;
         projectionNodeStack[++projectionNodeIndex] = currentView !;
         if (head) {
-          currentView = componentView[PARENT] !;
+          currentView = componentView[PARENT] !as LView;
           nextTNode = currentView[TVIEW].data[head.index] as TNode;
         }
       }
@@ -156,7 +160,7 @@ function walkTNodeTree(
 
         // When exiting a container, the beforeNode must be restored to the previous value
         if (tNode.type === TNodeType.Container) {
-          currentView = currentView[PARENT] !;
+          currentView = getLViewParent(currentView) !;
           beforeNode = currentView[tNode.index][NATIVE];
         }
 
@@ -252,35 +256,35 @@ export function addRemoveViewFromContainer(
  */
 export function destroyViewTree(rootView: LView): void {
   // If the view has no children, we can clean it up and return early.
-  if (rootView[TVIEW].childIndex === -1) {
+  let lViewOrLContainer = rootView[CHILD_HEAD];
+  if (!lViewOrLContainer) {
     return cleanUpView(rootView);
   }
-  let viewOrContainer: LView|LContainer|null = getLViewChild(rootView);
 
-  while (viewOrContainer) {
+  while (lViewOrLContainer) {
     let next: LView|LContainer|null = null;
 
-    if (viewOrContainer.length >= HEADER_OFFSET) {
+    if (isLView(lViewOrLContainer)) {
       // If LView, traverse down to child.
-      const view = viewOrContainer as LView;
-      if (view[TVIEW].childIndex > -1) next = getLViewChild(view);
+      next = lViewOrLContainer[CHILD_HEAD];
     } else {
+      ngDevMode && assertLContainer(lViewOrLContainer);
       // If container, traverse down to its first LView.
-      const container = viewOrContainer as LContainer;
-      if (container[VIEWS].length) next = container[VIEWS][0];
+      const views = lViewOrLContainer[VIEWS] as LView[];
+      if (views.length > 0) next = views[0];
     }
 
-    if (next == null) {
+    if (!next) {
       // Only clean up view when moving to the side or up, as destroy hooks
       // should be called in order from the bottom up.
-      while (viewOrContainer && !viewOrContainer ![NEXT] && viewOrContainer !== rootView) {
-        cleanUpView(viewOrContainer);
-        viewOrContainer = getParentState(viewOrContainer, rootView);
+      while (lViewOrLContainer && !lViewOrLContainer ![NEXT] && lViewOrLContainer !== rootView) {
+        cleanUpView(lViewOrLContainer);
+        lViewOrLContainer = getParentState(lViewOrLContainer, rootView);
       }
-      cleanUpView(viewOrContainer || rootView);
-      next = viewOrContainer && viewOrContainer ![NEXT];
+      cleanUpView(lViewOrLContainer || rootView);
+      next = lViewOrLContainer && lViewOrLContainer ![NEXT];
     }
-    viewOrContainer = next;
+    lViewOrLContainer = next;
   }
 }
 
@@ -294,15 +298,13 @@ export function destroyViewTree(rootView: LView): void {
  *
  * @param lView The view to insert
  * @param lContainer The container into which the view should be inserted
- * @param parentView The new parent of the inserted view
- * @param index The index at which to insert the view
- * @param containerIndex The index of the container node, if dynamic
+ * @param index Which index in the container to insert the child view into
  */
-export function insertView(
-    lView: LView, lContainer: LContainer, parentView: LView, index: number,
-    containerIndex: number) {
+export function insertView(lView: LView, lContainer: LContainer, index: number) {
+  ngDevMode && assertLView(lView);
+  ngDevMode && assertLContainer(lContainer);
   const views = lContainer[VIEWS];
-
+  ngDevMode && assertDefined(views, 'Container must have views');
   if (index > 0) {
     // This is a new view, we need to add it to the children.
     views[index - 1][NEXT] = lView;
@@ -316,12 +318,7 @@ export function insertView(
     lView[NEXT] = null;
   }
 
-  // Dynamically inserted views need a reference to their parent container's host so it's
-  // possible to jump from a view to its container's next when walking the node tree.
-  if (containerIndex > -1) {
-    lView[CONTAINER_INDEX] = containerIndex;
-    lView[PARENT] = parentView;
-  }
+  lView[PARENT] = lContainer;
 
   // Notify query that a new view has been added
   if (lView[QUERIES]) {
@@ -354,7 +351,6 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView {
   if (viewToDetach[QUERIES]) {
     viewToDetach[QUERIES] !.removeView();
   }
-  viewToDetach[CONTAINER_INDEX] = -1;
   viewToDetach[PARENT] = null;
   // Unsets the attached flag
   viewToDetach[FLAGS] &= ~LViewFlags.Attached;
@@ -404,20 +400,21 @@ export function destroyLView(view: LView) {
  * embedded views, the container (which is the view node's parent, but not the
  * LView's parent) needs to be checked for a possible next property.
  *
- * @param state The LViewOrLContainer for which we need a parent state
+ * @param lViewOrLContainer The LViewOrLContainer for which we need a parent state
  * @param rootView The rootView, so we don't propagate too far up the view tree
  * @returns The correct parent LViewOrLContainer
  */
-export function getParentState(state: LView | LContainer, rootView: LView): LView|LContainer|null {
+export function getParentState(lViewOrLContainer: LView | LContainer, rootView: LView): LView|
+    LContainer|null {
   let tNode;
-  if (state.length >= HEADER_OFFSET && (tNode = (state as LView) ![T_HOST]) &&
+  if (isLView(lViewOrLContainer) && (tNode = lViewOrLContainer[T_HOST]) &&
       tNode.type === TNodeType.View) {
     // if it's an embedded view, the state needs to go up to the container, in case the
     // container has a next
-    return getLContainer(tNode as TViewNode, state as LView) as LContainer;
+    return getLContainer(tNode as TViewNode, lViewOrLContainer);
   } else {
     // otherwise, use parent view for containers or component views
-    return state[PARENT] === rootView ? null : state[PARENT];
+    return lViewOrLContainer[PARENT] === rootView ? null : lViewOrLContainer[PARENT];
   }
 }
 
@@ -576,9 +573,10 @@ function getRenderParent(tNode: TNode, currentView: LView): RElement|null {
  * a host element.
  */
 function getHostNative(currentView: LView): RElement|null {
+  ngDevMode && assertLView(currentView);
   const hostTNode = currentView[T_HOST];
   return hostTNode && hostTNode.type === TNodeType.Element ?
-      (getNativeByTNode(hostTNode, currentView[PARENT] !) as RElement) :
+      (getNativeByTNode(hostTNode, getLViewParent(currentView) !) as RElement) :
       null;
 }
 
