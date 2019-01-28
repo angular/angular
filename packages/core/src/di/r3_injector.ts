@@ -435,7 +435,7 @@ function deepForEach<T>(input: (T | any[])[], fn: (value: T) => void): void {
 }
 
 function isValueProvider(value: SingleProvider): value is ValueProvider {
-  return value && typeof value == 'object' && USE_VALUE in value;
+  return value !== null && typeof value == 'object' && USE_VALUE in value;
 }
 
 function isExistingProvider(value: SingleProvider): value is ExistingProvider {
@@ -456,7 +456,7 @@ function hasDeps(value: ClassProvider | ConstructorProvider | StaticClassProvide
 }
 
 function hasOnDestroy(value: any): value is OnDestroy {
-  return typeof value === 'object' && value != null && (value as OnDestroy).ngOnDestroy &&
+  return value !== null && typeof value === 'object' &&
       typeof(value as OnDestroy).ngOnDestroy === 'function';
 }
 
