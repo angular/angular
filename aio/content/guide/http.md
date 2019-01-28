@@ -91,7 +91,7 @@ the component, even in simple cases like this one.
 
 ### Typed response
 
-The subscribe callback above requires bracket notation to extract the data values.
+The subscribe callback above requires a bracket notation to extract the data values.
 
 <code-example
   path="http/src/app/config/config.component.ts"
@@ -164,11 +164,11 @@ As you can see, the response object has a `body` property of the correct type.
 
 ### Making a JSONP request
 
-An app can use the Angular JSONP request as a workaround to make cross domain `GET` requests. JSONP treats the API we need to access as a javascript file. Browser doesn't check cross domain when executing javascript files, so by using the Angular JSONP, an app can access APIs without facing the cross-domain issue.
+Apps can use the Angular JSONP request as a workaround to make cross-domain `GET` requests. JSONP treats the API we need to access as a javascript file. Browser doesn't check cross domain when executing javascript files, so by using the Angular JSONP, an app can access APIs without facing the cross-domain issue.
 
 An application makes a JSONP request by passing along a callback function that tells the server
-to wrap the response in that function. Angular JSONP requests returns an Observable. Follow the pattern for subscribing to observables and use the RxJS `map` property to manipulate the results.
-You can also use the async pipe to manipulate the results.
+to wrap the response in that function. Angular JSONP request returns an Observable. Follow the pattern for subscribing to observables and use the RxJS `map` property to manipulate the results.
+You can also use the async pipe to manage the results.
 
 <div class="alert is-important">
 
@@ -177,9 +177,9 @@ Use JSONP requests only with APIs that support JSONP, as the server needs to res
 JSONP requests only works for `GET` requests, it doesn’t work for PUT/POST/DELETE and so on.
 </div>
 
-In Angular, use JSONP by importing the `JsonpModule` to the `NgModule` imports. Here is the `searchHeroes` method that queries for heroes whose names contain the search term using the JSONP request.
+In Angular, use JSONP by importing the `JsonpModule` to the `NgModule` imports. Here is a `searchHeroes` method that queries for heroes whose names contain the search term using the JSONP request.
 
-Here we pass the `heroesURL` as the first parameter and `callback` as the second parameter. The response is wrapped in the callback function. Next, we take the Observables returned by the JSONP method and pipe them through to the error handler.
+Here we pass the `heroesURL` as the first parameter and callback function name as the second parameter. The response is wrapped in the callback function. We take the Observables returned by the JSONP method and pipe them through to the error handler.
 
 <code-example hideCopy language="typescript">
 /* GET heroes whose name contains search term */
