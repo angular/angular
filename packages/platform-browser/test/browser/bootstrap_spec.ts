@@ -160,34 +160,34 @@ function bootstrap(
 
     afterEach(destroyPlatform);
 
-    // TODO(misko): can't use `fixmeIvy.it` because the `it` is somehow special here.
-    modifiedInIvy('bootstrapping non-Component throws in View Engine').isEnabled &&
-        it('should throw if bootstrapped Directive is not a Component',
-           inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
-             const logger = new MockConsole();
-             const errorHandler = new ErrorHandler();
-             (errorHandler as any)._console = logger as any;
-             expect(
-                 () => bootstrap(
-                     HelloRootDirectiveIsNotCmp, [{provide: ErrorHandler, useValue: errorHandler}]))
-                 .toThrowError(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`);
-             done.done();
-           }));
+    modifiedInIvy('bootstrapping non-Component throws in View Engine')
+        .it('should throw if bootstrapped Directive is not a Component',
+            inject([AsyncTestCompleter], (done: AsyncTestCompleter) => {
+              const logger = new MockConsole();
+              const errorHandler = new ErrorHandler();
+              (errorHandler as any)._console = logger as any;
+              expect(
+                  () => bootstrap(
+                      HelloRootDirectiveIsNotCmp,
+                      [{provide: ErrorHandler, useValue: errorHandler}]))
+                  .toThrowError(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`);
+              done.done();
+            }));
 
-    onlyInIvy('bootstrapping non-Component rejects Promise in Ivy').isEnabled &&
-        it('should throw if bootstrapped Directive is not a Component',
-           inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-             const logger = new MockConsole();
-             const errorHandler = new ErrorHandler();
-             (errorHandler as any)._console = logger as any;
-             bootstrap(HelloRootDirectiveIsNotCmp, [
-               {provide: ErrorHandler, useValue: errorHandler}
-             ]).catch((error: Error) => {
-               expect(error).toEqual(
-                   new Error(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`));
-               async.done();
-             });
-           }));
+    onlyInIvy('bootstrapping non-Component rejects Promise in Ivy')
+        .it('should throw if bootstrapped Directive is not a Component',
+            inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
+              const logger = new MockConsole();
+              const errorHandler = new ErrorHandler();
+              (errorHandler as any)._console = logger as any;
+              bootstrap(HelloRootDirectiveIsNotCmp, [
+                {provide: ErrorHandler, useValue: errorHandler}
+              ]).catch((error: Error) => {
+                expect(error).toEqual(
+                    new Error(`HelloRootDirectiveIsNotCmp cannot be used as an entry component.`));
+                async.done();
+              });
+            }));
 
     it('should throw if no element is found',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
