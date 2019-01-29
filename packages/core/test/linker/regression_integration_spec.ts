@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, ApplicationRef, Component, ComponentRef, ContentChild, Directive, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgModuleRef, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChildren, ViewContainerRef, destroyPlatform, ɵivyEnabled as ivyEnabled} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, ApplicationRef, Component, ComponentRef, ContentChild, Directive, ErrorHandler, EventEmitter, HostListener, InjectionToken, Injector, Input, NgModule, NgModuleRef, NgZone, Output, Pipe, PipeTransform, Provider, QueryList, Renderer2, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, destroyPlatform, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {BrowserModule, By, DOCUMENT} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, modifiedInIvy} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 if (ivyEnabled) {
   describe('ivy', () => { declareTests(); });
@@ -355,7 +355,7 @@ function declareTests(config?: {useJit: boolean}) {
           });
     });
 
-    fixmeIvy('FW-797: @ContentChildren results are assigned after @Input bindings')
+    modifiedInIvy('Static ViewChild and ContentChild queries are resolved in update mode')
         .it('should support @ContentChild and @Input on the same property for static queries',
             () => {
               @Directive({selector: 'test'})
@@ -386,6 +386,22 @@ function declareTests(config?: {useJit: boolean}) {
               expect(testDirs[1].tpl).toBeDefined();
               expect(testDirs[2].tpl).toBeDefined();
             });
+
+    onlyInIvy('Ivy does not support @ContentChild and @Input on the same property')
+        .it('should throw if @ContentChild and @Input are on the same property', () => {
+          @Directive({selector: 'test'})
+          class Test {
+            @Input() @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
+          }
+
+          @Component({selector: 'my-app', template: `<test></test>`})
+          class App {
+          }
+
+          expect(() => {
+            TestBed.configureTestingModule({declarations: [App, Test]}).createComponent(App);
+          }).toThrowError(/Cannot combine @Input decorators with query decorators/);
+        });
 
     it('should not add ng-version for dynamically created components', () => {
       @Component({template: ''})

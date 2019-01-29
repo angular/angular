@@ -13,7 +13,7 @@ import {resolveForwardRef} from '../../di/forward_ref';
 import {getReflect, reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Query} from '../../metadata/di';
-import {Component, Directive} from '../../metadata/directives';
+import {Component, Directive, Input} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ViewEncapsulation} from '../../metadata/view';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
@@ -180,12 +180,16 @@ function extractQueriesMetadata(
   const queriesMeta: R3QueryMetadataFacade[] = [];
   for (const field in propMetadata) {
     if (propMetadata.hasOwnProperty(field)) {
-      propMetadata[field].forEach(ann => {
+      const annotations = propMetadata[field];
+      annotations.forEach(ann => {
         if (isQueryAnn(ann)) {
           if (!ann.selector) {
             throw new Error(
                 `Can't construct a query for the property "${field}" of ` +
                 `"${renderStringify(type)}" since the query selector wasn't defined.`);
+          }
+          if (annotations.some(isInputAnn)) {
+            throw new Error(`Cannot combine @Input decorators with query decorators`);
           }
           queriesMeta.push(convertToR3QueryMetadata(field, ann));
         }
@@ -211,6 +215,10 @@ function isContentQuery(value: any): value is Query {
 function isViewQuery(value: any): value is Query {
   const name = value.ngMetadataName;
   return name === 'ViewChild' || name === 'ViewChildren';
+}
+
+function isInputAnn(value: any): value is Input {
+  return value.ngMetadataName === 'Input';
 }
 
 function splitByComma(value: string): string[] {
