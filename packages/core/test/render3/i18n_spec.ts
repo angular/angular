@@ -8,14 +8,13 @@
 
 import {noop} from '../../../compiler/src/render3/view/util';
 import {Component as _Component} from '../../src/core';
-import {defineComponent} from '../../src/render3/definition';
+import {defineComponent, defineDirective} from '../../src/render3/definition';
 import {getTranslationForTemplate, i18n, i18nApply, i18nAttributes, i18nEnd, i18nExp, i18nPostprocess, i18nStart} from '../../src/render3/i18n';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {getNativeByIndex} from '../../src/render3/util';
-
 import {NgIf} from './common_with_def';
-
-import {element, elementEnd, elementStart, template, text, nextContext, bind, elementProperty, projectionDef, projection, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
+import {allocHostVars, element, elementEnd, elementStart, template, text, nextContext, bind, elementProperty, projectionDef, projection, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {ComponentFixture, TemplateFixture} from './render_util';
@@ -83,7 +82,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 1,
-        expandoStartIndex: nbConsts,
         create: [
           'simple text', nbConsts,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
@@ -105,7 +103,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 5,
-        expandoStartIndex: nbConsts,
         create: [
           'Hello ',
           nbConsts,
@@ -142,7 +139,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 1,
-        expandoStartIndex: nbConsts,
         create:
             ['', nbConsts, index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild],
         update: [
@@ -164,7 +160,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 1,
-        expandoStartIndex: nbConsts,
         create:
             ['', nbConsts, index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild],
         update: [
@@ -198,7 +193,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 2,
-        expandoStartIndex: nbConsts,
         create: [
           '',
           nbConsts,
@@ -229,7 +223,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 2,
-        expandoStartIndex: nbConsts,
         create: [
           spanElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
@@ -257,7 +250,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 1,
-        expandoStartIndex: nbConsts,
         create: [
           bElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
@@ -291,7 +283,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 5,
-        expandoStartIndex: nbConsts,
         create: [
           COMMENT_MARKER, 'ICU 1', icuCommentNodeIndex,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
@@ -308,7 +299,6 @@ describe('Runtime i18n', () => {
         icus: [{
           type: 1,
           vars: [4, 3, 3],
-          expandoStartIndex: icuCommentNodeIndex + 1,
           childIcus: [[], [], []],
           cases: ['0', '1', 'other'],
           create: [
@@ -407,7 +397,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 6,
-        expandoStartIndex: nbConsts,
         create: [
           COMMENT_MARKER, 'ICU 1', icuCommentNodeIndex,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
@@ -425,7 +414,6 @@ describe('Runtime i18n', () => {
           {
             type: 0,
             vars: [1, 1, 1],
-            expandoStartIndex: lastTextNodeIndex + 1,
             childIcus: [[], [], []],
             cases: ['cat', 'dog', 'other'],
             create: [
@@ -455,7 +443,6 @@ describe('Runtime i18n', () => {
           {
             type: 1,
             vars: [1, 4],
-            expandoStartIndex: icuCommentNodeIndex + 1,
             childIcus: [[], [0]],
             cases: ['0', 'other'],
             create: [
@@ -1348,6 +1335,105 @@ describe('Runtime i18n', () => {
 
       const fixture = new ComponentFixture(MyApp);
       expect(fixture.html).toEqual(`<div title="start 2 middle 1 end">trad 1</div>`);
+    });
+
+    it('should work with directives and host bindings', () => {
+      let directiveInstances: Directive[] = [];
+
+      class Directive {
+        // @HostBinding('className')
+        klass = 'foo';
+
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          selectors: [['', 'dir', '']],
+          factory: () => {
+            const instance = new Directive();
+            directiveInstances.push(instance);
+            return instance;
+          },
+          hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
+            if (rf & RenderFlags.Create) {
+              allocHostVars(1);
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(elementIndex, 'className', bind(ctx.klass), null, true);
+            }
+          }
+        });
+      }
+
+      // Translated template:
+      // <div i18n [test]="false" i18n-title title="start {{exp2}} middle {{exp1}} end">
+      //    trad {�0�, plural,
+      //         =0 {no <b title="none">emails</b>!}
+      //         =1 {one <i>email</i>}
+      //         other {�0� emails}
+      //       }
+      // </div>
+
+      const MSG_DIV_1 = `trad {�0�, plural, 
+        =0 {no <b title="none">emails</b>!} 
+        =1 {one <i>email</i>} 
+        other {�0� emails}
+      }`;
+      const MSG_DIV_1_ATTR_1 = ['title', `start �1� middle �0� end`];
+
+      class MyApp {
+        exp1 = 1;
+        exp2 = 2;
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          selectors: [['my-app']],
+          factory: () => new MyApp(),
+          consts: 6,
+          vars: 5,
+          directives: [Directive],
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div', [AttributeMarker.SelectOnly, 'dir']);
+              {
+                i18nAttributes(1, MSG_DIV_1_ATTR_1);
+                i18nStart(2, MSG_DIV_1);
+                {
+                  elementStart(3, 'b', [AttributeMarker.SelectOnly, 'dir']);  // Will be removed
+                  { i18nAttributes(4, MSG_DIV_1_ATTR_1); }
+                  elementEnd();
+                }
+                i18nEnd();
+              }
+              elementEnd();
+              element(5, 'div', [AttributeMarker.SelectOnly, 'dir']);
+            }
+            if (rf & RenderFlags.Update) {
+              i18nExp(bind(ctx.exp1));
+              i18nExp(bind(ctx.exp2));
+              i18nApply(1);
+              i18nExp(bind(ctx.exp1));
+              i18nApply(2);
+              i18nExp(bind(ctx.exp1));
+              i18nExp(bind(ctx.exp2));
+              i18nApply(4);
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      // the "test" attribute should not be reflected in the DOM as it is here only for directive
+      // matching purposes
+      expect(fixture.html)
+          .toEqual(
+              `<div class="foo" title="start 2 middle 1 end">trad one <i>email</i><!--ICU 23--></div><div class="foo"></div>`);
+
+      directiveInstances.forEach(instance => instance.klass = 'bar');
+      fixture.component.exp1 = 2;
+      fixture.component.exp2 = 3;
+      fixture.update();
+      expect(fixture.html)
+          .toEqual(
+              `<div class="bar" title="start 3 middle 2 end">trad 2 emails<!--ICU 23--></div><div class="bar"></div>`);
     });
 
     describe('projection', () => {
