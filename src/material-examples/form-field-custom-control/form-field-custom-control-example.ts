@@ -70,6 +70,7 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
   get disabled(): boolean { return this._disabled; }
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
+    this._disabled ? this.parts.disable() : this.parts.enable();
     this.stateChanges.next();
   }
   private _disabled = false;

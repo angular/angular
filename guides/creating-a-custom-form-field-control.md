@@ -307,21 +307,13 @@ make up our component.
 
 ```ts
 @Input()
-get disabled() {
-  return this._disabled;
-}
-set disabled(dis) {
-  this._disabled = coerceBooleanProperty(dis);
+get disabled(): boolean { return this._disabled; }
+set disabled(value: boolean) {
+  this._disabled = coerceBooleanProperty(value);
+  this._disabled ? this.parts.disable() : this.parts.enable();
   this.stateChanges.next();
 }
 private _disabled = false;
-```
-```html
-<input class="area" formControlName="area" size="3" [disabled]="disabled">
-<span>&ndash;</span>
-<input class="exchange" formControlName="exchange" size="3" [disabled]="disabled">
-<span>&ndash;</span>
-<input class="subscriber" formControlName="subscriber" size="4" [disabled]="disabled">
 ```
 
 #### `errorState`
