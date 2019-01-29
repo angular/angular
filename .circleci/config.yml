@@ -12,9 +12,9 @@
 # fetched by the Webtesting rules. Therefore for jobs that run tests with Bazel, we don't need a
 # docker image with browsers pre-installed.
 # **NOTE**: If you change the version of the docker images, also change the `cache_key` suffix.
-var_1: &default_docker_image circleci/node:10.12
-var_2: &browsers_docker_image circleci/node:10.12-browsers
-var_3: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-node-10.12
+var_1: &default_docker_image circleci/node:11.8
+var_2: &browsers_docker_image circleci/node:11.8-browsers
+var_3: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-node-11.8
 
 # Define common ENV vars
 var_4: &define_env_vars
