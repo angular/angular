@@ -36,6 +36,7 @@ const requiredNodeModules = {
   '@angular/platform-server':
       resolveNpmTreeArtifact('angular/packages/platform-server/npm_package'),
   '@angular/router': resolveNpmTreeArtifact('angular/packages/router/npm_package'),
+  '@bazel/typescript': resolveNpmTreeArtifact('ngdeps/node_modules/@bazel/typescript'),
   '@types/jasmine': resolveNpmTreeArtifact('ngdeps/node_modules/@types/jasmine'),
   '@types/node': resolveNpmTreeArtifact('ngdeps/node_modules/@types/node'),
 
