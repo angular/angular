@@ -24,3 +24,4 @@ export {CompilerOptions as AngularCompilerOptions} from './src/transformers/api'
 export {NgTools_InternalApi_NG_2 as __NGTOOLS_PRIVATE_API_2} from './src/ngtools_api';
 
 export {ngToTsDiagnostic} from './src/transformers/util';
+export {NgTscPlugin} from './src/ngtsc/tsc_plugin';
