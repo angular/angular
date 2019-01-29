@@ -698,5 +698,13 @@
     "website": "https://brianflove.com",
     "bio": "Brian is a software engineer and GDE in Angular with a passion for learning, writing, speaking, teaching and mentoring. Brian has been building web applications for over 20 years and has long been a fanboy of JavaScript. When not in front of his Macbook Pro Brian is in the Rocky Mountains skiing or hiking.",
     "group": "GDE"
+  },
+  "jeffbcross": {
+    "name": "Jeff Cross",
+    "picture": "jeff-cross.jpg",
+    "twitter": "jeffbcross",
+    "website": "https://nrwl.io/",
+    "bio": "Jeff is an Angular Consultant at nrwl.io where he helps enterprise teams succeed with Angular. Prior to founding Nrwl, Jeff was one of the earliest members of the Angular Core Team at Google, and contributed to many of the early state management and performance efforts of AngularJS and Angular.",
+    "group": "GDE"
   }
 }
