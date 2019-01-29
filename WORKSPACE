@@ -5,8 +5,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Add NodeJS rules (explicitly used for sass bundle rules)
 http_archive(
   name = "build_bazel_rules_nodejs",
-  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.16.4.zip",
-  strip_prefix = "rules_nodejs-0.16.4",
+  url = "https://github.com/bazelbuild/rules_nodejs/archive/0.16.5.zip",
+  strip_prefix = "rules_nodejs-0.16.5",
 )
 
 # Add TypeScript rules
@@ -14,15 +14,15 @@ http_archive(
   name = "build_bazel_rules_typescript",
   # Explicitly depend on https://github.com/bazelbuild/rules_typescript/pull/327 which fixes the devserver
   # for windows. Once this has been reviewed and merged, we can switch back to a normal release.
-  url = "https://github.com/bazelbuild/rules_typescript/archive/1bb017e2f9c58f96bac8ddda2ed4a170282bc58e.zip",
-  strip_prefix = "rules_typescript-1bb017e2f9c58f96bac8ddda2ed4a170282bc58e",
+  url = "https://github.com/bazelbuild/rules_typescript/archive/2e761b53ca465a140c4a265cb80887e7bcf61eb9.zip",
+  strip_prefix = "rules_typescript-2e761b53ca465a140c4a265cb80887e7bcf61eb9",
 )
 
 # Add Angular source and Bazel rules.
 http_archive(
   name = "angular",
-  url = "https://github.com/angular/angular/archive/7.1.3.zip",
-  strip_prefix = "angular-7.1.3",
+  url = "https://github.com/angular/angular/archive/7.2.1.zip",
+  strip_prefix = "angular-7.2.1",
 )
 
 # Add RxJS as repository because those are needed in order to build Angular from source.
