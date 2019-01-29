@@ -394,6 +394,10 @@ export function queriesFromFields(
     fields: {member: ClassMember, decorators: Decorator[]}[], reflector: ReflectionHost,
     evaluator: PartialEvaluator): R3QueryMetadata[] {
   return fields.map(({member, decorators}) => {
+    // Throw in case of `@Input() @ContentChild('foo') foo: any`, which is not supported in Ivy
+    if (member.decorators !.some(v => v.name === 'Input')) {
+      throw new Error(`Cannot combine @Input decorators with query decorators`);
+    }
     if (decorators.length !== 1) {
       throw new Error(`Cannot have multiple query decorators on the same class member`);
     } else if (!isPropertyTypeMember(member)) {
