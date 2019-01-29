@@ -144,7 +144,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     return jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
   }
 
-  createTypeSourceSpan(kind: string, typeName: string, sourceUrl: string): any {
+  createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan {
     return r3JitTypeSourceSpan(kind, typeName, sourceUrl);
   }
 }

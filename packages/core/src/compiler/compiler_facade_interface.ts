@@ -38,7 +38,7 @@ export interface CompilerFacade {
   compileComponent(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3ComponentMetadataFacade): any;
 
-  createTypeSourceSpan(kind: string, typeName: string, sourceUrl: string): any;
+  createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
   R3ResolvedDependencyType: typeof R3ResolvedDependencyType;
 }

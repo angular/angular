@@ -58,7 +58,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
         const meta: R3ComponentMetadataFacade = {
           ...directiveMetadata(type, metadata),
           typeSourceSpan:
-              compiler.createTypeSourceSpan('Component', renderStringify(type), sourceMapUrl),
+              compiler.createParseSourceSpan('Component', renderStringify(type), sourceMapUrl),
           template: metadata.template || '',
           preserveWhitespaces: metadata.preserveWhitespaces || false,
           styles: metadata.styles || EMPTY_ARRAY,
@@ -118,7 +118,7 @@ export function compileDirective(type: Type<any>, directive: Directive): void {
         const compiler = getCompilerFacade();
         const facade = directiveMetadata(type as ComponentType<any>, directive);
         facade.typeSourceSpan =
-            compiler.createTypeSourceSpan('Directive', renderStringify(type), sourceMapUrl);
+            compiler.createParseSourceSpan('Directive', renderStringify(type), sourceMapUrl);
         ngDirectiveDef = compiler.compileDirective(angularCoreEnv, sourceMapUrl, facade);
       }
       return ngDirectiveDef;
