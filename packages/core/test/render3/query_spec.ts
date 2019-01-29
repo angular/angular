@@ -2791,13 +2791,11 @@ describe('query', () => {
           type: ContentQueryDirective,
           selectors: [['', 'content-query', '']],
           factory: () => contentQueryDirective = new ContentQueryDirective(),
-          contentQueries:
-              (dirIndex) => { registerContentQuery(query(TextDirective, true), dirIndex); },
-          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+          contentQueries: (dirIndex: number) => { contentQuery(dirIndex, TextDirective, true); },
+          contentQueriesRefresh: (dirIndex: number) => {
             let tmp: any;
             const instance = load<ContentQueryDirective>(dirIndex);
-            queryRefresh(tmp = loadQueryList<TextDirective>(queryStartIdx)) &&
-                (instance.texts = tmp);
+            queryRefresh(tmp = loadContentQuery<TextDirective>()) && (instance.texts = tmp);
           }
         });
       }
