@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {fixmeIvy} from '@angular/private/testing';
 import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
@@ -59,35 +58,32 @@ describe('upgrade/static (lite)', () => {
 
   it('should initially not render the heroes', () => expectHeroes(false));
 
-  fixmeIvy('unknown; <ng1Hero> component does not seem to render name & description')
-      .it('should toggle the heroes when clicking the "show/hide" button', () => {
-        showHideBtn.click();
-        expectHeroes(true);
+  it('should toggle the heroes when clicking the "show/hide" button', () => {
+    showHideBtn.click();
+    expectHeroes(true);
 
-        showHideBtn.click();
-        expectHeroes(false);
-      });
+    showHideBtn.click();
+    expectHeroes(false);
+  });
 
-  fixmeIvy('unknown; <ng1Hero> component does not seem to render name & description')
-      .it('should add a new hero when clicking the "add" button', () => {
-        showHideBtn.click();
-        ng2HeroesAddBtn.click();
+  it('should add a new hero when clicking the "add" button', () => {
+    showHideBtn.click();
+    ng2HeroesAddBtn.click();
 
-        expectHeroes(true, 4, 'Added hero Kamala Khan');
-        expect(ng1Heroes.last()).toHaveName('Kamala Khan');
-      });
+    expectHeroes(true, 4, 'Added hero Kamala Khan');
+    expect(ng1Heroes.last()).toHaveName('Kamala Khan');
+  });
 
-  fixmeIvy('unknown; <ng1Hero> component does not seem to render name & description')
-      .it('should remove a hero when clicking its "remove" button', () => {
-        showHideBtn.click();
+  it('should remove a hero when clicking its "remove" button', () => {
+    showHideBtn.click();
 
-        const firstHero = ng1Heroes.first();
-        expect(firstHero).toHaveName('Superman');
+    const firstHero = ng1Heroes.first();
+    expect(firstHero).toHaveName('Superman');
 
-        const removeBtn = firstHero.element(by.buttonText('Remove'));
-        removeBtn.click();
+    const removeBtn = firstHero.element(by.buttonText('Remove'));
+    removeBtn.click();
 
-        expectHeroes(true, 2, 'Removed hero Superman');
-        expect(ng1Heroes.first()).not.toHaveName('Superman');
-      });
+    expectHeroes(true, 2, 'Removed hero Superman');
+    expect(ng1Heroes.first()).not.toHaveName('Superman');
+  });
 });
