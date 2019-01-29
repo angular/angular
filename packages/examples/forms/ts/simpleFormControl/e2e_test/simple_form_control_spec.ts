@@ -7,7 +7,7 @@
  */
 
 import {ElementFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('simpleFormControl example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -18,7 +18,7 @@ describe('simpleFormControl example', () => {
     let statusP: ElementFinder;
 
     beforeEach(() => {
-      browser.get('/simpleFormControl');
+      browser.get('/forms/ts/simpleFormControl/index.html');
       input = element(by.css('input'));
       valueP = element(by.css('p:first-of-type'));
       statusP = element(by.css('p:last-of-type'));

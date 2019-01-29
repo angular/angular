@@ -18,5 +18,3 @@ import {Pane, ViewChildrenComp} from './view_children_example';
 })
 export class AppModule {
 }
-
-export {ViewChildrenComp as AppComponent};

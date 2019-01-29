@@ -7,7 +7,7 @@
  */
 
 import {$, ExpectedConditions, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 function waitForElement(selector: string) {
   const EC = ExpectedConditions;
@@ -17,7 +17,7 @@ function waitForElement(selector: string) {
 
 describe('pipe', () => {
   afterEach(verifyNoBrowserErrors);
-  const URL = '/pipes';
+  const URL = '/common/pipes/ts/';
 
   describe('async', () => {
     it('should resolve and display promise', () => {

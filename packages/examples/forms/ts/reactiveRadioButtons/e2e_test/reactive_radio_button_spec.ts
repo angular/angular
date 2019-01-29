@@ -7,14 +7,14 @@
  */
 
 import {ElementArrayFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('radioButtons example', () => {
   afterEach(verifyNoBrowserErrors);
   let inputs: ElementArrayFinder;
 
   beforeEach(() => {
-    browser.get('/reactiveRadioButtons');
+    browser.get('/forms/ts/reactiveRadioButtons/index.html');
     inputs = element.all(by.css('input'));
   });
 

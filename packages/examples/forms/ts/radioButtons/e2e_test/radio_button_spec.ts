@@ -7,7 +7,7 @@
  */
 
 import {ElementArrayFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('radioButtons example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -15,7 +15,7 @@ describe('radioButtons example', () => {
   let paragraphs: ElementArrayFinder;
 
   beforeEach(() => {
-    browser.get('/radioButtons');
+    browser.get('/forms/ts/radioButtons/index.html');
     inputs = element.all(by.css('input'));
     paragraphs = element.all(by.css('p'));
   });

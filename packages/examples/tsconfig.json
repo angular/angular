@@ -1,0 +1,18 @@
+// WARNING:
+// This file is used to build the e2e tests only.
+// The rest of the files are included in `/packages/tsconfig.json`.
+{
+  "extends": "../tsconfig.json",
+
+  "compilerOptions": {
+    "types": []
+  },
+
+  "include": [
+    "../../node_modules/@types/jasminewd2/index.d.ts",
+    "../types.d.ts",
+    "**/e2e_test/*"
+  ],
+
+  "exclude": []
+}

@@ -7,13 +7,13 @@
  */
 
 import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
+import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
 import {addCustomMatchers} from './e2e_util';
 
 function loadPage() {
   browser.rootEl = 'example-app';
-  browser.get('/');
+  browser.get('/upgrade/static/ts/lite/');
 }
 
 describe('upgrade/static (lite)', () => {

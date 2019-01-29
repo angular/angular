@@ -8,14 +8,14 @@
 
 import {browser, by, element} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
 
 
 describe('upgrade/static (lite with multiple downgraded modules)', () => {
   const navButtons = element.all(by.css('nav button'));
   const mainContent = element(by.css('main'));
 
-  beforeEach(() => browser.get('/'));
+  beforeEach(() => browser.get('/upgrade/static/ts/lite-multi/'));
   afterEach(verifyNoBrowserErrors);
 
   it('should correctly bootstrap multiple downgraded modules', () => {

@@ -7,7 +7,7 @@
  */
 
 import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('reactiveSelectControl example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -16,7 +16,7 @@ describe('reactiveSelectControl example', () => {
   let p: ElementFinder;
 
   beforeEach(() => {
-    browser.get('/reactiveSelectControl');
+    browser.get('/forms/ts/reactiveSelectControl/index.html');
     select = element(by.css('select'));
     options = element.all(by.css('option'));
     p = element(by.css('p'));

@@ -7,7 +7,7 @@
  */
 
 import {ElementFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('nestedFormGroup example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -16,7 +16,7 @@ describe('nestedFormGroup example', () => {
   let button: ElementFinder;
 
   beforeEach(() => {
-    browser.get('/nestedFormGroup');
+    browser.get('/forms/ts/nestedFormGroup/index.html');
     firstInput = element(by.css('[formControlName="first"]'));
     lastInput = element(by.css('[formControlName="last"]'));
     button = element(by.css('button:not([type="submit"])'));

@@ -18,5 +18,3 @@ import {ReactiveRadioButtonComp} from './reactive_radio_button_example';
 })
 export class AppModule {
 }
-
-export {ReactiveRadioButtonComp as AppComponent};

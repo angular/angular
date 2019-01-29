@@ -18,5 +18,3 @@ import {NestedFormArray} from './nested_form_array_example';
 })
 export class AppModule {
 }
-
-export {NestedFormArray as AppComponent};
