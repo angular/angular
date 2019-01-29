@@ -45,7 +45,7 @@ var_7: &post_checkout
 var_8: &yarn_install
   run:
     name: Running Yarn install
-    command: yarn install --frozen-lockfile --non-interactive
+    command: yarn install --frozen-lockfile --non-interactive --verbose
 
 var_9: &setup_circleci_bazel_config
   run:
