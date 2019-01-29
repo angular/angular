@@ -159,9 +159,9 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/typescript@gregmagolan/rules_typescript#dist-0.22.1-typescript-2":
+"@bazel/typescript@gregmagolan/rules_typescript#dist-0.22.1-typescript-4":
   version "0.22.1-10-gbf837db"
-  resolved "https://codeload.github.com/gregmagolan/rules_typescript/tar.gz/7af8da54bdcd6c55622da24def7320dc01efbf89"
+  resolved "https://codeload.github.com/gregmagolan/rules_typescript/tar.gz/586596494cf0a3adacbe18e701cedac15ca9e2eb"
   dependencies:
     jasmine-core "2.8.0"
     protobufjs "5.0.3"

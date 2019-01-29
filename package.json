@@ -36,7 +36,7 @@
     "@angular-devkit/core": "^7.0.4",
     "@angular-devkit/schematics": "^7.3.0-rc.0",
     "@bazel/karma": "gregmagolan/rules_typescript#dist-0.22.1-karma",
-    "@bazel/typescript": "gregmagolan/rules_typescript#dist-0.22.1-typescript-2",
+    "@bazel/typescript": "gregmagolan/rules_typescript#dist-0.22.1-typescript-4",
     "@schematics/angular": "^7.0.4",
     "@types/angular": "^1.6.47",
     "@types/chokidar": "1.7.3",
