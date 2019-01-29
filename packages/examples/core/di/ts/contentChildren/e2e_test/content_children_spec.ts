@@ -7,7 +7,7 @@
  */
 
 import {ElementFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
 
 describe('contentChildren example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -16,7 +16,7 @@ describe('contentChildren example', () => {
   let resultNested: ElementFinder;
 
   beforeEach(() => {
-    browser.get('/di/contentChildren');
+    browser.get('/core/di/ts/contentChildren/index.html');
     button = element(by.css('button'));
     resultTopLevel = element(by.css('.top-level'));
     resultNested = element(by.css('.nested'));

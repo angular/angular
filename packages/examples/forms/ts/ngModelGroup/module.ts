@@ -18,5 +18,3 @@ import {NgModelGroupComp} from './ng_model_group_example';
 })
 export class AppModule {
 }
-
-export {NgModelGroupComp as AppComponent};

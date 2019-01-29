@@ -7,7 +7,7 @@
  */
 
 import {$, ExpectedConditions, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 function waitForElement(selector: string) {
   const EC = ExpectedConditions;
@@ -16,7 +16,7 @@ function waitForElement(selector: string) {
 }
 
 describe('ngTemplateOutlet', () => {
-  const URL = '/ngTemplateOutlet';
+  const URL = 'common/ngTemplateOutlet/ts/';
   afterEach(verifyNoBrowserErrors);
 
   describe('ng-template-outlet-example', () => {

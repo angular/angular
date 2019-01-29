@@ -7,7 +7,7 @@
  */
 
 import {ElementArrayFinder, browser, by, element} from 'protractor';
-import {verifyNoBrowserErrors} from '../../../../test-utils';
+import {verifyNoBrowserErrors} from '../../../../_common/e2e_util';
 
 describe('nestedFormArray example', () => {
   afterEach(verifyNoBrowserErrors);
@@ -15,7 +15,7 @@ describe('nestedFormArray example', () => {
   let buttons: ElementArrayFinder;
 
   beforeEach(() => {
-    browser.get('/nestedFormArray');
+    browser.get('/forms/ts/nestedFormArray/index.html');
     inputs = element.all(by.css('input'));
     buttons = element.all(by.css('button'));
   });

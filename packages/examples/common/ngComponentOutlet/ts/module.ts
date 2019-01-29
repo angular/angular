@@ -7,22 +7,21 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, Component, Injectable, Injector, NgModule, NgModuleFactory} from '@angular/core';
+import {Compiler, Component, Injectable, Injector, NgModule, NgModuleFactory} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {JitCompilerFactory} from '@angular/platform-browser-dynamic';
 
 
 
 // #docregion SimpleExample
 @Component({selector: 'hello-world', template: 'Hello World!'})
-export class HelloWorld {
+class HelloWorld {
 }
 
 @Component({
   selector: 'ng-component-outlet-simple-example',
   template: `<ng-container *ngComponentOutlet="HelloWorld"></ng-container>`
 })
-export class NgTemplateOutletSimpleExample {
+class NgTemplateOutletSimpleExample {
   // This field is necessary to expose HelloWorld to the template.
   HelloWorld = HelloWorld;
 }
@@ -30,7 +29,7 @@ export class NgTemplateOutletSimpleExample {
 
 // #docregion CompleteExample
 @Injectable()
-export class Greeter {
+class Greeter {
   suffix = '!';
 }
 
@@ -38,7 +37,7 @@ export class Greeter {
   selector: 'complete-component',
   template: `Complete: <ng-content></ng-content> <ng-content></ng-content>{{ greeter.suffix }}`
 })
-export class CompleteComponent {
+class CompleteComponent {
   constructor(public greeter: Greeter) {}
 }
 
@@ -49,7 +48,7 @@ export class CompleteComponent {
                                       injector: myInjector; 
                                       content: myContent"></ng-container>`
 })
-export class NgTemplateOutletCompleteExample {
+class NgTemplateOutletCompleteExample {
   // This field is necessary to expose CompleteComponent to the template.
   CompleteComponent = CompleteComponent;
   myInjector: Injector;
@@ -65,7 +64,7 @@ export class NgTemplateOutletCompleteExample {
 
 // #docregion NgModuleFactoryExample
 @Component({selector: 'other-module-component', template: `Other Module Component!`})
-export class OtherModuleComponent {
+class OtherModuleComponent {
 }
 
 @Component({
@@ -74,7 +73,7 @@ export class OtherModuleComponent {
     <ng-container *ngComponentOutlet="OtherModuleComponent;
                                       ngModuleFactory: myModule;"></ng-container>`
 })
-export class NgTemplateOutletOtherModuleExample {
+class NgTemplateOutletOtherModuleExample {
   // This field is necessary to expose OtherModuleComponent to the template.
   OtherModuleComponent = OtherModuleComponent;
   myModule: NgModuleFactory<any>;
@@ -92,7 +91,19 @@ export class NgTemplateOutletOtherModuleExample {
              <hr/>
              <ng-component-outlet-other-module-example></ng-component-outlet-other-module-example>`
 })
-export class AppComponent {
+class ExampleApp {
+}
+
+@NgModule({
+  imports: [BrowserModule],
+  declarations: [
+    ExampleApp, NgTemplateOutletSimpleExample, NgTemplateOutletCompleteExample,
+    NgTemplateOutletOtherModuleExample, HelloWorld, CompleteComponent
+  ],
+  entryComponents: [HelloWorld, CompleteComponent],
+  bootstrap: [ExampleApp]
+})
+export class AppModule {
 }
 
 @NgModule({
@@ -101,27 +112,4 @@ export class AppComponent {
   entryComponents: [OtherModuleComponent]
 })
 export class OtherModule {
-}
-
-export function createCompiler(compilerFactory: CompilerFactory) {
-  return compilerFactory.createCompiler();
-}
-
-@NgModule({
-  imports: [BrowserModule],
-  declarations: [
-    AppComponent, NgTemplateOutletSimpleExample, NgTemplateOutletCompleteExample,
-    NgTemplateOutletOtherModuleExample, HelloWorld, CompleteComponent
-  ],
-  entryComponents: [HelloWorld, CompleteComponent],
-  providers: [
-    // Setup the JIT compiler that is not set up by default because the examples
-    // are bootstrapped using their NgModule factory. Since this example uses the
-    // JIT compiler, we manually set it up for this module.
-    {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
-    {provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
-    {provide: Compiler, useFactory: createCompiler, deps: [CompilerFactory]}
-  ]
-})
-export class AppModule {
 }

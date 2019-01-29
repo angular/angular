@@ -11,7 +11,7 @@ import {Component, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
-@Component({selector: 'my-component', template: 'text'})
+@Component({selector: 'my-component'})
 class MyAppComponent {
 }
 

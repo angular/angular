@@ -18,5 +18,3 @@ import {SelectControlComp} from './select_control_example';
 })
 export class AppModule {
 }
-
-export {SelectControlComp as AppComponent};

@@ -21,7 +21,7 @@ import {Subject} from 'rxjs';
     <div *ngIf="show">Text to show</div>
 `
 })
-export class NgIfSimple {
+class NgIfSimple {
   show: boolean = true;
 }
 // #enddocregion
@@ -37,7 +37,7 @@ export class NgIfSimple {
     <ng-template #elseBlock>Alternate text while primary text is hidden</ng-template>
 `
 })
-export class NgIfElse {
+class NgIfElse {
   show: boolean = true;
 }
 // #enddocregion
@@ -56,7 +56,7 @@ export class NgIfElse {
     <ng-template #elseBlock>Alternate text while primary text is hidden</ng-template>
 `
 })
-export class NgIfThenElse implements OnInit {
+class NgIfThenElse implements OnInit {
   thenBlock: TemplateRef<any>|null = null;
   show: boolean = true;
 
@@ -85,7 +85,7 @@ export class NgIfThenElse implements OnInit {
     <ng-template #loading let-user>Waiting... (user is {{user|json}})</ng-template>
 `
 })
-export class NgIfAs {
+class NgIfAs {
   userObservable = new Subject<{first: string, last: string}>();
   first = ['John', 'Mike', 'Mary', 'Bob'];
   firstIndex = 0;
@@ -116,12 +116,13 @@ export class NgIfAs {
     <hr>
 `
 })
-export class AppComponent {
+class ExampleApp {
 }
 
 @NgModule({
   imports: [BrowserModule],
-  declarations: [AppComponent, NgIfSimple, NgIfElse, NgIfThenElse, NgIfAs],
+  declarations: [ExampleApp, NgIfSimple, NgIfElse, NgIfThenElse, NgIfAs],
+  bootstrap: [ExampleApp]
 })
 export class AppModule {
 }

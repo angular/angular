@@ -18,5 +18,3 @@ import {SimpleFormGroup} from './simple_form_group_example';
 })
 export class AppModule {
 }
-
-export {SimpleFormGroup as AppComponent};
