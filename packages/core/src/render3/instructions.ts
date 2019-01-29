@@ -269,7 +269,11 @@ export function assignTViewNodeToLView(
 export function allocExpando(view: LView) {
   const tView = view[TVIEW];
   if (tView.firstTemplatePass) {
-    tView.expandoStartIndex++;
+    // We should only increment the expando start index if there aren't already directives
+    // and injectors saved in the "expando" section
+    if (tView.blueprint.length === tView.expandoStartIndex) {
+      tView.expandoStartIndex++;
+    }
     tView.blueprint.push(null);
     tView.data.push(null);
     view.push(null);
