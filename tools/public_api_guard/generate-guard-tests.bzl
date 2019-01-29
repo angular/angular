@@ -24,7 +24,7 @@ def generate_test_targets(golden_files):
 
     # Create the test rule that compares the build output with the golden file.
     ts_api_guardian_test(
-      name = "%s_%s_api" % (package_name, entry_point),
+      name = "%s_api" % golden_file,
       actual = "angular_material/src/%s/index.d.ts" % entry_point_path,
       data = [golden_file] + [
         "//src/%s" % (entry_point_path),
