@@ -79,7 +79,7 @@ export const _MatFormFieldMixinBase: CanColorCtor & typeof MatFormFieldBase =
 export type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
 
 /**
- * Represents the default options form the form field that can be configured
+ * Represents the default options for the form field that can be configured
  * using the `MAT_FORM_FIELD_DEFAULT_OPTIONS` injection token.
  */
 export interface MatFormFieldDefaultOptions {
