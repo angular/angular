@@ -427,7 +427,6 @@ ng update @angular/material
 * **ripple:** deprecated `[matRippleSpeedFactor]` and `baseSpeedFactor` for the ripples have been removed. Use the new animation config instead.
 * **overlay:** The `flexibleDiemsions` property on `CdkConnectedOverlay` has been renamed to `flexibleDimensions`
 * **sidenav:** the constructor signature of the `MatDrawerContent` and `MatSidenavContent` has changed.
-* **sidenav:** the templates for `MatSidenav` and `MatDrawer` have changed.
 * **elevation:** Because `mat-elevation` usages have been moved out of component stylesheets, users who have
 not invoked a theme mixin will not see any elevation shadows on Material components.
 However, users that have created a custom theme which lacks the `elevation` property will
