@@ -378,7 +378,7 @@ export declare class RouterLink {
         [k: string]: any;
     };
     readonly urlTree: UrlTree;
-    constructor(router: Router, route: ActivatedRoute, tabIndex: string, renderer: Renderer2, el: ElementRef);
+    constructor(router: Router, route: ActivatedRoute);
     onClick(): boolean;
 }
 

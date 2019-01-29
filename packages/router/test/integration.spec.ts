@@ -1806,7 +1806,7 @@ describe('Integration', () => {
          expect(fixture.nativeElement).toHaveText('team 22 [ link, right:  ]');
 
          const button = fixture.nativeElement.querySelector('button');
-         expect(button.getAttribute('tabindex')).toEqual('0');
+         expect(button.getAttribute('tabindex')).toEqual(null);
          button.click();
          advance(fixture);
 

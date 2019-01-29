@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, isDevMode} from '@angular/core';
+import {Directive, HostBinding, HostListener, Input, OnChanges, OnDestroy, isDevMode} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {QueryParamsHandling} from '../config';
@@ -130,13 +130,7 @@ export class RouterLink {
   // TODO(issue/24571): remove '!'.
   private preserve !: boolean;
 
-  constructor(
-      private router: Router, private route: ActivatedRoute,
-      @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef) {
-    if (tabIndex == null) {
-      renderer.setAttribute(el.nativeElement, 'tabindex', '0');
-    }
-  }
+  constructor(private router: Router, private route: ActivatedRoute) {}
 
   @Input()
   set routerLink(commands: any[]|string) {
