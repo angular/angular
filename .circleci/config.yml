@@ -507,9 +507,9 @@ workflows:
       - test_aio_local:
           requires:
             - build-packages-dist
-      - test_aio_local_ivy:
-          requires:
-            - build-packages-dist
+      # - test_aio_local_ivy:
+      #     requires:
+      #       - build-packages-dist
       - test_aio_tools:
           requires:
             - build-packages-dist
@@ -539,7 +539,7 @@ workflows:
             - integration_test
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
-            - test_aio_local_ivy
+            # - test_aio_local_ivy
             - test_docs_examples
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
