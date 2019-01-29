@@ -14,7 +14,7 @@
     "@angular/compiler": "file:../angular/dist/packages-dist/compiler",
     "@angular/compiler-cli": "file:../angular/dist/packages-dist/compiler-cli",
     "@bazel/karma": "gregmagolan/rules_typescript#dist-0.22.1-karma",
-    "@bazel/typescript": "gregmagolan/rules_typescript#dist-0.22.1-typescript",
+    "@bazel/typescript": "gregmagolan/rules_typescript#dist-0.22.1-typescript-2",
     "@types/jasmine": "2.8.8",
     "@types/source-map": "0.5.1",
     "protractor": "5.1.2",
