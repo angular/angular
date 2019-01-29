@@ -699,12 +699,21 @@
     "bio": "Brian is a software engineer and GDE in Angular with a passion for learning, writing, speaking, teaching and mentoring. Brian has been building web applications for over 20 years and has long been a fanboy of JavaScript. When not in front of his Macbook Pro Brian is in the Rocky Mountains skiing or hiking.",
     "group": "GDE"
   },
+
   "jeffbcross": {
     "name": "Jeff Cross",
     "picture": "jeff-cross.jpg",
     "twitter": "jeffbcross",
     "website": "https://nrwl.io/",
     "bio": "Jeff is an Angular Consultant at nrwl.io where he helps enterprise teams succeed with Angular. Prior to founding Nrwl, Jeff was one of the earliest members of the Angular Core Team at Google, and contributed to many of the early state management and performance efforts of AngularJS and Angular.",
+    "group": "GDE"
+  },
+
+  "keilla": {
+    "name": "Keilla Menezes Fernandes",
+    "picture": "keilla.jpg",
+    "twitter": "keillamenezes_",
+    "bio": "I am Senior Software Development Consultant in ThoughtWorks and GDE in Angular. Graduated in Computer Science from Federal University of Bahia, I have been worked with software development for more than 11 years. Since 2017, I started with Angular Framework and I went deep into front-end ecosystem and became more specialized in this area. I participate in a computer science community, Campinas Front-end, that promotes events in this area. In the end of 2016, I started to do technical talks. The passion for science is the engine that drives me to seek answers to the problems that computing aims to solve. Besides that, sharing knowledge and experiences is the path I choose to democratize the technology for all.",
     "group": "GDE"
   }
 }
