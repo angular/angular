@@ -167,7 +167,10 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     if (analysis.metadataStmt !== null) {
       ngModuleStatements.push(analysis.metadataStmt);
     }
-    const context = node.getSourceFile();
+    let context = node.getSourceFile();
+    if (context === undefined) {
+      context = ts.getOriginalNode(node).getSourceFile();
+    }
     for (const decl of analysis.declarations) {
       if (this.scopeRegistry.requiresRemoteScope(decl.node)) {
         const scope = this.scopeRegistry.lookupCompilationScopeAsRefs(decl.node);
