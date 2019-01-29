@@ -191,11 +191,9 @@ export class NgtscProgram implements api.Program {
   }
 
   listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
-    if (entryRoute !== undefined) {
-      throw new Error(
-          `Listing specific routes is unsupported for now (got query for ${entryRoute})`);
-    }
     this.ensureAnalyzed();
+    // Listing specific routes is unsupported for now, so we erroneously return
+    // all lazy routes instead (which should be okay for the CLI's usage).
     return this.routeAnalyzer !.listLazyRoutes();
   }
 
