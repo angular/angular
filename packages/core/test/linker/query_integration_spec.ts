@@ -9,7 +9,7 @@
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, asNativeElements} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, ivyEnabled, modifiedInIvy} from '@angular/private/testing';
+import {fixmeIvy, ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 import {Subject} from 'rxjs';
 
 import {stringify} from '../../src/util/stringify';
@@ -570,7 +570,7 @@ describe('Query API', () => {
     });
 
     // Note: this test is just document our current behavior, which we do for performance reasons.
-    fixmeIvy('FW-853: Query results are cleared if embedded views are detached / moved')
+    modifiedInIvy('Query results from views are reported upon view insert / detach')
         .it('should not affect queries for projected templates if views are detached or moved',
             () => {
               const template = `<manual-projecting #q>
@@ -599,6 +599,41 @@ describe('Query API', () => {
               view.detectChanges();
               expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
             });
+
+    onlyInIvy('Query results from views are reported upon view insert / detach')
+        .it('should update queries when a view is detached and re-inserted', () => {
+          const template = `<manual-projecting #q>
+              <ng-template let-x="x">
+                 <div [text]="x"></div>
+              </ng-template>
+          </manual-projecting>`;
+          const view = createTestCmpAndDetectChanges(MyComp0, template);
+          const q = view.debugElement.children[0].references !['q'] as ManualProjecting;
+          expect(q.query.length).toBe(0);
+
+          const view1 = q.vc.createEmbeddedView(q.template, {'x': '1'});
+          const view2 = q.vc.createEmbeddedView(q.template, {'x': '2'});
+
+          // 2 views were created and inserted so we've got 2 matching results
+          view.detectChanges();
+          expect(q.query.map((d: TextDirective) => d.text)).toEqual(['1', '2']);
+
+          q.vc.detach(1);
+          q.vc.detach(0);
+
+          // both views were detached so query results from those views should not be reported
+          view.detectChanges();
+          expect(q.query.map((d: TextDirective) => d.text)).toEqual([]);
+
+          q.vc.insert(view2);
+          q.vc.insert(view1);
+
+          // previously detached views are re-inserted in the different order so:
+          // - query results from the inserted views are reported again
+          // - the order results from views reflects orders of views
+          view.detectChanges();
+          expect(q.query.map((d: TextDirective) => d.text)).toEqual(['2', '1']);
+        });
 
     fixmeIvy('FW-920: Queries in nested views are not destroyed properly')
         .it('should remove manually projected templates if their parent view is destroyed', () => {
