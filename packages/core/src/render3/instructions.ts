@@ -267,13 +267,24 @@ export function assignTViewNodeToLView(
  * i18nApply() or ComponentFactory.create), we need to adjust the blueprint for future
  * template passes.
  */
-export function allocExpando(view: LView) {
+export function allocExpando(view: LView, numSlotsToAlloc: number) {
   const tView = view[TVIEW];
   if (tView.firstTemplatePass) {
-    tView.expandoStartIndex++;
-    tView.blueprint.push(null);
-    tView.data.push(null);
-    view.push(null);
+    for (let i = 0; i < numSlotsToAlloc; i++) {
+      tView.blueprint.push(null);
+      tView.data.push(null);
+      view.push(null);
+    }
+
+    // We should only increment the expando start index if there aren't already directives
+    // and injectors saved in the "expando" section
+    if (!tView.expandoInstructions) {
+      tView.expandoStartIndex += numSlotsToAlloc;
+    } else {
+      // Since we're adding the dynamic nodes into the expando section, we need to let the host
+      // bindings know that they should skip x slots
+      tView.expandoInstructions.push(numSlotsToAlloc);
+    }
   }
 }
 
