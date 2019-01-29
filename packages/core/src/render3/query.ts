@@ -191,19 +191,21 @@ function copyQueriesToView(query: LQuery<any>| null): LQuery<any>|null {
 
 function insertView(index: number, query: LQuery<any>| null) {
   while (query) {
-    ngDevMode &&
-        assertDefined(
-            query.containerValues, 'View queries need to have a pointer to container values.');
+    ngDevMode && assertViewQueryhasPointerToDeclarationContainer(query);
     query.containerValues !.splice(index, 0, query.values);
+
+    // mark a query as dirty only when inserted view had matching modes
+    if (query.values.length) {
+      query.list.setDirty();
+    }
+
     query = query.next;
   }
 }
 
 function removeView(query: LQuery<any>| null) {
   while (query) {
-    ngDevMode &&
-        assertDefined(
-            query.containerValues, 'View queries need to have a pointer to container values.');
+    ngDevMode && assertViewQueryhasPointerToDeclarationContainer(query);
 
     const containerValues = query.containerValues !;
     const viewValuesIdx = containerValues.indexOf(query.values);
@@ -219,6 +221,9 @@ function removeView(query: LQuery<any>| null) {
   }
 }
 
+function assertViewQueryhasPointerToDeclarationContainer(query: LQuery<any>) {
+  assertDefined(query.containerValues, 'View queries need to have a pointer to container values.');
+}
 
 /**
  * Iterates over local names for a given node and returns directive index
