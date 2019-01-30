@@ -97,6 +97,9 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   /** Event emitted when the current step is done transitioning in. */
   @Output() readonly animationDone: EventEmitter<void> = new EventEmitter<void>();
 
+  /** Whether ripples should be disabled for the step headers. */
+  @Input() disableRipple: boolean;
+
   /** Consumer-specified template-refs to be used to override the header icons. */
   _iconOverrides: {[key: string]: TemplateRef<MatStepperIconContext>} = {};
 

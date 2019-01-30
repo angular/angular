@@ -63,6 +63,9 @@ export class MatStepHeader extends CdkStepHeader implements OnDestroy {
   /** Whether the given step is optional. */
   @Input() optional: boolean;
 
+  /** Whether the ripple should be disabled. */
+  @Input() disableRipple: boolean;
+
   constructor(
     public _intl: MatStepperIntl,
     private _focusMonitor: FocusMonitor,

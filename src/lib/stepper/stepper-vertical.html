@@ -1,5 +1,5 @@
 <div class="mat-step" *ngFor="let step of steps; let i = index; let isLast = last">
-  <mat-step-header  class="mat-vertical-stepper-header"
+  <mat-step-header class="mat-vertical-stepper-header"
                    (click)="step.select()"
                    (keydown)="_onKeydown($event)"
                    [tabIndex]="_getFocusIndex() == i ? 0 : -1"
@@ -17,7 +17,8 @@
                    [active]="step.completed || selectedIndex === i || !linear"
                    [optional]="step.optional"
                    [errorMessage]="step.errorMessage"
-                   [iconOverrides]="_iconOverrides">
+                   [iconOverrides]="_iconOverrides"
+                   [disableRipple]="disableRipple">
   </mat-step-header>
 
   <div class="mat-vertical-content-container" [class.mat-stepper-vertical-line]="!isLast">

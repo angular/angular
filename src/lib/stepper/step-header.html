@@ -1,4 +1,7 @@
-<div class="mat-step-header-ripple" mat-ripple [matRippleTrigger]="_getHostElement()"></div>
+<div class="mat-step-header-ripple" matRipple
+     [matRippleTrigger]="_getHostElement()"
+     [matRippleDisabled]="disableRipple"></div>
+
 <div class="mat-step-icon-state-{{state}} mat-step-icon" [class.mat-step-icon-selected]="selected">
   <div class="mat-step-icon-content" [ngSwitch]="!!(iconOverrides && iconOverrides[state])">
     <ng-container

@@ -62,6 +62,7 @@ ng_test_library(
     "//src/cdk/testing",
     "//src/lib/form-field",
     "//src/lib/input",
+    "//src/lib/core",
     ":stepper",
   ]
 )

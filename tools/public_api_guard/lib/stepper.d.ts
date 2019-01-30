@@ -19,6 +19,7 @@ export declare class MatStep extends CdkStep implements ErrorStateMatcher {
 export declare class MatStepHeader extends CdkStepHeader implements OnDestroy {
     _intl: MatStepperIntl;
     active: boolean;
+    disableRipple: boolean;
     errorMessage: string;
     iconOverrides: {
         [key: string]: TemplateRef<MatStepperIconContext>;
@@ -49,6 +50,7 @@ export declare class MatStepper extends CdkStepper implements AfterContentInit {
     _stepHeader: QueryList<MatStepHeader>;
     _steps: QueryList<MatStep>;
     readonly animationDone: EventEmitter<void>;
+    disableRipple: boolean;
     ngAfterContentInit(): void;
 }
 
