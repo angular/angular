@@ -86,6 +86,23 @@ describe('MatChipList', () => {
 
         expect(chips.toArray().every(chip => chip.disabled)).toBe(false);
       });
+
+      it('should disable a chip that is added after the list became disabled', fakeAsync(() => {
+        expect(chips.toArray().every(chip => chip.disabled)).toBe(false);
+
+        chipListInstance.disabled = true;
+        fixture.detectChanges();
+
+        expect(chips.toArray().every(chip => chip.disabled)).toBe(true);
+
+        fixture.componentInstance.items.push(5, 6);
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
+
+        expect(chips.toArray().every(chip => chip.disabled)).toBe(true);
+      }));
+
     });
 
     describe('with selected chips', () => {
@@ -1305,7 +1322,7 @@ describe('MatChipList', () => {
 @Component({
   template: `
     <mat-chip-list [tabIndex]="tabIndex" [selectable]="selectable">
-      <div *ngFor="let i of [0,1,2,3,4]">
+      <div *ngFor="let i of items">
        <div *ngIf="remove != i">
           <mat-chip (select)="chipSelect(i)" (deselect)="chipDeselect(i)">
             {{name}} {{i + 1}}
@@ -1315,6 +1332,7 @@ describe('MatChipList', () => {
     </mat-chip-list>`
 })
 class StandardChipList {
+  items = [0, 1, 2, 3, 4];
   name: string = 'Test';
   selectable: boolean = true;
   remove: number;
