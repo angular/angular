@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as fs from 'fs';
 import * as ts from 'typescript';
 
 
@@ -67,24 +66,30 @@ export class SymbolExtractor {
     return symbols;
   }
 
-  static diff(actual: Symbol[], expected: string|((Symbol | string)[])): {[name: string]: string} {
+  static diff(actual: Symbol[], expected: string|((Symbol | string)[])): {[name: string]: number} {
     if (typeof expected == 'string') {
       expected = JSON.parse(expected);
     }
-    const diff: {[name: string]: ('missing' | 'extra')} = {};
+    const diff: {[name: string]: number} = {};
+
+    // All symbols in the golden file start out with a count corresponding to the number of symbols
+    // with that name. Once they are matched with symbols in the actual output, the count should
+    // even out to 0.
     (expected as(Symbol | string)[]).forEach((nameOrSymbol) => {
-      diff[typeof nameOrSymbol == 'string' ? nameOrSymbol : nameOrSymbol.name] = 'missing';
+      const symbolName = typeof nameOrSymbol == 'string' ? nameOrSymbol : nameOrSymbol.name;
+      diff[symbolName] = (diff[symbolName] || 0) + 1;
     });
 
     actual.forEach((s) => {
-      if (diff[s.name] === 'missing') {
+      if (diff[s.name] === 1) {
         delete diff[s.name];
       } else {
-        diff[s.name] = 'extra';
+        diff[s.name] = (diff[s.name] || 0) - 1;
       }
     });
     return diff;
   }
+
 
   constructor(private path: string, private contents: string) {
     this.actual = SymbolExtractor.parse(path, contents);
@@ -102,7 +107,9 @@ export class SymbolExtractor {
         console.error(`Expected symbols in '${this.path}' did not match gold file.`);
         passed = false;
       }
-      console.error(`   Symbol: ${key} => ${diff[key]}`);
+      const missingOrExtra = diff[key] > 0 ? 'extra' : 'missing';
+      const count = Math.abs(diff[key]);
+      console.error(`   Symbol: ${key} => ${count} ${missingOrExtra} in golden file.`);
     });
 
     return passed;
@@ -112,14 +119,6 @@ export class SymbolExtractor {
 function stripSuffix(text: string): string {
   const index = text.lastIndexOf('$');
   return index > -1 ? text.substring(0, index) : text;
-}
-
-function toSymbol(v: string | Symbol): Symbol {
-  return typeof v == 'string' ? {'name': v} : v as Symbol;
-}
-
-function toName(symbol: Symbol): string {
-  return symbol.name;
 }
 
 /**
