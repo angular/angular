@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "lib": ["es2017"],
+    "types": ["node"]
+  }
+}

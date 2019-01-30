@@ -206,7 +206,6 @@ def _expected_outs(ctx):
         devmode_js_files.append(ctx.actions.declare_file("%s.js" % flat_module_out))
         closure_js_files.append(ctx.actions.declare_file("%s.closure.js" % flat_module_out))
         bundle_index_typings = ctx.actions.declare_file("%s.d.ts" % flat_module_out)
-        declaration_files.append(bundle_index_typings)
         if is_legacy_ngc:
             metadata_files.append(ctx.actions.declare_file("%s.metadata.json" % flat_module_out))
     else:
@@ -294,6 +293,7 @@ def ngc_compile_action(
         label,
         inputs,
         outputs,
+        dts_bundle_out,
         messages_out,
         tsconfig_file,
         node_opts,
@@ -309,6 +309,7 @@ def ngc_compile_action(
       label: the label of the ng_module being compiled
       inputs: passed to the ngc action's inputs
       outputs: passed to the ngc action's outputs
+      dts_bundle_out: produced flattened dts file
       messages_out: produced xmb files
       tsconfig_file: tsconfig file with settings used for the compilation
       node_opts: list of strings, extra nodejs options.
@@ -357,6 +358,20 @@ def ngc_compile_action(
         },
     )
 
+    if dts_bundle_out != None:
+        ctx.actions.run(
+            progress_message = "Bundling DTS %s" % str(ctx.label),
+            mnemonic = "APIExtractor",
+            executable = ctx.executable.api_extractor,
+            inputs = inputs + outputs,
+            outputs = [dts_bundle_out],
+            arguments = [
+                tsconfig_file.path,
+                "/".join([ctx.bin_dir.path, ctx.label.package, ctx.attr.entry_point.replace(".ts", ".d.ts")]),
+                dts_bundle_out.path
+            ],
+        )
+
     if is_legacy_ngc and messages_out != None:
         ctx.actions.run(
             inputs = list(inputs),
@@ -392,7 +407,7 @@ def _filter_ts_inputs(all_inputs):
         if f.path.endswith(".js") or f.path.endswith(".ts") or f.path.endswith(".json")
     ]
 
-def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file, node_opts):
+def _compile_action(ctx, inputs, outputs, dts_bundle_out, messages_out, tsconfig_file, node_opts):
     # Give the Angular compiler all the user-listed assets
     file_inputs = list(ctx.files.assets)
 
@@ -419,16 +434,16 @@ def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file, node_opts
         ],
     )
 
-    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file, node_opts)
+    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, dts_bundle_out, messages_out, tsconfig_file, node_opts)
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    return _compile_action(ctx, inputs, outputs + outs.closure_js, outs.i18n_messages, tsconfig_file, node_opts)
+    return _compile_action(ctx, inputs, outputs + outs.closure_js, None, outs.i18n_messages, tsconfig_file, node_opts)
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
     compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
-    _compile_action(ctx, inputs, compile_action_outputs, None, tsconfig_file, node_opts)
+    _compile_action(ctx, inputs, compile_action_outputs, outs.bundle_index_typings, None, tsconfig_file, node_opts)
 
 def _ts_expected_outs(ctx, label, srcs_files = []):
     # rules_typescript expects a function with two or more arguments, but our
@@ -540,6 +555,11 @@ NG_MODULE_ATTRIBUTES = {
     ),
     "ng_xi18n": attr.label(
         default = Label(DEFAULT_NG_XI18N),
+        executable = True,
+        cfg = "host",
+    ),
+    "api_extractor": attr.label(
+        default = Label("//packages/bazel/src/api-extractor:api_extractor"),
         executable = True,
         cfg = "host",
     ),

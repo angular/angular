@@ -176,7 +176,9 @@ function main(args: string[]): number {
     moduleFiles['esm5_index'] = path.join(binDir, 'esm5', relative);
     moduleFiles['esm2015_index'] = path.join(binDir, 'esm2015', relative);
 
-    copyFileFromInputPath(moduleFiles['metadata']);
+    const metadataFile = moduleFiles['metadata'];
+    const metadataContent = rewireMetadata(metadataFile, moduleFiles['typings']);
+    writeFileFromInputPath(metadataFile, metadataContent);
   });
 
   // Root package name (e.g. '@angular/common'), captures as we iterate through sources below.
@@ -368,6 +370,28 @@ export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, '')
    * forward slash separators.
    */
   function normalizeSeparators(path: string): string { return path.replace(/\\/g, '/'); }
+
+  /**
+   * Rewires metadata to point to the flattened dts file.
+   * 
+   * @param metadataPath the metadata file path
+   * @param typingsPath the typings bundle entrypoint
+   */
+  function rewireMetadata(metadataPath: string, typingsPath: string): string {
+    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
+    const origins = metadata.origins;
+
+    let typingsRelativePath = normalizeSeparators(path.relative(path.dirname(metadataPath), typingsPath));
+    if (!typingsRelativePath.startsWith('..')) {
+      typingsRelativePath = `./${typingsRelativePath}`;
+    }
+
+    for (const key of Object.keys(origins)) {
+      origins[key] = typingsRelativePath;
+    }
+
+    return JSON.stringify(metadata);
+  }
 }
 
 if (require.main === module) {
