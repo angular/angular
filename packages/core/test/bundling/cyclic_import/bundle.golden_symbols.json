@@ -288,9 +288,6 @@
     "name": "findDirectiveMatches"
   },
   {
-    "name": "firstTemplatePass"
-  },
-  {
     "name": "generateExpandoInstructionBlock"
   },
   {
@@ -325,9 +322,6 @@
   },
   {
     "name": "getElementDepthCount"
-  },
-  {
-    "name": "getFirstTemplatePass"
   },
   {
     "name": "getHighestElementOrICUContainer"
@@ -592,9 +586,6 @@
   },
   {
     "name": "setCurrentQueryIndex"
-  },
-  {
-    "name": "setFirstTemplatePass"
   },
   {
     "name": "setHostBindings"
