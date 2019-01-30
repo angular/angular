@@ -127,7 +127,8 @@ export function isComponentDef<T>(def: DirectiveDef<T>): def is ComponentDef<T> 
   return (def as ComponentDef<T>).template !== null;
 }
 
-export function isLContainer(value: RElement | RComment | LContainer | StylingContext): boolean {
+export function isLContainer(
+    value: RElement | RComment | LContainer | LView | StylingContext | null): boolean {
   // Styling contexts are also arrays, but their first index contains an element node
   return Array.isArray(value) && value.length === LCONTAINER_LENGTH;
 }
