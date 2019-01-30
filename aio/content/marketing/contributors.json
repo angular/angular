@@ -651,5 +651,13 @@
     "website": "https://medium.com/@sharondio",
     "bio": "Sharon is a mother to four teenagers, wife of a USMC veteran/police officer, and lead front-end engineer for an educational non-profit in Boston. In her spare time, she is the \"Head Instigator\" of the Angular-Boston Meetup and an active member of the Boston meetups community. She occasionally speaks on Angular and related topics at technology conferences across the country. She has a Bachelor of Fine Arts from SMU and a Masters with honors from RTFM.",
     "group": "GDE"
+  },
+  "leonardozizzamia": {
+    "name": "Leonardo Zizzamia",
+    "picture": "leonardo.jpg",
+    "twitter": "zizzamia",
+    "website": "https://medium.com/@zizzamia",
+    "bio": "Leonardo is a Senior Software Engineer at Coinbase. He is deeply passionate about web performance and most recently developed Perfume.js to help companies prioritize roadmaps and business, through performance analytics. From 2018, co-organizer of the Angular San Francisco Meetup group and NGRome Conference.",
+    "group": "GDE"
   }
 }
