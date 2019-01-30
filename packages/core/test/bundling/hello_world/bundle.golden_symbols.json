@@ -216,9 +216,6 @@
     "name": "extractPipeDef"
   },
   {
-    "name": "firstTemplatePass"
-  },
-  {
     "name": "generateExpandoInstructionBlock"
   },
   {
@@ -241,9 +238,6 @@
   },
   {
     "name": "getDirectiveDef"
-  },
-  {
-    "name": "getFirstTemplatePass"
   },
   {
     "name": "getHighestElementOrICUContainer"
@@ -421,9 +415,6 @@
   },
   {
     "name": "setCurrentQueryIndex"
-  },
-  {
-    "name": "setFirstTemplatePass"
   },
   {
     "name": "setHostBindings"

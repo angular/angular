@@ -24,7 +24,7 @@ import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {CONTENT_QUERIES, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
-import {getCurrentQueryIndex, getFirstTemplatePass, getIsParent, getLView, getOrCreateCurrentQueries, setCurrentQueryIndex} from './state';
+import {getCurrentQueryIndex, getIsParent, getLView, getOrCreateCurrentQueries, setCurrentQueryIndex} from './state';
 import {isContentQueryHost} from './util';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
@@ -444,7 +444,7 @@ export function contentQuery<T>(
   const tView = lView[TVIEW];
   const contentQuery: QueryList<T> = query<T>(predicate, descend, read);
   (lView[CONTENT_QUERIES] || (lView[CONTENT_QUERIES] = [])).push(contentQuery);
-  if (getFirstTemplatePass()) {
+  if (tView.firstTemplatePass) {
     const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
     const lastSavedDirectiveIndex =
         tView.contentQueries.length ? tView.contentQueries[tView.contentQueries.length - 1] : -1;
