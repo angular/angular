@@ -15,10 +15,8 @@ export abstract class RouterEntryPoint {
 
   abstract readonly moduleName: string;
 
-  // Alias of moduleName.
+  // Alias of moduleName for compatibility with what `ngtools_api` returned.
   abstract readonly name: string;
-
-  abstract toString(): string;
 }
 
 class RouterEntryPointImpl implements RouterEntryPoint {
@@ -26,7 +24,8 @@ class RouterEntryPointImpl implements RouterEntryPoint {
 
   get name(): string { return this.moduleName; }
 
-  toString(): string { return `${this.filePath}#${this.moduleName}`; }
+  // For debugging purposes.
+  toString(): string { return `RouterEntryPoint(name: ${this.name}, filePath: ${this.filePath})`; }
 }
 
 export class RouterEntryPointManager {
