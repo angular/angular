@@ -30,9 +30,9 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {PlayerFactory} from './interfaces/player';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {GlobalTargetResolver, ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {GlobalTargetResolver, ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
@@ -156,6 +156,7 @@ function refreshChildComponents(components: number[] | null): void {
 
 export function createLView<T>(
     parentLView: LView | null, tView: TView, context: T | null, flags: LViewFlags,
+    host: RElement | null, tHostNode: TViewNode | TElementNode | null,
     rendererFactory?: RendererFactory3 | null, renderer?: Renderer3 | null,
     sanitizer?: Sanitizer | null, injector?: Injector | null): LView {
   const lView = tView.blueprint.slice() as LView;
@@ -168,6 +169,8 @@ export function createLView<T>(
   ngDevMode && assertDefined(lView[RENDERER], 'Renderer is required');
   lView[SANITIZER] = sanitizer || parentLView && parentLView[SANITIZER] || null !;
   lView[INJECTOR as any] = injector || parentLView && parentLView[INJECTOR] || null;
+  lView[HOST] = host;
+  lView[T_HOST] = tHostNode;
   return lView;
 }
 
@@ -216,7 +219,7 @@ export function createNodeAtIndex(
 
     // Parents cannot cross component boundaries because components will be used in multiple places,
     // so it's only set if the view is the same.
-    const parentInSameView = parent && parent !== lView[HOST_NODE];
+    const parentInSameView = parent && parent !== lView[T_HOST];
     const tParentNode = parentInSameView ? parent as TElementNode | TContainerNode : null;
 
     tNode = tView.data[adjustedIndex] = createTNode(tParentNode, type, adjustedIndex, name, attrs);
@@ -258,7 +261,7 @@ export function assignTViewNodeToLView(
         TNodeType.View, index, null, null) as TViewNode;
   }
 
-  return lView[HOST_NODE] = tNode as TViewNode;
+  return lView[T_HOST] = tNode as TViewNode;
 }
 
 
@@ -306,28 +309,28 @@ export function allocExpando(view: LView, numSlotsToAlloc: number) {
  */
 export function renderTemplate<T>(
     hostNode: RElement, templateFn: ComponentTemplate<T>, consts: number, vars: number, context: T,
-    providedRendererFactory: RendererFactory3, hostView: LView | null,
+    providedRendererFactory: RendererFactory3, componentView: LView | null,
     directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
     sanitizer?: Sanitizer | null): LView {
-  if (hostView == null) {
+  if (componentView === null) {
     resetComponentState();
     const renderer = providedRendererFactory.createRenderer(null, null);
 
     // We need to create a root view so it's possible to look up the host element through its index
     const hostLView = createLView(
         null, createTView(-1, null, 1, 0, null, null, null), {},
-        LViewFlags.CheckAlways | LViewFlags.IsRoot, providedRendererFactory, renderer);
+        LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null, providedRendererFactory, renderer);
     enterView(hostLView, null);  // SUSPECT! why do we need to enter the View?
 
     const componentTView =
         getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null);
-    hostView = createLView(
-        hostLView, componentTView, context, LViewFlags.CheckAlways, providedRendererFactory,
-        renderer, sanitizer);
-    hostView[HOST_NODE] = createNodeAtIndex(0, TNodeType.Element, hostNode, null, null);
+    const hostTNode = createNodeAtIndex(0, TNodeType.Element, hostNode, null, null);
+    componentView = createLView(
+        hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,
+        providedRendererFactory, renderer, sanitizer);
   }
-  renderComponentOrTemplate(hostView, context, templateFn);
-  return hostView;
+  renderComponentOrTemplate(componentView, context, templateFn);
+  return componentView;
 }
 
 /**
@@ -343,7 +346,7 @@ export function createEmbeddedViewAndNode<T>(
   setIsParent(true);
   setPreviousOrParentTNode(null !);
 
-  const lView = createLView(declarationView, tView, context, LViewFlags.CheckAlways);
+  const lView = createLView(declarationView, tView, context, LViewFlags.CheckAlways, null, null);
   lView[DECLARATION_VIEW] = declarationView;
 
   if (queries) {
@@ -382,7 +385,7 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       setIsParent(true);
       setPreviousOrParentTNode(null !);
 
-      oldView = enterView(viewToRender, viewToRender[HOST_NODE]);
+      oldView = enterView(viewToRender, viewToRender[T_HOST]);
       namespaceHTML();
       tView.template !(getRenderFlags(viewToRender), context);
       // This must be set to false immediately after the first creation run because in an
@@ -417,7 +420,7 @@ export function nextContext<T = any>(level: number = 1): T {
 function renderComponentOrTemplate<T>(
     hostView: LView, context: T, templateFn?: ComponentTemplate<T>) {
   const rendererFactory = hostView[RENDERER_FACTORY];
-  const oldView = enterView(hostView, hostView[HOST_NODE]);
+  const oldView = enterView(hostView, hostView[T_HOST]);
   const normalExecutionPath = !getCheckNoChangesMode();
   const creationModeIsActive = isCreationMode(hostView);
   try {
@@ -1962,13 +1965,13 @@ function addComponentLogic<T>(
       lView, previousOrParentTNode.index as number,
       createLView(
           lView, tView, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
+          lView[previousOrParentTNode.index], previousOrParentTNode as TElementNode,
           rendererFactory, lView[RENDERER_FACTORY].createRenderer(native as RElement, def)));
 
-  componentView[HOST_NODE] = previousOrParentTNode as TElementNode;
+  componentView[T_HOST] = previousOrParentTNode as TElementNode;
 
   // Component view will always be created before any injected LContainers,
   // so this is a regular element, wrap it with the component view
-  componentView[HOST] = lView[previousOrParentTNode.index];
   lView[previousOrParentTNode.index] = componentView;
 
   if (lView[TVIEW].firstTemplatePass) {
@@ -2308,7 +2311,7 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
     viewToRender = createLView(
         lView,
         getOrCreateEmbeddedTView(viewBlockId, consts, vars, containerTNode as TContainerNode), null,
-        LViewFlags.CheckAlways);
+        LViewFlags.CheckAlways, null, null);
 
     if (lContainer[QUERIES]) {
       viewToRender[QUERIES] = lContainer[QUERIES] !.createView();
@@ -2360,7 +2363,7 @@ function getOrCreateEmbeddedTView(
 /** Marks the end of an embedded view. */
 export function embeddedViewEnd(): void {
   const lView = getLView();
-  const viewHost = lView[HOST_NODE];
+  const viewHost = lView[T_HOST];
 
   if (isCreationMode(lView)) {
     refreshDescendantViews(lView);  // creation mode pass
@@ -2452,7 +2455,7 @@ export function viewAttached(view: LView): boolean {
  * @param rawSelectors A collection of CSS selectors in the raw, un-parsed form
  */
 export function projectionDef(selectors?: CssSelectorList[], textSelectors?: string[]): void {
-  const componentNode = findComponentView(getLView())[HOST_NODE] as TElementNode;
+  const componentNode = findComponentView(getLView())[T_HOST] as TElementNode;
 
   if (!componentNode.projection) {
     const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
@@ -2511,7 +2514,7 @@ export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?:
 
   // re-distribution of projectable nodes is stored on a component's view level
   const componentView = findComponentView(lView);
-  const componentNode = componentView[HOST_NODE] as TElementNode;
+  const componentNode = componentView[T_HOST] as TElementNode;
   let nodeToProject = (componentNode.projection as(TNode | null)[])[selectorIndex];
   let projectedView = componentView[PARENT] !;
   let projectionNodeIndex = -1;
@@ -2523,7 +2526,7 @@ export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?:
       if (nodeToProject.type === TNodeType.Projection) {
         // This node is re-projected, so we must go up the tree to get its projected nodes.
         const currentComponentView = findComponentView(projectedView);
-        const currentComponentHost = currentComponentView[HOST_NODE] as TElementNode;
+        const currentComponentHost = currentComponentView[T_HOST] as TElementNode;
         const firstProjectedNode = (currentComponentHost.projection as(
             TNode | null)[])[nodeToProject.projection as number];
 
@@ -2799,7 +2802,7 @@ export function checkNoChangesInRootView(lView: LView): void {
 /** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck. */
 export function checkView<T>(hostView: LView, component: T) {
   const hostTView = hostView[TVIEW];
-  const oldView = enterView(hostView, hostView[HOST_NODE]);
+  const oldView = enterView(hostView, hostView[T_HOST]);
   const templateFn = hostTView.template !;
   const creationMode = isCreationMode(hostView);
 

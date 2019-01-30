@@ -19,7 +19,7 @@ import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/no
 import {RComment, RElement} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
-import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, LView, RENDERER, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
 import {appendChild, createTextNode, nativeRemoveNode} from './node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
@@ -368,9 +368,8 @@ function i18nStartFirstPass(
   const previousOrParentTNode = getPreviousOrParentTNode();
   const parentTNode = getIsParent() ? getPreviousOrParentTNode() :
                                       previousOrParentTNode && previousOrParentTNode.parent;
-  let parentIndex = parentTNode && parentTNode !== viewData[HOST_NODE] ?
-      parentTNode.index - HEADER_OFFSET :
-      index;
+  let parentIndex =
+      parentTNode && parentTNode !== viewData[T_HOST] ? parentTNode.index - HEADER_OFFSET : index;
   let parentIndexPointer = 0;
   parentIndexStack[parentIndexPointer] = parentIndex;
   const createOpCodes: I18nMutateOpCodes = [];
@@ -482,7 +481,7 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
     tNode.next = null;
   }
 
-  if (parentTNode !== viewData[HOST_NODE]) {
+  if (parentTNode !== viewData[T_HOST]) {
     tNode.parent = parentTNode as TElementNode;
   }
 
@@ -665,7 +664,7 @@ function readCreateOpCodes(
           if (destinationNodeIndex === index) {
             // If the destination node is `i18nStart`, we don't have a
             // top-level node and we should use the host node instead
-            destinationTNode = viewData[HOST_NODE] !;
+            destinationTNode = viewData[T_HOST] !;
           } else {
             destinationTNode = getTNode(destinationNodeIndex, viewData);
           }

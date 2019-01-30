@@ -13,7 +13,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEn
 
 import {checkNoChanges, checkNoChangesInRootView, checkView, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
 import {TNode, TNodeType, TViewNode} from './interfaces/node';
-import {FLAGS, HOST, HOST_NODE, LView, LViewFlags, PARENT, RENDERER_FACTORY} from './interfaces/view';
+import {FLAGS, HOST, LView, LViewFlags, PARENT, RENDERER_FACTORY, T_HOST} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
 import {getNativeByTNode} from './util';
 
@@ -41,7 +41,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
   get rootNodes(): any[] {
     if (this._lView[HOST] == null) {
-      const tView = this._lView[HOST_NODE] as TViewNode;
+      const tView = this._lView[T_HOST] as TViewNode;
       return collectNativeNodes(this._lView, tView, []);
     }
     return [];
