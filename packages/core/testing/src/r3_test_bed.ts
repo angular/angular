@@ -336,7 +336,18 @@ export class TestBedRender3 implements Injector, TestBed {
 
     // restore initial component/directive/pipe defs
     this._initiaNgDefs.forEach((value: [string, PropertyDescriptor], type: Type<any>) => {
-      Object.defineProperty(type, value[0], value[1]);
+      const [prop, descriptor] = value;
+      if (!descriptor) {
+        // Delete operations are generally undesirable since they have performance implications on
+        // objects they were applied to. In this particular case, situations where this code is
+        // invoked should be quite rare to cause any noticable impact, since it's applied only to
+        // some test cases (for example when class with no annotations extends some @Component) when
+        // we need to clear 'ngComponentDef' field on a given class to restore its original state
+        // (before applying overrides and running tests).
+        delete (type as any)[prop];
+      } else {
+        Object.defineProperty(type, prop, descriptor);
+      }
     });
     this._initiaNgDefs.clear();
     clearResolutionOfComponentResourcesQueue();

@@ -345,9 +345,12 @@ function setScopeOnDeclaredComponents(moduleType: Type<any>, ngModule: NgModule)
  */
 export function patchComponentDefWithScope<C>(
     componentDef: ComponentDef<C>, transitiveScopes: NgModuleTransitiveScopes) {
-  componentDef.directiveDefs = () => Array.from(transitiveScopes.compilation.directives)
-                                         .map(dir => getDirectiveDef(dir) || getComponentDef(dir) !)
-                                         .filter(def => !!def);
+  componentDef.directiveDefs = () =>
+      Array.from(transitiveScopes.compilation.directives)
+          .map(
+              dir => dir.hasOwnProperty(NG_COMPONENT_DEF) ? getComponentDef(dir) ! :
+                                                            getDirectiveDef(dir) !)
+          .filter(def => !!def);
   componentDef.pipeDefs = () =>
       Array.from(transitiveScopes.compilation.pipes).map(pipe => getPipeDef(pipe) !);
 }
