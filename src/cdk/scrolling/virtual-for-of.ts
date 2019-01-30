@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ArrayDataSource, CollectionViewer, DataSource, ListRange} from '@angular/cdk/collections';
+import {
+  ArrayDataSource,
+  CollectionViewer,
+  DataSource,
+  ListRange,
+  isDataSource,
+} from '@angular/cdk/collections';
 import {
   Directive,
   DoCheck,
@@ -82,7 +88,7 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
   }
   set cdkVirtualForOf(value: DataSource<T> | Observable<T[]> | NgIterable<T>) {
     this._cdkVirtualForOf = value;
-    const ds = value instanceof DataSource ? value :
+    const ds = isDataSource(value) ? value :
         // Slice the value if its an NgIterable to ensure we're working with an array.
         new ArrayDataSource<T>(
             value instanceof Observable ? value : Array.prototype.slice.call(value || []));

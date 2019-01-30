@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {FocusableOption} from '@angular/cdk/a11y';
-import {CollectionViewer, DataSource} from '@angular/cdk/collections';
+import {CollectionViewer, DataSource, isDataSource} from '@angular/cdk/collections';
 import {
   AfterContentChecked,
   ChangeDetectionStrategy,
@@ -185,10 +185,8 @@ export class CdkTree<T>
   private _observeRenderChanges() {
     let dataStream: Observable<T[] | ReadonlyArray<T>> | undefined;
 
-    // Cannot use `instanceof DataSource` since the data source could be a literal with
-    // `connect` function and may not extends DataSource.
-    if (typeof (this._dataSource as DataSource<T>).connect === 'function') {
-      dataStream = (this._dataSource as DataSource<T>).connect(this);
+    if (isDataSource(this._dataSource)) {
+      dataStream = this._dataSource.connect(this);
     } else if (this._dataSource instanceof Observable) {
       dataStream = this._dataSource;
     } else if (Array.isArray(this._dataSource)) {

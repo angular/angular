@@ -15,6 +15,8 @@ export declare abstract class DataSource<T> {
 
 export declare function getMultipleValuesInSingleSelectionError(): Error;
 
+export declare function isDataSource(value: any): value is DataSource<any>;
+
 export declare type ListRange = {
     start: number;
     end: number;

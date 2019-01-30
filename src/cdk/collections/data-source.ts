@@ -29,3 +29,11 @@ export abstract class DataSource<T> {
    */
   abstract disconnect(collectionViewer: CollectionViewer): void;
 }
+
+/** Checks whether an object is a data source. */
+export function isDataSource(value: any): value is DataSource<any> {
+  // Check if the value is a DataSource by observing if it has a connect function. Cannot
+  // be checked as an `instanceof DataSource` since people could create their own sources
+  // that match the interface, but don't extend DataSource.
+  return value && typeof value.connect === 'function';
+}

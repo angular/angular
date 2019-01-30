@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CollectionViewer, DataSource} from '@angular/cdk/collections';
+import {CollectionViewer, DataSource, isDataSource} from '@angular/cdk/collections';
 import {
   AfterContentChecked,
   Attribute,
@@ -449,7 +449,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     this._onDestroy.next();
     this._onDestroy.complete();
 
-    if (this.dataSource instanceof DataSource) {
+    if (isDataSource(this.dataSource)) {
       this.dataSource.disconnect(this);
     }
   }
@@ -769,7 +769,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   private _switchDataSource(dataSource: CdkTableDataSourceInput<T>) {
     this._data = [];
 
-    if (this.dataSource instanceof DataSource) {
+    if (isDataSource(this.dataSource)) {
       this.dataSource.disconnect(this);
     }
 
@@ -796,12 +796,8 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
     let dataStream: Observable<T[] | ReadonlyArray<T>> | undefined;
 
-    // Check if the datasource is a DataSource object by observing if it has a connect function.
-    // Cannot check this.dataSource['connect'] due to potential property renaming, nor can it
-    // checked as an instanceof DataSource<T> since the table should allow for data sources
-    // that did not explicitly extend DataSource<T>.
-    if ((this.dataSource as DataSource<T>).connect instanceof Function) {
-      dataStream = (this.dataSource as DataSource<T>).connect(this);
+    if (isDataSource(this.dataSource)) {
+      dataStream = this.dataSource.connect(this);
     } else if (this.dataSource instanceof Observable) {
       dataStream = this.dataSource;
     } else if (Array.isArray(this.dataSource)) {
