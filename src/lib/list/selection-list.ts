@@ -305,7 +305,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   _keyManager: FocusKeyManager<MatListOption>;
 
   /** The option components contained within this selection-list. */
-  @ContentChildren(MatListOption) options: QueryList<MatListOption>;
+  @ContentChildren(MatListOption, {descendants: true}) options: QueryList<MatListOption>;
 
   /** Emits a change event whenever the selected state of an option changes. */
   @Output() readonly selectionChange: EventEmitter<MatSelectionListChange> =

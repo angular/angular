@@ -36,7 +36,8 @@ describe('MatSelectionList without forms', () => {
           SelectionListWithListOptions,
           SelectionListWithCheckboxPositionAfter,
           SelectionListWithListDisabled,
-          SelectionListWithOnlyOneOption
+          SelectionListWithOnlyOneOption,
+          SelectionListWithIndirectChildOptions,
         ],
       });
 
@@ -503,6 +504,21 @@ describe('MatSelectionList without forms', () => {
 
     it('should set aria-multiselectable to true on the selection list element', () => {
       expect(selectionList.nativeElement.getAttribute('aria-multiselectable')).toBe('true');
+    });
+
+    it('should be able to reach list options that are indirect descendants', () => {
+      const descendatsFixture = TestBed.createComponent(SelectionListWithIndirectChildOptions);
+      descendatsFixture.detectChanges();
+      listOptions = descendatsFixture.debugElement.queryAll(By.directive(MatListOption));
+      selectionList = descendatsFixture.debugElement.query(By.directive(MatSelectionList));
+      const list: MatSelectionList = selectionList.componentInstance;
+
+      expect(list.options.toArray().every(option => option.selected)).toBe(false);
+
+      list.selectAll();
+      descendatsFixture.detectChanges();
+
+      expect(list.options.toArray().every(option => option.selected)).toBe(true);
     });
 
   });
@@ -1279,4 +1295,19 @@ class SelectionListWithAvatar {
   `
 })
 class SelectionListWithIcon {
+}
+
+
+@Component({
+  // Note the blank `ngSwitch` which we need in order to hit the bug that we're testing.
+  template: `
+    <mat-selection-list>
+      <ng-container [ngSwitch]="true">
+        <mat-list-option [value]="1">One</mat-list-option>
+        <mat-list-option [value]="2">Two</mat-list-option>
+      </ng-container>
+    </mat-selection-list>`
+})
+class SelectionListWithIndirectChildOptions {
+  @ViewChildren(MatListOption) optionInstances: QueryList<MatListOption>;
 }
