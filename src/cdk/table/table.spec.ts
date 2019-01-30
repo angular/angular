@@ -327,6 +327,16 @@ describe('CdkTable', () => {
     ]);
   });
 
+  it('should be able to project a caption', fakeAsync(() => {
+    setupTableTestApp(NativeHtmlTableWithCaptionApp);
+    fixture.detectChanges();
+
+    const caption = tableElement.querySelector('caption');
+
+    expect(caption).toBeTruthy();
+    expect(tableElement.firstElementChild).toBe(caption);
+  }));
+
   describe('with different data inputs other than data source', () => {
     let baseData: TestData[] = [
       {a: 'a_1', b: 'b_1', c: 'c_1'},
@@ -2178,6 +2188,27 @@ class OuterTableApp {
 class NativeHtmlTableApp {
   dataSource: FakeDataSource | undefined = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  template: `
+    <table cdk-table [dataSource]="dataSource">
+      <caption>Very important data</caption>
+      <ng-container cdkColumnDef="column_a">
+        <th cdk-header-cell *cdkHeaderCellDef> Column A</th>
+        <td cdk-cell *cdkCellDef="let row"> {{row.a}}</td>
+      </ng-container>
+
+      <tr cdk-header-row *cdkHeaderRowDef="columnsToRender"></tr>
+      <tr cdk-row *cdkRowDef="let row; columns: columnsToRender" class="customRowClass"></tr>
+    </table>
+  `
+})
+class NativeHtmlTableWithCaptionApp {
+  dataSource: FakeDataSource | undefined = new FakeDataSource();
+  columnsToRender = ['column_a'];
 
   @ViewChild(CdkTable) table: CdkTable<TestData>;
 }

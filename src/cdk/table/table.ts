@@ -106,10 +106,15 @@ export class FooterRowOutlet implements RowOutlet {
  * material library.
  * @docs-private
  */
-export const CDK_TABLE_TEMPLATE = `
+export const CDK_TABLE_TEMPLATE =
+// Note that according to MDN, the `caption` element has to be projected as the **first** element
+// in the table. See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption
+`
+  <ng-content select="caption"></ng-content>
   <ng-container headerRowOutlet></ng-container>
   <ng-container rowOutlet></ng-container>
-  <ng-container footerRowOutlet></ng-container>`;
+  <ng-container footerRowOutlet></ng-container>
+`;
 
 /**
  * Interface used to conveniently type the possible context interfaces for the render row.
