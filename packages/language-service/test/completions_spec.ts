@@ -187,6 +187,27 @@ export class MyComponent {
     contains('/app/my.component.ts', 'tree', 'children');
   });
 
+  it('should work with input and output', () => {
+    addCode(
+        `
+      @Component({
+        selector: 'foo-component',
+        template: \`
+          <div string-model ~{stringMarker}="text"></div>
+          <div number-model ~{numberMarker}="value"></div>
+        \`,
+      })
+      export class FooComponent {
+        text: string;
+        value: number;
+      }
+    `,
+        (fileName) => {
+          contains(fileName, 'stringMarker', '[model]', '(model)');
+          contains(fileName, 'numberMarker', '[inputAlias]', '(outputAlias)');
+        });
+  });
+
   function addCode(code: string, cb: (fileName: string, content?: string) => void) {
     const fileName = '/app/app.component.ts';
     const originalContent = mockHost.getFileContent(fileName);
