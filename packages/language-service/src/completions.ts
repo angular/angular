@@ -173,8 +173,9 @@ function getAttributeInfosForElement(
     matcher.match(elementSelector, selector => {
       let directive = selectorMap.get(selector);
       if (directive) {
-        attrs.push(...Object.keys(directive.inputs).map(name => ({name, input: true})));
-        attrs.push(...Object.keys(directive.outputs).map(name => ({name, output: true})));
+        const {inputs, outputs} = directive;
+        attrs.push(...Object.keys(inputs).map(name => ({name: inputs[name], input: true})));
+        attrs.push(...Object.keys(outputs).map(name => ({name: outputs[name], output: true})));
       }
     });
 
