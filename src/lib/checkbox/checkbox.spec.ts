@@ -6,7 +6,7 @@ import {
   flushMicrotasks,
 } from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
-import {Component, DebugElement, ViewChild, Type} from '@angular/core';
+import {Component, DebugElement, ViewChild, Type, ChangeDetectionStrategy} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {MatCheckbox, MatCheckboxChange, MatCheckboxModule} from './index';
@@ -689,7 +689,7 @@ describe('MatCheckbox', () => {
     }));
   });
 
-  describe('aria-label ', () => {
+  describe('aria-label', () => {
     let checkboxDebugElement: DebugElement;
     let checkboxNativeElement: HTMLElement;
     let inputElement: HTMLInputElement;
@@ -915,6 +915,31 @@ describe('MatCheckbox', () => {
       expect(ngModel.pristine).toBe(false);
       expect(ngModel.touched).toBe(true);
     }));
+
+    it('should mark the element as touched on blur when inside an OnPush parent', fakeAsync(() => {
+      fixture.destroy();
+      TestBed.resetTestingModule();
+      fixture = createComponent(CheckboxWithNgModelAndOnPush);
+      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox));
+      checkboxNativeElement = checkboxDebugElement.nativeElement;
+      checkboxInstance = checkboxDebugElement.componentInstance;
+      inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
+      ngModel = checkboxDebugElement.injector.get<NgModel>(NgModel);
+
+      inputElement.click();
+      fixture.detectChanges();
+      flush();
+
+      expect(checkboxNativeElement.classList).not.toContain('ng-touched');
+
+      dispatchFakeEvent(inputElement, 'blur');
+      fixture.detectChanges();
+      flushMicrotasks();
+      fixture.detectChanges();
+
+      expect(checkboxNativeElement.classList).toContain('ng-touched');
+    }));
+
 
     it('should not throw an error when disabling while focused', fakeAsync(() => {
       expect(() => {
@@ -1175,6 +1200,12 @@ class CheckboxWithNgModel {
   isGood: boolean = false;
   isRequired: boolean = true;
 }
+
+@Component({
+  template: `<mat-checkbox [required]="isRequired" [(ngModel)]="isGood">Be good</mat-checkbox>`,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+class CheckboxWithNgModelAndOnPush extends CheckboxWithNgModel {}
 
 /** Simple test component with multiple checkboxes. */
 @Component(({
