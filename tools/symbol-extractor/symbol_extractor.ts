@@ -108,7 +108,8 @@ export class SymbolExtractor {
         passed = false;
       }
       const missingOrExtra = diff[key] > 0 ? 'extra' : 'missing';
-      console.error(`   Symbol: ${key} => ${diff[key]} ${missingOrExtra} in golden file.`);
+      const count = Math.abs(diff[key]);
+      console.error(`   Symbol: ${key} => ${count} ${missingOrExtra} in golden file.`);
     });
 
     return passed;
