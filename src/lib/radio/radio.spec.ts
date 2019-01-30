@@ -409,6 +409,20 @@ describe('MatRadio', () => {
       }
     });
 
+    it('should update the name of radio DOM elements if the name of the group changes', () => {
+      const nodes: HTMLInputElement[] = innerRadios.map(radio => radio.nativeElement);
+
+      expect(nodes.every(radio => radio.getAttribute('name') === groupInstance.name))
+          .toBe(true, 'Expected all radios to have the initial name.');
+
+      fixture.componentInstance.groupName = 'changed-name';
+      fixture.detectChanges();
+
+      expect(groupInstance.name).toBe('changed-name');
+      expect(nodes.every(radio => radio.getAttribute('name') === groupInstance.name))
+          .toBe(true, 'Expected all radios to have the new name.');
+    });
+
     it('should check the corresponding radio button on group value change', () => {
       expect(groupInstance.value).toBeFalsy();
       for (const radio of radioInstances) {
@@ -814,7 +828,7 @@ class StandaloneRadioButtons {
 
 @Component({
   template: `
-  <mat-radio-group [(ngModel)]="modelValue" (change)="lastEvent = $event">
+  <mat-radio-group [name]="groupName" [(ngModel)]="modelValue" (change)="lastEvent = $event">
     <mat-radio-button *ngFor="let option of options" [value]="option.value">
       {{option.label}}
     </mat-radio-button>
@@ -823,6 +837,7 @@ class StandaloneRadioButtons {
 })
 class RadioGroupWithNgModel {
   modelValue: string;
+  groupName = 'radio-group';
   options = [
     {label: 'Vanilla', value: 'vanilla'},
     {label: 'Chocolate', value: 'chocolate'},
