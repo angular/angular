@@ -197,7 +197,7 @@
 /.circleci/**                                      @jelbourn
 /scripts/**                                        @devversion @jelbourn
 /test/**                                           @devversion @jelbourn
-/tools/**/!(*.d.ts)                                @devversion @jelbourn
+/tools/**                                          @devversion @jelbourn
 
 # Public API golden files
 /tools/public_api_guard/cdk/a11y.d.ts              @jelbourn @devversion
