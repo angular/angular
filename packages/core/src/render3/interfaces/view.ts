@@ -32,7 +32,7 @@ export const PARENT = 2;
 export const NEXT = 3;
 export const QUERIES = 4;
 export const HOST = 5;
-export const HOST_NODE = 6;  // Rename to `T_HOST`?
+export const T_HOST = 6;
 export const BINDING_INDEX = 7;
 export const CLEANUP = 8;
 export const CONTEXT = 9;
@@ -118,7 +118,7 @@ export interface LView extends Array<any> {
    *
    * If null, this is the root view of an application (root component is in this view).
    */
-  [HOST_NODE]: TViewNode|TElementNode|null;
+  [T_HOST]: TViewNode|TElementNode|null;
 
   /**
    * The binding index we should access next.

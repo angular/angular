@@ -18,7 +18,7 @@ import {NG_ELEMENT_ID} from './fields';
 import {DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
 import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
-import {DECLARATION_VIEW, HOST_NODE, INJECTOR, LView, TData, TVIEW, TView} from './interfaces/view';
+import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
 import {findComponentView, getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, isComponentDef, renderStringify} from './util';
@@ -205,11 +205,11 @@ export function getParentInjectorLocation(tNode: TNode, view: LView): RelativeIn
   // For most cases, the parent injector index can be found on the host node (e.g. for component
   // or container), so this loop will be skipped, but we must keep the loop here to support
   // the rarer case of deeply nested <ng-template> tags or inline views.
-  let hostTNode = view[HOST_NODE];
+  let hostTNode = view[T_HOST];
   let viewOffset = 1;
   while (hostTNode && hostTNode.injectorIndex === -1) {
     view = view[DECLARATION_VIEW] !;
-    hostTNode = view ? view[HOST_NODE] : null;
+    hostTNode = view ? view[T_HOST] : null;
     viewOffset++;
   }
 
@@ -332,7 +332,7 @@ export function getOrCreateInjectable<T>(
       let injectorIndex = getInjectorIndex(tNode, lView);
       let parentLocation: RelativeInjectorLocation = NO_PARENT_INJECTOR;
       let hostTElementNode: TNode|null =
-          flags & InjectFlags.Host ? findComponentView(lView)[HOST_NODE] : null;
+          flags & InjectFlags.Host ? findComponentView(lView)[T_HOST] : null;
 
       // If we should skip this injector, or if there is no injector on this node, start by
       // searching
