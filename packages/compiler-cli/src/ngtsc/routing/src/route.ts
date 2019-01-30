@@ -30,6 +30,11 @@ export class RouterEntryPointManager {
 
   constructor(private moduleResolver: ModuleResolver) {}
 
+  keyFor(filePath: string, moduleName: string): string {
+    // Drop the extension to be compatible with how cli calls `listLazyRoutes(entryRoute)`.
+    return `${filePath.replace(/\.tsx?$/i, '')}#${moduleName}`;
+  }
+
   resolveLoadChildrenIdentifier(loadChildrenIdentifier: string, context: ts.SourceFile):
       RouterEntryPoint|null {
     const [relativeFile, moduleName] = loadChildrenIdentifier.split('#');
@@ -44,10 +49,9 @@ export class RouterEntryPointManager {
   }
 
   fromNgModule(sf: ts.SourceFile, moduleName: string): RouterEntryPoint {
-    const absoluteFile = sf.fileName;
-    const key = `${absoluteFile}#${moduleName}`;
+    const key = this.keyFor(sf.fileName, moduleName);
     if (!this.map.has(key)) {
-      this.map.set(key, new RouterEntryPointImpl(absoluteFile, moduleName));
+      this.map.set(key, new RouterEntryPointImpl(sf.fileName, moduleName));
     }
     return this.map.get(key) !;
   }

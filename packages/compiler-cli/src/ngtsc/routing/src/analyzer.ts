@@ -38,9 +38,9 @@ export class NgModuleRouteAnalyzer {
 
   add(sourceFile: ts.SourceFile, moduleName: string, imports: ts.Expression|null,
       exports: ts.Expression|null, providers: ts.Expression|null): void {
-    const key = `${sourceFile.fileName}#${moduleName}`;
+    const key = this.entryPointManager.keyFor(sourceFile.fileName, moduleName);
     if (this.modules.has(key)) {
-      throw new Error(`Double route analyzing ${key}`);
+      throw new Error(`Double route analyzing for '${key}'.`);
     }
     this.modules.set(
         key, {
