@@ -236,27 +236,39 @@ export function addRemoveViewFromContainer(
 export function destroyViewTree(rootView: LView): void {
   // If the view has no children, we can clean it up and return early.
   if (rootView[TVIEW].childIndex === -1) {
-    return cleanUpView(rootView);
+    cleanUpView(rootView);
+    return;
   }
   let viewOrContainer: LView|LContainer|null = getLViewChild(rootView);
 
   while (viewOrContainer) {
     let next: LView|LContainer|null = null;
 
-    if (viewOrContainer.length >= HEADER_OFFSET) {
+    if (isLContainer(viewOrContainer)) {
+      // If container, traverse down to its first LView.
+      const viewsInContainer = viewOrContainer[VIEWS];
+      if (viewsInContainer.length) {
+        next = viewsInContainer[0];
+      }
+    } else {
       // If LView, traverse down to child.
       const view = viewOrContainer as LView;
       if (view[TVIEW].childIndex > -1) next = getLViewChild(view);
-    } else {
-      // If container, traverse down to its first LView.
-      const container = viewOrContainer as LContainer;
-      if (container[VIEWS].length) next = container[VIEWS][0];
     }
 
     if (next == null) {
       // Only clean up view when moving to the side or up, as destroy hooks
       // should be called in order from the bottom up.
       while (viewOrContainer && !viewOrContainer ![NEXT] && viewOrContainer !== rootView) {
+        if (isLContainer(viewOrContainer)) {
+          // this view will be destroyed so we need to notify queries that a view is detached
+          const viewsInContainer = (viewOrContainer as LContainer)[VIEWS];
+          for (let viewToDetach of viewsInContainer) {
+            if (viewToDetach[QUERIES]) {
+              viewToDetach[QUERIES] !.removeView();
+            }
+          }
+        }
         cleanUpView(viewOrContainer);
         viewOrContainer = getParentState(viewOrContainer, rootView);
       }
@@ -329,6 +341,7 @@ export function insertView(
 export function detachView(lContainer: LContainer, removeIndex: number, detached: boolean): LView {
   const views = lContainer[VIEWS];
   const viewToDetach = views[removeIndex];
+
   if (removeIndex > 0) {
     views[removeIndex - 1][NEXT] = viewToDetach[NEXT] as LView;
   }
@@ -337,9 +350,11 @@ export function detachView(lContainer: LContainer, removeIndex: number, detached
     addRemoveViewFromContainer(viewToDetach, false);
   }
 
-  if (viewToDetach[QUERIES]) {
+  if (!(viewToDetach[FLAGS] & LViewFlags.Destroyed) &&
+      (viewToDetach[FLAGS] & LViewFlags.Attached) && viewToDetach[QUERIES]) {
     viewToDetach[QUERIES] !.removeView();
   }
+
   viewToDetach[CONTAINER_INDEX] = -1;
   viewToDetach[PARENT] = null;
   // Unsets the attached flag

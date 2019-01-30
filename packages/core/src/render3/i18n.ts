@@ -841,9 +841,8 @@ function removeNode(index: number, viewData: LView) {
 
   const slotValue = load(index) as RElement | RComment | LContainer | StylingContext;
   if (isLContainer(slotValue)) {
-    const lContainer = slotValue as LContainer;
     if (removedPhTNode.type !== TNodeType.Container) {
-      nativeRemoveNode(viewData[RENDERER], lContainer[NATIVE]);
+      nativeRemoveNode(viewData[RENDERER], slotValue[NATIVE]);
     }
   }
 }
