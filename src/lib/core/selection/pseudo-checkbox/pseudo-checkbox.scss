@@ -64,4 +64,5 @@ $_mat-pseudo-checkmark-size: $mat-checkbox-size - (2 * $_mat-pseudo-checkbox-pad
   border-left: $mat-checkbox-border-width solid currentColor;
   transform: rotate(-45deg);
   opacity: 1;
+  box-sizing: content-box;
 }
