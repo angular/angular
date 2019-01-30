@@ -49,11 +49,11 @@ export default [
       'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
     ]
   ],
-  [['tr. CN', 'sau CN'], ['Trước CN', 'sau CN'], u], 1, [6, 0],
+  [['tr. CN', 'sau CN'], ['Trước CN', 'Sau CN'], u], 1, [6, 0],
   ['dd/MM/y', 'd MMM, y', 'd MMMM, y', 'EEEE, d MMMM, y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{0}, {1}', u, '{0} {1}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
-  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₫', 'Đồng Việt Nam',
+  ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₫', 'Việt Nam Đồng',
   {'AUD': ['AU$', '$'], 'JPY': ['JP¥', '¥'], 'THB': ['฿'], 'TWD': ['NT$'], 'USD': ['US$', '$']},
   plural
 ];
