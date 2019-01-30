@@ -7,7 +7,8 @@ import {
   Input,
   QueryList,
   Type,
-  ViewChild
+  ViewChild,
+  AfterViewInit
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {BehaviorSubject, combineLatest, Observable, of as observableOf} from 'rxjs';
@@ -537,6 +538,17 @@ describe('CdkTable', () => {
     expect(() => createComponent(MissingColumnDefCdkTableApp).detectChanges())
         .toThrowError(getTableUnknownColumnError('column_a').message);
   });
+
+  it('should throw an error if a column definition is requested but not defined after render',
+      fakeAsync(() => {
+        const columnDefinitionMissingAfterRenderFixture =
+            createComponent(MissingColumnDefAfterRenderCdkTableApp);
+        expect(() => {
+          columnDefinitionMissingAfterRenderFixture.detectChanges();
+          flush();
+          columnDefinitionMissingAfterRenderFixture.detectChanges();
+        }).toThrowError(getTableUnknownColumnError('column_a').message);
+  }));
 
   it('should throw an error if the row definitions are missing', () => {
     expect(() => createComponent(MissingAllRowDefsCdkTableApp).detectChanges())
@@ -1972,6 +1984,28 @@ class DuplicateColumnDefNameCdkTableApp {
 })
 class MissingColumnDefCdkTableApp {
   dataSource: FakeDataSource = new FakeDataSource();
+}
+
+@Component({
+  template: `
+    <cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_b">
+        <cdk-header-cell *cdkHeaderCellDef> Column A</cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{row.a}}</cdk-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="displayedColumns"></cdk-header-row>
+      <cdk-row *cdkRowDef="let row; columns: displayedColumns"></cdk-row>
+    </cdk-table>
+  `
+})
+class MissingColumnDefAfterRenderCdkTableApp implements AfterViewInit {
+  dataSource: FakeDataSource|null = null;
+  displayedColumns: string[] = [];
+
+  ngAfterViewInit() {
+    setTimeout(() => { this.displayedColumns = ['column_a']; }, 0);
+  }
 }
 
 @Component({

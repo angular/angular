@@ -852,7 +852,13 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
   /** Adds the sticky column styles for the rows according to the columns' stick states. */
   private _addStickyColumnStyles(rows: HTMLElement[], rowDef: BaseRowDef) {
-    const columnDefs = Array.from(rowDef.columns || []).map(c => this._columnDefsByName.get(c)!);
+    const columnDefs = Array.from(rowDef.columns || []).map(columnName => {
+      const columnDef = this._columnDefsByName.get(columnName);
+      if (!columnDef) {
+        throw getTableUnknownColumnError(columnName);
+      }
+      return columnDef!;
+    });
     const stickyStartStates = columnDefs.map(columnDef => columnDef.sticky);
     const stickyEndStates = columnDefs.map(columnDef => columnDef.stickyEnd);
     this._stickyStyler.updateStickyColumns(rows, stickyStartStates, stickyEndStates);
