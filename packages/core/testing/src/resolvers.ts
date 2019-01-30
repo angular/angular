@@ -13,6 +13,8 @@ import {MetadataOverrider} from './metadata_overrider';
 
 const reflection = new ReflectionCapabilities();
 
+const knownTypes: Type<any>[] = [Directive, Component, Pipe, NgModule];
+
 /**
  * Base interface to resolve `@Component`, `@Directive`, `@Pipe` and `@NgModule`.
  */
@@ -37,9 +39,19 @@ abstract class OverrideResolver<T> implements Resolver<T> {
   }
 
   getAnnotation(type: Type<any>): T|null {
-    // We should always return the last match from filter(), or we may return superclass data by
-    // mistake.
-    return reflection.annotations(type).filter(a => a instanceof this.type).pop() || null;
+    const annotations = reflection.annotations(type);
+    // Try to find the nearest known Type annotation and make sure that this annotation is an
+    // instance of the type we are looking for, so we can use it for resolution. Note: there might
+    // be multiple known annotations found due to the fact that Components can extend Directives (so
+    // both Directive and Component annotations would be present), so we always check if the known
+    // annotation has the right type.
+    for (let i = annotations.length - 1; i >= 0; i--) {
+      const isKnownType = knownTypes.some((type: Type<any>) => annotations[i] instanceof type);
+      if (isKnownType) {
+        return annotations[i] instanceof this.type ? annotations[i] : null;
+      }
+    }
+    return null;
   }
 
   resolve(type: Type<any>): T|null {
