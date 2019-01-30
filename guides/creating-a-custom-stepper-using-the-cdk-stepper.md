@@ -22,15 +22,6 @@ Now we are ready to create our custom stepper component. Therefore, we need to c
   providers: [{ provide: CdkStepper, useExisting: CustomStepperComponent }]
 })
 export class CustomStepperComponent extends CdkStepper {
-  /** Whether the validity of previous steps should be checked or not */
-  linear: boolean;
-
-  /** The index of the selected step. */
-  selectedIndex: number;
-
-  /** The list of step components that the stepper is holding. */
-  steps: QueryList<CdkStep>;
-
   onClick(index: number): void {
     this.selectedIndex = index;
   }
@@ -47,12 +38,10 @@ This is the HTML template of our custom stepper component:
 <section class="container">
   <header><h2>Step {{selectedIndex + 1}}/{{steps.length}}</h2></header>
 
-  <section *ngFor="let step of steps; let i = index;">
-    <div [style.display]="selectedIndex === i ? 'block' : 'none'">
-      <!-- Content from the CdkStep is projected here -->
-      <ng-container [ngTemplateOutlet]="step.content"></ng-container>
-    </div>
-  </section>
+  <div [style.display]="selected ? 'block' : 'none'">
+    <!-- Content from the CdkStep is projected here -->
+    <ng-container [ngTemplateOutlet]="selected.content"></ng-container>
+  </div>
 
   <footer class="step-navigation-bar">
     <button class="nav-button" cdkStepperPrevious>&larr;</button>
