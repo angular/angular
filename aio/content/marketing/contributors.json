@@ -686,8 +686,7 @@
     "mentor": "kyliau",
     "picture": "jbedard.png"
   },
-  "jschwarty":
-  {
+  "jschwarty": {
     "name": "Justin Schwartzenberger",
     "picture": "justinschwartzenberger.jpg",
     "twitter": "schwarty",
@@ -746,6 +745,14 @@
     "twitter": "luixaviles",
     "website": "https://luixaviles.com",
     "bio": "Luis is an enthusiast of Open Source software and communities, as well as being a public speaker, a technology trainer and an author of courses and technical articles. He is the organizer of the Angular Bolivia community and NG Bolivia conference. When he's not coding, Luis is reading about Astronomy or nerding about outer space, photography or even doing Astrophotography.",
+    "group": "GDE"
+  },
+  "siddajmera": {
+    "name": "Siddharth Ajmera",
+    "picture": "sidd-ajmera.jpg",
+    "twitter": "SiddAjmera",
+    "website": "https://webstackup.com/",
+    "bio": "Siddharth is a Full Stack JavaScript Developer and a GDE in Angular. He's passionate about sharing his knowledge on Angular, Firebase and the Web in general. He's the organizer of WebStack, a local community of developers focused on Web, Mobile, Voice and Server related technologies in general. WebStack hosts free monthly meetups every 2nd or 3rd Saturday of the month. Siddharth is also an avid photographer and loves traveling. Find him anywhere on the Web with `SiddAjmera`.",
     "group": "GDE"
   }
 }
