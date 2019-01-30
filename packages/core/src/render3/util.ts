@@ -16,7 +16,8 @@ import {NO_PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFl
 import {TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {RComment, RElement, RText} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
-import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView} from './interfaces/view';
+import {CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, RootContext, TData, TVIEW, TView, T_HOST} from './interfaces/view';
+
 
 
 /**
@@ -235,12 +236,12 @@ export function getParentInjectorTNode(
   let viewOffset = getParentInjectorViewOffset(location);
   // view offset is 1
   let parentView = startView;
-  let parentTNode = startView[HOST_NODE] as TElementNode;
+  let parentTNode = startView[T_HOST] as TElementNode;
 
   // view offset is superior to 1
   while (viewOffset > 1) {
     parentView = parentView[DECLARATION_VIEW] !;
-    parentTNode = parentView[HOST_NODE] as TElementNode;
+    parentTNode = parentView[T_HOST] as TElementNode;
     viewOffset--;
   }
   return parentTNode;
@@ -270,12 +271,12 @@ export function addAllToArray(items: any[], arr: any[]) {
  * @returns The host node
  */
 export function findComponentView(lView: LView): LView {
-  let rootTNode = lView[HOST_NODE];
+  let rootTNode = lView[T_HOST];
 
   while (rootTNode && rootTNode.type === TNodeType.View) {
     ngDevMode && assertDefined(lView[DECLARATION_VIEW], 'lView[DECLARATION_VIEW]');
     lView = lView[DECLARATION_VIEW] !;
-    rootTNode = lView[HOST_NODE];
+    rootTNode = lView[T_HOST];
   }
 
   return lView;
