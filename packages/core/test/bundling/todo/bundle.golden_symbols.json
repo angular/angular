@@ -51,10 +51,22 @@
     "name": "EMPTY_OBJ"
   },
   {
+    "name": "ERROR_DEBUG_CONTEXT"
+  },
+  {
+    "name": "ERROR_LOGGER"
+  },
+  {
+    "name": "ERROR_ORIGINAL_ERROR"
+  },
+  {
     "name": "ElementRef"
   },
   {
     "name": "EmptyErrorImpl"
+  },
+  {
+    "name": "ErrorHandler"
   },
   {
     "name": "FLAGS"
@@ -492,6 +504,9 @@
     "name": "decreaseElementDepthCount"
   },
   {
+    "name": "defaultErrorLogger"
+  },
+  {
     "name": "defaultScheduler"
   },
   {
@@ -642,6 +657,9 @@
     "name": "getCurrentView"
   },
   {
+    "name": "getDebugContext"
+  },
+  {
     "name": "getDirectiveDef"
   },
   {
@@ -655,6 +673,9 @@
   },
   {
     "name": "getElementDepthCount"
+  },
+  {
+    "name": "getErrorLogger"
   },
   {
     "name": "getHighestElementOrICUContainer"
@@ -721,6 +742,9 @@
   },
   {
     "name": "getOrCreateTView"
+  },
+  {
+    "name": "getOriginalError"
   },
   {
     "name": "getParentInjectorIndex"
@@ -802,6 +826,9 @@
   },
   {
     "name": "getValue"
+  },
+  {
+    "name": "handleError"
   },
   {
     "name": "hasClassInput"

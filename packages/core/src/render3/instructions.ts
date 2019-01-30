@@ -8,6 +8,7 @@
 
 import {InjectFlags, InjectionToken, Injector} from '../di';
 import {resolveForwardRef} from '../di/forward_ref';
+import {ErrorHandler} from '../error_handler';
 import {Type} from '../interface/type';
 import {validateAttribute, validateProperty} from '../sanitization/sanitization';
 import {Sanitizer} from '../sanitization/security';
@@ -936,6 +937,7 @@ function listenerInternal(
   const tView = lView[TVIEW];
   const firstTemplatePass = tView.firstTemplatePass;
   const tCleanup: false|any[] = firstTemplatePass && (tView.cleanup || (tView.cleanup = []));
+
   ngDevMode && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
 
@@ -2605,13 +2607,17 @@ function wrapListener(
       markViewDirty(startView);
     }
 
-    const result = listenerFn(e);
-    if (wrapWithPreventDefault && result === false) {
-      e.preventDefault();
-      // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
-      e.returnValue = false;
+    try {
+      const result = listenerFn(e);
+      if (wrapWithPreventDefault && result === false) {
+        e.preventDefault();
+        // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
+        e.returnValue = false;
+      }
+      return result;
+    } catch (error) {
+      handleError(lView, error);
     }
-    return result;
   };
 }
 /**
@@ -2723,12 +2729,17 @@ export function detectChangesInternal<T>(view: LView, context: T) {
 
   if (rendererFactory.begin) rendererFactory.begin();
 
-  if (isCreationMode(view)) {
-    checkView(view, context);  // creation mode pass
+  try {
+    if (isCreationMode(view)) {
+      checkView(view, context);  // creation mode pass
+    }
+    checkView(view, context);  // update mode pass
+  } catch (error) {
+    handleError(view, error);
+    throw error;
+  } finally {
+    if (rendererFactory.end) rendererFactory.end();
   }
-  checkView(view, context);  // update mode pass
-
-  if (rendererFactory.end) rendererFactory.end();
 }
 
 /**
@@ -3236,4 +3247,11 @@ function getTViewCleanup(view: LView): any[] {
 function loadComponentRenderer(tNode: TNode, lView: LView): Renderer3 {
   const componentLView = lView[tNode.index] as LView;
   return componentLView[RENDERER];
+}
+
+/** Handles an error thrown in an LView. */
+function handleError(lView: LView, error: any): void {
+  const injector = lView[INJECTOR];
+  const errorHandler = injector ? injector.get(ErrorHandler, null) : null;
+  errorHandler && errorHandler.handleError(error);
 }
