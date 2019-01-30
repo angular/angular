@@ -11,7 +11,7 @@ import {attachPatchData} from './context_discovery';
 import {callHooks} from './hooks';
 import {LContainer, NATIVE, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
@@ -242,14 +242,17 @@ export function destroyViewTree(rootView: LView): void {
   while (viewOrContainer) {
     let next: LView|LContainer|null = null;
 
-    if (viewOrContainer.length >= HEADER_OFFSET) {
+    if (isLContainer(viewOrContainer)) {
+      // If container, traverse down to its first LView.
+      const container = viewOrContainer as LContainer;
+      const viewsInContainer = container[VIEWS];
+      if (viewsInContainer.length) {
+        next = viewsInContainer[0];
+      }
+    } else {
       // If LView, traverse down to child.
       const view = viewOrContainer as LView;
       if (view[TVIEW].childIndex > -1) next = getLViewChild(view);
-    } else {
-      // If container, traverse down to its first LView.
-      const container = viewOrContainer as LContainer;
-      if (container[VIEWS].length) next = container[VIEWS][0];
     }
 
     if (next == null) {
@@ -258,6 +261,15 @@ export function destroyViewTree(rootView: LView): void {
       while (viewOrContainer && !viewOrContainer ![NEXT] && viewOrContainer !== rootView) {
         cleanUpView(viewOrContainer);
         viewOrContainer = getParentState(viewOrContainer, rootView);
+        if (isLContainer(viewOrContainer)) {
+          // this view will be destroyed so we need to notify queries that a view is detached
+          const viewsInContainer = (viewOrContainer as LContainer)[VIEWS];
+          for (let viewToDetach of viewsInContainer) {
+            if (viewToDetach[QUERIES]) {
+              viewToDetach[QUERIES] !.removeView();
+            }
+          }
+        }
       }
       cleanUpView(viewOrContainer || rootView);
       next = viewOrContainer && viewOrContainer ![NEXT];

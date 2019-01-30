@@ -633,25 +633,24 @@ describe('Query API', () => {
           expect(q.query.map((d: TextDirective) => d.text)).toEqual(['2', '1']);
         });
 
-    fixmeIvy('FW-920: Queries in nested views are not destroyed properly')
-        .it('should remove manually projected templates if their parent view is destroyed', () => {
-          const template = `
+    it('should remove manually projected templates if their parent view is destroyed', () => {
+      const template = `
           <manual-projecting #q><ng-template #tpl><div text="1"></div></ng-template></manual-projecting>
           <div *ngIf="shouldShow">
             <ng-container [ngTemplateOutlet]="tpl"></ng-container>
           </div>
         `;
-          const view = createTestCmp(MyComp0, template);
-          const q = view.debugElement.children[0].references !['q'];
-          view.componentInstance.shouldShow = true;
-          view.detectChanges();
+      const view = createTestCmp(MyComp0, template);
+      const q = view.debugElement.children[0].references !['q'];
+      view.componentInstance.shouldShow = true;
+      view.detectChanges();
 
-          expect(q.query.length).toBe(1);
+      expect(q.query.length).toBe(1);
 
-          view.componentInstance.shouldShow = false;
-          view.detectChanges();
-          expect(q.query.length).toBe(0);
-        });
+      view.componentInstance.shouldShow = false;
+      view.detectChanges();
+      expect(q.query.length).toBe(0);
+    });
 
     modifiedInIvy('https://github.com/angular/angular/issues/15117 fixed in ivy')
         .it('should not throw if a content template is queried and created in the view during change detection',
