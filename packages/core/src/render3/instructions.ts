@@ -9,7 +9,6 @@
 import {InjectFlags, InjectionToken, Injector} from '../di';
 import {resolveForwardRef} from '../di/forward_ref';
 import {Type} from '../interface/type';
-import {QueryList} from '../linker';
 import {validateAttribute, validateProperty} from '../sanitization/sanitization';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
@@ -36,7 +35,7 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLA
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getCurrentQueryIndex, getElementDepthCount, getFirstTemplatePass, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setFirstTemplatePass, setIsParent, setPreviousOrParentTNode} from './state';
+import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getCurrentQueryIndex, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from './state';
 import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
@@ -66,7 +65,6 @@ export function refreshDescendantViews(lView: LView) {
   const tView = lView[TVIEW];
   // This needs to be set before children are processed to support recursive components
   tView.firstTemplatePass = false;
-  setFirstTemplatePass(false);
 
   // Resetting the bindingIndex of the current LView as the next steps may trigger change detection.
   lView[BINDING_INDEX] = tView.bindingStartIndex;
@@ -380,7 +378,6 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       // off firstTemplatePass. If we don't set it here, instances will perform directive
       // matching, etc again and again.
       viewToRender[TVIEW].firstTemplatePass = false;
-      setFirstTemplatePass(false);
 
       refreshDescendantViews(viewToRender);
     } finally {
@@ -654,7 +651,7 @@ function createDirectivesAndLocals(
     localRefExtractor: LocalRefExtractor = getNativeByTNode) {
   if (!getBindingsEnabled()) return;
   const previousOrParentTNode = getPreviousOrParentTNode();
-  if (getFirstTemplatePass()) {
+  if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
 
     resolveDirectives(
@@ -1654,7 +1651,7 @@ function resolveDirectives(
     tView: TView, viewData: LView, directives: DirectiveDef<any>[] | null, tNode: TNode,
     localRefs: string[] | null): void {
   // Please make sure to have explicit type for `exportsMap`. Inferred type triggers bug in tsickle.
-  ngDevMode && assertEqual(getFirstTemplatePass(), true, 'should run on first template pass only');
+  ngDevMode && assertEqual(tView.firstTemplatePass, true, 'should run on first template pass only');
   const exportsMap: ({[key: string]: number} | null) = localRefs ? {'': -1} : null;
   if (directives) {
     initNodeFlags(tNode, tView.data.length, directives.length);
@@ -1691,7 +1688,7 @@ function resolveDirectives(
 function instantiateAllDirectives(tView: TView, lView: LView, tNode: TNode) {
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
-  if (!getFirstTemplatePass() && start < end) {
+  if (!tView.firstTemplatePass && start < end) {
     getOrCreateNodeInjectorForNode(
         tNode as TElementNode | TContainerNode | TElementContainerNode, lView);
   }
@@ -1709,7 +1706,7 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
   const start = tNode.directiveStart;
   const end = tNode.directiveEnd;
   const expando = tView.expandoInstructions !;
-  const firstTemplatePass = getFirstTemplatePass();
+  const firstTemplatePass = tView.firstTemplatePass;
   for (let i = start; i < end; i++) {
     const def = tView.data[i] as DirectiveDef<any>;
     const directive = viewData[i];
@@ -1757,7 +1754,7 @@ export function generateExpandoInstructionBlock(
 */
 function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): void {
   ngDevMode &&
-      assertEqual(getFirstTemplatePass(), true, 'Should only be called in first template pass.');
+      assertEqual(tView.firstTemplatePass, true, 'Should only be called in first template pass.');
   for (let i = 0; i < totalHostVars; i++) {
     lView.push(NO_CHANGE);
     tView.blueprint.push(NO_CHANGE);
@@ -1813,7 +1810,7 @@ function postProcessBaseDirective<T>(
 */
 function findDirectiveMatches(tView: TView, viewData: LView, tNode: TNode): DirectiveDef<any>[]|
     null {
-  ngDevMode && assertEqual(getFirstTemplatePass(), true, 'should run on first template pass only');
+  ngDevMode && assertEqual(tView.firstTemplatePass, true, 'should run on first template pass only');
   const registry = tView.directiveRegistry;
   let matches: any[]|null = null;
   if (registry) {
@@ -1844,9 +1841,9 @@ function findDirectiveMatches(tView: TView, viewData: LView, tNode: TNode): Dire
 
 /** Stores index of component's host element so it will be queued for view refresh during CD. */
 export function queueComponentIndexForCheck(previousOrParentTNode: TNode): void {
-  ngDevMode &&
-      assertEqual(getFirstTemplatePass(), true, 'Should only be called in first template pass.');
   const tView = getLView()[TVIEW];
+  ngDevMode &&
+      assertEqual(tView.firstTemplatePass, true, 'Should only be called in first template pass.');
   (tView.components || (tView.components = [])).push(previousOrParentTNode.index);
 }
 
@@ -1857,7 +1854,7 @@ export function queueComponentIndexForCheck(previousOrParentTNode: TNode): void 
 function queueHostBindingForCheck(
     tView: TView, def: DirectiveDef<any>| ComponentDef<any>, hostVars: number): void {
   ngDevMode &&
-      assertEqual(getFirstTemplatePass(), true, 'Should only be called in first template pass.');
+      assertEqual(tView.firstTemplatePass, true, 'Should only be called in first template pass.');
   const expando = tView.expandoInstructions !;
   const length = expando.length;
   // Check whether a given `hostBindings` function already exists in expandoInstructions,
@@ -1912,7 +1909,6 @@ function saveNameToExportMap(
  * @param index the initial index
  */
 export function initNodeFlags(tNode: TNode, index: number, numberOfDirectives: number) {
-  ngDevMode && assertEqual(getFirstTemplatePass(), true, 'expected firstTemplatePass to be true');
   const flags = tNode.flags;
   ngDevMode && assertEqual(
                    flags === 0 || flags === TNodeFlags.isComponent, true,
@@ -1961,7 +1957,7 @@ function addComponentLogic<T>(
   componentView[HOST] = lView[previousOrParentTNode.index];
   lView[previousOrParentTNode.index] = componentView;
 
-  if (getFirstTemplatePass()) {
+  if (lView[TVIEW].firstTemplatePass) {
     queueComponentIndexForCheck(previousOrParentTNode);
   }
 }
@@ -2098,7 +2094,7 @@ export function template(
   // TODO: consider a separate node type for templates
   const tNode = containerInternal(index, tagName || null, attrs || null);
 
-  if (getFirstTemplatePass()) {
+  if (tView.firstTemplatePass) {
     tNode.tViews = createTView(
         -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null);
   }
@@ -2126,7 +2122,10 @@ export function template(
  */
 export function container(index: number): void {
   const tNode = containerInternal(index, null, null);
-  getFirstTemplatePass() && (tNode.tViews = []);
+  const lView = getLView();
+  if (lView[TVIEW].firstTemplatePass) {
+    tNode.tViews = [];
+  }
   setIsParent(false);
 }
 
@@ -2550,10 +2549,9 @@ export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?:
 export function addToViewTree<T extends LView|LContainer>(
     lView: LView, adjustedHostIndex: number, state: T): T {
   const tView = lView[TVIEW];
-  const firstTemplatePass = getFirstTemplatePass();
   if (lView[TAIL]) {
     lView[TAIL] ![NEXT] = state;
-  } else if (firstTemplatePass) {
+  } else if (tView.firstTemplatePass) {
     tView.childIndex = adjustedHostIndex;
   }
   lView[TAIL] = state;
@@ -2813,9 +2811,9 @@ export function bind<T>(value: T): T|NO_CHANGE {
  * @param count Amount of vars to be allocated
  */
 export function allocHostVars(count: number): void {
-  if (!getFirstTemplatePass()) return;
   const lView = getLView();
   const tView = lView[TVIEW];
+  if (!tView.firstTemplatePass) return;
   queueHostBindingForCheck(tView, getCurrentDirectiveDef() !, count);
   prefillHostVars(tView, lView, count);
 }

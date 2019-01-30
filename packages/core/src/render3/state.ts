@@ -229,17 +229,6 @@ export function setCheckNoChangesMode(mode: boolean): void {
   checkNoChangesMode = mode;
 }
 
-/** Whether or not this is the first time the current view has been processed. */
-let firstTemplatePass = true;
-
-export function getFirstTemplatePass(): boolean {
-  return firstTemplatePass;
-}
-
-export function setFirstTemplatePass(value: boolean): void {
-  firstTemplatePass = value;
-}
-
 /**
  * The root index from which pure function instructions should calculate their binding
  * indices. In component views, this is TView.bindingStartIndex. In a host binding
@@ -287,7 +276,6 @@ export function enterView(newView: LView, hostTNode: TElementNode | TViewNode | 
   const oldView = lView;
   if (newView) {
     const tView = newView[TVIEW];
-    firstTemplatePass = tView.firstTemplatePass;
     bindingRootIndex = tView.bindingStartIndex;
   }
 
