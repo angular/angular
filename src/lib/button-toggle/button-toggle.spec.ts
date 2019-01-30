@@ -79,7 +79,7 @@ describe('MatButtonToggle with forms', () => {
     let buttonToggleInstances: MatButtonToggle[];
     let testComponent: ButtonToggleGroupWithNgModel;
     let groupNgModel: NgModel;
-    let buttonToggleLabels: HTMLElement[];
+    let innerButtons: HTMLElement[];
 
     beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(ButtonToggleGroupWithNgModel);
@@ -92,7 +92,7 @@ describe('MatButtonToggle with forms', () => {
 
       buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MatButtonToggle));
       buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
-      buttonToggleLabels = buttonToggleDebugElements.map(
+      innerButtons = buttonToggleDebugElements.map(
         debugEl => debugEl.query(By.css('button')).nativeElement);
 
       fixture.detectChanges();
@@ -102,7 +102,7 @@ describe('MatButtonToggle with forms', () => {
       expect(testComponent.modelValue).toBeUndefined();
       expect(testComponent.lastEvent).toBeUndefined();
 
-      buttonToggleLabels[0].click();
+      innerButtons[0].click();
       fixture.detectChanges();
 
       tick();
@@ -120,6 +120,18 @@ describe('MatButtonToggle with forms', () => {
       for (let buttonToggle of buttonToggleInstances) {
         expect(buttonToggle.name).toBe(groupInstance.name);
       }
+    });
+
+    it('should update the name of radio DOM elements if the name of the group changes', () => {
+       expect(innerButtons.every(button => button.getAttribute('name') === groupInstance.name))
+          .toBe(true, 'Expected all buttons to have the initial name.');
+
+       fixture.componentInstance.groupName = 'changed-name';
+      fixture.detectChanges();
+
+       expect(groupInstance.name).toBe('changed-name');
+      expect(innerButtons.every(button => button.getAttribute('name') === groupInstance.name))
+          .toBe(true, 'Expected all buttons to have the new name.');
     });
 
     it('should check the corresponding button toggle on a group value change', () => {
@@ -152,7 +164,7 @@ describe('MatButtonToggle with forms', () => {
         expect(groupNgModel.pristine).toBe(true);
         expect(groupNgModel.touched).toBe(false);
 
-        buttonToggleLabels[2].click();
+        innerButtons[2].click();
         fixture.detectChanges();
         tick();
 
@@ -162,7 +174,7 @@ describe('MatButtonToggle with forms', () => {
       }));
 
     it('should update the ngModel value when selecting a button toggle', fakeAsync(() => {
-      buttonToggleLabels[1].click();
+      innerButtons[1].click();
       fixture.detectChanges();
 
       tick();
@@ -175,8 +187,8 @@ describe('MatButtonToggle with forms', () => {
 
       expect(groupElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
 
-      dispatchMouseEvent(buttonToggleLabels[0], 'mousedown');
-      dispatchMouseEvent(buttonToggleLabels[0], 'mouseup');
+      dispatchMouseEvent(innerButtons[0], 'mousedown');
+      dispatchMouseEvent(innerButtons[0], 'mouseup');
 
       expect(groupElement.querySelectorAll('.mat-ripple-element').length).toBe(1);
     });
@@ -189,8 +201,8 @@ describe('MatButtonToggle with forms', () => {
 
       expect(groupElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
 
-      dispatchMouseEvent(buttonToggleLabels[0], 'mousedown');
-      dispatchMouseEvent(buttonToggleLabels[0], 'mouseup');
+      dispatchMouseEvent(innerButtons[0], 'mousedown');
+      dispatchMouseEvent(innerButtons[0], 'mouseup');
 
       expect(groupElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
     });
@@ -819,7 +831,10 @@ class ButtonTogglesInsideButtonToggleGroup {
 
 @Component({
   template: `
-  <mat-button-toggle-group [(ngModel)]="modelValue" (change)="lastEvent = $event">
+  <mat-button-toggle-group
+    [name]="groupName"
+    [(ngModel)]="modelValue"
+    (change)="lastEvent = $event">
     <mat-button-toggle *ngFor="let option of options" [value]="option.value"
                        [disableRipple]="disableRipple">
       {{option.label}}
@@ -828,6 +843,7 @@ class ButtonTogglesInsideButtonToggleGroup {
   `
 })
 class ButtonToggleGroupWithNgModel {
+  groupName = 'group-name';
   modelValue: string;
   options = [
     {label: 'Red', value: 'red'},

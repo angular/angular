@@ -143,7 +143,10 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
     this._name = value;
 
     if (this._buttonToggles) {
-      this._buttonToggles.forEach(toggle => toggle.name = this._name);
+      this._buttonToggles.forEach(toggle => {
+        toggle.name = this._name;
+        toggle._markForCheck();
+      });
     }
   }
   private _name = `mat-button-toggle-group-${_uniqueIdCounter++}`;
