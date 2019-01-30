@@ -11,7 +11,9 @@ import * as ts from 'typescript';
 
 import {SyntheticFilesCompilerHost} from './synthetic_files_compiler_host';
 
-// Copied from tsc_wrapped/plugin_api.ts to avoid a runtime dependency on that package
+// Copied from tsc_wrapped/plugin_api.ts to avoid a runtime dependency on the
+// @bazel/typescript package - it would be strange for non-Bazel users of
+// Angular to fetch that package.
 function createProxy<T>(delegate: T): T {
   const proxy = Object.create(null);
   for (const k of Object.keys(delegate)) {
@@ -22,6 +24,20 @@ function createProxy<T>(delegate: T): T {
 
 export class NgTscPlugin implements TscPlugin {
   constructor(private angularCompilerOptions: unknown) {}
+
+  wrapHost(inputFiles: string[], compilerHost: ts.CompilerHost) {
+    return new SyntheticFilesCompilerHost(inputFiles, compilerHost, (rootFiles: string[]) => {
+      // For demo purposes, assume that the first .ts rootFile is the only
+      // one that needs ngfactory.js/d.ts back-compat files produced.
+      const tsInputs = rootFiles.filter(f => f.endsWith('.ts') && !f.endsWith('.d.ts'));
+      const factoryPath: string = tsInputs[0].replace(/\.ts/, '.ngfactory.ts');
+
+      return {
+        factoryPath: (host: ts.CompilerHost) =>
+                         ts.createSourceFile(factoryPath, 'contents', ts.ScriptTarget.ES5),
+      };
+    });
+  }
 
   wrap(program: ts.Program, config: {}, host: ts.CompilerHost) {
     const proxy = createProxy(program);
@@ -38,7 +54,7 @@ export class NgTscPlugin implements TscPlugin {
           category: ts.DiagnosticCategory.Error,
           code: 12345,
           // source is the name of the plugin.
-          source: 'Angular',
+          source: 'ngtsc',
         };
         result.push(fake);
       }
@@ -63,16 +79,5 @@ export class NgTscPlugin implements TscPlugin {
           return visitor(sf) as ts.SourceFile;
         }];
     return {afterDeclarations};
-  }
-
-  wrapHost(inputFiles: string[], compilerHost: ts.CompilerHost) {
-    return new SyntheticFilesCompilerHost(inputFiles, compilerHost, this.generatedFiles);
-  }
-
-  generatedFiles(rootFiles: string[]) {
-    return {
-      'file-1.ts': (host: ts.CompilerHost) =>
-                       ts.createSourceFile('file-1.ts', 'contents', ts.ScriptTarget.ES5),
-    };
   }
 }
