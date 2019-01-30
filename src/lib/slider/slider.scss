@@ -94,8 +94,8 @@ $mat-slider-focus-ring-size: 30px !default;
               background-color $swift-ease-out-duration $swift-ease-out-timing-function,
               opacity $swift-ease-out-duration $swift-ease-out-timing-function;
 
-  .cdk-keyboard-focused &,
-  .cdk-program-focused & {
+  .mat-slider.cdk-keyboard-focused &,
+  .mat-slider.cdk-program-focused & {
     transform: scale(1);
     opacity: 1;
   }
@@ -197,8 +197,7 @@ $mat-slider-focus-ring-size: 30px !default;
 // Slider with thumb label.
 .mat-slider-thumb-label-showing {
   .mat-slider-focus-ring {
-    transform: scale(0);
-    opacity: 0;
+    display: none;
   }
 
   .mat-slider-thumb-label {
