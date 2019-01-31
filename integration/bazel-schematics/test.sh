@@ -10,8 +10,7 @@ function testBazel() {
   ng new demo --collection=@angular/bazel --defaults --skip-git --style=scss
   node replace_angular_repo.js "./demo/WORKSPACE"
   cd demo
-  # TODO(kyliau) pin @angular/bazel version to 7.2.2 due to builder bug in 7.2.3
-  yarn add @angular/bazel@7.2.2
+  yarn add @angular/bazel@file:../../../dist/packages-dist/bazel
   cp ../package.json.replace ./package.json
   ng generate component widget --style=css
   ng build
