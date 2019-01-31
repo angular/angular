@@ -363,6 +363,9 @@
     "name": "addRemoveViewFromContainer"
   },
   {
+    "name": "addTContainerToQueries"
+  },
+  {
     "name": "addToViewTree"
   },
   {

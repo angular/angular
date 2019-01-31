@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {Injector, NullInjector} from '../di/injector';
+import {Injector} from '../di/injector';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ElementRef as ViewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
@@ -19,9 +19,7 @@ import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
 import {NodeInjector, getParentInjectorLocation} from './di';
 import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions';
 import {ACTIVE_INDEX, LContainer, NATIVE, VIEWS} from './interfaces/container';
-import {RenderFlags} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
-import {LQueries} from './interfaces/query';
 import {RComment, RElement, Renderer3, isProceduralRenderer} from './interfaces/renderer';
 import {CONTAINER_INDEX, CONTEXT, HOST_NODE, LView, QUERIES, RENDERER, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
@@ -64,7 +62,7 @@ export function createElementRef(
 let R3TemplateRef: {
   new (
       _declarationParentView: LView, elementRef: ViewEngine_ElementRef, _tView: TView,
-      _renderer: Renderer3, _queries: LQueries | null, _injectorIndex: number):
+      _renderer: Renderer3, _hostLContainer: LContainer, _injectorIndex: number):
       ViewEngine_TemplateRef<any>
 };
 
@@ -97,7 +95,7 @@ export function createTemplateRef<T>(
     R3TemplateRef = class TemplateRef_<T> extends TemplateRefToken<T> {
       constructor(
           private _declarationParentView: LView, readonly elementRef: ViewEngine_ElementRef,
-          private _tView: TView, private _renderer: Renderer3, private _queries: LQueries|null,
+          private _tView: TView, private _renderer: Renderer3, private _hostLContainer: LContainer,
           private _injectorIndex: number) {
         super();
       }
@@ -107,7 +105,7 @@ export function createTemplateRef<T>(
           hostTNode?: TElementNode|TContainerNode|TElementContainerNode, hostView?: LView,
           index?: number): viewEngine_EmbeddedViewRef<T> {
         const lView = createEmbeddedViewAndNode(
-            this._tView, context, this._declarationParentView, this._renderer, this._queries,
+            this._tView, context, this._declarationParentView, this._hostLContainer[QUERIES],
             this._injectorIndex);
         if (container) {
           insertView(lView, container, hostView !, index !, hostTNode !.index);
@@ -125,7 +123,7 @@ export function createTemplateRef<T>(
     ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
     return new R3TemplateRef(
         hostView, createElementRef(ElementRefToken, hostTNode, hostView), hostTNode.tViews as TView,
-        getLView()[RENDERER], hostContainer[QUERIES], hostTNode.injectorIndex);
+        getLView()[RENDERER], hostContainer, hostTNode.injectorIndex);
   } else {
     return null;
   }

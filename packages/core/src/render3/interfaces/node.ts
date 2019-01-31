@@ -35,7 +35,7 @@ export const enum TNodeFlags {
   /** This bit is set if the node has been projected */
   isProjected = 0b0010,
 
-  /** This bit is set if the node has any content queries */
+  /** This bit is set if any directive on this node has content queries */
   hasContentQuery = 0b0100,
 
   /** This bit is set if the node has any directives that contain [class properties */

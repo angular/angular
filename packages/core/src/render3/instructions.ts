@@ -31,11 +31,11 @@ import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection'
 import {LQueries} from './interfaces/query';
 import {GlobalTargetResolver, ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getCurrentQueryIndex, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from './state';
+import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from './state';
 import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
@@ -324,7 +324,7 @@ export function renderTemplate<T>(
  * Such lViewNode will then be renderer with renderEmbeddedTemplate() (see below).
  */
 export function createEmbeddedViewAndNode<T>(
-    tView: TView, context: T, declarationView: LView, renderer: Renderer3, queries: LQueries | null,
+    tView: TView, context: T, declarationView: LView, queries: LQueries | null,
     injectorIndex: number): LView {
   const _isParent = getIsParent();
   const _previousOrParentTNode = getPreviousOrParentTNode();
@@ -2100,12 +2100,7 @@ export function template(
   }
 
   createDirectivesAndLocals(tView, lView, localRefs, localRefExtractor);
-
-  const currentQueries = lView[QUERIES];
-  if (currentQueries) {
-    lView[QUERIES] = currentQueries.addNode(tContainerNode);
-  }
-
+  addTContainerToQueries(lView, tContainerNode);
   attachPatchData(getNativeByTNode(tContainerNode, lView), lView);
   registerPostOrderHooks(tView, tContainerNode);
   setIsParent(false);
@@ -2126,6 +2121,7 @@ export function container(index: number): void {
   if (lView[TVIEW].firstTemplatePass) {
     tNode.tViews = [];
   }
+  addTContainerToQueries(lView, tNode);
   setIsParent(false);
 }
 
@@ -2148,14 +2144,26 @@ function containerInternal(
   // because views can be removed and re-inserted.
   addToViewTree(lView, index + HEADER_OFFSET, lContainer);
 
-  const currentQueries = lView[QUERIES];
-  if (currentQueries) {
-    // prepare place for matching nodes from views inserted into a given container
-    lContainer[QUERIES] = currentQueries.container();
-  }
-
   ngDevMode && assertNodeType(getPreviousOrParentTNode(), TNodeType.Container);
   return tNode;
+}
+
+/**
+ * Reporting a TContainer node queries is a 2-step process as we need to:
+ * - check if the container node itself is matching (query might match a <ng-template> node);
+ * - prepare room for nodes from views that might be created based on the TemplateRef linked to this
+ * container.
+ *
+ * Those 2 operations need to happen in the specific order (match the container node itself, then
+ * prepare space for nodes from views).
+ */
+function addTContainerToQueries(lView: LView, tContainerNode: TContainerNode): void {
+  const queries = lView[QUERIES];
+  if (queries) {
+    lView[QUERIES] = queries.addNode(tContainerNode);
+    const lContainer = lView[tContainerNode.index];
+    lContainer[QUERIES] = queries.container();
+  }
 }
 
 /**
