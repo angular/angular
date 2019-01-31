@@ -1239,6 +1239,6 @@
     "name": "walkUpViews"
   },
   {
-    "name": "wrapListenerWithPreventDefault"
+    "name": "wrapListener"
   }
 ]

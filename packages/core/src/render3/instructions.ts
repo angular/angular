@@ -956,13 +956,14 @@ function listenerInternal(
       // The first argument of `listen` function in Procedural Renderer is:
       // - either a target name (as a string) in case of global target (window, document, body)
       // - or element reference (in all other cases)
+      listenerFn = wrapListener(tNode, lView, listenerFn, false /** preventDefault */);
       const cleanupFn = renderer.listen(resolved.name || target, eventName, listenerFn);
       lCleanup.push(listenerFn, cleanupFn);
       useCaptureOrSubIdx = lCleanupIndex + 1;
     } else {
-      const wrappedListener = wrapListenerWithPreventDefault(listenerFn);
-      target.addEventListener(eventName, wrappedListener, useCapture);
-      lCleanup.push(wrappedListener);
+      listenerFn = wrapListener(tNode, lView, listenerFn, true /** preventDefault */);
+      target.addEventListener(eventName, listenerFn, useCapture);
+      lCleanup.push(listenerFn);
     }
 
     const idxOrTargetGetter = eventTargetResolver ?
@@ -2578,17 +2579,41 @@ function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
   }
 }
 
-/** Wraps an event listener with preventDefault behavior. */
-function wrapListenerWithPreventDefault(listenerFn: (e?: any) => any): EventListener {
-  return function wrapListenerIn_preventDefault(e: Event) {
-    if (listenerFn(e) === false) {
+/**
+ * Wraps an event listener with a function that marks ancestors dirty and prevents default behavior,
+ * if applicable.
+ *
+ * @param tNode The TNode associated with this listener
+ * @param lView The LView that contains this listener
+ * @param listenerFn The listener function to call
+ * @param wrapWithPreventDefault Whether or not to prevent default behavior
+ * (the procedural renderer does this already, so in those cases, we should skip)
+ */
+function wrapListener(
+    tNode: TNode, lView: LView, listenerFn: (e?: any) => any,
+    wrapWithPreventDefault: boolean): EventListener {
+  // Note: we are performing most of the work in the listener function itself
+  // to optimize listener registration.
+  return function wrapListenerIn_markDirtyAndPreventDefault(e: Event) {
+    // In order to be backwards compatible with View Engine, events on component host nodes
+    // must also mark the component view itself dirty (i.e. the view that it owns).
+    const startView =
+        tNode.flags & TNodeFlags.isComponent ? getComponentViewByIndex(tNode.index, lView) : lView;
+
+    // See interfaces/view.ts for more on LViewFlags.ManualOnPush
+    if ((lView[FLAGS] & LViewFlags.ManualOnPush) === 0) {
+      markViewDirty(startView);
+    }
+
+    const result = listenerFn(e);
+    if (wrapWithPreventDefault && result === false) {
       e.preventDefault();
       // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
       e.returnValue = false;
     }
+    return result;
   };
 }
-
 /**
  * Marks current view and all ancestors dirty.
  *
@@ -2600,12 +2625,15 @@ function wrapListenerWithPreventDefault(listenerFn: (e?: any) => any): EventList
  * @param lView The starting LView to mark dirty
  * @returns the root LView
  */
-export function markViewDirty(lView: LView): LView {
+export function markViewDirty(lView: LView): LView|null {
   while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
     lView[FLAGS] |= LViewFlags.Dirty;
     lView = lView[PARENT] !;
   }
-  lView[FLAGS] |= LViewFlags.Dirty;
+  // Detached views do not have a PARENT and also aren't root views
+  if (lView) {
+    lView[FLAGS] |= LViewFlags.Dirty;
+  }
   return lView;
 }
 
@@ -2791,7 +2819,7 @@ function executeViewQueryFn<T>(lView: LView, tView: TView, component: T): void {
  */
 export function markDirty<T>(component: T) {
   ngDevMode && assertDefined(component, 'component');
-  const rootView = markViewDirty(getComponentViewByInstance(component));
+  const rootView = markViewDirty(getComponentViewByInstance(component)) !;
 
   ngDevMode && assertDefined(rootView[CONTEXT], 'rootContext should be defined');
   scheduleTick(rootView[CONTEXT] as RootContext, RootContextFlags.DetectChanges);
