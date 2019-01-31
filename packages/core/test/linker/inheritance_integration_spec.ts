@@ -15,6 +15,12 @@ import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 class DirectiveA {
 }
 
+@Directive({selector: '[directiveB]'})
+class DirectiveB {
+  @HostBinding('title')
+  title = 'DirectiveB Title';
+}
+
 @Component({selector: 'component-a', template: 'ComponentA Template'})
 class ComponentA {
 }
@@ -24,11 +30,15 @@ class ComponentA {
 class ComponentExtendsDirective extends DirectiveA {
 }
 
+class ComponentWithNoAnnotation extends ComponentA {}
+
 @Directive({selector: '[directiveExtendsComponent]'})
 class DirectiveExtendsComponent extends ComponentA {
   @HostBinding('title')
   title = 'DirectiveExtendsComponent Title';
 }
+
+class DirectiveWithNoAnnotation extends DirectiveB {}
 
 @Component({selector: 'my-app', template: '...'})
 class App {
@@ -42,6 +52,24 @@ describe('Inheritance logic', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
     expect(fixture.nativeElement.firstChild.innerHTML).toBe('ComponentExtendsDirective Template');
+  });
+
+  it('should handle classes with no annotations that extend Components', () => {
+    TestBed.configureTestingModule({declarations: [ComponentWithNoAnnotation, App]});
+    const template = '<component-a></component-a>';
+    TestBed.overrideComponent(App, {set: {template}});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.firstChild.innerHTML).toBe('ComponentA Template');
+  });
+
+  it('should handle classes with no annotations that extend Directives', () => {
+    TestBed.configureTestingModule({declarations: [DirectiveWithNoAnnotation, App]});
+    const template = '<div directiveB></div>';
+    TestBed.overrideComponent(App, {set: {template}});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.firstChild.title).toBe('DirectiveB Title');
   });
 
   modifiedInIvy('View Engine allows Directives to extend Components')

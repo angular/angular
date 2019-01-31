@@ -336,7 +336,12 @@ export class TestBedRender3 implements Injector, TestBed {
 
     // restore initial component/directive/pipe defs
     this._initiaNgDefs.forEach((value: [string, PropertyDescriptor], type: Type<any>) => {
-      Object.defineProperty(type, value[0], value[1]);
+      const [prop, descriptor] = value;
+      if (!descriptor) {
+        delete (type as any)[prop];
+      } else {
+        Object.defineProperty(type, prop, descriptor);
+      }
     });
     this._initiaNgDefs.clear();
     clearResolutionOfComponentResourcesQueue();
