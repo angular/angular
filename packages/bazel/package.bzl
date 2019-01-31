@@ -60,6 +60,16 @@ def rules_angular_dev_dependencies():
         url = "https://github.com/google/brotli/archive/v1.0.5.zip",
     )
 
+    # The TypeScript rules transitively fetch a version of "rules_webtesting", but the version
+    # does not include 239b491e8251588bb46297b899d306ae7024858e which updates the "chromedriver"
+    # version so that e2e tests are able to capture the browser console output. This is needed
+    # for a few e2e tests, so we manually fetch a version that includes that required SHA.
+    http_archive(
+        name = "io_bazel_rules_webtesting",
+        url = "https://github.com/bazelbuild/rules_webtesting/archive/1f430d5e1cae10efc953a6511147e21b3bc03a5d.zip",
+        strip_prefix = "rules_webtesting-1f430d5e1cae10efc953a6511147e21b3bc03a5d",
+    )
+
     #############################################
     # Dependencies for generating documentation #
     #############################################
