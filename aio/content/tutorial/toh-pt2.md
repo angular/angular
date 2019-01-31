@@ -21,19 +21,17 @@ header="src/app/mock-heroes.ts">
 
 ## Displaying heroes
 
-You're about to display the list of heroes at the top of the `HeroesComponent`.
-
 Open the `HeroesComponent` class file and import the mock `HEROES`.
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="import-heroes" header="src/app/heroes/heroes.component.ts (import HEROES)">
 </code-example>
 
-In the same file (`HeroesComponent` class), define a component property called `heroes` to expose `HEROES` array for binding.
+In the same file (`HeroesComponent` class), define a component property called `heroes` to expose the `HEROES` array for binding.
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="component">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts" region="component">
 </code-example>
 
-### List heroes with _*ngFor_
+### List heroes with `*ngFor`
 
 Open the `HeroesComponent` template file and make the following changes:
 
@@ -47,7 +45,7 @@ Make it look like this:
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" header="heroes.component.html (heroes template)" linenums="false">
 </code-example>
 
-Now change the `<li>` to this:
+That shows one hero. To list them all, add an `*ngFor` to the `<li>` to iterate through the list of heroes:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="li">
 </code-example>
@@ -55,10 +53,10 @@ Now change the `<li>` to this:
 The [`*ngFor`](guide/template-syntax#ngFor) is Angular's _repeater_ directive.
 It repeats the host element for each element in a list.
 
-In this example
+The syntax in this example is as follows:
 
-* `<li>` is the host element
-* `heroes` is the list from the `HeroesComponent` class.
+* `<li>` is the host element.
+* `heroes` holds the mock heroes list from the `HeroesComponent` class, the mock heroes list.
 * `hero` holds the current hero object for each iteration through the list.
 
 <div class="alert is-important">
@@ -127,9 +125,10 @@ This is an example of Angular's [event binding](guide/template-syntax#event-bind
 The parentheses around `click` tell Angular to listen for the `<li>` element's  `click` event.
 When the user clicks in the `<li>`, Angular executes the `onSelect(hero)` expression.
 
-`onSelect()` is a `HeroesComponent` method that you're about to write.
-Angular calls it with the `hero` object displayed in the clicked `<li>`,
-the same `hero` defined previously in the `*ngFor` expression.
+
+In the next section, define an `onSelect()` method in `HeroesComponent` to
+display the hero that was defined in the `*ngFor` expression.
+
 
 ### Add the click event handler
 
@@ -142,10 +141,11 @@ to the component's `selectedHero`.
 <code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="on-select" header="src/app/heroes/heroes.component.ts (onSelect)" linenums="false">
 </code-example>
 
-### Update the details template
+### Add a details section
 
-The template still refers to the component's old `hero` property which no longer exists.
-Rename `hero` to `selectedHero`.
+Currently, you have a list in the component template. To click on a hero on the list
+and reveal details about that hero, you need a section for the details to render in the
+template. Add the following to `heroes.component.html` beneath the list section:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.html" region="selectedHero-details" header="heroes.component.html (selected hero details)" linenums="false">
 </code-example>
@@ -162,7 +162,7 @@ Open the browser developer tools and look in the console for an error message li
 
 When the app starts, the `selectedHero` is `undefined` _by design_.
 
-Binding expressions in the template that refer to properties of `selectedHero` &mdash; expressions like `{{selectedHero.name}}` &mdash; _must fail_ because there is no selected hero.
+Binding expressions in the template that refer to properties of `selectedHero`&mdash;expressions like `{{selectedHero.name}}`&mdash;_must fail_ because there is no selected hero.
 
 
 #### The fix - hide empty details with _*ngIf_
@@ -192,7 +192,7 @@ The heroes appear in a list and details about the clicked hero appear at the bot
 
 #### Why it works
 
-When `selectedHero` is undefined, the `ngIf` removes the hero detail from the DOM. There are no `selectedHero` bindings to worry about.
+When `selectedHero` is undefined, the `ngIf` removes the hero detail from the DOM. There are no `selectedHero` bindings to consider.
 
 When the user picks a hero, `selectedHero` has a value and
 `ngIf` puts the hero detail into the DOM.
@@ -240,7 +240,7 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 
   <code-pane header="src/app/mock-heroes.ts" path="toh-pt2/src/app/mock-heroes.ts">
   </code-pane>
-  
+
   <code-pane header="src/app/heroes/heroes.component.ts" path="toh-pt2/src/app/heroes/heroes.component.ts">
   </code-pane>
 
