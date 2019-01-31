@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, Binary, Conditional, Interpolation, LiteralPrimitive, MethodCall, PropertyRead} from '@angular/compiler';
+import {AST, ASTWithSource, Binary, Conditional, Interpolation, LiteralPrimitive, MethodCall, PropertyRead, SafePropertyRead} from '@angular/compiler';
 import * as ts from 'typescript';
 
 const BINARY_OPS = new Map<string, ts.SyntaxKind>([
@@ -48,6 +48,13 @@ export function astToTypescript(
     // TypeScript expression to read the property.
     const receiver = astToTypescript(ast.receiver, maybeResolve);
     return ts.createPropertyAccess(receiver, ast.name);
+  } else if (ast instanceof SafePropertyRead) {
+    const condExpr = ts.createBinary(
+        astToTypescript(ast.receiver, maybeResolve), BINARY_OPS.get('==') as any, ts.createNull());
+    const trueExpr = ts.createNull();
+    const falseExpr =
+        astToTypescript(new PropertyRead(ast.span, ast.receiver, ast.name), maybeResolve);
+    return ts.createParen(ts.createConditional(condExpr, trueExpr, falseExpr));
   } else if (ast instanceof Interpolation) {
     return astArrayToExpression(ast.expressions, maybeResolve);
   } else if (ast instanceof Binary) {

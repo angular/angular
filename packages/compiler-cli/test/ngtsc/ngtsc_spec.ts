@@ -2113,6 +2113,48 @@ describe('ngtsc behavioral tests', () => {
     expect(routes[0].module.filePath.endsWith('/test.ts')).toBe(true);
     expect(routes[0].referencedModule.filePath.endsWith('/lazy.ts')).toBe(true);
   });
+
+  describe('safe property read', () => {
+    it('should be supported in simple cases', () => {
+      env.tsconfig();
+      env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+         @Component({
+          selector: 'test',
+          template: '<div [someProp]="a?.b" (click)="a?.f($event)">{{a.b?.c}}</div>'
+        })
+        class FooCmp {}
+      `);
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents)
+          .toContain(
+              'i0.ɵelementProperty(0, "someProp", i0.ɵbind(((ctx.a == null) ? null : ctx.a.b)));');
+      expect(jsContents)
+          .toContain(
+              'i0.ɵlistener("click", function FooCmp_Template_div_click_0_listener($event) { return ((ctx.a == null) ? null : ctx.a.f($event)); });');
+      expect(jsContents)
+          .toContain(
+              'i0.ɵtextBinding(1, i0.ɵinterpolation1("", ((ctx.a.b == null) ? null : ctx.a.b.c), ""));');
+    });
+
+    it('should be supported in complex cases', () => {
+      env.tsconfig();
+      env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+         @Component({
+          selector: 'test',
+          template: '<div [someProp]="a?.b.c?.d.e"></div>'
+        })
+        class FooCmp {}
+      `);
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents)
+          .toContain(
+              'i0.ɵelementProperty(0, "someProp", i0.ɵbind(((ctx.a == null) ? null : ((ctx.a.b.c == null) ? null : ctx.a.b.c.d.e))));');
+    });
+  });
 });
 
 function expectTokenAtPosition<T extends ts.Node>(
