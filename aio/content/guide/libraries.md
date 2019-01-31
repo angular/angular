@@ -28,3 +28,10 @@ This can help to avoid various bad practices or architecture mistakes that can m
 Putting code into a separate library is more complex than simply putting everything in one app.
 It requires more of an investment in time and thought for managing, maintaining, and updating the library.
 This complexity can pay off, however, when the library is being used in multiple apps.
+
+<div class="alert is-helpful">
+
+Note that libraries are intended to be used by Angular apps.
+To add Angular functionality to non-Angular web apps, you can use [Angular custom elements](guide/elements).
+
+</div>
