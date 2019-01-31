@@ -2320,11 +2320,17 @@ The following section describes the Angular's template compiler options.
 Angular 템플릿 컴파일러에 사용하는 옵션에 대해 자세하게 알아봅시다.
 
 ### *enableResourceInlining*
+
+<!--
 This option instructs the compiler to replace the `templateUrl` and `styleUrls` property in all `@Component` decorators with inlined contents in `template` and `styles` properties.
 When enabled, the `.js` output of `ngc` will have no lazy-loaded `templateUrl` or `styleUrls`.
+-->
+이 옵션을 사용하면 `@Component` 데코레이터에 사용된 `templateUrl` 프로퍼티와 `styleUrls` 프로퍼티가 인라인으로 처리되어 `template`과 `styles`로 변경됩니다.
+그래서 이 옵션이 적용된 후에는 `templateUrl`과 `styleUrls`가 지연 로딩되지 않습니다.
 
 ### *skipMetadataEmit*
 
+<!--
 This option tells the compiler not to produce `.metadata.json` files.
 The option is `false` by default.
 
@@ -2339,9 +2345,23 @@ Angular. Use a bundler, such as [webpack](https://webpack.js.org/), instead.
 
 This option can also be set to `true` when using factory summaries because the factory summaries
 include a copy of the information that is in the `.metadata.json` file.
+-->
+이 옵션을 사용하면 AoT 컴파일러가 `.metadata.json` 파일을 생성하지 않습니다.
+기본값은 `false`입니다.
+
+`.metadata.json` 파일은 템플릿에 대한 정보를 담고 있는 파일이며, 이 정보는 TypeScript 컴파일러가 생성하는 `.d.ts` 파일에 포함되지 않습니다.
+`.metadata.json` 파일에는 어노테이션으로 사용된 컴포넌트 템플릿에 대한 정보도 존재하는데, 이 정보는 TypeScript 컴파일러가 생성한 `.js` 파일에는 존재하지만 `.d.ts` 파일에는 존재하지 않습니다.
+
+TypeScript 컴파일러를 실행할 때 `--outFile` 옵션을 사용한다면 이 옵션은 반드시 `true`로 설정해야 합니다.
+왜냐하면 `--outFile` 옵션을 사용했을 때 TypeScript가 생성한 결과 파일은 메타데이터 파일로 처리할 수 없기 때문인데, 그래서 Angular는 `--outFile` 옵션을 사용하지 않는 것을 권장합니다.
+`--outFile` 옵션을 반드시 사용해야 한다면 [webpack](https://webpack.js.org/)과 같은 번들러를 사용해야 합니다.
+
+이 옵션은 팩토리 요약 정보를 생성할 때도 `true`로 설정하는 것이 좋습니다.
+팩토리 요약 정보는 `.metadata.json` 파일의 정보와 중복됩니다.
 
 ### *strictMetadataEmit*
 
+<!--
 This option tells the template compiler to report an error to the `.metadata.json`
 file if `"skipMetadataEmit"` is `false`. This option is `false` by default. This should only be used when `"skipMetadataEmit"` is `false` and `"skipTemplateCodeGen"` is `true`.
 
@@ -2354,26 +2374,52 @@ include error nodes in the metadata for the exported symbols. The template compi
 nodes to report an error if these symbols are used. If the client of a library intends to use a symbol in an annotation, the template compiler will not normally report
 this until the client uses the symbol. This option allows detecting these errors during the build phase of
 the library and is used, for example, in producing Angular libraries themselves.
+-->
+이 옵션을 사용하면 `"skipMetadataEmit"`를 `false`로 설정해서 `.metadata.json` 파일을 생성할 때 에러가 발생합니다.
+기본값은 `false`이며, 이 옵션은 `"skipMetadataEmit"` 값이 `false` 이고 `"skipTemplateCodeGen"` 값이 `true`일 때만 동작합니다.
+
+이 옵션은 AoT 컴파일러가 아닌 다른 `npm` 패키지가 프로젝트를 번들링하면서 만든 `.metadata.json`를 검사하기 위해 사용됩니다.
+이 때 다른 `npm` 패키지가 검사하는 룰이 더 엄격할 수 있기 때문에 이 옵션을 설정하면 템플릿 컴파일러에서 발생하지 않은 메타데이터 에러가 추가적으로 발생할 수 있습니다.
+이 에러를 무시하려면 `export`가 지정된 심볼에 `@dynamic` 데코레이터를 사용하면 됩니다.
+
+메타데이터 콜렉터는 심볼이 어노테이션에 사용되기 위해 선언되었다는 것을 이해할 수 없기 때문에, 메타데이터 콜렉터가 생성한 `.metadata.json` 파일에는 에러 노드가 포함되어 있을 수 있습니다.
+그러면 템플릿 컴파일러가 이 에러 노드를 확인했다가 이 에러 노드와 관련된 심볼이 실제로 사용되면 에러를 발생시킵니다.
+만약 라이브러리에 있는 심볼 중 하나가 어노테이션에 사용되는 것을 의도해서 선언되었다면, 이 심볼은 실제로 코드에 사용되지 않는 이상 에러로 처리되지 않습니다.
+이 옵션은 라이브러리를 빌드하는 단계에서 심볼이 유효하게 사용되었는지 확인하는 용도로 사용됩니다.
+
 
 ### *skipTemplateCodegen*
 
+<!--
 This option tells the compiler to suppress emitting `.ngfactory.js` and `.ngstyle.js` files. When set,
 this turns off most of the template compiler and disables reporting template diagnostics.
 This option can be used to instruct the
 template compiler to produce `.metadata.json` files for distribution with an `npm` package while
 avoiding the production of `.ngfactory.js` and `.ngstyle.js` files that cannot be distributed to
 `npm`.
+-->
+이 옵션을 사용하면 컴파일러가 `.ngfactory.js` 파일과 `.ngstyle.js` 파일을 생성하지 않습니다.
+그리고 템플릿 컴파일러의 기능이 대부분 생략되며 템플릿 에러를 검사하지도 않습니다.
+
+이 옵션은 `.metadata.json` 파일을 배포용으로 생성하면서 `npm` 패키지로 배포할 수 없는 `.ngfafctory.js` 파일과 `.ngstyle.js` 파일을 생략하기 위해 사용됩니다.
 
 ### *strictInjectionParameters*
 
+<!--
 When set to `true`, this options tells the compiler to report an error for a parameter supplied
 whose injection type cannot be determined. When this option is not provided or is `false`, constructor parameters of classes marked with `@Injectable` whose type cannot be resolved will
 produce a warning.
 
 *Note*: It is recommended to change this option explicitly to `true` as this option will default to `true` in the future.
+-->
+이 옵션이 `true`로 설정되면 의존성으로 주입하는 객체의 타입을 컴파일러가 파악할 수 없을 때 에러가 발생합니다.
+그리고 이 옵션이 사용되지 않거나 `false` 값으로 지정되면 타입을 알 수 없는 의존성 객체에 `@Injectable` 데코레이터가 지정되었을 때 경고 메시지가 출력되지만 에러는 발생하지 않습니다.
+
+*참고*: 이 옵션의 값은 `true`로 지정하는 것을 권장합니다. 이후 버전에서 이 옵션의 기본값은 `true`가 될 것입니다.
 
 ### *flatModuleOutFile*
 
+<!--
 When set to `true`, this option tells the template compiler to generate a flat module
 index of the given file name and the corresponding flat module metadata. Use this option when creating
 flat modules that are packaged similarly to `@angular/core` and `@angular/common`. When this option
@@ -2394,47 +2440,90 @@ would be `["public_api.ts"]`. The `flatModuleOutFile` options could then be set 
 example `"index.js"`, which produces `index.d.ts` and  `index.metadata.json` files. The
 library's `package.json`'s `module` field would be `"index.js"` and the `typings` field
 would be `"index.d.ts"`.
+-->
+이 옵션값이 `true`로 지정되면 템플릿 컴파일러가 생성하는 모듈 인덱스와 모듈 메타데이터가 플랫(flat) 구조로 생성됩니다.
+`@angular/core` 패키지와 `@angular/common` 패키지와 같은 구조도 이 옵션을 사용해서 생성된 것입니다.
+그리고 이 옵션을 사용하려면 `package.json` 파일이 라이브러리 인덱스 파일이 아니라 플랫 모듈 인덱스 파일을 참조해야 합니다.
+이 옵션이 사용되면 라이브러리 인덱스에서 사용하는 모든 심볼이 `.metadata.json` 파일 하나에 모두 포함됩니다.
+그리고 플랫 모듈 인덱스 파일인 `.ngfactory.js` 파일은 각 라이브러리 인덱스 파일이 public API와 심볼을 참조할 때 사용됩니다.
+
+기본 설정값을 사용하면 `files` 필드에 지정된 `.ts` 파일이 라이브러리 인덱스를 생성하는 데에 사용됩니다.
+그리고 `.ts` 파일이 1개 이상 지정되면, 사용할 파일을 구분하기 위해 `libraryIndex`를 참조합니다.
+그런데 이 상황에서 `libraryIndex`가 존재하지 않으면 에러가 발생합니다.
+`libraryIndex`가 정상적으로 존재하는 상황이라면  `flatModuleOutFile`에 지정된 이름으로 플랫 모듈 인덱스 파일인 `.d.ts` 파일과 `.js` 파일이 라이브러리 인덱스가 존재하는 위치에 생성됩니다.
+예를 들어 모듈 인덱스로 `public_api.ts` 파일을 사용하는 라이브러리가 있고, 이 라이브러리의 `tsconfig.json` 파일 `files` 필드는 `["public_api.ts"]`로 지정되어 있다고 합시다.
+이 상황에서 `flatModuleOutFile` 옵션이 `"index.js"`로 지정되면, `index.d.ts` 파일과 `index.metadata.json` 파일이 생성됩니다.
+그러면 라이브러리의 `package.json` 파일의 `module` 필드는 `"index.js"`로 지정되어야 하고 `typings` 필드 값은 `"index.d.ts"`가 지정되어야 합니다.
 
 ### *flatModuleId*
 
+<!--
 This option specifies the preferred module id to use for importing a flat module.
 References generated by the template compiler will use this module name when importing symbols
 from the flat module.
 This is only meaningful when `flatModuleOutFile` is also supplied. Otherwise the compiler ignores
 this option.
+-->
+이 옵션을 사용하면 플랫 모듈을 로드할 때 사용될 모듈 id를 지정할 수 있습니다.
+이 옵션이 지정되면 템플릿 컴파일러가 해당 모듈을 팩토리 코드로 생성할 때 이 옵션값으로 지정된 모듈 이름을 참조하도록 코드를 생성합니다.
+이 옵션은 `flatModuleOutFile`이 사용되었을 때만 유효하며, `flatModuleOutFile` 옵션이 사용되지 않았다면 이 옵션은 무시됩니다.
 
 ### *generateCodeForLibraries*
 
+<!--
 This option tells the template compiler to generate factory files (`.ngfactory.js` and `.ngstyle.js`)
 for `.d.ts` files with a corresponding `.metadata.json` file. This option defaults to
 `true`. When this option is `false`, factory files are generated only for `.ts` files.
 
 This option should be set to `false` when using factory summaries.
+-->
+이 옵션을 사용하면 템플릿 컴파일러가 `.metadata.json` 파일과 관계된 팩토리 파일들(`.ngfactory.js`, `.ngstyle.js`)과 `.d.ts` 파일을 생성하게 할 수 있습니다.
+기본값은 `true`이며, 이 옵션의 값이 `false`로 지정되면 `.ts` 팩토리 파일만 생성됩니다.
+
+팩토리 요약정보를 생성해야 한다면 이 옵션값은 반드시 `false`가 되어야 합니다.
 
 ### *fullTemplateTypeCheck*
 
+<!--
 This option tells the compiler to enable the [binding expression validation](#binding-expression-validation)
 phase of the template compiler which uses TypeScript to validate binding expressions.
 
 This option is `false` by default.
 
 *Note*: It is recommended to set this to `true` because this option will default to `true` in the future.
+-->
+이 옵션을 사용하면 Angular 템플릿 컴파일러가 TypeScript 컴파일러의 기능을 활용해서 [템플릿에 사용된 바인딩 표현식의 유효성을 검사](#binding-expression-validation)할 수 있습니다.
+기본값은 `false`입니다.
+
+*참고*: 이 옵션의 값은 `true`로 지정하는 것을 권장합니다. 이후 버전에서 이 옵션의 기본값은 `true`가 될 것입니다.
 
 ### *annotateForClosureCompiler*
 
+<!--
 This option tells the compiler to use [Tsickle](https://github.com/angular/tsickle) to annotate the emitted
 JavaScript with [JSDoc](http://usejsdoc.org/) comments needed by the
 [Closure Compiler](https://github.com/google/closure-compiler). This option defaults to `false`.
+-->
+이 옵션을 사용하면 [Closure Compiler](https://github.com/google/closure-compiler)를 위해 [JSDoc](http://usejsdoc.org/) 주석을 처리할 때 [Tsickle](https://github.com/angular/tsickle)를 사용하도록 지정할 수 있습니다.
+
+기본값은 `false`입니다.
 
 ### *annotationsAs*
 
+<!--
 Use this option to modify how the Angular specific annotations are emitted to improve tree-shaking. Non-Angular
 annotations and decorators are unaffected. Default is `static fields`.
+-->
+이 옵션을 사용하면 코드에 사용된 어노테이션 중 어떤 것을 트리셰이킹 할 것인지 지정할 수 있습니다.
+이 때 Angular가 제공하지 않는 어노테이션과 데코레이터는 영향을 받지 않습니다.
+
+기본값은 `static fields`입니다.
 
 <style>
   td, th {vertical-align: top}
 </style>
 
+<!--
 <table>
   <tr>
     <th>Value</th>
@@ -2450,45 +2539,92 @@ annotations and decorators are unaffected. Default is `static fields`.
     <a href="https://github.com/google/closure-compiler">Closure compiler</a> to remove unused classes.</td>
   </tr>
   </table>
+-->
+<table>
+  <tr>
+    <th>값</th>
+    <th>설명</th>
+  </tr>
+  <tr>
+    <td><code>decorators</code></td>
+    <td>데코레이터를 유지합니다. 이 옵션값을 사용하면 컴파일 시간이 단축되며, TypeScript가 __decorate 헬퍼를 사용합니다. 그리고 이 내용을 실행되는 코드에 적용하려면 <code>--emitDecoratorMetadata</code> 옵션을 함께 사용해야 합니다. 트리셰이킹은 동작하지 않을 수도 있습니다.</td>
+  </tr>
+  <tr>
+    <td><code>static fields</code></td>
+    <td>데코레이터를 클래스의 정적 필드로 변환합니다. <a href="https://github.com/google/closure-compiler">Closure compiler</a>와 같은 최신 트리셰이커를 사용한다면, 이 데코레이터가 실제로 사용되지 않았을 때 최종 빌드 결과물에서 제거됩니다.</td>
+  </tr>
+</table>
 
 
 ### *trace*
 
+<!--
 This tells the compiler to print extra information while compiling templates.
+-->
+이 옵션을 사용하면 템플릿을 컴파일하는 동안 자세한 정보가 출력됩니다.
 
 ### *enableLegacyTemplate*
 
+<!--
 Use of  the `<template>` element was deprecated starting in Angular 4.0 in favor of using
 `<ng-template>` to avoid colliding with the DOM's element of the same name. Setting this option to
 `true` enables the use of the deprecated `<template>` element. This option
 is `false` by default. This option might be required by some third-party Angular libraries.
+-->
+`<template>` 엘리먼트는 같은 이름으로 사용되는 DOM 엘리먼트와 충돌하는 것을 방지하기 위해 Angular 4.0부터 `<ng-template>`으로 변경되었습니다.
+그런데 이 옵션의 값을 `true`로 지정하면 지원이 중단된 `<template>` 엘리먼트를 사용할 수 있습니다.
+기본값은 `false`입니다.
+
+서드파티 Angular 라이브러리가 `<template>` 엘리먼트를 사용한다면 이 옵션의 값을 `true`로 지정해야 합니다.
 
 ### *disableExpressionLowering*
 
+<!--
 The Angular template compiler transforms code that is used, or could be used, in an annotation
 to allow it to be imported from template factory modules. See
 [metadata rewriting](#metadata-rewriting) for more information.
 
 Setting this option to `false` disables this rewriting, requiring the rewriting to be
 done manually.
+-->
+Angular 템플릿 컴파일러는 어노테이션에 사용되는 코드를 팩토리 모듈 형식으로 변환합니다.
+자세한 내용은 [메타데이터 재구축](#metadata-rewriting) 섹션을 참고하세요.
+
+이 옵션의 값이 `false`로 지정되면 메타데이터를 재구축하지 않습니다. 메타데이터를 수동으로 재구축하는 경우에 이 옵션을 사용합니다.
 
 ### *disableTypeScriptVersionCheck*
 
+<!--
 When `true`, this option tells the compiler not to check the TypeScript version.
 The compiler will skip checking and will not error out when an unsupported version of TypeScript is used.
 Setting this option to `true` is not recommended because unsupported versions of TypeScript might have undefined behaviour.
 
 This option is `false` by default.
+-->
+이 옵션의 값이 `true`로 지정되면 AoT 컴파일러가 TypeScript 버전을 체크하지 않으며, 사용하고 있는 TypeScript의 버전을 지원하지 않는다고 해도 에러를 발생시키지 않습니다.
+하지만 이렇게 사용하면 Angular 컴파일러가 의도한대로 동작하지 않을 수 있기 때문에 이 옵션의 값을 `true`로 지정하는 것은 권장하지 않습니다.
+
+기본값은 `false`입니다.
 
 ### *preserveWhitespaces*
 
+<!--
 This option tells the compiler whether to remove blank text nodes from compiled templates.
 As of v6, this option is `false` by default, which results in smaller emitted template factory modules.
+-->
+이 옵션을 사용하면 템플릿 컴파일러가 템플릿을 컴파일하면서 공백문자가 사용된 빈 텍스트 노드를 제거하지 않습니다.
+Angular v6 부터는 템플릿 팩토리 모듈을 좀 더 단순화하기 위해 `false`가 기본값입니다.
 
 ### *allowEmptyCodegenFiles*
 
+<!--
 Tells the compiler to generate all the possible generated files even if they are empty. This option is
 `false` by default. This is an option used by the Bazel build rules and is needed to simplify
 how Bazel rules track file dependencies. It is not recommended to use this option outside of the Bazel
 rules.
+-->
+이 옵션을 사용하면 템플릿 컴파일러가 생성한 파일의 내용이 없더라도 이 파일을 유지합니다.
+기본값은 `false`입니다.
 
+이 옵션은 Bazel 빌드 룰에 파일 이름을 반드시 지정해야 하거나 Bazel 빌드 룰이 추적하는 파일의 의존성을 간단하게 작성하고 싶을 때 사용합니다.
+하지만 Bazel 빌드 룰 이외에서는 `true` 값을 사용하지 않는 것을 권장합니다.
