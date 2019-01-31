@@ -72,7 +72,7 @@ Amend the `@angular/core` import statement to include the `Input` symbol.
 
 Add a `hero` property, preceded by the `@Input()` decorator.
 
-<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" region="input-hero"  linenums="false">
+<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" header="src/app/hero-detail/hero-detail.component.ts" region="input-hero"  linenums="false">
 </code-example>
 
 That's the only change you should make to the `HeroDetailComponent` class.
