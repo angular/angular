@@ -477,8 +477,9 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
 
   visitMethodCall(ast: MethodCall, context: any): AST {
     const receiver = ast.receiver.visit(this);
-    if (receiver !== ast.receiver) {
-      return new MethodCall(ast.span, receiver, ast.name, this.visitAll(ast.args));
+    const args = this.visitAll(ast.args);
+    if (receiver !== ast.receiver || args !== ast.args) {
+      return new MethodCall(ast.span, receiver, ast.name, args);
     }
     return ast;
   }
