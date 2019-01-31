@@ -34,4 +34,7 @@ export class HeroesComponent implements OnInit {
     this.selectedHero = hero;
   }
   // #enddocregion on-select
+// #docregion component
 }
+// #enddocregion component
+
