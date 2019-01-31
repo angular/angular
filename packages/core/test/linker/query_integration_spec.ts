@@ -94,21 +94,19 @@ describe('Query API', () => {
       ]);
     });
 
-    fixmeIvy(
-        'FW-982: For queries, ng-template own directives should be registered before the ones from inside the template')
-        .it('should contain the first content child when target is on <ng-template> with embedded view (issue #16568)',
-            () => {
-              const template =
-                  '<div directive-needs-content-child><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></div>' +
-                  '<needs-content-child #q><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></needs-content-child>';
-              const view = createTestCmp(MyComp0, template);
-              view.detectChanges();
-              const q: NeedsContentChild = view.debugElement.children[1].references !['q'];
-              expect(q.child.text).toEqual('foo');
-              const directive: DirectiveNeedsContentChild =
-                  view.debugElement.children[0].injector.get(DirectiveNeedsContentChild);
-              expect(directive.child.text).toEqual('foo');
-            });
+    it('should contain the first content child when target is on <ng-template> with embedded view (issue #16568)',
+       () => {
+         const template =
+             '<div directive-needs-content-child><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></div>' +
+             '<needs-content-child #q><ng-template text="foo" [ngIf]="true"><div text="bar"></div></ng-template></needs-content-child>';
+         const view = createTestCmp(MyComp0, template);
+         view.detectChanges();
+         const q: NeedsContentChild = view.debugElement.children[1].references !['q'];
+         expect(q.child.text).toEqual('foo');
+         const directive: DirectiveNeedsContentChild =
+             view.debugElement.children[0].injector.get(DirectiveNeedsContentChild);
+         expect(directive.child.text).toEqual('foo');
+       });
 
     it('should contain the first view child', () => {
       const template = '<needs-view-child #q></needs-view-child>';
