@@ -43,7 +43,8 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
           typeArgumentCount: 0,
           providedIn: meta.providedIn,
           ctorDeps: reflectDependencies(type),
-          userDeps: undefined
+          userDeps: undefined,
+          valid: true,
         };
         if ((isUseClassProvider(meta) || isUseFactoryProvider(meta)) && meta.deps !== undefined) {
           compilerMeta.userDeps = convertDependencies(meta.deps);

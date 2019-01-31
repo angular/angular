@@ -576,6 +576,40 @@ describe('ngtsc behavioral tests', () => {
             'i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestPipe, typeof TestCmp], never, never>');
   });
 
+  describe('compiling invalid @Injectables', () => {
+    it('should compile an @Injectable on a class with a non-injectable constructor', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {Injectable} from '@angular/core';
+
+        @Injectable()
+        export class Test {
+          constructor(private notInjectable: string) {}
+        }
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('factory: function Test_Factory() { throw new Error(');
+    });
+
+    it('should give a compile-time error if @Injectable is used an argument', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {Injectable} from '@angular/core';
+
+        @Injectable({providedIn: 'root'})
+        export class Test {
+          constructor(private notInjectable: string) {}
+        }
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(1);
+      expect(errors[0].messageText).toContain('No suitable injection token for parameter');
+    })
+  });
+
   describe('former View Engine AST transform bugs', () => {
     it('should compile array literals behind conditionals', () => {
       env.tsconfig();

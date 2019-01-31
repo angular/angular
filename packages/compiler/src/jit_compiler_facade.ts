@@ -54,6 +54,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       useExisting: wrapExpression(facade, USE_EXISTING),
       ctorDeps: convertR3DependencyMetadataArray(facade.ctorDeps),
       userDeps: convertR3DependencyMetadataArray(facade.userDeps) || undefined,
+      valid: facade.valid,
     });
 
     return jitExpression(expression, angularCoreEnv, sourceMapUrl, statements);

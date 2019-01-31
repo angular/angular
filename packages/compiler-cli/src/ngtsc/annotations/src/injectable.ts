@@ -14,7 +14,7 @@ import {Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection'
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
-import {getConstructorDependencies, isAngularCore} from './util';
+import {getConstructorDependencies, getValidConstructorDependencies, isAngularCore} from './util';
 
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;
@@ -62,6 +62,8 @@ export class InjectableDecoratorHandler implements
 /**
  * Read metadata from the `@Injectable` decorator and produce the `IvyInjectableMetadata`, the input
  * metadata needed to run `compileIvyInjectable`.
+ *
+ * A `null` return value indicates this is @Injectable has invalid data.
  */
 function extractInjectableMetadata(
     clazz: ts.ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
@@ -72,20 +74,41 @@ function extractInjectableMetadata(
   }
   const name = clazz.name.text;
   const type = new WrappedNodeExpr(clazz.name);
-  const ctorDeps = getConstructorDependencies(clazz, reflector, isCore);
   const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
         ErrorCode.DECORATOR_NOT_CALLED, decorator.node, '@Injectable must be called');
   }
   if (decorator.args.length === 0) {
+    // Ideally, using @Injectable() would have the same effect as using @Injectable({...}), and be
+    // subject to the same validation. However, existing Angular code abuses @Injectable, applying
+    // it to abstract classes and to classes with constructors that were never meant for use with
+    // Angular's DI.
+    //
+    // To deal with this, @Injectable() without an argument is more lenient, and if the constructor
+    // signature does not work for DI then an ngInjectableDef that throws.
+    const possibleCtorDeps = getConstructorDependencies(clazz, reflector, isCore);
+    let ctorDeps: R3DependencyMetadata[]|null = null;
+    let valid: boolean = true;
+    if (possibleCtorDeps !== null) {
+      if (possibleCtorDeps.deps !== null) {
+        // This use of @Injectable has valid constructor dependencies.
+        ctorDeps = possibleCtorDeps.deps;
+      } else {
+        // This use of @Injectable is technically invalid. Generate a factory function which throws
+        // an error.
+        // TODO(alxhub): log warnings for the bad use of @Injectable.
+        valid = false;
+      }
+    }
     return {
       name,
       type,
       typeArgumentCount,
-      providedIn: new LiteralExpr(null), ctorDeps,
+      providedIn: new LiteralExpr(null), ctorDeps, valid,
     };
   } else if (decorator.args.length === 1) {
+    const ctorDeps = getValidConstructorDependencies(clazz, reflector, isCore);
     const metaNode = decorator.args[0];
     // Firstly make sure the decorator argument is an inline literal - if not, it's illegal to
     // transport references from one location to another. This is the problem that lowering
@@ -119,7 +142,8 @@ function extractInjectableMetadata(
         typeArgumentCount,
         ctorDeps,
         providedIn,
-        useValue: new WrappedNodeExpr(meta.get('useValue') !)
+        useValue: new WrappedNodeExpr(meta.get('useValue') !),
+        valid: true,
       };
     } else if (meta.has('useExisting')) {
       return {
@@ -128,7 +152,8 @@ function extractInjectableMetadata(
         typeArgumentCount,
         ctorDeps,
         providedIn,
-        useExisting: new WrappedNodeExpr(meta.get('useExisting') !)
+        useExisting: new WrappedNodeExpr(meta.get('useExisting') !),
+        valid: true,
       };
     } else if (meta.has('useClass')) {
       return {
@@ -137,14 +162,22 @@ function extractInjectableMetadata(
         typeArgumentCount,
         ctorDeps,
         providedIn,
-        useClass: new WrappedNodeExpr(meta.get('useClass') !), userDeps
+        useClass: new WrappedNodeExpr(meta.get('useClass') !), userDeps,
+        valid: true,
       };
     } else if (meta.has('useFactory')) {
       // useFactory is special - the 'deps' property must be analyzed.
       const factory = new WrappedNodeExpr(meta.get('useFactory') !);
-      return {name, type, typeArgumentCount, providedIn, useFactory: factory, ctorDeps, userDeps};
+      return {
+        name,
+        type,
+        typeArgumentCount,
+        providedIn,
+        useFactory: factory, ctorDeps, userDeps,
+        valid: true
+      };
     } else {
-      return {name, type, typeArgumentCount, providedIn, ctorDeps};
+      return {name, type, typeArgumentCount, providedIn, ctorDeps, valid: true};
     }
   } else {
     throw new FatalDiagnosticError(

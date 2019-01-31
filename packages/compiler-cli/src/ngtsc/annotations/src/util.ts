@@ -11,12 +11,25 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {AbsoluteReference, ImportMode, Reference} from '../../imports';
-import {ClassMemberKind, Decorator, ReflectionHost} from '../../reflection';
+import {ClassMemberKind, CtorParameter, Decorator, ReflectionHost} from '../../reflection';
+
+export enum ConstructorDepErrorKind {
+  NO_SUITABLE_TOKEN,
+}
+
+export interface ConstructorDepError {
+  index: number, param: CtorParameter, kind: ConstructorDepErrorKind,
+}
 
 export function getConstructorDependencies(
-    clazz: ts.ClassDeclaration, reflector: ReflectionHost, isCore: boolean): R3DependencyMetadata[]|
-    null {
-  const useType: R3DependencyMetadata[] = [];
+    clazz: ts.ClassDeclaration, reflector: ReflectionHost,
+    isCore: boolean): {deps: R3DependencyMetadata[];}|{
+  deps: null;
+  errors: ConstructorDepError[]
+}
+|null {
+  const deps: R3DependencyMetadata[] = [];
+  const errors: ConstructorDepError[] = [];
   let ctorParams = reflector.getConstructorParameters(clazz);
   if (ctorParams === null) {
     if (reflector.hasBaseClass(clazz)) {
@@ -60,14 +73,39 @@ export function getConstructorDependencies(
       }
     });
     if (tokenExpr === null) {
-      throw new FatalDiagnosticError(
-          ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
-          `No suitable injection token for parameter '${param.name || idx}' of class '${clazz.name!.text}'. Found: ${param.typeNode!.getText()}`);
+      errors.push({
+        index: idx,
+        kind: ConstructorDepErrorKind.NO_SUITABLE_TOKEN, param,
+      });
+    } else {
+      const token = new WrappedNodeExpr(tokenExpr);
+      deps.push({token, optional, self, skipSelf, host, resolved});
     }
-    const token = new WrappedNodeExpr(tokenExpr);
-    useType.push({token, optional, self, skipSelf, host, resolved});
   });
-  return useType;
+  if (errors.length === 0) {
+    return {deps};
+  } else {
+    return {deps: null, errors};
+  }
+}
+
+export function getValidConstructorDependencies(
+    clazz: ts.ClassDeclaration, reflector: ReflectionHost, isCore: boolean): R3DependencyMetadata[]|
+    null {
+  const deps = getConstructorDependencies(clazz, reflector, isCore);
+  if (deps === null) {
+    return null;
+  } else if (deps.deps !== null) {
+    return deps.deps;
+  } else {
+    // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
+    const {param, index} = (deps as{errors: ConstructorDepError[]}).errors[0];
+    // There is at least one error.
+    throw new FatalDiagnosticError(
+        ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
+        `No suitable injection token for parameter '${param.name || index}' of class '${clazz.name!.text}'. Found: ${param.typeNode!.getText()}`);
+  }
+  return null;
 }
 
 export function toR3Reference(

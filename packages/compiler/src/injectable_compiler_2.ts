@@ -29,9 +29,14 @@ export interface R3InjectableMetadata {
   useExisting?: o.Expression;
   useValue?: o.Expression;
   userDeps?: R3DependencyMetadata[];
+  valid: boolean;
 }
 
 export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
+  if (!meta.valid) {
+    return invalidInjectableDef(meta);
+  }
+
   let result: {factory: o.Expression, statements: o.Statement[]}|null = null;
 
   const factoryMeta = {
@@ -104,5 +109,30 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     expression,
     type,
     statements: result.statements,
+  };
+}
+
+/**
+ * Produce an injectable definition which throws when the factory is called.
+ *
+ * `@Injectable` used to have no side effects, and so was freely added throughout Angular code,
+ * even to classes which have constructor signatures that aren't injectable. In such cases,
+ * `@Injectable` is compiled to an ngInjectableDef that throws immediately when injection is
+ * attempted.
+ */
+function invalidInjectableDef(meta: R3InjectableMetadata): InjectableDef {
+  const errStmt = new o.ThrowStmt(new o.InstantiateExpr(new o.ReadVarExpr('Error'), [
+    o.literal(
+        `${meta.name} has a constructor which is not compatible with Dependency Injection. It should probably not be @Injectable().`)
+  ]));
+  const factory = o.fn([], [errStmt], o.INFERRED_TYPE, undefined, `${meta.name}_Factory`);
+  const expression = o.importExpr(Identifiers.defineInjectable).callFn([mapToMapExpression(
+      {token: meta.type, factory, providedIn: o.NULL_EXPR})]);
+  const type = new o.ExpressionType(o.importExpr(
+      Identifiers.InjectableDef, [typeWithParameters(meta.type, meta.typeArgumentCount)]));
+  return {
+    expression,
+    type,
+    statements: [],
   };
 }

@@ -88,6 +88,7 @@ export interface R3InjectableMetadataFacade {
   useExisting?: any;
   useValue?: any;
   userDeps?: R3DependencyMetadataFacade[];
+  valid: boolean;
 }
 
 export interface R3NgModuleMetadataFacade {
