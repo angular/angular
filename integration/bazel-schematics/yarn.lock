@@ -51,7 +51,7 @@
     rxjs "6.3.3"
     source-map "0.7.3"
 
-"@angular-devkit/schematics@7.1.3", "@angular-devkit/schematics@^7.0.4":
+"@angular-devkit/schematics@7.1.3":
   version "7.1.3"
   resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-7.1.3.tgz#30d03fde5bb27d6606d9a6e055188382408670d6"
   integrity sha512-Snmfog/n5k1PWdDaI+Top1F978vlXZFTvxHRPzlMCGhGsY+LMOpeRLVHADI+WP1q1LZ+2BjLELZVA2GP35AH8A==
@@ -59,7 +59,7 @@
     "@angular-devkit/core" "7.1.3"
     rxjs "6.3.3"
 
-"@angular-devkit/schematics@7.3.0-rc.0":
+"@angular-devkit/schematics@7.3.0-rc.0", "@angular-devkit/schematics@^7.3.0-rc.0":
   version "7.3.0-rc.0"
   resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-7.3.0-rc.0.tgz#9f1e1f6942da36b12c81241398ed6ca8b2e65875"
   integrity sha512-noqcQIOvah2G126DTFKY5Kiga8UwI9cKzyhQdNlf+8hAZpnWwTURItQ5xuMJg/XfRQLUSg9gWS2h1cI9AD7mxQ==
@@ -68,11 +68,11 @@
     rxjs "6.3.3"
 
 "@angular/bazel@file:../../dist/packages-dist/bazel":
-  version "8.0.0-beta.0"
+  version "8.0.0-beta.1"
   dependencies:
     "@angular-devkit/architect" "^0.10.6"
     "@angular-devkit/core" "^7.0.4"
-    "@angular-devkit/schematics" "^7.0.4"
+    "@angular-devkit/schematics" "^7.3.0-rc.0"
     "@bazel/typescript" "^0.22.1"
     "@schematics/angular" "^7.0.4"
     "@types/node" "6.0.84"
@@ -97,27 +97,27 @@
     semver "5.6.0"
     symbol-observable "1.2.0"
 
-"@bazel/bazel-darwin_x64@0.21.0":
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.21.0.tgz#db033b6880294ed274489d3bce4a36c77dbf5a7a"
-  integrity sha512-9lI9SFHUm50ufJHD/5gOdJeuaI/hdGji5d0ezYWJdJK55tj4VhcatkJumjYD6yp1nPNnU038AZ7JvkPcTgt7OA==
+"@bazel/bazel-darwin_x64@0.22.0":
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-darwin_x64/-/bazel-darwin_x64-0.22.0.tgz#a2bea5922dba9a32554a218ba4849a200115b248"
+  integrity sha512-LFxkyQgPATeB64z/1IvOWZhK+lc3JVHejbmdo96qB4lsoD8zselvOlgHvVXxlAjRxVZ9mlmXDvDRDyaXyyRdwA==
 
-"@bazel/bazel-linux_x64@0.21.0":
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.21.0.tgz#d9ba05ff405c52d09878ecfb89872bda2fda418e"
-  integrity sha512-CyOblC7pMIMaXwkQazo/jz2ipmIkxngmVCTzjNKGO9GiZK71L4X/B8Simy3tFhDHZFxso2HkvJTiY1UJozFyZw==
+"@bazel/bazel-linux_x64@0.22.0":
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-linux_x64/-/bazel-linux_x64-0.22.0.tgz#12e5884f2a7b7f3b62afbef9f8da4de0976f3bc8"
+  integrity sha512-xDs8cb2bbGZ9uvzYZOzCVrMBywzRhLj0J/t+py+FYZj+VO5B3wVg9eUf6nWWR0oJ2mzvToI9h31t2tNdqwy2kQ==
 
-"@bazel/bazel-win32_x64@0.21.0":
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.21.0.tgz#f2f40f40b862f368d8596b4f69152640bd15e2ed"
-  integrity sha512-ELNF4ddUCnd1Qx9359tJ5DenlVK0e5Yoe7PVv+qWNQKSCjguh8jtRy9IlzGZHjn8tFMSnTQjYYY0DgW1W1sbSA==
+"@bazel/bazel-win32_x64@0.22.0":
+  version "0.22.0"
+  resolved "https://registry.yarnpkg.com/@bazel/bazel-win32_x64/-/bazel-win32_x64-0.22.0.tgz#a8a65986639583a8cc7b018e001aedfdafe41b50"
+  integrity sha512-FbJaXVDoCLnpIFLnPHFkQdfriYPXfnfQNuf9EXMliERdRuoeBVbwEZfwcuArxZWNFus7bD8QiTj0XzKVWO+Wbw==
 
 "@bazel/bazel@file:../../node_modules/@bazel/bazel":
-  version "0.21.0"
+  version "0.22.0"
   optionalDependencies:
-    "@bazel/bazel-darwin_x64" "0.21.0"
-    "@bazel/bazel-linux_x64" "0.21.0"
-    "@bazel/bazel-win32_x64" "0.21.0"
+    "@bazel/bazel-darwin_x64" "0.22.0"
+    "@bazel/bazel-linux_x64" "0.22.0"
+    "@bazel/bazel-win32_x64" "0.22.0"
 
 "@bazel/typescript@^0.22.1":
   version "0.22.1"
