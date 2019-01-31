@@ -16,7 +16,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore, unwrapExpression} from './util';
+import {getValidConstructorDependencies, isAngularCore, unwrapExpression} from './util';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
@@ -87,7 +87,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
           name,
           type,
           pipeName,
-          deps: getConstructorDependencies(clazz, this.reflector, this.isCore), pure,
+          deps: getValidConstructorDependencies(clazz, this.reflector, this.isCore), pure,
         },
         metadataStmt: generateSetClassMetadataCall(clazz, this.reflector, this.isCore),
       },
