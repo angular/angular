@@ -19,7 +19,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
+import {getValidConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
@@ -145,7 +145,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const ngInjectorDef: R3InjectorMetadata = {
       name: node.name !.text,
       type: new WrappedNodeExpr(node.name !),
-      deps: getConstructorDependencies(node, this.reflector, this.isCore), providers,
+      deps: getValidConstructorDependencies(node, this.reflector, this.isCore), providers,
       imports: new LiteralArrayExpr(injectorImports),
     };
 

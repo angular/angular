@@ -17,7 +17,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
 import {SelectorScopeRegistry} from './selector_scope';
-import {extractDirectiveGuards, getConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwardRef} from './util';
+import {extractDirectiveGuards, getValidConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwardRef} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
@@ -196,7 +196,7 @@ export function extractDirectiveMetadata(
       clazz.heritageClauses.some(hc => hc.token === ts.SyntaxKind.ExtendsKeyword);
   const metadata: R3DirectiveMetadata = {
     name: clazz.name !.text,
-    deps: getConstructorDependencies(clazz, reflector, isCore), host,
+    deps: getValidConstructorDependencies(clazz, reflector, isCore), host,
     lifecycle: {
         usesOnChanges,
     },
