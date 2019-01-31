@@ -14,7 +14,7 @@ import {NgModuleData} from '@angular/core/src/view/types';
 import {tokenKey} from '@angular/core/src/view/util';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, modifiedInIvy, obsoleteInIvy} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
@@ -1316,7 +1316,7 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('tree shakable providers', () => {
-        fixmeIvy('FW-794: NgModuleDefinition not exposed on NgModuleData')
+        modifiedInIvy('Ivy and VE have different internal fields to access providers')
             .it('definition should not persist across NgModuleRef instances', () => {
               @NgModule()
               class SomeModule {
@@ -1345,6 +1345,36 @@ function declareTests(config?: {useJit: boolean}) {
               const ngModuleRef2 = factory.create(null);
               const providerDef2 =
                   (ngModuleRef2 as NgModuleData)._def.providersByKey[tokenKey(Bar)];
+              expect(providerDef2).toBeUndefined();
+            });
+
+        onlyInIvy(`Ivy and VE have different internal fields to access providers`)
+            .it('definition should not persist across NgModuleRef instances', () => {
+              @NgModule()
+              class SomeModule {
+              }
+
+              class Bar {
+                static ngInjectableDef: InjectableDef<Bar> = defineInjectable({
+                  factory: () => new Bar(),
+                  providedIn: SomeModule,
+                });
+              }
+
+              const factory = createModuleFactory(SomeModule);
+              const ngModuleRef1 = factory.create(null);
+
+              // Inject a tree shakeable provider token.
+              ngModuleRef1.injector.get(Bar);
+
+              // Tree Shakeable provider definition should be available.
+              const providerDef1 = (ngModuleRef1 as any)._r3Injector.records.get(Bar);
+              expect(providerDef1).not.toBeUndefined();
+
+              // Instantiate the same module. The tree shakeable provider definition should not be
+              // present.
+              const ngModuleRef2 = factory.create(null);
+              const providerDef2 = (ngModuleRef2 as any)._r3Injector.records.get(Bar);
               expect(providerDef2).toBeUndefined();
             });
       });
