@@ -2091,23 +2091,23 @@ export function template(
     localRefExtractor?: LocalRefExtractor) {
   const lView = getLView();
   const tView = lView[TVIEW];
-  // TODO: consider a separate node type for templates
-  const tNode = containerInternal(index, tagName || null, attrs || null);
 
+  // TODO: consider a separate node type for templates
+  const tContainerNode = containerInternal(index, tagName || null, attrs || null);
   if (tView.firstTemplatePass) {
-    tNode.tViews = createTView(
+    tContainerNode.tViews = createTView(
         -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null);
   }
 
   createDirectivesAndLocals(tView, lView, localRefs, localRefExtractor);
+
   const currentQueries = lView[QUERIES];
-  const previousOrParentTNode = getPreviousOrParentTNode();
-  const native = getNativeByTNode(previousOrParentTNode, lView);
-  attachPatchData(native, lView);
   if (currentQueries) {
-    lView[QUERIES] = currentQueries.addNode(previousOrParentTNode as TContainerNode);
+    lView[QUERIES] = currentQueries.addNode(tContainerNode);
   }
-  registerPostOrderHooks(tView, tNode);
+
+  attachPatchData(getNativeByTNode(tContainerNode, lView), lView);
+  registerPostOrderHooks(tView, tContainerNode);
   setIsParent(false);
 }
 
@@ -2130,7 +2130,7 @@ export function container(index: number): void {
 }
 
 function containerInternal(
-    index: number, tagName: string | null, attrs: TAttributes | null): TNode {
+    index: number, tagName: string | null, attrs: TAttributes | null): TContainerNode {
   const lView = getLView();
   ngDevMode && assertEqual(
                    lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
