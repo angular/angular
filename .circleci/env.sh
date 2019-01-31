@@ -35,7 +35,9 @@ setSecretVar CI_SECRET_SLACK_CARETAKER_WEBHOOK_URL "$SLACK_CARETAKER_WEBHOOK_URL
 # Define SauceLabs environment variables for CircleCI.
 ####################################################################################################
 setPublicVar SAUCE_CONNECT_VERSION "4.5.3";
-setPublicVar SAUCE_CONNECT_READY_FILE /tmp/angular/sauce-connect-ready-file.lock
+setPublicVar SAUCE_READY_FILE /tmp/angular/sauce-connect-ready-file.lock
+setPublicVar SAUCE_PID_FILE /tmp/angular/sauce-connect-pid-file.lock
+setPublicVar SAUCE_TUNNEL_IDENTIFIER "angular-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX}"
 # In order to have a meaningful SauceLabs badge on the repo page,
 # the angular2-ci account is used only when pushing commits to master;
 # in all other cases, the regular angular-ci account is used.

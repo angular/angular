@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 set -u -e
 
@@ -6,7 +6,9 @@ set -u -e
 # This script requires your CircleCI environment to include the following env variables:
 # SAUCE_USERNAME
 # SAUCE_ACCESS_KEY
-# SAUCE_CONNECT_READY_FILE
+# SAUCE_READY_FILE
+# SAUCE_PID_FILE
+# SAUCE_TUNNEL_IDENTIFIER
 
 CONNECT_URL="https://saucelabs.com/downloads/sc-${SAUCE_CONNECT_VERSION}-linux.tar.gz"
 CONNECT_DIR="/tmp/sauce-connect"
@@ -26,7 +28,22 @@ mkdir sauce-connect
 tar --extract --file=$CONNECT_DOWNLOAD --strip-components=1 --directory=sauce-connect > /dev/null
 rm $CONNECT_DOWNLOAD
 
-mkdir -p $(dirname ${SAUCE_CONNECT_READY_FILE})
+# Command arguments that will be passed to sauce-connect.
+sauceArgs=""
 
-echo "Starting Sauce Connect"
-./sauce-connect/bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --readyfile $SAUCE_CONNECT_READY_FILE
+if [[ ! -z "${SAUCE_READY_FILE}" ]]; then
+  sauceArgs="${sauceArgs} --readyfile ${SAUCE_READY_FILE}"
+fi
+
+if [[ ! -z "${SAUCE_PID_FILE}" ]]; then
+  mkdir -p $(dirname ${SAUCE_PID_FILE})
+  sauceArgs="${sauceArgs} --pidfile ${SAUCE_PID_FILE}"
+fi
+
+if [[ ! -z "${SAUCE_TUNNEL_IDENTIFIER}" ]]; then
+  sauceArgs="${sauceArgs} --tunnel-identifier ${SAUCE_TUNNEL_IDENTIFIER}"
+fi
+
+echo "Starting Sauce Connect. Passed arguments: ${sauceArgs}"
+
+./sauce-connect/bin/sc -u ${SAUCE_USERNAME} -k ${SAUCE_ACCESS_KEY} ${sauceArgs}
