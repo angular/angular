@@ -1355,6 +1355,7 @@ describe('providers', () => {
       expect(fixture.html).toEqual('<div></div>');
       expect(logs).toEqual(['Injectable OnDestroy']);
     });
+
   });
 });
 interface ComponentTest {
