@@ -706,29 +706,44 @@ describe('view destruction', () => {
   });
 
   it('should invoke onDestroy only once when a component is registered as a provider', () => {
-    const testToken = new InjectionToken<ComponentWithOnDestroy>('testToken');
+    const testToken = new InjectionToken<ParentWithOnDestroy>('testToken');
     let destroyCalls = 0;
 
-    class ComponentWithOnDestroy {
+    class ParentWithOnDestroy {
       static ngComponentDef = defineComponent({
         selectors: [['comp-with-on-destroy']],
-        type: ComponentWithOnDestroy,
+        type: ParentWithOnDestroy,
         consts: 0,
         vars: 0,
-        factory: () => new ComponentWithOnDestroy(),
+        factory: () => new ParentWithOnDestroy(),
         template: (rf: any, ctx: any) => {},
-        features: [ProvidersFeature([{provide: testToken, useExisting: ComponentWithOnDestroy}])]
+        features: [ProvidersFeature([{provide: testToken, useExisting: ParentWithOnDestroy}])]
       });
 
       ngOnDestroy() { destroyCalls++; }
     }
 
+    class ChildComponent {
+      static ngComponentDef = defineComponent({
+        selectors: [['child']],
+        type: ChildComponent,
+        consts: 0,
+        vars: 0,
+        factory: () => new ChildComponent(directiveInject(testToken)),
+        template: (rf: any, ctx: any) => {},
+      });
+
+      // We need to inject the parent so the provider is instantiated.
+      constructor(_parent: ParentWithOnDestroy) {}
+    }
+
     const FixtureComponent = createComponent('test-app', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        element(0, 'comp-with-on-destroy');
-        directiveInject(testToken);  // Inject the token so the provider gets instantiated.
+        elementStart(0, 'comp-with-on-destroy');
+        element(1, 'child');
+        elementEnd();
       }
-    }, 1, 0, [ComponentWithOnDestroy], [], null, [], []);
+    }, 2, 0, [ParentWithOnDestroy, ChildComponent], [], null, [], []);
 
     const fixture = new ComponentFixture(FixtureComponent);
     fixture.update();
