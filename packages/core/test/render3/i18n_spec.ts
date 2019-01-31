@@ -82,7 +82,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 1,
-        expandoStartIndex: nbConsts,
         create: [
           'simple text', nbConsts,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
@@ -104,7 +103,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 5,
-        expandoStartIndex: nbConsts,
         create: [
           'Hello ',
           nbConsts,
@@ -141,7 +139,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 1,
-        expandoStartIndex: nbConsts,
         create:
             ['', nbConsts, index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild],
         update: [
@@ -163,7 +160,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 1,
-        expandoStartIndex: nbConsts,
         create:
             ['', nbConsts, index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild],
         update: [
@@ -197,7 +193,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 2,
-        expandoStartIndex: nbConsts,
         create: [
           '',
           nbConsts,
@@ -228,7 +223,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 2,
-        expandoStartIndex: nbConsts,
         create: [
           spanElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
@@ -256,7 +250,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 1,
-        expandoStartIndex: nbConsts,
         create: [
           bElement << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild,
@@ -290,7 +283,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 5,
-        expandoStartIndex: nbConsts,
         create: [
           COMMENT_MARKER, 'ICU 1', icuCommentNodeIndex,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
@@ -307,7 +299,6 @@ describe('Runtime i18n', () => {
         icus: [{
           type: 1,
           vars: [4, 3, 3],
-          expandoStartIndex: icuCommentNodeIndex + 1,
           childIcus: [[], [], []],
           cases: ['0', '1', 'other'],
           create: [
@@ -406,7 +397,6 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         vars: 6,
-        expandoStartIndex: nbConsts,
         create: [
           COMMENT_MARKER, 'ICU 1', icuCommentNodeIndex,
           index << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild
@@ -424,7 +414,6 @@ describe('Runtime i18n', () => {
           {
             type: 0,
             vars: [1, 1, 1],
-            expandoStartIndex: lastTextNodeIndex + 1,
             childIcus: [[], [], []],
             cases: ['cat', 'dog', 'other'],
             create: [
@@ -454,7 +443,6 @@ describe('Runtime i18n', () => {
           {
             type: 1,
             vars: [1, 4],
-            expandoStartIndex: icuCommentNodeIndex + 1,
             childIcus: [[], [0]],
             cases: ['0', 'other'],
             create: [
@@ -1350,8 +1338,7 @@ describe('Runtime i18n', () => {
     });
 
     it('should work with directives and host bindings', () => {
-      let directiveInstance: Directive;
-      const elementIndices: number[] = [];
+      let directiveInstances: Directive[] = [];
 
       class Directive {
         // @HostBinding('className')
@@ -1360,9 +1347,12 @@ describe('Runtime i18n', () => {
         static ngDirectiveDef = defineDirective({
           type: Directive,
           selectors: [['', 'dir', '']],
-          factory: () => directiveInstance = new Directive,
+          factory: () => {
+            const instance = new Directive();
+            directiveInstances.push(instance);
+            return instance;
+          },
           hostBindings: (rf: RenderFlags, ctx: any, elementIndex: number) => {
-            elementIndices.push(elementIndex);
             if (rf & RenderFlags.Create) {
               allocHostVars(1);
             }
@@ -1397,7 +1387,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: () => new MyApp(),
-          consts: 5,
+          consts: 6,
           vars: 5,
           directives: [Directive],
           template: (rf: RenderFlags, ctx: MyApp) => {
@@ -1407,13 +1397,14 @@ describe('Runtime i18n', () => {
                 i18nAttributes(1, MSG_DIV_1_ATTR_1);
                 i18nStart(2, MSG_DIV_1);
                 {
-                  elementStart(3, 'b');  // Will be removed
+                  elementStart(3, 'b', [AttributeMarker.SelectOnly, 'dir']);  // Will be removed
                   { i18nAttributes(4, MSG_DIV_1_ATTR_1); }
                   elementEnd();
                 }
                 i18nEnd();
               }
               elementEnd();
+              element(5, 'div', [AttributeMarker.SelectOnly, 'dir']);
             }
             if (rf & RenderFlags.Update) {
               i18nExp(bind(ctx.exp1));
@@ -1434,18 +1425,15 @@ describe('Runtime i18n', () => {
       // matching purposes
       expect(fixture.html)
           .toEqual(
-              `<div class="foo" title="start 2 middle 1 end">trad one <i>email</i><!--ICU 22--></div>`);
+              `<div class="foo" title="start 2 middle 1 end">trad one <i>email</i><!--ICU 23--></div><div class="foo"></div>`);
 
-      directiveInstance !.klass = 'bar';
+      directiveInstances.forEach(instance => instance.klass = 'bar');
       fixture.component.exp1 = 2;
       fixture.component.exp2 = 3;
       fixture.update();
       expect(fixture.html)
           .toEqual(
-              `<div class="bar" title="start 3 middle 2 end">trad 2 emails<!--ICU 22--></div>`);
-
-      // verify that we always call `hostBindings` function with the same element index
-      expect(elementIndices.every(id => id === elementIndices[0])).toBeTruthy();
+              `<div class="bar" title="start 3 middle 2 end">trad 2 emails<!--ICU 23--></div><div class="bar"></div>`);
     });
 
     describe('projection', () => {
