@@ -624,6 +624,99 @@ describe('ngtsc behavioral tests', () => {
             'i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestPipe, typeof TestCmp], never, never>');
   });
 
+  describe('compiling invalid @Injectables', () => {
+    describe('with strictInjectionParameters = true', () => {
+      it('should give a compile-time error if an invalid @Injectable is used with no arguments',
+         () => {
+           env.tsconfig({strictInjectionParameters: true});
+           env.write('test.ts', `
+            import {Injectable} from '@angular/core';
+    
+            @Injectable()
+            export class Test {
+              constructor(private notInjectable: string) {}
+            }
+          `);
+
+           const errors = env.driveDiagnostics();
+           expect(errors.length).toBe(1);
+           expect(errors[0].messageText).toContain('No suitable injection token for parameter');
+         });
+
+      it('should give a compile-time error if an invalid @Injectable is used with an argument',
+         () => {
+           env.tsconfig({strictInjectionParameters: true});
+           env.write('test.ts', `
+            import {Injectable} from '@angular/core';
+    
+            @Injectable()
+            export class Test {
+              constructor(private notInjectable: string) {}
+            }
+          `);
+
+           const errors = env.driveDiagnostics();
+           expect(errors.length).toBe(1);
+           expect(errors[0].messageText).toContain('No suitable injection token for parameter');
+         });
+
+      it('should not give a compile-time error if an invalid @Injectable is used with useValue',
+         () => {
+           env.tsconfig({strictInjectionParameters: true});
+           env.write('test.ts', `
+               import {Injectable} from '@angular/core';
+       
+               @Injectable({
+                 providedIn: 'root',
+                 useValue: '42',
+               })
+               export class Test {
+                 constructor(private notInjectable: string) {}
+               }
+             `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+           expect(jsContents).toMatch(/if \(t\).*throw new Error.* else .* '42'/ms);
+         });
+    });
+
+    describe('with strictInjectionParameters = false', () => {
+      it('should compile an @Injectable on a class with a non-injectable constructor', () => {
+        env.tsconfig({strictInjectionParameters: false});
+        env.write('test.ts', `
+          import {Injectable} from '@angular/core';
+
+          @Injectable()
+          export class Test {
+            constructor(private notInjectable: string) {}
+          }
+        `);
+
+        env.driveMain();
+        const jsContents = env.getContents('test.js');
+        expect(jsContents).toContain('factory: function Test_Factory(t) { throw new Error(');
+      });
+
+      it('should compile an @Injectable provided in the root on a class with a non-injectable constructor',
+         () => {
+           env.tsconfig({strictInjectionParameters: false});
+           env.write('test.ts', `
+            import {Injectable} from '@angular/core';
+            @Injectable({providedIn: 'root'})
+            export class Test {
+              constructor(private notInjectable: string) {}
+            }
+          `);
+
+           env.driveMain();
+           const jsContents = env.getContents('test.js');
+           expect(jsContents).toContain('factory: function Test_Factory(t) { throw new Error(');
+         });
+
+    });
+  });
+
   describe('former View Engine AST transform bugs', () => {
     it('should compile array literals behind conditionals', () => {
       env.tsconfig();

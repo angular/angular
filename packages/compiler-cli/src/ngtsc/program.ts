@@ -340,7 +340,8 @@ export class NgtscProgram implements api.Program {
           this.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false, this.moduleResolver, this.cycleAnalyzer),
       new DirectiveDecoratorHandler(this.reflector, evaluator, scopeRegistry, this.isCore),
-      new InjectableDecoratorHandler(this.reflector, this.isCore),
+      new InjectableDecoratorHandler(
+          this.reflector, this.isCore, this.options.strictInjectionParameters || false),
       new NgModuleDecoratorHandler(
           this.reflector, evaluator, scopeRegistry, referencesRegistry, this.isCore,
           this.routeAnalyzer),

@@ -139,7 +139,9 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     throw new Error('Method not implemented.');
   }
 
-  visitThrowStmt(stmt: ThrowStmt, context: Context) { throw new Error('Method not implemented.'); }
+  visitThrowStmt(stmt: ThrowStmt, context: Context): ts.ThrowStatement {
+    return ts.createThrow(stmt.error.visitExpression(this, context.withExpressionMode));
+  }
 
   visitCommentStmt(stmt: CommentStmt, context: Context): never {
     throw new Error('Method not implemented.');
