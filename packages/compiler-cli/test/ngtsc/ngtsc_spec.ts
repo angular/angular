@@ -624,6 +624,49 @@ describe('ngtsc behavioral tests', () => {
             'i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestPipe, typeof TestCmp], never, never>');
   });
 
+  describe('former View Engine AST transform bugs', () => {
+    it('should compile array literals behind conditionals', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '{{value ? "yes" : [no]}}',
+        })
+        class TestCmp {
+          value = true;
+          no = 'no';
+        }
+      `);
+
+      env.driveMain();
+      expect(env.getContents('test.js')).toContain('i0.ɵpureFunction1');
+    });
+
+    it('should compile array literals inside function arguments', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '{{fn([test])}}',
+        })
+        class TestCmp {
+          fn(arg: any): string {
+            return 'test';
+          }
+
+          test = 'test';
+        }
+      `);
+
+      env.driveMain();
+      expect(env.getContents('test.js')).toContain('i0.ɵpureFunction1');
+    });
+  });
+
   describe('unwrapping ModuleWithProviders functions', () => {
     it('should extract the generic type and include it in the module\'s declaration', () => {
       env.tsconfig();
