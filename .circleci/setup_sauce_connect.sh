@@ -26,5 +26,7 @@ mkdir sauce-connect
 tar --extract --file=$CONNECT_DOWNLOAD --strip-components=1 --directory=sauce-connect > /dev/null
 rm $CONNECT_DOWNLOAD
 
+mkdir -p $(dirname ${SAUCE_CONNECT_READY_FILE})
+
 echo "Starting Sauce Connect"
 ./sauce-connect/bin/sc -u $SAUCE_USERNAME -k $SAUCE_ACCESS_KEY --readyfile $SAUCE_CONNECT_READY_FILE
