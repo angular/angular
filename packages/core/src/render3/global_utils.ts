@@ -30,13 +30,13 @@ import {getComponent, getContext, getDirectives, getHostElement, getInjector, ge
  * */
 export const GLOBAL_PUBLISH_EXPANDO_KEY = 'ng';
 
-/*
- * Publishes a collection of default debug tools onto `window._ng_`.
+let _published = false;
+/**
+ * Publishes a collection of default debug tools onto`window.ng`.
  *
  * These functions are available globally when Angular is in development
  * mode and are automatically stripped away from prod mode is on.
  */
-let _published = false;
 export function publishDefaultGlobalUtils() {
   if (!_published) {
     _published = true;
@@ -58,7 +58,7 @@ export declare type GlobalDevModeContainer = {
 };
 
 /**
- * Publishes the given function to `window.ngDevMode` so that it can be
+ * Publishes the given function to `window.ng` so that it can be
  * used from the browser console when an application is not in production.
  */
 export function publishGlobalUtil(name: string, fn: Function): void {
