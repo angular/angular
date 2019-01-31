@@ -522,7 +522,10 @@ export function getNodeInjectable(
       value = lData[index] = factory.factory(null, tData, lData, tNode);
       const tView = lData[TVIEW];
       if (value && factory.isProvider && value.ngOnDestroy) {
-        (tView.destroyHooks || (tView.destroyHooks = [])).push(index, value.ngOnDestroy);
+        const type = value.constructor as Type<any>;
+        if (!getComponentDef(type) && !getDirectiveDef(type)) {
+          (tView.destroyHooks || (tView.destroyHooks = [])).push(index, value.ngOnDestroy);
+        }
       }
     } finally {
       if (factory.injectImpl) setInjectImplementation(previousInjectImplementation);

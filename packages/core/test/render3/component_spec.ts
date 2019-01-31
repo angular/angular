@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation, defineInjectable, defineInjector} from '../../src/core';
+import {InjectionToken, ViewEncapsulation, defineInjectable, defineInjector} from '../../src/core';
 
-import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty, template, getRenderedText} from '../../src/render3/index';
+import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty, template, getRenderedText, ProvidersFeature} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, text, textBinding, tick} from '../../src/render3/instructions';
 import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
 
@@ -669,22 +669,22 @@ describe('recursive components', () => {
 });
 
 describe('view destruction', () => {
-  let wasOnDestroyCalled = false;
-
-  class ComponentWithOnDestroy {
-    static ngComponentDef = defineComponent({
-      selectors: [['comp-with-destroy']],
-      type: ComponentWithOnDestroy,
-      consts: 0,
-      vars: 0,
-      factory: () => new ComponentWithOnDestroy(),
-      template: (rf: any, ctx: any) => {},
-    });
-
-    ngOnDestroy() { wasOnDestroyCalled = true; }
-  }
-
   it('should invoke onDestroy when directly destroying a root view', () => {
+    let wasOnDestroyCalled = false;
+
+    class ComponentWithOnDestroy {
+      static ngComponentDef = defineComponent({
+        selectors: [['comp-with-destroy']],
+        type: ComponentWithOnDestroy,
+        consts: 0,
+        vars: 0,
+        factory: () => new ComponentWithOnDestroy(),
+        template: (rf: any, ctx: any) => {},
+      });
+
+      ngOnDestroy() { wasOnDestroyCalled = true; }
+    }
+
     // This test asserts that the view tree is set up correctly based on the knowledge that this
     // tree is used during view destruction. If the child view is not correctly attached as a
     // child of the root view, then the onDestroy hook on the child view will never be called
@@ -703,5 +703,37 @@ describe('view destruction', () => {
         .toBe(
             true,
             'Expected component onDestroy method to be called when its parent view is destroyed');
+  });
+
+  it('should invoke onDestroy only once when a component is registered as a provider', () => {
+    const testToken = new InjectionToken<ComponentWithOnDestroy>('testToken');
+    let destroyCalls = 0;
+
+    class ComponentWithOnDestroy {
+      static ngComponentDef = defineComponent({
+        selectors: [['comp-with-on-destroy']],
+        type: ComponentWithOnDestroy,
+        consts: 0,
+        vars: 0,
+        factory: () => new ComponentWithOnDestroy(),
+        template: (rf: any, ctx: any) => {},
+        features: [ProvidersFeature([{provide: testToken, useExisting: ComponentWithOnDestroy}])]
+      });
+
+      ngOnDestroy() { destroyCalls++; }
+    }
+
+    const FixtureComponent = createComponent('test-app', (rf: RenderFlags, ctx: any) => {
+      if (rf & RenderFlags.Create) {
+        element(0, 'comp-with-on-destroy');
+        directiveInject(testToken);  // Inject the token so the provider gets instantiated.
+      }
+    }, 1, 0, [ComponentWithOnDestroy], [], null, [], []);
+
+    const fixture = new ComponentFixture(FixtureComponent);
+    fixture.update();
+    fixture.destroy();
+
+    expect(destroyCalls).toBe(1, 'Expected `ngOnDestroy` to only be called once.');
   });
 });
