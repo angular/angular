@@ -158,6 +158,8 @@ module.exports = function(config) {
       conf.browsers = [process.env['DISPLAY'] ? 'Chrome' : 'ChromeHeadless'];
   }
 
+  console.error(JSON.stringify(process.env, null, 2));
+
   if (process.env.TRAVIS) {
     var buildId =
         'TRAVIS #' + process.env.TRAVIS_BUILD_NUMBER + ' (' + process.env.TRAVIS_BUILD_ID + ')';
