@@ -467,6 +467,10 @@ export function isTypeProvider(value: SingleProvider): value is TypeProvider {
   return typeof value === 'function';
 }
 
+export function isClassProvider(value: SingleProvider): value is ClassProvider {
+  return !!(value as StaticClassProvider | ClassProvider).useClass;
+}
+
 function hasDeps(value: ClassProvider | ConstructorProvider | StaticClassProvider):
     value is ClassProvider&{deps: any[]} {
   return !!(value as any).deps;

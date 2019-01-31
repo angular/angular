@@ -9,9 +9,9 @@
 import {ViewEncapsulation} from '../metadata/view';
 
 import {attachPatchData} from './context_discovery';
-import {callHooks} from './hooks';
 import {LContainer, NATIVE, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
+import {NodeInjectorFactory} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
@@ -495,8 +495,16 @@ function removeListeners(lView: LView): void {
 function executeOnDestroys(view: LView): void {
   const tView = view[TVIEW];
   let destroyHooks: HookData|null;
+
   if (tView != null && (destroyHooks = tView.destroyHooks) != null) {
-    callHooks(view, destroyHooks);
+    for (let i = 0; i < destroyHooks.length; i += 2) {
+      const context = view[destroyHooks[i] as number];
+
+      // Only call the destroy hook if the context has been requested.
+      if (!(context instanceof NodeInjectorFactory)) {
+        (destroyHooks[i + 1] as() => void).call(context);
+      }
+    }
   }
 }
 

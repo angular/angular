@@ -520,10 +520,6 @@ export function getNodeInjectable(
     setTNodeAndViewData(tNode, lData);
     try {
       value = lData[index] = factory.factory(null, tData, lData, tNode);
-      const tView = lData[TVIEW];
-      if (value && factory.isProvider && value.ngOnDestroy) {
-        (tView.destroyHooks || (tView.destroyHooks = [])).push(index, value.ngOnDestroy);
-      }
     } finally {
       if (factory.injectImpl) setInjectImplementation(previousInjectImplementation);
       setIncludeViewProviders(previousIncludeViewProviders);

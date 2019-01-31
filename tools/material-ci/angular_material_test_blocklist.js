@@ -237,46 +237,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'accordion' of undefined",
     "notes": "Unknown"
   },
-  "CdkDrag standalone draggable should enable native drag interactions when there is a drag handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should not be able to drag the entire element if it has a handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to drag an element using its handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should not be able to drag the element if the handle is disabled": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should not be able to drag using the handle if the element is disabled": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to use a handle that was added after init": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to use more than one handle to drag the element": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to drag with a handle that is not a direct descendant": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should disable the tap highlight while dragging via the handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should preserve any existing `webkitTapHighlightColor`": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
   "CdkDrag in a drop container should be able to customize the preview element": {
     "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
     "notes": "Unknown"

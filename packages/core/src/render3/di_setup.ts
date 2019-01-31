@@ -8,8 +8,8 @@
 
 
 import {resolveForwardRef} from '../di/forward_ref';
-import {Provider} from '../di/interface/provider';
-import {isTypeProvider, providerToFactory} from '../di/r3_injector';
+import {ClassProvider, Provider} from '../di/interface/provider';
+import {isClassProvider, isTypeProvider, providerToFactory} from '../di/r3_injector';
 
 import {DirectiveDef} from '.';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from './di';
@@ -81,10 +81,19 @@ function resolveProvider(
     const cptViewProvidersCount =
         tNode.providerIndexes >> TNodeProviderIndexes.CptViewProvidersCountShift;
 
+    if (isClassProvider(provider) || isTypeProvider(provider)) {
+      const prototype = ((provider as ClassProvider).useClass || provider).prototype;
+      const ngOnDestroy = prototype.ngOnDestroy;
+
+      if (ngOnDestroy) {
+        const tView = lView[TVIEW];
+        (tView.destroyHooks || (tView.destroyHooks = [])).push(tInjectables.length, ngOnDestroy);
+      }
+    }
+
     if (isTypeProvider(provider) || !provider.multi) {
       // Single provider case: the factory is created and pushed immediately
-      const factory =
-          new NodeInjectorFactory(providerFactory, isViewProvider, true, directiveInject);
+      const factory = new NodeInjectorFactory(providerFactory, isViewProvider, directiveInject);
       const existingFactoryIndex = indexOf(
           token, tInjectables, isViewProvider ? beginIndex : beginIndex + cptViewProvidersCount,
           endIndex);
@@ -246,7 +255,7 @@ function multiFactory(
         this: NodeInjectorFactory, _: null, tData: TData, lData: LView, tNode: TElementNode) => any,
     index: number, isViewProvider: boolean, isComponent: boolean,
     f: () => any): NodeInjectorFactory {
-  const factory = new NodeInjectorFactory(factoryFn, isViewProvider, true, directiveInject);
+  const factory = new NodeInjectorFactory(factoryFn, isViewProvider, directiveInject);
   factory.multi = [];
   factory.index = index;
   factory.componentProviders = 0;

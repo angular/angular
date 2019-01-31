@@ -235,10 +235,6 @@ export class NodeInjectorFactory {
        * Set to `true` if the token is declared in `viewProviders` (or if it is component).
        */
       isViewProvider: boolean,
-      /**
-       * Set to `true` if the token is a provider, and not a directive.
-       */
-      public isProvider: boolean,
       injectImplementation: null|(<T>(token: Type<T>|InjectionToken<T>, flags: InjectFlags) => T)) {
     this.canSeeViewProviders = isViewProvider;
     this.injectImpl = injectImplementation;
