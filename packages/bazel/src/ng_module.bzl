@@ -205,7 +205,8 @@ def _expected_outs(ctx):
         flat_module_out = _flat_module_out_file(ctx)
         devmode_js_files.append(ctx.actions.declare_file("%s.js" % flat_module_out))
         closure_js_files.append(ctx.actions.declare_file("%s.closure.js" % flat_module_out))
-        bundle_index_typings = ctx.actions.declare_file("%s.d.ts" % flat_module_out)
+        bundle_index_typings = ctx.actions.declare_file("%s.bundle.d.ts" % flat_module_out)
+        declaration_files.append(ctx.actions.declare_file("%s.d.ts" % flat_module_out))
         if is_legacy_ngc:
             metadata_files.append(ctx.actions.declare_file("%s.metadata.json" % flat_module_out))
     else:

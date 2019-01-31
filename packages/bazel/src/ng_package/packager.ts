@@ -73,9 +73,6 @@ function main(args: string[]): number {
       // List of all files in the ng_package rule's srcs.
       srcsArg,
 
-      // List of all type definitions that need to packaged into the ng_package.
-      typeDefinitionsArg,
-
       // List of all files in the ng_package rule's data.
       dataArg,
 
@@ -88,7 +85,6 @@ function main(args: string[]): number {
   const esm2015 = esm2015Arg.split(',').filter(s => !!s);
   const esm5 = esm5Arg.split(',').filter(s => !!s);
   const bundles = bundlesArg.split(',').filter(s => !!s);
-  const typeDefinitions = typeDefinitionsArg.split(',').filter(s => !!s);
   const srcs = srcsArg.split(',').filter(s => !!s);
   const dataFiles: string[] = dataArg.split(',').filter(s => !!s);
   const modulesManifest = JSON.parse(modulesManifestArg);
@@ -153,15 +149,6 @@ function main(args: string[]): number {
   fesm2015.forEach(file => { copyFile(file, out, 'fesm2015'); });
   fesm5.forEach(file => { copyFile(file, out, 'fesm5'); });
 
-  // Copy all type definitions into the package. This is necessary so that developers can use
-  // the package with type definitions.
-  typeDefinitions.forEach((f: string) => {
-    const content = fs.readFileSync(f, 'utf-8')
-                        // Strip the named AMD module for compatibility with non-bazel users
-                        .replace(/^\/\/\/ <amd-module name=.*\/>[\r\n]+/gm, '');
-    writeFileFromInputPath(f, content);
-  });
-
   // Copy all `data` files into the package. These are files that aren't built by the ng_package
   // rule, but instead are just straight copied into the package, e.g. global CSS assets.
   dataFiles.forEach(f => copyFileFromInputPath(f));
@@ -177,8 +164,13 @@ function main(args: string[]): number {
     moduleFiles['esm2015_index'] = path.join(binDir, 'esm2015', relative);
 
     const metadataFile = moduleFiles['metadata'];
-    const metadataContent = rewireMetadata(metadataFile, moduleFiles['typings']);
+    const typingsOutFile = moduleFiles['typings'];
+    const metadataContent = rewireMetadata(metadataFile, typingsOutFile);
     writeFileFromInputPath(metadataFile, metadataContent);
+
+    // Write bundled dts to the final file name
+    const typingContent = fs.readFileSync(moduleFiles['typings_bundle'], 'utf-8');
+    writeFileFromInputPath(typingsOutFile, typingContent);
   });
 
   // Root package name (e.g. '@angular/common'), captures as we iterate through sources below.
