@@ -54,7 +54,13 @@ var_7: &post_checkout
 var_8: &yarn_install
   run:
     name: Running Yarn install
-    command: yarn install --frozen-lockfile --non-interactive
+    command: |
+      # Yarn's requests sometimes take more than 10mins to complete.
+      # Print something to stdout, to prevent CircleCI from failing due to not output.
+      while true; do sleep 60; echo "[`date`] Keeping alive..."; done &
+      KEEP_ALIVE_PID=$!
+      yarn install --frozen-lockfile --non-interactive
+      kill $KEEP_ALIVE_PID
 
 var_9: &setup_circleci_bazel_config
   run:
