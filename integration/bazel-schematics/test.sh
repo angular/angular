@@ -11,6 +11,7 @@ function testBazel() {
   node replace_angular_repo.js "./demo/WORKSPACE"
   cd demo
   yarn add @angular/bazel@file:../../../dist/packages-dist/bazel
+  yarn webdriver-manager update --gecko=false --standalone=false $CI_CHROMEDRIVER_VERSION_ARG
   cp ../package.json.replace ./package.json
   ng generate component widget --style=css
   ng build
@@ -24,7 +25,7 @@ function testNonBazel() {
   rm -rf dist src/main.dev.ts src/main.prod.ts
   ng build --progress=false
   ng test --progress=false --watch=false
-  ng e2e --configuration=ci
+  ng e2e --configuration=ci --webdriver-update=false
 }
 
 testBazel

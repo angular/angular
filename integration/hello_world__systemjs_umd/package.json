@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG",
+    "postinstall": "webdriver-manager update --gecko false --standalone false $CI_CHROMEDRIVER_VERSION_ARG",
     "test": "concurrently \"yarn serve\" \"yarn protractor\" --kill-others --success first",
     "serve": "lite-server -c bs-config.e2e.json",
     "preprotractor": "tsc -p e2e",
