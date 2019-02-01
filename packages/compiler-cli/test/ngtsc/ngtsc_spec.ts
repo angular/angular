@@ -1004,6 +1004,31 @@ describe('ngtsc behavioral tests', () => {
     expect(trim(jsContents)).toContain(trim(hostBindingsFn));
   });
 
+  it('should accept enum values as host bindings', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+        import {Component, HostBinding, HostListener, TemplateRef} from '@angular/core';
+
+        enum HostBindings {
+          Hello = 'foo'
+        }
+
+        @Component({
+          selector: 'test',
+          template: 'Test',
+          host: {
+            '[attr.hello]': HostBindings.Hello,
+          },
+        })
+        class FooCmp {
+          foo = 'test';
+        }
+    `);
+
+    env.driveMain();
+    expect(env.getContents('test.js')).toContain('"hello", i0.ɵbind(ctx.foo)');
+  });
+
   it('should generate host listeners for directives within hostBindings section', () => {
     env.tsconfig();
     env.write(`test.ts`, `
