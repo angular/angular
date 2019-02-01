@@ -1,0 +1,9 @@
+load("//modules/playground/e2e_test:example_test.bzl", "example_test")
+
+example_test(
+    name = "template_driven_forms",
+    srcs = glob(["**/*.ts"]),
+    server = "//modules/playground/src/template_driven_forms:devserver",
+    # TODO: This does not pass with Ivy because the patch branch does not contain ivy fixes.
+    tags = ["fixme-ivy-aot"],
+)

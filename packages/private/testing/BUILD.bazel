@@ -1,4 +1,7 @@
-package(default_visibility = ["//packages:__subpackages__"])
+package(default_visibility = [
+    "//modules/playground:__subpackages__",
+    "//packages:__subpackages__",
+])
 
 exports_files(["package.json"])
 
