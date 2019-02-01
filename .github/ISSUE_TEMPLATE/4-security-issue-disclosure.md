@@ -1,6 +1,9 @@
 ---
-name: ⚠️ Security issue disclosure
+name: "⚠️ Security issue disclosure"
 about: Report a security issue in Angular Framework, Material, or CLI
+title: ''
+labels: ''
+assignees: ''
 
 ---
 

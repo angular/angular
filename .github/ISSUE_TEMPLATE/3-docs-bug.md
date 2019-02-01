@@ -1,8 +1,12 @@
 ---
-name: "📚 Docs or angular.io issue report"
+name: "\U0001F4DA Docs or angular.io issue report"
 about: Report an issue in Angular's documentation or angular.io application
+title: ''
+labels: ''
+assignees: ''
 
 ---
+
 <!--🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
 
 Oh hi there! 😄

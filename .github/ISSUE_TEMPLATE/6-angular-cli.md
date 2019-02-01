@@ -1,6 +1,9 @@
 ---
 name: "\U0001F6E0️Angular CLI"
 about: Issues and feature requests for Angular CLI
+title: ''
+labels: ''
+assignees: ''
 
 ---
 
