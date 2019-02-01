@@ -166,8 +166,14 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     return context.isStatement ? result : ts.createParen(result);
   }
 
-  visitWriteKeyExpr(expr: WriteKeyExpr, context: Context): never {
-    throw new Error('Method not implemented.');
+  visitWriteKeyExpr(expr: WriteKeyExpr, context: Context): ts.Expression {
+    const exprContext = context.withExpressionMode;
+    const lhs = ts.createElementAccess(
+        expr.receiver.visitExpression(this, exprContext),
+        expr.index.visitExpression(this, exprContext), );
+    const rhs = expr.value.visitExpression(this, exprContext);
+    const result: ts.Expression = ts.createBinary(lhs, ts.SyntaxKind.EqualsToken, rhs);
+    return context.isStatement ? result : ts.createParen(result);
   }
 
   visitWritePropExpr(expr: WritePropExpr, context: Context): ts.BinaryExpression {
