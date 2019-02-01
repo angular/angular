@@ -14,7 +14,7 @@ import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHa
 import {CycleAnalyzer, ImportGraph} from '../../../ngtsc/cycles';
 import {ModuleResolver, TsReferenceResolver} from '../../../ngtsc/imports';
 import {PartialEvaluator} from '../../../ngtsc/partial_evaluator';
-import {CompileResult, DecoratorHandler} from '../../../ngtsc/transform';
+import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../ngtsc/transform';
 import {DecoratedClass} from '../host/decorated_class';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {isDefined} from '../utils';
@@ -26,8 +26,7 @@ export interface AnalyzedFile {
 
 export interface AnalyzedClass extends DecoratedClass {
   diagnostics?: ts.Diagnostic[];
-  handler: DecoratorHandler<any, any>;
-  analysis: any;
+  matches: {handler: DecoratorHandler<any, any>; analysis: any;}[];
 }
 
 export interface CompiledClass extends AnalyzedClass { compilation: CompileResult[]; }
@@ -43,7 +42,7 @@ export const DecorationAnalyses = Map;
 
 export interface MatchingHandler<A, M> {
   handler: DecoratorHandler<A, M>;
-  match: M;
+  detected: M;
 }
 
 /**
@@ -118,21 +117,52 @@ export class DecorationAnalyzer {
   protected analyzeClass(clazz: DecoratedClass): AnalyzedClass|null {
     const matchingHandlers = this.handlers
                                  .map(handler => {
-                                   const match =
+                                   const detected =
                                        handler.detect(clazz.declaration, clazz.decorators);
-                                   return {handler, match};
+                                   return {handler, detected};
                                  })
                                  .filter(isMatchingHandler);
 
-    if (matchingHandlers.length > 1) {
-      throw new Error('TODO.Diagnostic: Class has multiple Angular decorators.');
-    }
     if (matchingHandlers.length === 0) {
       return null;
     }
-    const {handler, match} = matchingHandlers[0];
-    const {analysis, diagnostics} = handler.analyze(clazz.declaration, match);
-    return {...clazz, handler, analysis, diagnostics};
+    const detections: {handler: DecoratorHandler<any, any>, detected: DetectResult<any>}[] = [];
+    let hasWeakHandler: boolean = false;
+    let hasNonWeakHandler: boolean = false;
+    let hasPrimaryHandler: boolean = false;
+
+    for (const {handler, detected} of matchingHandlers) {
+      if (hasNonWeakHandler && handler.precedence === HandlerPrecedence.WEAK) {
+        continue;
+      } else if (hasWeakHandler && handler.precedence !== HandlerPrecedence.WEAK) {
+        // Clear all the WEAK handlers from the list of matches.
+        detections.length = 0;
+      }
+      if (hasPrimaryHandler && handler.precedence === HandlerPrecedence.PRIMARY) {
+        throw new Error(`TODO.Diagnostic: Class has multiple incompatible Angular decorators.`);
+      }
+
+      detections.push({handler, detected});
+      if (handler.precedence === HandlerPrecedence.WEAK) {
+        hasWeakHandler = true;
+      } else if (handler.precedence === HandlerPrecedence.SHARED) {
+        hasNonWeakHandler = true;
+      } else if (handler.precedence === HandlerPrecedence.PRIMARY) {
+        hasNonWeakHandler = true;
+        hasPrimaryHandler = true;
+      }
+    }
+
+    const matches: {handler: DecoratorHandler<any, any>, analysis: any}[] = [];
+    const allDiagnostics: ts.Diagnostic[] = [];
+    for (const {handler, detected} of detections) {
+      const {analysis, diagnostics} = handler.analyze(clazz.declaration, detected.metadata);
+      if (diagnostics !== undefined) {
+        allDiagnostics.push(...diagnostics);
+      }
+      matches.push({handler, analysis});
+    }
+    return {...clazz, matches, diagnostics: allDiagnostics.length > 0 ? allDiagnostics : undefined};
   }
 
   protected compileFile(analyzedFile: AnalyzedFile): CompiledFile {
@@ -145,15 +175,20 @@ export class DecorationAnalyzer {
   }
 
   protected compileClass(clazz: AnalyzedClass, constantPool: ConstantPool): CompileResult[] {
-    let compilation = clazz.handler.compile(clazz.declaration, clazz.analysis, constantPool);
-    if (!Array.isArray(compilation)) {
-      compilation = [compilation];
+    const compilations: CompileResult[] = [];
+    for (const {handler, analysis} of clazz.matches) {
+      const result = handler.compile(clazz.declaration, analysis, constantPool);
+      if (Array.isArray(result)) {
+        compilations.push(...result);
+      } else {
+        compilations.push(result);
+      }
     }
-    return compilation;
+    return compilations;
   }
 }
 
 function isMatchingHandler<A, M>(handler: Partial<MatchingHandler<A, M>>):
     handler is MatchingHandler<A, M> {
-  return !!handler.match;
+  return !!handler.detected;
 }

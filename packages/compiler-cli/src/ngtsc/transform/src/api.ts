@@ -12,6 +12,29 @@ import * as ts from 'typescript';
 import {Decorator} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 
+export enum HandlerPrecedence {
+  /**
+   * Handler with PRIMARY precedence cannot overlap - there can only be one on a given class.
+   *
+   * If more than one PRIMARY handler matches a class, an error is produced.
+   */
+  PRIMARY,
+
+  /**
+   * Handlers with SHARED precedence can match any class, possibly in addition to a single PRIMARY
+   * handler.
+   *
+   * It is not an error for a class to have any number of SHARED handlers.
+   */
+  SHARED,
+
+  /**
+   * Handlers with WEAK precedence that match a class are ignored if any handlers with stronger
+   * precedence match a class.
+   */
+  WEAK,
+}
+
 
 /**
  * Provides the interface between a decorator compiler from @angular/compiler and the Typescript
@@ -23,10 +46,18 @@ import {TypeCheckContext} from '../../typecheck';
  */
 export interface DecoratorHandler<A, M> {
   /**
+   * The precedence of a handler controls how it interacts with other handlers that match the same
+   * class.
+   *
+   * See the descriptions on `HandlerPrecedence` for an explanation of the behaviors involved.
+   */
+  readonly precedence: HandlerPrecedence;
+
+  /**
    * Scan a set of reflected decorators and determine if this handler is responsible for compilation
    * of one of them.
    */
-  detect(node: ts.Declaration, decorators: Decorator[]|null): M|undefined;
+  detect(node: ts.Declaration, decorators: Decorator[]|null): DetectResult<M>|undefined;
 
 
   /**
@@ -61,6 +92,11 @@ export interface DecoratorHandler<A, M> {
    */
   compile(node: ts.Declaration, analysis: A, constantPool: ConstantPool): CompileResult
       |CompileResult[];
+}
+
+export interface DetectResult<M> {
+  trigger: ts.Node|null;
+  metadata: M;
 }
 
 /**
