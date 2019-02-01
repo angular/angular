@@ -8,7 +8,7 @@
 
 import {FocusableOption, FocusKeyManager} from '@angular/cdk/a11y';
 import {Direction, Directionality} from '@angular/cdk/bidi';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
 import {END, ENTER, HOME, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
 import {
   AfterViewInit,
@@ -276,19 +276,21 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
   @Input()
   get selectedIndex() { return this._selectedIndex; }
   set selectedIndex(index: number) {
+    const newIndex = coerceNumberProperty(index);
+
     if (this.steps) {
       // Ensure that the index can't be out of bounds.
-      if (index < 0 || index > this.steps.length - 1) {
+      if (newIndex < 0 || newIndex > this.steps.length - 1) {
         throw Error('cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.');
       }
 
-      if (this._selectedIndex != index &&
-          !this._anyControlsInvalidOrPending(index) &&
-          (index >= this._selectedIndex || this.steps.toArray()[index].editable)) {
+      if (this._selectedIndex != newIndex &&
+          !this._anyControlsInvalidOrPending(newIndex) &&
+          (newIndex >= this._selectedIndex || this.steps.toArray()[newIndex].editable)) {
         this._updateSelectedItemIndex(index);
       }
     } else {
-      this._selectedIndex = index;
+      this._selectedIndex = newIndex;
     }
   }
   private _selectedIndex = 0;

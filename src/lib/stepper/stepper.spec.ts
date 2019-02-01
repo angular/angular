@@ -705,12 +705,25 @@ describe('MatStepper', () => {
 
   describe('linear stepper with a pre-defined selectedIndex', () => {
     let preselectedFixture: ComponentFixture<SimplePreselectedMatHorizontalStepperApp>;
+    let stepper: MatHorizontalStepper;
+
     beforeEach(() => {
       preselectedFixture = createComponent(SimplePreselectedMatHorizontalStepperApp);
+      preselectedFixture.detectChanges();
+      stepper = preselectedFixture.debugElement
+          .query(By.directive(MatHorizontalStepper)).componentInstance;
     });
 
     it('should not throw', () => {
       expect(() => preselectedFixture.detectChanges()).not.toThrow();
+    });
+
+    it('selectedIndex should be typeof number', () => {
+      expect(typeof stepper.selectedIndex).toBe('number');
+    });
+
+    it('value of selectedIndex should be the pre-defined value', () => {
+      expect(stepper.selectedIndex).toBe(0);
     });
   });
 
