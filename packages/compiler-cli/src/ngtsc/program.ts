@@ -280,9 +280,7 @@ export class NgtscProgram implements api.Program {
       beforeTransforms.push(
           generatedFactoryTransform(this.factoryToSourceInfo, this.importRewriter));
     }
-    if (this.isCore) {
-      beforeTransforms.push(ivySwitchTransform);
-    }
+    beforeTransforms.push(ivySwitchTransform);
     if (customTransforms && customTransforms.beforeTs) {
       beforeTransforms.push(...customTransforms.beforeTs);
     }
