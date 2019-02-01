@@ -59,7 +59,7 @@ describe('ComponentDecoratorHandler', () => {
       return fail('Failed to recognize @Component');
     }
     try {
-      handler.analyze(TestCmp, detected);
+      handler.analyze(TestCmp, detected.metadata);
       return fail('Analysis should have failed');
     } catch (err) {
       if (!(err instanceof FatalDiagnosticError)) {

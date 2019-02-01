@@ -15,7 +15,7 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ModuleResolver, Reference, ResolvedReference} from '../../imports';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 import {TypeCheckContext, TypeCheckableDirectiveMeta} from '../../typecheck';
 
 import {ResourceLoader} from './api';
@@ -48,13 +48,20 @@ export class ComponentDecoratorHandler implements
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
 
+  readonly precedence = HandlerPrecedence.PRIMARY;
 
-  detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
+  detect(node: ts.Declaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
       return undefined;
     }
-    return decorators.find(
+    const decorator = decorators.find(
         decorator => decorator.name === 'Component' && (this.isCore || isAngularCore(decorator)));
+    if (decorator !== undefined) {
+      return {
+        trigger: decorator.node,
+        metadata: decorator,
+      };
+    }
   }
 
   preanalyze(node: ts.ClassDeclaration, decorator: Decorator): Promise<void>|undefined {
