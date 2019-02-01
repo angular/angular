@@ -717,6 +717,11 @@ export class Router {
                 if (isNavigationCancelingError(e)) {
                   const redirecting = isUrlTree(e.url);
                   if (!redirecting) {
+                    // Set property only if we're not redirecting. If we landed on a page and
+                    // redirect to `/` route, the new navigation is going to see the `/` isn't
+                    // a change from the default currentUrlTree and won't navigate. This is
+                    // only applicable with initial navigation, so setting `navigated` only when
+                    // not redirecting resolves this scenario.
                     this.navigated = true;
                     this.resetStateAndUrl(t.currentRouterState, t.currentUrlTree, t.rawUrl);
                   }
