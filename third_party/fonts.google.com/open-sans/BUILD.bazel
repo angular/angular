@@ -1,0 +1,11 @@
+licenses(["notice"])
+
+# Downloaded from: https://fonts.google.com/?selection.family=Open+Sans:300,400,600,700
+# Timestamp: 03/02/2019
+exports_files(["LICENSE.txt"])
+
+filegroup(
+    name = "open-sans",
+    srcs = ["open-sans.css"] + glob(["OpenSans-*.ttf"]),
+    visibility = ["//modules/playground:__subpackages__"],
+)
