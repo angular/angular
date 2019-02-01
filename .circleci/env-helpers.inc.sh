@@ -15,7 +15,7 @@
 #
 # Usage: `setPublicVar <name> <value>`
 function setPublicVar() {
-  setSecretVar $1 $2;
+  setSecretVar $1 "$2";
   echo "$1=$2";
 }
 
