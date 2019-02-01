@@ -28,6 +28,7 @@
     "benchmarks/src/old",
     "benchmarks/src/**/index_aot.ts",
     "benchmarks_external",
+    "playground",
     "payload_tests"
   ],
   "angularCompilerOptions": {
