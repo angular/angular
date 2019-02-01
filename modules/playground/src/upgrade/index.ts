@@ -61,7 +61,7 @@ export class Pane {
       <pane title="Title: {{user}}">
         <table cellpadding="3">
           <tr>
-            <td><ng-content></ng-content></td>
+            <td class="projected-content"><ng-content></ng-content></td>
             <td><ng1-user [handle]="user" (reset)="reset.emit()"></ng1-user></td>
           </tr>
         </table>
