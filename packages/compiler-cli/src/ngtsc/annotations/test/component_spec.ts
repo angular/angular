@@ -59,7 +59,7 @@ describe('ComponentDecoratorHandler', () => {
       return fail('Failed to recognize @Component');
     }
     try {
-      handler.analyze(TestCmp, detected);
+      handler.analyze(TestCmp, detected.metadata);
       return fail('Analysis should have failed');
     } catch (err) {
       if (!(err instanceof FatalDiagnosticError)) {
@@ -68,7 +68,7 @@ describe('ComponentDecoratorHandler', () => {
       const diag = err.toDiagnostic();
       expect(diag.code).toEqual(ivyCode(ErrorCode.DECORATOR_ARG_NOT_LITERAL));
       expect(diag.file.fileName.endsWith('entry.ts')).toBe(true);
-      expect(diag.start).toBe(detected.args ![0].getStart());
+      expect(diag.start).toBe(detected.metadata.args ![0].getStart());
     }
   });
 });

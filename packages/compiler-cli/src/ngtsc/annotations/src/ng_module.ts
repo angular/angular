@@ -14,7 +14,7 @@ import {Reference, ResolvedReference} from '../../imports';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
-import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
@@ -39,12 +39,22 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       private scopeRegistry: SelectorScopeRegistry, private referencesRegistry: ReferencesRegistry,
       private isCore: boolean, private routeAnalyzer: NgModuleRouteAnalyzer|null) {}
 
-  detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
+  readonly precedence = HandlerPrecedence.PRIMARY;
+
+  detect(node: ts.Declaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
       return undefined;
     }
-    return decorators.find(
+    const decorator = decorators.find(
         decorator => decorator.name === 'NgModule' && (this.isCore || isAngularCore(decorator)));
+    if (decorator !== undefined) {
+      return {
+        trigger: decorator.node,
+        metadata: decorator,
+      };
+    } else {
+      return undefined;
+    }
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<NgModuleAnalysis> {

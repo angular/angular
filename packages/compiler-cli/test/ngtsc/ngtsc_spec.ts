@@ -624,6 +624,95 @@ describe('ngtsc behavioral tests', () => {
             'i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestPipe, typeof TestCmp], never, never>');
   });
 
+  describe('multiple decorators on classes', () => {
+    it('should compile @Injectable on Components, Directives, Pipes, and Modules', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {Component, Directive, Injectable, NgModule, Pipe} from '@angular/core';
+
+        @Component({selector: 'test', template: 'test'})
+        @Injectable()
+        export class TestCmp {}
+
+        @Directive({selector: 'test'})
+        @Injectable()
+        export class TestDir {}
+
+        @Pipe({name: 'test'})
+        @Injectable()
+        export class TestPipe {}
+
+        @NgModule({declarations: [TestCmp, TestDir, TestPipe]})
+        @Injectable()
+        export class TestNgModule {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const dtsContents = env.getContents('test.d.ts');
+
+      // Validate that each class has the primary definition.
+      expect(jsContents).toContain('TestCmp.ngComponentDef =');
+      expect(jsContents).toContain('TestDir.ngDirectiveDef =');
+      expect(jsContents).toContain('TestPipe.ngPipeDef =');
+      expect(jsContents).toContain('TestNgModule.ngModuleDef =');
+
+      // Validate that each class also has an injectable definition.
+      expect(jsContents).toContain('TestCmp.ngInjectableDef =');
+      expect(jsContents).toContain('TestDir.ngInjectableDef =');
+      expect(jsContents).toContain('TestPipe.ngInjectableDef =');
+      expect(jsContents).toContain('TestNgModule.ngInjectableDef =');
+
+      // Validate that each class's .d.ts declaration has the primary definition.
+      expect(dtsContents).toContain('ComponentDefWithMeta<TestCmp');
+      expect(dtsContents).toContain('DirectiveDefWithMeta<TestDir');
+      expect(dtsContents).toContain('PipeDefWithMeta<TestPipe');
+      expect(dtsContents).toContain('NgModuleDefWithMeta<TestNgModule');
+
+      // Validate that each class's .d.ts declaration also has an injectable definition.
+      expect(dtsContents).toContain('InjectableDef<TestCmp');
+      expect(dtsContents).toContain('InjectableDef<TestDir');
+      expect(dtsContents).toContain('InjectableDef<TestPipe');
+      expect(dtsContents).toContain('InjectableDef<TestNgModule');
+    });
+
+    it('should not compile a component and a directive annotation on the same class', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {Component, Directive} from '@angular/core';
+
+        @Component({selector: 'test', template: 'test'})
+        @Directive({selector: 'test'})
+        class ShouldNotCompile {}
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(errors.length).toBe(1);
+      expect(errors[0].messageText).toContain('Two incompatible decorators on class');
+    });
+
+
+
+    it('should leave decorators present on jit: true directives', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {Directive, Inject} from '@angular/core';
+
+        @Directive({
+          selector: 'test',
+          jit: true,
+        })
+        export class Test {
+          constructor(@Inject('foo') foo: string) {}
+        }
+      `);
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('Directive({');
+      expect(jsContents).toContain('__param(0, Inject');
+    });
+  });
+
   describe('compiling invalid @Injectables', () => {
     describe('with strictInjectionParameters = true', () => {
       it('should give a compile-time error if an invalid @Injectable is used with no arguments',

@@ -68,8 +68,7 @@ class IvyVisitor extends Visitor {
       node = ts.updateClassDeclaration(
           node,
           // Remove the decorator which triggered this compilation, leaving the others alone.
-          maybeFilterDecorator(
-              node.decorators, this.compilation.ivyDecoratorFor(node) !.node as ts.Decorator),
+          maybeFilterDecorator(node.decorators, this.compilation.ivyDecoratorsFor(node)),
           node.modifiers, node.name, node.typeParameters, node.heritageClauses || [],
           // Map over the class members and remove any Angular decorators from them.
           members.map(member => this._stripAngularDecorators(member)));
@@ -208,11 +207,12 @@ function transformIvySourceFile(
 
 function maybeFilterDecorator(
     decorators: ts.NodeArray<ts.Decorator>| undefined,
-    toRemove: ts.Decorator): ts.NodeArray<ts.Decorator>|undefined {
+    toRemove: ts.Decorator[]): ts.NodeArray<ts.Decorator>|undefined {
   if (decorators === undefined) {
     return undefined;
   }
-  const filtered = decorators.filter(dec => ts.getOriginalNode(dec) !== toRemove);
+  const filtered = decorators.filter(
+      dec => toRemove.find(decToRemove => ts.getOriginalNode(dec) === decToRemove) === undefined);
   if (filtered.length === 0) {
     return undefined;
   }
