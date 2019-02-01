@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser, by, element} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 describe('Model-Driven Forms', function() {
 
   afterEach(verifyNoBrowserErrors);
 
-  const URL = 'all/playground/src/model_driven_forms/index.html';
+  const URL = '/';
 
   it('should display errors', function() {
     browser.get(URL);
