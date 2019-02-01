@@ -45,7 +45,7 @@ class Person {
 // ---- services
 
 @Injectable()
-class DataService {
+export class DataService {
   currentPerson: Person;
   persons: Person[];
 
@@ -102,7 +102,7 @@ class DataService {
     </div>
   `
 })
-class FullNameComponent {
+export class FullNameComponent {
   constructor(private _service: DataService) {}
   get person(): Person { return this._service.currentPerson; }
 }
@@ -149,7 +149,7 @@ class FullNameComponent {
     </div>
   `
 })
-class PersonsDetailComponent {
+export class PersonsDetailComponent {
   constructor(private _service: DataService) {}
   get person(): Person { return this._service.currentPerson; }
 }
@@ -169,7 +169,7 @@ class PersonsDetailComponent {
     </div>
   `
 })
-class PersonsComponent {
+export class PersonsComponent {
   persons: Person[];
 
   constructor(private _service: DataService) { this.persons = _service.persons; }
@@ -189,7 +189,7 @@ class PersonsComponent {
     <persons-cmp *ngIf="mode == 'personList'"></persons-cmp>
   `
 })
-class PersonManagementApplication {
+export class PersonManagementApplication {
   mode: string;
 
   switchToEditName(): void { this.mode = 'editName'; }
@@ -202,9 +202,7 @@ class PersonManagementApplication {
       [PersonManagementApplication, FullNameComponent, PersonsComponent, PersonsDetailComponent],
   imports: [BrowserModule, FormsModule]
 })
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

@@ -13,14 +13,13 @@ import {RouterModule} from '@angular/router';
 
 import {DbService, DraftsCmp, InboxApp, InboxCmp, ROUTER_CONFIG} from './app/inbox-app';
 
-export function main() {
-  @NgModule({
-    providers: [DbService],
-    declarations: [InboxCmp, DraftsCmp, InboxApp],
-    imports: [RouterModule.forRoot(ROUTER_CONFIG, {useHash: true}), BrowserModule],
-    bootstrap: [InboxApp]
-  })
-  class RoutingExampleModule {
-  }
-  platformBrowserDynamic().bootstrapModule(RoutingExampleModule);
+@NgModule({
+  providers: [DbService],
+  declarations: [InboxCmp, DraftsCmp, InboxApp],
+  imports: [RouterModule.forRoot(ROUTER_CONFIG, {useHash: true}), BrowserModule],
+  bootstrap: [InboxApp],
+})
+export class RoutingExampleModule {
 }
+
+platformBrowserDynamic().bootstrapModule(RoutingExampleModule);
