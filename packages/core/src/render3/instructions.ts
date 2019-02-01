@@ -929,7 +929,7 @@ export function componentHostSyntheticListener<T>(
 }
 
 function listenerInternal(
-    eventName: string, callback: (e?: any) => any, useCapture = false,
+    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver,
     loadRendererFn?: ((tNode: TNode, lView: LView) => Renderer3) | null): void {
   const lView = getLView();
@@ -937,15 +937,6 @@ function listenerInternal(
   const tView = lView[TVIEW];
   const firstTemplatePass = tView.firstTemplatePass;
   const tCleanup: false|any[] = firstTemplatePass && (tView.cleanup || (tView.cleanup = []));
-  const listenerFn = function(event?: any) {
-    try {
-      return callback.call(this, event);
-    } catch (error) {
-      // Note that we should not rethrow here, because
-      // it'll cancel observable subscriptions.
-      handleError(lView, error);
-    }
-  };
 
   ngDevMode && assertNodeOfPossibleTypes(
                    tNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
@@ -2616,13 +2607,17 @@ function wrapListener(
       markViewDirty(startView);
     }
 
-    const result = listenerFn(e);
-    if (wrapWithPreventDefault && result === false) {
-      e.preventDefault();
-      // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
-      e.returnValue = false;
+    try {
+      const result = listenerFn(e);
+      if (wrapWithPreventDefault && result === false) {
+        e.preventDefault();
+        // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
+        e.returnValue = false;
+      }
+      return result;
+    } catch (error) {
+      handleError(lView, error);
     }
-    return result;
   };
 }
 /**
