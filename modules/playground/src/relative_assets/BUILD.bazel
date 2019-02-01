@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "ng_module")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+ng_module(
+    name = "relative_assets",
+    srcs = glob(["**/*.ts"]),
+    # This example demonstrates how external resources can be loaded relatively, so we
+    # need to disable resource inlining.
+    inline_resources = False,
+    tsconfig = "//modules/playground:tsconfig-build.json",
+    # TODO: FW-1004 Type checking is currently not complete.
+    type_check = False,
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        # Needed because the example uses "module.id" in order to load assets relatively.
+        "@ngdeps//@types/node",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    data = [
+        "app/style.css",
+        "app/tpl.html",
+    ],
+    entry_module = "angular/modules/playground/src/relative_assets/index",
+    index_html = "index.html",
+    port = 4200,
+    scripts = ["@ngdeps//node_modules/tslib:tslib.js"],
+    static_files = [
+        "@ngdeps//node_modules/zone.js:dist/zone.js",
+        "@ngdeps//node_modules/reflect-metadata:Reflect.js",
+    ],
+    deps = [":relative_assets"],
+)
