@@ -50,7 +50,7 @@ ng1module.directive('ng1User', function() {
     </div>`,
   styles: styles
 })
-class Pane {
+export class Pane {
   @Input() title: string;
 }
 
@@ -69,7 +69,7 @@ class Pane {
     </div>`,
   styles: styles
 })
-class UpgradeApp {
+export class UpgradeApp {
   @Input() user: string;
   @Output() reset = new EventEmitter();
   constructor() {}
@@ -77,14 +77,12 @@ class UpgradeApp {
 
 @NgModule({
   declarations: [Pane, UpgradeApp, adapter.upgradeNg1Component('ng1User')],
-  imports: [BrowserModule]
+  imports: [BrowserModule],
 })
-class Ng2AppModule {
+export class Ng2AppModule {
 }
 
 
 ng1module.directive('upgradeApp', adapter.downgradeNg2Component(UpgradeApp));
 
-export function main() {
-  adapter.bootstrap(document.body, ['myExample']);
-}
+adapter.bootstrap(document.body, ['myExample']);
