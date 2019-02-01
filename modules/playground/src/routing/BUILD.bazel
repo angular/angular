@@ -24,6 +24,7 @@ ts_devserver(
         # This is temporarily needed because Angular imports from "rxjs/operators/index", while
         # there is only one RxJS UMD bundle that re-exports everything at the root.
         "//modules/playground:systemjs-rxjs-operators.js",
+        "//third_party/fonts.google.com/open-sans",
         "@ngdeps//node_modules/rxjs:bundles/rxjs.umd.js",
         "@ngdeps//node_modules/tslib:tslib.js",
     ] + glob(["**/*.css"]),
