@@ -53,13 +53,9 @@ fesm5
   fesm5/secondary.js.map
   fesm5/waffels.js
   fesm5/waffels.js.map
-index.d.ts
-mymodule.d.ts
 secondary
-  secondary/index.d.ts
   secondary/secondary_public_index.d.ts
   secondary/secondary_public_index.metadata.json
-  secondary/secondarymodule.d.ts
 xample
   xample/package.json
   xample/secondary

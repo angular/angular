@@ -170,12 +170,8 @@ ts_library(
 jasmine_node_test(
     name = "perform_compile",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    data = [
-        "//packages/core:npm_package",
-    ],
     deps = [
         ":perform_compile_lib",
-        "//packages/core",
         "//tools/testing:node",
     ],
 )

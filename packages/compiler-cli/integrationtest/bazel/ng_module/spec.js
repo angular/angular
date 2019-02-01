@@ -22,12 +22,12 @@ describe('flat module index', () => {
   });
   describe('child typings', () => {
     it('should have contents', () => {
-      const dts =
-          fs.readFileSync(require.resolve(`${PKG}/flat_module_filename.d.ts`), {encoding: 'utf-8'});
+      const dts = fs.readFileSync(
+          require.resolve(`${PKG}/flat_module_filename.bundle.d.ts`), {encoding: 'utf-8'});
 
-      expect(dts).toContain('export * from \'./index\';');
+      expect(dts).toContain('export declare class Child');
       expect(dts).toContain(
-          'export { Parent as ɵangular_packages_compiler_cli_integrationtest_bazel_ng_module_test_module_a } from \'./parent\';');
+          'export declare class ɵangular_packages_compiler_cli_integrationtest_bazel_ng_module_test_module_a');
     });
   });
 });

@@ -36,6 +36,10 @@ export function runMain(
   // to use the internal TypeScript we shall not create a program but rather pass a parsed tsConfig
   const parsedTsConfig = parsedConfig.config as any;
   for (const [key, values] of Object.entries(parsedTsConfig.compilerOptions.paths)) {
+    if (key === '*') {
+      continue;
+    }
+
     // we shall not pass ts files as this will need to be parsed, and for example rxjs,
     // cannot be compiled with our tsconfig, as ours is more strict
     // hence amend the paths to point always to the `.d.ts` files

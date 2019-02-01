@@ -3,6 +3,7 @@ load("//packages/bazel:index.bzl", "ng_module")
 ng_module(
     name = "test_module",
     testonly = True,
+    tsconfig = ":tsconfig-test.json",
     srcs = glob(["*.ts"]),
     compiler = "//packages/bazel/src/ngc-wrapped",
     entry_point = "index.ts",
