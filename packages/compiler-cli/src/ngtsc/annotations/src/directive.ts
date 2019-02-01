@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Reference, ResolvedReference} from '../../imports';
-import {PartialEvaluator} from '../../partial_evaluator';
+import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
@@ -434,6 +434,11 @@ function extractHostBindings(
           ErrorCode.DECORATOR_ARG_NOT_LITERAL, expr, `Decorator host metadata must be an object`);
     }
     hostMetaMap.forEach((value, key) => {
+      // Resolve Enum references to their declared value.
+      if (value instanceof EnumValue) {
+        value = value.resolved;
+      }
+
       if (typeof value !== 'string' || typeof key !== 'string') {
         throw new Error(`Decorator host metadata must be a string -> string object, got ${value}`);
       }
