@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
+import {fixmeIvy} from '@angular/private/testing';
 import {browser} from 'protractor';
 
-describe('hello world', function() {
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
+
+fixmeIvy('NullInjectorError: No provider for Renderer!').describe('hello world', function() {
 
   afterEach(verifyNoBrowserErrors);
 
