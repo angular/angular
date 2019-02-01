@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser, by, element} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 describe('SVG', function() {
 
-  const URL = 'all/playground/src/svg/index.html';
+  const URL = '/';
 
   afterEach(verifyNoBrowserErrors);
   beforeEach(() => { browser.get(URL); });

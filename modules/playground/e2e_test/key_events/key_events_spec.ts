@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser, by, element, protractor} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
 const Key = protractor.Key;
 
 describe('key_events', function() {
 
-  const URL = 'all/playground/src/key_events/index.html';
+  const URL = '/';
 
   afterEach(verifyNoBrowserErrors);
   beforeEach(() => { browser.get(URL); });

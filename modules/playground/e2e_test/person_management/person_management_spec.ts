@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {browser} from 'protractor';
 
+import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
+
 describe('Person Management CRUD', function() {
-  const URL = 'all/playground/src/person_management/index.html';
+  const URL = '/';
 
   it('should work', function() {
     browser.get(URL);
