@@ -10,7 +10,7 @@
     "ngc": "ngc -p tsconfig.json",
     "rollup": "rollup -f iife -c rollup.config.js -o dist/bundle.es2015.js",
     "rollup:lazy": "rollup -f cjs -c rollup.lazy.config.js -o dist/lazy.bundle.es2015.js",
-    "postinstall": "webdriver-manager update --gecko false --standalone false $CHROMEDRIVER_VERSION_ARG",
+    "postinstall": "webdriver-manager update --gecko false --standalone false $CI_CHROMEDRIVER_VERSION_ARG",
     "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js",
     "serve": "lite-server -c e2e/browser.config.json",

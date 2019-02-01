@@ -6,7 +6,7 @@
   "scripts": {
     "http-server": "http-server",
     "protractor": "protractor",
-    "webdriver:update": "webdriver-manager update --standalone false --gecko false $CHROMEDRIVER_VERSION_ARG",
+    "webdriver:update": "webdriver-manager update --standalone false --gecko false $CI_CHROMEDRIVER_VERSION_ARG",
     "preinstall": "node ../../../../tools/yarn/check-yarn.js",
     "postinstall": "yarn webdriver:update"
   },

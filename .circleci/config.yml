@@ -11,7 +11,10 @@
 # needed for jobs that run tests without Bazel. Bazel runs tests with browsers that will be
 # fetched by the Webtesting rules. Therefore for jobs that run tests with Bazel, we don't need a
 # docker image with browsers pre-installed.
-# **NOTE**: If you change the version of the docker images, also change the `cache_key` suffix.
+# **NOTE 1**: If you change the version of the `*-browsers` docker image, make sure the
+#             `CI_CHROMEDRIVER_VERSION_ARG` env var (in `.circleci/env.sh`) points to a ChromeDriver
+#             version that is compatible with the Chrome version in the image.
+# **NOTE 2**: If you change the version of the docker images, also change the `cache_key` suffix.
 var_1: &default_docker_image circleci/node:10.12
 var_2: &browsers_docker_image circleci/node:10.12-browsers
 var_3: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-node-10.12
