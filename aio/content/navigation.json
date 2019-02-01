@@ -736,7 +736,7 @@
         {
           "url": "guide/build",
           "!title": "Building & Serving",
-          "title": "프로젝트 빌드 & 개발용 서버",
+          "title": "프로젝트 빌드/실행 설정",
           "!tooltip": "Building and serving Angular apps.",
           "tooltip": "Angular 앱을 개발용, 운영용으로 빌드해 보세요."
         },

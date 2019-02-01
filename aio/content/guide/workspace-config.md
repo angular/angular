@@ -245,4 +245,4 @@ Some additional options (listed below) can only be set through the configuration
 | `assets`                   | 프로젝트 전역 범위에 정적으로 제공되는 리소스 파일을 지정합니다. 프로젝트 아이콘 파일과 `assets` 폴더가 기본으로 지정되어 있습니다. |
 | `styles`                   | 프로젝트 전역 범위에 적용될 스타일 파일을 지정합니다. Angular CLI는 CSS 외에도 [sass/scss](http://sass-lang.com/), [less](http://lesscss.org/), [stylus](http://stylus-lang.com/)를 지원합니다. |
 | `scripts`                  | 프로젝트 전역 범위에 추가될 JavaScript 스크립트 파일을 지정합니다. 이 옵션을 사용하면 `index.html`에 `<script>`로 JavaScript 파일을 추가한 것과 같은 효과를 냅니다. |
-| `budgets`                  | 애플리케이션을 빌드한 후에 최종 빌드 결과물의 크기를 검사하기 위해 사용합니다. 이 옵션은 빌드 결과물이 일정 크기를 넘었을 때 경고 메시지를 표시하거나 에러 메시지를 표시하는 용도로 사용합니다. 자세한 내용은 [빌드 결과물 크기 설정](guide/build#configure-size-budgets) 문서를 참고하세요. (이 옵션은 `test` 섹션에 사용할 수 없습니다.) |
+| `budgets`                  | 애플리케이션을 빌드한 후에 최종 빌드 결과물의 크기를 검사하기 위해 사용합니다. 이 옵션은 빌드 결과물이 일정 크기를 넘었을 때 경고 메시지를 표시하거나 에러 메시지를 표시하는 용도로 사용합니다. 자세한 내용은 [빌드 결과물 크기 설정](guide/build#빌드-결과물-용량-제한하기) 문서를 참고하세요. (이 옵션은 `test` 섹션에 사용할 수 없습니다.) |
