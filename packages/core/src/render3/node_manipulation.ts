@@ -181,7 +181,7 @@ function executeNodeAction(
   if (action === WalkTNodeTreeAction.Insert) {
     nativeInsertBefore(renderer, parent !, node, beforeNode || null);
   } else if (action === WalkTNodeTreeAction.Detach) {
-    nativeRemoveChild(renderer, parent !, node, isComponent(tNode));
+    nativeRemoveChild(renderer, node, isComponent(tNode));
   } else if (action === WalkTNodeTreeAction.Destroy) {
     ngDevMode && ngDevMode.rendererDestroyNode++;
     (renderer as ProceduralRenderer3).destroyNode !(node);
@@ -593,13 +593,19 @@ function nativeAppendOrInsertBefore(
   }
 }
 
-/**
- * Removes a native child node from a given native parent node.
- */
+/** Removes a node from the DOM. */
 export function nativeRemoveChild(
-    renderer: Renderer3, parent: RElement, child: RNode, isHostElement?: boolean): void {
-  isProceduralRenderer(renderer) ? renderer.removeChild(parent as RElement, child, isHostElement) :
-                                   parent.removeChild(child);
+    renderer: Renderer3, child: RNode, isHostElement?: boolean): void {
+  if (isProceduralRenderer(renderer)) {
+    const renderParent = renderer.parentNode(child);
+    if (renderParent) {
+      renderer.removeChild(renderParent, child, isHostElement);
+    }
+  } else {
+    // We intentionally don't use the given parent node since it may no longer
+    // match the state of the DOM (if the child node has been manually moved).
+    child.parentNode && child.parentNode.removeChild(child);
+  }
 }
 
 /**
@@ -692,14 +698,9 @@ export function getBeforeNodeForView(index: number, views: LView[], containerNat
  * @param childTNode The TNode of the child to remove
  * @param childEl The child that should be removed
  * @param currentView The current LView
- * @returns Whether or not the child was removed
  */
-export function removeChild(childTNode: TNode, childEl: RNode, currentView: LView): void {
-  const parentNative = getRenderParent(childTNode, currentView);
-  // We only remove the element if it already has a render parent.
-  if (parentNative) {
-    nativeRemoveChild(currentView[RENDERER], parentNative, childEl);
-  }
+export function removeNode(childTNode: TNode, childEl: RNode, currentView: LView): void {
+  nativeRemoveChild(currentView[RENDERER], childEl);
 }
 
 /**

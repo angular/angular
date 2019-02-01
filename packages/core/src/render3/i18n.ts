@@ -19,7 +19,7 @@ import {RComment, RElement} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, LView, RENDERER, TVIEW, TView} from './interfaces/view';
-import {appendChild, createTextNode, removeChild} from './node_manipulation';
+import {appendChild, createTextNode, removeNode as removeRNode} from './node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
 import {addAllToArray, getNativeByIndex, getNativeByTNode, getTNode, isLContainer, renderStringify} from './util';
@@ -830,7 +830,7 @@ function removeNode(index: number, viewData: LView) {
   const removedPhTNode = getTNode(index, viewData);
   const removedPhRNode = getNativeByIndex(index, viewData);
   if (removedPhRNode) {
-    removeChild(removedPhTNode, removedPhRNode, viewData);
+    removeRNode(removedPhTNode, removedPhRNode, viewData);
   }
 
   removedPhTNode.detached = true;
@@ -840,7 +840,7 @@ function removeNode(index: number, viewData: LView) {
   if (isLContainer(slotValue)) {
     const lContainer = slotValue as LContainer;
     if (removedPhTNode.type !== TNodeType.Container) {
-      removeChild(removedPhTNode, lContainer[NATIVE], viewData);
+      removeRNode(removedPhTNode, lContainer[NATIVE], viewData);
     }
   }
 }

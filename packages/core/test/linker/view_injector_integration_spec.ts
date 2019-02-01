@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, DebugElement, Directive, ElementRef, Host, Inject, InjectionToken, Injector, Input, NgModule, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
+import {Attribute, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, DebugElement, Directive, ElementRef, EmbeddedViewRef, Host, Inject, InjectionToken, Injector, Input, NgModule, Optional, Pipe, PipeTransform, Provider, Self, SkipSelf, TemplateRef, Type, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -1019,6 +1019,58 @@ class TestComp {
         expect(impurePipe3).not.toBe(impurePipe1);
         expect(impurePipe4).toBeAnInstanceOf(ImpurePipe);
         expect(impurePipe4).not.toBe(impurePipe1);
+      });
+    });
+
+    describe('view destruction', () => {
+      @Component({selector: 'some-component', template: ''})
+      class SomeComponent {
+      }
+
+      @NgModule({
+        declarations: [SomeComponent],
+        exports: [SomeComponent],
+        entryComponents: [SomeComponent]
+      })
+      class SomeModule {
+      }
+
+      @Component({selector: 'listener-and-on-destroy', template: ''})
+      class ComponentThatLoadsAnotherComponentThenMovesIt {
+        constructor(
+            private viewContainerRef: ViewContainerRef,
+            private componentFactoryResolver: ComponentFactoryResolver) {}
+
+
+        ngOnInit() {
+          // Dynamically load some component.
+          const componentFactory =
+              this.componentFactoryResolver.resolveComponentFactory(SomeComponent);
+          const componentRef =
+              this.viewContainerRef.createComponent(componentFactory, this.viewContainerRef.length);
+
+          // Manually move the loaded component to some arbitrary DOM node.
+          const componentRootNode =
+              (componentRef.hostView as EmbeddedViewRef<any>).rootNodes[0] as HTMLElement;
+          document.createElement('div').appendChild(componentRootNode);
+
+          // Destroy the component we just moved to ensure that it does not error during
+          // destruction.
+          componentRef.destroy();
+        }
+      }
+
+      it('should not error when destroying a component that has been moved in the DOM', () => {
+        TestBed.configureTestingModule({
+          imports: [SomeModule],
+          declarations: [ComponentThatLoadsAnotherComponentThenMovesIt],
+        });
+        const fixture =
+            createComponentFixture(`<listener-and-on-destroy></listener-and-on-destroy>`);
+        fixture.detectChanges();
+
+        // This test will fail if the ngOnInit of ComponentThatLoadsAnotherComponentThenMovesIt
+        // throws an error.
       });
     });
   });
