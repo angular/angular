@@ -157,9 +157,9 @@ jobs:
         # (Run before unit and e2e tests, which destroy the `dist/` directory.)
       - run: yarn --cwd aio payload-size
         # Run unit tests
-      - run: yarn --cwd aio test --watch=false
+      - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
-      - run: yarn --cwd aio e2e
+      - run: yarn --cwd aio e2e --configuration=ci
         # Run unit tests for Firebase redirects
       - run: yarn --cwd aio redirects-test
 
@@ -197,9 +197,9 @@ jobs:
         # (Run before unit and e2e tests, which destroy the `dist/` directory.)
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Run unit tests
-      - run: yarn --cwd aio test --watch=false
+      - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
-      - run: yarn --cwd aio e2e
+      - run: yarn --cwd aio e2e --configuration=ci
 
   test_aio_local_ivy:
     <<: *job_defaults
