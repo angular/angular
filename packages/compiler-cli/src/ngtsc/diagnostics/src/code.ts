@@ -13,6 +13,11 @@ export enum ErrorCode {
   DECORATOR_ON_ANONYMOUS_CLASS = 1004,
   DECORATOR_UNEXPECTED = 1005,
 
+  /**
+   * This error code indicates that there are incompatible decorators on a type.
+   */
+  DECORATOR_COLLISION = 1006,
+
   VALUE_HAS_WRONG_TYPE = 1010,
   VALUE_NOT_LITERAL = 1011,
 

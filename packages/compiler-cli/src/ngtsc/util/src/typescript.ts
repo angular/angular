@@ -26,3 +26,11 @@ export function isFromDtsFile(node: ts.Node): boolean {
   }
   return sf !== undefined && D_TS.test(sf.fileName);
 }
+
+export function getSourceFile(node: ts.Node): ts.SourceFile {
+  // In certain transformation contexts, `ts.Node.getSourceFile()` can actually return `undefined`,
+  // despite the type signature not allowing it. In that event, get the `ts.SourceFile` via the
+  // original node instead (which works).
+  const directSf = node.getSourceFile() as ts.SourceFile | undefined;
+  return directSf !== undefined ? directSf : ts.getOriginalNode(node).getSourceFile();
+}

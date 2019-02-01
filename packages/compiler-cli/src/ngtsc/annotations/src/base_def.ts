@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ClassMember, Decorator, ReflectionHost} from '../../reflection';
-import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 import {isAngularCore} from './util';
 
 function containsNgTopLevelDecorator(decorators: Decorator[] | null): boolean {
@@ -28,8 +28,10 @@ export class BaseDefDecoratorHandler implements
     DecoratorHandler<R3BaseRefMetaData, R3BaseRefDecoratorDetection> {
   constructor(private reflector: ReflectionHost, private evaluator: PartialEvaluator) {}
 
-  detect(node: ts.ClassDeclaration, decorators: Decorator[]|null): R3BaseRefDecoratorDetection
-      |undefined {
+  readonly precedence = HandlerPrecedence.WEAK;
+
+  detect(node: ts.ClassDeclaration, decorators: Decorator[]|null):
+      DetectResult<R3BaseRefDecoratorDetection>|undefined {
     if (containsNgTopLevelDecorator(decorators)) {
       // If the class is already decorated by @Component or @Directive let that
       // DecoratorHandler handle this. BaseDef is unnecessary.
@@ -56,7 +58,14 @@ export class BaseDefDecoratorHandler implements
       }
     });
 
-    return result;
+    if (result !== undefined) {
+      return {
+        metadata: result,
+        trigger: null,
+      };
+    } else {
+      return undefined;
+    }
   }
 
   analyze(node: ts.ClassDeclaration, metadata: R3BaseRefDecoratorDetection):
