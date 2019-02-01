@@ -917,6 +917,25 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toMatch(contentQueryRegExp('ViewContainerRef', true));
   });
 
+  it('should compile expressions that write keys', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+        import {Component, ContentChild, TemplateRef, ViewContainerRef, forwardRef} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div (click)="test[key] = $event">',
+        })
+        class TestCmp {
+          test: any;
+          key: string;
+        }
+    `);
+
+    // It's enough that this compiles to verify the bug is fixed.
+    env.driveMain();
+  });
+
   it('should generate host listeners for components', () => {
     env.tsconfig();
     env.write(`test.ts`, `
