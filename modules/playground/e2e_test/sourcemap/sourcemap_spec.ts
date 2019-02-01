@@ -13,7 +13,7 @@ const fs = require('fs');
 const sourceMap = require('source-map');
 
 describe('sourcemaps', function() {
-  const URL = 'all/playground/src/sourcemap/index.html';
+  const URL = '/';
 
   it('should map sources', function() {
     browser.get(URL);
@@ -36,7 +36,7 @@ describe('sourcemaps', function() {
 
 
       const content =
-          fs.readFileSync('dist/all/playground/src/sourcemap/index.js').toString('utf8');
+          fs.readFileSync(require.resolve('../../src/sourcemap/index.js')).toString('utf8');
       const marker = '//# sourceMappingURL=data:application/json;base64,';
       const index = content.indexOf(marker);
       const sourceMapData =
@@ -46,7 +46,7 @@ describe('sourcemaps', function() {
 
       const originalPosition = decoder.originalPositionFor({line: errorLine, column: errorColumn});
 
-      const sourceCodeLines = fs.readFileSync('modules/playground/src/sourcemap/index.ts', {
+      const sourceCodeLines = fs.readFileSync(require.resolve('../../src/sourcemap/index.ts'), {
                                   encoding: 'UTF-8'
                                 }).split('\n');
       expect(sourceCodeLines[originalPosition.line - 1])
