@@ -2584,16 +2584,16 @@ function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
 function wrapListener(
     tNode: TNode, lView: LView, listenerFn: (e?: any) => any,
     wrapWithPreventDefault: boolean): EventListener {
-  // In order to be backwards compatible with View Engine, events on component host nodes
-  // must also mark the component view itself dirty (i.e. the view that it owns).
-  const startView =
-      tNode.flags & TNodeFlags.isComponent ? getComponentViewByIndex(tNode.index, lView) : lView;
-
-  // See interfaces/view.ts for more on LViewFlags.ManualOnPush
-  const manualOnPush = lView[FLAGS] & LViewFlags.ManualOnPush;
-
+  // Note: we are performing most of the work in the listener function itself
+  // to optimize listener registration.
   return function wrapListenerIn_markDirtyAndPreventDefault(e: Event) {
-    if (!manualOnPush) {
+    // In order to be backwards compatible with View Engine, events on component host nodes
+    // must also mark the component view itself dirty (i.e. the view that it owns).
+    const startView =
+        tNode.flags & TNodeFlags.isComponent ? getComponentViewByIndex(tNode.index, lView) : lView;
+
+    // See interfaces/view.ts for more on LViewFlags.ManualOnPush
+    if ((lView[FLAGS] & LViewFlags.ManualOnPush) === 0) {
       markViewDirty(startView);
     }
 
