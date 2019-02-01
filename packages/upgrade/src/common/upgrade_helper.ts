@@ -8,9 +8,10 @@
 
 import {ElementRef, Injector, SimpleChanges} from '@angular/core';
 
-import * as angular from './angular1';
+import {DirectiveRequireProperty, IAugmentedJQuery, ICloneAttachFunction, ICompileService, IController, IControllerService, IDirective, IHttpBackendService, IInjectorService, ILinkFn, IScope, ITemplateCacheService, SingleOrListOrMap, element as angularElement} from './angular1';
 import {$COMPILE, $CONTROLLER, $HTTP_BACKEND, $INJECTOR, $TEMPLATE_CACHE} from './constants';
 import {controllerKey, directiveNormalize, isFunction} from './util';
+
 
 
 // Constants
@@ -31,29 +32,29 @@ export interface IControllerInstance extends IBindingDestination {
 
 // Classes
 export class UpgradeHelper {
-  public readonly $injector: angular.IInjectorService;
+  public readonly $injector: IInjectorService;
   public readonly element: Element;
-  public readonly $element: angular.IAugmentedJQuery;
-  public readonly directive: angular.IDirective;
+  public readonly $element: IAugmentedJQuery;
+  public readonly directive: IDirective;
 
-  private readonly $compile: angular.ICompileService;
-  private readonly $controller: angular.IControllerService;
+  private readonly $compile: ICompileService;
+  private readonly $controller: IControllerService;
 
   constructor(
       private injector: Injector, private name: string, elementRef: ElementRef,
-      directive?: angular.IDirective) {
+      directive?: IDirective) {
     this.$injector = injector.get($INJECTOR);
     this.$compile = this.$injector.get($COMPILE);
     this.$controller = this.$injector.get($CONTROLLER);
 
     this.element = elementRef.nativeElement;
-    this.$element = angular.element(this.element);
+    this.$element = angularElement(this.element);
 
     this.directive = directive || UpgradeHelper.getDirective(this.$injector, name);
   }
 
-  static getDirective($injector: angular.IInjectorService, name: string): angular.IDirective {
-    const directives: angular.IDirective[] = $injector.get(name + 'Directive');
+  static getDirective($injector: IInjectorService, name: string): IDirective {
+    const directives: IDirective[] = $injector.get(name + 'Directive');
     if (directives.length > 1) {
       throw new Error(`Only support single directive definition for: ${name}`);
     }
@@ -70,12 +71,12 @@ export class UpgradeHelper {
   }
 
   static getTemplate(
-      $injector: angular.IInjectorService, directive: angular.IDirective,
-      fetchRemoteTemplate = false): string|Promise<string> {
+      $injector: IInjectorService, directive: IDirective, fetchRemoteTemplate = false): string
+      |Promise<string> {
     if (directive.template !== undefined) {
       return getOrCall<string>(directive.template);
     } else if (directive.templateUrl) {
-      const $templateCache = $injector.get($TEMPLATE_CACHE) as angular.ITemplateCacheService;
+      const $templateCache = $injector.get($TEMPLATE_CACHE) as ITemplateCacheService;
       const url = getOrCall<string>(directive.templateUrl);
       const template = $templateCache.get(url);
 
@@ -86,7 +87,7 @@ export class UpgradeHelper {
       }
 
       return new Promise((resolve, reject) => {
-        const $httpBackend = $injector.get($HTTP_BACKEND) as angular.IHttpBackendService;
+        const $httpBackend = $injector.get($HTTP_BACKEND) as IHttpBackendService;
         $httpBackend('GET', url, null, (status: number, response: string) => {
           if (status === 200) {
             resolve($templateCache.put(url, response));
@@ -100,7 +101,7 @@ export class UpgradeHelper {
     }
   }
 
-  buildController(controllerType: angular.IController, $scope: angular.IScope) {
+  buildController(controllerType: IController, $scope: IScope) {
     // TODO: Document that we do not pre-assign bindings on the controller instance.
     // Quoted properties below so that this code can be optimized with Closure Compiler.
     const locals = {'$scope': $scope, '$element': this.$element};
@@ -111,7 +112,7 @@ export class UpgradeHelper {
     return controller;
   }
 
-  compileTemplate(template?: string): angular.ILinkFn {
+  compileTemplate(template?: string): ILinkFn {
     if (template === undefined) {
       template = UpgradeHelper.getTemplate(this.$injector, this.directive) as string;
     }
@@ -119,7 +120,7 @@ export class UpgradeHelper {
     return this.compileHtml(template);
   }
 
-  onDestroy($scope: angular.IScope, controllerInstance?: any) {
+  onDestroy($scope: IScope, controllerInstance?: any) {
     if (controllerInstance && isFunction(controllerInstance.$onDestroy)) {
       controllerInstance.$onDestroy();
     }
@@ -131,14 +132,14 @@ export class UpgradeHelper {
     //  https://github.com/angular/angular.js/blob/26ddc5f830f902a3d22f4b2aab70d86d4d688c82/src/jqLite.js#L306-L312
     // `cleanData` will invoke the AngularJS `$destroy` DOM event
     //  https://github.com/angular/angular.js/blob/26ddc5f830f902a3d22f4b2aab70d86d4d688c82/src/Angular.js#L1911-L1924
-    angular.element.cleanData([this.element]);
-    angular.element.cleanData(this.element.querySelectorAll('*'));
+    angularElement.cleanData([this.element]);
+    angularElement.cleanData(this.element.querySelectorAll('*'));
   }
 
-  prepareTransclusion(): angular.ILinkFn|undefined {
+  prepareTransclusion(): ILinkFn|undefined {
     const transclude = this.directive.transclude;
     const contentChildNodes = this.extractChildNodes();
-    const attachChildrenFn: angular.ILinkFn = (scope, cloneAttachFn) => {
+    const attachChildrenFn: ILinkFn = (scope, cloneAttachFn) => {
       // Since AngularJS v1.5.8, `cloneAttachFn` will try to destroy the transclusion scope if
       // `$template` is empty. Since the transcluded content comes from Angular, not AngularJS,
       // there will be no transclusion scope here.
@@ -189,8 +190,9 @@ export class UpgradeHelper {
 
         Object.keys(slots).filter(slotName => slots[slotName]).forEach(slotName => {
           const nodes = slots[slotName];
-          slots[slotName] = (scope: angular.IScope, cloneAttach: angular.ICloneAttachFunction) =>
-              cloneAttach !(nodes, scope);
+          slots[slotName] = (scope: IScope, cloneAttach: ICloneAttachFunction) => {
+            return cloneAttach !(nodes, scope);
+          };
         });
       }
 
@@ -231,7 +233,7 @@ export class UpgradeHelper {
     return requiredControllers;
   }
 
-  private compileHtml(html: string): angular.ILinkFn {
+  private compileHtml(html: string): ILinkFn {
     this.element.innerHTML = html;
     return this.$compile(this.element.childNodes);
   }
@@ -248,7 +250,7 @@ export class UpgradeHelper {
     return childNodes;
   }
 
-  private getDirectiveRequire(): angular.DirectiveRequireProperty {
+  private getDirectiveRequire(): DirectiveRequireProperty {
     const require = this.directive.require || (this.directive.controller && this.directive.name) !;
 
     if (isMap(require)) {
@@ -266,8 +268,8 @@ export class UpgradeHelper {
     return require;
   }
 
-  private resolveRequire(require: angular.DirectiveRequireProperty, controllerInstance?: any):
-      angular.SingleOrListOrMap<IControllerInstance>|null {
+  private resolveRequire(require: DirectiveRequireProperty, controllerInstance?: any):
+      SingleOrListOrMap<IControllerInstance>|null {
     if (!require) {
       return null;
     } else if (Array.isArray(require)) {
@@ -307,7 +309,7 @@ function getOrCall<T>(property: T | Function): T {
 }
 
 // NOTE: Only works for `typeof T !== 'object'`.
-function isMap<T>(value: angular.SingleOrListOrMap<T>): value is {[key: string]: T} {
+function isMap<T>(value: SingleOrListOrMap<T>): value is {[key: string]: T} {
   return value && !Array.isArray(value) && typeof value === 'object';
 }
 

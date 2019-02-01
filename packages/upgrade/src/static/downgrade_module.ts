@@ -9,7 +9,7 @@
 import {Injector, NgModuleFactory, NgModuleRef, StaticProvider} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
-import * as angular from '../common/angular1';
+import {IInjectorService, IProvideService, module as angularModule} from '../common/angular1';
 import {$INJECTOR, $PROVIDE, DOWNGRADED_MODULE_COUNT_KEY, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../common/constants';
 import {LazyModuleRef, UpgradeAppType, getDowngradedModuleCount, isFunction} from '../common/util';
 
@@ -143,7 +143,7 @@ export function downgradeModule<T>(
   let injector: Injector;
 
   // Create an ng1 module to bootstrap.
-  angular.module(lazyModuleName, [])
+  angularModule(lazyModuleName, [])
       .constant(UPGRADE_APP_TYPE_KEY, UpgradeAppType.Lite)
       .factory(INJECTOR_KEY, [lazyInjectorKey, identity])
       .factory(
@@ -161,7 +161,7 @@ export function downgradeModule<T>(
           lazyModuleRefKey,
           [
             $INJECTOR,
-            ($injector: angular.IInjectorService) => {
+            ($injector: IInjectorService) => {
               setTempInjectorRef($injector);
               const result: LazyModuleRef = {
                 promise: bootstrapFn(angular1Providers).then(ref => {
@@ -176,7 +176,7 @@ export function downgradeModule<T>(
           ])
       .config([
         $INJECTOR, $PROVIDE,
-        ($injector: angular.IInjectorService, $provide: angular.IProvideService) => {
+        ($injector: IInjectorService, $provide: IProvideService) => {
           $provide.constant(DOWNGRADED_MODULE_COUNT_KEY, getDowngradedModuleCount($injector) + 1);
         }
       ]);
