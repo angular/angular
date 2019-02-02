@@ -1,6 +1,10 @@
 {@a top}
+<!--
 # Testing
+-->
+# 테스트
 
+<!--
 This guide offers tips and techniques for unit and integration testing Angular applications.
 
 The guide presents tests of a sample application created with the [Angular CLI](cli). This sample application is much like the one created in the [_Tour of Heroes_ tutorial](tutorial).
@@ -8,24 +12,46 @@ The sample application and all tests in this guide are available for inspection 
 
 - <live-example embedded-style>Sample app</live-example>
 - <live-example stackblitz="specs">Tests</live-example>
+-->
+이 문서는 Angular 애플리케이션에 유닛 테스트와 통합 테스트를 적용하는 방법에 대해 설명합니다.
+
+내용을 설명하면서 사용하는 예제 애플리케이션은 [Angular CLI](cli)를 사용해서 만든 것이며, [_히어로들의 여행_ 튜토리얼](tutorial)에서 다룬 애플리케이션와도 비슷합니다.
+이 문서에서 다루는 예제 애플리케이션과 모든 테스트 코드는 다음 링크에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+
+- <live-example embedded-style>예제 앱</live-example>
+- <live-example stackblitz="specs">테스트 코드</live-example>
 
 <hr>
 
+<!--
 ## Setup
+-->
+## 환경 설정
 
+<!--
 The Angular CLI downloads and install everything you need to test an Angular application with the [Jasmine test framework](https://jasmine.github.io/).
 
 The project you create with the CLI is immediately ready to test.
 Just run the [`ng test`](cli/test) CLI command:
+-->
+Angular 애플리케이션은 [Jasmine 테스트 프레임워크](https://jasmine.github.io/)를 사용해서 테스트하는데, 애플리케이션을 테스트할 때 필요한 것은 모두 Angular CLI가 프로젝트를 생성할 때 미리 준비합니다.
+
+그래서 Angular CLI로 생성한 프로젝트는 테스트할 준비도 완료된 상태입니다.
+프로젝트 최상위 폴더에서 [`ng test`](cli/test) 명령을 실행해 보세요:
 
 <code-example language="sh" class="code-shell">
   ng test
 </code-example>
 
+<!--
 The `ng test` command builds the app in _watch mode_,
 and launches the [karma test runner](https://karma-runner.github.io).
 
 The console output looks a bit like this:
+-->
+`ng test` 명령을 실행하면 애플리케이션을 _워치 모드 (watch mode)_ 로 빌드하고 [karma 테스트 러너](https://karma-runner.github.io)를 실행합니다.
+
+콘솔은 다음과 같이 출력될 것입니다:
 
 <code-example language="sh" class="code-shell">
 10% building modules 1/1 modules 0 active
@@ -36,15 +62,28 @@ The console output looks a bit like this:
 Chrome ...: Executed 3 of 3 SUCCESS (0.135 secs / 0.205 secs)
 </code-example>
 
+<!--
 The last line of the log is the most important.
 It shows that Karma ran three tests that all passed.
 
 A chrome browser also opens and displays the test output in the "Jasmine HTML Reporter" like this.
+-->
+이 로그에서 마지막 줄이 가장 중요합니다.
+마지막 줄을 보면, Karma가 3개의 테스트를 실행했고 테스트는 모두 통과했다는 것을 확인할 수 있습니다.
 
+테스트 실행 결과는 Chrome 브라우저에서도 확인할 수 있습니다.
+브라우저에서는 "Jasmine HTML Reporter"를 사용해서 다음과 같이 표시됩니다.
+
+<!--
 <figure>
   <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="Jasmine HTML Reporter in the browser">
 </figure>
+-->
+<figure>
+  <img src='generated/images/guide/testing/initial-jasmine-html-reporter.png' alt="브라우저에서 Jasmine HTML Reporter 확인하기">
+</figure>
 
+<!--
 Most people find this browser output easier to read than the console log.
 You can click on a test row to re-run just that test or click on a description to re-run the tests in the selected test group ("test suite").
 
@@ -52,9 +91,21 @@ Meanwhile, the `ng test` command is watching for changes.
 
 To see this in action, make a small change to `app.component.ts` and save.
 The tests run again, the browser refreshes, and the new test results appear.
+-->
+콘솔 로그를 확인하는 것보다는 브라우저에서 테스트 결과를 확인하는 것이 더 편합니다.
+브라우저에서는 특정 테스트 스펙을 클릭해서 해당 스펙만 다시 실행해볼 수 있고, 테스트 그룹(test suite)을 클릭해서 그룹 단위로 다시 실행할 수도 있습니다.
 
+그리고 `ng test` 명령을 실행했기 때문에 코드가 변경되는 것도 감지합니다.
+
+`app.component.ts` 파일의 내용을 수정하고 저장해 보세요.
+그러면 테스트가 다시 실행되면서 브라우저도 갱신되고, 새로운 결과 화면이 표시될 것입니다.
+
+<!--
 #### Configuration
+-->
+#### 테스트 설정
 
+<!--
 The CLI takes care of Jasmine and karma configuration for you.
 
 You can fine-tune many options by editing the `karma.conf.js` and
@@ -64,35 +115,70 @@ The `karma.conf.js` file is a partial karma configuration file.
 The CLI constructs the full runtime configuration in memory,based on application structure specified in the `angular.json` file, supplemented by `karma.conf.js`.
 
 Search the web for more details about Jasmine and karma configuration.
+-->
+Angular CLI로 프로젝트를 생성하면 Jasmine과 Karma를 실행할 수 있는 환경 설정이 자동으로 구성됩니다.
+이후에 이 설정을 튜닝하고 싶으면 `karma.conf.js` 파일과 `src/test.ts` 파일을 수정하면 됩니다.
 
+`karma.conf.js` 파일은 Karma가 실행되는 환경설정 중 일부를 담당합니다.
+Karma의 전체 설정값은 테스트를 실행하는 시점에 `angular.json` 파일과 `karma.conf.js`를 분석해서 Angular CLI가 구성합니다.
+
+자세한 내용은 Jasmine 문서와 Karma 문서를 참고하세요.
+
+<!--
 #### Other test frameworks
+-->
+#### 다른 테스트 프레임워크
 
+<!--
 You can also unit test an Angular app with other testing libraries and test runners.
 Each library and runner has its own distinctive installation procedures, configuration, and syntax.
 
 Search the web to learn more.
+-->
+Jasmine과 Karma 말고도 다른 라이브러리나 테스트 러너를 사용해서 Angular 앱을 테스트할 수도 있습니다.
+이 때 라이브러리를 설치하는 방법, 환경을 설정하는 방법, 실행하는 방법은 라이브러리에 따라 다르기 때문에 해당 문서를 참고하세요.
 
+<!--
 #### Test file name and location
+-->
+#### 테스트 파일의 이름과 위치
 
+<!--
 Look inside the `src/app` folder.
 
 The CLI generated a test file for the `AppComponent` named `app.component.spec.ts`.
+-->
+`src/app` 폴더를 봅시다.
+
+Angular CLI로 프로젝트를 생성하면 `AppComponent`를 테스트 하는 코드는 `app.component.spec.ts` 파일에 존재합니다.
 
 <div class="alert is-important">
 
+<!--
 The test file extension **must be `.spec.ts`** so that tooling can identify it as a file with tests (AKA, a _spec_ file).
+-->
+IDE와 같은 툴에서 스펙 파일을 구분하려면, 테스트 파일의 확장자를 **반드시 `.spec.ts`**로 지정해야 합니다.
 
 </div>
 
+<!--
 The `app.component.ts` and `app.component.spec.ts` files are siblings in the same folder.
 The root file names (`app.component`) are the same for both files.
 
 Adopt these two conventions in your own projects for _every kind_ of test file.
+-->
+이 상태로 보면 `app.component.ts` 파일과 `app.component.spec.ts` 파일은 같은 폴더에 이웃한 파일이며, 두 파일의 컴포넌트 이름 부분(`app.component`)은 같습니다.
+
+이 룰은 프로젝트 안에 있는 _모든_ 테스트 파일에 적용하는 것이 좋습니다.
 
 {@a ci}
 
+<!--
 ## Set up continuous integration
+-->
+## 지속적인 통합환경 구성하기
 
+<!--
 One of the best ways to keep your project bug free is through a test suite, but it's easy to forget to run tests all the time. 
 Continuous integration (CI) servers let you set up your project repository so that your tests run on every commit and pull request.
 
@@ -102,13 +188,30 @@ You can create a public project on GitHub and add these services without paying.
 Contributions to the Angular repo are automatically run through a whole suite of Circle CI tests.
 
 This article explains how to configure your project to run Circle CI and Travis CI, and also update your test configuration to be able to run tests in the Chrome browser in either environment.
+-->
+프로젝트에서 발생하는 버그를 방지하려면 주기적으로 테스트를 실행하는 것이 좋지만, 매번 테스트를 실행해야 하는 것은 번거로운 일입니다.
+이 때 프로젝트 레파지토리에 지속적인 통합(Continuous integration, CI) 서버를 연결하면 이 레파지토리에 커밋이나 풀 리퀘스트가 있을 때마다 자동으로 테스트를 실행하게 할 수 있습니다.
 
+Circle CI와 Travis CI는 이런 경우에 사용하는 유료 CI 서비스입니다. 그리고 Jenkins와 같은 툴을 사용하면 무료 CI 환경을 구성할 수도 있습니다.
+Circle CI와 Travis CI는 유료 서비스지만, 오픈 소스 프로젝트가 대상이라면 무료로 사용할 수 있습니다.
+그래서 GitHub에 public 프로젝트를 만들면 이 서비스를 무료로 사용할 수 없습니다.
+Angular 레파지토리에 코드를 반영할 때도 Circle CI 테스트가 자동으로 실행됩니다.
 
+이 섹션에서는 프로젝트에 Circle CI와 Travis CI를 연결하는 방법에 대해 설명하고, 프로젝트의 테스트 스펙을 리모트 서버의 Chrome 브라우저에서 실행하는 방법에 대해 안내합니다.
+
+<!--
 ### Configure project for Circle CI
+-->
+### Circle CI 환경 설정하기
 
+<!--
 Step 1: Create a folder called `.circleci` at the project root.
 
 Step 2: In the new folder, create a file called `config.yml` with the following content:
+-->
+1단계: 프로젝트 최상위 폴더에 `.circleci` 폴더를 생성합니다.
+
+2단계: 이 폴더에 `config.yml` 파일을 생성하고 파일의 내용을 다음과 같이 작성합니다:
 
 ```
 version: 2
@@ -130,6 +233,7 @@ jobs:
       - run: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
+<!--
 This configuration caches `node_modules/` and uses [`npm run`](https://docs.npmjs.com/cli/run-script) to run CLI commands, because `@angular/cli` is not installed globally. 
 The double dash (`--`) is needed to pass arguments into the `npm` script.
 
@@ -139,10 +243,27 @@ Step 4: [Sign up for Circle CI](https://circleci.com/docs/2.0/first-steps/) and 
 Your project should start building.
 
 * Learn more about Circle CI from [Circle CI documentation](https://circleci.com/docs/2.0/).
+-->
+이 환경설정 파일의 내용은 `node_modules/` 폴더의 내용을 캐싱하고 [`npm run`](https://docs.npmjs.com/cli/run-script)으로 Angular CLI 명령을 실행하는 것입니다.
+`@angular/cli`는 전역 범위에 필요하기 때문에 `npm install` 명령을 실행해서 설치했습니다.
+그리고 `npm` 스크립트에 옵션을 지정하려면 대시 2개(`--`)를 사용해야 합니다.
 
+3단계: 변경사항을 커밋하고 레파지토리에 푸시합니다.
+
+4단계: [Circle CI에 회원가입](https://circleci.com/docs/2.0/first-steps/)한 뒤에 [프로젝트를 추가](https://circleci.com/add-projects)합니다.
+이 때 프로젝트 빌드가 시작됩니다.
+
+* 더 자세한 내용은 [Circle CI 문서](https://circleci.com/docs/2.0/)를 참고하세요.
+
+<!--
 ### Configure project for Travis CI
+-->
+### Travis CI 환경 설정하기
 
+<!--
 Step 1: Create a file called `.travis.yml` at the project root, with the following content:
+-->
+1단계: 프로젝트 최상위 폴더에 `.travis.yml` 파일을 생성하고 내용을 다음과 같이 작성합니다:
 
 ```
 dist: trusty
@@ -171,6 +292,7 @@ script:
   - npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
+<!--
 This does the same things as the Circle CI configuration, except that Travis doesn't come with Chrome, so we use Chromium instead.
 
 Step 2: Commit your changes and push them to your repository.
@@ -179,9 +301,22 @@ Step 3: [Sign up for Travis CI](https://travis-ci.org/auth) and [add your projec
 You'll need to push a new commit to trigger a build.
 
 * Learn more about Travis CI testing from [Travis CI documentation](https://docs.travis-ci.com/).
+-->
+이 환경설정 파일의 내용은 Circle CI에서 설정했던 내용과 같지만, Travis에는 Chrome이 설치되어있지 않기 때문에 Chromium을 추가로 설치했습니다.
 
+2단계: 변경사항을 커밋하고 레파지토리에 푸시합니다.
+
+3단계: [Travis CI에 회원가입](https://travis-ci.org/auth)한 뒤에 [프로젝트를 추가](https://circleci.com/add-projects)합니다.
+빌드를 실행하려면 레파지토리에 새로운 커밋이 푸시되어야 합니다.
+
+* 더 자세한 내용은 [Travis CI 문서](https://docs.travis-ci.com/)를 참고하세요.
+
+<!--
 ### Configure CLI for CI testing in Chrome
+-->
+### CI 환경에서 Chrome으로 테스트하기
 
+<!--
 When the CLI commands `ng test` and `ng e2e` are generally running the CI tests in your environment, you might still need to adjust your configuration to run the Chrome browser tests.
 
 There are configuration files for both the [Karma JavaScript test runner](https://karma-runner.github.io/latest/config/configuration-file.html) 
@@ -191,6 +326,16 @@ which  you must adjust to start Chrome without sandboxing.
 We'll be using [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome#cli) in these examples.
 
 * In the Karma configuration file, `karma.conf.js`, add a custom launcher called ChromeHeadlessCI below browsers:
+-->
+로컬 개발환경에서 Angular CLI로 `ng test` 명령이나 `ng e2e` 명령을 실행하면 Chrome 브라우저가 실행되고 이 브라우저에서 테스트가 실행됩니다.
+
+이런 환경을 구성하려면 [Karma JavaScript 테스트 러너](https://karma-runner.github.io/latest/config/configuration-file.html)와 e2e 테스트 툴인 [Protractor](https://www.protractortest.org/#/api-overview)가 실행될 환경이 모두 설정되어야 하지만, Angular CLI로 프로젝트를 생성하면 이 환경은 자동으로 구성됩니다.
+하지만 CI 환경에서는 Chrome 브라우저를 직접 실행하지 않고 화면과 샌드박스 기능 없이 사용하는 것이 더 좋습니다.
+
+이번 섹션에서는 [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome#cli)을 사용하는 방법에 대해 알아봅시다.
+
+* Karma 환경설정 파일 `karma.conf.js`에 커스텀 런처를 ChromeHeadlessCI를 추가합니다:
+
 ```
 browsers: ['Chrome'],
 customLaunchers: {
@@ -201,7 +346,11 @@ customLaunchers: {
 },
 ```
 
+<!--
 * In the root folder of your e2e tests project, create a new file named `protractor-ci.conf.js`. This new file extends the original `protractor.conf.js`.
+-->
+* e2e 테스트 프로젝트의 최상위 폴더에 `protractor-ci.conf.js` 파일을 생성합니다. 이 파일은 기존에 존재하는 `protractor.conf.js` 파일을 확장하는 용도로 사용합니다.
+
 ```
 const config = require('./protractor.conf').config;
 
@@ -215,7 +364,10 @@ config.capabilities = {
 exports.config = config;
 ```
 
+<!--
 Now you can run the following commands to use the `--no-sandbox` flag:
+-->
+그러면 아래 명령들은 `--no-sandbox` 플래그가 지정된 채로 실행됩니다.
 
 <code-example language="sh" class="code-shell">
   ng test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
@@ -224,26 +376,44 @@ Now you can run the following commands to use the `--no-sandbox` flag:
 
 <div class="alert is-helpful">
 
+   <!--
    **Note:** Right now, you'll also want to include the `--disable-gpu` flag if you're running on Windows. See [crbug.com/737678](https://crbug.com/737678).
+   -->
+   **참고:** 개발 환경이 Windows라면 `--disable-gpu` 플래그를 사용하는 것이 나을 수 있습니다. 자세한 내용은 [이 링크](https://crbug.com/737678)를 참고하세요.
 
 </div>
 
 {@a code-coverage}
 
+<!--
 ## Enable code coverage reports
+-->
+## 코드 커버리지 리포트 활성화하기
 
+<!--
 The CLI can run unit tests and create code coverage reports. 
 Code coverage reports show you  any parts of our code base that may not be properly tested by your unit tests.
 
 To generate a coverage report run the following command in the root of your project.
+-->
+Angular CLI로 유닛 테스트를 실행하면서 코드 커버리지 리포트를 생성할 수도 있습니다.
+그래서 코드 커버리지 리포트를 확인하면서 유닛 테스트가 충실하게 작성되었는지 확인할 수 있습니다.
+
+커버리지 리포트를 생성하려면 프로젝트를 테스트할 때 다음과 같이 실행하면 됩니다.
 
 <code-example language="sh" class="code-shell">
   ng test --no-watch --code-coverage
 </code-example>
 
+<!--
 When  the tests are complete, the command creates a new `/coverage` folder in the project. Open the `index.html` file to see a report with your source code and code coverage values.
 
 If you want to create code-coverage reports every time you test, you can set the following option in the CLI configuration file, `angular.json`:
+-->
+이제 테스트가 끝나면 프로젝트에 `/coverage` 폴더가 생성됩니다.
+이 폴더에 있는 `index.html` 파일을 확인하면 소스 코드가 분석된 내용과 코드 커버리지를 확인할 수 있습니다.
+
+그리고 애플리케이션을 테스트를 할때마다 코드 커버리지 리포트를 생성하려면 Angular CLI 설정 파일 `angular.json`를 다음과 같이 수정하면 됩니다:
 
 ```
   "test": {
@@ -253,13 +423,23 @@ If you want to create code-coverage reports every time you test, you can set the
   }
 ```
 
+<!--
 ### Code coverage enforcement
+-->
+### 코드 커버리지 강제하기
 
+<!--
 The code coverage percentages let you estimate how much of your code is tested.  
 If your team decides on a set minimum amount to be unit tested, you can enforce this minimum with the Angular CLI. 
 
 For example, suppose you want the code base to have a minimum of 80% code coverage. 
 To enable this, open the [Karma](https://karma-runner.github.io) test platform configuration file, `karma.conf.js`, and add the following in the `coverageIstanbulReporter:` key.
+-->
+코드 커버리지 퍼센트를 확인하면 프로젝트 코드가 얼마나 많이 테스트되는지 확인할 수 있습니다.
+그래서 당신의 팀에서 유닛 테스트하기로 정한 최소한의 비율이 있다면, 이 비율을 강제하도록 Angular CLI를 설정할 수 있습니다.
+
+예를 들어 최소한 80% 이상의 코드가 테스트 대상이 되어야 한다고 합시다.
+그러면 [Karma](https://karma-runner.github.io) 설정 파일 `karma.conf.js` 파일을 열어서 `coverageIstanbulReporter` 키의 내용을 다음과 같이 수정하면 됩니다.
 
 ```
 coverageIstanbulReporter: {
@@ -274,13 +454,23 @@ coverageIstanbulReporter: {
 }
 ```
 
+<!--
 The `thresholds` property causes the tool to enforce a minimum of 80% code coverage when the unit tests are run in the project.
+-->
+이제 `thresholds` 프로퍼티를 추가했기 때문에 프로젝트를 대상으로 유닛 테스트가 실행될 때 80% 코드 커버리지를 달성하는 것이 강제됩니다.
 
+<!--
 ## Service Tests
+-->
+## 서비스 테스트하기
 
+<!--
 Services are often the easiest files to unit test.
 Here are some synchronous and asynchronous unit tests of the `ValueService`
 written without assistance from Angular testing utilities.
+-->
+서비스는 Angular 구성요소 중에서 유닛 테스트하기 가장 쉬운 구성요소입니다.
+이번 섹션에서는 Angular 테스트 유틸리티를 활용해서 `ValueService`를 동기적으로, 비동기적으로 테스트하는 방법에 대해 소개합니다.
 
 <code-example path="testing/src/app/demo/demo.spec.ts" region="ValueService" header="app/demo/demo.spec.ts"></code-example>
 
