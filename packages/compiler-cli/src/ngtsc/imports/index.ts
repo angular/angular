@@ -7,5 +7,6 @@
  */
 
 export {ImportRewriter, NoopImportRewriter, R3SymbolsImportRewriter, validateAndRewriteCoreSymbol} from './src/core';
-export {AbsoluteReference, ImportMode, NodeReference, Reference, ResolvedReference} from './src/references';
-export {ModuleResolver, ReferenceResolver, TsReferenceResolver} from './src/resolver';
+export {AbsoluteModuleStrategy, FileToModuleHost, FileToModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ReferenceEmitStrategy, ReferenceEmitter} from './src/emitter';
+export {ImportMode, OwningModule, Reference} from './src/references';
+export {ModuleResolver} from './src/resolver';

@@ -7,8 +7,11 @@
  */
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../../ngtsc/path';
+
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';
+
 
 
 /**
@@ -18,7 +21,7 @@ import {EntryPoint, EntryPointFormat} from './entry_point';
 export interface EntryPointBundle {
   format: EntryPointFormat;
   isFlat: boolean;
-  rootDirs: string[];
+  rootDirs: AbsoluteFsPath[];
   src: BundleProgram;
   dts: BundleProgram|null;
 }
@@ -45,7 +48,7 @@ export function makeEntryPointBundle(
     rootDir: entryPoint.path,
   };
   const host = ts.createCompilerHost(options);
-  const rootDirs = [entryPoint.path];
+  const rootDirs = [AbsoluteFsPath.from(entryPoint.path)];
 
   // Create the bundle programs, as necessary.
   const src = makeBundleProgram(isCore, path, 'r3_symbols.js', options, host);

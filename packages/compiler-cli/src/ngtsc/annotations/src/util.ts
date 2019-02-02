@@ -10,7 +10,7 @@ import {R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNode
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {AbsoluteReference, ImportMode, Reference} from '../../imports';
+import {ImportMode, Reference, ReferenceEmitter} from '../../imports';
 import {ClassMemberKind, CtorParameter, Decorator, ReflectionHost} from '../../reflection';
 
 export enum ConstructorDepErrorKind {
@@ -119,9 +119,9 @@ export function validateConstructorDependencies(
 
 export function toR3Reference(
     valueRef: Reference, typeRef: Reference, valueContext: ts.SourceFile,
-    typeContext: ts.SourceFile): R3Reference {
-  const value = valueRef.toExpression(valueContext, ImportMode.UseExistingImport);
-  const type = typeRef.toExpression(typeContext, ImportMode.ForceNewImport);
+    typeContext: ts.SourceFile, refEmitter: ReferenceEmitter): R3Reference {
+  const value = refEmitter.emit(valueRef, valueContext, ImportMode.UseExistingImport);
+  const type = refEmitter.emit(typeRef, typeContext, ImportMode.ForceNewImport);
   if (value === null || type === null) {
     throw new Error(`Could not refer to ${ts.SyntaxKind[valueRef.node.kind]}`);
   }
@@ -133,8 +133,7 @@ export function isAngularCore(decorator: Decorator): boolean {
 }
 
 export function isAngularCoreReference(reference: Reference, symbolName: string) {
-  return reference instanceof AbsoluteReference && reference.moduleName === '@angular/core' &&
-      reference.symbolName === symbolName;
+  return reference.ownedByModuleGuess === '@angular/core' && reference.debugName === symbolName;
 }
 
 /**
@@ -209,8 +208,7 @@ export function unwrapForwardRef(node: ts.Expression, reflector: ReflectionHost)
 export function forwardRefResolver(
     ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration>,
     args: ts.Expression[]): ts.Expression|null {
-  if (!(ref instanceof AbsoluteReference) || ref.moduleName !== '@angular/core' ||
-      ref.symbolName !== 'forwardRef' || args.length !== 1) {
+  if (!isAngularCoreReference(ref, 'forwardRef') || args.length !== 1) {
     return null;
   }
   return expandForwardRef(args[0]);

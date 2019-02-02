@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {ModuleResolver, ResolvedReference} from '../../imports';
+import {ModuleResolver, Reference} from '../../imports';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
@@ -225,7 +225,7 @@ export class ComponentDecoratorHandler implements
     // If the component has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this component appears in an `@NgModule` scope, its selector can be determined.
     if (metadata.selector !== null) {
-      const ref = new ResolvedReference(node, node.name !);
+      const ref = new Reference(node);
       this.scopeRegistry.registerDirective(node, {
         ref,
         name: node.name !.text,

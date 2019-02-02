@@ -8,6 +8,7 @@
 import {dirname} from 'canonical-path';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
+import {AbsoluteFsPath} from '../../../ngtsc/path';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
@@ -21,10 +22,11 @@ function setup(file: {name: string, contents: string}) {
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm2015ReflectionHost(false, typeChecker);
   const referencesRegistry = new NgccReferencesRegistry(host);
-  const decorationAnalyses = new DecorationAnalyzer(
-                                 bundle.src.program, bundle.src.options, bundle.src.host,
-                                 typeChecker, host, referencesRegistry, [''], false)
-                                 .analyzeProgram();
+  const decorationAnalyses =
+      new DecorationAnalyzer(
+          bundle.src.program, bundle.src.options, bundle.src.host, typeChecker, host,
+          referencesRegistry, [AbsoluteFsPath.fromUnchecked('/')], false)
+          .analyzeProgram();
   const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host).analyzeProgram(bundle.src.program);
   const renderer = new EsmRenderer(host, false, bundle, dir, dir);
   return {

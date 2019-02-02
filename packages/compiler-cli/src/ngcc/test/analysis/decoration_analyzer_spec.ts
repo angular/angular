@@ -7,6 +7,7 @@
  */
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../../ngtsc/path';
 import {Decorator} from '../../../ngtsc/reflection';
 import {DecoratorHandler, DetectResult} from '../../../ngtsc/transform';
 import {DecorationAnalyses, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
@@ -99,7 +100,7 @@ describe('DecorationAnalyzer', () => {
       const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
       const analyzer = new DecorationAnalyzer(
           program, options, host, program.getTypeChecker(), reflectionHost, referencesRegistry,
-          [''], false);
+          [AbsoluteFsPath.fromUnchecked('/')], false);
       testHandler = createTestHandler();
       analyzer.handlers = [testHandler];
       result = analyzer.analyzeProgram();
@@ -143,7 +144,7 @@ describe('DecorationAnalyzer', () => {
            const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
            const analyzer = new DecorationAnalyzer(
                program, options, host, program.getTypeChecker(), reflectionHost, referencesRegistry,
-               [''], false);
+               [AbsoluteFsPath.fromUnchecked('/')], false);
            const testHandler = createTestHandler();
            analyzer.handlers = [testHandler];
            const result = analyzer.analyzeProgram();
@@ -161,7 +162,7 @@ describe('DecorationAnalyzer', () => {
         const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
         const analyzer = new DecorationAnalyzer(
             program, options, host, program.getTypeChecker(), reflectionHost, referencesRegistry,
-            [''], false);
+            [AbsoluteFsPath.fromUnchecked('/')], false);
         const testHandler = createTestHandler();
         analyzer.handlers = [testHandler];
         const result = analyzer.analyzeProgram();

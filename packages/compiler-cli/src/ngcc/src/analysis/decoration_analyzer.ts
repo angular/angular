@@ -12,8 +12,9 @@ import * as ts from 'typescript';
 
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader, SelectorScopeRegistry} from '../../../ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../ngtsc/cycles';
-import {ModuleResolver, TsReferenceResolver} from '../../../ngtsc/imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, ReferenceEmitter} from '../../../ngtsc/imports';
 import {PartialEvaluator} from '../../../ngtsc/partial_evaluator';
+import {AbsoluteFsPath, LogicalFileSystem} from '../../../ngtsc/path';
 import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../ngtsc/transform';
 import {DecoratedClass} from '../host/decorated_class';
 import {NgccReflectionHost} from '../host/ngcc_host';
@@ -62,9 +63,16 @@ class NgccResourceLoader implements ResourceLoader {
  */
 export class DecorationAnalyzer {
   resourceManager = new NgccResourceLoader();
-  resolver = new TsReferenceResolver(this.program, this.typeChecker, this.options, this.host);
-  scopeRegistry = new SelectorScopeRegistry(this.typeChecker, this.reflectionHost, this.resolver);
-  evaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker, this.resolver);
+  refEmitter = new ReferenceEmitter([
+    new LocalIdentifierStrategy(),
+    new AbsoluteModuleStrategy(this.program, this.typeChecker, this.options, this.host),
+    // TODO(alxhub): there's no reason why ngcc needs the "logical file system" logic here, as ngcc
+    // projects only ever have one rootDir. Instead, ngcc should just switch its emitted imort based
+    // on whether a bestGuessOwningModule is present in the Reference.
+    new LogicalProjectStrategy(this.typeChecker, new LogicalFileSystem(this.rootDirs)),
+  ]);
+  scopeRegistry = new SelectorScopeRegistry(this.typeChecker, this.reflectionHost, this.refEmitter);
+  evaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker);
   moduleResolver = new ModuleResolver(this.program, this.options, this.host);
   importGraph = new ImportGraph(this.moduleResolver);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
@@ -79,7 +87,7 @@ export class DecorationAnalyzer {
     new InjectableDecoratorHandler(this.reflectionHost, this.isCore, /* strictCtorDeps */ false),
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.scopeRegistry, this.referencesRegistry,
-        this.isCore, /* routeAnalyzer */ null),
+        this.isCore, /* routeAnalyzer */ null, this.refEmitter),
     new PipeDecoratorHandler(this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore),
   ];
 
@@ -87,7 +95,7 @@ export class DecorationAnalyzer {
       private program: ts.Program, private options: ts.CompilerOptions,
       private host: ts.CompilerHost, private typeChecker: ts.TypeChecker,
       private reflectionHost: NgccReflectionHost, private referencesRegistry: ReferencesRegistry,
-      private rootDirs: string[], private isCore: boolean) {}
+      private rootDirs: AbsoluteFsPath[], private isCore: boolean) {}
 
   /**
    * Analyze a program to find all the decorated files should be transformed.

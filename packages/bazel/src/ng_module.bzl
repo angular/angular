@@ -240,6 +240,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     angular_compiler_options = {
         "enableResourceInlining": ctx.attr.inline_resources,
         "generateCodeForLibraries": False,
+        "useHostForImportGeneration": (not _is_bazel()),
         "allowEmptyCodegenFiles": True,
         # Summaries are only enabled if Angular outputs are to be produced.
         "enableSummariesForJit": is_legacy_ngc,

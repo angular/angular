@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {ModuleResolver, TsReferenceResolver} from '../../imports';
+import {ModuleResolver, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
@@ -44,15 +44,15 @@ describe('ComponentDecoratorHandler', () => {
     ]);
     const checker = program.getTypeChecker();
     const reflectionHost = new TypeScriptReflectionHost(checker);
-    const resolver = new TsReferenceResolver(program, checker, options, host);
-    const evaluator = new PartialEvaluator(reflectionHost, checker, resolver);
+    const evaluator = new PartialEvaluator(reflectionHost, checker);
     const moduleResolver = new ModuleResolver(program, options, host);
     const importGraph = new ImportGraph(moduleResolver);
     const cycleAnalyzer = new CycleAnalyzer(importGraph);
 
     const handler = new ComponentDecoratorHandler(
-        reflectionHost, evaluator, new SelectorScopeRegistry(checker, reflectionHost, resolver),
-        false, new NoopResourceLoader(), [''], false, true, moduleResolver, cycleAnalyzer);
+        reflectionHost, evaluator,
+        new SelectorScopeRegistry(checker, reflectionHost, new ReferenceEmitter([])), false,
+        new NoopResourceLoader(), [''], false, true, moduleResolver, cycleAnalyzer);
     const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', ts.isClassDeclaration);
     const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
     if (detected === undefined) {

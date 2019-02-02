@@ -9,7 +9,7 @@
 import {AST, BindingType, BoundTarget, ImplicitReceiver, PropertyRead, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Reference} from '../../imports';
+import {Reference, ReferenceEmitter} from '../../imports';
 import {ImportManager, translateExpression} from '../../translator';
 
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
@@ -28,9 +28,9 @@ import {astToTypescript} from './expression';
  * @param importManager an `ImportManager` for the file into which the TCB will be written.
  */
 export function generateTypeCheckBlock(
-    node: ts.ClassDeclaration, meta: TypeCheckBlockMetadata,
-    importManager: ImportManager): ts.FunctionDeclaration {
-  const tcb = new Context(meta.boundTarget, node.getSourceFile(), importManager);
+    node: ts.ClassDeclaration, meta: TypeCheckBlockMetadata, importManager: ImportManager,
+    refEmitter: ReferenceEmitter): ts.FunctionDeclaration {
+  const tcb = new Context(meta.boundTarget, node.getSourceFile(), importManager, refEmitter);
   const scope = new Scope(tcb);
   tcbProcessNodes(meta.boundTarget.target.template !, tcb, scope);
 
@@ -59,7 +59,8 @@ class Context {
 
   constructor(
       readonly boundTarget: BoundTarget<TypeCheckableDirectiveMeta>,
-      private sourceFile: ts.SourceFile, private importManager: ImportManager) {}
+      private sourceFile: ts.SourceFile, private importManager: ImportManager,
+      private refEmitter: ReferenceEmitter) {}
 
   /**
    * Allocate a new variable name for use within the `Context`.
@@ -75,7 +76,7 @@ class Context {
    * This may involve importing the node into the file if it's not declared there already.
    */
   reference(ref: Reference<ts.Node>): ts.Expression {
-    const ngExpr = ref.toExpression(this.sourceFile);
+    const ngExpr = this.refEmitter.emit(ref, this.sourceFile);
     if (ngExpr === null) {
       throw new Error(`Unreachable reference: ${ref.node}`);
     }

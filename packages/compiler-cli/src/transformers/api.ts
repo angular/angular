@@ -112,6 +112,11 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // This will be true be default in Angular 6.
   fullTemplateTypeCheck?: boolean;
 
+  // Whether to use the CompilerHost's fileNameToModuleName utility (if available) to generate
+  // import module specifiers. This is false by default, and exists to support running ngtsc
+  // within Google.
+  useHostForImportGeneration?: boolean;
+
   // Insert JSDoc type annotations needed by Closure Compiler
   annotateForClosureCompiler?: boolean;
 
