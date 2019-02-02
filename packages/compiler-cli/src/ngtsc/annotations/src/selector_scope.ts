@@ -9,7 +9,7 @@
 import {Expression, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {AbsoluteReference, Reference, ReferenceResolver, ResolvedReference} from '../../imports';
+import {Reference, ReferenceEmitter} from '../../imports';
 import {ReflectionHost, reflectIdentifierOfDeclaration, reflectNameOfDeclaration, reflectTypeEntityToDeclaration} from '../../reflection';
 import {TypeCheckableDirectiveMeta} from '../../typecheck';
 
@@ -96,7 +96,7 @@ export class SelectorScopeRegistry {
 
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
-      private resolver: ReferenceResolver) {}
+      private refEmitter: ReferenceEmitter) {}
 
   /**
    * Register a module's metadata with the registry.
@@ -224,7 +224,7 @@ export class SelectorScopeRegistry {
    */
   lookupCompilationScope(node: ts.Declaration): CompilationScope<Expression>|null {
     const scope = this.lookupCompilationScopeAsRefs(node);
-    return scope !== null ? convertScopeToExpressions(scope, node) : null;
+    return scope !== null ? convertScopeToExpressions(scope, node, this.refEmitter) : null;
   }
 
   private lookupScopesOrDie(
@@ -438,11 +438,11 @@ export class SelectorScopeRegistry {
       const type = element.exprName;
       if (ngModuleImportedFrom !== null) {
         const {node, from} = reflectTypeEntityToDeclaration(type, this.checker);
-        const moduleName = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
-        return this.resolver.resolve(node, moduleName, resolutionContext);
+        const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
+        return new Reference(node, {specifier, resolutionContext});
       } else {
         const {node} = reflectTypeEntityToDeclaration(type, this.checker);
-        return this.resolver.resolve(node, null, resolutionContext);
+        return new Reference(node);
       }
     });
   }
@@ -456,16 +456,14 @@ function flatten<T>(array: T[][]): T[] {
 }
 
 function absoluteModuleName(ref: Reference): string|null {
-  if (!(ref instanceof AbsoluteReference)) {
-    return null;
-  }
-  return ref.moduleName;
+  return ref.bestGuessOwningModule !== null ? ref.bestGuessOwningModule.specifier : null;
 }
 
 function convertDirectiveReferenceList(
-    input: ScopeDirective<Reference>[], context: ts.SourceFile): ScopeDirective<Expression>[] {
+    input: ScopeDirective<Reference>[], context: ts.SourceFile,
+    refEmitter: ReferenceEmitter): ScopeDirective<Expression>[] {
   return input.map(meta => {
-    const directive = meta.directive.toExpression(context);
+    const directive = refEmitter.emit(meta.directive, context);
     if (directive === null) {
       throw new Error(`Could not write expression to reference ${meta.directive.node}`);
     }
@@ -474,10 +472,11 @@ function convertDirectiveReferenceList(
 }
 
 function convertPipeReferenceMap(
-    map: Map<string, Reference>, context: ts.SourceFile): Map<string, Expression> {
+    map: Map<string, Reference>, context: ts.SourceFile,
+    refEmitter: ReferenceEmitter): Map<string, Expression> {
   const newMap = new Map<string, Expression>();
   map.forEach((meta, selector) => {
-    const pipe = meta.toExpression(context);
+    const pipe = refEmitter.emit(meta, context);
     if (pipe === null) {
       throw new Error(`Could not write expression to reference ${meta.node}`);
     }
@@ -487,10 +486,11 @@ function convertPipeReferenceMap(
 }
 
 function convertScopeToExpressions(
-    scope: CompilationScope<Reference>, context: ts.Declaration): CompilationScope<Expression> {
+    scope: CompilationScope<Reference>, context: ts.Declaration,
+    refEmitter: ReferenceEmitter): CompilationScope<Expression> {
   const sourceContext = ts.getOriginalNode(context).getSourceFile();
-  const directives = convertDirectiveReferenceList(scope.directives, sourceContext);
-  const pipes = convertPipeReferenceMap(scope.pipes, sourceContext);
+  const directives = convertDirectiveReferenceList(scope.directives, sourceContext, refEmitter);
+  const pipes = convertPipeReferenceMap(scope.pipes, sourceContext, refEmitter);
   const declPointer = maybeUnwrapNameOfDeclaration(context);
   let containsForwardDecls = false;
   directives.forEach(meta => {

@@ -18,6 +18,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/routing",
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/typecheck",
+        "//packages/compiler-cli/src/ngtsc/util",
         "@ngdeps//@types/node",
         "@ngdeps//typescript",
     ],

@@ -8,7 +8,8 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteReference, NodeReference, Reference, ReferenceResolver, ResolvedReference} from '../../imports';
+import {Reference} from '../../imports';
+import {OwningModule} from '../../imports/src/references';
 import {Declaration, ReflectionHost} from '../../reflection';
 
 import {ArraySliceBuiltinFn} from './builtin';
@@ -78,9 +79,7 @@ interface Context {
 }
 
 export class StaticInterpreter {
-  constructor(
-      private host: ReflectionHost, private checker: ts.TypeChecker,
-      private refResolver: ReferenceResolver) {}
+  constructor(private host: ReflectionHost, private checker: ts.TypeChecker) {}
 
   visit(node: ts.Expression, context: Context): ResolvedValue {
     return this.visitExpression(node, context);
@@ -332,10 +331,7 @@ export class StaticInterpreter {
     } else if (lhs instanceof Reference) {
       const ref = lhs.node;
       if (this.host.isClass(ref)) {
-        let absoluteModuleName = context.absoluteModuleName;
-        if (lhs instanceof NodeReference || lhs instanceof AbsoluteReference) {
-          absoluteModuleName = lhs.moduleName || absoluteModuleName;
-        }
+        const module = owningModule(context, lhs.bestGuessOwningModule);
         let value: ResolvedValue = undefined;
         const member = this.host.getMembersOfClass(ref).find(
             member => member.isStatic && member.name === strIndex);
@@ -343,9 +339,9 @@ export class StaticInterpreter {
           if (member.value !== null) {
             value = this.visitExpression(member.value, context);
           } else if (member.implementation !== null) {
-            value = new NodeReference(member.implementation, absoluteModuleName);
+            value = new Reference(member.implementation, module);
           } else if (member.node) {
-            value = new NodeReference(member.node, absoluteModuleName);
+            value = new Reference(member.node, module);
           }
         }
         return value;
@@ -391,11 +387,10 @@ export class StaticInterpreter {
 
       // If the function is declared in a different file, resolve the foreign function expression
       // using the absolute module name of that file (if any).
-      if ((lhs instanceof NodeReference || lhs instanceof AbsoluteReference) &&
-          lhs.moduleName !== null) {
+      if (lhs.bestGuessOwningModule !== null) {
         context = {
           ...context,
-          absoluteModuleName: lhs.moduleName,
+          absoluteModuleName: lhs.bestGuessOwningModule.specifier,
           resolutionContext: node.getSourceFile().fileName,
         };
       }
@@ -496,7 +491,7 @@ export class StaticInterpreter {
   }
 
   private getReference(node: ts.Declaration, context: Context): Reference {
-    return this.refResolver.resolve(node, context.absoluteModuleName, context.resolutionContext);
+    return new Reference(node, owningModule(context));
   }
 }
 
@@ -540,5 +535,20 @@ function joinModuleContext(existing: Context, node: ts.Node, decl: Declaration):
     };
   } else {
     return EMPTY;
+  }
+}
+
+function owningModule(context: Context, override: OwningModule | null = null): OwningModule|null {
+  let specifier = context.absoluteModuleName;
+  if (override !== null) {
+    specifier = override.specifier;
+  }
+  if (specifier !== null) {
+    return {
+      specifier,
+      resolutionContext: context.resolutionContext,
+    };
+  } else {
+    return null;
   }
 }
