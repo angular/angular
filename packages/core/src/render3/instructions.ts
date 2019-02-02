@@ -24,7 +24,7 @@ import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreat
 import {throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, registerPostOrderHooks, registerPreOrderHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
-import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
+import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from './interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from './interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
 import {PlayerFactory} from './interfaces/player';
@@ -80,7 +80,7 @@ export function refreshDescendantViews(lView: LView) {
     refreshDynamicEmbeddedViews(lView);
 
     // Content query results must be refreshed before content hooks are called.
-    refreshContentQueries(tView);
+    refreshContentQueries(tView, lView);
 
     executeHooks(
         lView, tView.contentHooks, tView.contentCheckHooks, checkNoChangesMode,
@@ -134,13 +134,15 @@ export function setHostBindings(tView: TView, viewData: LView): void {
 }
 
 /** Refreshes content queries for all directives in the given view. */
-function refreshContentQueries(tView: TView): void {
+function refreshContentQueries(tView: TView, lView: LView): void {
   if (tView.contentQueries != null) {
     setCurrentQueryIndex(0);
     for (let i = 0; i < tView.contentQueries.length; i++) {
       const directiveDefIdx = tView.contentQueries[i];
       const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
-      directiveDef.contentQueriesRefresh !(directiveDefIdx - HEADER_OFFSET);
+      ngDevMode &&
+          assertDefined(directiveDef.contentQueries, 'contentQueries function should be defined');
+      directiveDef.contentQueries !(RenderFlags.Update, lView[directiveDefIdx], directiveDefIdx);
     }
   }
 }
@@ -534,17 +536,17 @@ export function elementContainerStart(
     currentQueries.addNode(tNode);
     lView[QUERIES] = currentQueries.clone();
   }
-  executeContentQueries(tView, tNode);
+  executeContentQueries(tView, tNode, lView);
 }
 
-function executeContentQueries(tView: TView, tNode: TNode) {
+function executeContentQueries(tView: TView, tNode: TNode, lView: LView) {
   if (isContentQueryHost(tNode)) {
     const start = tNode.directiveStart;
     const end = tNode.directiveEnd;
-    for (let i = start; i < end; i++) {
-      const def = tView.data[i] as DirectiveDef<any>;
+    for (let directiveIndex = start; directiveIndex < end; directiveIndex++) {
+      const def = tView.data[directiveIndex] as DirectiveDef<any>;
       if (def.contentQueries) {
-        def.contentQueries(i);
+        def.contentQueries(RenderFlags.Create, lView[directiveIndex], directiveIndex);
       }
     }
   }
@@ -650,7 +652,7 @@ export function elementStart(
     currentQueries.addNode(tNode);
     lView[QUERIES] = currentQueries.clone();
   }
-  executeContentQueries(tView, tNode);
+  executeContentQueries(tView, tNode, lView);
 }
 
 /**
@@ -731,7 +733,7 @@ function saveResolvedLocalsInData(
 export function getOrCreateTView(
     templateFn: ComponentTemplate<any>, consts: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
-    viewQuery: ComponentQuery<any>| null): TView {
+    viewQuery: ViewQueriesFunction<any>| null): TView {
   // TODO(misko): reading `ngPrivateData` here is problematic for two reasons
   // 1. It is a megamorphic call on each invocation.
   // 2. For nested embedded views (ngFor inside ngFor) the template instance is per
@@ -756,7 +758,7 @@ export function getOrCreateTView(
 export function createTView(
     viewIndex: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
-    viewQuery: ComponentQuery<any>| null): TView {
+    viewQuery: ViewQueriesFunction<any>| null): TView {
   ngDevMode && ngDevMode.tView++;
   const bindingStartIndex = HEADER_OFFSET + consts;
   // This length does not yet contain host bindings from child directives because at this point,

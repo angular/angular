@@ -64,9 +64,10 @@ function baseDirectiveFields(
   });
   definitionMap.set('factory', result.factory);
 
-  definitionMap.set('contentQueries', createContentQueriesFunction(meta, constantPool));
-
-  definitionMap.set('contentQueriesRefresh', createContentQueriesRefreshFunction(meta));
+  if (meta.queries.length > 0) {
+    // e.g. `contentQueries: (rf, ctx, dirIndex) => { ... }
+    definitionMap.set('contentQueries', createContentQueriesFunction(meta, constantPool));
+  }
 
   // Initialize hostVarsCount to number of bound host properties (interpolations illegal),
   // except 'style' and 'class' properties, since they should *not* allocate host var slots
@@ -510,56 +511,39 @@ function convertAttributesToExpressions(attributes: any): o.Expression[] {
   return values;
 }
 
-// Return a contentQueries function or null if one is not necessary.
+// Define and update any content queries
 function createContentQueriesFunction(
-    meta: R3DirectiveMetadata, constantPool: ConstantPool): o.Expression|null {
-  if (meta.queries.length) {
-    const statements: o.Statement[] = meta.queries.map((query: R3QueryMetadata) => {
-      const args = [o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any];
-      return o.importExpr(R3.contentQuery).callFn(args).toStmt();
-    });
-    const typeName = meta.name;
-    const parameters = [new o.FnParam('dirIndex', o.NUMBER_TYPE)];
-    return o.fn(
-        parameters, statements, o.INFERRED_TYPE, null,
-        typeName ? `${typeName}_ContentQueries` : null);
+    meta: R3DirectiveMetadata, constantPool: ConstantPool): o.Expression {
+  const createStatements: o.Statement[] = [];
+  const updateStatements: o.Statement[] = [];
+  const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
+
+  for (const query of meta.queries) {
+    // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true);
+    const args = [o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any];
+    createStatements.push(o.importExpr(R3.contentQuery).callFn(args).toStmt());
+
+    // update, e.g. (r3.queryRefresh(tmp = r3.loadContentQuery()) && (ctx.someDir = tmp));
+    const temporary = tempAllocator();
+    const getQueryList = o.importExpr(R3.loadContentQuery).callFn([]);
+    const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
+    const updateDirective = o.variable(CONTEXT_NAME)
+                                .prop(query.propertyName)
+                                .set(query.first ? temporary.prop('first') : temporary);
+    updateStatements.push(refresh.and(updateDirective).toStmt());
   }
 
-  return null;
-}
-
-// Return a contentQueriesRefresh function or null if one is not necessary.
-function createContentQueriesRefreshFunction(meta: R3DirectiveMetadata): o.Expression|null {
-  if (meta.queries.length > 0) {
-    const statements: o.Statement[] = [];
-    const typeName = meta.name;
-    const parameters = [new o.FnParam('dirIndex', o.NUMBER_TYPE)];
-    const directiveInstanceVar = o.variable('instance');
-    // var $tmp$: any;
-    const temporary = temporaryAllocator(statements, TEMPORARY_NAME);
-
-    // const $instance$ = $r3$.ɵload(dirIndex);
-    statements.push(directiveInstanceVar.set(o.importExpr(R3.load).callFn([o.variable('dirIndex')]))
-                        .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
-
-    meta.queries.forEach((query: R3QueryMetadata) => {
-      const getQueryList = o.importExpr(R3.loadContentQuery).callFn([]);
-      const assignToTemporary = temporary().set(getQueryList);
-      const callQueryRefresh = o.importExpr(R3.queryRefresh).callFn([assignToTemporary]);
-
-      const updateDirective = directiveInstanceVar.prop(query.propertyName)
-                                  .set(query.first ? temporary().prop('first') : temporary());
-      const refreshQueryAndUpdateDirective = callQueryRefresh.and(updateDirective);
-
-      statements.push(refreshQueryAndUpdateDirective.toStmt());
-    });
-
-    return o.fn(
-        parameters, statements, o.INFERRED_TYPE, null,
-        typeName ? `${typeName}_ContentQueriesRefresh` : null);
-  }
-
-  return null;
+  const contentQueriesFnName = meta.name ? `${meta.name}_ContentQueries` : null;
+  return o.fn(
+      [
+        new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null),
+        new o.FnParam('dirIndex', null)
+      ],
+      [
+        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
+        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
+      ],
+      o.INFERRED_TYPE, null, contentQueriesFnName);
 }
 
 function stringAsType(str: string): o.Type {

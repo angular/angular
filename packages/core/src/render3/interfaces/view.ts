@@ -13,7 +13,7 @@ import {QueryList} from '../../linker';
 import {Sanitizer} from '../../sanitization/security';
 
 import {LContainer} from './container';
-import {ComponentDef, ComponentQuery, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList} from './definition';
+import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
 import {I18nUpdateOpCodes, TI18n} from './i18n';
 import {TElementNode, TNode, TViewNode} from './node';
 import {PlayerHandler} from './player';
@@ -323,7 +323,7 @@ export interface TView {
   /**
    * A function containing query-related instructions.
    */
-  viewQuery: ComponentQuery<{}>|null;
+  viewQuery: ViewQueriesFunction<{}>|null;
 
   /**
    * Pointer to the `TNode` that represents the root of the view.

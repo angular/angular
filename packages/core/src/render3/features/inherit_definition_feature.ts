@@ -104,29 +104,14 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
       const superContentQueries = superDef.contentQueries;
       if (superContentQueries) {
         if (prevContentQueries) {
-          definition.contentQueries = (directiveIndex: number) => {
-            superContentQueries(directiveIndex);
-            prevContentQueries(directiveIndex);
+          definition.contentQueries = <T>(rf: RenderFlags, ctx: T, directiveIndex: number) => {
+            superContentQueries(rf, ctx, directiveIndex);
+            prevContentQueries(rf, ctx, directiveIndex);
           };
         } else {
           definition.contentQueries = superContentQueries;
         }
       }
-
-      // Merge Content Queries Refresh
-      const prevContentQueriesRefresh = definition.contentQueriesRefresh;
-      const superContentQueriesRefresh = superDef.contentQueriesRefresh;
-      if (superContentQueriesRefresh) {
-        if (prevContentQueriesRefresh) {
-          definition.contentQueriesRefresh = (directiveIndex: number) => {
-            superContentQueriesRefresh(directiveIndex);
-            prevContentQueriesRefresh(directiveIndex);
-          };
-        } else {
-          definition.contentQueriesRefresh = superContentQueriesRefresh;
-        }
-      }
-
 
       // Merge inputs and outputs
       fillProperties(definition.inputs, superDef.inputs);

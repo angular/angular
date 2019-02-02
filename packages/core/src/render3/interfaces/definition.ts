@@ -22,9 +22,15 @@ export type ComponentTemplate<T> = {
 };
 
 /**
- * Definition of what a query function should look like.
+ * Definition of what a view queries function should look like.
  */
-export type ComponentQuery<T> = ComponentTemplate<T>;
+export type ViewQueriesFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => void;
+
+/**
+ * Definition of what a content queries function should look like.
+ */
+export type ContentQueriesFunction<T> =
+    <U extends T>(rf: RenderFlags, ctx: U, directiveIndex: number) => void;
 
 /**
  * Definition of what a factory function should look like.
@@ -148,14 +154,13 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   factory: FactoryFn<T>;
 
   /**
-   * Function to create instances of content queries associated with a given directive.
+   * Function to create and refresh content queries associated with a given directive.
    */
-  contentQueries: ((directiveIndex: number) => void)|null;
+  contentQueries: ContentQueriesFunction<T>|null;
 
-  /** Refreshes content queries associated with directives in a given view */
-  contentQueriesRefresh: ((directiveIndex: number) => void)|null;
-
-  /** Refreshes host bindings on the associated directive. */
+  /**
+   * Refreshes host bindings on the associated directive.
+   */
   hostBindings: HostBindingsFunction<T>|null;
 
   /* The following are lifecycle hooks for this component */
@@ -236,7 +241,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   /**
    * Query-related instructions for a component.
    */
-  viewQuery: ComponentQuery<T>|null;
+  viewQuery: ViewQueriesFunction<T>|null;
 
   /**
    * The view encapsulation type, which determines how styles are applied to

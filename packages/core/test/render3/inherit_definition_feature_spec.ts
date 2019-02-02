@@ -520,7 +520,7 @@ describe('InheritDefinitionFeature', () => {
   });
 
 
-  it('should compose contentQueries', () => {
+  it('should compose contentQueries (basic mechanics check)', () => {
     const log: string[] = [];
 
     class SuperDirective {
@@ -544,45 +544,12 @@ describe('InheritDefinitionFeature', () => {
 
     const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
 
-    subDef.contentQueries !(0);
+    subDef.contentQueries !(RenderFlags.Create, {}, 0);
 
     expect(log).toEqual(['super', 'sub']);
   });
 
-  it('should compose contentQueriesRefresh', () => {
-    const log: Array<[string, number]> = [];
-
-    class SuperDirective {
-      static ngDirectiveDef = defineDirective({
-        type: SuperDirective,
-        selectors: [['', 'superDir', '']],
-        contentQueriesRefresh: (directiveIndex: number) => {
-          log.push(['super', directiveIndex]);
-        },
-        factory: () => new SuperDirective(),
-      });
-    }
-
-    class SubDirective extends SuperDirective {
-      static ngDirectiveDef = defineDirective({
-        type: SubDirective,
-        selectors: [['', 'subDir', '']],
-        contentQueriesRefresh: (directiveIndex: number) => {
-          log.push(['sub', directiveIndex]);
-        },
-        factory: () => new SubDirective(),
-        features: [InheritDefinitionFeature]
-      });
-    }
-
-    const subDef = SubDirective.ngDirectiveDef as DirectiveDef<any>;
-
-    subDef.contentQueriesRefresh !(1);
-
-    expect(log).toEqual([['super', 1], ['sub', 1]]);
-  });
-
-  it('should compose contentQueries and contentQueriesRefresh', () => {
+  it('should compose contentQueries (verify query sets)', () => {
     let dirInstance: SubDirective;
     class SuperDirective {
       // @ContentChildren('foo')
@@ -592,11 +559,14 @@ describe('InheritDefinitionFeature', () => {
         type: SuperDirective,
         selectors: [['', 'super-dir', '']],
         factory: () => new SuperDirective(),
-        contentQueries: (dirIndex: number) => { contentQuery(dirIndex, ['foo'], true); },
-        contentQueriesRefresh: (dirIndex: number) => {
-          let tmp: any;
-          const instance = load<SuperDirective>(dirIndex);
-          queryRefresh(tmp = loadContentQuery<ElementRef>()) && (instance.foos = tmp);
+        contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
+          if (rf & RenderFlags.Create) {
+            contentQuery(dirIndex, ['foo'], true);
+          }
+          if (rf & RenderFlags.Update) {
+            let tmp: any;
+            queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.foos = tmp);
+          }
         }
       });
     }
@@ -608,12 +578,15 @@ describe('InheritDefinitionFeature', () => {
       static ngDirectiveDef = defineDirective({
         type: SubDirective,
         selectors: [['', 'sub-dir', '']],
-        factory: () => new SubDirective(),
-        contentQueries: (dirIndex: number) => { contentQuery(dirIndex, ['bar'], true); },
-        contentQueriesRefresh: (dirIndex: number) => {
-          let tmp: any;
-          dirInstance = load<SubDirective>(dirIndex);
-          queryRefresh(tmp = loadContentQuery<ElementRef>()) && (dirInstance.bars = tmp);
+        factory: () => dirInstance = new SubDirective(),
+        contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
+          if (rf & RenderFlags.Create) {
+            contentQuery(dirIndex, ['bar'], true);
+          }
+          if (rf & RenderFlags.Update) {
+            let tmp: any;
+            queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.bars = tmp);
+          }
         },
         features: [InheritDefinitionFeature]
       });
