@@ -2803,7 +2803,7 @@ describe('ngtsc behavioral tests', () => {
       const fileoverview = `
         /**
          * @fileoverview added by tsickle
-         * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
          */
       `;
       expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
@@ -2820,7 +2820,7 @@ describe('ngtsc behavioral tests', () => {
       const fileoverview = `
         /**
          * @fileoverview added by tsickle
-         * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
          */
       `;
       expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
@@ -2852,7 +2852,7 @@ describe('ngtsc behavioral tests', () => {
          * @fileoverview Some Comp overview
          * @modName {some_comp}
          *
-         * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
          */
       `;
       expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
@@ -2880,7 +2880,7 @@ describe('ngtsc behavioral tests', () => {
          * @fileoverview Some Comp overview
          * @modName {some_comp}
          *
-         * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         * @suppress {checkTypes,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
          */
       `;
       expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();

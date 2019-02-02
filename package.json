@@ -94,9 +94,9 @@
     "source-map": "^0.6.1",
     "source-map-support": "0.5.9",
     "systemjs": "0.18.10",
-    "tsickle": "0.34.0",
+    "tsickle": "0.34.3",
     "tslib": "^1.9.0",
-    "typescript": "~3.2.2",
+    "typescript": "~3.3.3333",
     "xhr2": "0.1.4",
     "yargs": "9.0.1",
     "zone.js": "^0.8.26"
