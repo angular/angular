@@ -34,6 +34,10 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
     // as efficient as possible. To support both of these requirements, all of the program's
     // source files are loaded into the cache up front.
     program.getSourceFiles().forEach(file => { this.sfCache.set(file.fileName, file); });
+
+    if (delegate.getDirectories !== undefined) {
+      this.getDirectories = (path: string) => delegate.getDirectories !(path);
+    }
   }
 
   getSourceFile(
@@ -77,7 +81,7 @@ export class TypeCheckProgramHost implements ts.CompilerHost {
 
   getCurrentDirectory(): string { return this.delegate.getCurrentDirectory(); }
 
-  getDirectories(path: string): string[] { return this.delegate.getDirectories(path); }
+  getDirectories?: (path: string) => string[];
 
   getCanonicalFileName(fileName: string): string {
     return this.delegate.getCanonicalFileName(fileName);
