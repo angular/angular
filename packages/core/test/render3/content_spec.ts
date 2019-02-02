@@ -8,7 +8,7 @@
 
 import {SelectorFlags} from '@angular/core/src/render3/interfaces/projection';
 
-import {AttributeMarker, defineDirective, detectChanges, directiveInject, loadViewQuery, queryRefresh, reference, templateRefExtractor, viewQuery} from '../../src/render3/index';
+import {AttributeMarker, defineComponent, defineDirective, detectChanges, directiveInject, loadViewQuery, queryRefresh, reference, templateRefExtractor, viewQuery} from '../../src/render3/index';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, template, text, textBinding, interpolation1} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -1439,6 +1439,86 @@ describe('content projection', () => {
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><grand-child>content</grand-child></child>');
+  });
+
+  it('should handle projected containers inside other containers', () => {
+    // <div>Child content</div>
+    const NestedComp = createComponent('nested-comp', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'div');
+        text(1, 'Child content');
+        elementEnd();
+      }
+    }, 2, 0, []);
+
+    // <ng-content></ng-content>
+    const RootComp = createComponent('root-comp', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef();
+        projection(0);
+      }
+    }, 1, 0, []);
+
+    // <root-comp>
+    //   <ng-container *ngFor="let item of items; last as last">
+    //     <child-comp *ngIf="!last"></child-comp>
+    //   </ng-container>
+    // </root-comp>
+    function MyApp_ng_container_1_child_comp_1_Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        element(0, 'nested-comp');
+      }
+    }
+    function MyApp_ng_container_1_Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementContainerStart(0);
+        template(1, MyApp_ng_container_1_child_comp_1_Template, 1, 0, 'nested-comp', [3, 'ngIf']);
+        elementContainerEnd();
+      }
+      if (rf & RenderFlags.Update) {
+        const last_r2 = ctx.last;
+        elementProperty(1, 'ngIf', bind(!last_r2));
+      }
+    }
+    let myAppInstance: MyApp;
+    class MyApp {
+      items = [1, 2];
+
+      static ngComponentDef = defineComponent({
+        type: MyApp,
+        selectors: [['', 'my-app', '']],
+        factory: () => myAppInstance = new MyApp(),
+        consts: 2,
+        vars: 1,
+        template: function MyApp_Template(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'root-comp');
+            template(
+                1, MyApp_ng_container_1_Template, 2, 1, 'ng-container',
+                ['ngFor', '', 3, 'ngForOf']);
+            elementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(1, 'ngForOf', bind(ctx.items));
+          }
+        },
+        directives: [NgForOf, NgIf, NestedComp, RootComp]
+      });
+    }
+    const fixture = new ComponentFixture(MyApp);
+    fixture.update();
+
+    // expecting # of divs to be (items.length - 1), since last element is filtered out by *ngIf,
+    // this applies to all other assertions below
+    expect(fixture.hostElement.querySelectorAll('div').length).toBe(1);
+
+    myAppInstance !.items = [3, 4, 5];
+    fixture.update();
+    expect(fixture.hostElement.querySelectorAll('div').length).toBe(2);
+
+    myAppInstance !.items = [6, 7, 8, 9];
+    fixture.update();
+    expect(fixture.hostElement.querySelectorAll('div').length).toBe(3);
   });
 
   describe('with selectors', () => {
