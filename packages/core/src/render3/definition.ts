@@ -17,7 +17,7 @@ import {stringify} from '../util/stringify';
 
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
-import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {BaseDef, ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
 import {CssSelectorList} from './interfaces/projection';
 
 let _renderCompCount = 0;
@@ -133,10 +133,7 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * Function to create instances of content queries associated with a given directive.
    */
-  contentQueries?: ((dirIndex: number) => void);
-
-  /** Refreshes content queries associated with directives in a given view */
-  contentQueriesRefresh?: ((directiveIndex: number) => void);
+  contentQueries?: ContentQueriesFunction<T>;
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -189,7 +186,7 @@ export function defineComponent<T>(componentDefinition: {
    * execution is different as compared to all other instructions (after change detection hooks but
    * before view hooks).
    */
-  viewQuery?: ComponentQuery<T>| null;
+  viewQuery?: ViewQueriesFunction<T>| null;
 
   /**
    * A list of optional features to apply.
@@ -251,7 +248,6 @@ export function defineComponent<T>(componentDefinition: {
     ngContentSelectors: componentDefinition.ngContentSelectors,
     hostBindings: componentDefinition.hostBindings || null,
     contentQueries: componentDefinition.contentQueries || null,
-    contentQueriesRefresh: componentDefinition.contentQueriesRefresh || null,
     declaredInputs: declaredInputs,
     inputs: null !,   // assigned in noSideEffects
     outputs: null !,  // assigned in noSideEffects
@@ -589,10 +585,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   /**
    * Function to create instances of content queries associated with a given directive.
    */
-  contentQueries?: ((directiveIndex: number) => void);
-
-  /** Refreshes content queries associated with directives in a given view */
-  contentQueriesRefresh?: ((directiveIndex: number, queryIndex: number) => void);
+  contentQueries?: ContentQueriesFunction<T>;
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.

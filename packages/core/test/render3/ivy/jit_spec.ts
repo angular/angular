@@ -313,7 +313,6 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
-    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
   });
 
   it('should compile ContentChild query with string predicate on a directive', () => {
@@ -323,7 +322,6 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
-    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
   });
 
   it('should compile ContentChildren query with type predicate on a directive', () => {
@@ -335,7 +333,6 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
-    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
   });
 
   it('should compile ContentChild query with type predicate on a directive', () => {
@@ -347,7 +344,6 @@ ivyEnabled && describe('render3 jit', () => {
     }
 
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
-    expect((TestDirective as any).ngDirectiveDef.contentQueriesRefresh).not.toBeNull();
   });
 
   it('should not pick up view queries from directives', () => {

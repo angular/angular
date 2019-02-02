@@ -1009,11 +1009,14 @@ describe('host bindings', () => {
             elementProperty(elIndex, 'id', bind(ctx.foos.length), null, true);
           }
         },
-        contentQueries: (dirIndex: number) => { contentQuery(dirIndex, ['foo']); },
-        contentQueriesRefresh: (dirIndex: number) => {
-          let tmp: any;
-          const instance = load<HostBindingWithContentChildren>(dirIndex);
-          queryRefresh(tmp = loadContentQuery<ElementRef>()) && (instance.foos = tmp);
+        contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
+          if (rf & RenderFlags.Create) {
+            contentQuery(dirIndex, ['foo']);
+          }
+          if (rf & RenderFlags.Update) {
+            let tmp: any;
+            queryRefresh(tmp = loadContentQuery<ElementRef>()) && (ctx.foos = tmp);
+          }
         },
         template: (rf: RenderFlags, cmp: HostBindingWithContentChildren) => {}
       });
