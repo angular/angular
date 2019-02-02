@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteReference, NodeReference, Reference} from '../../imports';
+import {Reference} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 
 import {NgModuleRawRouteData} from './analyzer';
@@ -163,7 +163,9 @@ const routerModuleFFR: ForeignFunctionResolver =
     null {
       if (!isMethodNodeReference(ref) || !ts.isClassDeclaration(ref.node.parent)) {
         return null;
-      } else if (ref.moduleName !== '@angular/router') {
+      } else if (
+          ref.bestGuessOwningModule === null ||
+          ref.bestGuessOwningModule.specifier !== '@angular/router') {
         return null;
       } else if (
           ref.node.parent.name === undefined || ref.node.parent.name.text !== 'RouterModule') {
@@ -188,11 +190,11 @@ function hasIdentifier(node: ts.Node): node is ts.Node&{name: ts.Identifier} {
 
 function isMethodNodeReference(
     ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>):
-    ref is NodeReference<ts.MethodDeclaration> {
-  return ref instanceof NodeReference && ts.isMethodDeclaration(ref.node);
+    ref is Reference<ts.MethodDeclaration> {
+  return ts.isMethodDeclaration(ref.node);
 }
 
 function isRouteToken(ref: ResolvedValue): boolean {
-  return ref instanceof AbsoluteReference && ref.moduleName === '@angular/router' &&
-      ref.symbolName === 'ROUTES';
+  return ref instanceof Reference && ref.bestGuessOwningModule !== null &&
+      ref.bestGuessOwningModule.specifier === '@angular/router' && ref.debugName === 'ROUTES';
 }

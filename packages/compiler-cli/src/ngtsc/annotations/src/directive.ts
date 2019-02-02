@@ -10,7 +10,7 @@ import {ConstantPool, Expression, ParseError, R3DirectiveMetadata, R3QueryMetada
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Reference, ResolvedReference} from '../../imports';
+import {Reference} from '../../imports';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
@@ -57,7 +57,7 @@ export class DirectiveDecoratorHandler implements
     // If the directive has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this directive appears in an `@NgModule` scope, its selector can be determined.
     if (analysis && analysis.selector !== null) {
-      let ref = new ResolvedReference(node, node.name !);
+      const ref = new Reference(node);
       this.scopeRegistry.registerDirective(node, {
         ref,
         directive: ref,

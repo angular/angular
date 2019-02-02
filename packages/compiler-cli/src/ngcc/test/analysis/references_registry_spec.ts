@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Reference, TsReferenceResolver} from '../../../ngtsc/imports';
+import {Reference} from '../../../ngtsc/imports';
 import {PartialEvaluator} from '../../../ngtsc/partial_evaluator';
 import {TypeScriptReflectionHost} from '../../../ngtsc/reflection';
 import {getDeclaration, makeProgram} from '../../../ngtsc/testing/in_memory_typescript';
@@ -39,11 +39,11 @@ describe('NgccReferencesRegistry', () => {
     const testArrayExpression = testArrayDeclaration.initializer !;
 
     const reflectionHost = new TypeScriptReflectionHost(checker);
-    const resolver = new TsReferenceResolver(program, checker, options, host);
-    const evaluator = new PartialEvaluator(reflectionHost, checker, resolver);
+    const evaluator = new PartialEvaluator(reflectionHost, checker);
     const registry = new NgccReferencesRegistry(reflectionHost);
 
-    const references = evaluator.evaluate(testArrayExpression) as Reference<ts.Declaration>[];
+    const references = (evaluator.evaluate(testArrayExpression) as any[])
+                           .filter(ref => ref instanceof Reference) as Reference<ts.Declaration>[];
     registry.add(null !, ...references);
 
     const map = registry.getDeclarationMap();
