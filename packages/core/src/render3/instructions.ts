@@ -80,7 +80,7 @@ export function refreshDescendantViews(lView: LView) {
     refreshDynamicEmbeddedViews(lView);
 
     // Content query results must be refreshed before content hooks are called.
-    refreshContentQueries(tView);
+    refreshContentQueries(tView, lView);
 
     executeHooks(
         lView, tView.contentHooks, tView.contentCheckHooks, checkNoChangesMode,
@@ -134,14 +134,15 @@ export function setHostBindings(tView: TView, viewData: LView): void {
 }
 
 /** Refreshes content queries for all directives in the given view. */
-function refreshContentQueries(tView: TView): void {
+function refreshContentQueries(tView: TView, lView: LView): void {
   if (tView.contentQueries != null) {
     setCurrentQueryIndex(0);
     for (let i = 0; i < tView.contentQueries.length; i++) {
       const directiveDefIdx = tView.contentQueries[i];
       const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
       const directiveIndex = directiveDefIdx - HEADER_OFFSET;
-      directiveDef.contentQueries !(RenderFlags.Update, load(directiveIndex), directiveDefIdx);
+      directiveDef.contentQueries !(
+          RenderFlags.Update, loadInternal(lView, directiveIndex), directiveDefIdx);
     }
   }
 }
