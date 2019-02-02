@@ -8,9 +8,11 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteReference, ResolvedReference, TsReferenceResolver} from '../../imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, Reference, ReferenceEmitter} from '../../imports';
+import {LogicalFileSystem} from '../../path';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
+import {getRootDirs} from '../../util/src/typescript';
 import {SelectorScopeRegistry} from '../src/selector_scope';
 
 describe('SelectorScopeRegistry', () => {
@@ -63,18 +65,19 @@ describe('SelectorScopeRegistry', () => {
     expect(ProgramModule).toBeDefined();
     expect(SomeModule).toBeDefined();
 
-    const ProgramCmpRef = new ResolvedReference(ProgramCmp, ProgramCmp.name !);
-
-    const resolver = new TsReferenceResolver(program, checker, options, host);
-    const registry = new SelectorScopeRegistry(checker, reflectionHost, resolver);
+    const ProgramCmpRef = new Reference(ProgramCmp);
+    const refEmitter = makeReferenceEmitter(program, checker, options, host);
+    const registry = new SelectorScopeRegistry(checker, reflectionHost, refEmitter);
 
     registry.registerModule(ProgramModule, {
-      declarations: [new ResolvedReference(ProgramCmp, ProgramCmp.name !)],
+      declarations: [new Reference(ProgramCmp)],
       exports: [],
-      imports: [new AbsoluteReference(SomeModule, SomeModule.name !, 'some_library', 'SomeModule')],
+      imports: [new Reference(
+          SomeModule,
+          {specifier: 'some_library', resolutionContext: '/node_modules/some_library/index.d.ts'})],
     });
 
-    const ref = new ResolvedReference(ProgramCmp, ProgramCmp.name !);
+    const ref = new Reference(ProgramCmp);
     registry.registerDirective(ProgramCmp, {
       name: 'ProgramCmp',
       ref: ProgramCmpRef,
@@ -136,14 +139,15 @@ describe('SelectorScopeRegistry', () => {
     expect(ProgramModule).toBeDefined();
     expect(SomeModule).toBeDefined();
 
-    const ProgramCmpRef = new ResolvedReference(ProgramCmp, ProgramCmp.name !);
-
-    const resolver = new TsReferenceResolver(program, checker, options, host);
-    const registry = new SelectorScopeRegistry(checker, reflectionHost, resolver);
+    const ProgramCmpRef = new Reference(ProgramCmp);
+    const refEmitter = makeReferenceEmitter(program, checker, options, host);
+    const registry = new SelectorScopeRegistry(checker, reflectionHost, refEmitter);
 
     registry.registerModule(ProgramModule, {
-      declarations: [new ResolvedReference(ProgramCmp, ProgramCmp.name !)],
-      exports: [new AbsoluteReference(SomeModule, SomeModule.name !, 'some_library', 'SomeModule')],
+      declarations: [new Reference(ProgramCmp)],
+      exports: [new Reference(
+          SomeModule,
+          {specifier: 'some_library', resolutionContext: '/node_modules/some_library/index.d.ts'})],
       imports: [],
     });
 
@@ -167,3 +171,14 @@ describe('SelectorScopeRegistry', () => {
     expect(scope.directives.length).toBe(2);
   });
 });
+
+function makeReferenceEmitter(
+    program: ts.Program, checker: ts.TypeChecker, options: ts.CompilerOptions,
+    host: ts.CompilerHost): ReferenceEmitter {
+  const rootDirs = getRootDirs(host, options);
+  return new ReferenceEmitter([
+    new LocalIdentifierStrategy(),
+    new AbsoluteModuleStrategy(program, checker, options, host),
+    new LogicalProjectStrategy(checker, new LogicalFileSystem(rootDirs)),
+  ]);
+}

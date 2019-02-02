@@ -7,12 +7,14 @@
  */
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath} from '../../../ngtsc/path';
 import {makeProgram} from '../../../ngtsc/testing/in_memory_typescript';
 import {BundleProgram} from '../../src/packages/bundle_program';
 import {EntryPointFormat} from '../../src/packages/entry_point';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 
 export {getDeclaration} from '../../../ngtsc/testing/in_memory_typescript';
+
 
 
 /**
@@ -27,7 +29,7 @@ export function makeTestEntryPointBundle(
   const src = makeTestBundleProgram(files);
   const dts = dtsFiles ? makeTestBundleProgram(dtsFiles) : null;
   const isFlat = src.r3SymbolsFile === null;
-  return {format, rootDirs: ['/'], src, dts, isFlat};
+  return {format, rootDirs: [AbsoluteFsPath.fromUnchecked('/')], src, dts, isFlat};
 }
 
 /**

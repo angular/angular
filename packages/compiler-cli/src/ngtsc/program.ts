@@ -17,8 +17,10 @@ import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
-import {ImportRewriter, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, TsReferenceResolver} from './imports';
+import {AbsoluteModuleStrategy, FileToModuleHost, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
+import {FileToModuleStrategy} from './imports/src/emitter';
 import {PartialEvaluator} from './partial_evaluator';
+import {AbsoluteFsPath, LogicalFileSystem} from './path';
 import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
 import {NgModuleRouteAnalyzer, entryPointKeyFor} from './routing';
@@ -27,7 +29,7 @@ import {ivySwitchTransform} from './switch';
 import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
 import {TypeCheckContext, TypeCheckProgramHost} from './typecheck';
 import {normalizeSeparators} from './util/src/path';
-import {isDtsPath} from './util/src/typescript';
+import {getRootDirs, isDtsPath} from './util/src/typescript';
 
 export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
@@ -40,7 +42,7 @@ export class NgtscProgram implements api.Program {
   private _importRewriter: ImportRewriter|undefined = undefined;
   private _reflector: TypeScriptReflectionHost|undefined = undefined;
   private _isCore: boolean|undefined = undefined;
-  private rootDirs: string[];
+  private rootDirs: AbsoluteFsPath[];
   private closureCompilerEnabled: boolean;
   private entryPoint: ts.SourceFile|null;
   private exportReferenceGraph: ReferenceGraph|null = null;
@@ -51,22 +53,20 @@ export class NgtscProgram implements api.Program {
   private moduleResolver: ModuleResolver;
   private cycleAnalyzer: CycleAnalyzer;
 
+  private refEmitter: ReferenceEmitter|null = null;
+  private fileToModuleHost: FileToModuleHost|null = null;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
       host: api.CompilerHost, oldProgram?: api.Program) {
-    this.rootDirs = [];
-    if (options.rootDirs !== undefined) {
-      this.rootDirs.push(...options.rootDirs);
-    } else if (options.rootDir !== undefined) {
-      this.rootDirs.push(options.rootDir);
-    } else {
-      this.rootDirs.push(host.getCurrentDirectory());
-    }
+    this.rootDirs = getRootDirs(host, options);
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
     this.resourceManager = new HostResourceLoader(host, options);
     const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
     this.host = host;
+    if (host.fileNameToModuleName !== undefined) {
+      this.fileToModuleHost = host as FileToModuleHost;
+    }
     let rootFiles = [...rootNames];
 
     const generators: ShimGenerator[] = [];
@@ -168,7 +168,7 @@ export class NgtscProgram implements api.Program {
     const compilation = this.ensureAnalyzed();
     const diagnostics = [...compilation.diagnostics];
     if (!!this.options.fullTemplateTypeCheck) {
-      const ctx = new TypeCheckContext();
+      const ctx = new TypeCheckContext(this.refEmitter !);
       compilation.typeCheck(ctx);
       diagnostics.push(...this.compileTypeCheckProgram(ctx));
     }
@@ -315,9 +315,32 @@ export class NgtscProgram implements api.Program {
 
   private makeCompilation(): IvyCompilation {
     const checker = this.tsProgram.getTypeChecker();
-    const refResolver = new TsReferenceResolver(this.tsProgram, checker, this.options, this.host);
-    const evaluator = new PartialEvaluator(this.reflector, checker, refResolver);
-    const scopeRegistry = new SelectorScopeRegistry(checker, this.reflector, refResolver);
+    // Construct the ReferenceEmitter.
+    if (this.fileToModuleHost === null || !this.options._useHostForImportGeneration) {
+      // The CompilerHost doesn't have fileNameToModuleName, so build an NPM-centric reference
+      // resolution strategy.
+      this.refEmitter = new ReferenceEmitter([
+        // First, try to use local identifiers if available.
+        new LocalIdentifierStrategy(),
+        // Next, attempt to use an absolute import.
+        new AbsoluteModuleStrategy(this.tsProgram, checker, this.options, this.host),
+        // Finally, check if the reference is being written into a file within the project's logical
+        // file system, and use a relative import if so. If this fails, ReferenceEmitter will throw
+        // an error.
+        new LogicalProjectStrategy(checker, new LogicalFileSystem(this.rootDirs)),
+      ]);
+    } else {
+      // The CompilerHost supports fileNameToModuleName, so use that to emit imports.
+      this.refEmitter = new ReferenceEmitter([
+        // First, try to use local identifiers if available.
+        new LocalIdentifierStrategy(),
+        // Then use fileNameToModuleName to emit imports.
+        new FileToModuleStrategy(checker, this.fileToModuleHost),
+      ]);
+    }
+
+    const evaluator = new PartialEvaluator(this.reflector, checker);
+    const scopeRegistry = new SelectorScopeRegistry(checker, this.reflector, this.refEmitter);
 
     // If a flat module entrypoint was specified, then track references via a `ReferenceGraph` in
     // order to produce proper diagnostics for incorrectly exported directives/pipes/etc. If there
@@ -344,7 +367,7 @@ export class NgtscProgram implements api.Program {
           this.reflector, this.isCore, this.options.strictInjectionParameters || false),
       new NgModuleDecoratorHandler(
           this.reflector, evaluator, scopeRegistry, referencesRegistry, this.isCore,
-          this.routeAnalyzer),
+          this.routeAnalyzer, this.refEmitter),
       new PipeDecoratorHandler(this.reflector, evaluator, scopeRegistry, this.isCore),
     ];
 

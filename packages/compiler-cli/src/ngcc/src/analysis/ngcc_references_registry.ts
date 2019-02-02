@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 import {ReferencesRegistry} from '../../../ngtsc/annotations';
-import {Reference, ResolvedReference} from '../../../ngtsc/imports';
+import {Reference} from '../../../ngtsc/imports';
 import {Declaration, ReflectionHost} from '../../../ngtsc/reflection';
 import {hasNameIdentifier} from '../utils';
 
@@ -31,8 +31,8 @@ export class NgccReferencesRegistry implements ReferencesRegistry {
    */
   add(source: ts.Declaration, ...references: Reference<ts.Declaration>[]): void {
     references.forEach(ref => {
-      // Only store resolved references. We are not interested in literals.
-      if (ref instanceof ResolvedReference && hasNameIdentifier(ref.node)) {
+      // Only store relative references. We are not interested in literals.
+      if (ref.bestGuessOwningModule === null && hasNameIdentifier(ref.node)) {
         const declaration = this.host.getDeclarationOfIdentifier(ref.node.name);
         if (declaration && hasNameIdentifier(declaration.node)) {
           this.map.set(declaration.node.name, declaration);
