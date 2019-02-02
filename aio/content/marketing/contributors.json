@@ -715,5 +715,14 @@
     "twitter": "keillamenezes_",
     "bio": "I am Senior Software Development Consultant in ThoughtWorks and GDE in Angular. Graduated in Computer Science from Federal University of Bahia, I have been worked with software development for more than 11 years. Since 2017, I started with Angular Framework and I went deep into front-end ecosystem and became more specialized in this area. I participate in a computer science community, Campinas Front-end, that promotes events in this area. In the end of 2016, I started to do technical talks. The passion for science is the engine that drives me to seek answers to the problems that computing aims to solve. Besides that, sharing knowledge and experiences is the path I choose to democratize the technology for all.",
     "group": "GDE"
+  },
+
+  "mira": {
+    "name": "Stanimira Vlaeva",
+    "picture": "mira.jpg",
+    "twitter": "StanimiraVlaeva",
+    "website": "https://github.com/sis0k0",
+    "bio": "Software engineer on the NativeScript team at Progress, focused on NativeScript Angular, NativeScript schematics, and integrating webpack in the {N} build system. Co-organizing the Angular Sofia meetup. Speaking about Angular things at conferences here and there.",
+    "group": "GDE"
   }
 }
