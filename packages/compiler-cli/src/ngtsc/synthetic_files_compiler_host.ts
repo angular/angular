@@ -41,6 +41,9 @@ export class SyntheticFilesCompilerHost implements PluginCompilerHost {
         this.syntheticFiles.set(generated.fileName, generated);
       }
     }
+    if (delegate.getDirectories !== undefined) {
+      this.getDirectories = (path: string) => delegate.getDirectories !(path);
+    }
   }
 
   fileExists(filePath: string): boolean {
@@ -88,7 +91,7 @@ export class SyntheticFilesCompilerHost implements PluginCompilerHost {
 
   getNewLine(): string { return this.delegate.getNewLine(); }
 
-  getDirectories(path: string) { return this.delegate.getDirectories(path); }
+  getDirectories?: (path: string) => string[];
 
   readFile(fileName: string): string|undefined { return this.delegate.readFile(fileName); }
 
