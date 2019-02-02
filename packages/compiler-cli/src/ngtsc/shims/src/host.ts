@@ -44,6 +44,9 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
     if (delegate.directoryExists !== undefined) {
       this.directoryExists = (directoryName: string) => delegate.directoryExists !(directoryName);
     }
+    if (delegate.getDirectories !== undefined) {
+      this.getDirectories = (path: string) => delegate.getDirectories !(path);
+    }
   }
 
   resolveTypeReferenceDirectives?:
@@ -84,7 +87,7 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
 
   getCurrentDirectory(): string { return this.delegate.getCurrentDirectory(); }
 
-  getDirectories(path: string): string[] { return this.delegate.getDirectories(path); }
+  getDirectories?: (path: string) => string[];
 
   getCanonicalFileName(fileName: string): string {
     return this.delegate.getCanonicalFileName(fileName);
