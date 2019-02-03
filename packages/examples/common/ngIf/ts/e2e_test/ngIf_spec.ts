@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {fixmeIvy} from '@angular/private/testing';
+import {modifiedInIvy} from '@angular/private/testing';
 import {$, ExpectedConditions, browser, by, element} from 'protractor';
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
@@ -46,7 +46,7 @@ describe('ngIf', () => {
   describe('ng-if-then-else', () => {
     let comp = 'ng-if-then-else';
 
-    fixmeIvy('unknown. Run "yarn bazel run packages/examples/common:devserver" to debug')
+    modifiedInIvy('FW-1019: Design new API to replace static queries')
         .it('should hide/show content', () => {
           browser.get(URL);
           waitForElement(comp);
