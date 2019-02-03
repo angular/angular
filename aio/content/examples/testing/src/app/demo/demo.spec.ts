@@ -14,7 +14,7 @@ export class FakeValueService extends ValueService {
 describe('demo (no TestBed):', () => {
 
   // #docregion ValueService
-  // Straight Jasmine testing without Angular's testing support
+  // Angular가 제공하는 테스트 유틸리티를 사용하지 않고 Jasmine을 그대로 사용합니다.
   describe('ValueService', () => {
     let service: ValueService;
     beforeEach(() => { service = new ValueService(); });
@@ -63,11 +63,11 @@ describe('demo (no TestBed):', () => {
     });
 
     it('#getValue should return stubbed value from a spy', () => {
-      // create `getValue` spy on an object representing the ValueService
+      // `getValue` 메소드가 정의된 스파이 객체를 정의합니다.
       const valueServiceSpy =
         jasmine.createSpyObj('ValueService', ['getValue']);
 
-      // set the value to return when the `getValue` spy is called.
+      // `getValue` 스파이 메소드가 반환할 값을 정의합니다.
       const stubValue = 'stub value';
       valueServiceSpy.getValue.and.returnValue(stubValue);
 

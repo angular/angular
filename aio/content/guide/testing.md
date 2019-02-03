@@ -476,22 +476,37 @@ written without assistance from Angular testing utilities.
 
 {@a services-with-dependencies}
 
+<!--
 #### Services with dependencies
+-->
+#### 의존성 객체가 존재하는 서비스
 
+<!--
 Services often depend on other services that Angular injects into the constructor.
 In many cases, it easy to create and _inject_ these dependencies by hand while
 calling the service's constructor.
 
 The `MasterService` is a simple example:
+-->
+서비스는 생성자로 다른 서비스를 의존성으로 주입받을 수 있습니다.
+의존성 객체가 있는 서비스를 간단하게 생성하려면 의존성 객체를 직접 생성한 후에 서비스 클래스에 `new` 키워드를 사용할 때 인자로 전달하면 됩니다.
+
+`MasterService`의 경우를 봅시다:
 
 <code-example path="testing/src/app/demo/demo.ts" region="MasterService" header="app/demo/demo.ts" linenums="false"></code-example>
 
+<!--
 `MasterService` delegates its only method, `getValue`, to the injected `ValueService`.
 
 Here are several ways to test it.
+-->
+`MasterService`에는 `getValue` 메소드만 정의되어 있으며, `ValueService`를 의존성으로 주입받습니다.
+
+그러면 `MasterService`를 다음과 같이 다양하게 테스트할 수 있습니다.
 
 <code-example path="testing/src/app/demo/demo.spec.ts" region="MasterService" header="app/demo/demo.spec.ts"></code-example>
 
+<!--
 The first test creates a `ValueService` with `new` and passes it to the `MasterService` constructor.
 
 However, injecting the real service rarely works well as most dependent services are difficult to create and control.
@@ -499,21 +514,41 @@ However, injecting the real service rarely works well as most dependent services
 Instead you can mock the dependency, use a dummy value, or create a
 [spy](https://jasmine.github.io/2.0/introduction.html#section-Spies)
 on the pertinent service method.
+-->
+첫번째 테스트에서는 `new` 키워드를 사용해서 `ValueService`를 생성할 때 생성자로 `MasterService` 인스턴스를 전달합니다.
+
+그런데 실제 서비스 클래스를 의존성으로 주입하면, 이 클래스가 실제로 어떤 동작을 할지 제어하기 힘들기 때문에  테스트가 제대로 동작하지 않을 가능성이 더 높아집니다.
+
+그렇다면 실제 서비스 대신 더미 값이나 [스파이(spy)](https://jasmine.github.io/2.0/introduction.html#section-Spies)를 활용하는 것이 더 간편합니다.
 
 <div class="alert is-helpful">
 
+<!--
 Prefer spies as they are usually the easiest way to mock services.
+-->
+서비스를 모킹(mocking)하는 방법 중 간단한 방법은 스파이를 활용하는 것입니다.
+스파이를 적극적으로 활용하세요.
 
 </div>
 
+<!--
 These standard testing techniques are great for unit testing services in isolation.
 
 However, you almost always inject service into application classes using Angular
 dependency injection and you should have tests that reflect that usage pattern.
 Angular testing utilities make it easy to investigate how injected services behave.
+-->
+이렇게 작성하면 테스트하려는 서비스를 독립적인 영역으로 분리할 수 있기 때문에 테스트하기 편합니다.
 
+하지만 의존성 관계가 복잡하게 엮여 있거나 실제 사용하는 패턴으로 테스트를 실행해야 한다면 조금 다른 방법이 필요합니다.
+이런 상황에서 활용할 수 있는 Angular 테스트 유틸리티 기능에 대해 알아봅시다.
+
+<!--
 #### Testing services with the _TestBed_
+-->
+#### _TestBed_ 로 서비스 테스트하기
 
+<!--
 Your app relies on Angular [dependency injection (DI)](guide/dependency-injection)
 to create services.
 When a service has a dependent service, DI finds or creates that dependent service.
@@ -525,11 +560,22 @@ You don't worry about the order of constructor arguments or how they're created.
 As a service _tester_, you must at least think about the first level of service dependencies
 but you _can_ let Angular DI do the service creation and deal with constructor argument order
 when you use the `TestBed` testing utility to provide and create services.
+-->
+테스트할 서비스의 인스턴스는 Angular가 제공하는 [의존성 주입(Dependency Injection, DI)](guide/dependency-injection) 시스템을 활용할 수도 있습니다.
+서비스에 의존성으로 주입될 서비스가 있다면, 이 의존성 객체의 인스턴스를 찾는 역할을 DI에 맡길 수 있습니다.
+의존성으로 주입되는 서비스에 또다른 의존성이 필요하다면 이 의존성 객체를 찾는 것도 DI를 활용할 수 있습니다.
+
+개발자는 테스트할 서비스만 신경쓰면 됩니다.
+의존성 객체를 어떻게 생성하는지, 생성자에 전달하는 순서는 어떻게 되는지 신경쓸 필요가 없습니다.
+
+이제 `TestBed` 테스트 유틸리티ㅣ를 활용하면 Angular DI 시스템을 활용해서 서비스 인스턴스를 참조할 수 있습니다.
+서비스에 연결된 의존성 관계는 DI가 모두 처리합니다.
 
 {@a testbed}
 
 #### Angular _TestBed_
 
+<!--
 The `TestBed` is the most important of the Angular testing utilities.
 The `TestBed` creates a dynamically-constructed Angular _test_ module that emulates
 an Angular [@NgModule](guide/ngmodules).
@@ -538,37 +584,65 @@ The `TestBed.configureTestingModule()` method takes a metadata object that can h
 
 To test a service, you set the `providers` metadata property with an
 array of the services that you'll test or mock.
+-->
+`TestBed`는 Angular 테스트 유틸리티 중 가장 중요한 객체입니다.
+`TestBed`는 Angular에서 [@NgModule](guide/ngmodules) 역할을 하는 _테스트_ 모듈을 동적으로 생성합니다.
 
+`TestBed.configureTestingModule()` 메소드는 메타데이터 객체를 인자로 받는데, 메타데이터는 [@NgModule](guide/ngmodules)에 사용하는 프로퍼티를 거의 대부분 지원합니다.
+
+그래서 `NgModule`에 `providers` 메타데이터 프로퍼티를 지정했던 것처럼 `TestBed.configureTestingModule()` 메소드에도 `providers` 프로퍼티를 지정할 수 있습니다.
+
+<!--
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
   region="value-service-before-each"
   header="app/demo/demo.testbed.spec.ts (provide ValueService in beforeEach">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/demo/demo.testbed.spec.ts"
+  region="value-service-before-each"
+  header="app/demo/demo.testbed.spec.ts (beforeEach()에서 ValueService 준비하기)">
+</code-example>
 
+<!--
 Then inject it inside a test by calling `TestBed.get()` with the service class as the argument.
+-->
+그리고 `TestBed.get()` 함수를 실행하면서 인자로 서비스 클래스를 전달하면 서비스 클래스의 인스턴스를 참조할 수 있습니다.
 
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
   region="value-service-inject-it">
 </code-example>
 
+<!--
 Or inside the `beforeEach()` if you prefer to inject the service as part of your setup.
+-->
+아니면 `beforeEach()` 안쪽에서 서비스 객체의 인스턴스를 변수에 할당해 둘 수도 있습니다.
 
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
   region="value-service-inject-before-each">
 </code-example>
 
+<!--
 When testing a service with a dependency, provide the mock in the `providers` array.
 
 In the following example, the mock is a spy object.
+-->
+서비스에 의존성으로 주입되는 객체가 있다면, 이 객체의 목(mock) 역할을 하는 객체도 `providers` 배열에 지정할 수 있습니다.
+
+아래 예제에서는 Jasmine 스파이 객체가 목으로 사용되었습니다.
 
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
   region="master-service-before-each" linenums="false">
 </code-example>
 
+<!--
 The test consumes that spy in the same way it did earlier.
+-->
+이 목 객체는 이전에 살펴봤던 테스트 코드에서 다음과 같이 사용되었습니다.
 
 <code-example
   path="testing/src/app/demo/demo.testbed.spec.ts"
@@ -576,8 +650,13 @@ The test consumes that spy in the same way it did earlier.
 </code-example>
 
 {@a no-before-each}
-#### Testing without _beforeEach()_
 
+<!--
+#### Testing without _beforeEach()_
+-->
+#### _beforeEach()_ 없이 테스트하기
+
+<!--
 Most test suites in this guide call `beforeEach()` to set the preconditions for each `it()` test
 and rely on the `TestBed` to create classes and inject services.
 
@@ -586,6 +665,14 @@ There's another school of testing that never calls `beforeEach()` and prefers to
 Here's how you might rewrite one of the `MasterService` tests in that style.
 
 Begin by putting re-usable, preparatory code in a _setup_ function instead of `beforeEach()`.
+-->
+이 문서에서 다루는 테스트 스윗(test suites) 대부분은 테스트가 실제로 수행되는 `it()`에 필요한 준비를 하기 위해 `beforeEach()` 함수를 실행합니다. `TestBed`를 사용해서 의존성 관계를 연결하고, 서비스 인스턴스를 생성해서 변수에 할당하는 것이 이런 과정에 해당됩니다.
+
+그런데 `beforeEach()`를 하번도 실행하지 않으면서 테스트 준비를 모두 끝낼 수 있는 방법도 있습니다.
+
+이번에는 새로운 방식으로 `MasterService`를 테스트 코드를 작성해 봅시다.
+
+먼저, `beforeEach()` 함수에서 하던 작업을 대신하는 _setup_ 함수를 정의합니다.
 
 <code-example
   path="testing/src/app/demo/demo.spec.ts"
@@ -593,6 +680,7 @@ Begin by putting re-usable, preparatory code in a _setup_ function instead of `b
   header="app/demo/demo.spec.ts (setup)" linenums="false">
 </code-example>
 
+<!--
 The `setup()` function returns an object literal
 with the variables, such as `masterService`, that a test might reference.
 You don't define _semi-global_ variables (e.g., `let masterService: MasterService`)
@@ -600,21 +688,30 @@ in the body of the `describe()`.
 
 Then each test invokes `setup()` in its first line, before continuing
 with steps that manipulate the test subject and assert expectations.
+-->
+`setup()` 함수는 객체 리터럴을 반환하는데, 이 객체에는 `masterService`와 같이 테스트에서 사용할 프로퍼티가 들어 있습니다.
+그래서 `let masterService: MasterService`와 같이 _거의 전역으로 사용되는_ 변수를 따로 선언할 필요가 없습니다.
+
+이제는 테스트 스펙 제일 첫 줄에서 `setup()` 함수를 실행한 후에 이 함수가 반환하는 객체를 사용해서 테스트 로직을 작성하면 됩니다.
 
 <code-example
   path="testing/src/app/demo/demo.spec.ts"
   region="no-before-each-test" linenums="false">
 </code-example>
 
+<!--
 Notice how the test uses
 [_destructuring assignment_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment)
 to extract the setup variables that it needs.
+-->
+객체 리터럴에서 필요한 객체를 추출해서 각 변수에 할당하는 문법은 [_구조 분해 할당(destructuring assignment)_](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment) 문법을 활용한 것입니다.
 
 <code-example
   path="testing/src/app/demo/demo.spec.ts"
   region="no-before-each-setup-call">
 </code-example>
 
+<!--
 Many developers feel this approach is cleaner and more explicit than the
 traditional `beforeEach()` style.
 
@@ -622,22 +719,43 @@ Although this testing guide follows the tradition style and
 the default [CLI schematics](https://github.com/angular/angular-cli)
 generate test files with `beforeEach()` and `TestBed`,
 feel free to adopt _this alternative approach_ in your own projects.
+-->
+전통적인 `beforeEach()` 스타일보다는 이 방식이 더 깔끔하고 좀 더 명확할 수 있습니다.
 
+이 문서에서는 기본 [Angular CLI 스키매틱(schematics)](https://github.com/angular/angular-cli)에 정의된 대로 `beforeEach()`와 `TestBed`를 활용하는 전통적인 방식으로 테스트 스펙을 작성하지만, 프로젝트에 _이 새로운 방식_ 을 적용해보는 것도 권장합니다.
+
+<!--
 #### Testing HTTP services
+-->
+#### HTTP 서비스 테스트하기
 
+<!--
 Data services that make HTTP calls to remote servers typically inject and delegate
 to the Angular [`HttpClient`](guide/http) service for XHR calls.
 
 You can test a data service with an injected `HttpClient` spy as you would
 test any service with a dependency.
+-->
+HTTP 요청을 보내는 데이터 서비스는 일반적으로 XHR 요청을 리모트 서버로 보내기 위해 Angular [`HttpClient`](guide/http) 서비스를 의존성으로 주입받습니다.
+
+이런 데이터 서비스는 `HttpClient` 스파이를 활용해서 테스트할 수 있습니다.
+
+<!--
 <code-example
   path="testing/src/app/model/hero.service.spec.ts"
   region="test-with-spies"
   header="app/model/hero.service.spec.ts (tests with spies)">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/model/hero.service.spec.ts"
+  region="test-with-spies"
+  header="app/model/hero.service.spec.ts (HttpClient 스파이로 테스트하기)">
+</code-example>
 
 <div class="alert is-important">
 
+<!--
 The `HeroService` methods return `Observables`. You must
 _subscribe_ to an observable to (a) cause it to execute and (b)
 assert that the method succeeds or fails.
@@ -646,29 +764,41 @@ The `subscribe()` method takes a success (`next`) and fail (`error`) callback.
 Make sure you provide _both_ callbacks so that you capture errors.
 Neglecting to do so produces an asynchronous uncaught observable error that
 the test runner will likely attribute to a completely different test.
+-->
+`HeroService`에 정의한 메소드는 모두 `Observable` 타입을 반환합니다.
+그러면 이 옵저버블은 (a) 실행하기 위해서, 그리고 (b) 메소드가 정상적으로 실행되었는지, 실패했는지 확인하기 위해 반드시 _구독(subscribe)_ 해야 합니다.
+
+`subscribe()` 메소드는 성공했을 때 실행할 콜백(`next`)과 실패했을 때 실행할 콜백(`error`)을 인자로 받습니다.
+그래서 옵저버블에서 발생한 에러를 확인하려면 두 인자를 모두 지정해야 합니다.
+옵저버블은 비동기로 실행되기 때문에 이 옵저버블에서 발생하는 에러를 확인하지 않으면 전혀 다른 테스트 결과를 낼 수도 있습니다.
 
 </div>
 
 #### _HttpClientTestingModule_
 
+<!--
 Extended interactions between a data service and the `HttpClient` can be complex
 and difficult to mock with spies.
 
 The `HttpClientTestingModule` can make these testing scenarios more manageable.
 
-<!--
 While the _code sample_ accompanying this guide demonstrates `HttpClientTestingModule`,
 this page defers to the [Http guide](guide/http#testing-http-requests),
 which covers testing with the `HttpClientTestingModule` in detail.
 -->
-While the _code sample_ accompanying this guide demonstrates `HttpClientTestingModule`,
-this page defers to the [Http guide](guide/http#http-요청-테스트하기),
-which covers testing with the `HttpClientTestingModule` in detail.
+데이터 서비스와 `HttpClient`는 복잡하게 연결될 수 있기 때문에 `HttpClient` 역할을 대신하는 목 스파이를 새로 만드는 것은 쉬운 작업이 아닙니다.
+
+하지만 `HttpClientTestingModule`을 활용하면 `HttpClient`가 실행되는 과정을 좀 더 편하게 제어할 수 있기 때문에 테스트 시나리오를 작성하기도 편합니다.
+
+다만, 이 문서에서 `HttpClientTestingModule`의 내용을 다루기에는 내용이 많기 때문에, 이 내용을 자세하게 다루는 [Http guide](guide/http#http-요청-테스트하기) 문서를 참고하세요.
 
 <div class="alert is-helpful">
 
+<!--
 This guide's sample code also demonstrates testing of the _legacy_ `HttpModule`
 in `app/model/http-hero.service.spec.ts`.
+-->
+_이전 버전에서 제공하던_ `HttpModule`을 사용하는 예제 코드는 `app/model/http-hero.service.spec.ts`에서 확인할 수 있습니다.
 
 </div>
 

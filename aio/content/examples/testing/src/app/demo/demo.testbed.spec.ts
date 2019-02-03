@@ -102,13 +102,13 @@ describe('demo (with TestBed):', () => {
       const spy = jasmine.createSpyObj('ValueService', ['getValue']);
 
       TestBed.configureTestingModule({
-        // Provide both the service-to-test and its (spy) dependency
+        // 테스트할 서비스와 의존성으로 사용될 목 객체를 등록합니다.
         providers: [
           MasterService,
           { provide: ValueService, useValue: spy }
         ]
       });
-      // Inject both the service-to-test and its (spy) dependency
+      // 서비스의 인스턴스와 목 객체의 인스턴스를 가져옵니다.
       masterService = TestBed.get(MasterService);
       valueServiceSpy = TestBed.get(ValueService);
     });
