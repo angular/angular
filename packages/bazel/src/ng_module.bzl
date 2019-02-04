@@ -200,11 +200,11 @@ def _expected_outs(ctx):
         if not _is_bazel():
             metadata_files += [ctx.actions.declare_file(basename + ext) for ext in metadata]
 
-    flat_module_out = _flat_module_out_file(ctx)
-    bundle_index_typings = ctx.actions.declare_file("%s.bundle.d.ts" % flat_module_out)
+        bundle_index_typings = ctx.actions.declare_file("%s.bundle.d.ts" % ctx.label.name)
 
     # We do this just when producing a flat module index for a publishable ng_module
     if _should_produce_flat_module_outs(ctx):
+        flat_module_out = _flat_module_out_file(ctx)
         devmode_js_files.append(ctx.actions.declare_file("%s.js" % flat_module_out))
         closure_js_files.append(ctx.actions.declare_file("%s.closure.js" % flat_module_out))
         declaration_files.append(ctx.actions.declare_file("%s.d.ts" % flat_module_out))
@@ -367,7 +367,7 @@ def ngc_compile_action(
             outputs = [dts_bundle_out],
             arguments = [
                 tsconfig_file.path,
-                dts_bundle_out.path.replace(".bundle.d.ts", ".d.ts"),
+                "/".join([ctx.bin_dir.path, ctx.label.package, ctx.attr.entry_point.replace(".ts", ".d.ts")]),
                 dts_bundle_out.path
             ],
         )
