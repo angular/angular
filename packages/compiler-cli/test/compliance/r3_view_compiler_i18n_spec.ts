@@ -600,9 +600,9 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_1 = goog.getMsg("Element title");
-        …
-        const MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_0 = goog.getMsg(" Some content ");
+        const MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_0 = goog.getMsg("Element title");
+        const $_c1$ = ["title", MSG_EXTERNAL_ID_WITH_INVALID_CHARS$$APP_SPEC_TS_0];
+        const MSG_EXTERNAL_ID_WITH_INVALID_CHARS_2$$APP_SPEC_TS_2 = goog.getMsg(" Some content ");
         …
       `;
 
