@@ -145,7 +145,7 @@ describe('NgPackagesInstaller', () => {
       beforeEach(() => {
         log = [];
         fs.writeFileSync.and.callFake((filePath, contents) => filePath === packageJsonPath && log.push(`writeFile: ${contents}`));
-        installer._installDeps.and.callFake(() => log.push('installDeps:'));
+        installer._installDeps.and.callFake((...args) => log.push(`installDeps: ${args.join(' ')}`));
         installer._checkLocalMarker.and.returnValue(false);
         installer.installLocalDependencies();
       });
@@ -198,7 +198,7 @@ describe('NgPackagesInstaller', () => {
       it('should overwrite package.json, then install deps, then restore original package.json', () => {
         expect(log).toEqual([
           `writeFile: ${expectedModifiedPackageJson}`,
-          `installDeps:`,
+          `installDeps: --pure-lockfile --check-files`,
           `writeFile: ${dummyPackageJson}`
         ]);
       });
