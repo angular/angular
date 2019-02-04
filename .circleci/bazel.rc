@@ -2,6 +2,10 @@
 # We do this by copying this file to /etc/bazel.bazelrc at the start of the build.
 # See documentation in /docs/BAZEL.md
 
+# Save downloaded repositories in a location that can be cached by CircleCI. This helps us
+# speeding up the analysis time significantly with Bazel managed node dependencies on the CI.
+build --repository_cache=/home/circleci/bazel_repository_cache
+
 # Don't be spammy in the logs
 # TODO(gmagolan): Hide progress again once build performance improves
 # Presently, CircleCI can timeout during bazel test ... with the following
