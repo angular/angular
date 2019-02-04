@@ -1023,6 +1023,9 @@
     "name": "nativeRemoveChild"
   },
   {
+    "name": "nativeRemoveNode"
+  },
+  {
     "name": "nextContext"
   },
   {
