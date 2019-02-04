@@ -210,7 +210,7 @@ def _expected_outs(ctx):
         if is_legacy_ngc:
             metadata_files.append(ctx.actions.declare_file("%s.metadata.json" % flat_module_out))
     else:
-        bundle_index_typings = ctx.actions.declare_file("%s.bundle.d.ts" % ctx.label.name)
+        bundle_index_typings = ctx.actions.declare_file("%s.bundle.d.ts" % ctx.attr.entry_point.replace('.ts', ''))
 
     # TODO(alxhub): i18n is only produced by the legacy compiler currently. This should be re-enabled
     # when ngtsc can extract messages

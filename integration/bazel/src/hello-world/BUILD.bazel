@@ -15,6 +15,7 @@ ng_module(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
+    entry_point = "index.ts",
     assets = [":hello-world-styles"],
     deps = [
         "@angular//packages/core",
