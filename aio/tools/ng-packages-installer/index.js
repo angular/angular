@@ -88,10 +88,10 @@ class NgPackagesInstaller {
             });
           });
 
-          fs.writeFileSync(pkg.packageJsonPath, JSON.stringify(tmpConfig));
+          fs.writeFileSync(pkg.packageJsonPath, JSON.stringify(tmpConfig, null, 2));
         });
 
-        const packageConfigFile = fs.readFileSync(pathToPackageConfig);
+        const packageConfigFile = fs.readFileSync(pathToPackageConfig, 'utf8');
         const packageConfig = JSON.parse(packageConfigFile);
 
         const [dependencies, peers] = this._collectDependencies(packageConfig.dependencies || {}, packages);
@@ -118,7 +118,7 @@ class NgPackagesInstaller {
         this._log(`Restoring original ${PACKAGE_JSON} for local Angular packages.`);
         Object.keys(packages).forEach(key => {
           const pkg = packages[key];
-          fs.writeFileSync(pkg.packageJsonPath, JSON.stringify(pkg.config));
+          fs.writeFileSync(pkg.packageJsonPath, JSON.stringify(pkg.config, null, 2));
         });
       }
     }
