@@ -185,8 +185,6 @@ export interface ContentChildrenDecorator {
     }): Query;
 }
 
-export declare function createInjector(defType: any, parent?: Injector | null, additionalProviders?: StaticProvider[] | null): Injector;
-
 export declare function createPlatform(injector: Injector): PlatformRef;
 
 export declare function createPlatformFactory(parentPlatformFactory: ((extraProviders?: StaticProvider[]) => PlatformRef) | null, name: string, providers?: StaticProvider[]): (extraProviders?: StaticProvider[]) => PlatformRef;

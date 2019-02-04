@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, ViewRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
+import {ChangeDetectorRef, Component as _Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, QueryList, RendererFactory2, TemplateRef, ViewContainerRef, ViewRef, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {ViewEncapsulation} from '../../src/metadata';
 
 import {AttributeMarker, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, listener, loadViewQuery, NgOnChangesFeature, queryRefresh, viewQuery,} from '../../src/render3/index';
@@ -18,6 +18,7 @@ import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
 import {getLView} from '../../src/render3/state';
 import {getNativeByIndex} from '../../src/render3/util';
+import {createInjector} from '../../src/di/r3_injector';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 import {NgForOf} from '../../test/render3/common_with_def';
 

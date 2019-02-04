@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
+import {ViewEncapsulation, defineInjectable, defineInjector} from '../../src/core';
 
 import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty, template, getRenderedText} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, text, textBinding, tick} from '../../src/render3/instructions';
@@ -15,6 +15,7 @@ import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition
 import {NgIf} from './common_with_def';
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, MockRendererFactory, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
+import {createInjector} from '../../src/di/r3_injector';
 
 describe('component', () => {
   class CounterComponent {

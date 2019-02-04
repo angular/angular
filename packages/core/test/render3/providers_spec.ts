@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component as _Component, ComponentFactoryResolver, ElementRef, InjectFlags, Injectable as _Injectable, InjectionToken, InjectorType, Provider, RendererFactory2, ViewContainerRef, createInjector, defineInjectable, defineInjector, inject, ɵNgModuleDef as NgModuleDef} from '../../src/core';
+import {Component as _Component, ComponentFactoryResolver, ElementRef, InjectFlags, Injectable as _Injectable, InjectionToken, InjectorType, Provider, RendererFactory2, ViewContainerRef, defineInjectable, defineInjector, inject, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {forwardRef} from '../../src/di/forward_ref';
+import {createInjector} from '../../src/di/r3_injector';
 import {getInjector} from '../../src/render3/discovery_utils';
 import {ProvidersFeature, defineComponent, defineDirective, directiveInject, injectComponentFactoryResolver} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, text, textBinding} from '../../src/render3/instructions';
