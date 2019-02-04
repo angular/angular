@@ -18,7 +18,7 @@ import {
   Output,
   SkipSelf,
 } from '@angular/core';
-import {Observable, of as observableOf, Subject, Subscription, Observer} from 'rxjs';
+import {Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {coerceElement} from '@angular/cdk/coercion';
 
 
@@ -41,8 +41,7 @@ export interface FocusOptions {
 type MonitoredElementInfo = {
   unlisten: Function,
   checkChildren: boolean,
-  subject: Subject<FocusOrigin>,
-  observable: Observable<FocusOrigin>
+  subject: Subject<FocusOrigin>
 };
 
 /**
@@ -170,30 +169,17 @@ export class FocusMonitor implements OnDestroy {
     }
 
     // Create monitored element info.
-    const subject = new Subject<FocusOrigin>();
-    const info: MonitoredElementInfo = {
+    let info: MonitoredElementInfo = {
       unlisten: () => {},
-      checkChildren,
-      subject,
-      // Note that we want the observable to emit inside the NgZone, however we don't want to
-      // trigger change detection if nobody has subscribed to it. We do so by creating the
-      // observable manually.
-      observable: new Observable((observer: Observer<FocusOrigin>) => {
-        const subscription = subject.subscribe(origin => {
-          this._ngZone.run(() => observer.next(origin));
-        });
-
-        return () => {
-          subscription.unsubscribe();
-        };
-      })
+      checkChildren: checkChildren,
+      subject: new Subject<FocusOrigin>()
     };
     this._elementInfo.set(nativeElement, info);
     this._incrementMonitoredElementCount();
 
     // Start listening. We need to listen in capture phase since focus events don't bubble.
-    const focusListener = (event: FocusEvent) => this._onFocus(event, nativeElement);
-    const blurListener = (event: FocusEvent) => this._onBlur(event, nativeElement);
+    let focusListener = (event: FocusEvent) => this._onFocus(event, nativeElement);
+    let blurListener = (event: FocusEvent) => this._onBlur(event, nativeElement);
     this._ngZone.runOutsideAngular(() => {
       nativeElement.addEventListener('focus', focusListener, true);
       nativeElement.addEventListener('blur', blurListener, true);
@@ -205,7 +191,7 @@ export class FocusMonitor implements OnDestroy {
       nativeElement.removeEventListener('blur', blurListener, true);
     };
 
-    return info.observable;
+    return info.subject.asObservable();
   }
 
   /**
@@ -372,7 +358,7 @@ export class FocusMonitor implements OnDestroy {
     }
 
     this._setClasses(element, origin);
-    elementInfo.subject.next(origin);
+    this._emitOrigin(elementInfo.subject, origin);
     this._lastFocusOrigin = origin;
   }
 
@@ -392,7 +378,11 @@ export class FocusMonitor implements OnDestroy {
     }
 
     this._setClasses(element);
-    elementInfo.subject.next(null);
+    this._emitOrigin(elementInfo.subject, null);
+  }
+
+  private _emitOrigin(subject: Subject<FocusOrigin>, origin: FocusOrigin) {
+    this._ngZone.run(() => subject.next(origin));
   }
 
   private _incrementMonitoredElementCount() {
