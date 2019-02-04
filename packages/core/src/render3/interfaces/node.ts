@@ -305,8 +305,8 @@ export interface TNode {
   parent: TElementNode|TContainerNode|null;
 
   /**
-   * If this node is part of an i18n block, it indicates whether this node is part of the DOM.
-   * If this node is not part of an i18n block, this field is false.
+   * It indicates whether this node is part of the DOM.
+   * i18n can set this to `false` under some conditions.
    */
   attached: boolean;
 

@@ -322,7 +322,7 @@ export function insertView(
  *
  * @param lContainer The container from which to detach a view
  * @param removeIndex The index of the view to detach
- * @param attached Whether or not this view is already detached.
+ * @param attached Whether or not this view is still attached.
  * @returns Detached LView instance.
  */
 export function detachView(lContainer: LContainer, removeIndex: number, attached: boolean): LView {
