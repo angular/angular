@@ -4547,63 +4547,63 @@ window.testBlocklist = {
   },
   "MatSelectionList without forms with list option should restore focus if active option is destroyed": {
     "error": "Error: Expected -1 to be 3.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList without forms with list option should not attempt to focus the next option when the destroyed option was not focused": {
     "error": "Error: Expected -1 to be 3.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList without forms with list option should focus and toggle the next item when pressing SHIFT + UP_ARROW": {
     "error": "Error: Expected -1 to be 3.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList without forms with list option should focus next item when press DOWN ARROW": {
     "error": "Error: Expected 0 to equal 3.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList without forms with list option should focus the last item when pressing END": {
     "error": "Error: Expected 2 to be 3.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList without forms with list option should select all items using ctrl + a": {
     "error": "Error: Expected false to be true.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList without forms with list option should select all items using ctrl + a if some items are selected": {
     "error": "Error: Expected false to be true.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList without forms with list option should be able to jump focus down to an item by typing": {
     "error": "Error: Expected 1 to be 3.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList with forms and ngModel should update the model if an option got selected programmatically": {
     "error": "Error: Expected 0 to be 1, 'Expected first list option to be selected'.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList with forms and ngModel should update the model if an option got clicked": {
     "error": "Error: Expected 0 to be 1, 'Expected first list option to be selected'.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList with forms and ngModel should remove a selected option from the value on destroy": {
     "error": "Error: Expected $.length = 0 to equal 2.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList with forms and ngModel should update the model if an option got selected via the model": {
     "error": "Error: Expected $.length = 0 to equal 1.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList with forms and ngModel should be able to programmatically set an array with duplicate values": {
     "error": "Error: Expected $[0] = false to equal true.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList with forms preselected values should show the item as selected when preselected inside OnPush parent": {
     "error": "Error: Expected false to be true.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "MatSelectionList with forms with custom compare function should use a custom comparator to determine which options are selected": {
     "error": "Error: Expected spy comparator to have been called.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should revert the element back to its parent after dragging with a custom preview has stopped": {
     "error": "TypeError: Cannot read property 'clientRect' of undefined",
@@ -4615,7 +4615,7 @@ window.testBlocklist = {
   },
   "MatSelectionList with forms and ngModel should not dispatch the model change event if nothing changed using selectAll": {
     "error": "Error: Expected spy model change spy to have been called once. It was called 0 times.",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly",
   }
 }
 
