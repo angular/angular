@@ -52,6 +52,8 @@ describe('NgPackagesInstaller', () => {
 
     beforeEach(() => {
       spyOn(installer, '_checkLocalMarker');
+      spyOn(installer, '_installDeps');
+      spyOn(installer, '_setLocalMarker');
 
       // These are the packages that are "found" in the dist directory
       dummyNgPackages = {
@@ -121,11 +123,19 @@ describe('NgPackagesInstaller', () => {
     });
 
     describe('when there is a local package marker', () => {
+      beforeEach(() => installer._checkLocalMarker.and.returnValue(true));
+
       it('should not continue processing', () => {
-        installer._checkLocalMarker.and.returnValue(true);
         installer.installLocalDependencies();
         expect(installer._checkLocalMarker).toHaveBeenCalled();
         expect(installer._getDistPackages).not.toHaveBeenCalled();
+      });
+
+      it('should continue processing (without checking for local marker) if `force` is true', () => {
+        installer.force = true;
+        installer.installLocalDependencies();
+        expect(installer._checkLocalMarker).not.toHaveBeenCalled();
+        expect(installer._getDistPackages).toHaveBeenCalled();
       });
     });
 
@@ -135,8 +145,7 @@ describe('NgPackagesInstaller', () => {
       beforeEach(() => {
         log = [];
         fs.writeFileSync.and.callFake((filePath, contents) => filePath === packageJsonPath && log.push(`writeFile: ${contents}`));
-        spyOn(installer, '_installDeps').and.callFake(() => log.push('installDeps:'));
-        spyOn(installer, '_setLocalMarker');
+        installer._installDeps.and.callFake(() => log.push('installDeps:'));
         installer._checkLocalMarker.and.returnValue(false);
         installer.installLocalDependencies();
       });

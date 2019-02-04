@@ -62,7 +62,7 @@ class NgPackagesInstaller {
    * contents and acts as an indicator that dependencies have been overridden.
    */
   installLocalDependencies() {
-    if (this._checkLocalMarker() !== true || this.force) {
+    if (this.force || !this._checkLocalMarker()) {
       const pathToPackageConfig = path.resolve(this.projectDir, PACKAGE_JSON);
       const packages = this._getDistPackages();
 
