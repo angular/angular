@@ -19,13 +19,6 @@ http_archive(
     strip_prefix = "rules_nodejs-%s" % RULES_NODEJS_VERSION,
 )
 
-RULES_TYPESCRIPT_VERSION = "<%= RULES_TYPESCRIPT_VERSION %>"
-http_archive(
-    name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/%s.zip" % RULES_TYPESCRIPT_VERSION,
-    strip_prefix = "rules_typescript-%s" % RULES_TYPESCRIPT_VERSION,
-)
-
 # The @angular repo contains rule for building Angular applications
 ANGULAR_VERSION = "<%= ANGULAR_VERSION %>"
 http_archive(
@@ -53,15 +46,6 @@ http_archive(
 ####################################
 # Load and install our dependencies downloaded above.
 
-load("@angular//packages/bazel:package.bzl", "rules_angular_dependencies")
-rules_angular_dependencies()
-
-load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
-rules_typescript_dependencies()
-
-load("@build_bazel_rules_nodejs//:package.bzl", "rules_nodejs_dependencies")
-rules_nodejs_dependencies()
-
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 # 0.18.0 is needed for .bazelignore
 check_bazel_version("0.18.0")
@@ -71,6 +55,12 @@ yarn_install(
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",
 )
+
+load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
+install_bazel_dependencies()
+
+load("@build_bazel_rules_karma//:package.bzl", "rules_karma_dependencies")
+rules_karma_dependencies()
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
 go_rules_dependencies()

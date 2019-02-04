@@ -8,11 +8,11 @@
  * @fileoverview Schematics for ng-new project that builds with Bazel.
  */
 
-import {Rule, Tree, chain, externalSchematic, schematic} from '@angular-devkit/schematics';
-import {validateProjectName} from '@schematics/angular/utility/validation';
-import {Schema} from './schema';
+import { Rule, Tree, chain, externalSchematic, schematic } from '@angular-devkit/schematics';
+import { validateProjectName } from '@schematics/angular/utility/validation';
+import { Schema } from './schema';
 
-export default function(options: Schema): Rule {
+export default function (options: Schema): Rule {
   return (host: Tree) => {
     validateProjectName(options.name);
 
