@@ -107,7 +107,7 @@ class NgPackagesInstaller {
         try {
           this._log(`Writing temporary local ${PACKAGE_JSON} to ${pathToPackageConfig}`);
           fs.writeFileSync(pathToPackageConfig, localPackageConfigJson);
-          this._installDeps('--no-lockfile', '--check-files');
+          this._installDeps('--pure-lockfile', '--check-files');
           this._setLocalMarker(localPackageConfigJson);
         } finally {
           this._log(`Restoring original ${PACKAGE_JSON} to ${pathToPackageConfig}`);
