@@ -11,7 +11,7 @@ import {attachPatchData} from './context_discovery';
 import {callHooks} from './hooks';
 import {LContainer, NATIVE, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
@@ -181,7 +181,7 @@ function executeNodeAction(
   if (action === WalkTNodeTreeAction.Insert) {
     nativeInsertBefore(renderer, parent !, node, beforeNode || null);
   } else if (action === WalkTNodeTreeAction.Detach) {
-    nativeRemoveChild(renderer, node, isComponent(tNode));
+    nativeRemoveNode(renderer, node, isComponent(tNode));
   } else if (action === WalkTNodeTreeAction.Destroy) {
     ngDevMode && ngDevMode.rendererDestroyNode++;
     (renderer as ProceduralRenderer3).destroyNode !(node);
@@ -593,18 +593,13 @@ function nativeAppendOrInsertBefore(
   }
 }
 
-/** Removes a node from the DOM. */
-export function nativeRemoveChild(
-    renderer: Renderer3, child: RNode, isHostElement?: boolean): void {
+/** Removes a node from the DOM given its native parent. */
+function nativeRemoveChild(
+    renderer: Renderer3, parent: RElement, child: RNode, isHostElement?: boolean): void {
   if (isProceduralRenderer(renderer)) {
-    const renderParent = renderer.parentNode(child);
-    if (renderParent) {
-      renderer.removeChild(renderParent, child, isHostElement);
-    }
+    renderer.removeChild(parent, child, isHostElement);
   } else {
-    // We intentionally don't use the given parent node since it may no longer
-    // match the state of the DOM (if the child node has been manually moved).
-    child.parentNode && child.parentNode.removeChild(child);
+    parent.removeChild(child);
   }
 }
 
@@ -693,14 +688,19 @@ export function getBeforeNodeForView(index: number, views: LView[], containerNat
 }
 
 /**
- * Removes the `child` element from the DOM if not in view and not projected.
+ * Removes a native node itself using a given renderer. To remove the node we are looking up its
+ * parent from the native tree as not all platforms / browsers support the equivalent of
+ * node.remove().
  *
- * @param childTNode The TNode of the child to remove
- * @param childEl The child that should be removed
- * @param currentView The current LView
+ * @param renderer A renderer to be used
+ * @param rNode The native node that should be removed
+ * @param isHostElement A flag indicating if a node to be removed is a host of a component.
  */
-export function removeNode(childTNode: TNode, childEl: RNode, currentView: LView): void {
-  nativeRemoveChild(currentView[RENDERER], childEl);
+export function nativeRemoveNode(renderer: Renderer3, rNode: RNode, isHostElement?: boolean): void {
+  const nativeParent = nativeParentNode(renderer, rNode);
+  if (nativeParent) {
+    nativeRemoveChild(renderer, nativeParent, rNode, isHostElement);
+  }
 }
 
 /**
