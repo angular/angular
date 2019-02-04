@@ -351,7 +351,10 @@ export function i18nStart(index: number, message: string, subTemplateIndex?: num
   }
 }
 
-let totalHostVars: number;
+// Count for the number of vars that will be allocated for each i18n block.
+// It is global because this is used in multiple functions that include loops and recursive calls.
+// This is reset to 0 when `i18nStartFirstPass` is called.
+let i18nVarsCount: number;
 
 /**
  * See `i18nStart` above.
@@ -360,7 +363,7 @@ function i18nStartFirstPass(
     tView: TView, index: number, message: string, subTemplateIndex?: number) {
   const viewData = getLView();
   const startIndex = tView.blueprint.length - HEADER_OFFSET;
-  totalHostVars = 0;
+  i18nVarsCount = 0;
   const previousOrParentTNode = getPreviousOrParentTNode();
   const parentTNode = getIsParent() ? getPreviousOrParentTNode() :
                                       previousOrParentTNode && previousOrParentTNode.parent;
@@ -411,7 +414,7 @@ function i18nStartFirstPass(
         if (j & 1) {
           // Odd indexes are ICU expressions
           // Create the comment node that will anchor the ICU expression
-          const icuNodeIndex = startIndex + totalHostVars++;
+          const icuNodeIndex = startIndex + i18nVarsCount++;
           createOpCodes.push(
               COMMENT_MARKER, ngDevMode ? `ICU ${icuNodeIndex}` : '', icuNodeIndex,
               parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
@@ -435,7 +438,7 @@ function i18nStartFirstPass(
           // Even indexes are text (including bindings)
           const hasBinding = text.match(BINDING_REGEXP);
           // Create text nodes
-          const textNodeIndex = startIndex + totalHostVars++;
+          const textNodeIndex = startIndex + i18nVarsCount++;
           createOpCodes.push(
               // If there is a binding, the value will be set during update
               hasBinding ? '' : text, textNodeIndex,
@@ -449,11 +452,11 @@ function i18nStartFirstPass(
     }
   }
 
-  allocExpando(viewData, totalHostVars);
+  allocExpando(viewData, i18nVarsCount);
 
   // NOTE: local var needed to properly assert the type of `TI18n`.
   const tI18n: TI18n = {
-    vars: totalHostVars,
+    vars: i18nVarsCount,
     create: createOpCodes,
     update: updateOpCodes,
     icus: icuExpressions.length ? icuExpressions : null,
@@ -1388,7 +1391,7 @@ function icuStart(
   };
   tIcus.push(tIcu);
   // Adding the maximum possible of vars needed (based on the cases with the most vars)
-  totalHostVars += Math.max(...vars);
+  i18nVarsCount += Math.max(...vars);
 }
 
 /**
