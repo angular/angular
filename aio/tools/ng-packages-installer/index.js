@@ -2,11 +2,14 @@
 
 const chalk = require('chalk');
 const fs = require('fs-extra');
+const lockfile = require('@yarnpkg/lockfile');
 const path = require('canonical-path');
+const semver = require('semver');
 const shelljs = require('shelljs');
 const yargs = require('yargs');
 
 const PACKAGE_JSON = 'package.json';
+const YARN_LOCK = 'yarn.lock';
 const LOCAL_MARKER_PATH = 'node_modules/_local_.json';
 const PACKAGE_JSON_REGEX = /^[^/]+\/package\.json$/;
 
@@ -64,6 +67,8 @@ class NgPackagesInstaller {
   installLocalDependencies() {
     if (this.force || !this._checkLocalMarker()) {
       const pathToPackageConfig = path.resolve(this.projectDir, PACKAGE_JSON);
+      const pathToLockfile = path.resolve(this.projectDir, YARN_LOCK);
+      const parsedLockfile = this._parseLockfile(pathToLockfile);
       const packages = this._getDistPackages();
 
       try {
@@ -97,8 +102,8 @@ class NgPackagesInstaller {
         const [dependencies, peers] = this._collectDependencies(packageConfig.dependencies || {}, packages);
         const [devDependencies, devPeers] = this._collectDependencies(packageConfig.devDependencies || {}, packages);
 
-        this._assignPeerDependencies(peers, dependencies, devDependencies);
-        this._assignPeerDependencies(devPeers, dependencies, devDependencies);
+        this._assignPeerDependencies(peers, dependencies, devDependencies, parsedLockfile);
+        this._assignPeerDependencies(devPeers, dependencies, devDependencies, parsedLockfile);
 
         const localPackageConfig = Object.assign(Object.create(null), packageConfig, { dependencies, devDependencies });
         localPackageConfig.__angular = { local: true };
@@ -134,15 +139,23 @@ class NgPackagesInstaller {
 
   // Protected helpers
 
-  _assignPeerDependencies(peerDependencies, dependencies, devDependencies) {
+  _assignPeerDependencies(peerDependencies, dependencies, devDependencies, parsedLockfile) {
     Object.keys(peerDependencies).forEach(key => {
+      const peerDepRange = peerDependencies[key];
+
+      // Ignore peerDependencies whose range is already satisfied by current version in lockfile.
+      const originalRange = dependencies[key] || devDependencies[key];
+      const lockfileVersion = originalRange && parsedLockfile[`${key}@${originalRange}`].version;
+
+      if (lockfileVersion && semver.satisfies(lockfileVersion, peerDepRange)) return;
+
       // If there is already an equivalent dependency then override it - otherwise assign/override the devDependency
       if (dependencies[key]) {
-        this._log(`Overriding dependency with peerDependency: ${key}: ${peerDependencies[key]}`);
-        dependencies[key] = peerDependencies[key];
+        this._log(`Overriding dependency with peerDependency: ${key}: ${peerDepRange}`);
+        dependencies[key] = peerDepRange;
       } else {
-        this._log(`${devDependencies[key] ? 'Overriding' : 'Assigning'} devDependency with peerDependency: ${key}: ${peerDependencies[key]}`);
-        devDependencies[key] = peerDependencies[key];
+        this._log(`${devDependencies[key] ? 'Overriding' : 'Assigning'} devDependency with peerDependency: ${key}: ${peerDepRange}`);
+        devDependencies[key] = peerDepRange;
       }
     });
   }
@@ -219,6 +232,20 @@ class NgPackagesInstaller {
       const message = messages.join(' ');
       console.info(`${header}${message.split('\n').join(`\n${indent}`)}`);
     }
+  }
+
+  /**
+   * Parse and return a `yarn.lock` file.
+   */
+  _parseLockfile(lockfilePath) {
+    const lockfileContent = fs.readFileSync(lockfilePath, 'utf8');
+    const parsed = lockfile.parse(lockfileContent);
+
+    if (parsed.type !== 'success') {
+      throw new Error(`[${NgPackagesInstaller.name}]: Error parsing lockfile '${lockfilePath}' (result type: ${parsed.type}).`);
+    }
+
+    return parsed.object;
   }
 
   _printWarning() {
