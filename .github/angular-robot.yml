@@ -63,6 +63,7 @@ merge:
       - "**/*.md"
       - "packages/**/integrationtest/**"
       - "packages/**/test/**"
+      - "packages/**/docs/**"
 
   # comment that will be added to a PR when there is a conflict, leave empty or set to false to disable
   mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.
