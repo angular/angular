@@ -8,7 +8,7 @@
 
 import {runMain} from './index';
 
-const DEBUG = true;
+const DEBUG = false;
 
 if (DEBUG) {
   console.error(`
