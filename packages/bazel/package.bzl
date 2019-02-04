@@ -9,41 +9,12 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 def rules_angular_dependencies():
-    """
-    Fetch our transitive dependencies.
-
-    If the user wants to get a different version of these, they can just fetch it
-    from their WORKSPACE before calling this function, or not call this function at all.
-    """
-
-    #
-    # Download Bazel toolchain dependencies as needed by build actions
-    # Use a SHA to get fix for needing symlink_prefix during npm publishing
-    _maybe(
-        http_archive,
-        name = "build_bazel_rules_nodejs",
-        url = "https://github.com/bazelbuild/rules_nodejs/archive/0.16.5.zip",
-        strip_prefix = "rules_nodejs-0.16.5",
-    )
-
-    _maybe(
-        http_archive,
-        name = "build_bazel_rules_typescript",
-        url = "https://github.com/bazelbuild/rules_typescript/archive/0.22.1.zip",
-        strip_prefix = "rules_typescript-0.22.1",
-    )
-
-    # Needed for Remote Execution
-    _maybe(
-        http_archive,
-        name = "bazel_toolchains",
-        sha256 = "ee854b5de299138c1f4a2edb5573d22b21d975acfc7aa938f36d30b49ef97498",
-        strip_prefix = "bazel-toolchains-37419a124bdb9af2fec5b99a973d359b6b899b61",
-        urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/bazel-toolchains/archive/37419a124bdb9af2fec5b99a973d359b6b899b61.tar.gz",
-            "https://github.com/bazelbuild/bazel-toolchains/archive/37419a124bdb9af2fec5b99a973d359b6b899b61.tar.gz",
-        ],
-    )
+    print("""DEPRECATION WARNING:
+    rules_angular_dependencies is no longer needed, and will be removed in a future release.
+    We assume you will fetch rules_nodejs in your WORKSPACE file, and no other dependencies remain here.
+    Simply remove any calls to this function and the corresponding call to
+      load("@angular//:package.bzl", "rules_angular_dependencies")
+    """)
 
 def rules_angular_dev_dependencies():
     """
@@ -60,14 +31,16 @@ def rules_angular_dev_dependencies():
         url = "https://github.com/google/brotli/archive/v1.0.5.zip",
     )
 
-    # The TypeScript rules transitively fetch a version of "rules_webtesting", but the version
-    # does not include 239b491e8251588bb46297b899d306ae7024858e which updates the "chromedriver"
-    # version so that e2e tests are able to capture the browser console output. This is needed
-    # for a few e2e tests, so we manually fetch a version that includes that required SHA.
-    http_archive(
-        name = "io_bazel_rules_webtesting",
-        url = "https://github.com/bazelbuild/rules_webtesting/archive/1f430d5e1cae10efc953a6511147e21b3bc03a5d.zip",
-        strip_prefix = "rules_webtesting-1f430d5e1cae10efc953a6511147e21b3bc03a5d",
+    # Needed for Remote Execution
+    _maybe(
+        http_archive,
+        name = "bazel_toolchains",
+        sha256 = "ee854b5de299138c1f4a2edb5573d22b21d975acfc7aa938f36d30b49ef97498",
+        strip_prefix = "bazel-toolchains-37419a124bdb9af2fec5b99a973d359b6b899b61",
+        urls = [
+            "https://mirror.bazel.build/github.com/bazelbuild/bazel-toolchains/archive/37419a124bdb9af2fec5b99a973d359b6b899b61.tar.gz",
+            "https://github.com/bazelbuild/bazel-toolchains/archive/37419a124bdb9af2fec5b99a973d359b6b899b61.tar.gz",
+        ],
     )
 
     #############################################

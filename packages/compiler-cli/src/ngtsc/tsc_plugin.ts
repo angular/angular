@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PluginCompilerHost, TscPlugin} from '@bazel/typescript/tsc_wrapped/plugin_api';
+import {PluginCompilerHost, TscPlugin} from '@bazel/typescript/internal/tsc_wrapped/plugin_api';
 import * as ts from 'typescript';
 
 import {SyntheticFilesCompilerHost} from './synthetic_files_compiler_host';
