@@ -20,8 +20,10 @@ var_2: &browsers_docker_image circleci/node:10.12-browsers
 # We don't want to include the current branch name in the cache key because that would prevent
 # PRs from being able to restore the cache since the branch names are always different for PRs.
 # The cache key should only consist of dynamic values that change whenever something in the
-# cache changes. (e.g. Yarn lock file changes --> cached "node_modules" are different).
-var_3: &cache_key v2-angular-{{ checksum "yarn.lock" }}-node-10.12
+# cache changes. For example:
+# 1) yarn lock file changes --> cached "node_modules" are different.
+# 2) bazel repository definitions change --> cached bazel repositories are different.
+var_3: &cache_key v2-angular-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-node-10.12
 
 # Define common ENV vars
 var_4: &define_env_vars
