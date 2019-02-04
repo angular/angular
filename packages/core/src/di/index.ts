@@ -21,7 +21,6 @@ export {INJECTOR, Injector} from './injector';
 export {inject} from './injector_compatibility';
 export {ReflectiveInjector} from './reflective_injector';
 export {StaticProvider, ValueProvider, ConstructorSansProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ClassProvider} from './interface/provider';
-export {createInjector} from './r3_injector';
 export {ResolvedReflectiveFactory, ResolvedReflectiveProvider} from './reflective_provider';
 export {ReflectiveKey} from './reflective_key';
 export {InjectionToken} from './injection_token';

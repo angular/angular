@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive as _Directive, InjectionToken, OnChanges, OnDestroy, Pipe as _Pipe, PipeTransform, WrappedValue, createInjector, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
+import {Directive as _Directive, InjectionToken, OnChanges, OnDestroy, Pipe as _Pipe, PipeTransform, WrappedValue, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
+import {createInjector} from '../../src/di/r3_injector';
 import {defineDirective, definePipe} from '../../src/render3/definition';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
