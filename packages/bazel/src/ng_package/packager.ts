@@ -389,7 +389,7 @@ export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, '')
 
     typingsRelativePath = typingsRelativePath.replace('.d.ts', '');
 
-    return metadata.replace(/(\.?.\/[\w\.-_]+)/g, typingsRelativePath);
+    return metadata.replace(/(\.?\.\/[\w\.-_]+)/g, typingsRelativePath);
   }
 }
 

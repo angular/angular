@@ -706,8 +706,7 @@ export { }
 
 --- secondary/secondary.metadata.json ---
 
-{"__symbolic":"module","version":4,"metadata":{"SecondaryModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":10,"character":1},"arguments":[{}]}],"members":{}},"a":1},"origins":{"SecondaryModule":"./secondary
-","a":"./secondary"},"importAs":"example/secondary"}
+{"__symbolic":"module","version":4,"metadata":{"SecondaryModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":10,"character":1},"arguments":[{}]}],"members":{}},"a":1},"origins":{"SecondaryModule":"./secondary","a":"./secondary"},"importAs":"example/secondary"}
 
 --- secondary.d.ts ---
 

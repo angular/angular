@@ -16,6 +16,9 @@ ng_package(
         "package.json",
     ],
     entry_point = "packages/fake_core/index.js",
+    data = [
+        ":fake_core"
+    ],
     deps = [
         ":fake_core",
     ],
