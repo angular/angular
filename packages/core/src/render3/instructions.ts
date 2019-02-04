@@ -1260,7 +1260,7 @@ export function createTNode(
     next: null,
     child: null,
     parent: tParent,
-    detached: null,
+    attached: true,
     stylingTemplate: null,
     projection: null
   };

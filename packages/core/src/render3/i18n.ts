@@ -833,7 +833,7 @@ function removeNode(index: number, viewData: LView) {
     removeChild(removedPhTNode, removedPhRNode, viewData);
   }
 
-  removedPhTNode.detached = true;
+  removedPhTNode.attached = false;
   ngDevMode && ngDevMode.rendererRemoveNode++;
 
   const slotValue = load(index) as RElement | RComment | LContainer | StylingContext;

@@ -322,17 +322,17 @@ export function insertView(
  *
  * @param lContainer The container from which to detach a view
  * @param removeIndex The index of the view to detach
- * @param detached Whether or not this view is already detached.
+ * @param attached Whether or not this view is already detached.
  * @returns Detached LView instance.
  */
-export function detachView(lContainer: LContainer, removeIndex: number, detached: boolean): LView {
+export function detachView(lContainer: LContainer, removeIndex: number, attached: boolean): LView {
   const views = lContainer[VIEWS];
   const viewToDetach = views[removeIndex];
   if (removeIndex > 0) {
     views[removeIndex - 1][NEXT] = viewToDetach[NEXT] as LView;
   }
   views.splice(removeIndex, 1);
-  if (!detached) {
+  if (attached) {
     addRemoveViewFromContainer(viewToDetach, false);
   }
 
@@ -357,7 +357,7 @@ export function removeView(
     lContainer: LContainer, containerHost: TElementNode | TContainerNode | TElementContainerNode,
     removeIndex: number) {
   const view = lContainer[VIEWS][removeIndex];
-  detachView(lContainer, removeIndex, !!containerHost.detached);
+  detachView(lContainer, removeIndex, containerHost.attached);
   destroyLView(view);
 }
 

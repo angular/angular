@@ -306,9 +306,9 @@ export interface TNode {
 
   /**
    * If this node is part of an i18n block, it indicates whether this node is part of the DOM.
-   * If this node is not part of an i18n block, this field is null.
+   * If this node is not part of an i18n block, this field is false.
    */
-  detached: boolean|null;
+  attached: boolean;
 
   stylingTemplate: StylingContext|null;
   /**
