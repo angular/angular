@@ -262,4 +262,6 @@ export {
   publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
 } from './render3/global_utils';
 
+export {createInjector as ɵcreateInjector} from './di/r3_injector';
+
 // clang-format on

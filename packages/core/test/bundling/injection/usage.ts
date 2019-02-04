@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, createInjector, defineInjectable, defineInjector} from '@angular/core';
+import {Injector, defineInjectable, defineInjector, ɵcreateInjector as createInjector} from '@angular/core';
 
 export class RootService {
   static ngInjectableDef = defineInjectable({
