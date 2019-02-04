@@ -150,31 +150,32 @@ describe('NgPackagesInstaller', () => {
         const pkgJsonFor = pkgName => dummyNgPackages[`@angular/${pkgName}`].packageJsonPath;
         const pkgConfigFor = pkgName => copyJsonObj(dummyNgPackages[`@angular/${pkgName}`].config);
         const overwriteConfigFor = (pkgName, newProps) => Object.assign(pkgConfigFor(pkgName), newProps);
+        const stringifyConfig = config => JSON.stringify(config, null, 2);
 
         const allArgs = fs.writeFileSync.calls.allArgs();
         const firstFiveArgs = allArgs.slice(0, 5);
         const lastFiveArgs = allArgs.slice(-5);
 
         expect(firstFiveArgs).toEqual([
-          [pkgJsonFor('core'), JSON.stringify(overwriteConfigFor('core', {private: true}))],
-          [pkgJsonFor('common'), JSON.stringify(overwriteConfigFor('common', {private: true}))],
-          [pkgJsonFor('compiler'), JSON.stringify(overwriteConfigFor('compiler', {private: true}))],
-          [pkgJsonFor('compiler-cli'), JSON.stringify(overwriteConfigFor('compiler-cli', {
+          [pkgJsonFor('core'), stringifyConfig(overwriteConfigFor('core', {private: true}))],
+          [pkgJsonFor('common'), stringifyConfig(overwriteConfigFor('common', {private: true}))],
+          [pkgJsonFor('compiler'), stringifyConfig(overwriteConfigFor('compiler', {private: true}))],
+          [pkgJsonFor('compiler-cli'), stringifyConfig(overwriteConfigFor('compiler-cli', {
             private: true,
             dependencies: { '@angular/tsc-wrapped': `file:${toolsDir}/tsc-wrapped` }
           }))],
-          [pkgJsonFor('tsc-wrapped'), JSON.stringify(overwriteConfigFor('tsc-wrapped', {
+          [pkgJsonFor('tsc-wrapped'), stringifyConfig(overwriteConfigFor('tsc-wrapped', {
             private: true,
             devDependencies: { '@angular/common': `file:${packagesDir}/common` }
           }))],
         ]);
 
         expect(lastFiveArgs).toEqual(['core', 'common', 'compiler', 'compiler-cli', 'tsc-wrapped']
-            .map(pkgName => [pkgJsonFor(pkgName), JSON.stringify(pkgConfigFor(pkgName))]));
+            .map(pkgName => [pkgJsonFor(pkgName), stringifyConfig(pkgConfigFor(pkgName))]));
       });
 
       it('should load the package.json', () => {
-        expect(fs.readFileSync).toHaveBeenCalledWith(packageJsonPath);
+        expect(fs.readFileSync).toHaveBeenCalledWith(packageJsonPath, 'utf8');
       });
 
       it('should overwrite package.json with modified config', () => {
