@@ -26,7 +26,7 @@
     "check-release-output": "ts-node --project tools/release tools/release/check-release-output.ts",
     "preinstall": "node ./tools/npm/check-npm.js"
   },
-  "version": "7.3.0",
+  "version": "7.3.1",
   "requiredAngularVersion": ">=7.0.0",
   "dependencies": {
     "@angular/animations": "^7.2.1",
