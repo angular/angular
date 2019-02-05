@@ -384,6 +384,7 @@ describe('MatMenu', () => {
   it('should transfer any custom classes from the host to the overlay', () => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
 
+    fixture.componentInstance.panelClass = 'custom-one custom-two';
     fixture.detectChanges();
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
@@ -396,6 +397,28 @@ describe('MatMenu', () => {
 
     expect(panel.classList).toContain('custom-one');
     expect(panel.classList).toContain('custom-two');
+  });
+
+  it('should not remove mat-elevation class from overlay when panelClass is changed', () => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+
+    fixture.componentInstance.panelClass = 'custom-one';
+    fixture.detectChanges();
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+
+    const panel = overlayContainerElement.querySelector('.mat-menu-panel')!;
+
+    expect(panel.classList).toContain('custom-one');
+    expect(panel.classList).toContain('mat-elevation-z4');
+
+    fixture.componentInstance.panelClass = 'custom-two';
+    fixture.detectChanges();
+
+    expect(panel.classList).not.toContain('custom-one');
+    expect(panel.classList).toContain('custom-two');
+    expect(panel.classList)
+        .toContain('mat-elevation-z4', 'Expected mat-elevation-z4 not to be removed');
   });
 
   it('should set the "menu" role on the overlay panel', () => {
@@ -1858,7 +1881,7 @@ describe('MatMenu default overrides', () => {
     <button [matMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
     <mat-menu
       #menu="matMenu"
-      class="custom-one custom-two"
+      [class]="panelClass"
       (closed)="closeCallback($event)"
       [backdropClass]="backdropClass">
 
@@ -1880,6 +1903,7 @@ class SimpleMenu {
   extraItems: string[] = [];
   closeCallback = jasmine.createSpy('menu closed callback');
   backdropClass: string;
+  panelClass: string;
 }
 
 @Component({
