@@ -3,12 +3,14 @@
        [class.mat-slide-toggle-bar-no-side-margin]="!labelContent.textContent || !labelContent.textContent.trim()">
 
     <input #input class="mat-slide-toggle-input cdk-visually-hidden" type="checkbox"
+           role="switch"
            [id]="inputId"
            [required]="required"
            [tabIndex]="tabIndex"
            [checked]="checked"
            [disabled]="disabled"
            [attr.name]="name"
+           [attr.aria-checked]="checked.toString()"
            [attr.aria-label]="ariaLabel"
            [attr.aria-labelledby]="ariaLabelledby"
            (change)="_onChangeEvent($event)"
