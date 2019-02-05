@@ -23,7 +23,10 @@ var_2: &browsers_docker_image circleci/node:10.12-browsers
 # cache changes. For example:
 # 1) yarn lock file changes --> cached "node_modules" are different.
 # 2) bazel repository definitions change --> cached bazel repositories are different.
-var_3: &cache_key v2-angular-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-node-10.12
+# **NOTE 1 **: If you change the cache key prefix, also sync the restore_cache fallback to match.
+# **NOTE 2 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
+# See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
+var_3: &cache_key v2-angular-node-10.12-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}
 
 # Define common ENV vars
 var_4: &define_env_vars
@@ -76,6 +79,13 @@ var_10: &download_yarn
     name: Downloading Yarn
     command: curl -o- -L https://yarnpkg.com/install.sh | PROFILE=$BASH_ENV bash -s -- --version "$CI_YARN_VERSION"
 
+var_11: &restore_cache
+  restore_cache:
+    keys:
+      - *cache_key
+      # This fallback should be the cache_key without variables.
+      - v2-angular-node-10.12-
+
 version: 2
 jobs:
   lint:
@@ -83,8 +93,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - *yarn_install
@@ -103,8 +112,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - *yarn_install
@@ -124,8 +132,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - *yarn_install
@@ -164,8 +171,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
         # Build aio
@@ -193,8 +199,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
         # Deploy angular.io to production (if necessary)
@@ -209,8 +214,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - attach_workspace:
           at: dist
       - *define_env_vars
@@ -230,8 +234,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - attach_workspace:
           at: dist
       - *define_env_vars
@@ -244,8 +247,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - attach_workspace:
           at: dist
       - *define_env_vars
@@ -266,8 +268,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - attach_workspace:
           at: dist
       - *define_env_vars
@@ -287,8 +288,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CI_PULL_REQUEST $CI_COMMIT
@@ -308,8 +308,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
@@ -332,8 +331,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - *yarn_install
@@ -363,8 +361,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - *yarn_install
@@ -399,8 +396,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - attach_workspace:
           at: dist
       - *define_env_vars
@@ -449,8 +445,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - run:
@@ -470,8 +465,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - *yarn_install
@@ -488,8 +482,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - *yarn_install
@@ -517,8 +510,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - *yarn_install
@@ -541,8 +533,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - restore_cache:
-          key: *cache_key
+      - *restore_cache
       - *define_env_vars
       - *download_yarn
       - *yarn_install
