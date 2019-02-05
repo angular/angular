@@ -68,12 +68,12 @@
     rxjs "6.3.3"
 
 "@angular/bazel@file:../../dist/packages-dist/bazel":
-  version "8.0.0-beta.1"
+  version "8.0.0-beta.2"
   dependencies:
     "@angular-devkit/architect" "^0.10.6"
     "@angular-devkit/core" "^7.0.4"
     "@angular-devkit/schematics" "^7.3.0-rc.0"
-    "@bazel/typescript" "^0.22.1"
+    "@bazel/typescript" "^0.23.2"
     "@schematics/angular" "^7.0.4"
     "@types/node" "6.0.84"
     semver "^5.6.0"
@@ -119,11 +119,12 @@
     "@bazel/bazel-linux_x64" "0.22.0"
     "@bazel/bazel-win32_x64" "0.22.0"
 
-"@bazel/typescript@^0.22.1":
-  version "0.22.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.22.1.tgz#b52c00e8560019e2f9d273d45c04785e0ec9d9bd"
-  integrity sha512-88DaCCnNg8rPlKP0eAQEZuoiJkEPeiItpUS3oBR1sFQNBRJb56D25ahK8+N6LJk4qaH+ZQ1/AHOPDhfEEWvDzA==
+"@bazel/typescript@^0.23.2":
+  version "0.23.2"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.23.2.tgz#a3ff199880855259d84216cb41644c1d9a0fad14"
+  integrity sha512-GrTyDW6Fvp/rgnxZGYampB5/QmDWvxtLEtUyMCPa/QXFR1OVxaMWeHxxuFEcES2UKJegqBDKAA8IzX21x4UbEw==
   dependencies:
+    jasmine-core "2.8.0"
     protobufjs "5.0.3"
     semver "5.6.0"
     source-map-support "0.5.9"
@@ -1204,6 +1205,11 @@ isobject@^3.0.0, isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
+
+jasmine-core@2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.8.0.tgz#bcc979ae1f9fd05701e45e52e65d3a5d63f1a24e"
+  integrity sha1-vMl5rh+f0FcB5F5S5l06XWPxok4=
 
 json-parse-better-errors@^1.0.0:
   version "1.0.2"
