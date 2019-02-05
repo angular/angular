@@ -22,6 +22,36 @@ export interface LazyRouteEntry {
   resolvedTo: RouterEntryPoint;
 }
 
+export function scanForCandidateTransitiveModules(
+    expr: ts.Expression | null, entryPointManager: RouterEntryPointManager,
+    evaluator: PartialEvaluator): string[] {
+  if (expr === null) {
+    return [];
+  }
+
+  const candidateModuleKeys: string[] = [];
+  const entries = evaluator.evaluate(expr);
+
+  function recursivelyAddModules(entry: ResolvedValue) {
+    if (Array.isArray(entry)) {
+      for (const e of entry) {
+        recursivelyAddModules(e);
+      }
+    } else if (entry instanceof Map) {
+      if (entry.has('ngModule')) {
+        recursivelyAddModules(entry.get('ngModule') !);
+      }
+    } else if ((entry instanceof Reference) && hasIdentifier(entry.node)) {
+      const filePath = entry.node.getSourceFile().fileName;
+      const moduleName = entry.node.name.text;
+      candidateModuleKeys.push(entryPointManager.keyFor(filePath, moduleName));
+    }
+  }
+
+  recursivelyAddModules(entries);
+  return candidateModuleKeys;
+}
+
 export function scanForRouteEntryPoints(
     ngModule: ts.SourceFile, moduleName: string, data: NgModuleRawRouteData,
     entryPointManager: RouterEntryPointManager, evaluator: PartialEvaluator): LazyRouteEntry[] {
@@ -151,6 +181,11 @@ const routerModuleFFR: ForeignFunctionResolver =
         ts.createPropertyAssignment('routes', routes),
       ]);
     };
+
+function hasIdentifier(node: ts.Node): node is ts.Node&{name: ts.Identifier} {
+  const node_ = node as ts.NamedDeclaration;
+  return (node_.name !== undefined) && ts.isIdentifier(node_.name);
+}
 
 function isMethodNodeReference(
     ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>):

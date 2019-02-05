@@ -106,7 +106,6 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
-        "//packages/private/testing",
         "@ngdeps//typescript",
     ],
 )

@@ -7,7 +7,6 @@
  */
 
 import {__NGTOOLS_PRIVATE_API_2 as NgTools_InternalApi_NG_2} from '@angular/compiler-cli';
-import {fixmeIvy} from '@angular/private/testing';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -60,7 +59,7 @@ describe('ngtools_api (deprecated)', () => {
     });
   }
 
-  fixmeIvy('FW-629: ngtsc lists lazy routes').it('should list lazy routes recursively', () => {
+  fit('should list lazy routes recursively', () => {
     writeSomeRoutes();
     const {program, host, options} = createProgram(['src/main.ts']);
     const routes = NgTools_InternalApi_NG_2.listLazyRoutes({
