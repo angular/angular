@@ -15,9 +15,35 @@ const PROTRACTOR_CONFIG_FILENAME = path.join(__dirname, './shared/protractor.con
 const SJS_SPEC_FILENAME = 'e2e-spec.ts';
 const CLI_SPEC_FILENAME = 'e2e/src/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
-const IGNORED_EXAMPLES = [ // temporary ignores
-  
+const IGNORED_EXAMPLES = [
+  // temporary ignores
+
 ];
+
+const fixmeIvyExamples = [
+  // fixmeIvy('unknown') movie list route is not rendering
+  'ajs-quick-reference',
+  // fixmeIvy('unknown') version value goes undefined when clicking Major button after clicking
+  // Minor button twice
+  'component-interaction',
+  // fixmeIvy('unknown') failed content projection and applied styles
+  'component-styles',
+  // fails due to incompatible AoT code with a tree-shakable provider and a non-type constructor
+  // argument
+  'dependency-injection',
+  // fixmeIvy('unknown') Error: Internal Error: The name heroForm is already defined in scope to be
+  // [object Object]
+  'forms',
+  // fixmeIvy('unknown') app fails at runtime due to missing external service (goog is undefined)
+  'i18n',
+  // fixmeIvy('unknown') ERROR in HostResourceResolver: could not resolve app/app.component.css
+  // in context of aio/content/examples/styleguide/src/01-01/app/heroes/hero.component.avoid.ts)
+  'styleguide'
+];
+
+if (argv.ivy) {
+  IGNORED_EXAMPLES.push(...fixmeIvyExamples);
+}
 
 /**
  * Run Protractor End-to-End Tests for Doc Samples
@@ -43,30 +69,30 @@ function runE2e() {
     // Run setup.
     console.log('runE2e: setup boilerplate');
     const installPackagesCommand = `example-use-${argv.local ? 'local' : 'npm'}`;
-    const addBoilerplateCommand = 'boilerplate:add';
-    shelljs.exec(`yarn ${installPackagesCommand}`, { cwd: AIO_PATH });
-    shelljs.exec(`yarn ${addBoilerplateCommand}`, { cwd: AIO_PATH });
+    const addBoilerplateCommand = `boilerplate:add${argv.ivy ? ':ivy' : ''}`;
+    shelljs.exec(`yarn ${installPackagesCommand}`, {cwd: AIO_PATH});
+    shelljs.exec(`yarn ${addBoilerplateCommand}`, {cwd: AIO_PATH});
   }
 
   const outputFile = path.join(AIO_PATH, './protractor-results.txt');
 
   return Promise.resolve()
-    .then(() => findAndRunE2eTests(argv.filter, outputFile, argv.shard))
-    .then((status) => {
-      reportStatus(status, outputFile);
-      if (status.failed.length > 0) {
-        return Promise.reject('Some test suites failed');
-      }
-    }).catch(function (e) {
-      console.log(e);
-      process.exitCode = 1;
-    });
+      .then(() => findAndRunE2eTests(argv.filter, outputFile, argv.shard))
+      .then((status) => {
+        reportStatus(status, outputFile);
+        if (status.failed.length > 0) {
+          return Promise.reject('Some test suites failed');
+        }
+      })
+      .catch(function(e) {
+        console.log(e);
+        process.exitCode = 1;
+      });
 }
 
 // Finds all of the *e2e-spec.tests under the examples folder along with the corresponding apps
 // that they should run under. Then run each app/spec collection sequentially.
 function findAndRunE2eTests(filter, outputFile, shard) {
-
   const shardParts = shard ? shard.split('/') : [0, 1];
   const shardModulo = parseInt(shardParts[0], 10);
   const shardDivider = parseInt(shardParts[1], 10);
@@ -78,45 +104,48 @@ function findAndRunE2eTests(filter, outputFile, shard) {
   fs.writeFileSync(outputFile, header);
 
   // Run the tests sequentially.
-  const status = { passed: [], failed: [] };
+  const status = {passed: [], failed: []};
   return getE2eSpecs(EXAMPLES_PATH, filter)
-    .then(e2eSpecPaths => {
-      console.log('All e2e specs:');
-      logSpecs(e2eSpecPaths);
+      .then(e2eSpecPaths => {
+        console.log('All e2e specs:');
+        logSpecs(e2eSpecPaths);
 
-      Object.keys(e2eSpecPaths).forEach(key => {
-        const value = e2eSpecPaths[key];
-        e2eSpecPaths[key] = value.filter((p, index) => index % shardDivider === shardModulo);
-      });
-
-      console.log(`E2e specs for shard ${shardParts.join('/')}:`);
-      logSpecs(e2eSpecPaths);
-
-      return e2eSpecPaths.systemjs.reduce((promise, specPath) => {
-        return promise.then(() => {
-          const examplePath = path.dirname(specPath);
-          return runE2eTestsSystemJS(examplePath, outputFile).then(ok => {
-            const arr = ok ? status.passed : status.failed;
-            arr.push(examplePath);
-          });
+        Object.keys(e2eSpecPaths).forEach(key => {
+          const value = e2eSpecPaths[key];
+          e2eSpecPaths[key] = value.filter((p, index) => index % shardDivider === shardModulo);
         });
-      }, Promise.resolve())
-      .then(() => {
-        return e2eSpecPaths.cli.reduce((promise, specPath) => {
-          return promise.then(() => {
-            return runE2eTestsCLI(specPath, outputFile).then(ok => {
-              const arr = ok ? status.passed : status.failed;
-              arr.push(specPath);
+
+        console.log(`E2e specs for shard ${shardParts.join('/')}:`);
+        logSpecs(e2eSpecPaths);
+
+        return e2eSpecPaths.systemjs
+            .reduce(
+                (promise, specPath) => {
+                  return promise.then(() => {
+                    const examplePath = path.dirname(specPath);
+                    return runE2eTestsSystemJS(examplePath, outputFile).then(ok => {
+                      const arr = ok ? status.passed : status.failed;
+                      arr.push(examplePath);
+                    });
+                  });
+                },
+                Promise.resolve())
+            .then(() => {
+              return e2eSpecPaths.cli.reduce((promise, specPath) => {
+                return promise.then(() => {
+                  return runE2eTestsCLI(specPath, outputFile).then(ok => {
+                    const arr = ok ? status.passed : status.failed;
+                    arr.push(specPath);
+                  });
+                });
+              }, Promise.resolve());
             });
-          });
-        }, Promise.resolve());
+      })
+      .then(() => {
+        const stopTime = new Date().getTime();
+        status.elapsedTime = (stopTime - startTime) / 1000;
+        return status;
       });
-    })
-    .then(() => {
-      const stopTime = new Date().getTime();
-      status.elapsedTime = (stopTime - startTime) / 1000;
-      return status;
-    });
 }
 
 // Start the example in appDir; then run protractor with the specified
@@ -126,8 +155,8 @@ function findAndRunE2eTests(filter, outputFile, shard) {
 function runE2eTestsSystemJS(appDir, outputFile) {
   const config = loadExampleConfig(appDir);
 
-  const appBuildSpawnInfo = spawnExt('yarn', [config.build], { cwd: appDir });
-  const appRunSpawnInfo = spawnExt('yarn', [config.run, '-s'], { cwd: appDir }, true);
+  const appBuildSpawnInfo = spawnExt('yarn', [config.build], {cwd: appDir});
+  const appRunSpawnInfo = spawnExt('yarn', [config.run, '-s'], {cwd: appDir}, true);
 
   let run = runProtractorSystemJS(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
 
@@ -140,40 +169,40 @@ function runE2eTestsSystemJS(appDir, outputFile) {
 function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile) {
   const specFilename = path.resolve(`${appDir}/${SJS_SPEC_FILENAME}`);
   return prepPromise
-    .catch(function () {
-      const emsg = `Application at ${appDir} failed to transpile.\n\n`;
-      console.log(emsg);
-      fs.appendFileSync(outputFile, emsg);
-      return Promise.reject(emsg);
-    })
-    .then(function () {
-      let transpileError = false;
+      .catch(function() {
+        const emsg = `Application at ${appDir} failed to transpile.\n\n`;
+        console.log(emsg);
+        fs.appendFileSync(outputFile, emsg);
+        return Promise.reject(emsg);
+      })
+      .then(function() {
+        let transpileError = false;
 
-      // Start protractor.
-      console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
-      const spawnInfo = spawnExt('yarn', ['protractor',
-        PROTRACTOR_CONFIG_FILENAME,
-        `--specs=${specFilename}`,
-        '--params.appDir=' + appDir,
-        '--params.outputFile=' + outputFile
-      ], { cwd: SHARED_PATH });
+        // Start protractor.
+        console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
+        const spawnInfo = spawnExt(
+            'yarn',
+            [
+              'protractor', PROTRACTOR_CONFIG_FILENAME, `--specs=${specFilename}`,
+              '--params.appDir=' + appDir, '--params.outputFile=' + outputFile
+            ],
+            {cwd: SHARED_PATH});
 
-      spawnInfo.proc.stderr.on('data', function (data) {
-        transpileError = transpileError || /npm ERR! Exit status 100/.test(data.toString());
-      });
-      return spawnInfo.promise.catch(function () {
-        if (transpileError) {
-          const emsg = `${specFilename} failed to transpile.\n\n`;
-          console.log(emsg);
-          fs.appendFileSync(outputFile, emsg);
-        }
-        return Promise.reject();
-      });
-    })
-    .then(
-    function () { return finish(appRunSpawnInfo.proc.pid, true); },
-    function () { return finish(appRunSpawnInfo.proc.pid, false); }
-    );
+        spawnInfo.proc.stderr.on('data', function(data) {
+          transpileError = transpileError || /npm ERR! Exit status 100/.test(data.toString());
+        });
+        return spawnInfo.promise.catch(function() {
+          if (transpileError) {
+            const emsg = `${specFilename} failed to transpile.\n\n`;
+            console.log(emsg);
+            fs.appendFileSync(outputFile, emsg);
+          }
+          return Promise.reject();
+        });
+      })
+      .then(
+          function() { return finish(appRunSpawnInfo.proc.pid, true); },
+          function() { return finish(appRunSpawnInfo.proc.pid, false); });
 }
 
 function finish(spawnProcId, ok) {
@@ -186,14 +215,14 @@ function finish(spawnProcId, ok) {
 // Run e2e tests over the AOT build for projects that examples it.
 function runProtractorAoT(appDir, outputFile) {
   fs.appendFileSync(outputFile, '++ AoT version ++\n');
-  const aotBuildSpawnInfo = spawnExt('yarn', ['build:aot'], { cwd: appDir });
+  const aotBuildSpawnInfo = spawnExt('yarn', ['build:aot'], {cwd: appDir});
   let promise = aotBuildSpawnInfo.promise;
 
   const copyFileCmd = 'copy-dist-files.js';
   if (fs.existsSync(appDir + '/' + copyFileCmd)) {
-    promise = promise.then(() => spawnExt('node', [copyFileCmd], { cwd: appDir }).promise);
+    promise = promise.then(() => spawnExt('node', [copyFileCmd], {cwd: appDir}).promise);
   }
-  const aotRunSpawnInfo = spawnExt('yarn', ['serve:aot'], { cwd: appDir }, true);
+  const aotRunSpawnInfo = spawnExt('yarn', ['serve:aot'], {cwd: appDir}, true);
   return runProtractorSystemJS(promise, appDir, aotRunSpawnInfo, outputFile);
 }
 
@@ -205,11 +234,12 @@ function runE2eTestsCLI(appDir, outputFile) {
   console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
-  const commands = config.e2e || [{ cmd: 'yarn', args: ['e2e', '--prod', '--no-webdriver-update'] }];
+  const commands = config.e2e ||
+      [{cmd: 'yarn', args: ['e2e', (argv.ivy ? '--prod' : ''), '--no-webdriver-update']}];
 
-  const e2eSpawnPromise = commands.reduce((prevSpawnPromise, { cmd, args }) => {
+  const e2eSpawnPromise = commands.reduce((prevSpawnPromise, {cmd, args}) => {
     return prevSpawnPromise.then(() => {
-      const currSpawn = spawnExt(cmd, args, { cwd: appDir });
+      const currSpawn = spawnExt(cmd, args, {cwd: appDir});
       return currSpawn.promise.then(
           () => Promise.resolve(finish(currSpawn.proc.pid, true)),
           () => Promise.reject(finish(currSpawn.proc.pid, false)));
@@ -217,25 +247,39 @@ function runE2eTestsCLI(appDir, outputFile) {
   }, Promise.resolve());
 
   return e2eSpawnPromise.then(
-      () => { fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`); return true; },
-      () => { fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`); return false; });
+      () => {
+        fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`);
+        return true;
+      },
+      () => {
+        fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`);
+        return false;
+      });
 }
 
 // Report final status.
 function reportStatus(status, outputFile) {
   let log = [''];
+
+  log.push('Suites ignored due to legacy guides:');
+  IGNORED_EXAMPLES.filter(example => !fixmeIvyExamples.find(ex => ex.startsWith(example)))
+      .forEach(function(val) { log.push('  ' + val); });
+
+  if (argv.ivy) {
+    log.push('');
+    log.push('Suites ignored due to breakage with Ivy:');
+    fixmeIvyExamples.forEach(function(val) { log.push('  ' + val); });
+  }
+
+  log.push('');
   log.push('Suites passed:');
-  status.passed.forEach(function (val) {
-    log.push('  ' + val);
-  });
+  status.passed.forEach(function(val) { log.push('  ' + val); });
 
   if (status.failed.length == 0) {
     log.push('All tests passed');
   } else {
     log.push('Suites failed:');
-    status.failed.forEach(function (val) {
-      log.push('  ' + val);
-    });
+    status.failed.forEach(function(val) { log.push('  ' + val); });
   }
   log.push('\nElapsed time: ' + status.elapsedTime + ' seconds');
   log = log.join('\n');
@@ -254,68 +298,59 @@ function spawnExt(command, args, options, ignoreClose = false) {
     } catch (e) {
       console.log(e);
       reject(e);
-      return { proc: null, promise };
+      return {proc: null, promise};
     }
-    proc.stdout.on('data', function (data) {
-      process.stdout.write(data.toString());
-    });
-    proc.stderr.on('data', function (data) {
-      process.stdout.write(data.toString());
-    });
-    proc.on('close', function (returnCode) {
+    proc.stdout.on('data', function(data) { process.stdout.write(data.toString()); });
+    proc.stderr.on('data', function(data) { process.stdout.write(data.toString()); });
+    proc.on('close', function(returnCode) {
       console.log(`completed: ${descr} \n`);
       // Many tasks (e.g., tsc) complete but are actually errors;
       // Confirm return code is zero.
       returnCode === 0 || ignoreClose ? resolve(0) : reject(returnCode);
     });
-    proc.on('error', function (data) {
+    proc.on('error', function(data) {
       console.log(`completed with error: ${descr} \n`);
       console.log(data.toString());
       reject(data);
     });
   });
-  return { proc, promise };
+  return {proc, promise};
 }
 
 function getE2eSpecs(basePath, filter) {
   let specs = {};
 
-  return getE2eSpecsFor(basePath, SJS_SPEC_FILENAME, filter).then(sjsPaths => {
-    specs.systemjs = sjsPaths;
-  }).then(() => {
-    return getE2eSpecsFor(basePath, CLI_SPEC_FILENAME, filter).then(cliPaths => {
-      return cliPaths.map(p => {
-        return p.replace(`${CLI_SPEC_FILENAME}`, '');
-      });
-    });
-  }).then(cliPaths => {
-    specs.cli = cliPaths;
-  }).then(() => specs);
+  return getE2eSpecsFor(basePath, SJS_SPEC_FILENAME, filter)
+      .then(sjsPaths => { specs.systemjs = sjsPaths; })
+      .then(() => {
+        return getE2eSpecsFor(basePath, CLI_SPEC_FILENAME, filter).then(cliPaths => {
+          return cliPaths.map(p => { return p.replace(`${CLI_SPEC_FILENAME}`, ''); });
+        });
+      })
+      .then(cliPaths => { specs.cli = cliPaths; })
+      .then(() => specs);
 }
 
 // Find all e2e specs in a given example folder.
 function getE2eSpecsFor(basePath, specFile, filter) {
   // Only get spec file at the example root.
-  const e2eSpecGlob = `${filter ? `*${filter}*` : '*'}/${specFile}`;
-  return globby(e2eSpecGlob, { cwd: basePath, nodir: true })
-    .then(paths => paths
-      .filter(file => !IGNORED_EXAMPLES.some(ignored => file.startsWith(ignored)))
-      .map(file => path.join(basePath, file))
-    );
+  const e2eSpecGlob = `${filter ? ` * ${filter} * ` : '*'}/${specFile}`;
+  return globby(e2eSpecGlob, {cwd: basePath, nodir: true})
+      .then(
+          paths => paths.filter(file => !IGNORED_EXAMPLES.some(ignored => file.startsWith(ignored)))
+                       .map(file => path.join(basePath, file)));
 }
 
 // Load configuration for an example. Used for SystemJS
 function loadExampleConfig(exampleFolder) {
   // Default config.
-  let config = {
-    build: 'build',
-    run: 'serve:e2e'
-  };
+  let config = {build: 'build', run: 'serve:e2e'};
 
   try {
     const exampleConfig = fs.readJsonSync(`${exampleFolder}/${EXAMPLE_CONFIG_FILENAME}`);
     Object.assign(config, exampleConfig);
-  } catch (e) { }
+  } catch (e) {
+  }
 
   return config;
 }

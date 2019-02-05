@@ -280,6 +280,27 @@ jobs:
         # with either "0", "1" or "2" as node index. This can be passed to the "--shard" argument.
       - run: yarn --cwd aio example-e2e --setup --local --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
 
+  test_docs_examples_ivy:
+    <<: *job_defaults
+    docker:
+      # Needed because the example e2e tests depend on Chrome.
+      - image: *browsers_docker_image
+    parallelism: 3
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - *restore_cache
+      - attach_workspace:
+          at: dist
+      - *define_env_vars
+      - *download_yarn
+        # Install aio
+      - run: yarn --cwd aio install --frozen-lockfile --non-interactive
+        # Run examples tests with ivy. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
+        # Since the parallelism is set to "3", there will be three parallel CircleCI containers
+        # with either "0", "1" or "2" as node index. This can be passed to the "--shard" argument.
+      - run: yarn --cwd aio example-e2e --setup --local --ivy --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
+
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
     <<: *job_defaults
@@ -593,6 +614,9 @@ workflows:
       - test_docs_examples:
           requires:
             - build-npm-packages
+      - test_docs_examples_ivy:
+          requires:
+            - build-npm-packages
       - aio_preview:
           # Only run on PR builds. (There can be no previews for non-PR builds.)
           filters:
@@ -618,7 +642,8 @@ workflows:
             - test_aio_local
             - test_aio_local_ivy
             - test_docs_examples
-            # Get the artifacts to publish from the build-npm-packages job
+            - test_docs_examples_ivy
+            # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - build-ivy-npm-packages
