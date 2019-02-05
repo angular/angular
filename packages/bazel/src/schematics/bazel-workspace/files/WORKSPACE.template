@@ -62,10 +62,6 @@ install_bazel_dependencies()
 load("@build_bazel_rules_karma//:package.bzl", "rules_karma_dependencies")
 rules_karma_dependencies()
 
-load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
-go_rules_dependencies()
-go_register_toolchains()
-
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories", "web_test_repositories")
 web_test_repositories()
 browser_repositories(
