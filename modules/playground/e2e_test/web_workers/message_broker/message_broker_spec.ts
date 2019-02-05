@@ -6,44 +6,42 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {fixmeIvy} from '@angular/private/testing';
 import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
 const URL = '/';
 
-fixmeIvy('NullInjectorError: No provider for InjectionToken ROOT_CONTEXT_TOKEN!')
-    .describe('MessageBroker', function() {
+describe('MessageBroker', function() {
 
-      afterEach(() => {
-        verifyNoBrowserErrors();
-        browser.ignoreSynchronization = false;
-      });
+  afterEach(() => {
+    verifyNoBrowserErrors();
+    browser.ignoreSynchronization = false;
+  });
 
-      it('should bootstrap', () => {
-        // This test can't wait for Angular as Testability is not available when using WebWorker
-        browser.ignoreSynchronization = true;
-        browser.get(URL);
-        waitForBootstrap();
-        expect(element(by.css('app h1')).getText()).toEqual('WebWorker MessageBroker Test');
-      });
+  it('should bootstrap', () => {
+    // This test can't wait for Angular as Testability is not available when using WebWorker
+    browser.ignoreSynchronization = true;
+    browser.get(URL);
+    waitForBootstrap();
+    expect(element(by.css('app h1')).getText()).toEqual('WebWorker MessageBroker Test');
+  });
 
-      it('should echo messages', () => {
-        const VALUE = 'Hi There';
-        // This test can't wait for Angular as Testability is not available when using WebWorker
-        browser.ignoreSynchronization = true;
-        browser.get(URL);
-        waitForBootstrap();
+  it('should echo messages', () => {
+    const VALUE = 'Hi There';
+    // This test can't wait for Angular as Testability is not available when using WebWorker
+    browser.ignoreSynchronization = true;
+    browser.get(URL);
+    waitForBootstrap();
 
-        const input = element.all(by.css('#echo_input')).first();
-        input.sendKeys(VALUE);
-        element(by.css('#send_echo')).click();
-        const area = element(by.css('#echo_result'));
-        browser.wait(ExpectedConditions.textToBePresentInElement(area, VALUE), 5000);
-        expect(area.getText()).toEqual(VALUE);
-      });
-    });
+    const input = element.all(by.css('#echo_input')).first();
+    input.sendKeys(VALUE);
+    element(by.css('#send_echo')).click();
+    const area = element(by.css('#echo_result'));
+    browser.wait(ExpectedConditions.textToBePresentInElement(area, VALUE), 5000);
+    expect(area.getText()).toEqual(VALUE);
+  });
+});
 
 function waitForBootstrap(): void {
   browser.wait(protractor.until.elementLocated(by.css('app h1')), 15000);
