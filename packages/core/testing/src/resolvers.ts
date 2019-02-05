@@ -13,8 +13,6 @@ import {MetadataOverrider} from './metadata_overrider';
 
 const reflection = new ReflectionCapabilities();
 
-const knownTypes: Type<any>[] = [Directive, Component, Pipe, NgModule];
-
 /**
  * Base interface to resolve `@Component`, `@Directive`, `@Pipe` and `@NgModule`.
  */
@@ -46,9 +44,11 @@ abstract class OverrideResolver<T> implements Resolver<T> {
     // both Directive and Component annotations would be present), so we always check if the known
     // annotation has the right type.
     for (let i = annotations.length - 1; i >= 0; i--) {
-      const isKnownType = knownTypes.some((type: Type<any>) => annotations[i] instanceof type);
+      const annotation = annotations[i];
+      const isKnownType = annotation instanceof Directive || annotation instanceof Component ||
+          annotation instanceof Pipe || annotation instanceof NgModule;
       if (isKnownType) {
-        return annotations[i] instanceof this.type ? annotations[i] : null;
+        return annotation instanceof this.type ? annotation : null;
       }
     }
     return null;
