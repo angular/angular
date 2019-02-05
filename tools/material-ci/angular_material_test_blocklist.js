@@ -953,6 +953,58 @@ window.testBlocklist = {
     "error": "Error: Expected undefined to be truthy.",
     "notes": "Unknown"
   },
+  "MatButton should apply class based on color attribute": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton should not clear previous defined classes": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton button[mat-fab] should have accent palette by default": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton button[mat-mini-fab] should have accent palette by default": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton button[mat-button] should not increment if disabled": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton button[mat-button] should disable the native button element": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton a[mat-button] should not redirect if disabled": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton a[mat-button] should remove tabindex if disabled": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton a[mat-button] should add aria-disabled attribute if disabled": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton a[mat-button] should not add aria-disabled attribute if disabled is false": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton a[mat-button] should be able to set a custom tabindex": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton button ripples should disable the ripple if matRippleDisabled input is set": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatButton button ripples should disable the ripple when the button is disabled": {
+    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
   "MatTabHeader focusing should initialize to the selected index": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"

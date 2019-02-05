@@ -20,7 +20,7 @@ import {getTNode} from '../util';
 
 import {CorePlayerHandler} from './core_player_handler';
 
-const ANIMATION_PROP_PREFIX = '@';
+export const ANIMATION_PROP_PREFIX = '@';
 
 export function createEmptyStylingContext(
     element?: RElement | null, sanitizer?: StyleSanitizeFn | null,

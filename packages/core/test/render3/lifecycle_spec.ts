@@ -443,7 +443,8 @@ describe('lifecycles', () => {
           factory: () => new Component(), template,
           consts: consts,
           vars: vars,
-          directives: directives
+          directives: directives,
+          inputs: {val: 'val'}
         });
       };
     }
@@ -2665,10 +2666,10 @@ describe('lifecycles', () => {
               element(0, 'div');
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(0, 'data-a', bind(ctx.a));
+              elementProperty(0, 'id', bind(ctx.a));
             }
           },
-          selectors: [['mycomp']],
+          selectors: [['my-comp']],
           inputs: {
             value: 'value',
           },
@@ -2683,7 +2684,7 @@ describe('lifecycles', () => {
 
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          element(0, 'mycomp');
+          element(0, 'my-comp');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'value', bind(1));

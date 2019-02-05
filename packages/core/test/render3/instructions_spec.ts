@@ -182,11 +182,12 @@ describe('instructions', () => {
     });
 
     it('should not stringify non string values', () => {
-      const t = new TemplateFixture(createDiv, () => {}, 1);
+      const t = new TemplateFixture(() => { element(0, 'input'); }, () => {}, 1);
 
-      t.update(() => elementProperty(0, 'hidden', false));
-      // The hidden property would be true if `false` was stringified into `"false"`.
-      expect((t.hostElement as HTMLElement).querySelector('div') !.hidden).toEqual(false);
+      // Note: don't use 'hidden' here because IE10 does not support the hidden property
+      t.update(() => elementProperty(0, 'required', false));
+      // The required property would be true if `false` was stringified into `"false"`.
+      expect((t.hostElement as HTMLElement).querySelector('input') !.required).toEqual(false);
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
