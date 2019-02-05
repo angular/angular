@@ -14,10 +14,10 @@ export class GitClient {
    * Spawns a child process running Git. The "stderr" output is inherited and will be printed
    * in case of errors. This makes it easier to debug failed commands.
    */
-  private _spawnGitProcess(args: string[]): SpawnSyncReturns<string> {
+  private _spawnGitProcess(args: string[], printStderr = true): SpawnSyncReturns<string> {
     return spawnSync('git', args, {
       cwd: this.projectDir,
-      stdio: ['pipe', 'pipe', 'inherit'],
+      stdio: ['pipe', 'pipe', printStderr ? 'inherit' : 'pipe'],
       encoding: 'utf8',
     });
   }
@@ -76,7 +76,7 @@ export class GitClient {
 
   /** Checks whether the specified tag exists locally. */
   hasLocalTag(tagName: string) {
-    return this._spawnGitProcess(['rev-parse', `refs/tags/${tagName}`]).status === 0;
+    return this._spawnGitProcess(['rev-parse', `refs/tags/${tagName}`], false).status === 0;
   }
 
   /** Gets the Git SHA of the specified local tag. */

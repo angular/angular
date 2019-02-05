@@ -6,7 +6,7 @@ import {BaseReleaseTask} from './base-release-task';
 import {checkReleaseOutput} from './check-release-output';
 import {extractReleaseNotes} from './extract-release-notes';
 import {GitClient} from './git/git-client';
-import {getGithubReleasesUrl} from './git/github-urls';
+import {getGithubNewReleaseUrl} from './git/github-urls';
 import {isNpmAuthenticated, runInteractiveNpmLogin, runNpmPublish} from './npm/npm-client';
 import {promptForNpmDistTag} from './prompt/npm-dist-tag-prompt';
 import {releasePackages} from './release-output/release-packages';
@@ -91,7 +91,7 @@ class PublishReleaseTask extends BaseReleaseTask {
     checkReleaseOutput(this.releaseOutputPath);
 
     // Extract the release notes for the new version from the changelog file.
-    const releaseNotes = extractReleaseNotes(
+    const {releaseNotes, releaseTitle} = extractReleaseNotes(
       join(this.projectDir, CHANGELOG_FILE_NAME), newVersionName);
 
     if (!releaseNotes) {
@@ -114,11 +114,17 @@ class PublishReleaseTask extends BaseReleaseTask {
       this.publishPackageToNpm(packageName, npmDistTag);
     }
 
+    const newReleaseUrl = getGithubNewReleaseUrl({
+      owner: this.repositoryOwner,
+      repository: this.repositoryName,
+      tagName: newVersionName,
+      releaseTitle: releaseTitle,
+    });
+
     console.log();
     console.info(green(bold(`  ✓   Published all packages successfully`)));
     console.info(yellow(`  ⚠   Please draft a new release of the version on Github.`));
-    console.info(yellow(
-      `      ${getGithubReleasesUrl(this.repositoryOwner, this.repositoryName)}`));
+    console.info(yellow(`      ${newReleaseUrl}`));
   }
 
   /**
