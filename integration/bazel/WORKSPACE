@@ -56,6 +56,9 @@ node_repositories(
 # Install our npm dependencies into @npm
 yarn_install(
     name = "npm",
+    # Need a reference to @angular here so that Bazel sets up the
+    # external repository before calling yarn_install
+    data = ["@angular//:LICENSE"],
     package_json = "//src:package.json",
     yarn_lock = "//src:yarn.lock",
 )
