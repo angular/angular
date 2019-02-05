@@ -8,12 +8,12 @@
  * @fileoverview Schematics for ng-new project that builds with Bazel.
  */
 
-import { SchematicContext, apply, applyTemplates, chain, mergeWith, move, Rule, schematic, Tree, url, SchematicsException, UpdateRecorder, } from '@angular-devkit/schematics';
-import { parseJsonAst, JsonAstObject, strings, JsonValue } from '@angular-devkit/core';
-import { findPropertyInAstObject, insertPropertyInAstObjectInOrder } from '@schematics/angular/utility/json-utils';
-import { validateProjectName } from '@schematics/angular/utility/validation';
-import { getWorkspacePath } from '@schematics/angular/utility/config';
-import { Schema } from './schema';
+import {SchematicContext, apply, applyTemplates, chain, mergeWith, move, Rule, schematic, Tree, url, SchematicsException, UpdateRecorder,} from '@angular-devkit/schematics';
+import {parseJsonAst, JsonAstObject, strings, JsonValue} from '@angular-devkit/core';
+import {findPropertyInAstObject, insertPropertyInAstObjectInOrder} from '@schematics/angular/utility/json-utils';
+import {validateProjectName} from '@schematics/angular/utility/validation';
+import {getWorkspacePath} from '@schematics/angular/utility/config';
+import {Schema} from './schema';
 
 /**
  * Packages that build under Bazel require additional dev dependencies. This
@@ -40,7 +40,7 @@ function addDevDependenciesToPackageJson(options: Schema) {
     }
     const angularCoreVersion = angularCoreNode.value as string;
 
-    const devDependencies: { [ k: string ]: string } = {
+    const devDependencies: {[k: string]: string} = {
       '@angular/bazel': angularCoreVersion,
       // TODO(kyliau): Consider moving this to latest-versions.ts
       '@bazel/bazel': '^0.22.1',
@@ -51,7 +51,7 @@ function addDevDependenciesToPackageJson(options: Schema) {
 
     const recorder = host.beginUpdate(packageJson);
     for (const packageName of Object.keys(devDependencies)) {
-      const version = devDependencies[ packageName ];
+      const version = devDependencies[packageName];
       const indent = 4;
       insertPropertyInAstObjectInOrder(recorder, devDeps, packageName, version, indent);
     }
@@ -103,23 +103,23 @@ function updateGitignore() {
 }
 
 function replacePropertyInAstObject(
-  recorder: UpdateRecorder, node: JsonAstObject, propertyName: string, value: JsonValue,
-  indent: number) {
+    recorder: UpdateRecorder, node: JsonAstObject, propertyName: string, value: JsonValue,
+    indent: number) {
   const property = findPropertyInAstObject(node, propertyName);
   if (property === null) {
     throw new Error(`Property ${propertyName} does not exist in JSON object`);
   }
-  const { start, text } = property;
+  const {start, text} = property;
   recorder.remove(start.offset, text.length);
   const indentStr = '\n' +
-    ' '.repeat(indent);
+      ' '.repeat(indent);
   const content = JSON.stringify(value, null, '  ').replace(/\n/g, indentStr);
   recorder.insertLeft(start.offset, content);
 }
 
 function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
-    const { name } = options;
+    const {name} = options;
     const workspacePath = getWorkspacePath(host);
     if (!workspacePath) {
       throw new Error('Could not find angular.json');
@@ -137,61 +137,61 @@ function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
     const recorder = host.beginUpdate(workspacePath);
     const indent = 8;
     const architect =
-      findPropertyInAstObject(project as JsonAstObject, 'architect') as JsonAstObject;
+        findPropertyInAstObject(project as JsonAstObject, 'architect') as JsonAstObject;
     replacePropertyInAstObject(
-      recorder, architect, 'build', {
-        builder: '@angular/bazel:build',
-        options: {
-          targetLabel: '//src:bundle.js',
-          bazelCommand: 'build',
-        },
-        configurations: {
-          production: {
-            targetLabel: '//src:bundle',
+        recorder, architect, 'build', {
+          builder: '@angular/bazel:build',
+          options: {
+            targetLabel: '//src:bundle.js',
+            bazelCommand: 'build',
+          },
+          configurations: {
+            production: {
+              targetLabel: '//src:bundle',
+            },
           },
         },
-      },
-      indent);
+        indent);
     replacePropertyInAstObject(
-      recorder, architect, 'serve', {
-        builder: '@angular/bazel:build',
-        options: {
-          targetLabel: '//src:devserver',
-          bazelCommand: 'run',
-        },
-        configurations: {
-          production: {
-            targetLabel: '//src:prodserver',
+        recorder, architect, 'serve', {
+          builder: '@angular/bazel:build',
+          options: {
+            targetLabel: '//src:devserver',
+            bazelCommand: 'run',
+          },
+          configurations: {
+            production: {
+              targetLabel: '//src:prodserver',
+            },
           },
         },
-      },
-      indent);
+        indent);
     replacePropertyInAstObject(
-      recorder, architect, 'test', {
-        builder: '@angular/bazel:build',
-        options: { 'bazelCommand': 'test', 'targetLabel': '//src/...' },
-      },
-      indent);
+        recorder, architect, 'test', {
+          builder: '@angular/bazel:build',
+          options: {'bazelCommand': 'test', 'targetLabel': '//src/...'},
+        },
+        indent);
 
     const e2e = `${options.name}-e2e`;
     const e2eNode = findPropertyInAstObject(projects as JsonAstObject, e2e);
     if (e2eNode) {
       const architect =
-        findPropertyInAstObject(e2eNode as JsonAstObject, 'architect') as JsonAstObject;
+          findPropertyInAstObject(e2eNode as JsonAstObject, 'architect') as JsonAstObject;
       replacePropertyInAstObject(
-        recorder, architect, 'e2e', {
-          builder: '@angular/bazel:build',
-          options: {
-            bazelCommand: 'test',
-            targetLabel: '//e2e:devserver_test',
-          },
-          configurations: {
-            production: {
-              targetLabel: '//e2e:prodserver_test',
+          recorder, architect, 'e2e', {
+            builder: '@angular/bazel:build',
+            options: {
+              bazelCommand: 'test',
+              targetLabel: '//e2e:devserver_test',
             },
-          }
-        },
-        indent);
+            configurations: {
+              production: {
+                targetLabel: '//e2e:prodserver_test',
+              },
+            }
+          },
+          indent);
     }
 
     host.commitUpdate(recorder);
@@ -210,13 +210,13 @@ function backupAngularJson(): Rule {
       return;
     }
     host.create(
-      `${workspacePath}.bak`, '// This is a backup file of the original angular.json. ' +
-      'This file is needed in case you want to revert to the workflow without Bazel.\n\n' +
-      host.read(workspacePath));
+        `${workspacePath}.bak`, '// This is a backup file of the original angular.json. ' +
+            'This file is needed in case you want to revert to the workflow without Bazel.\n\n' +
+            host.read(workspacePath));
   };
 }
 
-export default function (options: Schema): Rule {
+export default function(options: Schema): Rule {
   return (host: Tree) => {
     validateProjectName(options.name);
 
