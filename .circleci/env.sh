@@ -18,6 +18,7 @@ setPublicVar PROJECT_ROOT "$(pwd)";
 setPublicVar CI_AIO_MIN_PWA_SCORE "95";
 # This is the branch being built; e.g. `pull/12345` for PR builds.
 setPublicVar CI_BRANCH "$CIRCLE_BRANCH";
+setPublicVar CI_YARN_VERSION "1.13.0"
 # ChromeDriver version compatible with the Chrome version included in the docker image used in
 # `.circleci/config.yml`. See http://chromedriver.chromium.org/downloads for a list of versions.
 # This variable is intended to be passed as an arg to the `webdriver-manager update` command (e.g.
