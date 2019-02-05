@@ -20,6 +20,28 @@ const IGNORED_EXAMPLES = [ // temporary ignores
   'setup',
 ];
 
+const fixmeIvyExamples = [
+  // fixmeIvy('unknown') movie list route is not rendering
+  'ajs-quick-reference',
+  // fixmeIvy('unknown') version value goes undefined when clicking Major button after clicking Minor button twice
+  'component-interaction',
+  // fixmeIvy('unknown') failed content projection and applied styles
+  'component-styles',
+  // fails due to incompatible AoT code with a tree-shakable provider and a non-type constructor argument
+  'dependency-injection',
+  // fixmeIvy('unknown') Error: Internal Error: The name heroForm is already defined in scope to be [object Object]
+  'forms',
+  // fixmeIvy('unknown') app fails at runtime due to missing external service (goog is undefined)
+  'i18n',
+  // fixmeIvy('unknown') ERROR in HostResourceResolver: could not resolve app/app.component.css
+  // in context of aio/content/examples/styleguide/src/01-01/app/heroes/hero.component.avoid.ts)
+  'styleguide'
+];
+
+if (argv.ivy) {
+  IGNORED_EXAMPLES.push(...fixmeIvyExamples);
+}
+
 /**
  * Run Protractor End-to-End Tests for Doc Samples
  *
@@ -44,7 +66,7 @@ function runE2e() {
     // Run setup.
     console.log('runE2e: setup boilerplate');
     const installPackagesCommand = `example-use-${argv.local ? 'local' : 'npm'}`;
-    const addBoilerplateCommand = 'boilerplate:add';
+    const addBoilerplateCommand = `boilerplate:add${argv.ivy ? ':ivy' : ''}`;
     shelljs.exec(`yarn ${installPackagesCommand}`, { cwd: AIO_PATH });
     shelljs.exec(`yarn ${addBoilerplateCommand}`, { cwd: AIO_PATH });
   }
@@ -102,16 +124,16 @@ function findAndRunE2eTests(filter, outputFile, shard) {
           });
         });
       }, Promise.resolve())
-      .then(() => {
-        return e2eSpecPaths.cli.reduce((promise, specPath) => {
-          return promise.then(() => {
-            return runE2eTestsCLI(specPath, outputFile).then(ok => {
-              const arr = ok ? status.passed : status.failed;
-              arr.push(specPath);
+        .then(() => {
+          return e2eSpecPaths.cli.reduce((promise, specPath) => {
+            return promise.then(() => {
+              return runE2eTestsCLI(specPath, outputFile).then(ok => {
+                const arr = ok ? status.passed : status.failed;
+                arr.push(specPath);
+              });
             });
-          });
-        }, Promise.resolve());
-      });
+          }, Promise.resolve());
+        });
     })
     .then(() => {
       const stopTime = new Date().getTime();
@@ -172,8 +194,8 @@ function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile)
       });
     })
     .then(
-    function () { return finish(appRunSpawnInfo.proc.pid, true); },
-    function () { return finish(appRunSpawnInfo.proc.pid, false); }
+      function () { return finish(appRunSpawnInfo.proc.pid, true); },
+      function () { return finish(appRunSpawnInfo.proc.pid, false); }
     );
 }
 
@@ -206,25 +228,42 @@ function runE2eTestsCLI(appDir, outputFile) {
   console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
-  const commands = config.e2e || [{ cmd: 'yarn', args: ['e2e', '--no-webdriver-update'] }];
+  const commands = config.e2e || [{ cmd: 'yarn', args: ['e2e', (argv.ivy ? '--prod' : ''), '--no-webdriver-update'] }];
 
   const e2eSpawnPromise = commands.reduce((prevSpawnPromise, { cmd, args }) => {
     return prevSpawnPromise.then(() => {
       const currSpawn = spawnExt(cmd, args, { cwd: appDir });
       return currSpawn.promise.then(
-          () => Promise.resolve(finish(currSpawn.proc.pid, true)),
-          () => Promise.reject(finish(currSpawn.proc.pid, false)));
+        () => Promise.resolve(finish(currSpawn.proc.pid, true)),
+        () => Promise.reject(finish(currSpawn.proc.pid, false)));
     });
   }, Promise.resolve());
 
   return e2eSpawnPromise.then(
-      () => { fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`); return true; },
-      () => { fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`); return false; });
+    () => { fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`); return true; },
+    () => { fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`); return false; });
 }
 
 // Report final status.
 function reportStatus(status, outputFile) {
   let log = [''];
+
+  log.push('Suites ignored due to legacy guides:');
+  IGNORED_EXAMPLES
+    .filter(example => !fixmeIvyExamples.find(ex => ex.startsWith(example)))
+    .forEach(function (val) {
+      log.push('  ' + val);
+    });
+
+  if (argv.ivy) {
+    log.push('');
+    log.push('Suites ignored due to breakage with Ivy:');
+    fixmeIvyExamples.forEach(function (val) {
+      log.push('  ' + val);
+    });
+  }
+
+  log.push('');
   log.push('Suites passed:');
   status.passed.forEach(function (val) {
     log.push('  ' + val);
