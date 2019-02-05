@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 /**
- * @title Table with a sticky columns
+ * @title Table with sticky columns
  */
 @Component({
   selector: 'table-sticky-columns-example',
