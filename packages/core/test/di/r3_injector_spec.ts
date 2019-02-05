@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {INJECTOR, InjectFlags, InjectionToken, Injector, Optional, createInjector, defineInjectable, defineInjector, inject} from '@angular/core';
-import {R3Injector} from '@angular/core/src/di/r3_injector';
+import {INJECTOR, InjectFlags, InjectionToken, Injector, Optional, defineInjectable, defineInjector, inject} from '@angular/core';
+import {R3Injector, createInjector} from '@angular/core/src/di/r3_injector';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('InjectorDef-based createInjector()', () => {
