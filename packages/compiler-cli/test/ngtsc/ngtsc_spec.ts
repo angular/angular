@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {LazyRoute} from '@angular/compiler-cli/src/ngtsc/routing';
+import * as path from 'path';
 import * as ts from 'typescript';
 
 import {NgtscTestEnvironment} from './env';
@@ -1439,13 +1441,13 @@ describe('ngtsc behavioral tests', () => {
       env.write('test.ts', `
         import {Component, NgModule} from '@angular/core';
         import {NormalComponent} from './cyclic';
-  
+
         @Component({
           selector: 'cyclic-component',
           template: 'Importing this causes a cycle',
         })
         export class CyclicComponent {}
-  
+
         @NgModule({
           declarations: [NormalComponent, CyclicComponent],
         })
@@ -1454,7 +1456,7 @@ describe('ngtsc behavioral tests', () => {
 
       env.write('cyclic.ts', `
         import {Component} from '@angular/core';
-  
+
         @Component({
           selector: 'normal-component',
           template: '<cyclic-component></cyclic-component>',
@@ -1992,91 +1994,497 @@ describe('ngtsc behavioral tests', () => {
     });
   });
 
-  it('should detect all lazy routes', () => {
-    env.tsconfig();
-    env.write('test.ts', `
-    import {NgModule} from '@angular/core';
-    import {RouterModule} from '@angular/router';
+  describe('listLazyRoutes()', () => {
+    // clang-format off
+    const lazyRouteMatching = (
+        route: string, fromModulePath: RegExp, fromModuleName: string, toModulePath: RegExp,
+        toModuleName: string) => {
+      return {
+        route,
+        module: jasmine.objectContaining({
+          name: fromModuleName,
+          filePath: jasmine.stringMatching(fromModulePath),
+        }),
+        referencedModule: jasmine.objectContaining({
+          name: toModuleName,
+          filePath: jasmine.stringMatching(toModulePath),
+        }),
+      } as unknown as LazyRoute;
+    };
+    // clang-format on
 
-    @NgModule({
-      imports: [
-        RouterModule.forChild([
-          {path: '', loadChildren: './lazy#LazyModule'},
-        ]),
-      ],
-    })
-    export class TestModule {}
-    `);
-    env.write('lazy.ts', `
-    import {NgModule} from '@angular/core';
-    import {RouterModule} from '@angular/router';
+    beforeEach(() => {
+      env.tsconfig();
+      env.write('node_modules/@angular/router/index.d.ts', `
+        import {ModuleWithProviders} from '@angular/core';
 
-    @NgModule({})
-    export class LazyModule {}
-    `);
-    env.write('node_modules/@angular/router/index.d.ts', `
-    import {ModuleWithProviders} from '@angular/core';
+        export declare var ROUTES;
+        export declare class RouterModule {
+          static forRoot(arg1: any, arg2: any): ModuleWithProviders<RouterModule>;
+          static forChild(arg1: any): ModuleWithProviders<RouterModule>;
+        }
+      `);
+    });
 
-    export declare var ROUTES;
-    export declare class RouterModule {
-      static forRoot(arg1: any, arg2: any): ModuleWithProviders<RouterModule>;
-      static forChild(arg1: any): ModuleWithProviders<RouterModule>;
-    }
-    `);
+    describe('when called without arguments', () => {
+      it('should list all routes', () => {
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
 
-    const routes = env.driveRoutes();
-    expect(routes.length).toBe(1);
-    expect(routes[0].route).toEqual('./lazy#LazyModule');
-    expect(routes[0].module.filePath.endsWith('/test.ts')).toBe(true);
-    expect(routes[0].referencedModule.filePath.endsWith('/lazy.ts')).toBe(true);
-  });
+          @NgModule({
+            imports: [
+              RouterModule.forRoot([
+                {path: '1', loadChildren: './lazy/lazy-1#Lazy1Module'},
+                {path: '2', loadChildren: './lazy/lazy-2#Lazy2Module'},
+              ]),
+            ],
+          })
+          export class TestModule {}
+        `);
+        env.write('lazy/lazy-1.ts', `
+          import {NgModule} from '@angular/core';
 
-  it('should detect lazy routes in simple children routes', () => {
-    env.tsconfig();
-    env.write('test.ts', `
-    import {NgModule} from '@angular/core';
-    import {RouterModule} from '@angular/router';
-    
-    @Component({
-      selector: 'foo',
-      template: '<div>Foo</div>'
-    })
-    class FooCmp {}
+          @NgModule({})
+          export class Lazy1Module {}
+        `);
+        env.write('lazy/lazy-2.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
 
-    @NgModule({
-      imports: [
-        RouterModule.forRoot([
-          {path: '', children: [
-            {path: 'foo', component: FooCmp},
-            {path: 'lazy', loadChildren: './lazy#LazyModule'}
-          ]},
-        ]),
-      ],
-    })
-    export class TestModule {}
-    `);
-    env.write('lazy.ts', `
-    import {NgModule} from '@angular/core';
-    import {RouterModule} from '@angular/router';
+          @NgModule({
+            imports: [
+              RouterModule.forChild([
+                {path: '3', loadChildren: './lazy-3#Lazy3Module'},
+              ]),
+            ],
+          })
+          export class Lazy2Module {}
+        `);
+        env.write('lazy/lazy-3.ts', `
+          import {NgModule} from '@angular/core';
 
-    @NgModule({})
-    export class LazyModule {}
-    `);
-    env.write('node_modules/@angular/router/index.d.ts', `
-    import {ModuleWithProviders} from '@angular/core';
+          @NgModule({})
+          export class Lazy3Module {}
+        `);
 
-    export declare var ROUTES;
-    export declare class RouterModule {
-      static forRoot(arg1: any, arg2: any): ModuleWithProviders<RouterModule>;
-      static forChild(arg1: any): ModuleWithProviders<RouterModule>;
-    }
-    `);
+        const routes = env.driveRoutes();
+        expect(routes).toEqual([
+          lazyRouteMatching(
+              './lazy-3#Lazy3Module', /\/lazy\/lazy-2\.ts$/, 'Lazy2Module', /\/lazy\/lazy-3\.ts$/,
+              'Lazy3Module'),
+          lazyRouteMatching(
+              './lazy/lazy-1#Lazy1Module', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy-1\.ts$/,
+              'Lazy1Module'),
+          lazyRouteMatching(
+              './lazy/lazy-2#Lazy2Module', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy-2\.ts$/,
+              'Lazy2Module'),
+        ]);
+      });
 
-    const routes = env.driveRoutes();
-    expect(routes.length).toBe(1);
-    expect(routes[0].route).toEqual('./lazy#LazyModule');
-    expect(routes[0].module.filePath.endsWith('/test.ts')).toBe(true);
-    expect(routes[0].referencedModule.filePath.endsWith('/lazy.ts')).toBe(true);
+      it('should detect lazy routes in simple children routes', () => {
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @Component({
+            selector: 'foo',
+            template: '<div>Foo</div>'
+          })
+          class FooCmp {}
+
+          @NgModule({
+            imports: [
+              RouterModule.forRoot([
+                {path: '', children: [
+                  {path: 'foo', component: FooCmp},
+                  {path: 'lazy', loadChildren: './lazy#LazyModule'}
+                ]},
+              ]),
+            ],
+          })
+          export class TestModule {}
+        `);
+        env.write('lazy.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({})
+          export class LazyModule {}
+        `);
+
+        const routes = env.driveRoutes();
+        expect(routes).toEqual([
+          lazyRouteMatching(
+              './lazy#LazyModule', /\/test\.ts$/, 'TestModule', /\/lazy\.ts$/, 'LazyModule'),
+        ]);
+      });
+    });
+
+    describe('when called with entry module', () => {
+      it('should throw if the entry module hasn\'t been analyzed', () => {
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forChild([
+                {path: '', loadChildren: './lazy#LazyModule'},
+              ]),
+            ],
+          })
+          export class TestModule {}
+        `);
+
+        const entryModule1 = path.join(env.basePath, 'test#TestModule');
+        const entryModule2 = path.join(env.basePath, 'not-test#TestModule');
+        const entryModule3 = path.join(env.basePath, 'test#NotTestModule');
+
+        expect(() => env.driveRoutes(entryModule1)).not.toThrow();
+        expect(() => env.driveRoutes(entryModule2))
+            .toThrowError(`Failed to list lazy routes: Unknown module '${entryModule2}'.`);
+        expect(() => env.driveRoutes(entryModule3))
+            .toThrowError(`Failed to list lazy routes: Unknown module '${entryModule3}'.`);
+      });
+
+      it('should list all transitive lazy routes', () => {
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+          import {Test1Module as Test1ModuleRenamed} from './test-1';
+          import {Test2Module} from './test-2';
+
+          @NgModule({
+            exports: [
+              Test1ModuleRenamed,
+            ],
+            imports: [
+              Test2Module,
+              RouterModule.forRoot([
+                {path: '', loadChildren: './lazy/lazy#LazyModule'},
+              ]),
+            ],
+          })
+          export class TestModule {}
+        `);
+        env.write('test-1.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forChild([
+                {path: 'one', loadChildren: './lazy-1/lazy-1#Lazy1Module'},
+              ]),
+            ],
+          })
+          export class Test1Module {}
+        `);
+        env.write('test-2.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            exports: [
+              RouterModule.forChild([
+                {path: 'two', loadChildren: './lazy-2/lazy-2#Lazy2Module'},
+              ]),
+            ],
+          })
+          export class Test2Module {}
+        `);
+        env.write('lazy/lazy.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class LazyModule {}
+        `);
+        env.write('lazy-1/lazy-1.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class Lazy1Module {}
+        `);
+        env.write('lazy-2/lazy-2.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class Lazy2Module {}
+        `);
+
+        const routes = env.driveRoutes(path.join(env.basePath, 'test#TestModule'));
+
+        expect(routes).toEqual([
+          lazyRouteMatching(
+              './lazy/lazy#LazyModule', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy\.ts$/,
+              'LazyModule'),
+          lazyRouteMatching(
+              './lazy-1/lazy-1#Lazy1Module', /\/test-1\.ts$/, 'Test1Module',
+              /\/lazy-1\/lazy-1\.ts$/, 'Lazy1Module'),
+          lazyRouteMatching(
+              './lazy-2/lazy-2#Lazy2Module', /\/test-2\.ts$/, 'Test2Module',
+              /\/lazy-2\/lazy-2\.ts$/, 'Lazy2Module'),
+        ]);
+      });
+
+      it('should ignore exports that do not refer to an `NgModule`', () => {
+        env.write('test-1.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+          import {Test2Component, Test2Module} from './test-2';
+
+          @NgModule({
+            exports: [
+              Test2Component,
+              Test2Module,
+            ],
+            imports: [
+              RouterModule.forRoot([
+                {path: '', loadChildren: './lazy-1/lazy-1#Lazy1Module'},
+              ]),
+            ],
+          })
+          export class Test1Module {}
+        `);
+        env.write('test-2.ts', `
+          import {Component, NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @Component({
+            selector: 'test-2',
+            template: '',
+          })
+          export class Test2Component {}
+
+          @NgModule({
+            declarations: [
+              Test2Component,
+            ],
+            exports: [
+              Test2Component,
+              RouterModule.forChild([
+                {path: 'two', loadChildren: './lazy-2/lazy-2#Lazy2Module'},
+              ]),
+            ],
+          })
+          export class Test2Module {}
+        `);
+        env.write('lazy-1/lazy-1.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class Lazy1Module {}
+        `);
+        env.write('lazy-2/lazy-2.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class Lazy2Module {}
+        `);
+
+        const routes = env.driveRoutes(path.join(env.basePath, 'test-1#Test1Module'));
+
+        expect(routes).toEqual([
+          lazyRouteMatching(
+              './lazy-1/lazy-1#Lazy1Module', /\/test-1\.ts$/, 'Test1Module',
+              /\/lazy-1\/lazy-1\.ts$/, 'Lazy1Module'),
+          lazyRouteMatching(
+              './lazy-2/lazy-2#Lazy2Module', /\/test-2\.ts$/, 'Test2Module',
+              /\/lazy-2\/lazy-2\.ts$/, 'Lazy2Module'),
+        ]);
+      });
+
+      it('should support `ModuleWithProviders`', () => {
+        env.write('test.ts', `
+          import {ModuleWithProviders, NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forChild([
+                {path: '', loadChildren: './lazy-2/lazy-2#Lazy2Module'},
+              ]),
+            ],
+          })
+          export class TestRoutingModule {
+            static forRoot(): ModuleWithProviders<TestRoutingModule> {
+              return {
+                ngModule: TestRoutingModule,
+                providers: [],
+              };
+            }
+          }
+
+          @NgModule({
+            imports: [
+              TestRoutingModule.forRoot(),
+              RouterModule.forRoot([
+                {path: '', loadChildren: './lazy-1/lazy-1#Lazy1Module'},
+              ]),
+            ],
+          })
+          export class TestModule {}
+        `);
+        env.write('lazy-1/lazy-1.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class Lazy1Module {}
+        `);
+        env.write('lazy-2/lazy-2.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class Lazy2Module {}
+        `);
+
+        const routes = env.driveRoutes(path.join(env.basePath, 'test#TestModule'));
+
+        expect(routes).toEqual([
+          lazyRouteMatching(
+              './lazy-1/lazy-1#Lazy1Module', /\/test\.ts$/, 'TestModule', /\/lazy-1\/lazy-1\.ts$/,
+              'Lazy1Module'),
+          lazyRouteMatching(
+              './lazy-2/lazy-2#Lazy2Module', /\/test\.ts$/, 'TestRoutingModule',
+              /\/lazy-2\/lazy-2\.ts$/, 'Lazy2Module'),
+        ]);
+      });
+
+      it('should only process each module once', () => {
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forChild([
+                {path: '', loadChildren: './lazy/lazy#LazyModule'},
+              ]),
+            ],
+          })
+          export class SharedModule {}
+
+          @NgModule({
+            imports: [
+              SharedModule,
+              RouterModule.forRoot([
+                {path: '', loadChildren: './lazy/lazy#LazyModule'},
+              ]),
+            ],
+          })
+          export class TestModule {}
+        `);
+        env.write('lazy/lazy.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forChild([
+                {path: '', loadChildren: '../lazier/lazier#LazierModule'},
+              ]),
+            ],
+          })
+          export class LazyModule {}
+        `);
+        env.write('lazier/lazier.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class LazierModule {}
+        `);
+
+        const routes = env.driveRoutes(path.join(env.basePath, 'test#TestModule'));
+
+        // `LazyModule` is referenced in both `SharedModule` and `TestModule`,
+        // but it is only processed once (hence one `LazierModule` entry).
+        expect(routes).toEqual([
+          lazyRouteMatching(
+              './lazy/lazy#LazyModule', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy\.ts$/,
+              'LazyModule'),
+          lazyRouteMatching(
+              './lazy/lazy#LazyModule', /\/test\.ts$/, 'SharedModule', /\/lazy\/lazy\.ts$/,
+              'LazyModule'),
+          lazyRouteMatching(
+              '../lazier/lazier#LazierModule', /\/lazy\/lazy\.ts$/, 'LazyModule',
+              /\/lazier\/lazier\.ts$/, 'LazierModule'),
+        ]);
+      });
+
+      it('should ignore modules not (transitively) referenced by the entry module', () => {
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forRoot([
+                {path: '', loadChildren: './lazy/lazy#Lazy1Module'},
+              ]),
+            ],
+          })
+          export class Test1Module {}
+
+          @NgModule({
+            imports: [
+              RouterModule.forRoot([
+                {path: '', loadChildren: './lazy/lazy#Lazy2Module'},
+              ]),
+            ],
+          })
+          export class Test2Module {}
+        `);
+        env.write('lazy/lazy.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class Lazy1Module {}
+
+          @NgModule({})
+          export class Lazy2Module {}
+        `);
+
+        const routes = env.driveRoutes(path.join(env.basePath, 'test#Test1Module'));
+
+        expect(routes).toEqual([
+          lazyRouteMatching(
+              './lazy/lazy#Lazy1Module', /\/test\.ts$/, 'Test1Module', /\/lazy\/lazy\.ts$/,
+              'Lazy1Module'),
+        ]);
+      });
+
+      it('should ignore routes to unknown modules', () => {
+        env.write('test.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forRoot([
+                {path: '', loadChildren: './unknown/unknown#UnknownModule'},
+                {path: '', loadChildren: './lazy/lazy#LazyModule'},
+              ]),
+            ],
+          })
+          export class TestModule {}
+        `);
+        env.write('lazy/lazy.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class LazyModule {}
+        `);
+
+        const routes = env.driveRoutes(path.join(env.basePath, 'test#TestModule'));
+
+        expect(routes).toEqual([
+          lazyRouteMatching(
+              './lazy/lazy#LazyModule', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy\.ts$/,
+              'LazyModule'),
+        ]);
+      });
+    });
   });
 });
 

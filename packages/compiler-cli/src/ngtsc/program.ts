@@ -192,9 +192,7 @@ export class NgtscProgram implements api.Program {
 
   listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
     this.ensureAnalyzed();
-    // Listing specific routes is unsupported for now, so we erroneously return
-    // all lazy routes instead (which should be okay for the CLI's usage).
-    return this.routeAnalyzer !.listLazyRoutes();
+    return this.routeAnalyzer !.listLazyRoutes(entryRoute);
   }
 
   getLibrarySummaries(): Map<string, api.LibrarySummary> {
