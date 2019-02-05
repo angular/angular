@@ -11,7 +11,7 @@ import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
-fixmeIvy('NullInjectorError: No provider for InjectionToken ROOT_CONTEXT_TOKEN!')
+fixmeIvy('FW-1032: Ivy doesn\'t support injecting Renderer, the deprecated renderer V1')
     .describe('WebWorkers Kitchen Sink', function() {
       afterEach(() => {
         verifyNoBrowserErrors();
