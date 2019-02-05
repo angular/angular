@@ -239,7 +239,7 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('schemas', () => {
-      fixmeIvy('FW-819: ngtsc compiler should support schemas')
+      modifiedInIvy('Unknown property error thrown during update mode, not creation mode')
           .it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
             class ComponentUsingInvalidProperty {
@@ -252,19 +252,36 @@ function declareTests(config?: {useJit: boolean}) {
             expect(() => createModule(SomeModule)).toThrowError(/Can't bind to 'someUnknownProp'/);
           });
 
-      it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
-         () => {
-           @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
-           class ComponentUsingInvalidProperty {
-           }
+      onlyInIvy('Unknown property error thrown during update mode, not creation mode')
+          .it('should error on unknown bound properties on custom elements by default', () => {
+            @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+            class ComponentUsingInvalidProperty {
+            }
 
-           @NgModule(
-               {schemas: [CUSTOM_ELEMENTS_SCHEMA], declarations: [ComponentUsingInvalidProperty]})
-           class SomeModule {
-           }
+            @NgModule({declarations: [ComponentUsingInvalidProperty]})
+            class SomeModule {
+            }
 
-           expect(() => createModule(SomeModule)).not.toThrow();
-         });
+            const fixture = createComp(ComponentUsingInvalidProperty, SomeModule);
+            expect(() => fixture.detectChanges()).toThrowError(/Can't bind to 'someUnknownProp'/);
+          });
+
+      fixmeIvy('FW-819: ngtsc compiler should support schemas')
+          .it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
+              () => {
+                @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+                class ComponentUsingInvalidProperty {
+                }
+
+                @NgModule({
+                  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+                  declarations: [ComponentUsingInvalidProperty]
+                })
+                class SomeModule {
+                }
+
+                expect(() => createModule(SomeModule)).not.toThrow();
+              });
     });
 
     describe('id', () => {

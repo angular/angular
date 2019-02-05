@@ -42,11 +42,13 @@ describe('ViewContainerRef', () => {
       factory: () => directiveInstance = new DirectiveWithVCRef(
 
                    directiveInject(ViewContainerRef as any), injectComponentFactoryResolver()),
-      inputs: {tplRef: 'tplRef'}
+      inputs: {tplRef: 'tplRef', name: 'name'}
     });
 
     // TODO(issue/24571): remove '!'.
     tplRef !: TemplateRef<{}>;
+
+    name: string = '';
 
     // injecting a ViewContainerRef to create a dynamic container in which embedded views will be
     // created

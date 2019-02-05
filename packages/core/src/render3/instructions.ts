@@ -10,7 +10,7 @@ import {InjectFlags, InjectionToken, Injector} from '../di';
 import {resolveForwardRef} from '../di/forward_ref';
 import {ErrorHandler} from '../error_handler';
 import {Type} from '../interface/type';
-import {validateAttribute, validateProperty} from '../sanitization/sanitization';
+import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../sanitization/sanitization';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDataInRange, assertDefined, assertEqual, assertLessThan, assertNotEqual} from '../util/assert';
@@ -39,7 +39,7 @@ import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector
 import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from './state';
 import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
-import {createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
+import {ANIMATION_PROP_PREFIX, createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
 import {INTERPOLATION_DELIMITER, findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isContentQueryHost, loadInternal, readElementValue, readPatchedLView, renderStringify} from './util';
 
@@ -1099,7 +1099,7 @@ export function elementAttribute(
     index: number, name: string, value: any, sanitizer?: SanitizerFn | null,
     namespace?: string): void {
   if (value !== NO_CHANGE) {
-    ngDevMode && validateAttribute(name);
+    ngDevMode && validateAgainstEventAttributes(name);
     const lView = getLView();
     const renderer = lView[RENDERER];
     const element = getNativeByIndex(index, lView);
@@ -1193,7 +1193,8 @@ function elementPropertyInternal<T>(
     }
   } else if (tNode.type === TNodeType.Element) {
     if (ngDevMode) {
-      validateProperty(propName);
+      validateAgainstEventProperties(propName);
+      validateAgainstUnknownProperties(element, propName, tNode);
       ngDevMode.rendererSetProperty++;
     }
 
@@ -1209,6 +1210,18 @@ function elementPropertyInternal<T>(
       (element as RElement).setProperty ? (element as any).setProperty(propName, value) :
                                           (element as any)[propName] = value;
     }
+  }
+}
+
+function validateAgainstUnknownProperties(
+    element: RElement | RComment, propName: string, tNode: TNode) {
+  // If prop is not a known property of the HTML element...
+  if (!(propName in element) &&
+      // and isn't a synthetic animation property...
+      propName[0] !== ANIMATION_PROP_PREFIX) {
+    // ... it is probably a user error and we should throw.
+    throw new Error(
+        `Template error: Can't bind to '${propName}' since it isn't a known property of '${tNode.tagName}'.`);
   }
 }
 
