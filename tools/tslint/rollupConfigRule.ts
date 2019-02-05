@@ -17,8 +17,8 @@ function _isRollupPath(path: string) {
   return /rollup\.config\.js$/.test(path);
 }
 
-// Regexes to blacklist.
-const sourceFilePathBlacklist = [
+// Regexes to blocklist.
+const sourceFilePathBlocklist = [
   /\.spec\.ts$/,
   /_spec\.ts$/,
   /_perf\.ts$/,
@@ -62,7 +62,7 @@ const packageScopedImportWhitelist: [RegExp, string[]][] = [
 
 // Return true if the file should be linted.
 function _pathShouldBeLinted(path: string) {
-  return /[/\\]packages[/\\]/.test(path) && sourceFilePathBlacklist.every(re => !re.test(path));
+  return /[/\\]packages[/\\]/.test(path) && sourceFilePathBlocklist.every(re => !re.test(path));
 }
 
 
@@ -157,7 +157,7 @@ export class Rule extends AbstractRule {
                 sourceFile, importStatement.getStart(), importStatement.getWidth(),
                 `Import ${JSON.stringify(modulePath)} could not be found in the rollup config ` +
                     `at path ${JSON.stringify(rollupFilePath)}.`,
-                this.ruleName, );
+                this.ruleName);
           }
 
           return null;

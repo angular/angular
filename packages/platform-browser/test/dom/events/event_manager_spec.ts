@@ -296,7 +296,7 @@ import {el} from '../../../testing/src/browser_util';
       expect(receivedEvents).toEqual([]);
     });
 
-    it('should run blackListedEvents handler outside of ngZone', () => {
+    it('should run blockListedEvents handler outside of ngZone', () => {
       const Zone = (window as any)['Zone'];
       const element = el('<div><div></div></div>');
       getDOM().appendChild(doc.body, element);
