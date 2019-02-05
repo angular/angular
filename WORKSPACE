@@ -28,13 +28,6 @@ http_archive(
     url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
 )
 
-# TODO(gregmagolan): do we still need go dependencies?
-http_archive(
-    name = "io_bazel_rules_go",
-    sha256 = "b7a62250a3a73277ade0ce306d22f122365b513f5402222403e507f2f997d421",
-    url = "https://github.com/bazelbuild/rules_go/releases/download/0.16.3/rules_go-0.16.3.tar.gz",
-)
-
 # Use a mock @npm repository while we are building angular from source
 # downstream. Angular will get its npm dependencies with in @ngdeps which
 # is setup in ng_setup_workspace().
@@ -86,13 +79,6 @@ rules_angular_dev_dependencies()
 load("@build_bazel_rules_karma//:package.bzl", "rules_karma_dependencies")
 
 rules_karma_dependencies()
-
-# TODO(gregmagolan): do we still need go dependencies?
-load("@io_bazel_rules_go//go:def.bzl", "go_register_toolchains", "go_rules_dependencies")
-
-go_rules_dependencies()
-
-go_register_toolchains()
 
 # Setup the rules_webtesting toolchain
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "browser_repositories", "web_test_repositories")
