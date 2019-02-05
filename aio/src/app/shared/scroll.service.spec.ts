@@ -55,11 +55,11 @@ describe('ScrollService', () => {
     const updateScrollPositionInHistorySpy = spyOn(scrollService, 'updateScrollPositionInHistory');
 
     window.dispatchEvent(new Event('scroll'));
-    tick(499);
+    tick(249);
     window.dispatchEvent(new Event('scroll'));
-    tick(499);
+    tick(249);
     window.dispatchEvent(new Event('scroll'));
-    tick(499);
+    tick(249);
     expect(updateScrollPositionInHistorySpy).not.toHaveBeenCalled();
     tick(1);
     expect(updateScrollPositionInHistorySpy).toHaveBeenCalledTimes(1);

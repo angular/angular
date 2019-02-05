@@ -47,7 +47,7 @@ export class ScrollService {
     fromEvent(window, 'resize').subscribe(() => this._topOffset = null);
 
     fromEvent(window, 'scroll')
-      .pipe(debounceTime(500)).subscribe(() => this.updateScrollPositionInHistory());
+      .pipe(debounceTime(250)).subscribe(() => this.updateScrollPositionInHistory());
 
     this.supportManualScrollRestoration = !!window && 'scrollTo' in window && 'scrollX' in window
       && 'scrollY' in window && !!history && 'scrollRestoration' in history;
