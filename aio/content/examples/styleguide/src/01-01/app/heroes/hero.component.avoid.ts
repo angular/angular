@@ -15,7 +15,7 @@ class Hero {
       <h1>{{title}}</h1>
       <pre>{{heroes | json}}</pre>
     `,
-  styleUrls: ['app/app.component.css']
+  styleUrls: ['../app.component.css']
 })
 class AppComponent implements OnInit {
   title = 'Tour of Heroes';

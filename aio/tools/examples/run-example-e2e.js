@@ -20,6 +20,17 @@ const IGNORED_EXAMPLES = [ // temporary ignores
   'setup',
 ];
 
+const IGNORED_IVY_EXAMPLES = [
+  'ajs-quick-reference',
+  'component-interaction',
+  'component-styles',
+  'i18n',
+];
+
+if (argv.ivy) {
+  IGNORED_EXAMPLES.push(...IGNORED_IVY_EXAMPLES);
+}
+
 /**
  * Run Protractor End-to-End Tests for Doc Samples
  *
@@ -44,7 +55,7 @@ function runE2e() {
     // Run setup.
     console.log('runE2e: setup boilerplate');
     const installPackagesCommand = `example-use-${argv.local ? 'local' : 'npm'}`;
-    const addBoilerplateCommand = 'boilerplate:add';
+    const addBoilerplateCommand = `boilerplate:add${argv.ivy ? ':ivy' : ''}`;
     shelljs.exec(`yarn ${installPackagesCommand}`, { cwd: AIO_PATH });
     shelljs.exec(`yarn ${addBoilerplateCommand}`, { cwd: AIO_PATH });
   }
@@ -102,16 +113,16 @@ function findAndRunE2eTests(filter, outputFile, shard) {
           });
         });
       }, Promise.resolve())
-      .then(() => {
-        return e2eSpecPaths.cli.reduce((promise, specPath) => {
-          return promise.then(() => {
-            return runE2eTestsCLI(specPath, outputFile).then(ok => {
-              const arr = ok ? status.passed : status.failed;
-              arr.push(specPath);
+        .then(() => {
+          return e2eSpecPaths.cli.reduce((promise, specPath) => {
+            return promise.then(() => {
+              return runE2eTestsCLI(specPath, outputFile).then(ok => {
+                const arr = ok ? status.passed : status.failed;
+                arr.push(specPath);
+              });
             });
-          });
-        }, Promise.resolve());
-      });
+          }, Promise.resolve());
+        });
     })
     .then(() => {
       const stopTime = new Date().getTime();
@@ -172,8 +183,8 @@ function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile)
       });
     })
     .then(
-    function () { return finish(appRunSpawnInfo.proc.pid, true); },
-    function () { return finish(appRunSpawnInfo.proc.pid, false); }
+      function () { return finish(appRunSpawnInfo.proc.pid, true); },
+      function () { return finish(appRunSpawnInfo.proc.pid, false); }
     );
 }
 
@@ -206,25 +217,32 @@ function runE2eTestsCLI(appDir, outputFile) {
   console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
-  const commands = config.e2e || [{ cmd: 'yarn', args: ['e2e', '--no-webdriver-update'] }];
+  const commands = config.e2e || [{ cmd: 'yarn', args: ['e2e', (argv.ivy ? '--prod' : ''), '--no-webdriver-update'] }];
 
   const e2eSpawnPromise = commands.reduce((prevSpawnPromise, { cmd, args }) => {
     return prevSpawnPromise.then(() => {
       const currSpawn = spawnExt(cmd, args, { cwd: appDir });
       return currSpawn.promise.then(
-          () => Promise.resolve(finish(currSpawn.proc.pid, true)),
-          () => Promise.reject(finish(currSpawn.proc.pid, false)));
+        () => Promise.resolve(finish(currSpawn.proc.pid, true)),
+        () => Promise.reject(finish(currSpawn.proc.pid, false)));
     });
   }, Promise.resolve());
 
   return e2eSpawnPromise.then(
-      () => { fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`); return true; },
-      () => { fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`); return false; });
+    () => { fs.appendFileSync(outputFile, `Passed: ${appDir}\n\n`); return true; },
+    () => { fs.appendFileSync(outputFile, `Failed: ${appDir}\n\n`); return false; });
 }
 
 // Report final status.
 function reportStatus(status, outputFile) {
   let log = [''];
+
+  log.push('Suites ignored:');
+  IGNORED_EXAMPLES.forEach(function (val) {
+    log.push('  ' + val);
+  });
+
+  log.push('');
   log.push('Suites passed:');
   status.passed.forEach(function (val) {
     log.push('  ' + val);

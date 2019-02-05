@@ -5,7 +5,8 @@ import { Component } from '@angular/core';
 
 // HeroComponent is in the Tour of Heroes feature
 @Component({
-  selector: 'hero'
+  selector: 'hero',
+  template: ''
 })
-export class HeroComponent {}
+export class HeroComponent { }
 // #enddocregion example

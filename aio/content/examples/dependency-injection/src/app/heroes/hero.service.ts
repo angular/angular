@@ -6,15 +6,19 @@ import { UserService } from '../user.service';
 
 @Injectable({
   providedIn: 'root',
-  useFactory: (logger: Logger, userService: UserService) =>
-      new HeroService(logger, userService.user.isAuthorized),
+  useFactory: (logger: Logger, userService: UserService) => {
+    const heroService = new HeroService(logger);
+    heroService.isAuthorized = userService.user.isAuthorized;
+    return heroService;
+  },
   deps: [Logger, UserService],
 })
 export class HeroService {
   // #docregion internals
+  isAuthorized = false;
+
   constructor(
-    private logger: Logger,
-    private isAuthorized: boolean) { }
+    private logger: Logger) { }
 
   getHeroes() {
     let auth = this.isAuthorized ? 'authorized ' : 'unauthorized';

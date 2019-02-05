@@ -5,7 +5,8 @@ import { Component } from '@angular/core';
 
 // UsersComponent is in an Admin feature
 @Component({
-  selector: 'users'
+  selector: 'users',
+  template: ''
 })
-export class UsersComponent {}
+export class UsersComponent { }
 // #enddocregion example

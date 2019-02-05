@@ -6,7 +6,9 @@ import { UserService } from '../user.service';
 
 // #docregion factory
 let heroServiceFactory = (logger: Logger, userService: UserService) => {
-  return new HeroService(logger, userService.user.isAuthorized);
+  const heroService = new HeroService(logger);
+  heroService.isAuthorized = userService.user.isAuthorized;
+  return heroService;
 };
 // #enddocregion factory
 
