@@ -3,6 +3,7 @@
 @import '../core/style/checkbox-common';
 @import '../core/ripple/ripple';
 @import '../core/style/layout-common';
+@import '../core/style/vendor-prefixes';
 @import '../core/style/noop-animation';
 @import '../../cdk/a11y/a11y';
 
@@ -189,6 +190,11 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 }
 
 .mat-checkbox-layout {
+  // Disable text selection on the label itself, because having text selected
+  // will prevent focus from reaching the label. Below we'll re-enable it only
+  // for the label's content so that people can still select the text.
+  @include user-select(none);
+
   // `cursor: inherit` ensures that the wrapper element gets the same cursor as the mat-checkbox
   // (e.g. pointer by default, regular when disabled), instead of the browser default.
   cursor: inherit;
@@ -196,6 +202,12 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
   vertical-align: middle;
   display: inline-flex;
   white-space: nowrap;
+}
+
+.mat-checkbox-label {
+  // Re-enable text selection for the checkbox's content since
+  // we disabled it above in the `.mat-checkbox-layout`.
+  @include user-select(auto);
 }
 
 .mat-checkbox-inner-container {
