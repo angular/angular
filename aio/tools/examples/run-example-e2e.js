@@ -60,7 +60,7 @@ function runE2e() {
     // Run setup.
     console.log('runE2e: setup boilerplate');
     const installPackagesCommand = `example-use-${argv.local ? 'local' : 'npm'}`;
-    const addBoilerplateCommand = 'boilerplate:add';
+    const addBoilerplateCommand = `boilerplate:add${argv.ivy ? ':ivy' : ''}`;
     shelljs.exec(`yarn ${installPackagesCommand}`, {cwd: AIO_PATH});
     shelljs.exec(`yarn ${addBoilerplateCommand}`, {cwd: AIO_PATH});
   }
@@ -225,7 +225,8 @@ function runE2eTestsCLI(appDir, outputFile) {
   console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
-  const commands = config.e2e || [{ cmd: 'yarn', args: ['e2e', '--prod', '--no-webdriver-update'] }];
+  const commands = config.e2e ||
+      [{cmd: 'yarn', args: ['e2e', (argv.ivy ? '--prod' : ''), '--no-webdriver-update']}];
 
   const e2eSpawnPromise = commands.reduce((prevSpawnPromise, {cmd, args}) => {
     return prevSpawnPromise.then(() => {
@@ -250,6 +251,18 @@ function runE2eTestsCLI(appDir, outputFile) {
 // Report final status.
 function reportStatus(status, outputFile) {
   let log = [''];
+
+  log.push('Suites ignored due to legacy guides:');
+  IGNORED_EXAMPLES.filter(example => !fixmeIvyExamples.find(ex => ex.startsWith(example)))
+      .forEach(function(val) { log.push('  ' + val); });
+
+  if (argv.ivy) {
+    log.push('');
+    log.push('Suites ignored due to breakage with Ivy:');
+    fixmeIvyExamples.forEach(function(val) { log.push('  ' + val); });
+  }
+
+  log.push('');
   log.push('Suites passed:');
   status.passed.forEach(function(val) { log.push('  ' + val); });
 
