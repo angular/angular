@@ -1180,6 +1180,51 @@ describe('MatDialog', () => {
     }
   });
 
+  describe('aria-labelledby', () => {
+    it('should be able to set a custom aria-labelledby', () => {
+      dialog.open(PizzaMsg, {
+        ariaLabelledBy: 'Labelled By',
+        viewContainerRef: testViewContainerRef
+      });
+      viewContainerFixture.detectChanges();
+
+      const container = overlayContainerElement.querySelector('mat-dialog-container')!;
+      expect(container.getAttribute('aria-labelledby')).toBe('Labelled By');
+    });
+
+    it('should not set the aria-labelledby automatically if it has an aria-label ' +
+      'and an aria-labelledby', fakeAsync(() => {
+        dialog.open(ContentElementDialog, {
+          ariaLabel: 'Hello there',
+          ariaLabelledBy: 'Labelled By',
+          viewContainerRef: testViewContainerRef
+        });
+        viewContainerFixture.detectChanges();
+        tick();
+        viewContainerFixture.detectChanges();
+
+        const container = overlayContainerElement.querySelector('mat-dialog-container')!;
+        expect(container.hasAttribute('aria-labelledby')).toBe(false);
+    }));
+
+    it('should set the aria-labelledby attribute to the config provided aria-labelledby ' +
+      'instead of the mat-dialog-title id', fakeAsync(() => {
+        dialog.open(ContentElementDialog, {
+          ariaLabelledBy: 'Labelled By',
+          viewContainerRef: testViewContainerRef
+        });
+        viewContainerFixture.detectChanges();
+        flush();
+        let title = overlayContainerElement.querySelector('[mat-dialog-title]')!;
+        let container = overlayContainerElement.querySelector('mat-dialog-container')!;
+        flush();
+        viewContainerFixture.detectChanges();
+
+        expect(title.id).toBeTruthy('Expected title element to have an id.');
+        expect(container.getAttribute('aria-labelledby')).toBe('Labelled By');
+    }));
+  });
+
   describe('aria-label', () => {
     it('should be able to set a custom aria-label', () => {
       dialog.open(PizzaMsg, {
