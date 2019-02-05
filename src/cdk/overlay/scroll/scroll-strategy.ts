@@ -20,6 +20,9 @@ export interface ScrollStrategy {
 
   /** Attaches this `ScrollStrategy` to an overlay. */
   attach: (overlayRef: OverlayReference) => void;
+
+  /** Detaches the scroll strategy from the current overlay. */
+  detach?: () => void;
 }
 
 /**

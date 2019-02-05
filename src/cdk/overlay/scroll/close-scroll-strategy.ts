@@ -75,6 +75,11 @@ export class CloseScrollStrategy implements ScrollStrategy {
     }
   }
 
+  detach() {
+    this.disable();
+    this._overlayRef = null!;
+  }
+
   /** Detaches the overlay ref and disables the scroll strategy. */
   private _detach = () => {
     this.disable();

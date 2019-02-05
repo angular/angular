@@ -45,6 +45,7 @@ export declare class CdkOverlayOrigin {
 export declare class CloseScrollStrategy implements ScrollStrategy {
     constructor(_scrollDispatcher: ScrollDispatcher, _ngZone: NgZone, _viewportRuler: ViewportRuler, _config?: CloseScrollStrategyConfig | undefined);
     attach(overlayRef: OverlayReference): void;
+    detach(): void;
     disable(): void;
     enable(): void;
 }
@@ -228,9 +229,9 @@ export declare class OverlayRef implements PortalOutlet, OverlayReference {
     readonly overlayElement: HTMLElement;
     constructor(_portalOutlet: PortalOutlet, _host: HTMLElement, _pane: HTMLElement, _config: ImmutableObject<OverlayConfig>, _ngZone: NgZone, _keyboardDispatcher: OverlayKeyboardDispatcher, _document: Document, _location?: Location | undefined);
     addPanelClass(classes: string | string[]): void;
-    attach(portal: any): any;
     attach<T>(portal: ComponentPortal<T>): ComponentRef<T>;
     attach<T>(portal: TemplatePortal<T>): EmbeddedViewRef<T>;
+    attach(portal: any): any;
     attachments(): Observable<void>;
     backdropClick(): Observable<MouseEvent>;
     detach(): any;
@@ -245,6 +246,7 @@ export declare class OverlayRef implements PortalOutlet, OverlayReference {
     setDirection(dir: Direction | Directionality): void;
     updatePosition(): void;
     updatePositionStrategy(strategy: PositionStrategy): void;
+    updateScrollStrategy(strategy: ScrollStrategy): void;
     updateSize(sizeConfig: OverlaySizeConfig): void;
 }
 
@@ -267,6 +269,7 @@ export interface PositionStrategy {
 export declare class RepositionScrollStrategy implements ScrollStrategy {
     constructor(_scrollDispatcher: ScrollDispatcher, _viewportRuler: ViewportRuler, _ngZone: NgZone, _config?: RepositionScrollStrategyConfig | undefined);
     attach(overlayRef: OverlayReference): void;
+    detach(): void;
     disable(): void;
     enable(): void;
 }
@@ -285,6 +288,7 @@ export declare class ScrollingVisibility {
 
 export interface ScrollStrategy {
     attach: (overlayRef: OverlayReference) => void;
+    detach?: () => void;
     disable: () => void;
     enable: () => void;
 }

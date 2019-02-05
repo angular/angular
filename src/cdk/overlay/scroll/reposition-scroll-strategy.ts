@@ -79,4 +79,9 @@ export class RepositionScrollStrategy implements ScrollStrategy {
       this._scrollSubscription = null;
     }
   }
+
+  detach() {
+    this.disable();
+    this._overlayRef = null!;
+  }
 }
