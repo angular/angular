@@ -94,6 +94,6 @@ For example:
   outline-color: mat-color($accent, lighter);
 
   // Get a constrast color for a hue by adding `-contrast` to any other key.
-  border-color: mat-color($primary, '100-constrast');
+  border-color: mat-color($primary, '100-contrast');
 }
 ```
