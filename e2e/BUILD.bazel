@@ -4,8 +4,8 @@ load("@angular//:index.bzl", "protractor_web_test_suite")
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
-  name = "e2e_specs_lib",
-  srcs = glob(["**/*.ts"]),
+  name = "e2e_utils_lib",
+  srcs = glob(["util/**/*.ts"]),
   tsconfig = ":tsconfig.json",
   deps = [
     "@matdeps//@types/jasmine",
@@ -13,18 +13,34 @@ ts_library(
   ]
 )
 
-protractor_web_test_suite(
-  name = "e2e",
+# For each spec file in the "components/" folder, we declare a Bazel target
+# that builds the JavaScript outputs for the e2e spec file.
+[ts_library(
+   name = "%s_specs_lib" % spec_file,
+   srcs = [spec_file],
+   tsconfig = ":tsconfig.json",
+   deps = [
+     "@matdeps//@types/jasmine",
+     "@matdeps//protractor",
+     ":e2e_utils_lib",
+   ]
+ ) for spec_file in glob(["components/**/*.spec.ts"])]
+
+# For each spec file in the "components/" folder, we declare a Protractor web test
+# suite target that runs the given e2e spec against the e2e-app devserver.
+[protractor_web_test_suite(
+  name = "%s_e2e" % spec_file,
   configuration = ":protractor.conf.js",
   on_prepare = ":start-devserver.js",
   server = "//src/e2e-app:devserver",
   deps = [
     "@matdeps//protractor",
-    ":e2e_specs_lib"
+    ":%s_specs_lib" % spec_file,
+    ":e2e_utils_lib",
   ],
   data = [
     "@angular//packages/bazel/src/protractor/utils",
     "//tools/axe-protractor",
   ],
-)
+) for spec_file in glob(["components/**/*.spec.ts"])]
 
