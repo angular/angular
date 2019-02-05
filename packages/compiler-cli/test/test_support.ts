@@ -126,6 +126,12 @@ export function setupBazelTo(basePath: string) {
           fs.existsSync(path.join(packages, name, 'npm_package')));
   for (const pkg of packageNames) {
     fs.symlinkSync(path.join(packages, `${pkg}/npm_package`), path.join(angularDirectory, pkg));
+    // todo: check why we always need an index.d.ts
+    if (!fs.existsSync(path.join(angularDirectory, pkg, 'index.d.ts'))) {
+      fs.symlinkSync(
+          path.join(packages, `${pkg}/npm_package/${pkg}.d.ts`),
+          path.join(angularDirectory, pkg, 'index.d.ts'));
+    }
   }
 
   // Link rxjs
