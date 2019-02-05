@@ -1,0 +1,35 @@
+package(default_visibility = ["//visibility:private"])
+
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "acceptance_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/compiler/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+        "@ngdeps//zone.js",
+    ],
+)
+
+jasmine_node_test(
+    name = "acceptance",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    deps = [
+        ":acceptance_lib",
+        "//tools/testing:node",
+        "@ngdeps//base64-js",
+        "@ngdeps//source-map",
+        "@ngdeps//zone.js",
+    ],
+)
