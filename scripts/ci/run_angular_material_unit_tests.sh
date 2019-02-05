@@ -28,9 +28,9 @@ cp -r ${angular_dir}/dist/packages-dist-ivy-aot/* /tmp/material2/node_modules/@a
 # For angular/angular, we only want to run the local tests.
 export TEST_PLATFORM=local
 
-# Append the test blacklist into angular/material2's karma-test-shim.js.
+# Append the test blocklist into angular/material2's karma-test-shim.js.
 # This filters out known-failing tests because the goal is to prevent regressions.
-cat ${angular_dir}/tools/material-ci/angular_material_test_blacklist.js >> /tmp/material2/test/karma-test-shim.js
+cat ${angular_dir}/tools/material-ci/angular_material_test_blocklist.js >> /tmp/material2/test/karma-test-shim.js
 
 # Now actually run the tests.
 yarn gulp test:single-run

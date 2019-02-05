@@ -7,8 +7,8 @@
  */
 
 /**
- * Blacklist of unit tests from angular/material2 with ivy that are skipped when running on
- * angular/angular. As bugs are resolved, items should be removed from this blacklist.
+ * Blocklist of unit tests from angular/material2 with ivy that are skipped when running on
+ * angular/angular. As bugs are resolved, items should be removed from this blocklist.
  *
  * The `notes` section should be used to keep track of specific issues associated with the failures.
  */
@@ -16,7 +16,7 @@
 // clang-format off
 // tslint:disable
 
-window.testBlacklist = {
+window.testBlocklist = {
   "Portals CdkPortalOutlet should load a template into the portal": {
     "error": "TypeError: Cannot read property 'createEmbeddedView' of undefined",
     "notes": "Unknown"
