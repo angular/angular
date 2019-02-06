@@ -662,46 +662,6 @@ describe('InheritDefinitionFeature', () => {
     }).toThrowError('Directives cannot inherit Components');
   });
 
-  it('should inherit ngOnChanges', () => {
-    const log: string[] = [];
-    let subDir !: SubDirective;
-
-    class SuperDirective {
-      someInput = '';
-
-      ngOnChanges() { log.push('on changes!'); }
-
-      static ngDirectiveDef = defineDirective({
-        type: SuperDirective,
-        selectors: [['', 'superDir', '']],
-        factory: () => new SuperDirective(),
-        features: [NgOnChangesFeature()],
-        inputs: {someInput: 'someInput'}
-      });
-    }
-
-    class SubDirective extends SuperDirective {
-      static ngDirectiveDef = defineDirective({
-        type: SubDirective,
-        selectors: [['', 'subDir', '']],
-        factory: () => subDir = new SubDirective(),
-        features: [InheritDefinitionFeature],
-      });
-    }
-
-    const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
-      if (rf & RenderFlags.Create) {
-        element(0, 'div', ['subDir', '']);
-      }
-      if (rf & RenderFlags.Update) {
-        elementProperty(0, 'someInput', bind(1));
-      }
-    }, 1, 1, [SubDirective]);
-
-    const fixture = new ComponentFixture(App);
-    expect(log).toEqual(['on changes!']);
-  });
-
   it('should NOT inherit providers', () => {
     let otherDir !: OtherDirective;
 

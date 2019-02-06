@@ -151,9 +151,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     inputs: metadata.inputs || EMPTY_ARRAY,
     outputs: metadata.outputs || EMPTY_ARRAY,
     queries: extractQueriesMetadata(type, propMetadata, isContentQuery),
-    lifecycle: {
-      usesOnChanges: type.prototype.ngOnChanges !== undefined,
-    },
+    lifecycle: {usesOnChanges: type.prototype.hasOwnProperty('ngOnChanges')},
     typeSourceSpan: null !,
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: extractExportAs(metadata.exportAs),

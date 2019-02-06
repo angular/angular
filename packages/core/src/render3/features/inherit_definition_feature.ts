@@ -12,6 +12,7 @@ import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../interfaces/definition';
 
+import {NgOnChangesFeature} from './ng_onchanges_feature';
 
 
 /**
@@ -168,6 +169,10 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
         definition.doCheck = definition.doCheck || superPrototype.ngDoCheck;
         definition.onDestroy = definition.onDestroy || superPrototype.ngOnDestroy;
         definition.onInit = definition.onInit || superPrototype.ngOnInit;
+
+        if (superPrototype.ngOnChanges) {
+          NgOnChangesFeature()(definition);
+        }
       }
     }
 
