@@ -1,5 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_config")
 
 exports_files(["tsconfig.json"])
@@ -8,6 +9,17 @@ ts_config(
     name = "tsconfig-test",
     src = "tsconfig-test.json",
     deps = ["tsconfig.json"],
+)
+
+nodejs_binary(
+    name = "@bazel/typescript/tsc_wrapped",
+    entry_point = "@bazel/typescript/internal/tsc_wrapped/tsc_wrapped.js",
+    # The --expose-gc node option is required for tsc_wrapped
+    templated_args = ["--node_options=--expose-gc"],
+    data = [
+        "@npm//@bazel/typescript",
+        "//packages/compiler-cli",
+    ],
 )
 
 # The toolchain container used for execution is defined in the target indicated

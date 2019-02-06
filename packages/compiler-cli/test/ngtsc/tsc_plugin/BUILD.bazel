@@ -1,0 +1,32 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "example_app",
+    testonly = True,
+    srcs = ["example_app.ts"],
+    # Use our local compiler binary that has a data dep on ngtsc
+    compiler = "//tools:@bazel/typescript/tsc_wrapped",
+    expected_diagnostics = ["TS12345: Example"],
+    deps = [
+        "//packages/compiler-cli",
+        "//packages/core",
+    ],
+    compile_angular_templates = True,
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = ["spec.ts"],
+)
+
+jasmine_node_test(
+    name = "tsc_plugin",
+    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
+    deps = [
+        ":example_app",
+        ":test_lib",
+        "//tools/testing:node_no_angular",
+        "@ngdeps//minimist",
+    ],
+)

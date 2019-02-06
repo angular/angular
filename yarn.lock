@@ -160,10 +160,10 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/typescript@0.23.2":
-  version "0.23.2"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.23.2.tgz#a3ff199880855259d84216cb41644c1d9a0fad14"
-  integrity sha512-GrTyDW6Fvp/rgnxZGYampB5/QmDWvxtLEtUyMCPa/QXFR1OVxaMWeHxxuFEcES2UKJegqBDKAA8IzX21x4UbEw==
+"@bazel/typescript@0.23.3":
+  version "0.23.3"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.23.3.tgz#d0bc1767ce33feb455c49cee9fd739005f2b218a"
+  integrity sha512-jTiT7p3SB34l1SHQeLs8ukZaiReST0JEJXALzMw0nc972aJT33Yq+zgPow5Nwu7haUXeDxlksqxuPBDy6uvIKA==
   dependencies:
     jasmine-core "2.8.0"
     protobufjs "5.0.3"
