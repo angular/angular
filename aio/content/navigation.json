@@ -21,7 +21,6 @@
       "title": "Blog"
     }
   ],
-
   "TopBarNarrow": [
     {
       "title": "About Angular",
@@ -45,7 +44,6 @@
       ]
     }
   ],
-
   "SideNav": [
     {
       "url": "docs",
@@ -53,20 +51,17 @@
       "tooltip": "Angular Documentation",
       "hidden": true
     },
-
     {
       "url": "guide/docs-style-guide",
       "title": "Doc authors style guide",
       "tooltip": "Style guide for documentation authors.",
       "hidden": true
     },
-
     {
       "url": "guide/quickstart",
       "title": "Getting Started",
       "tooltip": "A brief introduction to Angular and Angular CLI essentials."
     },
-
     {
       "title": "Tutorial",
       "tooltip": "The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.",
@@ -113,7 +108,6 @@
         }
       ]
     },
-
     {
       "title": "Fundamentals",
       "tooltip": "The fundamentals of Angular",
@@ -240,8 +234,8 @@
               "tooltip": "Render dynamic forms with FormGroup."
             }
           ]
-       },
-       {
+        },
+        {
           "title": "Observables & RxJS",
           "tooltip": "Observables & RxJS",
           "children": [
@@ -272,14 +266,12 @@
             }
           ]
         },
-
         {
           "url": "guide/bootstrapping",
           "title": "Bootstrapping",
           "tooltip": "Tell Angular how to construct and bootstrap the app in the root \"AppModule\"."
         },
         {
-
           "title": "NgModules",
           "tooltip": "NgModules.",
           "children": [
@@ -343,8 +335,8 @@
               "title": "NgModule FAQs",
               "tooltip": "Answers to frequently asked questions about NgModules."
             }
-        ]},
-
+          ]
+        },
         {
           "title": "Dependency Injection",
           "tooltip": "Dependency Injection: creating and injecting services",
@@ -376,7 +368,6 @@
             }
           ]
         },
-
         {
           "url": "guide/http",
           "title": "HttpClient",
@@ -418,15 +409,12 @@
             }
           ]
         }
-    ]
-  },
-
-
+      ]
+    },
     {
       "title": "Techniques",
       "tooltip": "Techniques for putting Angular to work in your environment",
       "children": [
-
         {
           "url": "guide/security",
           "title": "Security",
@@ -437,7 +425,6 @@
           "title": "Internationalization (i18n)",
           "tooltip": "Translate the app's template text into multiple languages."
         },
-
         {
           "title": "Service Workers & PWA",
           "tooltip": "Angular service workers: Controlling caching of application resources.",
@@ -515,22 +502,24 @@
               "tooltip": "Extend Angular by creating, publishing, and using your own libraries."
             }
           ]
+        },
+        {
+          "url": "guide/ivy",
+          "title": "Angular Ivy",
+          "tooltip": "Opting into Angular Ivy with Angular CLI."
         }
       ]
     },
-
     {
       "title": "Setup & Deployment",
       "tooltip": "Setup, build, testing, and deployment environment and tool information.",
       "children": [
-
         {
           "url": "guide/setup",
           "title": "Setup for local development",
           "tooltip": "Install the Angular QuickStart seed for faster, more efficient development on your machine.",
           "hidden": true
         },
-
         {
           "url": "guide/file-structure",
           "title": "Project File Structure",
@@ -541,7 +530,6 @@
           "title": "Workspace Configuration",
           "tooltip": "The \"angular.json\" file contains workspace and project configuration defaults for Angular CLI commands."
         },
-
         {
           "url": "guide/npm-packages",
           "title": "npm Dependencies",
@@ -577,37 +565,34 @@
           "title": "Browser Support",
           "tooltip": "Browser support and polyfills guide."
         },
-
         {
           "title": "Dev Tool Integration",
           "tooltip": "Integrate with your development environment and tools.",
           "children": [
-           {
-             "url": "guide/language-service",
-             "title": "Language Service",
-             "tooltip": "Use Angular Language Service to speed up dev time."
-           },
-           {
-             "url": "guide/visual-studio-2015",
-             "title": "Visual Studio 2015",
-             "tooltip": "Using Angular with Visual Studio 2015.",
-             "hidden": true
-           }
+            {
+              "url": "guide/language-service",
+              "title": "Language Service",
+              "tooltip": "Use Angular Language Service to speed up dev time."
+            },
+            {
+              "url": "guide/visual-studio-2015",
+              "title": "Visual Studio 2015",
+              "tooltip": "Using Angular with Visual Studio 2015.",
+              "hidden": true
+            }
           ]
         }
-     ]
+      ]
     },
-
-
     {
       "title": "Release Information",
       "tooltip": "Angular release practices, updating, and upgrading.",
       "children": [
         {
           "url": "guide/updating",
-           "title": "Keeping Up-to-Date",
-           "tooltip": "Information about updating Angular applications and libraries to the latest version."
-       },
+          "title": "Keeping Up-to-Date",
+          "tooltip": "Information about updating Angular applications and libraries to the latest version."
+        },
         {
           "url": "guide/releases",
           "title": "Angular Releases",
@@ -615,12 +600,10 @@
         }
       ]
     },
-
     {
       "title": "Quick Reference",
       "tooltip": "Summaries of Angular syntax, coding, and terminology.",
       "children": [
-
         {
           "url": "guide/cheatsheet",
           "title": "Cheat Sheet",
@@ -661,7 +644,6 @@
       "hidden": true
     }
   ],
-
   "Footer": [
     {
       "title": "Resources",
@@ -761,11 +743,22 @@
       ]
     }
   ],
-
   "docVersions": [
-    { "title": "v6", "url": "https://v6.angular.io" },
-    { "title": "v5", "url": "https://v5.angular.io" },
-    { "title": "v4", "url": "https://v4.angular.io" },
-    { "title": "v2", "url": "https://v2.angular.io" }
+    {
+      "title": "v6",
+      "url": "https://v6.angular.io"
+    },
+    {
+      "title": "v5",
+      "url": "https://v5.angular.io"
+    },
+    {
+      "title": "v4",
+      "url": "https://v4.angular.io"
+    },
+    {
+      "title": "v2",
+      "url": "https://v2.angular.io"
+    }
   ]
 }
