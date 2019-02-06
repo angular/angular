@@ -121,4 +121,7 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
     const args = new UiArguments('back');
     this._broker.runOnService(args, null);
   }
+
+  // History API isn't available on WebWorkers, therefore return undefined
+  getState(): unknown { return undefined; }
 }
