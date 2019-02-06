@@ -81,9 +81,6 @@
     "name": "HOST"
   },
   {
-    "name": "T_HOST"
-  },
-  {
     "name": "INJECTOR"
   },
   {
@@ -217,6 +214,9 @@
   },
   {
     "name": "TVIEW"
+  },
+  {
+    "name": "T_HOST"
   },
   {
     "name": "TemplateRef"
@@ -571,6 +571,9 @@
   },
   {
     "name": "enterView"
+  },
+  {
+    "name": "executeContentQueries"
   },
   {
     "name": "executeHooks"

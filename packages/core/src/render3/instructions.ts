@@ -532,6 +532,21 @@ export function elementContainerStart(
   const currentQueries = lView[QUERIES];
   if (currentQueries) {
     currentQueries.addNode(tNode);
+    lView[QUERIES] = currentQueries.clone();
+  }
+  executeContentQueries(tView, tNode);
+}
+
+function executeContentQueries(tView: TView, tNode: TNode) {
+  if (isContentQueryHost(tNode)) {
+    const start = tNode.directiveStart;
+    const end = tNode.directiveEnd;
+    for (let i = start; i < end; i++) {
+      const def = tView.data[i] as DirectiveDef<any>;
+      if (def.contentQueries) {
+        def.contentQueries(i);
+      }
+    }
   }
 }
 
@@ -543,7 +558,7 @@ export function elementContainerEnd(): void {
   if (getIsParent()) {
     setIsParent(false);
   } else {
-    ngDevMode && assertHasParent(getPreviousOrParentTNode());
+    ngDevMode && assertHasParent(previousOrParentTNode);
     previousOrParentTNode = previousOrParentTNode.parent !;
     setPreviousOrParentTNode(previousOrParentTNode);
   }
@@ -551,8 +566,7 @@ export function elementContainerEnd(): void {
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.ElementContainer);
   const currentQueries = lView[QUERIES];
   if (currentQueries) {
-    lView[QUERIES] =
-        isContentQueryHost(previousOrParentTNode) ? currentQueries.parent : currentQueries;
+    lView[QUERIES] = currentQueries.parent;
   }
 
   registerPostOrderHooks(tView, previousOrParentTNode);
@@ -630,7 +644,9 @@ export function elementStart(
   const currentQueries = lView[QUERIES];
   if (currentQueries) {
     currentQueries.addNode(tNode);
+    lView[QUERIES] = currentQueries.clone();
   }
+  executeContentQueries(tView, tNode);
 }
 
 /**
@@ -668,17 +684,9 @@ function createDirectivesAndLocals(
   const previousOrParentTNode = getPreviousOrParentTNode();
   if (tView.firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
-
     resolveDirectives(
         tView, lView, findDirectiveMatches(tView, lView, previousOrParentTNode),
         previousOrParentTNode, localRefs || null);
-  } else {
-    // During first template pass, queries are created or cloned when first requested
-    // using `getOrCreateCurrentQueries`. For subsequent template passes, we clone
-    // any current LQueries here up-front if the current node hosts a content query.
-    if (isContentQueryHost(getPreviousOrParentTNode()) && lView[QUERIES]) {
-      lView[QUERIES] = lView[QUERIES] !.clone();
-    }
   }
   instantiateAllDirectives(tView, lView, previousOrParentTNode);
   invokeDirectivesHostBindings(tView, lView, previousOrParentTNode);
@@ -1068,8 +1076,7 @@ export function elementEnd(): void {
   const lView = getLView();
   const currentQueries = lView[QUERIES];
   if (currentQueries) {
-    lView[QUERIES] =
-        isContentQueryHost(previousOrParentTNode) ? currentQueries.parent : currentQueries;
+    lView[QUERIES] = currentQueries.parent;
   }
 
   registerPostOrderHooks(getLView()[TVIEW], previousOrParentTNode);
@@ -1805,8 +1812,8 @@ function postProcessDirective<T>(
     setInputsFromAttrs(directiveDefIdx, directive, def, previousOrParentTNode);
   }
 
-  if (def.contentQueries) {
-    def.contentQueries(directiveDefIdx);
+  if (viewData[TVIEW].firstTemplatePass && def.contentQueries) {
+    previousOrParentTNode.flags |= TNodeFlags.hasContentQuery;
   }
 
   if (isComponentDef(def)) {
@@ -2191,7 +2198,7 @@ function containerInternal(
 function addTContainerToQueries(lView: LView, tContainerNode: TContainerNode): void {
   const queries = lView[QUERIES];
   if (queries) {
-    lView[QUERIES] = queries.addNode(tContainerNode);
+    queries.addNode(tContainerNode);
     const lContainer = lView[tContainerNode.index];
     lContainer[QUERIES] = queries.container();
   }
