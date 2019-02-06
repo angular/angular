@@ -14,23 +14,6 @@ import {TreeNode, emptyTree} from '../util';
 
 function noop() {}
 
-export function main() {
-  let component: TreeFunction;
-  if (typeof window !== 'undefined') {
-    component = renderComponent(TreeFunction);
-    bindAction('#createDom', () => createDom(component as any));
-    bindAction('#destroyDom', () => destroyDom(component as any));
-    bindAction('#detectChanges', () => detectChanges(component as any));
-    bindAction(
-        '#detectChangesProfile',
-        profile(() => detectChanges(component as any), noop, 'detectChanges'));
-    bindAction('#updateDomProfile', profile(() => createDom(component as any), noop, 'update'));
-    bindAction(
-        '#createDomProfile',
-        profile(() => createDom(component as any), () => destroyDom(component as any), 'create'));
-  }
-}
-
 export class TreeFunction {
   data: TreeNode = emptyTree;
 
@@ -85,4 +68,19 @@ export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
     }
     ɵcontainerRefreshEnd();
   }
+}
+
+let component: TreeFunction;
+if (typeof window !== 'undefined') {
+  component = renderComponent(TreeFunction);
+  bindAction('#createDom', () => createDom(component as any));
+  bindAction('#destroyDom', () => destroyDom(component as any));
+  bindAction('#detectChanges', () => detectChanges(component as any));
+  bindAction(
+      '#detectChangesProfile',
+      profile(() => detectChanges(component as any), noop, 'detectChanges'));
+  bindAction('#updateDomProfile', profile(() => createDom(component as any), noop, 'update'));
+  bindAction(
+      '#createDomProfile',
+      profile(() => createDom(component as any), () => destroyDom(component as any), 'create'));
 }
