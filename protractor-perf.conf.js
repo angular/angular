@@ -14,8 +14,8 @@ const isBazel = !!process.env.RUNFILES;
 
 // Make sure that the command line is read as the first thing
 // as this could exit node if the help script should be printed.
-const BASE = isBazel ? 'angular/modules' : 'dist/all';
-require(`./${BASE}/e2e_util/perf_util`).readCommandLine();
+const BASE = isBazel ? 'angular/modules' : './dist/all';
+require(`${BASE}/e2e_util/perf_util`).readCommandLine();
 
 const CHROME_OPTIONS = {
   'args': ['--js-flags=--expose-gc', '--no-sandbox', '--headless', '--disable-dev-shm-usage'],
