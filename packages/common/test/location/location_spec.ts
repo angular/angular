@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Location} from '@angular/common';
+import {CommonModule, Location, LocationStrategy, PlatformLocation} from '@angular/common';
+import {PathLocationStrategy} from '@angular/common/src/common';
+import {MockPlatformLocation} from '@angular/common/testing';
+import {TestBed, inject} from '@angular/core/testing';
 
 const baseUrl = '/base';
 
@@ -36,5 +39,42 @@ describe('Location Class', () => {
       const input = baseUrl + '#test/?=3';
       expect(Location.stripTrailingSlash(input)).toBe(input);
     });
+  });
+
+  describe('location.getState()', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [CommonModule],
+        providers: [
+          {provide: LocationStrategy, useClass: PathLocationStrategy},
+          {provide: PlatformLocation, useFactory: () => { return new MockPlatformLocation(); }},
+          {provide: Location, useClass: Location, deps: [LocationStrategy, PlatformLocation]},
+        ]
+      });
+    });
+
+    it('should get the state object', inject([Location], (location: Location) => {
+
+         expect(location.getState()).toBe(null);
+
+         location.go('/test', '', {foo: 'bar'});
+
+         expect(location.getState()).toEqual({foo: 'bar'});
+       }));
+
+    it('should work after using back button', inject([Location], (location: Location) => {
+
+         expect(location.getState()).toBe(null);
+
+         location.go('/test1', '', {url: 'test1'});
+         location.go('/test2', '', {url: 'test2'});
+
+         expect(location.getState()).toEqual({url: 'test2'});
+
+         location.back();
+
+         expect(location.getState()).toEqual({url: 'test1'});
+       }));
+
   });
 });

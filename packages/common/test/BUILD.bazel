@@ -11,6 +11,7 @@ ts_library(
     deps = [
         "//packages/common",
         "//packages/common/locales",
+        "//packages/common/testing",
         "//packages/compiler",
         "//packages/core",
         "//packages/core/testing",
