@@ -180,6 +180,26 @@ describe('applyRedirects', () => {
             expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
           });
     });
+    
+    it('should handle the case when the module is destroyed', () => {
+      const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
+      const loader = {
+        load: (injector: any, p: any) => {
+          if (injector !== testModule.injector) throw 'Invalid Injector';
+          return of (loadedConfig);
+        }
+      };
+      const config: Routes = [{path: 'a', component: ComponentA, loadChildren: 'children'}];
+
+      applyRedirects(testModule.injector, <any>loader, serializer, tree('a/b'), config)
+          .forEach(r => {
+            expectTreeToBe(r, '/a/b');
+            expect((config[0] as any)._loadedConfig).toBe(loadedConfig);
+          });
+      
+      testModule.destroy();
+      expect((config[0] as any)._loadedConfig).toBe(undefined);
+    });
 
     it('should handle the case when the loader errors', () => {
       const loader = {
