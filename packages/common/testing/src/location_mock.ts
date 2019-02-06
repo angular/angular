@@ -34,7 +34,7 @@ export class SpyLocation implements Location {
 
   path(): string { return this._history[this._historyIndex].path; }
 
-  private state(): string { return this._history[this._historyIndex].state; }
+  getState(): unknown { return this._history[this._historyIndex].state; }
 
   isCurrentPathEqualTo(path: string, query: string = ''): boolean {
     const givenPath = path.endsWith('/') ? path.substring(0, path.length - 1) : path;
@@ -100,14 +100,14 @@ export class SpyLocation implements Location {
   forward() {
     if (this._historyIndex < (this._history.length - 1)) {
       this._historyIndex++;
-      this._subject.emit({'url': this.path(), 'state': this.state(), 'pop': true});
+      this._subject.emit({'url': this.path(), 'state': this.getState(), 'pop': true});
     }
   }
 
   back() {
     if (this._historyIndex > 0) {
       this._historyIndex--;
-      this._subject.emit({'url': this.path(), 'state': this.state(), 'pop': true});
+      this._subject.emit({'url': this.path(), 'state': this.getState(), 'pop': true});
     }
   }
 

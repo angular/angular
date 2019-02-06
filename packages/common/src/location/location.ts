@@ -10,6 +10,7 @@ import {EventEmitter, Injectable} from '@angular/core';
 import {SubscriptionLike} from 'rxjs';
 
 import {LocationStrategy} from './location_strategy';
+import {PlatformLocation} from './platform_location';
 
 /** @publicApi */
 export interface PopStateEvent {
@@ -54,10 +55,13 @@ export class Location {
   _baseHref: string;
   /** @internal */
   _platformStrategy: LocationStrategy;
+  /** @internal */
+  _platformLocation: PlatformLocation;
 
-  constructor(platformStrategy: LocationStrategy) {
+  constructor(platformStrategy: LocationStrategy, platformLocation: PlatformLocation) {
     this._platformStrategy = platformStrategy;
     const browserBaseHref = this._platformStrategy.getBaseHref();
+    this._platformLocation = platformLocation;
     this._baseHref = Location.stripTrailingSlash(_stripIndexHtml(browserBaseHref));
     this._platformStrategy.onPopState((ev) => {
       this._subject.emit({
@@ -81,6 +85,11 @@ export class Location {
   path(includeHash: boolean = false): string {
     return this.normalize(this._platformStrategy.path(includeHash));
   }
+
+  /**
+   * Returns the current value of the history.state object.
+   */
+  getState(): unknown { return this._platformLocation.getState(); }
 
   /**
    * Normalizes the given path and compares to the current normalized path.
