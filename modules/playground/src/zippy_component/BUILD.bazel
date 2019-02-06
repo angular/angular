@@ -6,7 +6,7 @@ package(default_visibility = ["//modules/playground:__subpackages__"])
 ng_module(
     name = "zippy_component",
     srcs = glob(["**/*.ts"]),
-    assets = glob(["**/*.html"]),
+    assets = glob(["app/zippy.html"]),
     tsconfig = "//modules/playground:tsconfig-build.json",
     # TODO: FW-1004 Type checking is currently not complete.
     type_check = False,

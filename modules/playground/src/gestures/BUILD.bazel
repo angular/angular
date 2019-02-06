@@ -6,6 +6,7 @@ package(default_visibility = ["//modules/playground:__subpackages__"])
 ng_module(
     name = "gestures",
     srcs = glob(["**/*.ts"]),
+    assets = ["template.html"],
     tsconfig = "//modules/playground:tsconfig-build.json",
     # TODO: FW-1004 Type checking is currently not complete.
     type_check = False,
