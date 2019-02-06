@@ -83,6 +83,9 @@ export class ServerPlatformLocation implements PlatformLocation {
   forward(): void { throw new Error('Not implemented'); }
 
   back(): void { throw new Error('Not implemented'); }
+
+  // History API isn't available on server, therefore return undefined
+  getState(): unknown { return undefined; }
 }
 
 export function scheduleMicroTask(fn: Function) {

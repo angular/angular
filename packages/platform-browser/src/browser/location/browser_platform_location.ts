@@ -73,4 +73,6 @@ export class BrowserPlatformLocation extends PlatformLocation {
   forward(): void { this._history.forward(); }
 
   back(): void { this._history.back(); }
+
+  getState(): unknown { return this._history.state; }
 }

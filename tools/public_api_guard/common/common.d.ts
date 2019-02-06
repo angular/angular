@@ -116,6 +116,7 @@ export declare class HashLocationStrategy extends LocationStrategy {
     back(): void;
     forward(): void;
     getBaseHref(): string;
+    getState(): unknown;
     onPopState(fn: LocationChangeListener): void;
     path(includeHash?: boolean): string;
     prepareExternalUrl(internal: string): string;
@@ -169,6 +170,7 @@ export declare class Location {
     constructor(platformStrategy: LocationStrategy);
     back(): void;
     forward(): void;
+    getState(): unknown;
     go(path: string, query?: string, state?: any): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;
@@ -196,6 +198,7 @@ export declare abstract class LocationStrategy {
     abstract back(): void;
     abstract forward(): void;
     abstract getBaseHref(): string;
+    abstract getState(): unknown;
     abstract onPopState(fn: LocationChangeListener): void;
     abstract path(includeHash?: boolean): string;
     abstract prepareExternalUrl(internal: string): string;
@@ -359,6 +362,7 @@ export declare class PathLocationStrategy extends LocationStrategy {
     back(): void;
     forward(): void;
     getBaseHref(): string;
+    getState(): unknown;
     onPopState(fn: LocationChangeListener): void;
     path(includeHash?: boolean): string;
     prepareExternalUrl(internal: string): string;
@@ -378,6 +382,7 @@ export declare abstract class PlatformLocation {
     abstract back(): void;
     abstract forward(): void;
     abstract getBaseHrefFromDOM(): string;
+    abstract getState(): unknown;
     abstract onHashChange(fn: LocationChangeListener): void;
     abstract onPopState(fn: LocationChangeListener): void;
     abstract pushState(state: any, title: string, url: string): void;
