@@ -24,10 +24,13 @@
     </a>
   </div>
 
-  <div class="file-field">
+  <div class="input-field file-field">
     <div class="btn blue darken-2">
       <span>Select Images</span>
       <input type="file" accept="image/bmp" multiple (change)="uploadFiles($event.target.files)" />
+    </div>
+    <div class="file-path-wrapper">
+      <input class="file-path validate" type="text" placeholder="Upload one or more files">
     </div>
   </div>
 </section>
