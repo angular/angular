@@ -242,17 +242,14 @@ export function destroyViewTree(rootView: LView): void {
   while (viewOrContainer) {
     let next: LView|LContainer|null = null;
 
-    if (isLContainer(viewOrContainer)) {
-      // If container, traverse down to its first LView.
-      const container = viewOrContainer as LContainer;
-      const viewsInContainer = container[VIEWS];
-      if (viewsInContainer.length) {
-        next = viewsInContainer[0];
-      }
-    } else {
+    if (viewOrContainer.length >= HEADER_OFFSET) {
       // If LView, traverse down to child.
       const view = viewOrContainer as LView;
       if (view[TVIEW].childIndex > -1) next = getLViewChild(view);
+    } else {
+      // If container, traverse down to its first LView.
+      const container = viewOrContainer as LContainer;
+      if (container[VIEWS].length) next = container[VIEWS][0];
     }
 
     if (next == null) {
@@ -261,15 +258,6 @@ export function destroyViewTree(rootView: LView): void {
       while (viewOrContainer && !viewOrContainer ![NEXT] && viewOrContainer !== rootView) {
         cleanUpView(viewOrContainer);
         viewOrContainer = getParentState(viewOrContainer, rootView);
-        if (isLContainer(viewOrContainer)) {
-          // this view will be destroyed so we need to notify queries that a view is detached
-          const viewsInContainer = (viewOrContainer as LContainer)[VIEWS];
-          for (let viewToDetach of viewsInContainer) {
-            if (viewToDetach[QUERIES]) {
-              viewToDetach[QUERIES] !.removeView();
-            }
-          }
-        }
       }
       cleanUpView(viewOrContainer || rootView);
       next = viewOrContainer && viewOrContainer ![NEXT];
