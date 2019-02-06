@@ -117,12 +117,6 @@ jobs:
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
       - run: yarn bazel test //... --build_tag_filters=-ivy-only,local --test_tag_filters=-ivy-only,local
 
-      - save_cache:
-          key: *cache_key
-          paths:
-            - "node_modules"
-            - "~/bazel_repository_cache"
-
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
     <<: *job_defaults
@@ -354,6 +348,12 @@ jobs:
           root: dist
           paths:
             - packages-dist
+
+      - save_cache:
+          key: *cache_key
+          paths:
+            - "node_modules"
+            - "~/bazel_repository_cache"
 
 
   # Build the ivy npm packages.
