@@ -18,7 +18,7 @@ describe('BannerComponent (inline template)', () => {
     });
     fixture = TestBed.createComponent(BannerComponent);
     // #enddocregion configure-and-create
-    component = fixture.componentInstance; // BannerComponent test instance
+    component = fixture.componentInstance; // BannerComponent 인스턴스
     h1 = fixture.nativeElement.querySelector('h1');
     // #docregion configure-and-create
   });

@@ -197,18 +197,18 @@ function heroModuleSetup() {
 
     // #docregion title-case-pipe
     it('should convert hero name to Title Case', () => {
-      // get the name's input and display elements from the DOM
+      // 이름에 해당하는 input 엘리먼트와 이 이름을 화면에 표시하는 span 엘리먼트를 DOM에서 참조합니다.
       const hostElement = fixture.nativeElement;
       const nameInput: HTMLInputElement = hostElement.querySelector('input');
       const nameDisplay: HTMLElement = hostElement.querySelector('span');
 
-      // simulate user entering a new name into the input box
+      // 사용자가 입력한 것처럼 입력 필드의 내용을 변경합니다.
       nameInput.value = 'quick BROWN  fOx';
 
-      // dispatch a DOM event so that Angular learns of input value change.
+      // 엘리먼트의 값이 변경되었다는 것을 Angular에게 알리기 위해 DOM 이벤트를 생성합니다.
       nameInput.dispatchEvent(newEvent('input'));
 
-      // Tell Angular to update the display binding through the title pipe
+      // Angular가 화면을 갱신하도록 detectChanges() 함수를 실행합니다.
       fixture.detectChanges();
 
       expect(nameDisplay.textContent).toBe('Quick Brown  Fox');

@@ -31,20 +31,20 @@ describe('BannerComponent (AutoChangeDetect)', () => {
 
   // #docregion auto-detect-tests
   it('should display original title', () => {
-    // Hooray! No `fixture.detectChanges()` needed
+    // 만세! `fixture.detectChanges()`는 더이상 필요 없습니다.
     expect(h1.textContent).toContain(comp.title);
   });
 
   it('should still see original title after comp.title change', () => {
     const oldTitle = comp.title;
     comp.title = 'Test Title';
-    // Displayed title is old because Angular didn't hear the change :(
+    // 화면에 표시되는 문자열은 갱신되지 않습니다. 이 경우에는 변화감지 로직이 실행되지 않았습니다 :(
     expect(h1.textContent).toContain(oldTitle);
   });
 
   it('should display updated title after detectChanges', () => {
     comp.title = 'Test Title';
-    fixture.detectChanges(); // detect changes explicitly
+    fixture.detectChanges(); // 명시적으로 변화감지 로직을 실행합니다.
     expect(h1.textContent).toContain(comp.title);
   });
   // #enddocregion auto-detect-tests

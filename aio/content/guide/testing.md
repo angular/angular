@@ -1241,6 +1241,7 @@ looks for the expected text.
 
 #### _nativeElement_
 
+<!--
 The value of `ComponentFixture.nativeElement` has the `any` type.
 Later you'll encounter the `DebugElement.nativeElement` and it too has the `any` type.
 
@@ -1258,6 +1259,18 @@ Knowing that it is an `HTMLElement` of some sort, you can use
 the standard HTML `querySelector` to dive deeper into the element tree.
 
 Here's another test that calls `HTMLElement.querySelector` to get the paragraph element and look for the banner text:
+-->
+`ComponentFixture.nativeElement`에 할당되는 객체는 `any` 타입입니다.
+그리고 나중에 살펴볼 `DebugElement.nativeElement`에 할당되는 객체도 `any` 타입입니다.
+
+Angular 코드가 컴파일되는 시점에는 `nativeElement`에 할당되는 객체가 어떤 HTML 엘리먼트인지 알지 못하며, 심지어 HTML 엘리먼트가 할당되는지도 알지 못합니다.
+그리고 Angular 애플리케이션이 _서버가 아닌 환경_, 예를 들면 서버에서 실행되거나 [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)로 실행된다면 엘리먼트와 관련된 API가 일부 존재하지 않거나 전부 없을 수도 있습니다.
+
+하지만 이 문서에서 다루는 예제는 모두 브라우저에서 실행되는 것을 전제로 작성되었기 때문에 `nativeElement`에 할당되는 객체는 언제나 `HTMLElement`이거나 이 엘리먼트의 자식 클래스입니다.
+
+그래서 테스트 코드에서는 `HTMLElement`에서 제공하는 프로퍼티나 메소드를 활용할 수 있으며, HTML `querySelector`를 사용해서 엘리먼트 트리 안쪽을 참조할 수도 있습니다.
+
+`HTMLElement.querySelector` 메소드를 사용해서 `<p>` 엘리먼트를 참조하고, 이 엘리먼트의 텍스트를 검사하는 로직은 다음과 같이 작성할 수 있습니다:
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
@@ -1268,20 +1281,27 @@ Here's another test that calls `HTMLElement.querySelector` to get the paragraph 
 
 #### _DebugElement_
 
+<!--
 The Angular _fixture_ provides the component's element directly through the `fixture.nativeElement`.
+-->
+Angular 픽스쳐(fixture)가 제공하는 API를 활용하면 컴포넌트 엘리먼트에 직접 접근할 수 있습니다.
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="nativeElement">
 </code-example>
 
+<!--
 This is actually a convenience method, implemented as `fixture.debugElement.nativeElement`.
+-->
+이 프로퍼티는 사실 `fixture.debugElement.nativeElement`를 사용하기 쉽게 메소드로 정의한 것입니다.
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="debugElement-nativeElement">
 </code-example>
 
+<!--
 There's a good reason for this circuitous path to the element.
 
 The properties of the `nativeElement` depend upon the runtime environment.
@@ -1297,16 +1317,34 @@ a `nativeElement` in these tests is always an `HTMLElement`
 whose familiar methods and properties you can explore within a test.
 
 Here's the previous test, re-implemented with `fixture.debugElement.nativeElement`:
+-->
+이렇게 우회하는 이유가 있습니다.
+
+`nativeElement`에 할당되는 객체는 이 컴포넌트가 어떤 환경에서 실행되는지에 따라 달라집니다.
+_브라우저가 아닌_ 환경에서 애플리케이션을 실행한다면 DOM이 존재하지 않을 수도 있고, DOM을 에뮬레이트한 환경에서는 `HTMLelement`가 제공하는 API를 온전히 제공하지 않을 수도 있습니다.
+
+그래서 Angular는 _어떠한 플랫폼에서도_ 이 코드를 문제없이 실행할 수 없도록 `DebugElement` 추상화를 도입했습니다.
+Angular는 실제로 HTML 엘리먼트 트리를 구성하는 대신, 실행되는 플랫폼에 맞게 랩핑된 _네이티브 엘리먼트_ 로 `DebugElement` 트리를 구성합니다.
+결국 `nativeElement` 프로퍼티에 접근하는 것은 Angular가 생성한 `DebugElement`에 접근하는 것이며, 이 방식 덕분에 플랫폼에서 제공하는 엘리먼트 객체에 안전하게 접근할 수 있습니다.
+
+이 문서에서 다루는 예제는 모두 브라우저에서 실행되는 것을 전제로 작성되었기 때문에 이 문서에서 사용하는 모든 `nativeElement`는 `HTMLElement` 객체가 할당됩니다.
+그래서 기존에 DOM에서 사용하던 프로퍼티와 메소드는 그대로 활용할 수 있습니다.
+
+위에서 살펴본 테스트 코드를 풀어서 쓰면 다음과 같이 작성할 수 있습니다:
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="v4-test-4">
 </code-example>
 
+<!--
 The `DebugElement` has other methods and properties that
 are useful in tests, as you'll see elsewhere in this guide.
 
 You import the `DebugElement` symbol from the Angular core library.
+-->
+`@angular/core` 패키지에서 제공하는 `DebugElement`에는 테스트에 활용할만한 메소드나 프로퍼티들이 더 정의되어 있습니다.
+이 내용은 이후 내용에서 더 알아봅시다.
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
@@ -1316,6 +1354,7 @@ You import the `DebugElement` symbol from the Angular core library.
 {@a by-css}
 #### _By.css()_
 
+<!--
 Although the tests in this guide all run in the browser,
 some apps might run on a different platform at least some of the time.
 
@@ -1327,20 +1366,35 @@ These query methods take a _predicate_ function that returns `true` when a node 
 
 You create a _predicate_ with the help of a `By` class imported from a
 library for the runtime platform. Here's the `By` import for the browser platform:
+-->
+이 문서에서 다루는 모든 테스트 코드는 브라우저에서 실행되는 것을 전제로 작성되었지만, Angular 애플리케이션은 브라우저가 아닌 환경에서도 실행될 수 있습니다.
+
+예를 들어보면, 접속 환경이 좋지 않은 디바이스를 위해 애플리케이션은 서버에서 미리 렌더링한 뒤에 제공될 수도 있는데, 서버사이드 렌더링 시점에는 HTML 엘리먼트가 제공하는 API를 제대로 사용할 수 없습니다.
+위에서 다뤘던 `querySelector`도 사용할 수 없기 때문에 테스트는 실패할 것입니다.
+
+하지만 `DebugElement`가 제공하는 쿼리 메소드는 모든 플랫폼에서 동작합니다.
+그래서 `querySelector` 대신 `By` 클래스로 제공되는 쿼리 메소드를 활용하면 모든 플랫폼에서 원하는 엘리먼트를 참조할 수 있습니다.
+
+`By` 클래스는 애플리케이션이 실행되는 플랫폼에 따라 다르게 제공됩니다.
+그래서 브라우저 환경에서 동작하는 `By` 클래스는 다음과 같이 제공됩니다:
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="import-by">
 </code-example>
 
+<!--
 The following example re-implements the previous test with
 `DebugElement.query()` and the browser's `By.css` method.
+-->
+위에서 살펴본 쿼리 예제는 `DebugElement.query()` 메소드와 `By.css` 메소드를 사용해서 다음과 같이 작성할 수 있습니다.
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="v4-test-5">
 </code-example>
 
+<!--
 Some noteworthy observations:
 
 - The `By.css()` static method selects `DebugElement` nodes
@@ -1353,20 +1407,44 @@ When you're filtering by CSS selector and only testing properties of a browser's
 It's often easier and more clear to filter with a standard `HTMLElement` method
 such as `querySelector()` or `querySelectorAll()`,
 as you'll see in the next set of tests.
+-->
+몇가지 알아둬야 할 내용이 있습니다:
+
+- `By.css()` 정적 메소드는 [표준 CSS 셀렉터](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Getting_started/Selectors 'CSS selectors') 문법으로 `DebugElement` 노드를 탐색합니다.
+- 이 메소드를 실행하면 `<p>` 타입의 `DebugElement`를 반환합니다.
+- 반환값으로 받은 `DebugElement`는 `nativeElement` 프로퍼티를 사용해서 `HTMLElement`로 참조할 수 있습니다.
+
+그래서 브라우저 환경에서 _네이티브 엘리먼트_ 를 테스트한다면 CSS 셀렉터와 `By.css` 메소드를 사용하는 것으로 충분합니다.
+
+하지만 `querySelector()`나 `querySelectorAll()`을 사용해서 표준 `HTMLElement`를 참조하는 것이 더 나을 때도 있습니다. 이 내용은 다음 섹션부터 자세하게 알아봅시다.
 
 <hr>
 
+<!--
 ## Component Test Scenarios
+-->
+## 컴포넌트 테스트 시나리오
 
+<!--
 The following sections, comprising most of this guide, explore common
 component testing scenarios
+-->
+이제부터는 컴포넌트를 테스트하는 다양한 시나리오에 대해 알아봅시다.
 
+<!--
 ### Component binding
+-->
+### 바인딩
 
+<!--
 The current `BannerComponent` presents static title text in the HTML template.
 
 After a few changes, the `BannerComponent` presents a dynamic title by binding to
 the component's `title` property like this.
+-->
+지금까지 작성한 `BannerComponent`를 보면, HTML 템플릿에 표시되는 `title` 프로퍼티는 정적(static) 변수였습니다.
+
+그런데 이제 이 프로퍼티의 값은 동적으로 변경될 수 있으며, 그 때마다 변경된 값이 화면에 바인딩되어 표시된다고 합시다.
 
 <code-example
   path="testing/src/app/banner/banner.component.ts"
@@ -1374,41 +1452,70 @@ the component's `title` property like this.
   header="app/banner/banner.component.ts" linenums="false">
 </code-example>
 
+<!--
 Simple as this is, you decide to add a test to confirm that component
 actually displays the right content where you think it should.
+-->
+그러면 `title` 프로퍼티의 값이 변경되었을 때 이 문자열이 화면에 제대로 표시되는지 검사하는 테스트 코드를 작성할 수 있습니다.
 
+<!--
 #### Query for the _&lt;h1&gt;_
+-->
+#### _&lt;h1&gt;_ 쿼리하기
 
+<!--
 You'll write a sequence of tests that inspect the value of the `<h1>` element
 that wraps the _title_ property interpolation binding.
 
 You update the `beforeEach` to find that element with a standard HTML `querySelector`
 and assign it to the `h1` variable.
+-->
+가장 먼저, _title_ 프로퍼티가 바인딩되는 `<h1>` 엘리먼트에 실제로는 어떤 값이 들어가는지 확인해야 합니다.
 
+그래서 `beforeEach` 로직 안에서 HTML `querySelector` 메소드를 실행해서 `<h1>` 엘리먼트를 참조하고, 이 엘리먼트를 변수 `h1`에 할당합니다.
+
+<!--
 <code-example
   path="testing/src/app/banner/banner.component.spec.ts"
   region="setup"
   header="app/banner/banner.component.spec.ts (setup)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/banner/banner.component.spec.ts"
+  region="setup"
+  header="app/banner/banner.component.spec.ts (테스트환경 설정)" linenums="false">
+</code-example>
 
 {@a detect-changes}
 
+<!--
 #### _createComponent()_ does not bind data
+-->
+#### _createComponent()_ 는 데이터를 바인딩하지 않습니다.
 
+<!--
 For your first test you'd like to see that the screen displays the default `title`.
 Your instinct is to write a test that immediately inspects the `<h1>` like this:
+-->
+그러면 이렇게 참조한 `<h1>` 엘리먼트의 텍스트가 `title` 프로퍼티의 기본값과 같다고 테스트 코드를 작성할 수도 있습니다.
+`title` 프로퍼티는 `<h1>` 엘리먼트에 바인딩되기 때문입니다:
 
 <code-example
   path="testing/src/app/banner/banner.component.spec.ts"
   region="expect-h1-default-v1">
 </code-example>
 
+<!--
 _That test fails_ with the message:
+-->
+하지만 이 테스트는 실패합니다:
 
 ```javascript
 expected '' to contain 'Test Tour of Heroes'.
 ```
 
+<!--
 Binding happens when Angular performs **change detection**.
 
 In production, change detection kicks in automatically
@@ -1417,6 +1524,13 @@ an asynchronous activity (e.g., AJAX) completes.
 
 The `TestBed.createComponent` does _not_ trigger change detection.
 a fact confirmed in the revised test:
+-->
+프로퍼티 바인딩은 Angular가 **변화감지 동작**을 실행할 때 발생합니다.
+
+그리고 실제 운영용 환경에서는 Angular가 컴포넌트 인스턴스를 생성하거나 사용자가 키를 입력했을 때, AJAX와 같은 비동기 작업이 완료되었을 때 자동으로 변화감지 동작이 실행됩니다.
+
+`TestBed.createComponent`는 변화감지 동작을 _실행하지 않습니다_.
+그래서 사실 이 테스트 코드는 다음과 같은 의미로 실행되었습니다:
 
 <code-example
   path="testing/src/app/banner/banner.component.spec.ts" region="test-w-o-detect-changes" linenums="false">
@@ -1424,19 +1538,29 @@ a fact confirmed in the revised test:
 
 #### _detectChanges()_
 
+<!--
 You must tell the `TestBed` to perform data binding by calling `fixture.detectChanges()`.
 Only then does the `<h1>` have the expected title.
+-->
+`TestBed`로 구성한 컴포넌트에 데이터를 바인딩하려면 `fixture.detectChanges()` 함수를 실행하면 됩니다.
+이 함수를 실행하면 `title` 프로퍼티의 값이 `<h1>`에 바인딩 됩니다.
 
 <code-example
   path="testing/src/app/banner/banner.component.spec.ts"
   region="expect-h1-default">
 </code-example>
 
+<!--
 Delayed change detection is intentional and useful.
 It gives the tester an opportunity to inspect and change the state of
 the component _before Angular initiates data binding and calls [lifecycle hooks](guide/lifecycle-hooks)_.
 
 Here's another test that changes the component's `title` property _before_ calling `fixture.detectChanges()`.
+-->
+변화감지 동작이 자동으로 실행되지 않는 것은 Angular가 의도한 방식이며, 이렇게 사용해야 테스트 코드를 작성하기 더 편합니다.
+왜냐하면 변화감지 동작을 수동으로 실행할 수 있어야 Angular가 데이터 바인딩을 초기화하하기 전에 컴포넌트의 상태를 검사할 수 있으며, [라이프싸이클 후킹 함수](guide/lifecycle-hooks)가 동작하기 전에도 컴포넌트를 체크할 수 있기 때문입니다.
+
+그래서 컴포넌트의 `title` 프로퍼티를 직접 변경한 후에 `fixture.detectChanges()` 함수를 실행하는 방식으로 테스트 코드를 작성할 수도 있습니다.
 
 <code-example
   path="testing/src/app/banner/banner.component.spec.ts"
@@ -1445,24 +1569,41 @@ Here's another test that changes the component's `title` property _before_ calli
 
 {@a auto-detect-changes}
 
+<!--
 #### Automatic change detection
+-->
+#### 변화감지 자동으로 실행하기
 
+<!--
 The `BannerComponent` tests frequently call `detectChanges`.
 Some testers prefer that the Angular test environment run change detection automatically.
 
 That's possible by configuring the `TestBed` with the `ComponentFixtureAutoDetect` provider.
 First import it from the testing utility library:
+-->
+`BannerComponent`를 테스트할 때는 `detectChanges`를 실행하는 코드가 그리 많지 않습니다.
+하지만 어떤 경우에는 Angular 테스트 환경에서도 변화감지 로직이 자동으로 동작해야 편한 경우도 있습니다.
+
+그러면 변화감지 로직을 자동으로 실행하도록 `TtestBed`를 구성할 수 있습니다.
+먼저, 테스트 라이브러리에서 `ComponentFixtureAutoDetect` 프로바이더를 로드합니다:
 
 <code-example path="testing/src/app/banner/banner.component.detect-changes.spec.ts" region="import-ComponentFixtureAutoDetect" header="app/banner/banner.component.detect-changes.spec.ts (import)" linenums="false"></code-example>
 
+<!--
 Then add it to the `providers` array of the testing module configuration:
+-->
+그리고 이 프로바이더를 `providers` 배열에 추가합니다:
 
 <code-example path="testing/src/app/banner/banner.component.detect-changes.spec.ts" region="auto-detect" header="app/banner/banner.component.detect-changes.spec.ts (AutoDetect)" linenums="false"></code-example>
 
+<!--
 Here are three tests that illustrate how automatic change detection works.
+-->
+이 프로바이더가 동작하는지 확인해 봅시다. 테스트 스펙 3개를 다음과 같이 정의합니다.
 
 <code-example path="testing/src/app/banner/banner.component.detect-changes.spec.ts" region="auto-detect-tests" header="app/banner/banner.component.detect-changes.spec.ts (AutoDetect Tests)" linenums="false"></code-example>
 
+<!--
 The first test shows the benefit of automatic change detection.
 
 The second and third test reveal an important limitation.
@@ -1470,12 +1611,24 @@ The Angular testing environment does _not_ know that the test changed the compon
 The `ComponentFixtureAutoDetect` service responds to _asynchronous activities_ such as promise resolution, timers, and DOM events.
 But a direct, synchronous update of the component property is invisible.
 The test must call `fixture.detectChanges()` manually to trigger another cycle of change detection.
+-->
+변화감지 로직이 자동으로 실행되는 것은 첫번째 테스트 스펙에만 적용되었습니다.
+
+두번째 스펙과 세번째 스펙에 대해 자세하게 알아봅시다.
+Angular 테스트 환경은 컴포넌트의 `title` 프로퍼티 값이 변경되는지 확인하지 않습니다.
+`ComponentFixtureAutoDetect` 서비스는 Promise가 완료되었을 때, 타이머가 완료되었을 때, DOM 이벤트가 발생했을 때와 같이 _비동기로 일어나는 작업_ 에만 반응합니다.
+그래서 비동기로 컴포넌트 프로퍼티 값을 변경하면 이 값은 화면에 반영되지 않습니다.
+변화감지 동작을 실행하려면 `fixture.detectChanges()`를 수동으로 호출해야 합니다.
 
 <div class="alert is-helpful">
 
+<!--
 Rather than wonder when the test fixture will or won't perform change detection,
 the samples in this guide _always call_ `detectChanges()` _explicitly_.
 There is no harm in calling `detectChanges()` more often than is strictly necessary.
+-->
+이 문서에서 다루는 예제에서는 테스트 코드가 실행되는 환경에 변화감지 동작이 필요할 때 `detectChanges()`를 _명시적으로 실행_ 했습니다.
+`detectChanges()` 함수는 꼭 필요한 경우 외에 더 실행되더라도 문제되지 않습니다.
 
 </div>
 
@@ -1483,8 +1636,12 @@ There is no harm in calling `detectChanges()` more often than is strictly necess
 
 {@a dispatch-event}
 
+<!--
 #### Change an input value with _dispatchEvent()_
+-->
+#### _dispatchEvent()_: 입력값 변경하기
 
+<!--
 To simulate user input, you can find the input element and set its `value` property.
 
 You will call `fixture.detectChanges()` to trigger Angular's change detection.
@@ -1495,6 +1652,16 @@ It won't read that property until you raise the element's `input` event by calli
 _Then_ you call `detectChanges()`.
 
 The following example demonstrates the proper sequence.
+-->
+테스트 코드에서 사용자의 입력을 흉내내려면 `<input>` 엘리먼트를 찾아서 이 엘리먼트이 `value` 프로퍼티를 변경해야 합니다.
+
+그리고 `fixture.detectChanges()`를 실행하면 Angular의 변화감지 로직을 실행할 수 있지만, 이 메소드를 실행하기 전에 꼭 해야하는 작업이 있습니다.
+
+Angular는 개발자가 `<input>` 엘리먼트의 `value` 프로퍼티를 변경했다는 것을 알지 못합니다.
+그래서 엘리먼트에서 `input` 이벤트가 발생했다는 것을 알리기 위해 `dispatchEvent()` 함수를 실행해야 이 엘리먼트의 변경된 프로퍼티를 참조할 수 있습니다.
+`detectChanges()`는 _그 다음에_ 실행해야 합니다.
+
+이 순서로 테스트 코드를 작성해 봅시다.
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" header="app/hero/hero-detail.component.spec.ts (pipe test)"></code-example>
 
@@ -3474,7 +3641,10 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
     <td>
 
+      <!--
       A provider token for a service that turns on [automatic change detection](#automatic-change-detection).
+      -->
+      A provider token for a service that turns on [변화감지 자동으로 실행하기](#변화감지-자동으로-실행하기).
 
     </td>
   </tr>
