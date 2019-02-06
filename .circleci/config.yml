@@ -458,7 +458,9 @@ jobs:
           command: ./aio/scripts/test-production.sh $CI_AIO_MIN_PWA_SCORE
       - run:
           name: Notify caretaker about failure
-          command: 'curl --request POST --header "Content-Type: application/json" --data "{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}" $CI_SECRET_SLACK_CARETAKER_WEBHOOK_URL'
+          # `$SLACK_CARETAKER_WEBHOOK_URL` is a secret env var defined in CircleCI project settings.
+          # The URL comes from https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
+          command: 'curl --request POST --header "Content-Type: application/json" --data "{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}" $SLACK_CARETAKER_WEBHOOK_URL'
           when: on_fail
 
   legacy-unit-tests-local:
