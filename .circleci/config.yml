@@ -106,9 +106,9 @@ jobs:
       - restore_cache:
           key: *cache_key
       - *define_env_vars
-      - *setup_circleci_bazel_config
       - *download_yarn
       - *yarn_install
+      - *setup_circleci_bazel_config
 
       # Setup remote execution and run RBE-compatible tests.
       - *setup_bazel_remote_execution
@@ -133,9 +133,9 @@ jobs:
       - restore_cache:
           key: *cache_key
       - *define_env_vars
-      - *setup_circleci_bazel_config
       - *download_yarn
       - *yarn_install
+      - *setup_circleci_bazel_config
       - *setup_bazel_remote_execution
 
         # We need to explicitly specify the --symlink_prefix option because otherwise we would
@@ -321,7 +321,7 @@ jobs:
           key: *cache_key
       - *define_env_vars
       - *download_yarn
-      - run: yarn install --cwd aio --frozen-lockfile --non-interactive
+      - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run:
           name: Wait for preview and run tests
           command: node aio/scripts/test-preview.js $CI_PULL_REQUEST $CI_COMMIT $CI_AIO_MIN_PWA_SCORE
