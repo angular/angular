@@ -19,6 +19,8 @@ ng_module(
 
 ts_devserver(
     name = "devserver",
+    # Workaround for: https://github.com/bazelbuild/rules_typescript/issues/409
+    additional_root_paths = ["angular"],
     data = [
         "//modules/playground/src/web_workers:worker-config",
         "@ngdeps//node_modules/base64-js:base64js.min.js",
@@ -30,6 +32,12 @@ ts_devserver(
     index_html = "index.html",
     port = 4200,
     scripts = ["@ngdeps//node_modules/tslib:tslib.js"],
-    static_files = ["@ngdeps//node_modules/zone.js:dist/zone.js"],
+    static_files = [
+        "@ngdeps//node_modules/zone.js:dist/zone.js",
+        "@ngdeps//node_modules/materialize-css:dist/js/materialize.min.js",
+        "@ngdeps//node_modules/materialize-css:dist/css/materialize.min.css",
+        "@ngdeps//node_modules/jquery:dist/jquery.min.js",
+        "//third_party/github.com/google/material-design-icons",
+    ],
     deps = [":images"],
 )
