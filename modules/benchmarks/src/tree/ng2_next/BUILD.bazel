@@ -1,5 +1,6 @@
 load("//tools:defaults.bzl", "ts_library")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
@@ -23,4 +24,13 @@ ts_devserver(
     port = 4200,
     scripts = ["@ngdeps//node_modules/tslib:tslib.js"],
     deps = [":ng2_next"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    deps = [
+        "//modules/benchmarks/src/tree:perf_detect_changes_lib",
+        "//modules/benchmarks/src/tree:perf_lib",
+    ],
 )
