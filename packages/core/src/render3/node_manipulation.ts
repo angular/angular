@@ -150,7 +150,7 @@ function walkTNodeTree(
        */
       while (!nextTNode) {
         // If parent is null, we're crossing the view boundary, so we should get the host TNode.
-        tNode = tNode.parent || currentView[HOST_NODE];
+        tNode = tNode.parent || currentView[T_HOST];
 
         if (tNode === null || tNode === rootTNode) return null;
 
@@ -172,11 +172,11 @@ function walkTNodeTree(
                  !(tNode.parent && tNode.parent.next)) {
             if (tNode === rootTNode) return null;
             currentView = currentView[PARENT] as LView;
-            tNode = currentView[HOST_NODE] !;
+            tNode = currentView[T_HOST] !;
           }
           if (currentView[NEXT]) {
             currentView = currentView[NEXT] as LView;
-            nextTNode = currentView[HOST_NODE];
+            nextTNode = currentView[T_HOST];
           } else {
             nextTNode = tNode.next;
           }
