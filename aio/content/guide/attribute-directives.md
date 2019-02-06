@@ -41,6 +41,10 @@ when the user hovers over that element. You can apply it like this:
 
 {@a write-directive}
 
+Please note that directives _do not_ support namespaces.
+
+<code-example path="attribute-directives/src/app/app.component.avoid.html" linenums="false" header="src/app/app.component.avoid.html (unsupported)" region="unsupported"></code-example>
+
 ### Write the directive code
 
 Create the directive class file in a terminal window with the CLI command [`ng generate directive`](cli/generate).
