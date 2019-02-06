@@ -1,0 +1,10 @@
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ts_devserver(
+    name = "devserver",
+    index_html = "index.html",
+    port = 4200,
+    static_files = ["tree.js"],
+)
