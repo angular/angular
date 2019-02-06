@@ -28,8 +28,10 @@
     "benchmarks/src/old",
     "benchmarks/src/**/index_aot.ts",
     "benchmarks_external",
-    "playground",
-    "payload_tests"
+    "payload_tests",
+    // Tests which are already migrated to Bazel:
+    "playground/",
+    "benchmarks/src/tree"
   ],
   "angularCompilerOptions": {
     "skipTemplateCodegen": true

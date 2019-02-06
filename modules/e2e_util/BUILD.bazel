@@ -12,6 +12,7 @@ ts_library(
         "@ngdeps//@types/fs-extra",
         "@ngdeps//@types/selenium-webdriver",
         "@ngdeps//fs-extra",
+        "@ngdeps//node-uuid",
         "@ngdeps//protractor",
         "@ngdeps//selenium-webdriver",
     ],
