@@ -51,9 +51,6 @@
     "name": "HOST"
   },
   {
-    "name": "T_HOST"
-  },
-  {
     "name": "INJECTOR"
   },
   {
@@ -130,6 +127,9 @@
   },
   {
     "name": "TVIEW"
+  },
+  {
+    "name": "T_HOST"
   },
   {
     "name": "TriggerComponent"
@@ -265,6 +265,9 @@
   },
   {
     "name": "enterView"
+  },
+  {
+    "name": "executeContentQueries"
   },
   {
     "name": "executeHooks"

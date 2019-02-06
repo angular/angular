@@ -23,9 +23,8 @@ import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition'
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
-import {CONTENT_QUERIES, HEADER_OFFSET, LView, TVIEW} from './interfaces/view';
-import {getCurrentQueryIndex, getIsParent, getLView, getOrCreateCurrentQueries, setCurrentQueryIndex} from './state';
-import {isContentQueryHost} from './util';
+import {CONTENT_QUERIES, HEADER_OFFSET, LView, QUERIES, TVIEW} from './interfaces/view';
+import {getCurrentQueryIndex, getIsParent, getLView, setCurrentQueryIndex} from './state';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
@@ -107,7 +106,6 @@ export class LQueries_ implements LQueries {
   container(): LQueries|null {
     const shallowResults = copyQueriesToContainer(this.shallow);
     const deepResults = copyQueriesToContainer(this.deep);
-
     return shallowResults || deepResults ? new LQueries_(this, shallowResults, deepResults) : null;
   }
 
@@ -123,32 +121,15 @@ export class LQueries_ implements LQueries {
     insertView(index, this.deep);
   }
 
-  addNode(tNode: TElementNode|TContainerNode|TElementContainerNode): LQueries|null {
+  addNode(tNode: TElementNode|TContainerNode|TElementContainerNode): void {
     add(this.deep, tNode);
-
-    if (isContentQueryHost(tNode)) {
-      add(this.shallow, tNode);
-
-      if (tNode.parent && isContentQueryHost(tNode.parent)) {
-        // if node has a content query and parent also has a content query
-        // both queries need to check this node for shallow matches
-        add(this.parent !.shallow, tNode);
-      }
-      return this.parent;
-    }
-
-    isRootNodeOfQuery(tNode) && add(this.shallow, tNode);
-    return this;
+    add(this.shallow, tNode);
   }
 
   removeView(): void {
     removeView(this.shallow);
     removeView(this.deep);
   }
-}
-
-function isRootNodeOfQuery(tNode: TNode) {
-  return tNode.parent === null || isContentQueryHost(tNode.parent);
 }
 
 function copyQueriesToContainer(query: LQuery<any>| null): LQuery<any>|null {
@@ -371,11 +352,12 @@ export function query<T>(
     // TODO: "read" should be an AbstractType (FW-486)
     predicate: Type<any>| string[], descend?: boolean, read?: any): QueryList<T> {
   ngDevMode && assertPreviousIsParent(getIsParent());
+  const lView = getLView();
   const queryList = new QueryList<T>();
-  const queries = getOrCreateCurrentQueries(LQueries_);
+  const queries = lView[QUERIES] || (lView[QUERIES] = new LQueries_(null, null, null));
   (queryList as QueryList_<T>)._valuesTree = [];
   queries.track(queryList, predicate, descend, read);
-  storeCleanupWithContext(getLView(), queryList, queryList.destroy);
+  storeCleanupWithContext(lView, queryList, queryList.destroy);
   return queryList;
 }
 

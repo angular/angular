@@ -40,8 +40,8 @@ class App {
 }
 
 @Component({
-  selector: 'lock',
-  template: `{{frame.name}}(<span *ngFor="let  lock of locks">{{lock.name}}</span>)`,
+  selector: 'door',
+  template: `{{frame.name}}(<span *ngFor="let lock of locks">{{lock.name}}</span>)`,
 })
 class Door {
   // TODO(issue/24571): remove '!'.
