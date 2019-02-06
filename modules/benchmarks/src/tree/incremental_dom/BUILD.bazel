@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "ts_library")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ts_library(
+    name = "incremental_dom",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/tree:util_lib",
+        "@ngdeps//@types/node",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "angular/modules/benchmarks/src/tree/incremental_dom/index",
+    index_html = "index.html",
+    port = 4200,
+    static_files = [
+        "@ngdeps//node_modules/incremental-dom:dist/incremental-dom.js",
+    ],
+    deps = [":incremental_dom"],
+)
