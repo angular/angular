@@ -10,17 +10,31 @@
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "selenium-webdriver": ["../node_modules/@types/selenium-webdriver/index.d.ts"],
-      "rxjs/*": ["../node_modules/rxjs/*"],
-      "@angular/*": ["../dist/all/@angular/*"]
+      "selenium-webdriver": [
+        "../node_modules/@types/selenium-webdriver/index.d.ts"
+      ],
+      "rxjs/*": [
+        "../node_modules/rxjs/*"
+      ],
+      "@angular/*": [
+        "../dist/all/@angular/*"
+      ]
     },
     "rootDir": ".",
     "inlineSourceMap": true,
-    "lib": ["es5", "dom", "es2015.promise", "es2015.collection", "es2015.iterable"],
+    "lib": [
+      "es5",
+      "dom",
+      "es2015.promise",
+      "es2015.collection",
+      "es2015.iterable"
+    ],
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "target": "es5",
-    "types": ["angular"]
+    "types": [
+      "angular"
+    ]
   },
   "exclude": [
     "angular1_router",
@@ -28,7 +42,10 @@
     "benchmarks/src/old",
     "benchmarks/src/**/index_aot.ts",
     "benchmarks_external",
-    "payload_tests"
+    "payload_tests",
+    // Tests which are already migrated to Bazel:
+    "playground/",
+    "benchmarks/src/tree"
   ],
   "angularCompilerOptions": {
     "skipTemplateCodegen": true
