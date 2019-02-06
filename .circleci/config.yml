@@ -278,8 +278,6 @@ jobs:
           at: dist
       - *define_env_vars
       - *download_yarn
-        # Install root
-      - *yarn_install
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
@@ -299,7 +297,6 @@ jobs:
           key: *cache_key
       - *define_env_vars
       - *download_yarn
-      - *yarn_install
       - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CI_PULL_REQUEST $CI_COMMIT
       - store_artifacts:
           path: *aio_preview_artifact_path
@@ -408,6 +405,8 @@ jobs:
           at: dist
       - *define_env_vars
       - *download_yarn
+      # Some integration tests get their dependencies from the root `node_modules/`.
+      - *yarn_install
       # Runs the integration tests in parallel across multiple CircleCI container instances. The
       # amount of container nodes for this job is controlled by the "parallelism" option.
       - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}
