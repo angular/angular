@@ -6,34 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {fixmeIvy} from '@angular/private/testing';
 import {browser} from 'protractor';
 
 import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
 
-fixmeIvy('FW-1032: Ivy doesn\'t support injecting Renderer, the deprecated renderer V1')
-    .describe('hello world', function() {
+describe('hello world', function() {
 
-      afterEach(verifyNoBrowserErrors);
+  afterEach(verifyNoBrowserErrors);
 
-      describe('hello world app', function() {
-        const URL = '/';
+  describe('hello world app', function() {
+    const URL = '/';
 
-        it('should greet', function() {
-          browser.get(URL);
+    it('should greet', function() {
+      browser.get(URL);
 
-          expect(getComponentText('hello-app', '.greeting')).toEqual('hello world!');
-        });
-
-        it('should change greeting', function() {
-          browser.get(URL);
-
-          clickComponentButton('hello-app', '.changeButton');
-          expect(getComponentText('hello-app', '.greeting')).toEqual('howdy world!');
-        });
-      });
-
+      expect(getComponentText('hello-app', '.greeting')).toEqual('hello world!');
     });
+
+    it('should change greeting', function() {
+      browser.get(URL);
+
+      clickComponentButton('hello-app', '.changeButton');
+      expect(getComponentText('hello-app', '.greeting')).toEqual('howdy world!');
+    });
+  });
+
+});
 
 function getComponentText(selector: string, innerSelector: string) {
   return browser.executeScript(
