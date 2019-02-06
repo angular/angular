@@ -115,7 +115,7 @@ Every triaged PR must have a `pr_action` label assigned to it:
 * `PR action: review` - work is complete and comment is needed from the reviewers.
 * `PR action: cleanup` - more work is needed from the author.
 * `PR action: discuss` - discussion is needed, to be led by the author.
-* `PR action: merge` - the PR is ready to be merged by the caretaker.
+* `PR action: merge` - the PR author is ready for the changes to be merged by the caretaker.
 
 In addition, PRs can have the following states:
 
@@ -161,3 +161,10 @@ Only issues with `cla:yes` should be merged into master.
 
 ### `aio: preview`
 Applying this label to a PR makes the angular.io preview available regardless of the author. [More info](../aio/aio-builds-setup/docs/overview--security-model.md)
+
+### `PR action: merge-assistance`
+This label can be added to let the caretaker know that the PR needs special attention.
+There should always be a comment added to the PR to explain why the caretaker's assistance is needed.
+The comment should be formatted like this: `merge-assistance: <explain what kind of assistance you need, and if not obvious why>`
+
+For example, the PR owner might not be a Googler and needs help to run g3sync; or one of the checks is failing due to external causes and the PR should still be merged.
