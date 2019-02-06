@@ -1,3 +1,22 @@
+<a name="8.0.0-beta.3"></a>
+# [8.0.0-beta.3](https://github.com/angular/angular/compare/8.0.0-beta.2...8.0.0-beta.3) (2019-02-06)
+
+
+### Bug Fixes
+
+* **bazel:** Bazel builder resolves with require.resolve() ([#28478](https://github.com/angular/angular/issues/28478)) ([36902e2](https://github.com/angular/angular/commit/36902e2))
+* **bazel:** fix integration test for bazel-schematics ([#28460](https://github.com/angular/angular/issues/28460)) ([b1e099b](https://github.com/angular/angular/commit/b1e099b))
+* **compiler-cli:** base synthetic filepaths on input filepath ([#28453](https://github.com/angular/angular/issues/28453)) ([7219639](https://github.com/angular/angular/commit/7219639))
+* **compiler-cli:** diagnostics should respect "newLine" compiler option ([#28352](https://github.com/angular/angular/issues/28352)) ([4aa189d](https://github.com/angular/angular/commit/4aa189d))
+* **core:** remove createInjector() from public API ([#28509](https://github.com/angular/angular/issues/28509)) ([f2621db](https://github.com/angular/angular/commit/f2621db))
+
+
+### Performance Improvements
+
+* pngcrush all pngs ([#28479](https://github.com/angular/angular/issues/28479)) ([ec6e730](https://github.com/angular/angular/commit/ec6e730)), closes [#18243](https://github.com/angular/angular/issues/18243)
+
+
+
 <a name="7.2.4"></a>
 ## [7.2.4](https://github.com/angular/angular/compare/7.2.3...7.2.4) (2019-02-06)
 
