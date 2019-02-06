@@ -10,11 +10,8 @@ import {assertDefined} from '../util/assert';
 
 import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
-import {TElementNode, TNode, TNodeFlags, TViewNode} from './interfaces/node';
-import {LQueries} from './interfaces/query';
-import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, QUERIES, TVIEW, T_HOST} from './interfaces/view';
-import {isContentQueryHost} from './util';
-
+import {TElementNode, TNode, TViewNode} from './interfaces/node';
+import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
 
 
 /**
@@ -165,28 +162,6 @@ export function setIsParent(value: boolean): void {
   isParent = value;
 }
 
-/**
- * Query instructions can ask for "current queries" in 2 different cases:
- * - when creating view queries (at the root of a component view, before any node is created - in
- * this case currentQueries points to view queries)
- * - when creating content queries (i.e. this previousOrParentTNode points to a node on which we
- * create content queries).
- */
-export function getOrCreateCurrentQueries(
-    QueryType: {new (parent: null, shallow: null, deep: null): LQueries}): LQueries {
-  const lView = getLView();
-  let currentQueries = lView[QUERIES];
-  // If this is the first content query on a node, any existing LQueries needs to be cloned.
-  // In subsequent template passes, the cloning occurs before directive instantiation
-  // in `createDirectivesAndLocals`.
-  if (previousOrParentTNode && previousOrParentTNode !== lView[T_HOST] &&
-      !isContentQueryHost(previousOrParentTNode)) {
-    currentQueries && (currentQueries = lView[QUERIES] = currentQueries.clone());
-    previousOrParentTNode.flags |= TNodeFlags.hasContentQuery;
-  }
-
-  return currentQueries || (lView[QUERIES] = new QueryType(null, null, null));
-}
 
 /** Checks whether a given view is in creation mode */
 export function isCreationMode(view: LView = lView): boolean {

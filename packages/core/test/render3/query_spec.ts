@@ -2385,7 +2385,7 @@ describe('query', () => {
               `Expected content query results to be available when ngAfterContentChecked was called.`);
     });
 
-    it('should support content query matches on directive hosts', () => {
+    it('should not match directive host with content queries', () => {
       /**
        * <div with-content #foo>
        * </div>
@@ -2398,7 +2398,7 @@ describe('query', () => {
 
       const fixture = new ComponentFixture(AppComponent);
       expect(withContentInstance !.foos.length)
-          .toBe(1, `Expected content query to match <div with-content #foo>.`);
+          .toBe(0, `Expected content query not to match <div with-content #foo>.`);
     });
 
     it('should match shallow content queries in views inserted / removed by ngIf', () => {
@@ -2629,7 +2629,7 @@ describe('query', () => {
 
       const fixture = new ComponentFixture(AppComponent);
       expect(outInstance !.fooBars.length).toBe(1);
-      expect(inInstance !.fooBars.length).toBe(2);
+      expect(inInstance !.fooBars.length).toBe(1);
     });
 
     it('should support nested shallow content queries across multiple component instances', () => {
@@ -2668,7 +2668,11 @@ describe('query', () => {
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'div', ['query', ''], ['out', 'query']);
-              { element(2, 'div', ['query', ''], ['in', 'query', 'foo', '']); }
+              {
+                elementStart(2, 'div', ['query', ''], ['in', 'query', 'foo', '']);
+                { element(5, 'span', ['id', 'bar'], ['foo', '']); }
+                elementEnd();
+              }
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
@@ -2676,7 +2680,7 @@ describe('query', () => {
               inInstance = load<QueryDirective>(3);
             }
           },
-          5, 0, [QueryDirective]);
+          7, 0, [QueryDirective]);
 
       const fixture1 = new ComponentFixture(AppComponent);
       expect(outInstance !.fooBars.length).toBe(1);
