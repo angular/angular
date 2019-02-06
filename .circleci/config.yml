@@ -74,9 +74,7 @@ var_9: &setup_circleci_bazel_config
 var_10: &download_yarn
   run:
     name: Downloading Yarn
-    command: |
-      echo "Attempting to install $CI_YARN_VERSION from https://yarnpkg.com" |
-      curl -o- -L https://yarnpkg.com/install.sh | PROFILE=$BASH_ENV bash -s -- --version "$CI_YARN_VERSION"
+    command: curl -o- -L https://yarnpkg.com/install.sh | PROFILE=$BASH_ENV bash -s -- --version "$CI_YARN_VERSION"
 
 version: 2
 jobs:
@@ -454,8 +452,8 @@ jobs:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
-      - *download_yarn
       - *define_env_vars
+      - *download_yarn
       - run:
           name: Run tests against the deployed apps
           command: ./aio/scripts/test-production.sh $CI_AIO_MIN_PWA_SCORE
