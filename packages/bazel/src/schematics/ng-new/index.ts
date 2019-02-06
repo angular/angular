@@ -43,8 +43,8 @@ function addDevDependenciesToPackageJson(options: Schema) {
       // TODO(kyliau): Consider moving this to latest-versions.ts
       '@bazel/bazel': '^0.22.1',
       '@bazel/ibazel': '^0.9.0',
-      '@bazel/karma': '^0.22.1',
-      '@bazel/typescript': '^0.22.1',
+      '@bazel/karma': '^0.23.2',
+      '@bazel/typescript': '^0.23.2',
     };
 
     const recorder = host.beginUpdate(packageJson);

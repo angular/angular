@@ -19,7 +19,8 @@ def ng_setup_workspace():
     # The NodeJS rules version must be at least v0.15.3 because:
     #   - 0.15.2 Re-introduced the prod_only attribute on yarn_install
     #   - 0.15.3 Includes a fix for the `jasmine_node_test` rule ignoring target tags
-    check_rules_nodejs_version("0.15.3")
+    #   - 0.16.8 Supports npm installed bazel workspaces
+    check_rules_nodejs_version("0.16.8")
 
     yarn_install(
         name = "ngdeps",
