@@ -7,8 +7,12 @@
  */
 
 import {TreeNode} from '../util';
+
+// We load "IncrementalDOM" as a AMD global because the "incremental-dom" NPM package does not
+// come with a named UMD module, and it's easier to just import the AMD file and use it globally.
+declare const IncrementalDOM: any;
 const {patch, elementOpen, elementClose, elementOpenStart, elementOpenEnd, text, attr} =
-    require('incremental-dom');
+    IncrementalDOM;
 
 export class TreeComponent {
   constructor(private _rootEl: any) {}
