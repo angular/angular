@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, QueryList, Renderer2, SimpleChanges} from '@angular/core';
+import {AfterContentInit, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, Optional, QueryList, Renderer2, SimpleChanges} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {NavigationEnd, RouterEvent} from '../events';
@@ -93,7 +93,8 @@ export class RouterLinkActive implements OnChanges,
 
   constructor(
       private router: Router, private element: ElementRef, private renderer: Renderer2,
-      private cdr: ChangeDetectorRef) {
+      @Optional() private link?: RouterLink,
+      @Optional() private linkWithHref?: RouterLinkWithHref) {
     this.subscription = router.events.subscribe((s: RouterEvent) => {
       if (s instanceof NavigationEnd) {
         this.update();
@@ -140,7 +141,9 @@ export class RouterLinkActive implements OnChanges,
   }
 
   private hasActiveLinks(): boolean {
-    return this.links.some(this.isLinkActive(this.router)) ||
-        this.linksWithHrefs.some(this.isLinkActive(this.router));
+    const isActiveCheckFn = this.isLinkActive(this.router);
+    return this.link && isActiveCheckFn(this.link) ||
+        this.linkWithHref && isActiveCheckFn(this.linkWithHref) ||
+        this.links.some(isActiveCheckFn) || this.linksWithHrefs.some(isActiveCheckFn);
   }
 }
