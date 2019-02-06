@@ -7,6 +7,7 @@ export declare class MockLocationStrategy extends LocationStrategy {
     back(): void;
     forward(): void;
     getBaseHref(): string;
+    getState(): unknown;
     onPopState(fn: (value: any) => void): void;
     path(includeHash?: boolean): string;
     prepareExternalUrl(internal: string): string;
@@ -19,6 +20,7 @@ export declare class SpyLocation implements Location {
     urlChanges: string[];
     back(): void;
     forward(): void;
+    getState(): unknown;
     go(path: string, query?: string, state?: any): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;

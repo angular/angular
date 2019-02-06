@@ -25,6 +25,7 @@ export class MockLocationStrategy extends LocationStrategy {
   urlChanges: string[] = [];
   /** @internal */
   _subject: EventEmitter<any> = new EventEmitter();
+  private stateChanges: any[] = [];
   constructor() { super(); }
 
   simulatePopState(url: string): void {
@@ -42,6 +43,9 @@ export class MockLocationStrategy extends LocationStrategy {
   }
 
   pushState(ctx: any, title: string, path: string, query: string): void {
+    // Add state change to changes array
+    this.stateChanges.push(ctx);
+
     this.internalTitle = title;
 
     const url = path + (query.length > 0 ? ('?' + query) : '');
@@ -52,6 +56,9 @@ export class MockLocationStrategy extends LocationStrategy {
   }
 
   replaceState(ctx: any, title: string, path: string, query: string): void {
+    // Reset the last index of stateChanges to the ctx (state) object
+    this.stateChanges[(this.stateChanges.length || 1) - 1] = ctx;
+
     this.internalTitle = title;
 
     const url = path + (query.length > 0 ? ('?' + query) : '');
@@ -68,12 +75,15 @@ export class MockLocationStrategy extends LocationStrategy {
   back(): void {
     if (this.urlChanges.length > 0) {
       this.urlChanges.pop();
+      this.stateChanges.pop();
       const nextUrl = this.urlChanges.length > 0 ? this.urlChanges[this.urlChanges.length - 1] : '';
       this.simulatePopState(nextUrl);
     }
   }
 
   forward(): void { throw 'not implemented'; }
+
+  getState(): unknown { return this.stateChanges[(this.stateChanges.length || 1) - 1]; }
 }
 
 class _MockPopStateEvent {
