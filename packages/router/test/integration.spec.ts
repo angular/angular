@@ -3578,7 +3578,6 @@ describe('Integration', () => {
 
          TestBed.configureTestingModule({declarations: [RootCmpWithLink]});
          const router: Router = TestBed.get(Router);
-         const loc: any = TestBed.get(Location);
 
          const f = TestBed.createComponent(RootCmpWithLink);
          advance(f);
