@@ -803,8 +803,12 @@ _이전 버전에서 제공하던_ `HttpModule`을 사용하는 예제 코드는
 </div>
 
 
+<!--
 ## Component Test Basics
+-->
+## 컴포넌트 테스트
 
+<!--
 A component, unlike all other parts of an Angular application,
 combines an HTML template and a TypeScript class.
 The component truly is the template and the class _working together_.
@@ -818,13 +822,33 @@ the DOM as described by its template.
 The Angular `TestBed` facilitates this kind of testing as you'll see in the sections below.
 But in many cases, _testing the component class alone_, without DOM involvement,
 can validate much of the component's behavior in an easier, more obvious way.
+-->
+다른 Angular 구성요소와는 다르게, 컴포넌트는 HTML 템플릿과 TypeScript 클래스가 조합되어 정의됩니다.
+그리고 컴포넌트가 실행될 때도 템플릿과 클래스가 _상호작용 하면서_ 동작합니다.
+그래서 컴포넌트를 테스트하려면 템플릿과 TypeScript 클래스 코드가 서로 연동된다는 것을 염두에 두어야 합니다.
 
+컴포넌트가 위치할 호스트 엘리먼트는 테스트 환경의 DOM 트리에도 생성되어야 합니다.
+그래야 컴포넌트 클래스는 컴포넌트 템플릿이 렌더링되는 DOM과 상호작용할 수 있습니다.
+
+이 작업들은 모두 Angular `TestBed`가 모두 처리하기 때문에 컴포넌트를 테스트하는 것이 그리 어려운 것만은 아닙니다.
+하지만 일반적으로는 DOM을 신경쓰지 않고 _컴포넌트 클래스만 테스트하는 경우_ 가 많습니다.
+컴포넌트는 동작 위주로 테스트하는 것이 더 간단하고, 테스트 스펙을 정의하기에도 명확합니다.
+
+
+<!--
 ### Component class testing
+-->
+### 컴포넌트 클래스 테스트
 
+<!--
 Test a component class on its own as you would test a service class.
 
 Consider this `LightswitchComponent` which toggles a light on and off
 (represented by an on-screen message) when the user clicks the button.
+-->
+컴포넌트 클래스를 테스트하는 것은 서비스 클래스를 테스트하는 것과 비슷합니다.
+
+사용자가 버튼을 누르면 조명을 껴고 크는 `LightswitchComponent`가 있다고 합시다. 조명이 켜진 상태는 화면에 텍스트로 표시됩니다.
 
 <code-example
   path="testing/src/app/demo/demo.ts"
@@ -832,6 +856,7 @@ Consider this `LightswitchComponent` which toggles a light on and off
   header="app/demo/demo.ts (LightswitchComp)" linenums="false">
 </code-example>
 
+<!--
 You might decide only to test that the `clicked()` method
 toggles the light's _on/off_ state and sets the message appropriately.
 
@@ -839,38 +864,78 @@ This component class has no dependencies.
 To test a service with no dependencies, you create it with `new`, poke at its API,
 and assert expectations on its public state.
 Do the same with the component class.
+-->
+이 컴포넌트를 테스트한다면 조명을 _켜거나/끄는_ 동작을 하는 `clicked()` 메소드를 테스트하는 것이 가장 합리적입니다.
+조명이 켜진 상태는 화면에 표시된 메시지로 체크하면 됩니다.
 
+이 클래스에는 의존성으로 주입되는 객체가 없습니다.
+그러면 의존성이 없는 서비스르 테스트했던 것과 마찬가지로, `new` 키워드로 컴포넌트 인스턴스를 생성하고, API를 직접 실행한 후에, public 프로퍼티를 검사하면 됩니다.
+
+<!--
 <code-example
   path="testing/src/app/demo/demo.spec.ts"
   region="Lightswitch"
   header="app/demo/demo.spec.ts (Lightswitch tests)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/demo/demo.spec.ts"
+  region="Lightswitch"
+  header="app/demo/demo.spec.ts (Lightswitch 테스트하기)" linenums="false">
+</code-example>
 
+<!--
 Here is the `DashboardHeroComponent` from the _Tour of Heroes_ tutorial.
+-->
+_히어로들의 여행_ 튜토리얼에서 다룬 `DashboardHeroComponent`의 클래스 코드는 이렇게 정의되어 있습니다.
 
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.ts"
   region="class"
   header="app/dashboard/dashboard-hero.component.ts (component)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard-hero.component.ts"
+  region="class"
+  header="app/dashboard/dashboard-hero.component.ts (컴포넌트 코드)" linenums="false">
+</code-example>
 
+<!--
 It appears within the template of a parent component,
 which binds a _hero_ to the `@Input` property and
 listens for an event raised through the _selected_ `@Output` property.
 
 You can test that the class code works without creating the `DashboardHeroComponent`
 or its parent component.
+-->
+이 컴포넌트에는 부모 컴포넌트의 템플릿에서 받는 `@Input` _hero_ 프로퍼티가 존재하고, 부모 컴포넌트로 이벤트를 보내는 `@Output` _selected_ 프로퍼티가 존재합니다.
 
+그런데 이 컴포넌트는 부모 컴포넌트를 생성하지 않아도 직접 테스트할 수 있습니다.
+
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="class-only"
   header="app/dashboard/dashboard-hero.component.spec.ts (class tests)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
+  region="class-only"
+  header="app/dashboard/dashboard-hero.component.spec.ts (class 테스트하기)" linenums="false">
+</code-example>
 
+<!--
 When a component has dependencies, you may wish to use the `TestBed` to both
 create the component and its dependencies.
 
 The following `WelcomeComponent` depends on the `UserService` to know the name of the user to greet.
+-->
+그리고 컴포넌트에 주입되어야 하는 의존성이 있다면, `TestBed`를 사용해서 이 컴포넌트의 인스턴스를 생성할 수 있습니다.
+
+아래 예제로 다루는 `WelcomeComponent`는 사용자의 이름을 참조하기 위해 `UserService`가 의존성으로 주입되어야 합니다.
 
 <code-example
   path="testing/src/app/welcome/welcome.component.ts"
@@ -878,7 +943,10 @@ The following `WelcomeComponent` depends on the `UserService` to know the name o
   header="app/welcome/welcome.component.ts" linenums="false">
 </code-example>
 
+<!--
 You might start by creating a mock of the `UserService` that meets the minimum needs of this component.
+-->
+이 경우에는 먼저 `UserService` 코드 중 컴포넌트에 필요한 메소드만 최소한으로 구현한 목 클래스를 만드는 것부터 시작합니다.
 
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
@@ -886,24 +954,48 @@ You might start by creating a mock of the `UserService` that meets the minimum n
   header="app/welcome/welcome.component.spec.ts (MockUserService)" linenums="false">
 </code-example>
 
+<!--
 Then provide and inject _both the_ **component** _and the service_ in the `TestBed` configuration.
+-->
+그리고 이렇게 정의한 컴포넌트를 `TestBed` 환경에 등록합니다. 이 때 _**컴포넌트**도_ 함께 등록합니다.
 
+<!--
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
   region="class-only-before-each"
   header="app/welcome/welcome.component.spec.ts (class-only setup)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/welcome/welcome.component.spec.ts"
+  region="class-only-before-each"
+  header="app/welcome/welcome.component.spec.ts (TestBed 설정)" linenums="false">
+</code-example>
 
+<!--
 Then exercise the component class, remembering to call the [lifecycle hook methods](guide/lifecycle-hooks) as Angular does when running the app.
+-->
+그러면 테스트 스펙을 정의할 때 Angular 앱이 실행되는 것처럼 [라이프싸이클 후킹 함수](guide/lifecycle-hooks)를 활용할 수 있습니다.
 
+<!--
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
   region="class-only-tests"
   header="app/welcome/welcome.component.spec.ts (class-only tests)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/welcome/welcome.component.spec.ts"
+  region="class-only-tests"
+  header="app/welcome/welcome.component.spec.ts (컴포넌트 클래스 테스트하기)" linenums="false">
+</code-example>
 
+<!--
 ### Component DOM testing
+-->
+### 컴포넌트 DOM 테스트
 
+<!--
 Testing the component _class_ is as easy as testing a service.
 
 But a component is more than just its class.
@@ -934,28 +1026,72 @@ behave as expected.
 
 To write these kinds of test, you'll use additional features of the `TestBed`
 as well as other testing helpers.
+-->
+컴포넌트 _클래스_ 를 테스트하는 것은 서비스를 테스트하는 것만큼이나 쉽습니다.
 
+하지만 컴포넌트는 클래스로만 구성되는 것이 아닙니다.
+컴포넌트는 DOM에 존재하며 DOM에서 다른 컴포넌트와 상호작용할 수도 있습니다.
+그래서 _컴포넌트 클래스만_ 테스트하면 이 클래스의 행동은 테스트할 수 있지만, 이 컴포넌트가 제대로 렌더링 되었는지, 사용자의 입력이나 제스처에 잘 반응하는지, 부모 컴포넌트나 자식 컴포넌트와 상호작용을 제대로 하는지는 확인할 수 없습니다.
+
+결국 컴포넌트의 클래스만 테스트하면 다음 물음에 대해 답할 수 없습니다.
+
+- 사용자가 컴포넌트에 있는 버튼을 클릭하면 `Lightswitch.clicked()` 함수는 제대로 실행될까?
+- `Lightswitch.message`는 화면에 제대로 표시될까?
+- 사용자가 `DashboardHeroComponent`에서 선택한 히어로 정보가 컴포넌트에도 표시될까?
+- 히어로의 이름은 정해둔 방식대로 표시될까?
+- `WelcomeComponent` 템플릿에는 환영 메시지가 제대로 표시될까?
+
+컴포넌트가 간단하다면 이런 내용을 신경쓰지 않아도 됩니다.
+하지만 일반적으로 컴포넌트 템플릿은 클래스 코드와 복잡한 과정으로 상호작용하기도 하고, 컴포넌트의 상태에 따라 일부 HTML 조각을 표시하지 않는 경우도 많습니다.
+
+그래서 컴포넌트를 제대로 테스트하려면 해당 컴포넌트와 관련된 DOM 엘리먼트를 구성해야 하며, 지정된 로직에 따라 DOM도 제대로 연동되는지 확인해야 합니다. 그리고 사용자가 화면에서 발생시키는 이벤트에 컴포넌트가 제대로 반응하는지도 확인해야 합니다.
+
+이 요구사항들은 `TestBed`가 제공하는 기능으로 모두 처리할 수 있습니다.
+
+<!--
 #### CLI-generated tests
+-->
+#### Angular CLI로 생성한 테스트 코드
 
+<!--
 The CLI creates an initial test file for you by default when you ask it to
 generate a new component.
 
 For example, the following CLI command generates a `BannerComponent` in the `app/banner` folder (with inline template and styles):
+-->
+Angular CLI를 사용해서 컴포넌트를 생성하면 이 컴포넌트를 테스트하는 파일이 함께 생성됩니다.
+
+
+예를 들어 다음 명령을 실행하면 `app/banner` 폴더에 `BannerComponent` 컴포넌트 파일이 생성되는데, 옵션을 지정했기 때문에 템플릿과 스타일은 인라인으로 구성됩니다:
 
 <code-example language="sh" class="code-shell">
 ng generate component banner --inline-template --inline-style --module app
 </code-example>
 
+<!--
 It also generates an initial test file for the component, `banner-external.component.spec.ts`, that looks like this:
+-->
+Angular CLI는 이 컴포넌트를 생성하면서 다음 내용으로 `banner-external.component.spec.ts` 파일을 함께 생성합니다:
 
+<!--
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="v1"
   header="app/banner/banner-external.component.spec.ts (initial)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/banner/banner-initial.component.spec.ts"
+  region="v1"
+  header="app/banner/banner-external.component.spec.ts (기본 코드)" linenums="false">
+</code-example>
 
+<!--
 #### Reduce the setup
+-->
+#### 간단하게 줄이기
 
+<!--
 Only the last three lines of this file actually test the component
 and all they do is assert that Angular can create the component.
 
@@ -963,15 +1099,32 @@ The rest of the file is boilerplate setup code anticipating more advanced tests 
 
 You'll learn about these advanced test features below.
 For now, you can radically reduce this test file to a more manageable size:
+-->
+그런데 컴포넌트가 제대로 생성되는지 확인하려면 이 테스트 코드 중에서 마지막 3줄만 필요합니다.
 
+그밖의 코드는 이후에 이 컴포넌트에 추가되는 기능을 테스트하기 위해 미리 준비해 둔 코드들입니다.
+
+컴포넌트를 테스트할 때 필요한 내용은 아래에서 자세하게 살펴볼 것입니다.
+지금은 지금 단계에서 꼭 필요한 내용만 남도록 간단하게 줄여봅시다:
+
+<!--
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="v2"
   header="app/banner/banner-initial.component.spec.ts (minimal)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/banner/banner-initial.component.spec.ts"
+  region="v2"
+  header="app/banner/banner-initial.component.spec.ts (최소 코드)" linenums="false">
+</code-example>
 
+<!--
 In this example, the metadata object passed to `TestBed.configureTestingModule`
 simply declares `BannerComponent`, the component to test.
+-->
+이 예제에서 `TestBed.configureTestingModule`로 전달하는 메타데이터 객체에는 단순하게 `BannerComponent`를 선언하는 내용만 담겨 있습니다.
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
@@ -980,6 +1133,7 @@ simply declares `BannerComponent`, the component to test.
 
 <div class="alert is-helpful">
 
+<!--
 There's no need to declare or import anything else.
 The default test module is pre-configured with
 something like the `BrowserModule` from `@angular/platform-browser`.
@@ -987,6 +1141,12 @@ something like the `BrowserModule` from `@angular/platform-browser`.
 Later you'll call `TestBed.configureTestingModule()` with
 imports, providers, and more declarations to suit your testing needs.
 Optional `override` methods can further fine-tune aspects of the configuration.
+-->
+컴포넌트가 제대로 생성되는지 확인하는 코드는 이것으로 충분합니다.
+테스트 모듈은 `@angular/platform-browser` 패키지가 제공하는 `BrowserModule`을 활용하도록 자동으로 구성되어 있기 때문에, 테스트는 이대로도 실행할 수 있습니다.
+
+나중에 테스트할 내용이 많아지면 `TestBed.configureTestingModule()` 메타데이터의 imports, providers, declarations 프로퍼티를 수정해서 사용하면 됩니다.
+그리고 테스트 환경을 좀 더 튜닝하려면 오버라이드 메소드를 활용할 수도 있습니다.
 
 </div>
 
@@ -994,19 +1154,26 @@ Optional `override` methods can further fine-tune aspects of the configuration.
 
 #### _createComponent()_
 
+<!--
 After configuring `TestBed`, you call its `createComponent()` method.
+-->
+`TestBed`를 설정한 뒤에는 `createComponent()` 메소드를 실행합니다.
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
   region="createComponent">
 </code-example>
 
+<!--
 `TestBed.createComponent()` creates an instance of the `BannerComponent`,
 adds a corresponding element to the test-runner DOM,
 and returns a [`ComponentFixture`](#component-fixture).
+-->
+`TestBed.createComponent()`를 실행하면 `BannerComponent`의 인스턴스를 생성하면서 이 컴포넌트의 템플릿을 테스트-러너 DOM에 추가하고 [`ComponentFixture`](#component-fixture)를 반환합니다.
 
 <div class="alert is-important">
 
+<!--
 Do not re-configure `TestBed` after calling `createComponent`.
 
 The `createComponent` method freezes the current `TestBed` definition,
@@ -1015,6 +1182,13 @@ closing it to further configuration.
 You cannot call any more `TestBed` configuration methods, not `configureTestingModule()`,
 nor `get()`, nor any of the `override...` methods.
 If you try, `TestBed` throws an error.
+-->
+`createComponent`를 실행한 뒤에 `TestBed` 설정을 바꾸지 마세요.
+
+`createComponent` 메소드는 이 메소드가 실행되는 시점에 `TestBed`에 설정된 내용으로 생성되며, 이후에 `TestBed` 설정이 변경되어도 변경된 내용이 반영되지 않습니다.
+
+그래서 `createComponent` 메소드를 실행한 후에는 `configureTestingModule()` 메소드를 다시 실행할 수 없으며, 반대로 `configureTestingModule()`를 실행하기 전에는 `get()`이나 `override...` 메소드를 실행할 수 없습니다.
+이렇게 실행하면 에러가 발생합니다.
 
 </div>
 
@@ -1022,9 +1196,14 @@ If you try, `TestBed` throws an error.
 
 #### _ComponentFixture_
 
+<!--
 The [ComponentFixture](api/core/testing/ComponentFixture) is a test harness for interacting with the created component and its corresponding element.
 
 Access the component instance through the fixture and confirm it exists with a Jasmine expectation:
+-->
+[ComponentFixture](api/core/testing/ComponentFixture)는 컴포넌트와 이 컴포넌트의 엘리먼트를 테스트할 때 사용하는 객체입니다.
+
+이 객체를 참조하면 컴포넌트 인스턴스에 접근할 수 있기 때문에, 다음과 같은 Jasmine 검증식을 작성할 수 있습니다:
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
@@ -1033,9 +1212,13 @@ Access the component instance through the fixture and confirm it exists with a J
 
 #### _beforeEach()_
 
+<!--
 You will add more tests as this component evolves.
 Rather than duplicate the `TestBed` configuration for each test,
 you refactor to pull the setup into a Jasmine `beforeEach()` and some supporting variables:
+-->
+컴포넌트에 기능이 추가될수록 컴포넌트를 테스트하는 코드도 점점 많아질 것입니다.
+그렇다면 `TestBed`를 설정하는 로직을 모든 테스트 스펙에 반복할 필요 없이, 이 내용을 Jasmine `beforeEach()`에 작성하는 것이 더 효율적입니다.
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
@@ -1043,8 +1226,11 @@ you refactor to pull the setup into a Jasmine `beforeEach()` and some supporting
   linenums="false">
 </code-example>
 
+<!--
 Now add a test that gets the component's element from `fixture.nativeElement` and
 looks for the expected text.
+-->
+그러면 테스트 스펙을 작성할 때 공통 로직을 생략하고 테스트에 꼭 필요한 내용만 작성할 수 있습니다.
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
@@ -2053,9 +2239,15 @@ the test must match the element value with the upper-cased name.
 
 <div class="alert is-helpful">
 
+<!--
 This small test demonstrates how Angular tests can verify a component's visual
 representation&mdash;something not possible with
 [component class tests](#component-class-testing)&mdash;at
+low cost and without resorting to much slower and more complicated end-to-end tests.
+-->
+This small test demonstrates how Angular tests can verify a component's visual
+representation&mdash;something not possible with
+[component class tests](#컴포넌트-클래스-테스트)&mdash;at
 low cost and without resorting to much slower and more complicated end-to-end tests.
 
 </div>
@@ -3988,8 +4180,13 @@ next to their corresponding helper files.
 
 #### Why not rely on E2E tests of DOM integration?
 
+<!--
 The component DOM tests described in this guide often require extensive setup and
 advanced techniques whereas the [unit tests](#component-class-testing)
+are comparatively simple.
+-->
+The component DOM tests described in this guide often require extensive setup and
+advanced techniques whereas the [unit tests](#컴포넌트-클래스-테스트)
 are comparatively simple.
 
 #### Why not defer DOM integration tests to end-to-end (E2E) testing?

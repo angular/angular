@@ -18,13 +18,13 @@ describe('WelcomeComponent (class only)', () => {
   // #docregion class-only-before-each
   beforeEach(() => {
     TestBed.configureTestingModule({
-      // provide the component-under-test and dependent service
+      // 테스트할 컴포넌트와 의존성으로 주입될 서비스를 프로바이더에 등록합니다.
       providers: [
         WelcomeComponent,
         { provide: UserService, useClass: MockUserService }
       ]
     });
-    // inject both the component and the dependent service.
+    // TestBed를 사용해서 컴포넌트 인스턴스와 서비스 인스턴스를 참조합니다.
     comp = TestBed.get(WelcomeComponent);
     userService = TestBed.get(UserService);
   });
