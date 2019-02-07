@@ -12,6 +12,7 @@ load(
     "DEFAULT_NG_COMPILER",
     "DEFAULT_NG_XI18N",
     "DEPS_ASPECTS",
+    "FLAT_DTS_FILE_SUFFIX",
     "NodeModuleInfo",
     "collect_node_modules_aspect",
     "compile_ts",
@@ -121,6 +122,24 @@ def _flat_module_out_file(ctx):
         return ctx.attr.flat_module_out_file
     return "%s_public_index" % ctx.label.name
 
+def _should_produce_dts_bundle(ctx):
+    """Should we produce dts bundles.
+
+    We only produce flatten dts outs when we expect the ng_module is meant to be published,
+    based on the value of the bundle_dts attribute.
+
+    Args:
+      ctx: skylark rule execution context
+
+    Returns:
+      true when we should produce bundled dts.
+    """
+
+    # At the moment we cannot use this with ngtsc compiler since it emits
+    # import * as ___ from local modules which is not supported
+    # see: https://github.com/Microsoft/web-build-tools/issues/1029
+    return _is_legacy_ngc(ctx) and ctx.attr.bundle_dts
+
 def _should_produce_flat_module_outs(ctx):
     """Should we produce flat module outputs.
 
@@ -200,6 +219,14 @@ def _expected_outs(ctx):
         if not _is_bazel():
             metadata_files += [ctx.actions.declare_file(basename + ext) for ext in metadata]
 
+    dts_bundle = None
+    if _should_produce_dts_bundle(ctx):
+        # We need to add a suffix to bundle as it might collide with the flat module dts.
+        # The flat module dts out contains several other exports
+        # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/metadata/index_writer.ts#L18
+        # the file name will be like 'core.bundle.d.ts'
+        dts_bundle = ctx.actions.declare_file(ctx.label.name + FLAT_DTS_FILE_SUFFIX)
+
     # We do this just when producing a flat module index for a publishable ng_module
     if _should_produce_flat_module_outs(ctx):
         flat_module_out = _flat_module_out_file(ctx)
@@ -225,6 +252,7 @@ def _expected_outs(ctx):
         declarations = declaration_files,
         summaries = summary_files,
         metadata = metadata_files,
+        dts_bundle = dts_bundle,
         bundle_index_typings = bundle_index_typings,
         i18n_messages = i18n_messages_files,
     )
@@ -302,6 +330,7 @@ def ngc_compile_action(
         label,
         inputs,
         outputs,
+        dts_bundle_out,
         messages_out,
         tsconfig_file,
         node_opts,
@@ -317,6 +346,7 @@ def ngc_compile_action(
       label: the label of the ng_module being compiled
       inputs: passed to the ngc action's inputs
       outputs: passed to the ngc action's outputs
+      dts_bundle_out: produced flattened dts file
       messages_out: produced xmb files
       tsconfig_file: tsconfig file with settings used for the compilation
       node_opts: list of strings, extra nodejs options.
@@ -380,6 +410,28 @@ def ngc_compile_action(
             mnemonic = "Angular2MessageExtractor",
         )
 
+    if dts_bundle_out != None:
+        # combine the inputs and outputs and filter .d.ts and json files
+        filter_inputs = [f for f in inputs + outputs if f.path.endswith(".d.ts") or f.path.endswith(".json")]
+
+        if _should_produce_flat_module_outs(ctx):
+            dts_entry_point = "%s.d.ts" % _flat_module_out_file(ctx)
+        else:
+            dts_entry_point = ctx.attr.entry_point.replace(".ts", ".d.ts")
+
+        ctx.actions.run(
+            progress_message = "Bundling DTS %s" % str(ctx.label),
+            mnemonic = "APIExtractor",
+            executable = ctx.executable._api_extractor,
+            inputs = filter_inputs,
+            outputs = [dts_bundle_out],
+            arguments = [
+                tsconfig_file.path,
+                "/".join([ctx.bin_dir.path, ctx.label.package, dts_entry_point]),
+                dts_bundle_out.path,
+            ],
+        )
+
     if not locale and not ctx.attr.no_i18n:
         return struct(
             label = label,
@@ -400,7 +452,7 @@ def _filter_ts_inputs(all_inputs):
         if f.path.endswith(".js") or f.path.endswith(".ts") or f.path.endswith(".json")
     ]
 
-def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file, node_opts):
+def _compile_action(ctx, inputs, outputs, dts_bundle_out, messages_out, tsconfig_file, node_opts):
     # Give the Angular compiler all the user-listed assets
     file_inputs = list(ctx.files.assets)
 
@@ -427,16 +479,16 @@ def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file, node_opts
         ],
     )
 
-    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file, node_opts)
+    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, dts_bundle_out, messages_out, tsconfig_file, node_opts)
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    return _compile_action(ctx, inputs, outputs + outs.closure_js, outs.i18n_messages, tsconfig_file, node_opts)
+    return _compile_action(ctx, inputs, outputs + outs.closure_js, None, outs.i18n_messages, tsconfig_file, node_opts)
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
     compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
-    _compile_action(ctx, inputs, compile_action_outputs, None, tsconfig_file, node_opts)
+    _compile_action(ctx, inputs, compile_action_outputs, outs.dts_bundle, None, tsconfig_file, node_opts)
 
 def _ts_expected_outs(ctx, label, srcs_files = []):
     # rules_typescript expects a function with two or more arguments, but our
@@ -497,6 +549,9 @@ def ng_module_impl(ctx, ts_compile_actions):
             flat_module_out_file = _flat_module_out_file(ctx),
         )
 
+    if outs.dts_bundle != None:
+        providers["dts_bundle"] = outs.dts_bundle
+
     return providers
 
 def _ng_module_impl(ctx):
@@ -548,6 +603,11 @@ NG_MODULE_ATTRIBUTES = {
     ),
     "ng_xi18n": attr.label(
         default = Label(DEFAULT_NG_XI18N),
+        executable = True,
+        cfg = "host",
+    ),
+    "_api_extractor": attr.label(
+        default = Label("//packages/bazel/src/api-extractor:api_extractor"),
         executable = True,
         cfg = "host",
     ),
@@ -630,6 +690,7 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     # See the flatModuleOutFile documentation in
     # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/transformers/api.ts
     "flat_module_out_file": attr.string(),
+    "bundle_dts": attr.bool(default = False),
 })
 
 ng_module = rule(
