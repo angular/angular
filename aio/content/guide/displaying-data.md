@@ -149,7 +149,7 @@ In either style, the template data bindings have the same access to the componen
 Although this example uses variable assignment to initialize the components, you could instead declare and initialize the properties using a constructor:
 
 
-<code-example path="displaying-data/src/app/app-ctor.component.ts" linenums="false" region="class">
+<code-example path="displaying-data/src/app/app-ctor.component.1.ts" linenums="false" region="class">
 
 </code-example>
 
