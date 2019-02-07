@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, onlyInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
+import {onlyInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
 
 @Directive({
   selector: '[tplRef]',
@@ -59,7 +59,9 @@ const TRANSLATIONS: any = {
   '{VAR_SELECT, select, 10 {10 - {$startBoldText}ten{$closeBoldText}} 20 {20 - {$startItalicText}twenty{$closeItalicText}} other {{$startTagDiv}{$startUnderlinedText}other{$closeUnderlinedText}{$closeTagDiv}}}':
       '{VAR_SELECT, select, 10 {10 - {$startBoldText}dix{$closeBoldText}} 20 {20 - {$startItalicText}vingt{$closeItalicText}} other {{$startTagDiv}{$startUnderlinedText}autres{$closeUnderlinedText}{$closeTagDiv}}}',
   '{VAR_SELECT_2, select, 10 {ten - {VAR_SELECT, select, 1 {one} 2 {two} other {more than two}}} 20 {twenty - {VAR_SELECT_1, select, 1 {one} 2 {two} other {more than two}}} other {other}}':
-      '{VAR_SELECT_2, select, 10 {dix - {VAR_SELECT, select, 1 {un} 2 {deux} other {plus que deux}}} 20 {vingt - {VAR_SELECT_1, select, 1 {un} 2 {deux} other {plus que deux}}} other {autres}}'
+      '{VAR_SELECT_2, select, 10 {dix - {VAR_SELECT, select, 1 {un} 2 {deux} other {plus que deux}}} 20 {vingt - {VAR_SELECT_1, select, 1 {un} 2 {deux} other {plus que deux}}} other {autres}}',
+  '{$startTagNgTemplate}{$startTagDiv_1}{$startTagDiv}{$startTagSpan}Content{$closeTagSpan}{$closeTagDiv}{$closeTagDiv}{$closeTagNgTemplate}':
+      '{$startTagNgTemplate}Contenu{$closeTagNgTemplate}'
 };
 
 const getFixtureWithOverrides = (overrides = {}) => {
@@ -512,6 +514,71 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
 
       const element = fixture.nativeElement;
       expect(element).toHaveText('vingt');
+    });
+  });
+
+  describe('queries', () => {
+    function toHtml(element: Element): string {
+      return element.innerHTML.replace(/\sng-reflect-\S*="[^"]*"/g, '')
+          .replace(/<!--bindings=\{(\W.*\W\s*)?\}-->/g, '');
+    }
+
+    it('detached nodes should still be part of query', () => {
+      const template = `
+          <div-query #q i18n>
+            <ng-template>
+              <div>
+                <div *ngIf="visible">
+                  <span text="1">Content</span>
+                </div>
+              </div>
+            </ng-template>
+          </div-query>
+        `;
+
+      @Directive({selector: '[text]', inputs: ['text'], exportAs: 'textDir'})
+      class TextDirective {
+        // TODO(issue/24571): remove '!'.
+        text !: string;
+        constructor() {}
+      }
+
+      @Component({selector: 'div-query', template: '<ng-container #vc></ng-container>'})
+      class DivQuery {
+        // TODO(issue/24571): remove '!'.
+        @ContentChild(TemplateRef) template !: TemplateRef<any>;
+
+        // TODO(issue/24571): remove '!'.
+        @ViewChild('vc', {read: ViewContainerRef})
+        vc !: ViewContainerRef;
+
+        // TODO(issue/24571): remove '!'.
+        @ContentChildren(TextDirective, {descendants: true})
+        query !: QueryList<TextDirective>;
+
+        create() { this.vc.createEmbeddedView(this.template); }
+
+        destroy() { this.vc.clear(); }
+      }
+
+      TestBed.configureTestingModule({declarations: [TextDirective, DivQuery]});
+      const fixture = getFixtureWithOverrides({template});
+      const q = fixture.debugElement.children[0].references.q;
+      expect(q.query.length).toEqual(0);
+
+      // Create embedded view
+      q.create();
+      fixture.detectChanges();
+      expect(q.query.length).toEqual(1);
+      expect(toHtml(fixture.nativeElement))
+          .toEqual(`<div-query><!--ng-container-->Contenu<!--container--></div-query>`);
+
+      // Disable ng-if
+      fixture.componentInstance.visible = false;
+      fixture.detectChanges();
+      expect(q.query.length).toEqual(0);
+      expect(toHtml(fixture.nativeElement))
+          .toEqual(`<div-query><!--ng-container-->Contenu<!--container--></div-query>`);
     });
   });
 });

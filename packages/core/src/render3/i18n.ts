@@ -614,6 +614,16 @@ export function i18nEnd(): void {
   i18nEndFirstPass(tView);
 }
 
+function findLastNode(node: TNode): TNode {
+  while (node.next) {
+    node = node.next;
+  }
+  if (node.child) {
+    return findLastNode(node.child);
+  }
+  return node;
+}
+
 /**
  * See `i18nEnd` above.
  */
@@ -629,12 +639,17 @@ function i18nEndFirstPass(tView: TView) {
 
   // The last placeholder that was added before `i18nEnd`
   const previousOrParentTNode = getPreviousOrParentTNode();
-  const visitedPlaceholders = readCreateOpCodes(rootIndex, tI18n.create, tI18n.icus, viewData);
+  const visitedNodes = readCreateOpCodes(rootIndex, tI18n.create, tI18n.icus, viewData);
 
-  // Remove deleted placeholders
-  // The last placeholder that was added before `i18nEnd` is `previousOrParentTNode`
-  for (let i = rootIndex + 1; i <= previousOrParentTNode.index - HEADER_OFFSET; i++) {
-    if (visitedPlaceholders.indexOf(i) === -1) {
+  // Find the last node that was added before `i18nEnd`
+  let lastCreatedNode = previousOrParentTNode;
+  if (lastCreatedNode.child) {
+    lastCreatedNode = findLastNode(lastCreatedNode.child);
+  }
+
+  // Remove deleted nodes
+  for (let i = rootIndex + 1; i <= lastCreatedNode.index - HEADER_OFFSET; i++) {
+    if (visitedNodes.indexOf(i) === -1) {
       removeNode(i, viewData);
     }
   }
@@ -646,7 +661,7 @@ function readCreateOpCodes(
   const renderer = getLView()[RENDERER];
   let currentTNode: TNode|null = null;
   let previousTNode: TNode|null = null;
-  const visitedPlaceholders: number[] = [];
+  const visitedNodes: number[] = [];
   for (let i = 0; i < createOpCodes.length; i++) {
     const opCode = createOpCodes[i];
     if (typeof opCode == 'string') {
@@ -655,6 +670,7 @@ function readCreateOpCodes(
       ngDevMode && ngDevMode.rendererCreateTextNode++;
       previousTNode = currentTNode;
       currentTNode = createNodeAtIndex(textNodeIndex, TNodeType.Element, textRNode, null, null);
+      visitedNodes.push(textNodeIndex);
       setIsParent(false);
     } else if (typeof opCode == 'number') {
       switch (opCode & I18nMutateOpCode.MASK_OPCODE) {
@@ -677,7 +693,7 @@ function readCreateOpCodes(
           break;
         case I18nMutateOpCode.Select:
           const nodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
-          visitedPlaceholders.push(nodeIndex);
+          visitedNodes.push(nodeIndex);
           previousTNode = currentTNode;
           currentTNode = getTNode(nodeIndex, viewData);
           if (currentTNode) {
@@ -715,6 +731,7 @@ function readCreateOpCodes(
           previousTNode = currentTNode;
           currentTNode =
               createNodeAtIndex(commentNodeIndex, TNodeType.IcuContainer, commentRNode, null, null);
+          visitedNodes.push(commentNodeIndex);
           attachPatchData(commentRNode, viewData);
           (currentTNode as TIcuContainerNode).activeCaseIndex = null;
           // We will add the case nodes later, during the update phase
@@ -731,6 +748,7 @@ function readCreateOpCodes(
           previousTNode = currentTNode;
           currentTNode = createNodeAtIndex(
               elementNodeIndex, TNodeType.Element, elementRNode, tagNameValue, null);
+          visitedNodes.push(elementNodeIndex);
           break;
         default:
           throw new Error(`Unable to determine the type of mutate operation for "${opCode}"`);
@@ -740,7 +758,7 @@ function readCreateOpCodes(
 
   setIsParent(false);
 
-  return visitedPlaceholders;
+  return visitedNodes;
 }
 
 function readUpdateOpCodes(
