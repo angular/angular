@@ -33,7 +33,7 @@
     "@nguniversal/common": "^7.1.0",
     "@nguniversal/express-engine": "^7.1.0",
     "@nguniversal/module-map-ngfactory-loader": "^7.1.0",
-    "angular-in-memory-web-api": "github:brandonroberts/in-memory-web-api-bazel#50a34d8",
+    "angular-in-memory-web-api": "^0.6.0",
     "core-js": "^2.5.4",
     "express": "^4.14.1",
     "rxjs": "^6.3.0",
