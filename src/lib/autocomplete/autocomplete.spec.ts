@@ -482,6 +482,15 @@ describe('MatAutocomplete', () => {
       expect(fixture.componentInstance.stateCtrl.value).toBe('hello');
     });
 
+    it('should set aria-haspopup depending on whether the autocomplete is disabled', () => {
+      expect(input.getAttribute('aria-haspopup')).toBe('true');
+
+      fixture.componentInstance.autocompleteDisabled = true;
+      fixture.detectChanges();
+
+      expect(input.getAttribute('aria-haspopup')).toBe('false');
+    });
+
   });
 
   it('should have the correct text direction in RTL', () => {
