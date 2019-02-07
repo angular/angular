@@ -69,6 +69,7 @@ export function CDK_DRAG_CONFIG_FACTORY(): DragRefConfig {
   exportAs: 'cdkDrag',
   host: {
     'class': 'cdk-drag',
+    '[class.cdk-drag-disabled]': 'disabled',
     '[class.cdk-drag-dragging]': '_dragRef.isDragging()',
   },
   providers: [{provide: CDK_DRAG_PARENT, useExisting: CdkDrag}]

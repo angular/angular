@@ -62,6 +62,7 @@ export interface CdkDropListInternal extends CdkDropList {}
   host: {
     'class': 'cdk-drop-list',
     '[id]': 'id',
+    '[class.cdk-drop-list-disabled]': 'disabled',
     '[class.cdk-drop-list-dragging]': '_dropListRef.isDragging()',
     '[class.cdk-drop-list-receiving]': '_dropListRef.isReceiving()',
   }

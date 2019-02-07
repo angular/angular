@@ -536,8 +536,12 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
       const dragElement = fixture.componentInstance.dragElement.nativeElement;
 
-      fixture.componentInstance.dragInstance.disabled = true;
+      expect(dragElement.classList).not.toContain('cdk-drag-disabled');
 
+      fixture.componentInstance.dragInstance.disabled = true;
+      fixture.detectChanges();
+
+      expect(dragElement.classList).toContain('cdk-drag-disabled');
       expect(dragElement.style.transform).toBeFalsy();
       dragElementViaMouse(fixture, dragElement, 50, 100);
       expect(dragElement.style.transform).toBeFalsy();
@@ -2115,9 +2119,14 @@ describe('CdkDrag', () => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
       const dragItems = fixture.componentInstance.dragItems;
+      const dropElement = fixture.componentInstance.dropInstance.element.nativeElement;
+
+      expect(dropElement.classList).not.toContain('cdk-drop-list-disabled');
 
       fixture.componentInstance.dropInstance.disabled = true;
+      fixture.detectChanges();
 
+      expect(dropElement.classList).toContain('cdk-drop-list-disabled');
       expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
           .toEqual(['Zero', 'One', 'Two', 'Three']);
 
