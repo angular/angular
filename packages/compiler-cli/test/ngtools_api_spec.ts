@@ -37,7 +37,7 @@ describe('ngtools_api (deprecated)', () => {
         export class ErrorComp2 {}
 
         @NgModule({
-          declarations: [ErrorComp2, NonExistentComp],
+          declarations: [ErrorComp2],
           imports: [RouterModule.forRoot([{loadChildren: './child#ChildModule'}])]
         })
         export class MainModule {}
@@ -60,7 +60,7 @@ describe('ngtools_api (deprecated)', () => {
     });
   }
 
-  fixmeIvy('FW-629: ngtsc lists lazy routes').it('should list lazy routes recursively', () => {
+  it('should list lazy routes recursively', () => {
     writeSomeRoutes();
     const {program, host, options} =
         createProgram(['src/main.ts', 'src/child.ts', 'src/child2.ts']);
