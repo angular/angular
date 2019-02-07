@@ -13,8 +13,8 @@ import { AppComponent }       from './app.component';
 // #enddocregion
 */
 // #docregion
-import { HighlightDirective } from './highlight.directive';
-import { TitleComponent }     from './title.component';
+import { HighlightDirective } from './highlight.directive.1';
+import { TitleComponent }     from './title.component.1';
 import { UserService }        from './user.service';
 
 /* Routing Module */
