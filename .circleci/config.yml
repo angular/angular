@@ -116,6 +116,13 @@ jobs:
       # Now run RBE incompatible tests locally.
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
       - run: yarn bazel test //... --build_tag_filters=-ivy-only,local --test_tag_filters=-ivy-only,local
+      # Populate data into CircleCI test result view
+      # See https://circleci.com/docs/2.0/collect-test-data/#metadata-collection-in-custom-test-steps
+      - store_test_results:
+          # Bazel always writes test.xml files under this directory
+          path: dist/testlogs
+      - store_artifacts:
+          path: dist/testlogs
 
   # Temporary job to test what will happen when we flip the Ivy flag to true
   test_ivy_aot:
