@@ -10,11 +10,13 @@ import {MatSnackBar} from '@angular/material';
   styleUrls: ['snack-bar-component-example.css'],
 })
 export class SnackBarComponentExample {
+  durationInSeconds = 5;
+
   constructor(private snackBar: MatSnackBar) {}
 
   openSnackBar() {
     this.snackBar.openFromComponent(PizzaPartyComponent, {
-      duration: 500,
+      duration: this.durationInSeconds * 1000,
     });
   }
 }
