@@ -16,8 +16,7 @@ const SJS_SPEC_FILENAME = 'e2e-spec.ts';
 const CLI_SPEC_FILENAME = 'e2e/src/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 const IGNORED_EXAMPLES = [ // temporary ignores
-  'quickstart',
-  'setup',
+  
 ];
 
 /**
@@ -206,7 +205,7 @@ function runE2eTestsCLI(appDir, outputFile) {
   console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
-  const commands = config.e2e || [{ cmd: 'yarn', args: ['e2e', '--no-webdriver-update'] }];
+  const commands = config.e2e || [{ cmd: 'yarn', args: ['e2e', '--prod', '--no-webdriver-update'] }];
 
   const e2eSpawnPromise = commands.reduce((prevSpawnPromise, { cmd, args }) => {
     return prevSpawnPromise.then(() => {
