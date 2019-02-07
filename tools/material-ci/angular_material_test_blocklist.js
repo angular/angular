@@ -49,22 +49,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'attachComponentPortal' of undefined",
     "notes": "Unknown"
   },
-  "Portals DomPortalOutlet should attach and detach a component portal": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Portals DomPortalOutlet should attach and detach a component portal with a given injector": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Portals DomPortalOutlet should attach and detach a template portal with a binding": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Portals DomPortalOutlet should change the attached portal": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
   "Portals DomPortalOutlet should attach and detach a component portal without a ViewContainerRef": {
     "error": "Error: Expected '<pizza-msg><p>Pizza</p><p>Chocolate</p></pizza-msg>' to be '', 'Expected the DomPortalOutlet to be empty after detach'.",
     "notes": "Unknown"
@@ -154,467 +138,215 @@ window.testBlocklist = {
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render initial state": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the data length": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the viewport size": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport size": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered range": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered content offset": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the scroll offset": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered content size": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should measure range size": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set total content size": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set total content size in horizontal mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set a class based on the orientation": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set the vertical class if an invalid orientation is set": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set rendered range": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set content offset to top of content": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set content offset to bottom of content": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to offset": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to index": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to offset in horizontal mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to index in horizontal mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should output scrolled index": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls down": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls up": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the end when scrolled to the top": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the start and end when scrolled to the middle": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the start when scrolled to the bottom": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic item size": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic buffer size": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic item array": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls right in horizontal mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls left in horizontal mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should work with an Observable": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'getRenderedRange' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should work with a DataSource": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'getRenderedRange' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should trackBy value by default": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "Error: <spyOn> : could not find an object to spy upon for detach()",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should trackBy index when specified": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "Error: <spyOn> : could not find an object to spy upon for detach()",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should recycle views when template cache is large enough to accommodate": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "Error: <spyOn> : could not find an object to spy upon for createEmbeddedView()",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should not recycle views when template cache is full": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "Error: <spyOn> : could not find an object to spy upon for createEmbeddedView()",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render up to maxBufferPx when buffer dips below minBufferPx": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should throw if maxBufferPx is less than minBufferPx": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should register and degregister with ScrollDispatcher": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should emit on viewChange inside the Angular zone": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'viewChange' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should not throw when disposing of a view that will not fit in the cache": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with RTL direction should initially be scrolled all the way right and showing the first item in horizontal mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with RTL direction should scroll through items as user scrolls to the left in horizontal mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with RTL direction should interpret scrollToOffset amount as an offset from the right in horizontal mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with RTL direction should scroll to the correct index in horizontal mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with RTL direction should emit the scrolled to index in horizontal mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with RTL direction should set total content size": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with RTL direction should set total content size in horizontal mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "CdkVirtualScrollViewport with no VirtualScrollStrategy should fail on construction": {
-    "error": "Error: Expected function to throw an exception with message 'Error: cdk-virtual-scroll-viewport requires the \"itemSize\" property to be set.', but it threw an exception with message 'StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
     "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should render initial state for uniform items": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should render extra content if first item is smaller than average": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should throw if maxBufferPx is less than minBufferPx": {
-    "error": "Error: StaticInjectorError(Platform: core)[CdkVirtualScrollViewport]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "CdkTable in a typical simple use case should initialize with a connected data source": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with a rendered header with the right number of header cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with rendered rows with right number of row cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with column class names provided to header and data row cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with the right accessibility roles": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should disconnect the data source when table is destroyed": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should re-render the rows when the data changes": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should clear the `mostRecentCellOutlet` on destroy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should correctly use the differ to add/remove/move rows when the data is heterogeneous": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should correctly use the differ to add/remove/move rows when the data contains multiple occurrences of the same object instance": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should clear the row view containers on destroy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should match the right table content with dynamic data": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should be able to dynamically change the columns for header and rows": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should render no rows when the data is null": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to render multiple header and footer rows": {
-    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Attempting to access content children before view is initialized"
-  },
-  "CdkTable should be able to render and change multiple header and footer rows": {
-    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Attempting to access content children before view is initialized"
-  },
-  "CdkTable with different data inputs other than data source should render with data array input": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with different data inputs other than data source should render with data stream input": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with different data inputs other than data source should throw an error if the data source is not valid": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable missing row defs should be able to render without a header row def": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable missing row defs should be able to render without a data row def": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable missing row defs should be able to render without a footer row def": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should render correctly when using native HTML tags": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable should render cells even if row data is falsy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to apply class-friendly css class names for the column cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should not clobber an existing table role": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should throw an error if two column definitions have the same name": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should throw an error if a column definition is requested but not defined": {
-    "error": "Error: Expected function to throw an exception with message 'Could not find column with id \"column_a\".', but it threw an exception with message 'Cannot read property 'viewContainer' of undefined'.",
+    "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
-  },
-  "CdkTable should throw an error if the row definitions are missing": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should not throw an error if columns are undefined on initialization": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to dynamically add/remove column definitions": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to register column, row, and header row definitions outside content": {
-    "error": "TypeError: Cannot read property 'addColumnDef' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkTable using when predicate should be able to display different row templates based on the row data": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate should error if there is row data that does not have a matching row template": {
-    "error": "Error: Expected function to throw an Error.",
-    "notes": "Unknown"
-  },
-  "CdkTable using when predicate should fail when multiple rows match data without multiTemplateDataRows": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate with multiTemplateDataRows should be able to render multiple rows per data object": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate with multiTemplateDataRows should have the correct data and row indicies": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate with multiTemplateDataRows should have the correct data and row indicies when data contains multiple instances of the same object instance": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick headers": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick footers": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick left columns": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick right columns": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should reverse directions for sticky columns in rtl": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick combination of sticky header, footer, and columns": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick headers": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick footers": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick tfoot when all rows are stuck": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick left columns": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick right columns": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick combination of sticky header, footer, and columns": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with trackBy should add/remove/move rows with reference-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should add/remove/move rows with changed references without property-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should add/remove/move rows with changed references with property-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should add/remove/move rows with changed references with index-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should change row implicit data even when trackBy finds no changes": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should match the right table content with dynamic data source": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to apply classes to rows based on their context": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to apply classes to cells based on their row context": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
   },
   "CdkAccordion should not register nested items to the same accordion": {
     "error": "TypeError: Cannot read property 'accordion' of undefined",
-    "notes": "Unknown"
-  },
-  "ScrollDispatcher Basic usage should not register the same scrollable twice": {
-    "error": "Error: Expected spy scroll spy not to have been called.",
-    "notes": "Unknown"
-  },
-  "ScrollDispatcher Nested scrollables should be able to identify the containing scrollables of an element": {
-    "error": "Error: Expected $.length = 4 to equal 2.",
-    "notes": "Unknown"
-  },
-  "ScrollDispatcher Nested scrollables should emit when one of the ancestor scrollable containers is scrolled": {
-    "error": "Error: Expected spy scroll spy to have been called once. It was called 2 times.",
-    "notes": "Unknown"
-  },
-  "ScrollDispatcher lazy subscription should remove global listeners on unsubscribe, despite any other live scrollables": {
-    "error": "Error: Expected 8 to be 4, 'Expected multiple scrollables'.",
     "notes": "Unknown"
   },
   "CdkDrag standalone draggable should enable native drag interactions when there is a drag handle": {
@@ -873,6 +605,238 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'element' of undefined",
     "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
+  "CdkTable in a typical simple use case should initialize with a connected data source": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should initialize with a rendered header with the right number of header cells": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should initialize with rendered rows with right number of row cells": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should initialize with column class names provided to header and data row cells": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should initialize with the right accessibility roles": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should disconnect the data source when table is destroyed": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should re-render the rows when the data changes": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should clear the `mostRecentCellOutlet` on destroy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should correctly use the differ to add/remove/move rows when the data is heterogeneous": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should correctly use the differ to add/remove/move rows when the data contains multiple occurrences of the same object instance": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should clear the row view containers on destroy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should match the right table content with dynamic data": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should be able to dynamically change the columns for header and rows": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should render no rows when the data is null": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to render multiple header and footer rows": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Attempting to access content children before view is initialized"
+  },
+  "CdkTable should be able to render and change multiple header and footer rows": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Attempting to access content children before view is initialized"
+  },
+  "CdkTable with different data inputs other than data source should render with data array input": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with different data inputs other than data source should render with data stream input": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with different data inputs other than data source should throw an error if the data source is not valid": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable missing row defs should be able to render without a header row def": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable missing row defs should be able to render without a data row def": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable missing row defs should be able to render without a footer row def": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should render correctly when using native HTML tags": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable should render cells even if row data is falsy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to apply class-friendly css class names for the column cells": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should not clobber an existing table role": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should throw an error if two column definitions have the same name": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should throw an error if a column definition is requested but not defined": {
+    "error": "Error: Expected function to throw an exception with message 'Could not find column with id \"column_a\".', but it threw an exception with message 'Cannot read property 'viewContainer' of undefined'.",
+    "notes": "Unknown"
+  },
+  "CdkTable should throw an error if the row definitions are missing": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should not throw an error if columns are undefined on initialization": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to dynamically add/remove column definitions": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to register column, row, and header row definitions outside content": {
+    "error": "TypeError: Cannot read property 'addColumnDef' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkTable using when predicate should be able to display different row templates based on the row data": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable using when predicate should error if there is row data that does not have a matching row template": {
+    "error": "Error: Expected function to throw an Error.",
+    "notes": "Unknown"
+  },
+  "CdkTable using when predicate should fail when multiple rows match data without multiTemplateDataRows": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable using when predicate with multiTemplateDataRows should be able to render multiple rows per data object": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable using when predicate with multiTemplateDataRows should have the correct data and row indicies": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable using when predicate with multiTemplateDataRows should have the correct data and row indicies when data contains multiple instances of the same object instance": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick headers": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick footers": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick left columns": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick right columns": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should reverse directions for sticky columns in rtl": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick combination of sticky header, footer, and columns": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick headers": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick footers": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with sticky positioning on native table layout should stick tfoot when all rows are stuck": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick left columns": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick right columns": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick combination of sticky header, footer, and columns": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with trackBy should add/remove/move rows with reference-based trackBy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with trackBy should add/remove/move rows with changed references without property-based trackBy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with trackBy should add/remove/move rows with changed references with property-based trackBy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with trackBy should add/remove/move rows with changed references with index-based trackBy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with trackBy should change row implicit data even when trackBy finds no changes": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should match the right table content with dynamic data source": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to apply classes to rows based on their context": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to apply classes to cells based on their row context": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
   "CdkTree should clear out the `mostRecentTreeNode` on destroy": {
     "error": "Error: Expected false to be true.",
     "notes": "Unknown"
@@ -892,10 +856,6 @@ window.testBlocklist = {
   "CdkTree flat tree with toggle should expand/collapse the node recursively": {
     "error": "TypeError: Cannot read property 'click' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTree flat tree with array data source with the right data": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
   },
   "CdkTree flat tree with trackBy should add/remove/move nodes with reference-based trackBy": {
     "error": "TypeError: Cannot read property 'getAttribute' of undefined",
@@ -949,60 +909,60 @@ window.testBlocklist = {
     "error": "Error: Expected 0 to be 5.",
     "notes": "Unknown"
   },
+  "MatButton should apply class based on color attribute": {
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
+    "notes": "Unknown"
+  },
   "MatButton should expose the ripple instance": {
     "error": "Error: Expected undefined to be truthy.",
     "notes": "Unknown"
   },
-  "MatButton should apply class based on color attribute": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
   "MatButton should not clear previous defined classes": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatButton button[mat-fab] should have accent palette by default": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatButton button[mat-mini-fab] should have accent palette by default": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatButton button[mat-button] should not increment if disabled": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatButton button[mat-button] should disable the native button element": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatButton a[mat-button] should not redirect if disabled": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatButton a[mat-button] should remove tabindex if disabled": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatButton a[mat-button] should add aria-disabled attribute if disabled": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatButton a[mat-button] should not add aria-disabled attribute if disabled is false": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatButton a[mat-button] should be able to set a custom tabindex": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatButton button ripples should disable the ripple if matRippleDisabled input is set": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatButton button ripples should disable the ripple when the button is disabled": {
-    "error": "Template error: Can't bind to 'disabled' since it isn't a known property of 'a'",
+    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatTabHeader focusing should initialize to the selected index": {
@@ -1241,260 +1201,116 @@ window.testBlocklist = {
     "error": "Error: Expected 'true' to be 'false'.",
     "notes": "Unknown"
   },
-  "MatStepper basic stepper should default to the first step": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper basic stepper should throw when a negative `selectedIndex` is assigned": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper basic stepper should throw when an out-of-bounds `selectedIndex` is assigned": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
   "MatStepper basic stepper should change selected index on header click": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper basic stepper should set the \"tablist\" role on stepper": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper basic stepper should set aria-expanded of content correctly": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should display the correct label": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "Error: cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should go to next available step when the next button is clicked": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should set the next stepper button type to \"submit\"": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of null",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should go to previous available step when the previous button is clicked": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "Error: cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should set the previous stepper button type to \"button\"": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of null",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should set the correct step position for animation": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "Error: cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should not set focus on header of selected step if header is not clicked": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should focus next step header if focus is inside the stepper": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should only be able to return to a previous step if it is editable": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should set create icon if step is editable and completed": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should set done icon if step is not editable and is completed": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper basic stepper should emit an event when the enter animation is done": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should set the correct aria-posinset and aria-setsize": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "Error: Expected $.length = 0 to equal 3.",
+    "notes": "Unknown"
   },
   "MatStepper basic stepper should adjust the index when removing a step before the current one": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper basic stepper should not do anything when pressing the ENTER key with a modifier": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper basic stepper should not do anything when pressing the SPACE key with a modifier": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper basic stepper when attempting to set the selected step too early should not throw": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper basic stepper with i18n label change should re-render when the i18n labels change": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper icon overrides should allow for the `edit` icon to be overridden": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper icon overrides should allow for the `done` icon to be overridden": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper icon overrides should allow for the `number` icon to be overridden with context": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "Error: cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.",
+    "notes": "Unknown"
   },
   "MatStepper RTL should reverse animation in RTL mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper linear stepper should have true linear attribute": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper linear stepper should not move to next step if current step is invalid": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "Error: cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.",
+    "notes": "Unknown"
   },
   "MatStepper linear stepper should not move to next step if current step is pending": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper linear stepper should be able to focus step header upon click if it is unable to be selected": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper linear stepper should be able to move to next step even when invalid if current step is optional": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper linear stepper should be able to reset the stepper to its initial state": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper linear stepper should reset back to the first step when some of the steps are not editable": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper linear stepper should not clobber the `complete` binding when resetting": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper linear stepper with a pre-defined selectedIndex should not throw": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper linear stepper with no `stepControl` should not move to the next step if the current one is not completed ": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper linear stepper with `stepControl` should have the `stepControl` take precedence when `completed` is set": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper vertical stepper should set the aria-orientation to \"vertical\"": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper vertical stepper should support using the left/right arrows to move focus": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper vertical stepper should support using the up/down arrows to move focus": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper vertical stepper should reverse arrow key focus in RTL mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper horizontal stepper should set the aria-orientation to \"horizontal\"": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper horizontal stepper should support using the left/right arrows to move focus": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper horizontal stepper should reverse arrow key focus in RTL mode": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper horizontal stepper should reverse arrow key focus when switching into RTL after init": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper linear stepper with valid step must be visited if not optional": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper linear stepper with valid step can be skipped entirely if optional": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper aria labelling should not set aria-label or aria-labelledby attributes if they are not passed in": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'hasAttribute' of null",
+    "notes": "Unknown"
   },
   "MatStepper aria labelling should set the aria-label attribute": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'getAttribute' of null",
+    "notes": "Unknown"
   },
   "MatStepper aria labelling should set the aria-labelledby attribute": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'getAttribute' of null",
+    "notes": "Unknown"
   },
   "MatStepper aria labelling should not be able to set both an aria-label and aria-labelledby": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'getAttribute' of null",
+    "notes": "Unknown"
   },
   "MatStepper stepper with error state should show error state": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper stepper with error state should respect a custom falsy hasError value": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
   },
   "MatStepper stepper using Material UI Guideline logic should show done state when step is completed and its not the current step": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatStepper stepper using Material UI Guideline logic should show edit state when step is editable and its the current step": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
-  },
-  "MatSlideToggle without forms custom action configuration should not change value on click when click action is noop": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "Unknown"
   },
   "MatSlideToggle without forms custom action configuration should not change value on dragging when drag action is noop": {
     "error": "Error: Expected mat-slide-toggle-thumb-container to contain 'mat-dragging'.",
-    "notes": "Unknown"
-  },
-  "MatSlider slider with set min and max should adjust fill and ticks on mouse enter when min changes": {
-    "error": "Error: Expected '0% 2px' to be '75% 2px'.",
-    "notes": "Unknown"
-  },
-  "MatSlider slider with set min and max should adjust fill and ticks on mouse enter when max changes": {
-    "error": "Error: Expected '0% 2px' to be '50% 2px'.",
-    "notes": "Unknown"
-  },
-  "MatSlider slider with auto ticks should set the correct tick separation on mouse enter": {
-    "error": "Error: Expected '0% 2px' to be '30% 2px'.",
-    "notes": "Unknown"
-  },
-  "MatSlider slider with set tick interval should set the correct tick separation on mouse enter": {
-    "error": "Error: Expected '0% 2px' to be '18% 2px'.",
-    "notes": "Unknown"
-  },
-  "MatButtonToggle without forms as standalone should have correct aria-pressed attribute": {
-    "error": "Error: Expected 'false' to be 'true'.",
     "notes": "Unknown"
   },
   "MatDrawer methods should be able to open": {
@@ -1518,7 +1334,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer methods should restore focus on close if focus is inside drawer": {
-    "error": "Error: Expected <button class=\"ng-tns-c20933-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <button class=\"ng-tns-c21129-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer methods should not restore focus on close if focus is outside drawer": {
@@ -1530,55 +1346,47 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"over\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21228-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21424-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"push\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21262-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21458-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should focus the drawer if there are no focusable elements": {
-    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c21330-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c21526-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawerContainer should animate the content when a drawer is added at a later point": {
-    "error": "TypeError: Cannot read property 'style' of null",
+    "error": "Error: Expected NaN to be greater than 0.",
     "notes": "Unknown"
   },
   "MatDrawerContainer should recalculate the margin if a drawer is destroyed": {
-    "error": "TypeError: Cannot read property 'style' of null",
+    "error": "Error: Expected NaN to be greater than 0.",
     "notes": "Unknown"
   },
   "MatDrawerContainer should recalculate the margin if the drawer mode is changed": {
-    "error": "TypeError: Cannot read property 'style' of null",
+    "error": "Error: Expected NaN to be greater than 0.",
     "notes": "Unknown"
   },
   "MatDrawerContainer should recalculate the margin if the direction has changed": {
-    "error": "TypeError: Cannot read property 'style' of null",
+    "error": "Error: Expected NaN to be greater than 0.",
     "notes": "Unknown"
   },
   "MatDrawerContainer should recalculate the margin if a drawer changes size while open in autosize mode": {
-    "error": "TypeError: Cannot read property 'style' of null",
+    "error": "Error: Expected NaN to be greater than 0.",
     "notes": "Unknown"
   },
   "MatDrawerContainer should not set a style property if it would be zero": {
-    "error": "TypeError: Cannot read property 'style' of null",
+    "error": "Error: Expected '' not to be '', 'Margin should be present when drawer is open'.",
     "notes": "Unknown"
   },
   "MatDrawerContainer should be able to explicitly enable the backdrop in `side` mode": {
     "error": "TypeError: Cannot set property 'mode' of undefined",
     "notes": "Unknown"
   },
-  "MatDrawerContainer should expose a scrollable when the consumer has not specified drawer content": {
-    "error": "Error: Expected false to be true.",
-    "notes": "Unknown"
-  },
-  "MatDrawerContainer should expose a scrollable when the consumer has specified drawer content": {
-    "error": "Error: Expected false to be true.",
-    "notes": "Unknown"
-  },
   "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c21780-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
+    "error": "Error: Expected ng-tns-c21976-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "Unknown"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
@@ -1626,143 +1434,35 @@ window.testBlocklist = {
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatAccordion should ensure only one item is expanded at a time": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
+    "error": "Error: Expected undefined to be truthy.",
+    "notes": "Unknown"
   },
   "MatAccordion should allow multiple items to be expanded simultaneously": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
+    "error": "Error: Expected undefined to be truthy.",
+    "notes": "Unknown"
   },
   "MatAccordion should expand or collapse all enabled items": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
+    "error": "Error: Expected undefined to be truthy.",
+    "notes": "Unknown"
   },
   "MatAccordion should not expand or collapse disabled items": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
+    "error": "Error: Expected undefined to be truthy.",
+    "notes": "Unknown"
   },
   "MatAccordion should not register nested panels to the same accordion": {
-    "error": "Error: Export of name 'matExpansionPanel' not found!",
+    "error": "TypeError: Cannot read property 'accordion' of undefined",
     "notes": "Unknown"
-  },
-  "MatAccordion should update the expansion panel if hideToggle changed": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatAccordion should move focus to the next header when pressing the down arrow": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatAccordion should move focus to the next header when pressing the up arrow": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatAccordion should skip disabled items when moving focus with the keyboard": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatAccordion should focus the first header when pressing the home key": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatAccordion should focus the last header when pressing the end key": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should expand and collapse the panel": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should be able to render panel content lazily": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should render the content for a lazy-loaded panel that is opened on init": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel emit correct events for change in panel expanded state": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should create a unique panel id for each panel": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should set `aria-labelledby` of the content to the header id": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should set the proper role on the content element": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
   },
   "MatExpansionPanel should toggle the panel when pressing SPACE on the header": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should toggle the panel when pressing ENTER on the header": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should not toggle if a modifier key is pressed": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should not be able to focus content while closed": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should restore focus to header if focused element is inside panel on close": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should not override the panel margin if it is not inside an accordion": {
-    "error": "TypeError: Cannot read property '_hasSpacing' of null",
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
     "notes": "Unknown"
   },
-  "MatExpansionPanel should be able to hide the toggle": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
+  "MatExpansionPanel should toggle the panel when pressing ENTER on the header": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+    "notes": "Unknown"
   },
-  "MatExpansionPanel should update the indicator rotation when the expanded state is toggled programmatically": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should make sure accordion item runs ngOnDestroy when expansion panel is destroyed": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should support two-way binding of the `expanded` property": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should emit events for body expanding and collapsing animations": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel should be able to set the default options through the injection token": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel disabled state should toggle the aria-disabled attribute on the header": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel disabled state should toggle the expansion indicator": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel disabled state should not be able to toggle the panel via a user action if disabled": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatExpansionPanel disabled state should be able to toggle a disabled expansion panel programmatically": {
-    "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
-    "notes": "FW-966: Extended components missing from the directive registry (Removing the @Host() part of `MatExpansionPanelHeader` reveals a StaticInjectorError)"
-  },
-  "MatGridList should throw error if rowHeight ratio is invalid": {
-    "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
+  "MatExpansionPanel should not toggle if a modifier key is pressed": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
     "notes": "Unknown"
   },
   "MatInput without forms validates the type": {
@@ -1778,8 +1478,8 @@ window.testBlocklist = {
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatInput with textarea autosize should work in a step": {
-    "error": "Error: StaticInjectorError(Platform: core)[MatStepper]: ",
-    "notes": "FW-966: Extended components missing from the directive registry"
+    "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
+    "notes": "Unknown"
   },
   "MatTabNavBar basic behavior should change active index on click": {
     "error": "TypeError: Cannot read property 'show' of undefined",
@@ -2257,178 +1957,6 @@ window.testBlocklist = {
     "error": "Error: Must provide a portal to attach",
     "notes": "Unknown"
   },
-  "Overlay directives should attach the overlay based on the open property": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives should destroy the overlay when the directive is destroyed": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives should use a connected position strategy with a default set of positions": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives should set and update the `dir` attribute": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives should close when pressing escape": {
-    "error": "Error: Expected 'Menu content' to be '', 'Expected overlay to have been detached.'.",
-    "notes": "Unknown"
-  },
-  "Overlay directives inputs should set the width": {
-    "error": "Uncaught NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node. thrown",
-    "notes": "Unknown"
-  },
-  "Overlay directives inputs should set the height": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should set the min width": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should set the min height": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should create the backdrop if designated": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should not create the backdrop by default": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should be able to change hasBackdrop after the overlay has been initialized": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should set the custom backdrop class": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should set the custom panel class": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should set the offsetX": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should set the offsetY": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should be able to update the origin after init": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should update the positions if they change after init": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives inputs should take the offset from the position": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives outputs should emit backdropClick appropriately": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives outputs should emit positionChange appropriately": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives outputs should emit attach and detach appropriately": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay directives outputs should emit the keydown events from the overlay": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should load a component into an overlay": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should load a template portal into an overlay": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should disable pointer events of the pane element if detached": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should open multiple overlays": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should ensure that the most-recently-attached overlay is on top": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should emit when an overlay is detached": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should emit the detachment event after the overlay is removed from the DOM": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should emit and complete the observables when an overlay is disposed": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should complete the attachment observable before the detachment one": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should clear out all DOM element references on dispose": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should clear the backdrop timeout if the transition finishes first": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should add and remove the overlay host as the ref is being attached and detached": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay should be able to dispose an overlay on navigation": {
-    "error": "Error: Expected 1 to be 0.",
-    "notes": "Unknown"
-  },
-  "Overlay positioning should apply the positioning strategy": {
-    "error": "Uncaught NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node. thrown",
-    "notes": "Unknown"
-  },
-  "Overlay positioning should not apply the position if it detaches before the zone stabilizes": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay backdrop should complete the backdrop click stream once the overlay is destroyed": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay backdrop should disable the pointer events of a backdrop that is being removed": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay panelClass should remove the custom panel class when the overlay is detached": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay panelClass should wait for the overlay to be detached before removing the panelClass": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
-  "Overlay scroll strategy should disable the scroll strategy once the overlay is detached": {
-    "error": "Error: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.",
-    "notes": "FW-977: Destroying a component fails when it has been moved from its original location"
-  },
   "ConnectedPositionStrategy with origin on document body when near viewport edge should reposition the overlay if it would go off the left of the screen": {
     "error": "Error: Expected -3018 to be -3048.",
     "notes": "Unknown"
@@ -2438,63 +1966,11 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "ConnectedPositionStrategy with origin on document body should pick the fallback position that shows the largest area of the element": {
-    "error": "Error: Expected 969 to be 909.",
+    "error": "Error: Expected 999 to be 939.",
     "notes": "Unknown"
   },
-  "FlexibleConnectedPositionStrategy without flexible dimensions and pushing when near viewport edge should reposition the overlay if it would go off the left of the screen": {
-    "error": "Error: Expected -3018 to be -3048.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy without flexible dimensions and pushing when near viewport edge should reposition the overlay if it would go off the right of the screen": {
-    "error": "Error: Expected -3048 to be -3018.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy without flexible dimensions and pushing should account for the `offsetX` pushing the overlay out of the screen": {
-    "error": "Error: Expected -10 to be 130.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy without flexible dimensions and pushing should pick the fallback position that shows the largest area of the element": {
-    "error": "Error: Expected 969 to be 909.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy with pushing should be able to push an overlay into the viewport when it goes out on the right": {
-    "error": "Error: Expected 994 to be 1009.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy with pushing should be able to push an overlay into the viewport when it goes out on the bottom": {
-    "error": "Error: Expected 834 to be 768.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy with pushing should align to the trigger if the overlay is wider than the viewport, but the trigger is still within the viewport": {
-    "error": "Error: Expected 0 to be 150.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy with pushing should not continue pushing the overlay as the user scrolls, if position locking is enabled": {
-    "error": "Error: Expected 0 to be less than 0, 'Expected overlay to no longer be completely inside the viewport.'.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy with flexible dimensions should support offsets when centering": {
-    "error": "Error: Expected 35 to be -3013.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy with flexible dimensions should become scrollable when it hits the viewport edge with a flexible height": {
-    "error": "Error: Expected 30 to be 20.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy with flexible dimensions should become scrollable when it hits the viewport edge with a flexible width": {
-    "error": "Error: Expected 994 to be 1009.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy with flexible dimensions should take `weight` into account when determining which position to pick": {
-    "error": "Error: Expected 30 to be -3048.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy with flexible dimensions should be able to opt-in to having the overlay grow after it was opened": {
-    "error": "Error: Expected 30 to be 20.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy with flexible dimensions should calculate the bottom offset correctly with a viewport margin": {
-    "error": "Error: Expected -3263 to be 5.",
+  "BlockScrollStrategy should't do anything if the page isn't scrollable": {
+    "error": "Error: Expected cdk-global-scrollblock not to contain 'cdk-global-scrollblock'.",
     "notes": "Unknown"
   },
   "FlexibleConnectedPositionStrategy positioning properties in ltr should use `right` when positioning an element at the end": {
@@ -2509,12 +1985,28 @@ window.testBlocklist = {
     "error": "Error: Expected '' to be truthy.",
     "notes": "Unknown"
   },
-  "FlexibleConnectedPositionStrategy panel classes should clear the previous classes when the position changes": {
-    "error": "Error: Expected cdk-overlay-pane is-center is-in-the-middle not to contain 'is-center'.",
+  "MatAutocomplete aria should set role of autocomplete panel to listbox": {
+    "error": "TypeError: Cannot read property 'nativeElement' of null",
     "notes": "Unknown"
   },
-  "BlockScrollStrategy should't do anything if the page isn't scrollable": {
-    "error": "Error: Expected cdk-global-scrollblock not to contain 'cdk-global-scrollblock'.",
+  "MatAutocomplete aria should set aria-owns based on the attached autocomplete": {
+    "error": "TypeError: Cannot read property 'nativeElement' of null",
+    "notes": "Unknown"
+  },
+  "MatAutocomplete Fallback positions should use below positioning by default": {
+    "error": "Error: Expected 739 to equal 438.",
+    "notes": "Unknown"
+  },
+  "MatAutocomplete Fallback positions should reposition the panel on scroll": {
+    "error": "Error: Expected 3972 to equal 3671.",
+    "notes": "Unknown"
+  },
+  "MatAutocomplete Option selection should handle `optionSelections` being accessed too early": {
+    "error": "TypeError: Cannot read property 'autocomplete' of undefined",
+    "notes": "Unknown"
+  },
+  "MatAutocomplete should be able to set a custom panel connection element": {
+    "error": "Error: Expected 665 to be 827, 'Expected autocomplete panel to align with the bottom of the new origin.'.",
     "notes": "Unknown"
   },
   "MatBottomSheet should open a bottom sheet with a component": {
@@ -2697,34 +2189,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
-  "MatAutocomplete aria should set role of autocomplete panel to listbox": {
-    "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
-  },
-  "MatAutocomplete aria should set aria-owns based on the attached autocomplete": {
-    "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
-  },
-  "MatAutocomplete Fallback positions should use below positioning by default": {
-    "error": "Error: Expected 739 to equal 438.",
-    "notes": "Unknown"
-  },
-  "MatAutocomplete Fallback positions should reposition the panel on scroll": {
-    "error": "Error: Expected 3974 to equal 3673.",
-    "notes": "Unknown"
-  },
-  "MatAutocomplete Option selection should handle `optionSelections` being accessed too early": {
-    "error": "TypeError: Cannot read property 'autocomplete' of undefined",
-    "notes": "Unknown"
-  },
-  "MatAutocomplete should be able to set a custom panel connection element": {
-    "error": "Error: Expected 665 to be 827, 'Expected autocomplete panel to align with the bottom of the new origin.'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker open non-touch should open popup": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatDatepicker with MatNativeDateModule standard datepicker touch should open dialog": {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
@@ -2735,22 +2199,6 @@ window.testBlocklist = {
   },
   "MatDatepicker with MatNativeDateModule standard datepicker should open datepicker if opened input is set to true": {
     "error": "Error: Expected null not to be null.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker disabled datepicker input should open the calendar if datepicker is enabled": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker close should close popup": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker should close the popup when pressing ESCAPE": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker should set the proper role on the popup": {
-    "error": "TypeError: Cannot read property '0' of null",
     "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule standard datepicker close should close dialog": {
@@ -2765,53 +2213,9 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
-  "MatDatepicker with MatNativeDateModule standard datepicker clicking the currently selected date should close the calendar without firing selectedChanged": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker pressing enter on the currently selected date should close the calendar without firing selectedChanged": {
-    "error": "Error: ASSERTION ERROR: NgModule already destroyed",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker input should aria-owns calendar after opened in non-touch mode": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatDatepicker with MatNativeDateModule standard datepicker input should aria-owns calendar after opened in touch mode": {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker should clear out the backdrop subscriptions on close": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker should reset the datepicker when it is closed externally": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker should close the datpeicker using ALT + UP_ARROW": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker should open the datepicker using ALT + DOWN_ARROW": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with startView set to year should start at the specified view": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with startView set to year should fire yearSelected when user selects calendar year in year view": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with startView set to multiyear should start at the specified view": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with startView set to multiyear should fire yearSelected when user selects calendar year in multiyear view": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with ngModel should update datepicker when model changes": {
     "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
@@ -2866,56 +2270,56 @@ window.testBlocklist = {
     "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should set `aria-haspopup` on the toggle button": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should open calendar when toggle clicked": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should not open calendar when toggle clicked if datepicker is disabled": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should not open calendar when toggle clicked if input is disabled": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should set the `button` type on the trigger to prevent form submissions": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should remove the underlying SVG icon from the tab order": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should restore focus to the toggle after the calendar is closed": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should re-render when the i18n labels change": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should toggle the active state of the datepicker toggle": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with custom mat-datepicker-toggle icon should be able to override the mat-datepicker-toggle icon": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with tabindex on mat-datepicker-toggle should forward the tabindex to the underlying button": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with tabindex on mat-datepicker-toggle should clear the tabindex from the mat-datepicker-toggle host": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with tabindex on mat-datepicker-toggle should forward focus to the underlying button when the host is focused": {
-    "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker inside mat-form-field should pass the form field theme color to the overlay": {
     "error": "TypeError: Cannot read property 'classList' of null",
@@ -2973,41 +2377,9 @@ window.testBlocklist = {
     "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
     "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
   },
-  "MatDatepicker with MatNativeDateModule datepicker directionality should pass along the directionality to the popup": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker directionality should update the popup direction if the directionality value changes": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatDatepicker with MatNativeDateModule datepicker directionality should pass along the directionality to the dialog in touch mode": {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDatepicker popup positioning should be below and to the right when there is plenty of space": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker popup positioning should be above and to the right when there is no space below": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker popup positioning should be below and to the left when there is no space on the right": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker popup positioning should be above and to the left when there is no space on the bottom": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker datepicker with custom header should find the standard header element": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatDatepicker datepicker with custom header should find the custom element": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
   },
   "MatDialog should open a dialog with a component": {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
@@ -3345,128 +2717,32 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
-  "MatMenu should open the menu as an idempotent operation": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu should be able to remove the backdrop": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu should be able to remove the backdrop on repeat openings": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu should be able to set a custom class on the backdrop": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu should scroll the panel to the top on open, when it is scrollable": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatMenu should open a custom menu": {
     "error": "Error: Expected function not to throw an Error, but it threw TypeError.",
-    "notes": "Unknown"
-  },
-  "MatMenu should set the panel direction based on the trigger direction": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu should update the panel direction if the trigger direction changes": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu should transfer any custom classes from the host to the overlay": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu should set the \"menu\" role on the overlay panel": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu should set the \"menuitem\" role on the items by default": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu should be able to set an alternate role on the menu items": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu should set the proper focus origin when opening by mouse": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu should set the proper focus origin when opening by touch": {
-    "error": "TypeError: Cannot read property '0' of null",
     "notes": "Unknown"
   },
   "MatMenu should close the menu when using the CloseScrollStrategy": {
     "error": "TypeError: Cannot read property 'openMenu' of undefined",
     "notes": "Unknown"
   },
-  "MatMenu should switch to keyboard focus when using the keyboard after opening using the mouse": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu lazy rendering should be able to render the menu content lazily": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu lazy rendering should focus the first menu item when opening a lazy menu via keyboard": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu lazy rendering should be able to open the same menu with a different context": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu positions should append mat-menu-before if the x position is changed": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu positions should append mat-menu-above if the y position is changed": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatMenu positions should default to the \"below\" and \"after\" positions": {
-    "error": "Error: Expected ng-tns-c50423-0 ng-trigger ng-trigger-transformMenu mat-menu-panel custom-one custom-two mat-menu-after ng-star-inserted mat-elevation-z4 mat-menu-above ng-animating to contain 'mat-menu-below'.",
-    "notes": "Unknown"
-  },
-  "MatMenu positions should be able to update the position after the first open": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu fallback positions should fall back to \"before\" mode if \"after\" mode would not fit on screen": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu fallback positions should fall back to \"above\" mode if \"below\" mode would not fit on screen": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu fallback positions should re-position menu on both axes if both defaults would not fit": {
-    "error": "TypeError: Cannot read property '0' of null",
+    "error": "Error: Expected ng-tns-c55711-0 ng-trigger ng-trigger-transformMenu mat-menu-panel custom-one custom-two mat-menu-after ng-star-inserted mat-elevation-z4 mat-menu-above ng-animating to contain 'mat-menu-below'.",
     "notes": "Unknown"
   },
   "MatMenu fallback positions should re-position a menu with custom position set": {
-    "error": "Error: Expected 717 to be 802, 'Expected menu to open in \"below\" position if \"above\" position wouldn't fit.'.",
+    "error": "Error: Expected 716 to be 798, 'Expected menu to open in \"below\" position if \"above\" position wouldn't fit.'.",
     "notes": "Unknown"
   },
   "MatMenu overlapping trigger explicitly overlapping positions the overlay below the trigger": {
-    "error": "Error: Expected 738 to be 781, 'Expected menu to open in default \"below\" position.'.",
+    "error": "Error: Expected 734 to be 780, 'Expected menu to open in default \"below\" position.'.",
     "notes": "Unknown"
   },
   "MatMenu overlapping trigger not overlapping positions the overlay below the trigger": {
-    "error": "Error: Expected 717 to be 802, 'Expected menu to open directly below the trigger.'.",
-    "notes": "Unknown"
-  },
-  "MatMenu overlapping trigger not overlapping supports above position fall back": {
-    "error": "TypeError: Cannot read property '0' of null",
+    "error": "Error: Expected 716 to be 798, 'Expected menu to open directly below the trigger.'.",
     "notes": "Unknown"
   },
   "MatMenu overlapping trigger not overlapping repositions the origin to be below, so the menu opens from the trigger": {
-    "error": "Error: Expected ng-tns-c50660-0 ng-trigger ng-trigger-transformMenu mat-menu-panel mat-menu-after ng-star-inserted mat-elevation-z4 mat-menu-above ng-animating to contain 'mat-menu-below'.",
+    "error": "Error: Expected ng-tns-c55948-0 ng-trigger ng-trigger-transformMenu mat-menu-panel mat-menu-after ng-star-inserted mat-elevation-z4 mat-menu-above ng-animating to contain 'mat-menu-below'.",
     "notes": "Unknown"
   },
   "MatMenu animations should enable ripples on items by default": {
@@ -3481,24 +2757,8 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'query' of undefined",
     "notes": "Unknown"
   },
-  "MatMenu close event should complete the callback when the menu is destroyed": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should set the `parentMenu` on the sub-menu instances": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should pass the layout direction the nested menus": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should emit an event when the hover state of the menu items changes": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatMenu nested menu should toggle a nested menu when its trigger is hovered": {
-    "error": "Error: Expected mat-menu-item mat-menu-item-submenu-trigger ng-tns-c50979-0 cdk-focused cdk-program-focused to contain 'mat-menu-item-highlighted', 'Expected the trigger to be highlighted'.",
+    "error": "Error: Expected mat-menu-item mat-menu-item-submenu-trigger ng-tns-c56267-0 cdk-focused cdk-program-focused to contain 'mat-menu-item-highlighted', 'Expected the trigger to be highlighted'.",
     "notes": "Unknown"
   },
   "MatMenu nested menu should close all the open sub-menus when the hover state is changed at the root": {
@@ -3513,64 +2773,8 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
     "notes": "Unknown"
   },
-  "MatMenu nested menu should open a nested menu when its trigger is clicked": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should open and close a nested menu with arrow keys in ltr": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should open and close a nested menu with the arrow keys in rtl": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should not do anything with the arrow keys for a top-level menu": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should shift focus between the sub-menus": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should position the sub-menu to the right edge of the trigger in ltr": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should fall back to aligning to the left edge of the trigger in ltr": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should position the sub-menu to the left edge of the trigger in rtl": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should fall back to aligning to the right edge of the trigger in rtl": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should set a class on the menu items that trigger a sub-menu": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should increase the sub-menu elevation based on its depth": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should update the elevation when the same menu is opened at a different depth": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should not increase the elevation if the user specified a custom one": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatMenu nested menu should toggle a nested menu when its trigger is added after init": {
     "error": "Error: Expected mat-menu-item mat-menu-item-submenu-trigger ng-star-inserted to contain 'mat-menu-item-highlighted', 'Expected the trigger to be highlighted'.",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should prevent the default mousedown action if the menu item opens a sub-menu": {
-    "error": "TypeError: Cannot read property '0' of null",
     "notes": "Unknown"
   },
   "MatMenu nested menu should handle the items being rendered in a repeater": {
@@ -3597,320 +2801,28 @@ window.testBlocklist = {
     "error": "Error: Expected 1 to be 2, 'Expected two open menus'.",
     "notes": "Unknown"
   },
-  "MatSelect core accessibility for select should close when pressing ALT + DOWN_ARROW": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for select should close when pressing ALT + UP_ARROW": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for select should not shift focus when the selected options are updated programmatically in a multi select": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for select should toggle the next option when pressing shift + DOWN_ARROW on a multi-select": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for select should toggle the previous option when pressing shift + UP_ARROW on a multi-select": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for select should set aria-activedescendant based on the focused option": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for select should not change the aria-activedescendant using the horizontal arrow keys": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for select should restore focus to the trigger after selecting an option in multi-select mode": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for options should set the role of mat-option to option": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for options should set aria-selected on each option": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for options should set the tabindex of each option according to disabled state": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for options should set aria-disabled for disabled options": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for option groups should set the appropriate role": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for option groups should set the `aria-labelledby` attribute": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core accessibility for option groups should set the `aria-disabled` attribute if the group is disabled": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatSelect core overlay panel should not throw when attempting to open too early": {
     "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'open' of undefined.",
-    "notes": "Unknown"
-  },
-  "MatSelect core overlay panel should open the panel when trigger is clicked": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core overlay panel should set the width of the overlay based on the trigger": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core overlay panel should focus the first option when pressing HOME": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core overlay panel should focus the last option when pressing END": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core overlay panel should be able to set extra classes on the panel": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core overlay panel should not show ripples if they were disabled": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core overlay panel should be able to render options inside groups with an ng-container": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core overlay panel should not consider itself as blurred if the trigger loses focus while the panel is still open": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core selection logic should focus the first option if no option is selected": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core selection logic should select an option when it is clicked": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core selection logic should be able to select an option using the MatOption API": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core selection logic should deselect other options when one is selected": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core selection logic should deselect other options when one is programmatically selected": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core selection logic should remove selection if option has been removed": {
-    "error": "TypeError: Cannot read property '1' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core selection logic should focus the selected option if an option is selected": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core selection logic should not select disabled options": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core selection logic should not select options inside a disabled group": {
-    "error": "TypeError: Cannot read property '0' of null",
     "notes": "Unknown"
   },
   "MatSelect core selection logic should handle accessing `optionSelectionChanges` before the options are initialized": {
     "error": "TypeError: Cannot read property 'options' of undefined",
     "notes": "Unknown"
   },
-  "MatSelect core forms integration should take an initial view value with reactive forms": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core forms integration should set the view value from the form": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core forms integration should clear the selection when a nonexistent option value is selected": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core forms integration should clear the selection when the control is reset": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core disabled behavior should disable itself when control is disabled programmatically": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core keyboard scrolling should not scroll to options that are completely in the view": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core keyboard scrolling should scroll down to the active option": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core keyboard scrolling should scroll up to the active option": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatSelect core keyboard scrolling should skip option group labels": {
     "error": "ObjectUnsubscribedError: object unsubscribed",
-    "notes": "Unknown"
-  },
-  "MatSelect core keyboard scrolling should scroll top the top when pressing HOME": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core keyboard scrolling should scroll to the bottom of the panel when pressing END": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect core keyboard scrolling should scroll to the active option when typing": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with a selectionChange event handler should emit an event when the selected option has changed": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with a selectionChange event handler should not emit multiple change events for the same option": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with ngModel should disable itself when control is disabled using the property": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with ngIf should handle nesting in an ngIf": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple mat-select elements in one view should set aria-owns properly": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple mat-select elements in one view should set the option id properly": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect when initially hidden should set the width of the overlay if the element was hidden initially": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with no placeholder should set the width of the overlay if there is no placeholder": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with theming should transfer the theme to the select panel": {
-    "error": "TypeError: Cannot read property '0' of null",
     "notes": "Unknown"
   },
   "MatSelect when the select's value is accessed on initialization should not throw when trying to access the selected value on init": {
     "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'selected' of undefined.",
     "notes": "Unknown"
   },
-  "MatSelect inside of a form group should notify that the state changed when the options have changed": {
-    "error": "TypeError: Cannot read property '1' of null",
-    "notes": "Unknown"
-  },
   "MatSelect with custom value accessor should support use inside a custom value accessor": {
     "error": "Error: <spyOn> : could not find an object to spy upon for writeValue()",
     "notes": "Unknown"
   },
-  "MatSelect with a falsy value should be able to programmatically select a falsy option": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatSelect with custom trigger should allow the user to customize the label": {
     "error": "TypeError: Cannot read property 'selected' of undefined",
-    "notes": "Unknown"
-  },
-  "MatSelect when reseting the value by setting null or undefined should not mark the reset option as selected ": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect without Angular forms should mark options as selected when the value is set": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect without Angular forms should reflect the preselected value": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect without Angular forms should be able to select multiple values": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with option centering disabled should not align the active option with the trigger if centering is disabled": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning ample space to open should align the first option with trigger text if no option is selected": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning ample space to open should align a selected option too high to be centered with the trigger text": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning ample space to open should align a selected option in the middle with the trigger text": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning ample space to open should align a selected option at the scroll max with the trigger text": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning ample space to open should account for preceding label groups when aligning the option": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning limited space to open vertically should adjust position of centered option if there is little space above": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning limited space to open vertically should adjust position of centered option if there is little space below": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning limited space to open vertically should fall back to \"above\" positioning if scroll adjustment will not help": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning limited space to open vertically should fall back to \"below\" positioning if scroll adjustment won't help": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning limited space to open horizontally should stay within the viewport when overflowing on the left in ltr": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning limited space to open horizontally should stay within the viewport when overflowing on the left in rtl": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning limited space to open horizontally should stay within the viewport when overflowing on the right in ltr": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning limited space to open horizontally should stay within the viewport when overflowing on the right in rtl": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning limited space to open horizontally should keep the position within the viewport on repeat openings": {
-    "error": "TypeError: Cannot read property '0' of null",
     "notes": "Unknown"
   },
   "MatSelect positioning when scrolled should align the first option properly when scrolled": {
@@ -3925,116 +2837,8 @@ window.testBlocklist = {
     "error": "Error: Expected false to be true, 'Expected trigger to align with option 4.'.",
     "notes": "Unknown"
   },
-  "MatSelect positioning when scrolled should fall back to \"above\" positioning properly when scrolled": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatSelect positioning when scrolled should fall back to \"below\" positioning properly when scrolled": {
-    "error": "Error: Expected 2563 to equal 2801.",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning x-axis positioning should align the trigger and the selected option on the x-axis in ltr": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning x-axis positioning should align the trigger and the selected option on the x-axis in rtl": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning x-axis positioning in multi select mode should adjust for the checkbox in ltr": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning x-axis positioning in multi select mode should adjust for the checkbox in rtl": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning x-axis positioning with groups should adjust for the group padding in ltr": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning x-axis positioning with groups should adjust for the group padding in rtl": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning x-axis positioning with groups should not adjust if all options are within a group, except the selected one": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning x-axis positioning with groups should align the first option to the trigger, if nothing is selected": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should be able to select multiple values": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should be able to toggle an option on and off": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should update the label": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should be able to set the selected value by taking an array": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should override the previously-selected value when setting an array": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should not close the panel when clicking on options": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should sort the selected options based on their order in the panel": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should sort the selected options in reverse in rtl": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should be able to customize the value sorting logic": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should sort the values that get set via the model based on the panel order": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should reverse sort the values, that get set via the model in rtl": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should pass the `multiple` value to all of the option instances": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should update the active item index on click": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should be to select an option with a `null` value": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should select all options when pressing ctrl + a": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should skip disabled options when using ctrl + a": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should select all options when pressing ctrl + a when some options are selected": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatSelect with multiple selection should deselect all options with ctrl + a if all options are selected": {
-    "error": "TypeError: Cannot read property '0' of null",
+    "error": "Error: Expected 2561 to equal 2799.",
     "notes": "Unknown"
   },
   "MatSnackBar should have the role of `alert` with an `assertive` politeness if no announcement message is provided": {
@@ -4229,82 +3033,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
-  "MatTooltip basic usage should be able to re-open a tooltip if it was closed by detaching the overlay": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should show with delay": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should be able to override the default show and hide delays": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should set a css class on the overlay panel element": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should not show if disabled": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should hide if disabled while visible": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should hide if the message is cleared while the tooltip is open": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should not show if hide is called before delay finishes": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should not follow through with hide if show is called after": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should be able to update the tooltip position while open": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should be able to modify the tooltip message": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should allow extra classes to be set on the tooltip": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should be removed after parent destroyed": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should not try to dispose the tooltip when destroyed and done hiding": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should pass the layout direction to the tooltip": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should keep the overlay direction in sync with the trigger direction": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should not hide immediately if a click fires while animating": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip basic usage should not hide the tooltip when calling `show` twice in a row": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatTooltip scrollable usage should execute the `hide` call, after scrolling away, inside the NgZone": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatTooltip with OnPush should show and hide the tooltip": {
     "error": "Error: Expected '' to be 'scale(1)'.",
     "notes": "Unknown"
@@ -4321,41 +3049,13 @@ window.testBlocklist = {
     "error": "Error: Expected 'none' to be falsy.",
     "notes": "Unknown"
   },
-  "MatCalendarHeader standard calendar should be in month view with specified month active": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendarHeader standard calendar should toggle view when period clicked": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendarHeader standard calendar should go to next and previous month": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatCalendarHeader standard calendar should go to previous and next year": {
     "error": "Error: Expected 'multi-year' to be 'year'.",
     "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
   },
-  "MatCalendarHeader standard calendar should go to previous and next multi-year range": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatCalendarHeader standard calendar should go back to month view after selecting year and month": {
     "error": "Error: Expected 'multi-year' to be 'year'.",
     "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
-  },
-  "MatCalendar standard calendar should update today's date": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendar standard calendar should be in month view with specified month active": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendar standard calendar should select date in month view": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
   },
   "MatCalendar standard calendar should emit the selected month on cell clicked in year view": {
     "error": "Error: Expected 'multi-year' to be 'year'.",
@@ -4363,34 +3063,6 @@ window.testBlocklist = {
   },
   "MatCalendar standard calendar should emit the selected year on cell clicked in multiyear view": {
     "error": "TypeError: Cannot read property 'getFullYear' of undefined",
-    "notes": "Unknown"
-  },
-  "MatCalendar standard calendar should re-render when the i18n labels have changed": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendar standard calendar should set all buttons to be `type=\"button\"`": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendar standard calendar should complete the stateChanges stream": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendar standard calendar a11y calendar body should initially set start date active": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendar standard calendar a11y calendar body should make the calendar body focusable": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendar standard calendar a11y calendar body should not move focus to the active cell on init": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendar standard calendar a11y calendar body should move focus to the active cell when the view changes": {
-    "error": "TypeError: Cannot read property '0' of null",
     "notes": "Unknown"
   },
   "MatCalendar standard calendar a11y calendar body year view should return to month view on enter": {
@@ -4409,28 +3081,12 @@ window.testBlocklist = {
     "error": "Error: Expected 'multi-year' to be 'year'.",
     "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
   },
-  "MatCalendar calendar with min and max date should clamp startAt value below min date": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendar calendar with min and max date should clamp startAt value above max date": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
   "MatCalendar calendar with min and max date should not go back past min date": {
     "error": "Error: Expected false to be true, 'previous button should be disabled'.",
     "notes": "Unknown"
   },
   "MatCalendar calendar with min and max date should not go forward past max date": {
     "error": "Error: Expected false to be true, 'next button should be disabled'.",
-    "notes": "Unknown"
-  },
-  "MatCalendar calendar with min and max date should re-render the month view when the minDate changes": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendar calendar with min and max date should re-render the month view when the maxDate changes": {
-    "error": "TypeError: Cannot read property '0' of null",
     "notes": "Unknown"
   },
   "MatCalendar calendar with min and max date should re-render the year view when the minDate changes": {
@@ -4451,14 +3107,6 @@ window.testBlocklist = {
   },
   "MatCalendar calendar with min and max date should update the minDate in the child view if it changed after an interaction": {
     "error": "Error: This PortalOutlet has already been disposed",
-    "notes": "Unknown"
-  },
-  "MatCalendar calendar with date filter should disable and prevent selection of filtered dates": {
-    "error": "TypeError: Cannot read property '0' of null",
-    "notes": "Unknown"
-  },
-  "MatCalendar calendar with date filter a11y should not allow selection of disabled date in month view": {
-    "error": "TypeError: Cannot read property '0' of null",
     "notes": "Unknown"
   },
   "MatCalendar calendar with date filter a11y should allow entering month view at disabled month": {
@@ -4597,6 +3245,10 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'viewContainer' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
+  "MatGridList should throw error if rowHeight ratio is invalid": {
+    "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
+    "notes": "Unknown"
+  },
   "MatSelectionList without forms with list option should restore focus if active option is destroyed": {
     "error": "Error: Expected -1 to be 3.",
     "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
@@ -4656,19 +3308,6 @@ window.testBlocklist = {
   "MatSelectionList with forms with custom compare function should use a custom comparator to determine which options are selected": {
     "error": "Error: Expected spy comparator to have been called.",
     "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "CdkDrag in a drop container should revert the element back to its parent after dragging with a custom preview has stopped": {
-    "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should not throw if the `touches` array is empty": {
-    "error": "Error: 1 timer(s) still in the queue.",
-    "notes": "Unknown"
-  },
-  "MatSelectionList with forms and ngModel should not dispatch the model change event if nothing changed using selectAll": {
-    "error": "Error: Expected spy model change spy to have been called once. It was called 0 times.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   }
-}
-
+};
 // clang-format on
