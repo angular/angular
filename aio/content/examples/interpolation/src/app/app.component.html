@@ -50,9 +50,10 @@
 
 <div (keyup)="0">
   <h4>Template context: template reference variables (#customerInput):</h4>
-  <label>Type something:
   <!-- #docregion template-reference-variable -->
-  <input #customerInput>{{customerInput.value}}</label>
+  <label>Type something:
+    <input #customerInput>{{customerInput.value}}
+  </label>
   <!-- #enddocregion template-reference-variable -->
 </div>
 
