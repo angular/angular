@@ -619,51 +619,51 @@ window.testBlocklist = {
   },
   "CdkDrag standalone draggable should enable native drag interactions when there is a drag handle": {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "Unknown"
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
   "CdkDrag draggable with a handle should not be able to drag the entire element if it has a handle": {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "Unknown"
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
   "CdkDrag draggable with a handle should be able to drag an element using its handle": {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "Unknown"
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
   "CdkDrag draggable with a handle should not be able to drag the element if the handle is disabled": {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "Unknown"
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
   "CdkDrag draggable with a handle should not be able to drag using the handle if the element is disabled": {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "Unknown"
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
   "CdkDrag draggable with a handle should be able to use a handle that was added after init": {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "Unknown"
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
   "CdkDrag draggable with a handle should be able to use more than one handle to drag the element": {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "Unknown"
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
   "CdkDrag draggable with a handle should be able to drag with a handle that is not a direct descendant": {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "Unknown"
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
   "CdkDrag draggable with a handle should disable the tap highlight while dragging via the handle": {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "Unknown"
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
   "CdkDrag draggable with a handle should preserve any existing `webkitTapHighlightColor`": {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "Unknown"
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
   "CdkDrag in a drop container should dispatch the `dropped` event when an item has been dropped": {
     "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should expose whether an item was dropped over a container": {
     "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should dispatch the `sorted` event as an item is being sorted": {
     "error": "TypeError: Cannot read property 'args' of undefined",
@@ -675,15 +675,15 @@ window.testBlocklist = {
   },
   "CdkDrag in a drop container should not move the original element from its initial DOM position": {
     "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should dispatch the `dropped` event in a horizontal drop zone": {
     "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should dispatch the correct `dropped` event in RTL horizontal drop zone": {
     "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should not move items in a horizontal list if pointer is too far away": {
     "error": "Error: Expected $.previousIndex = -1 to equal 0.",
@@ -691,23 +691,23 @@ window.testBlocklist = {
   },
   "CdkDrag in a drop container should remove the preview if its `transitionend` event timed out": {
     "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should emit the released event as soon as the item is released": {
     "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should reset immediately when failed drag happens after a successful one": {
     "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should not wait for transition that are not on the `transform` property": {
     "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should pick out the `transform` duration if multiple properties are being transitioned": {
     "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should move the placeholder as an item is being sorted down": {
     "error": "Error: Expected 0 to be 1.",
@@ -887,11 +887,11 @@ window.testBlocklist = {
   },
   "CdkTree flat tree with toggle should expand/collapse the node": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "CdkTree flat tree with toggle should expand/collapse the node recursively": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "CdkTree flat tree with array data source with the right data": {
     "error": "TypeError: Cannot read property '0' of null",
@@ -919,11 +919,11 @@ window.testBlocklist = {
   },
   "CdkTree nested tree with toggle should expand/collapse the node multiple times": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "CdkTree nested tree with toggle should expand/collapse the node recursively": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "CdkTree nested tree with trackBy should add/remove/move children nodes with reference-based trackBy": {
     "error": "Error: Expected 0 to be 3.",
@@ -1599,11 +1599,11 @@ window.testBlocklist = {
   },
   "MatTree flat tree with toggle should expand/collapse the node": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTree flat tree with toggle should expand/collapse the node recursively": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTree flat tree with undefined or null children should initialize with rendered dataNodes": {
     "error": "TypeError: Cannot read property 'classList' of undefined",
@@ -1619,11 +1619,11 @@ window.testBlocklist = {
   },
   "MatTree nested tree with toggle should expand/collapse the node": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTree nested tree with toggle should expand/collapse the node recursively": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatAccordion should ensure only one item is expanded at a time": {
     "error": "Error: NodeInjector: NOT_FOUND [MatExpansionPanel]",
@@ -2867,55 +2867,55 @@ window.testBlocklist = {
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should set `aria-haspopup` on the toggle button": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should open calendar when toggle clicked": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should not open calendar when toggle clicked if datepicker is disabled": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should not open calendar when toggle clicked if input is disabled": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should set the `button` type on the trigger to prevent form submissions": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should remove the underlying SVG icon from the tab order": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should restore focus to the toggle after the calendar is closed": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should re-render when the i18n labels change": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should toggle the active state of the datepicker toggle": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with custom mat-datepicker-toggle icon should be able to override the mat-datepicker-toggle icon": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with tabindex on mat-datepicker-toggle should forward the tabindex to the underlying button": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with tabindex on mat-datepicker-toggle should clear the tabindex from the mat-datepicker-toggle host": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with tabindex on mat-datepicker-toggle should forward focus to the underlying button when the host is focused": {
     "error": "TypeError: Cannot read property 'disabled' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker inside mat-form-field should pass the form field theme color to the overlay": {
     "error": "TypeError: Cannot read property 'classList' of null",
@@ -4335,7 +4335,7 @@ window.testBlocklist = {
   },
   "MatCalendarHeader standard calendar should go to previous and next year": {
     "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "Unknown"
+    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
   },
   "MatCalendarHeader standard calendar should go to previous and next multi-year range": {
     "error": "TypeError: Cannot read property '0' of null",
@@ -4343,7 +4343,7 @@ window.testBlocklist = {
   },
   "MatCalendarHeader standard calendar should go back to month view after selecting year and month": {
     "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "Unknown"
+    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
   },
   "MatCalendar standard calendar should update today's date": {
     "error": "TypeError: Cannot read property '0' of null",
@@ -4359,7 +4359,7 @@ window.testBlocklist = {
   },
   "MatCalendar standard calendar should emit the selected month on cell clicked in year view": {
     "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "Unknown"
+    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
   },
   "MatCalendar standard calendar should emit the selected year on cell clicked in multiyear view": {
     "error": "TypeError: Cannot read property 'getFullYear' of undefined",
@@ -4395,19 +4395,19 @@ window.testBlocklist = {
   },
   "MatCalendar standard calendar a11y calendar body year view should return to month view on enter": {
     "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "Unknown"
+    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
   },
   "MatCalendar standard calendar a11y calendar body year view should return to month view on space": {
     "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "Unknown"
+    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
   },
   "MatCalendar standard calendar a11y calendar body multi-year view should go to year view on enter": {
     "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "Unknown"
+    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
   },
   "MatCalendar standard calendar a11y calendar body multi-year view should go to year view on space": {
     "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "Unknown"
+    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
   },
   "MatCalendar calendar with min and max date should clamp startAt value below min date": {
     "error": "TypeError: Cannot read property '0' of null",
@@ -4463,7 +4463,7 @@ window.testBlocklist = {
   },
   "MatCalendar calendar with date filter a11y should allow entering month view at disabled month": {
     "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "Unknown"
+    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
   },
   "MatPaginator when navigating with the next and previous buttons should be able to go to the next page": {
     "error": "TypeError: Cannot read property 'pageIndex' of undefined",
@@ -4667,7 +4667,7 @@ window.testBlocklist = {
   },
   "MatSelectionList with forms and ngModel should not dispatch the model change event if nothing changed using selectAll": {
     "error": "Error: Expected spy model change spy to have been called once. It was called 0 times.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly",
+    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   }
 }
 
