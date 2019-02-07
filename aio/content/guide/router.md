@@ -896,11 +896,11 @@ Replace the contents of each component with the sample HTML below.
 
 <code-tabs>
 
-  <code-pane header="src/app/crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.html">
+  <code-pane header="src/app/crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.1.html">
 
   </code-pane>
 
-  <code-pane header="src/app/hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.html" region="template">
+  <code-pane header="src/app/hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.1.html" region="template">
 
   </code-pane>
 
@@ -972,7 +972,7 @@ Be sure it is the _last_ route in the configuration.
 
 To test this feature, add a button with a `RouterLink` to the `HeroListComponent` template and set the link to `"/sidekicks"`.
 
-<code-example path="router/src/app/hero-list/hero-list.component.html" linenums="false" header="src/app/hero-list/hero-list.component.html (excerpt)">
+<code-example path="router/src/app/hero-list/hero-list.component.1.html" linenums="false" header="src/app/hero-list/hero-list.component.html (excerpt)">
 
 </code-example>
 
@@ -1239,11 +1239,11 @@ Here are the files discussed in this milestone.
 
   </code-pane>
 
-  <code-pane header="hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.html">
+  <code-pane header="hero-list/hero-list.component.html" path="router/src/app/hero-list/hero-list.component.1.html">
 
   </code-pane>
 
-  <code-pane header="crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.html">
+  <code-pane header="crisis-list/crisis-list.component.html" path="router/src/app/crisis-list/crisis-list.component.1.html">
 
   </code-pane>
 
