@@ -5,7 +5,7 @@ set -x -u -e -o pipefail
 readonly currentDir=$(cd $(dirname $0); pwd)
 
 # Command arguments that will be passed to sauce-connect.
-sauceArgs=""
+sauceArgs="-vv --logfile /dev/stdout"
 
 if [[ ! -z "${SAUCE_READY_FILE}" ]]; then
   sauceArgs="${sauceArgs} --readyfile ${SAUCE_READY_FILE}"
