@@ -7,6 +7,7 @@
   "exclude": [
     "test.ts",
     "**/*.spec.ts",
+    "**/*.avoid.ts",
     "**/*.0.ts",
     "**/*.1.ts",
     "**/*.1b.ts",
