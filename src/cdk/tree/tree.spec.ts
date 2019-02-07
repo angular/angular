@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ComponentFixture, TestBed, fakeAsync, flush} from '@angular/core/testing';
-import {Component, ViewChild, TrackByFunction, Type} from '@angular/core';
+import {Component, ViewChild, TrackByFunction, Type, EventEmitter} from '@angular/core';
 
 import {CollectionViewer, DataSource} from '@angular/cdk/collections';
+import {Directionality, Direction} from '@angular/cdk/bidi';
 import {combineLatest, BehaviorSubject, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -27,10 +28,15 @@ describe('CdkTree', () => {
   let dataSource: FakeDataSource;
   let treeElement: HTMLElement;
   let tree: CdkTree<TestData>;
+  let dir: {value: Direction, change: EventEmitter<Direction>};
 
   function configureCdkTreeTestingModule(declarations: Type<any>[]) {
     TestBed.configureTestingModule({
       imports: [CdkTreeModule],
+      providers: [{
+        provide: Directionality,
+        useFactory: () => dir = {value: 'ltr', change: new EventEmitter<Direction>()}
+      }],
       declarations: declarations,
     }).compileComponents();
   }
@@ -129,6 +135,23 @@ describe('CdkTree', () => {
           [`${data[0].pizzaTopping} - ${data[0].pizzaCheese} + ${data[0].pizzaBase}`],
           [`${data[1].pizzaTopping} - ${data[1].pizzaCheese} + ${data[1].pizzaBase}`],
           [`${data[2].pizzaTopping} - ${data[2].pizzaCheese} + ${data[2].pizzaBase}`]);
+      });
+
+      it('should reset the opposite direction padding if the direction changes', () => {
+        const node = getNodes(treeElement)[0];
+
+        component.indent = 10;
+        fixture.detectChanges();
+
+        expect(node.style.paddingLeft).toBe('10px');
+        expect(node.style.paddingRight).toBeFalsy();
+
+        dir.value = 'rtl';
+        dir.change.emit('rtl');
+        fixture.detectChanges();
+
+        expect(node.style.paddingRight).toBe('10px');
+        expect(node.style.paddingLeft).toBeFalsy();
       });
 
     });
@@ -1011,8 +1034,8 @@ class FakeDataSource extends DataSource<TestData> {
   }
 }
 
-function getNodes(treeElement: Element): Element[] {
-  return [].slice.call(treeElement.querySelectorAll('.cdk-tree-node'))!;
+function getNodes(treeElement: Element): HTMLElement[] {
+  return Array.from(treeElement.querySelectorAll('.cdk-tree-node'));
 }
 
 function expectFlatTreeToMatch(treeElement: Element,

@@ -67,8 +67,8 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
               private _element: ElementRef<HTMLElement>,
               @Optional() private _dir: Directionality) {
     this._setPadding();
-    if (this._dir) {
-      this._dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => this._setPadding());
+    if (_dir) {
+      _dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => this._setPadding());
     }
   }
 
@@ -87,9 +87,12 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
   }
 
   _setPadding() {
+    const element = this._element.nativeElement;
     const padding = this._paddingIndent();
     const paddingProp = this._dir && this._dir.value === 'rtl' ? 'paddingRight' : 'paddingLeft';
+    const resetProp = paddingProp === 'paddingLeft' ? 'paddingRight' : 'paddingLeft';
 
-    this._renderer.setStyle(this._element.nativeElement, paddingProp, padding);
+    this._renderer.setStyle(element, paddingProp, padding);
+    this._renderer.setStyle(element, resetProp, '');
   }
 }

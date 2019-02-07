@@ -26,6 +26,7 @@ ng_test_library(
     "@rxjs",
     "@rxjs//operators",
     "//src/cdk/collections",
+    "//src/cdk/bidi",
     ":tree",
   ],
 )
