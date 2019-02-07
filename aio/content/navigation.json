@@ -440,6 +440,11 @@
               "tooltip": "Enabling the service worker in a CLI project and observing behavior in the browser."
             },
             {
+              "url": "guide/app-shell",
+              "title": "App Shell",
+              "tooltip": "Enabling the App Shell in a CLI project."
+            },
+            {
               "url": "guide/service-worker-communications",
               "title": "Service Worker Communication",
               "tooltip": "Services that enable you to interact with an Angular service worker."
