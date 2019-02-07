@@ -11,8 +11,6 @@ export declare function MAT_PAGINATOR_INTL_PROVIDER_FACTORY(parentIntl: MatPagin
 export declare class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy, CanDisable, HasInitialized {
     _displayedPageSizeOptions: number[];
     _intl: MatPaginatorIntl;
-    _length: number;
-    _pageIndex: number;
     color: ThemePalette;
     hidePageSize: boolean;
     length: number;

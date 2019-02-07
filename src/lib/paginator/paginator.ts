@@ -93,7 +93,7 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
     this._pageIndex = Math.max(coerceNumberProperty(value), 0);
     this._changeDetectorRef.markForCheck();
   }
-  _pageIndex: number = 0;
+  private _pageIndex = 0;
 
   /** The length of the total number of items that are being paginated. Defaulted to 0. */
   @Input()
@@ -102,7 +102,7 @@ export class MatPaginator extends _MatPaginatorBase implements OnInit, OnDestroy
     this._length = coerceNumberProperty(value);
     this._changeDetectorRef.markForCheck();
   }
-  _length: number = 0;
+  private _length = 0;
 
   /** Number of items to display on a page. By default set to 50. */
   @Input()
