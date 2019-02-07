@@ -304,12 +304,6 @@ export interface TNode {
    */
   parent: TElementNode|TContainerNode|null;
 
-  /**
-   * If this node is part of an i18n block, it indicates whether this node is part of the DOM.
-   * If this node is not part of an i18n block, this field is null.
-   */
-  detached: boolean|null;
-
   stylingTemplate: StylingContext|null;
   /**
    * List of projected TNodes for a given component host element OR index into the said nodes.

@@ -264,13 +264,13 @@ export function createContainerRef(
 
       remove(index?: number): void {
         const adjustedIdx = this._adjustIndex(index, -1);
-        removeView(this._lContainer, this._hostTNode, adjustedIdx);
+        removeView(this._lContainer, adjustedIdx);
         this._viewRefs.splice(adjustedIdx, 1);
       }
 
       detach(index?: number): viewEngine_ViewRef|null {
         const adjustedIdx = this._adjustIndex(index, -1);
-        const view = detachView(this._lContainer, adjustedIdx, !!this._hostTNode.detached);
+        const view = detachView(this._lContainer, adjustedIdx);
         const wasDetached = this._viewRefs.splice(adjustedIdx, 1)[0] != null;
         return wasDetached ? new ViewRef(view, view[CONTEXT], view[CONTAINER_INDEX]) : null;
       }
