@@ -1771,7 +1771,7 @@ describe('Runtime i18n', () => {
             selectors: [['parent']],
             directives: [Child],
             factory: () => new Parent(),
-            consts: 2,
+            consts: 3,
             vars: 0,
             template: (rf: RenderFlags, cmp: Parent) => {
               if (rf & RenderFlags.Create) {
