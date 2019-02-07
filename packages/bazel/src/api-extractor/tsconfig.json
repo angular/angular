@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "lib": [
+      "es2017"
+    ],
+    "types": [
+      "node"
+    ]
+  }
+}

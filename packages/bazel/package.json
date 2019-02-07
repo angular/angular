@@ -16,6 +16,7 @@
     "@angular-devkit/core": "^7.0.4",
     "@angular-devkit/schematics": "^7.3.0-rc.0",
     "@bazel/typescript": "^0.23.2",
+    "@microsoft/api-extractor": "^7.0.11",
     "@schematics/angular": "^7.0.4",
     "@types/node": "6.0.84",
     "semver": "^5.6.0",
