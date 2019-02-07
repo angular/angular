@@ -91,8 +91,19 @@ export class GitClient {
   }
 
   /** Pushes the specified tag to the remote git repository. */
-  pushTagToRemote(tagName: string): boolean {
-    return this._spawnGitProcess(['push', this.remoteGitUrl, `refs/tags/${tagName}`]).status === 0;
+  pushTagToRemote(tagName: string, remoteName: string = this.remoteGitUrl): boolean {
+    return this._spawnGitProcess(['push', remoteName, `refs/tags/${tagName}`]).status === 0;
+  }
+
+  /** Checks whether the given remote has been set up. */
+  hasRemote(remoteName: string): boolean {
+    return this._spawnGitProcess(['remote', 'get-url', remoteName], false).status == 0;
+  }
+
+  /** Gets a list of all available remotes set up. */
+  getAvailableRemotes(): string[] {
+    // Note that "git" always uses a line feed for new lines.
+    return this._spawnGitProcess(['remote']).stdout.trim().split('\n');
   }
 }
 

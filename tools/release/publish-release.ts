@@ -9,6 +9,7 @@ import {GitClient} from './git/git-client';
 import {getGithubNewReleaseUrl} from './git/github-urls';
 import {isNpmAuthenticated, runInteractiveNpmLogin, runNpmPublish} from './npm/npm-client';
 import {promptForNpmDistTag} from './prompt/npm-dist-tag-prompt';
+import {promptForUpstreamRemote} from './prompt/upstream-remote-prompt';
 import {releasePackages} from './release-output/release-packages';
 import {CHANGELOG_FILE_NAME} from './stage-release';
 import {parseVersionName, Version} from './version-name/parse-version';
@@ -76,6 +77,7 @@ class PublishReleaseTask extends BaseReleaseTask {
     this.verifyLastCommitVersionBump();
     this.verifyLocalCommitsMatchUpstream(publishBranch);
 
+    const upstreamRemote = await this.getProjectUpstreamRemote();
     const npmDistTag = await promptForNpmDistTag(newVersion);
 
     // In case the user wants to publish a stable version to the "next" npm tag, we want
@@ -101,7 +103,7 @@ class PublishReleaseTask extends BaseReleaseTask {
 
     // Create and push the release tag before publishing to NPM.
     this.createReleaseTag(newVersionName, releaseNotes);
-    this.pushReleaseTag(newVersionName);
+    this.pushReleaseTag(newVersionName, upstreamRemote);
 
     // Ensure that we are authenticated before running "npm publish" for each package.
     this.checkNpmAuthentication();
@@ -250,7 +252,7 @@ class PublishReleaseTask extends BaseReleaseTask {
   }
 
   /** Pushes the release tag to the remote repository. */
-  private pushReleaseTag(tagName: string) {
+  private pushReleaseTag(tagName: string, upstreamRemote: string) {
     const remoteTagSha = this.git.getShaOfRemoteTag(tagName);
     const expectedSha = this.git.getLocalCommitSha('HEAD');
 
@@ -267,14 +269,26 @@ class PublishReleaseTask extends BaseReleaseTask {
       return;
     }
 
-    if (!this.git.pushTagToRemote(tagName)) {
-      console.error(red(`  ✘   Could not push the "${tagName} "tag upstream.`));
+    if (!this.git.pushTagToRemote(tagName, upstreamRemote)) {
+      console.error(red(`  ✘   Could not push the "${tagName}" tag upstream.`));
       console.error(red(`      Please make sure you have permission to push to the ` +
         `"${this.git.remoteGitUrl}" remote.`));
       process.exit(1);
     }
 
     console.info(green(`  ✓   Pushed release tag upstream.`));
+  }
+
+  /**
+   * Determines the name of the Git remote that is used for pushing changes
+   * upstream to github.
+   */
+  private async getProjectUpstreamRemote() {
+    const remoteName = this.git.hasRemote('upstream') ?
+        'upstream' : await promptForUpstreamRemote(this.git.getAvailableRemotes());
+
+    console.info(green(`  ✓   Using the "${remoteName}" remote for pushing changes upstream.`));
+    return remoteName;
   }
 }
 
