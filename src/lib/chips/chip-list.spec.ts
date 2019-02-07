@@ -197,8 +197,8 @@ describe('MatChipList', () => {
           // Focus the middle item
           midItem.focus();
 
-          // Destroy the middle item
-          testComponent.remove = 2;
+          // Remove the middle item
+          testComponent.items.splice(2, 1);
           fixture.detectChanges();
 
           // It focuses the 4th item (now at index 2)
@@ -213,8 +213,8 @@ describe('MatChipList', () => {
           // Focus the last item
           lastItem.focus();
 
-          // Destroy the last item
-          testComponent.remove = lastIndex;
+          // Remove the last item
+          testComponent.items.splice(lastIndex, 1);
           fixture.detectChanges();
 
           // It focuses the next-to-last item
@@ -230,8 +230,8 @@ describe('MatChipList', () => {
           midItem._blur();
           zone.simulateZoneExit();
 
-          // Destroy the middle item
-          testComponent.remove = 2;
+          // Remove the middle item
+          testComponent.items.splice(2, 1);
           fixture.detectChanges();
 
           // Should not have focus
@@ -1322,20 +1322,17 @@ describe('MatChipList', () => {
 @Component({
   template: `
     <mat-chip-list [tabIndex]="tabIndex" [selectable]="selectable">
-      <div *ngFor="let i of items">
-       <div *ngIf="remove != i">
-          <mat-chip (select)="chipSelect(i)" (deselect)="chipDeselect(i)">
-            {{name}} {{i + 1}}
-          </mat-chip>
-        </div>
-      </div>
+      <mat-chip *ngFor="let i of items"
+                (select)="chipSelect(i)"
+                (deselect)="chipDeselect(i)">
+        {{name}} {{i + 1}}
+      </mat-chip>
     </mat-chip-list>`
 })
 class StandardChipList {
   items = [0, 1, 2, 3, 4];
   name: string = 'Test';
   selectable: boolean = true;
-  remove: number;
   chipSelect: (index?: number) => void = () => {};
   chipDeselect: (index?: number) => void = () => {};
   tabIndex: number = 0;
@@ -1594,12 +1591,10 @@ class StandardChipListWithAnimations {
   template: `
     <mat-form-field>
       <mat-chip-list>
-        <div *ngFor="let i of chips">
-          <mat-chip [value]="i" (removed)="removeChip($event)">
-            Chip {{i + 1}}
-            <span matChipRemove>Remove</span>
-          </mat-chip>
-        </div>
+        <mat-chip *ngFor="let i of chips" [value]="i" (removed)="removeChip($event)">
+          Chip {{i + 1}}
+          <span matChipRemove>Remove</span>
+        </mat-chip>
       </mat-chip-list>
     </mat-form-field>
   `
