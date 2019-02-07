@@ -21,7 +21,7 @@ import {ImportRewriter, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewri
 import {PartialEvaluator} from './partial_evaluator';
 import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
-import {NgModuleRouteAnalyzer} from './routing';
+import {NgModuleRouteAnalyzer, entryPointKeyFor} from './routing';
 import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
@@ -191,6 +191,28 @@ export class NgtscProgram implements api.Program {
   }
 
   listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
+    if (entryRoute) {
+      // Note:
+      // This resolution step is here to match the implementation of the old `AotCompilerHost` (see
+      // https://github.com/angular/angular/blob/50732e156/packages/compiler-cli/src/transformers/compiler_host.ts#L175-L188).
+      //
+      // `@angular/cli` will always call this API with an absolute path, so the resolution step is
+      // not necessary, but keeping it backwards compatible in case someone else is using the API.
+
+      if (entryRoute.startsWith('.')) {
+        throw new Error('Resolution of relative paths is not supported.');
+      }
+
+      // Any containing file gives the same result for absolute entry path.
+      const containingFile = this.tsProgram.getRootFileNames()[0];
+      const [entryPath, moduleName] = entryRoute.split('#');
+      const resolved = ts.resolveModuleName(entryPath, containingFile, this.options, this.host);
+
+      if (resolved.resolvedModule) {
+        entryRoute = entryPointKeyFor(resolved.resolvedModule.resolvedFileName, moduleName);
+      }
+    }
+
     this.ensureAnalyzed();
     return this.routeAnalyzer !.listLazyRoutes(entryRoute);
   }

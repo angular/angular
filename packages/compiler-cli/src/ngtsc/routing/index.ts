@@ -9,3 +9,4 @@
 /// <reference types="node" />
 
 export {LazyRoute, NgModuleRouteAnalyzer} from './src/analyzer';
+export {entryPointKeyFor} from './src/route';
