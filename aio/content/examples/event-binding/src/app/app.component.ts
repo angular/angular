@@ -11,7 +11,7 @@ export class AppComponent {
   currentItem = { name: 'teapot'} ;
   clickMessage = '';
 
-  onSave(event: KeyboardEvent) {
+  onSave(event?: KeyboardEvent) {
     const evtMsg = event ? ' Event target is ' + (<HTMLElement>event.target).textContent : '';
     alert('Saved.' + evtMsg);
     if (event) { event.stopPropagation(); }
@@ -21,7 +21,7 @@ export class AppComponent {
     alert(`Delete the ${item}.`);
   }
 
-  onClickMe(event: KeyboardEvent) {
+  onClickMe(event?: KeyboardEvent) {
     const evtMsg = event ? ' Event target class is ' + (<HTMLElement>event.target).className  : '';
     alert('Click me.' + evtMsg);
   }
