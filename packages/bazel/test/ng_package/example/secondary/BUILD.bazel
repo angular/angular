@@ -5,6 +5,7 @@ load("//tools:defaults.bzl", "ng_module")
 ng_module(
     name = "secondary",
     srcs = glob(["*.ts"]),
+    bundle_dts = True,
     module_name = "example/secondary",
     deps = [
         "//packages/core",
