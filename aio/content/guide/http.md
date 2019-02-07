@@ -91,20 +91,20 @@ the component, even in simple cases like this one.
 
 ### Typed response
 
-The subscribe callback above requires a bracket notation to extract the data values.
+The subscribe callback above requires bracket notation to extract the data values.
 
 <code-example
   path="http/src/app/config/config.component.ts"
   region="v1_callback" linenums="false">
 </code-example>
 
-You can't acces `heroesUrl` proplery with `data.heroesUrl` because TypeScript correctly complains that the `data` object from the service does not have a `heroesUrl` property. The `HttpClient.get()` method parses the JSON server response into the anonymous `Object` type. It doesn't know what properties the object has.
+You can't access the `heroesUrl` properly with `data.heroesUrl` because TypeScript correctly complains that the `data` object from the service does not have a `heroesUrl` property. The `HttpClient.get()` method parses the JSON server response into the anonymous `Object` type. It doesn't know what properties the object has.
 
-However, you can tell `HTTPClient` the type of the response object, to make consuming the output easier and more obvious. Specifying the type also acts as a type assertion during the compile time.
+However, you can structure your `HttpClient` request to include the type of the response object, to make consuming the output easier and more obvious. Specifying the response type acts as a type assertion during the compile time.
 
 <div class="alert is-important">
 
-Note that specifying the response object type is a way to tell compiler about the type of the response value, not a way to type cast the response from the server. If you have to convert the object you get from the JSON to the required response type, you need to explicitly do so.
+Note that specifying the response object type is a way to tell the Typescript compiler about the response type, not a way to type cast the response from the server. If you have to convert the object you get from the JSON to the required response type, you need to explicitly do so.
 </div>
 
 To specify the respose object type:
@@ -120,7 +120,7 @@ Then, specify that interface as the `HttpClient.get()` call's type parameter in 
 
 <div class="alert is-important">
 
- When you pass an interface or a class as a type parameter to `HttpCLient.get` method, use the `RxJS` `map` operator to read the response data. Angular only performs JSON.parse of the response it doesn't instantiate an object of the type parameter.
+ When you pass an interface or a class as a type parameter to `HttpClient.get` method, use the `RxJS` `map` operator to read the response data. Angular only performs JSON.parse of the response; it doesn't instantiate an object of the type parameter.
 </div>
 
 <code-example
@@ -168,16 +168,16 @@ Apps can use the Angular JSONP request as a workaround to make cross-domain `GET
 
 An application makes a JSONP request by passing along a callback function that tells the server
 to wrap the response in that function. Angular JSONP request returns an Observable. Follow the pattern for subscribing to observables and use the RxJS `map` property to manipulate the results.
-You can also use the async pipe to manage the results.
+You can also use the [async pipe](api/common/AsyncPipe) to manage the results.
 
 <div class="alert is-important">
 
 Use JSONP requests only with APIs that support JSONP, as the server needs to respond with the JSONP callback method.
 
-JSONP requests only works for `GET` requests, it doesn’t work for PUT/POST/DELETE and so on.
+JSONP requests only work for `GET` requests, they do not work for PUT/POST/DELETE and so on.
 </div>
 
-In Angular, use JSONP by importing the `JsonpModule` to the `NgModule` imports. Here is a `searchHeroes` method that queries for heroes whose names contain the search term using the JSONP request.
+In Angular, use JSONP by importing the `HttpClientJsonpModule` to the `NgModule` imports. Here is a `searchHeroes` method that queries for heroes whose names contain the search term using the JSONP request.
 
 Here we pass the `heroesURL` as the first parameter and callback function name as the second parameter. The response is wrapped in the callback function. We take the Observables returned by the JSONP method and pipe them through to the error handler.
 
@@ -467,7 +467,7 @@ in order to initiate the request.
 
 We have discussed the basic HTTP functionality in `@angular/common/http`, but sometimes you need to do more than make simple requests and get data back.
 
-### Http interceptors
+### HTTP interceptors
 
 _HTTP Interception_ is a major feature of `@angular/common/http`.
 With interception, you declare _interceptors_ that inspect and transform HTTP requests from your application to the server.
@@ -799,9 +799,9 @@ passing an options object (`httpOptions`) to its save methods.
 You can do more.
 
 
-#### URL Parameters
+#### URL query strings
 
-In this section, you will see how to use the `HTTPParams` class to add URL parameters in your `HttpRequest`.
+In this section, you will see how to use the `HttpParams` class to add URL query strings in your `HttpRequest`.
 
 Here is a `searchHeroes` method that queries for heroes whose names contain the search term.
 
