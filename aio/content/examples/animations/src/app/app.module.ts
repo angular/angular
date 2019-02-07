@@ -19,6 +19,7 @@ import { HeroListAutoCalcPageComponent } from './hero-list-auto-page.component';
 import { HeroListAutoComponent } from './hero-list-auto.component';
 import { HomeComponent } from './home.component';
 import { AboutComponent } from './about.component';
+import { InsertRemoveComponent } from './insert-remove.component';
 
 
 @NgModule({
@@ -56,6 +57,7 @@ import { AboutComponent } from './about.component';
     HeroListAutoCalcPageComponent,
     HeroListAutoComponent,
     HomeComponent,
+    InsertRemoveComponent,
     AboutComponent
   ],
   bootstrap: [AppComponent]
