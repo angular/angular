@@ -854,9 +854,6 @@ function removeNode(index: number, viewData: LView) {
     nativeRemoveNode(viewData[RENDERER], removedPhRNode);
   }
 
-  removedPhTNode.detached = true;
-  ngDevMode && ngDevMode.rendererRemoveNode++;
-
   const slotValue = load(index) as RElement | RComment | LContainer | StylingContext;
   if (isLContainer(slotValue)) {
     const lContainer = slotValue as LContainer;
@@ -864,6 +861,8 @@ function removeNode(index: number, viewData: LView) {
       nativeRemoveNode(viewData[RENDERER], lContainer[NATIVE]);
     }
   }
+
+  ngDevMode && ngDevMode.rendererRemoveNode++;
 }
 
 /**
