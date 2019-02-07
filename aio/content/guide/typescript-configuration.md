@@ -34,7 +34,21 @@ For details about `tsconfig.json`, see the official
 
 The [Setup](guide/setup) guide uses the following `tsconfig.json`:
 
-<code-example path="quickstart/src/tsconfig.1.json" header="tsconfig.json" linenums="false"></code-example>
+<code-example lang="json" header="tsconfig.json" linenums="false">
+  {
+    "compilerOptions": {
+      "target": "es5",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "sourceMap": true,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "lib": [ "es2015", "dom" ],
+      "noImplicitAny": true,
+      "suppressImplicitAnyIndexErrors": true
+    }
+  }
+</code-example>
 
 This file contains options and flags that are essential for Angular applications.
 
