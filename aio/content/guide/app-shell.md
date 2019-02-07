@@ -9,22 +9,25 @@ Learn more in [The App Shell Model](https://developers.google.com/web/fundamenta
 
 ## Step 1: Prepare the application
 
-An application must be set up with routing. This can be accomplished by running:
+You can do this with the following CLI command:
 <code-example format="." language="bash" linenums="false">
 ng new my-app --routing
 </code-example>
 
-Or if you have an existing application you can manually add routing by including the RouterModule and defining a `<router-outlet>` within your application.
+For an existing application, you have to manually add the `RouterModule` and defining a `<router-outlet>` within your application.
 
 ## Step 2: Create the app shell
+
+Use the CLI to automatically create the app shell.
 
 <code-example format="." language="bash" linenums="false">
 ng generate app-shell --client-project my-app --universal-project server-app
 </code-example>
 
-`my-app` is the name of your client application server-app is the name of the universal (or server) application.
+* `my-app` takes the name of your client application.
+* `server-app` takes the name of the Universal (or server) application.
 
-After running this command you will notice that the angular.json configuration file has been updated. Two new targets were added (and a few other changes):
+After running this command you will notice that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
 
 <code-example format="." language="none" linenums="false">
 "server": {
@@ -46,10 +49,11 @@ After running this command you will notice that the angular.json configuration f
 </code-example>
 
 ## Step 3: Verify the app is built with the shell content
-Build with the app shell target.
+
+Use the CLI to build the `app-shell` target.
 
 <code-example format="." language="bash" linenums="false">
 ng run my-app:app-shell
 </code-example>
 
-Verify the build output by openning `dist/my-app/index.html` look for text `app-shell works!` which verifies that the app shell route was rendered as part of the output.
+To verify the build output, open `dist/my-app/index.html`. Look for default text `app-shell works!` to show that the app shell route was rendered as part of the output.
