@@ -461,6 +461,25 @@ describe('CdkDrag', () => {
       expect(element.classList).not.toContain('cdk-drag-dragging');
     }));
 
+    it('should add a class while an element is being dragged with OnPush change detection',
+      fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggableWithOnPush);
+        fixture.detectChanges();
+
+        const element = fixture.componentInstance.dragElement.nativeElement;
+
+        expect(element.classList).not.toContain('cdk-drag-dragging');
+
+        startDraggingViaMouse(fixture, element);
+
+        expect(element.classList).toContain('cdk-drag-dragging');
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+
+        expect(element.classList).not.toContain('cdk-drag-dragging');
+      }));
+
     it('should not add a class if item was not dragged more than the threshold', fakeAsync(() => {
       const fixture = createComponent(StandaloneDraggable, [], 5);
       fixture.detectChanges();
@@ -2828,6 +2847,17 @@ class StandaloneDraggable {
   endedSpy = jasmine.createSpy('ended spy');
   releasedSpy = jasmine.createSpy('released spy');
   boundarySelector: string;
+}
+
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <div cdkDrag #dragElement style="width: 100px; height: 100px; background: red;"></div>
+  `
+})
+class StandaloneDraggableWithOnPush {
+  @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
+  @ViewChild(CdkDrag) dragInstance: CdkDrag;
 }
 
 @Component({

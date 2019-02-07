@@ -28,6 +28,7 @@ import {
   ViewContainerRef,
   OnChanges,
   SimpleChanges,
+  ChangeDetectorRef,
 } from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Observable, Observer, Subject, merge} from 'rxjs';
@@ -175,11 +176,12 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     @Optional() private _dir: Directionality,
 
     /**
-     * @deprecated `viewportRuler` and `dragDropRegistry` parameters
+     * @deprecated `viewportRuler`, `dragDropRegistry` and `_changeDetectorRef` parameters
      * to be removed. Also `dragDrop` parameter to be made required.
      * @breaking-change 8.0.0.
      */
-    dragDrop?: DragDrop) {
+    dragDrop?: DragDrop,
+    private _changeDetectorRef?: ChangeDetectorRef) {
 
 
     // @breaking-change 8.0.0 Remove null check once the paramter is made required.
@@ -192,7 +194,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
 
     this._dragRef.data = this;
     this._syncInputs(this._dragRef);
-    this._proxyEvents(this._dragRef);
+    this._handleEvents(this._dragRef);
   }
 
   /**
@@ -313,13 +315,17 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     });
   }
 
-  /**
-   * Proxies the events from a DragRef to events that
-   * match the interfaces of the CdkDrag outputs.
-   */
-  private _proxyEvents(ref: DragRef<CdkDrag<T>>) {
+  /** Handles the events from the underlying `DragRef`. */
+  private _handleEvents(ref: DragRef<CdkDrag<T>>) {
     ref.started.subscribe(() => {
       this.started.emit({source: this});
+
+      // Since all of these events run outside of change detection,
+      // we need to ensure that everything is marked correctly.
+      if (this._changeDetectorRef) {
+        // @breaking-change 8.0.0 Remove null check for _changeDetectorRef
+        this._changeDetectorRef.markForCheck();
+      }
     });
 
     ref.released.subscribe(() => {
@@ -328,6 +334,13 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
 
     ref.ended.subscribe(() => {
       this.ended.emit({source: this});
+
+      // Since all of these events run outside of change detection,
+      // we need to ensure that everything is marked correctly.
+      if (this._changeDetectorRef) {
+        // @breaking-change 8.0.0 Remove null check for _changeDetectorRef
+        this._changeDetectorRef.markForCheck();
+      }
     });
 
     ref.entered.subscribe(event => {

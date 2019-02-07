@@ -28,7 +28,7 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDes
     constructor(
     element: ElementRef<HTMLElement>,
     dropContainer: CdkDropList, _document: any, _ngZone: NgZone, _viewContainerRef: ViewContainerRef, viewportRuler: ViewportRuler, dragDropRegistry: DragDropRegistry<DragRef, DropListRef>, config: DragRefConfig, _dir: Directionality,
-    dragDrop?: DragDrop);
+    dragDrop?: DragDrop, _changeDetectorRef?: ChangeDetectorRef | undefined);
     getPlaceholderElement(): HTMLElement;
     getRootElement(): HTMLElement;
     ngAfterViewInit(): void;
