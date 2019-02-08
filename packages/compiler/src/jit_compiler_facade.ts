@@ -12,10 +12,11 @@ import {ConstantPool} from './constant_pool';
 import {HostBinding, HostListener, Input, Output, Type} from './core';
 import {compileInjectable} from './injectable_compiler_2';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config';
-import {Expression, LiteralExpr, WrappedNodeExpr} from './output/output_ast';
+import {DeclareVarStmt, Expression, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
+import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
 import {R3DependencyMetadata, R3ResolvedDependencyType} from './render3/r3_factory';
-import {jitExpression} from './render3/r3_jit';
+import {R3JitReflector} from './render3/r3_jit';
 import {R3InjectorMetadata, R3NgModuleMetadata, compileInjector, compileNgModule} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata} from './render3/r3_pipe_compiler';
 import {R3Reference} from './render3/util';
@@ -27,6 +28,7 @@ import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 export class CompilerFacadeImpl implements CompilerFacade {
   R3ResolvedDependencyType = R3ResolvedDependencyType as any;
   private elementSchemaRegistry = new DomElementSchemaRegistry();
+  private jitEvaluator = new JitEvaluator();
 
   compilePipe(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, facade: R3PipeMetadataFacade):
       any {
@@ -37,7 +39,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       pipeName: facade.pipeName,
       pure: facade.pure,
     });
-    return jitExpression(res.expression, angularCoreEnv, sourceMapUrl, res.statements);
+    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, res.statements);
   }
 
   compileInjectable(
@@ -56,7 +58,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       userDeps: convertR3DependencyMetadataArray(facade.userDeps) || undefined,
     });
 
-    return jitExpression(expression, angularCoreEnv, sourceMapUrl, statements);
+    return this.jitExpression(expression, angularCoreEnv, sourceMapUrl, statements);
   }
 
   compileInjector(
@@ -70,7 +72,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       imports: new WrappedNodeExpr(facade.imports),
     };
     const res = compileInjector(meta);
-    return jitExpression(res.expression, angularCoreEnv, sourceMapUrl, res.statements);
+    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, res.statements);
   }
 
   compileNgModule(
@@ -85,7 +87,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       emitInline: true,
     };
     const res = compileNgModule(meta);
-    return jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []);
+    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []);
   }
 
   compileDirective(
@@ -97,7 +99,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const meta: R3DirectiveMetadata = convertDirectiveFacadeToMetadata(facade);
     const res = compileDirectiveFromMetadata(meta, constantPool, bindingParser);
     const preStatements = [...constantPool.statements, ...res.statements];
-    return jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
+    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
   }
 
   compileComponent(
@@ -140,12 +142,37 @@ export class CompilerFacadeImpl implements CompilerFacade {
         },
         constantPool, makeBindingParser(interpolationConfig));
     const preStatements = [...constantPool.statements, ...res.statements];
-
-    return jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
+    return this.jitExpression(
+        res.expression, angularCoreEnv, sourceMapUrl, preStatements);
   }
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan {
     return r3JitTypeSourceSpan(kind, typeName, sourceUrl);
+  }
+
+  /**
+   * JIT compiles an expression and returns the result of executing that expression.
+   *
+   * @param def the definition which will be compiled and executed to get the value to patch
+   * @param context an object map of @angular/core symbol names to symbols which will be available
+   * in the context of the compiled expression
+   * @param sourceUrl a URL to use for the source map of the compiled expression
+   * @param preStatements a collection of statements that should be evaluated before the expression.
+   */
+  private jitExpression(
+      def: Expression, context: {[key: string]: any}, sourceUrl: string,
+      preStatements: Statement[]): any {
+    // The ConstantPool may contain Statements which declare variables used in the final expression.
+    // Therefore, its statements need to precede the actual JIT operation. The final statement is a
+    // declaration of $def which is set to the expression being compiled.
+    const statements: Statement[] = [
+      ...preStatements,
+      new DeclareVarStmt('$def', def, undefined, [StmtModifier.Exported]),
+    ];
+
+    const res = this.jitEvaluator.evaluateStatements(
+        sourceUrl, statements, new R3JitReflector(context), /* enableSourceMaps */ true);
+    return res['$def'];
   }
 }
 
