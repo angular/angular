@@ -11,9 +11,7 @@ import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protracto
 
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
-fixmeIvy(
-    'unkown; verifyNoBrowserErrors fails due to "ExpressionChangedAfterItHasBeenCheckedError"' +
-    'Debug by running "yarn bazel run //packages/examples/forms:devserver --define=compile=aot')
+fixmeIvy('FW-1051: Directives are updated after the execution of the template function')
     .describe('simpleNgModel example', () => {
       afterEach(verifyNoBrowserErrors);
       let input: ElementFinder;
