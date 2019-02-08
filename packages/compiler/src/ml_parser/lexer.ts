@@ -50,6 +50,13 @@ export class TokenizeResult {
   constructor(public tokens: Token[], public errors: TokenError[]) {}
 }
 
+export interface LexerRange {
+  startPos: number;
+  startLine: number;
+  startCol: number;
+  endPos: number;
+}
+
 /**
  * Options that modify how the text is tokenized.
  */
@@ -58,6 +65,11 @@ export interface TokenizeOptions {
   tokenizeExpansionForms?: boolean;
   /** How to tokenize interpolation markers. */
   interpolationConfig?: InterpolationConfig;
+  /**
+   * The start and end point of the text to parse within the `source` string.
+   * The entire `source` string is parsed if this is not provided.
+   * */
+  range?: LexerRange;
 }
 
 export function tokenize(
@@ -84,14 +96,14 @@ class _ControlFlowError {
 // See http://www.w3.org/TR/html51/syntax.html#writing
 class _Tokenizer {
   private _input: string;
-  private _length: number;
+  private _end: number;
   private _tokenizeIcu: boolean;
   private _interpolationConfig: InterpolationConfig;
   private _peek: number = -1;
   private _nextPeek: number = -1;
-  private _index: number = -1;
-  private _line: number = 0;
-  private _column: number = -1;
+  private _index: number;
+  private _line: number;
+  private _column: number;
   private _currentTokenStart: ParseLocation|null = null;
   private _currentTokenType: TokenType|null = null;
   private _expansionCaseStack: TokenType[] = [];
@@ -112,8 +124,26 @@ class _Tokenizer {
     this._tokenizeIcu = options.tokenizeExpansionForms || false;
     this._interpolationConfig = options.interpolationConfig || DEFAULT_INTERPOLATION_CONFIG;
     this._input = _file.content;
-    this._length = _file.content.length;
-    this._advance();
+    if (options.range) {
+      this._end = options.range.endPos;
+      this._index = options.range.startPos;
+      this._line = options.range.startLine;
+      this._column = options.range.startCol;
+    } else {
+      this._end = this._input.length;
+      this._index = 0;
+      this._line = 0;
+      this._column = 0;
+    }
+    try {
+      this._initPeek();
+    } catch (e) {
+      if (e instanceof _ControlFlowError) {
+        this.errors.push(e.error);
+      } else {
+        throw e;
+      }
+    }
   }
 
   private _processCarriageReturns(content: string): string {
@@ -232,8 +262,8 @@ class _Tokenizer {
     return new _ControlFlowError(error);
   }
 
-  private _advance() {
-    if (this._index >= this._length) {
+  private _advance(processingEscapeSequence?: boolean) {
+    if (this._index >= this._end) {
       throw this._createError(_unexpectedCharacterErrorMsg(chars.$EOF), this._getSpan());
     }
     if (this._peek === chars.$LF) {
@@ -243,9 +273,17 @@ class _Tokenizer {
       this._column++;
     }
     this._index++;
-    this._peek = this._index >= this._length ? chars.$EOF : this._input.charCodeAt(this._index);
+    this._initPeek(processingEscapeSequence);
+  }
+
+  /**
+   * Initialize the _peek and _nextPeek properties based on the current _index.
+   * @param processingEscapeSequence whether we are in the middle of processing an escape sequence.
+   */
+  private _initPeek(processingEscapeSequence?: boolean) {
+    this._peek = this._index >= this._end ? chars.$EOF : this._input.charCodeAt(this._index);
     this._nextPeek =
-        this._index + 1 >= this._length ? chars.$EOF : this._input.charCodeAt(this._index + 1);
+        this._index + 1 >= this._end ? chars.$EOF : this._input.charCodeAt(this._index + 1);
   }
 
   private _attemptCharCode(charCode: number): boolean {
@@ -274,7 +312,7 @@ class _Tokenizer {
 
   private _attemptStr(chars: string): boolean {
     const len = chars.length;
-    if (this._index + len > this._length) {
+    if (this._index + len > this._end) {
       return false;
     }
     const initialPosition = this._savePosition();
