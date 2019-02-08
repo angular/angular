@@ -246,14 +246,6 @@ export interface TI18n {
   vars: number;
 
   /**
-   * Index in EXPANDO where the i18n stores its DOM nodes.
-   *
-   * When the bindings are processed by the `i18nEnd` instruction it is necessary to know where the
-   * newly created DOM nodes will be inserted.
-   */
-  expandoStartIndex: number;
-
-  /**
    * A set of OpCodes which will create the Text Nodes and ICU anchors for the translation blocks.
    *
    * NOTE: The ICU anchors are filled in with ICU Update OpCode.
@@ -331,14 +323,6 @@ export interface TIcu {
    * represents the child ICUs to clean up. There may be more than one child ICUs per case.
    */
   childIcus: number[][];
-
-  /**
-   * Index in EXPANDO where the i18n stores its DOM nodes.
-   *
-   * When the bindings are processed by the `i18nEnd` instruction it is necessary to know where the
-   * newly created DOM nodes will be inserted.
-   */
-  expandoStartIndex: number;
 
   /**
    * A list of case values which the current ICU will try to match.

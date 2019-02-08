@@ -22,7 +22,7 @@ import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 import {dispatchEvent, el} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, modifiedInIvy, obsoleteInIvy} from '@angular/private/testing';
+import {modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 import {stringify} from '../../src/util/stringify';
 
@@ -637,44 +637,43 @@ function declareTests(config?: {useJit: boolean}) {
              }));
         }
 
-        fixmeIvy('FW-758: OnPush events not marking view dirty when using renderer2')
-            .it('should be checked when an event is fired', () => {
-              TestBed.configureTestingModule(
-                  {declarations: [MyComp, PushCmp, EventCmp], imports: [CommonModule]});
-              const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
-              TestBed.overrideComponent(MyComp, {set: {template}});
-              const fixture = TestBed.createComponent(MyComp);
+        it('should be checked when an event is fired', () => {
+          TestBed.configureTestingModule(
+              {declarations: [MyComp, PushCmp, EventCmp], imports: [CommonModule]});
+          const template = '<push-cmp [prop]="ctxProp" #cmp></push-cmp>';
+          TestBed.overrideComponent(MyComp, {set: {template}});
+          const fixture = TestBed.createComponent(MyComp);
 
-              const cmpEl = fixture.debugElement.children[0];
-              const cmp = cmpEl.componentInstance;
-              fixture.detectChanges();
-              fixture.detectChanges();
-              expect(cmp.numberOfChecks).toEqual(1);
+          const cmpEl = fixture.debugElement.children[0];
+          const cmp = cmpEl.componentInstance;
+          fixture.detectChanges();
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(1);
 
-              // regular element
-              cmpEl.children[0].triggerEventHandler('click', <Event>{});
-              fixture.detectChanges();
-              fixture.detectChanges();
-              expect(cmp.numberOfChecks).toEqual(2);
+          // regular element
+          cmpEl.children[0].triggerEventHandler('click', <Event>{});
+          fixture.detectChanges();
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(2);
 
-              // element inside of an *ngIf
-              cmpEl.children[1].triggerEventHandler('click', <Event>{});
-              fixture.detectChanges();
-              fixture.detectChanges();
-              expect(cmp.numberOfChecks).toEqual(3);
+          // element inside of an *ngIf
+          cmpEl.children[1].triggerEventHandler('click', <Event>{});
+          fixture.detectChanges();
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(3);
 
-              // element inside a nested component
-              cmpEl.children[2].children[0].triggerEventHandler('click', <Event>{});
-              fixture.detectChanges();
-              fixture.detectChanges();
-              expect(cmp.numberOfChecks).toEqual(4);
+          // element inside a nested component
+          cmpEl.children[2].children[0].triggerEventHandler('click', <Event>{});
+          fixture.detectChanges();
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(4);
 
-              // host element
-              cmpEl.triggerEventHandler('click', <Event>{});
-              fixture.detectChanges();
-              fixture.detectChanges();
-              expect(cmp.numberOfChecks).toEqual(5);
-            });
+          // host element
+          cmpEl.triggerEventHandler('click', <Event>{});
+          fixture.detectChanges();
+          fixture.detectChanges();
+          expect(cmp.numberOfChecks).toEqual(5);
+        });
 
         it('should not affect updating properties on the component', () => {
           TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithRef]]]});
@@ -1593,7 +1592,7 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('Property bindings', () => {
-      fixmeIvy('FW-721: Bindings to unknown properties are not reported as errors')
+      modifiedInIvy('Unknown property error thrown during update mode, not creation mode')
           .it('should throw on bindings to unknown properties', () => {
             TestBed.configureTestingModule({declarations: [MyComp]});
             const template = '<div unknown="{{ctxProp}}"></div>';
@@ -1604,6 +1603,21 @@ function declareTests(config?: {useJit: boolean}) {
             } catch (e) {
               expect(e.message).toMatch(
                   /Template parse errors:\nCan't bind to 'unknown' since it isn't a known property of 'div'. \("<div \[ERROR ->\]unknown="{{ctxProp}}"><\/div>"\): .*MyComp.html@0:5/);
+            }
+          });
+
+      onlyInIvy('Unknown property error thrown during update mode, not creation mode')
+          .it('should throw on bindings to unknown properties', () => {
+            TestBed.configureTestingModule({declarations: [MyComp]});
+            const template = '<div unknown="{{ctxProp}}"></div>';
+            TestBed.overrideComponent(MyComp, {set: {template}});
+            try {
+              const fixture = TestBed.createComponent(MyComp);
+              fixture.detectChanges();
+              throw 'Should throw';
+            } catch (e) {
+              expect(e.message).toMatch(
+                  /Template error: Can't bind to 'unknown' since it isn't a known property of 'div'./);
             }
           });
 

@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { Location, PlatformLocation, ViewportScroller } from '@angular/common';
 import { DOCUMENT } from '@angular/common';
 import { fromEvent } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 export const topMargin = 16;
 /**
@@ -45,12 +46,11 @@ export class ScrollService {
     // On resize, the toolbar might change height, so "invalidate" the top offset.
     fromEvent(window, 'resize').subscribe(() => this._topOffset = null);
 
-    try {
-      this.supportManualScrollRestoration = !!window && !!window.scrollTo && 'scrollX' in window
-        && 'scrollY' in window && !!history && !!history.scrollRestoration;
-    } catch {
-      this.supportManualScrollRestoration = false;
-    }
+    fromEvent(window, 'scroll')
+      .pipe(debounceTime(250)).subscribe(() => this.updateScrollPositionInHistory());
+
+    this.supportManualScrollRestoration = !!window && 'scrollTo' in window && 'scrollX' in window
+      && 'scrollY' in window && !!history && 'scrollRestoration' in history;
 
     // Change scroll restoration strategy to `manual` if it's supported
     if (this.supportManualScrollRestoration) {
@@ -62,6 +62,9 @@ export class ScrollService {
         if (event.type === 'hashchange') {
           this.scrollToPosition();
         } else {
+          // Navigating with forward/back, we have to remove the position from the session storage in order to avoid a
+          // race-condition
+          this.removeStoredScrollPosition();
           // The popstate event is always triggered by doing a browser action such as a click on the back or forward button.
           // It can be follow by a event of type `hashchange`.
           this.popStateFired = true;

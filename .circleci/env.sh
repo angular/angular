@@ -18,6 +18,11 @@ setPublicVar PROJECT_ROOT "$(pwd)";
 setPublicVar CI_AIO_MIN_PWA_SCORE "95";
 # This is the branch being built; e.g. `pull/12345` for PR builds.
 setPublicVar CI_BRANCH "$CIRCLE_BRANCH";
+# ChromeDriver version compatible with the Chrome version included in the docker image used in
+# `.circleci/config.yml`. See http://chromedriver.chromium.org/downloads for a list of versions.
+# This variable is intended to be passed as an arg to the `webdriver-manager update` command (e.g.
+# `"postinstall": "webdriver-manager update $CI_CHROMEDRIVER_VERSION_ARG"`).
+setPublicVar CI_CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.45";
 setPublicVar CI_COMMIT "$CIRCLE_SHA1";
 # `CI_COMMIT_RANGE` will only be available when `CIRCLE_COMPARE_URL` is also available (or can be
 # retrieved via `get-compare-url.js`), i.e. on push builds (a.k.a. non-PR, non-scheduled builds and
@@ -26,6 +31,7 @@ setPublicVar CI_COMMIT_RANGE "`[[ ${CIRCLE_PR_NUMBER:-false} != false ]] && echo
 setPublicVar CI_PULL_REQUEST "${CIRCLE_PR_NUMBER:-false}";
 setPublicVar CI_REPO_NAME "$CIRCLE_PROJECT_REPONAME";
 setPublicVar CI_REPO_OWNER "$CIRCLE_PROJECT_USERNAME";
+setPublicVar CI_YARN_VERSION "1.13.0";
 
 
 ####################################################################################################
@@ -33,8 +39,6 @@ setPublicVar CI_REPO_OWNER "$CIRCLE_PROJECT_USERNAME";
 ####################################################################################################
 setSecretVar CI_SECRET_AIO_DEPLOY_FIREBASE_TOKEN "$AIO_DEPLOY_TOKEN";
 setSecretVar CI_SECRET_PAYLOAD_FIREBASE_TOKEN "$ANGULAR_PAYLOAD_TOKEN";
-# Defined in https://angular-team.slack.com/apps/A0F7VRE7N-circleci.
-setSecretVar CI_SECRET_SLACK_CARETAKER_WEBHOOK_URL "$SLACK_CARETAKER_WEBHOOK_URL";
 
 
 ####################################################################################################

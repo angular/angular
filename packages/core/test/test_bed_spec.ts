@@ -257,42 +257,67 @@ describe('TestBed', () => {
   });
 
   onlyInIvy('patched ng defs should be removed after resetting TestingModule')
-      .it('make sure we restore ng defs to their initial states', () => {
-        @Pipe({name: 'somePipe', pure: true})
-        class SomePipe {
-          transform(value: string): string { return `transformed ${value}`; }
-        }
+      .describe('resetting ng defs', () => {
+        it('should restore ng defs to their initial states', () => {
+          @Pipe({name: 'somePipe', pure: true})
+          class SomePipe {
+            transform(value: string): string { return `transformed ${value}`; }
+          }
 
-        @Directive({selector: 'someDirective'})
-        class SomeDirective {
-          someProp = 'hello';
-        }
+          @Directive({selector: 'someDirective'})
+          class SomeDirective {
+            someProp = 'hello';
+          }
 
-        @Component({selector: 'comp', template: 'someText'})
-        class SomeComponent {
-        }
+          @Component({selector: 'comp', template: 'someText'})
+          class SomeComponent {
+          }
 
-        @NgModule({declarations: [SomeComponent]})
-        class SomeModule {
-        }
+          @NgModule({declarations: [SomeComponent]})
+          class SomeModule {
+          }
 
-        TestBed.configureTestingModule({imports: [SomeModule]});
+          TestBed.configureTestingModule({imports: [SomeModule]});
 
-        // adding Pipe and Directive via metadata override
-        TestBed.overrideModule(
-            SomeModule, {set: {declarations: [SomeComponent, SomePipe, SomeDirective]}});
-        TestBed.overrideComponent(
-            SomeComponent, {set: {template: `<span someDirective>{{'hello' | somePipe}}</span>`}});
-        TestBed.createComponent(SomeComponent);
+          // adding Pipe and Directive via metadata override
+          TestBed.overrideModule(
+              SomeModule, {set: {declarations: [SomeComponent, SomePipe, SomeDirective]}});
+          TestBed.overrideComponent(
+              SomeComponent,
+              {set: {template: `<span someDirective>{{'hello' | somePipe}}</span>`}});
+          TestBed.createComponent(SomeComponent);
 
-        const defBeforeReset = (SomeComponent as any).ngComponentDef;
-        expect(defBeforeReset.pipeDefs().length).toEqual(1);
-        expect(defBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
+          const defBeforeReset = (SomeComponent as any).ngComponentDef;
+          expect(defBeforeReset.pipeDefs().length).toEqual(1);
+          expect(defBeforeReset.directiveDefs().length).toEqual(2);  // directive + component
 
-        TestBed.resetTestingModule();
+          TestBed.resetTestingModule();
 
-        const defAfterReset = (SomeComponent as any).ngComponentDef;
-        expect(defAfterReset.pipeDefs().length).toEqual(0);
-        expect(defAfterReset.directiveDefs().length).toEqual(1);  // component
+          const defAfterReset = (SomeComponent as any).ngComponentDef;
+          expect(defAfterReset.pipeDefs().length).toEqual(0);
+          expect(defAfterReset.directiveDefs().length).toEqual(1);  // component
+        });
+
+        it('should cleanup ng defs for classes with no ng annotations (in case of inheritance)',
+           () => {
+             @Component({selector: 'someDirective', template: '...'})
+             class SomeComponent {
+             }
+
+             class ComponentWithNoAnnotations extends SomeComponent {}
+
+             TestBed.configureTestingModule({declarations: [ComponentWithNoAnnotations]});
+             TestBed.createComponent(ComponentWithNoAnnotations);
+
+             expect(ComponentWithNoAnnotations.hasOwnProperty('ngComponentDef')).toBeTruthy();
+             expect(SomeComponent.hasOwnProperty('ngComponentDef')).toBeTruthy();
+
+             TestBed.resetTestingModule();
+
+             expect(ComponentWithNoAnnotations.hasOwnProperty('ngComponentDef')).toBeFalsy();
+
+             // ngComponentDef should be preserved on super component
+             expect(SomeComponent.hasOwnProperty('ngComponentDef')).toBeTruthy();
+           });
       });
 });

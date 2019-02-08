@@ -14,7 +14,7 @@ import {NgModuleData} from '@angular/core/src/view/types';
 import {tokenKey} from '@angular/core/src/view/util';
 import {ComponentFixture, TestBed, inject} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, modifiedInIvy, obsoleteInIvy} from '@angular/private/testing';
+import {fixmeIvy, modifiedInIvy, obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 
 import {InternalNgModuleRef, NgModuleFactory} from '../../src/linker/ng_module_factory';
 import {clearModulesForTest} from '../../src/linker/ng_module_factory_loader';
@@ -239,7 +239,7 @@ function declareTests(config?: {useJit: boolean}) {
     });
 
     describe('schemas', () => {
-      fixmeIvy('FW-819: ngtsc compiler should support schemas')
+      modifiedInIvy('Unknown property error thrown during update mode, not creation mode')
           .it('should error on unknown bound properties on custom elements by default', () => {
             @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
             class ComponentUsingInvalidProperty {
@@ -252,19 +252,36 @@ function declareTests(config?: {useJit: boolean}) {
             expect(() => createModule(SomeModule)).toThrowError(/Can't bind to 'someUnknownProp'/);
           });
 
-      it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
-         () => {
-           @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
-           class ComponentUsingInvalidProperty {
-           }
+      onlyInIvy('Unknown property error thrown during update mode, not creation mode')
+          .it('should error on unknown bound properties on custom elements by default', () => {
+            @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+            class ComponentUsingInvalidProperty {
+            }
 
-           @NgModule(
-               {schemas: [CUSTOM_ELEMENTS_SCHEMA], declarations: [ComponentUsingInvalidProperty]})
-           class SomeModule {
-           }
+            @NgModule({declarations: [ComponentUsingInvalidProperty]})
+            class SomeModule {
+            }
 
-           expect(() => createModule(SomeModule)).not.toThrow();
-         });
+            const fixture = createComp(ComponentUsingInvalidProperty, SomeModule);
+            expect(() => fixture.detectChanges()).toThrowError(/Can't bind to 'someUnknownProp'/);
+          });
+
+      fixmeIvy('FW-819: ngtsc compiler should support schemas')
+          .it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
+              () => {
+                @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+                class ComponentUsingInvalidProperty {
+                }
+
+                @NgModule({
+                  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+                  declarations: [ComponentUsingInvalidProperty]
+                })
+                class SomeModule {
+                }
+
+                expect(() => createModule(SomeModule)).not.toThrow();
+              });
     });
 
     describe('id', () => {
@@ -734,8 +751,11 @@ function declareTests(config?: {useJit: boolean}) {
 
       it('should throw when the aliased provider does not exist', () => {
         const injector = createInjector([{provide: 'car', useExisting: SportsCar}]);
-        const e = `NullInjectorError: No provider for ${stringify(SportsCar)}!`;
-        expect(() => injector.get('car')).toThrowError(e);
+        let errorMsg = `NullInjectorError: No provider for ${stringify(SportsCar)}!`;
+        if (ivyEnabled) {
+          errorMsg = `R3InjectorError(SomeModule)[car -> SportsCar]: \n  ` + errorMsg;
+        }
+        expect(() => injector.get('car')).toThrowError(errorMsg);
       });
 
       it('should handle forwardRef in useExisting', () => {
@@ -930,8 +950,11 @@ function declareTests(config?: {useJit: boolean}) {
 
       it('should throw when no provider defined', () => {
         const injector = createInjector([]);
-        expect(() => injector.get('NonExisting'))
-            .toThrowError('NullInjectorError: No provider for NonExisting!');
+        let errorMsg = 'NullInjectorError: No provider for NonExisting!';
+        if (ivyEnabled) {
+          errorMsg = `R3InjectorError(SomeModule)[NonExisting]: \n  ` + errorMsg;
+        }
+        expect(() => injector.get('NonExisting')).toThrowError(errorMsg);
       });
 
       it('should throw when trying to instantiate a cyclic dependency', () => {
@@ -1316,7 +1339,7 @@ function declareTests(config?: {useJit: boolean}) {
       });
 
       describe('tree shakable providers', () => {
-        fixmeIvy('FW-794: NgModuleDefinition not exposed on NgModuleData')
+        modifiedInIvy('Ivy and VE have different internal fields to access providers')
             .it('definition should not persist across NgModuleRef instances', () => {
               @NgModule()
               class SomeModule {
@@ -1345,6 +1368,36 @@ function declareTests(config?: {useJit: boolean}) {
               const ngModuleRef2 = factory.create(null);
               const providerDef2 =
                   (ngModuleRef2 as NgModuleData)._def.providersByKey[tokenKey(Bar)];
+              expect(providerDef2).toBeUndefined();
+            });
+
+        onlyInIvy(`Ivy and VE have different internal fields to access providers`)
+            .it('definition should not persist across NgModuleRef instances', () => {
+              @NgModule()
+              class SomeModule {
+              }
+
+              class Bar {
+                static ngInjectableDef: InjectableDef<Bar> = defineInjectable({
+                  factory: () => new Bar(),
+                  providedIn: SomeModule,
+                });
+              }
+
+              const factory = createModuleFactory(SomeModule);
+              const ngModuleRef1 = factory.create(null);
+
+              // Inject a tree shakeable provider token.
+              ngModuleRef1.injector.get(Bar);
+
+              // Tree Shakeable provider definition should be available.
+              const providerDef1 = (ngModuleRef1 as any)._r3Injector.records.get(Bar);
+              expect(providerDef1).not.toBeUndefined();
+
+              // Instantiate the same module. The tree shakeable provider definition should not be
+              // present.
+              const ngModuleRef2 = factory.create(null);
+              const providerDef2 = (ngModuleRef2 as any)._r3Injector.records.get(Bar);
               expect(providerDef2).toBeUndefined();
             });
       });

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ElementRef, Host, INJECTOR, Inject, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, createInjector, defineInjectable, defineInjector} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ElementRef, Host, INJECTOR, Inject, InjectFlags, Injector, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, defineInjectable, defineInjector} from '@angular/core';
 import {ComponentType, RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
@@ -25,6 +25,7 @@ import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, createComponent, createDirective, getDirectiveOnNode, renderComponent, toHtml} from './render_util';
 import {NgIf} from './common_with_def';
 import {TNODE} from '../../src/render3/interfaces/injector';
+import {createInjector} from '../../src/di/r3_injector';
 import {LContainer, NATIVE} from '../../src/render3/interfaces/container';
 
 describe('di', () => {
@@ -2319,8 +2320,8 @@ describe('di', () => {
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
       const contentView = createLView(
-          null, createTView(-1, null, 1, 0, null, null, null), null, LViewFlags.CheckAlways,
-          {} as any, {} as any);
+          null, createTView(-1, null, 1, 0, null, null, null), null, LViewFlags.CheckAlways, null,
+          null, {} as any, {} as any);
       const oldView = enterView(contentView, null);
       try {
         const parentTNode = createNodeAtIndex(0, TNodeType.Element, null, null, null);

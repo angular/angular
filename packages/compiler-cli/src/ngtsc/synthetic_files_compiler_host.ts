@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PluginCompilerHost} from '@bazel/typescript/tsc_wrapped/plugin_api';
+import {PluginCompilerHost} from '@bazel/typescript/internal/tsc_wrapped/plugin_api';
 import * as ts from 'typescript';
 
 /**
@@ -30,7 +30,7 @@ export class SyntheticFilesCompilerHost implements PluginCompilerHost {
       private rootFiles: string[], private delegate: ts.CompilerHost,
       generatedFiles: (rootFiles: string[]) => {
         [fileName: string]: (host: ts.CompilerHost) => ts.SourceFile | undefined
-      }, ) {
+      }) {
     // Allow ngtsc to contribute in-memory synthetic files, which will be loaded
     // as if they existed on disk as action inputs.
     const angularGeneratedFiles = generatedFiles !(rootFiles);

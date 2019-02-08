@@ -37,9 +37,21 @@ abstract class OverrideResolver<T> implements Resolver<T> {
   }
 
   getAnnotation(type: Type<any>): T|null {
-    // We should always return the last match from filter(), or we may return superclass data by
-    // mistake.
-    return reflection.annotations(type).filter(a => a instanceof this.type).pop() || null;
+    const annotations = reflection.annotations(type);
+    // Try to find the nearest known Type annotation and make sure that this annotation is an
+    // instance of the type we are looking for, so we can use it for resolution. Note: there might
+    // be multiple known annotations found due to the fact that Components can extend Directives (so
+    // both Directive and Component annotations would be present), so we always check if the known
+    // annotation has the right type.
+    for (let i = annotations.length - 1; i >= 0; i--) {
+      const annotation = annotations[i];
+      const isKnownType = annotation instanceof Directive || annotation instanceof Component ||
+          annotation instanceof Pipe || annotation instanceof NgModule;
+      if (isKnownType) {
+        return annotation instanceof this.type ? annotation : null;
+      }
+    }
+    return null;
   }
 
   resolve(type: Type<any>): T|null {

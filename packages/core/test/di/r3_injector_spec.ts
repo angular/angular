@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../../src/di/injection_token';
-import {INJECTOR, Injector} from '../../src/di/injector';
-import {inject} from '../../src/di/injector_compatibility';
-import {defineInjectable, defineInjector} from '../../src/di/interface/defs';
-import {R3Injector, createInjector} from '../../src/di/r3_injector';
+import {INJECTOR, InjectFlags, InjectionToken, Injector, Optional, defineInjectable, defineInjector, inject} from '@angular/core';
+import {R3Injector, createInjector} from '@angular/core/src/di/r3_injector';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('InjectorDef-based createInjector()', () => {
   class CircularA {
@@ -34,6 +32,13 @@ describe('InjectorDef-based createInjector()', () => {
     });
   }
 
+  class OptionalService {
+    static ngInjectableDef = defineInjectable({
+      providedIn: null,
+      factory: () => new OptionalService(),
+    });
+  }
+
   class StaticService {
     constructor(readonly dep: Service) {}
   }
@@ -53,6 +58,24 @@ describe('InjectorDef-based createInjector()', () => {
     static ngInjectableDef = defineInjectable({
       providedIn: null,
       factory: () => new ServiceWithDep(inject(Service)),
+    });
+  }
+
+  class ServiceWithOptionalDep {
+    constructor(@Optional() readonly service: OptionalService|null) {}
+
+    static ngInjectableDef = defineInjectable({
+      providedIn: null,
+      factory: () => new ServiceWithOptionalDep(inject(OptionalService, InjectFlags.Optional)),
+    });
+  }
+
+  class ServiceWithMissingDep {
+    constructor(readonly service: Service) {}
+
+    static ngInjectableDef = defineInjectable({
+      providedIn: null,
+      factory: () => new ServiceWithMissingDep(inject(Service)),
     });
   }
 
@@ -135,6 +158,7 @@ describe('InjectorDef-based createInjector()', () => {
       imports: [IntermediateModule],
       providers: [
         ServiceWithDep,
+        ServiceWithOptionalDep,
         ServiceWithMultiDep,
         {provide: LOCALE, multi: true, useValue: 'en'},
         {provide: LOCALE, multi: true, useValue: 'es'},
@@ -155,6 +179,14 @@ describe('InjectorDef-based createInjector()', () => {
       factory: () => new OtherModule(),
       imports: undefined,
       providers: [],
+    });
+  }
+
+  class ModuleWithMissingDep {
+    static ngInjectorDef = defineInjector({
+      factory: () => new ModuleWithMissingDep(),
+      imports: undefined,
+      providers: [ServiceWithMissingDep],
     });
   }
 
@@ -198,10 +230,39 @@ describe('InjectorDef-based createInjector()', () => {
   it('returns the default value if a provider isn\'t present',
      () => { expect(injector.get(ServiceTwo, null)).toBeNull(); });
 
+  it('should throw when no provider defined', () => {
+    expect(() => injector.get(ServiceTwo))
+        .toThrowError(
+            `R3InjectorError(Module)[ServiceTwo]: \n` +
+            `  NullInjectorError: No provider for ServiceTwo!`);
+  });
+
+  it('should throw without the module name when no module', () => {
+    const injector = createInjector([ServiceTwo]);
+    expect(() => injector.get(ServiceTwo))
+        .toThrowError(
+            `R3InjectorError[ServiceTwo]: \n` +
+            `  NullInjectorError: No provider for ServiceTwo!`);
+  });
+
+  it('should throw with the full path when no provider', () => {
+    const injector = createInjector(ModuleWithMissingDep);
+    expect(() => injector.get(ServiceWithMissingDep))
+        .toThrowError(
+            `R3InjectorError(ModuleWithMissingDep)[ServiceWithMissingDep -> Service]: \n` +
+            `  NullInjectorError: No provider for Service!`);
+  });
+
   it('injects a service with dependencies', () => {
     const instance = injector.get(ServiceWithDep);
     expect(instance instanceof ServiceWithDep);
     expect(instance.service).toBe(injector.get(Service));
+  });
+
+  it('injects a service with optional dependencies', () => {
+    const instance = injector.get(ServiceWithOptionalDep);
+    expect(instance instanceof ServiceWithOptionalDep);
+    expect(instance.service).toBe(null);
   });
 
   it('injects a service with dependencies on multi-providers', () => {

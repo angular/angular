@@ -104,6 +104,9 @@
             },
             "archive": {
               "browserTarget": "site:build:archive"
+            },
+            "ci": {
+              "progress": false
             }
           }
         },
@@ -166,6 +169,11 @@
           "options": {
             "protractorConfig": "tests/e2e/protractor.conf.js",
             "devServerTarget": "site:serve"
+          },
+          "configurations": {
+            "ci": {
+              "devServerTarget": "site:serve:ci"
+            }
           }
         },
         "lint": {

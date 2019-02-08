@@ -10,6 +10,7 @@ import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
+
 import {attachPatchData} from './context_discovery';
 import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions';
 import {LContainer, NATIVE} from './interfaces/container';
@@ -18,8 +19,8 @@ import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/no
 import {RComment, RElement} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
-import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, LView, RENDERER, TVIEW, TView} from './interfaces/view';
-import {appendChild, createTextNode, removeChild} from './node_manipulation';
+import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
+import {appendChild, createTextNode, nativeRemoveNode} from './node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
 import {addAllToArray, getNativeByIndex, getNativeByTNode, getTNode, isLContainer, renderStringify} from './util';
@@ -351,19 +352,24 @@ export function i18nStart(index: number, message: string, subTemplateIndex?: num
   }
 }
 
+// Count for the number of vars that will be allocated for each i18n block.
+// It is global because this is used in multiple functions that include loops and recursive calls.
+// This is reset to 0 when `i18nStartFirstPass` is called.
+let i18nVarsCount: number;
+
 /**
  * See `i18nStart` above.
  */
 function i18nStartFirstPass(
     tView: TView, index: number, message: string, subTemplateIndex?: number) {
   const viewData = getLView();
-  const expandoStartIndex = tView.blueprint.length - HEADER_OFFSET;
+  const startIndex = tView.blueprint.length - HEADER_OFFSET;
+  i18nVarsCount = 0;
   const previousOrParentTNode = getPreviousOrParentTNode();
   const parentTNode = getIsParent() ? getPreviousOrParentTNode() :
                                       previousOrParentTNode && previousOrParentTNode.parent;
-  let parentIndex = parentTNode && parentTNode !== viewData[HOST_NODE] ?
-      parentTNode.index - HEADER_OFFSET :
-      index;
+  let parentIndex =
+      parentTNode && parentTNode !== viewData[T_HOST] ? parentTNode.index - HEADER_OFFSET : index;
   let parentIndexPointer = 0;
   parentIndexStack[parentIndexPointer] = parentIndex;
   const createOpCodes: I18nMutateOpCodes = [];
@@ -408,8 +414,7 @@ function i18nStartFirstPass(
         if (j & 1) {
           // Odd indexes are ICU expressions
           // Create the comment node that will anchor the ICU expression
-          allocExpando(viewData);
-          const icuNodeIndex = tView.blueprint.length - 1 - HEADER_OFFSET;
+          const icuNodeIndex = startIndex + i18nVarsCount++;
           createOpCodes.push(
               COMMENT_MARKER, ngDevMode ? `ICU ${icuNodeIndex}` : '', icuNodeIndex,
               parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
@@ -433,27 +438,25 @@ function i18nStartFirstPass(
           // Even indexes are text (including bindings)
           const hasBinding = text.match(BINDING_REGEXP);
           // Create text nodes
-          allocExpando(viewData);
-          const textNodeIndex = tView.blueprint.length - 1 - HEADER_OFFSET;
+          const textNodeIndex = startIndex + i18nVarsCount++;
           createOpCodes.push(
               // If there is a binding, the value will be set during update
               hasBinding ? '' : text, textNodeIndex,
               parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
 
           if (hasBinding) {
-            addAllToArray(
-                generateBindingUpdateOpCodes(text, tView.blueprint.length - 1 - HEADER_OFFSET),
-                updateOpCodes);
+            addAllToArray(generateBindingUpdateOpCodes(text, textNodeIndex), updateOpCodes);
           }
         }
       }
     }
   }
 
+  allocExpando(viewData, i18nVarsCount);
+
   // NOTE: local var needed to properly assert the type of `TI18n`.
   const tI18n: TI18n = {
-    vars: tView.blueprint.length - HEADER_OFFSET - expandoStartIndex,
-    expandoStartIndex,
+    vars: i18nVarsCount,
     create: createOpCodes,
     update: updateOpCodes,
     icus: icuExpressions.length ? icuExpressions : null,
@@ -478,7 +481,7 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
     tNode.next = null;
   }
 
-  if (parentTNode !== viewData[HOST_NODE]) {
+  if (parentTNode !== viewData[T_HOST]) {
     tNode.parent = parentTNode as TElementNode;
   }
 
@@ -611,6 +614,16 @@ export function i18nEnd(): void {
   i18nEndFirstPass(tView);
 }
 
+function findLastNode(node: TNode): TNode {
+  while (node.next) {
+    node = node.next;
+  }
+  if (node.child) {
+    return findLastNode(node.child);
+  }
+  return node;
+}
+
 /**
  * See `i18nEnd` above.
  */
@@ -626,12 +639,17 @@ function i18nEndFirstPass(tView: TView) {
 
   // The last placeholder that was added before `i18nEnd`
   const previousOrParentTNode = getPreviousOrParentTNode();
-  const visitedPlaceholders = readCreateOpCodes(rootIndex, tI18n.create, tI18n.icus, viewData);
+  const visitedNodes = readCreateOpCodes(rootIndex, tI18n.create, tI18n.icus, viewData);
 
-  // Remove deleted placeholders
-  // The last placeholder that was added before `i18nEnd` is `previousOrParentTNode`
-  for (let i = rootIndex + 1; i <= previousOrParentTNode.index - HEADER_OFFSET; i++) {
-    if (visitedPlaceholders.indexOf(i) === -1) {
+  // Find the last node that was added before `i18nEnd`
+  let lastCreatedNode = previousOrParentTNode;
+  if (lastCreatedNode.child) {
+    lastCreatedNode = findLastNode(lastCreatedNode.child);
+  }
+
+  // Remove deleted nodes
+  for (let i = rootIndex + 1; i <= lastCreatedNode.index - HEADER_OFFSET; i++) {
+    if (visitedNodes.indexOf(i) === -1) {
       removeNode(i, viewData);
     }
   }
@@ -643,7 +661,7 @@ function readCreateOpCodes(
   const renderer = getLView()[RENDERER];
   let currentTNode: TNode|null = null;
   let previousTNode: TNode|null = null;
-  const visitedPlaceholders: number[] = [];
+  const visitedNodes: number[] = [];
   for (let i = 0; i < createOpCodes.length; i++) {
     const opCode = createOpCodes[i];
     if (typeof opCode == 'string') {
@@ -652,6 +670,7 @@ function readCreateOpCodes(
       ngDevMode && ngDevMode.rendererCreateTextNode++;
       previousTNode = currentTNode;
       currentTNode = createNodeAtIndex(textNodeIndex, TNodeType.Element, textRNode, null, null);
+      visitedNodes.push(textNodeIndex);
       setIsParent(false);
     } else if (typeof opCode == 'number') {
       switch (opCode & I18nMutateOpCode.MASK_OPCODE) {
@@ -661,7 +680,7 @@ function readCreateOpCodes(
           if (destinationNodeIndex === index) {
             // If the destination node is `i18nStart`, we don't have a
             // top-level node and we should use the host node instead
-            destinationTNode = viewData[HOST_NODE] !;
+            destinationTNode = viewData[T_HOST] !;
           } else {
             destinationTNode = getTNode(destinationNodeIndex, viewData);
           }
@@ -674,7 +693,7 @@ function readCreateOpCodes(
           break;
         case I18nMutateOpCode.Select:
           const nodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
-          visitedPlaceholders.push(nodeIndex);
+          visitedNodes.push(nodeIndex);
           previousTNode = currentTNode;
           currentTNode = getTNode(nodeIndex, viewData);
           if (currentTNode) {
@@ -712,6 +731,7 @@ function readCreateOpCodes(
           previousTNode = currentTNode;
           currentTNode =
               createNodeAtIndex(commentNodeIndex, TNodeType.IcuContainer, commentRNode, null, null);
+          visitedNodes.push(commentNodeIndex);
           attachPatchData(commentRNode, viewData);
           (currentTNode as TIcuContainerNode).activeCaseIndex = null;
           // We will add the case nodes later, during the update phase
@@ -728,6 +748,7 @@ function readCreateOpCodes(
           previousTNode = currentTNode;
           currentTNode = createNodeAtIndex(
               elementNodeIndex, TNodeType.Element, elementRNode, tagNameValue, null);
+          visitedNodes.push(elementNodeIndex);
           break;
         default:
           throw new Error(`Unable to determine the type of mutate operation for "${opCode}"`);
@@ -737,7 +758,7 @@ function readCreateOpCodes(
 
   setIsParent(false);
 
-  return visitedPlaceholders;
+  return visitedNodes;
 }
 
 function readUpdateOpCodes(
@@ -830,19 +851,18 @@ function removeNode(index: number, viewData: LView) {
   const removedPhTNode = getTNode(index, viewData);
   const removedPhRNode = getNativeByIndex(index, viewData);
   if (removedPhRNode) {
-    removeChild(removedPhTNode, removedPhRNode, viewData);
+    nativeRemoveNode(viewData[RENDERER], removedPhRNode);
   }
-
-  removedPhTNode.detached = true;
-  ngDevMode && ngDevMode.rendererRemoveNode++;
 
   const slotValue = load(index) as RElement | RComment | LContainer | StylingContext;
   if (isLContainer(slotValue)) {
     const lContainer = slotValue as LContainer;
     if (removedPhTNode.type !== TNodeType.Container) {
-      removeChild(removedPhTNode, lContainer[NATIVE], viewData);
+      nativeRemoveNode(viewData[RENDERER], lContainer[NATIVE]);
     }
   }
+
+  ngDevMode && ngDevMode.rendererRemoveNode++;
 }
 
 /**
@@ -1380,18 +1400,15 @@ function icuStart(
   const tIcu: TIcu = {
     type: icuExpression.type,
     vars,
-    expandoStartIndex: expandoStartIndex + 1, childIcus,
+    childIcus,
     cases: icuExpression.cases,
     create: createCodes,
     remove: removeCodes,
     update: updateCodes
   };
   tIcus.push(tIcu);
-  const lView = getLView();
-  const worstCaseSize = Math.max(...vars);
-  for (let i = 0; i < worstCaseSize; i++) {
-    allocExpando(lView);
-  }
+  // Adding the maximum possible of vars needed (based on the cases with the most vars)
+  i18nVarsCount += Math.max(...vars);
 }
 
 /**

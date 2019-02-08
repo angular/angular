@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
 
-const URL = 'all/playground/src/web_workers/message_broker/index.html';
+import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
+
+const URL = '/';
 
 describe('MessageBroker', function() {
 

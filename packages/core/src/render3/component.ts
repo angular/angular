@@ -23,7 +23,7 @@ import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition'
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, HOST_NODE, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, T_HOST} from './interfaces/view';
 import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
 import {defaultScheduler, getRootView, readPatchedLView, renderStringify} from './util';
 
@@ -122,8 +122,8 @@ export function renderComponent<T>(
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
   const rootView: LView = createLView(
-      null, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags, rendererFactory,
-      renderer, undefined, opts.injector || null);
+      null, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags, null, null,
+      rendererFactory, renderer, undefined, opts.injector || null);
 
   const oldView = enterView(rootView, null);
   let component: T;
@@ -163,13 +163,13 @@ export function createRootComponentView(
     rendererFactory: RendererFactory3, renderer: Renderer3, sanitizer?: Sanitizer | null): LView {
   resetComponentState();
   const tView = rootView[TVIEW];
+  const tNode: TElementNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null);
   const componentView = createLView(
       rootView,
       getOrCreateTView(
           def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery),
-      null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rendererFactory, renderer,
-      sanitizer);
-  const tNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null);
+      null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[HEADER_OFFSET], tNode,
+      rendererFactory, renderer, sanitizer);
 
   if (tView.firstTemplatePass) {
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), rootView, def.type);
@@ -179,8 +179,6 @@ export function createRootComponentView(
   }
 
   // Store component view at node index, with node as the HOST
-  componentView[HOST] = rootView[HEADER_OFFSET];
-  componentView[HOST_NODE] = tNode as TElementNode;
   return rootView[HEADER_OFFSET] = componentView;
 }
 

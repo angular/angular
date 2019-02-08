@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs-extra');
+const lockfile = require('@yarnpkg/lockfile');
 const path = require('canonical-path');
 const shelljs = require('shelljs');
 
@@ -11,6 +12,7 @@ describe('NgPackagesInstaller', () => {
   const absoluteRootDir = path.resolve(rootDir);
   const nodeModulesDir = path.resolve(absoluteRootDir, 'node_modules');
   const packageJsonPath = path.resolve(absoluteRootDir, 'package.json');
+  const yarnLockPath = path.resolve(absoluteRootDir, 'yarn.lock');
   const packagesDir = path.resolve(path.resolve(__dirname, '../../../dist/packages-dist'));
   const toolsDir = path.resolve(path.resolve(__dirname, '../../../dist/tools/@angular'));
   let installer;
@@ -52,13 +54,26 @@ describe('NgPackagesInstaller', () => {
 
     beforeEach(() => {
       spyOn(installer, '_checkLocalMarker');
+      spyOn(installer, '_installDeps');
+      spyOn(installer, '_setLocalMarker');
+
+      spyOn(installer, '_parseLockfile').and.returnValue({
+        'rxjs@^6.3.0': {version: '6.3.3'},
+        'zone.js@^0.8.26': {version: '0.8.27'}
+      });
 
       // These are the packages that are "found" in the dist directory
       dummyNgPackages = {
         '@angular/core': {
           parentDir: packagesDir,
           packageJsonPath: `${packagesDir}/core/package.json`,
-          config: { peerDependencies: { 'some-package': '5.0.1' } }
+          config: {
+            peerDependencies: {
+              'rxjs': '^6.4.0',
+              'some-package': '5.0.1',
+              'zone.js': '~0.8.26'
+            }
+          }
         },
         '@angular/common': {
           parentDir: packagesDir,
@@ -93,10 +108,12 @@ describe('NgPackagesInstaller', () => {
       dummyPackage = {
         dependencies: {
           '@angular/core': '4.4.1',
-          '@angular/common': '4.4.1'
+          '@angular/common': '4.4.1',
+          rxjs: '^6.3.0'
         },
         devDependencies: {
-          '@angular/compiler-cli': '4.4.1'
+          '@angular/compiler-cli': '4.4.1',
+          'zone.js': '^0.8.26'
         }
       };
       dummyPackageJson = JSON.stringify(dummyPackage);
@@ -104,14 +121,23 @@ describe('NgPackagesInstaller', () => {
 
       // This is the package.json that is temporarily written to the "test" folder
       // Note that the Angular (dev)dependencies have been modified to use a "file:" path
-      // And that the peerDependencies from `dummyNgPackages` have been added as (dev)dependencies.
+      // And that the peerDependencies from `dummyNgPackages` have been updated or added as
+      // (dev)dependencies (unless the current version in lockfile satisfies semver).
+      //
+      // For example, `zone.js@0.8.27` (from lockfile) satisfies `zone.js@~0.8.26` (from
+      // `@angular/core`), thus `zone.js: ^0.8.26` (from original `package.json`) is retained.
+      // In contrast, `rxjs@6.3.3` (from lockfile) does not satisfy `rxjs@^6.4.0 (from
+      // `@angular/core`), thus `rxjs: ^6.3.0` (from original `package.json`) is replaced with
+      // `rxjs: ^6.4.0` (from `@angular/core`).
       expectedModifiedPackage = {
         dependencies: {
           '@angular/core': `file:${packagesDir}/core`,
-          '@angular/common': `file:${packagesDir}/common`
+          '@angular/common': `file:${packagesDir}/common`,
+          'rxjs': '^6.4.0'
         },
         devDependencies: {
           '@angular/compiler-cli': `file:${toolsDir}/compiler-cli`,
+          'zone.js': '^0.8.26',
           'some-package': '5.0.1',
           typescript: '^2.4.2'
         },
@@ -121,11 +147,19 @@ describe('NgPackagesInstaller', () => {
     });
 
     describe('when there is a local package marker', () => {
+      beforeEach(() => installer._checkLocalMarker.and.returnValue(true));
+
       it('should not continue processing', () => {
-        installer._checkLocalMarker.and.returnValue(true);
         installer.installLocalDependencies();
         expect(installer._checkLocalMarker).toHaveBeenCalled();
         expect(installer._getDistPackages).not.toHaveBeenCalled();
+      });
+
+      it('should continue processing (without checking for local marker) if `force` is true', () => {
+        installer.force = true;
+        installer.installLocalDependencies();
+        expect(installer._checkLocalMarker).not.toHaveBeenCalled();
+        expect(installer._getDistPackages).toHaveBeenCalled();
       });
     });
 
@@ -135,14 +169,14 @@ describe('NgPackagesInstaller', () => {
       beforeEach(() => {
         log = [];
         fs.writeFileSync.and.callFake((filePath, contents) => filePath === packageJsonPath && log.push(`writeFile: ${contents}`));
-        spyOn(installer, '_installDeps').and.callFake(() => log.push('installDeps:'));
-        spyOn(installer, '_setLocalMarker');
+        installer._installDeps.and.callFake((...args) => log.push(`installDeps: ${args.join(' ')}`));
         installer._checkLocalMarker.and.returnValue(false);
         installer.installLocalDependencies();
       });
 
-      it('should get the dist packages', () => {
+      it('should parse the lockfile and get the dist packages', () => {
         expect(installer._checkLocalMarker).toHaveBeenCalled();
+        expect(installer._parseLockfile).toHaveBeenCalledWith(yarnLockPath);
         expect(installer._getDistPackages).toHaveBeenCalled();
       });
 
@@ -150,31 +184,32 @@ describe('NgPackagesInstaller', () => {
         const pkgJsonFor = pkgName => dummyNgPackages[`@angular/${pkgName}`].packageJsonPath;
         const pkgConfigFor = pkgName => copyJsonObj(dummyNgPackages[`@angular/${pkgName}`].config);
         const overwriteConfigFor = (pkgName, newProps) => Object.assign(pkgConfigFor(pkgName), newProps);
+        const stringifyConfig = config => JSON.stringify(config, null, 2);
 
         const allArgs = fs.writeFileSync.calls.allArgs();
         const firstFiveArgs = allArgs.slice(0, 5);
         const lastFiveArgs = allArgs.slice(-5);
 
         expect(firstFiveArgs).toEqual([
-          [pkgJsonFor('core'), JSON.stringify(overwriteConfigFor('core', {private: true}))],
-          [pkgJsonFor('common'), JSON.stringify(overwriteConfigFor('common', {private: true}))],
-          [pkgJsonFor('compiler'), JSON.stringify(overwriteConfigFor('compiler', {private: true}))],
-          [pkgJsonFor('compiler-cli'), JSON.stringify(overwriteConfigFor('compiler-cli', {
+          [pkgJsonFor('core'), stringifyConfig(overwriteConfigFor('core', {private: true}))],
+          [pkgJsonFor('common'), stringifyConfig(overwriteConfigFor('common', {private: true}))],
+          [pkgJsonFor('compiler'), stringifyConfig(overwriteConfigFor('compiler', {private: true}))],
+          [pkgJsonFor('compiler-cli'), stringifyConfig(overwriteConfigFor('compiler-cli', {
             private: true,
             dependencies: { '@angular/tsc-wrapped': `file:${toolsDir}/tsc-wrapped` }
           }))],
-          [pkgJsonFor('tsc-wrapped'), JSON.stringify(overwriteConfigFor('tsc-wrapped', {
+          [pkgJsonFor('tsc-wrapped'), stringifyConfig(overwriteConfigFor('tsc-wrapped', {
             private: true,
             devDependencies: { '@angular/common': `file:${packagesDir}/common` }
           }))],
         ]);
 
         expect(lastFiveArgs).toEqual(['core', 'common', 'compiler', 'compiler-cli', 'tsc-wrapped']
-            .map(pkgName => [pkgJsonFor(pkgName), JSON.stringify(pkgConfigFor(pkgName))]));
+            .map(pkgName => [pkgJsonFor(pkgName), stringifyConfig(pkgConfigFor(pkgName))]));
       });
 
       it('should load the package.json', () => {
-        expect(fs.readFileSync).toHaveBeenCalledWith(packageJsonPath);
+        expect(fs.readFileSync).toHaveBeenCalledWith(packageJsonPath, 'utf8');
       });
 
       it('should overwrite package.json with modified config', () => {
@@ -188,7 +223,7 @@ describe('NgPackagesInstaller', () => {
       it('should overwrite package.json, then install deps, then restore original package.json', () => {
         expect(log).toEqual([
           `writeFile: ${expectedModifiedPackageJson}`,
-          `installDeps:`,
+          `installDeps: --pure-lockfile --check-files`,
           `writeFile: ${dummyPackageJson}`
         ]);
       });
@@ -261,6 +296,42 @@ describe('NgPackagesInstaller', () => {
       installer.debug = true;
       installer._log('bar');
       expect(console.info).toHaveBeenCalledWith('  [NgPackagesInstaller]: bar');
+    });
+  });
+
+  describe('_parseLockfile()', () => {
+    let originalLockfileParseDescriptor;
+
+    beforeEach(() => {
+      // Workaround for `lockfile.parse()` being non-writable.
+      let parse = lockfile.parse;
+      originalLockfileParseDescriptor = Object.getOwnPropertyDescriptor(lockfile, 'parse');
+      Object.defineProperty(lockfile, 'parse', {
+        get() { return parse; },
+        set(newParse) { parse = newParse; },
+      });
+
+      fs.readFileSync.and.returnValue('mock content');
+      spyOn(lockfile, 'parse').and.returnValue({type: 'success', object: {foo: {version: 'bar'}}});
+    });
+
+    afterEach(() => Object.defineProperty(lockfile, 'parse', originalLockfileParseDescriptor));
+
+    it('should parse the specified lockfile', () => {
+      installer._parseLockfile('/foo/bar/yarn.lock');
+      expect(fs.readFileSync).toHaveBeenCalledWith('/foo/bar/yarn.lock', 'utf8');
+      expect(lockfile.parse).toHaveBeenCalledWith('mock content');
+    });
+
+    it('should throw if parsing the lockfile fails', () => {
+      lockfile.parse.and.returnValue({type: 'not success'});
+      expect(() => installer._parseLockfile('/foo/bar/yarn.lock')).toThrowError(
+          '[NgPackagesInstaller]: Error parsing lockfile \'/foo/bar/yarn.lock\' (result type: not success).');
+    });
+
+    it('should return the parsed lockfile content as an object', () => {
+      const parsed = installer._parseLockfile('/foo/bar/yarn.lock');
+      expect(parsed).toEqual({foo: {version: 'bar'}});
     });
   });
 

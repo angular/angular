@@ -27,11 +27,25 @@ function loadTask(fileName, taskName) {
   return task(gulp);
 }
 
+// Check source code for formatting errors in all source files.
 gulp.task('format:enforce', loadTask('format', 'enforce'));
-gulp.task('format', loadTask('format', 'format'));
+
+// Format all source files.
+gulp.task('format:all', loadTask('format', 'format'));
+
+// Format only untracked source code files.
 gulp.task('format:untracked', loadTask('format', 'format-untracked'));
+
+// Format only the changed, tracked source code files.
 gulp.task('format:diff', loadTask('format', 'format-diff'));
+
+// Format only changed lines based on the diff from the provided --branch
+// argument (or `master` by default).
 gulp.task('format:changed', ['format:untracked', 'format:diff']);
+
+// Alias for `format:changed` that formerly formatted all files.
+gulp.task('format', ['format:changed']);
+
 gulp.task('lint', ['format:enforce', 'validate-commit-messages', 'tslint']);
 gulp.task('tslint', ['tools:build'], loadTask('lint'));
 gulp.task('validate-commit-messages', loadTask('validate-commit-message'));

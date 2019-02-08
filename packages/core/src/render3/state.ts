@@ -7,11 +7,12 @@
  */
 
 import {assertDefined} from '../util/assert';
+
 import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TViewNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
-import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, HOST_NODE, InitPhaseState, LView, LViewFlags, OpaqueViewState, QUERIES, TVIEW} from './interfaces/view';
+import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, QUERIES, TVIEW, T_HOST} from './interfaces/view';
 import {isContentQueryHost} from './util';
 
 
@@ -178,7 +179,7 @@ export function getOrCreateCurrentQueries(
   // If this is the first content query on a node, any existing LQueries needs to be cloned.
   // In subsequent template passes, the cloning occurs before directive instantiation
   // in `createDirectivesAndLocals`.
-  if (previousOrParentTNode && previousOrParentTNode !== lView[HOST_NODE] &&
+  if (previousOrParentTNode && previousOrParentTNode !== lView[T_HOST] &&
       !isContentQueryHost(previousOrParentTNode)) {
     currentQueries && (currentQueries = lView[QUERIES] = currentQueries.clone());
     previousOrParentTNode.flags |= TNodeFlags.hasContentQuery;

@@ -12,9 +12,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {AnimateApp} from './app/animate-app';
 
 @NgModule({declarations: [AnimateApp], bootstrap: [AnimateApp], imports: [BrowserAnimationsModule]})
-class ExampleModule {
+export class ExampleModule {
 }
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
+platformBrowserDynamic().bootstrapModule(ExampleModule);

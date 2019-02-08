@@ -12,10 +12,6 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import {MyCmp} from './app/my_cmp';
 
-export function main() {
-  platformBrowserDynamic().bootstrapModule(ExampleModule);
-}
-
 @Component({
   selector: 'relative-app',
   template: `component = <my-cmp></my-cmp>`,
@@ -24,5 +20,7 @@ export class RelativeApp {
 }
 
 @NgModule({declarations: [RelativeApp, MyCmp], bootstrap: [RelativeApp], imports: [BrowserModule]})
-class ExampleModule {
+export class ExampleModule {
 }
+
+platformBrowserDynamic().bootstrapModule(ExampleModule);

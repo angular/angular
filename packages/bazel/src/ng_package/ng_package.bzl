@@ -393,7 +393,7 @@ NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
         allow_files = True,
     ),
     "include_devmode_srcs": attr.bool(default = False),
-    "readme_md": attr.label(allow_single_file = FileType([".md"])),
+    "readme_md": attr.label(allow_single_file = [".md"]),
     "globals": attr.string_dict(default = {}),
     "entry_point_name": attr.string(
         doc = "Name to use when generating bundle files for the primary entry-point.",

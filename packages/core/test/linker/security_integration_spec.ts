@@ -255,13 +255,22 @@ function declareTests(config?: {useJit: boolean}) {
         expect(getDOM().getStyle(e, 'background')).not.toContain('javascript');
       });
 
-      fixmeIvy('FW-850: Should throw on unsafe SVG attributes')
+      modifiedInIvy('Unknown property error thrown during update mode, not creation mode')
           .it('should escape unsafe SVG attributes', () => {
             const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
             expect(() => TestBed.createComponent(SecuredComponent))
                 .toThrowError(/Can't bind to 'xlink:href'/);
+          });
+
+      onlyInIvy('Unknown property error thrown during update mode, not creation mode')
+          .it('should escape unsafe SVG attributes', () => {
+            const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
+            TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+            const fixture = TestBed.createComponent(SecuredComponent);
+            expect(() => fixture.detectChanges()).toThrowError(/Can't bind to 'xlink:href'/);
           });
 
       it('should escape unsafe HTML values', () => {

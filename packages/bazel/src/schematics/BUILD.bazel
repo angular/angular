@@ -15,6 +15,7 @@ jasmine_node_test(
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     deps = [
         "//packages/bazel/src/schematics/bazel-workspace:test",
+        "//packages/bazel/src/schematics/ng-add:test",
         "//packages/bazel/src/schematics/ng-new:test",
         "//tools/testing:node",
     ],

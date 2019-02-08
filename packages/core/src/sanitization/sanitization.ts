@@ -178,7 +178,7 @@ export const defaultStyleSanitizer = (function(prop: string, value?: string): st
   return sanitizeStyle(value);
 } as StyleSanitizeFn);
 
-export function validateProperty(name: string) {
+export function validateAgainstEventProperties(name: string) {
   if (name.toLowerCase().startsWith('on')) {
     const msg = `Binding to event property '${name}' is disallowed for security reasons, ` +
         `please use (${name.slice(2)})=...` +
@@ -188,7 +188,7 @@ export function validateProperty(name: string) {
   }
 }
 
-export function validateAttribute(name: string) {
+export function validateAgainstEventAttributes(name: string) {
   if (name.toLowerCase().startsWith('on')) {
     const msg = `Binding to event attribute '${name}' is disallowed for security reasons, ` +
         `please use (${name.slice(2)})=...`;

@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {verifyNoBrowserErrors} from 'e2e_util/e2e_util';
 import {ExpectedConditions, browser, by, element, protractor} from 'protractor';
+
+import {verifyNoBrowserErrors} from '../../../../e2e_util/e2e_util';
 
 describe('WebWorkers Kitchen Sink', function() {
   afterEach(() => {
@@ -15,7 +16,7 @@ describe('WebWorkers Kitchen Sink', function() {
     browser.ignoreSynchronization = false;
   });
   const selector = 'hello-app .greeting';
-  const URL = 'all/playground/src/web_workers/kitchen_sink/index.html';
+  const URL = '/';
 
   it('should greet', () => {
     // This test can't wait for Angular as Testability is not available when using WebWorker

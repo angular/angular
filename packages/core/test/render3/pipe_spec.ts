@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive as _Directive, InjectionToken, OnChanges, OnDestroy, Pipe as _Pipe, PipeTransform, WrappedValue, createInjector, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
+import {Directive as _Directive, InjectionToken, OnChanges, OnDestroy, Pipe as _Pipe, PipeTransform, WrappedValue, defineInjectable, defineInjector, ɵNgModuleDef as NgModuleDef, ɵdefineComponent as defineComponent, ɵdirectiveInject as directiveInject} from '@angular/core';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
+import {createInjector} from '../../src/di/r3_injector';
 import {defineDirective, definePipe} from '../../src/render3/definition';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -169,12 +170,12 @@ describe('pipe', () => {
         elementEnd();
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'someProp', bind(pipeBind1(1, 1, 'Megatron')));
+        elementProperty(0, 'id', bind(pipeBind1(1, 1, 'Megatron')));
       }
     }
 
     renderToHtml(Template, person, 2, 3, null, [IdentityPipe], rendererFactory2);
-    expect(renderLog.log).toEqual(['someProp=Megatron']);
+    expect(renderLog.log).toEqual(['id=Megatron']);
 
     renderLog.clear();
     renderToHtml(Template, person, 2, 3, null, pipes, rendererFactory2);
@@ -254,8 +255,8 @@ describe('pipe', () => {
           container(4);
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(0, 'someProp', bind(pipeBind1(1, 2, true)));
-          elementProperty(2, 'someProp', bind(pipeBind1(3, 4, true)));
+          elementProperty(0, 'id', bind(pipeBind1(1, 2, true)));
+          elementProperty(2, 'id', bind(pipeBind1(3, 4, true)));
           pipeInstances.push(load<CountingImpurePipe>(1), load(3));
           containerRefreshStart(4);
           {
@@ -268,7 +269,7 @@ describe('pipe', () => {
                   elementEnd();
                 }
                 if (rf1 & RenderFlags.Update) {
-                  elementProperty(0, 'someProp', bind(pipeBind1(1, 1, true)));
+                  elementProperty(0, 'id', bind(pipeBind1(1, 1, true)));
                   pipeInstances.push(load<CountingImpurePipe>(1));
                 }
               }

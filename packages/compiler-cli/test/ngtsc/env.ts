@@ -14,19 +14,21 @@ import * as ts from 'typescript';
 import {createCompilerHost, createProgram} from '../../ngtools2';
 import {main, mainDiagnosticsForTest, readNgcCommandLineAndConfiguration} from '../../src/main';
 import {LazyRoute} from '../../src/ngtsc/routing';
-import {TestSupport, isInBazel, setup} from '../test_support';
+import {resolveNpmTreeArtifact} from '../runfile_helpers';
+import {TestSupport, setup} from '../test_support';
 
 function setupFakeCore(support: TestSupport): void {
   if (!process.env.TEST_SRCDIR) {
     throw new Error('`setupFakeCore` must be run within a Bazel test');
   }
-  const fakeCore = path.join(
-      process.env.TEST_SRCDIR, 'angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package');
+
+  const fakeNpmPackageDir =
+      resolveNpmTreeArtifact('angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package');
 
   const nodeModulesPath = path.join(support.basePath, 'node_modules');
   const angularCoreDirectory = path.join(nodeModulesPath, '@angular/core');
 
-  fs.symlinkSync(fakeCore, angularCoreDirectory);
+  fs.symlinkSync(fakeNpmPackageDir, angularCoreDirectory, 'dir');
 }
 
 /**
@@ -42,10 +44,6 @@ export class NgtscTestEnvironment {
    * Set up a new testing environment.
    */
   static setup(): NgtscTestEnvironment {
-    if (!NgtscTestEnvironment.supported) {
-      throw new Error(`Attempting to setup ngtsc tests in an unsupported environment`);
-    }
-
     const support = setup();
     const outDir = path.join(support.basePath, 'built');
     process.chdir(support.basePath);
@@ -65,6 +63,7 @@ export class NgtscTestEnvironment {
         "baseUrl": ".",
         "declaration": true,
         "target": "es5",
+        "newLine": "lf",
         "module": "es2015",
         "moduleResolution": "node",
         "lib": ["es6", "dom"],
@@ -135,6 +134,4 @@ export class NgtscTestEnvironment {
     const program = createProgram({rootNames, host, options});
     return program.listLazyRoutes(entryPoint);
   }
-
-  static get supported(): boolean { return isInBazel(); }
 }

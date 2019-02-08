@@ -54,6 +54,7 @@
 #  kara - Kara Erickson
 #  kyliau - Keen Yee Liau
 #  matsko - Matias Niemelä
+#  mgechev - Minko Gechev
 #  mhevery - Misko Hevery
 #  ocombe - Olivier Combe
 #  petebacondarwin - Pete Bacon Darwin
@@ -113,6 +114,7 @@
 #   - alexeagle
 #   - kyliau
 #   - IgorMinar
+#   - mgechev
 
 
 # ===========================================================
@@ -122,6 +124,7 @@
 #   - alexeagle
 #   - filipesilva
 #   - hansl
+#   - mgechev
 
 
 # ===========================================================
@@ -746,6 +749,11 @@ testing/**                                                      @angular/fw-test
 /tools/**                                                       @angular/fw-dev-infra
 *.bzl                                                           @angular/fw-dev-infra
 
+# ================================================
+#  Material CI
+# ================================================
+
+/tools/material-ci/**                                           @angular/fw-core @angular/fw-dev-infra
 
 
 # ================================================

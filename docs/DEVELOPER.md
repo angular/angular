@@ -105,8 +105,8 @@ Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to form
 If the source code is not properly formatted, the CI will fail and the PR can not be merged.
 
 You can automatically format your code by running:
-- `gulp format`: format all source code
-- `gulp format:changed`: re-format only edited source code.
+- `gulp format`: re-format only edited source code.
+- `gulp format:all`: format _all_ source code
 
 A better way is to set up your IDE to format the changed file on each file save.
 

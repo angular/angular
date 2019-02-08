@@ -9,7 +9,6 @@
 import {Type} from '../interface/type';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
-
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {inject} from './injector_compatibility';
@@ -42,7 +41,9 @@ export class NullInjector implements Injector {
       // reason why correctly written application should cause this exception.
       // TODO(misko): uncomment the next line once `ngDevMode` works with closure.
       // if(ngDevMode) debugger;
-      throw new Error(`NullInjectorError: No provider for ${stringify(token)}!`);
+      const error = new Error(`NullInjectorError: No provider for ${stringify(token)}!`);
+      error.name = 'NullInjectorError';
+      throw error;
     }
     return notFoundValue;
   }
@@ -131,7 +132,7 @@ const MULTI_PROVIDER_FN = function(): any[] {
 export const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
 const NG_TOKEN_PATH = 'ngTokenPath';
-const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
+export const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
 const enum OptionFlags {
   Optional = 1 << 0,
   CheckSelf = 1 << 1,
@@ -167,14 +168,7 @@ export class StaticInjector implements Injector {
     try {
       return tryResolveToken(token, record, this._records, this.parent, notFoundValue, flags);
     } catch (e) {
-      const tokenPath: any[] = e[NG_TEMP_TOKEN_PATH];
-      if (token[SOURCE]) {
-        tokenPath.unshift(token[SOURCE]);
-      }
-      e.message = formatError('\n' + e.message, tokenPath, this.source);
-      e[NG_TOKEN_PATH] = tokenPath;
-      e[NG_TEMP_TOKEN_PATH] = null;
-      throw e;
+      return catchInjectorError(e, token, 'StaticInjectorError', this.source);
     }
   }
 
@@ -199,8 +193,6 @@ interface DependencyRecord {
   token: any;
   options: number;
 }
-
-type TokenPath = Array<any>;
 
 function resolveProvider(provider: SupportedProvider): Record {
   const deps = computeDeps(provider);
@@ -385,7 +377,20 @@ function computeDeps(provider: StaticProvider): DependencyRecord[] {
   return deps;
 }
 
-function formatError(text: string, obj: any, source: string | null = null): string {
+export function catchInjectorError(
+    e: any, token: any, injectorErrorName: string, source: string | null): never {
+  const tokenPath: any[] = e[NG_TEMP_TOKEN_PATH];
+  if (token[SOURCE]) {
+    tokenPath.unshift(token[SOURCE]);
+  }
+  e.message = formatError('\n' + e.message, tokenPath, injectorErrorName, source);
+  e[NG_TOKEN_PATH] = tokenPath;
+  e[NG_TEMP_TOKEN_PATH] = null;
+  throw e;
+}
+
+function formatError(
+    text: string, obj: any, injectorErrorName: string, source: string | null = null): string {
   text = text && text.charAt(0) === '\n' && text.charAt(1) == NO_NEW_LINE ? text.substr(2) : text;
   let context = stringify(obj);
   if (obj instanceof Array) {
@@ -401,9 +406,9 @@ function formatError(text: string, obj: any, source: string | null = null): stri
     }
     context = `{${parts.join(', ')}}`;
   }
-  return `StaticInjectorError${source ? '(' + source + ')' : ''}[${context}]: ${text.replace(NEW_LINE, '\n  ')}`;
+  return `${injectorErrorName}${source ? '(' + source + ')' : ''}[${context}]: ${text.replace(NEW_LINE, '\n  ')}`;
 }
 
 function staticError(text: string, obj: any): Error {
-  return new Error(formatError(text, obj));
+  return new Error(formatError(text, obj, 'StaticInjectorError'));
 }

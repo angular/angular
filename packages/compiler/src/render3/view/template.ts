@@ -362,7 +362,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (this.i18nUseExternalIds) {
       const prefix = getTranslationConstPrefix(`EXTERNAL_`);
       const uniqueSuffix = this.constantPool.uniqueName(suffix);
-      name = `${prefix}${messageId}$$${uniqueSuffix}`;
+      name = `${prefix}${sanitizeIdentifier(messageId)}$$${uniqueSuffix}`;
     } else {
       const prefix = getTranslationConstPrefix(suffix);
       name = this.constantPool.uniqueName(prefix);

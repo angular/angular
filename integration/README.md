@@ -20,12 +20,10 @@ $ yarn ng update @angular/cli @angular-devkit/build-angular
 
 ## Render3 tests
 
-The directory `hello_world_cli` contains a test for render3 used with the angular cli.
+The directory `cli-hello-world-ivy-compat` contains a test for render3 used with the angular cli.
 
-If the Angular CLI is modified to generate a render3 application this should be replaced with that project.
-
-If the render3 is updated to support the Angular 5 bootstrap a version of this project should be created that
-uses the Angular 5 bootstrap.
+The `cli-hello-world-ivy-minimal` contains a minimal ivy app that is meant to mimic the bazel 
+equivalent in `packages/core/test/bundling/hello_world`, and should be kept similar.
 
 ## Writing an integration test
 

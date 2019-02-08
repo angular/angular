@@ -12,11 +12,9 @@ ts_library(
         "schema.json",
     ],
     deps = [
-        "//packages/bazel/src/schematics/bazel-workspace",
-        "@ngdeps//@angular-devkit/core",
+        "//packages/bazel/src/schematics/ng-add",
         "@ngdeps//@angular-devkit/schematics",
         "@ngdeps//@schematics/angular",
-        "@ngdeps//typescript",
     ],
 )
 
