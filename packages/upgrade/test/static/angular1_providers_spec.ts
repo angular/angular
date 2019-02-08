@@ -28,20 +28,15 @@ import {compileFactory, injectorFactory, parseFactory, rootScopeFactory, setTemp
         expect(injector).toBe(mockInjector);
       });
 
-      it('should throw if the injector value has not been set yet', () => {
-        let injector: IInjectorService|null = null;
+      it('should throw if the injector value is not set', () => {
+        // Ensure the injector is not set. This shouldn't be necessary, but on CI there seems to be
+        // some race condition with previous tests not being cleaned up properly.
+        // Related:
+        //   - https://github.com/angular/angular/pull/28045
+        //   - https://github.com/angular/angular/pull/28181
+        setTempInjectorRef(null as any);
 
-        try {
-          injector = injectorFactory();
-        } catch {
-          // Throwing an error is the expected behavior.
-          return;
-        }
-
-        // Normally, we should never get here (but sometimes we do on CI).
-        // Log some info to help debug the issue.
-        console.error(`Unexpected injector (${typeof injector}):`, injector);
-        fail(`Expected no injector, but got: ${jasmine.pp(injector)}`);
+        expect(injectorFactory).toThrowError();
       });
 
       it('should unset the injector after the first call (to prevent memory leaks)', () => {
