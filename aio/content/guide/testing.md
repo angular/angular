@@ -2650,10 +2650,10 @@ It takes two arguments: the component type to override (`HeroDetailComponent`) a
 The [override metadata object](#metadata-override-object) is a generic defined as follows:
 
 <code-example format="." language="javascript">
-  type MetadataOverride<T> = {
-    add?: Partial<T>;
-    remove?: Partial<T>;
-    set?: Partial<T>;
+  type MetadataOverride&lt;T&gt; = {
+    add?: Partial&lt;T&gt;;
+    remove?: Partial&lt;T&gt;;
+    set?: Partial&lt;T&gt;;
   };
 </code-example>
 
@@ -3008,10 +3008,10 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
 `@Component`, `@Directive`, or `@Pipe`.
 
 <code-example format="." language="javascript">
-  type MetadataOverride<T> = {
-    add?: Partial<T>;
-    remove?: Partial<T>;
-    set?: Partial<T>;
+  type MetadataOverride&lt;T&gt; = {
+    add?: Partial&lt;T&gt;;
+    remove?: Partial&lt;T&gt;;
+    set?: Partial&lt;T&gt;;
   };
 </code-example>
 
