@@ -501,7 +501,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/util/util';
 
 function parseHtml(html: string): html.Node[] {
   const htmlParser = new HtmlParser();
-  const parseResult = htmlParser.parse(html, 'extractor spec', true);
+  const parseResult = htmlParser.parse(html, 'extractor spec', {tokenizeExpansionForms: true});
   if (parseResult.errors.length > 1) {
     throw new Error(`unexpected parse errors: ${parseResult.errors.join('\n')}`);
   }

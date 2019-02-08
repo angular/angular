@@ -112,7 +112,7 @@ class LanguageServiceImpl implements LanguageService {
         const parser = new TemplateParser(
             config, this.host.resolver.getReflector(), expressionParser,
             new DomElementSchemaRegistry(), htmlParser, null !, []);
-        const htmlResult = htmlParser.parse(template.source, '', true);
+        const htmlResult = htmlParser.parse(template.source, '', {tokenizeExpansionForms: true});
         const analyzedModules = this.host.getAnalyzedModules();
         let errors: Diagnostic[]|undefined = undefined;
         let ngModule = analyzedModules.ngModuleByPipeOrDirective.get(template.type);

@@ -443,10 +443,11 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
 
       it('should parse interpolation with custom markers', () => {
-        expect(tokenizeAndHumanizeParts('{% a %}', null !, {start: '{%', end: '%}'})).toEqual([
-          [lex.TokenType.TEXT, '{% a %}'],
-          [lex.TokenType.EOF],
-        ]);
+        expect(tokenizeAndHumanizeParts('{% a %}', {interpolationConfig: {start: '{%', end: '%}'}}))
+            .toEqual([
+              [lex.TokenType.TEXT, '{% a %}'],
+              [lex.TokenType.EOF],
+            ]);
       });
 
       it('should handle CR & LF', () => {
@@ -524,13 +525,15 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
 
       it('should treat expansion form as text when they are not parsed', () => {
-        expect(tokenizeAndHumanizeParts('<span>{a, b, =4 {c}}</span>', false)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, null, 'span'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TEXT, '{a, b, =4 {c}}'],
-          [lex.TokenType.TAG_CLOSE, null, 'span'],
-          [lex.TokenType.EOF],
-        ]);
+        expect(tokenizeAndHumanizeParts(
+                   '<span>{a, b, =4 {c}}</span>', {tokenizeExpansionForms: false}))
+            .toEqual([
+              [lex.TokenType.TAG_OPEN_START, null, 'span'],
+              [lex.TokenType.TAG_OPEN_END],
+              [lex.TokenType.TEXT, '{a, b, =4 {c}}'],
+              [lex.TokenType.TAG_CLOSE, null, 'span'],
+              [lex.TokenType.EOF],
+            ]);
       });
     });
 
@@ -641,7 +644,9 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
     describe('expansion forms', () => {
       it('should parse an expansion form', () => {
-        expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four} =5 {five} foo {bar} }', true))
+        expect(
+            tokenizeAndHumanizeParts(
+                '{one.two, three, =4 {four} =5 {five} foo {bar} }', {tokenizeExpansionForms: true}))
             .toEqual([
               [lex.TokenType.EXPANSION_FORM_START],
               [lex.TokenType.RAW_TEXT, 'one.two'],
@@ -664,75 +669,84 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
 
       it('should parse an expansion form with text elements surrounding it', () => {
-        expect(tokenizeAndHumanizeParts('before{one.two, three, =4 {four}}after', true)).toEqual([
-          [lex.TokenType.TEXT, 'before'],
-          [lex.TokenType.EXPANSION_FORM_START],
-          [lex.TokenType.RAW_TEXT, 'one.two'],
-          [lex.TokenType.RAW_TEXT, 'three'],
-          [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-          [lex.TokenType.EXPANSION_CASE_EXP_START],
-          [lex.TokenType.TEXT, 'four'],
-          [lex.TokenType.EXPANSION_CASE_EXP_END],
-          [lex.TokenType.EXPANSION_FORM_END],
-          [lex.TokenType.TEXT, 'after'],
-          [lex.TokenType.EOF],
-        ]);
+        expect(tokenizeAndHumanizeParts(
+                   'before{one.two, three, =4 {four}}after', {tokenizeExpansionForms: true}))
+            .toEqual([
+              [lex.TokenType.TEXT, 'before'],
+              [lex.TokenType.EXPANSION_FORM_START],
+              [lex.TokenType.RAW_TEXT, 'one.two'],
+              [lex.TokenType.RAW_TEXT, 'three'],
+              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
+              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.TEXT, 'four'],
+              [lex.TokenType.EXPANSION_CASE_EXP_END],
+              [lex.TokenType.EXPANSION_FORM_END],
+              [lex.TokenType.TEXT, 'after'],
+              [lex.TokenType.EOF],
+            ]);
       });
 
       it('should parse an expansion form as a tag single child', () => {
-        expect(tokenizeAndHumanizeParts('<div><span>{a, b, =4 {c}}</span></div>', true)).toEqual([
-          [lex.TokenType.TAG_OPEN_START, null, 'div'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TAG_OPEN_START, null, 'span'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.EXPANSION_FORM_START],
-          [lex.TokenType.RAW_TEXT, 'a'],
-          [lex.TokenType.RAW_TEXT, 'b'],
-          [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-          [lex.TokenType.EXPANSION_CASE_EXP_START],
-          [lex.TokenType.TEXT, 'c'],
-          [lex.TokenType.EXPANSION_CASE_EXP_END],
-          [lex.TokenType.EXPANSION_FORM_END],
-          [lex.TokenType.TAG_CLOSE, null, 'span'],
-          [lex.TokenType.TAG_CLOSE, null, 'div'],
-          [lex.TokenType.EOF],
-        ]);
+        expect(tokenizeAndHumanizeParts(
+                   '<div><span>{a, b, =4 {c}}</span></div>', {tokenizeExpansionForms: true}))
+            .toEqual([
+              [lex.TokenType.TAG_OPEN_START, null, 'div'],
+              [lex.TokenType.TAG_OPEN_END],
+              [lex.TokenType.TAG_OPEN_START, null, 'span'],
+              [lex.TokenType.TAG_OPEN_END],
+              [lex.TokenType.EXPANSION_FORM_START],
+              [lex.TokenType.RAW_TEXT, 'a'],
+              [lex.TokenType.RAW_TEXT, 'b'],
+              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
+              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.TEXT, 'c'],
+              [lex.TokenType.EXPANSION_CASE_EXP_END],
+              [lex.TokenType.EXPANSION_FORM_END],
+              [lex.TokenType.TAG_CLOSE, null, 'span'],
+              [lex.TokenType.TAG_CLOSE, null, 'div'],
+              [lex.TokenType.EOF],
+            ]);
       });
 
       it('should parse an expansion forms with elements in it', () => {
-        expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four <b>a</b>}}', true)).toEqual([
-          [lex.TokenType.EXPANSION_FORM_START],
-          [lex.TokenType.RAW_TEXT, 'one.two'],
-          [lex.TokenType.RAW_TEXT, 'three'],
-          [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-          [lex.TokenType.EXPANSION_CASE_EXP_START],
-          [lex.TokenType.TEXT, 'four '],
-          [lex.TokenType.TAG_OPEN_START, null, 'b'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TEXT, 'a'],
-          [lex.TokenType.TAG_CLOSE, null, 'b'],
-          [lex.TokenType.EXPANSION_CASE_EXP_END],
-          [lex.TokenType.EXPANSION_FORM_END],
-          [lex.TokenType.EOF],
-        ]);
+        expect(tokenizeAndHumanizeParts(
+                   '{one.two, three, =4 {four <b>a</b>}}', {tokenizeExpansionForms: true}))
+            .toEqual([
+              [lex.TokenType.EXPANSION_FORM_START],
+              [lex.TokenType.RAW_TEXT, 'one.two'],
+              [lex.TokenType.RAW_TEXT, 'three'],
+              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
+              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.TEXT, 'four '],
+              [lex.TokenType.TAG_OPEN_START, null, 'b'],
+              [lex.TokenType.TAG_OPEN_END],
+              [lex.TokenType.TEXT, 'a'],
+              [lex.TokenType.TAG_CLOSE, null, 'b'],
+              [lex.TokenType.EXPANSION_CASE_EXP_END],
+              [lex.TokenType.EXPANSION_FORM_END],
+              [lex.TokenType.EOF],
+            ]);
       });
 
       it('should parse an expansion forms containing an interpolation', () => {
-        expect(tokenizeAndHumanizeParts('{one.two, three, =4 {four {{a}}}}', true)).toEqual([
-          [lex.TokenType.EXPANSION_FORM_START],
-          [lex.TokenType.RAW_TEXT, 'one.two'],
-          [lex.TokenType.RAW_TEXT, 'three'],
-          [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
-          [lex.TokenType.EXPANSION_CASE_EXP_START],
-          [lex.TokenType.TEXT, 'four {{a}}'],
-          [lex.TokenType.EXPANSION_CASE_EXP_END],
-          [lex.TokenType.EXPANSION_FORM_END],
-          [lex.TokenType.EOF],
-        ]);
+        expect(tokenizeAndHumanizeParts(
+                   '{one.two, three, =4 {four {{a}}}}', {tokenizeExpansionForms: true}))
+            .toEqual([
+              [lex.TokenType.EXPANSION_FORM_START],
+              [lex.TokenType.RAW_TEXT, 'one.two'],
+              [lex.TokenType.RAW_TEXT, 'three'],
+              [lex.TokenType.EXPANSION_CASE_VALUE, '=4'],
+              [lex.TokenType.EXPANSION_CASE_EXP_START],
+              [lex.TokenType.TEXT, 'four {{a}}'],
+              [lex.TokenType.EXPANSION_CASE_EXP_END],
+              [lex.TokenType.EXPANSION_FORM_END],
+              [lex.TokenType.EOF],
+            ]);
       });
 
       it('should parse nested expansion forms', () => {
-        expect(tokenizeAndHumanizeParts(`{one.two, three, =4 { {xx, yy, =x {one}} }}`, true))
+        expect(tokenizeAndHumanizeParts(
+                   `{one.two, three, =4 { {xx, yy, =x {one}} }}`, {tokenizeExpansionForms: true}))
             .toEqual([
               [lex.TokenType.EXPANSION_FORM_START],
               [lex.TokenType.RAW_TEXT, 'one.two'],
@@ -757,11 +771,12 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
     describe('errors', () => {
       it('should report unescaped "{" on error', () => {
-        expect(tokenizeAndHumanizeErrors(`<p>before { after</p>`, true)).toEqual([[
-          lex.TokenType.RAW_TEXT,
-          `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
-          '0:21',
-        ]]);
+        expect(tokenizeAndHumanizeErrors(`<p>before { after</p>`, {tokenizeExpansionForms: true}))
+            .toEqual([[
+              lex.TokenType.RAW_TEXT,
+              `Unexpected character "EOF" (Do you have an unescaped "{" in your template? Use "{{ '{' }}") to escape it.)`,
+              '0:21',
+            ]]);
       });
 
       it('should include 2 lines of context in message', () => {
@@ -790,11 +805,8 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
   });
 }
 
-function tokenizeWithoutErrors(
-    input: string, tokenizeExpansionForms: boolean = false,
-    interpolationConfig?: InterpolationConfig): lex.Token[] {
-  const tokenizeResult = lex.tokenize(
-      input, 'someUrl', getHtmlTagDefinition, tokenizeExpansionForms, interpolationConfig);
+function tokenizeWithoutErrors(input: string, options?: lex.TokenizeOptions): lex.Token[] {
+  const tokenizeResult = lex.tokenize(input, 'someUrl', getHtmlTagDefinition, options);
 
   if (tokenizeResult.errors.length > 0) {
     const errorString = tokenizeResult.errors.join('\n');
@@ -804,27 +816,25 @@ function tokenizeWithoutErrors(
   return tokenizeResult.tokens;
 }
 
-function tokenizeAndHumanizeParts(
-    input: string, tokenizeExpansionForms: boolean = false,
-    interpolationConfig?: InterpolationConfig): any[] {
-  return tokenizeWithoutErrors(input, tokenizeExpansionForms, interpolationConfig)
-      .map(token => [<any>token.type].concat(token.parts));
+function tokenizeAndHumanizeParts(input: string, options?: lex.TokenizeOptions): any[] {
+  return tokenizeWithoutErrors(input, options).map(token => [<any>token.type].concat(token.parts));
 }
 
-function tokenizeAndHumanizeSourceSpans(input: string): any[] {
-  return tokenizeWithoutErrors(input).map(token => [<any>token.type, token.sourceSpan.toString()]);
+function tokenizeAndHumanizeSourceSpans(input: string, options?: lex.TokenizeOptions): any[] {
+  return tokenizeWithoutErrors(input, options)
+      .map(token => [<any>token.type, token.sourceSpan.toString()]);
 }
 
 function humanizeLineColumn(location: ParseLocation): string {
   return `${location.line}:${location.col}`;
 }
 
-function tokenizeAndHumanizeLineColumn(input: string): any[] {
-  return tokenizeWithoutErrors(input).map(
-      token => [<any>token.type, humanizeLineColumn(token.sourceSpan.start)]);
+function tokenizeAndHumanizeLineColumn(input: string, options?: lex.TokenizeOptions): any[] {
+  return tokenizeWithoutErrors(input, options)
+      .map(token => [<any>token.type, humanizeLineColumn(token.sourceSpan.start)]);
 }
 
-function tokenizeAndHumanizeErrors(input: string, tokenizeExpansionForms: boolean = false): any[] {
-  return lex.tokenize(input, 'someUrl', getHtmlTagDefinition, tokenizeExpansionForms)
+function tokenizeAndHumanizeErrors(input: string, options?: lex.TokenizeOptions): any[] {
+  return lex.tokenize(input, 'someUrl', getHtmlTagDefinition, options)
       .errors.map(e => [<any>e.tokenType, e.msg, humanizeLineColumn(e.span.start)]);
 }

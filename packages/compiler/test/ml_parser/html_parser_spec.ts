@@ -300,7 +300,7 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         it('should parse out expansion forms', () => {
           const parsed = parser.parse(
               `<div>before{messages.length, plural, =0 {You have <b>no</b> messages} =1 {One {{message}}}}after</div>`,
-              'TestComp', true);
+              'TestComp', {tokenizeExpansionForms: true});
 
           expect(humanizeDom(parsed)).toEqual([
             [html.Element, 'div', 0],
@@ -324,8 +324,9 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         });
 
         it('should parse out expansion forms', () => {
-          const parsed =
-              parser.parse(`<div><span>{a, plural, =0 {b}}</span></div>`, 'TestComp', true);
+          const parsed = parser.parse(
+              `<div><span>{a, plural, =0 {b}}</span></div>`, 'TestComp',
+              {tokenizeExpansionForms: true});
 
           expect(humanizeDom(parsed)).toEqual([
             [html.Element, 'div', 0],
@@ -337,7 +338,8 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
 
         it('should parse out nested expansion forms', () => {
           const parsed = parser.parse(
-              `{messages.length, plural, =0 { {p.gender, select, male {m}} }}`, 'TestComp', true);
+              `{messages.length, plural, =0 { {p.gender, select, male {m}} }}`, 'TestComp',
+              {tokenizeExpansionForms: true});
           expect(humanizeDom(parsed)).toEqual([
             [html.Expansion, 'messages.length', 'plural', 0],
             [html.ExpansionCase, '=0', 1],
@@ -353,26 +355,31 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         });
 
         it('should error when expansion form is not closed', () => {
-          const p = parser.parse(`{messages.length, plural, =0 {one}`, 'TestComp', true);
+          const p = parser.parse(
+              `{messages.length, plural, =0 {one}`, 'TestComp', {tokenizeExpansionForms: true});
           expect(humanizeErrors(p.errors)).toEqual([
             [null, 'Invalid ICU message. Missing \'}\'.', '0:34']
           ]);
         });
 
         it('should support ICU expressions with cases that contain numbers', () => {
-          const p = parser.parse(`{sex, select, male {m} female {f} 0 {other}}`, 'TestComp', true);
+          const p = parser.parse(
+              `{sex, select, male {m} female {f} 0 {other}}`, 'TestComp',
+              {tokenizeExpansionForms: true});
           expect(p.errors.length).toEqual(0);
         });
 
         it('should error when expansion case is not closed', () => {
-          const p = parser.parse(`{messages.length, plural, =0 {one`, 'TestComp', true);
+          const p = parser.parse(
+              `{messages.length, plural, =0 {one`, 'TestComp', {tokenizeExpansionForms: true});
           expect(humanizeErrors(p.errors)).toEqual([
             [null, 'Invalid ICU message. Missing \'}\'.', '0:29']
           ]);
         });
 
         it('should error when invalid html in the case', () => {
-          const p = parser.parse(`{messages.length, plural, =0 {<b/>}`, 'TestComp', true);
+          const p = parser.parse(
+              `{messages.length, plural, =0 {<b/>}`, 'TestComp', {tokenizeExpansionForms: true});
           expect(humanizeErrors(p.errors)).toEqual([
             ['b', 'Only void and foreign elements can be self closed "b"', '0:30']
           ]);
@@ -404,8 +411,9 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         });
 
         it('should support expansion form', () => {
-          expect(humanizeDomSourceSpans(
-                     parser.parse('<div>{count, plural, =0 {msg}}</div>', 'TestComp', true)))
+          expect(humanizeDomSourceSpans(parser.parse(
+                     '<div>{count, plural, =0 {msg}}</div>', 'TestComp',
+                     {tokenizeExpansionForms: true})))
               .toEqual([
                 [html.Element, 'div', 0, '<div>'],
                 [html.Expansion, 'count', 'plural', 1, '{count, plural, =0 {msg}}'],
