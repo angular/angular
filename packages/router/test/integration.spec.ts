@@ -302,6 +302,17 @@ describe('Integration', () => {
            expect(warnings.length).toBe(0);
          })));
     });
+
+    describe('with relative path', () => {
+      it('should warn when used without "relativeTo" property',
+         fakeAsync(inject([Router, NgZone], (router: Router, ngZone: NgZone) => {
+           ngZone.run(() => { router.navigate(['./simple']); });
+
+           expect(warnings.length).toBe(1);
+           expect(warnings[0])
+               .toBe(`WARNING: using relative route without the 'relativeTo' property`);
+         })));
+    });
   });
 
   describe('should execute navigations serially', () => {

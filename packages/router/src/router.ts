@@ -1167,7 +1167,7 @@ export class Router {
    */
   navigate(commands: any[], extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
-    validateCommands(commands);
+    this.validateCommands(commands, extras);
     return this.navigateByUrl(this.createUrlTree(commands, extras), extras);
   }
 
@@ -1314,13 +1314,22 @@ export class Router {
     this.location.replaceState(
         this.urlSerializer.serialize(this.rawUrlTree), '', {navigationId: this.lastSuccessfulId});
   }
-}
 
-function validateCommands(commands: string[]): void {
-  for (let i = 0; i < commands.length; i++) {
-    const cmd = commands[i];
-    if (cmd == null) {
-      throw new Error(`The requested path contains ${cmd} segment at index ${i}`);
+  private validateCommands(commands: any[], extras: NavigationExtras): void {
+    for (let i = 0; i < commands.length; i++) {
+      const cmd = commands[i];
+      if (cmd == null) {
+        throw new Error(`The requested path contains ${cmd} segment at index ${i}`);
+      }
+
+      if (typeof cmd === 'string') {
+        const urlList = cmd.split('/');
+        const containRelativePath = urlList[0] === '.' || urlList.indexOf('..') !== -1;
+
+        if (containRelativePath && !extras.relativeTo) {
+          this.console.warn(`WARNING: using relative route without the 'relativeTo' property`);
+        }
+      }
     }
   }
 }
