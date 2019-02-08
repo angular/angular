@@ -5,4 +5,4 @@ export declare const RouterUpgradeInitializer: {
     deps: (typeof UpgradeModule)[];
 };
 
-export declare function setUpLocationSync(ngUpgrade: UpgradeModule): void;
+export declare function setUpLocationSync(ngUpgrade: UpgradeModule, urlType?: 'path' | 'hash'): void;
