@@ -429,8 +429,15 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
         it('should report a value span for an attribute with a value', () => {
           const ast = parser.parse('<div bar="12"></div>', 'TestComp');
           const attr = (ast.rootNodes[0] as html.Element).attrs[0];
+          expect(attr.valueSpan !.start.offset).toEqual(10);
+          expect(attr.valueSpan !.end.offset).toEqual(12);
+        });
+
+        it('should report a value span for an unquoted attribute value', () => {
+          const ast = parser.parse('<div bar=12></div>', 'TestComp');
+          const attr = (ast.rootNodes[0] as html.Element).attrs[0];
           expect(attr.valueSpan !.start.offset).toEqual(9);
-          expect(attr.valueSpan !.end.offset).toEqual(13);
+          expect(attr.valueSpan !.end.offset).toEqual(11);
         });
       });
 
