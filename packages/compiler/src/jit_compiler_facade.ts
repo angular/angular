@@ -28,7 +28,8 @@ import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 export class CompilerFacadeImpl implements CompilerFacade {
   R3ResolvedDependencyType = R3ResolvedDependencyType as any;
   private elementSchemaRegistry = new DomElementSchemaRegistry();
-  private jitEvaluator = new JitEvaluator();
+
+  constructor(private jitEvaluator = new JitEvaluator()) {}
 
   compilePipe(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, facade: R3PipeMetadataFacade):
       any {

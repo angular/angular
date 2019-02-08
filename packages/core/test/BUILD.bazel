@@ -46,6 +46,7 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core",
+        "//packages/core/src/compiler",
         "//packages/core/testing",
         "//packages/platform-server",
         "//packages/platform-server/testing",
