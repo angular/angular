@@ -9,6 +9,7 @@
 import * as cdAst from '../expression_parser/ast';
 import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
+import {ParseSourceSpan} from '../parse_util';
 
 export class EventHandlerVars { static event = o.variable('$event'); }
 
@@ -65,7 +66,8 @@ export type InterpolationFunction = (args: o.Expression[]) => o.Expression;
  */
 export function convertActionBinding(
     localResolver: LocalResolver | null, implicitReceiver: o.Expression, action: cdAst.AST,
-    bindingId: string, interpolationFunction?: InterpolationFunction): ConvertActionBindingResult {
+    bindingId: string, interpolationFunction?: InterpolationFunction,
+    baseSourceSpan?: ParseSourceSpan): ConvertActionBindingResult {
   if (!localResolver) {
     localResolver = new DefaultLocalResolver();
   }
@@ -92,8 +94,8 @@ export function convertActionBinding(
       },
       action);
 
-  const visitor =
-      new _AstToIrVisitor(localResolver, implicitReceiver, bindingId, interpolationFunction);
+  const visitor = new _AstToIrVisitor(
+      localResolver, implicitReceiver, bindingId, interpolationFunction, baseSourceSpan);
   const actionStmts: o.Statement[] = [];
   flattenStatements(actionWithoutBuiltins.visit(visitor, _Mode.Statement), actionStmts);
   prependTemporaryDecls(visitor.temporaryCount, bindingId, actionStmts);
@@ -243,7 +245,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
   constructor(
       private _localResolver: LocalResolver, private _implicitReceiver: o.Expression,
-      private bindingId: string, private interpolationFunction: InterpolationFunction|undefined) {}
+      private bindingId: string, private interpolationFunction: InterpolationFunction|undefined,
+      private baseSourceSpan?: ParseSourceSpan) {}
 
   visitBinary(ast: cdAst.Binary, mode: _Mode): any {
     let op: o.BinaryOperator;
@@ -300,7 +303,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return convertToStatementIfNeeded(
         mode,
         new o.BinaryOperatorExpr(
-            op, this._visit(ast.left, _Mode.Expression), this._visit(ast.right, _Mode.Expression)));
+            op, this._visit(ast.left, _Mode.Expression), this._visit(ast.right, _Mode.Expression),
+            undefined, this.convertSourceSpan(ast.span)));
   }
 
   visitChain(ast: cdAst.Chain, mode: _Mode): any {
@@ -313,7 +317,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return convertToStatementIfNeeded(
         mode, value.conditional(
                   this._visit(ast.trueExp, _Mode.Expression),
-                  this._visit(ast.falseExp, _Mode.Expression)));
+                  this._visit(ast.falseExp, _Mode.Expression), this.convertSourceSpan(ast.span)));
   }
 
   visitPipe(ast: cdAst.BindingPipe, mode: _Mode): any {
@@ -327,7 +331,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     if (ast instanceof BuiltinFunctionCall) {
       fnResult = ast.converter(convertedArgs);
     } else {
-      fnResult = this._visit(ast.target !, _Mode.Expression).callFn(convertedArgs);
+      fnResult = this._visit(ast.target !, _Mode.Expression)
+                     .callFn(convertedArgs, this.convertSourceSpan(ast.span));
     }
     return convertToStatementIfNeeded(mode, fnResult);
   }
@@ -351,7 +356,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     }
     return ast.expressions.length <= 9 ?
         o.importExpr(Identifiers.inlineInterpolate).callFn(args) :
-        o.importExpr(Identifiers.interpolate).callFn([args[0], o.literalArr(args.slice(1))]);
+        o.importExpr(Identifiers.interpolate).callFn([
+          args[0], o.literalArr(args.slice(1), undefined, this.convertSourceSpan(ast.span))
+        ]);
   }
 
   visitKeyedRead(ast: cdAst.KeyedRead, mode: _Mode): any {
@@ -386,7 +393,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         ast.value === null || ast.value === undefined || ast.value === true || ast.value === true ?
         o.INFERRED_TYPE :
         undefined;
-    return convertToStatementIfNeeded(mode, o.literal(ast.value, type));
+    return convertToStatementIfNeeded(
+        mode, o.literal(ast.value, type, this.convertSourceSpan(ast.span)));
   }
 
   private _getLocal(name: string): o.Expression|null { return this._localResolver.getLocal(name); }
@@ -398,7 +406,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         throw new Error(
             `Invalid call to $any, expected 1 argument but received ${args.length || 'none'}`);
       }
-      return (args[0] as o.Expression).cast(o.DYNAMIC_TYPE);
+      return (args[0] as o.Expression).cast(o.DYNAMIC_TYPE, this.convertSourceSpan(ast.span));
     }
 
     const leftMostSafe = this.leftMostSafeNode(ast);
@@ -415,7 +423,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         }
       }
       if (result == null) {
-        result = receiver.callMethod(ast.name, args);
+        result = receiver.callMethod(ast.name, args, this.convertSourceSpan(ast.span));
       }
       return convertToStatementIfNeeded(mode, result);
     }
@@ -663,6 +671,27 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     this._currentTemporary--;
     if (temporary.name != temporaryName(this.bindingId, this._currentTemporary)) {
       throw new Error(`Temporary ${temporary.name} released out of order`);
+    }
+  }
+
+  /**
+   * Creates an absolute `ParseSourceSpan` from the relative `ParseSpan`.
+   *
+   * `ParseSpan` objects are relative to the start of the expression.
+   * This method converts these to full `ParseSourceSpan` objects that
+   * show where the span is within the overall source file.
+   *
+   * @param span the relative span to convert.
+   * @returns a `ParseSourceSpan` for the the given span or null if no
+   * `baseSourceSpan` was provided to this class.
+   */
+  private convertSourceSpan(span: cdAst.ParseSpan) {
+    if (this.baseSourceSpan) {
+      const start = this.baseSourceSpan.start.moveBy(span.start);
+      const end = this.baseSourceSpan.start.moveBy(span.end);
+      return new ParseSourceSpan(start, end);
+    } else {
+      return null;
     }
   }
 }
