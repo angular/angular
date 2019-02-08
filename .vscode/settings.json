@@ -15,4 +15,5 @@
     "**/bazel-out": true,
     "**/dist": true,
   },
+  "git.ignoreLimitWarning": true,
 }
