@@ -243,7 +243,7 @@ def _ng_package_impl(ctx):
 
         if len(type_definitions) > 0 and len(bundled_type_definitions) > 0:
             # bundle_dts needs to be enabled/disabled for all ng module packages.
-            fail("Expected all or none deps targets to have 'bundle_dts' enabled.")
+            fail("Expected all or none of the 'ng_module' dependencies to have 'bundle_dts' enabled.")
 
         es2015_entry_point = "/".join([p for p in [
             ctx.bin_dir.path,

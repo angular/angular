@@ -86,7 +86,7 @@ def _is_legacy_ngc(ctx):
       ctx: skylark rule execution context
 
     Returns:
-      true if the current compilation strategy will produce View Engine compilation outputs (such as
+      true iff the current compilation strategy will produce View Engine compilation outputs (such as
       factory files), false otherwise
     """
 
@@ -135,7 +135,7 @@ def _should_produce_dts_bundle(ctx):
       true when we should produce bundled dts.
     """
 
-    # At the moment we cannot use this with ngtsc compiler since it emittes
+    # At the moment we cannot use this with ngtsc compiler since it emits
     # import * as ___ from local modules which is not supported
     # see: https://github.com/Microsoft/web-build-tools/issues/1029
     return _is_legacy_ngc(ctx) and ctx.attr.bundle_dts
@@ -421,7 +421,7 @@ def ngc_compile_action(
         ctx.actions.run(
             progress_message = "Bundling DTS %s" % str(ctx.label),
             mnemonic = "APIExtractor",
-            executable = ctx.executable.api_extractor,
+            executable = ctx.executable._api_extractor,
             inputs = filter_inputs,
             outputs = [dts_bundle_out],
             arguments = [
@@ -605,7 +605,7 @@ NG_MODULE_ATTRIBUTES = {
         executable = True,
         cfg = "host",
     ),
-    "api_extractor": attr.label(
+    "_api_extractor": attr.label(
         default = Label("//packages/bazel/src/api-extractor:api_extractor"),
         executable = True,
         cfg = "host",

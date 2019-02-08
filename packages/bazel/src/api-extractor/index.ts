@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node"/>
+/// <reference lib="es2017"/>
+
 import {format, parseTsconfig} from '@bazel/typescript';
 import {Extractor, ExtractorValidationRulePolicy, IExtractorConfig, IExtractorOptions} from '@microsoft/api-extractor';
 import * as fs from 'fs';
@@ -15,7 +18,7 @@ const DEBUG = false;
 
 export function runMain(
     tsConfig: string, entryPoint: string, dtsBundleOut?: string, apiReviewFolder?: string,
-    acceptApiUpdates = false): number {
+    acceptApiUpdates = false): 1|0 {
   const [parsedConfig, errors] = parseTsconfig(tsConfig);
   if (errors && errors.length) {
     console.error(format('', errors));
