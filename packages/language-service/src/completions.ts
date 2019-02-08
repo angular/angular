@@ -316,7 +316,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
       // find the template binding that contains the position
       if (!this.attr.valueSpan) return;
-      const valueRelativePosition = this.position - this.attr.valueSpan.start.offset - 1;
+      const valueRelativePosition = this.position - this.attr.valueSpan.start.offset;
       const bindings = templateBindingResult.templateBindings;
       const binding =
           bindings.find(
@@ -401,7 +401,7 @@ class ExpressionVisitor extends NullTemplateVisitor {
 
   private get attributeValuePosition() {
     if (this.attr && this.attr.valueSpan) {
-      return this.position - this.attr.valueSpan.start.offset - 1;
+      return this.position - this.attr.valueSpan.start.offset;
     }
     return 0;
   }
