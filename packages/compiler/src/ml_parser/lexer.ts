@@ -49,14 +49,20 @@ export class TokenizeResult {
   constructor(public tokens: Token[], public errors: TokenError[]) {}
 }
 
+/**
+ * Options that modify how the text is tokenized.
+ */
+export interface TokenizeOptions {
+  /** Whether to tokenize ICU messages (considered as text nodes when false). */
+  tokenizeExpansionForms?: boolean;
+  /** How to tokenize interpolation markers. */
+  interpolationConfig?: InterpolationConfig;
+}
+
 export function tokenize(
     source: string, url: string, getTagDefinition: (tagName: string) => TagDefinition,
-    tokenizeExpansionForms: boolean = false,
-    interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): TokenizeResult {
-  return new _Tokenizer(
-             new ParseSourceFile(source, url), getTagDefinition, tokenizeExpansionForms,
-             interpolationConfig)
-      .tokenize();
+    options: TokenizeOptions = {}): TokenizeResult {
+  return new _Tokenizer(new ParseSourceFile(source, url), getTagDefinition, options).tokenize();
 }
 
 const _CR_OR_CRLF_REGEXP = /\r\n?/g;
@@ -78,6 +84,8 @@ class _ControlFlowError {
 class _Tokenizer {
   private _input: string;
   private _length: number;
+  private _tokenizeIcu: boolean;
+  private _interpolationConfig: InterpolationConfig;
   // Note: this is always lowercase!
   private _peek: number = -1;
   private _nextPeek: number = -1;
@@ -102,8 +110,9 @@ class _Tokenizer {
    */
   constructor(
       private _file: ParseSourceFile, private _getTagDefinition: (tagName: string) => TagDefinition,
-      private _tokenizeIcu: boolean,
-      private _interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) {
+      options: TokenizeOptions) {
+    this._tokenizeIcu = options.tokenizeExpansionForms || false;
+    this._interpolationConfig = options.interpolationConfig || DEFAULT_INTERPOLATION_CONFIG;
     this._input = _file.content;
     this._length = _file.content.length;
     this._advance();

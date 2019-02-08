@@ -38,11 +38,7 @@ export function createLanguageServiceFromTypescript(
  * syntactically incorrect templates.
  */
 export class DummyHtmlParser extends HtmlParser {
-  parse(
-      source: string, url: string, parseExpansionForms: boolean = false,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
-    return new ParseTreeResult([], []);
-  }
+  parse(): ParseTreeResult { return new ParseTreeResult([], []); }
 }
 
 /**
