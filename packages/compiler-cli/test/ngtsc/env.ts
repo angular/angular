@@ -70,7 +70,7 @@ export class NgtscTestEnvironment {
         "typeRoots": ["node_modules/@types"]
       },
       "angularCompilerOptions": {
-        "enableIvy": "ngtsc"
+        "enableIvy": true
       }
     }`);
 
@@ -100,7 +100,7 @@ export class NgtscTestEnvironment {
   tsconfig(extraOpts: {[key: string]: string | boolean} = {}, extraRootDirs?: string[]): void {
     const tsconfig: {[key: string]: any} = {
       extends: './tsconfig-base.json',
-      angularCompilerOptions: {...extraOpts, enableIvy: 'ngtsc'},
+      angularCompilerOptions: {...extraOpts, enableIvy: true},
     };
     if (extraRootDirs !== undefined) {
       tsconfig.compilerOptions = {

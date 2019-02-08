@@ -74,7 +74,7 @@ def _enable_ivy_value(ctx):
     if strategy == "legacy":
         return False
     elif strategy == "aot":
-        return "ngtsc"
+        return True
     else:
         fail("unreachable")
 
