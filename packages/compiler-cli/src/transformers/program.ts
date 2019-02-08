@@ -263,11 +263,10 @@ class AngularCompilerProgram implements Program {
     emitCallback?: TsEmitCallback,
     mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
   } = {}): ts.EmitResult {
-    if (this.options.enableIvy === 'ngtsc' || this.options.enableIvy === 'tsc') {
+    if (this.options.enableIvy) {
       throw new Error('Cannot run legacy compiler in ngtsc mode');
     }
-    return this.options.enableIvy === true ? this._emitRender3(parameters) :
-                                             this._emitRender2(parameters);
+    return this._emitRender2(parameters);
   }
 
   private _emitRender3(
@@ -899,7 +898,7 @@ export function createProgram({rootNames, options, host, oldProgram}: {
   options: CompilerOptions,
   host: CompilerHost, oldProgram?: Program
 }): Program {
-  if (options.enableIvy === 'ngtsc') {
+  if (options.enableIvy === true) {
     return new NgtscProgram(rootNames, options, host, oldProgram);
   } else if (options.enableIvy === 'tsc') {
     return new TscPassThroughProgram(rootNames, options, host, oldProgram);
