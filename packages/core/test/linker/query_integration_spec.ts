@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, asNativeElements} from '@angular/core';
+import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, ContentChild, ContentChildren, Directive, ElementRef, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef, asNativeElements} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {fixmeIvy, ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 import {Subject} from 'rxjs';
 
-import {ElementRef} from '../../src/core';
 import {stringify} from '../../src/util/stringify';
 
 describe('Query API', () => {
