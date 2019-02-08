@@ -11,6 +11,14 @@ import {Component, ContentChildren, Directive, Inject, NO_ERRORS_SCHEMA, NgModul
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
+class Frame {
+  name: string = 'frame';
+}
+
+class ModuleFrame {
+  name: string = 'moduleFram';
+}
+
 describe('forwardRef integration', function() {
   beforeEach(() => { TestBed.configureTestingModule({imports: [Module], declarations: [App]}); });
 
@@ -49,14 +57,6 @@ class Door {
   frame: Frame;
 
   constructor(@Inject(forwardRef(() => Frame)) frame: Frame) { this.frame = frame; }
-}
-
-class Frame {
-  name: string = 'frame';
-}
-
-class ModuleFrame {
-  name: string = 'moduleFram';
 }
 
 @Directive({selector: 'lock'})
