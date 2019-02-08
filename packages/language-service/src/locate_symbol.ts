@@ -33,7 +33,7 @@ export function locateSymbol(info: TemplateInfo): SymbolInfo|undefined {
           const dinfo = diagnosticInfoFromTemplateInfo(info);
           const scope = getExpressionScope(dinfo, path, inEvent);
           if (attribute.valueSpan) {
-            const expressionOffset = attribute.valueSpan.start.offset + 1;
+            const expressionOffset = attribute.valueSpan.start.offset;
             const result = getExpressionSymbol(
                 scope, ast, templatePosition - expressionOffset, info.template.query);
             if (result) {

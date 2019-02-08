@@ -326,11 +326,18 @@ class _TreeBuilder {
     let end = attrName.sourceSpan.end;
     let value = '';
     let valueSpan: ParseSourceSpan = undefined !;
+    if (this._peek.type === lex.TokenType.ATTR_QUOTE) {
+      this._advance();
+    }
     if (this._peek.type === lex.TokenType.ATTR_VALUE) {
       const valueToken = this._advance();
       value = valueToken.parts[0];
       end = valueToken.sourceSpan.end;
       valueSpan = valueToken.sourceSpan;
+    }
+    if (this._peek.type === lex.TokenType.ATTR_QUOTE) {
+      const quoteToken = this._advance();
+      end = quoteToken.sourceSpan.end;
     }
     return new html.Attribute(
         fullName, value, new ParseSourceSpan(attrName.sourceSpan.start, end), valueSpan);

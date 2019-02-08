@@ -25,6 +25,7 @@ export enum TokenType {
   CDATA_START,
   CDATA_END,
   ATTR_NAME,
+  ATTR_QUOTE,
   ATTR_VALUE,
   DOC_TYPE,
   EXPANSION_FORM_START,
@@ -709,23 +710,29 @@ class _Tokenizer {
   }
 
   private _consumeAttributeValue() {
-    this._beginToken(TokenType.ATTR_VALUE);
     let value: string;
     if (this._peek === chars.$SQ || this._peek === chars.$DQ) {
+      this._beginToken(TokenType.ATTR_QUOTE);
       const quoteChar = this._peek;
       this._advance();
+      this._endToken([String.fromCodePoint(quoteChar)]);
+      this._beginToken(TokenType.ATTR_VALUE);
       const parts: string[] = [];
       while (this._peek !== quoteChar) {
         parts.push(this._readChar(true));
       }
       value = parts.join('');
+      this._endToken([this._processCarriageReturns(value)]);
+      this._beginToken(TokenType.ATTR_QUOTE);
       this._advance();
+      this._endToken([String.fromCodePoint(quoteChar)]);
     } else {
+      this._beginToken(TokenType.ATTR_VALUE);
       const valueStart = this._index;
       this._requireCharCodeUntilFn(isNameEnd, 1);
       value = this._input.substring(valueStart, this._index);
+      this._endToken([this._processCarriageReturns(value)]);
     }
-    this._endToken([this._processCarriageReturns(value)]);
   }
 
   private _consumeTagOpenEnd() {

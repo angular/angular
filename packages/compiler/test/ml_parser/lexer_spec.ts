@@ -238,11 +238,17 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts('<t a="{{v}}" b="s{{m}}e" c="s{{m//c}}e">')).toEqual([
           [lex.TokenType.TAG_OPEN_START, null, 't'],
           [lex.TokenType.ATTR_NAME, null, 'a'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_VALUE, '{{v}}'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_NAME, null, 'b'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_VALUE, 's{{m}}e'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_NAME, null, 'c'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_VALUE, 's{{m//c}}e'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
         ]);
@@ -270,7 +276,9 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts('<t a=\'b\'>')).toEqual([
           [lex.TokenType.TAG_OPEN_START, null, 't'],
           [lex.TokenType.ATTR_NAME, null, 'a'],
+          [lex.TokenType.ATTR_QUOTE, '\''],
           [lex.TokenType.ATTR_VALUE, 'b'],
+          [lex.TokenType.ATTR_QUOTE, '\''],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
         ]);
@@ -280,7 +288,9 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts('<t a="b">')).toEqual([
           [lex.TokenType.TAG_OPEN_START, null, 't'],
           [lex.TokenType.ATTR_NAME, null, 'a'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_VALUE, 'b'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
         ]);
@@ -310,7 +320,9 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts('<t a="&#65;&#x41;">')).toEqual([
           [lex.TokenType.TAG_OPEN_START, null, 't'],
           [lex.TokenType.ATTR_NAME, null, 'a'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_VALUE, 'AA'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
         ]);
@@ -320,9 +332,13 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts('<t a="&amp" b="c&&d">')).toEqual([
           [lex.TokenType.TAG_OPEN_START, null, 't'],
           [lex.TokenType.ATTR_NAME, null, 'a'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_VALUE, '&amp'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_NAME, null, 'b'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_VALUE, 'c&&d'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
         ]);
@@ -332,7 +348,9 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts('<t a="b && c &">')).toEqual([
           [lex.TokenType.TAG_OPEN_START, null, 't'],
           [lex.TokenType.ATTR_NAME, null, 'a'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_VALUE, 'b && c &'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
         ]);
@@ -342,7 +360,9 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         expect(tokenizeAndHumanizeParts('<t a=\'t\ne\rs\r\nt\'>')).toEqual([
           [lex.TokenType.TAG_OPEN_START, null, 't'],
           [lex.TokenType.ATTR_NAME, null, 'a'],
+          [lex.TokenType.ATTR_QUOTE, '\''],
           [lex.TokenType.ATTR_VALUE, 't\ne\ns\nt'],
+          [lex.TokenType.ATTR_QUOTE, '\''],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
         ]);
@@ -1001,9 +1021,13 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             .toEqual([
               [lex.TokenType.TAG_OPEN_START, null, 't'],
               [lex.TokenType.ATTR_NAME, null, 'a'],
+              [lex.TokenType.ATTR_QUOTE, '"'],
               [lex.TokenType.ATTR_VALUE, 'b'],
+              [lex.TokenType.ATTR_QUOTE, '"'],
               [lex.TokenType.ATTR_NAME, null, 'c'],
+              [lex.TokenType.ATTR_QUOTE, '\''],
               [lex.TokenType.ATTR_VALUE, 'd'],
+              [lex.TokenType.ATTR_QUOTE, '\''],
               [lex.TokenType.TAG_OPEN_END],
               [lex.TokenType.EOF],
             ]);
