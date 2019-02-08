@@ -1471,7 +1471,7 @@ describe('ngtsc behavioral tests', () => {
     });
   });
 
-  describe('duplicate local refs', () => {
+  describe('multiple local refs', () => {
     const getComponentScript = (template: string): string => `
       import {Component, Directive, NgModule} from '@angular/core';
 
@@ -1482,37 +1482,17 @@ describe('ngtsc behavioral tests', () => {
       class Module {}
     `;
 
-    // Components with templates listed below should
-    // throw the "ref is already defined" error
-    const invalidCases = [
+    const cases = [
       `
         <div #ref></div>
         <div #ref></div>
-      `,
-      `
-        <div #ref>
-          <div #ref></div>
-        </div>
-      `,
-      `
-        <div>
-          <div #ref></div>
-        </div>
-        <div>
-          <div #ref></div>
-        </div>
       `,
       `
         <ng-container>
           <div #ref></div>
         </ng-container>
         <div #ref></div>
-      `
-    ];
-
-    // Components with templates listed below should not throw
-    // the error, since refs are located in different scopes
-    const validCases = [
+      `,
       `
         <ng-template>
           <div #ref></div>
@@ -1529,18 +1509,8 @@ describe('ngtsc behavioral tests', () => {
       `
     ];
 
-    invalidCases.forEach(template => {
-      it('should throw in case of duplicate refs', () => {
-        env.tsconfig();
-        env.write('test.ts', getComponentScript(template));
-        const errors = env.driveDiagnostics();
-        expect(errors[0].messageText)
-            .toContain('Internal Error: The name ref is already defined in scope');
-      });
-    });
-
-    validCases.forEach(template => {
-      it('should not throw in case refs are in different scopes', () => {
+    cases.forEach(template => {
+      it('should not throw', () => {
         env.tsconfig();
         env.write('test.ts', getComponentScript(template));
         const errors = env.driveDiagnostics();

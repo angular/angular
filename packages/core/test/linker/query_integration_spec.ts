@@ -270,19 +270,15 @@ describe('Query API', () => {
   });
 
   describe('read a different token', () => {
-    modifiedInIvy(
-        'Breaking change in Ivy: no longer allow multiple local refs with the same name, all local refs are now unique')
-        .it('should contain all content children', () => {
-          const template =
-              '<needs-content-children-read #q text="ca"><div #q text="cb"></div></needs-content-children-read>';
-          const view = createTestCmpAndDetectChanges(MyComp0, template);
+    it('should contain all content children', () => {
+      const template =
+          '<needs-content-children-read #q text="ca"><div #q text="cb"></div></needs-content-children-read>';
+      const view = createTestCmpAndDetectChanges(MyComp0, template);
 
-          const comp: NeedsContentChildrenWithRead =
-              view.debugElement.children[0].injector.get(NeedsContentChildrenWithRead);
-          expect(comp.textDirChildren.map(textDirective => textDirective.text)).toEqual([
-            'ca', 'cb'
-          ]);
-        });
+      const comp: NeedsContentChildrenWithRead =
+          view.debugElement.children[0].injector.get(NeedsContentChildrenWithRead);
+      expect(comp.textDirChildren.map(textDirective => textDirective.text)).toEqual(['ca', 'cb']);
+    });
 
     it('should contain the first content child', () => {
       const template =
