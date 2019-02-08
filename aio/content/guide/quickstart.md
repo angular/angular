@@ -36,6 +36,11 @@ This Quick Start uses the [npm client](https://docs.npmjs.com/cli/install) comma
 To check that you have the npm client installed, run `npm -v` in a terminal/console window.
 
 
+{@ windowsusers}
+### Windows users
+
+If you're on Windows, make sure to install [Git](https://git-scm.com/) too.
+
 {@a install-cli}
 
 ## Step 1: Install the Angular CLI
