@@ -19,8 +19,7 @@ describe('ngtools_api (deprecated)', () => {
   beforeEach(() => { testSupport = setup(); });
 
   function createProgram(rootNames: string[]) {
-    const options =
-        testSupport.createCompilerOptions({enableIvy: ivyEnabled && 'ngtsc' as 'ngtsc'});
+    const options = testSupport.createCompilerOptions({enableIvy: ivyEnabled && 'ngtsc'});
     const host = ts.createCompilerHost(options, true);
     const program =
         ts.createProgram(rootNames.map(p => path.resolve(testSupport.basePath, p)), options, host);
