@@ -79,7 +79,8 @@ export function prepareEventListenerParameters(
   }
 
   const bindingExpr = convertActionBinding(
-      scope, bindingContext, handler, 'b', () => error('Unexpected interpolation'));
+      scope, bindingContext, handler, 'b', () => error('Unexpected interpolation'),
+      eventAst.handlerSpan);
 
   const statements = [];
   if (scope) {
