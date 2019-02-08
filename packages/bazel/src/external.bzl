@@ -2,11 +2,11 @@
 """
 
 load(
-    "@build_bazel_rules_typescript//internal:build_defs.bzl",
+    "@npm_bazel_typescript//internal:build_defs.bzl",
     _tsc_wrapped_tsconfig = "tsc_wrapped_tsconfig",
 )
 load(
-    "@build_bazel_rules_typescript//internal:common/compilation.bzl",
+    "@npm_bazel_typescript//internal:common/compilation.bzl",
     _COMMON_ATTRIBUTES = "COMMON_ATTRIBUTES",
     _COMMON_OUTPUTS = "COMMON_OUTPUTS",
     _DEPS_ASPECTS = "DEPS_ASPECTS",

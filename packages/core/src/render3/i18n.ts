@@ -715,6 +715,9 @@ function readUpdateOpCodes(
             value += stringify(viewData[bindingsStartIndex - opCode]);
           } else {
             const nodeIndex = opCode >>> I18nUpdateOpCode.SHIFT_REF;
+            let tIcuIndex: number;
+            let tIcu: TIcu;
+            let icuTNode: TIcuContainerNode;
             switch (opCode & I18nUpdateOpCode.MASK_OPCODE) {
               case I18nUpdateOpCode.Attr:
                 const attrName = updateOpCodes[++j] as string;
@@ -725,9 +728,9 @@ function readUpdateOpCodes(
                 textBinding(nodeIndex, value);
                 break;
               case I18nUpdateOpCode.IcuSwitch:
-                let tIcuIndex = updateOpCodes[++j] as number;
-                let tIcu = icus ![tIcuIndex];
-                let icuTNode = getTNode(nodeIndex, viewData) as TIcuContainerNode;
+                tIcuIndex = updateOpCodes[++j] as number;
+                tIcu = icus ![tIcuIndex];
+                icuTNode = getTNode(nodeIndex, viewData) as TIcuContainerNode;
                 // If there is an active case, delete the old nodes
                 if (icuTNode.activeCaseIndex !== null) {
                   const removeCodes = tIcu.remove[icuTNode.activeCaseIndex];
