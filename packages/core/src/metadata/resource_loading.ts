@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { Component } from './directives';
+import {Component} from './directives';
 
 
 /**
@@ -42,7 +42,7 @@ import { Component } from './directives';
  * contents of the resolved URL. Browser's `fetch()` method is a good default implementation.
  */
 export function resolveComponentResources(
-  resourceResolver: (url: string) => (Promise<string | { text(): Promise<string> }>)): Promise<null> {
+    resourceResolver: (url: string) => (Promise<string|{text(): Promise<string>}>)): Promise<null> {
   // Store all promises which are fetching the resources.
   const urlFetches: Promise<string>[] = [];
 
@@ -62,7 +62,6 @@ export function resolveComponentResources(
     if (component.templateUrl) {
       cachedResourceResolve(component.templateUrl).then((template) => {
         component.template = template;
-        component.templateUrl = undefined;
       });
     }
     const styleUrls = component.styleUrls;
@@ -92,12 +91,14 @@ export function maybeQueueResolutionOfComponentResources(metadata: Component) {
 }
 
 export function componentNeedsResolution(component: Component): boolean {
-  return !!(component.templateUrl || component.styleUrls && component.styleUrls.length);
+  return !!(
+      (component.templateUrl && !component.template) ||
+      component.styleUrls && component.styleUrls.length);
 }
 export function clearResolutionOfComponentResourcesQueue() {
   componentResourceResolutionQueue.clear();
 }
 
-function unwrapResponse(response: string | { text(): Promise<string> }): string | Promise<string> {
+function unwrapResponse(response: string | {text(): Promise<string>}): string|Promise<string> {
   return typeof response == 'string' ? response : response.text();
 }
