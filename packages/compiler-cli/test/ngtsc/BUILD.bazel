@@ -8,7 +8,10 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler-cli/src/ngtsc/routing",
+        "//packages/compiler-cli/src/ngtsc/util",
         "//packages/compiler-cli/test:test_utils",
+        "@ngdeps//@types/source-map",
+        "@ngdeps//source-map",
         "@ngdeps//typescript",
     ],
 )

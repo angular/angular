@@ -91,6 +91,7 @@ export function translateType(type: Type, imports: ImportManager): ts.TypeNode {
 }
 
 class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor {
+  private externalSourceFiles = new Map<string, ts.SourceMapSource>();
   constructor(private imports: ImportManager) {}
 
   visitDeclareVarStmt(stmt: DeclareVarStmt, context: Context): ts.VariableStatement {
@@ -153,7 +154,9 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitReadVarExpr(ast: ReadVarExpr, context: Context): ts.Identifier {
-    return ts.createIdentifier(ast.name !);
+    const identifier = ts.createIdentifier(ast.name !);
+    this.setSourceMapRange(identifier, ast);
+    return identifier;
   }
 
   visitWriteVarExpr(expr: WriteVarExpr, context: Context): ts.Expression {
@@ -175,9 +178,11 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
 
   visitInvokeMethodExpr(ast: InvokeMethodExpr, context: Context): ts.CallExpression {
     const target = ast.receiver.visitExpression(this, context);
-    return ts.createCall(
+    const call = ts.createCall(
         ast.name !== null ? ts.createPropertyAccess(target, ast.name) : target, undefined,
         ast.args.map(arg => arg.visitExpression(this, context)));
+    this.setSourceMapRange(call, ast);
+    return call;
   }
 
   visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: Context): ts.CallExpression {
@@ -187,6 +192,7 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     if (ast.pure) {
       ts.addSyntheticLeadingComment(expr, ts.SyntaxKind.MultiLineCommentTrivia, '@__PURE__', false);
     }
+    this.setSourceMapRange(expr, ast);
     return expr;
   }
 
@@ -197,13 +203,16 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitLiteralExpr(ast: LiteralExpr, context: Context): ts.Expression {
+    let expr: ts.Expression;
     if (ast.value === undefined) {
-      return ts.createIdentifier('undefined');
+      expr = ts.createIdentifier('undefined');
     } else if (ast.value === null) {
-      return ts.createNull();
+      expr = ts.createNull();
     } else {
-      return ts.createLiteral(ast.value);
+      expr = ts.createLiteral(ast.value);
     }
+    this.setSourceMapRange(expr, ast);
+    return expr;
   }
 
   visitExternalExpr(ast: ExternalExpr, context: Context): ts.PropertyAccessExpression
@@ -269,7 +278,10 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
   }
 
   visitLiteralArrayExpr(ast: LiteralArrayExpr, context: Context): ts.ArrayLiteralExpression {
-    return ts.createArrayLiteral(ast.entries.map(expr => expr.visitExpression(this, context)));
+    const expr =
+        ts.createArrayLiteral(ast.entries.map(expr => expr.visitExpression(this, context)));
+    this.setSourceMapRange(expr, ast);
+    return expr;
   }
 
   visitLiteralMapExpr(ast: LiteralMapExpr, context: Context): ts.ObjectLiteralExpression {
@@ -277,7 +289,9 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
         entry => ts.createPropertyAssignment(
             entry.quoted ? ts.createLiteral(entry.key) : ts.createIdentifier(entry.key),
             entry.value.visitExpression(this, context)));
-    return ts.createObjectLiteral(entries);
+    const expr = ts.createObjectLiteral(entries);
+    this.setSourceMapRange(expr, ast);
+    return expr;
   }
 
   visitCommaExpr(ast: CommaExpr, context: Context): never {
@@ -288,6 +302,20 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
 
   visitTypeofExpr(ast: TypeofExpr, context: Context): ts.TypeOfExpression {
     return ts.createTypeOf(ast.expr.visitExpression(this, context));
+  }
+
+  private setSourceMapRange(expr: ts.Expression, ast: Expression) {
+    if (ast.sourceSpan) {
+      const {start, end} = ast.sourceSpan;
+      const {url, content} = start.file;
+      if (url) {
+        if (!this.externalSourceFiles.has(url)) {
+          this.externalSourceFiles.set(url, ts.createSourceMapSource(url, content, pos => pos));
+        }
+        const source = this.externalSourceFiles.get(url);
+        ts.setSourceMapRange(expr, {pos: start.offset, end: end.offset, source});
+      }
+    }
   }
 }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, ElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, R3ComponentMetadata, R3DirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, R3ComponentMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -16,7 +16,8 @@ import {ModuleResolver, Reference, ResolvedReference} from '../../imports';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
-import {TypeCheckContext, TypeCheckableDirectiveMeta} from '../../typecheck';
+import {TypeCheckContext} from '../../typecheck';
+import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
@@ -119,24 +120,56 @@ export class ComponentDecoratorHandler implements
     // Next, read the `@Component`-specific fields.
     const {decoratedElements, decorator: component, metadata} = directiveResult;
 
+    // Go through the root directories for this project, and select the one with the smallest
+    // relative path representation.
+    const filePath = node.getSourceFile().fileName;
+    const relativeContextFilePath = this.rootDirs.reduce<string|undefined>((previous, rootDir) => {
+      const candidate = path.posix.relative(rootDir, filePath);
+      if (previous === undefined || candidate.length < previous.length) {
+        return candidate;
+      } else {
+        return previous;
+      }
+    }, undefined) !;
+
     let templateStr: string|null = null;
+    let templateUrl: string = '';
+    let templateRange: LexerRange|undefined;
+    let escapedString: boolean = false;
+
     if (component.has('templateUrl')) {
       const templateUrlExpr = component.get('templateUrl') !;
-      const templateUrl = this.evaluator.evaluate(templateUrlExpr);
-      if (typeof templateUrl !== 'string') {
+      const evalTemplateUrl = this.evaluator.evaluate(templateUrlExpr);
+      if (typeof evalTemplateUrl !== 'string') {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
       }
-      const resolvedTemplateUrl = this.resourceLoader.resolve(templateUrl, containingFile);
-      templateStr = this.resourceLoader.load(resolvedTemplateUrl);
+      templateUrl = this.resourceLoader.resolve(evalTemplateUrl, containingFile);
+      templateStr = this.resourceLoader.load(templateUrl);
+      if (!tsSourceMapBug29300Fixed()) {
+        // By removing the template URL we are telling the translator not to try to
+        // map the external source file to the generated code, since the version
+        // of TS that is running does not support it.
+        templateUrl = '';
+      }
     } else if (component.has('template')) {
       const templateExpr = component.get('template') !;
-      const resolvedTemplate = this.evaluator.evaluate(templateExpr);
-      if (typeof resolvedTemplate !== 'string') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, templateExpr, 'template must be a string');
+      // We only support SourceMaps for inline templates that are simple string literals.
+      if (ts.isStringLiteral(templateExpr) || ts.isNoSubstitutionTemplateLiteral(templateExpr)) {
+        // the start and end of the `templateExpr` node includes the quotation marks, which we must
+        // strip
+        templateRange = getTemplateRange(templateExpr);
+        templateStr = templateExpr.getSourceFile().text;
+        templateUrl = relativeContextFilePath;
+        escapedString = true;
+      } else {
+        const resolvedTemplate = this.evaluator.evaluate(templateExpr);
+        if (typeof resolvedTemplate !== 'string') {
+          throw new FatalDiagnosticError(
+              ErrorCode.VALUE_HAS_WRONG_TYPE, templateExpr, 'template must be a string');
+        }
+        templateStr = resolvedTemplate;
       }
-      templateStr = resolvedTemplate;
     } else {
       throw new FatalDiagnosticError(
           ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node, 'component is missing a template');
@@ -157,18 +190,6 @@ export class ComponentDecoratorHandler implements
         new WrappedNodeExpr(component.get('viewProviders') !) :
         null;
 
-    // Go through the root directories for this project, and select the one with the smallest
-    // relative path representation.
-    const filePath = node.getSourceFile().fileName;
-    const relativeContextFilePath = this.rootDirs.reduce<string|undefined>((previous, rootDir) => {
-      const candidate = path.posix.relative(rootDir, filePath);
-      if (previous === undefined || candidate.length < previous.length) {
-        return candidate;
-      } else {
-        return previous;
-      }
-    }, undefined) !;
-
     let interpolation: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG;
     if (component.has('interpolation')) {
       const expr = component.get('interpolation') !;
@@ -182,9 +203,11 @@ export class ComponentDecoratorHandler implements
       interpolation = InterpolationConfig.fromArray(value as[string, string]);
     }
 
-    const template = parseTemplate(
-        templateStr, `${node.getSourceFile().fileName}#${node.name!.text}/template.html`,
-        {preserveWhitespaces, interpolationConfig: interpolation});
+    const template = parseTemplate(templateStr, templateUrl, {
+      preserveWhitespaces,
+      interpolationConfig: interpolation,
+      range: templateRange, escapedString
+    });
     if (template.errors !== undefined) {
       throw new Error(
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
@@ -401,4 +424,16 @@ export class ComponentDecoratorHandler implements
     // Check whether the import is legal.
     return this.cycleAnalyzer.wouldCreateCycle(origin, imported);
   }
+}
+
+function getTemplateRange(templateExpr: ts.Expression) {
+  const startPos = templateExpr.getStart() + 1;
+  const {line, character} =
+      ts.getLineAndCharacterOfPosition(templateExpr.getSourceFile(), startPos);
+  return {
+    startPos,
+    startLine: line,
+    startCol: character,
+    endPos: templateExpr.getEnd() - 1,
+  };
 }
