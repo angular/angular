@@ -143,7 +143,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
         constantPool, makeBindingParser(interpolationConfig));
     const preStatements = [...constantPool.statements, ...res.statements];
     return this.jitExpression(
-        res.expression, angularCoreEnv, sourceMapUrl, preStatements);
+        res.expression, angularCoreEnv, `ng:///${facade.name}.js`, preStatements);
   }
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan {
