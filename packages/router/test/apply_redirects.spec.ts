@@ -181,7 +181,7 @@ describe('applyRedirects', () => {
           });
     });
     
-    it('should handle the case when the module is destroyed', () => {
+    it('should handle the case when the lazy module is destroyed', () => {
       const loadedConfig = new LoadedRouterConfig([{path: 'b', component: ComponentB}], testModule);
       const loader = {
         load: (injector: any, p: any) => {
