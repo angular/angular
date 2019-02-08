@@ -16,6 +16,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {parse as parseStyle} from './style_parser';
 import {ValueConverter} from './template';
 
+const IMPORTANT_FLAG = '!important';
 
 /**
  * A styling expression summary that is to be processed by the compiler
@@ -31,7 +32,8 @@ export interface Instruction {
  * An internal record of the input data for a styling binding
  */
 interface BoundStylingEntry {
-  name: string;
+  hasOverrideFlag: boolean;
+  name: string|null;
   unit: string|null;
   sourceSpan: ParseSourceSpan;
   value: AST;
@@ -123,51 +125,70 @@ export class StylingBuilder {
     // will therefore skip all style/class resolution that is present
     // with style="", [style]="" and [style.prop]="", class="",
     // [class.prop]="". [class]="" assignments
-    const name = input.name;
     let binding: BoundStylingEntry|null = null;
+    let name = input.name;
     switch (input.type) {
       case BindingType.Property:
-        if (name == 'style') {
-          binding = this.registerStyleInput(null, input.value, '', input.sourceSpan);
-        } else if (isClassBinding(input.name)) {
-          binding = this.registerClassInput(null, input.value, input.sourceSpan);
-        }
+        binding = this.registerInputBasedOnName(name, input.value, input.sourceSpan);
         break;
       case BindingType.Style:
-        binding = this.registerStyleInput(input.name, input.value, input.unit, input.sourceSpan);
+        binding = this.registerStyleInput(name, false, input.value, input.sourceSpan, input.unit);
         break;
       case BindingType.Class:
-        binding = this.registerClassInput(input.name, input.value, input.sourceSpan);
+        binding = this.registerClassInput(name, false, input.value, input.sourceSpan);
         break;
     }
     return binding ? true : false;
   }
 
+  registerInputBasedOnName(name: string, expression: AST, sourceSpan: ParseSourceSpan) {
+    let binding: BoundStylingEntry|null = null;
+    const nameToMatch = name.substring(0, 5);  // class | style
+    const isStyle = nameToMatch === 'style';
+    const isClass = isStyle ? false : (nameToMatch === 'class');
+    if (isStyle || isClass) {
+      const isMapBased = name.charAt(5) !== '.';         // style.prop or class.prop makes this a no
+      const property = name.substr(isMapBased ? 5 : 6);  // the dot explains why there's a +1
+      if (isStyle) {
+        binding = this.registerStyleInput(property, isMapBased, expression, sourceSpan);
+      } else {
+        binding = this.registerClassInput(property, isMapBased, expression, sourceSpan);
+      }
+    }
+    return binding;
+  }
+
   registerStyleInput(
-      propertyName: string|null, value: AST, unit: string|null,
-      sourceSpan: ParseSourceSpan): BoundStylingEntry {
-    const entry = { name: propertyName, unit, value, sourceSpan } as BoundStylingEntry;
-    if (propertyName) {
-      (this._singleStyleInputs = this._singleStyleInputs || []).push(entry);
-      this._useDefaultSanitizer = this._useDefaultSanitizer || isStyleSanitizable(propertyName);
-      registerIntoMap(this._stylesIndex, propertyName);
-    } else {
+      name: string, isMapBased: boolean, value: AST, sourceSpan: ParseSourceSpan,
+      unit?: string|null): BoundStylingEntry {
+    const {property, hasOverrideFlag, unit: bindingUnit} = parseProperty(name);
+    const entry: BoundStylingEntry = {
+      name: property,
+      unit: unit || bindingUnit, value, sourceSpan, hasOverrideFlag
+    };
+    if (isMapBased) {
       this._useDefaultSanitizer = true;
       this._styleMapInput = entry;
+    } else {
+      (this._singleStyleInputs = this._singleStyleInputs || []).push(entry);
+      this._useDefaultSanitizer = this._useDefaultSanitizer || isStyleSanitizable(name);
+      registerIntoMap(this._stylesIndex, property);
     }
     this._lastStylingInput = entry;
     this.hasBindings = true;
     return entry;
   }
 
-  registerClassInput(className: string|null, value: AST, sourceSpan: ParseSourceSpan):
+  registerClassInput(name: string, isMapBased: boolean, value: AST, sourceSpan: ParseSourceSpan):
       BoundStylingEntry {
-    const entry = { name: className, value, sourceSpan } as BoundStylingEntry;
-    if (className) {
-      (this._singleClassInputs = this._singleClassInputs || []).push(entry);
-      registerIntoMap(this._classesIndex, className);
-    } else {
+    const {property, hasOverrideFlag} = parseProperty(name);
+    const entry:
+        BoundStylingEntry = {name: property, value, sourceSpan, hasOverrideFlag, unit: null};
+    if (isMapBased) {
       this._classMapInput = entry;
+    } else {
+      (this._singleClassInputs = this._singleClassInputs || []).push(entry);
+      registerIntoMap(this._classesIndex, property);
     }
     this._lastStylingInput = entry;
     this.hasBindings = true;
@@ -235,6 +256,7 @@ export class StylingBuilder {
         reference: R3.elementHostAttrs,
         allocateBindingSlots: 0,
         buildParams: () => {
+          // params => elementHostAttrs(directive, attrs)
           this.populateInitialStylingAttrs(attrs);
           return [this._directiveExpr !, getConstantLiteralFromArray(constantPool, attrs)];
         }
@@ -337,24 +359,26 @@ export class StylingBuilder {
         reference: R3.elementStylingMap,
         allocateBindingSlots: totalBindingSlotsRequired,
         buildParams: (convertFn: (value: any) => o.Expression) => {
-          const params: o.Expression[] = [this._elementIndexExpr];
-
-          if (mapBasedClassValue) {
-            params.push(convertFn(mapBasedClassValue));
-          } else if (this._styleMapInput) {
-            params.push(o.NULL_EXPR);
-          }
-
-          if (mapBasedStyleValue) {
-            params.push(convertFn(mapBasedStyleValue));
-          } else if (this._directiveExpr) {
-            params.push(o.NULL_EXPR);
-          }
-
+          // min params => elementStylingMap(index, classMap)
+          // max params => elementStylingMap(index, classMap, styleMap, directive)
+          let expectedNumberOfArgs = 0;
           if (this._directiveExpr) {
-            params.push(this._directiveExpr);
+            expectedNumberOfArgs = 4;
+          } else if (mapBasedStyleValue) {
+            expectedNumberOfArgs = 3;
+          } else if (mapBasedClassValue) {
+            // index and class = 2
+            expectedNumberOfArgs = 2;
           }
 
+          const params: o.Expression[] = [this._elementIndexExpr];
+          addParam(
+              params, mapBasedClassValue, mapBasedClassValue ? convertFn(mapBasedClassValue) : null,
+              2, expectedNumberOfArgs);
+          addParam(
+              params, mapBasedStyleValue, mapBasedStyleValue ? convertFn(mapBasedStyleValue) : null,
+              3, expectedNumberOfArgs);
+          addParam(params, this._directiveExpr, this._directiveExpr, 4, expectedNumberOfArgs);
           return params;
         }
       };
@@ -367,14 +391,18 @@ export class StylingBuilder {
       allowUnits: boolean, valueConverter: ValueConverter): Instruction[] {
     let totalBindingSlotsRequired = 0;
     return inputs.map(input => {
-      const bindingIndex: number = mapIndex.get(input.name) !;
+      const bindingIndex: number = mapIndex.get(input.name !) !;
       const value = input.value.visit(valueConverter);
       totalBindingSlotsRequired += (value instanceof Interpolation) ? value.expressions.length : 0;
       return {
         sourceSpan: input.sourceSpan,
         allocateBindingSlots: totalBindingSlotsRequired, reference,
         buildParams: (convertFn: (value: any) => o.Expression) => {
+          // min params => elementStlyingProp(elmIndex, bindingIndex, value)
+          // max params => elementStlyingProp(elmIndex, bindingIndex, value, overrideFlag)
+
           const params = [this._elementIndexExpr, o.literal(bindingIndex), convertFn(value)];
+
           if (allowUnits) {
             if (input.unit) {
               params.push(o.literal(input.unit));
@@ -385,7 +413,14 @@ export class StylingBuilder {
 
           if (this._directiveExpr) {
             params.push(this._directiveExpr);
+          } else if (input.hasOverrideFlag) {
+            params.push(o.NULL_EXPR);
           }
+
+          if (input.hasOverrideFlag) {
+            params.push(o.literal(true));
+          }
+
           return params;
         }
       };
@@ -414,6 +449,8 @@ export class StylingBuilder {
       reference: R3.elementStylingApply,
       allocateBindingSlots: 0,
       buildParams: () => {
+        // min params => elementStylingApply(elmIndex)
+        // max params => elementStylingApply(elmIndex, directive)
         const params: o.Expression[] = [this._elementIndexExpr];
         if (this._directiveExpr) {
           params.push(this._directiveExpr);
@@ -442,10 +479,6 @@ export class StylingBuilder {
   }
 }
 
-function isClassBinding(name: string): boolean {
-  return name == 'className' || name == 'class';
-}
-
 function registerIntoMap(map: Map<string, number>, key: string) {
   if (!map.has(key)) {
     map.set(key, map.size);
@@ -471,11 +504,31 @@ function getConstantLiteralFromArray(
  * predicate and totalExpectedArgs values
  */
 function addParam(
-    params: o.Expression[], predicate: boolean, value: o.Expression, argNumber: number,
+    params: o.Expression[], predicate: any, value: o.Expression | null, argNumber: number,
     totalExpectedArgs: number) {
-  if (predicate) {
+  if (predicate && value) {
     params.push(value);
   } else if (argNumber < totalExpectedArgs) {
     params.push(o.NULL_EXPR);
   }
+}
+
+export function parseProperty(name: string):
+    {property: string, unit: string, hasOverrideFlag: boolean} {
+  let hasOverrideFlag = false;
+  const overrideIndex = name.indexOf(IMPORTANT_FLAG);
+  if (overrideIndex !== -1) {
+    name = overrideIndex > 0 ? name.substring(0, overrideIndex) : '';
+    hasOverrideFlag = true;
+  }
+
+  let unit = '';
+  let property = name;
+  const unitIndex = name.lastIndexOf('.');
+  if (unitIndex > 0) {
+    unit = name.substr(unitIndex + 1);
+    property = name.substring(0, unitIndex);
+  }
+
+  return {property, unit, hasOverrideFlag};
 }

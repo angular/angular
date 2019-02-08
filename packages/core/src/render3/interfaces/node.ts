@@ -30,16 +30,19 @@ export const enum TNodeType {
  */
 export const enum TNodeFlags {
   /** This bit is set if the node is a component */
-  isComponent = 0b0001,
+  isComponent = 0b00001,
 
   /** This bit is set if the node has been projected */
-  isProjected = 0b0010,
+  isProjected = 0b00010,
 
   /** This bit is set if any directive on this node has content queries */
-  hasContentQuery = 0b0100,
+  hasContentQuery = 0b00100,
 
-  /** This bit is set if the node has any directives that contain [class properties */
-  hasClassInput = 0b1000,
+  /** This bit is set if the node has any "class" inputs */
+  hasClassInput = 0b01000,
+
+  /** This bit is set if the node has any "style" inputs */
+  hasStyleInput = 0b10000,
 }
 
 /**
@@ -182,7 +185,7 @@ export interface TNode {
   propertyMetadataEndIndex: number;
 
   /**
-   * Stores if Node isComponent, isProjected, hasContentQuery and hasClassInput
+   * Stores if Node isComponent, isProjected, hasContentQuery, hasClassInput and hasStyleInput
    */
   flags: TNodeFlags;
 
@@ -345,6 +348,19 @@ export interface TNode {
    * projectable nodes during dynamic component creation.
    */
   projection: (TNode|RNode[])[]|number|null;
+
+  /**
+   * A buffer of functions that will be called once `elementEnd` (or `element`) completes.
+   *
+   * Due to the nature of how directives work in Angular, some directive code may
+   * need to fire after any template-level code runs. If present, this array will
+   * be flushed (each function will be invoked) once the associated element is
+   * created.
+   *
+   * If an element is created multiple times then this function will be populated
+   * with functions each time the creation block is called.
+   */
+  onElementCreationFns: Function[]|null;
 }
 
 /** Static data for an element  */
