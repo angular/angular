@@ -1217,6 +1217,8 @@ function validateAgainstUnknownProperties(
     element: RElement | RComment, propName: string, tNode: TNode) {
   // If prop is not a known property of the HTML element...
   if (!(propName in element) &&
+      // and we are in a browser context... (web worker nodes should be skipped)
+      typeof Node === 'function' && element instanceof Node &&
       // and isn't a synthetic animation property...
       propName[0] !== ANIMATION_PROP_PREFIX) {
     // ... it is probably a user error and we should throw.
