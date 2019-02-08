@@ -23,6 +23,9 @@ class RouterEntryPointImpl implements RouterEntryPoint {
   constructor(readonly filePath: string, readonly moduleName: string) {}
 
   get name(): string { return this.moduleName; }
+
+  // For debugging purposes.
+  toString(): string { return `RouterEntryPoint(name: ${this.name}, filePath: ${this.filePath})`; }
 }
 
 export class RouterEntryPointManager {
