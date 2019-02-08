@@ -41,7 +41,8 @@ const extract = (from: string, regex: any, transformFn: (match: any[]) => any) =
 const verifyTranslationIds =
     (source: string, output: string, exceptions = {},
      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG) => {
-      const parseResult = htmlParser.parse(source, 'path:://to/template', true);
+      const parseResult =
+          htmlParser.parse(source, 'path:://to/template', {tokenizeExpansionForms: true});
       const extractedIdToMsg = new Map<string, any>();
       const extractedIds = new Set<string>();
       const generatedIds = new Set<string>();

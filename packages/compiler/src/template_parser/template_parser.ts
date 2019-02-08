@@ -114,8 +114,10 @@ export class TemplateParser {
       directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
       templateUrl: string, preserveWhitespaces: boolean): TemplateParseResult {
     let htmlParseResult = typeof template === 'string' ?
-        this._htmlParser !.parse(
-            template, templateUrl, true, this.getInterpolationConfig(component)) :
+        this._htmlParser !.parse(template, templateUrl, {
+          tokenizeExpansionForms: true,
+          interpolationConfig: this.getInterpolationConfig(component)
+        }) :
         template;
 
     if (!preserveWhitespaces) {
