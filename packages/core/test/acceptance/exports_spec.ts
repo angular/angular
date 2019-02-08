@@ -55,6 +55,21 @@ describe('exports', () => {
     expect(dirWithInput.comp).toEqual(myComp);
   });
 
+
+  onlyInIvy(
+      'in Ivy first declared ref is selected in case of multiple non-unique refs, when VE used the last one')
+      .it('should point to the first declared ref', () => {
+        const fixture = initWithTemplate(AppComp, `
+          <div>
+            <input value="First" #ref />
+            <input value="Second" #ref />
+            <input value="Third" #ref />
+            <span>{{ ref.value }}</span>
+          </div>
+        `);
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('span').innerHTML).toBe('First');
+      });
 });
 
 function initWithTemplate(compType: Type<any>, template: string) {
