@@ -21,7 +21,7 @@ ts_library(
         "largetable_perf.spec.ts",
     ],
     deps = [
-        "//modules/e2e_util:lib",
+        "//modules/e2e_util",
         "//packages:types",
         "@ngdeps//protractor",
     ],
