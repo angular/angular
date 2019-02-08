@@ -50,13 +50,15 @@ export class BoundAttribute implements Node {
 export class BoundEvent implements Node {
   constructor(
       public name: string, public type: ParsedEventType, public handler: AST,
-      public target: string|null, public phase: string|null, public sourceSpan: ParseSourceSpan) {}
+      public target: string|null, public phase: string|null, public sourceSpan: ParseSourceSpan,
+      public handlerSpan: ParseSourceSpan) {}
 
   static fromParsedEvent(event: ParsedEvent) {
     const target: string|null = event.type === ParsedEventType.Regular ? event.targetOrPhase : null;
     const phase: string|null =
         event.type === ParsedEventType.Animation ? event.targetOrPhase : null;
-    return new BoundEvent(event.name, event.type, event.handler, target, phase, event.sourceSpan);
+    return new BoundEvent(
+        event.name, event.type, event.handler, target, phase, event.sourceSpan, event.handlerSpan);
   }
 
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitBoundEvent(this); }
@@ -67,7 +69,12 @@ export class Element implements Node {
       public name: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
       public outputs: BoundEvent[], public children: Node[], public references: Reference[],
       public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
-      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nAST) {}
+      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nAST) {
+    // If the element is empty then the source span should include any closing tag
+    if (children.length === 0 && startSourceSpan && endSourceSpan) {
+      this.sourceSpan = {...sourceSpan, end: endSourceSpan.end};
+    }
+  }
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitElement(this); }
 }
 

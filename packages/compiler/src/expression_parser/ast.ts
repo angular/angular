@@ -698,7 +698,8 @@ export class ParsedEvent {
   // Animation events have a phase
   constructor(
       public name: string, public targetOrPhase: string, public type: ParsedEventType,
-      public handler: AST, public sourceSpan: ParseSourceSpan) {}
+      public handler: AST, public sourceSpan: ParseSourceSpan,
+      public handlerSpan: ParseSourceSpan) {}
 }
 
 export class ParsedVariable {
