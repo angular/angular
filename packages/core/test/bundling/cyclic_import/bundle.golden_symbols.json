@@ -171,6 +171,9 @@
     "name": "allocStylingContext"
   },
   {
+    "name": "allocateDirectiveIntoContext"
+  },
+  {
     "name": "appendChild"
   },
   {
@@ -336,6 +339,9 @@
     "name": "getInitialClassNameValue"
   },
   {
+    "name": "getInitialStyleStringValue"
+  },
+  {
     "name": "getInjectorIndex"
   },
   {
@@ -406,6 +412,9 @@
   },
   {
     "name": "hasParentInjector"
+  },
+  {
+    "name": "hasStyleInput"
   },
   {
     "name": "hasStyling"
@@ -555,7 +564,10 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderInitialStylesAndClasses"
+    "name": "renderInitialClasses"
+  },
+  {
+    "name": "renderInitialStyles"
   },
   {
     "name": "renderInitialStylingValues"

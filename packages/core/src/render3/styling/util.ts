@@ -26,17 +26,24 @@ export function createEmptyStylingContext(
     element?: RElement | null, sanitizer?: StyleSanitizeFn | null,
     initialStyles?: InitialStylingValues | null,
     initialClasses?: InitialStylingValues | null): StylingContext {
-  return [
-    0,                                     // MasterFlags
-    [null, -1, false, sanitizer || null],  // DirectiveRefs
-    initialStyles || [null],               // InitialStyles
-    initialClasses || [null],              // InitialClasses
-    [0, 0],                                // SinglePropOffsets
-    element || null,                       // Element
-    null,                                  // PreviousMultiClassValue
-    null,                                  // PreviousMultiStyleValue
-    null,                                  // PlayerContext
+  const context: StylingContext = [
+    0,                               // MasterFlags
+    [] as any,                       // DirectiveRefs (this gets filled below)
+    initialStyles || [null, null],   // InitialStyles
+    initialClasses || [null, null],  // InitialClasses
+    [0, 0],                          // SinglePropOffsets
+    element || null,                 // Element
+    [0],                             // CachedMultiClassValue
+    [0],                             // CachedMultiStyleValue
+    null,                            // PlayerContext
   ];
+  allocateDirectiveIntoContext(context, null);
+  return context;
+}
+
+export function allocateDirectiveIntoContext(context: StylingContext, directiveRef: any | null) {
+  // this is a new directive which we have not seen yet.
+  context[StylingIndex.DirectiveRegistryPosition].push(directiveRef, -1, false, null);
 }
 
 /**
@@ -101,6 +108,34 @@ export function isStylingContext(value: any): value is StylingContext {
 
 export function isAnimationProp(name: string): boolean {
   return name[0] === ANIMATION_PROP_PREFIX;
+}
+
+export function hasClassInput(tNode: TNode) {
+  return (tNode.flags & TNodeFlags.hasClassInput) !== 0;
+}
+
+export function hasStyleInput(tNode: TNode) {
+  return (tNode.flags & TNodeFlags.hasStyleInput) !== 0;
+}
+
+export function forceClassesAsString(classes: string | {[key: string]: any} | null | undefined):
+    string {
+  if (classes && typeof classes !== 'string') {
+    classes = Object.keys(classes).join(' ');
+  }
+  return (classes as string) || '';
+}
+
+export function forceStylesAsString(styles: {[key: string]: any} | null | undefined): string {
+  let str = '';
+  if (styles) {
+    const props = Object.keys(styles);
+    for (let i = 0; i < props.length; i++) {
+      const prop = props[i];
+      str += (i ? ';' : '') + `${prop}:${styles[prop]}`;
+    }
+  }
+  return str;
 }
 
 export function addPlayerInternal(
@@ -195,8 +230,4 @@ export function hasStyling(attrs: TAttributes): boolean {
     if (attr == AttributeMarker.Classes || attr == AttributeMarker.Styles) return true;
   }
   return false;
-}
-
-export function hasClassInput(tNode: TNode) {
-  return tNode.flags & TNodeFlags.hasClassInput ? true : false;
 }

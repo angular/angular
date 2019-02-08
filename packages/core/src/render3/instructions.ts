@@ -37,9 +37,9 @@ import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from './state';
-import {getInitialClassNameValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialStylesAndClasses, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
+import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
-import {ANIMATION_PROP_PREFIX, createEmptyStylingContext, getStylingContext, hasClassInput, hasStyling, isAnimationProp} from './styling/util';
+import {ANIMATION_PROP_PREFIX, allocateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContext, hasClassInput, hasStyleInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
 import {INTERPOLATION_DELIMITER, findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isContentQueryHost, loadInternal, readElementValue, readPatchedLView, renderStringify} from './util';
 
@@ -633,12 +633,16 @@ export function elementStart(
     if (inputData && inputData.hasOwnProperty('class')) {
       tNode.flags |= TNodeFlags.hasClassInput;
     }
+    if (inputData && inputData.hasOwnProperty('style')) {
+      tNode.flags |= TNodeFlags.hasStyleInput;
+    }
   }
 
   // There is no point in rendering styles when a class directive is present since
   // it will take that over for us (this will be removed once #FW-882 is in).
-  if (tNode.stylingTemplate && (tNode.flags & TNodeFlags.hasClassInput) === 0) {
-    renderInitialStylesAndClasses(native, tNode.stylingTemplate, lView[RENDERER]);
+  if (tNode.stylingTemplate) {
+    renderInitialClasses(native, tNode.stylingTemplate, lView[RENDERER]);
+    renderInitialStyles(native, tNode.stylingTemplate, lView[RENDERER]);
   }
 
   const currentQueries = lView[QUERIES];
@@ -1072,6 +1076,20 @@ export function elementEnd(): void {
     previousOrParentTNode = previousOrParentTNode.parent !;
     setPreviousOrParentTNode(previousOrParentTNode);
   }
+
+  // there may be some instructions that need to run in a specific
+  // order because the CREATE block in a directive runs before the
+  // CREATE block in a template. To work around this instructions
+  // can get access to the function array below and defer any code
+  // to run after the element is created.
+  let fns: Function[]|null;
+  if (fns = previousOrParentTNode.onElementCreationFns) {
+    for (let i = 0; i < fns.length; i++) {
+      fns[i]();
+    }
+    previousOrParentTNode.onElementCreationFns = null;
+  }
+
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Element);
   const lView = getLView();
   const currentQueries = lView[QUERIES];
@@ -1089,6 +1107,12 @@ export function elementEnd(): void {
     const stylingContext = getStylingContext(previousOrParentTNode.index, lView);
     setInputsForProperty(
         lView, previousOrParentTNode.inputs !['class'] !, getInitialClassNameValue(stylingContext));
+  }
+  if (hasStyleInput(previousOrParentTNode)) {
+    const stylingContext = getStylingContext(previousOrParentTNode.index, lView);
+    setInputsForProperty(
+        lView, previousOrParentTNode.inputs !['style'] !,
+        getInitialStyleStringValue(stylingContext));
   }
 }
 
@@ -1297,7 +1321,8 @@ export function createTNode(
     child: null,
     parent: tParent,
     stylingTemplate: null,
-    projection: null
+    projection: null,
+    onElementCreationFns: null,
   };
 }
 
@@ -1412,9 +1437,33 @@ export function elementStyling(
   if (!tNode.stylingTemplate) {
     tNode.stylingTemplate = createEmptyStylingContext();
   }
+
+  if (directive) {
+    // this will ALWAYS happen first before the bindings are applied so that the ordering
+    // of directives is correct (otherwise if a follow-up directive contains static styling,
+    // which is applied through elementHostAttrs, then it may end up being listed in the
+    // context directive array before a former one (because the former one didn't contain
+    // any static styling values))
+    allocateDirectiveIntoContext(tNode.stylingTemplate, directive);
+
+    const fns = tNode.onElementCreationFns = tNode.onElementCreationFns || [];
+    fns.push(
+        () => initElementStyling(
+            tNode, classBindingNames, styleBindingNames, styleSanitizer, directive));
+  } else {
+    // this will make sure that the root directive (the template) will always be
+    // run FIRST before all the other styling properties are populated into the
+    // context...
+    initElementStyling(tNode, classBindingNames, styleBindingNames, styleSanitizer, directive);
+  }
+}
+
+function initElementStyling(
+    tNode: TNode, classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
+    styleSanitizer?: StyleSanitizeFn | null, directive?: {}): void {
   updateContextWithBindings(
       tNode.stylingTemplate !, directive || null, classBindingNames, styleBindingNames,
-      styleSanitizer, hasClassInput(tNode));
+      styleSanitizer);
 }
 
 /**
@@ -1521,7 +1570,7 @@ components
  */
 export function elementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
-    suffix?: string | null, directive?: {}): void {
+    suffix?: string | null, directive?: {}, forceOverride?: boolean): void {
   let valueToAdd: string|null = null;
   if (value !== null) {
     if (suffix) {
@@ -1537,7 +1586,8 @@ export function elementStyleProp(
     }
   }
   updateElementStyleProp(
-      getStylingContext(index + HEADER_OFFSET, getLView()), styleIndex, valueToAdd, directive);
+      getStylingContext(index + HEADER_OFFSET, getLView()), styleIndex, valueToAdd, directive,
+      forceOverride);
 }
 
 /**
@@ -1555,26 +1605,36 @@ export function elementStyleProp(
  * @param value A true/false value which will turn the class on or off.
  * @param directive Directive instance that is attempting to change styling. (Defaults to the
  *        component of the current view).
-components
+ * @param forceOverride Whether or not this value will be applied regardless of where it is being
+ *        set within the directive priority structure.
  *
  * @publicApi
  */
 export function elementClassProp(
-    index: number, classIndex: number, value: boolean | PlayerFactory, directive?: {}): void {
-  const onOrOffClassValue =
-      (value instanceof BoundPlayerFactory) ? (value as BoundPlayerFactory<boolean>) : (!!value);
+    index: number, classIndex: number, value: boolean | PlayerFactory, directive?: {},
+    forceOverride?: boolean): void {
+  const input = (value instanceof BoundPlayerFactory) ?
+      (value as BoundPlayerFactory<boolean|null>) :
+      booleanOrNull(value);
   updateElementClassProp(
-      getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, onOrOffClassValue,
-      directive);
+      getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, input, directive,
+      forceOverride);
+}
+
+function booleanOrNull(value: any): boolean|null {
+  if (typeof value === 'boolean') return value;
+  return value ? true : null;
 }
 
 /**
  * Update style and/or class bindings using object literal.
  *
  * This instruction is meant apply styling via the `[style]="exp"` and `[class]="exp"` template
- * bindings. When styles are applied to the Element they will then be placed with respect to
+ * bindings. When styles are applied to the element they will then be placed with respect to
  * any styles set with `elementStyleProp`. If any styles are set to `null` then they will be
- * removed from the element.
+ * removed from the element. This instruction is also called for host bindings that write to
+ * `[style]` and `[class]` (the directive param helps the instruction code determine where the
+ * binding values come from).
  *
  * (Note that the styling instruction will not be applied until `elementStylingApply` is called.)
  *
@@ -1593,29 +1653,33 @@ export function elementClassProp(
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: {}): void {
-  if (directive != undefined)
-    return hackImplementationOfElementStylingMap(
-        index, classes, styles, directive);  // supported in next PR
   const lView = getLView();
   const tNode = getTNode(index, lView);
   const stylingContext = getStylingContext(index + HEADER_OFFSET, lView);
-  if (hasClassInput(tNode) && classes !== NO_CHANGE) {
-    const initialClasses = getInitialClassNameValue(stylingContext);
-    const classInputVal =
-        (initialClasses.length ? (initialClasses + ' ') : '') + (classes as string);
-    setInputsForProperty(lView, tNode.inputs !['class'] !, classInputVal);
-  } else {
-    updateStylingMap(stylingContext, classes, styles);
-  }
-}
 
-/* START OF HACK BLOCK */
-function hackImplementationOfElementStylingMap<T>(
-    index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
-    styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: {}): void {
-  throw new Error('unimplemented. Should not be needed by ViewEngine compatibility');
+  // inputs are only evaluated from a template binding into a directive, therefore,
+  // there should not be a situation where a directive host bindings function
+  // evaluates the inputs (this should only happen in the template function)
+  if (!directive) {
+    if (hasClassInput(tNode) && classes !== NO_CHANGE) {
+      const initialClasses = getInitialClassNameValue(stylingContext);
+      const classInputVal =
+          (initialClasses.length ? (initialClasses + ' ') : '') + forceClassesAsString(classes);
+      setInputsForProperty(lView, tNode.inputs !['class'] !, classInputVal);
+      classes = NO_CHANGE;
+    }
+
+    if (hasStyleInput(tNode) && styles !== NO_CHANGE) {
+      const initialStyles = getInitialClassNameValue(stylingContext);
+      const styleInputVal =
+          (initialStyles.length ? (initialStyles + ' ') : '') + forceStylesAsString(styles);
+      setInputsForProperty(lView, tNode.inputs !['style'] !, styleInputVal);
+      styles = NO_CHANGE;
+    }
+  }
+
+  updateStylingMap(stylingContext, classes, styles, directive);
 }
-/* END OF HACK BLOCK */
 
 //////////////////////////
 //// Text

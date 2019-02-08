@@ -11,13 +11,13 @@ import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerIndex} from '../interfaces/player';
 import {RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '../interfaces/renderer';
-import {DirectiveOwnerAndPlayerBuilderIndex, DirectiveRegistryValues, DirectiveRegistryValuesIndex, InitialStylingValues, InitialStylingValuesIndex, SinglePropOffsetValues, SinglePropOffsetValuesIndex, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
+import {DirectiveOwnerAndPlayerBuilderIndex, DirectiveRegistryValues, DirectiveRegistryValuesIndex, InitialStylingValues, InitialStylingValuesIndex, MapBasedOffsetValues, MapBasedOffsetValuesIndex, SinglePropOffsetValues, SinglePropOffsetValuesIndex, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {LView, RootContext} from '../interfaces/view';
 import {NO_CHANGE} from '../tokens';
 import {getRootContext} from '../util';
 
 import {BoundPlayerFactory} from './player_factory';
-import {addPlayerInternal, allocPlayerContext, createEmptyStylingContext, getPlayerContext} from './util';
+import {addPlayerInternal, allocPlayerContext, allocateDirectiveIntoContext, createEmptyStylingContext, getPlayerContext} from './util';
 
 
 
@@ -30,8 +30,11 @@ import {addPlayerInternal, allocPlayerContext, createEmptyStylingContext, getPla
  * [style.prop]="myPropValue"
  * [class.name]="myClassValue"
  *
+ * It also includes code that will allow style binding code to operate within host
+ * bindings for components/directives.
+ *
  * There are many different ways in which these functions below are called. Please see
- * `interfaces/styles.ts` to get a better idea of how the styling algorithm works.
+ * `render3/interfaces/styling.ts` to get a better idea of how the styling algorithm works.
  */
 
 
@@ -39,12 +42,12 @@ import {addPlayerInternal, allocPlayerContext, createEmptyStylingContext, getPla
 /**
  * Creates a new StylingContext an fills it with the provided static styling attribute values.
  */
-export function initializeStaticContext(attrs: TAttributes) {
+export function initializeStaticContext(attrs: TAttributes): StylingContext {
   const context = createEmptyStylingContext();
   const initialClasses: InitialStylingValues = context[StylingIndex.InitialClassValuesPosition] =
-      [null];
+      [null, null];
   const initialStyles: InitialStylingValues = context[StylingIndex.InitialStyleValuesPosition] =
-      [null];
+      [null, null];
 
   // The attributes array has marker values (numbers) indicating what the subsequent
   // values represent. When we encounter a number, we set the mode to that type of attribute.
@@ -72,18 +75,18 @@ export function initializeStaticContext(attrs: TAttributes) {
  * @param context the existing styling context
  * @param attrs an array of new static styling attributes that will be
  *              assigned to the context
- * @param directive the directive instance with which static data is associated with.
+ * @param directiveRef the directive instance with which static data is associated with.
  */
 export function patchContextWithStaticAttrs(
-    context: StylingContext, attrs: TAttributes, startingIndex: number, directive: any): void {
+    context: StylingContext, attrs: TAttributes, startingIndex: number, directiveRef: any): void {
   // If the styling context has already been patched with the given directive's bindings,
   // then there is no point in doing it again. The reason why this may happen (the directive
   // styling being patched twice) is because the `stylingBinding` function is called each time
   // an element is created (both within a template function and within directive host bindings).
   const directives = context[StylingIndex.DirectiveRegistryPosition];
-  if (getDirectiveRegistryValuesIndexOf(directives, directive) == -1) {
+  if (getDirectiveRegistryValuesIndexOf(directives, directiveRef) == -1) {
     // this is a new directive which we have not seen yet.
-    directives.push(directive, -1, false, null);
+    allocateDirectiveIntoContext(context, directiveRef);
 
     let initialClasses: InitialStylingValues|null = null;
     let initialStyles: InitialStylingValues|null = null;
@@ -134,16 +137,23 @@ function patchInitialStylingValue(
 }
 
 /**
- * Runs through the initial styling data present in the context and renders
+ * Runs through the initial style data present in the context and renders
  * them via the renderer on the element.
  */
-export function renderInitialStylesAndClasses(
+export function renderInitialStyles(
+    element: RElement, context: StylingContext, renderer: Renderer3) {
+  const initialStyles = context[StylingIndex.InitialStyleValuesPosition];
+  renderInitialStylingValues(element, renderer, initialStyles, false);
+}
+
+/**
+ * Runs through the initial class data present in the context and renders
+ * them via the renderer on the element.
+ */
+export function renderInitialClasses(
     element: RElement, context: StylingContext, renderer: Renderer3) {
   const initialClasses = context[StylingIndex.InitialClassValuesPosition];
   renderInitialStylingValues(element, renderer, initialClasses, true);
-
-  const initialStyles = context[StylingIndex.InitialStyleValuesPosition];
-  renderInitialStylingValues(element, renderer, initialStyles, false);
 }
 
 /**
@@ -190,8 +200,7 @@ export function allowNewBindingsForStylingContext(context: StylingContext): bool
  */
 export function updateContextWithBindings(
     context: StylingContext, directiveRef: any | null, classBindingNames?: string[] | null,
-    styleBindingNames?: string[] | null, styleSanitizer?: StyleSanitizeFn | null,
-    onlyProcessSingleClasses?: boolean) {
+    styleBindingNames?: string[] | null, styleSanitizer?: StyleSanitizeFn | null) {
   if (context[StylingIndex.MasterFlagPosition] & StylingFlags.BindingAllocationLocked) return;
 
   // this means the context has already been patched with the directive's bindings
@@ -199,6 +208,10 @@ export function updateContextWithBindings(
   if (directiveIndex === -1) {
     // this means the directive has already been patched in ... No point in doing anything
     return;
+  }
+
+  if (styleBindingNames) {
+    styleBindingNames = hyphenateEntries(styleBindingNames);
   }
 
   // there are alot of variables being used below to track where in the context the new
@@ -211,6 +224,9 @@ export function updateContextWithBindings(
       singlePropOffsetValues[SinglePropOffsetValuesIndex.ClassesCountPosition];
   const totalCurrentStyleBindings =
       singlePropOffsetValues[SinglePropOffsetValuesIndex.StylesCountPosition];
+
+  const cachedClassMapValues = context[StylingIndex.CachedMultiClasses];
+  const cachedStyleMapValues = context[StylingIndex.CachedMultiStyles];
 
   const classesOffset = totalCurrentClassBindings * StylingIndex.Size;
   const stylesOffset = totalCurrentStyleBindings * StylingIndex.Size;
@@ -390,27 +406,90 @@ export function updateContextWithBindings(
   singlePropOffsetValues[SinglePropOffsetValuesIndex.StylesCountPosition] =
       totalCurrentStyleBindings + filteredStyleBindingNames.length;
 
+  // the map-based values also need to know how many entries got inserted
+  cachedClassMapValues[MapBasedOffsetValuesIndex.EntriesCountPosition] +=
+      filteredClassBindingNames.length;
+  cachedStyleMapValues[MapBasedOffsetValuesIndex.EntriesCountPosition] +=
+      filteredStyleBindingNames.length;
+  const newStylesSpaceAllocationSize = filteredStyleBindingNames.length * StylingIndex.Size;
+  const newClassesSpaceAllocationSize = filteredClassBindingNames.length * StylingIndex.Size;
+
+  // update the multi styles cache with a reference for the directive that was just inserted
+  const directiveMultiStylesStartIndex =
+      multiStylesStartIndex + totalCurrentStyleBindings * StylingIndex.Size;
+  const cachedStyleMapIndex = cachedStyleMapValues.length;
+
+  // this means that ONLY directive style styling (like ngStyle) was used
+  // therefore the root directive will still need to be filled in
+  if (directiveIndex > 0 &&
+      cachedStyleMapValues.length <= MapBasedOffsetValuesIndex.ValuesStartPosition) {
+    cachedStyleMapValues.push(0, directiveMultiStylesStartIndex, null, 0);
+  }
+
+  cachedStyleMapValues.push(
+      0, directiveMultiStylesStartIndex, null, filteredStyleBindingNames.length);
+
+  for (let i = MapBasedOffsetValuesIndex.ValuesStartPosition; i < cachedStyleMapIndex;
+       i += MapBasedOffsetValuesIndex.Size) {
+    // multi values start after all the single values (which is also where classes are) in the
+    // context therefore the new class allocation size should be taken into account
+    cachedStyleMapValues[i + MapBasedOffsetValuesIndex.PositionStartOffset] +=
+        newClassesSpaceAllocationSize + newStylesSpaceAllocationSize;
+  }
+
+  // update the multi classes cache with a reference for the directive that was just inserted
+  const directiveMultiClassesStartIndex =
+      multiClassesStartIndex + totalCurrentClassBindings * StylingIndex.Size;
+  const cachedClassMapIndex = cachedClassMapValues.length;
+
+  // this means that ONLY directive class styling (like ngClass) was used
+  // therefore the root directive will still need to be filled in
+  if (directiveIndex > 0 &&
+      cachedClassMapValues.length <= MapBasedOffsetValuesIndex.ValuesStartPosition) {
+    cachedClassMapValues.push(0, directiveMultiClassesStartIndex, null, 0);
+  }
+
+  cachedClassMapValues.push(
+      0, directiveMultiClassesStartIndex, null, filteredClassBindingNames.length);
+
+  for (let i = MapBasedOffsetValuesIndex.ValuesStartPosition; i < cachedClassMapIndex;
+       i += MapBasedOffsetValuesIndex.Size) {
+    // the reason why both the styles + classes space is allocated to the existing offsets is
+    // because the styles show up before the classes in the context and any new inserted
+    // styles will offset any existing class entries in the context (even if there are no
+    // new class entries added) also the reason why it's *2 is because both single + multi
+    // entries for each new style have been added in the context before the multi class values
+    // actually start
+    cachedClassMapValues[i + MapBasedOffsetValuesIndex.PositionStartOffset] +=
+        (newStylesSpaceAllocationSize * 2) + newClassesSpaceAllocationSize;
+  }
+
   // there is no initial value flag for the master index since it doesn't
   // reference an initial style value
-  const masterFlag = pointers(0, 0, multiStylesStartIndex) |
-      (onlyProcessSingleClasses ? StylingFlags.OnlyProcessSingleClasses : 0);
+  const masterFlag = pointers(0, 0, multiStylesStartIndex);
   setFlag(context, StylingIndex.MasterFlagPosition, masterFlag);
 }
 
 /**
  * Searches through the existing registry of directives
  */
-function findOrPatchDirectiveIntoRegistry(
+export function findOrPatchDirectiveIntoRegistry(
     context: StylingContext, directiveRef: any, styleSanitizer?: StyleSanitizeFn | null) {
   const directiveRefs = context[StylingIndex.DirectiveRegistryPosition];
   const nextOffsetInsertionIndex = context[StylingIndex.SinglePropOffsetPositions].length;
 
   let directiveIndex: number;
-  const detectedIndex = getDirectiveRegistryValuesIndexOf(directiveRefs, directiveRef);
+  let detectedIndex = getDirectiveRegistryValuesIndexOf(directiveRefs, directiveRef);
 
   if (detectedIndex === -1) {
+    detectedIndex = directiveRefs.length;
     directiveIndex = directiveRefs.length / DirectiveRegistryValuesIndex.Size;
-    directiveRefs.push(directiveRef, nextOffsetInsertionIndex, false, styleSanitizer || null);
+
+    allocateDirectiveIntoContext(context, directiveRef);
+    directiveRefs[detectedIndex + DirectiveRegistryValuesIndex.SinglePropValuesIndexOffset] =
+        nextOffsetInsertionIndex;
+    directiveRefs[detectedIndex + DirectiveRegistryValuesIndex.StyleSanitizerOffset] =
+        styleSanitizer || null;
   } else {
     const singlePropStartPosition =
         detectedIndex + DirectiveRegistryValuesIndex.SinglePropValuesIndexOffset;
@@ -446,27 +525,53 @@ function getMatchingBindingIndex(
 }
 
 /**
- * Sets and resolves all `multi` styling on an `StylingContext` so that they can be
- * applied to the element once `renderStyling` is called.
+ * Registers the provided multi styling (`[style]` and `[class]`) values to the context.
  *
- * All missing styles/class (any values that are not provided in the new `styles`
- * or `classes` params) will resolve to `null` within their respective positions
- * in the context.
+ * This function will iterate over the provided `classesInput` and `stylesInput` map
+ * values and insert/update or remove them from the context at exactly the right
+ * spot.
+ *
+ * This function also takes in a directive which implies that the styling values will
+ * be evaluated for that directive with respect to any other styling that already exists
+ * on the context. When there are styles that conflict (e.g. say `ngStyle` and `[style]`
+ * both update the `width` property at the same time) then the styling algorithm code below
+ * will decide which one wins based on the directive styling prioritization mechanism. This
+ * mechanism is better explained in render3/interfaces/styling.ts#directives).
+ *
+ * This function will not render any styling values on screen, but is rather designed to
+ * prepare the context for that. `renderStyling` must be called afterwards to render any
+ * styling data that was set in this function (note that `updateClassProp` and
+ * `updateStyleProp` are designed to be run after this function is run).
  *
  * @param context The styling context that will be updated with the
  *    newly provided style values.
  * @param classesInput The key/value map of CSS class names that will be used for the update.
  * @param stylesInput The key/value map of CSS styles that will be used for the update.
+ * @param directiveRef an optional reference to the directive responsible
+ *    for this binding change. If present then style binding will only
+ *    actualize if the directive has ownership over this binding
+ *    (see styling.ts#directives for more information about the algorithm).
  */
 export function updateStylingMap(
     context: StylingContext, classesInput: {[key: string]: any} | string |
-        BoundPlayerFactory<null|string|{[key: string]: any}>| NO_CHANGE | null,
-    stylesInput?: {[key: string]: any} | BoundPlayerFactory<null|{[key: string]: any}>| NO_CHANGE |
-        null,
+        BoundPlayerFactory<null|string|{[key: string]: any}>| null,
+    stylesInput?: {[key: string]: any} | BoundPlayerFactory<null|{[key: string]: any}>| null,
     directiveRef?: any): void {
-  stylesInput = stylesInput || null;
-
   const directiveIndex = getDirectiveIndexFromRegistry(context, directiveRef || null);
+
+  classesInput = classesInput || null;
+  stylesInput = stylesInput || null;
+  const ignoreAllClassUpdates = isMultiValueCacheHit(context, true, directiveIndex, classesInput);
+  const ignoreAllStyleUpdates = isMultiValueCacheHit(context, false, directiveIndex, stylesInput);
+
+  // early exit (this is what's done to avoid using ctx.bind() to cache the value)
+  if (ignoreAllClassUpdates && ignoreAllStyleUpdates) return;
+
+  classesInput =
+      classesInput === NO_CHANGE ? readCachedMapValue(context, true, directiveIndex) : classesInput;
+  stylesInput =
+      stylesInput === NO_CHANGE ? readCachedMapValue(context, false, directiveIndex) : stylesInput;
+
   const element = context[StylingIndex.ElementPosition] !as HTMLElement;
   const classesPlayerBuilder = classesInput instanceof BoundPlayerFactory ?
       new ClassAndStylePlayerBuilder(classesInput as any, element, BindingType.Class) :
@@ -479,15 +584,6 @@ export function updateStylingMap(
       (classesInput as BoundPlayerFactory<{[key: string]: any}|string>) !.value :
       classesInput;
   const stylesValue = stylesPlayerBuilder ? stylesInput !.value : stylesInput;
-  // early exit (this is what's done to avoid using ctx.bind() to cache the value)
-  const ignoreAllClassUpdates = limitToSingleClasses(context) || classesValue === NO_CHANGE ||
-      classesValue === context[StylingIndex.CachedClassValueOrInitialClassString];
-  const ignoreAllStyleUpdates =
-      stylesValue === NO_CHANGE || stylesValue === context[StylingIndex.CachedStyleValue];
-  if (ignoreAllClassUpdates && ignoreAllStyleUpdates) return;
-
-  context[StylingIndex.CachedClassValueOrInitialClassString] = classesValue;
-  context[StylingIndex.CachedStyleValue] = stylesValue;
 
   let classNames: string[] = EMPTY_ARRAY;
   let applyAllClasses = false;
@@ -522,150 +618,27 @@ export function updateStylingMap(
     }
   }
 
-  const classes = (classesValue || EMPTY_OBJ) as{[key: string]: any};
-  const styleProps = stylesValue ? Object.keys(stylesValue) : EMPTY_ARRAY;
-  const styles = stylesValue || EMPTY_OBJ;
+  const multiStylesStartIndex = getMultiStylesStartIndex(context);
+  let multiClassesStartIndex = getMultiClassStartIndex(context);
+  let multiClassesEndIndex = context.length;
 
-  const classesStartIndex = styleProps.length;
-  let multiStartIndex = getMultiStartIndex(context);
-
-  let dirty = false;
-  let ctxIndex = multiStartIndex;
-
-  let propIndex = 0;
-  const propLimit = styleProps.length + classNames.length;
-
-  // the main loop here will try and figure out how the shape of the provided
-  // styles differ with respect to the context. Later if the context/styles/classes
-  // are off-balance then they will be dealt in another loop after this one
-  while (ctxIndex < context.length && propIndex < propLimit) {
-    const isClassBased = propIndex >= classesStartIndex;
-    const processValue =
-        (!isClassBased && !ignoreAllStyleUpdates) || (isClassBased && !ignoreAllClassUpdates);
-
-    // when there is a cache-hit for a string-based class then we should
-    // avoid doing any work diffing any of the changes
-    if (processValue) {
-      const adjustedPropIndex = isClassBased ? propIndex - classesStartIndex : propIndex;
-      const newProp: string =
-          isClassBased ? classNames[adjustedPropIndex] : styleProps[adjustedPropIndex];
-      const newValue: string|boolean =
-          isClassBased ? (applyAllClasses ? true : classes[newProp]) : styles[newProp];
-      const playerBuilderIndex =
-          isClassBased ? classesPlayerBuilderIndex : stylesPlayerBuilderIndex;
-
-      const prop = getProp(context, ctxIndex);
-      if (prop === newProp) {
-        const value = getValue(context, ctxIndex);
-        const flag = getPointers(context, ctxIndex);
-        setPlayerBuilderIndex(context, ctxIndex, playerBuilderIndex, directiveIndex);
-
-        if (hasValueChanged(flag, value, newValue)) {
-          setValue(context, ctxIndex, newValue);
-          playerBuildersAreDirty = playerBuildersAreDirty || !!playerBuilderIndex;
-
-          const initialValue = getInitialValue(context, flag);
-
-          // SKIP IF INITIAL CHECK
-          // If the former `value` is `null` then it means that an initial value
-          // could be being rendered on screen. If that is the case then there is
-          // no point in updating the value incase it matches. In other words if the
-          // new value is the exact same as the previously rendered value (which
-          // happens to be the initial value) then do nothing.
-          if (value != null || hasValueChanged(flag, initialValue, newValue)) {
-            setDirty(context, ctxIndex, true);
-            dirty = true;
-          }
-        }
-      } else {
-        const indexOfEntry = findEntryPositionByProp(context, newProp, ctxIndex);
-        if (indexOfEntry > 0) {
-          // it was found at a later point ... just swap the values
-          const valueToCompare = getValue(context, indexOfEntry);
-          const flagToCompare = getPointers(context, indexOfEntry);
-          swapMultiContextEntries(context, ctxIndex, indexOfEntry);
-          if (hasValueChanged(flagToCompare, valueToCompare, newValue)) {
-            const initialValue = getInitialValue(context, flagToCompare);
-            setValue(context, ctxIndex, newValue);
-
-            // same if statement logic as above (look for SKIP IF INITIAL CHECK).
-            if (valueToCompare != null || hasValueChanged(flagToCompare, initialValue, newValue)) {
-              setDirty(context, ctxIndex, true);
-              playerBuildersAreDirty = playerBuildersAreDirty || !!playerBuilderIndex;
-              dirty = true;
-            }
-          }
-        } else {
-          // we only care to do this if the insertion is in the middle
-          const newFlag = prepareInitialFlag(
-              context, newProp, isClassBased, getStyleSanitizer(context, directiveIndex));
-          playerBuildersAreDirty = playerBuildersAreDirty || !!playerBuilderIndex;
-          insertNewMultiProperty(
-              context, ctxIndex, isClassBased, newProp, newFlag, newValue, directiveIndex,
-              playerBuilderIndex);
-          dirty = true;
-        }
-      }
+  if (!ignoreAllStyleUpdates) {
+    const styleProps = stylesValue ? Object.keys(stylesValue) : EMPTY_ARRAY;
+    const styles = stylesValue || EMPTY_OBJ;
+    const totalNewEntries = patchStylingMapIntoContext(
+        context, directiveIndex, stylesPlayerBuilderIndex, multiStylesStartIndex,
+        multiClassesStartIndex, styleProps, styles, stylesInput, false);
+    if (totalNewEntries) {
+      multiClassesStartIndex += totalNewEntries * StylingIndex.Size;
+      multiClassesEndIndex += totalNewEntries * StylingIndex.Size;
     }
-
-    ctxIndex += StylingIndex.Size;
-    propIndex++;
   }
 
-  // this means that there are left-over values in the context that
-  // were not included in the provided styles/classes and in this
-  // case the  goal is to "remove" them from the context (by nullifying)
-  while (ctxIndex < context.length) {
-    const flag = getPointers(context, ctxIndex);
-    const isClassBased = (flag & StylingFlags.Class) === StylingFlags.Class;
-    const processValue =
-        (!isClassBased && !ignoreAllStyleUpdates) || (isClassBased && !ignoreAllClassUpdates);
-    if (processValue) {
-      const value = getValue(context, ctxIndex);
-      const doRemoveValue = valueExists(value, isClassBased);
-      if (doRemoveValue) {
-        setDirty(context, ctxIndex, true);
-        setValue(context, ctxIndex, null);
-
-        // we keep the player factory the same so that the `nulled` value can
-        // be instructed into the player because removing a style and/or a class
-        // is a valid animation player instruction.
-        const playerBuilderIndex =
-            isClassBased ? classesPlayerBuilderIndex : stylesPlayerBuilderIndex;
-        setPlayerBuilderIndex(context, ctxIndex, playerBuilderIndex, directiveIndex);
-        dirty = true;
-      }
-    }
-    ctxIndex += StylingIndex.Size;
-  }
-
-  // this means that there are left-over properties in the context that
-  // were not detected in the context during the loop above. In that
-  // case we want to add the new entries into the list
-  const sanitizer = getStyleSanitizer(context, directiveIndex);
-  while (propIndex < propLimit) {
-    const isClassBased = propIndex >= classesStartIndex;
-    const processValue =
-        (!isClassBased && !ignoreAllStyleUpdates) || (isClassBased && !ignoreAllClassUpdates);
-    if (processValue) {
-      const adjustedPropIndex = isClassBased ? propIndex - classesStartIndex : propIndex;
-      const prop = isClassBased ? classNames[adjustedPropIndex] : styleProps[adjustedPropIndex];
-      const value: string|boolean =
-          isClassBased ? (applyAllClasses ? true : classes[prop]) : styles[prop];
-      const flag = prepareInitialFlag(context, prop, isClassBased, sanitizer) | StylingFlags.Dirty;
-      const playerBuilderIndex =
-          isClassBased ? classesPlayerBuilderIndex : stylesPlayerBuilderIndex;
-      const ctxIndex = context.length;
-      context.push(flag, prop, value, 0);
-      setPlayerBuilderIndex(context, ctxIndex, playerBuilderIndex, directiveIndex);
-      dirty = true;
-    }
-    propIndex++;
-  }
-
-  if (dirty) {
-    setContextDirty(context, true);
-    setDirectiveDirty(context, directiveIndex, true);
+  if (!ignoreAllClassUpdates) {
+    const classes = (classesValue || EMPTY_OBJ) as{[key: string]: any};
+    patchStylingMapIntoContext(
+        context, directiveIndex, classesPlayerBuilderIndex, multiClassesStartIndex,
+        multiClassesEndIndex, classNames, applyAllClasses || classes, classesInput, true);
   }
 
   if (playerBuildersAreDirty) {
@@ -674,18 +647,275 @@ export function updateStylingMap(
 }
 
 /**
- * This method will toggle the referenced CSS class (by the provided index)
- * within the given context.
+ * Applies the given multi styling (styles or classes) values to the context.
+ *
+ * The styling algorithm code that applies multi-level styling (things like `[style]` and `[class]`
+ * values) resides here.
+ *
+ * Because this function understands that multiple directives may all write to the `[style]` and
+ * `[class]` bindings (through host bindings), it relies of each directive applying its binding
+ * value in order. This means that a directive like `classADirective` will always fire before
+ * `classBDirective` and therefore its styling values (classes and styles) will always be evaluated
+ * in the same order. Because of this consistent ordering, the first directive has a higher priority
+ * than the second one. It is with this prioritzation mechanism that the styling algorithm knows how
+ * to merge and apply redudant styling properties.
+ *
+ * The function itself applies the key/value entries (or an array of keys) to
+ * the context in the following steps.
+ *
+ * STEP 1:
+ *    First check to see what properties are already set and in use by another directive in the
+ *    context (e.g. `ngClass` set the `width` value and `[style.width]="w"` in a directive is
+ *    attempting to set it as well).
+ *
+ * STEP 2:
+ *    All remaining properties (that were not set prior to this directive) are now updated in
+ *    the context. Any new properties are inserted exactly at their spot in the context and any
+ *    previously set properties are shifted to exactly where the cursor sits while iterating over
+ *    the context. The end result is a balanced context that includes the exact ordering of the
+ *    styling properties/values for the provided input from the directive.
+ *
+ * STEP 3:
+ *    Any unmatched properties in the context that belong to the directive are set to null
+ *
+ * Once the updating phase is done, then the algorithm will decide whether or not to flag the
+ * follow-up directives (the directives that will pass in their styling values) depending on if
+ * the "shape" of the multi-value map has changed (either if any keys are removed or added or
+ * if there are any new `null` values). If any follow-up directives are flagged as dirty then the
+ * algorithm will run again for them. Otherwise if the shape did not change then any follow-up
+ * directives will not run (so long as their binding values stay the same).
+ *
+ * @returns the total amount of new slots that were allocated into the context due to new styling
+ *          properties that were detected.
+ */
+function patchStylingMapIntoContext(
+    context: StylingContext, directiveIndex: number, playerBuilderIndex: number, ctxStart: number,
+    ctxEnd: number, props: (string | null)[], values: {[key: string]: any} | true, cacheValue: any,
+    entryIsClassBased: boolean): number {
+  let dirty = false;
+
+  const cacheIndex = MapBasedOffsetValuesIndex.ValuesStartPosition +
+      directiveIndex * MapBasedOffsetValuesIndex.Size;
+
+  // the cachedValues array is the registry of all multi style values (map values). Each
+  // value is stored (cached) each time is updated.
+  const cachedValues =
+      context[entryIsClassBased ? StylingIndex.CachedMultiClasses : StylingIndex.CachedMultiStyles];
+
+  // this is the index in which this directive has ownership access to write to this
+  // value (anything before is owned by a previous directive that is more important)
+  const ownershipValuesStartIndex =
+      cachedValues[cacheIndex + MapBasedOffsetValuesIndex.PositionStartOffset];
+
+  const existingCachedValue = cachedValues[cacheIndex + MapBasedOffsetValuesIndex.ValueOffset];
+  const existingCachedValueCount =
+      cachedValues[cacheIndex + MapBasedOffsetValuesIndex.ValueCountOffset];
+  const existingCachedValueIsDirty =
+      cachedValues[cacheIndex + MapBasedOffsetValuesIndex.DirtyFlagOffset] === 1;
+
+  // A shape change means the provided map value has either removed or added new properties
+  // compared to what were in the last time. If a shape change occurs then it means that all
+  // follow-up multi-styling entries are obsolete and will be examined again when CD runs
+  // them. If a shape change has not occurred then there is no reason to check any other
+  // directive values if their identity has not changed. If a previous directive set this
+  // value as dirty (because its own shape changed) then this means that the object has been
+  // offset to a different area in the context. Because its value has been offset then it
+  // can't write to a region that it wrote to before (which may have been apart of another
+  // directive) and therefore its shape changes too.
+  let valuesEntryShapeChange =
+      existingCachedValueIsDirty || ((!existingCachedValue && cacheValue) ? true : false);
+
+  let totalUniqueValues = 0;
+  let totalNewAllocatedSlots = 0;
+
+  // this is a trick to avoid building {key:value} map where all the values
+  // are `true` (this happens when a className string is provided instead of a
+  // map as an input value to this styling algorithm)
+  const applyAllProps = values === true;
+
+  // STEP 1:
+  // loop through the earlier directives and figure out if any properties here will be placed
+  // in their area (this happens when the value is null because the earlier directive erased it).
+  let ctxIndex = ctxStart;
+  let totalRemainingProperties = props.length;
+  while (ctxIndex < ownershipValuesStartIndex) {
+    const currentProp = getProp(context, ctxIndex);
+    if (totalRemainingProperties) {
+      for (let i = 0; i < props.length; i++) {
+        const mapProp = props[i];
+        const normalizedProp = mapProp ? (entryIsClassBased ? mapProp : hyphenate(mapProp)) : null;
+        if (normalizedProp && currentProp === normalizedProp) {
+          const currentValue = getValue(context, ctxIndex);
+          const currentDirectiveIndex = getDirectiveIndexFromEntry(context, ctxIndex);
+          const value = applyAllProps ? true : (values as{[key: string]: any})[normalizedProp];
+          const currentFlag = getPointers(context, ctxIndex);
+          if (hasValueChanged(currentFlag, currentValue, value) &&
+              allowValueChange(currentValue, value, currentDirectiveIndex, directiveIndex)) {
+            setValue(context, ctxIndex, value);
+            setPlayerBuilderIndex(context, ctxIndex, playerBuilderIndex, directiveIndex);
+            if (hasInitialValueChanged(context, currentFlag, value)) {
+              setDirty(context, ctxIndex, true);
+              dirty = true;
+            }
+          }
+          props[i] = null;
+          totalRemainingProperties--;
+          break;
+        }
+      }
+    }
+    ctxIndex += StylingIndex.Size;
+  }
+
+  // STEP 2:
+  // apply the left over properties to the context in the correct order.
+  if (totalRemainingProperties) {
+    const sanitizer = entryIsClassBased ? null : getStyleSanitizer(context, directiveIndex);
+    propertiesLoop: for (let i = 0; i < props.length; i++) {
+      const mapProp = props[i];
+
+      if (!mapProp) {
+        // this is an early exit incase a value was already encountered above in the
+        // previous loop (which means that the property was applied or rejected)
+        continue;
+      }
+
+      const value = applyAllProps ? true : (values as{[key: string]: any})[mapProp];
+      const normalizedProp = entryIsClassBased ? mapProp : hyphenate(mapProp);
+      const isInsideOwnershipArea = ctxIndex >= ownershipValuesStartIndex;
+
+      for (let j = ctxIndex; j < ctxEnd; j += StylingIndex.Size) {
+        const distantCtxProp = getProp(context, j);
+        if (distantCtxProp === normalizedProp) {
+          const distantCtxDirectiveIndex = getDirectiveIndexFromEntry(context, j);
+          const distantCtxPlayerBuilderIndex = getPlayerBuilderIndex(context, j);
+          const distantCtxValue = getValue(context, j);
+          const distantCtxFlag = getPointers(context, j);
+
+          if (allowValueChange(distantCtxValue, value, distantCtxDirectiveIndex, directiveIndex)) {
+            // even if the entry isn't updated (by value or directiveIndex) then
+            // it should still be moved over to the correct spot in the array so
+            // the iteration loop is tighter.
+            if (isInsideOwnershipArea) {
+              swapMultiContextEntries(context, ctxIndex, j);
+              totalUniqueValues++;
+            }
+
+            if (hasValueChanged(distantCtxFlag, distantCtxValue, value)) {
+              if (value === null || value === undefined && value !== distantCtxValue) {
+                valuesEntryShapeChange = true;
+              }
+
+              setValue(context, ctxIndex, value);
+
+              // SKIP IF INITIAL CHECK
+              // If the former `value` is `null` then it means that an initial value
+              // could be being rendered on screen. If that is the case then there is
+              // no point in updating the value incase it matches. In other words if the
+              // new value is the exact same as the previously rendered value (which
+              // happens to be the initial value) then do nothing.
+              if (distantCtxValue !== null ||
+                  hasInitialValueChanged(context, distantCtxFlag, value)) {
+                setDirty(context, ctxIndex, true);
+                dirty = true;
+              }
+            }
+
+            if (distantCtxDirectiveIndex !== directiveIndex ||
+                playerBuilderIndex !== distantCtxPlayerBuilderIndex) {
+              setPlayerBuilderIndex(context, ctxIndex, playerBuilderIndex, directiveIndex);
+            }
+          }
+
+          ctxIndex += StylingIndex.Size;
+          continue propertiesLoop;
+        }
+      }
+
+      // fallback case ... value not found at all in the context
+      if (value != null) {
+        valuesEntryShapeChange = true;
+        totalUniqueValues++;
+        const flag = prepareInitialFlag(context, normalizedProp, entryIsClassBased, sanitizer) |
+            StylingFlags.Dirty;
+
+        const insertionIndex = isInsideOwnershipArea ?
+            ctxIndex :
+            (ownershipValuesStartIndex + totalNewAllocatedSlots * StylingIndex.Size);
+        insertNewMultiProperty(
+            context, insertionIndex, entryIsClassBased, normalizedProp, flag, value, directiveIndex,
+            playerBuilderIndex);
+
+        totalNewAllocatedSlots++;
+        ctxEnd += StylingIndex.Size;
+        ctxIndex += StylingIndex.Size;
+
+        dirty = true;
+      }
+    }
+  }
+
+  // STEP 3:
+  // Remove (nullify) any existing entries in the context that were not apart of the
+  // map input value that was passed into this algorithm for this directive.
+  while (ctxIndex < ctxEnd) {
+    valuesEntryShapeChange = true;  // some values are missing
+    const ctxValue = getValue(context, ctxIndex);
+    const ctxFlag = getPointers(context, ctxIndex);
+    if (ctxValue != null) {
+      valuesEntryShapeChange = true;
+    }
+    if (hasValueChanged(ctxFlag, ctxValue, null)) {
+      setValue(context, ctxIndex, null);
+      // only if the initial value is falsy then
+      if (hasInitialValueChanged(context, ctxFlag, ctxValue)) {
+        setDirty(context, ctxIndex, true);
+        dirty = true;
+      }
+      setPlayerBuilderIndex(context, ctxIndex, playerBuilderIndex, directiveIndex);
+    }
+    ctxIndex += StylingIndex.Size;
+  }
+
+  // Because the object shape has changed, this means that all follow-up directives will need to
+  // reapply their values into the object. For this to happen, the cached array needs to be updated
+  // with dirty flags so that follow-up calls to `updateStylingMap` will reapply their styling code.
+  // the reapplication of styling code within the context will reshape it and update the offset
+  // values (also follow-up directives can write new values incase earlier directives set anything
+  // to null due to removals or falsy values).
+  valuesEntryShapeChange = valuesEntryShapeChange || existingCachedValueCount !== totalUniqueValues;
+  updateCachedMapValue(
+      context, directiveIndex, entryIsClassBased, cacheValue, ownershipValuesStartIndex, ctxEnd,
+      totalUniqueValues, valuesEntryShapeChange);
+
+  if (dirty) {
+    setContextDirty(context, true);
+    setDirectiveDirty(context, directiveIndex, true);
+  }
+
+  return totalNewAllocatedSlots;
+}
+
+/**
+ * Sets and resolves a single class value on the provided `StylingContext` so
+ * that they can be applied to the element once `renderStyling` is called.
  *
  * @param context The styling context that will be updated with the
  *    newly provided class value.
  * @param offset The index of the CSS class which is being updated.
  * @param addOrRemove Whether or not to add or remove the CSS class
+ * @param directiveRef an optional reference to the directive responsible
+ *    for this binding change. If present then style binding will only
+ *    actualize if the directive has ownership over this binding
+ *    (see styling.ts#directives for more information about the algorithm).
+ * @param forceOverride whether or not to skip all directive prioritization
+ *    and just apply the value regardless.
  */
 export function updateClassProp(
-    context: StylingContext, offset: number, addOrRemove: boolean | BoundPlayerFactory<boolean>,
-    directiveRef?: any): void {
-  _updateSingleStylingValue(context, offset, addOrRemove, true, directiveRef);
+    context: StylingContext, offset: number,
+    input: boolean | BoundPlayerFactory<boolean|null>| null, directiveRef?: any,
+    forceOverride?: boolean): void {
+  updateSingleStylingValue(context, offset, input, true, directiveRef, forceOverride);
 }
 
 /**
@@ -705,18 +935,20 @@ export function updateClassProp(
  *    for this binding change. If present then style binding will only
  *    actualize if the directive has ownership over this binding
  *    (see styling.ts#directives for more information about the algorithm).
+ * @param forceOverride whether or not to skip all directive prioritization
+ *    and just apply the value regardless.
  */
 export function updateStyleProp(
     context: StylingContext, offset: number,
-    input: string | boolean | null | BoundPlayerFactory<string|boolean|null>,
-    directiveRef?: any): void {
-  _updateSingleStylingValue(context, offset, input, false, directiveRef);
+    input: string | boolean | null | BoundPlayerFactory<string|boolean|null>, directiveRef?: any,
+    forceOverride?: boolean): void {
+  updateSingleStylingValue(context, offset, input, false, directiveRef, forceOverride);
 }
 
-function _updateSingleStylingValue(
+function updateSingleStylingValue(
     context: StylingContext, offset: number,
     input: string | boolean | null | BoundPlayerFactory<string|boolean|null>, isClassBased: boolean,
-    directiveRef: any): void {
+    directiveRef: any, forceOverride?: boolean): void {
   const directiveIndex = getDirectiveIndexFromRegistry(context, directiveRef || null);
   const singleIndex = getSinglePropIndexValue(context, directiveIndex, offset, isClassBased);
   const currValue = getValue(context, singleIndex);
@@ -725,7 +957,7 @@ function _updateSingleStylingValue(
   const value: string|boolean|null = (input instanceof BoundPlayerFactory) ? input.value : input;
 
   if (hasValueChanged(currFlag, currValue, value) &&
-      allowValueChange(currValue, value, currDirective, directiveIndex)) {
+      (forceOverride || allowValueChange(currValue, value, currDirective, directiveIndex))) {
     const isClassBased = (currFlag & StylingFlags.Class) === StylingFlags.Class;
     const element = context[StylingIndex.ElementPosition] !as HTMLElement;
     const playerBuilder = input instanceof BoundPlayerFactory ?
@@ -816,8 +1048,7 @@ export function renderStyling(
     const flushPlayerBuilders: any =
         context[StylingIndex.MasterFlagPosition] & StylingFlags.PlayerBuildersDirty;
     const native = context[StylingIndex.ElementPosition] !;
-    const multiStartIndex = getMultiStartIndex(context);
-    const onlySingleClasses = limitToSingleClasses(context);
+    const multiStartIndex = getMultiStylesStartIndex(context);
 
     let stillDirty = false;
     for (let i = StylingIndex.SingleStylesStartPosition; i < context.length;
@@ -838,7 +1069,6 @@ export function renderStyling(
         const playerBuilder = getPlayerBuilder(context, i);
         const isClassBased = flag & StylingFlags.Class ? true : false;
         const isInSingleRegion = i < multiStartIndex;
-        const readInitialValue = !isClassBased || !onlySingleClasses;
 
         let valueToApply: string|boolean|null = value;
 
@@ -859,7 +1089,7 @@ export function renderStyling(
         // classes are turned off and should therefore defer to their initial values)
         // Note that we ignore class-based deferals because otherwise a class can never
         // be removed in the case that it exists as true in the initial classes list...
-        if (!isClassBased && !valueExists(valueToApply, isClassBased) && readInitialValue) {
+        if (!valueExists(valueToApply, isClassBased)) {
           valueToApply = getInitialValue(context, flag);
         }
 
@@ -922,6 +1152,8 @@ export function renderStyling(
 }
 
 /**
+ * Assigns a style value to a style property for the given element.
+ *
  * This function renders a given CSS prop/value entry using the
  * provided renderer. If a `store` value is provided then
  * that will be used a render context instead of the provided
@@ -947,20 +1179,22 @@ export function setStyle(
     }
   } else if (value) {
     value = value.toString();  // opacity, z-index and flexbox all have number values which may not
-                               // assign as numbers
+    // assign as numbers
     ngDevMode && ngDevMode.rendererSetStyle++;
     isProceduralRenderer(renderer) ?
         renderer.setStyle(native, prop, value, RendererStyleFlags3.DashCase) :
-        native.style[prop] = value;
+        native.style.setProperty(prop, value);
   } else {
     ngDevMode && ngDevMode.rendererRemoveStyle++;
     isProceduralRenderer(renderer) ?
         renderer.removeStyle(native, prop, RendererStyleFlags3.DashCase) :
-        native.style[prop] = '';
+        native.style.removeProperty(prop);
   }
 }
 
 /**
+ * Adds/removes the provided className value to the provided element.
+ *
  * This function renders a given CSS class value using the provided
  * renderer (by adding or removing it from the provided element).
  * If a `store` value is provided then that will be used a render
@@ -1059,6 +1293,20 @@ function getMultiStartIndex(context: StylingContext): number {
   return getMultiOrSingleIndex(context[StylingIndex.MasterFlagPosition]) as number;
 }
 
+function getMultiClassStartIndex(context: StylingContext): number {
+  const classCache = context[StylingIndex.CachedMultiClasses];
+  return classCache
+      [MapBasedOffsetValuesIndex.ValuesStartPosition +
+       MapBasedOffsetValuesIndex.PositionStartOffset];
+}
+
+function getMultiStylesStartIndex(context: StylingContext): number {
+  const stylesCache = context[StylingIndex.CachedMultiStyles];
+  return stylesCache
+      [MapBasedOffsetValuesIndex.ValuesStartPosition +
+       MapBasedOffsetValuesIndex.PositionStartOffset];
+}
+
 function setProp(context: StylingContext, index: number, prop: string) {
   context[index + StylingIndex.PropertyOffset] = prop;
 }
@@ -1148,10 +1396,6 @@ export function isContextDirty(context: StylingContext): boolean {
   return isDirty(context, StylingIndex.MasterFlagPosition);
 }
 
-export function limitToSingleClasses(context: StylingContext) {
-  return context[StylingIndex.MasterFlagPosition] & StylingFlags.OnlyProcessSingleClasses;
-}
-
 export function setContextDirty(context: StylingContext, isDirtyYes: boolean): void {
   setDirty(context, StylingIndex.MasterFlagPosition, isDirtyYes);
 }
@@ -1164,23 +1408,14 @@ export function setContextPlayersDirty(context: StylingContext, isDirtyYes: bool
   }
 }
 
-function findEntryPositionByProp(
-    context: StylingContext, prop: string, startIndex?: number): number {
-  for (let i = (startIndex || 0) + StylingIndex.PropertyOffset; i < context.length;
-       i += StylingIndex.Size) {
-    const thisProp = context[i];
-    if (thisProp == prop) {
-      return i - StylingIndex.PropertyOffset;
-    }
-  }
-  return -1;
-}
-
 function swapMultiContextEntries(context: StylingContext, indexA: number, indexB: number) {
+  if (indexA === indexB) return;
+
   const tmpValue = getValue(context, indexA);
   const tmpProp = getProp(context, indexA);
   const tmpFlag = getPointers(context, indexA);
   const tmpPlayerBuilderIndex = getPlayerBuilderIndex(context, indexA);
+  const tmpDirectiveIndex = getDirectiveIndexFromEntry(context, indexA);
 
   let flagA = tmpFlag;
   let flagB = getPointers(context, indexB);
@@ -1203,13 +1438,13 @@ function swapMultiContextEntries(context: StylingContext, indexA: number, indexB
   setProp(context, indexA, getProp(context, indexB));
   setFlag(context, indexA, getPointers(context, indexB));
   const playerIndexA = getPlayerBuilderIndex(context, indexB);
-  const directiveIndexA = 0;
+  const directiveIndexA = getDirectiveIndexFromEntry(context, indexB);
   setPlayerBuilderIndex(context, indexA, playerIndexA, directiveIndexA);
 
   setValue(context, indexB, tmpValue);
   setProp(context, indexB, tmpProp);
   setFlag(context, indexB, tmpFlag);
-  setPlayerBuilderIndex(context, indexB, tmpPlayerBuilderIndex, directiveIndexA);
+  setPlayerBuilderIndex(context, indexB, tmpPlayerBuilderIndex, tmpDirectiveIndex);
 }
 
 function updateSinglePointerValues(context: StylingContext, indexStartPosition: number) {
@@ -1248,9 +1483,6 @@ function insertNewMultiProperty(
 }
 
 function valueExists(value: string | null | boolean, isClassBased?: boolean) {
-  if (isClassBased) {
-    return value ? true : false;
-  }
   return value !== null;
 }
 
@@ -1271,6 +1503,11 @@ function prepareInitialFlag(
 
   initialIndex = initialIndex > 0 ? (initialIndex + InitialStylingValuesIndex.ValueOffset) : 0;
   return pointers(flag, initialIndex, 0);
+}
+
+function hasInitialValueChanged(context: StylingContext, flag: number, newValue: any) {
+  const initialValue = getInitialValue(context, flag);
+  return !initialValue || hasValueChanged(flag, initialValue, newValue);
 }
 
 function hasValueChanged(
@@ -1336,12 +1573,11 @@ export interface LogSummary {
   dynamicIndex: number;  //
   value: number;         //
   flags: {
-    dirty: boolean;                     //
-    class: boolean;                     //
-    sanitize: boolean;                  //
-    playerBuildersDirty: boolean;       //
-    onlyProcessSingleClasses: boolean;  //
-    bindingAllocationLocked: boolean;   //
+    dirty: boolean;                    //
+    class: boolean;                    //
+    sanitize: boolean;                 //
+    playerBuildersDirty: boolean;      //
+    bindingAllocationLocked: boolean;  //
   };
 }
 
@@ -1379,7 +1615,6 @@ export function generateConfigSummary(source: number | StylingContext, index?: n
       class: flag & StylingFlags.Class ? true : false,
       sanitize: flag & StylingFlags.Sanitize ? true : false,
       playerBuildersDirty: flag & StylingFlags.PlayerBuildersDirty ? true : false,
-      onlyProcessSingleClasses: flag & StylingFlags.OnlyProcessSingleClasses ? true : false,
       bindingAllocationLocked: flag & StylingFlags.BindingAllocationLocked ? true : false,
     }
   };
@@ -1502,9 +1737,9 @@ function allowValueChange(
   // prioritization of directives enables the styling algorithm to decide if a style
   // or class should be allowed to be updated/replaced incase an earlier directive
   // already wrote to the exact same style-property or className value. In other words
-  // ... this decides what to do if and when there is a collision.
-  if (currentValue) {
-    if (newValue) {
+  // this decides what to do if and when there is a collision.
+  if (currentValue != null) {
+    if (newValue != null) {
       // if a directive index is lower than it always has priority over the
       // previous directive's value...
       return newDirectiveOwner <= currentDirectiveOwner;
@@ -1520,16 +1755,21 @@ function allowValueChange(
 }
 
 /**
- * This function is only designed to be called for `[class]` bindings when
- * `[ngClass]` (or something that uses `class` as an input) is present. Once
- * directive host bindings fully work for `[class]` and `[style]` inputs
- * then this can be deleted.
+ * Returns the className string of all the initial classes for the element.
+ *
+ * This function is designed to populate and cache all the static class
+ * values into a className string. The caching mechanism works by placing
+ * the completed className string into the initial values array into a
+ * dedicated slot. This will prevent the function from having to populate
+ * the string each time an element is created or matched.
+ *
+ * @returns the className string (e.g. `on active red`)
  */
 export function getInitialClassNameValue(context: StylingContext): string {
-  let className = context[StylingIndex.CachedClassValueOrInitialClassString] as string;
-  if (className == null) {
+  const initialClassValues = context[StylingIndex.InitialClassValuesPosition];
+  let className = initialClassValues[InitialStylingValuesIndex.InitialClassesStringPosition];
+  if (className === null) {
     className = '';
-    const initialClassValues = context[StylingIndex.InitialClassValuesPosition];
     for (let i = InitialStylingValuesIndex.KeyValueStartPosition; i < initialClassValues.length;
          i += InitialStylingValuesIndex.Size) {
       const isPresent = initialClassValues[i + 1];
@@ -1537,7 +1777,162 @@ export function getInitialClassNameValue(context: StylingContext): string {
         className += (className.length ? ' ' : '') + initialClassValues[i];
       }
     }
-    context[StylingIndex.CachedClassValueOrInitialClassString] = className;
+    initialClassValues[InitialStylingValuesIndex.InitialClassesStringPosition] = className;
   }
   return className;
+}
+
+/**
+ * Returns the style string of all the initial styles for the element.
+ *
+ * This function is designed to populate and cache all the static style
+ * values into a style string. The caching mechanism works by placing
+ * the completed style string into the initial values array into a
+ * dedicated slot. This will prevent the function from having to populate
+ * the string each time an element is created or matched.
+ *
+ * @returns the style string (e.g. `width:100px;height:200px`)
+ */
+export function getInitialStyleStringValue(context: StylingContext): string {
+  const initialStyleValues = context[StylingIndex.InitialStyleValuesPosition];
+  let styleString = initialStyleValues[InitialStylingValuesIndex.InitialClassesStringPosition];
+  if (styleString === null) {
+    styleString = '';
+    for (let i = InitialStylingValuesIndex.KeyValueStartPosition; i < initialStyleValues.length;
+         i += InitialStylingValuesIndex.Size) {
+      const value = initialStyleValues[i + 1];
+      if (value !== null) {
+        styleString += (styleString.length ? ';' : '') + `${initialStyleValues[i]}:${value}`;
+      }
+    }
+    initialStyleValues[InitialStylingValuesIndex.InitialClassesStringPosition] = styleString;
+  }
+  return styleString;
+}
+
+/**
+ * Returns the current cached mutli-value for a given directiveIndex within the provided context.
+ */
+function readCachedMapValue(
+    context: StylingContext, entryIsClassBased: boolean, directiveIndex: number) {
+  const values: MapBasedOffsetValues =
+      context[entryIsClassBased ? StylingIndex.CachedMultiClasses : StylingIndex.CachedMultiStyles];
+  const index = MapBasedOffsetValuesIndex.ValuesStartPosition +
+      directiveIndex * MapBasedOffsetValuesIndex.Size;
+  return values[index + MapBasedOffsetValuesIndex.ValueOffset] || null;
+}
+
+/**
+ * Determines whether the provided multi styling value should be updated or not.
+ *
+ * Because `[style]` and `[class]` bindings rely on an identity change to occur before
+ * applying new values, the styling algorithm may not update an existing entry into
+ * the context if a previous directive's entry changed shape.
+ *
+ * This function will decide whether or not a value should be applied (if there is a
+ * cache miss) to the context based on the following rules:
+ *
+ * - If there is an identity change between the existing value and new value
+ * - If there is no existing value cached (first write)
+ * - If a previous directive flagged the existing cached value as dirty
+ */
+function isMultiValueCacheHit(
+    context: StylingContext, entryIsClassBased: boolean, directiveIndex: number,
+    newValue: any): boolean {
+  const indexOfCachedValues =
+      entryIsClassBased ? StylingIndex.CachedMultiClasses : StylingIndex.CachedMultiStyles;
+  const cachedValues = context[indexOfCachedValues] as MapBasedOffsetValues;
+  const index = MapBasedOffsetValuesIndex.ValuesStartPosition +
+      directiveIndex * MapBasedOffsetValuesIndex.Size;
+  if (cachedValues[index + MapBasedOffsetValuesIndex.DirtyFlagOffset]) return false;
+  return newValue === NO_CHANGE ||
+      readCachedMapValue(context, entryIsClassBased, directiveIndex) === newValue;
+}
+
+/**
+ * Updates the cached status of a multi-styling value in the context.
+ *
+ * The cached map array (which exists in the context) contains a manifest of
+ * each multi-styling entry (`[style]` and `[class]` entries) for the template
+ * as well as all directives.
+ *
+ * This function will update the cached status of the provided multi-style
+ * entry within the cache.
+ *
+ * When called, this function will update the following information:
+ * - The actual cached value (the raw value that was passed into `[style]` or `[class]`)
+ * - The total amount of unique styling entries that this value has written into the context
+ * - The exact position of where the multi styling entries start in the context for this binding
+ * - The dirty flag will be set to true
+ *
+ * If the `dirtyFutureValues` param is provided then it will update all future entries (binding
+ * entries that exist as apart of other directives) to be dirty as well. This will force the
+ * styling algorithm to reapply those values once change detection checks them (which will in
+ * turn cause the styling context to update itself and the correct styling values will be
+ * rendered on screen).
+ */
+function updateCachedMapValue(
+    context: StylingContext, directiveIndex: number, entryIsClassBased: boolean, cacheValue: any,
+    startPosition: number, endPosition: number, totalValues: number, dirtyFutureValues: boolean) {
+  const values =
+      context[entryIsClassBased ? StylingIndex.CachedMultiClasses : StylingIndex.CachedMultiStyles];
+
+  const index = MapBasedOffsetValuesIndex.ValuesStartPosition +
+      directiveIndex * MapBasedOffsetValuesIndex.Size;
+
+  // in the event that this is true we assume that future values are dirty and therefore
+  // will be checked again in the next CD cycle
+  if (dirtyFutureValues) {
+    const nextStartPosition = startPosition + totalValues * MapBasedOffsetValuesIndex.Size;
+    for (let i = index + MapBasedOffsetValuesIndex.Size; i < values.length;
+         i += MapBasedOffsetValuesIndex.Size) {
+      values[i + MapBasedOffsetValuesIndex.PositionStartOffset] = nextStartPosition;
+      values[i + MapBasedOffsetValuesIndex.DirtyFlagOffset] = 1;
+    }
+  }
+
+  values[index + MapBasedOffsetValuesIndex.DirtyFlagOffset] = 0;
+  values[index + MapBasedOffsetValuesIndex.PositionStartOffset] = startPosition;
+  values[index + MapBasedOffsetValuesIndex.ValueOffset] = cacheValue;
+  values[index + MapBasedOffsetValuesIndex.ValueCountOffset] = totalValues;
+
+  // the code below counts the total amount of styling values that exist in
+  // the context up until this directive. This value will be later used to
+  // update the cached value map's total counter value.
+  let totalStylingEntries = totalValues;
+  for (let i = MapBasedOffsetValuesIndex.ValuesStartPosition; i < index;
+       i += MapBasedOffsetValuesIndex.Size) {
+    totalStylingEntries += values[i + MapBasedOffsetValuesIndex.ValueCountOffset];
+  }
+
+  // because style values come before class values in the context this means
+  // that if any new values were inserted then the cache values array for
+  // classes is out of sync. The code below will update the offsets to point
+  // to their new values.
+  if (!entryIsClassBased) {
+    const classCache = context[StylingIndex.CachedMultiClasses];
+    const classesStartPosition = classCache
+        [MapBasedOffsetValuesIndex.ValuesStartPosition +
+         MapBasedOffsetValuesIndex.PositionStartOffset];
+    const diffInStartPosition = endPosition - classesStartPosition;
+    for (let i = MapBasedOffsetValuesIndex.ValuesStartPosition; i < classCache.length;
+         i += MapBasedOffsetValuesIndex.Size) {
+      classCache[i + MapBasedOffsetValuesIndex.PositionStartOffset] += diffInStartPosition;
+    }
+  }
+
+  values[MapBasedOffsetValuesIndex.EntriesCountPosition] = totalStylingEntries;
+}
+
+function hyphenateEntries(entries: string[]): string[] {
+  const newEntries: string[] = [];
+  for (let i = 0; i < entries.length; i++) {
+    newEntries.push(hyphenate(entries[i]));
+  }
+  return newEntries;
+}
+
+function hyphenate(value: string): string {
+  return value.replace(
+      /[a-z][A-Z]/g, match => `${match.charAt(0)}-${match.charAt(1).toLowerCase()}`);
 }

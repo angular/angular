@@ -363,9 +363,6 @@
     "name": "_symbolIterator"
   },
   {
-    "name": "_updateSingleStylingValue"
-  },
-  {
     "name": "addComponentLogic"
   },
   {
@@ -385,6 +382,9 @@
   },
   {
     "name": "allocStylingContext"
+  },
+  {
+    "name": "allocateDirectiveIntoContext"
   },
   {
     "name": "allowValueChange"
@@ -418,6 +418,9 @@
   },
   {
     "name": "bloomHashBitOrFactory"
+  },
+  {
+    "name": "booleanOrNull"
   },
   {
     "name": "cacheMatchingLocalNames"
@@ -690,6 +693,9 @@
     "name": "getInitialIndex"
   },
   {
+    "name": "getInitialStyleStringValue"
+  },
+  {
     "name": "getInitialStylingValuesIndexOf"
   },
   {
@@ -720,7 +726,7 @@
     "name": "getMultiOrSingleIndex"
   },
   {
-    "name": "getMultiStartIndex"
+    "name": "getMultiStylesStartIndex"
   },
   {
     "name": "getNativeAnchorNode"
@@ -840,6 +846,9 @@
     "name": "hasPlayerBuilderChanged"
   },
   {
+    "name": "hasStyleInput"
+  },
+  {
     "name": "hasStyling"
   },
   {
@@ -849,10 +858,19 @@
     "name": "hasValueChanged"
   },
   {
+    "name": "hyphenate"
+  },
+  {
+    "name": "hyphenateEntries"
+  },
+  {
     "name": "includeViewProviders"
   },
   {
     "name": "increaseElementDepthCount"
+  },
+  {
+    "name": "initElementStyling"
   },
   {
     "name": "initNodeFlags"
@@ -964,9 +982,6 @@
   },
   {
     "name": "leaveView"
-  },
-  {
-    "name": "limitToSingleClasses"
   },
   {
     "name": "listener"
@@ -1104,7 +1119,10 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderInitialStylesAndClasses"
+    "name": "renderInitialClasses"
+  },
+  {
+    "name": "renderInitialStyles"
   },
   {
     "name": "renderInitialStylingValues"
@@ -1255,6 +1273,9 @@
   },
   {
     "name": "updateContextWithBindings"
+  },
+  {
+    "name": "updateSingleStylingValue"
   },
   {
     "name": "valueExists"
