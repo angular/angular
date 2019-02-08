@@ -103,6 +103,11 @@ merge:
     requiredStatuses:
       - "ci/circleci: build"
       - "ci/circleci: lint"
+      - "ci/circleci: publish_snapshot"
+      - "ci/angular: size"
+      - "cla/google"
+      - "google3"
+
 
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
   # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option
