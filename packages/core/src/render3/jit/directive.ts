@@ -54,11 +54,11 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           throw new Error(error.join('\n'));
         }
 
-        const sourceMapUrl = `ng://${renderStringify(type)}/template.html`;
+        const templateUrl = metadata.templateUrl || `ng:///${renderStringify(type)}/template.html`;
         const meta: R3ComponentMetadataFacade = {
           ...directiveMetadata(type, metadata),
           typeSourceSpan:
-              compiler.createParseSourceSpan('Component', renderStringify(type), sourceMapUrl),
+              compiler.createParseSourceSpan('Component', renderStringify(type), templateUrl),
           template: metadata.template || '',
           preserveWhitespaces: metadata.preserveWhitespaces || false,
           styles: metadata.styles || EMPTY_ARRAY,
@@ -71,7 +71,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           interpolation: metadata.interpolation,
           viewProviders: metadata.viewProviders || null,
         };
-        ngComponentDef = compiler.compileComponent(angularCoreEnv, sourceMapUrl, meta);
+        ngComponentDef = compiler.compileComponent(angularCoreEnv, templateUrl, meta);
 
         // When NgModule decorator executed, we enqueued the module definition such that
         // it would only dequeue and add itself as module scope to all of its declarations,
