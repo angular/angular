@@ -480,7 +480,8 @@ jobs:
       - run: yarn karma start ./karma-js.conf.js --single-run --browsers=ChromeNoSandbox
 
   legacy-unit-tests-saucelabs:
-    <<: *job_defaults
+    working_directory: ~/ng
+    machine: true
     # In order to avoid the bottleneck of having a slow host machine, we acquire a better
     # container for this job. This is necessary because we launch a lot of browsers concurrently
     # and therefore the tunnel and Karma need to process a lot of file requests and tests.
