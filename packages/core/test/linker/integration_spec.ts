@@ -559,6 +559,22 @@ function declareTests(config?: {useJit: boolean}) {
           expect(fixture.debugElement.children[0].children[0].references !['superAlice'])
               .toBeAnInstanceOf(ChildComp);
         });
+
+        it('should point to the last declared ref', () => {
+          TestBed.configureTestingModule({declarations: [MyComp, ChildComp]});
+          const template = `
+            <div>
+              <input value="First" #ref />
+              <input value="Second" #ref />
+              <input value="Third" #ref />
+              <span>{{ ref.value }}</span>
+            </div>
+          `;
+          TestBed.overrideComponent(MyComp, {set: {template}});
+          const fixture = TestBed.createComponent(MyComp);
+          fixture.detectChanges();
+          expect(fixture.nativeElement.querySelector('span')).toHaveText('Third');
+        });
       });
 
       describe('variables', () => {

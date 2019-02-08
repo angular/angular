@@ -1395,8 +1395,9 @@ export class BindingScope implements LocalResolver {
   set(retrievalLevel: number, name: string, lhs: o.ReadVarExpr,
       priority: number = DeclarationPriority.DEFAULT,
       declareLocalCallback?: DeclareLocalVarCallback, localRef?: true): BindingScope {
-    !this.map.has(name) ||
-        error(`The name ${name} is already defined in scope to be ${this.map.get(name)}`);
+    if (!localRef && this.map.has(name)) {
+      error(`The name ${name} is already defined in scope to be ${this.map.get(name)}`);
+    }
     this.map.set(name, {
       retrievalLevel: retrievalLevel,
       lhs: lhs,
