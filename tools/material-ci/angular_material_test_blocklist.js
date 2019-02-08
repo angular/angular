@@ -389,14 +389,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
     "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
   },
-  "CdkDrag in a drop container should dispatch the `dropped` event when an item has been dropped": {
-    "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "CdkDrag in a drop container should expose whether an item was dropped over a container": {
-    "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
   "CdkDrag in a drop container should dispatch the `sorted` event as an item is being sorted": {
     "error": "TypeError: Cannot read property 'args' of undefined",
     "notes": "Unknown"
@@ -405,41 +397,9 @@ window.testBlocklist = {
     "error": "Error: Expected $.previousIndex = -1 to equal 0.",
     "notes": "Unknown"
   },
-  "CdkDrag in a drop container should not move the original element from its initial DOM position": {
-    "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "CdkDrag in a drop container should dispatch the `dropped` event in a horizontal drop zone": {
-    "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "CdkDrag in a drop container should dispatch the correct `dropped` event in RTL horizontal drop zone": {
-    "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
   "CdkDrag in a drop container should not move items in a horizontal list if pointer is too far away": {
     "error": "Error: Expected $.previousIndex = -1 to equal 0.",
     "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should remove the preview if its `transitionend` event timed out": {
-    "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "CdkDrag in a drop container should emit the released event as soon as the item is released": {
-    "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "CdkDrag in a drop container should reset immediately when failed drag happens after a successful one": {
-    "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "CdkDrag in a drop container should not wait for transition that are not on the `transform` property": {
-    "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "CdkDrag in a drop container should pick out the `transform` duration if multiple properties are being transitioned": {
-    "error": "TypeError: Cannot read property 'clientRect' of undefined",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   },
   "CdkDrag in a drop container should move the placeholder as an item is being sorted down": {
     "error": "Error: Expected 0 to be 1.",
@@ -3248,66 +3208,6 @@ window.testBlocklist = {
   "MatGridList should throw error if rowHeight ratio is invalid": {
     "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
     "notes": "Unknown"
-  },
-  "MatSelectionList without forms with list option should restore focus if active option is destroyed": {
-    "error": "Error: Expected -1 to be 3.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList without forms with list option should not attempt to focus the next option when the destroyed option was not focused": {
-    "error": "Error: Expected -1 to be 3.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList without forms with list option should focus and toggle the next item when pressing SHIFT + UP_ARROW": {
-    "error": "Error: Expected -1 to be 3.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList without forms with list option should focus next item when press DOWN ARROW": {
-    "error": "Error: Expected 0 to equal 3.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList without forms with list option should focus the last item when pressing END": {
-    "error": "Error: Expected 2 to be 3.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList without forms with list option should select all items using ctrl + a": {
-    "error": "Error: Expected false to be true.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList without forms with list option should select all items using ctrl + a if some items are selected": {
-    "error": "Error: Expected false to be true.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList without forms with list option should be able to jump focus down to an item by typing": {
-    "error": "Error: Expected 1 to be 3.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList with forms and ngModel should update the model if an option got selected programmatically": {
-    "error": "Error: Expected 0 to be 1, 'Expected first list option to be selected'.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList with forms and ngModel should update the model if an option got clicked": {
-    "error": "Error: Expected 0 to be 1, 'Expected first list option to be selected'.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList with forms and ngModel should remove a selected option from the value on destroy": {
-    "error": "Error: Expected $.length = 0 to equal 2.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList with forms and ngModel should update the model if an option got selected via the model": {
-    "error": "Error: Expected $.length = 0 to equal 1.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList with forms and ngModel should be able to programmatically set an array with duplicate values": {
-    "error": "Error: Expected $[0] = false to equal true.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList with forms preselected values should show the item as selected when preselected inside OnPush parent": {
-    "error": "Error: Expected false to be true.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
-  },
-  "MatSelectionList with forms with custom compare function should use a custom comparator to determine which options are selected": {
-    "error": "Error: Expected spy comparator to have been called.",
-    "notes": "FW-803: Queries for root nodes of embedded views aren't working properly"
   }
 };
 // clang-format on
