@@ -1,7 +1,7 @@
 load("//packages/bazel:index.bzl", "protractor_web_test_suite")
 load("//tools:defaults.bzl", "ts_library")
 
-def example_test(name, srcs, server, data = []):
+def example_test(name, srcs, server, data = [], **kwargs):
     ts_library(
         name = "%s_lib" % name,
         testonly = True,
@@ -28,4 +28,5 @@ def example_test(name, srcs, server, data = []):
             "@ngdeps//yargs",
             "@ngdeps//source-map",
         ],
+        **kwargs
     )
