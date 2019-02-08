@@ -65,12 +65,21 @@
     tslib "^1.9.0"
 
 "@angular/bazel@file:../angular/dist/packages-dist/bazel":
+<<<<<<< HEAD
   version "0.0.0"
   dependencies:
     "@angular-devkit/architect" "^0.10.6"
     "@angular-devkit/core" "^7.0.4"
     "@angular-devkit/schematics" "^7.0.4"
     "@bazel/typescript" "^0.21.0"
+=======
+  version "8.0.0-beta.3"
+  dependencies:
+    "@angular-devkit/architect" "^0.10.6"
+    "@angular-devkit/core" "^7.0.4"
+    "@angular-devkit/schematics" "^7.3.0-rc.0"
+    "@bazel/typescript" "^0.24.1"
+>>>>>>> b052dfada9... build: update to rules_typescript 0.24.1
     "@schematics/angular" "^7.0.4"
     "@types/node" "6.0.84"
     semver "^5.6.0"
@@ -83,7 +92,11 @@
     tslib "^1.9.0"
 
 "@angular/compiler-cli@file:../angular/dist/packages-dist/compiler-cli":
+<<<<<<< HEAD
   version "0.0.0"
+=======
+  version "8.0.0-beta.3"
+>>>>>>> b052dfada9... build: update to rules_typescript 0.24.1
   dependencies:
     canonical-path "1.0.0"
     chokidar "^1.4.2"
@@ -98,6 +111,7 @@
     yargs "9.0.1"
 
 "@angular/compiler@file:../angular/dist/packages-dist/compiler":
+<<<<<<< HEAD
   version "0.0.0"
   dependencies:
     tslib "^1.9.0"
@@ -114,13 +128,16 @@
 
 "@angular/platform-browser@file:../angular/dist/packages-dist/platform-browser":
   version "0.0.0"
+=======
+  version "8.0.0-beta.3"
+>>>>>>> b052dfada9... build: update to rules_typescript 0.24.1
   dependencies:
     tslib "^1.9.0"
 
-"@bazel/karma@0.23.2":
-  version "0.23.2"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.23.2.tgz#17421a61cbcc6c917902beaaef88d61f22471f11"
-  integrity sha512-aNujXKusUjJIkc6CF03LS8AS7ULwNE0MKEL2TlYvnGCZviQ3nKrpRiEtWFmZlT+GrTOeu7AM4t3l4pSdQx/jnw==
+"@bazel/karma@0.24.1":
+  version "0.24.1"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.24.1.tgz#eeeec30e0f16cc70283f1b818c80fd8d473066de"
+  integrity sha512-nBTLTUtRKoV1zM8TeJXHyRthC93Ug+iWc3VAI67WKzJaTzH2NmgTaGBesEPvPd/HJTZi1Zi6tKPIVpu0hOaZVA==
   dependencies:
     jasmine-core "2.8.0"
     karma "^4.0.0"
@@ -134,10 +151,17 @@
     semver "5.6.0"
     tmp "0.0.33"
 
+<<<<<<< HEAD
 "@bazel/typescript@0.23.2":
   version "0.23.2"
   resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.23.2.tgz#a3ff199880855259d84216cb41644c1d9a0fad14"
   integrity sha512-GrTyDW6Fvp/rgnxZGYampB5/QmDWvxtLEtUyMCPa/QXFR1OVxaMWeHxxuFEcES2UKJegqBDKAA8IzX21x4UbEw==
+=======
+"@bazel/typescript@0.24.1", "@bazel/typescript@^0.24.1":
+  version "0.24.1"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.24.1.tgz#3efdc085c122939b2dd161b7ff589454c50edffc"
+  integrity sha512-tvdgUlqA5EkSQmQ656G/Dc3LX4ZvqPucOGfQ/ls9fYnG4ZWIh1KgwZq99NbjMS5MAJ+47hQBH+gL6dcRfHOGUg==
+>>>>>>> b052dfada9... build: update to rules_typescript 0.24.1
   dependencies:
     jasmine-core "2.8.0"
     protobufjs "5.0.3"

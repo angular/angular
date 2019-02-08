@@ -22,7 +22,7 @@ You can access Bazel with the `yarn bazel` command
 
 The `WORKSPACE` file indicates that our root directory is a
 Bazel project. It contains the version of the Bazel rules we
-use to execute build steps, from `build_bazel_rules_typescript`.
+use to execute build steps, from `npm_bazel_typescript`.
 The sources on [GitHub] are published from Google's internal
 repository (google3).
 

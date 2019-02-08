@@ -283,16 +283,20 @@ export interface MetadataFactory<T> {
 }
 
 function makeMetadataFactory<T>(name: string, props?: (...args: any[]) => T): MetadataFactory<T> {
-  const factory: any = (...args: any[]) => {
+  // This must be declared as a function, not a fat arrow, so that ES2015 devmode produces code
+  // that works with the static_reflector.ts in the ViewEngine compiler.
+  // In particular, `_registerDecoratorOrConstructor` assumes that the value returned here can be
+  // new'ed.
+  function factory(...args: any[]) {
     const values = props ? props(...args) : {};
     return {
       ngMetadataName: name,
       ...values,
     };
-  };
-  factory.isTypeOf = (obj: any) => obj && obj.ngMetadataName === name;
-  factory.ngMetadataName = name;
-  return factory;
+  }
+  (factory as any).isTypeOf = (obj: any) => obj && obj.ngMetadataName === name;
+  (factory as any).ngMetadataName = name;
+  return factory as any;
 }
 
 export interface Route {

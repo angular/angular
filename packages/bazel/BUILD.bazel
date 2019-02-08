@@ -1,12 +1,5 @@
 load("//tools:defaults.bzl", "npm_package")
 
-genrule(
-    name = "copy_browser_repositories",
-    srcs = ["//:browser_repositories.bzl"],
-    outs = ["browser_repositories.bzl"],
-    cmd = "cp $< $@",
-)
-
 npm_package(
     name = "npm_package",
     srcs = glob(
@@ -37,7 +30,6 @@ npm_package(
     # Dependencies on the full npm_package cause long re-builds.
     visibility = ["//visibility:private"],
     deps = [
-        ":copy_browser_repositories",
         "//packages/bazel/src/api-extractor:lib",
         "//packages/bazel/src/builders",
         "//packages/bazel/src/ng_package:lib",
