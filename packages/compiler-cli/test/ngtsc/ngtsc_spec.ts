@@ -157,7 +157,7 @@ describe('ngtsc behavioral tests', () => {
     expect(dtsContents).toContain('static ngInjectableDef: i0.ɵInjectableDef<Service>;');
   });
 
-  it('should compile Components without errors', () => {
+  it('should compile Components (inline template) without errors', () => {
     env.tsconfig();
     env.write('test.ts', `
         import {Component} from '@angular/core';
@@ -181,7 +181,58 @@ describe('ngtsc behavioral tests', () => {
             'static ngComponentDef: i0.ɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
   });
 
-  it('should compile Components without errors', () => {
+  it('should compile Components (dynamic inline template) without errors', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: 'this is ' + 'a test',
+        })
+        export class TestCmp {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('TestCmp.ngComponentDef = i0.ɵdefineComponent');
+    expect(jsContents).not.toContain('__decorate');
+
+    const dtsContents = env.getContents('test.d.ts');
+    expect(dtsContents)
+        .toContain(
+            'static ngComponentDef: i0.ɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
+  });
+
+  it('should compile Components (function call inline template) without errors', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        function getTemplate() {
+          return 'this is a test';
+        }
+        @Component({
+          selector: 'test-cmp',
+          template: getTemplate(),
+        })
+        export class TestCmp {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('TestCmp.ngComponentDef = i0.ɵdefineComponent');
+    expect(jsContents).not.toContain('__decorate');
+
+    const dtsContents = env.getContents('test.d.ts');
+    expect(dtsContents)
+        .toContain(
+            'static ngComponentDef: i0.ɵComponentDefWithMeta<TestCmp, "test-cmp", never, {}, {}, never>');
+  });
+
+  it('should compile Components (external template) without errors', () => {
     env.tsconfig();
     env.write('test.ts', `
         import {Component} from '@angular/core';
