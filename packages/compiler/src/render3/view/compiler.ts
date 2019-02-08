@@ -39,8 +39,8 @@ const EMPTY_ARRAY: any[] = [];
 // If there is a match, the first matching group will contain the attribute name to bind.
 const ATTR_REGEX = /attr\.([^\]]+)/;
 
-function getStylingPrefix(propName: string): string {
-  return propName.substring(0, 5).toLowerCase();
+function getStylingPrefix(name: string): string {
+  return name.substring(0, 5);  // style or class
 }
 
 function baseDirectiveFields(
@@ -672,14 +672,9 @@ function createHostBindingsFunction(
   const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
   (bindings || []).forEach((binding: ParsedProperty) => {
     const name = binding.name;
-    const stylePrefix = getStylingPrefix(name);
-    if (stylePrefix === 'style') {
-      const {propertyName, unit} = parseNamedProperty(name);
-      styleBuilder.registerStyleInput(propertyName, binding.expression, unit, binding.sourceSpan);
-    } else if (stylePrefix === 'class') {
-      styleBuilder.registerClassInput(
-          parseNamedProperty(name).propertyName, binding.expression, binding.sourceSpan);
-    } else {
+    const stylingInputWasSet =
+        styleBuilder.registerInputBasedOnName(name, binding.expression, binding.sourceSpan);
+    if (!stylingInputWasSet) {
       // resolve literal arrays and literal objects
       const value = binding.expression.visit(getValueConverter());
       const bindingExpr = bindingFn(bindingContext, value);
@@ -922,20 +917,4 @@ export function verifyHostBindings(
 function compileStyles(styles: string[], selector: string, hostSelector: string): string[] {
   const shadowCss = new ShadowCss();
   return styles.map(style => { return shadowCss !.shimCssText(style, selector, hostSelector); });
-}
-
-function parseNamedProperty(name: string): {propertyName: string, unit: string} {
-  let unit = '';
-  let propertyName = '';
-  const index = name.indexOf('.');
-  if (index > 0) {
-    const unitIndex = name.lastIndexOf('.');
-    if (unitIndex !== index) {
-      unit = name.substring(unitIndex + 1, name.length);
-      propertyName = name.substring(index + 1, unitIndex);
-    } else {
-      propertyName = name.substring(index + 1, name.length);
-    }
-  }
-  return {propertyName, unit};
 }

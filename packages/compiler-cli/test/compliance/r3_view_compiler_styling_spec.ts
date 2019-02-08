@@ -1062,6 +1062,84 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
+    it('should generate override instructions for only single-level styling bindings when !override is present',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                import {Component, NgModule, HostBinding} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: \`
+                    <div [style!override]="myStyleExp"
+                         [class!override]="myClassExp"
+                         [style.height!override]="myHeightExp"
+                         [class.bar!override]="myBarClassExp"></div>
+                  \`,
+                  host: {
+                    '[style!override]': 'myStyleExp',
+                    '[class!override]': 'myClassExp'
+                  }
+                })
+                export class MyComponent {
+                  @HostBinding('class.foo!override')
+                  myFooClassExp = true;
+
+                  @HostBinding('style.width!override')
+                  myWidthExp = '100px';
+
+                  myBarClassExp = true;
+                  myHeightExp = '200px';
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+           }
+         };
+
+         const template = `
+            const _c2 = ["bar"];
+            const _c3 = ["height"];
+            …
+            function MyComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵelementStart(0, "div");
+                $r3$.ɵelementStyling(_c2, _c3, $r3$.ɵdefaultStyleSanitizer);
+                $r3$.ɵelementEnd();
+              }
+              if (rf & 2) {
+                $r3$.ɵelementStylingMap(0, ctx.myClassExp, ctx.myStyleExp);
+                $r3$.ɵelementStyleProp(0, 0, ctx.myHeightExp, null, true);
+                $r3$.ɵelementClassProp(0, 0, ctx.myBarClassExp, null, true);
+                $r3$.ɵelementStylingApply(0);
+              }
+            },
+          `;
+
+         const hostBindings = `
+            const _c0 = ["foo"];
+            const _c1 = ["width"];
+            …
+            hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
+              if (rf & 1) {
+                $r3$.ɵelementStyling(_c0, _c1, $r3$.ɵdefaultStyleSanitizer, ctx);
+              }
+              if (rf & 2) {
+                $r3$.ɵelementStylingMap(elIndex, ctx.myClassExp, ctx.myStyleExp, ctx);
+                $r3$.ɵelementStyleProp(elIndex, 0, ctx.myWidthExp, null, ctx, true);
+                $r3$.ɵelementClassProp(elIndex, 0, ctx.myFooClassExp, ctx, true);
+                $r3$.ɵelementStylingApply(elIndex, ctx);
+              }
+            },
+          `;
+
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, hostBindings, 'Incorrect template');
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+
     it('should generate styling instructions for multiple directives that contain host binding definitions',
        () => {
          const files = {
