@@ -36,11 +36,12 @@ export enum TokenType {
 }
 
 export class Token {
-  constructor(public type: TokenType, public parts: string[], public sourceSpan: ParseSourceSpan) {}
+  constructor(
+      public type: TokenType|null, public parts: string[], public sourceSpan: ParseSourceSpan) {}
 }
 
 export class TokenError extends ParseError {
-  constructor(errorMsg: string, public tokenType: TokenType, span: ParseSourceSpan) {
+  constructor(errorMsg: string, public tokenType: TokenType|null, span: ParseSourceSpan) {
     super(span, errorMsg);
   }
 }
@@ -86,16 +87,13 @@ class _Tokenizer {
   private _length: number;
   private _tokenizeIcu: boolean;
   private _interpolationConfig: InterpolationConfig;
-  // Note: this is always lowercase!
   private _peek: number = -1;
   private _nextPeek: number = -1;
   private _index: number = -1;
   private _line: number = 0;
   private _column: number = -1;
-  // TODO(issue/24571): remove '!'.
-  private _currentTokenStart !: ParseLocation;
-  // TODO(issue/24571): remove '!'.
-  private _currentTokenType !: TokenType;
+  private _currentTokenStart: ParseLocation|null = null;
+  private _currentTokenType: TokenType|null = null;
   private _expansionCaseStack: TokenType[] = [];
   private _inInterpolation: boolean = false;
 
@@ -206,11 +204,21 @@ class _Tokenizer {
   }
 
   private _endToken(parts: string[], end: ParseLocation = this._getLocation()): Token {
+    if (this._currentTokenStart === null) {
+      throw new TokenError(
+          'Programming error - attempted to end a token when there was no start to the token',
+          this._currentTokenType, this._getSpan(end, end));
+    }
+    if (this._currentTokenType === null) {
+      throw new TokenError(
+          'Programming error - attempted to end a token which has no token type', null,
+          this._getSpan(this._currentTokenStart, end));
+    }
     const token =
         new Token(this._currentTokenType, parts, new ParseSourceSpan(this._currentTokenStart, end));
     this.tokens.push(token);
-    this._currentTokenStart = null !;
-    this._currentTokenType = null !;
+    this._currentTokenStart = null;
+    this._currentTokenType = null;
     return token;
   }
 
