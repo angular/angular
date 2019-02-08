@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component} from './directives';
+import { Component } from './directives';
 
 
 /**
@@ -18,18 +18,18 @@ import {Component} from './directives';
  *   selector: 'my-comp',
  *   templateUrl: 'my-comp.html', // This requires asynchronous resolution
  * })
- * class MyComponnent{
+ * class MyComponent{
  * }
  *
- * // Calling `renderComponent` will fail because `MyComponent`'s `@Compenent.templateUrl`
- * // needs to be resolved because `renderComponent` is synchronous process.
- * // renderComponent(MyComponent);
+ * // Calling `renderComponent` will fail because `renderComponent` is a synchronous process
+ * // and `MyComponent`'s `@Component.templateUrl` needs to be resolved asynchronously.
  *
- * // Calling `resolveComponentResources` will resolve `@Compenent.templateUrl` into
- * // `@Compenent.template`, which would allow `renderComponent` to proceed in synchronous manner.
- * // Use browser's `fetch` function as the default resource resolution strategy.
+ * // Calling `resolveComponentResources()` will resolve `@Component.templateUrl` into
+ * // `@Component.template`, which allows `renderComponent` to proceed in a synchronous manner.
+ *
+ * // Use browser's `fetch()` function as the default resource resolution strategy.
  * resolveComponentResources(fetch).then(() => {
- *   // After resolution all URLs have been converted into strings.
+ *   // After resolution all URLs have been converted into `template` strings.
  *   renderComponent(MyComponent);
  * });
  *
@@ -38,11 +38,11 @@ import {Component} from './directives';
  * NOTE: In AOT the resolution happens during compilation, and so there should be no need
  * to call this method outside JIT mode.
  *
- * @param resourceResolver a function which is responsible to returning a `Promise` of the resolved
- * URL. Browser's `fetch` method is a good default implementation.
+ * @param resourceResolver a function which is responsible for returning a `Promise` to the
+ * contents of the resolved URL. Browser's `fetch()` method is a good default implementation.
  */
 export function resolveComponentResources(
-    resourceResolver: (url: string) => (Promise<string|{text(): Promise<string>}>)): Promise<null> {
+  resourceResolver: (url: string) => (Promise<string | { text(): Promise<string> }>)): Promise<null> {
   // Store all promises which are fetching the resources.
   const urlFetches: Promise<string>[] = [];
 
@@ -98,6 +98,6 @@ export function clearResolutionOfComponentResourcesQueue() {
   componentResourceResolutionQueue.clear();
 }
 
-function unwrapResponse(response: string | {text(): Promise<string>}): string|Promise<string> {
+function unwrapResponse(response: string | { text(): Promise<string> }): string | Promise<string> {
   return typeof response == 'string' ? response : response.text();
 }
