@@ -9,7 +9,6 @@
 import {ParseError, ParseSourceSpan} from '../parse_util';
 
 import * as html from './ast';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './interpolation_config';
 import * as lex from './lexer';
 import {TagDefinition, getNsPrefix, isNgContainer, mergeNsAndName} from './tags';
 
@@ -30,11 +29,8 @@ export class ParseTreeResult {
 export class Parser {
   constructor(public getTagDefinition: (tagName: string) => TagDefinition) {}
 
-  parse(
-      source: string, url: string, parseExpansionForms: boolean = false,
-      interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG): ParseTreeResult {
-    const tokensAndErrors =
-        lex.tokenize(source, url, this.getTagDefinition, parseExpansionForms, interpolationConfig);
+  parse(source: string, url: string, options?: lex.TokenizeOptions): ParseTreeResult {
+    const tokensAndErrors = lex.tokenize(source, url, this.getTagDefinition, options);
 
     const treeAndErrors = new _TreeBuilder(tokensAndErrors.tokens, this.getTagDefinition).build();
 
