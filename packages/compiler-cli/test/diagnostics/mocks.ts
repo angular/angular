@@ -157,12 +157,7 @@ export class DiagnosticContext {
       };
       const urlResolver = createOfflineCompileUrlResolver();
       const htmlParser = new class extends HtmlParser {
-        parse(
-            source: string, url: string, parseExpansionForms: boolean = false,
-            interpolationConfig: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG):
-            ParseTreeResult {
-          return new ParseTreeResult([], []);
-        }
+        parse(): ParseTreeResult { return new ParseTreeResult([], []); }
       };
 
       // This tracks the CompileConfig in codegen.ts. Currently these options
@@ -209,7 +204,7 @@ function compileTemplate(context: DiagnosticContext, type: StaticSymbol, templat
     const parser = new TemplateParser(
         config, context.reflector, expressionParser, new DomElementSchemaRegistry(), htmlParser,
         null !, []);
-    const htmlResult = htmlParser.parse(template, '', true);
+    const htmlResult = htmlParser.parse(template, '', {tokenizeExpansionForms: true});
     const analyzedModules = context.analyzedModules;
     // let errors: Diagnostic[]|undefined = undefined;
     let ngModule = analyzedModules.ngModuleByPipeOrDirective.get(type);

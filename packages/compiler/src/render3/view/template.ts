@@ -1563,19 +1563,34 @@ function interpolate(args: o.Expression[]): o.Expression {
 }
 
 /**
+ * Options that can be used to modify how a template is parsed by `parseTemplate()`.
+ */
+export interface ParseTemplateOptions {
+  /**
+   * Include whitespace nodes in the parsed output.
+   */
+  preserveWhitespaces?: boolean;
+  /**
+   * How to parse interpolation markers.
+   */
+  interpolationConfig?: InterpolationConfig;
+}
+
+/**
  * Parse a template into render3 `Node`s and additional metadata, with no other dependencies.
  *
  * @param template text of the template to parse
  * @param templateUrl URL to use for source mapping of the parsed template
+ * @param options options to modify how the template is parsed
  */
 export function parseTemplate(
     template: string, templateUrl: string,
-    options: {preserveWhitespaces?: boolean, interpolationConfig?: InterpolationConfig} = {}):
-    {errors?: ParseError[], nodes: t.Node[]} {
+    options: ParseTemplateOptions = {}): {errors?: ParseError[], nodes: t.Node[]} {
   const {interpolationConfig, preserveWhitespaces} = options;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
-  const parseResult = htmlParser.parse(template, templateUrl, true, interpolationConfig);
+  const parseResult =
+      htmlParser.parse(template, templateUrl, {...options, tokenizeExpansionForms: true});
 
   if (parseResult.errors && parseResult.errors.length > 0) {
     return {errors: parseResult.errors, nodes: []};

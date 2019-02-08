@@ -203,7 +203,7 @@ class Xliff2Parser implements ml.Visitor {
     this._unitMlString = null;
     this._msgIdToHtml = {};
 
-    const xml = new XmlParser().parse(xliff, url, false);
+    const xml = new XmlParser().parse(xliff, url);
 
     this._errors = xml.errors;
     ml.visitAll(this, xml.rootNodes, null);
@@ -293,7 +293,7 @@ class XmlToI18n implements ml.Visitor {
   private _errors !: I18nError[];
 
   convert(message: string, url: string) {
-    const xmlIcu = new XmlParser().parse(message, url, true);
+    const xmlIcu = new XmlParser().parse(message, url, {tokenizeExpansionForms: true});
     this._errors = xmlIcu.errors;
 
     const i18nNodes = this._errors.length > 0 || xmlIcu.rootNodes.length == 0 ?
