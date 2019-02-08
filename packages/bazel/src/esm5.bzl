@@ -157,7 +157,7 @@ esm5_outputs_aspect = aspect(
             cfg = "host",
         ),
         "_tsc_wrapped": attr.label(
-            default = Label("@build_bazel_rules_typescript//:@bazel/typescript/tsc_wrapped"),
+            default = Label("@npm//@bazel/typescript/bin:tsc_wrapped"),
             executable = True,
             cfg = "host",
         ),

@@ -6,8 +6,6 @@ exports_files([
     "tsconfig.json",
     "LICENSE",
     "protractor-perf.conf.js",
-    # Copied into the @angular/bazel package
-    "browser_repositories.bzl",
 ])
 
 filegroup(
