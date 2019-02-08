@@ -1,6 +1,6 @@
 load("//packages/bazel:index.bzl", "protractor_web_test_suite")
 load("//tools:defaults.bzl", "ng_module", "ts_library")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
 
 """
   Macro that can be used to create the Bazel targets for an "upgrade" example. Since the
