@@ -1667,20 +1667,37 @@ Angular는 개발자가 `<input>` 엘리먼트의 `value` 프로퍼티를 변경
 
 <hr>
 
+<!--
 ### Component with external files
+-->
+### 외부 파일로 구성된 컴포넌트
 
+<!--
 The `BannerComponent` above is defined with an _inline template_ and _inline css_, specified in the `@Component.template` and `@Component.styles` properties respectively.
 
 Many components specify _external templates_ and _external css_ with the
 `@Component.templateUrl` and `@Component.styleUrls` properties respectively,
 as the following variant of `BannerComponent` does.
+-->
+위에서 살펴본 `BannerComponent`는 메타데이터에 `@Component.template`과 `@Component.styles` 프로퍼티를 사용해서 _인라인 템플릿_ 과 _인라인 CSS_ 로 작성되었습니다.
 
+하지만 이런 경우보다는 `@Component.templateUrl`과 `@Component.styleUrls` 프로퍼티를 사용해서 _외부 템플릿 파일_ 과 _외부 CSS 파일_ 로 구성하는 경우가 더 많습니다.
+이런 경우에 컴포넌트 메타데이터는 다음과 같이 구성됩니다.
+
+<!--
 <code-example
   path="testing/src/app/banner/banner-external.component.ts"
   region="metadata"
   header="app/banner/banner-external.component.ts (metadata)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/banner/banner-external.component.ts"
+  region="metadata"
+  header="app/banner/banner-external.component.ts (메타데이터)" linenums="false">
+</code-example>
 
+<!--
 This syntax tells the Angular compiler to read the external files during component compilation.
 
 That's not a problem when you run the CLI `ng test` command because it
@@ -1689,6 +1706,14 @@ _compiles the app before running the tests_.
 However, if you run the tests in a **non-CLI environment**,
 tests of this component may fail.
 For example, if you run the `BannerComponent` tests in a web coding environment such as [plunker](https://plnkr.co/), you'll see a message like this one:
+-->
+이 방식을 사용하면 Angular 컴파일러가 컴포넌트를 컴파일할 때 별개 파일로 정의된 템플릿 파일과 스타일 파일을 로드합니다.
+
+Angular CLI 명령 `ng test`를 실행한다면 이 방식은 딱히 문제가 되지 않습니다.
+애플리케이션은 _테스트가 실행되기 전에 먼저 컴파일됩니다_.
+
+그런데 **Angular CLI를 사용하지 않는 환경**에서 테스트를 실행할 때는 문제가 될 수 있습니다.
+[plunker](https://plnkr.co/)와 같은 웹 코딩 환경에서 `BannerComponent` 테스트를 실행하면 다음과 같은 에러가 발생할 수 있습니다:
 
 <code-example language="sh" class="code-shell" hideCopy>
 Error: This test module uses the component BannerComponent
@@ -1696,35 +1721,62 @@ which is using a "templateUrl" or "styleUrls", but they were never compiled.
 Please call "TestBed.compileComponents" before your test.
 </code-example>
 
+<!--
 You get this test failure message when the runtime environment
 compiles the source code _during the tests themselves_.
 
 To correct the problem, call `compileComponents()` as explained [below](#compile-components).
+-->
+이 에러는 테스트할 컴포넌트를 실행 시점에 컴파일 하기 때문에 발생하는 에러입니다.
+
+이 문제를 해결하려면 `compileComponents()`를 명시적으로 실행해줘야 합니다.
+이 내용은 [아래](#compile-components)에서 자세하게 알아봅니다.
 
 {@a component-with-dependency}
 
+<!--
 ### Component with a dependency
+-->
+### 의존성 주입이 필요한 컴포넌트
 
+<!--
 Components often have service dependencies.
 
 The `WelcomeComponent` displays a welcome message to the logged in user.
 It knows who the user is based on a property of the injected `UserService`:
+-->
+컴포넌트는 서비스 클래스를 의존성으로 주입받을 수 있습니다.
+
+`WelcomeComponent`는 로그인한 사용자에게 환영 메시지를 출력하는 컴포넌트입니다.
+그러면 이 컴포넌트는 어떤 사용자가 로그인했는지 확인하기 위해 `UserService`가 의존성으로 주입되어야 합니다:
 
 <code-example path="testing/src/app/welcome/welcome.component.ts" header="app/welcome/welcome.component.ts" linenums="false"></code-example>
 
+<!--
 The `WelcomeComponent` has decision logic that interacts with the service, logic that makes this component worth testing.
 Here's the testing module configuration for the spec file, `app/welcome/welcome.component.spec.ts`:
+-->
+`WelcomeComponent`가 동작할때 실행되는 로직은 의존성으로 주입받은 서비스를 사용하지만, 컴포넌트를 테스트하면서 서비스까지 테스트할 필요는 없습니다.
+그래서 이런 경우에는 테스트 모듈을 다음과 같이 구성합니다:
 
 <code-example path="testing/src/app/welcome/welcome.component.spec.ts" region="config-test-module" header="app/welcome/welcome.component.spec.ts" linenums="false"></code-example>
 
+<!--
 This time, in addition to declaring the _component-under-test_,
 the configuration adds a `UserService` provider to the `providers` list.
 But not the real `UserService`.
+-->
+이 코드에는 테스트하려는 컴포넌트 외에도 `providers` 목록에 `UserService` 타입의 객체를 등록했습니다.
+하지만 실제 `UserService`가 사용되는 것이 아닙니다.
 
 {@a service-test-doubles}
 
+<!--
 #### Provide service test doubles
+-->
+#### 목 서비스 사용하기
 
+<!--
 A _component-under-test_ doesn't have to be injected with real services.
 In fact, it is usually better if they are test doubles (stubs, fakes, spies, or mocks).
 The purpose of the spec is to test the component, not the service,
@@ -1738,6 +1790,18 @@ It is far easier and safer to create and register a test double in place of the 
 
 This particular test suite supplies a minimal mock of the `UserService` that satisfies the needs of the `WelcomeComponent`
 and its tests:
+-->
+테스트하려는 컴포넌트에 실제 서비스가 의존성으로 등록될 필요는 없습니다.
+이런 경우에는 보통 목(mocks, doubles, stubs, fakes, spies) 서비스를 사용하는 것이 더 좋습니다.
+컴포넌트를 테스트하는 스펙의 목적은 컴포넌트를 테스트하는 것이지 서비스를 테스트하는 것이 아닙니다.
+실행 시점에 사용하는 서비스가 실제로 주입된다면 복잡해지기만 할 뿐입니다.
+
+만약 실제 `UserService`를 주입해야 한다면 아주 괴로운 경험을 겪게될 수도 있습니다.
+실제 서비스는 사용자에게 로그인 인증정보를 제공하라고 할 수도, 있고 인증 서버에 HTTP 요청을 보낼지도 모릅니다.
+이런 동작은 인터셉트하기도 힘듭니다.
+그렇다면 실제 `UserService`를 대신해서 컴포넌트 동작에 꼭 필요한 로직만 제공하는 무언가를 만드는 것이 훨씬 간단합니다.
+
+`UserService`의 로직 중 `WelcomeComponent`의 요구사항에 맞는 기능만 최소한으로 정의하면 다음과 같이 구현할 수 있습니다:
 
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
@@ -1747,8 +1811,12 @@ and its tests:
 
 {@a get-injected-service}
 
+<!--
 #### Get injected services
+-->
+#### 의존성으로 주입한 서비스 가져오기
 
+<!--
 The tests need access to the (stub) `UserService` injected into the `WelcomeComponent`.
 
 Angular has a hierarchical injection system.
@@ -1758,23 +1826,46 @@ down through the component tree.
 The safest way to get the injected service, the way that **_always works_**,
 is to **get it from the injector of the _component-under-test_**.
 The component injector is a property of the fixture's `DebugElement`.
+-->
+테스트 스펙을 작성하려면 `WelcomeComponent`에 주입된 `UserService` 타입의 목 클래스에 접근해야 합니다.
 
+Angular는 의존성 주입 시스템을 계층 구조로 제공합니다.
+그래서 인젝터는 `TestBed`가 생성한 최상위 인젝터부터 컴포넌트 트리 전체에 걸쳐 여러 계층에 존재할 수 있습니다.
+
+의존성으로 주입된 서비스를 가져오는 방법 중 가장 안전한 방법은 **테스트하는 컴포넌트**에 있는 인젝터에서 서비스 인스턴스를 가져오는 것입니다.
+이 방법은 **_언제나 동작합니다_**.
+컴포넌트 인젝터는 픽스쳐의 `DebugElement` 클래스 프로퍼티로 참조할 수 있습니다.
+
+<!--
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
   region="injected-service"
   header="WelcomeComponent's injector">
+</code-example>
+-->
+<code-example
+  path="testing/src/app/welcome/welcome.component.spec.ts"
+  region="injected-service"
+  header="WelcomeComponent의 인젝터">
 </code-example>
 
 {@a testbed-get}
 
 #### _TestBed.get()_
 
+<!--
 You _may_ also be able to get the service from the root injector via `TestBed.get()`.
 This is easier to remember and less verbose.
 But it only works when Angular injects the component with the service instance in the test's root injector.
 
 In this test suite, the _only_ provider of `UserService` is the root testing module,
 so it is safe to call `TestBed.get()` as follows:
+-->
+서비스의 인스턴스는 `TestBed.get()`을 사용해서 최상위 인젝터에서 참조할 _수도_ 있습니다.
+이렇게 작성하는 것이 더 간단하기도 하고 외우기도 쉽죠.
+하지만 이 방식은 컴포넌트와 서비스 클래스가 테스트 모듈의 최상위 인젝터로 등록되었을 때만 제대로 동작합니다.
+
+다행히 지금 다루는 예제에서는 `UserService`가 최상위 테스트 모듈에만 등록되었기 때문에 `TestBed.get()`을 써서 다음과 같이 작성할 수 있습니다:
 
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
@@ -1784,70 +1875,124 @@ so it is safe to call `TestBed.get()` as follows:
 
 <div class="alert is-helpful">
 
+<!--
 For a use case in which `TestBed.get()` does not work,
 see the [_Override component providers_](#component-override) section that
 explains when and why you must get the service from the component's injector instead.
+-->
+`TestBed.get()`로 의존성으로 주입된 서비스의 인스턴스를 가져올 수 없으면, [_컴포넌트 프로바이더 오버라이드_](#component-override) 섹션을 참고하세요.
+서비스 인스턴스는 컴포넌트의 인젝터에서 가져와야 할 수도 있습니다.
 
 </div>
 
 {@a service-from-injector}
 
+<!--
 #### Always get the service from an injector
+-->
+#### 서비스 인스턴스는 반드시 인젝터에서 가져오세요.
 
+<!--
 Do _not_ reference the `userServiceStub` object
 that's provided to the testing module in the body of your test.
 **It does not work!**
 The `userService` instance injected into the component is a completely _different_ object,
 a clone of the provided `userServiceStub`.
+-->
+테스트 스펙을 작성할 때 모듈에 등록한 `userServiceStub` 객체를 직접 _참조하지 마세요_.
+**이렇게 하면 동작하지 않습니다!**
+`userServiceStub`은 모듈에 등록될 때 복제되기 때문에 컴포넌트에 주입된 `userService` 인스턴스와는 _다른_ 객체입니다.
 
 <code-example path="testing/src/app/welcome/welcome.component.spec.ts" region="stub-not-injected" header="app/welcome/welcome.component.spec.ts" linenums="false"></code-example>
 
 {@a welcome-spec-setup}
 
+<!--
 #### Final setup and tests
+-->
+#### 마지막 환경설정, 테스트
 
+<!--
 Here's the complete `beforeEach()`, using `TestBed.get()`:
+-->
+`TestBed.get()`을 사용하면 `beforeEach()` 코드를 다음과 같이 작성할 수 있습니다:
 
 <code-example path="testing/src/app/welcome/welcome.component.spec.ts" region="setup" header="app/welcome/welcome.component.spec.ts" linenums="false"></code-example>
 
+<!--
 And here are some tests:
+-->
+그리고 테스트 코드는 이렇게 작성합니다:
 
 <code-example path="testing/src/app/welcome/welcome.component.spec.ts" region="tests" header="app/welcome/welcome.component.spec.ts" linenums="false"></code-example>
 
+<!--
 The first is a sanity test; it confirms that the stubbed `UserService` is called and working.
+-->
+첫번째 테스트 스펙은 서비스가 제대로 주입되었는지 확인하는 스펙입니다.
+이 테스트가 성공하면 목으로 만든 `UserService` 객체가 제대로 실행된 것으로 판단할 수 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 The second parameter to the Jasmine matcher (e.g., `'expected name'`) is an optional failure label.
 If the expectation fails, Jasmine displays appends this label to the expectation failure message.
 In a spec with multiple expectations, it can help clarify what went wrong and which expectation failed.
+-->
+Jasmine 매처의 두번째 인자는 테스트가 실패했을 때 표시할 라벨을 지정하는 옵션 인자입니다.
+이 인자가 지정된 검증식이 실패하면 Jasmine은 에러 메시지 뒤에 이 라벨을 붙여서 화면에 표시합니다.
+그래서 한 테스트 스펙 안에서 여러 검증식을 사용하는 경우에 이 인자를 지정하면 어떤 검증식이 잘못되었는지 빠르게 확인할 수 있습니다.
 
 </div>
 
+<!--
 The remaining tests confirm the logic of the component when the service returns different values.
 The second test validates the effect of changing the user name.
 The third test checks that the component displays the proper message when there is no logged-in user.
+-->
+두번째와 세번째 테스트 스펙은 서비스가 다른 값을 반환했을 때 컴포넌트의 로직이 제대로 동작하는지 확인하는 스펙입니다.
+두번째 스펙은 사용자의 이름을 변경한 것이 제대로 반영되는지 확인하는 것이고, 세번째 스펙은 사용자가 로그인하지 않았을 때 올바른 메시지를 표시하는지 확인하는 것입니다.
 
 <hr>
 
 {@a component-with-async-service}
 
+<!--
 ### Component with async service
+-->
+### 비동기 서비스를 사용하는 컴포넌트
 
+<!--
 In this sample, the `AboutComponent` template hosts a `TwainComponent`.
 The `TwainComponent` displays Mark Twain quotes.
+-->
+이번 예제에서는 `AboutComponent` 템플릿 안에 `TainComponent`가 존재합니다.
+그리고 `TwainComponent`는 Mark Twain의 명언을 표시할 것입니다.
 
+<!--
 <code-example
   path="testing/src/app/twain/twain.component.ts"
   region="template"
   header="app/twain/twain.component.ts (template)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/twain/twain.component.ts"
+  region="template"
+  header="app/twain/twain.component.ts (템플릿)" linenums="false">
+</code-example>
 
+<!--
 Note that value of the component's `quote` property passes through an `AsyncPipe`.
 That means the property returns either a `Promise` or an `Observable`.
 
 In this example, the `TwainComponent.getQuote()` method tells you that
 the `quote` property returns an `Observable`.
+-->
+이 때 컴포넌트의 `quote` 프로퍼티는 `AsyncPipe`로 처리됩니다.
+이 말은 프로퍼티에 `Promise`이나 `Observable` 타입의 값이 할당된다는 의미입니다.
+
+그리고 `TwainComponent.getQuote()` 메소드에서 확인할 수 있듯이, `quote` 프로퍼티가 반환하는 값은 `Observable` 타입입니다.
 
 <code-example
   path="testing/src/app/twain/twain.component.ts"
@@ -1855,6 +2000,7 @@ the `quote` property returns an `Observable`.
   header="app/twain/twain.component.ts (getQuote)" linenums="false">
 </code-example>
 
+<!--
 The `TwainComponent` gets quotes from an injected `TwainService`.
 The component starts the returned `Observable` with a placeholder value (`'...'`),
 before the service can returns its first quote.
@@ -1865,46 +2011,84 @@ It must wait a tick to set the `errorMessage`
 in order to avoid updating that message twice in the same change detection cycle.
 
 These are all features you'll want to test.
+-->
+`TwainComponent`의 `quote` 프로퍼티는 기본 문자열 `'...'`을 `Observable` 타입으로 제공하며, 컴포넌트가 초기화된 이후에는 의존성으로 주입된 `TwainService`에서 명언을 가져옵니다.
 
+서비스에서 에러가 발생하면 `catchError` 인터셉트 함수가 실행됩니다.
+이 함수는 화면에 표시할 에러 메시지를 준비하며, 서비스를 실행했을 때와 마찬가지로 기본 문자열을 반환합니다.
+그런데 이 때 같은 변화감지 싸이클에서 프로퍼티의 값이 두 번 변경되면 안되기 때문에 `errorMessage`에 값을 할당할 때는 한 싸이클 기다려야 합니다.
+
+<!--
 #### Testing with a spy
+-->
+#### 스파이로 테스트하기
 
+<!--
 When testing a component, only the service's public API should matter.
 In general, tests themselves should not make calls to remote servers.
 They should emulate such calls. The setup in this `app/twain/twain.component.spec.ts` shows one way to do that:
+-->
+컴포넌트를 테스트할 때는 서비스가 제공하는 public API만 신경쓰면 됩니다.
+그리고 일반적으로 테스트 코드는 리모트 서버로 보내는 HTTP 요청을 생략하고 테스트 환경 안에서 완료되었다고 처리하는 것이 좋습니다.
+`app/twain/twain.component.spec.ts` 파일에 작성된 테스트 환경 설정 코드를 봅시다:
 
+<!--
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
   region="setup"
   header="app/twain/twain.component.spec.ts (setup)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/twain/twain.component.spec.ts"
+  region="setup"
+  header="app/twain/twain.component.spec.ts (테스트 모듈 설정)" linenums="false">
+</code-example>
 
 {@a service-spy}
 
+<!--
 Focus on the spy.
+-->
+스파이 메소드를 정의하는 부분을 봅시다.
 
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
   region="spy">
 </code-example>
 
+<!--
 The spy is designed such that any call to `getQuote` receives an observable with a test quote.
 Unlike the real `getQuote()` method, this spy bypasses the server
 and returns a synchronous observable whose value is available immediately.
 
 You can write many useful tests with this spy, even though its `Observable` is synchronous.
+-->
+이 스파이 함수는 `getQuote`가 실행되었을 때 테스트 문자열을 Observable 타입으로 반환하도록 선언되었습니다.
+그리고 실제 `getQuote()` 메소드와 다르게, 이 스파이 함수는 서버로 보내는 요청을 생략하고 문자열을 즉시 반환합니다.
+
+스파이는 이것과 비슷한 상황에서도 얼마든지 활용할 수 있습니다.
+반환하는 타입이 `Observable`이며, 이 Observable이 동기로 실행되어도 문제될 것은 전혀 없습니다.
 
 {@a sync-tests}
 
+<!--
 #### Synchronous tests
+-->
+#### 동기 테스트
 
+<!--
 A key advantage of a synchronous `Observable` is that
 you can often turn asynchronous processes into synchronous tests.
+-->
+`Observable`을 동기 방식으로 실행하면 비동기 로직 흐름을 동기 로직 흐름 안으로 자연스럽게 합칠 수 잇습니다.
 
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
   region="sync-test">
 </code-example>
 
+<!--
 Because the spy result returns synchronously, the `getQuote()` method updates
 the message on screen immediately _after_
 the first change detection cycle during which Angular calls `ngOnInit`.
@@ -1914,29 +2098,57 @@ Although the service spy will return an error synchronously,
 the component method calls `setTimeout()`.
 The test must wait at least one full turn of the JavaScript engine before the
 value becomes available. The test must become _asynchronous_.
+-->
+스파이 함수로 정의한 `getQuote()` 메소드는 반환값을 즉시 동기 방식으로 반환하기 때문에, Angular가 `ngOnInit`을 실행하면서 함께 실행된 첫번째 변화 감지 싸이클이 _끝나면_ 이 메소드가 반환한 값을 화면에서 바로 확인할 수 있습니다.
+
+하지만 에러를 처리하려면 조금 더 신경써야 할 부분이 있습니다.
+서비스 스파이가 에러를 동기 흐름으로 반환하면 컴포넌트 메소드가 `setTimeout()`을 실행하는데, 그러면 이 테스트 스펙은 완료되기 전에 JavaScript 엔진이 한 싸이클 도는 것을 기다려야 합니다.
+테스트 로직은 _비동기_ 로 실행되어야 합니다.
 
 {@a fake-async}
 
+<!--
 #### Async test with _fakeAsync()_
+-->
+#### 비동기로 테스트하기: _fakeAsync()_
 
+<!--
 To use `fakeAsync()` functionality, you need to import `zone-testing`, for details, please read [setup guide](guide/setup#appendix-test-using-fakeasyncasync).
 
 The following test confirms the expected behavior when the service returns an `ErrorObservable`.
+-->
+`fakeAsync()`를 사용하려면 `zone-testing` 패키지들을 로드해야 합니다.
+자세한 내용은 [환경설정 가이드](guide/setup#부록-fakeasyncasync-활용하기)를 참고하세요.
+
+아래 코드는 서비스가 `ErrorObservable`을 반환했을 때 정해진 로직을 제대로 실행하는지 검증하는 테스트 코드입니다.
 
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
   region="error-test">
 </code-example>
 
+<!--
 Note that the `it()` function receives an argument of the following form.
+-->
+`it()` 함수에 전달하는 인자는 이런 형태입니다.
 
+<!--
 ```javascript
 fakeAsync(() => { /* test body */ })`
 ```
+-->
+```javascript
+fakeAsync(() => { /* 테스트 코드 */ })`
+```
 
+<!--
 The `fakeAsync()` function enables a linear coding style by running the test body in a special `fakeAsync test zone`.
 The test body appears to be synchronous.
 There is no nested syntax (like a `Promise.then()`) to disrupt the flow of control.
+-->
+`fakeAsync()` 함수를 사용하면 `fakeAsync test zone`이 구성되기 때문에, 이 테스트 존 안에서는 코드를 콜백 스타일로 작성하지 않고 일렬로 작성해도 비동기 흐름을 처리할 수 있습니다.
+테스트 코드를 보면 동기 흐름인 것처럼 보입니다.
+더이상 코드 흐름을 제어하기 위해 `Promise.then()`과 같은 복잡한 문법을 사용할 필요가 없습니다.
 
 {@a tick}
 
@@ -2113,7 +2325,16 @@ Then you can assert that the quote element displays the expected text.
 
 #### Async test with _async()_
 
+<!--
 To use `async()` functionality, you need to import `zone-testing`, for details, please read [setup guide](guide/setup#appendix-test-using-fakeasyncasync).
+
+The `fakeAsync()` utility function has a few limitations.
+In particular, it won't work if the test body makes an `XHR` call.
+
+`XHR` calls within a test are rare so you can generally stick with `fakeAsync()`.
+But if you ever do need to call `XHR`, you'll want to know about `async()`.
+-->
+To use `async()` functionality, you need to import `zone-testing`, for details, please read [setup guide](guide/setup#부록-fakeasyncasync-활용하기).
 
 The `fakeAsync()` utility function has a few limitations.
 In particular, it won't work if the test body makes an `XHR` call.
@@ -3593,9 +3814,14 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
     <td>
 
+      <!--
       Injects one or more services from the current `TestBed` injector into a test function.
       It cannot inject a service provided by the component itself.
       See discussion of the [debugElement.injector](#get-injected-services).
+      -->
+      Injects one or more services from the current `TestBed` injector into a test function.
+      It cannot inject a service provided by the component itself.
+      See discussion of the [debugElement.injector](#의존성으로-주입한-서비스-가져오기).
 
     </td>
   </tr>

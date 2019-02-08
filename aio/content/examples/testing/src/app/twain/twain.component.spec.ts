@@ -29,9 +29,9 @@ describe('TwainComponent', () => {
     testQuote = 'Test Quote';
 
     // #docregion spy
-    // Create a fake TwainService object with a `getQuote()` spy
+    // `getQuote()` 스파이 메소드가 선언된 가짜 TwainService 객체를 정의합니다.
     const twainService = jasmine.createSpyObj('TwainService', ['getQuote']);
-    // Make the spy return a synchronous Observable with the test data
+    // `getQuote()` 메소드는 테스트 데이터를 Observable 형태로 즉시 반환합니다.
     getQuoteSpy = twainService.getQuote.and.returnValue( of(testQuote) );
     // #enddocregion spy
 
@@ -60,7 +60,7 @@ describe('TwainComponent', () => {
     it('should show quote after component initialized', () => {
       fixture.detectChanges(); // onInit()
 
-      // sync spy result shows testQuote immediately after init
+      // 스파이 메소드가 반환한 결과는 컴포넌트가 초기화된 이후에 바로 표시됩니다.
       expect(quoteEl.textContent).toBe(testQuote);
       expect(getQuoteSpy.calls.any()).toBe(true, 'getQuote called');
     });
@@ -71,16 +71,16 @@ describe('TwainComponent', () => {
     // Use `fakeAsync` because the component error calls `setTimeout`
     // #docregion error-test
     it('should display error when TwainService fails', fakeAsync(() => {
-      // tell spy to return an error observable
+      // 스파이 메소드가 에러를 Observable 타입으로 반환합니다.
       getQuoteSpy.and.returnValue(
         throwError('TwainService test failure'));
 
       fixture.detectChanges(); // onInit()
-      // sync spy errors immediately after init
+      // 스파이가 보내는 에러는 init이 실행된 직후에 받습니다.
 
-      tick(); // flush the component's setTimeout()
+      tick(); // 컴포넌트가 실행한 setTimeout()을 끝냅니다.
 
-      fixture.detectChanges(); // update errorMessage within setTimeout()
+      fixture.detectChanges(); // setTimeout() 안에서 변경한 errorMessage를 반영합니다.
 
       expect(errorMessage()).toMatch(/test failure/, 'should display error');
       expect(quoteEl.textContent).toBe('...', 'should show placeholder');

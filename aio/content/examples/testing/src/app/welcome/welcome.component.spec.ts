@@ -62,7 +62,7 @@ describe('WelcomeComponent', () => {
 
   // #enddocregion user-service-stub
   beforeEach(() => {
-    // stub UserService for test purposes
+    // 테스트하기 위해 만든 목 UserService
     // #docregion user-service-stub
     userServiceStub = {
       isLoggedIn: true,
@@ -74,8 +74,8 @@ describe('WelcomeComponent', () => {
     TestBed.configureTestingModule({
        declarations: [ WelcomeComponent ],
     // #enddocregion setup
-    // providers:    [ UserService ]  // NO! Don't provide the real service!
-                                      // Provide a test-double instead
+    // providers:    [ UserService ]  // NO! 프로바이더에 실제 서비스 클래스를 등록하면 안됩니다!
+                                      // 목 서비스를 등록하세요.
     // #docregion setup
        providers:    [ {provide: UserService, useValue: userServiceStub } ]
     });
@@ -86,17 +86,17 @@ describe('WelcomeComponent', () => {
 
     // #enddocregion setup
    // #docregion injected-service
-    // UserService actually injected into the component
+    // 컴포넌트에 주입된 UserService를 가져옵니다.
     userService = fixture.debugElement.injector.get(UserService);
     // #enddocregion injected-service
     componentUserService = userService;
     // #docregion setup
     // #docregion inject-from-testbed
-    // UserService from the root injector
+    // 최상위 인젝터에서 UserService를 가져옵니다.
     userService = TestBed.get(UserService);
     // #enddocregion inject-from-testbed
 
-    //  get the "welcome" element by CSS selector (e.g., by class name)
+    // 클래스 이름으로 CSS 셀렉터를 사용해서 "welcome" 엘리먼트를 가져옵니다.
     el = fixture.nativeElement.querySelector('.welcome');
   });
   // #enddocregion setup
@@ -110,13 +110,13 @@ describe('WelcomeComponent', () => {
   });
 
   it('should welcome "Bubba"', () => {
-    userService.user.name = 'Bubba'; // welcome message hasn't been shown yet
+    userService.user.name = 'Bubba'; // 환영 메시지는 아직 표시되지 않습니다.
     fixture.detectChanges();
     expect(el.textContent).toContain('Bubba');
   });
 
   it('should request login if not logged in', () => {
-    userService.isLoggedIn = false; // welcome message hasn't been shown yet
+    userService.isLoggedIn = false; // 환영 메시지는 아직 표시되지 않습니다.
     fixture.detectChanges();
     const content = el.textContent;
     expect(content).not.toContain('Welcome', 'not welcomed');
@@ -137,7 +137,7 @@ describe('WelcomeComponent', () => {
   it('stub object and injected UserService should not be the same', () => {
     expect(userServiceStub === userService).toBe(false);
 
-    // Changing the stub object has no effect on the injected service
+    // 목 객체의 프로퍼티 값을 변경해도 의존성으로 주입된 서비스에는 반영되지 않습니다.
     userServiceStub.isLoggedIn = false;
     expect(userService.isLoggedIn).toBe(true);
   });

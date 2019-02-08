@@ -36,9 +36,9 @@ export class TwainComponent implements OnInit {
     this.quote = this.twainService.getQuote().pipe(
       startWith('...'),
       catchError( (err: any) => {
-        // Wait a turn because errorMessage already set once this turn
+        // 이번 싸이클에서 errorMessage가 한 번 할당되었기 때문에 한 싸이클 기다립니다.
         setTimeout(() => this.errorMessage = err.message || err.toString());
-        return of('...'); // reset message to placeholder
+        return of('...'); // quote 프로퍼티의 값을 '...'로 재설정합니다.
       })
     );
     // #enddocregion get-quote

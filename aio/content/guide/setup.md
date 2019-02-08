@@ -495,15 +495,28 @@ So if IE was refreshed manunally or automatically by `ng serve`, sometimes, the 
 그래서 IE에서 수동으로 페이지를 새로고침하거나 `ng serve`에 의해 자동으로 갱신되면 종종 웹소켓이 정상적으로 종료되지 않아서 새로운 웹소켓을 연결하지 못할 때가 있습니다. 이 때 `SecurityError` 가 발생하는데, 이 에러가 Angular 애플리케이션에는 영향을 주지 않지만 에러를 없애려면 IE를 재시작해야 합니다.
 Windows에서 이 제한을 해제하려면 레지스트리를 수정해야 합니다.
 
+<!--
 ## Appendix: test using `fakeAsync()/async()`
+-->
+## 부록: `fakeAsync()/async()` 활용하기
 
+<!--
 If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read [testing guide](guide/testing#async-test-with-fakeasync)), you need to import `zone.js/dist/zone-testing` in your test setup file.
+-->
+유닛 테스트를 실행할 때 `fakeAsync()/async()` 헬퍼 함수를 사용한다면, 테스트 환경 설정을 위해 `zone.js/dist/zone-testing` 패키지들을 로드해야 합니다.
+자세한 내용은 [테스트](guide/testing#비동기로-테스트하기-fakeasync) 문서를 참고하세요.
 
 <div class="alert is-important">
+<!--
 If you create project with `Angular/CLI`, it is already imported in `src/test.ts`.
+-->
+Angular CLI로 프로젝트를 생성했다면 이 내용은 이미 `src/test.ts` 파일에 구성되어 있습니다.
 </div>
 
+<!--
 And in the earlier versions of `Angular`, the following files were imported or added in your html file:
+-->
+이전에는 HTML 파일에서 이 파일들을 직접 로드하기도 했습니다:
 
 ```
 import 'zone.js/dist/long-stack-trace-zone';
@@ -514,4 +527,10 @@ import 'zone.js/dist/async-test';
 import 'zone.js/dist/fake-async-test';
 ```
 
+<!--
 You can still load those files separately, but the order is important, you must import `proxy` before `sync-test`, `async-test`, `fake-async-test` and `jasmine-patch`. And you also need to import `sync-test` before `jasmine-patch`, so it is recommended to just import `zone-testing` instead of loading those separated files.
+-->
+이 파일들 중에서 필요한 파일만 로드할 수도 있지만, 로드하는 순서가 중요합니다.
+`proxy` 패키지는 `sync-test`, `async-test`, `fake-async-test`, `jasmine-patch`가 로드되기 전에 먼저 로드되어야 합니다.
+그리고 `sync-test` 패키지는 `jasmine-patch`가 로드되기 전에 먼저 로드되어야 합니다.
+그래서 개별 파일을 로드하지 말고 `zone-testing` 패키지를 한 번에 로드하는 것을 권장합니다.
