@@ -83,7 +83,8 @@ export class BindingParser {
       Object.keys(dirMeta.hostListeners).forEach(propName => {
         const expression = dirMeta.hostListeners[propName];
         if (typeof expression === 'string') {
-          this.parseEvent(propName, expression, sourceSpan, [], targetEvents);
+          // TODO: pass a more accurate handlerSpan for this event.
+          this.parseEvent(propName, expression, sourceSpan, sourceSpan, [], targetEvents);
         } else {
           this._reportError(
               `Value of the host listener "${propName}" needs to be a string representing an expression but got "${expression}" (${typeof expression})`,
@@ -300,13 +301,14 @@ export class BindingParser {
   }
 
   parseEvent(
-      name: string, expression: string, sourceSpan: ParseSourceSpan,
+      name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
     if (isAnimationLabel(name)) {
       name = name.substr(1);
-      this._parseAnimationEvent(name, expression, sourceSpan, targetEvents);
+      this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents);
     } else {
-      this._parseRegularEvent(name, expression, sourceSpan, targetMatchableAttrs, targetEvents);
+      this._parseRegularEvent(
+          name, expression, sourceSpan, handlerSpan, targetMatchableAttrs, targetEvents);
     }
   }
 
@@ -317,7 +319,8 @@ export class BindingParser {
   }
 
   private _parseAnimationEvent(
-      name: string, expression: string, sourceSpan: ParseSourceSpan, targetEvents: ParsedEvent[]) {
+      name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
+      targetEvents: ParsedEvent[]) {
     const matches = splitAtPeriod(name, [name, '']);
     const eventName = matches[0];
     const phase = matches[1].toLowerCase();
@@ -325,9 +328,9 @@ export class BindingParser {
       switch (phase) {
         case 'start':
         case 'done':
-          const ast = this._parseAction(expression, sourceSpan);
-          targetEvents.push(
-              new ParsedEvent(eventName, phase, ParsedEventType.Animation, ast, sourceSpan));
+          const ast = this._parseAction(expression, handlerSpan);
+          targetEvents.push(new ParsedEvent(
+              eventName, phase, ParsedEventType.Animation, ast, sourceSpan, handlerSpan));
           break;
 
         default:
@@ -344,13 +347,14 @@ export class BindingParser {
   }
 
   private _parseRegularEvent(
-      name: string, expression: string, sourceSpan: ParseSourceSpan,
+      name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
     // long format: 'target: eventName'
     const [target, eventName] = splitAtColon(name, [null !, name]);
-    const ast = this._parseAction(expression, sourceSpan);
+    const ast = this._parseAction(expression, handlerSpan);
     targetMatchableAttrs.push([name !, ast.source !]);
-    targetEvents.push(new ParsedEvent(eventName, target, ParsedEventType.Regular, ast, sourceSpan));
+    targetEvents.push(
+        new ParsedEvent(eventName, target, ParsedEventType.Regular, ast, sourceSpan, handlerSpan));
     // Don't detect directives for event names for now,
     // so don't add the event name to the matchableAttrs
   }

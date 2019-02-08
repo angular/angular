@@ -420,7 +420,7 @@ class ArrayConsole implements Console {
       expectVisitedNode(
           new class extends
           NullVisitor{visitEvent(ast: BoundEventAst, context: any): any{return ast;}},
-          new BoundEventAst('foo', 'bar', 'goo', null !, null !));
+          new BoundEventAst('foo', 'bar', 'goo', null !, null !, null !));
     });
 
     it('should visit BoundElementPropertyAst', () => {
@@ -474,7 +474,7 @@ class ArrayConsole implements Console {
         new EmbeddedTemplateAst([], [], [], [], [], [], false, [], [], 0, null !),
         new ElementAst('foo', [], [], [], [], [], [], false, [], [], 0, null !, null !),
         new ReferenceAst('foo', null !, 'bar', null !), new VariableAst('foo', 'bar', null !),
-        new BoundEventAst('foo', 'bar', 'goo', null !, null !),
+        new BoundEventAst('foo', 'bar', 'goo', null !, null !, null !),
         new BoundElementPropertyAst('foo', null !, null !, null !, 'bar', null !),
         new AttrAst('foo', 'bar', null !), new BoundTextAst(null !, 0, null !),
         new TextAst('foo', 0, null !), new DirectiveAst(null !, [], [], [], 0, null !),
