@@ -107,7 +107,7 @@ However, you can structure your `HttpClient` request to include the type of the 
 Note that specifying the response object type is a way to tell the Typescript compiler about the response type, not a way to type cast the response from the server. If you have to convert the object you get from the JSON to the required response type, you need to explicitly do so.
 </div>
 
-To specify the respose object type:
+To specify the response object type:
 
 First, define an interface with the required properties:
 
@@ -164,17 +164,17 @@ As you can see, the response object has a `body` property of the correct type.
 
 ### Making a JSONP request
 
-Apps can use the Angular JSONP request as a workaround to make cross-domain `GET` requests. JSONP treats the API we need to access as a javascript file. Browser doesn't check cross domain when executing javascript files, so by using the Angular JSONP, an app can access APIs without facing the cross-domain issue.
+Apps can use the Angular JSONP request as a workaround to make cross-domain `GET` requests. JSONP treats the API we need to access as a JavaScript file. Browser doesn't check cross domain when executing JavaScript files, so by using the Angular JSONP, an app can access APIs without facing the cross-domain issue.
 
 An application makes a JSONP request by passing along a callback function that tells the server
-to wrap the response in that function. Angular JSONP request returns an Observable. Follow the pattern for subscribing to observables and use the RxJS `map` property to manipulate the results.
+to wrap the response in that function. Angular JSONP request then returns an `Observable`. Follow the pattern for subscribing to Observables and use the RxJS `map` property to manipulate the results.
 You can also use the [async pipe](api/common/AsyncPipe) to manage the results.
 
 <div class="alert is-important">
 
 Use JSONP requests only with APIs that support JSONP, as the server needs to respond with the JSONP callback method.
 
-JSONP requests only work for `GET` requests, they do not work for PUT/POST/DELETE and so on.
+JSONP requests only work for `GET` requests, they don't work for PUT/POST/DELETE and so on.
 </div>
 
 In Angular, use JSONP by importing the `HttpClientJsonpModule` to the `NgModule` imports. Here is a `searchHeroes` method that queries for heroes whose names contain the search term using the JSONP request.
