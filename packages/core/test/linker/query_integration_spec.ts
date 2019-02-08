@@ -581,7 +581,6 @@ describe('Query API', () => {
           `;
          const view = createTestCmpAndDetectChanges(MyComp0, template);
          const queryList = view.debugElement.children[0].references['q'].contentQueryResults;
-         debugger;
          expect(queryList.first).toBeAnInstanceOf(TemplateRef);
        });
 
