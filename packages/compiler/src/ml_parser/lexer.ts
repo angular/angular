@@ -70,6 +70,30 @@ export interface TokenizeOptions {
    * The entire `source` string is parsed if this is not provided.
    * */
   range?: LexerRange;
+  /**
+   * If this text is stored in a JavaScript string, then we have to deal with escape sequences.
+   *
+   * **Example 1:**
+   *
+   * ```
+   * "abc\"def\nghi"
+   * ```
+   *
+   * - The `\"` must be converted to `"`.
+   * - The `\n` must be converted to a new line character in a token,
+   *   but it should not increment the current line for source mapping.
+   *
+   * **Example 2:**
+   *
+   * ```
+   * "abc\
+   *  def"
+   * ```
+   *
+   * The line continuation (`\` followed by a newline) should be removed from a token
+   * but the new line should increment the current line for source mapping.
+   */
+  escapedString?: boolean;
 }
 
 export function tokenize(
@@ -99,6 +123,7 @@ class _Tokenizer {
   private _end: number;
   private _tokenizeIcu: boolean;
   private _interpolationConfig: InterpolationConfig;
+  private _escapedString: boolean;
   private _peek: number = -1;
   private _nextPeek: number = -1;
   private _index: number;
@@ -123,6 +148,7 @@ class _Tokenizer {
       options: TokenizeOptions) {
     this._tokenizeIcu = options.tokenizeExpansionForms || false;
     this._interpolationConfig = options.interpolationConfig || DEFAULT_INTERPOLATION_CONFIG;
+    this._escapedString = options.escapedString || false;
     this._input = _file.content;
     if (options.range) {
       this._end = options.range.endPos;
@@ -266,10 +292,13 @@ class _Tokenizer {
     if (this._index >= this._end) {
       throw this._createError(_unexpectedCharacterErrorMsg(chars.$EOF), this._getSpan());
     }
-    if (this._peek === chars.$LF) {
+    // The actual character in the input might be different to the _peek if we are processing
+    // escape characters. We only want to track "real" new lines.
+    const actualChar = this._input.charCodeAt(this._index);
+    if (actualChar === chars.$LF) {
       this._line++;
       this._column = 0;
-    } else if (this._peek !== chars.$LF && this._peek !== chars.$CR) {
+    } else if (!chars.isNewLine(actualChar)) {
       this._column++;
     }
     this._index++;
@@ -284,6 +313,22 @@ class _Tokenizer {
     this._peek = this._index >= this._end ? chars.$EOF : this._input.charCodeAt(this._index);
     this._nextPeek =
         this._index + 1 >= this._end ? chars.$EOF : this._input.charCodeAt(this._index + 1);
+    if (this._peek === chars.$BACKSLASH && processingEscapeSequence !== true &&
+        this._escapedString) {
+      this._processEscapeSequence();
+    }
+  }
+
+  /**
+   * Advance the specific number of characters.
+   * @param count The number of characters to advance.
+   * @param processingEscapeSequence Whether we want `advance()` to process escape sequences.
+   */
+  private _advanceN(count: number, processingEscapeSequence?: boolean) {
+    while (count) {
+      this._advance(processingEscapeSequence);
+      count--;
+    }
   }
 
   private _attemptCharCode(charCode: number): boolean {
@@ -368,9 +413,11 @@ class _Tokenizer {
     if (decodeEntities && this._peek === chars.$AMPERSAND) {
       return this._decodeEntity();
     } else {
-      const index = this._index;
+      // Don't rely upon reading directly from `_input` as the actual char value
+      // may have been generated from an escape sequence.
+      const char = String.fromCodePoint(this._peek);
       this._advance();
-      return this._input[index];
+      return char;
     }
   }
 
@@ -409,6 +456,122 @@ class _Tokenizer {
       return char;
     }
   }
+
+  /**
+   * Process the escape sequence that starts at the current position in the text.
+   *
+   * This method is called from `_advance()` to ensure that escape sequences are
+   * always processed correctly however tokens are being consumed.
+   *
+   * But note that this method also calls `_advance()` (re-entering) to move through
+   * the characters within an escape sequence. In that case it tells `_advance()` not
+   * to attempt to process further escape sequences by passing `true` as its first
+   * argument.
+   */
+  private _processEscapeSequence(): void {
+    this._advance(true);  // advance past the backslash
+
+    // First check for standard control char sequences
+    if (this._peekChar() === chars.$n) {
+      this._peek = chars.$LF;
+    } else if (this._peekChar() === chars.$r) {
+      this._peek = chars.$CR;
+    } else if (this._peekChar() === chars.$v) {
+      this._peek = chars.$VTAB;
+    } else if (this._peekChar() === chars.$t) {
+      this._peek = chars.$TAB;
+    } else if (this._peekChar() === chars.$b) {
+      this._peek = chars.$BSPACE;
+    } else if (this._peekChar() === chars.$f) {
+      this._peek = chars.$FF;
+    }
+
+    // Now consider more complex sequences
+
+    else if (this._peekChar() === chars.$u) {
+      // Unicode code-point sequence
+      this._advance(true);  // advance past the `u` char
+      if (this._peekChar() === chars.$LBRACE) {
+        // Variable length Unicode, e.g. `\x{123}`
+        this._advance(true);  // advance past the `{` char
+        // Advance past the variable number of hex digits until we hit a `}` char
+        const start = this._getLocation();
+        while (this._peekChar() !== chars.$RBRACE) {
+          this._advance(true);
+        }
+        this._decodeHexDigits(start, this._index - start.offset);
+      } else {
+        // Fixed length Unicode, e.g. `\u1234`
+        this._parseFixedHexSequence(4);
+      }
+    }
+
+    else if (this._peekChar() === chars.$x) {
+      // Hex char code, e.g. `\x2F`
+      this._advance(true);  // advance past the `x` char
+      this._parseFixedHexSequence(2);
+    }
+
+    else if (chars.isOctalDigit(this._peekChar())) {
+      // Octal char code, e.g. `\012`,
+      const start = this._index;
+      let length = 1;
+      // Note that we work with `_nextPeek` because, although we check the next character
+      // after the sequence to find the end of the sequence,
+      // we do not want to advance that far to check the character, otherwise we will
+      // have to back up.
+      while (chars.isOctalDigit(this._nextPeek) && length < 3) {
+        this._advance(true);
+        length++;
+      }
+      const octal = this._input.substr(start, length);
+      this._peek = parseInt(octal, 8);
+    }
+
+    else if (chars.isNewLine(this._peekChar())) {
+      // Line continuation `\` followed by a new line
+      this._advance(true);  // advance over the newline
+    }
+
+    // If none of the `if` blocks were executed then we just have an escaped normal character.
+    // In that case we just, effectively, skip the backslash from the character.
+  }
+
+  private _parseFixedHexSequence(length: number) {
+    const start = this._getLocation();
+    this._advanceN(length - 1, true);
+    this._decodeHexDigits(start, length);
+  }
+
+  private _decodeHexDigits(start: ParseLocation, length: number) {
+    const hex = this._input.substr(start.offset, length);
+    const charCode = parseInt(hex, 16);
+    if (!isNaN(charCode)) {
+      this._peek = charCode;
+    } else {
+      throw this._createError(
+          'Invalid hexadecimal escape sequence', this._getSpan(start, this._getLocation()));
+    }
+  }
+
+  /**
+   * This little helper is to solve a problem where the TS compiler will narrow
+   * the type of `_peek` after an `if` statment, even if there is a call to a
+   * method that might mutate the `_peek`.
+   *
+   * For example:
+   *
+   * ```
+   * if (this._peek === 10) {
+   *   this._advance(); // mutates _peek
+   *   if (this._peek === 20) {
+   *     ...
+   * ```
+   *
+   * The second if statement fails TS compilation because the compiler has determined
+   * that `_peek` is `10` and so can never be equal to `20`.
+   */
+  private _peekChar(): number { return this._peek; }
 
   private _consumeRawText(
       decodeEntities: boolean, firstCharOfEnd: number, attemptEndRest: () => boolean): Token {
