@@ -4,5 +4,4 @@ example_test(
     name = "todo",
     srcs = glob(["**/*.ts"]),
     server = "//modules/playground/src/web_workers/todo:devserver",
-    tags = ["fixme-ivy-aot"],
 )
