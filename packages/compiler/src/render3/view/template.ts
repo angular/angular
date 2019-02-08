@@ -18,6 +18,7 @@ import * as html from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../ml_parser/interpolation_config';
+import {LexerRange} from '../../ml_parser/lexer';
 import {isNgContainer as checkIsNgContainer, splitNsName} from '../../ml_parser/tags';
 import {mapLiteral} from '../../output/map_util';
 import * as o from '../../output/output_ast';
@@ -1574,6 +1575,11 @@ export interface ParseTemplateOptions {
    * How to parse interpolation markers.
    */
   interpolationConfig?: InterpolationConfig;
+  /**
+   * The start and end point of the text to parse within the `source` string.
+   * The entire `source` string is parsed if this is not provided.
+   * */
+  range?: LexerRange;
 }
 
 /**
