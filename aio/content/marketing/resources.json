@@ -415,6 +415,12 @@
             "rev": true,
             "title": "ag-Grid",
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
+          },          
+          "fancygrid": {
+            "desc": "Angular grid library with charts integration and server communication for Enterprise.",
+            "rev": true,
+            "title": "FancyGrid",
+            "url": "https://fancygrid.com/docs/getting-started/angular"
           },
           "jqwidgets": {
             "desc": "Angular UI Components including data grid, tree grid, pivot grid, scheduler, charts, editors and other multi-purpose components",
