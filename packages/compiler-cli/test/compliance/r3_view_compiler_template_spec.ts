@@ -558,4 +558,48 @@ describe('compiler compliance: template', () => {
        expect(allListenerFunctionsNames.length).toBe(3);
        expect(allListenerFunctionsNames).toEqual(uniqueListenerFunctionNames);
      });
+
+  it('should support pipes in template bindings', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: \`
+                  <div *ngIf="val | pipe"></div>\`
+              })
+              export class MyComponent {}
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+      }
+    };
+
+    const template = `
+      const $c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+
+      function MyComponent_div_0_Template(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵelement(0, "div");
+        }
+      }
+
+      // ...
+
+      template: function MyComponent_Template(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", $c0$);
+          $i0$.ɵpipe(1, "pipe");
+        } if (rf & 2) {
+          $i0$.ɵelementProperty(0, "ngIf", $i0$.ɵbind($i0$.ɵpipeBind1(1, 1, ctx.val)));
+        }
+      }`;
+
+    const result = compile(files, angularFiles);
+
+    expectEmit(result.source, template, 'Incorrect template');
+  });
 });
