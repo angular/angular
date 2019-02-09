@@ -129,8 +129,7 @@ describe('query logic', () => {
      });
 
   onlyInIvy('multiple local refs are supported in Ivy')
-      .fit(
-          'should return ElementRefs when HTML elements are labelled and retrieved via Content query',
+      .it('should return ElementRefs when HTML elements are labelled and retrieved via Content query',
           () => {
             const template = `
               <local-ref-query-component #q>
