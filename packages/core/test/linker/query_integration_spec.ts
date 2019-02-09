@@ -19,9 +19,6 @@ describe('Query API', () => {
   beforeEach(() => TestBed.configureTestingModule({
     declarations: [
       MyComp0,
-      SimpleCompA,
-      SimpleCompB,
-      LocalRefQueryComp,
       NeedsQuery,
       NeedsQueryDesc,
       NeedsQueryByLabel,
@@ -456,149 +453,6 @@ describe('Query API', () => {
       expect(q.textDirChildren.length).toEqual(1);
       expect(q.numberOfChildrenAfterViewInit).toEqual(1);
     });
-
-    it('should return Component instances when Components are labelled and retrieved via View query',
-       () => {
-         const template = `
-           <div><simple-comp-a #viewQuery></simple-comp-a></div>
-           <div><simple-comp-b #viewQuery></simple-comp-b></div>
-         `;
-         const view = createTestCmpAndDetectChanges(LocalRefQueryComp, template);
-         const queryList = view.componentInstance.viewQueryResults;
-         expect(queryList.first).toBeAnInstanceOf(SimpleCompA);
-         expect(queryList.last).toBeAnInstanceOf(SimpleCompB);
-       });
-
-    it('should return Component instance when Component is labelled and retrieved via Content query',
-       () => {
-         const template = `
-           <local-ref-query-component #q>
-             <simple-comp-a #contentQuery></simple-comp-a>
-           </local-ref-query-component>
-         `;
-         const view = createTestCmpAndDetectChanges(MyComp0, template);
-         const queryList = view.debugElement.children[0].references['q'].contentQueryResults;
-         expect(queryList.first).toBeAnInstanceOf(SimpleCompA);
-       });
-
-    onlyInIvy('multiple local refs are supported in Ivy')
-        .it('should return Component instances when Components are labelled and retrieved via Content query',
-            () => {
-              const template = `
-               <local-ref-query-component #q>
-                 <simple-comp-a #contentQuery></simple-comp-a>
-                 <simple-comp-b #contentQuery></simple-comp-b>
-               </local-ref-query-component>
-             `;
-              const view = createTestCmpAndDetectChanges(MyComp0, template);
-              const queryList = view.debugElement.children[0].references['q'].contentQueryResults;
-              expect(queryList.first).toBeAnInstanceOf(SimpleCompA);
-              expect(queryList.last).toBeAnInstanceOf(SimpleCompB);
-              expect(queryList.length).toBe(2);
-            });
-
-    it('should return ElementRef when HTML element is labelled and retrieved via View query',
-       () => {
-         const template = `
-            <div #viewQuery></div>
-        `;
-         const view = createTestCmpAndDetectChanges(LocalRefQueryComp, template);
-         const queryList = view.componentInstance.viewQueryResults;
-         expect(queryList.first).toBeAnInstanceOf(ElementRef);
-       });
-
-    onlyInIvy('multiple local refs are supported in Ivy')
-        .it('should return ElementRefs when HTML elements are labelled and retrieved via View query',
-            () => {
-              const template = `
-                <div #viewQuery></div>
-                <div #viewQuery></div>
-              `;
-              const view = createTestCmpAndDetectChanges(LocalRefQueryComp, template);
-              const queryList = view.componentInstance.viewQueryResults;
-              expect(queryList.first).toBeAnInstanceOf(ElementRef);
-              expect(queryList.last).toBeAnInstanceOf(ElementRef);
-              expect(queryList.length).toBe(2);
-            });
-
-    it('should return TemplateRef when template is labelled and retrieved via View query', () => {
-      const template = `
-        <ng-template #viewQuery></ng-template>
-      `;
-      const view = createTestCmpAndDetectChanges(LocalRefQueryComp, template);
-      const queryList = view.componentInstance.viewQueryResults;
-      expect(queryList.first).toBeAnInstanceOf(TemplateRef);
-    });
-
-    onlyInIvy('multiple local refs are supported in Ivy')
-        .it('should return TemplateRefs when templates are labelled and retrieved via View query',
-            () => {
-              const template = `
-                <ng-template #viewQuery></ng-template>
-                <ng-template #viewQuery></ng-template>
-              `;
-              const view = createTestCmpAndDetectChanges(LocalRefQueryComp, template);
-              const queryList = view.componentInstance.viewQueryResults;
-              expect(queryList.first).toBeAnInstanceOf(TemplateRef);
-              expect(queryList.last).toBeAnInstanceOf(TemplateRef);
-              expect(queryList.length).toBe(2);
-            });
-
-    it('should return ElementRef when HTML element is labelled and retrieved via Content query',
-       () => {
-         const template = `
-           <local-ref-query-component #q>
-             <div #contentQuery></div>
-           </local-ref-query-component>
-         `;
-         const view = createTestCmpAndDetectChanges(MyComp0, template);
-         const queryList = view.debugElement.children[0].references['q'].contentQueryResults;
-         expect(queryList.first).toBeAnInstanceOf(ElementRef);
-       });
-
-    onlyInIvy('multiple local refs are supported in Ivy')
-        .it('should return ElementRefs when HTML elements are labelled and retrieved via Content query',
-            () => {
-              const template = `
-                <local-ref-query-component #q>
-                  <div #contentQuery></div>
-                  <div #contentQuery></div>
-                </local-ref-query-component>
-              `;
-              const view = createTestCmpAndDetectChanges(MyComp0, template);
-              const queryList = view.debugElement.children[0].references['q'].contentQueryResults;
-              expect(queryList.first).toBeAnInstanceOf(ElementRef);
-              expect(queryList.last).toBeAnInstanceOf(ElementRef);
-              expect(queryList.length).toBe(2);
-            });
-
-    it('should return TemplateRef when template is labelled and retrieved via Content query',
-       () => {
-         const template = `
-            <local-ref-query-component #q>
-              <ng-template #contentQuery></ng-template>
-            </local-ref-query-component>
-          `;
-         const view = createTestCmpAndDetectChanges(MyComp0, template);
-         const queryList = view.debugElement.children[0].references['q'].contentQueryResults;
-         expect(queryList.first).toBeAnInstanceOf(TemplateRef);
-       });
-
-    onlyInIvy('multiple local refs are supported in Ivy')
-        .it('should return TemplateRefs when templates are labelled and retrieved via Content query',
-            () => {
-              const template = `
-                <local-ref-query-component #q>
-                  <ng-template #contentQuery></ng-template>
-                  <ng-template #contentQuery></ng-template>
-                </local-ref-query-component>
-              `;
-              const view = createTestCmpAndDetectChanges(MyComp0, template);
-              const queryList = view.debugElement.children[0].references['q'].contentQueryResults;
-              expect(queryList.first).toBeAnInstanceOf(TemplateRef);
-              expect(queryList.last).toBeAnInstanceOf(TemplateRef);
-              expect(queryList.length).toBe(2);
-            });
   });
 
   describe('querying in the view', () => {
@@ -1150,20 +1004,6 @@ class NeedsViewContainerWithRead {
   @ContentChild(TemplateRef) template !: TemplateRef<Object>;
 
   createView() { this.vc.createEmbeddedView(this.template); }
-}
-
-@Component({selector: 'local-ref-query-component', template: '<ng-content></ng-content>'})
-class LocalRefQueryComp {
-  @ViewChildren('viewQuery') viewQueryResults !: QueryList<any>;
-  @ContentChildren('contentQuery') contentQueryResults !: QueryList<any>;
-}
-
-@Component({selector: 'simple-comp-a', template: ''})
-class SimpleCompA {
-}
-
-@Component({selector: 'simple-comp-b', template: ''})
-class SimpleCompB {
 }
 
 @Component({selector: 'has-null-query-condition', template: '<div></div>'})
