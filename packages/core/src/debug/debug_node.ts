@@ -196,11 +196,6 @@ function _queryNodeChildren(
     });
   }
 }
-
-function notImplemented(): Error {
-  throw new Error('Missing proper ivy implementation.');
-}
-
 class DebugNode__POST_R3__ implements DebugNode {
   readonly nativeNode: Node;
 
