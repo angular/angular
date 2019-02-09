@@ -1742,7 +1742,7 @@ export function instantiateRootComponent<T>(
   }
   const directive =
       getNodeInjectable(tView.data, viewData, viewData.length - 1, rootTNode as TElementNode);
-  postProcessBaseDirective(viewData, rootTNode, directive, def as DirectiveDef<T>);
+  postProcessBaseDirective(viewData, rootTNode, directive);
   return directive;
 }
 
@@ -1870,7 +1870,7 @@ function prefillHostVars(tView: TView, lView: LView, totalHostVars: number): voi
 function postProcessDirective<T>(
     viewData: LView, directive: T, def: DirectiveDef<T>, directiveDefIdx: number): void {
   const previousOrParentTNode = getPreviousOrParentTNode();
-  postProcessBaseDirective(viewData, previousOrParentTNode, directive, def);
+  postProcessBaseDirective(viewData, previousOrParentTNode, directive);
   ngDevMode && assertDefined(previousOrParentTNode, 'previousOrParentTNode');
   if (previousOrParentTNode && previousOrParentTNode.attrs) {
     setInputsFromAttrs(directiveDefIdx, directive, def, previousOrParentTNode);
@@ -1890,7 +1890,7 @@ function postProcessDirective<T>(
  * A lighter version of postProcessDirective() that is used for the root component.
  */
 function postProcessBaseDirective<T>(
-    lView: LView, previousOrParentTNode: TNode, directive: T, def: DirectiveDef<T>): void {
+    lView: LView, previousOrParentTNode: TNode, directive: T): void {
   const native = getNativeByTNode(previousOrParentTNode, lView);
 
   ngDevMode && assertEqual(
