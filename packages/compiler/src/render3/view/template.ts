@@ -803,19 +803,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       parameters.push(o.importExpr(R3.templateRefExtractor));
     }
 
-    // handle property bindings e.g. p(1, 'ngForOf', ɵbind(ctx.items));
-    const context = o.variable(CONTEXT_NAME);
-    template.inputs.forEach(input => {
-      const value = input.value.visit(this._valueConverter);
-      this.allocateBindingSlots(value);
-      this.updateInstruction(template.sourceSpan, R3.elementProperty, () => {
-        return [
-          o.literal(templateIndex), o.literal(input.name),
-          this.convertPropertyBinding(context, value)
-        ];
-      });
-    });
-
     // Create the template function
     const templateVisitor = new TemplateDefinitionBuilder(
         this.constantPool, this._bindingScope, this.level + 1, contextName, this.i18n,
@@ -843,6 +830,19 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           2, 0, o.literal(templateVisitor.getConstCount()),
           o.literal(templateVisitor.getVarCount()));
       return trimTrailingNulls(parameters);
+    });
+
+    // handle property bindings e.g. ɵelementProperty(1, 'ngForOf', ɵbind(ctx.items));
+    const context = o.variable(CONTEXT_NAME);
+    template.inputs.forEach(input => {
+      const value = input.value.visit(this._valueConverter);
+      this.allocateBindingSlots(value);
+      this.updateInstruction(template.sourceSpan, R3.elementProperty, () => {
+        return [
+          o.literal(templateIndex), o.literal(input.name),
+          this.convertPropertyBinding(context, value)
+        ];
+      });
     });
 
     // Generate listeners for directive output
