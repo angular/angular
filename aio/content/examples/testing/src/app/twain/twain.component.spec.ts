@@ -91,7 +91,7 @@ describe('TwainComponent', () => {
   describe('when test with asynchronous observable', () => {
     beforeEach(() => {
       // #docregion async-setup
-      // Simulate delayed observable values with the `asyncData()` helper
+      // `asyncData()` 헬퍼 함수를 사용해서 옵저버블을 비동기로 처리합니다.
       getQuoteSpy.and.returnValue(asyncData(testQuote));
       // #enddocregion async-setup
     });
@@ -116,8 +116,8 @@ describe('TwainComponent', () => {
       fixture.detectChanges(); // ngOnInit()
       expect(quoteEl.textContent).toBe('...', 'should show placeholder');
 
-      tick(); // flush the observable to get the quote
-      fixture.detectChanges(); // update view
+      tick(); // 옵저버블을 실행합니다.
+      fixture.detectChanges(); // 화면을 갱신합니다.
 
       expect(quoteEl.textContent).toBe(testQuote, 'should show quote');
       expect(errorMessage()).toBeNull('should not show error');
@@ -129,8 +129,8 @@ describe('TwainComponent', () => {
       fixture.detectChanges(); // ngOnInit()
       expect(quoteEl.textContent).toBe('...', 'should show placeholder');
 
-      fixture.whenStable().then(() => { // wait for async getQuote
-        fixture.detectChanges();        // update view with quote
+      fixture.whenStable().then(() => { // 비동기 getQuote를 기다립니다.
+        fixture.detectChanges();        // 화면을 갱신합니다.
         expect(quoteEl.textContent).toBe(testQuote);
         expect(errorMessage()).toBeNull('should not show error');
       });

@@ -13,16 +13,14 @@
 import { defer } from 'rxjs';
 
 // #docregion async-data
-/** Create async observable that emits-once and completes
- *  after a JS engine turn */
+/** JS 실행 싸이클이 한 번 지난 뒤에 Observable을 보내고 바로 종료합니다. */
 export function asyncData<T>(data: T) {
   return defer(() => Promise.resolve(data));
 }
 // #enddocregion async-data
 
 // #docregion async-error
-/** Create async observable error that errors
- *  after a JS engine turn */
+/** JS 실행 싸이클이 한 번 지난 뒤에 에러 Observable을 보내고 바로 종료합니다. */
 export function asyncError<T>(errorObject: any) {
   return defer(() => Promise.reject(errorObject));
 }

@@ -65,8 +65,7 @@ describe('Angular async helper', () => {
 
   // #docregion fake-async-test-rxjs
   it('should get Date diff correctly in fakeAsync with rxjs scheduler', fakeAsync(() => {
-       // need to add `import 'zone.js/dist/zone-patch-rxjs-fake-async'
-       // to patch rxjs scheduler
+       // rxjs 스케쥴러를 사용하기 위해 `import 'zone.js/dist/zone-patch-rxjs-fake-async'를 추가해야 합니다.
        let result = null;
        of ('hello').pipe(delay(1000)).subscribe(v => { result = v; });
        expect(result).toBeNull();
@@ -86,12 +85,13 @@ describe('Angular async helper', () => {
 
   // #docregion fake-async-test-clock
   describe('use jasmine.clock()', () => {
-    // need to config __zone_symbol__fakeAsyncPatchLock flag
-    // before loading zone.js/dist/zone-testing
+    // zone.js/dist/zone-testing 패키지를 로드하기 전에
+    // __zone_symbol_fakeAsyncPatchLock 플래그 설정이 필요합니다.
     beforeEach(() => { jasmine.clock().install(); });
     afterEach(() => { jasmine.clock().uninstall(); });
     it('should auto enter fakeAsync', () => {
-      // is in fakeAsync now, don't need to call fakeAsync(testFn)
+      // 이 코드는 fakeAsync 테스트 존 안에서 실행됩니다.
+      // 이 때 fakeAsync()를 명시적으로 실행할 필요는 없습니다.
       let called = false;
       setTimeout(() => { called = true; }, 100);
       jasmine.clock().tick(100);
