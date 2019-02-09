@@ -432,7 +432,7 @@ function renderComponentOrTemplate<T>(
       // creation mode pass
       if (templateFn) {
         namespaceHTML();
-        templateFn(RenderFlags.Create, context !);
+        templateFn(RenderFlags.Create, context);
       }
 
       refreshDescendantViews(hostView);
@@ -440,7 +440,7 @@ function renderComponentOrTemplate<T>(
     }
 
     // update mode pass
-    templateFn && templateFn(RenderFlags.Update, context !);
+    templateFn && templateFn(RenderFlags.Update, context);
     refreshDescendantViews(hostView);
   } finally {
     if (normalExecutionPath && !creationModeIsActive && rendererFactory.end) {

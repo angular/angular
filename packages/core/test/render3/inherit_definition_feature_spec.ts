@@ -7,7 +7,7 @@
  */
 
 import {ElementRef, Inject, InjectionToken, QueryList, ɵAttributeMarker as AttributeMarker} from '../../src/core';
-import {ComponentDef, DirectiveDef, InheritDefinitionFeature, NgOnChangesFeature, ProvidersFeature, RenderFlags, allocHostVars, bind, contentQuery, defineBase, defineComponent, defineDirective, directiveInject, element, elementEnd, elementProperty, elementStart, load, loadContentQuery, loadViewQuery, queryRefresh, viewQuery} from '../../src/render3/index';
+import {allocHostVars, bind, ComponentDef, contentQuery, defineBase, defineComponent, defineDirective, DirectiveDef, directiveInject, element, elementEnd, elementProperty, elementStart, InheritDefinitionFeature, load, loadContentQuery, loadViewQuery, NgOnChangesFeature, ProvidersFeature, queryRefresh, RenderFlags, viewQuery,} from '../../src/render3/index';
 
 import {ComponentFixture, createComponent, getDirectiveOnNode} from './render_util';
 
@@ -457,8 +457,8 @@ describe('InheritDefinitionFeature', () => {
           consts: 0,
           vars: 0,
           selectors: [['', 'subDir', '']],
-          viewQuery: (directiveIndex: number, elementIndex: number) => {
-            log.push(['sub', directiveIndex, elementIndex]);
+          viewQuery: (rf: RenderFlags, ctx: SubComponent) => {
+            log.push(['sub', rf, ctx]);
           },
           factory: () => new SubComponent(),
           features: [InheritDefinitionFeature]
@@ -469,9 +469,10 @@ describe('InheritDefinitionFeature', () => {
 
       const context = {foo: 'bar'};
 
-      subDef.viewQuery !(1, context);
+      subDef.viewQuery !(RenderFlags.Create, context);
 
-      expect(log).toEqual([['super', 1, context], ['sub', 1, context]]);
+      expect(log).toEqual(
+          [['super', RenderFlags.Create, context], ['sub', RenderFlags.Create, context]]);
     });
 
 

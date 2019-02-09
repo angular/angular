@@ -17,7 +17,7 @@ import {stringify} from '../util/stringify';
 
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
-import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {BaseDef, ComponentDef, ComponentDefFeature, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
 import {CssSelectorList} from './interfaces/projection';
 
 let _renderCompCount = 0;
@@ -49,7 +49,7 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * Factory method used to create an instance of directive.
    */
-  factory: (t: Type<T>| null) => T;
+  factory: FactoryFn<T>;
 
   /**
    * The number of nodes, local refs, and pipes in this component template.
@@ -515,7 +515,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   /**
    * Factory method used to create an instance of directive.
    */
-  factory: (t: Type<T>| null) => T;
+  factory: FactoryFn<T>;
 
   /**
    * A map of input names.
@@ -624,7 +624,7 @@ export function definePipe<T>(pipeDef: {
   type: Type<T>,
 
   /** A factory for creating a pipe instance. */
-  factory: (t: Type<T>| null) => T,
+  factory: FactoryFn<T>,
 
   /** Whether the pipe is pure. */
   pure?: boolean
