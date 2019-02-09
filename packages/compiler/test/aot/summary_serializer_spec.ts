@@ -466,5 +466,58 @@ import {MockAotSummaryResolverHost, createMockOutputContext} from './summary_res
         expect(serialized.json).not.toContain('error');
       });
     });
+
+    describe('createExternalSymbolReexports disabled', () => {
+      it('should use existing reexports for "importAs" for symbols of libraries', () => {
+        init();
+        const externalSerialized = serializeSummaries(
+            'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver,
+            [
+              {symbol: symbolCache.get('/tmp/external.ts', 'value'), metadata: 'aValue'},
+              {
+                symbol: symbolCache.get('/tmp/external.ts', 'reexportValue'),
+                metadata: symbolCache.get('/tmp/external.ts', 'value')
+              },
+            ],
+            [], false);
+        expect(externalSerialized.exportAs).toEqual([]);
+        init({
+          '/tmp/external.ngsummary.json': externalSerialized.json,
+        });
+        const serialized = serializeSummaries(
+            'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
+              symbol: symbolCache.get('/tmp/test.ts', 'mainValue'),
+              metadata: symbolCache.get('/tmp/external.d.ts', 'reexportValue'),
+            }],
+            []);
+        expect(serialized.exportAs).toEqual([]);
+        const importAs =
+            deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serialized.json)
+                .importAs;
+        expect(importAs).toEqual([{
+          symbol: symbolCache.get('/tmp/external.d.ts', 'value'),
+          importAs: symbolCache.get('/tmp/test.d.ts', 'mainValue'),
+        }]);
+      });
+
+      it('should not create reexports in the ngfactory for external symbols', () => {
+        init();
+        const serialized = serializeSummaries(
+            'someFile.ts', createMockOutputContext(), summaryResolver, symbolResolver, [{
+              symbol: symbolCache.get('/tmp/test.ts', 'main'),
+              metadata: [
+                symbolCache.get('/tmp/external.d.ts', 'lib'),
+                symbolCache.get('/tmp/external.d.ts', 'lib', ['someMember']),
+              ]
+            }],
+            [], false);
+        expect(serialized.exportAs.length)
+            .toBe(0, 'Expected no external symbols to be re-exported.');
+        const deserialized =
+            deserializeSummaries(symbolCache, summaryResolver, 'someFile.d.ts', serialized.json);
+        expect(deserialized.importAs.length)
+            .toBe(0, 'Expected no symbols that can be imported from a re-exported location');
+      });
+    });
   });
 }
