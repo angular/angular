@@ -4,9 +4,11 @@ ColumnLimit:     100
 
 TabWidth:                2
 ContinuationIndentWidth: 4
-MaxEmptyLinesToKeep    : 2
+MaxEmptyLinesToKeep:     2
 
 AllowShortBlocksOnASingleLine:              false
 AllowShortIfStatementsOnASingleLine:        false
 AllowShortLoopsOnASingleLine:               false
 AllowShortFunctionsOnASingleLine:           Empty
+JavaScriptWrapImports:                      true
+
