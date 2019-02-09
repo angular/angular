@@ -184,7 +184,7 @@ describe('di', () => {
           consts: 0,
           vars: 0,
           factory: () => new Comp(directiveInject(DirB)),
-          template: (ctx: any, fm: boolean) => {}
+          template: (rf: RenderFlags, ctx: Comp) => {}
         });
       }
 
