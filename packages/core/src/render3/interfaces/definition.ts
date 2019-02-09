@@ -15,7 +15,10 @@ import {CssSelectorList} from './projection';
  * Definition of what a template rendering function should look like for a component.
  */
 export type ComponentTemplate<T> = {
-  <U extends T>(rf: RenderFlags, ctx: U): void; ngPrivateData?: never;
+  // Note: the ctx parameter is typed as T|U, as using only U would prevent a template with
+  // e.g. ctx: {} from being assigned to ComponentTemplate<any> as TypeScript won't infer U = any
+  // in that scenario. By including T this incompatibility is resolved.
+  <U extends T>(rf: RenderFlags, ctx: T | U): void; ngPrivateData?: never;
 };
 
 /**
@@ -29,8 +32,7 @@ export type ComponentQuery<T> = ComponentTemplate<T>;
 export type FactoryFn<T> = {
   /**
    * Subclasses without an explicit constructor call through to the factory of their base
-   * definition,
-   * providing it with their own constructor to instantiate.
+   * definition, providing it with their own constructor to instantiate.
    */
   <U extends T>(t: Type<U>): U;
 
@@ -38,7 +40,7 @@ export type FactoryFn<T> = {
    * If no constructor to instantiate is provided, an instance of type T itself is created.
    */
   (t: null): T;
-}
+};
 
 /**
  * Flags passed into template functions to determine which blocks (i.e. creation, update)

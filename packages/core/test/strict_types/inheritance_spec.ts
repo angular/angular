@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵComponentDefWithMeta, ɵPipeDefWithMeta} from '@angular/core';
+import {ɵComponentDefWithMeta as ComponentDefWithMeta, ɵPipeDefWithMeta as PipeDefWithMeta} from '@angular/core';
 
 declare class SuperComponent {
-  static ngComponentDef: ɵComponentDefWithMeta<SuperComponent, '[super]', never, {}, {}, never>;
+  static ngComponentDef: ComponentDefWithMeta<SuperComponent, '[super]', never, {}, {}, never>;
 }
 
 declare class SubComponent extends SuperComponent {
@@ -18,15 +18,15 @@ declare class SubComponent extends SuperComponent {
   // would produce type errors when the "strictFunctionTypes" option is enabled.
   onlyInSubtype: string;
 
-  static ngComponentDef: ɵComponentDefWithMeta<SubComponent, '[sub]', never, {}, {}, never>;
+  static ngComponentDef: ComponentDefWithMeta<SubComponent, '[sub]', never, {}, {}, never>;
 }
 
-declare class SuperPipe { static ngPipeDef: ɵPipeDefWithMeta<SuperPipe, 'super'>; }
+declare class SuperPipe { static ngPipeDef: PipeDefWithMeta<SuperPipe, 'super'>; }
 
 declare class SubPipe extends SuperPipe {
   onlyInSubtype: string;
 
-  static ngPipeDef: ɵPipeDefWithMeta<SubPipe, 'sub'>;
+  static ngPipeDef: PipeDefWithMeta<SubPipe, 'sub'>;
 }
 
 describe('inheritance strict type checking', () => {

@@ -5,10 +5,10 @@ load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 ts_library(
     name = "strict_types_lib",
     testonly = True,
-    tsconfig = ":tsconfig.json",
     srcs = glob(
         ["**/*.ts"],
     ),
+    tsconfig = ":tsconfig.json",
     deps = [
         "//packages/core",
     ],
