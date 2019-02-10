@@ -2025,18 +2025,23 @@ describe('ngtsc behavioral tests', () => {
   });
 
   describe('listLazyRoutes()', () => {
-    const lazyRouteMatching =
-        (route: string, fromModulePath: RegExp, fromModuleName: string, toModulePath: RegExp,
-         toModuleName: string) => ({
-          route: route, module: jasmine.objectContaining({
-            name: fromModuleName,
-            filePath: jasmine.stringMatching(fromModulePath),
-          }),
-              referencedModule: jasmine.objectContaining({
-                name: toModuleName,
-                filePath: jasmine.stringMatching(toModulePath),
-              }),
-        } as unknown as LazyRoute);
+    // clang-format off
+    const lazyRouteMatching = (
+        route: string, fromModulePath: RegExp, fromModuleName: string, toModulePath: RegExp,
+        toModuleName: string) => {
+      return {
+        route,
+        module: jasmine.objectContaining({
+          name: fromModuleName,
+          filePath: jasmine.stringMatching(fromModulePath),
+        }),
+        referencedModule: jasmine.objectContaining({
+          name: toModuleName,
+          filePath: jasmine.stringMatching(toModulePath),
+        }),
+      } as unknown as LazyRoute;
+    };
+    // clang-format on
 
     beforeEach(() => {
       env.tsconfig();
@@ -2059,25 +2064,51 @@ describe('ngtsc behavioral tests', () => {
 
           @NgModule({
             imports: [
-              RouterModule.forChild([
-                {path: '', loadChildren: './lazy#LazyModule'},
+              RouterModule.forRoot([
+                {path: '1', loadChildren: './lazy/lazy-1#Lazy1Module'},
+                {path: '2', loadChildren: './lazy/lazy-2#Lazy2Module'},
               ]),
             ],
           })
           export class TestModule {}
         `);
-        env.write('lazy.ts', `
+        env.write('lazy/lazy-1.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class Lazy1Module {}
+        `);
+        env.write('lazy/lazy-2.ts', `
           import {NgModule} from '@angular/core';
           import {RouterModule} from '@angular/router';
 
+          @NgModule({
+            imports: [
+              RouterModule.forChild([
+                {path: '3', loadChildren: './lazy-3#Lazy3Module'},
+              ]),
+            ],
+          })
+          export class Lazy2Module {}
+        `);
+        env.write('lazy/lazy-3.ts', `
+          import {NgModule} from '@angular/core';
+
           @NgModule({})
-          export class LazyModule {}
+          export class Lazy3Module {}
         `);
 
         const routes = env.driveRoutes();
         expect(routes).toEqual([
           lazyRouteMatching(
-              './lazy#LazyModule', /\/test\.ts$/, 'TestModule', /\/lazy\.ts$/, 'LazyModule'),
+              './lazy-3#Lazy3Module', /\/lazy\/lazy-2\.ts$/, 'Lazy2Module', /\/lazy\/lazy-3\.ts$/,
+              'Lazy3Module'),
+          lazyRouteMatching(
+              './lazy/lazy-1#Lazy1Module', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy-1\.ts$/,
+              'Lazy1Module'),
+          lazyRouteMatching(
+              './lazy/lazy-2#Lazy2Module', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy-2\.ts$/,
+              'Lazy2Module'),
         ]);
       });
 
@@ -2152,12 +2183,11 @@ describe('ngtsc behavioral tests', () => {
           import {NgModule} from '@angular/core';
           import {RouterModule} from '@angular/router';
           import {Test1Module as Test1ModuleRenamed} from './test-1';
-          import {Test2Component, Test2Module} from './test-2';
+          import {Test2Module} from './test-2';
 
           @NgModule({
             exports: [
               Test1ModuleRenamed,
-              Test2Component,
             ],
             imports: [
               Test2Module,
@@ -2182,21 +2212,11 @@ describe('ngtsc behavioral tests', () => {
           export class Test1Module {}
         `);
         env.write('test-2.ts', `
-          import {Component, NgModule} from '@angular/core';
+          import {NgModule} from '@angular/core';
           import {RouterModule} from '@angular/router';
 
-          @Component({
-            selector: 'test-2',
-            template: '',
-          })
-          export class Test2Component {}
-
           @NgModule({
-            declarations: [
-              Test2Component,
-            ],
             exports: [
-              Test2Component,
               RouterModule.forChild([
                 {path: 'two', loadChildren: './lazy-2/lazy-2#Lazy2Module'},
               ]),
@@ -2229,6 +2249,73 @@ describe('ngtsc behavioral tests', () => {
           lazyRouteMatching(
               './lazy/lazy#LazyModule', /\/test\.ts$/, 'TestModule', /\/lazy\/lazy\.ts$/,
               'LazyModule'),
+          lazyRouteMatching(
+              './lazy-1/lazy-1#Lazy1Module', /\/test-1\.ts$/, 'Test1Module',
+              /\/lazy-1\/lazy-1\.ts$/, 'Lazy1Module'),
+          lazyRouteMatching(
+              './lazy-2/lazy-2#Lazy2Module', /\/test-2\.ts$/, 'Test2Module',
+              /\/lazy-2\/lazy-2\.ts$/, 'Lazy2Module'),
+        ]);
+      });
+
+      it('should ignore exports that do not refer to an `NgModule`', () => {
+        env.write('test-1.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+          import {Test2Component, Test2Module} from './test-2';
+
+          @NgModule({
+            exports: [
+              Test2Component,
+              Test2Module,
+            ],
+            imports: [
+              RouterModule.forRoot([
+                {path: '', loadChildren: './lazy-1/lazy-1#Lazy1Module'},
+              ]),
+            ],
+          })
+          export class Test1Module {}
+        `);
+        env.write('test-2.ts', `
+          import {Component, NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @Component({
+            selector: 'test-2',
+            template: '',
+          })
+          export class Test2Component {}
+
+          @NgModule({
+            declarations: [
+              Test2Component,
+            ],
+            exports: [
+              Test2Component,
+              RouterModule.forChild([
+                {path: 'two', loadChildren: './lazy-2/lazy-2#Lazy2Module'},
+              ]),
+            ],
+          })
+          export class Test2Module {}
+        `);
+        env.write('lazy-1/lazy-1.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class Lazy1Module {}
+        `);
+        env.write('lazy-2/lazy-2.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class Lazy2Module {}
+        `);
+
+        const routes = env.driveRoutes(path.join(env.basePath, 'test-1#Test1Module'));
+
+        expect(routes).toEqual([
           lazyRouteMatching(
               './lazy-1/lazy-1#Lazy1Module', /\/test-1\.ts$/, 'Test1Module',
               /\/lazy-1\/lazy-1\.ts$/, 'Lazy1Module'),
