@@ -199,11 +199,21 @@ export class NgtscProgram implements api.Program {
       // `@angular/cli` will always call this API with an absolute path, so the resolution step is
       // not necessary, but keeping it backwards compatible in case someone else is using the API.
 
+      // Relative entry paths are disallowed.
       if (entryRoute.startsWith('.')) {
-        throw new Error('Resolution of relative paths is not supported.');
+        throw new Error(
+            `Falied to list lazy routes: Resolution of relative paths (${entryRoute}) is not supported.`);
       }
 
-      // Any containing file gives the same result for absolute entry path.
+      // Non-relative entry paths fall into one of the following categories:
+      // - Absolute system paths (e.g. `/foo/bar/my-project/my-module`), which are unaffected by the
+      //   logic below.
+      // - Paths to enternal modules (e.g. `some-lib`).
+      // - Paths mapped to directories in `tsconfig.json` (e.g. `shared/my-module`).
+      //   (See https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping.)
+      //
+      // In all cases above, the `containingFile` argument is ignored, so we can just take the first
+      // of the root files.
       const containingFile = this.tsProgram.getRootFileNames()[0];
       const [entryPath, moduleName] = entryRoute.split('#');
       const resolved = ts.resolveModuleName(entryPath, containingFile, this.options, this.host);
