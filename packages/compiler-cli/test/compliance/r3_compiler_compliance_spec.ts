@@ -1756,7 +1756,7 @@ describe('compiler compliance', () => {
 
                 @Component({
                   selector: 'my-app',
-                  template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }}</p>'
+                  template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }} {{ name ? 1 : 2 | myPipe }}</p>'
                 })
                 export class MyApp {
                   name = 'World';
@@ -1795,8 +1795,8 @@ describe('compiler compliance', () => {
               type: MyApp,
               selectors: [["my-app"]],
               factory: function MyApp_Factory(t) { return new (t || MyApp)(); },
-              consts: 6,
-              vars: 17,
+              consts: 7,
+              vars: 20,
               template:  function MyApp_Template(rf, ctx) {
                 if (rf & 1) {
                   $r3$.ɵtext(0);
@@ -1805,11 +1805,12 @@ describe('compiler compliance', () => {
                   $r3$.ɵelementStart(3, "p");
                   $r3$.ɵtext(4);
                   $r3$.ɵpipe(5, "myPipe");
+                  $r3$.ɵpipe(6, "myPipe");
                   $r3$.ɵelementEnd();
                 }
                 if (rf & 2) {
-                  $r3$.ɵtextBinding(0, $r3$.ɵinterpolation1("", $r3$.ɵpipeBind2(1, 2, $r3$.ɵpipeBind2(2, 5, ctx.name, ctx.size), ctx.size), ""));
-                  $r3$.ɵtextBinding(4, $r3$.ɵinterpolation1("", $r3$.ɵpipeBindV(5, 8, $r3$.ɵpureFunction1(15, $c0$, ctx.name)), ""));
+                  $r3$.ɵtextBinding(0, $r3$.ɵinterpolation1("", $r3$.ɵpipeBind2(1, 3, $r3$.ɵpipeBind2(2, 6, ctx.name, ctx.size), ctx.size), ""));
+                  $r3$.ɵtextBinding(4, $r3$.ɵinterpolation2("", $r3$.ɵpipeBindV(5, 9, $r3$.ɵpureFunction1(18, $c0$, ctx.name)), " ", (ctx.name ? 1 : $r3$.ɵpipeBind1(6, 16, 2)), ""));
                 }
               },
               pipes: [MyPurePipe, MyPipe],
