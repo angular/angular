@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
 import {Component, Pipe, PipeTransform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -26,7 +25,7 @@ describe('pipe', () => {
       condition = false;
     }
 
-    TestBed.configureTestingModule({declarations: [MyApp, MyPipe], imports: [CommonModule]});
+    TestBed.configureTestingModule({declarations: [MyApp, MyPipe]});
     const fixture = TestBed.createComponent(MyApp);
     fixture.detectChanges();
 
