@@ -36,11 +36,19 @@ const UpdateWorker: Worker = {
   work: () => $('#createDom').click()
 };
 
+// In order to make sure that we don't change the ids of the benchmarks, we need to
+// determine the current test package name from the Bazel target. This is necessary
+// because previous to the Bazel conversion, the benchmark test ids contained the test
+// name. e.g. "largeTable.ng2_switch.createDestroy". We determine the name of the
+// Bazel package where this test runs from the current test target. The Bazel target
+// looks like: "//modules/benchmarks/src/largetable/{pkg_name}:{target_name}".
+const testPackageName = process.env['BAZEL_TARGET'] !.split(':')[0].split('/').pop();
+
 describe('largetable benchmark perf', () => {
 
   afterEach(verifyNoBrowserErrors);
 
-  it('should render the table for render3', () => {
+  it(`should render the table for ${testPackageName}`, () => {
     openBrowser({
       url: '',
       ignoreBrowserSynchronization: true,
@@ -56,26 +64,26 @@ describe('largetable benchmark perf', () => {
 
   [CreateOnlyWorker, CreateAndDestroyWorker, UpdateWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it('should run benchmark for render3', done => {
+      it(`should run benchmark for ${testPackageName}`, done => {
         runTableBenchmark({
-          id: `largeTable.render3.${worker.id}`,
-          url: 'index.html',
+          id: `largeTable.${testPackageName}.${worker.id}`,
+          url: '/',
           ignoreBrowserSynchronization: true,
           worker: worker
         }).then(done, done.fail);
       });
     });
   });
-
-  function runTableBenchmark(
-      config: {id: string, url: string, ignoreBrowserSynchronization?: boolean, worker: Worker}) {
-    return runBenchmark({
-      id: config.id,
-      url: config.url,
-      ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
-      params: [{name: 'cols', value: 40}, {name: 'rows', value: 200}],
-      prepare: config.worker.prepare,
-      work: config.worker.work
-    });
-  }
 });
+
+function runTableBenchmark(
+    config: {id: string, url: string, ignoreBrowserSynchronization?: boolean, worker: Worker}) {
+  return runBenchmark({
+    id: config.id,
+    url: config.url,
+    ignoreBrowserSynchronization: config.ignoreBrowserSynchronization,
+    params: [{name: 'cols', value: 40}, {name: 'rows', value: 200}],
+    prepare: config.worker.prepare,
+    work: config.worker.work
+  });
+}
