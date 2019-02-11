@@ -7,7 +7,8 @@
  */
 
 import {Injector, Type} from '@angular/core';
-import * as angular from './angular1';
+
+import {IInjectorService, INgModelController} from './angular1';
 import {DOWNGRADED_MODULE_COUNT_KEY, UPGRADE_APP_TYPE_KEY} from './constants';
 
 const DIRECTIVE_PREFIX_REGEXP = /^(?:x|data)[:\-_]/i;
@@ -38,12 +39,12 @@ export function getTypeName(type: Type<any>): string {
   return (type as any).overriddenName || type.name || type.toString().split('\n')[0];
 }
 
-export function getDowngradedModuleCount($injector: angular.IInjectorService): number {
+export function getDowngradedModuleCount($injector: IInjectorService): number {
   return $injector.has(DOWNGRADED_MODULE_COUNT_KEY) ? $injector.get(DOWNGRADED_MODULE_COUNT_KEY) :
                                                       0;
 }
 
-export function getUpgradeAppType($injector: angular.IInjectorService): UpgradeAppType {
+export function getUpgradeAppType($injector: IInjectorService): UpgradeAppType {
   return $injector.has(UPGRADE_APP_TYPE_KEY) ? $injector.get(UPGRADE_APP_TYPE_KEY) :
                                                UpgradeAppType.None;
 }
@@ -53,7 +54,7 @@ export function isFunction(value: any): value is Function {
 }
 
 export function validateInjectionKey(
-    $injector: angular.IInjectorService, downgradedModule: string, injectionKey: string,
+    $injector: IInjectorService, downgradedModule: string, injectionKey: string,
     attemptedAction: string): void {
   const upgradeAppType = getUpgradeAppType($injector);
   const downgradedModuleCount = getDowngradedModuleCount($injector);
@@ -141,7 +142,7 @@ function supportsNgModel(component: any) {
  * Glue the AngularJS `NgModelController` (if it exists) to the component
  * (if it implements the needed subset of the `ControlValueAccessor` interface).
  */
-export function hookupNgModel(ngModel: angular.INgModelController, component: any) {
+export function hookupNgModel(ngModel: INgModelController, component: any) {
   if (ngModel && supportsNgModel(component)) {
     ngModel.$render = () => { component.writeValue(ngModel.$viewValue); };
     component.registerOnChange(ngModel.$setViewValue.bind(ngModel));
