@@ -75,13 +75,22 @@ function createTestSupportFor(basePath: string) {
     shouldNotExist
   };
 
-  function write(fileName: string, content: string) {
-    const dir = path.dirname(fileName);
-    if (dir != '.') {
-      const newDir = path.resolve(basePath, dir);
-      if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
+  function ensureDirExists(absolutePathToDir: string) {
+    if (fs.existsSync(absolutePathToDir)) {
+      if (!fs.statSync(absolutePathToDir).isDirectory()) {
+        throw new Error(`'${absolutePathToDir}' exists and is not a directory.`);
+      }
+    } else {
+      const parentDir = path.dirname(absolutePathToDir);
+      ensureDirExists(parentDir);
+      fs.mkdirSync(absolutePathToDir);
     }
-    fs.writeFileSync(path.resolve(basePath, fileName), content, {encoding: 'utf-8'});
+  }
+
+  function write(fileName: string, content: string) {
+    const absolutePathToFile = path.resolve(basePath, fileName);
+    ensureDirExists(path.dirname(absolutePathToFile));
+    fs.writeFileSync(absolutePathToFile, content);
   }
 
   function writeFiles(...mockDirs: {[fileName: string]: string}[]) {

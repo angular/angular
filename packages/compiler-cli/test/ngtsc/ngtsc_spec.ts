@@ -2119,6 +2119,69 @@ describe('ngtsc behavioral tests', () => {
               './lazy#LazyModule', /\/test\.ts$/, 'TestModule', /\/lazy\.ts$/, 'LazyModule'),
         ]);
       });
+
+      it('should detect lazy routes in all root directories', () => {
+        env.tsconfig({}, ['./foo/other-root-dir', './bar/other-root-dir']);
+        env.write('src/test.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forRoot([
+                {path: '', loadChildren: './lazy-foo#LazyFooModule'},
+              ]),
+            ],
+          })
+          export class TestModule {}
+        `);
+        env.write('foo/other-root-dir/src/lazy-foo.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forChild([
+                {path: '', loadChildren: './lazy-bar#LazyBarModule'},
+              ]),
+            ],
+          })
+          export class LazyFooModule {}
+        `);
+        env.write('bar/other-root-dir/src/lazy-bar.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forChild([
+                {path: '', loadChildren: './lazier-bar#LazierBarModule'},
+              ]),
+            ],
+          })
+          export class LazyBarModule {}
+        `);
+        env.write('bar/other-root-dir/src/lazier-bar.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class LazierBarModule {}
+        `);
+
+        const routes = env.driveRoutes();
+
+        expect(routes).toEqual([
+          lazyRouteMatching(
+              './lazy-foo#LazyFooModule', /\/test\.ts$/, 'TestModule',
+              /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/, 'LazyFooModule'),
+          lazyRouteMatching(
+              './lazy-bar#LazyBarModule', /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/,
+              'LazyFooModule', /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/, 'LazyBarModule'),
+          lazyRouteMatching(
+              './lazier-bar#LazierBarModule', /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/,
+              'LazyBarModule', /\/bar\/other-root-dir\/src\/lazier-bar\.ts$/, 'LazierBarModule'),
+        ]);
+      });
     });
 
     describe('when called with entry module', () => {
@@ -2409,6 +2472,69 @@ describe('ngtsc behavioral tests', () => {
           lazyRouteMatching(
               '../lazier/lazier#LazierModule', /\/lazy\/lazy\.ts$/, 'LazyModule',
               /\/lazier\/lazier\.ts$/, 'LazierModule'),
+        ]);
+      });
+
+      it('should detect lazy routes in all root directories', () => {
+        env.tsconfig({}, ['./foo/other-root-dir', './bar/other-root-dir']);
+        env.write('src/test.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forRoot([
+                {path: '', loadChildren: './lazy-foo#LazyFooModule'},
+              ]),
+            ],
+          })
+          export class TestModule {}
+        `);
+        env.write('foo/other-root-dir/src/lazy-foo.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forChild([
+                {path: '', loadChildren: './lazy-bar#LazyBarModule'},
+              ]),
+            ],
+          })
+          export class LazyFooModule {}
+        `);
+        env.write('bar/other-root-dir/src/lazy-bar.ts', `
+          import {NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+
+          @NgModule({
+            imports: [
+              RouterModule.forChild([
+                {path: '', loadChildren: './lazier-bar#LazierBarModule'},
+              ]),
+            ],
+          })
+          export class LazyBarModule {}
+        `);
+        env.write('bar/other-root-dir/src/lazier-bar.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({})
+          export class LazierBarModule {}
+        `);
+
+        const routes = env.driveRoutes(path.join(env.basePath, 'src/test#TestModule'));
+
+        expect(routes).toEqual([
+          lazyRouteMatching(
+              './lazy-foo#LazyFooModule', /\/test\.ts$/, 'TestModule',
+              /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/, 'LazyFooModule'),
+          lazyRouteMatching(
+              './lazy-bar#LazyBarModule', /\/foo\/other-root-dir\/src\/lazy-foo\.ts$/,
+              'LazyFooModule', /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/, 'LazyBarModule'),
+          lazyRouteMatching(
+              './lazier-bar#LazierBarModule', /\/bar\/other-root-dir\/src\/lazy-bar\.ts$/,
+              'LazyBarModule', /\/bar\/other-root-dir\/src\/lazier-bar\.ts$/, 'LazierBarModule'),
         ]);
       });
 
