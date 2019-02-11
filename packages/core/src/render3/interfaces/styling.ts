@@ -45,8 +45,8 @@ import {PlayerContext} from './player';
  * 2. elementHostAttrs (for directive host bindings)
  *
  * In either case, a styling context will be created and stored within an element's `LViewData`.
- * Once the styling context is created then single and multi properties can stored within it. For
- * this to happen, the following function needs to be called:
+ * Once the styling context is created then single and multi properties can be stored within it.
+ * For this to happen, the following function needs to be called:
  *
  * `elementStyling` (called with style properties, class properties and a sanitizer + a directive
  * instance).
@@ -182,14 +182,14 @@ import {PlayerContext} from './player';
  * rule:
  *
  * 1. If the template binding has a value then it always wins
- * 2. If not then whichever first-registered directive that has that value first will win
+ * 2. Otherwise whichever first-registered directive that has that value first will win
  *
  * The code example helps make this clear:
  *
  * ```
  * <!--
  * <div [style.width]="myWidth"
- *      [my-width-directive]="'600px">
+ *      [my-width-directive]="'600px'">
  * -->
  *
  * @Directive({
@@ -231,7 +231,7 @@ import {PlayerContext} from './player';
  * bindings, but this process works by diffing the new multi-level values (which are key/value
  * maps) against the existing set of styles that live in the context. Each time a new map value
  * is detected (via identity check) then it will loop through the values and figure out what
- * has changed and reorder the context array to match the ordering of the keys. This reodering
+ * has changed and reorder the context array to match the ordering of the keys. This reordering
  * of the context makes sure that follow-up traversals of the context when updated against the
  * key/value map are as close as possible to o(n) (where "n" is the size of the key/value map).
  *
@@ -331,7 +331,7 @@ export interface InitialStylingValues extends Array<string|boolean|null> {
  *
  * Used as a reference point to provide markers to all static styling
  * values (the initial style and class values on an element) within an
- * array within the [StylingContext]. This array contains key/value pairs
+ * array within the `StylingContext`. This array contains key/value pairs
  * where the key is the style property name or className and the value is
  * the style value or whether or not a class is present on the elment.
  *

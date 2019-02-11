@@ -111,11 +111,11 @@ export function isAnimationProp(name: string): boolean {
 }
 
 export function hasClassInput(tNode: TNode) {
-  return tNode.flags & TNodeFlags.hasClassInput ? true : false;
+  return (tNode.flags & TNodeFlags.hasClassInput) !== 0;
 }
 
 export function hasStyleInput(tNode: TNode) {
-  return tNode.flags & TNodeFlags.hasStyleInput ? true : false;
+  return (tNode.flags & TNodeFlags.hasStyleInput) !== 0;
 }
 
 export function forceClassesAsString(classes: string | {[key: string]: any} | null | undefined):

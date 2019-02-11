@@ -660,12 +660,12 @@ export function updateStylingMap(
  * than the second one. It is with this prioritzation mechanism that the styling algorithm knows how
  * to merge and apply redudant styling properties.
  *
- * The function itself applies the key/value entries (or a array of keys) to
+ * The function itself applies the key/value entries (or an array of keys) to
  * the context in the following steps.
  *
  * STEP 1:
  *    First check to see what properties are already set and in use by another directive in the
- *    context (e.g. `ngClass` set the `width` value and not `[style.width]="w"` in a directive is
+ *    context (e.g. `ngClass` set the `width` value and `[style.width]="w"` in a directive is
  *    attempting to set it as well).
  *
  * STEP 2:
@@ -1634,12 +1634,6 @@ function getDirectiveIndexFromRegistry(context: StylingContext, directive: any) 
           `The provided directive ${directive} has not been allocated to the element\'s style/class bindings`);
   return index > 0 ? index / DirectiveRegistryValuesIndex.Size : 0;
   // return index / DirectiveRegistryValuesIndex.Size;
-}
-
-function isMapBasedDirectiveDirty(directiveIndex: number): boolean {
-  const index = MapBasedOffsetValuesIndex.ValuesStartPosition +
-      directiveIndex * MapBasedOffsetValuesIndex.Size;
-  return false;
 }
 
 function getDirectiveRegistryValuesIndexOf(

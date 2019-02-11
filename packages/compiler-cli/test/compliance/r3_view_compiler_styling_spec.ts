@@ -1062,7 +1062,7 @@ describe('compiler compliance: styling', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should generate override instructions for only single-level styling bindings when !override is present',
+    it('should generate override instructions for only single-level styling bindings when !important is present',
        () => {
          const files = {
            app: {
@@ -1072,21 +1072,21 @@ describe('compiler compliance: styling', () => {
                 @Component({
                   selector: 'my-component',
                   template: \`
-                    <div [style!override]="myStyleExp"
-                         [class!override]="myClassExp"
-                         [style.height!override]="myHeightExp"
-                         [class.bar!override]="myBarClassExp"></div>
+                    <div [style!important]="myStyleExp"
+                         [class!important]="myClassExp"
+                         [style.height!important]="myHeightExp"
+                         [class.bar!important]="myBarClassExp"></div>
                   \`,
                   host: {
-                    '[style!override]': 'myStyleExp',
-                    '[class!override]': 'myClassExp'
+                    '[style!important]': 'myStyleExp',
+                    '[class!important]': 'myClassExp'
                   }
                 })
                 export class MyComponent {
-                  @HostBinding('class.foo!override')
+                  @HostBinding('class.foo!important')
                   myFooClassExp = true;
 
-                  @HostBinding('style.width!override')
+                  @HostBinding('style.width!important')
                   myWidthExp = '100px';
 
                   myBarClassExp = true;

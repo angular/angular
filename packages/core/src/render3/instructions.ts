@@ -1083,11 +1083,11 @@ export function elementEnd(): void {
   // can get access to the function array below and defer any code
   // to run after the element is created.
   let fns: Function[]|null;
-  if (fns = previousOrParentTNode.creationInstructionFns) {
+  if (fns = previousOrParentTNode.onElementCreationFns) {
     for (let i = 0; i < fns.length; i++) {
       fns[i]();
     }
-    previousOrParentTNode.creationInstructionFns = null;
+    previousOrParentTNode.onElementCreationFns = null;
   }
 
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Element);
@@ -1322,7 +1322,7 @@ export function createTNode(
     parent: tParent,
     stylingTemplate: null,
     projection: null,
-    creationInstructionFns: null,
+    onElementCreationFns: null,
   };
 }
 
@@ -1446,7 +1446,7 @@ export function elementStyling(
     // any static styling values))
     allocateDirectiveIntoContext(tNode.stylingTemplate, directive);
 
-    const fns = tNode.creationInstructionFns = tNode.creationInstructionFns || [];
+    const fns = tNode.onElementCreationFns = tNode.onElementCreationFns || [];
     fns.push(
         () => initElementStyling(
             tNode, classBindingNames, styleBindingNames, styleSanitizer, directive));

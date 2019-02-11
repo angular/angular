@@ -16,7 +16,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {parse as parseStyle} from './style_parser';
 import {ValueConverter} from './template';
 
-const OVERRIDE_FLAG = '!override';
+const IMPORTANT_FLAG = '!important';
 
 /**
  * A styling expression summary that is to be processed by the compiler
@@ -516,7 +516,7 @@ function addParam(
 export function parseProperty(name: string):
     {property: string, unit: string, hasOverrideFlag: boolean} {
   let hasOverrideFlag = false;
-  const overrideIndex = name.indexOf(OVERRIDE_FLAG);
+  const overrideIndex = name.indexOf(IMPORTANT_FLAG);
   if (overrideIndex !== -1) {
     name = overrideIndex > 0 ? name.substring(0, overrideIndex) : '';
     hasOverrideFlag = true;
