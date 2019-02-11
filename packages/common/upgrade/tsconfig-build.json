@@ -1,0 +1,32 @@
+{
+  "extends": "../tsconfig-build.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "../",
+    "paths": {
+      "@angular/common": [
+        "../../../dist/packages/common"
+      ],
+      "@angular/core": [
+        "../../../dist/packages/core"
+      ],
+      "@angular/platform-browser": [
+        "../../../dist/packages/platform-browser"
+      ],
+      "@angular/upgrade/static": [
+        "../../../dist/packages/upgrade/static"
+      ]
+    },
+    "outDir": "../../../dist/packages/common"
+  },
+  "files": [
+    "public_api.ts"
+  ],
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "upgrade.js",
+    "flatModuleId": "@angular/common/upgrade"
+  }
+}
