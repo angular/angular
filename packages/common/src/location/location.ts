@@ -24,12 +24,12 @@ export interface PopStateEvent {
  *
  * A service that applications can use to interact with a browser's URL.
  *
- * Depending on which {@link LocationStrategy} is used, `Location` will either persist
+ * Depending on the {@link LocationStrategy} used, `Location` will either persist
  * to the URL's path or the URL's hash segment.
  *
  * @usageNotes
  *
- * It's better to use {@link Router#navigate} service to trigger route changes. Use
+ * It's better to use the {@link Router#navigate} service to trigger route changes. Use
  * `Location` only if you need to interact with or create normalized URLs outside of
  * routing.
  *
@@ -88,7 +88,7 @@ export class Location {
    * @param path The given URL path
    * @param query Query parameters
    *
-   * @returns True if the given URL path is equal to  the current normalized path, false
+   * @returns `true` if the given URL path is equal to the current normalized path, `false`
    * otherwise.
    */
   isCurrentPathEqualTo(path: string, query: string = ''): boolean {
@@ -162,7 +162,7 @@ export class Location {
   back(): void { this._platformStrategy.back(); }
 
   /**
-   * Subscribe to the platform's popState` events.
+   * Subscribe to the platform's `popState` events.
    *
    * @param value Event that is triggered when the state history changes.
    * @param exception The exception to throw.
@@ -188,7 +188,7 @@ export class Location {
   }
 
   /**
-   * Given 2 parts of an url, join them with a slash if needed.
+   * Given 2 parts of a URL, join them with a slash if needed.
    *
    * @param start  URL string
    * @param end    URL string
@@ -226,7 +226,7 @@ export class Location {
    *
    * @param url URL string
    *
-   * @returns returns URL string after removing the trailing slash if one exists, otherwise
+   * @returns Returns a URL string after removing the trailing slash if one exists, otherwise
    * returns the string as is.
    */
   public static stripTrailingSlash(url: string): string {
