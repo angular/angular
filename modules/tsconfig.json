@@ -45,6 +45,7 @@
     "payload_tests",
     // Tests which are already migrated to Bazel:
     "playground/",
+    "benchmarks/src/largetable",
     "benchmarks/src/tree"
   ],
   "angularCompilerOptions": {
