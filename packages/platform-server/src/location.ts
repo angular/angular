@@ -32,6 +32,7 @@ function parseUrl(urlStr: string) {
  */
 @Injectable()
 export class ServerPlatformLocation implements PlatformLocation {
+  public readonly href: string = '/';
   public readonly hostname: string = '/';
   public readonly protocol: string = '/';
   public readonly port: string = '/';
