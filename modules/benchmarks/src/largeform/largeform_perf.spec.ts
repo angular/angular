@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {runBenchmark, verifyNoBrowserErrors} from 'e2e_util/perf_util';
-import {$} from 'protractor';
+import {$, By, element} from 'protractor';
+
+import {openBrowser, verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
+import {runBenchmark} from '../../../e2e_util/perf_util';
 
 interface Worker {
   id: string;
@@ -15,7 +17,7 @@ interface Worker {
   work(): void;
 }
 
-const CreateAndDestroyWorker: Worker = {
+const CreateAndDestroyWorker = {
   id: 'createDestroy',
   work: () => {
     $('#createDom').click();
@@ -23,18 +25,28 @@ const CreateAndDestroyWorker: Worker = {
   }
 };
 
-describe('largeform benchmark perf', () => {
+describe('largeform benchmark spec', () => {
 
   afterEach(verifyNoBrowserErrors);
+
+  it('should work for ng2', () => {
+    openBrowser({
+      url: '/',
+      params: [{name: 'copies', value: 1}],
+      ignoreBrowserSynchronization: true,
+    });
+    $('#createDom').click();
+    expect(element.all(By.css('input[name=value0]')).get(0).getAttribute('value'))
+        .toBe('someValue0');
+    $('#destroyDom').click();
+    expect(element.all(By.css('input[name=value0]')).count()).toBe(0);
+  });
 
   [CreateAndDestroyWorker].forEach((worker) => {
     describe(worker.id, () => {
       it('should run for ng2', done => {
-        runLargeFormBenchmark({
-          id: `largeform.ng2.${worker.id}`,
-          url: 'all/benchmarks/src/largeform/ng2/index.html',
-          worker: worker
-        }).then(done, done.fail);
+        runLargeFormBenchmark({url: '/', id: `largeform.ng2.${worker.id}`, worker: worker})
+            .then(done, done.fail);
       });
     });
   });
