@@ -377,7 +377,10 @@ export declare class PercentPipe implements PipeTransform {
 
 export declare abstract class PlatformLocation {
     abstract readonly hash: string;
+    abstract readonly hostname: string;
     abstract readonly pathname: string;
+    abstract readonly port: string;
+    abstract readonly protocol: string;
     abstract readonly search: string;
     abstract back(): void;
     abstract forward(): void;
