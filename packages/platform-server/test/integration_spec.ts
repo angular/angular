@@ -516,6 +516,22 @@ class HiddenModule {
               expect(location.hash).toBe('#hash');
             });
       });
+      it('parses component pieces of a URL', () => {
+        platformDynamicServer([{
+          provide: INITIAL_CONFIG,
+          useValue: {document: '<app></app>', url: 'http://test.com:80/deep/path?query#hash'}
+        }])
+            .bootstrapModule(ExampleModule)
+            .then(appRef => {
+              const location: PlatformLocation = appRef.injector.get(PlatformLocation);
+              expect(location.hostname).toBe('test.com');
+              expect(location.protocol).toBe('http:');
+              expect(location.port).toBe('80');
+              expect(location.pathname).toBe('/deep/path');
+              expect(location.search).toBe('?query');
+              expect(location.hash).toBe('#hash');
+            });
+      });
       it('handles empty search and hash portions of the url', () => {
         platformDynamicServer([{
           provide: INITIAL_CONFIG,
