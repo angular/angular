@@ -11,9 +11,9 @@ import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detec
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
-import {checkNoChanges, checkNoChangesInRootView, checkView, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
+import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions';
 import {TNode, TNodeType, TViewNode} from './interfaces/node';
-import {FLAGS, HOST, LView, LViewFlags, PARENT, RENDERER_FACTORY, T_HOST} from './interfaces/view';
+import {FLAGS, HOST, LView, LViewFlags, PARENT, T_HOST} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
 import {getNativeByTNode} from './util';
 
@@ -252,7 +252,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * This is used in development mode to verify that running change detection doesn't
    * introduce other changes.
    */
-  checkNoChanges(): void { checkNoChanges(this.context); }
+  checkNoChanges(): void { checkNoChangesInternal(this._lView, this.context); }
 
   attachToViewContainerRef(vcRef: viewEngine_ViewContainerRef) {
     if (this._appRef) {
