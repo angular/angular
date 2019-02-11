@@ -70,12 +70,12 @@
     source-map-support "0.5.9"
     tsutils "2.27.2"
 
-"@microsoft/api-extractor@^7.0.11":
-  version "7.0.14"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.0.14.tgz#cc137b203cb5ad1bcca1e9bdf32d2593f867437b"
-  integrity sha512-ZKieNJBQLJx+5c4DrpTbRw8wuiAvffZesZs3HFBlUz1DSr23A2JrD+obqe07iRCXymSYSDp4Nh5wN9JydnR/Rw==
+"@microsoft/api-extractor@^7.0.17":
+  version "7.0.17"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.0.17.tgz#fadb376908a57144ba4a8eb18787d6337bfe6b56"
+  integrity sha512-Mm+6x5/1HRAKno0vow4DyMKcVtB+b6wehMUx21huN+FSpfxID5kAEqKw9OR9XCp7YBXjiISqFBlY4dVYq/bdCw==
   dependencies:
-    "@microsoft/node-core-library" "3.9.0"
+    "@microsoft/node-core-library" "3.10.0"
     "@microsoft/ts-command-line" "4.2.3"
     "@microsoft/tsdoc" "0.12.5"
     "@types/node" "8.5.8"
@@ -86,10 +86,10 @@
     typescript "~3.1.6"
     z-schema "~3.18.3"
 
-"@microsoft/node-core-library@3.9.0":
-  version "3.9.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.9.0.tgz#a999c15c45707bfd5e2329518e00cb2c8d33b55c"
-  integrity sha512-zmP6zNddcIrRXbg8NX9oHX2iCBLU9hZF/+7GeUi3hLbp13xMDHfdT4KepoT+8ZMOMZzRF1lcqiTiVy24VYvCEg==
+"@microsoft/node-core-library@3.10.0":
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.10.0.tgz#70e089534d8e20f6a0f9c7a4a12a6aeafd6a1ddb"
+  integrity sha512-1SbU+XNYAabhV9noGXHtsUVPc5ELV+oEuJQtZQoCncbOd6WAMeTgB1xFwh96hmdEXyKQyML/pnByiKocmh/nbQ==
   dependencies:
     "@types/fs-extra" "5.0.4"
     "@types/jju" "~1.4.0"

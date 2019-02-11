@@ -248,10 +248,10 @@
     through2 "^2.0.0"
     xdg-basedir "^3.0.0"
 
-"@microsoft/api-extractor@^7.0.11":
-  version "7.0.15"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.0.15.tgz#58a0fe18b72e648e4b38f5666e5db8a6c14977bf"
-  integrity sha512-C9HqdZ8LzkYno0BsllyvezsBfDeyNLntkF3fAIF90wPG322NUkAIOGvU127aVjcfPVNmt2a/oOkOy8k9N2bQwQ==
+"@microsoft/api-extractor@^7.0.17":
+  version "7.0.17"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.0.17.tgz#fadb376908a57144ba4a8eb18787d6337bfe6b56"
+  integrity sha512-Mm+6x5/1HRAKno0vow4DyMKcVtB+b6wehMUx21huN+FSpfxID5kAEqKw9OR9XCp7YBXjiISqFBlY4dVYq/bdCw==
   dependencies:
     "@microsoft/node-core-library" "3.10.0"
     "@microsoft/ts-command-line" "4.2.3"
