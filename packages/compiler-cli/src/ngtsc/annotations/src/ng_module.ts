@@ -134,6 +134,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       exports: exports.map(exp => this._toR3Reference(exp, valueContext, typeContext)),
       imports: imports.map(imp => this._toR3Reference(imp, valueContext, typeContext)),
       emitInline: false,
+      // TODO: to be implemented as a part of FW-1004.
+      schemas: [],
     };
 
     const providers: Expression = ngModule.has('providers') ?

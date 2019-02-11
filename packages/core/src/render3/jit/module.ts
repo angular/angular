@@ -115,6 +115,7 @@ export function compileNgModuleDefs(moduleType: NgModuleType, ngModule: NgModule
               exports: flatten(ngModule.exports || EMPTY_ARRAY, resolveForwardRef)
                            .map(expandModuleWithProviders),
               emitInline: true,
+              schemas: ngModule.schemas ? flatten(ngModule.schemas) : null,
             });
       }
       return ngModuleDef;
@@ -353,6 +354,7 @@ export function patchComponentDefWithScope<C>(
           .filter(def => !!def);
   componentDef.pipeDefs = () =>
       Array.from(transitiveScopes.compilation.pipes).map(pipe => getPipeDef(pipe) !);
+  componentDef.schemas = transitiveScopes.schemas;
 }
 
 /**
@@ -375,6 +377,7 @@ export function transitiveScopesFor<T>(
   }
 
   const scopes: NgModuleTransitiveScopes = {
+    schemas: def.schemas || null,
     compilation: {
       directives: new Set<any>(),
       pipes: new Set<any>(),

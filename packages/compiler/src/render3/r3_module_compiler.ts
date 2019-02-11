@@ -57,13 +57,18 @@ export interface R3NgModuleMetadata {
    * does not allow components to be tree-shaken, but is useful for JIT mode.
    */
   emitInline: boolean;
+
+  /**
+   * The set of schemas that declare elements to be allowed in the NgModule.
+   */
+  schemas: R3Reference[]|null;
 }
 
 /**
  * Construct an `R3NgModuleDef` for the given `R3NgModuleMetadata`.
  */
 export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
-  const {type: moduleType, bootstrap, declarations, imports, exports} = meta;
+  const {type: moduleType, bootstrap, declarations, imports, exports, schemas} = meta;
   const definitionMap = {
     type: moduleType
   } as{
@@ -71,7 +76,8 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     bootstrap: o.LiteralArrayExpr,
     declarations: o.LiteralArrayExpr,
     imports: o.LiteralArrayExpr,
-    exports: o.LiteralArrayExpr
+    exports: o.LiteralArrayExpr,
+    schemas: o.LiteralArrayExpr
   };
 
   // Only generate the keys in the metadata if the arrays have values.
@@ -89,6 +95,10 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
 
   if (exports.length) {
     definitionMap.exports = o.literalArr(exports.map(ref => ref.value));
+  }
+
+  if (schemas && schemas.length) {
+    definitionMap.schemas = o.literalArr(schemas.map(ref => ref.value));
   }
 
   const expression = o.importExpr(R3.defineNgModule).callFn([mapToMapExpression(definitionMap)]);

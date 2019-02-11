@@ -11,6 +11,7 @@ import '../util/ng_dev_mode';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Mutable, Type} from '../interface/type';
 import {NgModuleDef} from '../metadata/ng_module';
+import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
 import {stringify} from '../util/stringify';
@@ -234,6 +235,11 @@ export function defineComponent<T>(componentDefinition: {
    * `PipeDefs`s. The function is necessary to be able to support forward declarations.
    */
   pipes?: PipeTypesOrFactory | null;
+
+  /**
+   * The set of schemas that declare elements to be allowed in the component's template.
+   */
+  schemas?: SchemaMetadata[] | null;
 }): never {
   const type = componentDefinition.type;
   const typePrototype = type.prototype;
@@ -274,6 +280,7 @@ export function defineComponent<T>(componentDefinition: {
     styles: componentDefinition.styles || EMPTY_ARRAY,
     _: null as never,
     setInput: null,
+    schemas: componentDefinition.schemas || null,
   };
   def._ = noSideEffects(() => {
     const directiveTypes = componentDefinition.directives !;
@@ -326,6 +333,7 @@ export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): nev
     imports: def.imports || EMPTY_ARRAY,
     exports: def.exports || EMPTY_ARRAY,
     transitiveCompileScopes: null,
+    schemas: def.schemas || null,
   };
   return res as never;
 }

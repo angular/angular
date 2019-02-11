@@ -122,7 +122,7 @@ export function renderComponent<T>(
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
   const rootView: LView = createLView(
-      null, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags, null, null,
+      null, createTView(-1, null, 1, 0, null, null, null, null), rootContext, rootFlags, null, null,
       rendererFactory, renderer, undefined, opts.injector || null);
 
   const oldView = enterView(rootView, null);
@@ -165,9 +165,9 @@ export function createRootComponentView(
   const tView = rootView[TVIEW];
   const tNode: TElementNode = createNodeAtIndex(0, TNodeType.Element, rNode, null, null);
   const componentView = createLView(
-      rootView,
-      getOrCreateTView(
-          def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery),
+      rootView, getOrCreateTView(
+                    def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs,
+                    def.viewQuery, def.schemas),
       null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[HEADER_OFFSET], tNode,
       rendererFactory, renderer, sanitizer);
 
