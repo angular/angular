@@ -49,6 +49,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
     getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('hashchange', fn, false);
   }
 
+  get href(): string { return this.location.href; }
   get protocol(): string { return this.location.protocol; }
   get hostname(): string { return this.location.hostname; }
   get port(): string { return this.location.port; }
