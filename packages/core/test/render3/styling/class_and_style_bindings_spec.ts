@@ -34,8 +34,8 @@ describe('style and class based bindings', () => {
     const rootContext =
         createRootContext(requestAnimationFrame.bind(window), playerHandler || null);
     const lView = createLView(
-        null, createTView(-1, null, 1, 0, null, null, null), rootContext, LViewFlags.IsRoot, null,
-        null, domRendererFactory3, domRendererFactory3.createRenderer(element, null));
+        null, createTView(-1, null, 1, 0, null, null, null, null), rootContext, LViewFlags.IsRoot,
+        null, null, domRendererFactory3, domRendererFactory3.createRenderer(element, null));
     return lView;
   }
 
