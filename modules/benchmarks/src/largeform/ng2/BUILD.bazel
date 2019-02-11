@@ -4,19 +4,20 @@ load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-# Note that this benchmark has been designed for Angular with ViewEngine, but once
-# ViewEngine is removed, we should should consider removing this one since there
-# already is a "render3" benchmark.
+# Note that this benchmark has been designed for Angular with ViewEngine, but once ViewEngine is
+# removed, we should keep this benchmark and run it with Ivy (potentially rename it to "render3")
 ng_module(
     name = "ng2",
     srcs = glob(["*.ts"]),
+    # FIXME-IVY(FW-998): ExpressionTranslatorVisitor#visitWriteKeyExpr is not implemented.
+    tags = ["fixme-ivy-aot"],
     tsconfig = "//modules/benchmarks:tsconfig-build.json",
     # TODO: FW-1004 Type checking is currently not complete.
     type_check = False,
     deps = [
         "//modules/benchmarks/src:util_lib",
-        "//modules/benchmarks/src/tree:util_lib",
         "//packages/core",
+        "//packages/forms",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
     ],
@@ -24,7 +25,7 @@ ng_module(
 
 ts_devserver(
     name = "devserver",
-    entry_module = "angular/modules/benchmarks/src/tree/ng2/index",
+    entry_module = "angular/modules/benchmarks/src/largeform/ng2/index",
     index_html = "index.html",
     port = 4200,
     scripts = ["@ngdeps//node_modules/tslib:tslib.js"],
@@ -32,14 +33,13 @@ ts_devserver(
         "@ngdeps//node_modules/zone.js:dist/zone.js",
         "@ngdeps//node_modules/reflect-metadata:Reflect.js",
     ],
+    tags = ["fixme-ivy-aot"],
     deps = [":ng2"],
 )
 
 benchmark_test(
     name = "perf",
     server = ":devserver",
-    deps = [
-        "//modules/benchmarks/src/tree:perf_detect_changes_lib",
-        "//modules/benchmarks/src/tree:perf_lib",
-    ],
+    tags = ["fixme-ivy-aot"],
+    deps = ["//modules/benchmarks/src/largeform:tests_lib"],
 )
