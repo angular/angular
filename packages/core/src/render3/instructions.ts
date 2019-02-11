@@ -2751,7 +2751,7 @@ function tickRootContext(rootContext: RootContext) {
  * @param component The component which the change detection should be performed on.
  */
 export function detectChanges<T>(component: T): void {
-  const view = getComponentViewByInstance(component) !;
+  const view = getComponentViewByInstance(component);
   detectChangesInternal<T>(view, component);
 }
 
@@ -2790,9 +2790,14 @@ export function detectChangesInRootView(lView: LView): void {
  * introduce other changes.
  */
 export function checkNoChanges<T>(component: T): void {
+  const view = getComponentViewByInstance(component);
+  checkNoChangesInternal<T>(view, component);
+}
+
+export function checkNoChangesInternal<T>(view: LView, context: T) {
   setCheckNoChangesMode(true);
   try {
-    detectChanges(component);
+    detectChangesInternal(view, context);
   } finally {
     setCheckNoChangesMode(false);
   }
