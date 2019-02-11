@@ -10,6 +10,7 @@ import {InjectFlags, InjectionToken, Injector} from '../di';
 import {resolveForwardRef} from '../di/forward_ref';
 import {ErrorHandler} from '../error_handler';
 import {Type} from '../interface/type';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../metadata';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../sanitization/sanitization';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
@@ -728,12 +729,14 @@ function saveResolvedLocalsInData(
  * @param vars The number of bindings and pure function bindings in this view
  * @param directives Directive defs that should be saved on TView
  * @param pipes Pipe defs that should be saved on TView
+ * @param viewQuery View query that should be saved on TView
+ * @param schemas Schemas that should be saved on TView
  * @returns TView
  */
 export function getOrCreateTView(
     templateFn: ComponentTemplate<any>, consts: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
-    viewQuery: ViewQueriesFunction<any>| null): TView {
+    viewQuery: ViewQueriesFunction<any>| null, schemas?: SchemaMetadata[] | null): TView {
   // TODO(misko): reading `ngPrivateData` here is problematic for two reasons
   // 1. It is a megamorphic call on each invocation.
   // 2. For nested embedded views (ngFor inside ngFor) the template instance is per
@@ -742,8 +745,8 @@ export function getOrCreateTView(
   // and not on embedded templates.
 
   return templateFn.ngPrivateData ||
-      (templateFn.ngPrivateData =
-           createTView(-1, templateFn, consts, vars, directives, pipes, viewQuery) as never);
+      (templateFn.ngPrivateData = createTView(
+           -1, templateFn, consts, vars, directives, pipes, viewQuery, schemas) as never);
 }
 
 /**
@@ -754,11 +757,13 @@ export function getOrCreateTView(
  * @param consts The number of nodes, local refs, and pipes in this template
  * @param directives Registry of directives for this view
  * @param pipes Registry of pipes for this view
+ * @param viewQuery View queries for this view
+ * @param schemas Schemas for this view
  */
 export function createTView(
     viewIndex: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
-    viewQuery: ViewQueriesFunction<any>| null): TView {
+    viewQuery: ViewQueriesFunction<any>| null, schemas?: SchemaMetadata[] | null): TView {
   ngDevMode && ngDevMode.tView++;
   const bindingStartIndex = HEADER_OFFSET + consts;
   // This length does not yet contain host bindings from child directives because at this point,
@@ -792,6 +797,7 @@ export function createTView(
     directiveRegistry: typeof directives === 'function' ? directives() : directives,
     pipeRegistry: typeof pipes === 'function' ? pipes() : pipes,
     firstChild: null,
+    schemas: schemas,
   };
 }
 
@@ -1227,7 +1233,7 @@ function elementPropertyInternal<T>(
   } else if (tNode.type === TNodeType.Element) {
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
-      validateAgainstUnknownProperties(element, propName, tNode);
+      validateAgainstUnknownProperties(lView, element, propName, tNode);
       ngDevMode.rendererSetProperty++;
     }
 
@@ -1247,7 +1253,21 @@ function elementPropertyInternal<T>(
 }
 
 function validateAgainstUnknownProperties(
-    element: RElement | RComment, propName: string, tNode: TNode) {
+    hostView: LView, element: RElement | RComment, propName: string, tNode: TNode) {
+  const schemas = hostView[TVIEW].schemas;
+  const tagName = tNode.tagName;
+
+  // If there are schemas and the element matches any of the schemas, we shouldn't throw.
+  if (schemas) {
+    for (let i = 0; i < schemas.length; i++) {
+      const schema = schemas[i];
+      if (schema === NO_ERRORS_SCHEMA ||
+          schema === CUSTOM_ELEMENTS_SCHEMA && tagName && tagName.indexOf('-') > -1) {
+        return;
+      }
+    }
+  }
+
   // If prop is not a known property of the HTML element...
   if (!(propName in element) &&
       // and we are in a browser context... (web worker nodes should be skipped)
@@ -1256,7 +1276,7 @@ function validateAgainstUnknownProperties(
       propName[0] !== ANIMATION_PROP_PREFIX) {
     // ... it is probably a user error and we should throw.
     throw new Error(
-        `Template error: Can't bind to '${propName}' since it isn't a known property of '${tNode.tagName}'.`);
+        `Template error: Can't bind to '${propName}' since it isn't a known property of '${tagName}'.`);
   }
 }
 
@@ -2043,7 +2063,8 @@ function addComponentLogic<T>(
   const native = getNativeByTNode(previousOrParentTNode, lView);
 
   const tView = getOrCreateTView(
-      def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery);
+      def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery,
+      def.schemas);
 
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.

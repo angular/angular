@@ -28,6 +28,7 @@ import {TypeDecorator, makeDecorator} from '../util/decorators';
 export interface NgModuleTransitiveScopes {
   compilation: {directives: Set<any>; pipes: Set<any>;};
   exported: {directives: Set<any>; pipes: Set<any>;};
+  schemas?: SchemaMetadata[]|null;
 }
 
 export type NgModuleDefWithMeta<T, Declarations, Imports, Exports> = NgModuleDef<T>;
@@ -67,6 +68,9 @@ export interface NgModuleDef<T> {
    * This should never be read directly, but accessed via `transitiveScopesFor`.
    */
   transitiveCompileScopes: NgModuleTransitiveScopes|null;
+
+  /** The set of schemas that declare elements to be allowed in the NgModule. */
+  schemas?: SchemaMetadata[]|null;
 }
 
 /**

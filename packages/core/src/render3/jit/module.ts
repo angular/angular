@@ -13,7 +13,7 @@ import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {registerNgModuleType} from '../../linker/ng_module_factory_loader';
 import {Component} from '../../metadata';
-import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../../metadata/ng_module';
+import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes, SchemaMetadata} from '../../metadata/ng_module';
 import {assertDefined} from '../../util/assert';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
@@ -115,6 +115,7 @@ export function compileNgModuleDefs(moduleType: NgModuleType, ngModule: NgModule
               exports: flatten(ngModule.exports || EMPTY_ARRAY, resolveForwardRef)
                            .map(expandModuleWithProviders),
               emitInline: true,
+              schemas: ngModule.schemas && flatten(ngModule.schemas),
             });
       }
       return ngModuleDef;
@@ -353,6 +354,7 @@ export function patchComponentDefWithScope<C>(
           .filter(def => !!def);
   componentDef.pipeDefs = () =>
       Array.from(transitiveScopes.compilation.pipes).map(pipe => getPipeDef(pipe) !);
+  componentDef.schemas = transitiveScopes.schemas;
 }
 
 /**
@@ -375,6 +377,7 @@ export function transitiveScopesFor<T>(
   }
 
   const scopes: NgModuleTransitiveScopes = {
+    schemas: def.schemas,
     compilation: {
       directives: new Set<any>(),
       pipes: new Set<any>(),

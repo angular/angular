@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory, ɵivyEnabled as ivyEnabled} from '@angular/core';
+import {ANALYZE_FOR_ENTRY_COMPONENTS, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef, Compiler, Component, ComponentFactoryResolver, Directive, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, forwardRef, getModuleFactory, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {Console} from '@angular/core/src/console';
 import {InjectableDef, defineInjectable} from '@angular/core/src/di/interface/defs';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
@@ -266,22 +266,25 @@ function declareTests(config?: {useJit: boolean}) {
             expect(() => fixture.detectChanges()).toThrowError(/Can't bind to 'someUnknownProp'/);
           });
 
-      fixmeIvy('FW-819: ngtsc compiler should support schemas')
-          .it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
-              () => {
-                @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
-                class ComponentUsingInvalidProperty {
-                }
+      it('should not error on unknown bound properties on custom elements when using the CUSTOM_ELEMENTS_SCHEMA',
+         () => {
+           @Component({template: '<some-element [someUnknownProp]="true"></some-element>'})
+           class ComponentUsingInvalidProperty {
+           }
 
-                @NgModule({
-                  schemas: [CUSTOM_ELEMENTS_SCHEMA],
-                  declarations: [ComponentUsingInvalidProperty]
-                })
-                class SomeModule {
-                }
+           @NgModule({
+             schemas: [CUSTOM_ELEMENTS_SCHEMA],
+             declarations: [ComponentUsingInvalidProperty],
+             entryComponents: [ComponentUsingInvalidProperty]
+           })
+           class SomeModule {
+           }
 
-                expect(() => createModule(SomeModule)).not.toThrow();
-              });
+           expect(() => {
+             const fixture = createComp(ComponentUsingInvalidProperty, SomeModule);
+             fixture.detectChanges();
+           }).not.toThrow();
+         });
     });
 
     describe('id', () => {
