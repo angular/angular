@@ -226,7 +226,7 @@ function runE2eTestsCLI(appDir, outputFile) {
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
   const commands = config.e2e ||
-      [{cmd: 'yarn', args: ['e2e', (argv.ivy ? '--prod' : ''), '--no-webdriver-update']}];
+      [{cmd: 'yarn', args: ['e2e', '--prod', '--no-webdriver-update']}];
 
   const e2eSpawnPromise = commands.reduce((prevSpawnPromise, {cmd, args}) => {
     return prevSpawnPromise.then(() => {
