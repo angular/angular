@@ -2242,10 +2242,10 @@ This file does the following:
 
 You could also create more transitions for other routes. This trigger is sufficient for the current milestone.
 
-Back in the `AppComponent`, import the `RouterOutlet` token from the `@angular/router` package and the `slideInDownAnimation` from 
+Back in the `AppComponent`, import the `RouterOutlet` token from the `@angular/router` package and the `slideInAnimation` from 
 `'./animations.ts`.
 
-Add an `animations` array to the `@Component` metadata's that contains the `slideInDownAnimation`.
+Add an `animations` array to the `@Component` metadata's that contains the `slideInAnimation`.
 
 <code-example path="router/src/app/app.component.2.ts" linenums="false" header="src/app/app.component.ts (animations)" region="animation-imports">
 
