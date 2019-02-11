@@ -74,6 +74,8 @@ export class WebWorkerPlatformLocation extends PlatformLocation {
 
   onHashChange(fn: LocationChangeListener): void { this._hashChangeListeners.push(fn); }
 
+  get href(): string { return this._location ? this._location.href ! : '<unknown>'; }
+
   get hostname(): string { return this._location ? this._location.host ! : '<unknown>'; }
 
   get port(): string { return this._location ? this._location.port ! : '<unknown>'; }
