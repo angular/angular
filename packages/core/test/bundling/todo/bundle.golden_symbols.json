@@ -426,7 +426,7 @@
     "name": "callHooks"
   },
   {
-    "name": "checkNoChanges"
+    "name": "checkNoChangesInternal"
   },
   {
     "name": "checkNoChangesMode"
@@ -526,9 +526,6 @@
   },
   {
     "name": "detachView"
-  },
-  {
-    "name": "detectChanges"
   },
   {
     "name": "detectChangesInternal"
