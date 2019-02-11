@@ -8,7 +8,7 @@
 
 import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
 
-import * as angular from './angular1';
+import {IAttributes, IAugmentedJQuery, ICompileService, IInjectorService, INgModelController, IParseService, IScope} from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
 import {getTypeName, hookupNgModel, strictEquals} from './util';
@@ -21,7 +21,7 @@ export class DowngradeComponentAdapter {
   private implementsOnChanges = false;
   private inputChangeCount: number = 0;
   private inputChanges: SimpleChanges = {};
-  private componentScope: angular.IScope;
+  private componentScope: IScope;
   // TODO(issue/24571): remove '!'.
   private componentRef !: ComponentRef<any>;
   private component: any;
@@ -31,11 +31,10 @@ export class DowngradeComponentAdapter {
   private viewChangeDetector !: ChangeDetectorRef;
 
   constructor(
-      private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
-      private scope: angular.IScope, private ngModel: angular.INgModelController,
-      private parentInjector: Injector, private $injector: angular.IInjectorService,
-      private $compile: angular.ICompileService, private $parse: angular.IParseService,
-      private componentFactory: ComponentFactory<any>,
+      private element: IAugmentedJQuery, private attrs: IAttributes, private scope: IScope,
+      private ngModel: INgModelController, private parentInjector: Injector,
+      private $injector: IInjectorService, private $compile: ICompileService,
+      private $parse: IParseService, private componentFactory: ComponentFactory<any>,
       private wrapCallback: <T>(cb: () => T) => () => T) {
     this.componentScope = scope.$new();
   }

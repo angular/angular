@@ -7,7 +7,8 @@
  */
 
 import {DoCheck, ElementRef, EventEmitter, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges, ɵlooseIdentical as looseIdentical} from '@angular/core';
-import * as angular from '../common/angular1';
+
+import {IAttributes, IAugmentedJQuery, IDirective, IDirectivePrePost, IInjectorService, ILinkFn, IScope, ITranscludeFunction} from '../common/angular1';
 import {$SCOPE} from '../common/constants';
 import {IBindingDestination, IControllerInstance, UpgradeHelper} from '../common/upgrade_helper';
 import {isFunction} from '../common/util';
@@ -68,13 +69,13 @@ class Bindings {
 export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   private helper: UpgradeHelper;
 
-  private $injector: angular.IInjectorService;
+  private $injector: IInjectorService;
 
   private element: Element;
-  private $element: angular.IAugmentedJQuery;
-  private $componentScope: angular.IScope;
+  private $element: IAugmentedJQuery;
+  private $componentScope: IScope;
 
-  private directive: angular.IDirective;
+  private directive: IDirective;
   private bindings: Bindings;
 
   // TODO(issue/24571): remove '!'.
@@ -125,7 +126,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   ngOnInit() {
     // Collect contents, insert and compile template
-    const attachChildNodes: angular.ILinkFn|undefined = this.helper.prepareTransclusion();
+    const attachChildNodes: ILinkFn|undefined = this.helper.prepareTransclusion();
     const linkFn = this.helper.compileTemplate();
 
     // Instantiate controller
@@ -167,10 +168,10 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     // Linking
     const link = this.directive.link;
-    const preLink = (typeof link == 'object') && (link as angular.IDirectivePrePost).pre;
-    const postLink = (typeof link == 'object') ? (link as angular.IDirectivePrePost).post : link;
-    const attrs: angular.IAttributes = NOT_SUPPORTED;
-    const transcludeFn: angular.ITranscludeFunction = NOT_SUPPORTED;
+    const preLink = (typeof link == 'object') && (link as IDirectivePrePost).pre;
+    const postLink = (typeof link == 'object') ? (link as IDirectivePrePost).post : link;
+    const attrs: IAttributes = NOT_SUPPORTED;
+    const transcludeFn: ITranscludeFunction = NOT_SUPPORTED;
     if (preLink) {
       preLink(this.$componentScope, this.$element, attrs, requiredControllers, transcludeFn);
     }
@@ -221,7 +222,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     this.helper.onDestroy(this.$componentScope, this.controllerInstance);
   }
 
-  private initializeBindings(directive: angular.IDirective) {
+  private initializeBindings(directive: IDirective) {
     const btcIsObject = typeof directive.bindToController === 'object';
     if (btcIsObject && Object.keys(directive.scope !).length) {
       throw new Error(

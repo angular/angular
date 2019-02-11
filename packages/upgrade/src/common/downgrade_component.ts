@@ -8,7 +8,7 @@
 
 import {ComponentFactory, ComponentFactoryResolver, Injector, NgZone, Type} from '@angular/core';
 
-import * as angular from './angular1';
+import {IAnnotatedFunction, IAttributes, IAugmentedJQuery, ICompileService, IDirective, IInjectorService, INgModelController, IParseService, IScope} from './angular1';
 import {$COMPILE, $INJECTOR, $PARSE, INJECTOR_KEY, LAZY_MODULE_REF, REQUIRE_INJECTOR, REQUIRE_NG_MODEL} from './constants';
 import {DowngradeComponentAdapter} from './downgrade_component_adapter';
 import {LazyModuleRef, UpgradeAppType, controllerKey, getDowngradedModuleCount, getTypeName, getUpgradeAppType, isFunction, validateInjectionKey} from './util';
@@ -73,11 +73,8 @@ export function downgradeComponent(info: {
   /** @deprecated since v4. This parameter is no longer used */
   selectors?: string[];
 }): any /* angular.IInjectable */ {
-  const directiveFactory:
-      angular.IAnnotatedFunction = function(
-                                       $compile: angular.ICompileService,
-                                       $injector: angular.IInjectorService,
-                                       $parse: angular.IParseService): angular.IDirective {
+  const directiveFactory: IAnnotatedFunction = function(
+      $compile: ICompileService, $injector: IInjectorService, $parse: IParseService): IDirective {
     // When using `downgradeModule()`, we need to handle certain things specially. For example:
     // - We always need to attach the component view to the `ApplicationRef` for it to be
     //   dirty-checked.
@@ -99,13 +96,12 @@ export function downgradeComponent(info: {
       restrict: 'E',
       terminal: true,
       require: [REQUIRE_INJECTOR, REQUIRE_NG_MODEL],
-      link: (scope: angular.IScope, element: angular.IAugmentedJQuery, attrs: angular.IAttributes,
-             required: any[]) => {
+      link: (scope: IScope, element: IAugmentedJQuery, attrs: IAttributes, required: any[]) => {
         // We might have to compile the contents asynchronously, because this might have been
         // triggered by `UpgradeNg1ComponentAdapterBuilder`, before the Angular templates have
         // been compiled.
 
-        const ngModel: angular.INgModelController = required[1];
+        const ngModel: INgModelController = required[1];
         const parentInjector: Injector|Thenable<Injector>|undefined = required[0];
         let moduleInjector: Injector|Thenable<Injector>|undefined = undefined;
         let ranAsync = false;
@@ -230,7 +226,7 @@ class ParentInjectorPromise {
   private injectorKey: string = controllerKey(INJECTOR_KEY);
   private callbacks: ((injector: Injector) => any)[] = [];
 
-  constructor(private element: angular.IAugmentedJQuery) {
+  constructor(private element: IAugmentedJQuery) {
     // Store the promise on the element.
     element.data !(this.injectorKey, this);
   }
