@@ -12,13 +12,14 @@ load(
     "DEFAULT_NG_COMPILER",
     "DEFAULT_NG_XI18N",
     "DEPS_ASPECTS",
-    "FLAT_DTS_FILE_SUFFIX",
     "NodeModuleInfo",
     "collect_node_modules_aspect",
     "compile_ts",
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
 )
+
+_FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 
 def compile_strategy(ctx):
     """Detect which strategy should be used to implement ng_module.
@@ -138,7 +139,7 @@ def _should_produce_dts_bundle(ctx):
     # At the moment we cannot use this with ngtsc compiler since it emits
     # import * as ___ from local modules which is not supported
     # see: https://github.com/Microsoft/web-build-tools/issues/1029
-    return _is_legacy_ngc(ctx) and ctx.attr.bundle_dts
+    return _is_legacy_ngc(ctx) and hasattr(ctx.attr, "bundle_dts") and ctx.attr.bundle_dts
 
 def _should_produce_flat_module_outs(ctx):
     """Should we produce flat module outputs.
@@ -225,7 +226,7 @@ def _expected_outs(ctx):
         # The flat module dts out contains several other exports
         # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/metadata/index_writer.ts#L18
         # the file name will be like 'core.bundle.d.ts'
-        dts_bundle = ctx.actions.declare_file(ctx.label.name + FLAT_DTS_FILE_SUFFIX)
+        dts_bundle = ctx.actions.declare_file(ctx.label.name + _FLAT_DTS_FILE_SUFFIX)
 
     # We do this just when producing a flat module index for a publishable ng_module
     if _should_produce_flat_module_outs(ctx):
@@ -330,12 +331,12 @@ def ngc_compile_action(
         label,
         inputs,
         outputs,
-        dts_bundle_out,
         messages_out,
         tsconfig_file,
         node_opts,
         locale = None,
-        i18n_args = []):
+        i18n_args = [],
+        dts_bundle_out = None):
     """Helper function to create the ngc action.
 
     This is exposed for google3 to wire up i18n replay rules, and is not intended
@@ -346,12 +347,12 @@ def ngc_compile_action(
       label: the label of the ng_module being compiled
       inputs: passed to the ngc action's inputs
       outputs: passed to the ngc action's outputs
-      dts_bundle_out: produced flattened dts file
       messages_out: produced xmb files
       tsconfig_file: tsconfig file with settings used for the compilation
       node_opts: list of strings, extra nodejs options.
       locale: i18n locale, or None
       i18n_args: additional command-line arguments to ngc
+      dts_bundle_out: produced flattened dts file
 
     Returns:
       the parameters of the compilation which will be used to replay the ngc action for i18N.
@@ -479,7 +480,7 @@ def _compile_action(ctx, inputs, outputs, dts_bundle_out, messages_out, tsconfig
         ],
     )
 
-    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, dts_bundle_out, messages_out, tsconfig_file, node_opts)
+    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file, node_opts, None, [], dts_bundle_out)
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
@@ -606,11 +607,6 @@ NG_MODULE_ATTRIBUTES = {
         executable = True,
         cfg = "host",
     ),
-    "_api_extractor": attr.label(
-        default = Label("//packages/bazel/src/api-extractor:api_extractor"),
-        executable = True,
-        cfg = "host",
-    ),
     "_supports_workers": attr.bool(default = True),
 }
 
@@ -691,6 +687,11 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/transformers/api.ts
     "flat_module_out_file": attr.string(),
     "bundle_dts": attr.bool(default = False),
+    "_api_extractor": attr.label(
+        default = Label("//packages/bazel/src/api-extractor:api_extractor"),
+        executable = True,
+        cfg = "host",
+    ),
 })
 
 ng_module = rule(
