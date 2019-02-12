@@ -130,10 +130,10 @@ export class DropListRef<T = any> {
   private _previousSwap = {drag: null as DragRef | null, delta: 0};
 
   /** Draggable items in the container. */
-  private _draggables: DragRef[];
+  private _draggables: ReadonlyArray<DragRef>;
 
   /** Drop lists that are connected to the current one. */
-  private _siblings: DropListRef[] = [];
+  private _siblings: ReadonlyArray<DropListRef> = [];
 
   /** Direction in which the list is oriented. */
   private _orientation: 'horizontal' | 'vertical' = 'vertical';
@@ -256,7 +256,7 @@ export class DropListRef<T = any> {
    * @param items Items that are a part of this list.
    */
   withItems(items: DragRef[]): this {
-    this._draggables = items.slice();
+    this._draggables = items;
     items.forEach(item => item._withDropContainer(this));
     return this;
   }
