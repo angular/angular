@@ -8,7 +8,7 @@
 
 import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {MediaMatcher} from './media-matcher';
-import {asapScheduler, combineLatest, fromEventPattern, Observable, Subject} from 'rxjs';
+import {asapScheduler, combineLatest, Observable, Subject, Observer} from 'rxjs';
 import {debounceTime, map, startWith, takeUntil} from 'rxjs/operators';
 import {coerceArray} from '@angular/cdk/coercion';
 
@@ -99,27 +99,24 @@ export class BreakpointObserver implements OnDestroy {
 
     const mql: MediaQueryList = this.mediaMatcher.matchMedia(query);
 
-    // TODO(jelbourn): change this `any` to `MediaQueryListEvent` once Google has upgraded to
-    // TypeScript 3.1 (the type is unavailable before then).
-    let queryListener: any;
-
     // Create callback for match changes and add it is as a listener.
-    const queryObservable = fromEventPattern<MediaQueryList>(
+    const queryObservable = new Observable<MediaQueryList>((observer: Observer<MediaQueryList>) => {
       // Listener callback methods are wrapped to be placed back in ngZone. Callbacks must be placed
       // back into the zone because matchMedia is only included in Zone.js by loading the
       // webapis-media-query.js file alongside the zone.js file.  Additionally, some browsers do not
       // have MediaQueryList inherit from EventTarget, which causes inconsistencies in how Zone.js
       // patches it.
-      (listener: Function) => {
-        queryListener = (e: any) => this.zone.run(() => listener(e));
-        mql.addListener(queryListener);
-      },
-      () => mql.removeListener(queryListener))
-      .pipe(
-        startWith(mql),
-        map((nextMql: MediaQueryList) => ({query, matches: nextMql.matches})),
-        takeUntil(this._destroySubject)
-      );
+      const handler = (e: any) => this.zone.run(() => observer.next(e));
+      mql.addListener(handler);
+
+      return () => {
+        mql.removeListener(handler);
+      };
+    }).pipe(
+      startWith(mql),
+      map((nextMql: MediaQueryList) => ({query, matches: nextMql.matches})),
+      takeUntil(this._destroySubject)
+    );
 
     // Add the MediaQueryList to the set of queries.
     const output = {observable: queryObservable, mql};
