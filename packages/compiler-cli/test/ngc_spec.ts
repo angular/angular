@@ -1076,15 +1076,17 @@ describe('ngc transformer command-line', () => {
       });
     });
 
-    it('should be able to compile multiple libraries with summaries', () => {
-      // Note: we need to emit the generated code for the libraries
-      // into the node_modules, as that is the only way that we
-      // currently support when using summaries.
-      // TODO(tbosch): add support for `paths` to our CompilerHost.fileNameToModuleName
-      // and then use `paths` here instead of writing to node_modules.
+    describe('with external symbol re-exports enabled', () => {
 
-      // Angular
-      write('tsconfig-ng.json', `{
+      it('should be able to compile multiple libraries with summaries', () => {
+        // Note: we need to emit the generated code for the libraries
+        // into the node_modules, as that is the only way that we
+        // currently support when using summaries.
+        // TODO(tbosch): add support for `paths` to our CompilerHost.fileNameToModuleName
+        // and then use `paths` here instead of writing to node_modules.
+
+        // Angular
+        write('tsconfig-ng.json', `{
           "extends": "./tsconfig-base.json",
           "angularCompilerOptions": {
             "generateCodeForLibraries": true,
@@ -1100,69 +1102,68 @@ describe('ngc transformer command-line', () => {
           ]
         }`);
 
-      // Lib 1
-      write('lib1/tsconfig-lib1.json', `{
+        // Lib 1
+        write('lib1/tsconfig-lib1.json', `{
           "extends": "../tsconfig-base.json",
           "angularCompilerOptions": {
             "generateCodeForLibraries": false,
-            "enableSummariesForJit": true
+            "enableSummariesForJit": true,
+            "createExternalSymbolFactoryReexports": true
           },
           "compilerOptions": {
             "rootDir": ".",
             "outDir": "../node_modules/lib1_built"
           }
         }`);
-      write('lib1/module.ts', `
+        write('lib1/module.ts', `
           import {NgModule} from '@angular/core';
-
           export function someFactory(): any { return null; }
-
           @NgModule({
             providers: [{provide: 'foo', useFactory: someFactory}]
           })
           export class Module {}
         `);
-      write('lib1/class1.ts', `export class Class1 {}`);
+        write('lib1/class1.ts', `export class Class1 {}`);
 
-      // Lib 2
-      write('lib2/tsconfig-lib2.json', `{
+        // Lib 2
+        write('lib2/tsconfig-lib2.json', `{
           "extends": "../tsconfig-base.json",
           "angularCompilerOptions": {
             "generateCodeForLibraries": false,
-            "enableSummariesForJit": true
+            "enableSummariesForJit": true,
+            "createExternalSymbolFactoryReexports": true
           },
           "compilerOptions": {
             "rootDir": ".",
             "outDir": "../node_modules/lib2_built"
           }
         }`);
-      write('lib2/module.ts', `
+        write('lib2/module.ts', `
           export {Module} from 'lib1_built/module';
         `);
-      write('lib2/class2.ts', `
-        import {Class1} from 'lib1_built/class1';
+        write('lib2/class2.ts', `
+          import {Class1} from 'lib1_built/class1';
+          export class Class2 {
+            constructor(class1: Class1) {}
+          }
+        `);
 
-        export class Class2 {
-          constructor(class1: Class1) {}
-        }
-      `);
-
-      // Application
-      write('app/tsconfig-app.json', `{
+        // Application
+        write('app/tsconfig-app.json', `{
           "extends": "../tsconfig-base.json",
           "angularCompilerOptions": {
             "generateCodeForLibraries": false,
-            "enableSummariesForJit": true
+            "enableSummariesForJit": true,
+            "createExternalSymbolFactoryReexports": true
           },
           "compilerOptions": {
             "rootDir": ".",
             "outDir": "../built/app"
           }
         }`);
-      write('app/main.ts', `
+        write('app/main.ts', `
           import {NgModule, Inject} from '@angular/core';
           import {Module} from 'lib2_built/module';
-
           @NgModule({
             imports: [Module]
           })
@@ -1170,6 +1171,149 @@ describe('ngc transformer command-line', () => {
             constructor(@Inject('foo') public foo: any) {}
           }
         `);
+
+        expect(main(['-p', path.join(basePath, 'lib1', 'tsconfig-lib1.json')], errorSpy)).toBe(0);
+        expect(main(['-p', path.join(basePath, 'lib2', 'tsconfig-lib2.json')], errorSpy)).toBe(0);
+        expect(main(['-p', path.join(basePath, 'app', 'tsconfig-app.json')], errorSpy)).toBe(0);
+
+        // library 1
+        // make `shouldExist` / `shouldNotExist` relative to `node_modules`
+        outDir = path.resolve(basePath, 'node_modules');
+        shouldExist('lib1_built/module.js');
+        shouldExist('lib1_built/module.ngsummary.json');
+        shouldExist('lib1_built/module.ngsummary.js');
+        shouldExist('lib1_built/module.ngsummary.d.ts');
+        shouldExist('lib1_built/module.ngfactory.js');
+        shouldExist('lib1_built/module.ngfactory.d.ts');
+
+        // library 2
+        // make `shouldExist` / `shouldNotExist` relative to `node_modules`
+        outDir = path.resolve(basePath, 'node_modules');
+        shouldExist('lib2_built/module.js');
+        shouldExist('lib2_built/module.ngsummary.json');
+        shouldExist('lib2_built/module.ngsummary.js');
+        shouldExist('lib2_built/module.ngsummary.d.ts');
+        shouldExist('lib2_built/module.ngfactory.js');
+        shouldExist('lib2_built/module.ngfactory.d.ts');
+
+        shouldExist('lib2_built/class2.ngsummary.json');
+        shouldNotExist('lib2_built/class2.ngsummary.js');
+        shouldNotExist('lib2_built/class2.ngsummary.d.ts');
+        shouldExist('lib2_built/class2.ngfactory.js');
+        shouldExist('lib2_built/class2.ngfactory.d.ts');
+
+        // app
+        // make `shouldExist` / `shouldNotExist` relative to `built`
+        outDir = path.resolve(basePath, 'built');
+        shouldExist('app/main.js');
+      });
+
+      it('should create external symbol re-exports', () => {
+        writeConfig(`{
+          "extends": "./tsconfig-base.json",
+          "angularCompilerOptions": {
+            "generateCodeForLibraries": false,
+            "createExternalSymbolFactoryReexports": true
+          }
+        }`);
+
+        write('test.ts', `
+          import {Injectable, NgZone} from '@angular/core';
+        
+          @Injectable({providedIn: 'root'})
+          export class MyService {
+            constructor(public ngZone: NgZone) {}
+          }
+        `);
+
+        expect(main(['-p', basePath], errorSpy)).toBe(0);
+
+        shouldExist('test.js');
+        shouldExist('test.metadata.json');
+        shouldExist('test.ngsummary.json');
+        shouldExist('test.ngfactory.js');
+        shouldExist('test.ngfactory.d.ts');
+
+        const summaryJson = require(path.join(outDir, 'test.ngsummary.json'));
+        const factoryOutput = fs.readFileSync(path.join(outDir, 'test.ngfactory.js'), 'utf8');
+
+        expect(summaryJson['symbols'][0].name).toBe('MyService');
+        expect(summaryJson['symbols'][1])
+            .toEqual(jasmine.objectContaining({name: 'NgZone', importAs: 'NgZone_1'}));
+
+        expect(factoryOutput).toContain(`export { NgZone as NgZone_1 } from "@angular/core";`);
+      });
+    });
+
+    it('should be able to compile multiple libraries with summaries', () => {
+      // Lib 1
+      write('lib1/tsconfig-lib1.json', `{
+        "extends": "../tsconfig-base.json",
+        "angularCompilerOptions": {
+          "generateCodeForLibraries": false,
+          "enableSummariesForJit": true
+        },
+        "compilerOptions": {
+          "rootDir": ".",
+          "outDir": "../node_modules/lib1_built"
+        }
+      }`);
+      write('lib1/module.ts', `
+        import {NgModule} from '@angular/core';
+
+        export function someFactory(): any { return null; }
+
+        @NgModule({
+          providers: [{provide: 'foo', useFactory: someFactory}]
+        })
+        export class Module {}
+      `);
+      write('lib1/class1.ts', `export class Class1 {}`);
+
+      // Lib 2
+      write('lib2/tsconfig-lib2.json', `{
+        "extends": "../tsconfig-base.json",
+        "angularCompilerOptions": {
+          "generateCodeForLibraries": false,
+          "enableSummariesForJit": true
+        },
+        "compilerOptions": {
+          "rootDir": ".",
+          "outDir": "../node_modules/lib2_built"
+        }
+      }`);
+      write('lib2/module.ts', `export {Module} from 'lib1_built/module';`);
+      write('lib2/class2.ts', `
+        import {Class1} from 'lib1_built/class1';
+  
+        export class Class2 {
+          constructor(class1: Class1) {}
+        }
+      `);
+
+      // Application
+      write('app/tsconfig-app.json', `{
+        "extends": "../tsconfig-base.json",
+        "angularCompilerOptions": {
+          "generateCodeForLibraries": false,
+          "enableSummariesForJit": true
+        },
+        "compilerOptions": {
+          "rootDir": ".",
+          "outDir": "../built/app"
+        }
+      }`);
+      write('app/main.ts', `
+        import {NgModule, Inject} from '@angular/core';
+        import {Module} from 'lib2_built/module';
+
+        @NgModule({
+          imports: [Module]
+        })
+        export class AppModule {
+          constructor(@Inject('foo') public foo: any) {}
+        }
+      `);
 
       expect(main(['-p', path.join(basePath, 'lib1', 'tsconfig-lib1.json')], errorSpy)).toBe(0);
       expect(main(['-p', path.join(basePath, 'lib2', 'tsconfig-lib2.json')], errorSpy)).toBe(0);
@@ -1189,17 +1333,24 @@ describe('ngc transformer command-line', () => {
       // make `shouldExist` / `shouldNotExist` relative to `node_modules`
       outDir = path.resolve(basePath, 'node_modules');
       shouldExist('lib2_built/module.js');
+
+      // "module.ts" re-exports an external symbol and will therefore
+      // have a summary JSON file and its corresponding JIT summary.
       shouldExist('lib2_built/module.ngsummary.json');
       shouldExist('lib2_built/module.ngsummary.js');
       shouldExist('lib2_built/module.ngsummary.d.ts');
-      shouldExist('lib2_built/module.ngfactory.js');
-      shouldExist('lib2_built/module.ngfactory.d.ts');
+      // "module.ts" only re-exports an external symbol and the AOT compiler does not
+      // need to generate anything. Therefore there should be no factory files.
+      shouldNotExist('lib2_built/module.ngfactory.js');
+      shouldNotExist('lib2_built/module.ngfactory.d.ts');
 
       shouldExist('lib2_built/class2.ngsummary.json');
       shouldNotExist('lib2_built/class2.ngsummary.js');
       shouldNotExist('lib2_built/class2.ngsummary.d.ts');
-      shouldExist('lib2_built/class2.ngfactory.js');
-      shouldExist('lib2_built/class2.ngfactory.d.ts');
+      // We don't expect factories here because the "class2.ts" file
+      // just exports a class that does not produce any AOT code.
+      shouldNotExist('lib2_built/class2.ngfactory.js');
+      shouldNotExist('lib2_built/class2.ngfactory.d.ts');
 
       // app
       // make `shouldExist` / `shouldNotExist` relative to `built`

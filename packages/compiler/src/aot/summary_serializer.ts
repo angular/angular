@@ -23,7 +23,7 @@ export function serializeSummaries(
           CompileTypeMetadata
     }[],
     createExternalSymbolReexports =
-        true): {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
+        false): {json: string, exportAs: {symbol: StaticSymbol, exportAs: string}[]} {
   const toJsonSerializer = new ToJsonSerializer(symbolResolver, summaryResolver, srcFileName);
 
   // for symbols, we use everything except for the class metadata itself
