@@ -20,7 +20,7 @@ export function isNpmAuthenticated(): boolean {
 }
 
 /** Runs "npm login" interactively by piping stdin/stderr/stdout to the current tty. */
-export function runInteractiveNpmLogin(): boolean {
+export function npmLoginInteractive(): boolean {
   return spawnSync('npm', ['login'], {
     stdio: 'inherit',
     shell: true,
@@ -29,7 +29,7 @@ export function runInteractiveNpmLogin(): boolean {
 }
 
 /** Runs NPM publish within a specified directory */
-export function runNpmPublish(packagePath: string, distTag: string): string | null {
+export function npmPublish(packagePath: string, distTag: string): string | null {
   const result = spawnSync('npm', ['publish', '--access', 'public', '--tag', distTag], {
     cwd: packagePath,
     shell: true,
@@ -41,4 +41,12 @@ export function runNpmPublish(packagePath: string, distTag: string): string | nu
   if (result.status !== 0) {
     return result.stderr.toString();
   }
+}
+
+/** Log out of npm. */
+export function npmLogout(): boolean {
+  return spawnSync('npm', ['logout'], {
+    shell: true,
+    env: npmClientEnvironment,
+  }).status === 0;
 }
