@@ -137,7 +137,7 @@
     "rewire": "2.5.2",
     "rollup-plugin-commonjs": "8.1.0",
     "rxjs": "^6.3.0",
-    "sauce-connect": "https://saucelabs.com/downloads/sc-4.5.3-linux.tar.gz",
+    "sauce-connect": "https://saucelabs.com/downloads/sc-4.5.1-linux.tar.gz",
     "semver": "5.4.1",
     "tslint": "5.7.0",
     "tslint-eslint-rules": "4.1.1",
