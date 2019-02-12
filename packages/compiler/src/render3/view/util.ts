@@ -57,7 +57,7 @@ export function unsupported(feature: string): never {
 
 export function invalid<T>(arg: o.Expression | o.Statement | t.Node): never {
   throw new Error(
-      `Invalid state: Visitor ${this.constructor.name} doesn't handle ${o.constructor.name}`);
+      `Invalid state: Visitor ${this.constructor.name} doesn't handle ${arg.constructor.name}`);
 }
 
 export function asLiteral(value: any): o.Expression {
