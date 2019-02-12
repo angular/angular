@@ -1,7 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
 load("//packages/bazel:index.bzl", "protractor_web_test_suite")
-load("//tools:defaults.bzl", "ng_module", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ts_library")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 
 ng_module(
@@ -23,6 +23,19 @@ ng_module(
         "//packages/platform-browser/animations",
         "//packages/router",
         "@ngdeps//rxjs",
+    ],
+)
+
+ts_library(
+    name = "core_tests_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*_spec.ts"],
+        exclude = ["**/e2e_test/*"],
+    ),
+    deps = [
+        "//packages/core",
+        "//packages/core/testing",
     ],
 )
 
@@ -63,5 +76,14 @@ protractor_web_test_suite(
         ":core_e2e_tests_lib",
         "@ngdeps//protractor",
         "@ngdeps//selenium-webdriver",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    deps = [
+        ":core_tests_lib",
+        "//tools/testing:node",
     ],
 )
