@@ -89,6 +89,12 @@
     // happen, however it's possible to do it when clicking on a disabled input (see #13479).
     @include user-select(none);
 
+    &:-ms-input-placeholder {
+      // fix IE11 not able to focus programmatically with css style -ms-user-select: none
+      // see https://github.com/angular/material2/issues/15093
+      -ms-user-select: text;
+    }
+
     // Delay the transition until the label has animated about a third of the way through, in
     // order to prevent the placeholder from overlapping for a split second.
     transition: color $swift-ease-out-duration $swift-ease-out-duration / 3
