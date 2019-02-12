@@ -26,11 +26,15 @@ and which pieces are blocked) and make a comment.
 Also see our [`help wanted`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 label.
 
-High level stuff planned for Q4 2018 (October - Dec):
-* Improve our own build and automation tooling
-* Fix bugs and reduce some technical debt inside Google
-* Working on long-term plans on how to collaborate with the MDC Web team
-* Designs for advanced table improvements (column resize, selection directives, inline-edit)
+#### High level stuff planned for Q1 → Q2 2019 (January - June):
+* Most of the Angular Material team is on loan to the framework team
+  helping with [Ivy](https://blog.angular.io/a-plan-for-version-8-0-and-ivy-b3318dfc19f7).
+  We've been using the Angular CDK and Angular Material tests to validate code paths as well
+  as helping debug issues in switching Google applications to the new rendering pipeline.
+* We're also working with the Material Design team on a strategy to collaborate more deeply.
+  We'll have more to share on this once our plans are further along.
+* Assorted bugfixes and minor feature improvements.
+* Design for API enhancements to the tree component to improve ergonomics.
 
 
 #### Available features
