@@ -387,6 +387,9 @@
     "name": "appendChild"
   },
   {
+    "name": "applyOnCreateInstructions"
+  },
+  {
     "name": "assertTemplate"
   },
   {

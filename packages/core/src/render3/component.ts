@@ -25,7 +25,7 @@ import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, T_HOST} from './interfaces/view';
 import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
-import {defaultScheduler, getRootView, readPatchedLView, renderStringify} from './util';
+import {defaultScheduler, getRootView, readPatchedLView, renderStringify, applyOnCreateInstructions} from './util';
 
 
 
@@ -200,9 +200,21 @@ export function createRootComponent<T>(
 
   if (tView.firstTemplatePass && componentDef.hostBindings) {
     const rootTNode = getPreviousOrParentTNode();
+    const expando = tView.expandoInstructions !;
+    const previousExpandoLength = expando.length;
     setCurrentDirectiveDef(componentDef);
     componentDef.hostBindings(RenderFlags.Create, component, rootTNode.index - HEADER_OFFSET);
     setCurrentDirectiveDef(null);
+
+    // `hostBindings` function may or may not contain `allocHostVars` call
+    // (e.g. it may not if it only contains host listeners), so we need to check whether
+    // `expandoInstructions` has changed and if not - we still push `hostBindings` to
+    // expando block, to make sure we execute it for DI cycle
+    if (previousExpandoLength === expando.length && tView.firstTemplatePass) {
+      expando.push(componentDef.hostBindings);
+    }
+
+    rootTNode.onElementCreationFns && applyOnCreateInstructions(rootTNode);
   }
 
   return component;

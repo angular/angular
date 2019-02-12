@@ -14,7 +14,7 @@ import {LContext} from '../interfaces/context';
 import {AttributeMarker, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {PlayState, Player, PlayerContext, PlayerIndex} from '../interfaces/player';
 import {RElement} from '../interfaces/renderer';
-import {InitialStylingValues, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
+import {InitialStylingValues, InitialStylingValuesIndex, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {HEADER_OFFSET, HOST, LView, RootContext} from '../interfaces/view';
 import {getTNode} from '../util';
 
@@ -100,10 +100,14 @@ export function getStylingContext(index: number, viewData: LView): StylingContex
   }
 }
 
-export function isStylingContext(value: any): value is StylingContext {
+export function isStylingContext(value: any): boolean {
   // Not an LView or an LContainer
-  return Array.isArray(value) && typeof value[StylingIndex.MasterFlagPosition] === 'number' &&
-      value.length !== LCONTAINER_LENGTH;
+  if (Array.isArray(value) && value.length >= StylingIndex.SingleStylesStartPosition) {
+    return typeof value[StylingIndex.MasterFlagPosition] === 'number' &&
+        value[StylingIndex.InitialClassValuesPosition]
+             [InitialStylingValuesIndex.DefaultNullValuePosition] === null;
+  }
+  return false;
 }
 
 export function isAnimationProp(name: string): boolean {

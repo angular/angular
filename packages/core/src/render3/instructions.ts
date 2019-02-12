@@ -41,7 +41,7 @@ import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticCo
 import {BoundPlayerFactory} from './styling/player_factory';
 import {ANIMATION_PROP_PREFIX, allocateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContext, hasClassInput, hasStyleInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
-import {INTERPOLATION_DELIMITER, findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readElementValue, readPatchedLView, renderStringify} from './util';
+import {INTERPOLATION_DELIMITER, applyOnCreateInstructions, findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readElementValue, readPatchedLView, renderStringify} from './util';
 
 
 
@@ -1079,18 +1079,9 @@ export function elementEnd(): void {
     setPreviousOrParentTNode(previousOrParentTNode);
   }
 
-  // there may be some instructions that need to run in a specific
-  // order because the CREATE block in a directive runs before the
-  // CREATE block in a template. To work around this instructions
-  // can get access to the function array below and defer any code
-  // to run after the element is created.
-  let fns: Function[]|null;
-  if (fns = previousOrParentTNode.onElementCreationFns) {
-    for (let i = 0; i < fns.length; i++) {
-      fns[i]();
-    }
-    previousOrParentTNode.onElementCreationFns = null;
-  }
+  // this is required for all host-level styling-related instructions to run
+  // in the correct order
+  previousOrParentTNode.onElementCreationFns && applyOnCreateInstructions(previousOrParentTNode);
 
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Element);
   const lView = getLView();
