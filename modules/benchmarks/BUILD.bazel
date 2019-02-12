@@ -5,10 +5,3 @@ exports_files([
     "tsconfig-e2e.json",
     "start-server.js",
 ])
-
-filegroup(
-    name = "favicon",
-    srcs = [
-        "favicon.ico",
-    ],
-)
