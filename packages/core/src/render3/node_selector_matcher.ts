@@ -34,7 +34,7 @@ function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): 
 /**
  * Function that checks whether a given tNode matches tag-based selector and has a valid type.
  *
- * Matching can be perfomed in 2 modes: projection mode (when we project nodes) and regular
+ * Matching can be performed in 2 modes: projection mode (when we project nodes) and regular
  * directive matching mode. In "projection" mode, we do not need to check types, so if tag name
  * matches selector, we declare a match. In "directive matching" mode, we also check whether tNode
  * is of expected type:
@@ -61,7 +61,8 @@ export function isNodeMatchingSelector(
   ngDevMode && assertDefined(selector[0], 'Selector should have a tag name');
   let mode: SelectorFlags = SelectorFlags.ELEMENT;
   const nodeAttrs = tNode.attrs !;
-  const selectOnlyMarkerIdx = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.SelectOnly) : -1;
+  const selectOnlyMarkerIndex = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.SelectOnly) : -1;
+  const projectionOnlyIndex = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.ProjectionOnly) : -1;
 
   // When processing ":not" selectors, we skip to the next ":not" if the
   // current one doesn't match
@@ -105,7 +106,7 @@ export function isNodeMatchingSelector(
       }
 
       const attrName = (mode & SelectorFlags.CLASS) ? 'class' : current;
-      const attrIndexInNode = findAttrIndexInNode(attrName, nodeAttrs);
+      const attrIndexInNode = findAttrIndexInNode(attrName, nodeAttrs, isProjectionMode);
 
       if (attrIndexInNode === -1) {
         if (isPositive(mode)) return false;
@@ -116,7 +117,9 @@ export function isNodeMatchingSelector(
       if (selectorAttrValue !== '') {
         let nodeAttrValue: string;
         const maybeAttrName = nodeAttrs[attrIndexInNode];
-        if (selectOnlyMarkerIdx > -1 && attrIndexInNode > selectOnlyMarkerIdx) {
+        // Is the attribute marked as `SelectorOnly`
+        if (selectOnlyMarkerIndex > -1 && attrIndexInNode > selectOnlyMarkerIndex &&
+            (projectionOnlyIndex === -1 || attrIndexInNode <= projectionOnlyIndex)) {
           nodeAttrValue = '';
         } else {
           ngDevMode && assertNotEqual(
@@ -162,7 +165,8 @@ function readClassValueFromTNode(tNode: TNode): string {
  * @param name the name of the attribute to find
  * @param attrs the attribute array to examine
  */
-function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
+function findAttrIndexInNode(
+    name: string, attrs: TAttributes | null, isProjectionMode: boolean): number {
   if (attrs === null) return -1;
   let selectOnlyMode = false;
   let i = 0;
@@ -173,8 +177,11 @@ function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
     } else if (maybeAttrName === AttributeMarker.NamespaceURI) {
       // NOTE(benlesh): will not find namespaced attributes. This is by design.
       i += 4;
+    } else if (maybeAttrName === AttributeMarker.ProjectionOnly && !isProjectionMode) {
+      break;
     } else {
-      if (maybeAttrName === AttributeMarker.SelectOnly) {
+      if (maybeAttrName === AttributeMarker.SelectOnly ||
+          maybeAttrName === AttributeMarker.ProjectionOnly) {
         selectOnlyMode = true;
       }
       i += selectOnlyMode ? 1 : 2;
@@ -209,13 +216,16 @@ export function getProjectAsAttrValue(tNode: TNode): string|null {
 }
 
 /**
- * Checks a given node against matching selectors and returns
+ * Checks a given node against matching projection selectors and returns
  * selector index (or 0 if none matched).
  *
  * This function takes into account the ngProjectAs attribute: if present its value will be compared
  * to the raw (un-parsed) CSS selector instead of using standard selector matching logic.
+ *
+ * It will also match against `ProjectionOnly` attributes, which are not normally considered when
+ * matching for directives.
  */
-export function matchingSelectorIndex(
+export function matchingProjectionSelectorIndex(
     tNode: TNode, selectors: CssSelectorList[], textSelectors: string[]): number {
   const ngProjectAsAttrVal = getProjectAsAttrValue(tNode);
   for (let i = 0; i < selectors.length; i++) {

@@ -167,8 +167,9 @@ class HtmlAstToIvyAst implements html.Visitor {
       const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
 
       parsedElement = new t.Template(
-          element.name, attributes, attrs.bound, boundEvents, children, references, variables,
-          element.sourceSpan, element.startSourceSpan, element.endSourceSpan, element.i18n);
+          element.name, attributes, attrs.bound, boundEvents, [/* no projection attributes */],
+          children, references, variables, element.sourceSpan, element.startSourceSpan,
+          element.endSourceSpan, element.i18n);
     } else {
       const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
       parsedElement = new t.Element(
@@ -180,9 +181,9 @@ class HtmlAstToIvyAst implements html.Visitor {
       const attrs = this.extractAttributes('ng-template', templateParsedProperties, i18nAttrsMeta);
       // TODO(pk): test for this case
       parsedElement = new t.Template(
-          (parsedElement as t.Element).name, attrs.literal, attrs.bound, [], [parsedElement], [],
-          templateVariables, element.sourceSpan, element.startSourceSpan, element.endSourceSpan,
-          element.i18n);
+          (parsedElement as t.Element).name, attrs.literal, attrs.bound, [/* no outputs */],
+          attributes, [parsedElement], [/* no references */], templateVariables, element.sourceSpan,
+          element.startSourceSpan, element.endSourceSpan, element.i18n);
     }
     return parsedElement;
   }

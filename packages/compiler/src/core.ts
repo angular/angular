@@ -436,4 +436,33 @@ export const enum AttributeMarker {
    * ['class', 'fade in', AttributeMarker.SelectOnly, 'foo', 'bar']
    */
   SelectOnly = 3,
+
+  /**
+   * This marker indicates that the following attributes were extracted onto an ng-template element
+   * that is synthesized from the contained element an inline template.
+   * This allows them to be used to match against content projection selectors.
+   *
+   * The AttributeMarker.Classes and AttributeMarker.Styles markers are still in effect.
+   * For example in `<div *ngIf="..." foo="bar" class="a b">` you would get the following:
+   *
+   * ```
+   * [
+   *   AttributeMarker.SelectOnly,
+   *   'ngIf',
+   *   AttributeMarker.ProjectionOnly,
+   *   'foo',
+   *   AttributeMarker.Classes,
+   *   'a',
+   *   'b'
+   * ]
+   * ```
+   *
+   * This allows the `foo` attribute and the `a` and `b` CSS classes to be used to match for
+   * content projection selection, e.g. `<ng-content select="div.b">` and
+   * `<ng-content select="[foo=bar]">` would match the example given above.
+   *
+   * Attributes that appear after the `AttributeMarker.ProjectionOnly` marker are not rendered
+   * and do not take part in directive matching.
+   */
+  ProjectionOnly = 4,
 }

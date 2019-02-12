@@ -193,6 +193,8 @@ export function hasStyling(attrs: TAttributes): boolean {
   for (let i = 0; i < attrs.length; i++) {
     const attr = attrs[i];
     if (attr == AttributeMarker.Classes || attr == AttributeMarker.Styles) return true;
+    if (attr === AttributeMarker.SelectOnly || attr === AttributeMarker.ProjectionOnly)
+      return false;
   }
   return false;
 }

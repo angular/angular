@@ -74,10 +74,10 @@ export class Element implements Node {
 export class Template implements Node {
   constructor(
       public tagName: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
-      public outputs: BoundEvent[], public children: Node[], public references: Reference[],
-      public variables: Variable[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan|null, public endSourceSpan: ParseSourceSpan|null,
-      public i18n?: I18nAST) {}
+      public outputs: BoundEvent[], public projectionAttributes: TextAttribute[],
+      public children: Node[], public references: Reference[], public variables: Variable[],
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
+      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nAST) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitTemplate(this); }
 }
 
@@ -182,15 +182,19 @@ export class TransformVisitor implements Visitor<Node> {
     const newAttributes = transformAll(this, template.attributes);
     const newInputs = transformAll(this, template.inputs);
     const newOutputs = transformAll(this, template.outputs);
+    // const newProjectionAttributes = transformAll(this, template.projectionAttributes);
     const newChildren = transformAll(this, template.children);
     const newReferences = transformAll(this, template.references);
     const newVariables = transformAll(this, template.variables);
     if (newAttributes != template.attributes || newInputs != template.inputs ||
+        newOutputs != template.outputs ||
+        // newProjectionAttributes != template.projectionAttributes ||
         newChildren != template.children || newVariables != template.variables ||
         newReferences != template.references) {
       return new Template(
-          template.tagName, newAttributes, newInputs, newOutputs, newChildren, newReferences,
-          newVariables, template.sourceSpan, template.startSourceSpan, template.endSourceSpan);
+          template.tagName, newAttributes, newInputs, newOutputs, template.projectionAttributes,
+          newChildren, newReferences, newVariables, template.sourceSpan, template.startSourceSpan,
+          template.endSourceSpan);
     }
     return template;
   }

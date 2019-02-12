@@ -792,6 +792,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     template.attributes.forEach(
         (a: t.TextAttribute) => { attrsExprs.push(asLiteral(a.name), asLiteral(a.value)); });
     attrsExprs.push(...this.prepareSelectOnlyAttrs(template.inputs, template.outputs));
+    attrsExprs.push(...this.prepareProjectionOnlyAttrs(template.projectionAttributes));
     parameters.push(this.toAttrsParam(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -1089,6 +1090,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     return attrExprs;
+  }
+
+  private prepareProjectionOnlyAttrs(attrsExprs: t.TextAttribute[]): o.Expression[] {
+    const preparedAttrs: o.Expression[] =
+        attrsExprs.length ? [o.literal(core.AttributeMarker.ProjectionOnly)] : [];
+    attrsExprs.forEach(
+        (a: t.TextAttribute) => { preparedAttrs.push(asLiteral(a.name), asLiteral(a.value)); });
+    return preparedAttrs;
   }
 
   private toAttrsParam(attrsExprs: o.Expression[]): o.Expression {

@@ -57,7 +57,7 @@ export function initializeStaticContext(attrs: TAttributes) {
       initialStyles.push(attr as string, attrs[++i] as string);
     } else if (mode === AttributeMarker.Classes) {
       initialClasses.push(attr as string, true);
-    } else if (mode === AttributeMarker.SelectOnly) {
+    } else if (mode === AttributeMarker.SelectOnly || mode === AttributeMarker.ProjectionOnly) {
       break;
     }
   }
@@ -99,6 +99,8 @@ export function patchContextWithStaticAttrs(
       } else if (mode == AttributeMarker.Styles) {
         initialStyles = initialStyles || context[StylingIndex.InitialStyleValuesPosition];
         patchInitialStylingValue(initialStyles, attr, attrs[++i]);
+      } else if (mode === AttributeMarker.SelectOnly || mode === AttributeMarker.ProjectionOnly) {
+        break;
       }
     }
   }
