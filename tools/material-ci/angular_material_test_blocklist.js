@@ -1947,11 +1947,11 @@ window.testBlocklist = {
   },
   "MatAutocomplete aria should set role of autocomplete panel to listbox": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
   "MatAutocomplete aria should set aria-owns based on the attached autocomplete": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
   "MatAutocomplete Fallback positions should use below positioning by default": {
     "error": "Error: Expected 739 to equal 438.",
@@ -1963,7 +1963,7 @@ window.testBlocklist = {
   },
   "MatAutocomplete Option selection should handle `optionSelections` being accessed too early": {
     "error": "TypeError: Cannot read property 'autocomplete' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatAutocomplete should be able to set a custom panel connection element": {
     "error": "Error: Expected 665 to be 827, 'Expected autocomplete panel to align with the bottom of the new origin.'.",
