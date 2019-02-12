@@ -18,14 +18,14 @@ import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {publishDefaultGlobalUtils} from './global_utils';
 import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
-import {addToViewTree, CLEAN_PROMISE, createLView, createNodeAtIndex, createTNode, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews,} from './instructions';
+import {CLEAN_PROMISE, addToViewTree, createLView, createNodeAtIndex, createTNode, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, T_HOST} from './interfaces/view';
 import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
-import {defaultScheduler, getRootView, readPatchedLView, renderStringify} from './util';
+import {applyOnCreateInstructions, defaultScheduler, getRootView, readPatchedLView, renderStringify} from './util';
 
 
 
@@ -200,9 +200,10 @@ export function createRootComponent<T>(
 
   if (tView.firstTemplatePass && componentDef.hostBindings) {
     const rootTNode = getPreviousOrParentTNode();
-    setCurrentDirectiveDef(componentDef);
-    componentDef.hostBindings(RenderFlags.Create, component, rootTNode.index - HEADER_OFFSET);
-    setCurrentDirectiveDef(null);
+    const expando = tView.expandoInstructions !;
+    invokeHostBindingsInCreationMode(
+        componentDef, expando, component, rootTNode, tView.firstTemplatePass);
+    rootTNode.onElementCreationFns && applyOnCreateInstructions(rootTNode);
   }
 
   return component;

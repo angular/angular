@@ -293,6 +293,13 @@ export const enum InitPhaseState {
 }
 
 /**
+ * Set of instructions used to process host bindings efficiently.
+ *
+ * See VIEW_DATA.md for more information.
+ */
+export interface ExpandoInstructions extends Array<number|HostBindingsFunction<any>|null> {}
+
+/**
  * The static data for an LView (shared between all templates of a
  * given type).
  *
@@ -401,7 +408,7 @@ export interface TView {
    *
    * See VIEW_DATA.md for more information.
    */
-  expandoInstructions: (number|HostBindingsFunction<any>|null)[]|null;
+  expandoInstructions: ExpandoInstructions|null;
 
   /**
    * Full registry of directives and components that may be found in this view.

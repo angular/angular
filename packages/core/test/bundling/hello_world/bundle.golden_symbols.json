@@ -132,6 +132,9 @@
     "name": "appendChild"
   },
   {
+    "name": "applyOnCreateInstructions"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -319,6 +322,9 @@
   },
   {
     "name": "invertObject"
+  },
+  {
+    "name": "invokeHostBindingsInCreationMode"
   },
   {
     "name": "isComponentDef"
