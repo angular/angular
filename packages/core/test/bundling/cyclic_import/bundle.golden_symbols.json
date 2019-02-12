@@ -57,9 +57,6 @@
     "name": "INJECTOR_BLOOM_PARENT_SIZE"
   },
   {
-    "name": "LCONTAINER_LENGTH"
-  },
-  {
     "name": "MONKEY_PATCH_KEY_NAME"
   },
   {
@@ -169,6 +166,9 @@
   },
   {
     "name": "appendChild"
+  },
+  {
+    "name": "applyOnCreateInstructions"
   },
   {
     "name": "attachPatchData"
@@ -448,6 +448,9 @@
   },
   {
     "name": "invokeDirectivesHostBindings"
+  },
+  {
+    "name": "invokeHostBindingsInCreationMode"
   },
   {
     "name": "isAnimationProp"

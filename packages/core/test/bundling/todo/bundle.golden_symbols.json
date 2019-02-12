@@ -387,6 +387,9 @@
     "name": "appendChild"
   },
   {
+    "name": "applyOnCreateInstructions"
+  },
+  {
     "name": "assertTemplate"
   },
   {
@@ -910,6 +913,9 @@
   },
   {
     "name": "invokeDirectivesHostBindings"
+  },
+  {
+    "name": "invokeHostBindingsInCreationMode"
   },
   {
     "name": "isAnimationProp"

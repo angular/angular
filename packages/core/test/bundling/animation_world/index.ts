@@ -91,11 +91,13 @@ class BoxWithOverriddenStylesComponent {
 
     <box-with-overridden-styles
       style="display:block"
-      [style]="{'border-radius':'50px', 'border': '50px solid teal'}" [ngStyle]="{transform:'rotate(50deg)'}">
+      [style]="{'border-radius':'50px', 'border': '50px solid teal'}">
     </box-with-overridden-styles>
   `,
 })
 class AnimationWorldComponent {
+  @HostBinding('class') classVal = 'border';
+
   items: any[] = [
     {value: 1, active: false}, {value: 2, active: false}, {value: 3, active: false},
     {value: 4, active: false}, {value: 5, active: false}, {value: 6, active: false},
