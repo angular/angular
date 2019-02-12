@@ -245,6 +245,13 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "enableSummariesForJit": is_legacy_ngc,
         "enableIvy": _enable_ivy_value(ctx),
         "fullTemplateTypeCheck": ctx.attr.type_check,
+        # In Google3 we still want to use the symbol factory re-exports in order to
+        # not break existing apps inside Google. Unlike Bazel, Google3 does not only
+        # enforce strict dependencies of source files, but also for generated files
+        # (such as the factory files). Therefore in order to avoid that generated files
+        # introduce new module dependencies (which aren't explicitly declared), we need
+        # to enable external symbol re-exports by default when running with Blaze.
+        "createExternalSymbolFactoryReexports": (not _is_bazel()),
         # FIXME: wrong place to de-dupe
         "expectedOut": depset([o.path for o in expected_outs]).to_list(),
     }
