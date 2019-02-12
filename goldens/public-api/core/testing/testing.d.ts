@@ -131,9 +131,9 @@ export declare class TestComponentRenderer {
 }
 
 export declare type TestModuleMetadata = {
-    providers?: any[];
-    declarations?: any[];
-    imports?: any[];
+    providers?: Provider[];
+    declarations?: Array<Type<any> | any[] | any>;
+    imports?: Array<Type<any> | any[] | any>;
     schemas?: Array<SchemaMetadata | any[]>;
     aotSummaries?: () => any[];
 };
