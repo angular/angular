@@ -146,7 +146,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
   _onAnimationDone(event: AnimationEvent) {
     if (event.toState === 'hidden') {
       this._restoreFocus();
-    } else if (event.toState === 'visible' && this.bottomSheetConfig.autoFocus) {
+    } else if (event.toState === 'visible') {
       this._trapFocus();
     }
 
@@ -187,7 +187,9 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
       this._focusTrap = this._focusTrapFactory.create(this._elementRef.nativeElement);
     }
 
-    this._focusTrap.focusInitialElementWhenReady();
+    if (this.bottomSheetConfig.autoFocus) {
+      this._focusTrap.focusInitialElementWhenReady();
+    }
   }
 
   /** Restores focus to the element that was focused before the bottom sheet was opened. */

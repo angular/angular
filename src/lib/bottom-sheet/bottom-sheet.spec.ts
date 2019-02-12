@@ -547,6 +547,20 @@ describe('MatBottomSheet', () => {
           'Expected bottom sheet container to be focused.');
     }));
 
+    it('should create a focus trap if autoFocus is disabled', fakeAsync(() => {
+      bottomSheet.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+        autoFocus: false
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      const focusTrapAnchors = overlayContainerElement.querySelectorAll('.cdk-focus-trap-anchor');
+
+      expect(focusTrapAnchors.length).toBeGreaterThan(0);
+    }));
+
     it('should focus the first tabbable element of the bottom sheet on open when' +
       'autoFocus is enabled', fakeAsync(() => {
         bottomSheet.open(PizzaMsg, {
