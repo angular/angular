@@ -349,222 +349,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'accordion' of undefined",
     "notes": "Unknown"
   },
-  "CdkDrag standalone draggable should enable native drag interactions when there is a drag handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should not be able to drag the entire element if it has a handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to drag an element using its handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should not be able to drag the element if the handle is disabled": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should not be able to drag using the handle if the element is disabled": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to use a handle that was added after init": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to use more than one handle to drag the element": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to drag with a handle that is not a direct descendant": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should disable the tap highlight while dragging via the handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should preserve any existing `webkitTapHighlightColor`": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a drop container should dispatch the `sorted` event as an item is being sorted": {
-    "error": "TypeError: Cannot read property 'args' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should not move items in a vertical list if the pointer is too far away": {
-    "error": "Error: Expected $.previousIndex = -1 to equal 0.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should not move items in a horizontal list if pointer is too far away": {
-    "error": "Error: Expected $.previousIndex = -1 to equal 0.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should move the placeholder as an item is being sorted down": {
-    "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should move the placeholder as an item is being sorted down on a scrolled page": {
-    "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should move the placeholder as an item is being sorted up": {
-    "error": "Error: Expected 3 to be 2.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should move the placeholder as an item is being sorted up on a scrolled page": {
-    "error": "Error: Expected 3 to be 2.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should move the placeholder as an item is being sorted to the right": {
-    "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should move the placeholder as an item is being sorted to the left": {
-    "error": "Error: Expected 3 to be 2.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lay out the elements correctly, if an element skips multiple positions when sorting vertically": {
-    "error": "Error: Expected $[0] = 'Zero' to equal 'One'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lay out the elements correctly, when swapping down with a taller element": {
-    "error": "Error: Expected '' to be 'translate3d(0px, 25px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lay out the elements correctly, when swapping up with a taller element": {
-    "error": "Error: Expected '' to be 'translate3d(0px, -25px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lay out elements correctly, when swapping an item with margin": {
-    "error": "Error: Expected '' to be 'translate3d(0px, 37px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lay out the elements correctly, if an element skips multiple positions when sorting horizontally": {
-    "error": "Error: Expected $[0] = 'Zero' to equal 'One'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lay out the elements correctly, when swapping to the right with a wider element": {
-    "error": "Error: Expected '' to be 'translate3d(75px, 0px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lay out the elements correctly, when swapping left with a wider element": {
-    "error": "Error: Expected '' to be 'translate3d(-75px, 0px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lay out elements correctly, when horizontally swapping an item with margin": {
-    "error": "Error: Expected '' to be 'translate3d(87px, 0px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should not swap position for tiny pointer movements": {
-    "error": "Error: Expected $[0] = 'Zero' to equal 'One'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should swap position for pointer movements in the opposite direction": {
-    "error": "Error: Expected $[0] = 'Zero' to equal 'One'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should be able to customize the preview element": {
-    "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should position custom previews next to the pointer": {
-    "error": "Error: Expected 'translate3d(8px, 3533px, 0px)' to be 'translate3d(50px, 50px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lock position inside a drop container along the x axis": {
-    "error": "Error: Expected 'translate3d(58px, 3533px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lock position inside a drop container along the y axis": {
-    "error": "Error: Expected 'translate3d(8px, 3583px, 0px)' to be 'translate3d(50px, 100px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should inherit the position locking from the drop container": {
-    "error": "Error: Expected 'translate3d(58px, 3533px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should be able to customize the placeholder": {
-    "error": "Error: Expected cdk-drag cdk-drag-placeholder to contain 'custom-placeholder'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should clear the `transform` value from siblings when item is dropped`": {
-    "error": "Error: Expected '' to be truthy.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should not move the item if the group is disabled": {
-    "error": "Error: Expected $.length = 0 to equal 4.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a connected drop container should dispatch the `dropped` event when an item has been dropped into a new container": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should be able to move the element over a new container and return it": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should be able to move the element over a new container and return it to the initial one, even if it no longer matches the enterPredicate": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should transfer the DOM element from one drop zone to another": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should not be able to transfer an item into a container that is not in `connectedTo`": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should not be able to transfer an item that does not match the `enterPredicate`": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should call the `enterPredicate` with the item and the container it is entering": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should be able to start dragging after an item has been transferred": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should be able to return the last item inside its initial container": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should be able to connect two drop zones by id": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should be able to connect two drop zones using the drop list group": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should be able to pass a single id to `connectedTo`": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should return DOM element to its initial container after it is dropped, in a container with one draggable item": {
-    "error": "Error: Expected $.container.element.nativeElement = <div cdkdroplist=\"\" class=\"cdk-drop-list\" ng-reflect-connected-to=\"[object Object]\" id=\"cdk-drop-list-86\">...</div> to equal <div cdkdroplist=\"\" class=\"cdk-drop-list\" ng-reflect-connected-to=\"[object Object]\" id=\"cdk-drop-list-87\">...</div>.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a connected drop container should be able to return an element to its initial container in the same sequence, even if it is not connected to the current container": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should not be able to drop an element into a container that is under another element": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should set a class when a container can receive an item": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a connected drop container should toggle the `receiving` class when the item enters a new list": {
-    "error": "TypeError: Cannot read property 'element' of undefined",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
   "CdkTable in a typical simple use case should initialize with a connected data source": {
     "error": "TypeError: Cannot read property 'viewContainer' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
@@ -797,6 +581,70 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'viewContainer' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
+  "CdkDrag standalone draggable should enable native drag interactions when there is a drag handle": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should not be able to drag the entire element if it has a handle": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should be able to drag an element using its handle": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should not be able to drag the element if the handle is disabled": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should not be able to drag using the handle if the element is disabled": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should be able to use a handle that was added after init": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should be able to use more than one handle to drag the element": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should be able to drag with a handle that is not a direct descendant": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should disable the tap highlight while dragging via the handle": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should preserve any existing `webkitTapHighlightColor`": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag in a drop container should be able to customize the preview element": {
+    "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
+    "notes": "Unknown"
+  },
+  "CdkDrag in a drop container should position custom previews next to the pointer": {
+    "error": "Error: Expected 'translate3d(8px, 33px, 0px)' to be 'translate3d(50px, 50px, 0px)'.",
+    "notes": "Unknown"
+  },
+  "CdkDrag in a drop container should lock position inside a drop container along the x axis": {
+    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
+    "notes": "Unknown"
+  },
+  "CdkDrag in a drop container should lock position inside a drop container along the y axis": {
+    "error": "Error: Expected 'translate3d(8px, 83px, 0px)' to be 'translate3d(50px, 100px, 0px)'.",
+    "notes": "Unknown"
+  },
+  "CdkDrag in a drop container should inherit the position locking from the drop container": {
+    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
+    "notes": "Unknown"
+  },
+  "CdkDrag in a drop container should be able to customize the placeholder": {
+    "error": "Error: Expected cdk-drag cdk-drag-placeholder to contain 'custom-placeholder'.",
+    "notes": "Unknown"
+  },
   "CdkTree should clear out the `mostRecentTreeNode` on destroy": {
     "error": "Error: Expected false to be true.",
     "notes": "Unknown"
@@ -1005,10 +853,6 @@ window.testBlocklist = {
     "error": "Error: Expected true to be false.",
     "notes": "Unknown"
   },
-  "MatChipList StandardChipList with selected chips should have role listbox": {
-    "error": "Error: Expected null to be 'listbox'.",
-    "notes": "Unknown"
-  },
   "MatChipList StandardChipList focus behaviors should focus the first chip on focus": {
     "error": "Error: Expected -1 to be 0.",
     "notes": "Unknown"
@@ -1026,10 +870,6 @@ window.testBlocklist = {
     "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
   },
   "MatChipList StandardChipList focus behaviors on chip destroy should not focus if chip list is not focused": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList focus behaviors on chip destroy should move focus to the last chip when the focused chip was deleted inside acomponent with animations": {
     "error": "TypeError: Cannot read property 'focus' of undefined",
     "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
   },
@@ -1081,131 +921,23 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'focus' of undefined",
     "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
   },
-  "MatChipList selection logic should float placeholder if chip is selected": {
-    "error": "Error: Expected false to be true, 'placeholder should be floating'.",
-    "notes": "Unknown"
-  },
-  "MatChipList selection logic should select an option that was added after initialization": {
-    "error": "Error: Expected undefined to contain 'potatoes-8', 'Expect value contain the value of the last option'.",
-    "notes": "Unknown"
-  },
-  "MatChipList selection logic should not select disabled chips": {
-    "error": "TypeError: Cannot read property 'selected' of undefined",
-    "notes": "Unknown"
-  },
-  "MatChipList forms integration single selection should take an initial view value with reactive forms": {
-    "error": "Error: Expected false to be truthy 'Expect pizza-1 chip to be selected'.",
-    "notes": "Unknown"
-  },
-  "MatChipList forms integration single selection should set the view value from the form": {
-    "error": "Error: Expected false to be truthy 'Expect chip to be selected'.",
-    "notes": "Unknown"
-  },
-  "MatChipList forms integration single selection should update the form value when the view changes": {
-    "error": "Error: Expected null to equal 'steak-0'.",
-    "notes": "Unknown"
-  },
-  "MatChipList forms integration single selection should clear the selection when a nonexistent option value is selected": {
-    "error": "Error: Expected false to be truthy 'Expected chip with the value to be selected.'.",
-    "notes": "Unknown"
-  },
-  "MatChipList forms integration single selection should set the control to dirty when the chip list's value changes in the DOM": {
-    "error": "Error: Expected false to equal true.",
-    "notes": "Unknown"
-  },
-  "MatChipList forms integration single selection should be able to programmatically select a falsy option": {
-    "error": "Error: Expected false to be true, 'Expected first option to be selected'.",
-    "notes": "Unknown"
-  },
-  "MatChipList forms integration single selection should blur the form field when the active chip is blurred": {
-    "error": "Error: Expected ng-tns-c10704-0 mat-primary mat-form-field mat-form-field-type-mat-chip-list mat-form-field-appearance-legacy mat-form-field-can-float mat-form-field-has-label mat-form-field-hide-placeholder ng-untouched ng-pristine ng-valid _mat-animation-noopable to contain 'mat-focused'.",
-    "notes": "Unknown"
-  },
-  "MatChipList forms integration multiple selection should take an initial view value with reactive forms": {
-    "error": "Error: Expected false to be truthy 'Expect pizza-1 chip to be selected'.",
-    "notes": "Unknown"
-  },
-  "MatChipList forms integration multiple selection should set the view value from the form": {
-    "error": "Error: Expected false to be truthy 'Expect chip to be selected'.",
-    "notes": "Unknown"
-  },
-  "MatChipList forms integration multiple selection should update the form value when the view changes": {
-    "error": "Error: Expected null to equal [ 'steak-0' ].",
-    "notes": "Unknown"
-  },
-  "MatChipList forms integration multiple selection should clear the selection when a nonexistent option value is selected": {
-    "error": "Error: Expected false to be truthy 'Expected chip with the value to be selected.'.",
-    "notes": "Unknown"
-  },
-  "MatChipList chip list with chip input should take an initial view value with reactive forms": {
-    "error": "Error: Expected false to be truthy 'Expect pizza-1 chip to be selected'.",
-    "notes": "Unknown"
-  },
-  "MatChipList chip list with chip input should set the view value from the form": {
-    "error": "Error: Expected false to be truthy 'Expect chip to be selected'.",
-    "notes": "Unknown"
-  },
-  "MatChipList chip list with chip input should update the form value when the view changes": {
-    "error": "Error: Expected null to equal [ 'steak-0' ].",
-    "notes": "Unknown"
-  },
-  "MatChipList chip list with chip input should clear the selection when a nonexistent option value is selected": {
-    "error": "Error: Expected false to be truthy 'Expected chip with the value to be selected.'.",
-    "notes": "Unknown"
-  },
-  "MatChipList chip list with chip input should set the control to dirty when the chip list's value changes in the DOM": {
-    "error": "Error: Expected false to equal true.",
-    "notes": "Unknown"
-  },
-  "MatChipList chip list with chip input should set aria-invalid if the form field is invalid": {
-    "error": "Error: Expected 'true' to be 'false'.",
-    "notes": "Unknown"
-  },
-  "MatStepper basic stepper should change selected index on header click": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper basic stepper should display the correct label": {
-    "error": "Error: cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.",
-    "notes": "Unknown"
-  },
   "MatStepper basic stepper should go to next available step when the next button is clicked": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper basic stepper should set the next stepper button type to \"submit\"": {
-    "error": "TypeError: Cannot read property 'nativeElement' of null",
+    "error": "Error: Expected 2 to be 1.",
     "notes": "Unknown"
   },
   "MatStepper basic stepper should go to previous available step when the previous button is clicked": {
-    "error": "Error: cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.",
-    "notes": "Unknown"
-  },
-  "MatStepper basic stepper should set the previous stepper button type to \"button\"": {
-    "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
-  },
-  "MatStepper basic stepper should set the correct step position for animation": {
-    "error": "Error: cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.",
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
   "MatStepper basic stepper should not set focus on header of selected step if header is not clicked": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "error": "Error: Expected 2 to be 1.",
     "notes": "Unknown"
   },
   "MatStepper basic stepper should focus next step header if focus is inside the stepper": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "error": "Error: Expected 2 to be 1.",
     "notes": "Unknown"
   },
   "MatStepper basic stepper should only be able to return to a previous step if it is editable": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper basic stepper should set create icon if step is editable and completed": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper basic stepper should set done icon if step is not editable and is completed": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
@@ -1214,30 +946,10 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatStepper basic stepper should adjust the index when removing a step before the current one": {
-    "error": "Error: cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.",
-    "notes": "Unknown"
-  },
-  "MatStepper RTL should reverse animation in RTL mode": {
-    "error": "Error: cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.",
+    "error": "Error: Expected 2 to be 1.",
     "notes": "Unknown"
   },
   "MatStepper linear stepper should not move to next step if current step is pending": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper linear stepper with no `stepControl` should not move to the next step if the current one is not completed ": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper linear stepper with `stepControl` should have the `stepControl` take precedence when `completed` is set": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper vertical stepper should support using the left/right arrows to move focus": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper vertical stepper should support using the up/down arrows to move focus": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
@@ -1294,7 +1006,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer methods should restore focus on close if focus is inside drawer": {
-    "error": "Error: Expected <button class=\"ng-tns-c21129-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <button class=\"ng-tns-c21113-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer methods should not restore focus on close if focus is outside drawer": {
@@ -1306,15 +1018,15 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"over\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21424-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21408-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"push\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21458-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21442-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should focus the drawer if there are no focusable elements": {
-    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c21526-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c21510-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawerContainer should animate the content when a drawer is added at a later point": {
@@ -1346,7 +1058,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c21976-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
+    "error": "Error: Expected ng-tns-c21960-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "Unknown"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
@@ -1358,40 +1070,8 @@ window.testBlocklist = {
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatSort should use the column definition if used within an mat table": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTree flat tree should initialize with rendered dataNodes": {
-    "error": "TypeError: Cannot read property 'classList' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "Unknown"
-  },
-  "MatTree flat tree with toggle should expand/collapse the node": {
-    "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTree flat tree with toggle should expand/collapse the node recursively": {
-    "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTree flat tree with undefined or null children should initialize with rendered dataNodes": {
-    "error": "TypeError: Cannot read property 'classList' of undefined",
-    "notes": "Unknown"
-  },
-  "MatTree nested tree with undefined or null children should initialize with rendered dataNodes": {
-    "error": "TypeError: Cannot read property 'classList' of undefined",
-    "notes": "Unknown"
-  },
-  "MatTree nested tree should initialize with rendered dataNodes": {
-    "error": "TypeError: Cannot read property 'classList' of undefined",
-    "notes": "Unknown"
-  },
-  "MatTree nested tree with toggle should expand/collapse the node": {
-    "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTree nested tree with toggle should expand/collapse the node recursively": {
-    "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatAccordion should ensure only one item is expanded at a time": {
     "error": "Error: Expected undefined to be truthy.",
@@ -1647,6 +1327,42 @@ window.testBlocklist = {
   },
   "nested MatTabGroup with enabled animations should not throw when creating a component with nested tab groups": {
     "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'nativeElement' of undefined.",
+    "notes": "Unknown"
+  },
+  "MatTree flat tree should initialize with rendered dataNodes": {
+    "error": "TypeError: Cannot read property 'classList' of undefined",
+    "notes": "Unknown"
+  },
+  "MatTree flat tree with toggle should expand/collapse the node": {
+    "error": "TypeError: Cannot read property 'click' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "MatTree flat tree with toggle should expand/collapse the node recursively": {
+    "error": "TypeError: Cannot read property 'click' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "MatTree flat tree with undefined or null children should initialize with rendered dataNodes": {
+    "error": "TypeError: Cannot read property 'classList' of undefined",
+    "notes": "Unknown"
+  },
+  "MatTree nested tree with undefined or null children should initialize with rendered dataNodes": {
+    "error": "TypeError: Cannot read property 'classList' of undefined",
+    "notes": "Unknown"
+  },
+  "MatTree nested tree should initialize with rendered dataNodes": {
+    "error": "TypeError: Cannot read property 'classList' of undefined",
+    "notes": "Unknown"
+  },
+  "MatTree nested tree with toggle should expand/collapse the node": {
+    "error": "TypeError: Cannot read property 'click' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "MatTree nested tree with toggle should expand/collapse the node recursively": {
+    "error": "TypeError: Cannot read property 'click' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "MatGridList should throw error if rowHeight ratio is invalid": {
+    "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
     "notes": "Unknown"
   },
   "Dialog should open a dialog with a component": {
@@ -1917,34 +1633,6 @@ window.testBlocklist = {
     "error": "Error: Must provide a portal to attach",
     "notes": "Unknown"
   },
-  "ConnectedPositionStrategy with origin on document body when near viewport edge should reposition the overlay if it would go off the left of the screen": {
-    "error": "Error: Expected -3018 to be -3048.",
-    "notes": "Unknown"
-  },
-  "ConnectedPositionStrategy with origin on document body when near viewport edge should reposition the overlay if it would go off the right of the screen": {
-    "error": "Error: Expected -3048 to be -3018.",
-    "notes": "Unknown"
-  },
-  "ConnectedPositionStrategy with origin on document body should pick the fallback position that shows the largest area of the element": {
-    "error": "Error: Expected 999 to be 939.",
-    "notes": "Unknown"
-  },
-  "BlockScrollStrategy should't do anything if the page isn't scrollable": {
-    "error": "Error: Expected cdk-global-scrollblock not to contain 'cdk-global-scrollblock'.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy positioning properties in ltr should use `right` when positioning an element at the end": {
-    "error": "Error: Expected '' to be truthy.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy positioning properties in rtl should use `right` when positioning an element at the start": {
-    "error": "Error: Expected '' to be truthy.",
-    "notes": "Unknown"
-  },
-  "FlexibleConnectedPositionStrategy positioning properties vertical should use `bottom` when positioning at element along the bottom": {
-    "error": "Error: Expected '' to be truthy.",
-    "notes": "Unknown"
-  },
   "MatAutocomplete aria should set role of autocomplete panel to listbox": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
@@ -1953,21 +1641,9 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
-  "MatAutocomplete Fallback positions should use below positioning by default": {
-    "error": "Error: Expected 739 to equal 438.",
-    "notes": "Unknown"
-  },
-  "MatAutocomplete Fallback positions should reposition the panel on scroll": {
-    "error": "Error: Expected 3972 to equal 3671.",
-    "notes": "Unknown"
-  },
   "MatAutocomplete Option selection should handle `optionSelections` being accessed too early": {
     "error": "TypeError: Cannot read property 'autocomplete' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatAutocomplete should be able to set a custom panel connection element": {
-    "error": "Error: Expected 665 to be 827, 'Expected autocomplete panel to align with the bottom of the new origin.'.",
-    "notes": "Unknown"
   },
   "MatBottomSheet should open a bottom sheet with a component": {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
@@ -2177,57 +1853,21 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
-  "MatDatepicker with MatNativeDateModule datepicker with ngModel should update datepicker when model changes": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with ngModel should update model when date is selected": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with ngModel should mark input dirty after input event": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with ngModel should mark input dirty after date selected": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with ngModel should not mark dirty after model change": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with ngModel should mark input touched on blur": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with ngModel should reformat the input value on blur": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with ngModel should not reformat invalid dates on blur": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with ngModel should mark input touched on calendar selection": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
-  },
   "MatDatepicker with MatNativeDateModule datepicker with formControl should update datepicker when formControl changes": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with formControl should update formControl when date is selected": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with formControl should disable input when form control disabled": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with formControl should disable toggle when form control disabled": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should set `aria-haspopup` on the toggle button": {
     "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
@@ -2290,52 +1930,40 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should use min and max dates specified by the input": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should mark invalid when value is before min": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should mark invalid when value is after max": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should not mark invalid when value equals min": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should not mark invalid when value equals max": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should not mark invalid when value is between min and max": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with filter and validation should mark input invalid": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with filter and validation should disable filtered calendar cells": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
+    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule datepicker with change and input events should fire dateChange and dateInput events when user selects calendar date": {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDatepicker with MatNativeDateModule with ISO 8601 strings as input should coerce ISO strings": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
-  },
-  "MatDatepicker with MatNativeDateModule with events should dispatch an event when a datepicker is opened": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
-  },
-  "MatDatepicker with MatNativeDateModule with events should dispatch an event when a datepicker is closed": {
-    "error": "Error: Cannot instantiate cyclic dependency! InjectionToken LocaleId",
-    "notes": "FW-1016: SkipSelf flag ignored when directive injector passes to module injector"
   },
   "MatDatepicker with MatNativeDateModule datepicker directionality should pass along the directionality to the dialog in touch mode": {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
@@ -2685,26 +2313,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'openMenu' of undefined",
     "notes": "Unknown"
   },
-  "MatMenu positions should default to the \"below\" and \"after\" positions": {
-    "error": "Error: Expected ng-tns-c55711-0 ng-trigger ng-trigger-transformMenu mat-menu-panel custom-one custom-two mat-menu-after ng-star-inserted mat-elevation-z4 mat-menu-above ng-animating to contain 'mat-menu-below'.",
-    "notes": "Unknown"
-  },
-  "MatMenu fallback positions should re-position a menu with custom position set": {
-    "error": "Error: Expected 716 to be 798, 'Expected menu to open in \"below\" position if \"above\" position wouldn't fit.'.",
-    "notes": "Unknown"
-  },
-  "MatMenu overlapping trigger explicitly overlapping positions the overlay below the trigger": {
-    "error": "Error: Expected 734 to be 780, 'Expected menu to open in default \"below\" position.'.",
-    "notes": "Unknown"
-  },
-  "MatMenu overlapping trigger not overlapping positions the overlay below the trigger": {
-    "error": "Error: Expected 716 to be 798, 'Expected menu to open directly below the trigger.'.",
-    "notes": "Unknown"
-  },
-  "MatMenu overlapping trigger not overlapping repositions the origin to be below, so the menu opens from the trigger": {
-    "error": "Error: Expected ng-tns-c55948-0 ng-trigger ng-trigger-transformMenu mat-menu-panel mat-menu-after ng-star-inserted mat-elevation-z4 mat-menu-above ng-animating to contain 'mat-menu-below'.",
-    "notes": "Unknown"
-  },
   "MatMenu animations should enable ripples on items by default": {
     "error": "TypeError: Cannot read property 'query' of null",
     "notes": "Unknown"
@@ -2718,7 +2326,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatMenu nested menu should toggle a nested menu when its trigger is hovered": {
-    "error": "Error: Expected mat-menu-item mat-menu-item-submenu-trigger ng-tns-c56267-0 cdk-focused cdk-program-focused to contain 'mat-menu-item-highlighted', 'Expected the trigger to be highlighted'.",
+    "error": "Error: Expected mat-menu-item mat-menu-item-submenu-trigger ng-tns-c56347-0 cdk-focused cdk-program-focused to contain 'mat-menu-item-highlighted', 'Expected the trigger to be highlighted'.",
     "notes": "Unknown"
   },
   "MatMenu nested menu should close all the open sub-menus when the hover state is changed at the root": {
@@ -2783,22 +2391,6 @@ window.testBlocklist = {
   },
   "MatSelect with custom trigger should allow the user to customize the label": {
     "error": "TypeError: Cannot read property 'selected' of undefined",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning when scrolled should align the first option properly when scrolled": {
-    "error": "Error: Expected false to be true, 'Expected trigger to align with option 0.'.",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning when scrolled should align a centered option properly when scrolled": {
-    "error": "Error: Expected false to be true, 'Expected trigger to align with option 4.'.",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning when scrolled should align a centered option properly when scrolling while the panel is open": {
-    "error": "Error: Expected false to be true, 'Expected trigger to align with option 4.'.",
-    "notes": "Unknown"
-  },
-  "MatSelect positioning when scrolled should fall back to \"below\" positioning properly when scrolled": {
-    "error": "Error: Expected 2561 to equal 2799.",
     "notes": "Unknown"
   },
   "MatSnackBar should have the role of `alert` with an `assertive` politeness if no announcement message is provided": {
@@ -3134,7 +2726,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatTable with basic data source should be able to create a table with the right content and without when row": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable with basic data source should create a table with special when row": {
@@ -3150,11 +2742,11 @@ window.testBlocklist = {
     "notes": "FW-856: Attempting to access content children before view is initialized"
   },
   "MatTable should render with MatTableDataSource and sort": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable should render with MatTableDataSource and pagination": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable should apply custom sticky CSS class to sticky cells": {
@@ -3162,52 +2754,48 @@ window.testBlocklist = {
     "notes": "FW-856: Attempting to access content children before view is initialized"
   },
   "MatTable should not throw when a row definition is on an ng-container": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'viewContainer' of undefined.",
+    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'diff' of undefined.",
     "notes": "Unknown"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should create table and display data source contents": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter changing data should update the table contents": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should be able to filter the table contents": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should not match concatenated words": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should be able to sort the table contents": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should by default correctly sort an empty string": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should by default correctly sort undefined values": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should sort zero correctly": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should be able to page the table contents": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should sort strings with numbers larger than MAX_SAFE_INTEGER correctly": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatGridList should throw error if rowHeight ratio is invalid": {
-    "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
-    "notes": "Unknown"
   }
 };
 // clang-format on

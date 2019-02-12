@@ -392,10 +392,18 @@ export function getOrCreateInjectable<T>(
 
   if ((flags & (InjectFlags.Self | InjectFlags.Host)) === 0) {
     const moduleInjector = lView[INJECTOR];
-    if (moduleInjector) {
-      return moduleInjector.get(token, notFoundValue, flags & InjectFlags.Optional);
-    } else {
-      return injectRootLimpMode(token, notFoundValue, flags & InjectFlags.Optional);
+    // switch to `injectInjectorOnly` implementation for module injector, since module injector
+    // should not have access to Component/Directive DI scope (that may happen through
+    // `directiveInject` implementation)
+    const previousInjectImplementation = setInjectImplementation(undefined);
+    try {
+      if (moduleInjector) {
+        return moduleInjector.get(token, notFoundValue, flags & InjectFlags.Optional);
+      } else {
+        return injectRootLimpMode(token, notFoundValue, flags & InjectFlags.Optional);
+      }
+    } finally {
+      setInjectImplementation(previousInjectImplementation);
     }
   }
   if (flags & InjectFlags.Optional) {
