@@ -100,9 +100,9 @@ describe('Bazel-workspace Schematic', () => {
           'load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")');
     });
 
-    it('should add sass_binary rules in src/BUILD', () => {
+    it('should add multi_sass_binary rule in src/BUILD', () => {
       const content = host.readContent('/src/BUILD.bazel');
-      expect(content).toContain('load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")');
+      expect(content).toContain('load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary")');
       expect(content).toContain('glob(["**/*.scss"])');
     });
   });
