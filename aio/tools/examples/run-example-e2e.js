@@ -21,26 +21,16 @@ const IGNORED_EXAMPLES = [
 ];
 
 const fixmeIvyExamples = [
-  // fixmeIvy('unknown') movie list route is not rendering
-  'ajs-quick-reference',
   // fixmeIvy('unknown') version value goes undefined when clicking Major button after clicking
   // Minor button twice
   'component-interaction',
   // fixmeIvy('unknown') failed content projection and applied styles
   'component-styles',
-  // fails due to incompatible AoT code with a tree-shakable provider and a non-type constructor
-  // argument
-  'dependency-injection',
-  // fixmeIvy('unknown') Error: Internal Error: The name heroForm is already defined in scope to be
-  // [object Object]
-  'forms',
-  // fixmeIvy('unknown') ERROR Error: Unable to find context associated with [object HTMLInputElement]
+  // fixmeIvy('unknown') ERROR Error: Unable to find context associated with [object
+  // HTMLInputElement]
   'http',
   // fixmeIvy('unknown') app fails at runtime due to missing external service (goog is undefined)
-  'i18n',
-  // fixmeIvy('unknown') ERROR in HostResourceResolver: could not resolve app/app.component.css
-  // in context of aio/content/examples/styleguide/src/01-01/app/heroes/hero.component.avoid.ts)
-  'styleguide'
+  'i18n'
 ];
 
 if (argv.ivy) {
@@ -236,8 +226,7 @@ function runE2eTestsCLI(appDir, outputFile) {
   console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
-  const commands = config.e2e ||
-      [{cmd: 'yarn', args: ['e2e', '--prod', '--no-webdriver-update']}];
+  const commands = config.e2e || [{cmd: 'yarn', args: ['e2e', '--prod', '--no-webdriver-update']}];
 
   const e2eSpawnPromise = commands.reduce((prevSpawnPromise, {cmd, args}) => {
     return prevSpawnPromise.then(() => {
@@ -336,7 +325,7 @@ function getE2eSpecs(basePath, filter) {
 // Find all e2e specs in a given example folder.
 function getE2eSpecsFor(basePath, specFile, filter) {
   // Only get spec file at the example root.
-  const e2eSpecGlob = `${filter ? ` * ${filter} * ` : '*'}/${specFile}`;
+  const e2eSpecGlob = `${filter ? '*' + filter + '*' : '*'}/${specFile}`;
   return globby(e2eSpecGlob, {cwd: basePath, nodir: true})
       .then(
           paths => paths.filter(file => !IGNORED_EXAMPLES.some(ignored => file.startsWith(ignored)))
