@@ -13,7 +13,7 @@ import {ComponentFixture, TestBed, fakeAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, ivyEnabled, modifiedInIvy} from '@angular/private/testing';
+import {ivyEnabled, modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 export function createUrlResolverWithoutPackagePrefix(): UrlResolver {
   return new UrlResolver();
@@ -1469,8 +1469,7 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
           expect(log).toEqual(['inner-start', 'main-tpl', 'outer-tpl']);
         });
 
-        fixmeIvy(
-            'FW-842: View engine dirty-checks projected views when the declaration place is checked')
+        modifiedInIvy('Views should not be dirty checked if inserted into CD-detached view tree')
             .it('should dirty check projected views if the declaration place is dirty checked',
                 () => {
                   ctx.detectChanges(false);
@@ -1490,6 +1489,28 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
                   mainComp.cdRef.detectChanges();
 
                   expect(log).toEqual(['main-start', 'main-tpl']);
+                });
+
+        onlyInIvy('Views should not be dirty checked if inserted into CD-detached view tree')
+            .it('should not dirty check views that are inserted into a detached tree, even if the declaration place is dirty checked',
+                () => {
+                  ctx.detectChanges(false);
+                  log = [];
+                  innerComp.cdRef.detach();
+                  mainComp.cdRef.detectChanges();
+
+                  expect(log).toEqual(['main-start', 'outer-start']);
+
+                  log = [];
+                  outerComp.cdRef.detectChanges();
+
+                  expect(log).toEqual(['outer-start']);
+
+                  log = [];
+                  outerComp.cdRef.detach();
+                  mainComp.cdRef.detectChanges();
+
+                  expect(log).toEqual(['main-start']);
                 });
       });
     });
