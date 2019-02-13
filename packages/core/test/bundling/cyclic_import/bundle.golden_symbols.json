@@ -492,9 +492,6 @@
     "name": "leaveView"
   },
   {
-    "name": "loadInternal"
-  },
-  {
     "name": "locateHostElement"
   },
   {
