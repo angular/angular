@@ -1821,7 +1821,7 @@ describe('MatSelect', () => {
         expect(panel.scrollTop).toBe(320, 'Expected scroll to be at the 9th option.');
       }));
 
-      it('should scroll top the top when pressing HOME', fakeAsync(() => {
+      it('should scroll to the top when pressing HOME', fakeAsync(() => {
         for (let i = 0; i < 20; i++) {
           dispatchKeyboardEvent(host, 'keydown', DOWN_ARROW);
           fixture.detectChanges();
