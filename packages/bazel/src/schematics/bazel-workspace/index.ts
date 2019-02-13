@@ -95,7 +95,7 @@ export default function(options: BazelWorkspaceOptions): Rule {
       'ANGULAR_VERSION': existingVersions.Angular || clean(latestVersions.Angular),
       'RXJS_VERSION': existingVersions.RxJs || clean(latestVersions.RxJs),
       // TODO(kyliau): Consider moving this to latest-versions.ts
-      'RULES_SASS_VERSION': '1.15.1',
+      'RULES_SASS_VERSION': '1.17.0',
     };
 
     return mergeWith(apply(url('./files'), [
