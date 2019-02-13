@@ -33,7 +33,7 @@ on `CdkStep` in a `linear` stepper.
 
 #### Editable step
 By default, steps are editable, which means users can return to previously completed steps and
-edit their responses. `editable="true"` can be set on `CdkStep` to change the default.
+edit their responses. `editable="false"` can be set on `CdkStep` to change the default.
 
 #### Completed step
 By default, the `completed` attribute of a step returns `true` if the step is valid (in case of

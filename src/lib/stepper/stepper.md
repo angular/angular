@@ -127,7 +127,7 @@ on `mat-step`.
 
 #### Editable step
 By default, steps are editable, which means users can return to previously completed steps and
-edit their responses. `editable="true"` can be set on `mat-step` to change the default.
+edit their responses. `editable="false"` can be set on `mat-step` to change the default.
 
 <!-- example(stepper-editable) -->
 
