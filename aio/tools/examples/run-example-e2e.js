@@ -34,6 +34,10 @@ const fixmeIvyExamples = [
   'i18n'
 ];
 
+if (argv.ivy) {
+  IGNORED_EXAMPLES.push(...fixmeIvyExamples);
+}
+
 /**
  * Run Protractor End-to-End Tests for Doc Samples
  *
