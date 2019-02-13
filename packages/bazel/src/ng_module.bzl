@@ -330,12 +330,12 @@ def ngc_compile_action(
         label,
         inputs,
         outputs,
-        dts_bundle_out,
         messages_out,
         tsconfig_file,
         node_opts,
         locale = None,
-        i18n_args = []):
+        i18n_args = [],
+        dts_bundle_out = None):
     """Helper function to create the ngc action.
 
     This is exposed for google3 to wire up i18n replay rules, and is not intended
@@ -346,12 +346,12 @@ def ngc_compile_action(
       label: the label of the ng_module being compiled
       inputs: passed to the ngc action's inputs
       outputs: passed to the ngc action's outputs
-      dts_bundle_out: produced flattened dts file
       messages_out: produced xmb files
       tsconfig_file: tsconfig file with settings used for the compilation
       node_opts: list of strings, extra nodejs options.
       locale: i18n locale, or None
       i18n_args: additional command-line arguments to ngc
+      dts_bundle_out: produced flattened dts file
 
     Returns:
       the parameters of the compilation which will be used to replay the ngc action for i18N.
@@ -479,7 +479,7 @@ def _compile_action(ctx, inputs, outputs, dts_bundle_out, messages_out, tsconfig
         ],
     )
 
-    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, dts_bundle_out, messages_out, tsconfig_file, node_opts)
+    return ngc_compile_action(ctx, ctx.label, action_inputs, outputs, messages_out, tsconfig_file, node_opts, None, [], dts_bundle_out)
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
