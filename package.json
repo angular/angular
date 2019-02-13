@@ -27,7 +27,9 @@
     "test-ivy-aot": "bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot",
     "test-fixme-ivy-aot": "bazel test --define=compile=aot --build_tag_filters=-no-ivy-aot --test_tag_filters=-no-ivy-aot",
     "list-fixme-ivy-targets": "bazel query --output=label 'attr(\"tags\", \"\\[.*fixme-ivy.*\\]\", //...) except kind(\"sh_binary\", //...) except kind(\"devmode_js_sources\", //...)' | sort",
-    "bazel": "bazel"
+    "bazel": "bazel",
+    "build": "bazel build  --define=compile=aot --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot //...",
+    "test": "yarn test-ivy-aot //..."
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
@@ -94,7 +96,7 @@
     "typescript": "~3.2.2",
     "xhr2": "0.1.4",
     "yargs": "9.0.1",
-    "zone.js": "^0.8.26"
+    "zone.js": "0.8.29"
   },
   "optionalDependencies": {
     "fsevents": "2.0.1"

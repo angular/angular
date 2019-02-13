@@ -85,9 +85,9 @@ function runInTestZone(
   ProxyZoneSpec.assertPresent();
   // We need to create the AsyncTestZoneSpec outside the ProxyZone.
   // If we do it in ProxyZone then we will get to infinite recursion.
-  const proxyZone = Zone.current.getZoneWith('ProxyZoneSpec');
+  const proxyZone = Zone.current.getZoneWith('ProxyZoneSpec') !;
   const previousDelegate = proxyZoneSpec.getDelegate();
-  proxyZone.parent.run(() => {
+  proxyZone.parent !.run(() => {
     const testZoneSpec: ZoneSpec = new AsyncTestZoneSpec(
         () => {
           // Need to restore the original zone.
