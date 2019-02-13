@@ -24,13 +24,13 @@ export type ComponentTemplate<T> = {
 /**
  * Definition of what a view queries function should look like.
  */
-export type ViewQueriesFunction<T> = (rf: RenderFlags, ctx: T) => void;
+export type ViewQueriesFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => void;
 
 /**
  * Definition of what a content queries function should look like.
  */
-export type ContentQueriesFunction<T> = (rf: RenderFlags, ctx: T, directiveIndex: number) => void;
-
+export type ContentQueriesFunction<T> =
+    <U extends T>(rf: RenderFlags, ctx: U, directiveIndex: number) => void;
 
 /**
  * Definition of what a factory function should look like.
