@@ -32,7 +32,7 @@ import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection'
 import {LQueries} from './interfaces/query';
 import {GlobalTargetResolver, ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TData, TVIEW, TView, T_HOST} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
@@ -1806,20 +1806,26 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
     const def = tView.data[i] as DirectiveDef<any>;
     const directive = viewData[i];
     if (def.hostBindings) {
-      const previousExpandoLength = expando.length;
-      setCurrentDirectiveDef(def);
-      def.hostBindings !(RenderFlags.Create, directive, tNode.index - HEADER_OFFSET);
-      setCurrentDirectiveDef(null);
-      // `hostBindings` function may or may not contain `allocHostVars` call
-      // (e.g. it may not if it only contains host listeners), so we need to check whether
-      // `expandoInstructions` has changed and if not - we still push `hostBindings` to
-      // expando block, to make sure we execute it for DI cycle
-      if (previousExpandoLength === expando.length && firstTemplatePass) {
-        expando.push(def.hostBindings);
-      }
+      invokeHostBindings(def, expando, directive, tNode, firstTemplatePass);
     } else if (firstTemplatePass) {
       expando.push(null);
     }
+  }
+}
+
+export function invokeHostBindings(
+    def: DirectiveDef<any>, expando: ExpandoInstructions, directive: any, tNode: TNode,
+    firstTemplatePass: boolean) {
+  const previousExpandoLength = expando.length;
+  setCurrentDirectiveDef(def);
+  def.hostBindings !(RenderFlags.Create, directive, tNode.index - HEADER_OFFSET);
+  setCurrentDirectiveDef(null);
+  // `hostBindings` function may or may not contain `allocHostVars` call
+  // (e.g. it may not if it only contains host listeners), so we need to check whether
+  // `expandoInstructions` has changed and if not - we still push `hostBindings` to
+  // expando block, to make sure we execute it for DI cycle
+  if (previousExpandoLength === expando.length && firstTemplatePass) {
+    expando.push(def.hostBindings);
   }
 }
 

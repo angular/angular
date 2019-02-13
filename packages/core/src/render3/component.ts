@@ -18,7 +18,7 @@ import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {publishDefaultGlobalUtils} from './global_utils';
 import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
-import {addToViewTree, CLEAN_PROMISE, createLView, createNodeAtIndex, createTNode, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews,} from './instructions';
+import {addToViewTree, CLEAN_PROMISE, createLView, createNodeAtIndex, createTNode, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews, invokeHostBindings,} from './instructions';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
@@ -201,19 +201,7 @@ export function createRootComponent<T>(
   if (tView.firstTemplatePass && componentDef.hostBindings) {
     const rootTNode = getPreviousOrParentTNode();
     const expando = tView.expandoInstructions !;
-    const previousExpandoLength = expando.length;
-    setCurrentDirectiveDef(componentDef);
-    componentDef.hostBindings(RenderFlags.Create, component, rootTNode.index - HEADER_OFFSET);
-    setCurrentDirectiveDef(null);
-
-    // `hostBindings` function may or may not contain `allocHostVars` call
-    // (e.g. it may not if it only contains host listeners), so we need to check whether
-    // `expandoInstructions` has changed and if not - we still push `hostBindings` to
-    // expando block, to make sure we execute it for DI cycle
-    if (previousExpandoLength === expando.length && tView.firstTemplatePass) {
-      expando.push(componentDef.hostBindings);
-    }
-
+    invokeHostBindings(componentDef, expando, component, rootTNode, tView.firstTemplatePass);
     rootTNode.onElementCreationFns && applyOnCreateInstructions(rootTNode);
   }
 

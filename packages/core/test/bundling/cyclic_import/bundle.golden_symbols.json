@@ -450,6 +450,9 @@
     "name": "invokeDirectivesHostBindings"
   },
   {
+    "name": "invokeHostBindings"
+  },
+  {
     "name": "isAnimationProp"
   },
   {

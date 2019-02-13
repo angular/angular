@@ -2105,44 +2105,6 @@ describe('render3 integration test', () => {
            expect(target.classList.contains('three')).toBeFalsy();
            expect(target.classList.contains('four')).toBeFalsy();
          });
-
-      it('should render host bindings on the root component', () => {
-        const templateFn = () => {};
-        /**
-         * App has the following host bindings:
-         * - style[stylesExp],
-         * - class[classesExp]
-        */
-        const App = createComponent(
-            'app', templateFn, 1, 0, [], undefined, undefined, [], [],
-            (rf: RenderFlags, ctx: any, elementIndex: number) => {
-              if (rf & RenderFlags.Create) {
-                elementStyling(null, null, null, ctx);
-              }
-              if (rf & RenderFlags.Update) {
-                elementStylingMap(elementIndex, ctx.classesExp, ctx.stylesExp, ctx);
-                elementStylingApply(elementIndex, ctx);
-              }
-            });
-
-        const fixture = new ComponentFixture(App);
-        const element = fixture.hostElement;
-
-        fixture.component.stylesExp = {width: '100px'};
-        fixture.component.classesExp = 'foo';
-        fixture.update();
-
-        expect(element.style['width']).toEqual('100px');
-        expect(element.classList.contains('foo')).toBeTruthy();
-
-        fixture.component.stylesExp = {width: '200px'};
-        fixture.component.classesExp = 'bar';
-        fixture.update();
-
-        expect(element.style['width']).toEqual('200px');
-        expect(element.classList.contains('foo')).toBeFalsy();
-        expect(element.classList.contains('bar')).toBeTruthy();
-      });
     });
 
     it('should properly handle and render interpolation for class attribute bindings', () => {
