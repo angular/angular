@@ -52,6 +52,9 @@ check_bazel_version("0.18.0")
 node_repositories()
 yarn_install(
     name = "npm",
+    # Need a reference to @angular here so that Bazel sets up the
+    # external repository before calling yarn_install
+    data = ["@angular//:LICENSE"],
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",
 )
