@@ -276,14 +276,13 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     const element = this.nativeElement;
     if (element) {
       const lContext = loadLContextFromNode(element);
-      const lNode = lContext.lView[lContext.nodeIndex];
       const stylingContext = getStylingContext(lContext.nodeIndex, lContext.lView);
       if (stylingContext) {
-        for (let i = StylingIndex.SingleStylesStartPosition; i < lNode.length;
+        for (let i = StylingIndex.SingleStylesStartPosition; i < stylingContext.length;
              i += StylingIndex.Size) {
-          if (isClassBasedValue(lNode, i)) {
-            const className = getProp(lNode, i);
-            const value = getValue(lNode, i);
+          if (isClassBasedValue(stylingContext, i)) {
+            const className = getProp(stylingContext, i);
+            const value = getValue(stylingContext, i);
             if (typeof value == 'boolean') {
               // we want to ignore `null` since those don't overwrite the values.
               classes[className] = value;
@@ -306,14 +305,13 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     const element = this.nativeElement;
     if (element) {
       const lContext = loadLContextFromNode(element);
-      const lNode = lContext.lView[lContext.nodeIndex];
       const stylingContext = getStylingContext(lContext.nodeIndex, lContext.lView);
       if (stylingContext) {
-        for (let i = StylingIndex.SingleStylesStartPosition; i < lNode.length;
+        for (let i = StylingIndex.SingleStylesStartPosition; i < stylingContext.length;
              i += StylingIndex.Size) {
-          if (!isClassBasedValue(lNode, i)) {
-            const styleName = getProp(lNode, i);
-            const value = getValue(lNode, i) as string | null;
+          if (!isClassBasedValue(stylingContext, i)) {
+            const styleName = getProp(stylingContext, i);
+            const value = getValue(stylingContext, i) as string | null;
             if (value !== null) {
               // we want to ignore `null` since those don't overwrite the values.
               styles[styleName] = value;
