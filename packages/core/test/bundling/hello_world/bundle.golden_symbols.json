@@ -117,13 +117,7 @@
     "name": "ViewEncapsulation"
   },
   {
-    "name": "__self"
-  },
-  {
     "name": "__values"
-  },
-  {
-    "name": "__window"
   },
   {
     "name": "_global"
@@ -238,6 +232,9 @@
   },
   {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getGlobal"
   },
   {
     "name": "getHighestElementOrICUContainer"
