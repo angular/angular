@@ -279,16 +279,10 @@
     "name": "__read"
   },
   {
-    "name": "__self"
-  },
-  {
     "name": "__spread"
   },
   {
     "name": "__values"
-  },
-  {
-    "name": "__window"
   },
   {
     "name": "_c0"
@@ -679,6 +673,9 @@
   },
   {
     "name": "getErrorLogger"
+  },
+  {
+    "name": "getGlobal"
   },
   {
     "name": "getHighestElementOrICUContainer"
