@@ -138,7 +138,12 @@ class LocalsComp {
   template: `
    Bank Name: {{bank}}
    Account Id: {{id}}
- `
+ `,
+  host: {
+    'class': 'static-class',
+    '[class.absent-class]': 'false',
+    '[class.present-class]': 'true',
+  },
 })
 class BankAccount {
   // TODO(issue/24571): remove '!'.
@@ -185,6 +190,7 @@ class TestApp {
           ParentComp,
           TestApp,
           UsingFor,
+          BankAccount,
         ],
         providers: [Logger],
         schemas: [NO_ERRORS_SCHEMA],
@@ -274,6 +280,17 @@ class TestApp {
 
       expect(bankElem.classes['closed']).toBe(true);
       expect(bankElem.classes['open']).toBe(false);
+    });
+
+    it('should get element classes from host bindings', () => {
+      fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      const debugElement = fixture.debugElement.children[0];
+
+      expect(debugElement.classes['present-class'])
+          .toBe(true, 'Expected bound host CSS class "present-class" to be present');
+      expect(debugElement.classes['absent-class'])
+          .toBe(false, 'Expected bound host CSS class "absent-class" to be absent');
     });
 
     it('should list element styles', () => {
