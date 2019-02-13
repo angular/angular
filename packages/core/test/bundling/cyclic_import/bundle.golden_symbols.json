@@ -75,6 +75,9 @@
     "name": "NG_COMPONENT_DEF"
   },
   {
+    "name": "NG_CONTAINER_SELECTOR"
+  },
+  {
     "name": "NG_DIRECTIVE_DEF"
   },
   {
