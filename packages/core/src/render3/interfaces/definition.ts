@@ -154,7 +154,7 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   factory: FactoryFn<T>;
 
   /**
-   * Function to create instances of content queries associated with a given directive.
+   * Function to create and refresh content queries associated with a given directive.
    */
   contentQueries: ContentQueriesFunction<T>|null;
 

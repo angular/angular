@@ -140,9 +140,7 @@ function refreshContentQueries(tView: TView, lView: LView): void {
     for (let i = 0; i < tView.contentQueries.length; i++) {
       const directiveDefIdx = tView.contentQueries[i];
       const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
-      const directiveIndex = directiveDefIdx - HEADER_OFFSET;
-      directiveDef.contentQueries !(
-          RenderFlags.Update, loadInternal(lView, directiveIndex), directiveDefIdx);
+      directiveDef.contentQueries !(RenderFlags.Update, lView[directiveDefIdx], directiveDefIdx);
     }
   }
 }
