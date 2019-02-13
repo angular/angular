@@ -64,7 +64,7 @@ function baseDirectiveFields(
   });
   definitionMap.set('factory', result.factory);
 
-  if (meta.queries.length) {
+  if (meta.queries.length > 0) {
     // e.g. `contentQueries: (rf, ctx, dirIndex) => { ... }
     definitionMap.set('contentQueries', createContentQueriesFunction(meta, constantPool));
   }
@@ -518,7 +518,7 @@ function createContentQueriesFunction(
   const updateStatements: o.Statement[] = [];
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
-  meta.queries.forEach((query: R3QueryMetadata) => {
+  for (const query of meta.queries) {
     // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true);
     const args = [o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any];
     createStatements.push(o.importExpr(R3.contentQuery).callFn(args).toStmt());
@@ -531,7 +531,7 @@ function createContentQueriesFunction(
                                 .prop(query.propertyName)
                                 .set(query.first ? temporary.prop('first') : temporary);
     updateStatements.push(refresh.and(updateDirective).toStmt());
-  });
+  }
 
   const contentQueriesFnName = meta.name ? `${meta.name}_ContentQueries` : null;
   return o.fn(
