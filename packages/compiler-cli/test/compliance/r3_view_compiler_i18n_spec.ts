@@ -1001,7 +1001,7 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = ["src", "logo.png"];
-        const $_c1$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c1$ = ["src", "logo.png", ${AttributeMarker.SelectOnly}, "ngIf"];
         function MyComponent_img_1_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelement(0, "img", $_c0$);
@@ -1010,11 +1010,11 @@ describe('i18n support in the view compiler', () => {
         const $MSG_EXTERNAL_2367729185105559721$ = goog.getMsg("App logo #{$interpolation}", {
           "interpolation": "\uFFFD0\uFFFD"
         });
-        const $_c2$ = ["title", $MSG_EXTERNAL_2367729185105559721$];
+        const $_c3$ = ["title", $MSG_EXTERNAL_2367729185105559721$];
         function MyComponent_img_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "img", $_c0$);
-            $r3$.ɵi18nAttributes(1, $_c2$);
+            $r3$.ɵi18nAttributes(1, $_c3$);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -1747,15 +1747,16 @@ describe('i18n support in the view compiler', () => {
         const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
-        const $_c1$ = ["title", "icu only"];
+        const $_c1$ = ["title", "icu only", ${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c2$ = ["title", "icu and text", ${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c3$ = ["title", "icu only"];
         const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
         const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
         function MyComponent_div_2_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div", $_c1$);
+            $r3$.ɵelementStart(0, "div", $_c3$);
             $r3$.ɵi18n(1, $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$);
             $r3$.ɵelementEnd();
           }
@@ -1765,7 +1766,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵi18nApply(1);
           }
         }
-        const $_c2$ = ["title", "icu and text"];
+        const $_c5$ = ["title", "icu and text"];
         const $MSG_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$ = goog.getMsg("{VAR_SELECT, select, 0 {no emails} 1 {one email} other {{$interpolation} emails}}", {
           "interpolation": "\uFFFD1\uFFFD"
         });
@@ -1774,7 +1775,7 @@ describe('i18n support in the view compiler', () => {
         });
         function MyComponent_div_3_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵelementStart(0, "div", $_c2$);
+            $r3$.ɵelementStart(0, "div", $_c5$);
             $r3$.ɵtext(1, " You have ");
             $r3$.ɵi18n(2, $I18N_EXTERNAL_1922743304863699161$$APP_SPEC_TS__5$);
             $r3$.ɵtext(3, ". ");
@@ -1795,8 +1796,8 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵi18n(1, $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$);
             $r3$.ɵelementEnd();
-            $r3$.ɵtemplate(2, MyComponent_div_2_Template, 2, 1, "div", $_c0$);
-            $r3$.ɵtemplate(3, MyComponent_div_3_Template, 4, 2, "div", $_c0$);
+            $r3$.ɵtemplate(2, MyComponent_div_2_Template, 2, 1, "div", $_c1$);
+            $r3$.ɵtemplate(3, MyComponent_div_3_Template, 4, 2, "div", $_c2$);
           }
           if (rf & 2) {
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.gender));

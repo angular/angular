@@ -16,6 +16,7 @@ import {getInitialClassNameValue} from './styling/class_and_style_bindings';
 const unusedValueToPlacateAjd = unused1 + unused2;
 
 const NG_TEMPLATE_SELECTOR = 'ng-template';
+const NG_CONTAINER_SELECTOR = 'ng-container';
 
 function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): boolean {
   const nodeClassesLen = nodeClassAttrVal.length;
@@ -63,6 +64,9 @@ export function isNodeMatchingSelector(
   const nodeAttrs = tNode.attrs !;
   const selectOnlyMarkerIdx = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.SelectOnly) : -1;
 
+  const matchingInlineTemplate = tNode.type === TNodeType.Container &&
+      tNode.tagName !== NG_TEMPLATE_SELECTOR && tNode.tagName !== NG_CONTAINER_SELECTOR;
+
   // When processing ":not" selectors, we skip to the next ":not" if the
   // current one doesn't match
   let skipToNextSelector = false;
@@ -105,7 +109,8 @@ export function isNodeMatchingSelector(
       }
 
       const attrName = (mode & SelectorFlags.CLASS) ? 'class' : current;
-      const attrIndexInNode = findAttrIndexInNode(attrName, nodeAttrs);
+      const attrIndexInNode = findAttrIndexInNode(
+          attrName, nodeAttrs, selectOnlyMarkerIdx, isProjectionMode, matchingInlineTemplate);
 
       if (attrIndexInNode === -1) {
         if (isPositive(mode)) return false;
@@ -162,25 +167,41 @@ function readClassValueFromTNode(tNode: TNode): string {
  * @param name the name of the attribute to find
  * @param attrs the attribute array to examine
  */
-function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
+function findAttrIndexInNode(
+    name: string, attrs: TAttributes | null, selectOnlyIndex: number, isProjectionMode: boolean,
+    matchingInlineTemplate: boolean): number {
   if (attrs === null) return -1;
-  let selectOnlyMode = false;
-  let i = 0;
-  while (i < attrs.length) {
+
+  // If there is no SelectOnly marker then run to the end of the attrs array.
+  selectOnlyIndex = selectOnlyIndex === -1 ? attrs.length : selectOnlyIndex;
+
+  // If we are not in projection mode and are matching an inline template then we only consider
+  // SelectOnly attributes.
+  let i = !isProjectionMode && matchingInlineTemplate ? selectOnlyIndex : 0;
+
+  while (i < selectOnlyIndex) {
     const maybeAttrName = attrs[i];
     if (maybeAttrName === name) {
       return i;
     } else if (maybeAttrName === AttributeMarker.NamespaceURI) {
       // NOTE(benlesh): will not find namespaced attributes. This is by design.
       i += 4;
-    } else {
-      if (maybeAttrName === AttributeMarker.SelectOnly) {
-        selectOnlyMode = true;
-      }
-      i += selectOnlyMode ? 1 : 2;
     }
+    i++;
   }
 
+  // Skip the SelectOnly marker.
+  i++;
+
+  // Now try to match any of the SelectOnly marked attributes.
+  while (i < attrs.length) {
+    if (attrs[i] === name) {
+      return i;
+    }
+    i++;
+  }
+
+  // Not matched.
   return -1;
 }
 
@@ -209,11 +230,11 @@ export function getProjectAsAttrValue(tNode: TNode): string|null {
 }
 
 /**
- * Checks a given node against matching selectors and returns
- * selector index (or 0 if none matched).
+ * Checks a given node against matching projection selectors and returns selector index (or 0 if
+ * none matched).
  *
- * This function takes into account the ngProjectAs attribute: if present its value will be compared
- * to the raw (un-parsed) CSS selector instead of using standard selector matching logic.
+ * This function takes into account the ngProjectAs attribute: if present its value will be
+ * compared to the raw (un-parsed) CSS selector instead of using standard selector matching logic.
  */
 export function matchingSelectorIndex(
     tNode: TNode, selectors: CssSelectorList[], textSelectors: string[]): number {

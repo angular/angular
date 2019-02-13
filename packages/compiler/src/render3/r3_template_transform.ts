@@ -179,10 +179,14 @@ class HtmlAstToIvyAst implements html.Visitor {
     if (elementHasInlineTemplate) {
       const attrs = this.extractAttributes('ng-template', templateParsedProperties, i18nAttrsMeta);
       // TODO(pk): test for this case
+      // We concatenate the non-bound `attributes` from the element that hosted the inline template
+      // definition (e.g. the `div` from `<div *ngFor="...">`) to the `attrs.literal` attributes,
+      // which can include additional attributes extracted from the expanded directive expression
+      // (e.g. `ngForOf` or `ngTrackBy` from `*ngFor="let item of items trackBy item.id"`).
       parsedElement = new t.Template(
-          (parsedElement as t.Element).name, attrs.literal, attrs.bound, [], [parsedElement], [],
-          templateVariables, element.sourceSpan, element.startSourceSpan, element.endSourceSpan,
-          element.i18n);
+          (parsedElement as t.Element).name, attrs.literal.concat(attributes), attrs.bound,
+          [/* No outputs */], [parsedElement], [/* No references */], templateVariables,
+          element.sourceSpan, element.startSourceSpan, element.endSourceSpan, element.i18n);
     }
     return parsedElement;
   }

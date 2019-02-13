@@ -1222,17 +1222,18 @@ describe('compiler compliance', () => {
           }
         };
         const output = `
-          const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
-          const $_c1$ = ["id", "second"];
+        const $_c0$ = ["id", "second", ${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c1$ = ["id", "third", ${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c2$ = ["id", "second"];
           function Cmp_div_0_Template(rf, ctx) { if (rf & 1) {
-              $r3$.ɵelementStart(0, "div", $_c1$);
+              $r3$.ɵelementStart(0, "div", $_c2$);
               $r3$.ɵprojection(1, 1);
               $r3$.ɵelementEnd();
           } }
-          const $_c4$ = ["id", "third"];
+          const $_c3$ = ["id", "third"];
           function Cmp_div_1_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵelementStart(0, "div", $_c4$);
+              $r3$.ɵelementStart(0, "div", $_c3$);
               $r3$.ɵtext(1, " No ng-content, no instructions generated. ");
               $r3$.ɵelementEnd();
             }
@@ -1243,14 +1244,14 @@ describe('compiler compliance', () => {
               $r3$.ɵprojection(1);
             }
           }
-          const $_c2$ = [[["span", "title", "tofirst"]]];
-          const $_c3$ = ["span[title=toFirst]"];
+          const $_c4$ = [[["span", "title", "tofirst"]]];
+          const $_c5$ = ["span[title=toFirst]"];
           …
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵprojectionDef($_c2$, $_c3$);
+              $r3$.ɵprojectionDef($_c4$, $_c5$);
               $r3$.ɵtemplate(0, Cmp_div_0_Template, 2, 0, "div", $_c0$);
-              $r3$.ɵtemplate(1, Cmp_div_1_Template, 2, 0, "div", $_c0$);
+              $r3$.ɵtemplate(1, Cmp_div_1_Template, 2, 0, "div", $_c1$);
               $r3$.ɵtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
             }
             if (rf & 2) {
