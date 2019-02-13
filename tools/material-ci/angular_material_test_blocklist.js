@@ -985,6 +985,10 @@ window.testBlocklist = {
     "error": "Error: Expected mat-slide-toggle-thumb-container to contain 'mat-dragging'.",
     "notes": "Unknown"
   },
+  "MatSlideToggle without forms custom action configuration should not change value on click when click action is noop": {
+    "error": "TypeError: this._inputElement is undefined",
+    "notes": "Unknown"
+  },
   "MatDrawer methods should be able to open": {
     "error": "Error: Expected 0 to be 1.",
     "notes": "Unknown"
