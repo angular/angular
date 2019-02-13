@@ -10,10 +10,6 @@
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
-  // We use invert() here to have the darken the background color expected to be used. If the
-  // background is light, we use a dark backdrop. If the background is dark,
-  // we use a light backdrop.
-  $drawer-backdrop-color: invert(mat-color($background, card, 0.6));
   $drawer-background-color: mat-color($background, dialog);
   $drawer-container-background-color:  mat-color($background, background);
   $drawer-push-background-color: mat-color($background, dialog);
@@ -59,7 +55,21 @@
   }
 
   .mat-drawer-backdrop.mat-drawer-shown {
-    background-color: $drawer-backdrop-color;
+    $opacity: 0.6;
+    $backdrop-color: mat-color($background, card, $opacity);
+
+    @if (type-of($backdrop-color) == color) {
+      // We use invert() here to have the darken the background color expected to be used. If the
+      // background is light, we use a dark backdrop. If the background is dark,
+      // we use a light backdrop.
+      background-color: invert($backdrop-color);
+    }
+    @else {
+      // If we couldn't resolve the backdrop color to a color value, fall back to using
+      // `opacity` to make it opaque since its end value could be a solid color.
+      background-color: $backdrop-color;
+      opacity: $opacity;
+    }
   }
 }
 

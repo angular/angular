@@ -17,7 +17,16 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 
   .mat-calendar-body-disabled > .mat-calendar-body-selected {
-    background-color: fade-out(mat-color($palette), $mat-datepicker-selected-fade-amount);
+    $background: mat-color($palette);
+
+    @if (type-of($background) == color) {
+      background-color: fade-out($background, $mat-datepicker-selected-fade-amount);
+    }
+    @else {
+      // If we couldn't resolve to background to a color (e.g. it's a CSS variable),
+      // fall back to fading the content out via `opacity`.
+      opacity: $mat-datepicker-today-fade-amount;
+    }
   }
 
   .mat-calendar-body-today.mat-calendar-body-selected {
@@ -78,7 +87,18 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 
   .mat-calendar-body-disabled > .mat-calendar-body-today:not(.mat-calendar-body-selected) {
-    border-color: fade-out(mat-color($foreground, hint-text), $mat-datepicker-today-fade-amount);
+    $color: mat-color($foreground, hint-text);
+
+    @if (type-of($color) == color) {
+      border-color: fade-out($color, $mat-datepicker-today-fade-amount);
+    }
+    @else {
+      // If the color didn't resolve to a color value, but something like a CSS variable, we can't
+      // fade it out so we fall back to reducing the element opacity. Note that we don't use the
+      // $mat-datepicker-today-fade-amount, because hint text usually has some opacity applied
+      // to it already and we don't want them to stack on top of each other.
+      opacity: 0.5;
+    }
   }
 
   @include _mat-datepicker-color(map-get($theme, primary));

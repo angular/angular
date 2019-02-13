@@ -52,9 +52,15 @@
   }
 
   $color: map-get($palette, $hue);
-  $opacity: if($opacity == null, opacity($color), $opacity);
 
-  @return rgba($color, $opacity);
+  @if (type-of($color) != color) {
+    // If the $color resolved to something different from a color (e.g. a CSS variable),
+    // we can't apply the opacity anyway so we return the value as is, otherwise Sass can
+    // throw an error or output something invalid.
+    @return $color;
+  }
+
+  @return rgba($color, if($opacity == null, opacity($color), $opacity));
 }
 
 

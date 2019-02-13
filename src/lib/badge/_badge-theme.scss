@@ -130,14 +130,22 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
 
   .mat-badge-disabled {
     .mat-badge-content {
-      // The disabled color usually has some kind of opacity, but because the badge is overlayed
-      // on top of something else, it won't look good if it's opaque. We convert it into a solid
-      // color by taking the opacity from the rgba value and using the value to determine the
-      // percentage of the background to put into foreground when mixing the colors together.
       $app-background: mat-color($background, 'background');
       $badge-color: mat-color($foreground, disabled-button);
-      $badge-opacity: opacity($badge-color);
-      background: mix($app-background, rgba($badge-color, 1), (1 - $badge-opacity) * 100%);
+
+      // The disabled color usually has some kind of opacity, but because the badge is overlayed
+      // on top of something else, it won't look good if it's opaque. If it is a color *type*,
+      // we convert it into a solid color by taking the opacity from the rgba value and using
+      // the value to determine the percentage of the background to put into foreground when
+      // mixing the colors together.
+      @if (type-of($badge-color) == color and type-of($app-background) == color) {
+        $badge-opacity: opacity($badge-color);
+        background: mix($app-background, rgba($badge-color, 1), (1 - $badge-opacity) * 100%);
+      }
+      @else {
+        background: $badge-color;
+      }
+
       color: mat-color($foreground, disabled-text);
     }
   }

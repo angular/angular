@@ -1,0 +1,24 @@
+@import './all-theme';
+
+// Recursively replaces all of the values inside a Sass map with a different value.
+@function replace-all-values($palette, $replacement) {
+  $output: ();
+
+  @each $key, $value in $palette {
+    @if (type-of($value) == 'map') {
+      $output: map-merge(($key: replace-all-values($value, $replacement)), $output);
+    }
+    @else {
+      $output: map-merge(($key: $replacement), $output);
+    }
+  }
+
+  @return $output;
+}
+
+// Theme used to test that our themes would compile if the colors were specified as CSS variables.
+._demo-css-variables-theme {
+  $palette: mat-palette($mat-blue-grey);
+  $theme: mat-dark-theme($palette, $palette, $palette);
+  @include angular-material-theme(replace-all-values($theme, var(--test-var)));
+}

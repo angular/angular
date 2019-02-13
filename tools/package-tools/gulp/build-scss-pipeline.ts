@@ -17,7 +17,7 @@ gulpSass.compiler = nodeSass;
 
 /** Create a gulp task that builds SCSS files. */
 export function buildScssPipeline(sourceDir: string, minifyOutput = false) {
-  return src(join(sourceDir, '**/*.scss'))
+  return src(join(sourceDir, '**/!(test-).scss'))
     .pipe(gulpSass({includePaths: sassIncludePaths}).on('error', gulpSass.logError))
     .pipe(gulpIf(minifyOutput, gulpCleanCss()));
 }
