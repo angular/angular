@@ -134,7 +134,7 @@ The `@NgModule()` and `@Component()` decorators have the `providers` metadata op
 
 Components are directives, and the `providers` option is inherited from `@Directive()`. You can also configure providers for directives and pipes at the same level as the component.
 
-Learn more about [where to configure providers](guide/hierarchical-dependency-injection#where-to-register).
+Learn more about [where to configure providers](guide/hierarchical-dependency-injection).
 
 </div>
 
