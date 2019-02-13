@@ -9,7 +9,11 @@
 import {PluginCompilerHost, TscPlugin} from '@bazel/typescript/internal/tsc_wrapped/plugin_api';
 import * as ts from 'typescript';
 
+import {CompilerOptions} from '../transformers/api';
+
+import {NgtscProgram} from './program';
 import {SyntheticFilesCompilerHost} from './synthetic_files_compiler_host';
+
 
 // Copied from tsc_wrapped/plugin_api.ts to avoid a runtime dependency on the
 // @bazel/typescript package - it would be strange for non-Bazel users of
@@ -23,9 +27,15 @@ function createProxy<T>(delegate: T): T {
 }
 
 export class NgTscPlugin implements TscPlugin {
-  constructor(private angularCompilerOptions: unknown) {}
+  constructor(private options: CompilerOptions) {}
+
+  private program: NgtscProgram|undefined = undefined;
 
   wrapHost(inputFiles: string[], compilerHost: ts.CompilerHost) {
+    this.program = new NgtscProgram(
+        inputFiles, this.options, compilerHost, /* todo old program */
+        undefined);
+
     return new SyntheticFilesCompilerHost(inputFiles, compilerHost, (rootFiles: string[]) => {
       // For demo purposes, assume that the first .ts rootFile is the only
       // one that needs ngfactory.js/d.ts back-compat files produced.
@@ -33,51 +43,47 @@ export class NgTscPlugin implements TscPlugin {
       const factoryPath: string = tsInputs[0].replace(/\.ts/, '.ngfactory.ts');
 
       return {
-        factoryPath: (host: ts.CompilerHost) =>
-                         ts.createSourceFile(factoryPath, 'contents', ts.ScriptTarget.ES5),
+          // factoryPath: (host: ts.CompilerHost) =>
+          //  ts.createSourceFile(factoryPath, 'contents', ts.ScriptTarget.ES5),
       };
     });
   }
 
-  wrap(program: ts.Program, config: {}, host: ts.CompilerHost) {
-    const proxy = createProxy(program);
-    proxy.getSemanticDiagnostics = (sourceFile: ts.SourceFile) => {
-      const result: ts.Diagnostic[] = [...program.getSemanticDiagnostics(sourceFile)];
+  wrap(tsProgram: ts.Program, config: {}, host: ts.CompilerHost) {
+    if (!this.program) {
+      throw new Error('internal NgTscPlugin error: called wrap() before NgtscProgram created');
+    }
+    const ngProgram: NgtscProgram = this.program;
 
-      // For demo purposes, trigger a diagnostic when the sourcefile has a magic string
-      if (sourceFile.text.indexOf('diag') >= 0) {
-        const fake: ts.Diagnostic = {
-          file: sourceFile,
-          start: 0,
-          length: 3,
-          messageText: 'Example Angular Compiler Diagnostic',
-          category: ts.DiagnosticCategory.Error,
-          code: 12345,
-          // source is the name of the plugin.
-          source: 'ngtsc',
-        };
-        result.push(fake);
-      }
-      return result;
+    const proxy = createProxy(tsProgram);
+    proxy.getOptionsDiagnostics = (cancellationToken?: ts.CancellationToken) => {
+      return [
+        ...tsProgram.getOptionsDiagnostics(cancellationToken),
+        ...ngProgram.getNgOptionDiagnostics(cancellationToken) as ts.Diagnostic[],
+      ]
     };
+    proxy.getSyntacticDiagnostics =
+        (sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken) => {
+          return [
+            ...tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken),
+            // TODO: does angular contribute syntax errors?
+          ]
+        };
+    proxy.getSemanticDiagnostics = (sourceFile: ts.SourceFile) => {
+      return [
+        ...tsProgram.getSemanticDiagnostics(sourceFile),
+        ...ngProgram.getNgSemanticDiagnostics() as ts.Diagnostic[],
+      ];
+    };
+
     return proxy;
   }
 
   createTransformers(host: PluginCompilerHost) {
-    const afterDeclarations: Array<ts.TransformerFactory<ts.SourceFile|ts.Bundle>> =
-        [(context: ts.TransformationContext) => (sf: ts.SourceFile | ts.Bundle) => {
-          const visitor = (node: ts.Node): ts.Node => {
-            if (node.kind === ts.SyntaxKind.ClassDeclaration) {
-              const clz = node as ts.ClassDeclaration;
-              // For demo purposes, transform the class name in the .d.ts output
-              return ts.updateClassDeclaration(
-                  clz, clz.decorators, node.modifiers, ts.createIdentifier('NEWNAME'),
-                  clz.typeParameters, clz.heritageClauses, clz.members);
-            }
-            return ts.visitEachChild(node, visitor, context);
-          };
-          return visitor(sf) as ts.SourceFile;
-        }];
-    return {afterDeclarations};
+    if (!this.program) {
+      throw new Error(
+          'internal NgTscPlugin error: called createTransformers() before NgtscProgram created');
+    }
+    return this.program.customTransformers;
   }
 }

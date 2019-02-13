@@ -6,7 +6,6 @@ ts_library(
     srcs = ["example_app.ts"],
     # Use our local compiler binary that has a data dep on ngtsc
     compiler = "//tools:@bazel/typescript/tsc_wrapped",
-    expected_diagnostics = ["TS12345: Example"],
     deps = [
         "//packages/compiler-cli",
         "//packages/core",

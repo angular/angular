@@ -50,6 +50,7 @@ export class NgtscProgram implements api.Program {
   private constructionDiagnostics: ts.Diagnostic[] = [];
   private moduleResolver: ModuleResolver;
   private cycleAnalyzer: CycleAnalyzer;
+  /*private*/ customTransformers: ts.CustomTransformers = {};
 
 
   constructor(
@@ -259,17 +260,19 @@ export class NgtscProgram implements api.Program {
       beforeTransforms.push(...customTransforms.beforeTs);
     }
 
+    this.customTransformers = {
+      before: beforeTransforms,
+      after: customTransforms && customTransforms.afterTs,
+      afterDeclarations: afterDeclarationsTransforms,
+    };
+
     // Run the emit, including a custom transformer that will downlevel the Ivy decorators in code.
     const emitResult = emitCallback({
       program: this.tsProgram,
       host: this.host,
       options: this.options,
       emitOnlyDtsFiles: false, writeFile,
-      customTransformers: {
-        before: beforeTransforms,
-        after: customTransforms && customTransforms.afterTs,
-        afterDeclarations: afterDeclarationsTransforms,
-      },
+      customTransformers: this.customTransformers,
     });
     return emitResult;
   }
