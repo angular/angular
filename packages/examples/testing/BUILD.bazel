@@ -5,7 +5,7 @@ load("//tools:defaults.bzl", "ts_library")
 ts_library(
     name = "testing_examples",
     srcs = glob(["**/*.ts"]),
-    tsconfig = "//packages:tsconfig-test.json",
+    tsconfig = "//packages:tsconfig-test",
     deps = [
         "@ngdeps//@types/jasmine",
         "@ngdeps//@types/node",
