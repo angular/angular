@@ -13,10 +13,11 @@ workspace(name = "<%= utils.underscore(name) %>")
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 RULES_NODEJS_VERSION = "<%= RULES_NODEJS_VERSION %>"
+RULES_NODEJS_SHA256 = "<%= RULES_NODEJS_SHA256 %>"
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/%s.zip" % RULES_NODEJS_VERSION,
-    strip_prefix = "rules_nodejs-%s" % RULES_NODEJS_VERSION,
+    sha256 = "%s" % RULES_NODEJS_SHA256,
+    url = "https://github.com/bazelbuild/rules_nodejs/releases/download/%s/rules_nodejs-%s.tar.gz" % (RULES_NODEJS_VERSION, RULES_NODEJS_VERSION),
 )
 
 # The @angular repo contains rule for building Angular applications
