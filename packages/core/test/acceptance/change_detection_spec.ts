@@ -7,7 +7,7 @@
  */
 
 
-import {ApplicationRef, Component, Directive, EmbeddedViewRef, TemplateRef, ViewContainerRef} from '@angular/core';
+import {ApplicationRef, ChangeDetectionStrategy, Component, ComponentFactoryResolver, ComponentRef, Directive, EmbeddedViewRef, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
@@ -66,6 +66,65 @@ describe('change detection', () => {
       expect(viewRef.rootNodes[0]).toHaveText('change-detected');
     });
 
+  });
+
+  describe('markForCheck', () => {
+
+    it('should mark OnPush ancestor of dynamically created component views as dirty', () => {
+
+      @Component({
+        selector: `test-cmpt`,
+        template: `{{counter}}|<ng-template #vc></ng-template>`,
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class TestCmpt {
+        counter = 0;
+        @ViewChild('vc', {read: ViewContainerRef}) vcRef !: ViewContainerRef;
+
+        constructor(private _cfr: ComponentFactoryResolver) {}
+
+        createComponentView<T>(cmptType: Type<T>): ComponentRef<T> {
+          const cf = this._cfr.resolveComponentFactory(cmptType);
+          return this.vcRef.createComponent(cf);
+        }
+      }
+
+      @Component({
+        selector: 'dynamic-cmpt',
+        template: `dynamic`,
+        changeDetection: ChangeDetectionStrategy.OnPush
+      })
+      class DynamicCmpt {
+      }
+
+      @NgModule({declarations: [DynamicCmpt], entryComponents: [DynamicCmpt]})
+      class DynamicModule {
+      }
+
+      TestBed.configureTestingModule({imports: [DynamicModule], declarations: [TestCmpt]});
+
+      const fixture = TestBed.createComponent(TestCmpt);
+
+      // initial CD to have query results
+      // NOTE: we call change detection without checkNoChanges to have clearer picture
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement).toHaveText('0|');
+
+      // insert a dynamic component
+      const dynamicCmptRef = fixture.componentInstance.createComponentView(DynamicCmpt);
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement).toHaveText('0|dynamic');
+
+      // update model in the OnPush component - should not update UI
+      fixture.componentInstance.counter = 1;
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement).toHaveText('0|dynamic');
+
+      // now mark the dynamically inserted component as dirty
+      dynamicCmptRef.changeDetectorRef.markForCheck();
+      fixture.detectChanges(false);
+      expect(fixture.nativeElement).toHaveText('1|dynamic');
+    });
   });
 
 });
