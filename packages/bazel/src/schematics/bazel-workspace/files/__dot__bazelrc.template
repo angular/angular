@@ -13,6 +13,16 @@ build --strategy=AngularTemplateCompile=worker
 # `bazel-out` directory that is created in the workspace root.
 build --symlink_prefix=dist/
 
+# Turn on --incompatible_strict_action_env which was on by default
+# in Bazel 0.21.0 but turned off again in 0.22.0. Follow
+# https://github.com/bazelbuild/bazel/issues/7026 for more details.
+# This flag is needed to so that the bazel cache is not invalidated
+# when running bazel via `yarn bazel`.
+# See https://github.com/angular/angular/issues/27514.
+build --incompatible_strict_action_env
+run --incompatible_strict_action_env
+test --incompatible_strict_action_env
+
 test --test_output=errors
 
 # Use the Angular 6 compiler
