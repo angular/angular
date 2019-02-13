@@ -187,7 +187,7 @@ searchHeroes(term: string): Observable<Hero[]> {
   term = term.trim();
 
   let heroesURL = `${this.heroesURL}?${term}`;
-  return this.jsonp.request(heroesUrl, 'callback').pipe(
+  return this.http.jsonp.(heroesUrl, 'callback').pipe(
       catchError(this.handleError<Hero[]>('searchHeroes', []) // then handle the error
     );
 };
