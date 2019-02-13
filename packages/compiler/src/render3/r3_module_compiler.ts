@@ -61,7 +61,7 @@ export interface R3NgModuleMetadata {
   /**
    * The set of schemas that declare elements to be allowed in the NgModule.
    */
-  schemas?: R3Reference[]|null;
+  schemas: R3Reference[]|null;
 }
 
 /**

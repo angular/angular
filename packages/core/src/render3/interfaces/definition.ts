@@ -282,7 +282,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   /**
    * The set of schemas that declare elements to be allowed in the component's template.
    */
-  schemas?: SchemaMetadata[]|null;
+  schemas: SchemaMetadata[]|null;
 
   /**
    * Used to store the result of `noSideEffects` function so that it is not removed by closure

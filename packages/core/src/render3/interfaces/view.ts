@@ -533,7 +533,7 @@ export interface TView {
   /**
    * Set of schemas that declare elements to be allowed inside the view.
    */
-  schemas?: SchemaMetadata[]|null;
+  schemas: SchemaMetadata[]|null;
 }
 
 export const enum RootContextFlags {Empty = 0b00, DetectChanges = 0b01, FlushPlayers = 0b10}

@@ -122,7 +122,7 @@ export function renderComponent<T>(
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
   const rootView: LView = createLView(
-      null, createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags, null, null,
+      null, createTView(-1, null, 1, 0, null, null, null, null), rootContext, rootFlags, null, null,
       rendererFactory, renderer, undefined, opts.injector || null);
 
   const oldView = enterView(rootView, null);

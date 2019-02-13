@@ -275,6 +275,10 @@ function declareTests(config?: {useJit: boolean}) {
            @NgModule({
              schemas: [CUSTOM_ELEMENTS_SCHEMA],
              declarations: [ComponentUsingInvalidProperty],
+
+             // Note that we need to add the component to `entryComponents`, because of the
+             // `createComp` call below. In Ivy the property validation happens during the
+             //  update phase so we need to create the component, in order for it to run.
              entryComponents: [ComponentUsingInvalidProperty]
            })
            class SomeModule {

@@ -10,7 +10,7 @@ import {InjectFlags, InjectionToken, Injector} from '../di';
 import {resolveForwardRef} from '../di/forward_ref';
 import {ErrorHandler} from '../error_handler';
 import {Type} from '../interface/type';
-import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../metadata';
+import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../metadata/schema';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../sanitization/sanitization';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
@@ -321,12 +321,12 @@ export function renderTemplate<T>(
 
     // We need to create a root view so it's possible to look up the host element through its index
     const hostLView = createLView(
-        null, createTView(-1, null, 1, 0, null, null, null), {},
+        null, createTView(-1, null, 1, 0, null, null, null, null), {},
         LViewFlags.CheckAlways | LViewFlags.IsRoot, null, null, providedRendererFactory, renderer);
     enterView(hostLView, null);  // SUSPECT! why do we need to enter the View?
 
     const componentTView =
-        getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null);
+        getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null, null);
     const hostTNode = createNodeAtIndex(0, TNodeType.Element, hostNode, null, null);
     componentView = createLView(
         hostLView, componentTView, context, LViewFlags.CheckAlways, hostNode, hostTNode,
@@ -736,7 +736,7 @@ function saveResolvedLocalsInData(
 export function getOrCreateTView(
     templateFn: ComponentTemplate<any>, consts: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
-    viewQuery: ViewQueriesFunction<any>| null, schemas?: SchemaMetadata[] | null): TView {
+    viewQuery: ViewQueriesFunction<any>| null, schemas: SchemaMetadata[] | null): TView {
   // TODO(misko): reading `ngPrivateData` here is problematic for two reasons
   // 1. It is a megamorphic call on each invocation.
   // 2. For nested embedded views (ngFor inside ngFor) the template instance is per
@@ -763,7 +763,7 @@ export function getOrCreateTView(
 export function createTView(
     viewIndex: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
-    viewQuery: ViewQueriesFunction<any>| null, schemas?: SchemaMetadata[] | null): TView {
+    viewQuery: ViewQueriesFunction<any>| null, schemas: SchemaMetadata[] | null): TView {
   ngDevMode && ngDevMode.tView++;
   const bindingStartIndex = HEADER_OFFSET + consts;
   // This length does not yet contain host bindings from child directives because at this point,
@@ -1254,18 +1254,9 @@ function elementPropertyInternal<T>(
 
 function validateAgainstUnknownProperties(
     hostView: LView, element: RElement | RComment, propName: string, tNode: TNode) {
-  const schemas = hostView[TVIEW].schemas;
-  const tagName = tNode.tagName;
-
-  // If there are schemas and the element matches any of the schemas, we shouldn't throw.
-  if (schemas) {
-    for (let i = 0; i < schemas.length; i++) {
-      const schema = schemas[i];
-      if (schema === NO_ERRORS_SCHEMA ||
-          schema === CUSTOM_ELEMENTS_SCHEMA && tagName && tagName.indexOf('-') > -1) {
-        return;
-      }
-    }
+  // If the tag matches any of the schemas we shouldn't throw.
+  if (matchingSchemas(hostView, tNode.tagName)) {
+    return;
   }
 
   // If prop is not a known property of the HTML element...
@@ -1276,8 +1267,24 @@ function validateAgainstUnknownProperties(
       propName[0] !== ANIMATION_PROP_PREFIX) {
     // ... it is probably a user error and we should throw.
     throw new Error(
-        `Template error: Can't bind to '${propName}' since it isn't a known property of '${tagName}'.`);
+        `Template error: Can't bind to '${propName}' since it isn't a known property of '${tNode.tagName}'.`);
   }
+}
+
+function matchingSchemas(hostView: LView, tagName: string | null): boolean {
+  const schemas = hostView[TVIEW].schemas;
+
+  if (schemas !== null) {
+    for (let i = 0; i < schemas.length; i++) {
+      const schema = schemas[i];
+      if (schema === NO_ERRORS_SCHEMA ||
+          schema === CUSTOM_ELEMENTS_SCHEMA && tagName && tagName.indexOf('-') > -1) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 /**
@@ -2221,7 +2228,7 @@ export function template(
   const tContainerNode = containerInternal(index, tagName || null, attrs || null);
   if (tView.firstTemplatePass) {
     tContainerNode.tViews = createTView(
-        -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null);
+        -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null, null);
   }
 
   createDirectivesAndLocals(tView, lView, localRefs, localRefExtractor);
@@ -2459,7 +2466,7 @@ function getOrCreateEmbeddedTView(
   ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     containerTViews[viewIndex] = createTView(
-        viewIndex, null, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null);
+        viewIndex, null, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null, null);
   }
   return containerTViews[viewIndex];
 }
