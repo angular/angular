@@ -15,6 +15,7 @@ import {
   Compiler,
   Component,
   Directive,
+  ErrorHandler,
   Injector,
   ModuleWithComponentFactories,
   NgModule,
@@ -600,6 +601,7 @@ export class TestBedRender3 implements Injector, TestBed {
     const providers = [
       {provide: NgZone, useValue: ngZone},
       {provide: Compiler, useFactory: () => new R3TestCompiler(this)},
+      {provide: ErrorHandler, useClass: R3TestErrorHandler},
       ...this._providers,
       ...this._providerOverrides,
     ];
@@ -812,4 +814,9 @@ class R3TestCompiler implements Compiler {
     const meta = this.testBed._getModuleResolver().resolve(moduleType);
     return meta && meta.id || undefined;
   }
+}
+
+/** Error handler used for tests. Rethrows errors rather than logging them out. */
+class R3TestErrorHandler extends ErrorHandler {
+  handleError(error: any) { throw error; }
 }
