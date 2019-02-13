@@ -223,11 +223,7 @@ function runE2eTestsCLI(appDir, outputFile) {
   console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
-<<<<<<< HEAD
-  const commands = config.e2e || [{cmd: 'yarn', args: ['e2e', '--no-webdriver-update']}];
-=======
   const commands = config.e2e || [{cmd: 'yarn', args: ['e2e', '--prod', '--no-webdriver-update']}];
->>>>>>> c8a0ce7388... test(ivy): enable more docs examples e2e tests (#28688)
 
   const e2eSpawnPromise = commands.reduce((prevSpawnPromise, {cmd, args}) => {
     return prevSpawnPromise.then(() => {
