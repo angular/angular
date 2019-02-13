@@ -986,14 +986,16 @@ function listenerInternal(
       // The first argument of `listen` function in Procedural Renderer is:
       // - either a target name (as a string) in case of global target (window, document, body)
       // - or element reference (in all other cases)
-      listenerFn = wrapListener(tNode, lView, listenerFn, false /** preventDefault */);
-      const cleanupFn = renderer.listen(resolved.name || target, eventName, listenerFn);
-      lCleanup.push(listenerFn, cleanupFn);
+      const eventListenerFn = wrapListener(
+          tNode, lView, listenerFn, false /** preventDefault */, true /** rethrowError */);
+      const cleanupFn = renderer.listen(resolved.name || target, eventName, eventListenerFn);
+      lCleanup.push(eventListenerFn, cleanupFn);
       useCaptureOrSubIdx = lCleanupIndex + 1;
     } else {
-      listenerFn = wrapListener(tNode, lView, listenerFn, true /** preventDefault */);
-      target.addEventListener(eventName, listenerFn, useCapture);
-      lCleanup.push(listenerFn);
+      const eventListenerFn = wrapListener(
+          tNode, lView, listenerFn, true /** preventDefault */, true, /** rethrowError */);
+      target.addEventListener(eventName, eventListenerFn, useCapture);
+      lCleanup.push(eventListenerFn);
     }
 
     const idxOrTargetGetter = eventTargetResolver ?
@@ -1014,7 +1016,10 @@ function listenerInternal(
   if (outputs && (props = outputs[eventName])) {
     const propsLength = props.length;
     if (propsLength) {
+      // Note that we don't want to rethrow here, because doing so will cancel all subscriptions.
+      const outputListenerFn = wrapListener(tNode, lView, listenerFn, false, false);
       const lCleanup = getCleanup(lView);
+
       for (let i = 0; i < propsLength; i += 3) {
         const index = props[i] as number;
         ngDevMode && assertDataInRange(lView, index);
@@ -1027,9 +1032,9 @@ function listenerInternal(
               `@Output ${minifiedName} not initialized in '${directiveInstance.constructor.name}'.`);
         }
 
-        const subscription = output.subscribe(listenerFn);
+        const subscription = output.subscribe(outputListenerFn);
         const idx = lCleanup.length;
-        lCleanup.push(listenerFn, subscription);
+        lCleanup.push(outputListenerFn, subscription);
         tCleanup && tCleanup.push(eventName, tNode.index, idx, -(idx + 1));
       }
     }
@@ -2687,10 +2692,11 @@ function markDirtyIfOnPush(lView: LView, viewIndex: number): void {
  * @param listenerFn The listener function to call
  * @param wrapWithPreventDefault Whether or not to prevent default behavior
  * (the procedural renderer does this already, so in those cases, we should skip)
+ * @param rethrowError Whether errors should be rethrown.
  */
 function wrapListener(
-    tNode: TNode, lView: LView, listenerFn: (e?: any) => any,
-    wrapWithPreventDefault: boolean): EventListener {
+    tNode: TNode, lView: LView, listenerFn: (e?: any) => any, wrapWithPreventDefault: boolean,
+    rethrowError: boolean): EventListener {
   // Note: we are performing most of the work in the listener function itself
   // to optimize listener registration.
   return function wrapListenerIn_markDirtyAndPreventDefault(e: Event) {
@@ -2714,6 +2720,10 @@ function wrapListener(
       return result;
     } catch (error) {
       handleError(lView, error);
+
+      if (rethrowError) {
+        throw error;
+      }
     }
   };
 }
