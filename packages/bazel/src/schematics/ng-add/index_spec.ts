@@ -26,6 +26,13 @@ describe('ng-add schematic', () => {
         'typescript': '3.2.2',
       },
     }));
+    host.create('tsconfig.json', JSON.stringify({
+      compileOnSave: false,
+      compilerOptions: {
+        baseUrl: './',
+        outDir: './dist/out-tsc',
+      }
+    }));
     host.create('angular.json', JSON.stringify({
       projects: {
         'demo': {
@@ -167,5 +174,28 @@ describe('ng-add schematic', () => {
     expect(demo.architect['extract-i18n'].builder)
         .toBe('@angular-devkit/build-angular:extract-i18n');
     expect(lint.builder).toBe('@angular-devkit/build-angular:tslint');
+  });
+
+  it('should create a backup for original tsconfig.json', () => {
+    expect(host.files).toContain('/tsconfig.json');
+    const original = host.readContent('/tsconfig.json');
+    host = schematicRunner.runSchematic('ng-add', defaultOptions, host);
+    expect(host.files).toContain('/tsconfig.json.bak');
+    const content = host.readContent('/tsconfig.json.bak');
+    expect(content.startsWith('// This is a backup file')).toBe(true);
+    expect(content).toMatch(original);
+  });
+
+  it('should remove Bazel-controlled options from tsconfig.json', () => {
+    host = schematicRunner.runSchematic('ng-add', defaultOptions, host);
+    expect(host.files).toContain('/tsconfig.json');
+    const content = host.readContent('/tsconfig.json');
+    expect(() => JSON.parse(content)).not.toThrow();
+    expect(JSON.parse(content)).toEqual({
+      compileOnSave: false,
+      compilerOptions: {
+        outDir: './dist/out-tsc',
+      }
+    });
   });
 });
