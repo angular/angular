@@ -1143,9 +1143,24 @@ describe('MatDialog', () => {
         expect(overlayContainerElement.querySelectorAll('.mat-dialog-container').length).toBe(1);
       });
 
+      it('should set an aria-label on a button without text', fakeAsync(() => {
+        let button = overlayContainerElement.querySelector('.close-without-text')!;
+        expect(button.getAttribute('aria-label')).toBeTruthy();
+      }));
+
+      it('should not have an aria-label if a button has text', fakeAsync(() => {
+        let button = overlayContainerElement.querySelector('[mat-dialog-close]')!;
+        expect(button.getAttribute('aria-label')).toBeFalsy();
+      }));
+
       it('should allow for a user-specified aria-label on the close button', fakeAsync(() => {
         let button = overlayContainerElement.querySelector('.close-with-aria-label')!;
         expect(button.getAttribute('aria-label')).toBe('Best close button ever');
+      }));
+
+      it('should always have an aria-label on a mat-icon-button', fakeAsync(() => {
+        let button = overlayContainerElement.querySelector('.close-icon-button')!;
+        expect(button.getAttribute('aria-label')).toBeTruthy();
       }));
 
       it('should override the "type" attribute of the close button', () => {
@@ -1493,11 +1508,13 @@ class PizzaMsg {
     <mat-dialog-content>Lorem ipsum dolor sit amet.</mat-dialog-content>
     <mat-dialog-actions>
       <button mat-dialog-close>Close</button>
+      <button class="close-without-text" mat-dialog-close></button>
+      <button class="close-icon-button" mat-icon-button mat-dialog-close>exit</button>
       <button class="close-with-true" [mat-dialog-close]="true">Close and return true</button>
       <button
         class="close-with-aria-label"
         aria-label="Best close button ever"
-        [mat-dialog-close]="true">Close</button>
+        [mat-dialog-close]="true"></button>
       <div mat-dialog-close>Should not close</div>
     </mat-dialog-actions>
   `
@@ -1511,11 +1528,13 @@ class ContentElementDialog {}
       <mat-dialog-content>Lorem ipsum dolor sit amet.</mat-dialog-content>
       <mat-dialog-actions>
         <button mat-dialog-close>Close</button>
+        <button class="close-without-text" mat-dialog-close></button>
+        <button class="close-icon-button" mat-icon-button mat-dialog-close>exit</button>
         <button class="close-with-true" [mat-dialog-close]="true">Close and return true</button>
         <button
           class="close-with-aria-label"
           aria-label="Best close button ever"
-          [mat-dialog-close]="true">Close</button>
+          [mat-dialog-close]="true"></button>
         <div mat-dialog-close>Should not close</div>
       </mat-dialog-actions>
     </ng-template>
