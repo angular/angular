@@ -21,9 +21,6 @@ const IGNORED_EXAMPLES = [
 ];
 
 const fixmeIvyExamples = [
-  // fixmeIvy('unknown') version value goes undefined when clicking Major button after clicking
-  // Minor button twice
-  'component-interaction',
   // fixmeIvy('unknown') failed content projection and applied styles
   'component-styles',
   // fixmeIvy('unknown') ERROR Error: Unable to find context associated with [object
