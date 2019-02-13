@@ -4,7 +4,6 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
 
 exports_files([
-    "rollup.config.js",
     "ng_package.bzl",
 ])
 
