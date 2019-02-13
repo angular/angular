@@ -59,7 +59,6 @@ merge:
       - "**/package.json"
       - "**/tsconfig-build.json"
       - "**/tsconfig.json"
-      - "**/rollup.config.js"
       - "**/BUILD.bazel"
       - "**/*.md"
       - "packages/**/integrationtest/**"
