@@ -28,51 +28,53 @@ def browser_repositories():
 
     platform_http_file(
         name = "org_chromium_chromium",
-        # Chromium 72.0.3626
-        # stable version as per https://www.chromium.org/developers/calendar
         amd64_sha256 =
-            "da675fd5e6455fa8e31d80782a78b9eabe6ec7b01be2252b5ada4c1e92ebd724",
+            "941de83d78b27d43db07f427136ba159d661bb111db8d9ffe12499b863a003e1",
         amd64_urls = [
-            # Chromium 72.0.3626.0 2018-11-30 612456 snapshot
-            # https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Linux_x64/612456/
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/612456/chrome-linux.zip",
+            # Chromium 69.0.3497.0 (2018-07-19 snaphot 576668)
+            # https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Linux_x64/576668/
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/576668/chrome-linux.zip",
         ],
         licenses = ["notice"],  # BSD 3-clause (maybe more?)
         macos_sha256 =
-            "6f97313736f6afd5ed0ebd11cee8f14feee9edb2dc19f2e9a46f4dd92c5b4077",
+            "bd01783e7d179e9f85d4b6f0c9df53118d13977cc7d365a1caa9d198c6afcfd8",
         macos_urls = [
-            # Chromium 72.0.3626.0 2018-11-30 612451 snapshot
-            # https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Mac/612451/
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/612451/chrome-mac.zip",
+            # Chromium 69.0.3497.0 (2018-07-19 snaphot 576668)
+            # https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Mac/576668/
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Mac/576668/chrome-mac.zip",
         ],
         windows_sha256 =
-            "e1ae7fc3135bc5632c740d0e477be64adc0572d1fdfe976d76f34361f2cd469e",
+            "2997d6231867688a2bceb49af1d8dbdbe6ea5de848b98d686d40dd153ae4d271",
         windows_urls = [
-            # Chromium 72.0.3626.0 2018-11-30 612451 snapshot
-            # https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Win_x64/612451/
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/612451/chrome-win.zip",
+            # Chromium 69.0.3497.0 (2018-07-19 snaphot 576668)
+            # https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Win_x64/576668/
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Win_x64/576668/chrome-win32.zip",
         ],
     )
 
     platform_http_file(
         name = "org_chromium_chromedriver",
-        # ChromeDriver 2.46: Supports Chrome v71-73
-        # http://chromedriver.chromium.org/downloads
         amd64_sha256 =
-            "461919e080e19335a34224e2d353b96b07c7d068621aa940f9c136e86d090047",
+            "687d2e15c42908e2911344c08a949461b3f20a83017a7a682ef4d002e05b5d46",
         amd64_urls = [
-            "https://chromedriver.storage.googleapis.com/2.46/chromedriver_linux64.zip",
+            # ChromeDriver 2.44 supports Chrome v69-71
+            # http://chromedriver.chromium.org/downloads
+            "https://chromedriver.storage.googleapis.com/2.44/chromedriver_linux64.zip",
         ],
         licenses = ["reciprocal"],  # BSD 3-clause, ICU, MPL 1.1, libpng (BSD/MIT-like), Academic Free License v. 2.0, BSD 2-clause, MIT
         macos_sha256 =
-            "2aa256d17e4b2cc21f888b0e1b9ed211b925bf40f371d369fa0b9fbecf4bc52d",
+            "3fd49c2782a5f93cb48ff2dee021004d9a7fb393798e4c4807b391cedcd30ed9",
         macos_urls = [
-            "https://chromedriver.storage.googleapis.com/2.46/chromedriver_mac64.zip",
+            # ChromeDriver 2.44 supports Chrome v69-71
+            # http://chromedriver.chromium.org/downloads
+            "https://chromedriver.storage.googleapis.com/2.44/chromedriver_mac64.zip",
         ],
         windows_sha256 =
-            "85a53c6794ea2262a21fa7720158f1434f69e7cd04105fe1be3cb62c59308c37",
+            "5d2d2ddb2ed3730672484160c822b75b41c4e77f9cadb5111530699d561c548c",
         windows_urls = [
-            "https://chromedriver.storage.googleapis.com/2.46/chromedriver_win32.zip",
+            # ChromeDriver 2.44 supports Chrome v69-71
+            # http://chromedriver.chromium.org/downloads
+            "https://chromedriver.storage.googleapis.com/2.44/chromedriver_win32.zip",
         ],
     )
 
