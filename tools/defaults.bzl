@@ -7,7 +7,7 @@ load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_p
 load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 
 _DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
-_DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test.json"
+_DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _DEFAULT_TS_TYPINGS = "@ngdeps//typescript:typescript__typings"
 _DEFAULT_KARMA_BIN = "@ngdeps//@bazel/karma/bin:karma"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
