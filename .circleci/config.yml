@@ -460,20 +460,6 @@ jobs:
           command: 'curl --request POST --header "Content-Type: application/json" --data "{\"text\":\":x: \`$CIRCLE_JOB\` job failed on build $CIRCLE_BUILD_NUM: $CIRCLE_BUILD_URL :scream:\"}" $SLACK_CARETAKER_WEBHOOK_URL'
           when: on_fail
 
-  legacy-unit-tests-local:
-    <<: *job_defaults
-    docker:
-      - image: *browsers_docker_image
-    steps:
-      - checkout:
-          <<: *post_checkout
-      - *restore_cache
-      - *init_environment
-      - *yarn_install
-      - run: yarn tsc -p packages
-      - run: yarn tsc -p modules
-      - run: yarn karma start ./karma-js.conf.js --single-run --browsers=ChromeNoSandbox
-
   legacy-unit-tests-saucelabs:
     <<: *job_defaults
     # In order to avoid the bottleneck of having a slow host machine, we acquire a better
@@ -527,7 +513,6 @@ workflows:
       - test_ivy_aot
       - build-npm-packages
       - test_aio
-      - legacy-unit-tests-local
       - legacy-unit-tests-saucelabs
       - deploy_aio:
           requires:
@@ -580,7 +565,6 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - legacy-misc-tests
-            - legacy-unit-tests-local
             - legacy-unit-tests-saucelabs
 
 
