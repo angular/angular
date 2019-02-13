@@ -140,6 +140,8 @@ function refreshContentQueries(tView: TView, lView: LView): void {
     for (let i = 0; i < tView.contentQueries.length; i++) {
       const directiveDefIdx = tView.contentQueries[i];
       const directiveDef = tView.data[directiveDefIdx] as DirectiveDef<any>;
+      ngDevMode &&
+          assertDefined(directiveDef.contentQueries, 'contentQueries function should be defined');
       directiveDef.contentQueries !(RenderFlags.Update, lView[directiveDefIdx], directiveDefIdx);
     }
   }
