@@ -29,9 +29,9 @@ def browser_repositories():
     platform_http_file(
         name = "org_chromium_chromium",
         amd64_sha256 =
-            "6933d0afce6e17304b62029fbbd246cbe9e130eb0d90d7682d3765d3dbc8e1c8",
+            "a83baae72d70d4c337c7af6fb190ec3fbb082b94af1e16c5f28390dfd7771612",
         amd64_urls = [
-            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/561732/chrome-linux.zip",
+            "https://commondatastorage.googleapis.com/chromium-browser-snapshots/Linux_x64/587811/chrome-linux.zip",
         ],
         licenses = ["notice"],  # BSD 3-clause (maybe more?)
         macos_sha256 =
@@ -49,9 +49,9 @@ def browser_repositories():
     platform_http_file(
         name = "org_chromium_chromedriver",
         amd64_sha256 =
-            "71eafe087900dbca4bc0b354a1d172df48b31a4a502e21f7c7b156d7e76c95c7",
+            "d4a5eec0a3b7fec9bcb71353233dde38630e51b29fa7b218cdd196e2e4487da7",
         amd64_urls = [
-            "https://chromedriver.storage.googleapis.com/2.41/chromedriver_linux64.zip",
+            "https://chromedriver.storage.googleapis.com/2.45/chromedriver_linux64.zip",
         ],
         licenses = ["reciprocal"],  # BSD 3-clause, ICU, MPL 1.1, libpng (BSD/MIT-like), Academic Free License v. 2.0, BSD 2-clause, MIT
         macos_sha256 =
