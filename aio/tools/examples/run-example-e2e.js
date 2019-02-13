@@ -310,19 +310,11 @@ function getE2eSpecs(basePath, filter) {
 // Find all e2e specs in a given example folder.
 function getE2eSpecsFor(basePath, specFile, filter) {
   // Only get spec file at the example root.
-<<<<<<< HEAD
-  const e2eSpecGlob = `${filter ? ` * ${filter} * ` : '*'}/${specFile}`;
-  return globby(e2eSpecGlob, {cwd: basePath, nodir: true})
-      .then(
-          paths => paths.filter(file => !IGNORED_EXAMPLES.some(ignored => file.startsWith(ignored)))
-                       .map(file => path.join(basePath, file)));
-=======
   const e2eSpecGlob = `${filter ? '*' + filter + '*' : '*'}/${specFile}`;
   return globby(e2eSpecGlob, {cwd: basePath, nodir: true})
       .then(
           paths => paths.filter(file => !IGNORED_EXAMPLES.some(ignored => file.startsWith(ignored)))
                        .map(file => path.join(basePath, file)));
->>>>>>> c8a0ce7388... test(ivy): enable more docs examples e2e tests (#28688)
 }
 
 // Load configuration for an example. Used for SystemJS
