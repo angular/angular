@@ -24,7 +24,7 @@ load(
     "run_uglify",
     "write_rollup_config",
 )
-load("@build_bazel_rules_nodejs//internal:collect_es6_sources.bzl", collect_es2015_sources = "collect_es6_sources")
+load("@build_bazel_rules_nodejs//internal/common:collect_es6_sources.bzl", collect_es2015_sources = "collect_es6_sources")
 load(":esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
 
 PACKAGES = [
