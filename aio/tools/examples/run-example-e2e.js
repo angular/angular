@@ -17,6 +17,7 @@ const CLI_SPEC_FILENAME = 'e2e/src/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 const IGNORED_EXAMPLES = [
   // temporary ignores
+
 ];
 
 const fixmeIvyExamples = [
@@ -225,8 +226,7 @@ function runE2eTestsCLI(appDir, outputFile) {
   console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
   // `--no-webdriver-update` is needed to preserve the ChromeDriver version already installed.
   const config = loadExampleConfig(appDir);
-  const commands = config.e2e ||
-      [{cmd: 'yarn', args: ['e2e', '--prod', '--no-webdriver-update']}];
+  const commands = config.e2e || [{cmd: 'yarn', args: ['e2e', '--prod', '--no-webdriver-update']}];
 
   const e2eSpawnPromise = commands.reduce((prevSpawnPromise, {cmd, args}) => {
     return prevSpawnPromise.then(() => {
@@ -325,7 +325,7 @@ function getE2eSpecs(basePath, filter) {
 // Find all e2e specs in a given example folder.
 function getE2eSpecsFor(basePath, specFile, filter) {
   // Only get spec file at the example root.
-  const e2eSpecGlob = `${filter ? '*' + filter + '*' : '*'}/${specFile}`;
+  const e2eSpecGlob = `${filter ? `*${filter}*` : '*'}/${specFile}`;
   return globby(e2eSpecGlob, {cwd: basePath, nodir: true})
       .then(
           paths => paths.filter(file => !IGNORED_EXAMPLES.some(ignored => file.startsWith(ignored)))
