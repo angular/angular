@@ -30,7 +30,7 @@ import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, Pro
 import {PlayerFactory} from './interfaces/player';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {GlobalTargetResolver, ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {GlobalTargetResolver, ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TAIL, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
@@ -41,7 +41,7 @@ import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticCo
 import {BoundPlayerFactory} from './styling/player_factory';
 import {ANIMATION_PROP_PREFIX, allocateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContext, hasClassInput, hasStyleInput, hasStyling, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
-import {INTERPOLATION_DELIMITER, findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isContentQueryHost, loadInternal, readElementValue, readPatchedLView, renderStringify} from './util';
+import {INTERPOLATION_DELIMITER, findComponentView, getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getRootContext, getRootView, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readElementValue, readPatchedLView, renderStringify} from './util';
 
 
 
@@ -2729,15 +2729,16 @@ function wrapListener(
  * @returns the root LView
  */
 export function markViewDirty(lView: LView): LView|null {
-  while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
+  while (lView) {
     lView[FLAGS] |= LViewFlags.Dirty;
+    // Stop traversing up as soon as you find a root view that wasn't attached to any container
+    if (isRootView(lView) && lView[CONTAINER_INDEX] === -1) {
+      return lView;
+    }
+    // continue otherwise
     lView = lView[PARENT] !;
   }
-  // Detached views do not have a PARENT and also aren't root views
-  if (lView) {
-    lView[FLAGS] |= LViewFlags.Dirty;
-  }
-  return lView;
+  return null;
 }
 
 /**
