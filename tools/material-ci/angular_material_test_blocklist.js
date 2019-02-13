@@ -2600,39 +2600,11 @@ window.testBlocklist = {
   "MatTooltip special cases should clear the `-webkit-user-drag` on draggable elements": {
     "error": "Error: Expected 'none' to be falsy.",
     "notes": "Unknown"
-  },
-  "MatCalendarHeader standard calendar should go to previous and next year": {
-    "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
-  },
-  "MatCalendarHeader standard calendar should go back to month view after selecting year and month": {
-    "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
-  },
-  "MatCalendar standard calendar should emit the selected month on cell clicked in year view": {
-    "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
-  },
+  }, 
   "MatCalendar standard calendar should emit the selected year on cell clicked in multiyear view": {
     "error": "TypeError: Cannot read property 'getFullYear' of undefined",
     "notes": "Unknown"
-  },
-  "MatCalendar standard calendar a11y calendar body year view should return to month view on enter": {
-    "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
-  },
-  "MatCalendar standard calendar a11y calendar body year view should return to month view on space": {
-    "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
-  },
-  "MatCalendar standard calendar a11y calendar body multi-year view should go to year view on enter": {
-    "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
-  },
-  "MatCalendar standard calendar a11y calendar body multi-year view should go to year view on space": {
-    "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
-  },
+  },  
   "MatCalendar calendar with min and max date should not go back past min date": {
     "error": "Error: Expected false to be true, 'previous button should be disabled'.",
     "notes": "Unknown"
@@ -2660,10 +2632,6 @@ window.testBlocklist = {
   "MatCalendar calendar with min and max date should update the minDate in the child view if it changed after an interaction": {
     "error": "Error: This PortalOutlet has already been disposed",
     "notes": "Unknown"
-  },
-  "MatCalendar calendar with date filter a11y should allow entering month view at disabled month": {
-    "error": "Error: Expected 'multi-year' to be 'year'.",
-    "notes": "FW-1044: Events dispatched by dynamic components are not marking ancestor components dirty"
   },
   "MatPaginator when navigating with the next and previous buttons should be able to go to the next page": {
     "error": "TypeError: Cannot read property 'pageIndex' of undefined",
