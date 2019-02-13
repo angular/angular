@@ -75,8 +75,9 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule, urlType: 'path' | 'h
         if (urlType === 'path') {
           url = resolveUrl(next);
         } else if (urlType === 'hash') {
-          // Remove the leading hash from the URL
-          url = resolveUrl(next.substring(1));
+          // Remove the first hash from the URL
+          const hashIdx = next.indexOf('#');
+          url = resolveUrl(next.substring(0, hashIdx) + next.substring(hashIdx + 1));
         } else {
           throw 'Invalid URLType passed to setUpLocationSync: ' + urlType;
         }

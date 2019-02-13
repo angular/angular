@@ -97,7 +97,7 @@ describe('setUpLocationSync', () => {
     callback({}, combinedUrl, '');
 
     expect(LocationMock.normalize).toHaveBeenCalledTimes(1);
-    expect(LocationMock.normalize).toHaveBeenCalledWith(pathname + query + hash);
+    expect(LocationMock.normalize).toHaveBeenCalledWith(pathname);
 
     expect(RouterMock.navigateByUrl).toHaveBeenCalledTimes(1);
     expect(RouterMock.navigateByUrl).toHaveBeenCalledWith(normalizedPathname + query + hash);
