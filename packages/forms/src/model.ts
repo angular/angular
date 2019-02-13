@@ -1755,6 +1755,50 @@ export class FormArray extends AbstractControl {
   }
 
   /**
+   * Move a control from one position to another. The controls
+   * in between move one position towards the moved controls
+   * origin.
+   *
+   * @usageNotes
+   * ### Move a control inside of a FormArray
+   *
+   * ```typescript
+   * const arr = new FormArray([
+   *   new FormControl(0),
+   *   new FormControl(1),
+   *   new FormControl(2)
+   * ]);
+   *
+   * arr.moveControl(0, 2);
+   * console.log(arr.value);   // [1, 2, 0]
+   * ```
+   *
+   * This can be used with Material CDK drag and drop. See its
+   * docs here: https://material.angular.io/cdk/drag-drop/overview
+   *
+   * @param from Index of the array item to move
+   * @param to Index of the target item position
+   */
+  moveControl(from: number, to: number): void {
+    this._throwIfControlMissing(from);
+    this._throwIfControlMissing(to);
+
+    if (from === to) {
+      return;
+    }
+
+    const delta = to > from ? 1 : -1;
+    const controlToMove = this.at(from);
+
+    for (let i = from; i * delta < to * delta; i += delta) {
+      this._throwIfControlMissing(i + delta);
+      this.setControl(i, this.at(i + delta));
+    }
+
+    this.setControl(to, controlToMove);
+  }
+
+  /**
    * Length of the control array.
    */
   get length(): number { return this.controls.length; }

@@ -162,6 +162,77 @@ import {of } from 'rxjs';
       });
     });
 
+    describe('moveControl', () => {
+      let a: FormArray;
+
+      it('should move item from position 1 to 3', () => {
+        a = new FormArray(
+            [new FormControl(0), new FormControl(1), new FormControl(2), new FormControl(3)]);
+
+        a.moveControl(1, 3);
+        expect(a.getRawValue()).toEqual([0, 2, 3, 1]);
+      });
+
+      it('should work with nested forms', () => {
+        a = new FormArray([
+          new FormGroup({'c2': new FormControl('v2'), 'c3': new FormControl('v3')}),
+          new FormArray([new FormControl('v4'), new FormControl('v5')])
+        ]);
+
+        a.moveControl(0, 1);
+        expect(a.getRawValue()).toEqual([['v4', 'v5'], {'c2': 'v2', 'c3': 'v3'}]);
+      });
+
+      it('should work from higher position to lower position', () => {
+        a = new FormArray([new FormControl(0), new FormControl(1)]);
+
+        a.moveControl(1, 0);
+        expect(a.getRawValue()).toEqual([1, 0]);
+      });
+
+      it('should throw error when from-index out of bounds', () => {
+        a = new FormArray([new FormControl(0), new FormControl(1)]);
+        expect(() => a.moveControl(2, 0))
+            .toThrowError(new RegExp(`Cannot find form control at index 2`));
+        expect(a.getRawValue()).toEqual([0, 1]);
+      });
+
+      it('should throw error when to-index out of bounds', () => {
+        a = new FormArray([new FormControl(0), new FormControl(1)]);
+        expect(() => a.moveControl(0, 2))
+            .toThrowError(new RegExp(`Cannot find form control at index 2`));
+        expect(a.getRawValue()).toEqual([0, 1]);
+      });
+
+      it('should throw error when from-index is negative', () => {
+        a = new FormArray([new FormControl(0)]);
+
+        expect(() => a.moveControl(-1, 0))
+            .toThrowError(new RegExp(`Cannot find form control at index -1`));
+      });
+
+      it('should throw error when formarray is empty', () => {
+        a = new FormArray([]);
+
+        expect(() => a.moveControl(0, 1))
+            .toThrowError(new RegExp(`There are no form controls registered`));
+      });
+
+      it('should throw error if indices are equal and control does not exist', () => {
+        a = new FormArray([new FormControl(0), new FormControl(1)]);
+
+        expect(() => a.moveControl(3, 3))
+            .toThrowError(new RegExp(`Cannot find form control at index 3`));
+      });
+
+      it('should do nothing if indices are equal and control exists', () => {
+        a = new FormArray([new FormControl(0), new FormControl(1)]);
+
+        a.moveControl(0, 0);
+        expect(a.getRawValue()).toEqual([0, 1]);
+      });
+    });
+
     describe('setValue', () => {
       let c: FormControl, c2: FormControl, a: FormArray;
 

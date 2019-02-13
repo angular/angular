@@ -173,6 +173,7 @@ export declare class FormArray extends AbstractControl {
     clear(): void;
     getRawValue(): any[];
     insert(index: number, control: AbstractControl): void;
+    moveControl(from: number, to: number): void;
     patchValue(value: any[], options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
