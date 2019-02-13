@@ -17,6 +17,7 @@ jasmine_node_test(
         "//packages/bazel/src/schematics/bazel-workspace:test",
         "//packages/bazel/src/schematics/ng-add:test",
         "//packages/bazel/src/schematics/ng-new:test",
+        "//packages/bazel/src/schematics/utility:test",
         "//tools/testing:node",
     ],
 )

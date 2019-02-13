@@ -3,17 +3,12 @@ package(default_visibility = ["//visibility:public"])
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
-    name = "ng-add",
+    name = "utility",
     srcs = [
-        "index.ts",
-        "schema.d.ts",
+        "json-utils.ts",
     ],
-    data = glob(["files/**/*"]) + [
-        "schema.json",
-    ],
+    module_name = "@angular/bazel/src/schematics/utility",
     deps = [
-        "//packages/bazel/src/schematics/bazel-workspace",
-        "//packages/bazel/src/schematics/utility",
         "@ngdeps//@angular-devkit/core",
         "@ngdeps//@angular-devkit/schematics",
         "@ngdeps//@schematics/angular",
@@ -25,13 +20,11 @@ ts_library(
     name = "test",
     testonly = True,
     srcs = [
-        "index_spec.ts",
-    ],
-    data = [
-        "//packages/bazel/src/schematics:package_assets",
+        "json-utils_spec.ts",
     ],
     deps = [
-        ":ng-add",
+        ":utility",
+        "@ngdeps//@angular-devkit/core",
         "@ngdeps//@angular-devkit/schematics",
     ],
 )
