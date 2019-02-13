@@ -59,7 +59,16 @@ function wrapOnChanges() {
     const current = simpleChangesStore && simpleChangesStore.current;
 
     if (current) {
-      simpleChangesStore !.previous = current;
+      const previous = simpleChangesStore !.previous;
+      if (previous === EMPTY_OBJ) {
+        simpleChangesStore !.previous = current;
+      } else {
+        // New changes are copied to the previous store, so that we don't lose history for inputs
+        // which were not changed this time
+        for (let key in current) {
+          previous[key] = current[key];
+        }
+      }
       simpleChangesStore !.current = null;
       this.ngOnChanges(current);
     }
