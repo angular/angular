@@ -240,7 +240,6 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
     angular_compiler_options = {
         "enableResourceInlining": ctx.attr.inline_resources,
         "generateCodeForLibraries": False,
-        "useHostForImportGeneration": (not _is_bazel()),
         "allowEmptyCodegenFiles": True,
         # Summaries are only enabled if Angular outputs are to be produced.
         "enableSummariesForJit": is_legacy_ngc,
@@ -255,6 +254,7 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "createExternalSymbolFactoryReexports": (not _is_bazel()),
         # FIXME: wrong place to de-dupe
         "expectedOut": depset([o.path for o in expected_outs]).to_list(),
+        "_useHostForImportGeneration": (not _is_bazel()),
     }
 
     if _should_produce_flat_module_outs(ctx):

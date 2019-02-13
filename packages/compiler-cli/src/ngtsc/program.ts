@@ -316,7 +316,7 @@ export class NgtscProgram implements api.Program {
   private makeCompilation(): IvyCompilation {
     const checker = this.tsProgram.getTypeChecker();
     // Construct the ReferenceEmitter.
-    if (this.fileToModuleHost === null || !this.options.useHostForImportGeneration) {
+    if (this.fileToModuleHost === null || !this.options._useHostForImportGeneration) {
       // The CompilerHost doesn't have fileNameToModuleName, so build an NPM-centric reference
       // resolution strategy.
       this.refEmitter = new ReferenceEmitter([
