@@ -357,7 +357,7 @@ describe('unit test', () => {
     check({'file.d.ts': input}, expected, {stripExportPattern: /^__.*/});
   });
 
-  it('should throw on using non-whitelisted module imports in expression position', () => {
+  it('should throw on using disallowed module imports in expression position', () => {
     const input = `
       import * as foo from './foo';
       export declare class A extends foo.A {
@@ -365,20 +365,22 @@ describe('unit test', () => {
     `;
     checkThrows(
         {'file.d.ts': input}, 'file.d.ts(2,32): error: Module identifier "foo" is not allowed. ' +
-            'Remove it from source or whitelist it via --allowModuleIdentifiers.');
+            'Remove it from source or allow it via --allowModuleIdentifiers.');
   });
 
-  it('should throw on using non-whitelisted module imports in type position', () => {
-    const input = `
+  it('should throw on using an import from something not in allowed module imports in type position',
+     () => {
+       const input = `
       import * as foo from './foo';
       export type A = foo.A;
     `;
-    checkThrows(
-        {'file.d.ts': input}, 'file.d.ts(2,17): error: Module identifier "foo" is not allowed. ' +
-            'Remove it from source or whitelist it via --allowModuleIdentifiers.');
-  });
+       checkThrows(
+           {'file.d.ts': input},
+           'file.d.ts(2,17): error: Module identifier "foo" is not allowed. ' +
+               'Remove it from source or allow it via --allowModuleIdentifiers.');
+     });
 
-  it('should not throw on using whitelisted module imports', () => {
+  it('should not throw on using allowed module imports', () => {
     const input = `
       import * as foo from './foo';
       export declare class A extends foo.A {
@@ -391,7 +393,7 @@ describe('unit test', () => {
     check({'file.d.ts': input}, expected, {allowModuleIdentifiers: ['foo']});
   });
 
-  it('should not throw if non-whitelisted module imports are not written', () => {
+  it('should not throw if allowed module imports are not written', () => {
     const input = `
       import * as foo from './foo';
       export declare class A {

@@ -16,7 +16,7 @@
 // clang-format off
 // tslint:disable
 
-window.testBlocklist = {
+window.testBlockList = {
   "Portals CdkPortalOutlet should load a template into the portal": {
     "error": "TypeError: Cannot read property 'createEmbeddedView' of undefined",
     "notes": "Unknown"

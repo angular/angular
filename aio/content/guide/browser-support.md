@@ -48,7 +48,7 @@ Angular supports most recent browsers. This includes the following specific vers
       2 most recent major versions
     </td>
   </tr>
-  <tr> 
+  <tr>
     <td>
       IE
     </td>
@@ -57,7 +57,7 @@ Angular supports most recent browsers. This includes the following specific vers
     </td>
   </tr>
  <tr>
-   <tr> 
+   <tr>
     <td>
       IE Mobile
     </td>
@@ -82,7 +82,7 @@ Angular supports most recent browsers. This includes the following specific vers
     <td>
       2 most recent major versions
     </td>
-  </tr> 
+  </tr>
   <tr>
     <td>
       Android
@@ -91,7 +91,7 @@ Angular supports most recent browsers. This includes the following specific vers
     <td>
       Nougat (7.0)<br>Marshmallow (6.0)<br>Lollipop (5.0, 5.1)<br>KitKat (4.4)
     </td>
-  </tr> 
+  </tr>
 
 </table>
 
@@ -302,14 +302,14 @@ Here are the features which may require additional polyfills:
     <td>
 
     If you use the following deprecated i18n pipes:
-    
 
-     [date](api/common/DeprecatedDatePipe), 
-     
+
+     [date](api/common/DeprecatedDatePipe),
+
      [currency](api/common/DeprecatedCurrencyPipe),
-     
-     [decimal](api/common/DeprecatedDecimalPipe), 
-     
+
+     [decimal](api/common/DeprecatedDecimalPipe),
+
      [percent](api/common/DeprecatedPercentPipe)
 
     </td>
@@ -330,8 +330,8 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-       [NgClass](api/common/NgClass) 
-       
+       [NgClass](api/common/NgClass)
+
        on SVG elements
     </td>
 
@@ -351,8 +351,8 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-      [Http](guide/http) 
-      
+      [Http](guide/http)
+
       when sending and receiving binary data
     </td>
 
@@ -376,8 +376,8 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-      [Router](guide/router) 
-      
+      [Router](guide/router)
+
       when using [hash-based routing](guide/router#appendix-locationstrategy-and-browser-url-styles)
     </td>
 
@@ -604,7 +604,7 @@ If you are not using the CLI, you should add your polyfill scripts directly to t
      */
     // __Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
     // __Zone_disable_on_property = true; // disable patch onProperty such as onclick
-    // __zone_symbol__BLACK_LISTED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
+    // __zone_symbol_DISABLE_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
 
     /*
      * in IE/Edge developer tools, the addEventListener will also be wrapped by zone.js

@@ -38,19 +38,19 @@ const NATIVE_REMOVE_LISTENER = 'removeEventListener';
 const stopSymbol = '__zone_symbol__propagationStopped';
 const stopMethodSymbol = '__zone_symbol__stopImmediatePropagation';
 
-const blackListedEvents: string[] =
-    (typeof Zone !== 'undefined') && (Zone as any)[__symbol__('BLACK_LISTED_EVENTS')];
-let blackListedMap: {[eventName: string]: string};
-if (blackListedEvents) {
-  blackListedMap = {};
-  blackListedEvents.forEach(eventName => { blackListedMap[eventName] = eventName; });
+const disabledEvents: string[] =
+    (typeof Zone !== 'undefined') && (Zone as any)[__symbol__('DISABLE_EVENTS')];
+let disabledEventMap: {[eventName: string]: string};
+if (disabledEvents) {
+  disabledEventMap = {};
+  disabledEvents.forEach(eventName => { disabledEventMap[eventName] = eventName; });
 }
 
-const isBlackListedEvent = function(eventName: string) {
-  if (!blackListedMap) {
+const isEventDisabled = function(eventName: string) {
+  if (!disabledEventMap) {
     return false;
   }
-  return blackListedMap.hasOwnProperty(eventName);
+  return disabledEventMap.hasOwnProperty(eventName);
 };
 
 interface TaskData {
@@ -152,12 +152,11 @@ export class DomEventsPlugin extends EventManagerPlugin {
      * NOTE: it is possible that the element is from different iframe, and so we
      * have to check before we execute the method.
      */
-    const self = this;
     const zoneJsLoaded = element[ADD_EVENT_LISTENER];
     let callback: EventListener = handler as EventListener;
     // if zonejs is loaded and current zone is not ngZone
     // we keep Zone.current on target for later restoration.
-    if (zoneJsLoaded && (!NgZone.isInAngularZone() || isBlackListedEvent(eventName))) {
+    if (zoneJsLoaded && (!NgZone.isInAngularZone() || isEventDisabled(eventName))) {
       let symbolName = symbolNames[eventName];
       if (!symbolName) {
         symbolName = symbolNames[eventName] = __symbol__(ANGULAR + eventName + FALSE);
@@ -168,7 +167,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
         taskDatas = (element as any)[symbolName] = [];
       }
 
-      const zone = isBlackListedEvent(eventName) ? Zone.root : Zone.current;
+      const zone = isEventDisabled(eventName) ? Zone.root : Zone.current;
       if (taskDatas.length === 0) {
         taskDatas.push({zone: zone, handler: callback});
       } else {
