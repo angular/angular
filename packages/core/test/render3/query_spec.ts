@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="rxjs" />
+
 import {NgForOfContext} from '@angular/common';
 import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/core';
 

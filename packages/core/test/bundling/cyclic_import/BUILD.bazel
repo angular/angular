@@ -33,6 +33,7 @@ ng_rollup_bundle(
     deps = [
         ":cyclic_import",
         "//packages/core",
+        "@ngdeps//rxjs",
     ],
 )
 

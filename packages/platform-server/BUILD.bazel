@@ -21,8 +21,8 @@ ng_module(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
         "@ngdeps//@types/node",
+        "@ngdeps//rxjs",
         "@ngdeps//zone.js",
-        "@rxjs",
     ],
 )
 

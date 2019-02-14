@@ -38,6 +38,7 @@ ng_rollup_bundle(
         "//packages/core/test/bundling/util:reflect_metadata",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
+        "@ngdeps//rxjs",
     ],
 )
 

@@ -18,8 +18,7 @@ ts_library(
         "//packages/platform-browser",
         "//packages/platform-server",
         "//packages/private/testing",
-        "@rxjs",
-        "@rxjs//operators",
+        "@ngdeps//rxjs",
     ],
 )
 

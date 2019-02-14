@@ -8,6 +8,6 @@ ng_module(
     srcs = glob(["**/*.ts"]),
     deps = [
         "//packages/core",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )

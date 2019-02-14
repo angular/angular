@@ -14,7 +14,7 @@ ts_library(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser-dynamic/testing",
         "//packages/platform-browser/testing",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )
 

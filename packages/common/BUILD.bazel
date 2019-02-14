@@ -12,7 +12,7 @@ ng_module(
     ),
     deps = [
         "//packages/core",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )
 

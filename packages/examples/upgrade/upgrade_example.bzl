@@ -48,7 +48,10 @@ def create_upgrade_example_targets(name, srcs, e2e_srcs, entry_module, assets = 
             "@ngdeps//node_modules/reflect-metadata:Reflect.js",
         ],
         index_html = "//packages/examples:index.html",
-        scripts = ["@ngdeps//node_modules/tslib:tslib.js"],
+        scripts = [
+            "@ngdeps//node_modules/tslib:tslib.js",
+            "//tools/rxjs:rxjs_umd_modules",
+        ],
         deps = [":%s_sources" % name],
         data = assets,
     )
