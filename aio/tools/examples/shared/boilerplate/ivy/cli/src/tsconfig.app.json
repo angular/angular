@@ -17,5 +17,9 @@
     "**/*.5.ts",
     "**/*.6.ts",
     "**/*.7.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "enableIvy": "ngtsc",
+    "allowEmptyCodegenFiles": true
+  }
 }
