@@ -272,8 +272,9 @@ export class NgtscProgram implements api.Program {
         };
 
     const customTransforms = opts && opts.customTransformers;
-    const beforeTransforms =
-        [ivyTransformFactory(compilation, this.reflector, this.importRewriter, this.isCore)];
+    const beforeTransforms = [ivyTransformFactory(
+        compilation, this.reflector, this.importRewriter, this.isCore,
+        this.closureCompilerEnabled)];
     const afterDeclarationsTransforms = [declarationTransformFactory(compilation)];
 
     if (this.factoryToSourceInfo !== null) {

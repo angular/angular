@@ -20,12 +20,24 @@ import {addImports} from './utils';
 
 const NO_DECORATORS = new Set<ts.Decorator>();
 
+const CLOSURE_FILE_OVERVIEW_REGEXP = /\s+@fileoverview\s+/i;
+
+/**
+ * Metadata to support @fileoverview blocks (Closure annotations) extracting/restoring.
+ */
+interface FileOverviewMeta {
+  comments: ts.SynthesizedComment[];
+  host: ts.Statement;
+  trailing: boolean;
+}
+
 export function ivyTransformFactory(
     compilation: IvyCompilation, reflector: ReflectionHost, importRewriter: ImportRewriter,
-    isCore: boolean): ts.TransformerFactory<ts.SourceFile> {
+    isCore: boolean, isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     return (file: ts.SourceFile): ts.SourceFile => {
-      return transformIvySourceFile(compilation, context, reflector, importRewriter, isCore, file);
+      return transformIvySourceFile(
+          compilation, context, reflector, importRewriter, file, isCore, isClosureCompilerEnabled);
     };
   };
 }
@@ -189,20 +201,65 @@ class IvyVisitor extends Visitor {
  */
 function transformIvySourceFile(
     compilation: IvyCompilation, context: ts.TransformationContext, reflector: ReflectionHost,
-    importRewriter: ImportRewriter, isCore: boolean, file: ts.SourceFile): ts.SourceFile {
+    importRewriter: ImportRewriter, file: ts.SourceFile, isCore: boolean,
+    isClosureCompilerEnabled: boolean): ts.SourceFile {
   const constantPool = new ConstantPool();
   const importManager = new ImportManager(importRewriter);
 
   // Recursively scan through the AST and perform any updates requested by the IvyCompilation.
   const visitor = new IvyVisitor(compilation, reflector, importManager, isCore, constantPool);
-  const sf = visit(file, visitor, context);
+  let sf = visit(file, visitor, context);
 
   // Generate the constant statements first, as they may involve adding additional imports
   // to the ImportManager.
   const constants = constantPool.statements.map(stmt => translateStatement(stmt, importManager));
 
+  // Preserve @fileoverview comments required by Closure, since the location might change as a
+  // result of adding extra imports and constant pool statements.
+  const fileOverviewMeta = isClosureCompilerEnabled ? getFileOverviewComment(sf.statements) : null;
+
   // Add new imports for this file.
-  return addImports(importManager, sf, constants);
+  sf = addImports(importManager, sf, constants);
+
+  if (fileOverviewMeta !== null) {
+    setFileOverviewComment(sf, fileOverviewMeta);
+  }
+
+  return sf;
+}
+
+function getFileOverviewComment(statements: ts.NodeArray<ts.Statement>): FileOverviewMeta|null {
+  if (statements.length > 0) {
+    const host = statements[0];
+    let trailing = false;
+    let comments = ts.getSyntheticLeadingComments(host);
+    // If @fileoverview tag is not found in source file, tsickle produces fake node with trailing
+    // comment and inject it at the very beginning of the generated file. So we need to check for
+    // leading as well as trailing comments.
+    if (!comments || comments.length === 0) {
+      trailing = true;
+      comments = ts.getSyntheticTrailingComments(host);
+    }
+    if (comments && comments.length > 0 && CLOSURE_FILE_OVERVIEW_REGEXP.test(comments[0].text)) {
+      return {comments, host, trailing};
+    }
+  }
+  return null;
+}
+
+function setFileOverviewComment(sf: ts.SourceFile, fileoverview: FileOverviewMeta): void {
+  const {comments, host, trailing} = fileoverview;
+  // If host statement is no longer the first one, it means that extra statements were added at the
+  // very beginning, so we need to relocate @fileoverview comment and cleanup the original statement
+  // that hosted it.
+  if (sf.statements.length > 0 && host !== sf.statements[0]) {
+    if (trailing) {
+      ts.setSyntheticTrailingComments(host, undefined);
+    } else {
+      ts.setSyntheticLeadingComments(host, undefined);
+    }
+    ts.setSyntheticLeadingComments(sf.statements[0], comments);
+  }
 }
 
 function maybeFilterDecorator(
