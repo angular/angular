@@ -6,14 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {fixmeIvy} from '@angular/private/testing';
 import {ElementArrayFinder, ElementFinder, browser, by, element} from 'protractor';
+import {verifyNoBrowserErrors} from '../../../../../test-utils';
 
-import {verifyNoBrowserErrors} from '../../../../../_common/e2e_util';
 import {addCustomMatchers} from './e2e_util';
 
 function loadPage() {
   browser.rootEl = 'example-app';
-  browser.get('/upgrade/static/ts/lite/');
+  browser.get('/');
 }
 
 describe('upgrade/static (lite)', () => {
@@ -58,32 +59,35 @@ describe('upgrade/static (lite)', () => {
 
   it('should initially not render the heroes', () => expectHeroes(false));
 
-  it('should toggle the heroes when clicking the "show/hide" button', () => {
-    showHideBtn.click();
-    expectHeroes(true);
+  fixmeIvy('unknown; <ng1Hero> component does not seem to render name & description')
+      .it('should toggle the heroes when clicking the "show/hide" button', () => {
+        showHideBtn.click();
+        expectHeroes(true);
 
-    showHideBtn.click();
-    expectHeroes(false);
-  });
+        showHideBtn.click();
+        expectHeroes(false);
+      });
 
-  it('should add a new hero when clicking the "add" button', () => {
-    showHideBtn.click();
-    ng2HeroesAddBtn.click();
+  fixmeIvy('unknown; <ng1Hero> component does not seem to render name & description')
+      .it('should add a new hero when clicking the "add" button', () => {
+        showHideBtn.click();
+        ng2HeroesAddBtn.click();
 
-    expectHeroes(true, 4, 'Added hero Kamala Khan');
-    expect(ng1Heroes.last()).toHaveName('Kamala Khan');
-  });
+        expectHeroes(true, 4, 'Added hero Kamala Khan');
+        expect(ng1Heroes.last()).toHaveName('Kamala Khan');
+      });
 
-  it('should remove a hero when clicking its "remove" button', () => {
-    showHideBtn.click();
+  fixmeIvy('unknown; <ng1Hero> component does not seem to render name & description')
+      .it('should remove a hero when clicking its "remove" button', () => {
+        showHideBtn.click();
 
-    const firstHero = ng1Heroes.first();
-    expect(firstHero).toHaveName('Superman');
+        const firstHero = ng1Heroes.first();
+        expect(firstHero).toHaveName('Superman');
 
-    const removeBtn = firstHero.element(by.buttonText('Remove'));
-    removeBtn.click();
+        const removeBtn = firstHero.element(by.buttonText('Remove'));
+        removeBtn.click();
 
-    expectHeroes(true, 2, 'Removed hero Superman');
-    expect(ng1Heroes.first()).not.toHaveName('Superman');
-  });
+        expectHeroes(true, 2, 'Removed hero Superman');
+        expect(ng1Heroes.first()).not.toHaveName('Superman');
+      });
 });

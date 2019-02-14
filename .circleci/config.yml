@@ -491,7 +491,6 @@ jobs:
       - *download_yarn
       - *yarn_install
       - run: yarn tsc -p packages
-      - run: yarn tsc -p packages/examples
       - run: yarn tsc -p modules
       - run: yarn karma start ./karma-js.conf.js --single-run --browsers=ChromeNoSandbox
 
@@ -518,7 +517,6 @@ jobs:
           command: ./scripts/saucelabs/start-tunnel.sh
           background: true
       - run: yarn tsc -p packages
-      - run: yarn tsc -p packages/examples
       - run: yarn tsc -p modules
         # Waits for the Saucelabs tunnel to be ready. This ensures that we don't run tests
         # too early without Saucelabs not being ready.

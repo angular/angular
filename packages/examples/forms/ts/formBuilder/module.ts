@@ -9,12 +9,14 @@
 import {NgModule} from '@angular/core';
 import {ReactiveFormsModule} from '@angular/forms';
 import {BrowserModule} from '@angular/platform-browser';
-import {FormBuilderComp} from './form_builder_example';
+import {DisabledFormControlComponent, FormBuilderComp} from './form_builder_example';
 
 @NgModule({
   imports: [BrowserModule, ReactiveFormsModule],
-  declarations: [FormBuilderComp],
+  declarations: [FormBuilderComp, DisabledFormControlComponent],
   bootstrap: [FormBuilderComp]
 })
 export class AppModule {
 }
+
+export {FormBuilderComp as AppComponent};

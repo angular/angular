@@ -13,8 +13,10 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {MyComponent} from './my_component';
 
 enableProdMode();
-@NgModule({imports: [BrowserModule], bootstrap: [MyComponent]})
-class AppModule {
+
+@NgModule({imports: [BrowserModule], declarations: [MyComponent], bootstrap: [MyComponent]})
+export class AppModule {
 }
+
 platformBrowserDynamic().bootstrapModule(AppModule);
 // #enddocregion

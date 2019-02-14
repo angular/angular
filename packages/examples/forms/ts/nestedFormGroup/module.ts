@@ -18,3 +18,5 @@ import {NestedFormGroupComp} from './nested_form_group_example';
 })
 export class AppModule {
 }
+
+export {NestedFormGroupComp as AppComponent};
