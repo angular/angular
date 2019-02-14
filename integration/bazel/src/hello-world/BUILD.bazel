@@ -69,8 +69,6 @@ ts_web_test_suite(
     ],
     deps = [
         ":test_lib",
-        # This will be removed with https://github.com/angular/angular/pull/28720. This is the
-        # only remaining dependency that we still build from source here.
-        "@rxjs",
+        "//src:rxjs_umd_modules",
     ],
 )

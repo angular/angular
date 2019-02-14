@@ -92,6 +92,7 @@ jasmine_node_test(
         "//packages/core",
         "//tools/testing:node",
         "@ngdeps//minimist",
+        "@ngdeps//rxjs",
         "@ngdeps//tsickle",
     ],
 )

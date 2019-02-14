@@ -94,7 +94,6 @@ export default function(options: BazelWorkspaceOptions): Rule {
       'RULES_NODEJS_VERSION': '0.18.6',
       'RULES_NODEJS_SHA256': '1416d03823fed624b49a0abbd9979f7c63bbedfd37890ddecedd2fe25cccebc6',
       'ANGULAR_VERSION': existingVersions.Angular || clean(latestVersions.Angular),
-      'RXJS_VERSION': existingVersions.RxJs || clean(latestVersions.RxJs),
       // TODO(kyliau): Consider moving this to latest-versions.ts
       'RULES_SASS_VERSION': '1.17.0',
     };
