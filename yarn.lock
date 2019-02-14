@@ -5673,10 +5673,10 @@ jpm@1.3.1:
     xml2js "0.4.16"
     zip-dir "1.0.2"
 
-jquery@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-2.1.1.tgz#828fc60f50f7ee5983363ef4eb01c5f70af4bd5b"
-  integrity sha1-go/GD1D37lmDNj706wHF9wr0vVs=
+jquery@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.0.0.tgz#95a2a9541291a9f819e016f85ba247116d03e4ab"
+  integrity sha1-laKpVBKRqfgZ4Bb4W6JHEW0D5Ks=
 
 js-tokens@^3.0.2:
   version "3.0.2"
