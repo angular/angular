@@ -579,11 +579,20 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    * sticky input changes. May be called manually for cases where the cell content changes outside
    * of these events.
    */
-  updateStickyHeaderRowStyles() {
+  updateStickyHeaderRowStyles(): void {
     const headerRows = this._getRenderedRows(this._headerRowOutlet);
-    this._stickyStyler.clearStickyPositioning(headerRows, ['top']);
+    const tableElement = this._elementRef.nativeElement as HTMLElement;
+
+    // Hide the thead element if there are no header rows. This is necessary to satisfy
+    // overzealous a11y checkers that fail because the `rowgroup` element does not contain
+    // required child `row`.
+    const thead = tableElement.querySelector('thead');
+    if (thead) {
+      thead.style.display = headerRows.length ? '' : 'none';
+    }
 
     const stickyStates = this._headerRowDefs.map(def => def.sticky);
+    this._stickyStyler.clearStickyPositioning(headerRows, ['top']);
     this._stickyStyler.stickRows(headerRows, stickyStates, 'top');
 
     // Reset the dirty state of the sticky input change since it has been used.
@@ -597,11 +606,20 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    * sticky input changes. May be called manually for cases where the cell content changes outside
    * of these events.
    */
-  updateStickyFooterRowStyles() {
+  updateStickyFooterRowStyles(): void {
     const footerRows = this._getRenderedRows(this._footerRowOutlet);
-    this._stickyStyler.clearStickyPositioning(footerRows, ['bottom']);
+    const tableElement = this._elementRef.nativeElement as HTMLElement;
+
+    // Hide the tfoot element if there are no footer rows. This is necessary to satisfy
+    // overzealous a11y checkers that fail because the `rowgroup` element does not contain
+    // required child `row`.
+    const tfoot = tableElement.querySelector('tfoot');
+    if (tfoot) {
+      tfoot.style.display = footerRows.length ? '' : 'none';
+    }
 
     const stickyStates = this._footerRowDefs.map(def => def.sticky);
+    this._stickyStyler.clearStickyPositioning(footerRows, ['bottom']);
     this._stickyStyler.stickRows(footerRows, stickyStates, 'bottom');
     this._stickyStyler.updateStickyFooterContainer(this._elementRef.nativeElement, stickyStates);
 
@@ -865,7 +883,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   }
 
   /** Gets the list of rows that have been rendered in the row outlet. */
-  _getRenderedRows(rowOutlet: RowOutlet) {
+  _getRenderedRows(rowOutlet: RowOutlet): HTMLElement[] {
     const renderedRows: HTMLElement[] = [];
 
     for (let i = 0; i < rowOutlet.viewContainer.length; i++) {
@@ -983,6 +1001,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
     for (const section of sections) {
       const element = documentRef.createElement(section.tag);
+      element.setAttribute('role', 'rowgroup');
       element.appendChild(section.outlet.elementRef.nativeElement);
       documentFragment.appendChild(element);
     }

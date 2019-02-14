@@ -505,6 +505,32 @@ describe('CdkTable', () => {
     ]);
   });
 
+  it('should apply correct roles for native table elements', () => {
+    const thisFixture = createComponent(NativeHtmlTableApp);
+    const thisTableElement: HTMLTableElement = thisFixture.nativeElement.querySelector('table');
+    thisFixture.detectChanges();
+
+    const rowGroups = Array.from(thisTableElement.querySelectorAll('thead, tbody, tfoot'));
+    expect(rowGroups.length).toBe(3, 'Expected table to have a thead, tbody, and tfoot');
+    for (const group of rowGroups) {
+      expect(group.getAttribute('role'))
+          .toBe('rowgroup', 'Expected thead, tbody, and tfoot to have role="rowgroup"');
+    }
+  });
+
+  it('should hide thead/tfoot when there are no header/footer rows', () => {
+    const thisFixture = createComponent(NativeTableWithNoHeaderOrFooterRows);
+    const thisTableElement: HTMLTableElement = thisFixture.nativeElement.querySelector('table');
+    thisFixture.detectChanges();
+
+    const rowGroups: HTMLElement[] = Array.from(thisTableElement.querySelectorAll('thead, tfoot'));
+    expect(rowGroups.length).toBe(2, 'Expected table to have a thead and tfoot');
+    for (const group of rowGroups) {
+      expect(group.style.display)
+          .toBe('none', 'Expected thead and tfoot to be `display: none`');
+    }
+  });
+
   it('should render cells even if row data is falsy', () => {
     setupTableTestApp(BooleanRowCdkTableApp);
     expectTableToMatchContent(tableElement, [
@@ -1591,27 +1617,27 @@ class MultipleHeaderFooterRowsCdkTableApp {
 
       <ng-container cdkColumnDef="index1Column">
         <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row"> index_1_special_row</cdk-cell>
+        <cdk-cell *cdkCellDef> index_1_special_row</cdk-cell>
       </ng-container>
 
       <ng-container cdkColumnDef="c3Column">
         <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row"> c3_special_row</cdk-cell>
+        <cdk-cell *cdkCellDef> c3_special_row</cdk-cell>
       </ng-container>
 
       <ng-container cdkColumnDef="index">
         <cdk-header-cell *cdkHeaderCellDef> Index</cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row; let index = index"> {{index}}</cdk-cell>
+        <cdk-cell *cdkCellDef="let index = index"> {{index}}</cdk-cell>
       </ng-container>
 
       <ng-container cdkColumnDef="dataIndex">
         <cdk-header-cell *cdkHeaderCellDef> Data Index</cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row; let dataIndex = dataIndex"> {{dataIndex}}</cdk-cell>
+        <cdk-cell *cdkCellDef="let dataIndex = dataIndex"> {{dataIndex}}</cdk-cell>
       </ng-container>
 
       <ng-container cdkColumnDef="renderIndex">
         <cdk-header-cell *cdkHeaderCellDef> Render Index</cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row; let renderIndex = renderIndex"> {{renderIndex}}</cdk-cell>
+        <cdk-cell *cdkCellDef="let renderIndex = renderIndex"> {{renderIndex}}</cdk-cell>
       </ng-container>
 
       <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
@@ -1662,12 +1688,12 @@ class WhenRowCdkTableApp {
 
       <ng-container cdkColumnDef="index1Column">
         <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row"> index_1_special_row </cdk-cell>
+        <cdk-cell *cdkCellDef> index_1_special_row </cdk-cell>
       </ng-container>
 
       <ng-container cdkColumnDef="c3Column">
         <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row"> c3_special_row </cdk-cell>
+        <cdk-cell *cdkCellDef> c3_special_row </cdk-cell>
       </ng-container>
 
       <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
@@ -1705,12 +1731,12 @@ class WhenRowWithoutDefaultCdkTableApp {
 
       <ng-container cdkColumnDef="index1Column">
         <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row"> index_1_special_row </cdk-cell>
+        <cdk-cell *cdkCellDef> index_1_special_row </cdk-cell>
       </ng-container>
 
       <ng-container cdkColumnDef="c3Column">
         <cdk-header-cell *cdkHeaderCellDef> Column C</cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row"> c3_special_row </cdk-cell>
+        <cdk-cell *cdkCellDef> c3_special_row </cdk-cell>
       </ng-container>
 
       <cdk-header-row *cdkHeaderRowDef="columnsToRender"></cdk-header-row>
@@ -1790,7 +1816,7 @@ class TrackByCdkTableApp {
                     [sticky]="isStuck(stickyStartColumns, column)"
                     [stickyEnd]="isStuck(stickyEndColumns, column)">
         <cdk-header-cell *cdkHeaderCellDef> Header {{column}} </cdk-header-cell>
-        <cdk-cell *cdkCellDef="let row"> {{column}} </cdk-cell>
+        <cdk-cell *cdkCellDef>{{column}}</cdk-cell>
         <cdk-footer-cell *cdkFooterCellDef> Footer {{column}} </cdk-footer-cell>
       </ng-container>
 
@@ -2220,6 +2246,35 @@ class OuterTableApp {
   `
 })
 class NativeHtmlTableApp {
+  dataSource: FakeDataSource | undefined = new FakeDataSource();
+  columnsToRender = ['column_a', 'column_b', 'column_c'];
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
+}
+
+@Component({
+  template: `
+    <table cdk-table [dataSource]="dataSource">
+      <ng-container cdkColumnDef="column_a">
+        <th cdk-header-cell *cdkHeaderCellDef> Column A</th>
+        <td cdk-cell *cdkCellDef="let row"> {{row.a}}</td>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_b">
+        <th cdk-header-cell *cdkHeaderCellDef> Column B</th>
+        <td cdk-cell *cdkCellDef="let row"> {{row.b}}</td>
+      </ng-container>
+
+      <ng-container cdkColumnDef="column_c">
+        <th cdk-header-cell *cdkHeaderCellDef> Column C</th>
+        <td cdk-cell *cdkCellDef="let row"> {{row.c}}</td>
+      </ng-container>
+
+      <tr cdk-row *cdkRowDef="let row; columns: columnsToRender" class="customRowClass"></tr>
+    </table>
+  `
+})
+class NativeTableWithNoHeaderOrFooterRows {
   dataSource: FakeDataSource | undefined = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
 
