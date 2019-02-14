@@ -150,6 +150,8 @@ export interface ListKeyManagerOption {
     getLabel?(): string;
 }
 
+export declare const LIVE_ANNOUNCER_DEFAULT_OPTIONS: InjectionToken<LiveAnnouncerDefaultOptions>;
+
 export declare const LIVE_ANNOUNCER_ELEMENT_TOKEN: InjectionToken<HTMLElement | null>;
 
 export declare function LIVE_ANNOUNCER_ELEMENT_TOKEN_FACTORY(): null;
@@ -159,13 +161,18 @@ export declare const LIVE_ANNOUNCER_PROVIDER: Provider;
 export declare function LIVE_ANNOUNCER_PROVIDER_FACTORY(parentAnnouncer: LiveAnnouncer, liveElement: any, _document: any, ngZone: NgZone): LiveAnnouncer;
 
 export declare class LiveAnnouncer implements OnDestroy {
-    constructor(elementToken: any, _ngZone: NgZone, _document: any);
-    announce(message: string): Promise<void>;
+    constructor(elementToken: any, _ngZone: NgZone, _document: any, _defaultOptions?: LiveAnnouncerDefaultOptions | undefined);
+    announce(message: string, politeness?: AriaLivePoliteness): Promise<void>;
     announce(message: string, duration?: number): Promise<void>;
     announce(message: string, politeness?: AriaLivePoliteness, duration?: number): Promise<void>;
-    announce(message: string, politeness?: AriaLivePoliteness): Promise<void>;
+    announce(message: string): Promise<void>;
     clear(): void;
     ngOnDestroy(): void;
+}
+
+export interface LiveAnnouncerDefaultOptions {
+    duration?: number;
+    politeness?: AriaLivePoliteness;
 }
 
 export declare const MESSAGES_CONTAINER_ID = "cdk-describedby-message-container";

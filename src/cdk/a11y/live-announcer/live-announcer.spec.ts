@@ -4,7 +4,11 @@ import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angula
 import {By} from '@angular/platform-browser';
 import {A11yModule} from '../index';
 import {LiveAnnouncer} from './live-announcer';
-import {LIVE_ANNOUNCER_ELEMENT_TOKEN} from './live-announcer-token';
+import {
+  LIVE_ANNOUNCER_ELEMENT_TOKEN,
+  LIVE_ANNOUNCER_DEFAULT_OPTIONS,
+  LiveAnnouncerDefaultOptions,
+} from './live-announcer-tokens';
 
 
 describe('LiveAnnouncer', () => {
@@ -189,6 +193,47 @@ describe('LiveAnnouncer', () => {
       expect(customLiveElement.textContent).toBe('Custom Element');
     }));
   });
+
+  describe('with a default options', () => {
+    beforeEach(() => {
+      return TestBed.configureTestingModule({
+        imports: [A11yModule],
+        declarations: [TestApp],
+        providers: [{
+          provide: LIVE_ANNOUNCER_DEFAULT_OPTIONS,
+          useValue: {
+            politeness: 'assertive',
+            duration: 1337
+          } as LiveAnnouncerDefaultOptions
+        }],
+      });
+    });
+
+    beforeEach(inject([LiveAnnouncer], (la: LiveAnnouncer) => {
+      announcer = la;
+      ariaLiveElement = getLiveElement();
+    }));
+
+    it('should pick up the default politeness from the injection token', fakeAsync(() => {
+      announcer.announce('Hello');
+
+      tick(2000);
+
+      expect(ariaLiveElement.getAttribute('aria-live')).toBe('assertive');
+    }));
+
+    it('should pick up the default politeness from the injection token', fakeAsync(() => {
+      announcer.announce('Hello');
+
+      tick(100);
+      expect(ariaLiveElement.textContent).toBe('Hello');
+
+      tick(1337);
+      expect(ariaLiveElement.textContent).toBeFalsy();
+    }));
+
+  });
+
 });
 
 describe('CdkAriaLive', () => {

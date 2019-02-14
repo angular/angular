@@ -21,11 +21,13 @@ import {
   SkipSelf,
 } from '@angular/core';
 import {Subscription} from 'rxjs';
-import {LIVE_ANNOUNCER_ELEMENT_TOKEN} from './live-announcer-token';
+import {
+  AriaLivePoliteness,
+  LiveAnnouncerDefaultOptions,
+  LIVE_ANNOUNCER_ELEMENT_TOKEN,
+  LIVE_ANNOUNCER_DEFAULT_OPTIONS,
+} from './live-announcer-tokens';
 
-
-/** Possible politeness levels. */
-export type AriaLivePoliteness = 'off' | 'polite' | 'assertive';
 
 @Injectable({providedIn: 'root'})
 export class LiveAnnouncer implements OnDestroy {
@@ -36,7 +38,9 @@ export class LiveAnnouncer implements OnDestroy {
   constructor(
       @Optional() @Inject(LIVE_ANNOUNCER_ELEMENT_TOKEN) elementToken: any,
       private _ngZone: NgZone,
-      @Inject(DOCUMENT) _document: any) {
+      @Inject(DOCUMENT) _document: any,
+      @Optional() @Inject(LIVE_ANNOUNCER_DEFAULT_OPTIONS)
+      private _defaultOptions?: LiveAnnouncerDefaultOptions) {
 
     // We inject the live element and document as `any` because the constructor signature cannot
     // reference browser globals (HTMLElement, Document) on non-browser environments, since having
@@ -82,8 +86,9 @@ export class LiveAnnouncer implements OnDestroy {
   announce(message: string, politeness?: AriaLivePoliteness, duration?: number): Promise<void>;
 
   announce(message: string, ...args: any[]): Promise<void> {
-    let politeness: AriaLivePoliteness;
-    let duration: number;
+    const defaultOptions = this._defaultOptions;
+    let politeness: AriaLivePoliteness | undefined;
+    let duration: number | undefined;
 
     if (args.length === 1 && typeof args[0] === 'number') {
       duration = args[0];
@@ -94,8 +99,17 @@ export class LiveAnnouncer implements OnDestroy {
     this.clear();
     clearTimeout(this._previousTimeout);
 
+    if (!politeness) {
+      politeness =
+          (defaultOptions && defaultOptions.politeness) ? defaultOptions.politeness : 'polite';
+    }
+
+    if (duration == null && defaultOptions) {
+      duration = defaultOptions.duration;
+    }
+
     // TODO: ensure changing the politeness works on all environments we support.
-    this._liveElement.setAttribute('aria-live', politeness! || 'polite');
+    this._liveElement.setAttribute('aria-live', politeness);
 
     // This 100ms timeout is necessary for some browser + screen-reader combinations:
     // - Both JAWS and NVDA over IE11 will not announce anything without a non-zero timeout.
