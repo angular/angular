@@ -10,7 +10,6 @@ import {GeneratedFile} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import * as api from '../transformers/api';
-import {nocollapseHack} from '../transformers/nocollapse_hack';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry, SelectorScopeRegistry} from './annotations';
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
@@ -41,7 +40,6 @@ export class NgtscProgram implements api.Program {
   private _reflector: TypeScriptReflectionHost|undefined = undefined;
   private _isCore: boolean|undefined = undefined;
   private rootDirs: string[];
-  private closureCompilerEnabled: boolean;
   private entryPoint: ts.SourceFile|null;
   private exportReferenceGraph: ReferenceGraph|null = null;
   private flatIndexGenerator: FlatIndexGenerator|null = null;
@@ -63,7 +61,6 @@ export class NgtscProgram implements api.Program {
     } else {
       this.rootDirs.push(host.getCurrentDirectory());
     }
-    this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
     this.resourceManager = new HostResourceLoader(host, options);
     const shouldGenerateShims = options.allowEmptyCodegenFiles || false;
     this.host = host;
@@ -265,9 +262,6 @@ export class NgtscProgram implements api.Program {
         (fileName: string, data: string, writeByteOrderMark: boolean,
          onError: ((message: string) => void) | undefined,
          sourceFiles: ReadonlyArray<ts.SourceFile>) => {
-          if (this.closureCompilerEnabled && fileName.endsWith('.js')) {
-            data = nocollapseHack(data);
-          }
           this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
         };
 
