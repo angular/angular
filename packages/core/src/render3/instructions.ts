@@ -1806,14 +1806,14 @@ function invokeDirectivesHostBindings(tView: TView, viewData: LView, tNode: TNod
     const def = tView.data[i] as DirectiveDef<any>;
     const directive = viewData[i];
     if (def.hostBindings) {
-      invokeHostBindings(def, expando, directive, tNode, firstTemplatePass);
+      invokeHostBindingsInCreationMode(def, expando, directive, tNode, firstTemplatePass);
     } else if (firstTemplatePass) {
       expando.push(null);
     }
   }
 }
 
-export function invokeHostBindings(
+export function invokeHostBindingsInCreationMode(
     def: DirectiveDef<any>, expando: ExpandoInstructions, directive: any, tNode: TNode,
     firstTemplatePass: boolean) {
   const previousExpandoLength = expando.length;

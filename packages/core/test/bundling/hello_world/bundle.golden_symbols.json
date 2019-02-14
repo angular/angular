@@ -324,7 +324,7 @@
     "name": "invertObject"
   },
   {
-    "name": "invokeHostBindings"
+    "name": "invokeHostBindingsInCreationMode"
   },
   {
     "name": "isComponentDef"

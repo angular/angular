@@ -915,7 +915,7 @@
     "name": "invokeDirectivesHostBindings"
   },
   {
-    "name": "invokeHostBindings"
+    "name": "invokeHostBindingsInCreationMode"
   },
   {
     "name": "isAnimationProp"
