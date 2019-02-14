@@ -1,7 +1,9 @@
-import {createPackageBuildTasks} from 'material2-build-tools';
+import {task} from 'gulp';
+import {createPackageBuildTasks, sequenceTask} from 'material2-build-tools';
 import {
-  cdkPackage,
+  allBuildPackages,
   cdkExperimentalPackage,
+  cdkPackage,
   examplesPackage,
   materialExperimentalPackage,
   materialPackage,
@@ -26,3 +28,9 @@ import './tasks/lint';
 import './tasks/material-release';
 import './tasks/unit-test';
 import './tasks/universal';
+
+/** Task that builds all available release packages. */
+task('build-release-packages', sequenceTask(
+  'clean',
+  allBuildPackages.map(buildPackage => `${buildPackage.name}:build-release`)
+));

@@ -12,7 +12,7 @@
     "node": ">= 5.4.1"
   },
   "scripts": {
-    "build": "gulp :publish:build-releases",
+    "build": "gulp build-release-packages",
     "dev-app": "gulp serve:devapp",
     "test": "gulp test",
     "lint": "gulp lint",

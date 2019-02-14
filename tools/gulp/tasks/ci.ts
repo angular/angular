@@ -1,6 +1,4 @@
 import {task} from 'gulp';
-import {sequenceTask} from 'material2-build-tools';
-import {allBuildPackages} from '../packages';
 
 task('ci:lint', ['lint']);
 
@@ -18,7 +16,4 @@ task('ci:aot', ['build-aot:no-release-build']);
 task('ci:prerender', ['prerender']);
 
 /** Task that builds all release packages. */
-task('ci:build-release-packages', sequenceTask(
-  'clean',
-  allBuildPackages.map(buildPackage => `${buildPackage.name}:build-release`)
-));
+task('ci:build-release-packages', ['build-release-packages']);
