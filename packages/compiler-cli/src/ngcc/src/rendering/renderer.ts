@@ -248,10 +248,8 @@ export abstract class Renderer {
   protected abstract addImports(
       output: MagicString,
       imports: {specifier: string, qualifier: string, isDefault: boolean}[]): void;
-  protected abstract addExports(output: MagicString, entryPointBasePath: string, exports: {
-    identifier: string,
-    from: string
-  }[]): void;
+  protected abstract addExports(
+      output: MagicString, entryPointBasePath: string, exports: ExportInfo[]): void;
   protected abstract addDefinitions(
       output: MagicString, compiledClass: CompiledClass, definitions: string): void;
   protected abstract removeDecorators(
@@ -391,19 +389,18 @@ export abstract class Renderer {
 
     // Capture the private declarations that need to be re-exported
     if (privateDeclarationsAnalyses.length) {
-      const dtsExports = privateDeclarationsAnalyses.map(e => {
-        if (!e.dtsFrom) {
+      privateDeclarationsAnalyses.forEach(e => {
+        if (!e.dtsFrom && !e.alias) {
           throw new Error(
               `There is no typings path for ${e.identifier} in ${e.from}.\n` +
               `We need to add an export for this class to a .d.ts typings file because ` +
               `Angular compiler needs to be able to reference this class in compiled code, such as templates.\n` +
               `The simplest fix for this is to ensure that this class is exported from the package's entry-point.`);
         }
-        return {identifier: e.identifier, from: e.dtsFrom};
       });
       const dtsEntryPoint = this.bundle.dts !.file;
       const renderInfo = dtsMap.get(dtsEntryPoint) || new DtsRenderInfo();
-      renderInfo.privateExports = dtsExports;
+      renderInfo.privateExports = privateDeclarationsAnalyses;
       dtsMap.set(dtsEntryPoint, renderInfo);
     }
 

@@ -79,7 +79,7 @@ export function mainNgcc(args: string[]): number {
       });
     });
   } catch (e) {
-    console.error(e.stack);
+    console.error(e.stack || e.message);
     return 1;
   }
 
