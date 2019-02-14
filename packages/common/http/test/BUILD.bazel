@@ -11,8 +11,7 @@ ts_library(
         "//packages/common/http/testing",
         "//packages/core",
         "//packages/core/testing",
-        "@rxjs",
-        "@rxjs//operators",
+        "@ngdeps//rxjs",
     ],
 )
 

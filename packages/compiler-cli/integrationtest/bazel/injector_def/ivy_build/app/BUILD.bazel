@@ -14,6 +14,6 @@ ng_module(
     tags = ["ivy-only"],
     deps = [
         "//packages/core",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )

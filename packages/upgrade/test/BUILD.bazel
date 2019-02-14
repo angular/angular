@@ -14,7 +14,7 @@ ts_library(
         "//packages/private/testing",
         "//packages/upgrade",
         "//packages/upgrade/static",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )
 

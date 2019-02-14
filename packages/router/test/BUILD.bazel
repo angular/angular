@@ -15,9 +15,7 @@ ts_library(
         "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
-        "@rxjs",
-        "@rxjs//operators",
-        "@rxjs//testing",
+        "@ngdeps//rxjs",
     ],
 )
 
