@@ -4,6 +4,7 @@ import {
   dispatchFakeEvent,
   dispatchEvent,
   dispatchKeyboardEvent,
+  dispatchMouseEvent,
 } from '@angular/cdk/testing';
 import {
   Component,
@@ -13,7 +14,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import {async, ComponentFixture, fakeAsync, TestBed, tick, flush} from '@angular/core/testing';
-import {MatRipple} from '@angular/material/core';
+import {MatRipple, defaultRippleAnimationConfig} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {
   MatListModule,
@@ -520,6 +521,33 @@ describe('MatSelectionList without forms', () => {
 
       expect(list.options.toArray().every(option => option.selected)).toBe(true);
     });
+
+    it('should disable list item ripples when the ripples on the list have been disabled',
+      fakeAsync(() => {
+        const rippleTarget = fixture.nativeElement
+            .querySelector('.mat-list-option:not(.mat-list-item-disabled) .mat-list-item-content');
+        const {enterDuration, exitDuration} = defaultRippleAnimationConfig;
+
+        dispatchMouseEvent(rippleTarget, 'mousedown');
+        dispatchMouseEvent(rippleTarget, 'mouseup');
+
+        expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
+            .toBe(1, 'Expected ripples to be enabled by default.');
+
+        // Wait for the ripples to go away.
+        tick(enterDuration + exitDuration);
+        expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
+            .toBe(0, 'Expected ripples to go away.');
+
+        fixture.componentInstance.listRippleDisabled = true;
+        fixture.detectChanges();
+
+        dispatchMouseEvent(rippleTarget, 'mousedown');
+        dispatchMouseEvent(rippleTarget, 'mouseup');
+
+        expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
+            .toBe(0, 'Expected no ripples after list ripples are disabled.');
+      }));
 
   });
 
@@ -1091,7 +1119,10 @@ describe('MatSelectionList with forms', () => {
 
 
 @Component({template: `
-  <mat-selection-list id="selection-list-1" (selectionChange)="onValueChange($event)">
+  <mat-selection-list
+    id="selection-list-1"
+    (selectionChange)="onValueChange($event)"
+    [disableRipple]="listRippleDisabled">
     <mat-list-option checkboxPosition="before" disabled="true" value="inbox">
       Inbox (disabled selection-option)
     </mat-list-option>
@@ -1108,6 +1139,7 @@ describe('MatSelectionList with forms', () => {
   </mat-selection-list>`})
 class SelectionListWithListOptions {
   showLastOption: boolean = true;
+  listRippleDisabled = false;
 
   onValueChange(_change: MatSelectionListChange) {}
 }

@@ -81,7 +81,7 @@ export declare class MatNavList extends _MatListMixinBase implements CanDisableR
     ngOnDestroy(): void;
 }
 
-export declare class MatSelectionList extends _MatSelectionListMixinBase implements FocusableOption, CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy {
+export declare class MatSelectionList extends _MatSelectionListMixinBase implements FocusableOption, CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
     _keyManager: FocusKeyManager<MatListOption>;
     _onTouched: () => void;
     compareWith: (o1: any, o2: any) => boolean;
@@ -99,6 +99,7 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
     deselectAll(): void;
     focus(): void;
     ngAfterContentInit(): void;
+    ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     registerOnChange(fn: (value: any) => void): void;
     registerOnTouched(fn: () => void): void;

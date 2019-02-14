@@ -119,7 +119,8 @@
     <mat-selection-list #groceries [ngModel]="selectedOptions"
                         (ngModelChange)="onSelectedOptionsChange($event)"
                         (change)="changeEventCount = changeEventCount + 1"
-                        [disabled]="selectionListDisabled">
+                        [disabled]="selectionListDisabled"
+                        [disableRipple]="selectionListRippleDisabled">
       <h3 mat-subheader>Groceries</h3>
 
       <mat-list-option value="bananas" checkboxPosition="before">Bananas</mat-list-option>
@@ -128,7 +129,7 @@
       <mat-list-option value="strawberries">Strawberries</mat-list-option>
     </mat-selection-list>
 
-    <mat-selection-list>
+    <mat-selection-list [disableRipple]="selectionListRippleDisabled">
       <h3 mat-subheader>Dogs</h3>
 
       <mat-list-option checkboxPosition="before">
@@ -145,8 +146,16 @@
     <p>Selected: {{selectedOptions | json}}</p>
     <p>Change Event Count {{changeEventCount}}</p>
     <p>Model Change Event Count {{modelChangeEventCount}}</p>
-    <mat-checkbox [(ngModel)]="selectionListDisabled">Disable Selection List</mat-checkbox>
-
+    <p>
+      <mat-checkbox [(ngModel)]="selectionListDisabled">
+        Disable Selection List
+      </mat-checkbox>
+    </p>
+    <p>
+      <mat-checkbox [(ngModel)]="selectionListRippleDisabled">
+        Disable Selection List ripples
+      </mat-checkbox>
+    </p>
     <p>
       <button mat-raised-button (click)="groceries.selectAll()">Select all</button>
       <button mat-raised-button (click)="groceries.deselectAll()">Deselect all</button>

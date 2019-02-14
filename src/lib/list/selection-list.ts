@@ -38,6 +38,8 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
+  SimpleChanges,
+  OnChanges,
 } from '@angular/core';
 import {
   CanDisableRipple, CanDisableRippleCtor,
@@ -299,7 +301,7 @@ export class MatListOption extends _MatListOptionMixinBase
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatSelectionList extends _MatSelectionListMixinBase implements FocusableOption,
-    CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy {
+    CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
 
   /** The FocusKeyManager which handles focus. */
   _keyManager: FocusKeyManager<MatListOption>;
@@ -331,9 +333,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
     // strategy. Therefore the options will not check for any changes if the `MatSelectionList`
     // changed its state. Since we know that a change to `disabled` property of the list affects
     // the state of the options, we manually mark each option for check.
-    if (this.options) {
-      this.options.forEach(option => option._markForCheck());
-    }
+    this._markOptionsForCheck();
   }
   private _disabled: boolean = false;
 
@@ -385,6 +385,14 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
         }
       }
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    const disableRippleChanges = changes.disableRipple;
+
+    if (disableRippleChanges && !disableRippleChanges.firstChange) {
+      this._markOptionsForCheck();
+    }
   }
 
   ngOnDestroy() {
@@ -580,5 +588,12 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   /** Returns the index of the specified list option. */
   private _getOptionIndex(option: MatListOption): number {
     return this.options.toArray().indexOf(option);
+  }
+
+  /** Marks all the options to be checked in the next change detection run. */
+  private _markOptionsForCheck() {
+    if (this.options) {
+      this.options.forEach(option => option._markForCheck());
+    }
   }
 }
