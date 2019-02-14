@@ -261,7 +261,7 @@ describe('jit source mapping', () => {
          }));
 
 
-      fixmeIvy('FW-511: Report template typing errors')
+      modifiedInIvy('Unknown binding errors have been moved to runtime in Ivy')
           .it('should use the right source url in template parse errors', fakeAsync(() => {
                 const template = '<div>\n  <div unknown="{{ctxProp}}"></div>';
                 @Component({...templateDecorator(template)})
