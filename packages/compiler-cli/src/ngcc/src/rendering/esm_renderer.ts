@@ -12,6 +12,8 @@ import {NgccReflectionHost, POST_R3_MARKER, PRE_R3_MARKER, SwitchableVariableDec
 import {CompiledClass} from '../analysis/decoration_analyzer';
 import {RedundantDecoratorMap, Renderer, stripExtension} from './renderer';
 import {EntryPointBundle} from '../packages/entry_point_bundle';
+import {ExportInfo} from '../analysis/private_declarations_analyzer';
+import {isDtsPath} from '../../../ngtsc/util/src/typescript';
 
 export class EsmRenderer extends Renderer {
   constructor(
@@ -36,15 +38,21 @@ export class EsmRenderer extends Renderer {
     });
   }
 
-  addExports(output: MagicString, entryPointBasePath: string, exports: {
-    identifier: string,
-    from: string
-  }[]): void {
+  addExports(output: MagicString, entryPointBasePath: string, exports: ExportInfo[]): void {
     exports.forEach(e => {
-      const basePath = stripExtension(e.from);
-      const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
-      const exportFrom = entryPointBasePath !== basePath ? ` from '${relativePath}'` : '';
-      const exportStr = `\nexport {${e.identifier}}${exportFrom};`;
+      let exportFrom = '';
+      const isDtsFile = isDtsPath(entryPointBasePath);
+      const from = isDtsFile ? e.dtsFrom : e.from;
+
+      if (from) {
+        const basePath = stripExtension(from);
+        const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
+        exportFrom = entryPointBasePath !== basePath ? ` from '${relativePath}'` : '';
+      }
+
+      // aliases should only be added in dts files as these are lost when rolling up dts file.
+      const exportStatement = e.alias && isDtsFile ? `${e.alias} as ${e.identifier}` : e.identifier;
+      const exportStr = `\nexport {${exportStatement}}${exportFrom};`;
       output.append(exportStr);
     });
   }

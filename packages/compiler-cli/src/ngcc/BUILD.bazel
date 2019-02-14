@@ -20,6 +20,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/scope",
         "//packages/compiler-cli/src/ngtsc/transform",
         "//packages/compiler-cli/src/ngtsc/translator",
+        "//packages/compiler-cli/src/ngtsc/util",
         "@npm//@types/convert-source-map",
         "@npm//@types/node",
         "@npm//@types/shelljs",
