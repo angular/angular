@@ -11,7 +11,12 @@ describe('Directionality', () => {
 
     TestBed.configureTestingModule({
       imports: [BidiModule],
-      declarations: [ElementWithDir, ElementWithPredefinedAutoDir, InjectsDirectionality],
+      declarations: [
+        ElementWithDir,
+        ElementWithPredefinedAutoDir,
+        InjectsDirectionality,
+        ElementWithPredefinedUppercaseDir,
+      ],
       providers: [{provide: DIR_DOCUMENT, useFactory: () => fakeDocument}],
     }).compileComponents();
   }));
@@ -134,6 +139,13 @@ describe('Directionality', () => {
         expect(fixture.componentInstance.dir.value).toBe('ltr');
       });
 
+    it('should be case-insensitive', () => {
+      const fixture = TestBed.createComponent(ElementWithPredefinedUppercaseDir);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dir.value).toBe('rtl');
+    });
+
   });
 });
 
@@ -157,6 +169,14 @@ class ElementWithDir {
 class ElementWithPredefinedAutoDir {
   @ViewChild(Dir) dir: Dir;
 }
+
+@Component({
+  template: '<div dir="RTL"></div>'
+})
+class ElementWithPredefinedUppercaseDir {
+  @ViewChild(Dir) dir: Dir;
+}
+
 
 /** Test component with Dir directive. */
 @Component({
