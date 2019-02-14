@@ -2179,6 +2179,109 @@ describe('ngtsc behavioral tests', () => {
     expect(afterCount).toBe(1);
   });
 
+  describe('@fileoverview Closure annotations', () => {
+    it('should be produced if not present in source file', () => {
+      env.tsconfig({
+        'annotateForClosureCompiler': true,
+      });
+      env.write(`test.ts`, `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<div class="test"></div>',
+        })
+        export class SomeComp {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const fileoverview = `
+        /**
+         * @fileoverview added by tsickle
+         * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         */
+      `;
+      expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
+    });
+
+    it('should be produced for empty source files', () => {
+      env.tsconfig({
+        'annotateForClosureCompiler': true,
+      });
+      env.write(`test.ts`, ``);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const fileoverview = `
+        /**
+         * @fileoverview added by tsickle
+         * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         */
+      `;
+      expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
+    });
+
+    it('should always be at the very beginning of a script (if placed above imports)', () => {
+      env.tsconfig({
+        'annotateForClosureCompiler': true,
+      });
+      env.write(`test.ts`, `
+        /**
+         * @fileoverview Some Comp overview
+         * @modName {some_comp}
+         */
+
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<div class="test"></div>',
+        })
+        export class SomeComp {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const fileoverview = `
+        /**
+         *
+         * @fileoverview Some Comp overview
+         * @modName {some_comp}
+         *
+         * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         */
+      `;
+      expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
+    });
+
+    it('should always be at the very beginning of a script (if placed above non-imports)', () => {
+      env.tsconfig({
+        'annotateForClosureCompiler': true,
+      });
+      env.write(`test.ts`, `
+        /**
+         * @fileoverview Some Comp overview
+         * @modName {some_comp}
+         */
+
+        const testConst = 'testConstValue';
+        const testFn = function() { return true; }
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const fileoverview = `
+        /**
+         *
+         * @fileoverview Some Comp overview
+         * @modName {some_comp}
+         *
+         * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         */
+      `;
+      expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
+    });
+  });
+
   describe('sanitization', () => {
     it('should generate sanitizers for unsafe attributes in hostBindings fn in Directives', () => {
       env.tsconfig();

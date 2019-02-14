@@ -31,8 +31,12 @@ export function addImports(
   const body = sf.statements.filter(stmt => !isImportStatement(stmt));
   // Prepend imports if needed.
   if (addedImports.length > 0) {
-    sf.statements =
-        ts.createNodeArray([...existingImports, ...addedImports, ...extraStatements, ...body]);
+    // If we prepend imports, we also prepend NotEmittedStatement to use it as an anchor
+    // for @fileoverview Closure annotation. If there is no @fileoverview annotations, this
+    // statement would be a noop.
+    const fileoverviewAnchorStmt = ts.createNotEmittedStatement(sf);
+    sf.statements = ts.createNodeArray(
+        [fileoverviewAnchorStmt, ...existingImports, ...addedImports, ...extraStatements, ...body]);
   }
 
   return sf;
