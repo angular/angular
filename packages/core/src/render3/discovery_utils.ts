@@ -8,14 +8,13 @@
 
 import {Injector} from '../di/injector';
 
-import {assertDefined} from '../util/assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from './context_discovery';
 import {NodeInjector} from './di';
 import {LContext} from './interfaces/context';
 import {DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from './interfaces/node';
 import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, PARENT, RootContext, TVIEW} from './interfaces/view';
-import {readElementValue, readPatchedLView, renderStringify} from './util';
+import {getRootView, readElementValue, renderStringify} from './util';
 
 
 
@@ -205,28 +204,6 @@ export function loadLContext(target: {}, throwOnNotFound: boolean = true): LCont
                     'Invalid ng target');
   }
   return context;
-}
-
-/**
- * Retrieve the root view from any component by walking the parent `LView` until
- * reaching the root `LView`.
- *
- * @param componentOrView any component or view
- *
- */
-export function getRootView(componentOrView: LView | {}): LView {
-  let lView: LView;
-  if (Array.isArray(componentOrView)) {
-    ngDevMode && assertDefined(componentOrView, 'lView');
-    lView = componentOrView as LView;
-  } else {
-    ngDevMode && assertDefined(componentOrView, 'component');
-    lView = readPatchedLView(componentOrView) !;
-  }
-  while (lView && !(lView[FLAGS] & LViewFlags.IsRoot)) {
-    lView = lView[PARENT] !;
-  }
-  return lView;
 }
 
 /**
