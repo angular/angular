@@ -14,7 +14,6 @@ ts_library(
     ),
     deps = [
         "//packages/core/src/interface",
-        "@rxjs",
-        "@rxjs//operators",
+        "@ngdeps//rxjs",
     ],
 )

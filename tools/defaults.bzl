@@ -165,6 +165,7 @@ def ts_web_test_suite(bootstrap = [], deps = [], runtime_deps = [], **kwargs):
         bootstrap = ["//:web_test_bootstrap_scripts"]
     local_deps = [
         "@ngdeps//node_modules/tslib:tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
     ] + deps
     local_runtime_deps = [
         "//tools/testing:browser",

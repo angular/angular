@@ -37,6 +37,7 @@ ng_rollup_bundle(
         "//packages/common",
         "//packages/core",
         "//packages/core/test/bundling/util:reflect_metadata",
+        "@ngdeps//rxjs",
     ],
 )
 

@@ -23,6 +23,7 @@ ng_rollup_bundle(
     tags = ["ivy-only"],
     deps = [
         ":tree_lib",
+        "@ngdeps//rxjs",
     ],
 )
 

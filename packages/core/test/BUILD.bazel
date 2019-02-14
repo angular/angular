@@ -31,9 +31,8 @@ ts_library(
         "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
+        "@ngdeps//rxjs",
         "@ngdeps//zone.js",
-        "@rxjs",
-        "@rxjs//operators",
     ],
 )
 

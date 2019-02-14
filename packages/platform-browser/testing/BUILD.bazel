@@ -12,6 +12,6 @@ ng_module(
         "//packages/core/testing",
         "//packages/platform-browser",
         "@ngdeps//@types/jasmine",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )

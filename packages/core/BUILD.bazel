@@ -17,9 +17,8 @@ ng_module(
         "//packages/core/src/interface",
         "//packages/core/src/reflection",
         "//packages/core/src/util",
+        "@ngdeps//rxjs",
         "@ngdeps//zone.js",
-        "@rxjs",
-        "@rxjs//operators",
     ],
 )
 

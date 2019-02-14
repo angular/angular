@@ -16,6 +16,7 @@ ng_module(
         "//packages/compiler",
         "//packages/core",
         "//packages/platform-browser",
+        "@ngdeps//rxjs",
     ],
 )
 

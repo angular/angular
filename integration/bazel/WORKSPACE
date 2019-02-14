@@ -24,15 +24,6 @@ local_repository(
     path = "../..",
 )
 
-# Fetch the rxjs repository since we build rxjs from source
-# TODO(gregmagolan): use rxjs bundles in the Bazel build
-http_archive(
-    name = "rxjs",
-    sha256 = "72b0b4e517f43358f554c125e40e39f67688cd2738a8998b4a266981ed32f403",
-    strip_prefix = "package/src",
-    url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
-)
-
 # Check the bazel version and download npm dependencies
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
