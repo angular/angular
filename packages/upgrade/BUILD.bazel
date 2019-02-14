@@ -11,6 +11,7 @@ ng_module(
             "src/dynamic/**/*.ts",
         ],
     ),
+    bundle_dts = True,
     deps = [
         "//packages/core",
         "//packages/platform-browser",
