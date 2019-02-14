@@ -22,7 +22,10 @@ ts_devserver(
     entry_module = "angular/modules/benchmarks/src/tree/ng2_next/index",
     index_html = "index.html",
     port = 4200,
-    scripts = ["@ngdeps//node_modules/tslib:tslib.js"],
+    scripts = [
+        "@ngdeps//node_modules/tslib:tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
     deps = [":ng2_next"],
 )
 

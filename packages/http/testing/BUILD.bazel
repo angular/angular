@@ -10,6 +10,6 @@ ng_module(
     deps = [
         "//packages/core",
         "//packages/http",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )

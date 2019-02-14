@@ -30,6 +30,7 @@ ng_rollup_bundle(
     deps = [
         ":hello_world",
         "//packages/core",
+        "@ngdeps//rxjs",
     ],
 )
 

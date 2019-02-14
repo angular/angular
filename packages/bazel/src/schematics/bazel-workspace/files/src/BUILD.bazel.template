@@ -16,6 +16,16 @@ sass_binary(
 for x in glob(["**/*.scss"])
 ]
 <% } %>
+
+filegroup(
+    name = "rxjs_umd_modules",
+    srcs = [
+        # do not sort
+        "@npm//node_modules/rxjs:bundles/rxjs.umd.js",
+        ":rxjs_shims.js",
+    ],
+)
+
 ng_module(
     name = "src",
     srcs = glob(
@@ -36,13 +46,17 @@ ng_module(
         "@angular//packages/platform-browser",<% if (routing) { %>
         "@angular//packages/router",<% } %>
         "@npm//@types",
+        "@npm//rxjs",
     ],
 )
 
 rollup_bundle(
     name = "bundle",
     entry_point = "src/main.prod",
-    deps = ["//src"],
+    deps = [
+        "//src",
+        "@npm//rxjs",
+    ],
 )
 
 web_package(
@@ -67,15 +81,14 @@ history_server(
 ts_devserver(
     name = "devserver",
     port = 4200,
-    additional_root_paths = [
-        "npm/node_modules/zone.js/dist",
-        "npm/node_modules/tslib",
-    ],
     entry_module = "<%= utils.underscore(name) %>/src/main.dev",
     serving_path = "/bundle.min.js",
+    scripts = [
+        "@npm//node_modules/tslib:tslib.js",
+        ":rxjs_umd_modules",
+    ],
     static_files = [
         "@npm//node_modules/zone.js:dist/zone.min.js",
-        "@npm//node_modules/tslib:tslib.js",
     ],
     index_html = "index.html",
     deps = [":src"],
@@ -120,6 +133,7 @@ ts_web_test_suite(
         "@io_bazel_rules_webtesting//browsers:chromium-local",
     ],
     deps = [
+        ":rxjs_umd_modules",
         ":test_lib",
         "@npm//karma-jasmine",
     ],

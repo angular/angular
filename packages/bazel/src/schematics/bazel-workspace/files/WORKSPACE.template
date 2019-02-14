@@ -28,13 +28,6 @@ http_archive(
     strip_prefix = "angular-%s" % ANGULAR_VERSION,
 )
 
-# RxJS
-RXJS_VERSION = "<%= RXJS_VERSION %>"
-http_archive(
-    name = "rxjs",
-    url = "https://registry.yarnpkg.com/rxjs/-/rxjs-%s.tgz" % RXJS_VERSION,
-    strip_prefix = "package/src",
-)
 <% if (sass) { %>
 # Rules for compiling sass
 RULES_SASS_VERSION = "<%= RULES_SASS_VERSION %>"

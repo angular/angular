@@ -10,6 +10,6 @@ ts_library(
         "//packages:types",
         "//packages/core",
         "//packages/service-worker/worker",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )

@@ -11,7 +11,7 @@ ts_library(
         "//packages/http/testing",
         "//packages/platform-browser",
         "//packages/platform-browser/testing",
-        "@rxjs",
+        "@ngdeps//rxjs",
     ],
 )
 

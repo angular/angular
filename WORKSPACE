@@ -19,15 +19,6 @@ http_archive(
     urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.18.6/rules_nodejs-0.18.6.tar.gz"],
 )
 
-# Fetch the rxjs repository since we build rxjs from source
-# TODO(gregmagolan): use rxjs bundles in the bazel build
-http_archive(
-    name = "rxjs",
-    sha256 = "72b0b4e517f43358f554c125e40e39f67688cd2738a8998b4a266981ed32f403",
-    strip_prefix = "package/src",
-    url = "https://registry.yarnpkg.com/rxjs/-/rxjs-6.3.3.tgz",
-)
-
 # Use a mock @npm repository while we are building angular from source
 # downstream. Angular will get its npm dependencies with in @ngdeps which
 # is setup in ng_setup_workspace().
