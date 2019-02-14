@@ -33,7 +33,7 @@ test:debug --test_arg=--node_options=--inspect-brk --test_output=streamed --test
 # eventually a surprising failure with auto-discovery of the C++ toolchain in
 # MacOS High Sierra.
 # See https://github.com/bazelbuild/bazel/issues/4603
-build --symlink_prefix=dist/
+build --symlink_prefix=/
 
 # Performance: avoid stat'ing input files
 build --watchfs

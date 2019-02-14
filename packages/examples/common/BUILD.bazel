@@ -10,6 +10,9 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*_spec.ts"],
     ),
+    # TODO: This does not compile with Ivy because the patch branch does not contain
+    # all ngtsc fixes.
+    tags = ["fixme-ivy-aot"],
     # TODO: FW-1004 Type checking is currently not complete.
     type_check = False,
     deps = [
@@ -47,6 +50,7 @@ ts_devserver(
         # and needs to be able to read metadata at runtime.
         "@ngdeps//node_modules/reflect-metadata:Reflect.js",
     ],
+    tags = ["fixme-ivy-aot"],
     deps = [":common_examples"],
 )
 
@@ -55,6 +59,7 @@ protractor_web_test_suite(
     data = ["//packages/bazel/src/protractor/utils"],
     on_prepare = ":start-server.js",
     server = ":devserver",
+    tags = ["fixme-ivy-aot"],
     deps = [
         ":common_tests_lib",
         "@ngdeps//protractor",

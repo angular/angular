@@ -13,6 +13,9 @@ ng_module(
             "**/*_howto.ts",
         ],
     ),
+    # TODO: This does not compile with Ivy because the patch branch does not contain
+    # all ngtsc fixes.
+    tags = ["fixme-ivy-aot"],
     # TODO: FW-1004 Type checking is currently not complete.
     type_check = False,
     deps = [
@@ -47,6 +50,7 @@ ts_devserver(
         "@ngdeps//node_modules/zone.js:dist/zone.js",
         "@ngdeps//node_modules/zone.js:dist/task-tracking.js",
     ],
+    tags = ["fixme-ivy-aot"],
     deps = [":core_examples"],
 )
 
@@ -55,6 +59,7 @@ protractor_web_test_suite(
     data = ["//packages/bazel/src/protractor/utils"],
     on_prepare = ":start-server.js",
     server = ":devserver",
+    tags = ["fixme-ivy-aot"],
     deps = [
         ":core_e2e_tests_lib",
         "@ngdeps//protractor",

@@ -5,6 +5,9 @@ load("//tools:defaults.bzl", "ng_module")
 ng_module(
     name = "platform_browser_examples",
     srcs = glob(["**/*.ts"]),
+    # TODO: This does not compile with Ivy because the patch branch does not contain
+    # all ngtsc fixes.
+    tags = ["fixme-ivy-aot"],
     deps = [
         "//packages/compiler",
         "//packages/core",
