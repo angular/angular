@@ -177,10 +177,10 @@ import * as i1 from '@angular/common';
       const {renderer} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
       renderer.addExports(output, PROGRAM.name.replace(/\.js$/, ''), [
-        {from: '/some/a.js', identifier: 'ComponentA1'},
-        {from: '/some/a.js', identifier: 'ComponentA2'},
-        {from: '/some/foo/b.js', identifier: 'ComponentB'},
-        {from: PROGRAM.name, identifier: 'TopLevelComponent'},
+        {from: '/some/a.js', dtsFrom: '/some/a.d.ts', identifier: 'ComponentA1'},
+        {from: '/some/a.js', dtsFrom: '/some/a.d.ts', identifier: 'ComponentA2'},
+        {from: '/some/foo/b.js', dtsFrom: '/some/foo/b.d.ts', identifier: 'ComponentB'},
+        {from: PROGRAM.name, dtsFrom: PROGRAM.name, identifier: 'TopLevelComponent'},
       ]);
       expect(output.toString()).toContain(`
 export {A, B, C, NoIife, BadIife};
@@ -188,6 +188,21 @@ export {ComponentA1} from './a';
 export {ComponentA2} from './a';
 export {ComponentB} from './foo/b';
 export {TopLevelComponent};`);
+    });
+
+    it('should not insert alias exports in js output', () => {
+      const {renderer} = setup(PROGRAM);
+      const output = new MagicString(PROGRAM.contents);
+      renderer.addExports(output, PROGRAM.name.replace(/\.js$/, ''), [
+        {from: '/some/a.js', alias: 'eComponentA1', identifier: 'ComponentA1'},
+        {from: '/some/a.js', alias: 'eComponentA2', identifier: 'ComponentA2'},
+        {from: '/some/foo/b.js', alias: 'eComponentB', identifier: 'ComponentB'},
+        {from: PROGRAM.name, alias: 'eTopLevelComponent', identifier: 'TopLevelComponent'},
+      ]);
+      const outputString = output.toString();
+      expect(outputString).not.toContain(`{eComponentA1 as ComponentA1}`);
+      expect(outputString).not.toContain(`{eComponentB as ComponentB}`);
+      expect(outputString).not.toContain(`{eTopLevelComponent as TopLevelComponent}`);
     });
   });
 
