@@ -218,6 +218,59 @@ describe('metadata bundler', () => {
     ]);
   });
 
+  it('should rewrite call expression references for static class members', () => {
+    const host = new MockStringBundlerHost('/', {
+      'lib': {
+        'index.ts': `export * from './deep/index';`,
+        'shared.ts': `
+          export function sharedFn() {
+            return {foo: true};
+          }`,
+        'deep': {
+          'index.ts': `
+            import {sharedFn} from '../shared';
+          
+            export class MyClass {
+              static ngInjectableDef = sharedFn(); 
+            }
+          `,
+        }
+      }
+    });
+    const bundler = new MetadataBundler('/lib/index', undefined, host);
+    const bundledMetadata = bundler.getMetadataBundle().metadata;
+    const deepIndexMetadata = host.getMetadataFor('/lib/deep/index') !;
+
+    // The unbundled metadata should reference symbols using the relative module path.
+    expect(deepIndexMetadata.metadata['MyClass']).toEqual(jasmine.objectContaining({
+      statics: {
+        ngInjectableDef: {
+          __symbolic: 'call',
+          expression: {
+            __symbolic: 'reference',
+            name: 'sharedFn',
+            module: '../shared',
+          }
+        }
+      }
+    }));
+
+    // For the bundled metadata, the "sharedFn" symbol should not be referenced using the
+    // relative module path (like for unbundled), because the metadata bundle can be stored
+    // anywhere and it's not guaranteed that the relatively referenced files are present.
+    expect(bundledMetadata.metadata['MyClass']).toEqual(jasmine.objectContaining({
+      statics: {
+        ngInjectableDef: {
+          __symbolic: 'call',
+          expression: {
+            __symbolic: 'reference',
+            name: 'ɵa',
+          }
+        }
+      }
+    }));
+  });
+
   it('should be able to bundle an oddly constructed library', () => {
     const host = new MockStringBundlerHost('/', {
       'lib': {
