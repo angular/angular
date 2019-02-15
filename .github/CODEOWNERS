@@ -744,6 +744,7 @@ testing/**                                                      @angular/fw-test
 /.circleci/**                                                   @angular/fw-dev-infra
 /.github/**                                                     @angular/fw-dev-infra
 /docs/BAZEL.md                                                  @angular/fw-dev-infra
+/packages/*                                                     @angular/fw-dev-infra
 /scripts/**                                                     @angular/fw-dev-infra
 /third_party/**                                                 @angular/fw-dev-infra
 /tools/**                                                       @angular/fw-dev-infra
