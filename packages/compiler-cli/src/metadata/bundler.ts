@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {MetadataCache} from '../transformers/metadata_cache';
 
 import {MetadataCollector} from './collector';
-import {ClassMetadata, ConstructorMetadata, FunctionMetadata, METADATA_VERSION, MemberMetadata, MetadataEntry, MetadataError, MetadataImportedSymbolReferenceExpression, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicExpression, isMethodMetadata} from './schema';
+import {ClassMetadata, ConstructorMetadata, FunctionMetadata, METADATA_VERSION, MemberMetadata, MetadataEntry, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicCallExpression, isMetadataSymbolicExpression, isMethodMetadata} from './schema';
 
 
 
@@ -412,7 +412,17 @@ export class MetadataBundler {
     let result: StaticsMetadata = {};
     for (const key in statics) {
       const value = statics[key];
-      result[key] = isFunctionMetadata(value) ? this.convertFunction(moduleName, value) : value;
+
+      if (isFunctionMetadata(value)) {
+        result[key] = this.convertFunction(moduleName, value);
+      } else if (isMetadataSymbolicCallExpression(value)) {
+        // Class members can also contain static members that call a function with module
+        // references. e.g. "static ngInjectableDef = defineInjectable(..)". We also need to
+        // convert these module references because otherwise these resolve to non-existent files.
+        result[key] = this.convertValue(moduleName, value);
+      } else {
+        result[key] = value;
+      }
     }
     return result;
   }
