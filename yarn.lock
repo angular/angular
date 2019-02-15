@@ -2983,10 +2983,10 @@ domain-browser@^1.1.1:
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.2.0.tgz#3d31f50191a6749dd1375a7f522e823d42e54eda"
   integrity sha512-jnjyiM6eRyZl2H+W8Q/zLMA481hzi0eszAaBUzIVnmYVDBbnLxVNnfu1HgEBvCbL+71FrxMl3E6lpKH7Ge3OXA==
 
-domino@2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/domino/-/domino-2.1.0.tgz#653ba7d331441113b42e40ba05f24253ec86e02e"
-  integrity sha512-xINSODvrnuQcm3eXJN4IkBR+JxqLrJN8Ge4fd00y1b7HsY0A4huKN5BflSS/oo8quBWmocTfWdFvrw2H8TjGqQ==
+domino@2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/domino/-/domino-2.1.2.tgz#70e8367839ee8ad8bde3aeb4857cf3d93bd98b85"
+  integrity sha512-nzg76s4Smji9teyLwOnqqUCdFVOho+OQFqUwp+42Wo+SEZ1FGw7uhemv6OKk2qp8YIgnGB3jVt0sJWU96wbPgA==
 
 dot-prop@^3.0.0:
   version "3.0.0"
