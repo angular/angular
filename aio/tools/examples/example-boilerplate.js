@@ -124,9 +124,10 @@ class ExampleBoilerPlate {
       BOILERPLATE_PATHS.common.forEach(filePath => this.copyFile(BOILERPLATE_COMMON_BASE_PATH, exampleFolder, filePath));
 
       // Copy Ivy specific files
-      if (ivy && BOILERPLATE_PATHS.ivy[boilerPlateType]) {
-        const ivyBoilerPlateBasePath = path.resolve(BOILERPLATE_BASE_PATH, 'ivy', boilerPlateType);
-        BOILERPLATE_PATHS.ivy[boilerPlateType].forEach(filePath => this.copyFile(ivyBoilerPlateBasePath, exampleFolder, filePath));
+      if (ivy) {
+        const ivyBoilerPlateType = boilerPlateType === 'systemjs' ? 'systemjs' : 'cli';
+        const ivyBoilerPlateBasePath = path.resolve(BOILERPLATE_BASE_PATH, 'ivy', ivyBoilerPlateType);
+        BOILERPLATE_PATHS.ivy[ivyBoilerPlateType].forEach(filePath => this.copyFile(ivyBoilerPlateBasePath, exampleFolder, filePath));
       }
     });
   }
