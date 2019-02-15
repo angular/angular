@@ -9,7 +9,7 @@
 import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent} from '../sanitization/html_sanitizer';
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
-import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
+import {assertDefined, assertEqual, assertGreaterThan, assertNotEqual} from '../util/assert';
 import {attachPatchData} from './context_discovery';
 import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions';
 import {LContainer, NATIVE} from './interfaces/container';
@@ -476,6 +476,14 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
     previousTNode.next = tNode;
   } else {
     tNode.next = null;
+  }
+
+  if (ngDevMode) {
+    let cursor: TNode|null = tNode;
+    while (cursor) {
+      assertNotEqual(cursor, tNode, 'We have created a loop');
+      cursor = cursor.next;
+    }
   }
 
   if (parentTNode !== viewData[HOST_NODE]) {
