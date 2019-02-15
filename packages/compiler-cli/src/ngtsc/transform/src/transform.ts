@@ -213,7 +213,7 @@ function transformIvySourceFile(
   sf = addImports(importManager, sf, constants);
 
   if (fileOverviewMeta !== null) {
-    setFileOverviewComment(sf.statements, fileOverviewMeta);
+    sf = setFileOverviewComment(sf, fileOverviewMeta);
   }
 
   return sf;
@@ -239,19 +239,22 @@ function getFileOverviewComment(statements: ts.NodeArray<ts.Statement>):
 }
 
 function setFileOverviewComment(
-    statements: ts.NodeArray<ts.Statement>,
-    fileoverview: [ts.SynthesizedComment[], ts.Statement, boolean]) {
+    sf: ts.SourceFile,
+    fileoverview: [ts.SynthesizedComment[], ts.Statement, boolean]): ts.SourceFile {
   const [comments, host, isTrailing] = fileoverview;
   // If host statement is no longer the first one, it means that we need to relocate @fileoverview
   // comment and cleanup the original statement that hosted it.
-  if (host && host !== statements[0]) {
+  if (host && host !== sf.statements[0]) {
     if (isTrailing) {
       ts.setSyntheticTrailingComments(host, undefined);
     } else {
       ts.setSyntheticLeadingComments(host, undefined);
     }
-    ts.setSyntheticLeadingComments(statements[0], comments as ts.SynthesizedComment[]);
+    const commentStmt = ts.createNotEmittedStatement(sf);
+    ts.setSyntheticLeadingComments(commentStmt, comments);
+    sf.statements = ts.createNodeArray([commentStmt, ...sf.statements]);
   }
+  return sf;
 }
 
 function maybeFilterDecorator(
