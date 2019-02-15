@@ -6,6 +6,9 @@
     "name": "ANIMATION_PROP_PREFIX"
   },
   {
+    "name": "ATTR_TO_PROP"
+  },
+  {
     "name": "BINDING_INDEX"
   },
   {
