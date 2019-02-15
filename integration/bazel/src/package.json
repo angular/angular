@@ -4,6 +4,11 @@
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
+    "@angular/animations": "file:../angular/dist/packages-dist/animations",
+    "@angular/common": "file:../angular/dist/packages-dist/common",
+    "@angular/core": "file:../angular/dist/packages-dist/core",
+    "@angular/platform-browser": "file:../angular/dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../angular/dist/packages-dist/platform-browser-dynamic",
     "reflect-metadata": "0.1.12",
     "rxjs": "6.3.3",
     "tslib": "1.9.3",
@@ -21,6 +26,7 @@
     "typescript": "3.1.1"
   },
   "scripts": {
+    "postinstall": "ngc -p ./angular-metadata.tsconfig.json",
     "//": "TODO(gregmagolan): figure out how to keep dependencies here up to date with the root package.json"
   }
 }

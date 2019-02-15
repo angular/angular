@@ -56,9 +56,13 @@ node_repositories(
 # Install our npm dependencies into @npm
 yarn_install(
     name = "npm",
-    # Need a reference to @angular here so that Bazel sets up the
-    # external repository before calling yarn_install
-    data = ["@angular//:LICENSE"],
+    data = [
+        # Needed because this tsconfig file is used in the "postinstall" script.
+        "//:angular-metadata.tsconfig.json",
+        # Need a reference to @angular here so that Bazel sets up the
+        # external repository before calling yarn_install
+        "@angular//:LICENSE",
+    ],
     package_json = "//src:package.json",
     yarn_lock = "//src:yarn.lock",
 )
@@ -94,7 +98,10 @@ load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 
 sass_repositories()
 
-# Setup the angular toolchain
+# Setup the angular toolchain. This integration test no longer builds Angular from source,
+# but we still need to set up the "angular" workspace since some Bazel rules depend on
+# the "ngdeps" repository. This can be fixed if we switched the Angular repository to the
+# "npm" repository for the bazel managed dependencies.
 load("@angular//:index.bzl", "ng_setup_workspace")
 
 ng_setup_workspace()

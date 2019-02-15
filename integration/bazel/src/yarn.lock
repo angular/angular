@@ -32,10 +32,10 @@
     rxjs "6.3.3"
     source-map "0.7.3"
 
-"@angular-devkit/core@7.3.0":
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-7.3.0.tgz#fc272e39b4c307833e9a7db77007418a246f5410"
-  integrity sha512-b0qtAUpgqLpWY8W6vWRv1aj6bXkZCP1rvywl8i8TbGMY67CWRcy5J3fNAMmjiZS+LJixFlIXYf4iOydglyJMfg==
+"@angular-devkit/core@7.3.1":
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-7.3.1.tgz#d92f6545796579cabdcfc29579a2c977f7a96c6c"
+  integrity sha512-56XDWWfIzOAkEk69lBLgmCYybPUA4yjunhmMlCk7vVdb7gbQUyzNjFD04Uj0GjlejatAQ5F76tRwygD9C+3RXQ==
   dependencies:
     ajv "6.7.0"
     chokidar "2.0.4"
@@ -51,29 +51,39 @@
     "@angular-devkit/core" "7.1.2"
     rxjs "6.3.3"
 
-"@angular-devkit/schematics@^7.3.0-rc.0":
-  version "7.3.0"
-  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-7.3.0.tgz#112c1f59ff2778157aff6fb7484a6c132d4156ac"
-  integrity sha512-glOduymftH0LmJhITWgWUJK8QCDUltgTZ943/OyArIvLXTLL/8zCb+G6xL+3k33EQjwJicgQ3WIjonJmeTK/Ww==
+"@angular-devkit/schematics@^7.0.4":
+  version "7.3.1"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-7.3.1.tgz#7dc704005b966ea6c1ee62f380120183bb76eee6"
+  integrity sha512-cd7usiasfSgw75INz72/VssrLr9tiVRYfo1TEdvr9ww0GuQbuQpB33xbV8W135eAV8+wzQ3Ce8ohaDHibvj6Yg==
   dependencies:
-    "@angular-devkit/core" "7.3.0"
+    "@angular-devkit/core" "7.3.1"
     rxjs "6.3.3"
 
+"@angular/animations@file:../angular/dist/packages-dist/animations":
+  version "0.0.0"
+  dependencies:
+    tslib "^1.9.0"
+
 "@angular/bazel@file:../angular/dist/packages-dist/bazel":
-  version "8.0.0-beta.2"
+  version "0.0.0"
   dependencies:
     "@angular-devkit/architect" "^0.10.6"
     "@angular-devkit/core" "^7.0.4"
-    "@angular-devkit/schematics" "^7.3.0-rc.0"
-    "@bazel/typescript" "^0.23.2"
+    "@angular-devkit/schematics" "^7.0.4"
+    "@bazel/typescript" "^0.21.0"
     "@schematics/angular" "^7.0.4"
     "@types/node" "6.0.84"
     semver "^5.6.0"
     shelljs "0.8.2"
     tsickle "0.34.0"
 
+"@angular/common@file:../angular/dist/packages-dist/common":
+  version "0.0.0"
+  dependencies:
+    tslib "^1.9.0"
+
 "@angular/compiler-cli@file:../angular/dist/packages-dist/compiler-cli":
-  version "8.0.0-beta.2"
+  version "0.0.0"
   dependencies:
     canonical-path "1.0.0"
     chokidar "^1.4.2"
@@ -88,7 +98,22 @@
     yargs "9.0.1"
 
 "@angular/compiler@file:../angular/dist/packages-dist/compiler":
-  version "8.0.0-beta.2"
+  version "0.0.0"
+  dependencies:
+    tslib "^1.9.0"
+
+"@angular/core@file:../angular/dist/packages-dist/core":
+  version "0.0.0"
+  dependencies:
+    tslib "^1.9.0"
+
+"@angular/platform-browser-dynamic@file:../angular/dist/packages-dist/platform-browser-dynamic":
+  version "0.0.0"
+  dependencies:
+    tslib "^1.9.0"
+
+"@angular/platform-browser@file:../angular/dist/packages-dist/platform-browser":
+  version "0.0.0"
   dependencies:
     tslib "^1.9.0"
 
@@ -109,7 +134,7 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/typescript@0.23.2", "@bazel/typescript@^0.23.2":
+"@bazel/typescript@0.23.2":
   version "0.23.2"
   resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.23.2.tgz#a3ff199880855259d84216cb41644c1d9a0fad14"
   integrity sha512-GrTyDW6Fvp/rgnxZGYampB5/QmDWvxtLEtUyMCPa/QXFR1OVxaMWeHxxuFEcES2UKJegqBDKAA8IzX21x4UbEw==
@@ -117,6 +142,15 @@
     jasmine-core "2.8.0"
     protobufjs "5.0.3"
     semver "5.6.0"
+    source-map-support "0.5.9"
+    tsutils "2.27.2"
+
+"@bazel/typescript@^0.21.0":
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.21.0.tgz#41c304f77a42c6a016280d0f4c20e0749c3f4b2a"
+  integrity sha512-ASXj0RFybmqoa3LwqkTU3gNkX9bY9wL/VDNo5hlp9pynYWl4RMpe9V3m/qDIdtSuLJ+qD+Z3FKT/OcpWQHMlYA==
+  dependencies:
+    protobufjs "5.0.3"
     source-map-support "0.5.9"
     tsutils "2.27.2"
 
