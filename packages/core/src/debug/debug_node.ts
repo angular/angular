@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/discovery_utils';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getViewComponent, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/discovery_utils';
 import {TNode} from '../render3/interfaces/node';
 import {StylingIndex} from '../render3/interfaces/styling';
 import {LView, TData, TVIEW} from '../render3/interfaces/view';
@@ -210,7 +210,8 @@ class DebugNode__POST_R3__ implements DebugNode {
 
   get componentInstance(): any {
     const nativeElement = this.nativeNode;
-    return nativeElement && getComponent(nativeElement as Element);
+    return nativeElement &&
+        (getComponent(nativeElement as Element) || getViewComponent(nativeElement));
   }
   get context(): any { return getContext(this.nativeNode as Element); }
 
