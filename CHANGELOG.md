@@ -1,3 +1,24 @@
+<a name="7.2.5"></a>
+## [7.2.5](https://github.com/angular/angular/compare/7.2.4...7.2.5)
+(2019-02-15)
+
+
+### Bug Fixes
+
+* **compiler-cli:** diagnostics should respect "newLine" compiler option
+  ([#28550](https://github.com/angular/angular/issues/28550))
+  ([ce750e6](https://github.com/angular/angular/commit/ce750e6))
+* **router:** redirect to root url when returned as UrlTree from guard
+  ([#28271](https://github.com/angular/angular/issues/28271))
+  ([1e58a21](https://github.com/angular/angular/commit/1e58a21)), closes
+  [#27845](https://github.com/angular/angular/issues/27845)
+* **router:** set href when routerLink is used on an 'area' element
+  ([#28441](https://github.com/angular/angular/issues/28441))
+  ([d491a20](https://github.com/angular/angular/commit/d491a20)), closes
+  [#28401](https://github.com/angular/angular/issues/28401)
+
+
+
 <a name="8.0.0-beta.3"></a>
 # [8.0.0-beta.3](https://github.com/angular/angular/compare/8.0.0-beta.2...8.0.0-beta.3) (2019-02-06)
 
