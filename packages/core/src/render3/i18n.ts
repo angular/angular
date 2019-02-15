@@ -480,9 +480,8 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
 
   if (ngDevMode) {
     let cursor: TNode|null = tNode;
-    while (cursor) {
+    while (cursor = cursor.next) {
       assertNotEqual(cursor, tNode, 'We have created a loop');
-      cursor = cursor.next;
     }
   }
 
