@@ -176,10 +176,10 @@ describe('R3 template transform', () => {
       ]);
     });
 
-    it('should normalize property names via the element schema', () => {
+    it('should not normalize property names via the element schema', () => {
       expectFromHtml('<div [mappedAttr]="v"></div>').toEqual([
         ['Element', 'div'],
-        ['BoundAttribute', BindingType.Property, 'mappedProp', 'v'],
+        ['BoundAttribute', BindingType.Property, 'mappedAttr', 'v'],
       ]);
     });
 
