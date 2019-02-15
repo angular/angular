@@ -329,6 +329,39 @@ class TestCmpt {
       expect(getDOM().hasClass(childTestEls[3].nativeElement, 'childnested')).toBe(true);
     });
 
+    it('should query projected child elements by directive', () => {
+      @Directive({selector: 'example-directive-a'})
+      class ExampleDirectiveA {
+      }
+
+      @Component({
+        selector: 'wrapper-component',
+        template: `
+          <ng-content select="example-directive-a"></ng-content>
+        `
+      })
+      class WrapperComponent {
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [
+          WrapperComponent,
+          ExampleDirectiveA,
+        ]
+      });
+
+      TestBed.overrideTemplate(TestApp, `<wrapper-component>
+        <div></div>
+        <example-directive-a></example-directive-a>
+       </wrapper-component>`);
+
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+
+      const debugElement = fixture.debugElement.query(By.directive(ExampleDirectiveA));
+      expect(debugElement).toBeTruthy();
+    });
+
     it('should list providerTokens', () => {
       fixture = TestBed.createComponent(ParentComp);
       fixture.detectChanges();
