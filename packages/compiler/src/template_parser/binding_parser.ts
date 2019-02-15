@@ -240,8 +240,8 @@ export class BindingParser {
   }
 
   createBoundElementProperty(
-      elementSelector: string, boundProp: ParsedProperty,
-      skipValidation: boolean = false): BoundElementProperty {
+      elementSelector: string, boundProp: ParsedProperty, skipValidation: boolean = false,
+      mapPropertyName: boolean = true): BoundElementProperty {
     if (boundProp.isAnimation) {
       return new BoundElementProperty(
           boundProp.name, BindingType.Animation, SecurityContext.NONE, boundProp.expression, null,
@@ -286,12 +286,13 @@ export class BindingParser {
 
     // If not a special case, use the full property name
     if (boundPropertyName === null) {
-      boundPropertyName = this._schemaRegistry.getMappedPropName(boundProp.name);
+      const mappedPropName = this._schemaRegistry.getMappedPropName(boundProp.name);
+      boundPropertyName = mapPropertyName ? mappedPropName : boundProp.name;
       securityContexts = calcPossibleSecurityContexts(
-          this._schemaRegistry, elementSelector, boundPropertyName, false);
+          this._schemaRegistry, elementSelector, mappedPropName, false);
       bindingType = BindingType.Property;
       if (!skipValidation) {
-        this._validatePropertyOrAttributeName(boundPropertyName, boundProp.sourceSpan, false);
+        this._validatePropertyOrAttributeName(mappedPropName, boundProp.sourceSpan, false);
       }
     }
 

@@ -1213,6 +1213,18 @@ export function componentHostSyntheticProperty<T>(
   elementPropertyInternal(index, propName, value, sanitizer, nativeOnly, loadComponentRenderer);
 }
 
+/**
+ * Mapping between attributes names that don't correspond to their element property names.
+ */
+const ATTR_TO_PROP: {[name: string]: string} = {
+  'class': 'className',
+  'for': 'htmlFor',
+  'formaction': 'formAction',
+  'innerHtml': 'innerHTML',
+  'readonly': 'readOnly',
+  'tabindex': 'tabIndex',
+};
+
 function elementPropertyInternal<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean,
@@ -1233,6 +1245,8 @@ function elementPropertyInternal<T>(
       }
     }
   } else if (tNode.type === TNodeType.Element) {
+    propName = ATTR_TO_PROP[propName] || propName;
+
     if (ngDevMode) {
       validateAgainstEventProperties(propName);
       validateAgainstUnknownProperties(lView, element, propName, tNode);
