@@ -7,8 +7,7 @@
  */
 
 
-import {EventEmitter, Injectable, NO_ERRORS_SCHEMA} from '@angular/core';
-import {Component, Directive, Input} from '@angular/core/src/metadata';
+import {Component, Directive, EventEmitter, Injectable, Input, NO_ERRORS_SCHEMA} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -172,6 +171,10 @@ class TestApp {
   isClosed = true;
 }
 
+@Component({selector: 'test-cmpt', template: ``})
+class TestCmpt {
+}
+
 {
   describe('debug element', () => {
     let fixture: ComponentFixture<any>;
@@ -191,6 +194,7 @@ class TestApp {
           TestApp,
           UsingFor,
           BankAccount,
+          TestCmpt,
         ],
         providers: [Logger],
         schemas: [NO_ERRORS_SCHEMA],
@@ -370,5 +374,61 @@ class TestApp {
       expect(fixture.componentInstance.customed).toBe(true);
 
     });
+
+    describe('componentInstance on DebugNode', () => {
+
+      it('should return component associated with a node if a node is a component host', () => {
+        TestBed.overrideTemplate(TestCmpt, `<parent-comp></parent-comp>`);
+        fixture = TestBed.createComponent(TestCmpt);
+
+        const debugEl = fixture.debugElement.children[0];
+        expect(debugEl.componentInstance).toBeAnInstanceOf(ParentComp);
+      });
+
+      it('should return component associated with a node if a node is a component host (content projection)',
+         () => {
+           TestBed.overrideTemplate(
+               TestCmpt, `<parent-comp><child-comp></child-comp></parent-comp>`);
+           fixture = TestBed.createComponent(TestCmpt);
+
+           const debugEl = fixture.debugElement.query(By.directive(ChildComp));
+           expect(debugEl.componentInstance).toBeAnInstanceOf(ChildComp);
+         });
+
+      it('should return host component instance if a node has no associated component and there is no component projecting this node',
+         () => {
+           TestBed.overrideTemplate(TestCmpt, `<div></div>`);
+           fixture = TestBed.createComponent(TestCmpt);
+
+           const debugEl = fixture.debugElement.children[0];
+           expect(debugEl.componentInstance).toBeAnInstanceOf(TestCmpt);
+         });
+
+      it('should return host component instance if a node has no associated component and there is no component projecting this node (nested embedded views)',
+         () => {
+           TestBed.overrideTemplate(TestCmpt, `
+                <ng-template [ngIf]="true">
+                  <ng-template [ngIf]="true">
+                    <div mydir></div>
+                  </ng-template>
+                </ng-template>`);
+           fixture = TestBed.createComponent(TestCmpt);
+           fixture.detectChanges();
+
+           const debugEl = fixture.debugElement.query(By.directive(MyDir));
+           expect(debugEl.componentInstance).toBeAnInstanceOf(TestCmpt);
+         });
+
+      it('should return component instance that projects a given node if a node has no associated component',
+         () => {
+           TestBed.overrideTemplate(
+               TestCmpt, `<parent-comp><span><div></div></span></parent-comp>`);
+           fixture = TestBed.createComponent(TestCmpt);
+
+           const debugEl = fixture.debugElement.children[0].children[0].children[0];  // <div>
+           expect(debugEl.componentInstance).toBeAnInstanceOf(ParentComp);
+         });
+    });
+
   });
 }
