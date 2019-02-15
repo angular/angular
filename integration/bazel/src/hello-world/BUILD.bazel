@@ -18,7 +18,7 @@ ng_module(
     ),
     assets = [":hello-world-styles"],
     deps = [
-        "@angular//packages/core",
+        "@npm//@angular/core",
         "@npm//@types",
     ],
 )
@@ -35,10 +35,9 @@ ts_library(
     srcs = glob(["*.spec.ts"]),
     deps = [
         ":hello-world",
-        "@angular//packages/core",
-        "@angular//packages/core/testing",
-        "@angular//packages/platform-browser",
-        "@angular//packages/platform-browser-dynamic/testing",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
         "@npm//jasmine",
     ],
@@ -46,7 +45,18 @@ ts_library(
 
 ts_web_test_suite(
     name = "test",
-    srcs = ["@npm//node_modules/tslib:tslib.js"],
+    srcs = [
+        "@npm//node_modules/@angular/common:bundles/common.umd.js",
+        "@npm//node_modules/@angular/compiler:bundles/compiler.umd.js",
+        "@npm//node_modules/@angular/compiler:bundles/compiler-testing.umd.js",
+        "@npm//node_modules/@angular/core:bundles/core.umd.js",
+        "@npm//node_modules/@angular/core:bundles/core-testing.umd.js",
+        "@npm//node_modules/@angular/platform-browser:bundles/platform-browser.umd.js",
+        "@npm//node_modules/@angular/platform-browser:bundles/platform-browser-testing.umd.js",
+        "@npm//node_modules/@angular/platform-browser-dynamic:bundles/platform-browser-dynamic.umd.js",
+        "@npm//node_modules/@angular/platform-browser-dynamic:bundles/platform-browser-dynamic-testing.umd.js",
+        "@npm//node_modules/tslib:tslib.js",
+    ],
     bootstrap = [
         "@npm//node_modules/zone.js:dist/zone-testing-bundle.js",
         "@npm//node_modules/reflect-metadata:Reflect.js",
@@ -59,5 +69,8 @@ ts_web_test_suite(
     ],
     deps = [
         ":test_lib",
+        # This will be removed with https://github.com/angular/angular/pull/28720. This is the
+        # only remaining dependency that we still build from source here.
+        "@rxjs",
     ],
 )

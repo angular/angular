@@ -10,9 +10,9 @@ ng_module(
     srcs = glob(["*.ts"]),
     deps = [
         "//src/hello-world",
-        "@angular//packages/common/http",
-        "@angular//packages/core",
-        "@angular//packages/platform-browser",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
         "@npm//@types",
     ],
 )
@@ -26,26 +26,37 @@ ts_devserver(
         "npm/node_modules/zone.js/dist",
     ],
     entry_module = "bazel_integration_test/src/main",
+    scripts = [
+        "@npm//node_modules/@angular/common:bundles/common.umd.js",
+        "@npm//node_modules/@angular/common:bundles/common-http.umd.js",
+        "@npm//node_modules/@angular/core:bundles/core.umd.js",
+        "@npm//node_modules/@angular/platform-browser:bundles/platform-browser.umd.js",
+    ],
     serving_path = "/bundle.min.js",
     static_files = [
         "@npm//node_modules/tslib:tslib.js",
         "@npm//node_modules/zone.js:dist/zone.min.js",
         "index.html",
     ],
-    deps = ["//src"],
+    deps = [
+        "//src",
+        # This will be removed with https://github.com/angular/angular/pull/28720. This is the
+        # only remaining dependency that we still build from source here.
+        "@rxjs",
+    ],
 )
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "rollup_bundle")
 
-filegroup(
-    name = "empty_node_modules",
-)
-
 rollup_bundle(
     name = "bundle",
     entry_point = "src/main",
-    node_modules = ":empty_node_modules",
-    deps = ["//src"],
+    deps = [
+        "//src",
+        "@npm//@angular/common",
+        "@npm//@angular/core",
+        "@npm//@angular/platform-browser",
+    ],
 )
 
 # Needed because the prodserver only loads static files that appear under this
