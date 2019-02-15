@@ -151,7 +151,7 @@ through the injector tree until it reaches the root injector.
 
 * The first injector configured with a provider supplies the dependency (a service instance or value) to the constructor.
 
-* If no provider is found in the root injector, the DI framework returns null to the constructor.
+* If no provider is found in the root injector, the DI framework throws an error.
 
 There are a number of options for modifying the default search behavior, using _parameter decorators_
 on the service-valued parameters of a class constructor.
