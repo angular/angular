@@ -202,8 +202,7 @@ export function extractDirectiveMetadata(
   }
 
   // Detect if the component inherits from another class
-  const usesInheritance = clazz.heritageClauses !== undefined &&
-      clazz.heritageClauses.some(hc => hc.token === ts.SyntaxKind.ExtendsKeyword);
+  const usesInheritance = reflector.hasBaseClass(clazz);
   const metadata: R3DirectiveMetadata = {
     name: clazz.name !.text,
     deps: getValidConstructorDependencies(clazz, reflector, isCore), host,
