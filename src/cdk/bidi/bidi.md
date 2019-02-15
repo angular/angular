@@ -20,7 +20,7 @@ export class MyWidget implements OnDestroy {
   constructor(dir: Directionality) {
     this.isRtl = dir.value === 'rtl';
     
-    _dirChangeSubscription = dir.change.subscribe(() => {
+    this._dirChangeSubscription = dir.change.subscribe(() => {
       this.flipDirection();
     });
   }
