@@ -311,6 +311,26 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('background-color: blue');
   });
 
+  it('should compile components with styleUrls with fallback to .css extension', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          styleUrls: ['./dir/style.scss'],
+          template: '',
+        })
+        export class TestCmp {}
+    `);
+    env.write('dir/style.css', ':host { background-color: blue; }');
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('background-color: blue');
+  });
+
   it('should compile NgModules without errors', () => {
     env.tsconfig();
     env.write('test.ts', `
