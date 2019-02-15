@@ -21,7 +21,7 @@ const IGNORED_EXAMPLES = [
 ];
 
 const fixmeIvyExamples = [
-  // fixmeIvy('unknown') failed content projection and applied styles
+  // fixmeIvy('FW-1069: ngtsc does not support inline <style> and <link>')
   'component-styles',
   // fixmeIvy('unknown') ERROR Error: Unable to find context associated with [object
   // HTMLInputElement]
