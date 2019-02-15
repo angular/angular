@@ -124,9 +124,9 @@ function globListToMatcher(globs: string[]): (file: string) => boolean {
 function matches(file: string, patterns: {positive: boolean, regex: RegExp}[]): boolean {
   const res = patterns.reduce((isMatch, pattern) => {
     if (pattern.positive) {
-      return isMatch || pattern.regex.test(file);
+      return isMatch || pattern.regex.test(file.replace('%20', ' '));
     } else {
-      return isMatch && !pattern.regex.test(file);
+      return isMatch && !pattern.regex.test(file.replace('%20', ' '));
     }
   }, false);
   return res;
