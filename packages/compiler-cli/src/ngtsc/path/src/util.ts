@@ -9,9 +9,10 @@
 //  TODO(alxhub): Unify this file with `util/src/path`.
 
 const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
+const ABSOLUTE_PATH = /^([a-zA-Z]\:\/|\/)/;
 
 /**
- * Convert Windows-style paths to POSIX paths.
+ * Convert Windows-style separators to POSIX separators.
  */
 export function normalizeSeparators(path: string): string {
   // TODO: normalize path only for OS that need it.
@@ -23,4 +24,12 @@ export function normalizeSeparators(path: string): string {
  */
 export function stripExtension(path: string): string {
   return path.replace(TS_DTS_JS_EXTENSION, '');
+}
+
+/**
+ * Returns true if the normalized path is an absolute path.
+ */
+export function isAbsolutePath(path: string): boolean {
+  // TODO: use regExp based on OS in the future
+  return ABSOLUTE_PATH.test(path);
 }
