@@ -30,5 +30,6 @@ export function stripExtension(path: string): string {
  * Returns true if the normalized path is an absolute path.
  */
 export function isAbsolutePath(path: string): boolean {
+  // TODO: use regExp based on OS in the future
   return ABSOLUTE_PATH.test(path);
 }
