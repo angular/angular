@@ -17,6 +17,8 @@ import {stripExtension} from './util';
 /**
  * A path that's relative to the logical root of a TypeScript project (one of the project's
  * rootDirs).
+ *
+ * Paths in the type system use POSIX format.
  */
 export type LogicalProjectPath = BrandedPath<'LogicalProjectPath'>;
 
