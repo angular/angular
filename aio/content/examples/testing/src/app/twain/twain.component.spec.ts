@@ -143,7 +143,7 @@ describe('TwainComponent', () => {
       fixture.detectChanges();
 
       component.quote.pipe( last() ).subscribe(() => {
-        fixture.detectChanges(); // update view with quote
+        fixture.detectChanges(); // 화면을 갱신합니다.
         expect(quoteEl.textContent).toBe(testQuote);
         expect(errorMessage()).toBeNull('should not show error');
         done();
@@ -155,9 +155,9 @@ describe('TwainComponent', () => {
     it('should show quote after getQuote (spy done)', (done: DoneFn) => {
       fixture.detectChanges();
 
-      // the spy's most recent call returns the observable with the test quote
+      // 컴포넌트가 받는 문자열은 스파이가 마지막으로 실행되었을 때 반환하는 값으로 참조할 수도 있습니다.
       getQuoteSpy.calls.mostRecent().returnValue.subscribe(() => {
-        fixture.detectChanges(); // update view with quote
+        fixture.detectChanges(); // 화면을 갱신합니다.
         expect(quoteEl.textContent).toBe(testQuote);
         expect(errorMessage()).toBeNull('should not show error');
         done();

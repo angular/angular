@@ -44,7 +44,7 @@ describe('TwainComponent (marbles)', () => {
   // A synchronous test that simulates async behavior
   // #docregion get-quote-test
   it('should show quote after getQuote (marbles)', () => {
-    // observable test quote value and complete(), after delay
+    // 옵저버블은 약간 지연된 후 테스트 문장을 전달하고 종료됩니다.
     // #docregion test-quote-marbles
     const q$ = cold('---x|', { x: testQuote });
     // #enddocregion test-quote-marbles
@@ -54,10 +54,10 @@ describe('TwainComponent (marbles)', () => {
     expect(quoteEl.textContent).toBe('...', 'should show placeholder');
 
     // #docregion test-scheduler-flush
-    getTestScheduler().flush(); // flush the observables
+    getTestScheduler().flush(); // 옵저버블을 실행합니다.
     // #enddocregion test-scheduler-flush
 
-    fixture.detectChanges(); // update view
+    fixture.detectChanges(); // 화면을 갱신합니다.
 
     expect(quoteEl.textContent).toBe(testQuote, 'should show quote');
     expect(errorMessage()).toBeNull('should not show error');
@@ -67,7 +67,7 @@ describe('TwainComponent (marbles)', () => {
   // Still need fakeAsync() because of component's setTimeout()
   // #docregion error-test
   it('should display error when TwainService fails', fakeAsync(() => {
-    // observable error after delay
+    // 옵저버블은 약간 지연된 후 에러를 전달하고 종료됩니다.
     // #docregion error-marbles
     const q$ = cold('---#|', null, new Error('TwainService test failure'));
     // #enddocregion error-marbles
@@ -76,9 +76,9 @@ describe('TwainComponent (marbles)', () => {
     fixture.detectChanges(); // ngOnInit()
     expect(quoteEl.textContent).toBe('...', 'should show placeholder');
 
-    getTestScheduler().flush(); // flush the observables
-    tick();                     // component shows error after a setTimeout()
-    fixture.detectChanges();    // update error message
+    getTestScheduler().flush(); // 옵저버블을 실행합니다.
+    tick();                     // 컴포넌트가 사용하는 setTimeout()을 처리합니다.
+    fixture.detectChanges();    // 화면을 갱신합니다.
 
     expect(errorMessage()).toMatch(/test failure/, 'should display error');
     expect(quoteEl.textContent).toBe('...', 'should show placeholder');

@@ -354,7 +354,7 @@ In Angular terms, an idempotent expression always returns
 *exactly the same thing* until
 one of its dependent values changes.
 -->
-그래서 템플릿 표현식은 사이드 이펙트릉 방지하고 Angular의 변화 감지 성능을 최대화하기 위해 [멱등적 (idempotent)](https://en.wikipedia.org/wiki/Idempotence)인 표현식으로 작성하는 것이 이상적입니다.
+그래서 템플릿 표현식은 사이드 이펙트를 방지하고 Angular의 변화 감지 성능을 최대화하기 위해 [멱등적 (idempotent)](https://en.wikipedia.org/wiki/Idempotence)인 표현식으로 작성하는 것이 이상적입니다.
 
 Angular에서 이야기하는 멱등적인 표현식이란, 어떤 값을 기준으로 표현식을 실행했을 때 *항상 같은 값을* 반환하는 표현식을 의미합니다.
 

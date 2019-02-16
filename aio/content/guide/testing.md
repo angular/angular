@@ -2497,6 +2497,7 @@ When using an `intervalTimer()` such as `setInterval()` in `async()`, remember t
 
 #### _whenStable_
 
+<!--
 The test must wait for the `getQuote()` observable to emit the next quote.
 Instead of calling `tick()`, it calls `fixture.whenStable()`.
 
@@ -2506,11 +2507,21 @@ In this example, the task queue becomes empty when the observable emits the firs
 
 The test resumes within the promise callback, which calls `detectChanges()` to
 update the quote element with the expected text.
+-->
+이 테스트 스펙은 `getQuote()`로 받은 옵저버블이 다음 스트림을 전달할 때까지 기다려야 합니다.
+그리고 이 코드에서는 `tick()`을 실행하는 대신 `fixture.whenStable()`을 실행했습니다.
+
+`fixture.whenStable()`은 JavaScript 엔진의 태스크 큐가 비어있을 때 Promise를 반환합니다.
+그래서 이 예제에서는 옵저버블이 첫번째 문장을 전달한 뒤에 태스크 큐가 비어있게 됩니다.
+
+그러면 Promise 콜백으로 테스트가 이어집니다.
+이 콜백에서는 화면을 갱신하기 위해 `detectChanges()`를 실행하고, 그 이후에 화면에 표시된 메시지가 예상한 값이 맞는지 확인합니다.
 
 {@a jasmine-done}
 
 #### Jasmine _done()_
 
+<!--
 While the `async()` and `fakeAsync()` functions greatly
 simplify Angular asynchronous testing,
 you can still fall back to the traditional technique
@@ -2527,12 +2538,27 @@ But it is occasionally necessary when code involves the `intervalTimer()` like `
 
 Here are two more versions of the previous test, written with `done()`.
 The first one subscribes to the `Observable` exposed to the template by the component's `quote` property.
+-->
+Angular가 제공하는 `async()`와 `fakeAsync()`를 활용하면 비동기 로직을 아주 간단하게 테스트할 수 있습니다.
+하지만 이 함수들을 사용해도 실패하는 로직이 있다면 `it` 함수를 [`done` 콜백](https://jasmine.github.io/2.0/introduction.html#section-Asynchronous_Support)과 함께 사용하면 됩니다.
+
+다만, `async()`와 `fakeAsync()` 기능을 사용하면서 `done()`를 함께 사용할 수는 없습니다.
+두 함수를 사용하면 `done` 이 `undefined`로 전달됩니다.
+
+이제 `done()`을 사용하면 직접 Promise를 체이닝하거나 에러를 처리해야하고, 적절한 시점에 `done()`을 실행해야 합니다.
+
+그래서 `done()`을 사용해서 테스트하는 것은 `async()`나 `fakeAsync()`를 사용했던 것보다 조금 더 번거로워 집니다.
+하지만 `setInterval`이나 `intervalTimer()`을 활용하는 로직은 `done()`을 사용해야만 합니다.
+
+위에서 작성했던 테스트를 `done()`을 사용하는 방식으로 변경하면 다음과 같이 작성할 수 있습니다.
+이 코드에서는 `Observable`을 구독한 뒤에 실행되는 콜백에서 컴포넌트를 테스트하고 `done()`을 실행합니다.
 
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
   region="quote-done-test" linenums="false">
 </code-example>
 
+<!--
 The RxJS `last()` operator emits the observable's last value before completing, which will be the test quote.
 The `subscribe` callback calls `detectChanges()` to
 update the quote element with the test quote, in the same manner as the earlier tests.
@@ -2542,6 +2568,15 @@ than what appears on screen.
 
 A service spy, such as the `qetQuote()` spy of the fake `TwainService`,
 can give you that information and make assertions about the state of the view.
+-->
+RxJS `last()` 연산자는 옵저버블이 종료되는 시점에 마지막으로 전달된 데이터를 반환하기 때문에 옵저버블 콜백은 테스트 문장을 받아온 이후에 실행됩니다.
+그리고 `subscribe` 콜백에서는 `detectChanges()`를 실행해서 이 문장으로 화면을 갱신합니다.
+이 내용은 이전에 작성했던 내용과 같습니다.
+
+조금 더 자세히 들어가면 컴포넌트로 주입되는 서비스가 어떻게 실행되는지, 어떤 값을 반환해서 이 내용이 화면에 반영되는지 궁금해질 수도 있습니다.
+
+`TwainService`에 만든 `getQuote()` 함수는 스파이로 만든 함수입니다.
+그래서 이 스파이를 직접 활용하면 다음과 같은 테스트 코드를 작성할 수도 있습니다.
 
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
@@ -2551,8 +2586,12 @@ can give you that information and make assertions about the state of the view.
 <hr>
 
 {@a marble-testing}
+<!--
 ### Component marble tests
+-->
+### 컴포넌트 마블(marble) 테스트
 
+<!--
 The previous `TwainComponent` tests simulated an asynchronous observable response
 from the `TwainService` with the `asyncData` and `asyncError` utilities.
 
@@ -2574,20 +2613,48 @@ with marble testing.
 
 Start by installing the `jasmine-marbles` npm package.
 Then import the symbols you need.
+-->
+위에서 살펴본 `TwainComponent` 테스트 코드는 `TwainService`가 전달하는 옵저버블을 처리하기 위해 `asyncData`와 `asyncError` 기능을 활용했습니다.
 
+이 코드는 아주 간단하기 때문에 조금만 익숙해지면 금방 작성할 수 있습니다.
+하지만 이런 방식으로 모든 시나리오를 처리할 수는 없습니다.
+옵저버블은 여러번 데이터를 보내기도 하는데, 이 때 약간 딜레이가 있을 수도 있습니다.
+그리고 컴포넌트가 옵저버블 여러개를 복잡한 순서로 조작하면서 이 옵저버블들이 전달하는 값과 에러를 처리해야 할 수도 있습니다.
+
+**RxJS 마블 테스트는** 옵저버블이 어떻게 실행되는지 분석하는 테스트 방법입니다.
+옵저버블이 복잡하거나 단순한 것과는 관계없이, 일관된 방법으로 옵저버블이 실행되는 시나리오를 확인할 수 있습니다.
+[마블 다이어그램](http://rxmarbles.com/)도 옵저버블이 동작하는 것을 확인하는 RxJS 마블 테스트 방법 중 하나입니다.
+마블 테스트 로직은 기존에 옵저버블 스트림을 처리하고 검사했던 로직과 비슷합니다.
+
+이제부터는 `TwainComponent`에 마블 테스트를 적용하는 방법에 대해 알아봅시다.
+
+마블 테스트 로직을 작성하려면 `jasmine-marbles` npm 패키지를 설치해야 합니다.
+그리고 이 패키지에서 다음 심볼들을 로드합니다.
+
+<!--
 <code-example
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="import-marbles"
   header="app/twain/twain.component.marbles.spec.ts (import marbles)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/twain/twain.component.marbles.spec.ts"
+  region="import-marbles"
+  header="app/twain/twain.component.marbles.spec.ts (심볼 로드하기)" linenums="false">
+</code-example>
 
+<!--
 Here's the complete test for getting a quote:
+-->
+그리고 테스트 코드는 이렇게 작성합니다:
 
 <code-example
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="get-quote-test" linenums="false">
 </code-example>
 
+<!--
 Notice that the Jasmine test is synchronous. There's no `fakeAsync()`.
 Marble testing uses a test scheduler to simulate the passage of time
 in a synchronous test.
@@ -2597,57 +2664,97 @@ This test defines a [_cold_ observable](#cold-observable) that waits
 three [frames](#marble-frame) (`---`),
 emits a value (`x`), and completes (`|`).
 In the second argument you map the value marker (`x`) to the emitted value (`testQuote`).
+-->
+Jasmine 테스트 로직은 동기 방식으로 실행됩니다.
+`fakeAsync()`와 같은 것은 없습니다.
+대신 마블 테스트는 비동기 로직을 실행하기 위해 시간을 조작할 때 테스트 스케쥴러(test scheduler)를 사용합니다.
+
+마블 테스트는 옵저버블 스트림을 시각적으로 정의할 수 있다는 점이 가장 좋습니다.
+이 테스트에서는 [_콜드(cold)_ 옵저버블](#cold-observable)을 사용하며, 이 옵저버블은 3 [프레임](#marble-frame)을 기다린 후에(`---`) 데이터를 보내고(`x`) 종료합니다(`|`).
+이 때 `cold` 옵저버블의 두 번째로 전달하는 인자는 실제 값(`testQuote`)과 데이터 스트림을 연결하는 값 마커(value marker, `x`)입니다.
 
 <code-example
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="test-quote-marbles" linenums="false">
 </code-example>
 
+<!--
 The marble library constructs the corresponding observable, which the
 test sets as the `getQuote` spy's return value.
 
 When you're ready to activate the marble observables,
 you tell the `TestScheduler` to _flush_ its queue of prepared tasks like this.
+-->
+그 다음에는 이 옵저버블이 `getQuote` 스파이와 연결되어 값을 반환할 수 있도록 설정합니다.
+
+마블 옵저버블을 준비한 후에 `TestScheduler`의 `flush`를 실행하면 미리 정의한 대로 옵저버블이 실행됩니다.
 
 <code-example
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="test-scheduler-flush" linenums="false">
 </code-example>
 
+<!--
 This step serves a purpose analogous to `tick()` and `whenStable()` in the
 earlier `fakeAsync()` and `async()` examples.
 The balance of the test is the same as those examples.
+-->
+이 코드는 이전에 다뤘던 `fakeAsync()`와 `async()` 예제에서 `tick()`과 `whenStable()`을 사용했던 것과 비슷하게 동작합니다.
 
+나머지 코드는 이전에 살펴봤던 내용과 같습니다.
+
+<!--
 #### Marble error testing
+-->
+#### 마블 테스트에서 에러 처리하기
 
+<!--
 Here's the marble testing version of the `getQuote()` error test.
+-->
+아래 코드는 `getQuote` 에러 테스트 코드를 마블 테스트 방식으로 작성한 코드입니다.
 
 <code-example
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="error-test" linenums="false">
 </code-example>
 
+<!--
 It's still an async test, calling `fakeAsync()` and `tick()`, because the component itself
 calls `setTimeout()` when processing errors.
 
 Look at the marble observable definition.
+-->
+컴포넌트는 에러를 처리할 때 `setTimeout()`을 사용하기 때문에 이 코드는 `fakeAsync()`와 `tick()`를 사용해서 비동기로 처리되어야 합니다.
+
+이 때 마블 옵저버블을 어떻게 선언하는지 봅시다.
 
 <code-example
   path="testing/src/app/twain/twain.component.marbles.spec.ts"
   region="error-marbles" linenums="false">
 </code-example>
 
+<!--
 This is a _cold_ observable that waits three frames and then emits an error,
 The hash (`#`) indicates the timing of the error that is specified in the third argument.
 The second argument is null because the observable never emits a value.
+-->
+이 코드에서 정의하는 _콜드_ 옵저버블은 3 프레임을 기다린 후 에러를 보내는데, 에러는 세번째 인자로 전달하며, 이 에러는 해시(`#`)가 사용된 시점에 전달됩니다.
+그리고 이 옵저버블은 데이터를 전달하지 않기 때문에 두번째 인자는 null로 지정했습니다.
 
+<!--
 #### Learn about marble testing
+-->
+#### 마블 테스트 더 알아보기
 
 {@a marble-frame}
+<!--
 A _marble frame_ is a virtual unit of testing time.
 Each symbol (`-`, `x`, `|`, `#`) marks the passing of one frame.
+-->
+마블 테스트에서 시간을 표현하는 단위를 _마블 프레임(marble frame)_ 이라고 하며, 각 심볼(`-`, `x`, `|`, `#`) 하나는 한 프레임을 의미합니다.
 
 {@a cold-observable}
+<!--
 A _cold_ observable doesn't produce values until you subscribe to it.
 Most of your application observables are cold.
 All [_HttpClient_](guide/http) methods return cold observables.
@@ -2659,6 +2766,15 @@ which reports router activity, is a _hot_ observable.
 RxJS marble testing is a rich subject, beyond the scope of this guide.
 Learn about it on the web, starting with the
 [official documentation](https://github.com/ReactiveX/rxjs/blob/master/doc/writing-marble-tests.md).
+-->
+_콜드(cold)_ 옵저버블은 누군가가 구독하기 전까지는 데이터를 생성하지 않습니다.
+일반적으로 사용하는 옵저버블이 콜드 옵저버블이며, [_HttpClient_](guide/http) 메소드가 반환하는 옵저버블도 모두 콜드 옵저버블입니다.
+
+반면에, _핫(hot)_ 옵저버블은 누군가가 구독하지 _않아도_ 데이터를 생성합니다.
+라우터의 동작을 확인할 때 사용하는 [_Router 이벤트_](api/router/Router#events)가 _핫_ 옵저버블입니다.
+
+RxJS 마블 테스트는 더 다양하게 활용할 수 있지만, 이 내용은 이 가이드 문서가 다루는 범위를 어서는 내용입니다.
+RxJS 마블 테스트에 대해 더 자세하게 알아보려면 [공식 문서](https://github.com/ReactiveX/rxjs/blob/master/doc/writing-marble-tests.md)를 참고하세요.
 
 <hr>
 
