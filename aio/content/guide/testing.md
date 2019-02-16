@@ -23,7 +23,7 @@ Just run the [`ng test`](cli/test) CLI command:
 </code-example>
 
 The `ng test` command builds the app in _watch mode_,
-and launches the [karma test runner](https://karma-runner.github.io).
+and launches the [Karma test runner](https://karma-runner.github.io).
 
 The console output looks a bit like this:
 
@@ -55,15 +55,15 @@ The tests run again, the browser refreshes, and the new test results appear.
 
 #### Configuration
 
-The CLI takes care of Jasmine and karma configuration for you.
+The CLI takes care of Jasmine and Karma configuration for you.
 
 You can fine-tune many options by editing the `karma.conf.js` and
 the `test.ts` files in the `src/` folder.
 
-The `karma.conf.js` file is a partial karma configuration file.
+The `karma.conf.js` file is a partial Karma configuration file.
 The CLI constructs the full runtime configuration in memory, based on application structure specified in the `angular.json` file, supplemented by `karma.conf.js`.
 
-Search the web for more details about Jasmine and karma configuration.
+Search the web for more details about Jasmine and Karma configuration.
 
 #### Other test frameworks
 
@@ -2816,7 +2816,7 @@ Consider adding component tests such as this one:
 
 Debug specs in the browser in the same way that you debug an application.
 
-1. Reveal the karma browser window (hidden earlier).
+1. Reveal the Karma browser window (hidden earlier).
 1. Click the **DEBUG** button; it opens a new browser tab and re-runs the tests.
 1. Open the browser's “Developer Tools” (`Ctrl-Shift-I` on windows; `Command-Option-I` in OSX).
 1. Pick the "sources" section.
