@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {normalizeSeparators} from './util';
+import {isAbsolutePath, normalizeSeparators} from './util';
 
 /**
  * A `string` representing a specific type of path, with a particular brand `B`.
@@ -41,7 +41,7 @@ export const AbsoluteFsPath = {
    */
   from: function(str: string): AbsoluteFsPath {
     const normalized = normalizeSeparators(str);
-    if (!normalized.startsWith('/')) {
+    if (!isAbsolutePath(normalized)) {
       throw new Error(`Internal Error: AbsoluteFsPath.from(${str}): path is not absolute`);
     }
     return normalized as AbsoluteFsPath;
@@ -73,7 +73,7 @@ export const PathSegment = {
    */
   fromFsPath: function(str: string): PathSegment {
     const normalized = normalizeSeparators(str);
-    if (normalized.startsWith('/')) {
+    if (isAbsolutePath(normalized)) {
       throw new Error(`Internal Error: PathSegment.from(${str}): path is not relative`);
     }
     return normalized as PathSegment;
