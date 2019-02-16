@@ -12,7 +12,7 @@ const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
 const ABSOLUTE_PATH = /^([a-zA-Z]\:\/|\/)/;
 
 /**
- * Convert Windows-style seperators to POSIX seperators.
+ * Convert Windows-style separators to POSIX separators.
  */
 export function normalizeSeparators(path: string): string {
   // TODO: normalize path only for OS that need it.
