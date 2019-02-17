@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
 # Variables
-readonly envHelpersPath="`dirname $0`/env-helpers.inc.sh";
-readonly getCommitRangePath="`dirname $0`/get-commit-range.js";
+readonly projectDir=$(realpath "$(dirname ${BASH_SOURCE[0]})/..")
+readonly envHelpersPath="$projectDir/.circleci/env-helpers.inc.sh";
+readonly getCommitRangePath="$projectDir/.circleci/get-commit-range.js";
 
 # Load helpers and make them available everywhere (through `$BASH_ENV`).
 source $envHelpersPath;
@@ -14,7 +15,7 @@ echo "source $envHelpersPath;" >> $BASH_ENV;
 ####################################################################################################
 # See https://circleci.com/docs/2.0/env-vars/#built-in-environment-variables for more info.
 ####################################################################################################
-setPublicVar PROJECT_ROOT "$(pwd)";
+setPublicVar PROJECT_ROOT "$projectDir";
 setPublicVar CI_AIO_MIN_PWA_SCORE "95";
 # This is the branch being built; e.g. `pull/12345` for PR builds.
 setPublicVar CI_BRANCH "$CIRCLE_BRANCH";

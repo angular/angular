@@ -28,11 +28,14 @@ var_2: &browsers_docker_image circleci/node:10.12-browsers
 # See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
 var_3: &cache_key v2-angular-node-10.12-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}
 
-# Define common ENV vars
-var_4: &define_env_vars
+# Initializes the CI environment by setting up common environment variables and
+# downloading Yarn. Yarn is used by most jobs and therefore is part of this anchor.
+var_4: &init_environment
   run:
-    name: Define environment variables
-    command: ./.circleci/env.sh
+    name: Initializing environment (setting up variables, downloading Yarn)
+    command: |
+      source ./.circleci/env.sh
+      curl -o- -L https://yarnpkg.com/install.sh | PROFILE=$BASH_ENV bash -s -- --version "$CI_YARN_VERSION"
 
 var_5: &setup_bazel_remote_execution
   run:
@@ -70,16 +73,7 @@ var_9: &setup_circleci_bazel_config
     name: Setting up CircleCI bazel configuration
     command: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
 
-# Sets up Yarn by downloading it and installing it globally. We don't use Yarn from the
-# docker image because this means that we can only use the Yarn version that comes with
-# a specific version of NodeJS. We want to be able to update Yarn without having to
-# update the docker image that comes with NodeJS.
-var_10: &download_yarn
-  run:
-    name: Downloading Yarn
-    command: curl -o- -L https://yarnpkg.com/install.sh | PROFILE=$BASH_ENV bash -s -- --version "$CI_YARN_VERSION"
-
-var_11: &restore_cache
+var_10: &restore_cache
   restore_cache:
     keys:
       - *cache_key
@@ -94,8 +88,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - *yarn_install
 
       - run: 'yarn bazel:format -mode=check ||
@@ -113,8 +106,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - *yarn_install
       - *setup_circleci_bazel_config
 
@@ -133,8 +125,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - *yarn_install
       - *setup_circleci_bazel_config
       - *setup_bazel_remote_execution
@@ -172,8 +163,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
         # Build aio
       - run: yarn --cwd aio build --progress=false
         # Lint the code
@@ -200,8 +190,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
         # Deploy angular.io to production (if necessary)
       - run: setPublicVar CI_STABLE_BRANCH "$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')"
       - run: yarn --cwd aio deploy-production
@@ -217,8 +206,7 @@ jobs:
       - *restore_cache
       - attach_workspace:
           at: dist
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local --progress=false
         # Run PWA-score tests
@@ -237,8 +225,7 @@ jobs:
       - *restore_cache
       - attach_workspace:
           at: dist
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
         # Build aio with Ivy (using local Angular packages)
       - run: yarn --cwd aio build-with-ivy --progress=false
 
@@ -250,8 +237,7 @@ jobs:
       - *restore_cache
       - attach_workspace:
           at: dist
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
         # Install
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run: yarn --cwd aio extract-cli-command-docs
@@ -271,8 +257,7 @@ jobs:
       - *restore_cache
       - attach_workspace:
           at: dist
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
@@ -292,8 +277,7 @@ jobs:
       - *restore_cache
       - attach_workspace:
           at: dist
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
         # Run examples tests with ivy. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
@@ -310,8 +294,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CI_PULL_REQUEST $CI_COMMIT
       - store_artifacts:
           path: *aio_preview_artifact_path
@@ -330,8 +313,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run:
           name: Wait for preview and run tests
@@ -353,8 +335,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - *yarn_install
       - *setup_circleci_bazel_config
       - *setup_bazel_remote_execution
@@ -383,8 +364,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - *yarn_install
       - *setup_circleci_bazel_config
       - *setup_bazel_remote_execution
@@ -420,8 +400,7 @@ jobs:
       - *restore_cache
       - attach_workspace:
           at: dist
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       # Some integration tests get their dependencies from the root `node_modules/`.
       - *yarn_install
       # Runs the integration tests in parallel across multiple CircleCI container instances. The
@@ -435,7 +414,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
+      - *init_environment
       # See below - ideally this job should not trigger for non-upstream builds.
       # But since it does, we have to check this condition.
       - run:
@@ -467,8 +446,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - run:
           name: Run tests against the deployed apps
           command: ./aio/scripts/test-production.sh $CI_AIO_MIN_PWA_SCORE
@@ -487,8 +465,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - *yarn_install
       - run: yarn tsc -p packages
       - run: yarn tsc -p modules
@@ -504,8 +481,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - *yarn_install
       - run:
           name: Preparing environment for running tests on Saucelabs.
@@ -530,8 +506,7 @@ jobs:
       - checkout:
           <<: *post_checkout
       - *restore_cache
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - *yarn_install
       - attach_workspace:
           at: dist
@@ -550,8 +525,7 @@ jobs:
     steps:
       - checkout:
           <<: *post_checkout
-      - *define_env_vars
-      - *download_yarn
+      - *init_environment
       - attach_workspace:
           at: dist
       - run: ./scripts/ci/run_angular_material_unit_tests.sh
