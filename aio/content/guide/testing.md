@@ -34,9 +34,7 @@ The Angular CLI downloads and install everything you need to test an Angular app
 The project you create with the CLI is immediately ready to test.
 Just run the [`ng test`](cli/test) CLI command:
 -->
-Angular 애플리케이션은 [Jasmine 테스트 프레임워크](https://jasmine.github.io/)를 사용해서 테스트하는데, 애플리케이션을 테스트할 때 필요한 것은 모두 Angular CLI가 프로젝트를 생성할 때 미리 준비합니다.
-
-그래서 Angular CLI로 생성한 프로젝트는 테스트할 준비도 완료된 상태입니다.
+Angular 애플리케이션은 [Jasmine 테스트 프레임워크](https://jasmine.github.io/)로 테스트하는데, 애플리케이션을 테스트할 때 필요한 환경은 Angular CLI가 프로젝트를 생성하면서 모두 준비하기 때문에 바로 테스트할 수 있는 상태입니다.
 프로젝트 최상위 폴더에서 [`ng test`](cli/test) 명령을 실행해 보세요:
 
 <code-example language="sh" class="code-shell">
@@ -92,7 +90,7 @@ Meanwhile, the `ng test` command is watching for changes.
 To see this in action, make a small change to `app.component.ts` and save.
 The tests run again, the browser refreshes, and the new test results appear.
 -->
-콘솔 로그를 확인하는 것보다는 브라우저에서 테스트 결과를 확인하는 것이 더 편합니다.
+테스트 결과는 콘솔 로그로 확인하는 것보다 브라우저에서 확인하는 것이 더 편합니다.
 브라우저에서는 특정 테스트 스펙을 클릭해서 해당 스펙만 다시 실행해볼 수 있고, 테스트 그룹(test suite)을 클릭해서 그룹 단위로 다시 실행할 수도 있습니다.
 
 그리고 `ng test` 명령을 실행했기 때문에 코드가 변경되는 것도 감지합니다.
@@ -136,7 +134,7 @@ Each library and runner has its own distinctive installation procedures, configu
 Search the web to learn more.
 -->
 Jasmine과 Karma 말고도 다른 라이브러리나 테스트 러너를 사용해서 Angular 앱을 테스트할 수도 있습니다.
-이 때 라이브러리를 설치하는 방법, 환경을 설정하는 방법, 실행하는 방법은 라이브러리에 따라 다르기 때문에 해당 문서를 참고하세요.
+이 때 라이브러리를 설치하는 방법, 환경을 설정하는 방법, 실행하는 방법은 라이브러리에 따라 다르기 때문에 사용하려는 라이브러리가 제공하는 문서를 참고하세요.
 
 <!--
 #### Test file name and location
@@ -157,7 +155,7 @@ Angular CLI로 프로젝트를 생성하면 `AppComponent`를 테스트 하는 �
 <!--
 The test file extension **must be `.spec.ts`** so that tooling can identify it as a file with tests (AKA, a _spec_ file).
 -->
-IDE와 같은 툴에서 스펙 파일을 구분하려면, 테스트 파일의 확장자를 **반드시 `.spec.ts`**로 지정해야 합니다.
+IDE와 같은 툴에서 스펙 파일을 구분하려면 테스트 파일의 확장자를 **반드시 `.spec.ts`**로 지정해야 합니다.
 
 </div>
 
@@ -167,7 +165,7 @@ The root file names (`app.component`) are the same for both files.
 
 Adopt these two conventions in your own projects for _every kind_ of test file.
 -->
-이 상태로 보면 `app.component.ts` 파일과 `app.component.spec.ts` 파일은 같은 폴더에 이웃한 파일이며, 두 파일의 컴포넌트 이름 부분(`app.component`)은 같습니다.
+이 관계로 보면 `app.component.ts` 파일과 `app.component.spec.ts` 파일은 같은 폴더에 이웃한 파일이며, 두 파일의 컴포넌트 이름 부분(`app.component`)은 같다는 것을 확인할 수 있습니다.
 
 이 룰은 프로젝트 안에 있는 _모든_ 테스트 파일에 적용하는 것이 좋습니다.
 
@@ -193,9 +191,9 @@ This article explains how to configure your project to run Circle CI and Travis 
 이 때 프로젝트 레파지토리에 지속적인 통합(Continuous integration, CI) 서버를 연결하면 이 레파지토리에 커밋이나 풀 리퀘스트가 있을 때마다 자동으로 테스트를 실행하게 할 수 있습니다.
 
 Circle CI와 Travis CI는 이런 경우에 사용하는 유료 CI 서비스입니다. 그리고 Jenkins와 같은 툴을 사용하면 무료 CI 환경을 구성할 수도 있습니다.
-Circle CI와 Travis CI는 유료 서비스지만, 오픈 소스 프로젝트가 대상이라면 무료로 사용할 수 있습니다.
-그래서 GitHub에 public 프로젝트를 만들면 이 서비스를 무료로 사용할 수 없습니다.
-Angular 레파지토리에 코드를 반영할 때도 Circle CI 테스트가 자동으로 실행됩니다.
+Circle CI와 Travis CI는 유료 서비스지만, 오픈 소스 프로젝트라면 무료로 사용할 수 있습니다.
+그래서 GitHub에 public 프로젝트를 만들면 이 서비스를 무료로 사용할 수 있습니다.
+Angular 공식 레파지토리에 코드를 반영할 때도 Circle CI 테스트가 자동으로 실행됩니다.
 
 이 섹션에서는 프로젝트에 Circle CI와 Travis CI를 연결하는 방법에 대해 설명하고, 프로젝트의 테스트 스펙을 리모트 서버의 Chrome 브라우저에서 실행하는 방법에 대해 안내합니다.
 
@@ -329,7 +327,7 @@ We'll be using [Headless Chrome](https://developers.google.com/web/updates/2017/
 -->
 로컬 개발환경에서 Angular CLI로 `ng test` 명령이나 `ng e2e` 명령을 실행하면 Chrome 브라우저가 실행되고 이 브라우저에서 테스트가 실행됩니다.
 
-이런 환경을 구성하려면 [Karma JavaScript 테스트 러너](https://karma-runner.github.io/latest/config/configuration-file.html)와 e2e 테스트 툴인 [Protractor](https://www.protractortest.org/#/api-overview)가 실행될 환경이 모두 설정되어야 하지만, Angular CLI로 프로젝트를 생성하면 이 환경은 자동으로 구성됩니다.
+이런 환경을 구성하려면 [Karma JavaScript 테스트 러너](https://karma-runner.github.io/latest/config/configuration-file.html)와 e2e 테스트 툴인 [Protractor](https://www.protractortest.org/#/api-overview)가 실행될 환경이 모두 설정되어야 하지만, Angular CLI로 생성한 프로젝트에는 이 환경은 자동으로 구성되어 있습니다.
 하지만 CI 환경에서는 Chrome 브라우저를 직접 실행하지 않고 화면과 샌드박스 기능 없이 사용하는 것이 더 좋습니다.
 
 이번 섹션에서는 [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome#cli)을 사용하는 방법에 대해 알아봅시다.
@@ -396,8 +394,8 @@ Code coverage reports show you  any parts of our code base that may not be prope
 
 To generate a coverage report run the following command in the root of your project.
 -->
-Angular CLI로 유닛 테스트를 실행하면서 코드 커버리지 리포트를 생성할 수도 있습니다.
-그래서 코드 커버리지 리포트를 확인하면서 유닛 테스트가 충실하게 작성되었는지 확인할 수 있습니다.
+Angular CLI로 유닛 테스트를 실행하면서 코드 커버리지 리포트를 생성할 수 있습니다.
+코드 커버리지 리포트를 확인하면 유닛 테스트가 얼마나 충실하게 작성되었는지 확인할 수 있습니다.
 
 커버리지 리포트를 생성하려면 프로젝트를 테스트할 때 다음과 같이 실행하면 됩니다.
 
@@ -436,7 +434,7 @@ For example, suppose you want the code base to have a minimum of 80% code covera
 To enable this, open the [Karma](https://karma-runner.github.io) test platform configuration file, `karma.conf.js`, and add the following in the `coverageIstanbulReporter:` key.
 -->
 코드 커버리지 퍼센트를 확인하면 프로젝트 코드가 얼마나 많이 테스트되는지 확인할 수 있습니다.
-그래서 당신의 팀에서 유닛 테스트하기로 정한 최소한의 비율이 있다면, 이 비율을 강제하도록 Angular CLI를 설정할 수 있습니다.
+그리고 당신의 팀에서 유닛 테스트하기로 정한 최소한의 비율이 있다면, 이 비율을 강제하도록 Angular CLI를 설정할 수 있습니다.
 
 예를 들어 최소한 80% 이상의 코드가 테스트 대상이 되어야 한다고 합시다.
 그러면 [Karma](https://karma-runner.github.io) 설정 파일 `karma.conf.js` 파일을 열어서 `coverageIstanbulReporter` 키의 내용을 다음과 같이 수정하면 됩니다.
@@ -515,11 +513,11 @@ Instead you can mock the dependency, use a dummy value, or create a
 [spy](https://jasmine.github.io/2.0/introduction.html#section-Spies)
 on the pertinent service method.
 -->
-첫번째 테스트에서는 `new` 키워드를 사용해서 `ValueService`를 생성할 때 생성자로 `MasterService` 인스턴스를 전달합니다.
+첫번째 테스트에서는 `new` 키워드를 사용해서 `ValueService`의 인스턴스를 직접 생성하고, 이 인스턴스를 `MasterService`의 생성자로 전달합니다.
 
 그런데 실제 서비스 클래스를 의존성으로 주입하면, 이 클래스가 실제로 어떤 동작을 할지 제어하기 힘들기 때문에  테스트가 제대로 동작하지 않을 가능성이 더 높아집니다.
 
-그렇다면 실제 서비스 대신 더미 값이나 [스파이(spy)](https://jasmine.github.io/2.0/introduction.html#section-Spies)를 활용하는 것이 더 간편합니다.
+그렇다면 실제 서비스 대신 더미 객체나 [스파이(spy)](https://jasmine.github.io/2.0/introduction.html#section-Spies)를 활용하는 것이 더 간편합니다.
 
 <div class="alert is-helpful">
 
@@ -538,10 +536,10 @@ However, you almost always inject service into application classes using Angular
 dependency injection and you should have tests that reflect that usage pattern.
 Angular testing utilities make it easy to investigate how injected services behave.
 -->
-이렇게 작성하면 테스트하려는 서비스를 독립적인 영역으로 분리할 수 있기 때문에 테스트하기 편합니다.
+이렇게 작성하면 테스트하려는 서비스만 따로 분리할 수 있기 때문에 테스트하기 편합니다.
 
 하지만 의존성 관계가 복잡하게 엮여 있거나 실제 사용하는 패턴으로 테스트를 실행해야 한다면 조금 다른 방법이 필요합니다.
-이런 상황에서 활용할 수 있는 Angular 테스트 유틸리티 기능에 대해 알아봅시다.
+이런 상황에서 활용할 수 있는 Angular 테스트 기능에 대해 알아봅시다.
 
 <!--
 #### Testing services with the _TestBed_
@@ -561,15 +559,15 @@ As a service _tester_, you must at least think about the first level of service 
 but you _can_ let Angular DI do the service creation and deal with constructor argument order
 when you use the `TestBed` testing utility to provide and create services.
 -->
-테스트할 서비스의 인스턴스는 Angular가 제공하는 [의존성 주입(Dependency Injection, DI)](guide/dependency-injection) 시스템을 활용할 수도 있습니다.
-서비스에 의존성으로 주입될 서비스가 있다면, 이 의존성 객체의 인스턴스를 찾는 역할을 DI에 맡길 수 있습니다.
-의존성으로 주입되는 서비스에 또다른 의존성이 필요하다면 이 의존성 객체를 찾는 것도 DI를 활용할 수 있습니다.
+서비스의 인스턴스를 생성할 때는 Angular가 제공하는 [의존성 주입(Dependency Injection, DI)](guide/dependency-injection) 시스템을 활용할 수도 있습니다.
+서비스에 의존성으로 주입될 서비스가 있다면, 이 의존성 객체의 인스턴스를 찾는 역할을 DI에 맡기는 방식입니다.
+의존성으로 주입되는 서비스에 또다른 의존성이 필요하다면 이 의존성 객체를 찾는 것도 DI가 처리합니다.
 
 개발자는 테스트할 서비스만 신경쓰면 됩니다.
 의존성 객체를 어떻게 생성하는지, 생성자에 전달하는 순서는 어떻게 되는지 신경쓸 필요가 없습니다.
 
-이제 `TestBed` 테스트 유틸리티ㅣ를 활용하면 Angular DI 시스템을 활용해서 서비스 인스턴스를 참조할 수 있습니다.
-서비스에 연결된 의존성 관계는 DI가 모두 처리합니다.
+서비스를 테스트하는 입장에서도 테스트할 서비스 하나만 생각하면 됩니다.
+`TestBed`를 활용하면 해당 서비스에 연결된 의존성 관계는 모두 Angular DI가 처리합니다.
 
 {@a testbed}
 
@@ -666,9 +664,9 @@ Here's how you might rewrite one of the `MasterService` tests in that style.
 
 Begin by putting re-usable, preparatory code in a _setup_ function instead of `beforeEach()`.
 -->
-이 문서에서 다루는 테스트 스윗(test suites) 대부분은 테스트가 실제로 수행되는 `it()`에 필요한 준비를 하기 위해 `beforeEach()` 함수를 실행합니다. `TestBed`를 사용해서 의존성 관계를 연결하고, 서비스 인스턴스를 생성해서 변수에 할당하는 것이 이런 과정에 해당됩니다.
+이 문서에서 다루는 테스트 스윗(test suites) 대부분은 테스트가 실제로 수행되는 `it()` 블럭에 필요한 준비를 하기 위해 `beforeEach()` 함수를 실행합니다. `TestBed`를 사용해서 의존성 관계를 연결하고, 서비스 인스턴스를 생성해서 변수에 할당하는 것이 이런 과정에 해당됩니다.
 
-그런데 `beforeEach()`를 하번도 실행하지 않으면서 테스트 준비를 모두 끝낼 수 있는 방법도 있습니다.
+그런데 `beforeEach()`를 한번도 사용하지 않으면서 테스트 준비를 모두 끝낼 수 있는 방법도 있습니다.
 
 이번에는 새로운 방식으로 `MasterService`를 테스트 코드를 작성해 봅시다.
 
@@ -722,7 +720,7 @@ feel free to adopt _this alternative approach_ in your own projects.
 -->
 전통적인 `beforeEach()` 스타일보다는 이 방식이 더 깔끔하고 좀 더 명확할 수 있습니다.
 
-이 문서에서는 기본 [Angular CLI 스키매틱(schematics)](https://github.com/angular/angular-cli)에 정의된 대로 `beforeEach()`와 `TestBed`를 활용하는 전통적인 방식으로 테스트 스펙을 작성하지만, 프로젝트에 _이 새로운 방식_ 을 적용해보는 것도 권장합니다.
+이 문서에서는 기본 [Angular CLI 스키매틱(schematics)](https://github.com/angular/angular-cli)에 정의된 대로 `beforeEach()`와 `TestBed`를 활용하는 방식으로 테스트 스펙을 작성하지만, 프로젝트에 _이 새로운 방식_ 을 적용해보는 것도 좋습니다.
 
 <!--
 #### Testing HTTP services
@@ -736,7 +734,7 @@ to the Angular [`HttpClient`](guide/http) service for XHR calls.
 You can test a data service with an injected `HttpClient` spy as you would
 test any service with a dependency.
 -->
-HTTP 요청을 보내는 데이터 서비스는 일반적으로 XHR 요청을 리모트 서버로 보내기 위해 Angular [`HttpClient`](guide/http) 서비스를 의존성으로 주입받습니다.
+HTTP 요청을 보내는 데이터 서비스는 리모트 서버로 XHR 요청을 보내기 위해 Angular [`HttpClient`](guide/http) 서비스를 의존성으로 주입받습니다.
 
 이런 데이터 서비스는 `HttpClient` 스파이를 활용해서 테스트할 수 있습니다.
 
@@ -790,7 +788,7 @@ which covers testing with the `HttpClientTestingModule` in detail.
 
 하지만 `HttpClientTestingModule`을 활용하면 `HttpClient`가 실행되는 과정을 좀 더 편하게 제어할 수 있기 때문에 테스트 시나리오를 작성하기도 편합니다.
 
-다만, 이 문서에서 `HttpClientTestingModule`의 내용을 다루기에는 내용이 많기 때문에, 이 내용을 자세하게 다루는 [Http guide](guide/http#http-요청-테스트하기) 문서를 참고하세요.
+다만, 이 문서에서 `HttpClientTestingModule`의 내용을 모두 다루기 어렵기 때문에, 이 내용을 자세하게 다루는 [Http guide](guide/http#http-요청-테스트하기) 문서를 참고하세요.
 
 <div class="alert is-helpful">
 
@@ -832,7 +830,7 @@ can validate much of the component's behavior in an easier, more obvious way.
 
 이 작업들은 모두 Angular `TestBed`가 모두 처리하기 때문에 컴포넌트를 테스트하는 것이 그리 어려운 것만은 아닙니다.
 하지만 일반적으로는 DOM을 신경쓰지 않고 _컴포넌트 클래스만 테스트하는 경우_ 가 많습니다.
-컴포넌트는 동작 위주로 테스트하는 것이 더 간단하고, 테스트 스펙을 정의하기에도 명확합니다.
+컴포넌트는 동작 위주로 테스트하는 것이 더 간단하고, 테스트 스펙을 정의하기도 명확합니다.
 
 
 <!--
@@ -848,7 +846,7 @@ Consider this `LightswitchComponent` which toggles a light on and off
 -->
 컴포넌트 클래스를 테스트하는 것은 서비스 클래스를 테스트하는 것과 비슷합니다.
 
-사용자가 버튼을 누르면 조명을 껴고 크는 `LightswitchComponent`가 있다고 합시다. 조명이 켜진 상태는 화면에 텍스트로 표시됩니다.
+사용자가 버튼을 누르면 조명을 켜고 끄는 `LightswitchComponent`가 있다고 합시다. 조명이 켜진 상태는 화면에 텍스트로 표시됩니다.
 
 <code-example
   path="testing/src/app/demo/demo.ts"
@@ -910,9 +908,9 @@ listens for an event raised through the _selected_ `@Output` property.
 You can test that the class code works without creating the `DashboardHeroComponent`
 or its parent component.
 -->
-이 컴포넌트에는 부모 컴포넌트의 템플릿에서 받는 `@Input` _hero_ 프로퍼티가 존재하고, 부모 컴포넌트로 이벤트를 보내는 `@Output` _selected_ 프로퍼티가 존재합니다.
+이 컴포넌트에는 부모 컴포넌트의 템플릿에서 받는 `@Input` _hero_ 프로퍼티가 존재하고, 부모 컴포넌트로 이벤트를 보내는 `@Output` _selected_ 프로퍼티도 존재합니다.
 
-그런데 이 컴포넌트는 부모 컴포넌트를 생성하지 않아도 직접 테스트할 수 있습니다.
+이 컴포넌트는 부모 컴포넌트를 생성하지 않아도 직접 테스트할 수 있습니다.
 
 <!--
 <code-example
@@ -1037,8 +1035,8 @@ as well as other testing helpers.
 
 - 사용자가 컴포넌트에 있는 버튼을 클릭하면 `Lightswitch.clicked()` 함수는 제대로 실행될까?
 - `Lightswitch.message`는 화면에 제대로 표시될까?
-- 사용자가 `DashboardHeroComponent`에서 선택한 히어로 정보가 컴포넌트에도 표시될까?
-- 히어로의 이름은 정해둔 방식대로 표시될까?
+- 사용자가 `DashboardHeroComponent`에서 선택한 히어로 정보가 이 컴포넌트에도 표시될까?
+- 히어로의 이름은 정해둔 방식으로 표시될까?
 - `WelcomeComponent` 템플릿에는 환영 메시지가 제대로 표시될까?
 
 컴포넌트가 간단하다면 이런 내용을 신경쓰지 않아도 됩니다.
@@ -1051,7 +1049,7 @@ as well as other testing helpers.
 <!--
 #### CLI-generated tests
 -->
-#### Angular CLI로 생성한 테스트 코드
+#### Angular CLI가 생성한 테스트 코드
 
 <!--
 The CLI creates an initial test file for you by default when you ask it to
@@ -1169,7 +1167,7 @@ After configuring `TestBed`, you call its `createComponent()` method.
 adds a corresponding element to the test-runner DOM,
 and returns a [`ComponentFixture`](#component-fixture).
 -->
-`TestBed.createComponent()`를 실행하면 `BannerComponent`의 인스턴스를 생성하면서 이 컴포넌트의 템플릿을 테스트-러너 DOM에 추가하고 [`ComponentFixture`](#component-fixture)를 반환합니다.
+`TestBed.createComponent()`를 실행하면 `BannerComponent`의 인스턴스를 생성하면서 이 컴포넌트의 템플릿을 테스트 러너의 DOM에 추가하고 [`ComponentFixture`](#component-fixture)를 반환합니다.
 
 <div class="alert is-important">
 
@@ -1185,7 +1183,7 @@ If you try, `TestBed` throws an error.
 -->
 `createComponent`를 실행한 뒤에 `TestBed` 설정을 바꾸지 마세요.
 
-`createComponent` 메소드는 이 메소드가 실행되는 시점에 `TestBed`에 설정된 내용으로 생성되며, 이후에 `TestBed` 설정이 변경되어도 변경된 내용이 반영되지 않습니다.
+`createComponent` 메소드는 이 메소드가 실행되는 시점에 `TestBed`에 설정된 내용으로 생성되며, 이후에 `TestBed` 설정을 변경해도 변경된 내용이 반영되지 않습니다.
 
 그래서 `createComponent` 메소드를 실행한 후에는 `configureTestingModule()` 메소드를 다시 실행할 수 없으며, 반대로 `configureTestingModule()`를 실행하기 전에는 `get()`이나 `override...` 메소드를 실행할 수 없습니다.
 이렇게 실행하면 에러가 발생합니다.
@@ -1203,7 +1201,7 @@ Access the component instance through the fixture and confirm it exists with a J
 -->
 [ComponentFixture](api/core/testing/ComponentFixture)는 컴포넌트와 이 컴포넌트의 엘리먼트를 테스트할 때 사용하는 객체입니다.
 
-이 객체를 참조하면 컴포넌트 인스턴스에 접근할 수 있기 때문에, 다음과 같은 Jasmine 검증식을 작성할 수 있습니다:
+이 객체를 참조하면 컴포넌트 인스턴스에 직접 접근할 수 있기 때문에, 다음과 같은 Jasmine 검증식을 작성할 수 있습니다:
 
 <code-example
   path="testing/src/app/banner/banner-initial.component.spec.ts"
@@ -1263,12 +1261,12 @@ Here's another test that calls `HTMLElement.querySelector` to get the paragraph 
 `ComponentFixture.nativeElement`에 할당되는 객체는 `any` 타입입니다.
 그리고 나중에 살펴볼 `DebugElement.nativeElement`에 할당되는 객체도 `any` 타입입니다.
 
-Angular 코드가 컴파일되는 시점에는 `nativeElement`에 할당되는 객체가 어떤 HTML 엘리먼트인지 알지 못하며, 심지어 HTML 엘리먼트가 할당되는지도 알지 못합니다.
+Angular 코드가 컴파일되는 시점에는 `nativeElement`에 할당되는 객체가 어떤 HTML 엘리먼트인지 알 수 없으며, 심지어 HTML 엘리먼트가 정말 할당되는지도 알 수 없습니다.
 그리고 Angular 애플리케이션이 _서버가 아닌 환경_, 예를 들면 서버에서 실행되거나 [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)로 실행된다면 엘리먼트와 관련된 API가 일부 존재하지 않거나 전부 없을 수도 있습니다.
 
 하지만 이 문서에서 다루는 예제는 모두 브라우저에서 실행되는 것을 전제로 작성되었기 때문에 `nativeElement`에 할당되는 객체는 언제나 `HTMLElement`이거나 이 엘리먼트의 자식 클래스입니다.
 
-그래서 테스트 코드에서는 `HTMLElement`에서 제공하는 프로퍼티나 메소드를 활용할 수 있으며, HTML `querySelector`를 사용해서 엘리먼트 트리 안쪽을 참조할 수도 있습니다.
+그래서 테스트 코드에서는 `HTMLElement`에서 제공하는 프로퍼티나 메소드를 활용할 수 있으며, HTML `querySelector`를 사용해서 엘리먼트 트리 안쪽을 참조할 수 있습니다.
 
 `HTMLElement.querySelector` 메소드를 사용해서 `<p>` 엘리먼트를 참조하고, 이 엘리먼트의 텍스트를 검사하는 로직은 다음과 같이 작성할 수 있습니다:
 
@@ -1323,7 +1321,7 @@ Here's the previous test, re-implemented with `fixture.debugElement.nativeElemen
 `nativeElement`에 할당되는 객체는 이 컴포넌트가 어떤 환경에서 실행되는지에 따라 달라집니다.
 _브라우저가 아닌_ 환경에서 애플리케이션을 실행한다면 DOM이 존재하지 않을 수도 있고, DOM을 에뮬레이트한 환경에서는 `HTMLelement`가 제공하는 API를 온전히 제공하지 않을 수도 있습니다.
 
-그래서 Angular는 _어떠한 플랫폼에서도_ 이 코드를 문제없이 실행할 수 없도록 `DebugElement` 추상화를 도입했습니다.
+그래서 Angular는 _어떠한 플랫폼에서도_ 이 코드를 문제없이 실행할 수 없도록 `DebugElement`를 추상화했습니다.
 Angular는 실제로 HTML 엘리먼트 트리를 구성하는 대신, 실행되는 플랫폼에 맞게 랩핑된 _네이티브 엘리먼트_ 로 `DebugElement` 트리를 구성합니다.
 결국 `nativeElement` 프로퍼티에 접근하는 것은 Angular가 생성한 `DebugElement`에 접근하는 것이며, 이 방식 덕분에 플랫폼에서 제공하는 엘리먼트 객체에 안전하게 접근할 수 있습니다.
 
@@ -1557,7 +1555,7 @@ the component _before Angular initiates data binding and calls [lifecycle hooks]
 
 Here's another test that changes the component's `title` property _before_ calling `fixture.detectChanges()`.
 -->
-변화감지 동작이 자동으로 실행되지 않는 것은 Angular가 의도한 방식이며, 이렇게 사용해야 테스트 코드를 작성하기 더 편합니다.
+변화감지 동작이 자동으로 실행되지 않는 것은 Angular가 의도한 것이며, 이렇게 동작해야 테스트 코드를 작성하기 더 편합니다.
 왜냐하면 변화감지 동작을 수동으로 실행할 수 있어야 Angular가 데이터 바인딩을 초기화하하기 전에 컴포넌트의 상태를 검사할 수 있으며, [라이프싸이클 후킹 함수](guide/lifecycle-hooks)가 동작하기 전에도 컴포넌트를 체크할 수 있기 때문입니다.
 
 그래서 컴포넌트의 `title` 프로퍼티를 직접 변경한 후에 `fixture.detectChanges()` 함수를 실행하는 방식으로 테스트 코드를 작성할 수도 있습니다.
@@ -1581,8 +1579,8 @@ Some testers prefer that the Angular test environment run change detection autom
 That's possible by configuring the `TestBed` with the `ComponentFixtureAutoDetect` provider.
 First import it from the testing utility library:
 -->
-`BannerComponent`를 테스트할 때는 `detectChanges`를 실행하는 코드가 그리 많지 않습니다.
-하지만 어떤 경우에는 Angular 테스트 환경에서도 변화감지 로직이 자동으로 동작해야 편한 경우도 있습니다.
+`BannerComponent`를 테스트할 때는 변화감지 동작을 실행해야 하는 경우가 그리 많지 않기 때문에 `detectChanges`를 수동으로 실행해도 크게 번거롭지 않습니다.
+하지만 Angular 테스트 환경에서도 변화감지 로직이 자동으로 동작해야 편한 경우가 있습니다.
 
 그러면 변화감지 로직을 자동으로 실행하도록 `TtestBed`를 구성할 수 있습니다.
 먼저, 테스트 라이브러리에서 `ComponentFixtureAutoDetect` 프로바이더를 로드합니다:
@@ -1616,7 +1614,7 @@ The test must call `fixture.detectChanges()` manually to trigger another cycle o
 
 두번째 스펙과 세번째 스펙에 대해 자세하게 알아봅시다.
 Angular 테스트 환경은 컴포넌트의 `title` 프로퍼티 값이 변경되는지 확인하지 않습니다.
-`ComponentFixtureAutoDetect` 서비스는 Promise가 완료되었을 때, 타이머가 완료되었을 때, DOM 이벤트가 발생했을 때와 같이 _비동기로 일어나는 작업_ 에만 반응합니다.
+`ComponentFixtureAutoDetect` 서비스는 Promise가 완료되었을 때, 타이머가 완료되었을 때, DOM 이벤트가 발생했을 때와 같이 _비동기로 일어나는 동작_ 에만 반응합니다.
 그래서 비동기로 컴포넌트 프로퍼티 값을 변경하면 이 값은 화면에 반영되지 않습니다.
 변화감지 동작을 실행하려면 `fixture.detectChanges()`를 수동으로 호출해야 합니다.
 
@@ -1661,7 +1659,7 @@ Angular는 개발자가 `<input>` 엘리먼트의 `value` 프로퍼티를 변경
 그래서 엘리먼트에서 `input` 이벤트가 발생했다는 것을 알리기 위해 `dispatchEvent()` 함수를 실행해야 이 엘리먼트의 변경된 프로퍼티를 참조할 수 있습니다.
 `detectChanges()`는 _그 다음에_ 실행해야 합니다.
 
-이 순서로 테스트 코드를 작성해 봅시다.
+이 순서대로 테스트 코드를 작성해 봅시다.
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" header="app/hero/hero-detail.component.spec.ts (pipe test)"></code-example>
 
@@ -1748,7 +1746,7 @@ It knows who the user is based on a property of the injected `UserService`:
 컴포넌트는 서비스 클래스를 의존성으로 주입받을 수 있습니다.
 
 `WelcomeComponent`는 로그인한 사용자에게 환영 메시지를 출력하는 컴포넌트입니다.
-그러면 이 컴포넌트는 어떤 사용자가 로그인했는지 확인하기 위해 `UserService`가 의존성으로 주입되어야 합니다:
+그리고 이 컴포넌트는 어떤 사용자가 로그인했는지 확인하기 위해 `UserService`를 의존성으로 주입받습니다:
 
 <code-example path="testing/src/app/welcome/welcome.component.ts" header="app/welcome/welcome.component.ts" linenums="false"></code-example>
 
@@ -1767,7 +1765,7 @@ the configuration adds a `UserService` provider to the `providers` list.
 But not the real `UserService`.
 -->
 이 코드에는 테스트하려는 컴포넌트 외에도 `providers` 목록에 `UserService` 타입의 객체를 등록했습니다.
-하지만 실제 `UserService`가 사용되는 것이 아닙니다.
+하지만 실제 `UserService`가 사용되는 것은 아닙니다.
 
 {@a service-test-doubles}
 
@@ -1791,10 +1789,10 @@ It is far easier and safer to create and register a test double in place of the 
 This particular test suite supplies a minimal mock of the `UserService` that satisfies the needs of the `WelcomeComponent`
 and its tests:
 -->
-테스트하려는 컴포넌트에 실제 서비스가 의존성으로 등록될 필요는 없습니다.
+컴포넌트를 테스트하기 위해 실제 서비스를 의존성으로 등록할 필요는 없습니다.
 이런 경우에는 보통 목(mocks, doubles, stubs, fakes, spies) 서비스를 사용하는 것이 더 좋습니다.
 컴포넌트를 테스트하는 스펙의 목적은 컴포넌트를 테스트하는 것이지 서비스를 테스트하는 것이 아닙니다.
-실행 시점에 사용하는 서비스가 실제로 주입된다면 복잡해지기만 할 뿐입니다.
+실제로 사용하는 서비스를 주입한다면 컴포넌트를 테스트하는 로직이 더 복잡해지기만 할 뿐입니다.
 
 만약 실제 `UserService`를 주입해야 한다면 아주 괴로운 경험을 겪게될 수도 있습니다.
 실제 서비스는 사용자에게 로그인 인증정보를 제공하라고 할 수도, 있고 인증 서버에 HTTP 요청을 보낼지도 모릅니다.
@@ -1862,7 +1860,7 @@ In this test suite, the _only_ provider of `UserService` is the root testing mod
 so it is safe to call `TestBed.get()` as follows:
 -->
 서비스의 인스턴스는 `TestBed.get()`을 사용해서 최상위 인젝터에서 참조할 _수도_ 있습니다.
-이렇게 작성하는 것이 더 간단하기도 하고 외우기도 쉽죠.
+이렇게 작성하는 것이 더 간단하고 외우기도 쉽습니다.
 하지만 이 방식은 컴포넌트와 서비스 클래스가 테스트 모듈의 최상위 인젝터로 등록되었을 때만 제대로 동작합니다.
 
 다행히 지금 다루는 예제에서는 `UserService`가 최상위 테스트 모듈에만 등록되었기 때문에 `TestBed.get()`을 써서 다음과 같이 작성할 수 있습니다:
@@ -1966,7 +1964,7 @@ The third test checks that the component displays the proper message when there 
 In this sample, the `AboutComponent` template hosts a `TwainComponent`.
 The `TwainComponent` displays Mark Twain quotes.
 -->
-이번 예제에서는 `AboutComponent` 템플릿 안에 `TainComponent`가 존재합니다.
+이번 예제에서는 `AboutComponent` 템플릿 안에 `TwainComponent`가 존재합니다.
 그리고 `TwainComponent`는 Mark Twain의 명언을 표시할 것입니다.
 
 <!--
@@ -2081,7 +2079,7 @@ You can write many useful tests with this spy, even though its `Observable` is s
 A key advantage of a synchronous `Observable` is that
 you can often turn asynchronous processes into synchronous tests.
 -->
-`Observable`을 동기 방식으로 실행하면 비동기 로직 흐름을 동기 로직 흐름 안으로 자연스럽게 합칠 수 잇습니다.
+`Observable`을 동기 방식으로 실행하면 비동기 로직 흐름을 동기 로직 흐름 안으로 자연스럽게 합칠 수 있습니다.
 
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
@@ -2103,7 +2101,7 @@ value becomes available. The test must become _asynchronous_.
 
 하지만 에러를 처리하려면 조금 더 신경써야 할 부분이 있습니다.
 서비스 스파이가 에러를 동기 흐름으로 반환하면 컴포넌트 메소드가 `setTimeout()`을 실행하는데, 그러면 이 테스트 스펙은 완료되기 전에 JavaScript 엔진이 한 싸이클 도는 것을 기다려야 합니다.
-테스트 로직은 _비동기_ 로 실행되어야 합니다.
+결국 테스트 로직은 _비동기_ 로 실행되어야 합니다.
 
 {@a fake-async}
 
@@ -2165,10 +2163,10 @@ In this case, it waits for the error handler's `setTimeout()`;
 
 The `tick()` function accepts milliseconds as parameter (defaults to 0 if not provided). The parameter represents how much the virtual clock advances. For example, if you have a `setTimeout(fn, 100)` in a `fakeAsync()` test, you need to use tick(100) to trigger the fn callback.
 -->
-테스트환경에서 동작하는 가상의 시계를 빠르게 돌리려면 `tick()` 함수를 실행하면 됩니다.
+`tick()` 함수는 테스트환경에서 동작하는 가상의 시계를 빠르게 돌리기 위해 사용합니다.
 
 `tick()` 함수를 실행하면 그동안 대기중이던 비동기 작업들이 종료되는 시점까지 시간을 빠르게 돌립니다.
-그래서 이 함수를 사용하면 `TwainComponent.getQuote()` 메소드 안에 있는 `setTimeout()`이 종료된 이후 로직을 테스트하는 코드를 작성할 수 있습니다.
+그래서 이 함수를 사용하면 `TwainComponent.getQuote()` 메소드 안에 있는 `setTimeout()`이 종료된 이후에 실행되는 로직을 테스트하는 코드도 작성할 수 있습니다.
 
 `tick()` 함수에 인자를 전달하면 밀리초 단위로 시간을 빠르게 돌릴 수 있으며, 이 인자의 기본값은 0입니다.
 그래서 `fakeAsync()` 테스트 존 안에서 `setTimeout(fn, 100)`이라는 타이머를 정의하고 `tick(100)`을 실행하면 이 타이머를 실행할 수 있습니다.
@@ -2193,7 +2191,7 @@ It's a companion to `fakeAsync()` and you can only call it within a `fakeAsync()
 <!--
 `fakeAsync()` simulates passage of time, which allows you to calculate the difference between dates inside `fakeAsync()`.
 -->
-`fakeAsync()` 안에서는 시간이 지난 것처럼 조작할 수 있기 때문에 서로 다른 날짜를 비교하는 것도 가능합니다.
+`fakeAsync()` 안에서는 시간이 지난 것을 조작할 수 있기 때문에 서로 다른 날짜를 비교하는 것도 가능합니다.
 
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
@@ -2488,10 +2486,10 @@ When using an `intervalTimer()` such as `setInterval()` in `async()`, remember t
 `async()` 함수를 사용하면 `fakeAsync()`를 사용하면서 _비동기 테스트 존(async test zone)_ 에 사용했던 비동기 처리 관련 함수들을 일부 생략할 수 있습니다.
 그리고 Jasmine이 제공하는 `done()` 함수를 실행할 필요도 없습니다.
 
-대신 테스트를 정상적으로 종료할 수 있또록 `fixture.whenStable()`이 비동기 흐름을 처리합니다.
+대신 테스트를 정상적으로 종료할 수 있도록 `fixture.whenStable()`이 비동기 흐름을 처리합니다.
 
 다만, `async()` 안에서 `intervalTimer()`나 `setInterval()`을 사용한다면 이 타이머를 종료하거나 `clearInterval()`을 실행해야 합니다.
-그렇지 않으면 `async()`는 종료되지 않습니다.
+타이머를 종료하지 않으면 `async()`도 종료되지 않습니다.
 
 {@a when-stable}
 
@@ -2547,7 +2545,7 @@ Angular가 제공하는 `async()`와 `fakeAsync()`를 활용하면 비동기 로
 
 이제 `done()`을 사용하면 직접 Promise를 체이닝하거나 에러를 처리해야하고, 적절한 시점에 `done()`을 실행해야 합니다.
 
-그래서 `done()`을 사용해서 테스트하는 것은 `async()`나 `fakeAsync()`를 사용했던 것보다 조금 더 번거로워 집니다.
+그래서 `done()`을 사용해서 테스트하는 것은 `async()`나 `fakeAsync()`를 사용했던 것보다 조금 더 번거롭습니다.
 하지만 `setInterval`이나 `intervalTimer()`을 활용하는 로직은 `done()`을 사용해야만 합니다.
 
 위에서 작성했던 테스트를 `done()`을 사용하는 방식으로 변경하면 다음과 같이 작성할 수 있습니다.
@@ -2621,9 +2619,9 @@ Then import the symbols you need.
 옵저버블은 여러번 데이터를 보내기도 하는데, 이 때 약간 딜레이가 있을 수도 있습니다.
 그리고 컴포넌트가 옵저버블 여러개를 복잡한 순서로 조작하면서 이 옵저버블들이 전달하는 값과 에러를 처리해야 할 수도 있습니다.
 
-**RxJS 마블 테스트는** 옵저버블이 어떻게 실행되는지 분석하는 테스트 방법입니다.
-옵저버블이 복잡하거나 단순한 것과는 관계없이, 일관된 방법으로 옵저버블이 실행되는 시나리오를 확인할 수 있습니다.
-[마블 다이어그램](http://rxmarbles.com/)도 옵저버블이 동작하는 것을 확인하는 RxJS 마블 테스트 방법 중 하나입니다.
+**RxJS 마블 테스트는** 옵저버블을 시나리오 방식으로 테스트하는 방법입니다.
+옵저버블이 복잡하거나 단순한 것과는 관계없이, 일관된 방법으로 옵저버블이 실행되는 시나리오를 검증할 수 있습니다.
+[마블 다이어그램](http://rxmarbles.com/)도 RxJS 마블 테스트 방법 중 하나입니다.
 마블 테스트 로직은 기존에 옵저버블 스트림을 처리하고 검사했던 로직과 비슷합니다.
 
 이제부터는 `TwainComponent`에 마블 테스트를 적용하는 방법에 대해 알아봅시다.
@@ -2773,7 +2771,7 @@ _콜드(cold)_ 옵저버블은 누군가가 구독하기 전까지는 데이터�
 반면에, _핫(hot)_ 옵저버블은 누군가가 구독하지 _않아도_ 데이터를 생성합니다.
 라우터의 동작을 확인할 때 사용하는 [_Router 이벤트_](api/router/Router#events)가 _핫_ 옵저버블입니다.
 
-RxJS 마블 테스트는 더 다양하게 활용할 수 있지만, 이 내용은 이 가이드 문서가 다루는 범위를 어서는 내용입니다.
+RxJS 마블 테스트는 더 다양하게 활용할 수 있지만, 이 내용은 이 가이드 문서가 다루는 범위를 넘어서는 내용입니다.
 RxJS 마블 테스트에 대해 더 자세하게 알아보려면 [공식 문서](https://github.com/ReactiveX/rxjs/blob/master/doc/writing-marble-tests.md)를 참고하세요.
 
 <hr>

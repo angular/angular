@@ -85,8 +85,7 @@ describe('Angular async helper', () => {
 
   // #docregion fake-async-test-clock
   describe('use jasmine.clock()', () => {
-    // zone.js/dist/zone-testing 패키지를 로드하기 전에
-    // __zone_symbol_fakeAsyncPatchLock 플래그 설정이 필요합니다.
+    // zone.js/dist/zone-testing 패키지를 로드하기 전에 __zone_symbol_fakeAsyncPatchLock 플래그 설정이 필요합니다.
     beforeEach(() => { jasmine.clock().install(); });
     afterEach(() => { jasmine.clock().uninstall(); });
     it('should auto enter fakeAsync', () => {
