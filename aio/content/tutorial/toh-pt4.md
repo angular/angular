@@ -195,6 +195,8 @@ In a [later tutorial on HTTP](tutorial/toh-pt6), you'll learn that Angular's `Ht
 In this tutorial, you'll simulate getting data from the server with the RxJS `of()` function.
 
 Open the `HeroService` file and import the `Observable` and `of` symbols from RxJS.
+In 'HeroService' file we need to import { Observable, of } from 'rxjs' separately as import { Observable } from 'rxjs';
+and import { of } from 'rxjs/observable/of';
 
 <code-example path="toh-pt4/src/app/hero.service.ts" 
 header="src/app/hero.service.ts (Observable imports)" region="import-observable">
