@@ -81,6 +81,15 @@ var_10: &restore_cache
       # This fallback should be the cache_key without variables.
       - v2-angular-node-10.12-
 
+# Branch filter that can be specified for jobs that should only run on publish branches
+# (e.g. master or the patch branch)
+var_12: &publish_branches_filter
+  branches:
+    only:
+      - master
+      # e.g. 7.0.x, 7.1.x, etc.
+      - /\d+\.\d+\.x/
+
 version: 2
 jobs:
   lint:
@@ -529,7 +538,6 @@ workflows:
       - build-npm-packages
       - build-ivy-npm-packages
       - test_aio
-      - legacy-unit-tests-saucelabs
       - deploy_aio:
           requires:
             - test_aio
@@ -582,17 +590,25 @@ workflows:
             - build-npm-packages
             - build-ivy-npm-packages
             - legacy-misc-tests
-            - legacy-unit-tests-saucelabs
       - material-unit-tests:
           requires:
             - build-ivy-npm-packages
 
+  saucelabs_tests:
+    jobs:
+      - legacy-unit-tests-saucelabs
+    triggers:
+      - schedule:
+          # Runs the Saucelabs legacy tests every four hours.
+          cron: "0 0,4,8,12,16,20 * * *"
+          filters: *publish_branches_filter
 
   aio_monitoring:
     jobs:
       - aio_monitoring
     triggers:
       - schedule:
+          # Runs AIO monitoring job at 00:00AM every day.
           cron: "0 0 * * *"
           filters:
             branches:
