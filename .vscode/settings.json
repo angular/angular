@@ -1,5 +1,10 @@
 {
-  "editor.formatOnSave": true,
+  "[javascript]": {
+    "editor.formatOnSave": true,
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true,
+  },
   // Please install http://clang.llvm.org/docs/ClangFormat.html in VSCode to take advantage of clang-format
   "clang-format.executable": "${workspaceRoot}/node_modules/.bin/clang-format",
   "files.watcherExclude": {
