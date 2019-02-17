@@ -31,7 +31,7 @@ module.exports = (gulp) => () => {
     // We need to fetch origin explicitly because it might be stale.
     // I couldn't find a reliable way to do this without fetch.
     const result = shelljs.exec(
-        `git fetch origin ${baseBranch} && git log --reverse --format=%s HEAD ^origin/${baseBranch}`);
+        `git fetch origin ${baseBranch} && git log --reverse --format=%s origin/${baseBranch}..HEAD`);
 
     if (result.code) {
       throw new Error(`Failed to fetch commits: ${result.stderr}`);
@@ -39,10 +39,10 @@ module.exports = (gulp) => () => {
 
     const commitsByLine = result.trim().split(/\n/).filter(line => line != '');
 
-    console.log(`Examining ${commitsByLine.length} commits between HEAD and ${baseBranch}`);
+    console.log(`Examining ${commitsByLine.length} commit(s) between ${baseBranch} and HEAD`);
 
     if (commitsByLine.length == 0) {
-      console.log(`There are zero new commits between this HEAD and ${baseBranch}`);
+      console.log(`There are zero new commits between ${baseBranch} and HEAD`);
     }
 
     const someCommitsInvalid = !commitsByLine.every(validateCommitMessage);
