@@ -120,12 +120,25 @@
     ],
     "headers": [
       {
-        "source": "/",
+        // All paths (URLs without a file extension).
+        "source": "**/!(*.*)",
         "headers": [
-          {
-            "key": "Link",
-            "value": "</generated/navigation.json>;rel=preload;as=fetch,</generated/docs/index.json>;rel=preload;as=fetch"
-          }
+          {"key": "Cache-Control", "value": "no-cache"},
+          {"key": "Link", "value": "</generated/navigation.json>;rel=preload;as=fetch,</generated/docs/index.json>;rel=preload;as=fetch"}
+        ]
+      },
+      {
+        // Images, fonts, (non-hashed) CSS/JS files.
+        "source": "**/*.@(gif|jpg|jpeg|png|svg|webp|js|css|eot|otf|ttf|ttc|woff|woff2)",
+        "headers": [
+          {"key": "Cache-Control", "value": "max-age=86400"}  // 1 day
+        ]
+      },
+      {
+        // Hashed CSS/JS files...
+        "source": "**/*.+([0-9a-f]).@(css|js)",
+        "headers": [
+          {"key": "Cache-Control", "value": "max-age=2592000"}  // 30 days
         ]
       }
     ]
