@@ -115,6 +115,9 @@ export class HostResourceLoader implements ResourceLoader {
     // Strip a leading '/' if one is present.
     if (url.startsWith('/')) {
       url = url.substr(1);
+
+      // Do not take current file location into account if we process absolute path.
+      fromFile = '';
     }
     // Turn absolute paths into relative paths.
     if (!url.startsWith('.')) {
