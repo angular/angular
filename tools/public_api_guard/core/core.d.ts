@@ -166,9 +166,11 @@ export declare type ContentChild = Query;
 export interface ContentChildDecorator {
     (selector: Type<any> | Function | string, opts?: {
         read?: any;
+        static?: boolean;
     }): any;
     new (selector: Type<any> | Function | string, opts?: {
         read?: any;
+        static?: boolean;
     }): ContentChild;
 }
 
@@ -670,6 +672,7 @@ export interface Query {
     isViewQuery: boolean;
     read: any;
     selector: any;
+    static?: boolean;
 }
 
 export declare abstract class Query {
@@ -947,9 +950,11 @@ export declare type ViewChild = Query;
 export interface ViewChildDecorator {
     (selector: Type<any> | Function | string, opts?: {
         read?: any;
+        static?: boolean;
     }): any;
     new (selector: Type<any> | Function | string, opts?: {
         read?: any;
+        static?: boolean;
     }): ViewChild;
 }
 

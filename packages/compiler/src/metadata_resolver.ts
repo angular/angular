@@ -1157,7 +1157,8 @@ export class CompileMetadataResolver {
       selectors,
       first: q.first,
       descendants: q.descendants, propertyName,
-      read: q.read ? this._getTokenMetadata(q.read) : null !
+      read: q.read ? this._getTokenMetadata(q.read) : null !,
+      static: q.static
     };
   }
 

@@ -102,6 +102,7 @@ export interface Query {
   read: any;
   isViewQuery: boolean;
   selector: any;
+  static?: boolean;
 }
 
 /**
@@ -199,6 +200,8 @@ export interface ContentChildDecorator {
    *
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried element.
+   * * **static** - whether or not to resolve query results before change detection runs (i.e.
+   * static results only)
    *
    * @usageNotes
    * ### Example
@@ -211,8 +214,8 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any}): ContentChild;
+  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ContentChild;
 }
 
 /**
@@ -311,6 +314,8 @@ export interface ViewChildDecorator {
    *
    * * **selector** - the directive type or the name used for querying.
    * * **read** - read a different token from the queried elements.
+   * * **static** - whether or not to resolve query results before change detection runs (i.e.
+   * static results only)
    *
    * Supported selectors include:
    *   * any class with the `@Component` or `@Directive` decorator
@@ -337,8 +342,8 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any}): ViewChild;
+  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ViewChild;
 }
 
 /**
