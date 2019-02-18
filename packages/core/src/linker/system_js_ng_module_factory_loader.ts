@@ -8,6 +8,7 @@
 
 
 import {Injectable, Optional} from '../di';
+import {ivyEnabled} from '../ivy_switch';
 
 import {Compiler} from './compiler';
 import {NgModuleFactory} from './ng_module_factory';
@@ -56,8 +57,8 @@ export class SystemJsNgModuleLoader implements NgModuleFactoryLoader {
   }
 
   load(path: string): Promise<NgModuleFactory<any>> {
-    const offlineMode = this._compiler instanceof Compiler;
-    return offlineMode ? this.loadFactory(path) : this.loadAndCompile(path);
+    const legacyOfflineMode = !ivyEnabled && this._compiler instanceof Compiler;
+    return legacyOfflineMode ? this.loadFactory(path) : this.loadAndCompile(path);
   }
 
   private loadAndCompile(path: string): Promise<NgModuleFactory<any>> {
