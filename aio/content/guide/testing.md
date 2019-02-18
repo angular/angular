@@ -2778,8 +2778,12 @@ RxJS 마블 테스트에 대해 더 자세하게 알아보려면 [공식 문서]
 
 {@a component-with-input-output}
 
+<!--
 ### Component with inputs and outputs
+-->
+### 입력/출력 프로퍼티가 있는 컴포넌트
 
+<!--
 A component with inputs and outputs typically appears inside the view template of a host component.
 The host uses a property binding to set the input property and an event binding to
 listen to events raised by the output property.
@@ -2792,26 +2796,58 @@ It displays an individual hero provided by the `DashboardComponent`.
 Clicking that hero tells the `DashboardComponent` that the user has selected the hero.
 
 The `DashboardHeroComponent` is embedded in the `DashboardComponent` template like this:
+-->
+입력/출력 프로퍼티가 있는 컴포넌트는 일반적으로 호스트 컴포넌트의 템플릿 안에 존재합니다.
+이런 컴포넌트는 보통 호스트 컴포넌트가 프로퍼티 바인딩해서 입력 프로퍼티 값을 지정하며, 이벤트 바인딩해서 출력 프로퍼티에서 발생하는 이벤트를 감지합니다.
 
+이번에 진행하는 테스트의 목표는 프로퍼티 바인딩과 이벤트 바인딩이 제대로 동작하는지 확인하는 것입니다.
+입력 프로퍼티 값을 지정하고 출력 프로퍼티로 발생되는 이벤트를 감지해봅시다.
+
+이 내용은 `DashboardHeroComponent`를 통해 간단하게 알아봅니다.
+이 컴포넌트는 `DashboardComponent`에서 받은 히어로의 정보를 화면에 표시하는 컴포넌트입니다.
+그리고 컴포넌트를 클릭하면 해당 히어로가 선택되었다고 `DashboardComponent`에게 알리는 역할을 합니다.
+
+그래서 `DashboardHeroComponent`는 `DashboardComponent` 템플릿에 다음과 같이 사용됩니다:
+
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard.component.html"
   region="dashboard-hero"
   header="app/dashboard/dashboard.component.html (excerpt)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard.component.html"
+  region="dashboard-hero"
+  header="app/dashboard/dashboard.component.html (일부)" linenums="false">
+</code-example>
 
+<!--
 The `DashboardHeroComponent` appears in an `*ngFor` repeater, which sets each component's `hero` input property
 to the looping value and listens for the component's `selected` event.
 
 Here's the component's full definition:
+-->
+`DashboardHeroComponent`는 `*ngFor` 리피터와 함께 사용되어 각 루프마다 컴포넌트의 입력 프로퍼티를 `hero` 값으로 할당하고, 각 컴포넌트에서 발생하는 `selected` 이벤트를 감지합니다.
+
+컴포넌트 전체 코드는 이렇습니다:
 
 {@a dashboard-hero-component}
 
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.ts"
   region="component"
   header="app/dashboard/dashboard-hero.component.ts (component)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard-hero.component.ts"
+  region="component"
+  header="app/dashboard/dashboard-hero.component.ts (컴포넌트)" linenums="false">
+</code-example>
 
+<!--
 While testing a component this simple has little intrinsic value, it's worth knowing how.
 You can use one of these approaches:
 
@@ -2820,51 +2856,100 @@ You can use one of these approaches:
 - Test it as used by a substitute for `DashboardComponent`.
 
 A quick look at the `DashboardComponent` constructor discourages the first approach:
+-->
+이 컴포넌트를 바로 테스트하기 전에, 이 컴포넌트를 어떻게 테스트할 수 있을지 생각해보는 것이 좋습니다.
+테스트 접근 방식은 다음 중 하나를 선택할 수 있습니다:
 
+- `DashboardComponent`와 함께 사용되는 시나리오 테스트하기
+- 컴포넌트 단독으로 테스트하기
+- 단순화한 `DashboardComponent`로 테스트하기
+
+먼저, `DashboardComponent`의 생성자를 보면 첫번째 접근 방식은 사용하기 어렵다는 것을 예상할 수 있습니다:
+
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard.component.ts"
   region="ctor"
   header="app/dashboard/dashboard.component.ts (constructor)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard.component.ts"
+  region="ctor"
+  header="app/dashboard/dashboard.component.ts (생성자)" linenums="false">
+</code-example>
 
+<!--
 The `DashboardComponent` depends on the Angular router and the `HeroService`.
 You'd probably have to replace them both with test doubles, which is a lot of work.
 The router seems particularly challenging.
+-->
+`DashboardComponent`는 Angular 라우터와 `HeroService`를 의존성으로 주입받습니다.
+그러면 두 의존성에 대해 목 클래스를 정의해야 하는데, 이 작업이 쉽지 않습니다.
+라우터를 모킹하는 것은 험난한 과정이 될 것입니다.
 
 <div class="alert is-helpful">
 
+<!--
 The [discussion below](#routing-component) covers testing components that require the router.
+-->
+라우터가 필요한 컴포넌트를 테스트하는 경우는 [아래](#routing-component)에서 다룹니다.
 
 </div>
 
+<!--
 The immediate goal is to test the `DashboardHeroComponent`, not the `DashboardComponent`,
 so, try the second and third options.
+-->
+이번 섹션에서 하려는 것은 `DashboardHeroComponent`를 테스트하는 것이지 `DashboardComponent`를 테스트하는 것이 아닙니다.
+다른 방식을 생각해 봅시다.
 
 {@a dashboard-standalone}
 
+<!--
 #### Test _DashboardHeroComponent_ stand-alone
+-->
+#### _DashboardHeroComponent_ 단독으로 테스트하기
 
+<!--
 Here's the meat of the spec file setup.
+-->
+테스트 환경을 준비하는 코드는 다음과 같습니다.
 
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="setup"
   header="app/dashboard/dashboard-hero.component.spec.ts (setup)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
+  region="setup"
+  header="app/dashboard/dashboard-hero.component.spec.ts (테스트 환경설정)" linenums="false">
+</code-example>
 
+<!--
 Note how the setup code assigns a test hero (`expectedHero`) to the component's `hero` property,
 emulating the way the `DashboardComponent` would set it
 via the property binding in its repeater.
 
 The following test verifies that the hero name is propagated to the template via a binding.
+-->
+원래 `hero` 프로퍼티는 `DashboardComponent`의 리피터 안에서 프로퍼티 바인딩되지만, 이 과정을 간단하게 처리하기 위해 테스트 객체(`expectedHero`)를 선언하고 이 객체를 컴포넌트의 `hero` 프로퍼티에 직접 할당했습니다.
+
+그러면 이렇게 할당된 프로퍼티가 템플릿에 바인딩되어 이름을 제대로 표시하는지 검사할 수 있습니다.
 
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="name-test">
 </code-example>
 
+<!--
 Because the [template](#dashboard-hero-component) passes the hero name through the Angular `UpperCasePipe`,
 the test must match the element value with the upper-cased name.
+-->
+히어로의 이름은 [템플릿](#dashboard-hero-component)에서 Angular `UpperCasePipe`로 처리되기 때문에, 엘리먼트 값을 검사하는 로직도 대문자로 변환된 이름을 사용해야 합니다.
 
 <div class="alert is-helpful">
 
@@ -2874,23 +2959,29 @@ representation&mdash;something not possible with
 [component class tests](#component-class-testing)&mdash;at
 low cost and without resorting to much slower and more complicated end-to-end tests.
 -->
-This small test demonstrates how Angular tests can verify a component's visual
-representation&mdash;something not possible with
-[component class tests](#컴포넌트-클래스-테스트)&mdash;at
-low cost and without resorting to much slower and more complicated end-to-end tests.
+[컴포넌트 클래스 테스트](#컴포넌트-클래스-테스트)로 확인할 수 없는 컴포넌트의 시각적인 부분은 이렇게 검사할 수 있습니다.
+엔드-투-엔드 테스트에서 컴포넌트를 테스트하는 것보다 더 간단하기 때문에 실행 속도도 훨씬 빠릅니다.
 
 </div>
 
+<!--
 #### Clicking
+-->
+#### 클릭 테스트하기
 
+<!--
 Clicking the hero should raise a `selected` event that
 the host component (`DashboardComponent` presumably) can hear:
+-->
+화면에서 히어로를 클릭하면 `selected` 이벤트가 호스트 컴포넌트 `DashboardComponent`로 전달되어야 합니다.
+이 내용은 이렇게 테스트할 수 있습니다:
 
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="click-test">
 </code-example>
 
+<!--
 The component's `selected` property returns an `EventEmitter`,
 which looks like an RxJS synchronous `Observable` to consumers.
 The test subscribes to it _explicitly_ just as the host component does _implicitly_.
@@ -2899,11 +2990,19 @@ If the component behaves as expected, clicking the hero's element
 should tell the component's `selected` property to emit the `hero` object.
 
 The test detects that event through its subscription to `selected`.
+-->
+컴포넌트의 `selected` 프로퍼티는 `EventEmitter` 객체를 반환하며, 이 객체는 RxJS의 동기 `Observable`과 비슷한 객체입니다.
+원래 이 프로퍼티는 호스트 컴포넌트가 템플릿에서 _자동으로_ 구독하지만, 이 테스트에서는 _명시적으로_ 구독해야 이벤트가 발생하는 것을 확인할 수 있습니다.
+
+컴포넌트가 제대로 구현되었다면 히어로 엘리먼트를 클릭했을 때 컴포넌트의 `selected` 프로퍼티로 `hero` 객체가 전달되어야 합니다.
+
+이 내용은 `selected` 프로퍼티를 구독하면 확인할 수 있습니다.
 
 {@a trigger-event-handler}
 
 #### _triggerEventHandler_
 
+<!--
 The `heroDe` in the previous test is a `DebugElement` that represents the hero `<div>`.
 
 It has Angular properties and methods that abstract interaction with the native element.
@@ -2914,28 +3013,48 @@ The Angular `DebugElement.triggerEventHandler` can raise _any data-bound event_ 
 The second parameter is the event object passed to the handler.
 
 The test triggered a "click" event with a `null` event object.
+-->
+이 테스트에서 사용하는 변수 `heroDe`는 히어로 `<div>`를 표현하는 `DebugElement` 클래스입니다.
+
+이 클래스는 네이티브 엘리먼트와 추상적으로 상호 작용할 수 있는 프로퍼티와 메소드를 제공하는데, 그 중 `DebugElement.triggerEventHandler`를 사용하면 "click" 이벤트를 발생시킬 수 있습니다.
+그리고 `DashboardHeroComponent.click()` 메소드를 직접 사용해도 "click" 이벤트를 발생시킬 수 있습니다.
 
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="trigger-event-handler">
 </code-example>
 
+<!--
 The test assumes (correctly in this case) that the runtime
 event handler&mdash;the component's `click()` method&mdash;doesn't
 care about the event object.
+-->
+이 테스트 코드는 실행 시점에 사용되는 컴포넌트의 `click()` 메소드가 이벤트 객체의 내용은 신경쓰지 않는다는 것을 전제로 했기 때문에, `triggerEventHadler`로 전달하는 이벤트 객체를 `null`로 지정했습니다.
 
 <div class="alert is-helpful">
 
+<!--
 Other handlers are less forgiving. For example, the `RouterLink`
 directive expects an object with a `button` property
 that identifies which mouse button (if any) was pressed during the click.
 The `RouterLink` directive throws an error if the event object is missing.
+-->
+다른 핸들러는 조금 더 번거롭습니다.
+예를 들어 `RouterLink` 디렉티브는 어떤 엘리먼트에서 클릭 이벤트가 발생했는지 확인하기 위해 이벤트 객체에 `button` 프로퍼티가 있어야 합니다.
+이 프로퍼티가 없으면 에러가 발생합니다.
 
 </div>
 
+<!--
 #### Click the element
+-->
+#### 엘리먼트 클릭하기
 
+<!--
 The following test alternative calls the native element's own `click()` method,
 which is perfectly fine for _this component_.
+-->
+엘리먼트를 클릭하는 동작은 네이티브 엘리먼트가 제공하는 `click()` 메소드를 사용해도 됩니다.
+이렇게 사용해도 컴포넌트는 이전과 같이 동작합니다.
 
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
@@ -2944,39 +3063,74 @@ which is perfectly fine for _this component_.
 
 {@a click-helper}
 
+<!--
 #### _click()_ helper
+-->
+#### _click()_ 헬퍼
 
+<!--
 Clicking a button, an anchor, or an arbitrary HTML element is a common test task.
 
 Make that consistent and easy by encapsulating the _click-triggering_ process
 in a helper such as the `click()` function below:
+-->
+테스트를 작성하다보면 버튼(`<button>`)이나 앵커(`<a>`)와 같은 HTML 엘리먼트를 동작시키는 일이 자주 있습니다.
 
+이 동작을 캡슐화해서 항상 같은 방식으로 편하게 사용하려면 다음과 같이 _클릭을 처리하는_ 헬퍼를 정의하는 것도 좋습니다:
+
+<!--
 <code-example
   path="testing/src/testing/index.ts"
   region="click-event"
   header="testing/index.ts (click helper)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/testing/index.ts"
+  region="click-event"
+  header="testing/index.ts (클릭 헬퍼)" linenums="false">
+</code-example>
 
+<!--
 The first parameter is the _element-to-click_. If you wish, you can pass a
 custom event object as the second parameter. The default is a (partial)
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button">left-button mouse event object</a>
 accepted by many handlers including the `RouterLink` directive.
+-->
+첫번째 인자는 _클릭할 엘리먼트_ 입니다.
+그리고 두 번째 인자로 이벤트 객체를 전달할 수도 있습니다.
+`RouterLink` 디렉티브와 같이 인자가 필요한 핸들러를 위해, 이 이벤트 객체의 기본값은 <a href="https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent/button">마우스 왼쪽 버튼 이벤트 객체</a> 일부로 지정했습니다.
 
 <div class="alert is-important">
 
+<!--
 The `click()` helper function is **not** one of the Angular testing utilities.
 It's a function defined in _this guide's sample code_.
 All of the sample tests use it.
 If you like it, add it to your own collection of helpers.
+-->
+`click()` 헬퍼 함수는 Angular가 제공하는 테스트 기능이 _아닙니다_.
+이 함수는 _이 가이드 문서에서 사용하기 위해_ 선언한 함수일 뿐입니다.
+이번 문서에서는 이 함수를 계속 사용하며, 필요하다면 다른 헬퍼 함수를 정의해서 사용하는 것도 물론 가능합니다.
 
 </div>
 
+<!--
 Here's the previous test, rewritten using the click helper.
+-->
+이제 이전에 작성했던 테스트 코드는 클릭 헬퍼를 사용해서 다음과 같이 작성할 수 있습니다.
 
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="click-test-3"
   header="app/dashboard/dashboard-hero.component.spec.ts (test with click helper)">
+</code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
+  region="click-test-3"
+  header="app/dashboard/dashboard-hero.component.spec.ts (클릭 헬퍼를 사용하는 테스트 코드)">
 </code-example>
 
 <hr>

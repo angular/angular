@@ -48,17 +48,17 @@ describe('DashboardHeroComponent when tested directly', () => {
     fixture = TestBed.createComponent(DashboardHeroComponent);
     comp    = fixture.componentInstance;
 
-    // find the hero's DebugElement and element
+    // 컴포넌트의 DebugElement와 HTMLElement를 참조합니다.
     heroDe  = fixture.debugElement.query(By.css('.hero'));
     heroEl = heroDe.nativeElement;
 
-    // mock the hero supplied by the parent component
+    // 컴포넌트에 사용할 히어로 정보를 선언합니다.
     expectedHero = { id: 42, name: 'Test Name' };
 
-    // simulate the parent setting the input property with that hero
+    // 부모 컴포넌트에서 입력 프로퍼티로 받는 과정을 처리합니다.
     comp.hero = expectedHero;
 
-    // trigger initial data binding
+    // 초기 데이터 바인딩을 실행합니다.
     fixture.detectChanges();
     // #enddocregion setup
   });
@@ -97,8 +97,8 @@ describe('DashboardHeroComponent when tested directly', () => {
     let selectedHero: Hero;
     comp.selected.subscribe(hero => selectedHero = hero);
 
-    click(heroDe); // click helper with DebugElement
-    click(heroEl); // click helper with native element
+    click(heroDe); // DebugElement로 클릭 헬퍼를 실행합니다.
+    click(heroEl); // 네이티브 엘리먼트로 클릭 헬퍼를 실행합니다.
 
     expect(selectedHero).toBe(expectedHero);
   });
