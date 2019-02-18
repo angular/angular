@@ -29,6 +29,7 @@ export interface Query {
   read: any;
   isViewQuery: boolean;
   selector: any;
+  static?: boolean;
 }
 
 export const createContentChildren = makeMetadataFactory<Query>(

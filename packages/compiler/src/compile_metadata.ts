@@ -164,6 +164,7 @@ export interface CompileQueryMetadata {
   first: boolean;
   propertyName: string;
   read: CompileTokenMetadata;
+  static?: boolean;
 }
 
 /**
