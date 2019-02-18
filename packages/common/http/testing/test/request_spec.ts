@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="rxjs" />
-
 import {HttpClient} from '@angular/common/http';
 import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
 
