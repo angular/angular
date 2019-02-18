@@ -826,6 +826,75 @@ describe('ngtsc behavioral tests', () => {
     });
   });
 
+  describe('templateUrl and styleUrls processing', () => {
+    const testsForResource = (resource: string) => [
+        // [component location, resource location, resource reference]
+
+        // component and resource are in the same folder
+        [`a/app.ts`, `a/${resource}`, `./${resource}`],  //
+        [`a/app.ts`, `a/${resource}`, resource],         //
+        [`a/app.ts`, `a/${resource}`, `/a/${resource}`],
+
+        // resource is one level up
+        [`a/app.ts`, resource, `../${resource}`],  //
+        [`a/app.ts`, resource, `/${resource}`],
+
+        // component and resource are in different folders
+        [`a/app.ts`, `b/${resource}`, `../b/${resource}`],  //
+        [`a/app.ts`, `b/${resource}`, `/b/${resource}`],
+
+        // resource is in subfolder of component directory
+        [`a/app.ts`, `a/b/c/${resource}`, `./b/c/${resource}`],  //
+        [`a/app.ts`, `a/b/c/${resource}`, `b/c/${resource}`],    //
+        [`a/app.ts`, `a/b/c/${resource}`, `/a/b/c/${resource}`],
+    ];
+
+    testsForResource('style.css').forEach((test) => {
+      const [compLoc, styleLoc, styleRef] = test;
+      it(`should handle ${styleRef}`, () => {
+        env.tsconfig();
+        env.write(styleLoc, ':host { background-color: blue; }');
+        env.write(compLoc, `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            styleUrls: ['${styleRef}'],
+            template: '...',
+          })
+          export class TestCmp {}
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents(compLoc.replace('.ts', '.js'));
+        expect(jsContents).toContain('background-color: blue');
+      });
+    });
+
+    testsForResource('template.html').forEach((test) => {
+      const [compLoc, templateLoc, templateRef] = test;
+      it(`should handle ${templateRef}`, () => {
+        env.tsconfig();
+        env.write(templateLoc, 'Template Content');
+        env.write(compLoc, `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            templateUrl: '${templateRef}'
+          })
+          export class TestCmp {}
+        `);
+
+        env.driveMain();
+
+        const jsContents = env.getContents(compLoc.replace('.ts', '.js'));
+        expect(jsContents).toContain('Template Content');
+      });
+    });
+  });
+
   describe('former View Engine AST transform bugs', () => {
     it('should compile array literals behind conditionals', () => {
       env.tsconfig();
