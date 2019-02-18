@@ -10,10 +10,10 @@ import {WrappedValue} from '../change_detection/change_detection_util';
 import {PipeTransform} from '../change_detection/pipe_transform';
 
 import {load, store} from './instructions';
-import {PipeDef, PipeDefList} from './interfaces/definition';
+import {PipeDef, PipeDefList, RenderFlags} from './interfaces/definition';
 import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
-import {getLView} from './state';
+import {assertCreationMode, getLView} from './state';
 import {NO_CHANGE} from './tokens';
 
 
@@ -25,6 +25,7 @@ import {NO_CHANGE} from './tokens';
  * @returns T the instance of the pipe.
  */
 export function pipe(index: number, pipeName: string): any {
+  ngDevMode && assertCreationMode('pipe', RenderFlags.Create);
   const tView = getLView()[TVIEW];
   let pipeDef: PipeDef<any>;
   const adjustedIndex = index + HEADER_OFFSET;
@@ -75,6 +76,7 @@ function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
  * @param v1 1st argument to {@link PipeTransform#transform}.
  */
 export function pipeBind1(index: number, slotOffset: number, v1: any): any {
+  ngDevMode && assertCreationMode('pipeBind1', RenderFlags.Update);
   const pipeInstance = load<PipeTransform>(index);
   return unwrapValue(
       isPure(index) ? pureFunction1(slotOffset, pipeInstance.transform, v1, pipeInstance) :
@@ -93,6 +95,7 @@ export function pipeBind1(index: number, slotOffset: number, v1: any): any {
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  */
 export function pipeBind2(index: number, slotOffset: number, v1: any, v2: any): any {
+  ngDevMode && assertCreationMode('pipeBind2', RenderFlags.Update);
   const pipeInstance = load<PipeTransform>(index);
   return unwrapValue(
       isPure(index) ? pureFunction2(slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
@@ -112,6 +115,7 @@ export function pipeBind2(index: number, slotOffset: number, v1: any, v2: any): 
  * @param v3 4rd argument to {@link PipeTransform#transform}.
  */
 export function pipeBind3(index: number, slotOffset: number, v1: any, v2: any, v3: any): any {
+  ngDevMode && assertCreationMode('pipeBind3', RenderFlags.Update);
   const pipeInstance = load<PipeTransform>(index);
   return unwrapValue(
       isPure(index) ? pureFunction3(slotOffset, pipeInstance.transform, v1, v2, v3, pipeInstance) :
@@ -133,6 +137,7 @@ export function pipeBind3(index: number, slotOffset: number, v1: any, v2: any, v
  */
 export function pipeBind4(
     index: number, slotOffset: number, v1: any, v2: any, v3: any, v4: any): any {
+  ngDevMode && assertCreationMode('pipeBind4', RenderFlags.Update);
   const pipeInstance = load<PipeTransform>(index);
   return unwrapValue(
       isPure(index) ?
@@ -151,6 +156,7 @@ export function pipeBind4(
  * @param values Array of arguments to pass to {@link PipeTransform#transform} method.
  */
 export function pipeBindV(index: number, slotOffset: number, values: any[]): any {
+  ngDevMode && assertCreationMode('pipeBindV', RenderFlags.Update);
   const pipeInstance = load<PipeTransform>(index);
   return unwrapValue(
       isPure(index) ? pureFunctionV(slotOffset, pipeInstance.transform, values, pipeInstance) :

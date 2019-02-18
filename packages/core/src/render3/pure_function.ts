@@ -7,7 +7,8 @@
  */
 
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, getBinding, updateBinding} from './bindings';
-import {getBindingRoot, getLView, isCreationMode} from './state';
+import {RenderFlags} from './interfaces/definition';
+import {assertCreationMode, getBindingRoot, getLView, isCreationMode} from './state';
 
 
 
@@ -39,6 +40,7 @@ import {getBindingRoot, getLView, isCreationMode} from './state';
  * @returns value
  */
 export function pureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: any): T {
+  ngDevMode && assertCreationMode('pureFunction0', RenderFlags.Update);
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
@@ -59,6 +61,7 @@ export function pureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: 
  */
 export function pureFunction1(
     slotOffset: number, pureFn: (v: any) => any, exp: any, thisArg?: any): any {
+  ngDevMode && assertCreationMode('pureFunction1', RenderFlags.Update);
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const lView = getLView();
   const bindingIndex = getBindingRoot() + slotOffset;
@@ -81,6 +84,7 @@ export function pureFunction1(
 export function pureFunction2(
     slotOffset: number, pureFn: (v1: any, v2: any) => any, exp1: any, exp2: any,
     thisArg?: any): any {
+  ngDevMode && assertCreationMode('pureFunction2', RenderFlags.Update);
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
@@ -106,6 +110,7 @@ export function pureFunction2(
 export function pureFunction3(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any,
     thisArg?: any): any {
+  ngDevMode && assertCreationMode('pureFunction3', RenderFlags.Update);
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
@@ -132,6 +137,7 @@ export function pureFunction3(
 export function pureFunction4(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any) => any, exp1: any, exp2: any,
     exp3: any, exp4: any, thisArg?: any): any {
+  ngDevMode && assertCreationMode('pureFunction4', RenderFlags.Update);
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
@@ -159,6 +165,7 @@ export function pureFunction4(
 export function pureFunction5(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any) => any, exp1: any,
     exp2: any, exp3: any, exp4: any, exp5: any, thisArg?: any): any {
+  ngDevMode && assertCreationMode('pureFunction5', RenderFlags.Update);
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
@@ -188,6 +195,7 @@ export function pureFunction5(
 export function pureFunction6(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any) => any,
     exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, thisArg?: any): any {
+  ngDevMode && assertCreationMode('pureFunction6', RenderFlags.Update);
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
@@ -220,6 +228,7 @@ export function pureFunction7(
     slotOffset: number,
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any) => any, exp1: any,
     exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, thisArg?: any): any {
+  ngDevMode && assertCreationMode('pureFunction7', RenderFlags.Update);
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
@@ -254,6 +263,7 @@ export function pureFunction8(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any) => any,
     exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, exp8: any,
     thisArg?: any): any {
+  ngDevMode && assertCreationMode('pureFunction8', RenderFlags.Update);
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getBindingRoot() + slotOffset;
   const lView = getLView();
@@ -281,6 +291,7 @@ export function pureFunction8(
  */
 export function pureFunctionV(
     slotOffset: number, pureFn: (...v: any[]) => any, exps: any[], thisArg?: any): any {
+  ngDevMode && assertCreationMode('pureFunctionV', RenderFlags.Update);
   // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   let bindingIndex = getBindingRoot() + slotOffset;
   let different = false;

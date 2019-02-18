@@ -37,7 +37,7 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, DECLARATION_VIEW, Expa
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from './state';
+import {assertCreationMode, decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, getRenderFlags, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from './state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {ANIMATION_PROP_PREFIX, allocateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContext, hasClassInput, hasStyleInput, hasStyling, isAnimationProp} from './styling/util';
@@ -417,6 +417,7 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
  * @returns context
  */
 export function nextContext<T = any>(level: number = 1): T {
+  ngDevMode && assertCreationMode('nextContext', RenderFlags.Update);
   return nextContextImpl(level);
 }
 
@@ -453,15 +454,6 @@ function renderComponentOrTemplate<T>(
   }
 }
 
-/**
- * This function returns the default configuration of rendering flags depending on when the
- * template is in creation mode or update mode. Update block and create block are
- * always run separately.
- */
-function getRenderFlags(view: LView): RenderFlags {
-  return isCreationMode(view) ? RenderFlags.Create : RenderFlags.Update;
-}
-
 //////////////////////////
 //// Namespace
 //////////////////////////
@@ -495,6 +487,7 @@ export function namespaceHTML() {
  */
 export function element(
     index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
+  ngDevMode && assertCreationMode('element', RenderFlags.Create);
   elementStart(index, name, attrs, localRefs);
   elementEnd();
 }
@@ -513,6 +506,7 @@ export function element(
  */
 export function elementContainerStart(
     index: number, attrs?: TAttributes | null, localRefs?: string[] | null): void {
+  ngDevMode && assertCreationMode('elementContainerStart', RenderFlags.Create);
   const lView = getLView();
   const tView = lView[TVIEW];
   const renderer = lView[RENDERER];
@@ -555,6 +549,7 @@ function executeContentQueries(tView: TView, tNode: TNode, lView: LView) {
 
 /** Mark the end of the <ng-container>. */
 export function elementContainerEnd(): void {
+  ngDevMode && assertCreationMode('elementContainerEnd', RenderFlags.Create);
   let previousOrParentTNode = getPreviousOrParentTNode();
   const lView = getLView();
   const tView = lView[TVIEW];
@@ -590,6 +585,7 @@ export function elementContainerEnd(): void {
  */
 export function elementStart(
     index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
+  ngDevMode && assertCreationMode('elementStart', RenderFlags.Create);
   const lView = getLView();
   const tView = lView[TVIEW];
   ngDevMode && assertEqual(
@@ -934,6 +930,7 @@ export function locateHostElement(
 export function listener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
+  ngDevMode && assertCreationMode('listener', RenderFlags.Create);
   listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver);
 }
 
@@ -959,6 +956,7 @@ export function listener(
 export function componentHostSyntheticListener<T>(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false,
     eventTargetResolver?: GlobalTargetResolver): void {
+  ngDevMode && assertCreationMode('componentHostSyntheticListener', RenderFlags.Create);
   listenerInternal(eventName, listenerFn, useCapture, eventTargetResolver, loadComponentRenderer);
 }
 
@@ -1076,6 +1074,7 @@ export function storeCleanupFn(view: LView, cleanupFn: Function): void {
 
 /** Mark the end of the element. */
 export function elementEnd(): void {
+  ngDevMode && assertCreationMode('elementEnd', RenderFlags.Create);
   let previousOrParentTNode = getPreviousOrParentTNode();
   if (getIsParent()) {
     setIsParent(false);
@@ -1128,6 +1127,7 @@ export function elementEnd(): void {
 export function elementAttribute(
     index: number, name: string, value: any, sanitizer?: SanitizerFn | null,
     namespace?: string): void {
+  ngDevMode && assertCreationMode('elementAttribute', RenderFlags.Update);
   if (value !== NO_CHANGE) {
     ngDevMode && validateAgainstEventAttributes(name);
     const lView = getLView();
@@ -1172,6 +1172,7 @@ export function elementAttribute(
 export function elementProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean): void {
+  ngDevMode && assertCreationMode('elementProperty', RenderFlags.Update);
   elementPropertyInternal(index, propName, value, sanitizer, nativeOnly);
 }
 
@@ -1199,6 +1200,7 @@ export function elementProperty<T>(
 export function componentHostSyntheticProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn | null,
     nativeOnly?: boolean) {
+  ngDevMode && assertCreationMode('componentHostSyntheticProperty', RenderFlags.Update);
   elementPropertyInternal(index, propName, value, sanitizer, nativeOnly, loadComponentRenderer);
 }
 
@@ -1453,6 +1455,7 @@ function generatePropertyAliases(tNode: TNode, direction: BindingDirection): Pro
 export function elementStyling(
     classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
     styleSanitizer?: StyleSanitizeFn | null, directive?: {}): void {
+  ngDevMode && assertCreationMode('elementStyling', RenderFlags.Create);
   const tNode = getPreviousOrParentTNode();
   if (!tNode.stylingTemplate) {
     tNode.stylingTemplate = createEmptyStylingContext();
@@ -1526,6 +1529,7 @@ function initElementStyling(
  * @publicApi
  */
 export function elementHostAttrs(directive: any, attrs: TAttributes) {
+  ngDevMode && assertCreationMode('elementHostAttrs', RenderFlags.Create);
   const tNode = getPreviousOrParentTNode();
   if (!tNode.stylingTemplate) {
     tNode.stylingTemplate = initializeStaticStylingContext(attrs);
@@ -1551,6 +1555,7 @@ components
  * @publicApi
  */
 export function elementStylingApply(index: number, directive?: any): void {
+  ngDevMode && assertCreationMode('elementStylingApply', RenderFlags.Update);
   const lView = getLView();
   const isFirstRender = (lView[FLAGS] & LViewFlags.FirstLViewPass) !== 0;
   const totalPlayersQueued = renderStyling(
@@ -1591,6 +1596,7 @@ components
 export function elementStyleProp(
     index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
     suffix?: string | null, directive?: {}, forceOverride?: boolean): void {
+  ngDevMode && assertCreationMode('elementStyleProp', RenderFlags.Update);
   let valueToAdd: string|null = null;
   if (value !== null) {
     if (suffix) {
@@ -1633,6 +1639,7 @@ export function elementStyleProp(
 export function elementClassProp(
     index: number, classIndex: number, value: boolean | PlayerFactory, directive?: {},
     forceOverride?: boolean): void {
+  ngDevMode && assertCreationMode('elementClassProp', RenderFlags.Update);
   const input = (value instanceof BoundPlayerFactory) ?
       (value as BoundPlayerFactory<boolean|null>) :
       booleanOrNull(value);
@@ -1673,6 +1680,7 @@ function booleanOrNull(value: any): boolean|null {
 export function elementStylingMap<T>(
     index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
     styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: {}): void {
+  ngDevMode && assertCreationMode('elementStylingMap', RenderFlags.Update);
   const lView = getLView();
   const tNode = getTNode(index, lView);
   const stylingContext = getStylingContext(index + HEADER_OFFSET, lView);
@@ -1712,6 +1720,7 @@ export function elementStylingMap<T>(
  * @param value Value to write. This value will be stringified.
  */
 export function text(index: number, value?: any): void {
+  ngDevMode && assertCreationMode('text', RenderFlags.Create);
   const lView = getLView();
   ngDevMode && assertEqual(
                    lView[BINDING_INDEX], lView[TVIEW].bindingStartIndex,
@@ -1733,6 +1742,7 @@ export function text(index: number, value?: any): void {
  * @param value Stringified value to write.
  */
 export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
+  ngDevMode && assertCreationMode('textBinding', RenderFlags.Update);
   if (value !== NO_CHANGE) {
     const lView = getLView();
     ngDevMode && assertDataInRange(lView, index + HEADER_OFFSET);
@@ -2218,6 +2228,7 @@ export function template(
     index: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
     tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null,
     localRefExtractor?: LocalRefExtractor) {
+  ngDevMode && assertCreationMode('template', RenderFlags.Create);
   const lView = getLView();
   const tView = lView[TVIEW];
 
@@ -2245,6 +2256,7 @@ export function template(
  * @param index The index of the container in the data array
  */
 export function container(index: number): void {
+  ngDevMode && assertCreationMode('container', RenderFlags.Create);
   const tNode = containerInternal(index, null, null);
   const lView = getLView();
   if (lView[TVIEW].firstTemplatePass) {
@@ -2301,6 +2313,7 @@ function addTContainerToQueries(lView: LView, tContainerNode: TContainerNode): v
  * @param index The index of the container in the data array
  */
 export function containerRefreshStart(index: number): void {
+  ngDevMode && assertCreationMode('containerRefreshStart', RenderFlags.Update);
   const lView = getLView();
   const tView = lView[TVIEW];
   let previousOrParentTNode = loadInternal(tView.data, index) as TNode;
@@ -2322,6 +2335,7 @@ export function containerRefreshStart(index: number): void {
  * Marking the end of LContainer is the time when to child views get inserted or removed.
  */
 export function containerRefreshEnd(): void {
+  ngDevMode && assertCreationMode('containerRefreshEnd', RenderFlags.Update);
   let previousOrParentTNode = getPreviousOrParentTNode();
   if (getIsParent()) {
     setIsParent(false);
@@ -2400,6 +2414,7 @@ function scanForView(lContainer: LContainer, startIdx: number, viewBlockId: numb
  * @return boolean Whether or not this view is in creation mode
  */
 export function embeddedViewStart(viewBlockId: number, consts: number, vars: number): RenderFlags {
+  ngDevMode && assertCreationMode('embeddedViewStart', RenderFlags.Update);
   const lView = getLView();
   const previousOrParentTNode = getPreviousOrParentTNode();
   // The previous node can be a view node if we are processing an inline for loop
@@ -2470,6 +2485,7 @@ function getOrCreateEmbeddedTView(
 
 /** Marks the end of an embedded view. */
 export function embeddedViewEnd(): void {
+  ngDevMode && assertCreationMode('embeddedViewEnd', RenderFlags.Update);
   const lView = getLView();
   const viewHost = lView[T_HOST];
 
@@ -2563,6 +2579,7 @@ export function viewAttached(view: LView): boolean {
  * @param rawSelectors A collection of CSS selectors in the raw, un-parsed form
  */
 export function projectionDef(selectors?: CssSelectorList[], textSelectors?: string[]): void {
+  ngDevMode && assertCreationMode('projectionDef', RenderFlags.Create);
   const componentNode = findComponentView(getLView())[T_HOST] as TElementNode;
 
   if (!componentNode.projection) {
@@ -2610,6 +2627,7 @@ const projectionNodeStack: (LView | TNode)[] = [];
  *        - 1 based index of the selector from the {@link projectionDef}
  */
 export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
+  ngDevMode && assertCreationMode('projection', RenderFlags.Create);
   const lView = getLView();
   const tProjectionNode =
       createNodeAtIndex(nodeIndex, TNodeType.Projection, null, null, attrs || null);
@@ -2974,6 +2992,7 @@ export function markDirty<T>(component: T) {
  * @param value Value to diff
  */
 export function bind<T>(value: T): T|NO_CHANGE {
+  ngDevMode && assertCreationMode('bind', RenderFlags.Update);
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX]++;
   storeBindingMetadata(lView);
@@ -2986,6 +3005,7 @@ export function bind<T>(value: T): T|NO_CHANGE {
  * @param count Amount of vars to be allocated
  */
 export function allocHostVars(count: number): void {
+  ngDevMode && assertCreationMode('allocHostVars', RenderFlags.Create);
   const lView = getLView();
   const tView = lView[TVIEW];
   if (!tView.firstTemplatePass) return;
@@ -3006,6 +3026,7 @@ export function allocHostVars(count: number): void {
  * Returns the concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
  */
 export function interpolationV(values: any[]): string|NO_CHANGE {
+  ngDevMode && assertCreationMode('interpolationV', RenderFlags.Update);
   ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
   ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
   let different = false;
@@ -3049,6 +3070,7 @@ export function interpolationV(values: any[]): string|NO_CHANGE {
  * @param suffix static value used for concatenation only.
  */
 export function interpolation1(prefix: string, v0: any, suffix: string): string|NO_CHANGE {
+  ngDevMode && assertCreationMode('interpolation1', RenderFlags.Update);
   const lView = getLView();
   const different = bindingUpdated(lView, lView[BINDING_INDEX]++, v0);
   storeBindingMetadata(lView, prefix, suffix);
@@ -3058,6 +3080,7 @@ export function interpolation1(prefix: string, v0: any, suffix: string): string|
 /** Creates an interpolation binding with 2 expressions. */
 export function interpolation2(
     prefix: string, v0: any, i0: string, v1: any, suffix: string): string|NO_CHANGE {
+  ngDevMode && assertCreationMode('interpolation2', RenderFlags.Update);
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX];
   const different = bindingUpdated2(lView, bindingIndex, v0, v1);
@@ -3076,6 +3099,7 @@ export function interpolation2(
 export function interpolation3(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string|
     NO_CHANGE {
+  ngDevMode && assertCreationMode('interpolation3', RenderFlags.Update);
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX];
   const different = bindingUpdated3(lView, bindingIndex, v0, v1, v2);
@@ -3098,6 +3122,7 @@ export function interpolation3(
 export function interpolation4(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     suffix: string): string|NO_CHANGE {
+  ngDevMode && assertCreationMode('interpolation4', RenderFlags.Update);
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX];
   const different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
@@ -3122,6 +3147,7 @@ export function interpolation4(
 export function interpolation5(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, suffix: string): string|NO_CHANGE {
+  ngDevMode && assertCreationMode('interpolation5', RenderFlags.Update);
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX];
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
@@ -3148,6 +3174,7 @@ export function interpolation5(
 export function interpolation6(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, suffix: string): string|NO_CHANGE {
+  ngDevMode && assertCreationMode('interpolation6', RenderFlags.Update);
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX];
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
@@ -3176,6 +3203,7 @@ export function interpolation7(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string|
     NO_CHANGE {
+  ngDevMode && assertCreationMode('interpolation7', RenderFlags.Update);
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX];
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
@@ -3206,6 +3234,7 @@ export function interpolation8(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string): string|NO_CHANGE {
+  ngDevMode && assertCreationMode('interpolation8', RenderFlags.Update);
   const lView = getLView();
   const bindingIndex = lView[BINDING_INDEX];
   let different = bindingUpdated4(lView, bindingIndex, v0, v1, v2, v3);
@@ -3279,12 +3308,14 @@ export function store<T>(index: number, value: T): void {
  * @param index The index of the local ref in contextViewData.
  */
 export function reference<T>(index: number) {
+  ngDevMode && assertCreationMode('reference', RenderFlags.Update);
   const contextLView = getContextLView();
   return loadInternal<T>(contextLView, index);
 }
 
 /** Retrieves a value from current `viewData`. */
 export function load<T>(index: number): T {
+  ngDevMode && assertCreationMode('load', RenderFlags.Update);
   return loadInternal<T>(getLView(), index);
 }
 
@@ -3356,6 +3387,7 @@ function initializeTNodeInputs(tNode: TNode | null): PropertyAliases|null {
  * walking the declaration view tree in listeners to get vars from parent views.
  */
 export function getCurrentView(): OpaqueViewState {
+  ngDevMode && assertCreationMode('getCurrentView', RenderFlags.Create);
   return getLView() as any as OpaqueViewState;
 }
 

@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from '../util/assert';
+import {assertDefined, assertEqual} from '../util/assert';
 
 import {executeHooks} from './hooks';
-import {ComponentDef, DirectiveDef} from './interfaces/definition';
+import {ComponentDef, DirectiveDef, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
 import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
 
@@ -88,6 +88,7 @@ export function getBindingsEnabled(): boolean {
  * ```
  */
 export function enableBindings(): void {
+  ngDevMode && assertCreationMode('enableBindings', RenderFlags.Create);
   bindingsEnabled = true;
 }
 
@@ -109,6 +110,7 @@ export function enableBindings(): void {
  * ```
  */
 export function disableBindings(): void {
+  ngDevMode && assertCreationMode('disableBindings', RenderFlags.Create);
   bindingsEnabled = false;
 }
 
@@ -126,6 +128,7 @@ export function getLView(): LView {
  * @param viewToRestore The OpaqueViewState instance to restore.
  */
 export function restoreView(viewToRestore: OpaqueViewState) {
+  ngDevMode && assertCreationMode('restoreView', RenderFlags.Update);
   contextLView = viewToRestore as any as LView;
 }
 
@@ -310,4 +313,21 @@ export function leaveView(newView: LView): void {
     }
   }
   enterView(newView, null);
+}
+
+/**
+ * This function returns the default configuration of rendering flags depending on when the
+ * template is in creation mode or update mode. Update block and create block are
+ * always run separately.
+ */
+export function getRenderFlags(view: LView): RenderFlags {
+  return isCreationMode(view) ? RenderFlags.Create : RenderFlags.Update;
+}
+
+export function assertCreationMode(instruction: string, rf: RenderFlags) {
+  // With the current implementation, we can only assert about
+  rf === RenderFlags.Create &&
+      assertEqual(
+          getRenderFlags(getLView()) & rf, rf,
+          `${instruction}() instruction should only be executed in ${rf === RenderFlags.Create ? 'create' : 'update'} mode`);
 }

@@ -14,6 +14,7 @@ import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
 import {attachPatchData} from './context_discovery';
 import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions';
 import {LContainer, NATIVE} from './interfaces/container';
+import {RenderFlags} from './interfaces/definition';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
 import {RComment, RElement} from './interfaces/renderer';
@@ -21,7 +22,7 @@ import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
 import {appendChild, createTextNode, nativeRemoveNode} from './node_manipulation';
-import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from './state';
+import {assertCreationMode, getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
 import {addAllToArray, getNativeByIndex, getNativeByTNode, getTNode, isLContainer, renderStringify} from './util';
 
@@ -344,6 +345,7 @@ const parentIndexStack: number[] = [];
  * @param subTemplateIndex Optional sub-template index in the `message`.
  */
 export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
+  ngDevMode && assertCreationMode('i18nStart', RenderFlags.Create);
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
   i18nIndexStack[++i18nIndexStackPointer] = index;
@@ -609,6 +611,7 @@ export function i18nPostprocess(
  * into the render tree, moves the placeholder nodes and removes the deleted nodes.
  */
 export function i18nEnd(): void {
+  ngDevMode && assertCreationMode('i18nEnd', RenderFlags.Create);
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
   i18nEndFirstPass(tView);
@@ -890,6 +893,7 @@ function removeNode(index: number, viewData: LView) {
  * @param subTemplateIndex Optional sub-template index in the `message`.
  */
 export function i18n(index: number, message: string, subTemplateIndex?: number): void {
+  ngDevMode && assertCreationMode('i18n', RenderFlags.Create);
   i18nStart(index, message, subTemplateIndex);
   i18nEnd();
 }
@@ -901,6 +905,7 @@ export function i18n(index: number, message: string, subTemplateIndex?: number):
  * @param values
  */
 export function i18nAttributes(index: number, values: string[]): void {
+  ngDevMode && assertCreationMode('i18nAttributes', RenderFlags.Create);
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
   if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
@@ -951,6 +956,7 @@ let shiftsCounter = 0;
  * @param expression The binding's new value or NO_CHANGE
  */
 export function i18nExp<T>(expression: T | NO_CHANGE): void {
+  ngDevMode && assertCreationMode('i18nExp', RenderFlags.Update);
   if (expression !== NO_CHANGE) {
     changeMask = changeMask | (1 << shiftsCounter);
   }
@@ -964,6 +970,7 @@ export function i18nExp<T>(expression: T | NO_CHANGE): void {
  * (i18n attribute) on which it should update the content.
  */
 export function i18nApply(index: number) {
+  ngDevMode && assertCreationMode('i18nApply', RenderFlags.Update);
   if (shiftsCounter) {
     const lView = getLView();
     const tView = lView[TVIEW];

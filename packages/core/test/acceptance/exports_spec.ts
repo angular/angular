@@ -6,14 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, Type} from '@angular/core';
+import {Component, Directive, Input, OnChanges, SimpleChanges, Type} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {onlyInIvy} from '@angular/private/testing';
 
 describe('exports', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule(
-        {declarations: [AppComp, ComponentToReference, DirToReference, DirWithCompInput]});
+    TestBed.configureTestingModule({
+      declarations: [
+        AppComp, ComponentToReference, DirToReference, DirToReferenceWithOnChange, DirWithCompInput
+      ]
+    });
   });
 
   it('should support export of DOM element', () => {
@@ -34,6 +37,14 @@ describe('exports', () => {
     const fixture = initWithTemplate(AppComp, '<div dir #myDir="dir"></div> {{ myDir.name }}');
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML).toEqual('<div dir=""></div> Drew');
+  });
+
+  xit('should work with directives with exportAs and ngOnChanges set', () => {
+    const fixture = initWithTemplate(
+        AppComp, '<div dirOnChange #myDir="dirOnChange" [in]="true"></div> {{ myDir.name }}');
+    fixture.detectChanges();
+    expect(fixture.nativeElement.innerHTML)
+        .toEqual('<div dironchange="" ng-reflect-in="true"></div> Drew!');
   });
 
   onlyInIvy('Different error message is thrown in View Engine')
@@ -94,4 +105,11 @@ class DirToReference {
 @Directive({selector: '[dirWithInput]'})
 class DirWithCompInput {
   @Input('dirWithInput') comp: ComponentToReference|null = null;
+}
+
+@Directive({selector: '[dirOnChange]', exportAs: 'dirOnChange'})
+class DirToReferenceWithOnChange implements OnChanges {
+  @Input() in : any = null;
+  name = 'Drew';
+  ngOnChanges(changes: SimpleChanges) { this.name += '!'; }
 }

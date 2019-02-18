@@ -19,12 +19,12 @@ import {assertPreviousIsParent} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {NG_ELEMENT_ID} from './fields';
 import {load, store, storeCleanupWithContext} from './instructions';
-import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
+import {RenderFlags, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {CONTENT_QUERIES, HEADER_OFFSET, LView, QUERIES, TVIEW} from './interfaces/view';
-import {getCurrentQueryIndex, getIsParent, getLView, setCurrentQueryIndex} from './state';
+import {assertCreationMode, getCurrentQueryIndex, getIsParent, getLView, setCurrentQueryIndex} from './state';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
@@ -367,6 +367,7 @@ export function query<T>(
  * Returns true if a query got dirty during change detection, false otherwise.
  */
 export function queryRefresh(queryList: QueryList<any>): boolean {
+  ngDevMode && assertCreationMode('queryRefresh', RenderFlags.Update);
   const queryListImpl = (queryList as any as QueryList_<any>);
   if (queryList.dirty) {
     queryList.reset(queryListImpl._valuesTree || []);
@@ -387,6 +388,7 @@ export function queryRefresh(queryList: QueryList<any>): boolean {
 export function viewQuery<T>(
     // TODO: "read" should be an AbstractType (FW-486)
     predicate: Type<any>| string[], descend?: boolean, read?: any): QueryList<T> {
+  ngDevMode && assertCreationMode('viewQuery', RenderFlags.Create);
   const lView = getLView();
   const tView = lView[TVIEW];
   if (tView.firstTemplatePass) {
@@ -403,6 +405,7 @@ export function viewQuery<T>(
 * Loads current View Query and moves the pointer/index to the next View Query in LView.
 */
 export function loadViewQuery<T>(): T {
+  ngDevMode && assertCreationMode('loadViewQuery', RenderFlags.Update);
   const index = getCurrentQueryIndex();
   setCurrentQueryIndex(index + 1);
   return load<T>(index - HEADER_OFFSET);
@@ -422,6 +425,7 @@ export function contentQuery<T>(
     directiveIndex: number, predicate: Type<any>| string[], descend?: boolean,
     // TODO: "read" should be an AbstractType (FW-486)
     read?: any): QueryList<T> {
+  ngDevMode && assertCreationMode('contentQuery', RenderFlags.Create);
   const lView = getLView();
   const tView = lView[TVIEW];
   const contentQuery: QueryList<T> = query<T>(predicate, descend, read);
@@ -438,6 +442,7 @@ export function contentQuery<T>(
 }
 
 export function loadContentQuery<T>(): QueryList<T> {
+  ngDevMode && assertCreationMode('loadContentQuery', RenderFlags.Update);
   const lView = getLView();
   ngDevMode &&
       assertDefined(
