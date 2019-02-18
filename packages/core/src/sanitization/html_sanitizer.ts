@@ -83,6 +83,13 @@ const HTML_ATTRS = tagSet(
 
 export const VALID_ATTRS = merge(URI_ATTRS, SRCSET_ATTRS, HTML_ATTRS);
 
+// Elements whose content should not be traversed/preserved, if the elements themselves are invalid.
+//
+// Typically, `<invalid>Some content</invalid>` would traverse (and in this case preserve)
+// `Some content`, but strip `invalid-element` opening/closing tags. For some elements, though, we
+// don't want to preserve the content, if the elements themselves are going to be removed.
+const SKIP_TRAVERSING_CONTENT_IF_INVALID_ELEMENTS = tagSet('script,style,template');
+
 /**
  * SanitizingHtmlSerializer serializes a DOM fragment, stripping out any unsafe elements and unsafe
  * attributes.
@@ -98,17 +105,17 @@ class SanitizingHtmlSerializer {
     // However this code never accesses properties off of `document` before deleting its contents
     // again, so it shouldn't be vulnerable to DOM clobbering.
     let current: Node = el.firstChild !;
-    let elementValid = true;
+    let traverseContent = true;
     while (current) {
       if (current.nodeType === Node.ELEMENT_NODE) {
-        elementValid = this.startElement(current as Element);
+        traverseContent = this.startElement(current as Element);
       } else if (current.nodeType === Node.TEXT_NODE) {
         this.chars(current.nodeValue !);
       } else {
         // Strip non-element, non-text nodes.
         this.sanitizedSomething = true;
       }
-      if (elementValid && current.firstChild) {
+      if (traverseContent && current.firstChild) {
         current = current.firstChild !;
         continue;
       }
@@ -132,18 +139,18 @@ class SanitizingHtmlSerializer {
   }
 
   /**
-   * Outputs only valid Elements.
+   * Sanitizes an opening element tag (if valid) and returns whether the element's contents should
+   * be traversed. Element content must always be traversed (even if the element itself is not
+   * valid/safe), unless the element is one of `SKIP_TRAVERSING_CONTENT_IF_INVALID_ELEMENTS`.
    *
-   * Invalid elements are skipped.
-   *
-   * @param element element to sanitize
-   * Returns true if the element is valid.
+   * @param element The element to sanitize.
+   * @return True if the element's contents should be traversed.
    */
   private startElement(element: Element): boolean {
     const tagName = element.nodeName.toLowerCase();
     if (!VALID_ELEMENTS.hasOwnProperty(tagName)) {
       this.sanitizedSomething = true;
-      return false;
+      return !SKIP_TRAVERSING_CONTENT_IF_INVALID_ELEMENTS.hasOwnProperty(tagName);
     }
     this.buf.push('<');
     this.buf.push(tagName);

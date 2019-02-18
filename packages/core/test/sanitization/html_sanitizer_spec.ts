@@ -36,8 +36,8 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
           .toEqual('<p>Hello <br> World</p>');
     });
 
-    it('supports removal of namespaced elements',
-       () => { expect(_sanitizeHtml(defaultDoc, 'a<my:hr/><my:div>b</my:div>c')).toEqual('a'); });
+    it('supports namespaced elements',
+       () => { expect(_sanitizeHtml(defaultDoc, 'a<my:hr/><my:div>b</my:div>c')).toEqual('abc'); });
 
     it('supports namespaced attributes', () => {
       expect(_sanitizeHtml(defaultDoc, '<a xlink:href="something">t</a>'))
@@ -85,7 +85,7 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
           .toEqual('<p alt="% &amp; &#34; !">Hello</p>');  // NB: quote encoded as ASCII &#34;.
     });
 
-    describe('should strip dangerous elements and its content', () => {
+    describe('should strip dangerous elements (but potentially traverse their content)', () => {
       const dangerousTags = [
         'form',
         'object',
@@ -93,32 +93,40 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
         'button',
         'option',
         'select',
-        'script',
-        'style',
       ];
-
       for (const tag of dangerousTags) {
-        it(`${tag}`,
-           () => { expect(_sanitizeHtml(defaultDoc, `<${tag}>evil!</${tag}>`)).toEqual(''); });
+        it(tag,
+           () => { expect(_sanitizeHtml(defaultDoc, `<${tag}>evil!</${tag}>`)).toEqual('evil!'); });
       }
+
       const dangerousSelfClosingTags = [
-        'frameset',
-        'embed',
-        'input',
-        'param',
         'base',
         'basefont',
-        'param',
+        'embed',
+        'frameset',
+        'input',
         'link',
+        'param',
       ];
-
       for (const tag of dangerousSelfClosingTags) {
-        it(`${tag}`, () => {
+        it(tag, () => {
           expect(_sanitizeHtml(defaultDoc, `before<${tag}>After`)).toEqual('beforeAfter');
         });
       }
 
-      it(`swallows frame entirely`, () => {
+      const dangerousSkipContentTags = [
+        'script',
+        'style',
+        'template',
+      ];
+      for (const tag of dangerousSkipContentTags) {
+        it(tag, () => { expect(_sanitizeHtml(defaultDoc, `<${tag}>evil!</${tag}>`)).toEqual(''); });
+      }
+
+      it(`frame`, () => {
+        // `<frame>` is special, because different browsers treat it differently (e.g. remove it
+        // altogether). // We just verify that (one way or another), there is no `<frame>` element
+        // after sanitization.
         expect(_sanitizeHtml(defaultDoc, `<frame>evil!</frame>`)).not.toContain('<frame>');
       });
     });
@@ -131,6 +139,13 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
           expect(_sanitizeHtml(defaultDoc, `<a ${attr}="x">evil!</a>`)).toEqual('<a>evil!</a>');
         });
       }
+    });
+
+    it('ignores content of script elements', () => {
+      expect(_sanitizeHtml(defaultDoc, '<script>var foo="<p>bar</p>"</script>')).toEqual('');
+      expect(_sanitizeHtml(defaultDoc, '<script>var foo="<p>bar</p>"</script><div>hi</div>'))
+          .toEqual('<div>hi</div>');
+      expect(_sanitizeHtml(defaultDoc, '<style>\<\!-- something--\>hi</style>')).toEqual('');
     });
 
     it('ignores content of style elements', () => {
@@ -186,7 +201,7 @@ import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
                      // PlatformBrowser output
                      '<p><img src="x"></p>' :
                      // PlatformServer output
-                     '');
+                     '<p></p>');
        });
 
     if (browserDetection.isWebkit) {
