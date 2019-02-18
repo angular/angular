@@ -312,7 +312,7 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
 
   constructor(init: {
     error?: any; headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
-  }) {
+  } = {}) {
     // Initialize with a default status of 0 / Unknown Error.
     super(init, 0, 'Unknown Error');
 

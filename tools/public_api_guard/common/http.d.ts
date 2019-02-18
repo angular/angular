@@ -1499,7 +1499,7 @@ export declare class HttpErrorResponse extends HttpResponseBase implements Error
     readonly message: string;
     readonly name = "HttpErrorResponse";
     readonly ok = false;
-    constructor(init: {
+    constructor(init?: {
         error?: any;
         headers?: HttpHeaders;
         status?: number;
