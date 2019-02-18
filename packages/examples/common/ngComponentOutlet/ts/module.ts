@@ -7,10 +7,9 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, Component, Injectable, Injector, NgModule, NgModuleFactory} from '@angular/core';
+import {Component, Injectable, Injector, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {JitCompilerFactory} from '@angular/platform-browser-dynamic';
-
+import {OtherModuleNgFactory} from './module.ngfactory';
 
 
 // #docregion SimpleExample
@@ -77,9 +76,9 @@ export class OtherModuleComponent {
 export class NgTemplateOutletOtherModuleExample {
   // This field is necessary to expose OtherModuleComponent to the template.
   OtherModuleComponent = OtherModuleComponent;
-  myModule: NgModuleFactory<any>;
 
-  constructor(compiler: Compiler) { this.myModule = compiler.compileModuleSync(OtherModule); }
+  // TODO(pk): document what is going on here
+  myModule = OtherModuleNgFactory;
 }
 // #enddocregion
 
@@ -103,25 +102,13 @@ export class AppComponent {
 export class OtherModule {
 }
 
-export function createCompiler(compilerFactory: CompilerFactory) {
-  return compilerFactory.createCompiler();
-}
-
 @NgModule({
   imports: [BrowserModule],
   declarations: [
     AppComponent, NgTemplateOutletSimpleExample, NgTemplateOutletCompleteExample,
     NgTemplateOutletOtherModuleExample, HelloWorld, CompleteComponent
   ],
-  entryComponents: [HelloWorld, CompleteComponent],
-  providers: [
-    // Setup the JIT compiler that is not set up by default because the examples
-    // are bootstrapped using their NgModule factory. Since this example uses the
-    // JIT compiler, we manually set it up for this module.
-    {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
-    {provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
-    {provide: Compiler, useFactory: createCompiler, deps: [CompilerFactory]}
-  ]
+  entryComponents: [HelloWorld, CompleteComponent]
 })
 export class AppModule {
 }
