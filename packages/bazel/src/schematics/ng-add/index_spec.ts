@@ -21,6 +21,7 @@ describe('ng-add schematic', () => {
       name: 'demo',
       dependencies: {
         '@angular/core': '1.2.3',
+        'rxjs': '~6.3.3',
       },
       devDependencies: {
         'typescript': '3.2.2',
@@ -197,5 +198,45 @@ describe('ng-add schematic', () => {
         outDir: './dist/out-tsc',
       }
     });
+  });
+
+  describe('rxjs', () => {
+    const cases = [
+      // version|upgrade
+      ['6.3.3', true],
+      ['~6.3.3', true],
+      ['^6.3.3', true],
+      ['~6.3.11', true],
+      ['6.4.0', false],
+      ['~6.4.0', false],
+      ['~6.4.1', false],
+      ['6.5.0', false],
+      ['~6.5.0', false],
+      ['^6.5.0', false],
+      ['~7.0.1', false],
+    ];
+    for (const [version, upgrade] of cases) {
+      it(`should ${upgrade ? '' : 'not '}upgrade v${version}')`, () => {
+        host.overwrite('package.json', JSON.stringify({
+          name: 'demo',
+          dependencies: {
+            '@angular/core': '1.2.3',
+            'rxjs': version,
+          },
+          devDependencies: {
+            'typescript': '3.2.2',
+          },
+        }));
+        host = schematicRunner.runSchematic('ng-add', defaultOptions, host);
+        expect(host.files).toContain('/package.json');
+        const content = host.readContent('/package.json');
+        const json = JSON.parse(content);
+        if (upgrade) {
+          expect(json.dependencies.rxjs).toBe('~6.4.0');
+        } else {
+          expect(json.dependencies.rxjs).toBe(version);
+        }
+      });
+    }
   });
 });
