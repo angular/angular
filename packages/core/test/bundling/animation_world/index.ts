@@ -91,7 +91,7 @@ class BoxWithOverriddenStylesComponent {
 
     <box-with-overridden-styles
       style="display:block"
-      [style]="{'border-radius':'50px', 'border': '50px solid teal'}">
+      [style]="{'border-radius':'50px', 'border': '50px solid teal'}" [ngStyle]="{transform:'rotate(50deg)'}">
     </box-with-overridden-styles>
   `,
 })
