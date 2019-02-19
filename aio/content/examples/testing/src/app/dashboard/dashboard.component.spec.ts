@@ -131,13 +131,13 @@ function tests(heroClick: Function) {
     // #docregion navigate-test
     it('should tell ROUTER to navigate when hero clicked', () => {
 
-      heroClick(); // trigger click on first inner <div class="hero">
+      heroClick(); // <div class="hero"> 엘리먼트 중 첫번째 엘리먼트를 클릭합니다.
 
-      // args passed to router.navigateByUrl() spy
+      // 컴포넌트가 이동하는 주소는 router.navigateByUrl() 스파이의 인자로 전달됩니다.
       const spy = router.navigateByUrl as jasmine.Spy;
       const navArgs = spy.calls.first().args[0];
 
-      // expecting to navigate to id of the component's first hero
+      // 이동하려는 주소가 컴포넌트의 히어로 목록 중 첫번째의 id와 같은지 검사합니다.
       const id = comp.heroes[0].id;
       expect(navArgs).toBe('/heroes/' + id,
         'should nav to HeroDetail for first hero');

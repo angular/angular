@@ -123,11 +123,11 @@ describe('DashboardHeroComponent when inside a test host', () => {
 
   beforeEach(() => {
     // #docregion test-host-setup
-    // create TestHostComponent instead of DashboardHeroComponent
+    // DashboardHeroComponent 대신 TestHostComponent를 생성합니다.
     fixture  = TestBed.createComponent(TestHostComponent);
     testHost = fixture.componentInstance;
     heroEl   = fixture.nativeElement.querySelector('.hero');
-    fixture.detectChanges(); // trigger initial data binding
+    fixture.detectChanges(); // 초기 데이터 바인딩을 실행합니다.
     // #enddocregion test-host-setup
   });
 
@@ -139,7 +139,7 @@ describe('DashboardHeroComponent when inside a test host', () => {
 
   it('should raise selected event when clicked', () => {
     click(heroEl);
-    // selected hero should be the same data bound hero
+    // 선택된 히어로는 데이터 바인딩한 히어로와 같아야 합니다.
     expect(testHost.selectedHero).toBe(testHost.hero);
   });
   // #enddocregion test-host-tests

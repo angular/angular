@@ -3137,8 +3137,12 @@ Here's the previous test, rewritten using the click helper.
 
 {@a component-inside-test-host}
 
+<!--
 ### Component inside a test host
+-->
+### 테스트 호스트 안에서 테스트하기
 
+<!--
 The previous tests played the role of the host `DashboardComponent` themselves.
 But does the `DashboardHeroComponent` work correctly when properly data-bound to a host component?
 
@@ -3151,14 +3155,33 @@ and it starts interacting with those services right away.
 
 Imagine the effort to disable these distractions, just to prove a point
 that can be made satisfactorily with a _test host_ like this one:
+-->
+위에서 살펴본 테스트 코드는 테스트 코드 자체가 호스트 컴포넌트 `DashboardComponent`의 역할을 대신합니다.
+그런데 호스트 컴포넌트와 직접 데이터 바인딩 되는 경우에도 `DashboardHeroComponent`가 제대로 동작한다고 수 있을까요?
 
+이 의문점을 확인하려면 실제 `DashboardComponent`로 `DashboardHeroComponent`를 테스트해야 합니다.
+하지만 `DashboardComponent`를 사용해서 테스트하는 과정이 쉽지만은 않습니다.
+템플릿에는 `*ngFor` 리피터가 사용되었고, 다른 컴포넌트가 존재할 수도 있습니다.
+HTML 레이아웃이나 바인딩을 처리해야 할 수도 있고 생성자로 여러개의 서비스가 주입될 수도 있으며, 컴포넌트가 시작된 직후에 이 서비스들과 상호작용이 시작될 수도 있습니다.
+
+이 내용을 모두 준비하기 보다는, 다음과 같이 딱 필요한 기능만 구현한 _테스트 호스트_ 를 사용하는 편이 더 좋습니다:
+
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="test-host"
   header="app/dashboard/dashboard-hero.component.spec.ts (test host)"
   linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
+  region="test-host"
+  header="app/dashboard/dashboard-hero.component.spec.ts (테스트 호스트)"
+  linenums="false">
+</code-example>
 
+<!--
 This test host binds to `DashboardHeroComponent` as the `DashboardComponent` would
 but without the noise of the `Router`, the `HeroService`, or the `*ngFor` repeater.
 
@@ -3170,9 +3193,20 @@ Later, the tests will be able to easily check `selectedHero` to verify that the
 `DashboardHeroComponent.selected` event emitted the expected hero.
 
 The setup for the _test-host_ tests is similar to the setup for the stand-alone tests:
+-->
+이 테스트 호스트는 `DashboardComponent`가 하는 역할처럼 `DashboardHeroComponent`의 프로퍼티를 바인딩하지만, `Router`나 `HeroService`, `*ngFor` 리피터의 영향을 받지 않는 컴포넌트입니다.
 
+테스트 호스트는 자식 컴포넌트의 `hero` 입력 프로퍼티로 테스트 히어로 객체를 바인딩합니다.
+그리고 자식 컴포넌트의 `selected` 이벤트를 바인딩해서 `onSelected` 핸들러와 연결하기 때문에, 이 핸들러로 받은 이벤트 객체를 `selectedHero` 프로퍼티에 할당해서 확인할 수 있습니다.
+
+_테스트 호스트_ 로 컴포넌트를 테스트하는 환경은 컴포넌트를 단독으로 테스트하는 환경과 비슷하게 설정합니다:
+
+<!--
 <code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-setup" header="app/dashboard/dashboard-hero.component.spec.ts (test host setup)" linenums="false"></code-example>
+-->
+<code-example path="testing/src/app/dashboard/dashboard-hero.component.spec.ts" region="test-host-setup" header="app/dashboard/dashboard-hero.component.spec.ts (테스트 호스트 환경설정)" linenums="false"></code-example>
 
+<!--
 This testing module configuration shows three important differences:
 
 1. It _declares_ both the `DashboardHeroComponent` and the `TestHostComponent`.
@@ -3187,22 +3221,51 @@ The query for the hero element (`heroEl`) still finds it in the test DOM,
 albeit at greater depth in the element tree than before.
 
 The tests themselves are almost identical to the stand-alone version:
+-->
+이 모듈 설정 중에 세 군데는 이전과 다릅니다:
 
+1. `DashboardHeroComponent`를 등록하면서 `TestHostComponent`도 함께 등록합니다.
+1. `DashboardHeroComponent` 대신 `TestHostComponent`를 생성합니다.
+1. `DashboardHeroComponent.hero` 프로퍼티는 `TestHostComponent`가 바인딩해서 할당합니다.
+
+이제 `createComponent`를 실행하면 `DashboardHeroComponent` 대신 `TestHostComponent`의 `fixture`를 반환합니다.
+
+그러면 `TestHostComponent`의 템플릿 안에 `DashboardHeroComponent`가 사용되었기 때문에 `DashboardHeroComponent`의 인스턴스도 함께 생성됩니다.
+그래서 히어로 엘리먼트를 쿼리한 변수 `heroEl`도 여전히 테스트 DOM에 존재합니다.
+다만, 엘리먼트 트리 계층으로 보면 이전보다 조금 더 깊은 곳에 있습니다.
+
+테스트 호스트와 `DashboardHeroComponent`를 테스트하는 로직은 `DashboardHeroComponent`를 단독으로 테스트할 때와 거의 비슷합니다:
+
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
   region="test-host-tests"
   header="app/dashboard/dashboard-hero.component.spec.ts (test-host)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard-hero.component.spec.ts"
+  region="test-host-tests"
+  header="app/dashboard/dashboard-hero.component.spec.ts (테스트 호스트)" linenums="false">
+</code-example>
 
+<!--
 Only the selected event test differs. It confirms that the selected `DashboardHeroComponent` hero
 really does find its way up through the event binding to the host component.
+-->
+히어로 선택 이벤트를 검사하는 부분만 다릅니다.
+이 테스트 코드에서는 `DashboardHeroComponent`에서 사용자가 선택해서 이벤트로 전달된 히어로 객체와 호스트 컴포넌트가 데이터 바인딩하면서 전달했던 히어로 객체가 같은지 검사하도록 작성되었습니다.
 
 <hr>
 
 {@a routing-component}
 
+<!--
 ### Routing component
+-->
+### 라우팅하는 컴포넌트
 
+<!--
 A _routing component_ is a component that tells the `Router` to navigate to another component.
 The `DashboardComponent` is a _routing component_ because the user can
 navigate to the `HeroDetailComponent` by clicking on one of the _hero buttons_ on the dashboard.
@@ -3210,17 +3273,37 @@ navigate to the `HeroDetailComponent` by clicking on one of the _hero buttons_ o
 Routing is pretty complicated.
 Testing the `DashboardComponent` seemed daunting in part because it involves the `Router`,
 which it injects together with the `HeroService`.
+-->
+_라우팅하는 컴포넌트(routing component)_ 는 컴포넌트에서 `Router`를 사용해서 다른 컴포넌트로 이동하는 컴포넌트입니다.
+그래서 사용자가 대시보드에 있는 _히어로 버튼_ 중 하나를 클릭하면 `HeroDetailComponent`로 페이지를 전환하기 때문에 `DashboardComponent`도 라우팅하는 컴포넌트입니다.
 
+라우팅은 조금 복잡합니다.
+게다가 `DashboardComponent`처럼 `Router`만이 아니라 `HeroService`도 함께 주입되는 컴포넌트를 테스트해야 한다면 시작할 엄두가 나지 않을 수도 있습니다.
+
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard.component.ts"
   region="ctor"
   header="app/dashboard/dashboard.component.ts (constructor)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard.component.ts"
+  region="ctor"
+  header="app/dashboard/dashboard.component.ts (생성자)" linenums="false">
+</code-example>
 
+<!--
 Mocking the `HeroService` with a spy is a [familiar story](#component-with-async-service).
 But the `Router` has a complicated API and is entwined with other services and application preconditions. Might it be difficult to mock?
 
 Fortunately, not in this case because the `DashboardComponent` isn't doing much with the `Router`
+-->
+`HeroService`를 모킹하는 것은 [이전에 다뤘기 때문에](#component-with-async-service) 이제 익숙할 것입니다.
+하지만 `Router`의 API는 더 복잡하고, 다른 서비스와도 엮여있으며, 애플리케이션의 상태에 따라 동작이 달라지기도 합니다.
+라우터를 모킹하는 것이 얼마나 어려운지 짐작할 수 있을까요?
+
+하지만 다행히도 `DashboardComponent`를 테스트하면서 `Router`의 기능을 모두 모킹할 필요는 없습니다.
 
 <code-example
   path="testing/src/app/dashboard/dashboard.component.ts"
@@ -3228,26 +3311,49 @@ Fortunately, not in this case because the `DashboardComponent` isn't doing much 
   header="app/dashboard/dashboard.component.ts (goToDetail)">
 </code-example>
 
+<!--
 This is often the case with _routing components_.
 As a rule you test the component, not the router,
 and care only if the component navigates with the right address under the given conditions.
 
 Providing a router spy for _this component_ test suite happens to be as easy
 as providing a `HeroService` spy.
+-->
+_컴포넌트의 라우팅 동작_ 은 보통 이렇게 구현합니다.
+그리고 지금 컴포넌트를 테스트하면서 검사해야 하는 것은 라우터가 아니라 컴포넌트가 올바른 주소로 이동하는지 테스트하는 것입니다.
 
+그러면 `HeroService` 스파이를 활용했던 것처럼, _이 컴포넌트_ 에 필요한 기능만 구현해서 라우터 스파이를 활용할 수 있습니다.
+
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard.component.spec.ts"
   region="router-spy"
   header="app/dashboard/dashboard.component.spec.ts (spies)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard.component.spec.ts"
+  region="router-spy"
+  header="app/dashboard/dashboard.component.spec.ts (테스트 스파이)" linenums="false">
+</code-example>
 
+<!--
 The following test clicks the displayed hero and confirms that
 `Router.navigateByUrl` is called with the expected url.
+-->
+화면에 표시된 히어로를 클릭하면 원하는 주소로 이동하기 위해 `Router.navigateByUrl`을 실행하는데, 이 과정을 테스트하는 코드를 다음과 같이 작성할 수 있습니다.
 
+<!--
 <code-example
   path="testing/src/app/dashboard/dashboard.component.spec.ts"
   region="navigate-test"
   header="app/dashboard/dashboard.component.spec.ts (navigate test)" linenums="false">
+</code-example>
+-->
+<code-example
+  path="testing/src/app/dashboard/dashboard.component.spec.ts"
+  region="navigate-test"
+  header="app/dashboard/dashboard.component.spec.ts (네비게이션 테스트)" linenums="false">
 </code-example>
 
 {@a routed-component-w-param}

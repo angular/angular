@@ -27,7 +27,7 @@ export class HeroDetailComponent implements OnInit {
 
   // #docregion ng-on-init
   ngOnInit(): void {
-    // get hero when `id` param changes
+    // `id` 인자가 바뀔때마다 히어로 객체를 가져옵니다.
     this.route.paramMap.subscribe(pmap => this.getHero(pmap.get('id')));
   }
   // #enddocregion ng-on-init
