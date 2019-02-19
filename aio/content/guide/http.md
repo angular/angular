@@ -476,7 +476,7 @@ That's easy to implement with RxJS operators, as shown in this excerpt.
 <code-example 
   path="http/src/app/package-search/package-search.component.ts"
   region="debounce" 
-  header="app/package-search/package-search.component.ts (excerpt))">
+  header="app/package-search/package-search.component.ts (excerpt)">
 </code-example>
 
 The `searchText$` is the sequence of search-box values coming from the user.
