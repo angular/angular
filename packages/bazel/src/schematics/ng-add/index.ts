@@ -13,7 +13,7 @@ import {Rule, SchematicContext, SchematicsException, Tree, apply, applyTemplates
 import {getWorkspacePath} from '@schematics/angular/utility/config';
 import {findPropertyInAstObject, insertPropertyInAstObjectInOrder} from '@schematics/angular/utility/json-utils';
 import {validateProjectName} from '@schematics/angular/utility/validation';
-import {isJsonAstObject, removeKeyValueInAstObject as removeKeyValueInAstObject, replacePropertyInAstObject} from '../utility/json-utils';
+import {isJsonAstObject, removeKeyValueInAstObject, replacePropertyInAstObject} from '../utility/json-utils';
 import {Schema} from './schema';
 
 /**
@@ -257,6 +257,47 @@ function updateTsconfigJson(): Rule {
   };
 }
 
+/**
+ * @angular/bazel requires minimum version of rxjs to be 6.4.0. This function
+ * upgrades the version of rxjs in package.json if necessary.
+ */
+function upgradeRxjs() {
+  return (host: Tree, context: SchematicContext) => {
+    const packageJson = 'package.json';
+    if (!host.exists(packageJson)) {
+      throw new Error(`Could not find ${packageJson}`);
+    }
+    const content = host.read(packageJson).toString();
+    const jsonAst = parseJsonAst(content);
+    if (!isJsonAstObject(jsonAst)) {
+      throw new Error(`Failed to parse JSON for ${packageJson}`);
+    }
+    const deps = findPropertyInAstObject(jsonAst, 'dependencies');
+    if (!isJsonAstObject(deps)) {
+      throw new Error(`Failed to find dependencies in ${packageJson}`);
+    }
+    const rxjs = findPropertyInAstObject(deps, 'rxjs');
+    if (!rxjs) {
+      throw new Error(`Failed to find rxjs in dependencies of ${packageJson}`);
+    }
+    const value = rxjs.value as string;  // value can be version or range
+    const match = value.match(/(\d)+\.(\d)+.(\d)+$/);
+    if (match) {
+      const [_, major, minor] = match;
+      if (major < '6' || (major === '6' && minor < '4')) {
+        const recorder = host.beginUpdate(packageJson);
+        replacePropertyInAstObject(recorder, deps, 'rxjs', '~6.4.0');
+        host.commitUpdate(recorder);
+      }
+    } else {
+      context.logger.info(
+          'Could not determine version of rxjs. \n' +
+          'Please make sure that version is at least 6.4.0.');
+    }
+    return host;
+  };
+}
+
 export default function(options: Schema): Rule {
   return (host: Tree) => {
     validateProjectName(options.name);
@@ -270,6 +311,7 @@ export default function(options: Schema): Rule {
       updateAngularJsonToUseBazelBuilder(options),
       updateGitignore(),
       updateTsconfigJson(),
+      upgradeRxjs(),
     ]);
   };
 }
