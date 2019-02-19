@@ -32,7 +32,6 @@ setPublicVar CI_COMMIT_RANGE "`[[ ${CIRCLE_PR_NUMBER:-false} != false ]] && echo
 setPublicVar CI_PULL_REQUEST "${CIRCLE_PR_NUMBER:-false}";
 setPublicVar CI_REPO_NAME "$CIRCLE_PROJECT_REPONAME";
 setPublicVar CI_REPO_OWNER "$CIRCLE_PROJECT_USERNAME";
-setPublicVar CI_YARN_VERSION "1.13.0";
 
 
 ####################################################################################################
@@ -61,7 +60,6 @@ setPublicVar SAUCE_TUNNEL_IDENTIFIER "angular-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_
 # Amount of seconds we wait for sauceconnect to establish a tunnel instance. In order to not
 # acquire CircleCI instances for too long if sauceconnect failed, we need a connect timeout.
 setPublicVar SAUCE_READY_FILE_TIMEOUT 120
-
 
 # Source `$BASH_ENV` to make the variables available immediately.
 source $BASH_ENV;
