@@ -46,20 +46,18 @@ describe('ngIf', () => {
   describe('ng-if-then-else', () => {
     let comp = 'ng-if-then-else';
 
-    modifiedInIvy('FW-1019: Design new API to replace static queries')
-        .it('should hide/show content', () => {
-          browser.get(URL);
-          waitForElement(comp);
-          expect(element.all(by.css(comp)).get(0).getText())
-              .toEqual('hideSwitch Primary show = true\nPrimary text to show');
-          element.all(by.css(comp + ' button')).get(1).click();
-          expect(element.all(by.css(comp)).get(0).getText())
-              .toEqual('hideSwitch Primary show = true\nSecondary text to show');
-          element.all(by.css(comp + ' button')).get(0).click();
-          expect(element.all(by.css(comp)).get(0).getText())
-              .toEqual(
-                  'showSwitch Primary show = false\nAlternate text while primary text is hidden');
-        });
+    it('should hide/show content', () => {
+      browser.get(URL);
+      waitForElement(comp);
+      expect(element.all(by.css(comp)).get(0).getText())
+          .toEqual('hideSwitch Primary show = true\nPrimary text to show');
+      element.all(by.css(comp + ' button')).get(1).click();
+      expect(element.all(by.css(comp)).get(0).getText())
+          .toEqual('hideSwitch Primary show = true\nSecondary text to show');
+      element.all(by.css(comp + ' button')).get(0).click();
+      expect(element.all(by.css(comp)).get(0).getText())
+          .toEqual('showSwitch Primary show = false\nAlternate text while primary text is hidden');
+    });
   });
 
   describe('ng-if-let', () => {
