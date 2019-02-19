@@ -6,12 +6,71 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgModule} from '@angular/core';
+import {APP_BASE_HREF, CommonModule, HashLocationStrategy, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
+import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
+
 import {LocationUpgradeService} from './location';
+
+export interface LocationUpgradeConfig {
+  useHash?: boolean;
+  serverBaseHref?: string;
+  appBaseHref?: string;
+}
+
+/**
+ * @description
+ *
+ * Is used in DI to configure the router.
+ *
+ * @publicApi
+ */
+export const LOCATION_UPGRADE_CONFIGURATION =
+    new InjectionToken<LocationUpgradeConfig>('LOCATION_UPGRADE_CONFIGURATION');
+
+
+export const APP_BASE_HREF_RESOLVED = new InjectionToken<string>('APP_BASE_HREF_RESOLVED');
 
 /**
  * Module used for configuring Angular's LocationUpgradeService.
  */
-@NgModule({providers: [LocationUpgradeService]})
+@NgModule({imports: [CommonModule]})
 export class LocationUpgradeModule {
+  static config(config?: LocationUpgradeConfig): ModuleWithProviders<LocationUpgradeModule> {
+    return {
+      ngModule: LocationUpgradeModule,
+      providers: [
+        Location,
+        LocationUpgradeService,
+        {provide: LOCATION_UPGRADE_CONFIGURATION, useValue: config ? config : {}},
+        {
+          provide: APP_BASE_HREF_RESOLVED,
+          useFactory: (appBaseHref?: string) => {
+            if (config && config.appBaseHref != null) {
+              return config.appBaseHref;
+            } else if (appBaseHref != null) {
+              return appBaseHref;
+            }
+            return '';
+          },
+          deps: [[new Inject(APP_BASE_HREF), new Optional()]]
+        },
+        {
+          provide: LocationStrategy,
+          useFactory: provideLocationStrategy,
+          deps: [
+            PlatformLocation,
+            APP_BASE_HREF_RESOLVED,
+            LOCATION_UPGRADE_CONFIGURATION,
+          ]
+        },
+      ],
+    };
+  }
+}
+
+export function provideLocationStrategy(
+    platformLocationStrategy: PlatformLocation, baseHref: string,
+    options: LocationUpgradeConfig = {}) {
+  return options.useHash ? new HashLocationStrategy(platformLocationStrategy, baseHref) :
+                           new PathLocationStrategy(platformLocationStrategy, baseHref);
 }
