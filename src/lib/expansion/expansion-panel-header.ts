@@ -77,18 +77,18 @@ export class MatExpansionPanelHeader implements OnDestroy, FocusableOption {
       private _changeDetectorRef: ChangeDetectorRef,
       @Inject(MAT_EXPANSION_PANEL_DEFAULT_OPTIONS) @Optional()
           defaultOptions?: MatExpansionPanelDefaultOptions) {
-
     const accordionHideToggleChange = panel.accordion ?
-      panel.accordion._stateChanges.pipe(filter(changes => !!changes.hideToggle)) : EMPTY;
+        panel.accordion._stateChanges.pipe(
+            filter(changes => !!changes['hideToggle'])) :
+        EMPTY;
 
     // Since the toggle state depends on an @Input on the panel, we
     // need to subscribe and trigger change detection manually.
-    this._parentChangeSubscription = merge(
-      panel.opened,
-      panel.closed,
-      accordionHideToggleChange,
-      panel._inputChanges.pipe(filter(changes => !!(changes.hideToggle || changes.disabled)))
-    )
+    this._parentChangeSubscription =
+        merge(
+            panel.opened, panel.closed, accordionHideToggleChange,
+            panel._inputChanges.pipe(filter(
+                changes => !!(changes['hideToggle'] || changes['disabled']))))
     .subscribe(() => this._changeDetectorRef.markForCheck());
 
     // Avoids focus being lost if the panel contained the focused element and was closed.

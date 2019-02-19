@@ -76,7 +76,8 @@ export class MatDialogClose implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const proxiedChange = changes._matDialogClose || changes._matDialogCloseResult;
+    const proxiedChange =
+        changes['_matDialogClose'] || changes['_matDialogCloseResult'];
 
     if (proxiedChange) {
       this.dialogResult = proxiedChange.currentValue;

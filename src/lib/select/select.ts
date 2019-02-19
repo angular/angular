@@ -552,7 +552,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   ngOnChanges(changes: SimpleChanges) {
     // Updating the disabled state is handled by `mixinDisabled`, but we need to additionally let
     // the parent form field know to run change detection when the disabled state changes.
-    if (changes.disabled) {
+    if (changes['disabled']) {
       this.stateChanges.next();
     }
   }

@@ -318,7 +318,8 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const change = changes.minDate || changes.maxDate || changes.dateFilter;
+    const change =
+        changes['minDate'] || changes['maxDate'] || changes['dateFilter'];
 
     if (change && !change.firstChange) {
       const view = this._getCurrentViewComponent();

@@ -223,7 +223,7 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Aft
 
   ngOnChanges(changes: SimpleChanges) {
     // Only update the inline SVG icon if the inputs changed, to avoid unnecessary DOM operations.
-    if (changes.svgIcon) {
+    if (changes['svgIcon']) {
       if (this.svgIcon) {
         const [namespace, iconName] = this._splitIconName(this.svgIcon);
 

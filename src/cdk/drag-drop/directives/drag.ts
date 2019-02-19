@@ -250,7 +250,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const rootSelectorChange = changes.rootElementSelector;
+    const rootSelectorChange = changes['rootElementSelector'];
 
     // We don't have to react to the first change since it's being
     // handled in `ngAfterViewInit` where it needs to be deferred.

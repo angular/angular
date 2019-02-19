@@ -92,7 +92,7 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.datepicker) {
+    if (changes['datepicker']) {
       this._watchStateChanges();
     }
   }
