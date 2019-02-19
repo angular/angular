@@ -518,9 +518,12 @@ function createContentQueriesFunction(
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
   for (const query of meta.queries) {
-    // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true);
+    // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null);
     const args = [o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any];
-    createStatements.push(o.importExpr(R3.contentQuery).callFn(args).toStmt());
+
+    const queryInstruction = query.static ? R3.staticContentQuery : R3.contentQuery;
+
+    createStatements.push(o.importExpr(queryInstruction).callFn(args).toStmt());
 
     // update, e.g. (r3.queryRefresh(tmp = r3.loadContentQuery()) && (ctx.someDir = tmp));
     const temporary = tempAllocator();

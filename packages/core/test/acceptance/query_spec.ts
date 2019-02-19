@@ -9,7 +9,7 @@
 import {Component, ContentChild, ContentChildren, Directive, ElementRef, Input, QueryList, TemplateRef, Type, ViewChild, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {fixmeIvy, onlyInIvy} from '@angular/private/testing';
+import {onlyInIvy} from '@angular/private/testing';
 
 describe('query logic', () => {
   beforeEach(() => {
@@ -17,7 +17,7 @@ describe('query logic', () => {
       declarations: [
         AppComp, QueryComp, SimpleCompA, SimpleCompB, StaticViewQueryComp, TextDirective,
         SubclassStaticViewQueryComp, StaticContentQueryComp, SubclassStaticContentQueryComp,
-        QueryCompWithChanges
+        QueryCompWithChanges, StaticContentQueryDir
       ]
     });
   });
@@ -256,41 +256,37 @@ describe('query logic', () => {
           expect(comp.contentChildren.length).toBe(2);
         });
 
-  });
-
-  fixmeIvy('Must support static content queries in Ivy')
-      .it('should set static content child queries in creation mode (and just in creation mode)',
-          () => {
-            const template = `
+    it('should set static content child queries in creation mode (and just in creation mode)',
+       () => {
+         const template = `
               <static-content-query-comp>
                   <div [text]="text"></div>
                   <span #foo></span>
               </static-content-query-comp>
             `;
-            TestBed.overrideComponent(AppComp, {set: new Component({template})});
-            const fixture = TestBed.createComponent(AppComp);
-            const component = fixture.debugElement.children[0].injector.get(StaticContentQueryComp);
+         TestBed.overrideComponent(AppComp, {set: new Component({template})});
+         const fixture = TestBed.createComponent(AppComp);
+         const component = fixture.debugElement.children[0].injector.get(StaticContentQueryComp);
 
-            // static ContentChild query should be set in creation mode, before CD runs
-            expect(component.textDir).toBeAnInstanceOf(TextDirective);
-            expect(component.textDir.text).toEqual('');
-            expect(component.setEvents).toEqual(['textDir set']);
+         // static ContentChild query should be set in creation mode, before CD runs
+         expect(component.textDir).toBeAnInstanceOf(TextDirective);
+         expect(component.textDir.text).toEqual('');
+         expect(component.setEvents).toEqual(['textDir set']);
 
-            // dynamic ContentChild query should not have been resolved yet
-            expect(component.foo).not.toBeDefined();
+         // dynamic ContentChild query should not have been resolved yet
+         expect(component.foo).not.toBeDefined();
 
-            const span = fixture.nativeElement.querySelector('span');
-            (fixture.componentInstance as any).text = 'some text';
-            fixture.detectChanges();
+         const span = fixture.nativeElement.querySelector('span');
+         (fixture.componentInstance as any).text = 'some text';
+         fixture.detectChanges();
 
-            expect(component.textDir.text).toEqual('some text');
-            expect(component.foo.nativeElement).toBe(span);
-            expect(component.setEvents).toEqual(['textDir set', 'foo set']);
-          });
+         expect(component.textDir.text).toEqual('some text');
+         expect(component.foo.nativeElement).toBe(span);
+         expect(component.setEvents).toEqual(['textDir set', 'foo set']);
+       });
 
-  fixmeIvy('Must support static content queries in Ivy')
-      .it('should support static content child queries inherited from superclasses', () => {
-        const template = `
+    it('should support static content child queries inherited from superclasses', () => {
+      const template = `
               <subclass-static-content-query-comp>
                   <div [text]="text"></div>
                   <span #foo></span>
@@ -298,28 +294,100 @@ describe('query logic', () => {
                   <span #baz></span>
               </subclass-static-content-query-comp>
             `;
-        TestBed.overrideComponent(AppComp, {set: new Component({template})});
-        const fixture = TestBed.createComponent(AppComp);
-        const component =
-            fixture.debugElement.children[0].injector.get(SubclassStaticContentQueryComp);
-        const divs = fixture.nativeElement.querySelectorAll('div');
-        const spans = fixture.nativeElement.querySelectorAll('span');
+      TestBed.overrideComponent(AppComp, {set: new Component({template})});
+      const fixture = TestBed.createComponent(AppComp);
+      const component =
+          fixture.debugElement.children[0].injector.get(SubclassStaticContentQueryComp);
+      const divs = fixture.nativeElement.querySelectorAll('div');
+      const spans = fixture.nativeElement.querySelectorAll('span');
 
-        // static ContentChild queries should be set in creation mode, before CD runs
-        expect(component.textDir).toBeAnInstanceOf(TextDirective);
-        expect(component.textDir.text).toEqual('');
-        expect(component.bar.nativeElement).toEqual(divs[1]);
+      // static ContentChild queries should be set in creation mode, before CD runs
+      expect(component.textDir).toBeAnInstanceOf(TextDirective);
+      expect(component.textDir.text).toEqual('');
+      expect(component.bar.nativeElement).toEqual(divs[1]);
 
-        // dynamic ContentChild queries should not have been resolved yet
-        expect(component.foo).not.toBeDefined();
-        expect(component.baz).not.toBeDefined();
+      // dynamic ContentChild queries should not have been resolved yet
+      expect(component.foo).not.toBeDefined();
+      expect(component.baz).not.toBeDefined();
 
-        (fixture.componentInstance as any).text = 'some text';
-        fixture.detectChanges();
-        expect(component.textDir.text).toEqual('some text');
-        expect(component.foo.nativeElement).toBe(spans[0]);
-        expect(component.baz.nativeElement).toBe(spans[1]);
-      });
+      (fixture.componentInstance as any).text = 'some text';
+      fixture.detectChanges();
+      expect(component.textDir.text).toEqual('some text');
+      expect(component.foo.nativeElement).toBe(spans[0]);
+      expect(component.baz.nativeElement).toBe(spans[1]);
+    });
+
+    it('should set static content child queries on directives', () => {
+      const template = `
+              <div staticContentQueryDir>
+                  <div [text]="text"></div>
+                  <span #foo></span>
+              </div>
+            `;
+      TestBed.overrideComponent(AppComp, {set: new Component({template})});
+      const fixture = TestBed.createComponent(AppComp);
+      const component = fixture.debugElement.children[0].injector.get(StaticContentQueryDir);
+
+      // static ContentChild query should be set in creation mode, before CD runs
+      expect(component.textDir).toBeAnInstanceOf(TextDirective);
+      expect(component.textDir.text).toEqual('');
+      expect(component.setEvents).toEqual(['textDir set']);
+
+      // dynamic ContentChild query should not have been resolved yet
+      expect(component.foo).not.toBeDefined();
+
+      const span = fixture.nativeElement.querySelector('span');
+      (fixture.componentInstance as any).text = 'some text';
+      fixture.detectChanges();
+
+      expect(component.textDir.text).toEqual('some text');
+      expect(component.foo.nativeElement).toBe(span);
+      expect(component.setEvents).toEqual(['textDir set', 'foo set']);
+    });
+
+    it('should support multiple content query components (multiple template passes)', () => {
+      const template = `
+              <static-content-query-comp>
+                  <div [text]="text"></div>
+                  <span #foo></span>
+              </static-content-query-comp>
+              <static-content-query-comp>
+                  <div [text]="text"></div>
+                  <span #foo></span>
+              </static-content-query-comp>
+            `;
+      TestBed.overrideComponent(AppComp, {set: new Component({template})});
+      const fixture = TestBed.createComponent(AppComp);
+      const firstComponent = fixture.debugElement.children[0].injector.get(StaticContentQueryComp);
+      const secondComponent = fixture.debugElement.children[1].injector.get(StaticContentQueryComp);
+
+      // static ContentChild query should be set in creation mode, before CD runs
+      expect(firstComponent.textDir).toBeAnInstanceOf(TextDirective);
+      expect(secondComponent.textDir).toBeAnInstanceOf(TextDirective);
+      expect(firstComponent.textDir.text).toEqual('');
+      expect(secondComponent.textDir.text).toEqual('');
+      expect(firstComponent.setEvents).toEqual(['textDir set']);
+      expect(secondComponent.setEvents).toEqual(['textDir set']);
+
+      // dynamic ContentChild query should not have been resolved yet
+      expect(firstComponent.foo).not.toBeDefined();
+      expect(secondComponent.foo).not.toBeDefined();
+
+      const spans = fixture.nativeElement.querySelectorAll('span');
+      (fixture.componentInstance as any).text = 'some text';
+      fixture.detectChanges();
+
+      expect(firstComponent.textDir.text).toEqual('some text');
+      expect(secondComponent.textDir.text).toEqual('some text');
+
+      expect(firstComponent.foo.nativeElement).toBe(spans[0]);
+      expect(secondComponent.foo.nativeElement).toBe(spans[1]);
+
+      expect(firstComponent.setEvents).toEqual(['textDir set', 'foo set']);
+      expect(secondComponent.setEvents).toEqual(['textDir set', 'foo set']);
+    });
+
+  });
 
   describe('observable interface', () => {
 
@@ -432,6 +500,29 @@ class SubclassStaticViewQueryComp extends StaticViewQueryComp {
 
 @Component({selector: 'static-content-query-comp', template: `<ng-content></ng-content>`})
 class StaticContentQueryComp {
+  private _textDir !: TextDirective;
+  private _foo !: ElementRef;
+  setEvents: string[] = [];
+
+  @ContentChild(TextDirective, {static: true})
+  get textDir(): TextDirective { return this._textDir; }
+
+  set textDir(value: TextDirective) {
+    this.setEvents.push('textDir set');
+    this._textDir = value;
+  }
+
+  @ContentChild('foo', {static: false})
+  get foo(): ElementRef { return this._foo; }
+
+  set foo(value: ElementRef) {
+    this.setEvents.push('foo set');
+    this._foo = value;
+  }
+}
+
+@Directive({selector: '[staticContentQueryDir]'})
+class StaticContentQueryDir {
   private _textDir !: TextDirective;
   private _foo !: ElementRef;
   setEvents: string[] = [];
