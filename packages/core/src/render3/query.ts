@@ -442,7 +442,7 @@ export function loadViewQuery<T>(): T {
  */
 export function contentQuery<T>(
     directiveIndex: number, predicate: Type<any>| string[], descend: boolean,
-    // TODO: "read" should be an AbstractType (FW-486)
+    // TODO(FW-486): "read" should be an AbstractType
     read: any): QueryList<T> {
   const lView = getLView();
   const tView = lView[TVIEW];
@@ -471,11 +471,11 @@ export function contentQuery<T>(
  */
 export function staticContentQuery<T>(
     directiveIndex: number, predicate: Type<any>| string[], descend: boolean,
-    // TODO: "read" should be an AbstractType (FW-486)
+    // TODO(FW-486): "read" should be an AbstractType
     read: any): void {
-  const queryList = contentQuery(directiveIndex, predicate, descend, read);
+  const queryList = contentQuery(directiveIndex, predicate, descend, read) as QueryList_<T>;
   const tView = getLView()[TVIEW];
-  (queryList as QueryList_<T>)._static = true;
+  queryList._static = true;
   if (!tView.staticContentQueries) {
     tView.staticContentQueries = true;
   }

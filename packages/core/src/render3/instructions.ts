@@ -92,6 +92,9 @@ export function refreshDescendantViews(lView: LView) {
     setHostBindings(tView, lView);
   }
 
+  // We resolve content queries specifically marked as `static` in creation mode. Dynamic
+  // content queries are resolved during change detection (i.e. update mode), after embedded
+  // views are refreshed (see block above).
   if (creationMode && tView.staticContentQueries) {
     refreshContentQueries(tView, lView);
   }
