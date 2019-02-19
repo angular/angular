@@ -61,5 +61,13 @@ setPublicVar SAUCE_TUNNEL_IDENTIFIER "angular-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_
 # acquire CircleCI instances for too long if sauceconnect failed, we need a connect timeout.
 setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 
+
+####################################################################################################
+# Define our own yarn command for CircleCI.
+####################################################################################################
+echo "function yarn () { /usr/bin/env node $projectDir/third_party/github.com/yarnpkg/yarn/releases/yarn-1.13.0.js \"\$@\"; }" >> $BASH_ENV;
+echo "export -f yarn;" >> $BASH_ENV;
+
+
 # Source `$BASH_ENV` to make the variables available immediately.
 source $BASH_ENV;
