@@ -2520,9 +2520,9 @@ describe('ngtsc behavioral tests', () => {
           export class TestModule {}
         `);
 
-        const entryModule1 = path.join(env.basePath, 'test#TestModule');
-        const entryModule2 = path.join(env.basePath, 'not-test#TestModule');
-        const entryModule3 = path.join(env.basePath, 'test#NotTestModule');
+        const entryModule1 = path.posix.join(env.basePath, 'test#TestModule');
+        const entryModule2 = path.posix.join(env.basePath, 'not-test#TestModule');
+        const entryModule3 = path.posix.join(env.basePath, 'test#NotTestModule');
 
         expect(() => env.driveRoutes(entryModule1)).not.toThrow();
         expect(() => env.driveRoutes(entryModule2))
