@@ -729,6 +729,7 @@ testing/**                                                      @angular/fw-test
 # ================================================
 
 /aio/content/marketing/**                                       @angular/fw-docs-marketing @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/images/bios/**                                     @angular/fw-docs-marketing @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/marketing/**                                @angular/fw-docs-marketing @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/navigation.json                                    @angular/fw-docs-marketing @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/license.md                                         @angular/fw-docs-marketing @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
