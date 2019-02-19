@@ -46,12 +46,7 @@ ts_devserver(
     static_files = [
         "@npm//node_modules/zone.js:dist/zone.min.js",
     ],
-    deps = [
-        "//src",
-        # This will be removed with https://github.com/angular/angular/pull/28720. This is the
-        # only remaining dependency that we still build from source here.
-        "@rxjs",
-    ],
+    deps = ["//src"],
 )
 
 rollup_bundle(
