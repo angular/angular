@@ -472,6 +472,12 @@
             "rev": true,
             "title": "Alyle UI",
             "url": "https://alyle-ui.firebaseapp.com/"
+          },
+          "nebular": {
+            "desc": "Theme System, UI Components, Auth and Security for your next Angular application.",
+            "rev": true,
+            "title": "Nebular",
+            "url": "https://akveo.github.io/nebular/"
           }
         }
       }
