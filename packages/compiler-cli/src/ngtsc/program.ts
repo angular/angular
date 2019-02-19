@@ -12,18 +12,18 @@ import * as ts from 'typescript';
 import * as api from '../transformers/api';
 import {nocollapseHack} from '../transformers/nocollapse_hack';
 
-import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry, SelectorScopeRegistry} from './annotations';
+import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from './annotations';
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
-import {AbsoluteModuleStrategy, FileToModuleHost, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
-import {FileToModuleStrategy} from './imports/src/emitter';
+import {AbsoluteModuleStrategy, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {PartialEvaluator} from './partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from './path';
 import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
 import {NgModuleRouteAnalyzer, entryPointKeyFor} from './routing';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from './scope';
 import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
@@ -339,7 +339,9 @@ export class NgtscProgram implements api.Program {
     }
 
     const evaluator = new PartialEvaluator(this.reflector, checker);
-    const scopeRegistry = new SelectorScopeRegistry(checker, this.reflector, this.refEmitter);
+    const depScopeReader = new MetadataDtsModuleScopeResolver(checker, this.reflector);
+    const scopeRegistry = new LocalModuleScopeRegistry(depScopeReader);
+
 
     // If a flat module entrypoint was specified, then track references via a `ReferenceGraph` in
     // order to produce proper diagnostics for incorrectly exported directives/pipes/etc. If there
@@ -360,7 +362,8 @@ export class NgtscProgram implements api.Program {
       new ComponentDecoratorHandler(
           this.reflector, evaluator, scopeRegistry, this.isCore, this.resourceManager,
           this.rootDirs, this.options.preserveWhitespaces || false,
-          this.options.i18nUseExternalIds !== false, this.moduleResolver, this.cycleAnalyzer),
+          this.options.i18nUseExternalIds !== false, this.moduleResolver, this.cycleAnalyzer,
+          this.refEmitter),
       new DirectiveDecoratorHandler(this.reflector, evaluator, scopeRegistry, this.isCore),
       new InjectableDecoratorHandler(
           this.reflector, this.isCore, this.options.strictInjectionParameters || false),

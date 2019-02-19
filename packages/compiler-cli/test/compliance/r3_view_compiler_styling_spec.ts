@@ -1173,9 +1173,7 @@ describe('compiler compliance: styling', () => {
 
                 @Component({
                   selector: 'my-component',
-                  template: '
-                    <div myWidthDir myHeightDir myClassDir></div>
-                  ',
+                  template: '<div myWidthDir myHeightDir myClassDir></div>',
                 })
                 export class MyComponent {
                 }

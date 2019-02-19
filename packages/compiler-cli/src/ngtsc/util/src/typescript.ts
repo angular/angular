@@ -80,3 +80,9 @@ export function getRootDirs(host: ts.CompilerHost, options: ts.CompilerOptions):
   }
   return rootDirs.map(rootDir => AbsoluteFsPath.fromUnchecked(rootDir));
 }
+
+export function nodeDebugInfo(node: ts.Node): string {
+  const sf = getSourceFile(node);
+  const {line, character} = ts.getLineAndCharacterOfPosition(sf, node.pos);
+  return `[${sf.fileName}: ${ts.SyntaxKind[node.kind]} @ ${line}:${character}]`;
+}
