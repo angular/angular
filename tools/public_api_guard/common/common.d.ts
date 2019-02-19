@@ -207,12 +207,12 @@ export declare class LowerCasePipe implements PipeTransform {
     transform(value: string): string;
 }
 
-export declare class NgClass implements DoCheck {
+export declare class NgClass extends NgClassBase {
     klass: string;
     ngClass: string | string[] | Set<string> | {
         [klass: string]: any;
     };
-    constructor(_iterableDiffers: IterableDiffers, _keyValueDiffers: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer2);
+    constructor(delegate: NgClassImpl);
     ngDoCheck(): void;
 }
 
@@ -283,11 +283,11 @@ export declare class NgPluralCase {
     constructor(value: string, template: TemplateRef<Object>, viewContainer: ViewContainerRef, ngPlural: NgPlural);
 }
 
-export declare class NgStyle implements DoCheck {
+export declare class NgStyle extends NgStyleBase {
     ngStyle: {
-        [key: string]: string;
-    };
-    constructor(_differs: KeyValueDiffers, _ngEl: ElementRef, _renderer: Renderer2);
+        [klass: string]: any;
+    } | null;
+    constructor(delegate: NgStyleImpl);
     ngDoCheck(): void;
 }
 

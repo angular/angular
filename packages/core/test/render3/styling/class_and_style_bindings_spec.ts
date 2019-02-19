@@ -1693,18 +1693,6 @@ describe('style and class based bindings', () => {
            ]);
          });
 
-      it('should throw an error if a directive is provided that isn\'t registered', () => {
-        const template = createEmptyStylingContext();
-        const knownDir = {};
-        const unknownDir = {};
-        updateContextWithBindings(template, knownDir, null, ['color']);
-
-        const ctx = allocStylingContext(element, template);
-        updateStyleProp(ctx, 0, 'blue', knownDir);
-
-        expect(() => { updateStyleProp(ctx, 0, 'blue', unknownDir); }).toThrow();
-      });
-
       it('should use a different sanitizer when a different directive\'s binding is updated',
          () => {
            const getStyles = trackStylesFactory();
@@ -1765,6 +1753,62 @@ describe('style and class based bindings', () => {
            updateStyleProp(ctx, 0, 'green', dirWithoutSanitizer);
            expect(((ctx[colorIndex] as number) & StylingFlags.Sanitize) > 0).toBeFalsy();
            expect(getStyles(ctx, dirWithoutSanitizer)).toEqual({color: 'green'});
+         });
+
+      it('should automatically register a styling context with a foreign directive if styling is applied with said directive',
+         () => {
+           const template = createEmptyStylingContext();
+           const knownDir = {};
+           const foreignDir = {};
+           updateContextWithBindings(template, knownDir);
+
+           const ctx = allocStylingContext(element, template);
+           expect(ctx[StylingIndex.DirectiveRegistryPosition]).toEqual([
+             null,      //
+             -1,        //
+             false,     //
+             null,      //
+             knownDir,  //
+             2,         //
+             false,     //
+             null,      //
+           ]);
+
+           expect(ctx[StylingIndex.CachedMultiClasses].length)
+               .toEqual(template[StylingIndex.CachedMultiClasses].length);
+           expect(ctx[StylingIndex.CachedMultiClasses]).toEqual([0, 0, 9, null, 0, 0, 9, null, 0]);
+
+           expect(ctx[StylingIndex.CachedMultiStyles].length)
+               .toEqual(template[StylingIndex.CachedMultiStyles].length);
+           expect(ctx[StylingIndex.CachedMultiStyles]).toEqual([0, 0, 9, null, 0, 0, 9, null, 0]);
+
+           updateStylingMap(ctx, 'foo', null, foreignDir);
+           expect(ctx[StylingIndex.DirectiveRegistryPosition]).toEqual([
+             null,        //
+             -1,          //
+             false,       //
+             null,        //
+             knownDir,    //
+             2,           //
+             false,       //
+             null,        //
+             foreignDir,  //
+             -1,          //
+             true,        //
+             null,        //
+           ]);
+
+           expect(ctx[StylingIndex.CachedMultiClasses].length)
+               .not.toEqual(template[StylingIndex.CachedMultiClasses].length);
+           expect(ctx[StylingIndex.CachedMultiClasses]).toEqual([
+             1, 0, 9, null, 0, 0, 9, null, 0, 0, 9, 'foo', 1
+           ]);
+
+           expect(ctx[StylingIndex.CachedMultiStyles].length)
+               .not.toEqual(template[StylingIndex.CachedMultiStyles].length);
+           expect(ctx[StylingIndex.CachedMultiStyles]).toEqual([
+             0, 0, 9, null, 0, 0, 9, null, 0, 0, 9, null, 0
+           ]);
          });
     });
 

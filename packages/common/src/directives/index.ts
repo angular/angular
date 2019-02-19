@@ -7,18 +7,18 @@
  */
 
 import {Provider} from '@angular/core';
-
-import {NgClass} from './ng_class';
+import {NgClass, NgClassBase} from './ng_class';
 import {NgComponentOutlet} from './ng_component_outlet';
 import {NgForOf, NgForOfContext} from './ng_for_of';
 import {NgIf, NgIfContext} from './ng_if';
 import {NgPlural, NgPluralCase} from './ng_plural';
-import {NgStyle} from './ng_style';
+import {NgStyle, NgStyleBase} from './ng_style';
 import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
 import {NgTemplateOutlet} from './ng_template_outlet';
 
 export {
   NgClass,
+  NgClassBase,
   NgComponentOutlet,
   NgForOf,
   NgForOfContext,
@@ -27,10 +27,11 @@ export {
   NgPlural,
   NgPluralCase,
   NgStyle,
+  NgStyleBase,
   NgSwitch,
   NgSwitchCase,
   NgSwitchDefault,
-  NgTemplateOutlet
+  NgTemplateOutlet,
 };
 
 

@@ -723,6 +723,9 @@
     "name": "getMatchingBindingIndex"
   },
   {
+    "name": "getMultiClassesStartIndex"
+  },
+  {
     "name": "getMultiOrSingleIndex"
   },
   {
@@ -1099,6 +1102,9 @@
   },
   {
     "name": "refreshDynamicEmbeddedViews"
+  },
+  {
+    "name": "registerMultiMapEntry"
   },
   {
     "name": "registerPostOrderHooks"

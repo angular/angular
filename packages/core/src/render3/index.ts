@@ -105,7 +105,7 @@ export {
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
 
 export {
-    AttributeMarker
+  AttributeMarker
 } from './interfaces/node';
 
 export {
