@@ -228,6 +228,8 @@ export function extractQueryMetadata(
   const first = name === 'ViewChild' || name === 'ContentChild';
   const node = unwrapForwardRef(args[0], reflector);
   const arg = evaluator.evaluate(node);
+
+  /** Whether or not this query should collect only static results (see view/api.ts)  */
   let isStatic: boolean = false;
 
   // Extract the predicate
@@ -266,7 +268,7 @@ export function extractQueryMetadata(
     }
 
     if (options.has('static')) {
-      isStatic = evaluator.evaluate(options.get('static') !) as boolean;
+      isStatic = !!evaluator.evaluate(options.get('static') !);
     }
 
   } else if (args.length > 2) {

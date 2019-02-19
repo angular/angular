@@ -489,8 +489,9 @@ function selectorsFromGlobalMetadata(
 
 function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool): o.Expression[] {
   const parameters = [
-    getQueryPredicate(query, constantPool), o.literal(query.descendants),
-    query.read || o.literal(null)
+    getQueryPredicate(query, constantPool),
+    o.literal(query.descendants),
+    query.read || o.literal(null),
   ];
   return parameters;
 }

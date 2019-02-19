@@ -353,10 +353,10 @@ export function query<T>(
     predicate: Type<any>| string[], descend: boolean, read: any): QueryList<T> {
   ngDevMode && assertPreviousIsParent(getIsParent());
   const lView = getLView();
-  const queryList = new QueryList<T>();
+  const queryList = new QueryList<T>() as QueryList_<T>;
   const queries = lView[QUERIES] || (lView[QUERIES] = new LQueries_(null, null, null));
-  (queryList as QueryList_<T>)._valuesTree = [];
-  (queryList as QueryList_<T>)._static = false;
+  queryList._valuesTree = [];
+  queryList._static = false;
   queries.track(queryList, predicate, descend, read);
   storeCleanupWithContext(lView, queryList, queryList.destroy);
   return queryList;
@@ -388,10 +388,11 @@ export function queryRefresh(queryList: QueryList<any>): boolean {
  * @param read What to save in the query
  */
 export function staticViewQuery<T>(
+    // TODO(FW-486): "read" should be an AbstractType
     predicate: Type<any>| string[], descend: boolean, read: any): void {
-  const queryList = viewQuery(predicate, descend, read);
+  const queryList = viewQuery(predicate, descend, read) as QueryList_<T>;
   const tView = getLView()[TVIEW];
-  (queryList as QueryList_<T>)._static = true;
+  queryList._static = true;
   if (!tView.staticViewQueries) {
     tView.staticViewQueries = true;
   }
@@ -406,7 +407,7 @@ export function staticViewQuery<T>(
  * @returns QueryList<T>
  */
 export function viewQuery<T>(
-    // TODO: "read" should be an AbstractType (FW-486)
+    // TODO(FW-486): "read" should be an AbstractType
     predicate: Type<any>| string[], descend: boolean, read: any): QueryList<T> {
   const lView = getLView();
   const tView = lView[TVIEW];

@@ -165,7 +165,7 @@ export function setIsParent(value: boolean): void {
 
 /** Checks whether a given view is in creation mode */
 export function isCreationMode(view: LView = lView): boolean {
-  return view ? (view[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode : false;
+  return (view[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
 }
 
 /**
