@@ -12,7 +12,7 @@ import {defineComponent, defineDirective} from '../../src/render3/definition';
 import {getTranslationForTemplate, i18n, i18nApply, i18nAttributes, i18nEnd, i18nExp, i18nPostprocess, i18nStart} from '../../src/render3/i18n';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
-import {getNativeByIndex} from '../../src/render3/util';
+import {getNativeByIndex, getTNode} from '../../src/render3/util';
 import {NgIf} from './common_with_def';
 import {allocHostVars, element, elementEnd, elementStart, template, text, nextContext, bind, elementProperty, projectionDef, projection, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
@@ -1434,6 +1434,49 @@ describe('Runtime i18n', () => {
       expect(fixture.html)
           .toEqual(
               `<div class="bar" title="start 3 middle 2 end">trad 2 emails<!--ICU 23--></div><div class="bar"></div>`);
+    });
+
+    it('should fix the links when adding/moving/removing nodes', () => {
+      const MSG_DIV = `�#2��/#2��#8��/#8��#4��/#4��#5��/#5�Hello World�#3��/#3��#7��/#7�`;
+      let fixture = prepareFixture(() => {
+        elementStart(0, 'div');
+        {
+          i18nStart(1, MSG_DIV);
+          {
+            element(2, 'div2');
+            element(3, 'div3');
+            element(4, 'div4');
+            element(5, 'div5');
+            element(6, 'div6');
+            element(7, 'div7');
+            element(8, 'div8');
+          }
+          i18nEnd();
+        }
+        elementEnd();
+      }, null, 9);
+
+      expect(fixture.html)
+          .toEqual(
+              '<div><div2></div2><div8></div8><div4></div4><div5></div5>Hello World<div3></div3><div7></div7></div>');
+
+      const div0 = getTNode(0, fixture.hostView);
+      const div2 = getTNode(2, fixture.hostView);
+      const div3 = getTNode(3, fixture.hostView);
+      const div4 = getTNode(4, fixture.hostView);
+      const div5 = getTNode(5, fixture.hostView);
+      const div7 = getTNode(7, fixture.hostView);
+      const div8 = getTNode(8, fixture.hostView);
+      const text = getTNode(9, fixture.hostView);
+      expect(div0.child).toEqual(div2);
+      expect(div0.next).toBeNull();
+      expect(div2.next).toEqual(div8);
+      expect(div8.next).toEqual(div4);
+      expect(div4.next).toEqual(div5);
+      expect(div5.next).toEqual(text);
+      expect(text.next).toEqual(div3);
+      expect(div3.next).toEqual(div7);
+      expect(div7.next).toBeNull();
     });
 
     describe('projection', () => {
