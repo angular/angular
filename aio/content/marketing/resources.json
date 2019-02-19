@@ -819,6 +819,12 @@
             "title": "Formation JavaScript (French)",
             "url": "https://formationjavascript.com/formation-angular/"
           },
+          "humancoders-angular": {
+            "desc": "Angular trainings delivered by Human Coders (France)",
+            "rev": true,
+            "title": "Formation Angular (French)",
+            "url": "https://www.humancoders.com/formations/angular"
+          },
           "wao": {
             "desc": "Onsite Angular Training delivered by We Are One Sàrl in Switzerland",
             "logo": "https://weareone.ch/wordpress/wao-content/uploads/2014/12/logo_200_2x.png",
