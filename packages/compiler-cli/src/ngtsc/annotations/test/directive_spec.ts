@@ -8,17 +8,16 @@
 
 import * as ts from 'typescript';
 
-import {ReferenceEmitter} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost} from '../../reflection';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {DirectiveDecoratorHandler} from '../src/directive';
-import {SelectorScopeRegistry} from '../src/selector_scope';
 
 
 describe('DirectiveDecoratorHandler', () => {
   it('should use the `ReflectionHost` to detect class inheritance', () => {
-    const {program, options, host} = makeProgram([
+    const {program} = makeProgram([
       {
         name: 'node_modules/@angular/core/index.d.ts',
         contents: 'export const Directive: any;',
@@ -40,9 +39,9 @@ describe('DirectiveDecoratorHandler', () => {
     const checker = program.getTypeChecker();
     const reflectionHost = new TestReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflectionHost, checker);
-    const handler = new DirectiveDecoratorHandler(
-        reflectionHost, evaluator,
-        new SelectorScopeRegistry(checker, reflectionHost, new ReferenceEmitter([])), false);
+    const scopeRegistry =
+        new LocalModuleScopeRegistry(new MetadataDtsModuleScopeResolver(checker, reflectionHost));
+    const handler = new DirectiveDecoratorHandler(reflectionHost, evaluator, scopeRegistry, false);
 
     const analyzeDirective = (dirName: string) => {
       const DirNode = getDeclaration(program, 'entry.ts', dirName, ts.isClassDeclaration);

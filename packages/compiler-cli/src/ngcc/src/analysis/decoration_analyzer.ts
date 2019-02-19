@@ -10,11 +10,12 @@ import * as path from 'canonical-path';
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
-import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader, SelectorScopeRegistry} from '../../../ngtsc/annotations';
+import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../ngtsc/cycles';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, ReferenceEmitter} from '../../../ngtsc/imports';
 import {PartialEvaluator} from '../../../ngtsc/partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from '../../../ngtsc/path';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../ngtsc/scope';
 import {CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../ngtsc/transform';
 import {DecoratedClass} from '../host/decorated_class';
 import {NgccReflectionHost} from '../host/ngcc_host';
@@ -71,7 +72,9 @@ export class DecorationAnalyzer {
     // on whether a bestGuessOwningModule is present in the Reference.
     new LogicalProjectStrategy(this.typeChecker, new LogicalFileSystem(this.rootDirs)),
   ]);
-  scopeRegistry = new SelectorScopeRegistry(this.typeChecker, this.reflectionHost, this.refEmitter);
+  dtsModuleScopeResolver =
+      new MetadataDtsModuleScopeResolver(this.typeChecker, this.reflectionHost);
+  scopeRegistry = new LocalModuleScopeRegistry(this.dtsModuleScopeResolver);
   evaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker);
   moduleResolver = new ModuleResolver(this.program, this.options, this.host);
   importGraph = new ImportGraph(this.moduleResolver);
@@ -81,7 +84,7 @@ export class DecorationAnalyzer {
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore, this.resourceManager,
         this.rootDirs, /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
-        this.moduleResolver, this.cycleAnalyzer),
+        this.moduleResolver, this.cycleAnalyzer, this.refEmitter),
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore),
     new InjectableDecoratorHandler(this.reflectionHost, this.isCore, /* strictCtorDeps */ false),

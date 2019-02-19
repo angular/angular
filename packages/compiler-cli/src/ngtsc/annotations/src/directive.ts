@@ -13,11 +13,12 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
+import {LocalModuleScopeRegistry} from '../../scope/src/local';
+import {extractDirectiveGuards} from '../../scope/src/util';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
-import {SelectorScopeRegistry} from './selector_scope';
-import {extractDirectiveGuards, getValidConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwardRef} from './util';
+import {getValidConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwardRef} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
@@ -29,7 +30,7 @@ export class DirectiveDecoratorHandler implements
     DecoratorHandler<DirectiveHandlerData, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
+      private scopeRegistry: LocalModuleScopeRegistry, private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -58,9 +59,8 @@ export class DirectiveDecoratorHandler implements
     // when this directive appears in an `@NgModule` scope, its selector can be determined.
     if (analysis && analysis.selector !== null) {
       const ref = new Reference(node);
-      this.scopeRegistry.registerDirective(node, {
+      this.scopeRegistry.registerDirective({
         ref,
-        directive: ref,
         name: node.name !.text,
         selector: analysis.selector,
         exportAs: analysis.exportAs,

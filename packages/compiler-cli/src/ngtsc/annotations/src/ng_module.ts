@@ -14,12 +14,12 @@ import {Reference, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
+import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
 
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
-import {SelectorScopeRegistry} from './selector_scope';
 import {getValidConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
@@ -37,9 +37,9 @@ export interface NgModuleAnalysis {
 export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalysis, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private scopeRegistry: SelectorScopeRegistry, private referencesRegistry: ReferencesRegistry,
-      private isCore: boolean, private routeAnalyzer: NgModuleRouteAnalyzer|null,
-      private refEmitter: ReferenceEmitter) {}
+      private scopeRegistry: LocalModuleScopeRegistry,
+      private referencesRegistry: ReferencesRegistry, private isCore: boolean,
+      private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -114,9 +114,10 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       bootstrap = this.resolveTypeList(expr, bootstrapMeta, 'bootstrap');
     }
 
-    // Register this module's information with the SelectorScopeRegistry. This ensures that during
-    // the compile() phase, the module's metadata is available for selector scope computation.
-    this.scopeRegistry.registerModule(node, {declarations, imports, exports});
+    // Register this module's information with the LocalModuleScopeRegistry. This ensures that
+    // during the compile() phase, the module's metadata is available for selector scope
+    // computation.
+    this.scopeRegistry.registerNgModule(node, {declarations, imports, exports});
 
     const valueContext = node.getSourceFile();
 
@@ -183,16 +184,15 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
     const context = getSourceFile(node);
     for (const decl of analysis.declarations) {
-      if (this.scopeRegistry.requiresRemoteScope(decl.node)) {
-        const scope = this.scopeRegistry.lookupCompilationScopeAsRefs(decl.node);
+      if (this.scopeRegistry.getRequiresRemoteScope(decl.node)) {
+        const scope =
+            this.scopeRegistry.getScopeOfModule(ts.getOriginalNode(node) as ts.Declaration);
         if (scope === null) {
           continue;
         }
-        const directives: Expression[] = [];
-        const pipes: Expression[] = [];
-        scope.directives.forEach(
-            (directive, _) => { directives.push(this.refEmitter.emit(directive.ref, context) !); });
-        scope.pipes.forEach(pipe => pipes.push(this.refEmitter.emit(pipe, context) !));
+        const directives = scope.compilation.directives.map(
+            directive => this.refEmitter.emit(directive.ref, context));
+        const pipes = scope.compilation.pipes.map(pipe => this.refEmitter.emit(pipe.ref, context));
         const directiveArray = new LiteralArrayExpr(directives);
         const pipesArray = new LiteralArrayExpr(pipes);
         const declExpr = this.refEmitter.emit(decl, context) !;
