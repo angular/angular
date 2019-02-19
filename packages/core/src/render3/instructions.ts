@@ -65,6 +65,8 @@ const enum BindingDirection {
  */
 export function refreshDescendantViews(lView: LView) {
   const tView = lView[TVIEW];
+  const creationMode = isCreationMode(lView);
+
   // This needs to be set before children are processed to support recursive components
   tView.firstTemplatePass = false;
 
@@ -73,7 +75,7 @@ export function refreshDescendantViews(lView: LView) {
 
   // If this is a creation pass, we should not call lifecycle hooks or evaluate bindings.
   // This will be done in the update pass.
-  if (!isCreationMode(lView)) {
+  if (!creationMode) {
     const checkNoChangesMode = getCheckNoChangesMode();
 
     executeInitHooks(lView, tView, checkNoChangesMode);
@@ -88,6 +90,13 @@ export function refreshDescendantViews(lView: LView) {
         InitPhaseState.AfterContentInitHooksToBeRun);
 
     setHostBindings(tView, lView);
+  }
+
+  // We resolve content queries specifically marked as `static` in creation mode. Dynamic
+  // content queries are resolved during change detection (i.e. update mode), after embedded
+  // views are refreshed (see block above).
+  if (creationMode && tView.staticContentQueries) {
+    refreshContentQueries(tView, lView);
   }
 
   refreshChildComponents(tView.components);
@@ -785,6 +794,7 @@ export function createTView(
     expandoInstructions: null,
     firstTemplatePass: true,
     staticViewQueries: false,
+    staticContentQueries: false,
     initHooks: null,
     checkHooks: null,
     contentHooks: null,

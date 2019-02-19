@@ -1694,6 +1694,79 @@ describe('compiler compliance', () => {
         expectEmit(source, ContentQueryComponentDefinition, 'Invalid ContentQuery declaration');
       });
 
+      it('should support static content queries', () => {
+        const files = {
+          app: {
+            ...directive,
+            'content_query.ts': `
+            import {Component, ContentChild, NgModule} from '@angular/core';
+            import {SomeDirective} from './some.directive';
+
+            @Component({
+              selector: 'content-query-component',
+              template: \`
+                <div><ng-content></ng-content></div>
+              \`
+            })
+            export class ContentQueryComponent {
+              @ContentChild(SomeDirective, {static: true}) someDir !: SomeDirective;
+              @ContentChild('foo', {static: false}) foo !: ElementRef;
+            }
+
+            @Component({
+              selector: 'my-app',
+              template: \`
+                <content-query-component>
+                  <div someDir></div>
+                </content-query-component>
+              \`
+            })
+            export class MyApp { }
+
+            @NgModule({declarations: [SomeDirective, ContentQueryComponent, MyApp]})
+            export class MyModule { }
+            `
+          }
+        };
+
+        const ContentQueryComponentDefinition = `
+          ContentQueryComponent.ngComponentDef = $r3$.ɵdefineComponent({
+            type: ContentQueryComponent,
+            selectors: [["content-query-component"]],
+            factory: function ContentQueryComponent_Factory(t) {
+              return new (t || ContentQueryComponent)();
+            },
+            contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
+              if (rf & 1) {
+              $r3$.ɵstaticContentQuery(dirIndex, SomeDirective, true, null);
+              $r3$.ɵcontentQuery(dirIndex, $ref0$, true, null);
+              }
+              if (rf & 2) {
+              var $tmp$;
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadContentQuery())) && (ctx.someDir = $tmp$.first));
+                ($r3$.ɵqueryRefresh(($tmp$ = $r3$.ɵloadContentQuery())) && (ctx.foo = $tmp$.first));
+              }
+            },
+            ngContentSelectors: $_c1$,
+            consts: 2,
+            vars: 0,
+            template:  function ContentQueryComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵprojectionDef();
+                $r3$.ɵelementStart(0, "div");
+                $r3$.ɵprojection(1);
+                $r3$.ɵelementEnd();
+              }
+            },
+            encapsulation: 2
+          });`;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
+        expectEmit(source, ContentQueryComponentDefinition, 'Invalid ContentQuery declaration');
+      });
+
       it('should support content queries with read tokens specified', () => {
         const files = {
           app: {
