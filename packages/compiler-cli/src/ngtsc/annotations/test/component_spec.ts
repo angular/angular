@@ -13,10 +13,10 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ModuleResolver, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost} from '../../reflection';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {ResourceLoader} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
-import {SelectorScopeRegistry} from '../src/selector_scope';
 
 export class NoopResourceLoader implements ResourceLoader {
   resolve(): string { throw new Error('Not implemented.'); }
@@ -48,11 +48,13 @@ describe('ComponentDecoratorHandler', () => {
     const moduleResolver = new ModuleResolver(program, options, host);
     const importGraph = new ImportGraph(moduleResolver);
     const cycleAnalyzer = new CycleAnalyzer(importGraph);
+    const scopeRegistry =
+        new LocalModuleScopeRegistry(new MetadataDtsModuleScopeResolver(checker, reflectionHost));
+    const refEmitter = new ReferenceEmitter([]);
 
     const handler = new ComponentDecoratorHandler(
-        reflectionHost, evaluator,
-        new SelectorScopeRegistry(checker, reflectionHost, new ReferenceEmitter([])), false,
-        new NoopResourceLoader(), [''], false, true, moduleResolver, cycleAnalyzer);
+        reflectionHost, evaluator, scopeRegistry, false, new NoopResourceLoader(), [''], false,
+        true, moduleResolver, cycleAnalyzer, refEmitter);
     const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', ts.isClassDeclaration);
     const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
     if (detected === undefined) {

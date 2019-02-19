@@ -10,12 +10,13 @@ import {LiteralExpr, R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFrom
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {Reference} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
+import {LocalModuleScopeRegistry} from '../../scope/src/local';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
-import {SelectorScopeRegistry} from './selector_scope';
 import {getValidConstructorDependencies, isAngularCore, unwrapExpression} from './util';
 
 export interface PipeHandlerData {
@@ -26,7 +27,7 @@ export interface PipeHandlerData {
 export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
+      private scopeRegistry: LocalModuleScopeRegistry, private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -78,7 +79,8 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, pipeNameExpr, `@Pipe.name must be a string`);
     }
-    this.scopeRegistry.registerPipe(clazz, pipeName);
+    const ref = new Reference(clazz);
+    this.scopeRegistry.registerPipe({ref, name: pipeName});
 
     let pure = true;
     if (pipe.has('pure')) {

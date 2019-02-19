@@ -12,9 +12,10 @@ import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {ModuleResolver, Reference} from '../../imports';
+import {ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
+import {LocalModuleScopeRegistry, ScopeDirective, extractDirectiveGuards} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 import {TypeCheckContext} from '../../typecheck';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
@@ -22,8 +23,7 @@ import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
 import {generateSetClassMetadataCall} from './metadata';
-import {ScopeDirective, SelectorScopeRegistry} from './selector_scope';
-import {extractDirectiveGuards, isAngularCore, isAngularCoreReference, unwrapExpression} from './util';
+import {isAngularCore, isAngularCoreReference, unwrapExpression} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -41,10 +41,11 @@ export class ComponentDecoratorHandler implements
     DecoratorHandler<ComponentHandlerData, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean,
+      private scopeRegistry: LocalModuleScopeRegistry, private isCore: boolean,
       private resourceLoader: ResourceLoader, private rootDirs: string[],
       private defaultPreserveWhitespaces: boolean, private i18nUseExternalIds: boolean,
-      private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer) {}
+      private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
+      private refEmitter: ReferenceEmitter) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -222,14 +223,13 @@ export class ComponentDecoratorHandler implements
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
     }
 
-    // If the component has a selector, it should be registered with the `SelectorScopeRegistry` so
-    // when this component appears in an `@NgModule` scope, its selector can be determined.
+    // If the component has a selector, it should be registered with the `LocalModuleScopeRegistry`
+    // so that when this component appears in an `@NgModule` scope, its selector can be determined.
     if (metadata.selector !== null) {
       const ref = new Reference(node);
-      this.scopeRegistry.registerDirective(node, {
+      this.scopeRegistry.registerDirective({
         ref,
         name: node.name !.text,
-        directive: ref,
         selector: metadata.selector,
         exportAs: metadata.exportAs,
         inputs: metadata.inputs,
@@ -313,10 +313,13 @@ export class ComponentDecoratorHandler implements
   }
 
   typeCheck(ctx: TypeCheckContext, node: ts.Declaration, meta: ComponentHandlerData): void {
-    const scope = this.scopeRegistry.lookupCompilationScopeAsRefs(node);
-    const matcher = new SelectorMatcher<ScopeDirective<any>>();
+    if (!ts.isClassDeclaration(node)) {
+      return;
+    }
+    const scope = this.scopeRegistry.getScopeForComponent(node);
+    const matcher = new SelectorMatcher<ScopeDirective>();
     if (scope !== null) {
-      for (const meta of scope.directives) {
+      for (const meta of scope.compilation.directives) {
         matcher.addSelectables(CssSelector.parse(meta.selector), meta);
       }
       ctx.addTemplate(node as ts.ClassDeclaration, meta.parsedTemplate, matcher);
@@ -324,26 +327,33 @@ export class ComponentDecoratorHandler implements
   }
 
   resolve(node: ts.ClassDeclaration, analysis: ComponentHandlerData): void {
+    const context = node.getSourceFile();
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
-    const scope = this.scopeRegistry.lookupCompilationScope(node);
+    const scope = this.scopeRegistry.getScopeForComponent(node);
     let metadata = analysis.meta;
     if (scope !== null) {
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during resolve() the whole compilation unit has been
       // fully analyzed.
-      const {pipes, containsForwardDecls} = scope;
-      const directives =
-          scope.directives.map(dir => ({selector: dir.selector, expression: dir.directive}));
+      const directives = scope.compilation.directives.map(
+          dir => ({selector: dir.selector, expression: this.refEmitter.emit(dir.ref, context)}));
+      const pipes = new Map<string, Expression>();
+      for (const pipe of scope.compilation.pipes) {
+        pipes.set(pipe.name, this.refEmitter.emit(pipe.ref, context));
+      }
 
       // Scan through the references of the `scope.directives` array and check whether
       // any import which needs to be generated for the directive would create a cycle.
       const origin = node.getSourceFile();
-      const cycleDetected =
-          scope.directives.some(meta => this._isCyclicImport(meta.directive, origin)) ||
-          Array.from(scope.pipes.values()).some(pipe => this._isCyclicImport(pipe, origin));
+      const cycleDetected = directives.some(dir => this._isCyclicImport(dir.expression, origin)) ||
+          Array.from(pipes.values()).some(pipe => this._isCyclicImport(pipe, origin));
       if (!cycleDetected) {
-        const wrapDirectivesAndPipesInClosure: boolean = !!containsForwardDecls;
+        const wrapDirectivesAndPipesInClosure =
+            directives.some(
+                dir => isExpressionForwardReference(dir.expression, node.name !, origin)) ||
+            Array.from(pipes.values())
+                .some(pipe => isExpressionForwardReference(pipe, node.name !, origin));
         metadata.directives = directives;
         metadata.pipes = pipes;
         metadata.wrapDirectivesAndPipesInClosure = wrapDirectivesAndPipesInClosure;
@@ -445,4 +455,18 @@ function getTemplateRange(templateExpr: ts.Expression) {
     startCol: character,
     endPos: templateExpr.getEnd() - 1,
   };
+}
+
+function isExpressionForwardReference(
+    expr: Expression, context: ts.Node, contextSource: ts.SourceFile): boolean {
+  if (isWrappedTsNodeExpr(expr)) {
+    const node = ts.getOriginalNode(expr.node);
+    return node.getSourceFile() === contextSource && context.pos < node.pos;
+  } else {
+    return false;
+  }
+}
+
+function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<ts.Node> {
+  return expr instanceof WrappedNodeExpr;
 }

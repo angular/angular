@@ -1913,8 +1913,8 @@ describe('ngtsc behavioral tests', () => {
       env.driveMain();
       const jsContents = env.getContents('test.js');
       expect(jsContents)
-          .toContain(
-              'i0.ɵsetComponentScope(NormalComponent, [i1.NormalComponent, CyclicComponent], [])');
+          .toMatch(
+              /i\d\.ɵsetComponentScope\(NormalComponent,\s+\[NormalComponent,\s+CyclicComponent\],\s+\[\]\)/);
       expect(jsContents).not.toContain('/*__PURE__*/ i0.ɵsetComponentScope');
     });
   });
@@ -2565,12 +2565,13 @@ describe('ngtsc behavioral tests', () => {
     beforeEach(() => {
       env.tsconfig();
       env.write('node_modules/@angular/router/index.d.ts', `
-        import {ModuleWithProviders} from '@angular/core';
+        import {ModuleWithProviders, ɵNgModuleDefWithMeta as NgModuleDefWithMeta} from '@angular/core';
 
         export declare var ROUTES;
         export declare class RouterModule {
           static forRoot(arg1: any, arg2: any): ModuleWithProviders<RouterModule>;
           static forChild(arg1: any): ModuleWithProviders<RouterModule>;
+          static ngModuleDef: NgModuleDefWithMeta<RouterModule, never, never, never>
         }
       `);
     });
