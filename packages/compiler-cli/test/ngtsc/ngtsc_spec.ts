@@ -17,13 +17,13 @@ const trim = (input: string): string => input.replace(/\s+/g, ' ').trim();
 const varRegExp = (name: string): RegExp => new RegExp(`var \\w+ = \\[\"${name}\"\\];`);
 
 const viewQueryRegExp = (descend: boolean, ref?: string): RegExp => {
-  const maybeRef = ref ? `, ${ref}` : ``;
-  return new RegExp(`i0\\.ɵviewQuery\\(\\w+, ${descend}${maybeRef}\\)`);
+  const maybeRef = ref ? `${ref}` : `null`;
+  return new RegExp(`i0\\.ɵviewQuery\\(\\w+, ${descend}, ${maybeRef}\\)`);
 };
 
 const contentQueryRegExp = (predicate: string, descend: boolean, ref?: string): RegExp => {
-  const maybeRef = ref ? `, ${ref}` : ``;
-  return new RegExp(`i0\\.ɵcontentQuery\\(dirIndex, ${predicate}, ${descend}${maybeRef}\\)`);
+  const maybeRef = ref ? `${ref}` : `null`;
+  return new RegExp(`i0\\.ɵcontentQuery\\(dirIndex, ${predicate}, ${descend}, ${maybeRef}\\)`);
 };
 
 describe('ngtsc behavioral tests', () => {
@@ -1017,7 +1017,7 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toMatch(varRegExp('accessor'));
     // match `i0.ɵcontentQuery(dirIndex, _c1, true, TemplateRef)`
     expect(jsContents).toMatch(contentQueryRegExp('\\w+', true, 'TemplateRef'));
-    // match `i0.ɵviewQuery(_c2, true)`
+    // match `i0.ɵviewQuery(_c2, true, null)`
     expect(jsContents).toMatch(viewQueryRegExp(true));
   });
 
@@ -1039,9 +1039,9 @@ describe('ngtsc behavioral tests', () => {
 
     env.driveMain();
     const jsContents = env.getContents('test.js');
-    // match `i0.ɵcontentQuery(dirIndex, TemplateRef, true)`
+    // match `i0.ɵcontentQuery(dirIndex, TemplateRef, true, null)`
     expect(jsContents).toMatch(contentQueryRegExp('TemplateRef', true));
-    // match `i0.ɵcontentQuery(dirIndex, ViewContainerRef, true)`
+    // match `i0.ɵcontentQuery(dirIndex, ViewContainerRef, true, null)`
     expect(jsContents).toMatch(contentQueryRegExp('ViewContainerRef', true));
   });
 

@@ -1011,7 +1011,7 @@ describe('host bindings', () => {
         },
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
-            contentQuery(dirIndex, ['foo']);
+            contentQuery(dirIndex, ['foo'], false, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;

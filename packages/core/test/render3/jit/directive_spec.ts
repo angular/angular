@@ -56,7 +56,8 @@ describe('jit directive helper functions', () => {
         predicate: ['localRef'],
         descendants: false,
         first: false,
-        read: null
+        read: null,
+        static: false
       });
     });
 
@@ -72,7 +73,8 @@ describe('jit directive helper functions', () => {
         predicate: ['foo', 'bar', 'baz'],
         descendants: true,
         first: true,
-        read: null
+        read: null,
+        static: false
       });
     });
 
@@ -85,7 +87,8 @@ describe('jit directive helper functions', () => {
         descendants: true,
         first: true,
         isViewQuery: true,
-        read: Directive
+        read: Directive,
+        static: false
       });
 
       expect(converted.predicate).toEqual(Directive);

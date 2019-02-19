@@ -24,7 +24,7 @@ import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {CONTENT_QUERIES, HEADER_OFFSET, LView, QUERIES, TVIEW} from './interfaces/view';
-import {getCurrentQueryIndex, getIsParent, getLView, setCurrentQueryIndex} from './state';
+import {getCurrentQueryIndex, getIsParent, getLView, isCreationMode, setCurrentQueryIndex} from './state';
 import {createElementRef, createTemplateRef} from './view_engine_compatibility';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
@@ -338,7 +338,7 @@ function createQuery<T>(
   };
 }
 
-type QueryList_<T> = QueryList<T>& {_valuesTree: any[]};
+type QueryList_<T> = QueryList<T>& {_valuesTree: any[], _static: boolean};
 
 /**
  * Creates and returns a QueryList.
@@ -350,12 +350,13 @@ type QueryList_<T> = QueryList<T>& {_valuesTree: any[]};
  */
 export function query<T>(
     // TODO: "read" should be an AbstractType (FW-486)
-    predicate: Type<any>| string[], descend?: boolean, read?: any): QueryList<T> {
+    predicate: Type<any>| string[], descend: boolean, read: any): QueryList<T> {
   ngDevMode && assertPreviousIsParent(getIsParent());
   const lView = getLView();
-  const queryList = new QueryList<T>();
+  const queryList = new QueryList<T>() as QueryList_<T>;
   const queries = lView[QUERIES] || (lView[QUERIES] = new LQueries_(null, null, null));
-  (queryList as QueryList_<T>)._valuesTree = [];
+  queryList._valuesTree = [];
+  queryList._static = false;
   queries.track(queryList, predicate, descend, read);
   storeCleanupWithContext(lView, queryList, queryList.destroy);
   return queryList;
@@ -368,12 +369,33 @@ export function query<T>(
  */
 export function queryRefresh(queryList: QueryList<any>): boolean {
   const queryListImpl = (queryList as any as QueryList_<any>);
-  if (queryList.dirty) {
+  const creationMode = isCreationMode();
+
+  // if creation mode and static or update mode and not static
+  if (queryList.dirty && creationMode === queryListImpl._static) {
     queryList.reset(queryListImpl._valuesTree || []);
     queryList.notifyOnChanges();
     return true;
   }
   return false;
+}
+
+/**
+ * Creates new QueryList for a static view query.
+ *
+ * @param predicate The type for which the query will search
+ * @param descend Whether or not to descend into children
+ * @param read What to save in the query
+ */
+export function staticViewQuery<T>(
+    // TODO(FW-486): "read" should be an AbstractType
+    predicate: Type<any>| string[], descend: boolean, read: any): void {
+  const queryList = viewQuery(predicate, descend, read) as QueryList_<T>;
+  const tView = getLView()[TVIEW];
+  queryList._static = true;
+  if (!tView.staticViewQueries) {
+    tView.staticViewQueries = true;
+  }
 }
 
 /**
@@ -385,8 +407,8 @@ export function queryRefresh(queryList: QueryList<any>): boolean {
  * @returns QueryList<T>
  */
 export function viewQuery<T>(
-    // TODO: "read" should be an AbstractType (FW-486)
-    predicate: Type<any>| string[], descend?: boolean, read?: any): QueryList<T> {
+    // TODO(FW-486): "read" should be an AbstractType
+    predicate: Type<any>| string[], descend: boolean, read: any): QueryList<T> {
   const lView = getLView();
   const tView = lView[TVIEW];
   if (tView.firstTemplatePass) {
@@ -419,9 +441,9 @@ export function loadViewQuery<T>(): T {
  * @returns QueryList<T>
  */
 export function contentQuery<T>(
-    directiveIndex: number, predicate: Type<any>| string[], descend?: boolean,
+    directiveIndex: number, predicate: Type<any>| string[], descend: boolean,
     // TODO: "read" should be an AbstractType (FW-486)
-    read?: any): QueryList<T> {
+    read: any): QueryList<T> {
   const lView = getLView();
   const tView = lView[TVIEW];
   const contentQuery: QueryList<T> = query<T>(predicate, descend, read);
