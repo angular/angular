@@ -1550,6 +1550,23 @@ describe('ngtsc behavioral tests', () => {
     expect(emptyFactory).toContain(`export var ɵNonEmptyModule = true;`);
   });
 
+  it('should be able to compile an app using the factory shim', () => {
+    env.tsconfig({'allowEmptyCodegenFiles': true});
+
+    env.write('test.ts', `        
+        export {MyModuleNgFactory} from './my-module.ngfactory';
+    `);
+
+    env.write('my-module.ts', `
+        import {NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class MyModule {}
+    `);
+
+    env.driveMain();
+  });
+
   it('should generate correct imports in factory stubs when compiling @angular/core', () => {
     env.tsconfig({'allowEmptyCodegenFiles': true});
 
