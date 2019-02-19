@@ -457,6 +457,7 @@ function queriesFromGlobalMetadata(
       first: query.first,
       predicate: selectorsFromGlobalMetadata(query.selectors, outputCtx),
       descendants: query.descendants, read,
+      static: !!query.static
     };
   });
 }
@@ -490,10 +491,8 @@ function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool):
   const parameters = [
     getQueryPredicate(query, constantPool),
     o.literal(query.descendants),
+    query.read || o.literal(null),
   ];
-  if (query.read) {
-    parameters.push(query.read);
-  }
   return parameters;
 }
 
@@ -590,9 +589,11 @@ function createViewQueriesFunction(
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
   meta.viewQueries.forEach((query: R3QueryMetadata) => {
+    const queryInstruction = query.static ? R3.staticViewQuery : R3.viewQuery;
+
     // creation, e.g. r3.viewQuery(somePredicate, true);
     const queryDefinition =
-        o.importExpr(R3.viewQuery).callFn(prepareQueryParams(query, constantPool));
+        o.importExpr(queryInstruction).callFn(prepareQueryParams(query, constantPool));
     createStatements.push(queryDefinition.toStmt());
 
     // update, e.g. (r3.queryRefresh(tmp = r3.loadViewQuery()) && (ctx.someDir = tmp));

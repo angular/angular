@@ -15,7 +15,7 @@ import {getNativeByIndex} from '../../src/render3/util';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, reference, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {queryRefresh, viewQuery, loadViewQuery, contentQuery, loadContentQuery} from '../../src/render3/query';
+import {queryRefresh, viewQuery, loadViewQuery, contentQuery, loadContentQuery, query} from '../../src/render3/query';
 import {getLView} from '../../src/render3/state';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 
@@ -83,8 +83,8 @@ describe('query', () => {
         2, 0, [Child], [],
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            viewQuery(Child, false);
-            viewQuery(Child, true);
+            viewQuery(Child, false, null);
+            viewQuery(Child, true, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
@@ -261,9 +261,9 @@ describe('query', () => {
             },
             viewQuery: function(rf: RenderFlags, ctx: App) {
               if (rf & RenderFlags.Create) {
-                viewQuery(MyDirective, false);
-                viewQuery(Service, false);
-                viewQuery(Alias, false);
+                viewQuery(MyDirective, false, null);
+                viewQuery(Service, false, null);
+                viewQuery(Alias, false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -347,7 +347,7 @@ describe('query', () => {
             3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false);
+                viewQuery(['foo'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -385,8 +385,8 @@ describe('query', () => {
             4, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false);
-                viewQuery(['bar'], false);
+                viewQuery(['foo'], false, null);
+                viewQuery(['bar'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -434,7 +434,7 @@ describe('query', () => {
             5, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo', 'bar'], undefined);
+                viewQuery(['foo', 'bar'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -472,7 +472,7 @@ describe('query', () => {
             3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], false);
+                viewQuery(['foo'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -545,7 +545,7 @@ describe('query', () => {
             2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true);
+                viewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -746,7 +746,7 @@ describe('query', () => {
             2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], undefined);
+                viewQuery(['foo'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -817,7 +817,7 @@ describe('query', () => {
             2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true);
+                viewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -863,7 +863,7 @@ describe('query', () => {
             2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true);
+                viewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -902,7 +902,7 @@ describe('query', () => {
                2, 0, [Child], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   viewQuery(['foo'], true);
+                   viewQuery(['foo'], true, null);
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
@@ -942,7 +942,7 @@ describe('query', () => {
             3, 0, [Child1, Child2], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo', 'bar'], true);
+                viewQuery(['foo', 'bar'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -982,8 +982,8 @@ describe('query', () => {
             3, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true);
-                viewQuery(['bar'], true);
+                viewQuery(['foo'], true, null);
+                viewQuery(['bar'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -1026,7 +1026,7 @@ describe('query', () => {
             2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], undefined, ElementRef);
+                viewQuery(['foo'], false, ElementRef);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -1065,7 +1065,7 @@ describe('query', () => {
             3, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo', 'bar'], undefined);
+                viewQuery(['foo', 'bar'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -1266,7 +1266,7 @@ describe('query', () => {
             1, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(TemplateRef as any, false);
+                viewQuery(TemplateRef as any, false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -1315,7 +1315,7 @@ describe('query', () => {
             6, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(TemplateRef as any, false);
+                viewQuery(TemplateRef as any, false, null);
                 viewQuery(TemplateRef as any, false, ElementRef);
               }
               if (rf & RenderFlags.Update) {
@@ -1401,7 +1401,7 @@ describe('query', () => {
             2, 1, [NgIf], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true);
+                viewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -1463,7 +1463,7 @@ describe('query', () => {
             viewQuery: function(rf: RenderFlags, ctx: Cmpt) {
               let tmp: any;
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true);
+                viewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
@@ -1552,7 +1552,7 @@ describe('query', () => {
                8, 0, [ViewContainerManipulatorDirective], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   viewQuery(['foo'], true);
+                   viewQuery(['foo'], true, null);
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
@@ -1649,7 +1649,7 @@ describe('query', () => {
                viewQuery: (rf: RenderFlags, cmpt: Cmpt) => {
                  let tmp: any;
                  if (rf & RenderFlags.Create) {
-                   viewQuery(['foo'], true);
+                   viewQuery(['foo'], true, null);
                  }
                  if (rf & RenderFlags.Update) {
                    queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
@@ -1722,7 +1722,7 @@ describe('query', () => {
             viewQuery: (rf: RenderFlags, myApp: MyApp) => {
               let tmp: any;
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true);
+                viewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 queryRefresh(tmp = loadViewQuery<QueryList<any>>()) &&
@@ -1787,7 +1787,7 @@ describe('query', () => {
             1, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true);
+                viewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -1853,7 +1853,7 @@ describe('query', () => {
                5, 0, [], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   viewQuery(['foo'], true);
+                   viewQuery(['foo'], true, null);
                  }
                  if (rf & RenderFlags.Update) {
                    let tmp: any;
@@ -1930,7 +1930,7 @@ describe('query', () => {
             1, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true);
+                viewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -2011,7 +2011,7 @@ describe('query', () => {
             1, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true);
+                viewQuery(['foo'], true, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -2081,8 +2081,8 @@ describe('query', () => {
             3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                viewQuery(['foo'], true);
-                viewQuery(['foo'], false);
+                viewQuery(['foo'], true, null);
+                viewQuery(['foo'], false, null);
               }
               if (rf & RenderFlags.Update) {
                 let tmp: any;
@@ -2119,36 +2119,6 @@ describe('query', () => {
 
   });
 
-  describe('observable interface', () => {
-
-    it('should allow observing changes to query list', () => {
-      const queryList = new QueryList();
-      let changes = 0;
-
-      queryList.changes.subscribe({
-        next: (arg) => {
-          changes += 1;
-          expect(arg).toBe(queryList);
-        }
-      });
-
-      // initial refresh, the query should be dirty
-      queryRefresh(queryList);
-      expect(changes).toBe(1);
-
-
-      // refresh without setting dirty - no emit
-      queryRefresh(queryList);
-      expect(changes).toBe(1);
-
-      // refresh with setting dirty - emit
-      queryList.setDirty();
-      queryRefresh(queryList);
-      expect(changes).toBe(2);
-    });
-
-  });
-
   describe('queryList', () => {
     it('should be destroyed when the containing view is destroyed', () => {
       let queryInstance: QueryList<any>;
@@ -2163,7 +2133,7 @@ describe('query', () => {
           2, 0, [], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              viewQuery(['foo'], false);
+              viewQuery(['foo'], false, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -2244,7 +2214,7 @@ describe('query', () => {
         3, 0, [SomeDir], [],
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            viewQuery(['foo'], true);
+            viewQuery(['foo'], true, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
@@ -2284,7 +2254,7 @@ describe('query', () => {
         factory: () => withContentInstance = new WithContentDirective(),
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
-            contentQuery(dirIndex, ['foo'], true);
+            contentQuery(dirIndex, ['foo'], true, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
@@ -2307,7 +2277,7 @@ describe('query', () => {
         vars: 0,
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
-            contentQuery(dirIndex, ['foo'], false);
+            contentQuery(dirIndex, ['foo'], false, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
@@ -2468,7 +2438,7 @@ describe('query', () => {
           5, 0, [WithContentDirective], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              viewQuery(['foo', 'bar'], true);
+              viewQuery(['foo', 'bar'], true, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -2509,7 +2479,7 @@ describe('query', () => {
           5, 0, [WithContentDirective], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              viewQuery(['bar'], true);
+              viewQuery(['bar'], true, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -2535,7 +2505,7 @@ describe('query', () => {
             // @ContentChildren('foo, bar, baz', {descendants: true})
             // fooBars: QueryList<ElementRef>;
             if (rf & RenderFlags.Create) {
-              contentQuery(dirIndex, ['foo', 'bar', 'baz'], true);
+              contentQuery(dirIndex, ['foo', 'bar', 'baz'], true, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -2599,7 +2569,7 @@ describe('query', () => {
             // @ContentChildren('foo', {descendants: true})
             // fooBars: QueryList<ElementRef>;
             if (rf & RenderFlags.Create) {
-              contentQuery(dirIndex, ['foo'], false);
+              contentQuery(dirIndex, ['foo'], false, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -2655,7 +2625,7 @@ describe('query', () => {
             // @ContentChildren('foo', {descendants: true})
             // fooBars: QueryList<ElementRef>;
             if (rf & RenderFlags.Create) {
-              contentQuery(dirIndex, ['foo'], false);
+              contentQuery(dirIndex, ['foo'], false, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -2715,7 +2685,7 @@ describe('query', () => {
                // @ContentChildren('foo', {descendants: false})
                // foos: QueryList<ElementRef>;
                if (rf & RenderFlags.Create) {
-                 contentQuery(dirIndex, ['foo'], false);
+                 contentQuery(dirIndex, ['foo'], false, null);
                }
                if (rf & RenderFlags.Update) {
                  let tmp: any;
@@ -2736,7 +2706,7 @@ describe('query', () => {
                // @ContentChildren('foo', {descendants: true})
                // foos: QueryList<ElementRef>;
                if (rf & RenderFlags.Create) {
-                 contentQuery(dirIndex, ['foo'], true);
+                 contentQuery(dirIndex, ['foo'], true, null);
                }
                if (rf & RenderFlags.Update) {
                  let tmp: any;
@@ -2812,7 +2782,7 @@ describe('query', () => {
             // @ContentChildren(TextDirective, {descendants: true})
             // texts: QueryList<TextDirective>;
             if (rf & RenderFlags.Create) {
-              contentQuery(dirIndex, TextDirective, true);
+              contentQuery(dirIndex, TextDirective, true, null);
             }
             if (rf & RenderFlags.Update) {
               let tmp: any;
@@ -2892,7 +2862,7 @@ describe('query', () => {
           viewQuery: function(rf: RenderFlags, ctx: ViewQueryComponent) {
             let tmp: any;
             if (rf & RenderFlags.Create) {
-              viewQuery(TextDirective, true);
+              viewQuery(TextDirective, true, null);
             }
             if (rf & RenderFlags.Update) {
               queryRefresh(tmp = loadViewQuery<QueryList<TextDirective>>()) &&

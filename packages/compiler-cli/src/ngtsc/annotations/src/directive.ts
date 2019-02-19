@@ -229,6 +229,9 @@ export function extractQueryMetadata(
   const node = unwrapForwardRef(args[0], reflector);
   const arg = evaluator.evaluate(node);
 
+  /** Whether or not this query should collect only static results (see view/api.ts)  */
+  let isStatic: boolean = false;
+
   // Extract the predicate
   let predicate: Expression|string[]|null = null;
   if (arg instanceof Reference) {
@@ -263,13 +266,28 @@ export function extractQueryMetadata(
       }
       descendants = descendantsValue;
     }
+
+    if (options.has('static')) {
+      const staticValue = evaluator.evaluate(options.get('static') !);
+      if (typeof staticValue !== 'boolean') {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, node, `@${name} options.static must be a boolean`);
+      }
+      isStatic = staticValue;
+    }
+
   } else if (args.length > 2) {
     // Too many arguments.
     throw new Error(`@${name} has too many arguments`);
   }
 
   return {
-      propertyName, predicate, first, descendants, read,
+    propertyName,
+    predicate,
+    first,
+    descendants,
+    read,
+    static: isStatic,
   };
 }
 

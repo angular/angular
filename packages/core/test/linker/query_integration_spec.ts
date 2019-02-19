@@ -126,7 +126,7 @@ describe('Query API', () => {
       ]);
     });
 
-    modifiedInIvy('Static ViewChild and ContentChild queries are resolved in update mode')
+    modifiedInIvy('Static queries in Ivy require an explicit {static: true} arg')
         .it('should set static view and content children already after the constructor call', () => {
           const template =
               '<needs-static-content-view-child #q><div text="contentFoo"></div></needs-static-content-view-child>';
