@@ -60,7 +60,7 @@ export class NgIfThenElse implements OnInit {
   thenBlock: TemplateRef<any>|null = null;
   show: boolean = true;
 
-  @ViewChild('primaryBlock')
+  @ViewChild('primaryBlock', {static: true})
   primaryBlock: TemplateRef<any>|null = null;
   @ViewChild('secondaryBlock')
   secondaryBlock: TemplateRef<any>|null = null;
