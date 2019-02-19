@@ -63,5 +63,9 @@ setPublicVar SAUCE_TUNNEL_IDENTIFIER "angular-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_
 setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 
 
+echo "function yarn () { /usr/bin/env node $projectDir/yarn-1.14.0.js \"\$@\"; }" >> $BASH_ENV;
+echo "export -f yarn;" >> $BASH_ENV;
+
+
 # Source `$BASH_ENV` to make the variables available immediately.
 source $BASH_ENV;
