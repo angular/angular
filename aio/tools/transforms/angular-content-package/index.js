@@ -18,15 +18,15 @@ const { CONTENTS_PATH, GUIDE_EXAMPLES_PATH } = require('../config');
 module.exports = new Package('angular-content', [basePackage, contentPackage])
 
   // Where do we get the source files?
-  .config(function(readFilesProcessor, collectExamples, renderExamples) {
+  .config(function (readFilesProcessor, collectExamples, renderExamples) {
 
     const gitignoreFilePath = path.resolve(GUIDE_EXAMPLES_PATH, '.gitignore');
     const gitignoreFile = fs.readFileSync(gitignoreFilePath, 'utf8');
     const gitignore = ignore().add(gitignoreFile);
 
     const examplePaths = glob.sync('**/*', { cwd: GUIDE_EXAMPLES_PATH, dot: true, ignore: '**/node_modules/**', mark: true })
-                            .filter(filePath => filePath !== '.gitignore') // we are not interested in the .gitignore file itself
-                            .filter(filePath => !/\/$/.test(filePath)); // this filter removes the folders, leaving only files
+      .filter(filePath => filePath !== '.gitignore') // we are not interested in the .gitignore file itself
+      .filter(filePath => !/\/$/.test(filePath)); // this filter removes the folders, leaving only files
     const ignoredExamplePaths = [];
     const resolvedExamplePaths = [];
 
@@ -69,6 +69,11 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
       },
       {
         basePath: CONTENTS_PATH,
+        include: CONTENTS_PATH + '/localization.json',
+        fileReader: 'jsonFileReader'
+      },
+      {
+        basePath: CONTENTS_PATH,
         include: CONTENTS_PATH + '/marketing/announcements.json',
         fileReader: 'jsonFileReader'
       },
@@ -81,7 +86,7 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
         basePath: CONTENTS_PATH,
         include: CONTENTS_PATH + '/marketing/resources.json',
         fileReader: 'jsonFileReader'
-      },
+      }
     ]);
 
     collectExamples.exampleFolders.push('examples');
@@ -92,12 +97,12 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
 
 
   // Configure jsdoc-style tag parsing
-  .config(function(inlineTagProcessor) {
+  .config(function (inlineTagProcessor) {
     inlineTagProcessor.inlineTagDefinitions.push(require('./inline-tag-defs/anchor'));
   })
 
 
-  .config(function(computePathsProcessor) {
+  .config(function (computePathsProcessor) {
 
     // Replace any path templates inherited from other packages
     // (we want full and transparent control)
@@ -107,15 +112,16 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
         getPath: (doc) => `${doc.id.replace(/\/index$/, '')}`,
         outputPathTemplate: '${path}.json'
       },
-      {docTypes: ['navigation-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
-      {docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
-      {docTypes: ['announcements-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
-      {docTypes: ['resources-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
+      { docTypes: ['navigation-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json' },
+      { docTypes: ['localization-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json' },
+      { docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json' },
+      { docTypes: ['announcements-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json' },
+      { docTypes: ['resources-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json' }
     ]);
   })
 
   // We want the content files to be converted
-  .config(function(convertToJsonProcessor, postProcessHtml) {
+  .config(function (convertToJsonProcessor, postProcessHtml) {
     convertToJsonProcessor.docTypes.push('content');
     postProcessHtml.docTypes.push('content');
   });

@@ -1,16 +1,17 @@
 import { Component, ElementRef, HostBinding, HostListener, OnInit,
-         QueryList, ViewChild, ViewChildren } from '@angular/core';
-import { MatSidenav } from '@angular/material/sidenav';
+  QueryList, ViewChild, ViewChildren } from '@angular/core';
+  import { MatSidenav } from '@angular/material/sidenav';
 
-import { CurrentNodes, NavigationService, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
-import { DocumentService, DocumentContents } from 'app/documents/document.service';
-import { Deployment } from 'app/shared/deployment.service';
-import { LocationService } from 'app/shared/location.service';
-import { NotificationComponent } from 'app/layout/notification/notification.component';
-import { ScrollService } from 'app/shared/scroll.service';
-import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
-import { SearchResults } from 'app/search/interfaces';
-import { SearchService } from 'app/search/search.service';
+  import { CurrentNodes, NavigationService, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
+  import { DocumentService, DocumentContents } from 'app/documents/document.service';
+  import { Deployment } from 'app/shared/deployment.service';
+  import { LocationService } from 'app/shared/location.service';
+  import { NotificationComponent } from 'app/layout/notification/notification.component';
+  import { LocalizationService } from 'app/shared/localization.service';
+  import { ScrollService } from 'app/shared/scroll.service';
+  import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
+  import { SearchResults } from 'app/search/interfaces';
+  import { SearchService } from 'app/search/search.service';
 import { TocService } from 'app/shared/toc.service';
 
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
@@ -103,7 +104,8 @@ export class AppComponent implements OnInit {
     private navigationService: NavigationService,
     private scrollService: ScrollService,
     private searchService: SearchService,
-    private tocService: TocService
+    private tocService: TocService,
+    private localizationService: LocalizationService,
   ) { }
 
   ngOnInit() {
@@ -185,6 +187,8 @@ export class AppComponent implements OnInit {
       this.navigationService.currentNodes)   // ...needed to determine `sidenav` state
       .pipe(first())
       .subscribe(() => this.updateShell());
+
+    this.localizationService.suggestLocalizedVersion();
   }
 
   onDocReady() {
