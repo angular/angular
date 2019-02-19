@@ -83,6 +83,7 @@ function gulpStatus() {
 }
 
 module.exports = {
+  srcsToFmt,
   // Check source code for formatting errors (clang-format)
   enforce: (gulp) => () => {
     const format = require('gulp-clang-format');
