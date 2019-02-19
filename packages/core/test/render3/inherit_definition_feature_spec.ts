@@ -382,7 +382,7 @@ describe('InheritDefinitionFeature', () => {
         selectors: [['super-comp']],
         viewQuery: <T>(rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
-            viewQuery(['super'], false);
+            viewQuery(['super'], false, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
@@ -418,7 +418,7 @@ describe('InheritDefinitionFeature', () => {
         selectors: [['sub-comp']],
         viewQuery: (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
-            viewQuery(['sub'], false);
+            viewQuery(['sub'], false, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
@@ -561,7 +561,7 @@ describe('InheritDefinitionFeature', () => {
         factory: () => new SuperDirective(),
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
-            contentQuery(dirIndex, ['foo'], true);
+            contentQuery(dirIndex, ['foo'], true, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;
@@ -581,7 +581,7 @@ describe('InheritDefinitionFeature', () => {
         factory: () => dirInstance = new SubDirective(),
         contentQueries: (rf: RenderFlags, ctx: any, dirIndex: number) => {
           if (rf & RenderFlags.Create) {
-            contentQuery(dirIndex, ['bar'], true);
+            contentQuery(dirIndex, ['bar'], true, null);
           }
           if (rf & RenderFlags.Update) {
             let tmp: any;

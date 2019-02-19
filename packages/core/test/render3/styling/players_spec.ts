@@ -286,7 +286,7 @@ class SuperComp {
     },
     viewQuery: function(rf: RenderFlags, ctx: SuperComp) {
       if (rf & RenderFlags.Create) {
-        viewQuery(['child'], true);
+        viewQuery(['child'], true, null);
       }
       if (rf & RenderFlags.Update) {
         let tmp: any;

@@ -228,6 +228,7 @@ export function extractQueryMetadata(
   const first = name === 'ViewChild' || name === 'ContentChild';
   const node = unwrapForwardRef(args[0], reflector);
   const arg = evaluator.evaluate(node);
+  let isStatic: boolean = false;
 
   // Extract the predicate
   let predicate: Expression|string[]|null = null;
@@ -263,13 +264,23 @@ export function extractQueryMetadata(
       }
       descendants = descendantsValue;
     }
+
+    if (options.has('static')) {
+      isStatic = evaluator.evaluate(options.get('static') !) as boolean;
+    }
+
   } else if (args.length > 2) {
     // Too many arguments.
     throw new Error(`@${name} has too many arguments`);
   }
 
   return {
-      propertyName, predicate, first, descendants, read,
+    propertyName,
+    predicate,
+    first,
+    descendants,
+    read,
+    static: isStatic,
   };
 }
 

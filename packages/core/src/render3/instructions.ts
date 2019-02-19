@@ -37,7 +37,7 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, DECLARATION_VIEW, Expa
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, getLViewChild, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from './state';
+import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode,} from './state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
 import {ANIMATION_PROP_PREFIX, allocateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContext, hasClassInput, hasStyleInput, hasStyling, isAnimationProp} from './styling/util';
@@ -784,6 +784,7 @@ export function createTView(
     expandoStartIndex: initialViewLength,
     expandoInstructions: null,
     firstTemplatePass: true,
+    staticViewQueries: false,
     initHooks: null,
     checkHooks: null,
     contentHooks: null,
@@ -2922,20 +2923,23 @@ export function checkView<T>(hostView: LView, component: T) {
 
   try {
     namespaceHTML();
-    creationMode && executeViewQueryFn(hostView, hostTView, component);
+    creationMode && executeViewQueryFn(RenderFlags.Create, hostTView, component);
     templateFn(getRenderFlags(hostView), component);
     refreshDescendantViews(hostView);
-    !creationMode && executeViewQueryFn(hostView, hostTView, component);
+    // Only check view queries again in creation mode if there are static view queries
+    if (!creationMode || hostTView.staticViewQueries) {
+      executeViewQueryFn(RenderFlags.Update, hostTView, component);
+    }
   } finally {
     leaveView(oldView);
   }
 }
 
-function executeViewQueryFn<T>(lView: LView, tView: TView, component: T): void {
+function executeViewQueryFn<T>(flags: RenderFlags, tView: TView, component: T): void {
   const viewQuery = tView.viewQuery;
   if (viewQuery) {
     setCurrentQueryIndex(tView.viewQueryStartIndex);
-    viewQuery(getRenderFlags(lView), component);
+    viewQuery(flags, component);
   }
 }
 

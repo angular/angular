@@ -199,6 +199,7 @@ function convertToR3QueryMetadata(facade: R3QueryMetadataFacade): R3QueryMetadat
     predicate: Array.isArray(facade.predicate) ? facade.predicate :
                                                  new WrappedNodeExpr(facade.predicate),
     read: facade.read ? new WrappedNodeExpr(facade.read) : null,
+    static: facade.static
   };
 }
 

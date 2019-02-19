@@ -1026,7 +1026,7 @@ describe('content projection', () => {
            function(rf: RenderFlags, ctx: any) {
              /**  @ViewChild(TemplateRef) template: TemplateRef<any>  */
              if (rf & RenderFlags.Create) {
-               viewQuery(TemplateRef as any, true);
+               viewQuery(TemplateRef as any, true, null);
              }
              if (rf & RenderFlags.Update) {
                let tmp: any;

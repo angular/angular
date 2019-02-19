@@ -229,6 +229,11 @@ export interface R3QueryMetadata {
    * for a given node is to be returned.
    */
   read: o.Expression|null;
+
+  /**
+   * Whether or not this query should collect only static results.
+   */
+  static: boolean;
 }
 
 /**

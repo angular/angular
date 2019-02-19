@@ -16,7 +16,8 @@ describe('query logic', () => {
     TestBed.configureTestingModule({
       declarations: [
         AppComp, QueryComp, SimpleCompA, SimpleCompB, StaticViewQueryComp, TextDirective,
-        SubclassStaticViewQueryComp, StaticContentQueryComp, SubclassStaticContentQueryComp
+        SubclassStaticViewQueryComp, StaticContentQueryComp, SubclassStaticContentQueryComp,
+        QueryCompWithChanges
       ]
     });
   });
@@ -87,48 +88,78 @@ describe('query logic', () => {
           expect(comp.viewChildren.length).toBe(2);
         });
 
-    fixmeIvy('Must support static view queries in Ivy')
-        .it('should set static view child queries in creation mode (and just in creation mode)',
-            () => {
-              const fixture = TestBed.createComponent(StaticViewQueryComp);
-              const component = fixture.componentInstance;
+    it('should set static view child queries in creation mode (and just in creation mode)', () => {
+      const fixture = TestBed.createComponent(StaticViewQueryComp);
+      const component = fixture.componentInstance;
 
-              // static ViewChild query should be set in creation mode, before CD runs
-              expect(component.textDir).toBeAnInstanceOf(TextDirective);
-              expect(component.textDir.text).toEqual('');
-              expect(component.setEvents).toEqual(['textDir set']);
+      // static ViewChild query should be set in creation mode, before CD runs
+      expect(component.textDir).toBeAnInstanceOf(TextDirective);
+      expect(component.textDir.text).toEqual('');
+      expect(component.setEvents).toEqual(['textDir set']);
 
-              // dynamic ViewChild query should not have been resolved yet
-              expect(component.foo).not.toBeDefined();
+      // dynamic ViewChild query should not have been resolved yet
+      expect(component.foo).not.toBeDefined();
 
-              const span = fixture.nativeElement.querySelector('span');
-              fixture.detectChanges();
-              expect(component.textDir.text).toEqual('some text');
-              expect(component.foo.nativeElement).toBe(span);
-              expect(component.setEvents).toEqual(['textDir set', 'foo set']);
-            });
+      const span = fixture.nativeElement.querySelector('span');
+      fixture.detectChanges();
+      expect(component.textDir.text).toEqual('some text');
+      expect(component.foo.nativeElement).toBe(span);
+      expect(component.setEvents).toEqual(['textDir set', 'foo set']);
+    });
 
-    fixmeIvy('Must support static view queries in Ivy')
-        .it('should support static view child queries inherited from superclasses', () => {
-          const fixture = TestBed.createComponent(SubclassStaticViewQueryComp);
-          const component = fixture.componentInstance;
-          const divs = fixture.nativeElement.querySelectorAll('div');
-          const spans = fixture.nativeElement.querySelectorAll('span');
+    it('should support static view child queries inherited from superclasses', () => {
+      const fixture = TestBed.createComponent(SubclassStaticViewQueryComp);
+      const component = fixture.componentInstance;
+      const divs = fixture.nativeElement.querySelectorAll('div');
+      const spans = fixture.nativeElement.querySelectorAll('span');
 
-          // static ViewChild queries should be set in creation mode, before CD runs
-          expect(component.textDir).toBeAnInstanceOf(TextDirective);
-          expect(component.textDir.text).toEqual('');
-          expect(component.bar.nativeElement).toEqual(divs[1]);
+      // static ViewChild queries should be set in creation mode, before CD runs
+      expect(component.textDir).toBeAnInstanceOf(TextDirective);
+      expect(component.textDir.text).toEqual('');
+      expect(component.bar.nativeElement).toEqual(divs[1]);
 
-          // dynamic ViewChild queries should not have been resolved yet
-          expect(component.foo).not.toBeDefined();
-          expect(component.baz).not.toBeDefined();
+      // dynamic ViewChild queries should not have been resolved yet
+      expect(component.foo).not.toBeDefined();
+      expect(component.baz).not.toBeDefined();
 
-          fixture.detectChanges();
-          expect(component.textDir.text).toEqual('some text');
-          expect(component.foo.nativeElement).toBe(spans[0]);
-          expect(component.baz.nativeElement).toBe(spans[1]);
-        });
+      fixture.detectChanges();
+      expect(component.textDir.text).toEqual('some text');
+      expect(component.foo.nativeElement).toBe(spans[0]);
+      expect(component.baz.nativeElement).toBe(spans[1]);
+    });
+
+    it('should support multiple static view queries (multiple template passes)', () => {
+      const template = `
+           <static-view-query-comp></static-view-query-comp>
+           <static-view-query-comp></static-view-query-comp>
+         `;
+      TestBed.overrideComponent(AppComp, {set: new Component({template})});
+      const fixture = TestBed.createComponent(AppComp);
+
+      const firstComponent = fixture.debugElement.children[0].injector.get(StaticViewQueryComp);
+      const secondComponent = fixture.debugElement.children[1].injector.get(StaticViewQueryComp);
+
+      // static ViewChild query should be set in creation mode, before CD runs
+      expect(firstComponent.textDir).toBeAnInstanceOf(TextDirective);
+      expect(secondComponent.textDir).toBeAnInstanceOf(TextDirective);
+      expect(firstComponent.textDir.text).toEqual('');
+      expect(secondComponent.textDir.text).toEqual('');
+      expect(firstComponent.setEvents).toEqual(['textDir set']);
+      expect(secondComponent.setEvents).toEqual(['textDir set']);
+
+      // dynamic ViewChild query should not have been resolved yet
+      expect(firstComponent.foo).not.toBeDefined();
+      expect(secondComponent.foo).not.toBeDefined();
+
+      const spans = fixture.nativeElement.querySelectorAll('span');
+      fixture.detectChanges();
+      expect(firstComponent.textDir.text).toEqual('some text');
+      expect(secondComponent.textDir.text).toEqual('some text');
+      expect(firstComponent.foo.nativeElement).toBe(spans[0]);
+      expect(secondComponent.foo.nativeElement).toBe(spans[1]);
+      expect(firstComponent.setEvents).toEqual(['textDir set', 'foo set']);
+      expect(secondComponent.setEvents).toEqual(['textDir set', 'foo set']);
+    });
 
   });
 
@@ -290,6 +321,30 @@ describe('query logic', () => {
         expect(component.baz.nativeElement).toBe(spans[1]);
       });
 
+  describe('observable interface', () => {
+
+    it('should allow observing changes to query list', () => {
+      const fixture = TestBed.createComponent(QueryCompWithChanges);
+      let changes = 0;
+      fixture.detectChanges();
+
+      fixture.componentInstance.foos.changes.subscribe((value: any) => {
+        changes += 1;
+        expect(value).toBe(fixture.componentInstance.foos);
+      });
+
+      // refresh without setting dirty - no emit
+      fixture.detectChanges();
+      expect(changes).toBe(0);
+
+      // refresh with setting dirty - emit
+      fixture.componentInstance.showing = true;
+      fixture.detectChanges();
+      expect(changes).toBe(1);
+    });
+
+  });
+
 });
 
 function initWithTemplate(compType: Type<any>, template: string) {
@@ -405,4 +460,16 @@ class SubclassStaticContentQueryComp extends StaticContentQueryComp {
 
   @ContentChild('baz', {static: false})
   baz !: ElementRef;
+}
+
+@Component({
+  selector: 'query-with-changes',
+  template: `
+    <div *ngIf="showing" #foo></div>
+  `
+})
+export class QueryCompWithChanges {
+  @ViewChildren('foo') foos !: QueryList<any>;
+
+  showing = false;
 }
