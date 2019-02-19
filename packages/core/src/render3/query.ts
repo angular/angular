@@ -458,6 +458,28 @@ export function contentQuery<T>(
   return contentQuery;
 }
 
+/**
+ * Registers a QueryList, associated with a static content query, for later refresh
+ * (part of a view refresh).
+ *
+ * @param directiveIndex Current directive index
+ * @param predicate The type for which the query will search
+ * @param descend Whether or not to descend into children
+ * @param read What to save in the query
+ * @returns QueryList<T>
+ */
+export function staticContentQuery<T>(
+    directiveIndex: number, predicate: Type<any>| string[], descend: boolean,
+    // TODO: "read" should be an AbstractType (FW-486)
+    read: any): void {
+  const queryList = contentQuery(directiveIndex, predicate, descend, read);
+  const tView = getLView()[TVIEW];
+  (queryList as QueryList_<T>)._static = true;
+  if (!tView.staticContentQueries) {
+    tView.staticContentQueries = true;
+  }
+}
+
 export function loadContentQuery<T>(): QueryList<T> {
   const lView = getLView();
   ngDevMode &&

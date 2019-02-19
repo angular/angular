@@ -128,6 +128,7 @@ export {
   loadViewQuery,
   contentQuery,
   loadContentQuery,
+  staticContentQuery
 } from './query';
 
 export {

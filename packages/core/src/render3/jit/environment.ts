@@ -89,6 +89,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵqueryRefresh': r3.queryRefresh,
   'ɵviewQuery': r3.viewQuery,
   'ɵstaticViewQuery': r3.staticViewQuery,
+  'ɵstaticContentQuery': r3.staticContentQuery,
   'ɵloadViewQuery': r3.loadViewQuery,
   'ɵcontentQuery': r3.contentQuery,
   'ɵloadContentQuery': r3.loadContentQuery,
