@@ -268,7 +268,7 @@ export function extractQueryMetadata(
     }
 
     if (options.has('static')) {
-      const staticValue = evaluator.evaluate(options.get('static'));
+      const staticValue = evaluator.evaluate(options.get('static') !);
       if (typeof staticValue !== 'boolean') {
         throw new FatalDiagnosticError(
             ErrorCode.VALUE_HAS_WRONG_TYPE, node, `@${name} options.static must be a boolean`);
