@@ -95,11 +95,10 @@ export class GeneratedShimsHostWrapper implements ts.CompilerHost {
   getNewLine(): string { return this.delegate.getNewLine(); }
 
   fileExists(fileName: string): boolean {
-    const canonical = this.getCanonicalFileName(fileName);
     // Consider the file as existing whenever 1) it really does exist in the delegate host, or
     // 2) at least one of the shim generators recognizes it.
     return this.delegate.fileExists(fileName) ||
-        this.shimGenerators.some(gen => gen.recognize(canonical));
+        this.shimGenerators.some(gen => gen.recognize(fileName));
   }
 
   readFile(fileName: string): string|undefined { return this.delegate.readFile(fileName); }
