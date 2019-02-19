@@ -1,21 +1,22 @@
 {
   "extends": "../tsconfig-build.json",
-
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": "../",
     "paths": {
-      "@angular/core": ["../../../dist/packages/core"],
-      "@angular/common": ["../../../dist/packages/common"]
+      "@angular/core": [
+        "../../../dist/packages/core"
+      ],
+      "@angular/common": [
+        "../../../dist/packages/common"
+      ]
     },
     "outDir": "../../../dist/packages/common"
   },
-
   "files": [
     "public_api.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
-
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
     "strictMetadataEmit": false,
