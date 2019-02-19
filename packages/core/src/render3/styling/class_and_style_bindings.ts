@@ -6,7 +6,6 @@
 * found in the LICENSE file at https://angular.io/license
 */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
-import {assertNotEqual} from '../../util/assert';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {AttributeMarker, TAttributes} from '../interfaces/node';
 import {BindingStore, BindingType, Player, PlayerBuilder, PlayerFactory, PlayerIndex} from '../interfaces/player';
@@ -418,16 +417,9 @@ export function updateContextWithBindings(
   const directiveMultiStylesStartIndex =
       multiStylesStartIndex + totalCurrentStyleBindings * StylingIndex.Size;
   const cachedStyleMapIndex = cachedStyleMapValues.length;
-
-  // this means that ONLY directive style styling (like ngStyle) was used
-  // therefore the root directive will still need to be filled in
-  if (directiveIndex > 0 &&
-      cachedStyleMapValues.length <= MapBasedOffsetValuesIndex.ValuesStartPosition) {
-    cachedStyleMapValues.push(0, directiveMultiStylesStartIndex, null, 0);
-  }
-
-  cachedStyleMapValues.push(
-      0, directiveMultiStylesStartIndex, null, filteredStyleBindingNames.length);
+  registerMultiMapEntry(
+      context, directiveIndex, false, directiveMultiStylesStartIndex,
+      filteredStyleBindingNames.length);
 
   for (let i = MapBasedOffsetValuesIndex.ValuesStartPosition; i < cachedStyleMapIndex;
        i += MapBasedOffsetValuesIndex.Size) {
@@ -441,16 +433,9 @@ export function updateContextWithBindings(
   const directiveMultiClassesStartIndex =
       multiClassesStartIndex + totalCurrentClassBindings * StylingIndex.Size;
   const cachedClassMapIndex = cachedClassMapValues.length;
-
-  // this means that ONLY directive class styling (like ngClass) was used
-  // therefore the root directive will still need to be filled in
-  if (directiveIndex > 0 &&
-      cachedClassMapValues.length <= MapBasedOffsetValuesIndex.ValuesStartPosition) {
-    cachedClassMapValues.push(0, directiveMultiClassesStartIndex, null, 0);
-  }
-
-  cachedClassMapValues.push(
-      0, directiveMultiClassesStartIndex, null, filteredClassBindingNames.length);
+  registerMultiMapEntry(
+      context, directiveIndex, true, directiveMultiClassesStartIndex,
+      filteredClassBindingNames.length);
 
   for (let i = MapBasedOffsetValuesIndex.ValuesStartPosition; i < cachedClassMapIndex;
        i += MapBasedOffsetValuesIndex.Size) {
@@ -619,7 +604,7 @@ export function updateStylingMap(
   }
 
   const multiStylesStartIndex = getMultiStylesStartIndex(context);
-  let multiClassesStartIndex = getMultiClassStartIndex(context);
+  let multiClassesStartIndex = getMultiClassesStartIndex(context);
   let multiClassesEndIndex = context.length;
 
   if (!ignoreAllStyleUpdates) {
@@ -862,6 +847,7 @@ function patchStylingMapIntoContext(
     valuesEntryShapeChange = true;  // some values are missing
     const ctxValue = getValue(context, ctxIndex);
     const ctxFlag = getPointers(context, ctxIndex);
+    const ctxDirective = getDirectiveIndexFromEntry(context, ctxIndex);
     if (ctxValue != null) {
       valuesEntryShapeChange = true;
     }
@@ -1293,7 +1279,7 @@ function getMultiStartIndex(context: StylingContext): number {
   return getMultiOrSingleIndex(context[StylingIndex.MasterFlagPosition]) as number;
 }
 
-function getMultiClassStartIndex(context: StylingContext): number {
+function getMultiClassesStartIndex(context: StylingContext): number {
   const classCache = context[StylingIndex.CachedMultiClasses];
   return classCache
       [MapBasedOffsetValuesIndex.ValuesStartPosition +
@@ -1625,15 +1611,31 @@ export function getDirectiveIndexFromEntry(context: StylingContext, index: numbe
   return value & DirectiveOwnerAndPlayerBuilderIndex.BitMask;
 }
 
-function getDirectiveIndexFromRegistry(context: StylingContext, directive: any) {
-  const index =
-      getDirectiveRegistryValuesIndexOf(context[StylingIndex.DirectiveRegistryPosition], directive);
-  ngDevMode &&
-      assertNotEqual(
-          index, -1,
-          `The provided directive ${directive} has not been allocated to the element\'s style/class bindings`);
-  return index > 0 ? index / DirectiveRegistryValuesIndex.Size : 0;
-  // return index / DirectiveRegistryValuesIndex.Size;
+function getDirectiveIndexFromRegistry(context: StylingContext, directiveRef: any) {
+  let directiveIndex: number;
+
+  const dirs = context[StylingIndex.DirectiveRegistryPosition];
+  let index = getDirectiveRegistryValuesIndexOf(dirs, directiveRef);
+  if (index === -1) {
+    // if the directive was not allocated then this means that styling is
+    // being applied in a dynamic way AFTER the element was already instantiated
+    index = dirs.length;
+    directiveIndex = index > 0 ? index / DirectiveRegistryValuesIndex.Size : 0;
+
+    dirs.push(null, null, null, null);
+    dirs[index + DirectiveRegistryValuesIndex.DirectiveValueOffset] = directiveRef;
+    dirs[index + DirectiveRegistryValuesIndex.DirtyFlagOffset] = false;
+    dirs[index + DirectiveRegistryValuesIndex.SinglePropValuesIndexOffset] = -1;
+
+    const classesStartIndex =
+        getMultiClassesStartIndex(context) || StylingIndex.SingleStylesStartPosition;
+    registerMultiMapEntry(context, directiveIndex, true, context.length);
+    registerMultiMapEntry(context, directiveIndex, false, classesStartIndex);
+  } else {
+    directiveIndex = index > 0 ? index / DirectiveRegistryValuesIndex.Size : 0;
+  }
+
+  return directiveIndex;
 }
 
 function getDirectiveRegistryValuesIndexOf(
@@ -1935,4 +1937,22 @@ function hyphenateEntries(entries: string[]): string[] {
 function hyphenate(value: string): string {
   return value.replace(
       /[a-z][A-Z]/g, match => `${match.charAt(0)}-${match.charAt(1).toLowerCase()}`);
+}
+
+function registerMultiMapEntry(
+    context: StylingContext, directiveIndex: number, entryIsClassBased: boolean,
+    startPosition: number, count = 0) {
+  const cachedValues =
+      context[entryIsClassBased ? StylingIndex.CachedMultiClasses : StylingIndex.CachedMultiStyles];
+  if (directiveIndex > 0) {
+    const limit = MapBasedOffsetValuesIndex.ValuesStartPosition +
+        (directiveIndex * MapBasedOffsetValuesIndex.Size);
+    while (cachedValues.length < limit) {
+      // this means that ONLY directive class styling (like ngClass) was used
+      // therefore the root directive will still need to be filled in as well
+      // as any other directive spaces incase they only used static values
+      cachedValues.push(0, startPosition, null, 0);
+    }
+  }
+  cachedValues.push(0, startPosition, null, count);
 }

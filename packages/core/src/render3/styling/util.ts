@@ -56,6 +56,16 @@ export function allocStylingContext(
     element: RElement | null, templateStyleContext: StylingContext): StylingContext {
   // each instance gets a copy
   const context = templateStyleContext.slice() as any as StylingContext;
+
+  // the HEADER values contain arrays which also need
+  // to be copied over into the new context
+  for (let i = 0; i < StylingIndex.SingleStylesStartPosition; i++) {
+    const value = templateStyleContext[i];
+    if (Array.isArray(value)) {
+      context[i] = value.slice();
+    }
+  }
+
   context[StylingIndex.ElementPosition] = element;
 
   // this will prevent any other directives from extending the context
