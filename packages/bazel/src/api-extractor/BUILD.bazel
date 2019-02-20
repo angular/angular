@@ -1,6 +1,8 @@
 package(default_visibility = ["//packages:__subpackages__"])
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+# BEGIN-DEV-ONLY
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
@@ -15,6 +17,7 @@ ts_library(
     ],
 )
 
+# END-DEV-ONLY
 nodejs_binary(
     name = "api_extractor",
     data = [
@@ -24,4 +27,9 @@ nodejs_binary(
     ],
     entry_point = "angular/packages/bazel/src/api-extractor/index.js",
     visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "package_assets",
+    srcs = ["BUILD.bazel"],
 )

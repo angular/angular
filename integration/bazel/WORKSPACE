@@ -17,13 +17,6 @@ http_archive(
     url = "https://github.com/bazelbuild/rules_sass/archive/1.11.0.zip",
 )
 
-# Fetch the angular repository since we build angular from source
-# TODO(gregmagolan): use angular bundles in the Bazel build
-local_repository(
-    name = "angular",
-    path = "../..",
-)
-
 # Check the bazel version and download npm dependencies
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
@@ -50,9 +43,6 @@ yarn_install(
     data = [
         # Needed because this tsconfig file is used in the "postinstall" script.
         "//:angular-metadata.tsconfig.json",
-        # Need a reference to @angular here so that Bazel sets up the
-        # external repository before calling yarn_install
-        "@angular//:LICENSE",
     ],
     package_json = "//src:package.json",
     yarn_lock = "//src:yarn.lock",
@@ -75,7 +65,7 @@ web_test_repositories()
 
 # Temporary work-around for https://github.com/angular/angular/issues/28681
 # TODO(gregmagolan): go back to @io_bazel_rules_webtesting browser_repositories
-load("@angular//:browser_repositories.bzl", "browser_repositories")
+load("@npm_angular_bazel//:browser_repositories.bzl", "browser_repositories")
 
 browser_repositories()
 
@@ -93,6 +83,6 @@ sass_repositories()
 # but we still need to set up the "angular" workspace since some Bazel rules depend on
 # the "ngdeps" repository. This can be fixed if we switched the Angular repository to the
 # "npm" repository for the bazel managed dependencies.
-load("@angular//:index.bzl", "ng_setup_workspace")
+load("@npm_angular_bazel//:index.bzl", "ng_setup_workspace")
 
 ng_setup_workspace()

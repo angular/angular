@@ -22,7 +22,7 @@ ts_library(
 protractor_web_test_suite(
     name = "prodserver_test",
     data = [
-      "@angular//packages/bazel/src/protractor/utils",
+      "@angular//" + "packages/bazel/src/protractor/utils",
       "@npm//protractor",
     ],
     on_prepare = ":protractor.on-prepare.js",
@@ -33,7 +33,7 @@ protractor_web_test_suite(
 protractor_web_test_suite(
     name = "devserver_test",
     data = [
-      "@angular//packages/bazel/src/protractor/utils",
+      "@angular//" + "packages/bazel/src/protractor/utils",
       "@npm//protractor",
     ],
     on_prepare = ":protractor.on-prepare.js",
