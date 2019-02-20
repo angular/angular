@@ -65,7 +65,7 @@ setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 ####################################################################################################
 # Define our own yarn command for CircleCI.
 ####################################################################################################
-echo "function yarn () { /usr/bin/env node $projectDir/third_party/github.com/yarnpkg/yarn/releases/yarn-1.13.0.js \"\$@\"; }" >> $BASH_ENV;
+echo "function yarn () { /usr/bin/env node $projectDir/third_party/github.com/yarnpkg/yarn/releases/download/v1.13.0/bin/yarn.js \"\$@\"; }" >> $BASH_ENV;
 echo "export -f yarn;" >> $BASH_ENV;
 
 
