@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import '../util/ng_dev_mode';
+
 import {assertDomNode} from '../util/assert';
+
 import {EMPTY_ARRAY} from './empty';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, TVIEW} from './interfaces/view';
-import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData} from './util';
+import {getComponentViewByIndex, getNativeByTNode, readElementValue, readPatchedData} from './util/view_utils';
 
 
 

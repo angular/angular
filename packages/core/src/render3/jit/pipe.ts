@@ -11,7 +11,7 @@ import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';
 import {NG_PIPE_DEF} from '../fields';
-import {renderStringify} from '../util';
+import {renderStringify} from '../util/misc_utils';
 
 import {angularCoreEnv} from './environment';
 

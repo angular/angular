@@ -7,13 +7,14 @@
  */
 
 import {Injector} from '../di';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getViewComponent, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/discovery_utils';
+import {getViewComponent} from '../render3/global_utils_api';
 import {TNode} from '../render3/interfaces/node';
 import {StylingIndex} from '../render3/interfaces/styling';
 import {LView, TData, TVIEW} from '../render3/interfaces/view';
 import {getProp, getValue, isClassBasedValue} from '../render3/styling/class_and_style_bindings';
 import {getStylingContext} from '../render3/styling/util';
-import {INTERPOLATION_DELIMITER, isPropMetadataString, renderStringify} from '../render3/util';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/util/discovery_utils';
+import {INTERPOLATION_DELIMITER, isPropMetadataString, renderStringify} from '../render3/util/misc_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
 

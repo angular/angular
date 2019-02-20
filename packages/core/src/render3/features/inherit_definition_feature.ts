@@ -10,7 +10,7 @@ import {Type} from '../../interface/type';
 import {fillProperties} from '../../util/property';
 import {EMPTY_ARRAY, EMPTY_OBJ} from '../empty';
 import {ComponentDef, DirectiveDef, DirectiveDefFeature, RenderFlags} from '../interfaces/definition';
-import {isComponentDef} from '../util';
+import {isComponentDef} from '../util/view_utils';
 
 import {NgOnChangesFeature} from './ng_onchanges_feature';
 

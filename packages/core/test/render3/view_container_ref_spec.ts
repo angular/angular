@@ -17,7 +17,7 @@ import {RElement} from '../../src/render3/interfaces/renderer';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
 import {getLView} from '../../src/render3/state';
-import {getNativeByIndex} from '../../src/render3/util';
+import {getNativeByIndex} from '../../src/render3/util/view_utils';
 import {templateRefExtractor} from '../../src/render3/view_engine_compatibility_prebound';
 import {NgForOf} from '../../test/render3/common_with_def';
 

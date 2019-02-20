@@ -12,7 +12,7 @@ import {throwErrorIfNoChangesMode} from './errors';
 import {LView} from './interfaces/view';
 import {getCheckNoChangesMode} from './state';
 import {NO_CHANGE} from './tokens';
-import {isDifferent} from './util';
+import {isDifferent} from './util/misc_utils';
 
 
 
