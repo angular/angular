@@ -17,125 +17,13 @@
 // tslint:disable
 
 window.testBlocklist = {
-  "Portals CdkPortalOutlet should load a template into the portal": {
-    "error": "TypeError: Cannot read property 'createEmbeddedView' of undefined",
-    "notes": "Unknown"
-  },
-  "Portals CdkPortalOutlet should project template context bindings in the portal": {
-    "error": "TypeError: Cannot read property 'createEmbeddedView' of undefined",
-    "notes": "Unknown"
-  },
-  "Portals CdkPortalOutlet should set the `portal` when attaching a component portal programmatically": {
-    "error": "TypeError: Cannot read property 'attachComponentPortal' of undefined",
-    "notes": "Unknown"
-  },
   "Portals CdkPortalOutlet should not clear programmatically-attached portals on init": {
-    "error": "TypeError: Cannot read property 'attach' of undefined",
-    "notes": "Unknown"
-  },
-  "Portals CdkPortalOutlet should be considered attached when attaching using `attach`": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Portals CdkPortalOutlet should be considered attached when attaching using `attachComponentPortal`": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Portals CdkPortalOutlet should be considered attached when attaching using `attachTemplatePortal`": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Portals CdkPortalOutlet should use the `ComponentFactoryResolver` from the portal, if available": {
-    "error": "TypeError: Cannot read property 'attachComponentPortal' of undefined",
+    "error": "ObjectUnsubscribedError: object unsubscribed",
     "notes": "Unknown"
   },
   "Portals DomPortalOutlet should attach and detach a component portal without a ViewContainerRef": {
     "error": "Error: Expected '<pizza-msg><p>Pizza</p><p>Chocolate</p></pizza-msg>' to be '', 'Expected the DomPortalOutlet to be empty after detach'.",
     "notes": "Unknown"
-  },
-  "AutofillMonitor should add monitored class and listener upon monitoring": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AutofillMonitor should not add multiple listeners to the same element": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AutofillMonitor should remove monitored class and listener upon stop monitoring": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AutofillMonitor should stop monitoring all monitored elements upon destroy": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AutofillMonitor should emit and add filled class upon start animation": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AutofillMonitor should emit and remove filled class upon end animation": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AutofillMonitor should cleanup filled class if monitoring stopped in autofilled state": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AutofillMonitor should complete the stream when monitoring is stopped": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AutofillMonitor should emit on stream inside the NgZone": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AutofillMonitor should not emit on init if input is unfilled": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AriaDescriber should be able to create a message element": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AriaDescriber should not register empty strings": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AriaDescriber should not register non-string values": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'nativeElement' of undefined.",
-    "notes": "Unknown"
-  },
-  "AriaDescriber should not throw when trying to remove non-string value": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'nativeElement' of undefined.",
-    "notes": "Unknown"
-  },
-  "AriaDescriber should de-dupe a message registered multiple times": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AriaDescriber should be able to register multiple messages": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AriaDescriber should be able to unregister messages": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AriaDescriber should be able to unregister messages while having others registered": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AriaDescriber should be able to append to an existing list of aria describedby": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AriaDescriber should be able to handle multiple regisitrations of the same message to an element": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "AriaDescriber should clear any pre-existing containers": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render initial state": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
@@ -343,74 +231,6 @@ window.testBlocklist = {
   },
   "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should throw if maxBufferPx is less than minBufferPx": {
     "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkAccordion should not register nested items to the same accordion": {
-    "error": "TypeError: Cannot read property 'accordion' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkDrag standalone draggable should enable native drag interactions when there is a drag handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should not be able to drag the entire element if it has a handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to drag an element using its handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should not be able to drag the element if the handle is disabled": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should not be able to drag using the handle if the element is disabled": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to use a handle that was added after init": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to use more than one handle to drag the element": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should be able to drag with a handle that is not a direct descendant": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should disable the tap highlight while dragging via the handle": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag draggable with a handle should preserve any existing `webkitTapHighlightColor`": {
-    "error": "TypeError: Cannot read property 'removeEventListener' of null",
-    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
-  },
-  "CdkDrag in a drop container should be able to customize the preview element": {
-    "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should position custom previews next to the pointer": {
-    "error": "Error: Expected 'translate3d(8px, 33px, 0px)' to be 'translate3d(50px, 50px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lock position inside a drop container along the x axis": {
-    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should lock position inside a drop container along the y axis": {
-    "error": "Error: Expected 'translate3d(8px, 83px, 0px)' to be 'translate3d(50px, 100px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should inherit the position locking from the drop container": {
-    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "Unknown"
-  },
-  "CdkDrag in a drop container should be able to customize the placeholder": {
-    "error": "Error: Expected cdk-drag cdk-drag-placeholder to contain 'custom-placeholder'.",
     "notes": "Unknown"
   },
   "CdkTable in a typical simple use case should initialize with a connected data source": {
@@ -645,92 +465,104 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'viewContainer' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
-  "CdkTree should clear out the `mostRecentTreeNode` on destroy": {
-    "error": "Error: Expected false to be true.",
-    "notes": "Unknown"
-  },
-  "CdkTree flat tree should initialize with a connected data source": {
-    "error": "TypeError: Cannot read property 'dataSource' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkTree flat tree should initialize with rendered dataNodes": {
-    "error": "TypeError: Cannot read property 'classList' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkTree flat tree with toggle should expand/collapse the node": {
-    "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTree flat tree with toggle should expand/collapse the node recursively": {
-    "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTree flat tree with trackBy should add/remove/move nodes with reference-based trackBy": {
-    "error": "TypeError: Cannot read property 'getAttribute' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkTree flat tree with trackBy should add/remove/move nodes with property-based trackBy": {
-    "error": "TypeError: Cannot read property 'getAttribute' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkTree flat tree with trackBy should add/remove/move nodes with index-based trackBy": {
-    "error": "TypeError: Cannot read property 'getAttribute' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkTree nested tree should initialize with a connected data source": {
-    "error": "TypeError: Cannot read property 'dataSource' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkTree nested tree should initialize with rendered dataNodes": {
-    "error": "TypeError: Cannot read property 'classList' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkTree nested tree with toggle should expand/collapse the node multiple times": {
-    "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTree nested tree with toggle should expand/collapse the node recursively": {
-    "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTree nested tree with trackBy should add/remove/move children nodes with reference-based trackBy": {
-    "error": "Error: Expected 0 to be 3.",
-    "notes": "Unknown"
-  },
-  "CdkTree nested tree with trackBy should add/remove/move children nodes with property-based trackBy": {
-    "error": "Error: Expected 0 to be 3.",
-    "notes": "Unknown"
-  },
-  "CdkTree nested tree with trackBy should add/remove/move children nodes with index-based trackBy": {
-    "error": "Error: Expected 0 to be 3.",
-    "notes": "Unknown"
-  },
-  "CdkTree nested tree should throw an error when missing function in nested tree": {
-    "error": "Error: Expected function to throw an exception with message 'Could not find functions for nested/flat tree in tree control.', but it threw an exception with message 'Cannot read property 'viewContainer' of undefined'.",
-    "notes": "Unknown"
-  },
-  "CdkTree nested tree should throw an error when missing function in flat tree": {
-    "error": "Error: Expected function to throw an exception with message 'Could not find functions for nested/flat tree in tree control.', but it threw an exception with message 'Cannot read property 'viewContainer' of undefined'.",
-    "notes": "Unknown"
-  },
-  "CdkTree with depth should have correct depth for nested tree": {
-    "error": "Error: Expected 0 to be 5.",
-    "notes": "Unknown"
-  },
-  "MatAccordion should not register nested panels to the same accordion": {
+  "CdkAccordion should not register nested items to the same accordion": {
     "error": "TypeError: Cannot read property 'accordion' of undefined",
     "notes": "Unknown"
   },
-  "MatExpansionPanel should toggle the panel when pressing SPACE on the header": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+  "CdkDrag standalone draggable should enable native drag interactions when there is a drag handle": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should not be able to drag the entire element if it has a handle": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should be able to drag an element using its handle": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should not be able to drag the element if the handle is disabled": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should not be able to drag using the handle if the element is disabled": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should be able to use a handle that was added after init": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should be able to use more than one handle to drag the element": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should be able to drag with a handle that is not a direct descendant": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should disable the tap highlight while dragging via the handle": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag draggable with a handle should preserve any existing `webkitTapHighlightColor`": {
+    "error": "TypeError: Cannot read property 'removeEventListener' of null",
+    "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
+  },
+  "CdkDrag in a drop container should be able to customize the preview element": {
+    "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
     "notes": "Unknown"
   },
-  "MatExpansionPanel should toggle the panel when pressing ENTER on the header": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+  "CdkDrag in a drop container should position custom previews next to the pointer": {
+    "error": "Error: Expected 'translate3d(8px, 33px, 0px)' to be 'translate3d(50px, 50px, 0px)'.",
     "notes": "Unknown"
   },
-  "MatExpansionPanel should not toggle if a modifier key is pressed": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+  "CdkDrag in a drop container should lock position inside a drop container along the x axis": {
+    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
+    "notes": "Unknown"
+  },
+  "CdkDrag in a drop container should lock position inside a drop container along the y axis": {
+    "error": "Error: Expected 'translate3d(8px, 83px, 0px)' to be 'translate3d(50px, 100px, 0px)'.",
+    "notes": "Unknown"
+  },
+  "CdkDrag in a drop container should inherit the position locking from the drop container": {
+    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
+    "notes": "Unknown"
+  },
+  "CdkDrag in a drop container should be able to customize the placeholder": {
+    "error": "Error: Expected cdk-drag cdk-drag-placeholder to contain 'custom-placeholder'.",
+    "notes": "Unknown"
+  },
+  "CdkTree flat tree should initialize should be able to use units different from px for the indentation": {
+    "error": "Error: Failed: Expected node level to be 15rem but was 28px",
+    "notes": "Unknown"
+  },
+  "CdkTree flat tree should initialize should default to px if no unit is set for string value indentation": {
+    "error": "Error: Failed: Expected node level to be 17px but was 28px",
+    "notes": "Unknown"
+  },
+  "CdkTree flat tree with toggle should expand/collapse the node": {
+    "error": "Error: Failed: Expected node level to be 40px but was ",
+    "notes": "Unknown"
+  },
+  "CdkTree flat tree with toggle should expand/collapse the node recursively": {
+    "error": "Error: Failed: Expected node level to be 40px but was ",
+    "notes": "Unknown"
+  },
+  "CdkTree flat tree with trackBy should add/remove/move nodes with property-based trackBy": {
+    "error": "Error: Expected null to be '1'.",
+    "notes": "Unknown"
+  },
+  "CdkTree flat tree with trackBy should add/remove/move nodes with index-based trackBy": {
+    "error": "Error: Expected null to be '0'.",
+    "notes": "Unknown"
+  },
+  "CdkTree nested tree with toggle should expand/collapse the node multiple times": {
+    "error": "Error: Expected 3 to be 1, 'Expect node expanded'.",
+    "notes": "Unknown"
+  },
+  "CdkTree nested tree with toggle should expand/collapse the node recursively": {
+    "error": "Error: Failed: Expected node descendant num to be 2 but was 0",
     "notes": "Unknown"
   },
   "MatButton should apply class based on color attribute": {
@@ -788,18 +620,6 @@ window.testBlocklist = {
   "MatButton button ripples should disable the ripple when the button is disabled": {
     "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatInput without forms validates the type": {
-    "error": "Error: Input type \"file\" isn't supported by matInput.",
-    "notes": "Unknown"
-  },
-  "MatInput without forms should not highlight when focusing a readonly input": {
-    "error": "Error: Expected true to be false.",
-    "notes": "Unknown"
-  },
-  "MatInput with textarea autosize should work in a step": {
-    "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
-    "notes": "Unknown"
   },
   "MatChipList StandardChipList basic behaviors should toggle the chips disabled state based on whether it is disabled": {
     "error": "Error: Expected true to be false.",
@@ -873,10 +693,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'focus' of undefined",
     "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
   },
-  "MatGridList should throw error if rowHeight ratio is invalid": {
-    "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
-    "notes": "Unknown"
-  },
   "MatStepper basic stepper should go to next available step when the next button is clicked": {
     "error": "Error: Expected 2 to be 1.",
     "notes": "Unknown"
@@ -945,38 +761,6 @@ window.testBlocklist = {
     "error": "Error: Expected mat-slide-toggle-thumb-container to contain 'mat-dragging'.",
     "notes": "Unknown"
   },
-  "MatTabGroup basic behavior should change selected index on click": {
-    "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should support two-way binding for selectedIndex": {
-    "error": "TypeError: ctx_r13779._handleClick is not a function",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should fire animation done event": {
-    "error": "TypeError: ctx_r14175._handleClick is not a function",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should emit focusChange event on click": {
-    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should emit focusChange on arrow key navigation": {
-    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
-    "notes": "Unknown"
-  },
-  "MatTabGroup lazy loaded tabs should lazy load the second tab": {
-    "error": "TypeError: ctx_r15099._handleClick is not a function",
-    "notes": "Unknown"
-  },
-  "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c28983-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
-    "notes": "Unknown"
-  },
-  "MatSidenav should set fixed bottom and top when in fixed mode": {
-    "error": "Error: Expected '' to be '20px'.",
-    "notes": "Unknown"
-  },
   "MatDrawer methods should be able to open": {
     "error": "Error: Expected 0 to be 1.",
     "notes": "Unknown"
@@ -998,27 +782,23 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer methods should restore focus on close if focus is inside drawer": {
-    "error": "Error: Expected <button class=\"ng-tns-c29407-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <button class=\"ng-tns-c21113-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
-  },
-  "MatDrawer methods should not restore focus on close if focus is outside drawer": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDrawer attributes should bind 2-way bind on opened property": {
     "error": "Error: Expected false to be true.",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"over\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c29702-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21408-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"push\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c29736-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21442-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should focus the drawer if there are no focusable elements": {
-    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c29804-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c21510-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawerContainer should animate the content when a drawer is added at a later point": {
@@ -1049,6 +829,14 @@ window.testBlocklist = {
     "error": "TypeError: Cannot set property 'mode' of undefined",
     "notes": "Unknown"
   },
+  "MatSidenav should be fixed position when in fixed mode": {
+    "error": "Error: Expected ng-tns-c21960-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
+    "notes": "Unknown"
+  },
+  "MatSidenav should set fixed bottom and top when in fixed mode": {
+    "error": "Error: Expected '' to be '20px'.",
+    "notes": "Unknown"
+  },
   "MatSort should use the column definition if used within a cdk table": {
     "error": "TypeError: Cannot read property 'viewContainer' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
@@ -1059,35 +847,91 @@ window.testBlocklist = {
   },
   "MatTree flat tree should initialize with rendered dataNodes": {
     "error": "TypeError: Cannot read property 'classList' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
   "MatTree flat tree with toggle should expand/collapse the node": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
   "MatTree flat tree with toggle should expand/collapse the node recursively": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
   "MatTree flat tree with undefined or null children should initialize with rendered dataNodes": {
     "error": "TypeError: Cannot read property 'classList' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
   "MatTree nested tree with undefined or null children should initialize with rendered dataNodes": {
     "error": "TypeError: Cannot read property 'classList' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
   "MatTree nested tree should initialize with rendered dataNodes": {
     "error": "TypeError: Cannot read property 'classList' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
   "MatTree nested tree with toggle should expand/collapse the node": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
   "MatTree nested tree with toggle should expand/collapse the node recursively": {
     "error": "TypeError: Cannot read property 'click' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
+  },
+  "MatAccordion should not register nested panels to the same accordion": {
+    "error": "TypeError: Cannot read property 'accordion' of undefined",
+    "notes": "Unknown"
+  },
+  "MatExpansionPanel should toggle the panel when pressing SPACE on the header": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+    "notes": "Unknown"
+  },
+  "MatExpansionPanel should toggle the panel when pressing ENTER on the header": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+    "notes": "Unknown"
+  },
+  "MatExpansionPanel should not toggle if a modifier key is pressed": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+    "notes": "Unknown"
+  },
+  "MatInput without forms validates the type": {
+    "error": "Error: Input type \"file\" isn't supported by matInput.",
+    "notes": "Unknown"
+  },
+  "MatInput without forms should not highlight when focusing a readonly input": {
+    "error": "Error: Expected true to be false.",
+    "notes": "Unknown"
+  },
+  "MatInput with textarea autosize should work in a step": {
+    "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should change selected index on click": {
+    "error": "Error: Expected 0 to be 1.",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should support two-way binding for selectedIndex": {
+    "error": "TypeError: ctx_r16149._handleClick is not a function",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should fire animation done event": {
+    "error": "TypeError: ctx_r16545._handleClick is not a function",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should emit focusChange event on click": {
+    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should emit focusChange on arrow key navigation": {
+    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
+    "notes": "Unknown"
+  },
+  "MatTabGroup lazy loaded tabs should lazy load the second tab": {
+    "error": "TypeError: ctx_r17469._handleClick is not a function",
+    "notes": "Unknown"
+  },
+  "MatGridList should throw error if rowHeight ratio is invalid": {
+    "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
+    "notes": "Unknown"
   },
   "Dialog should set the proper animation states": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
@@ -1105,186 +949,6 @@ window.testBlocklist = {
     "error": "Error: Must provide a portal to attach",
     "notes": "Unknown"
   },
-  "MatBottomSheet should open a bottom sheet with a component": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should open a bottom sheet with a template": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should position the bottom sheet at the bottom center of the screen": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should emit when the bottom sheet opening animation is complete": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should use the correct injector": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should open a bottom sheet with a component and no ViewContainerRef": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should apply the correct role to the container element": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should close a bottom sheet via the escape key": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should close when clicking on the overlay backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should emit the backdropClick stream when clicking on the overlay backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should emit the keyboardEvent stream when key events target the overlay": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should allow setting the layout direction": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should inject the correct direction in the instantiated component": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should fall back to injecting the global direction if none is passed by the config": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should be able to set a custom panel class": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should be able to set a custom aria-label": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should be able to get dismissed through the service": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should dismiss the bottom sheet when the service is destroyed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should open a new bottom sheet after dismissing a previous sheet": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should remove past bottom sheets when opening new ones": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should not throw when opening multiple bottom sheet in quick succession": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'hasAttached' of undefined.",
-    "notes": "Unknown"
-  },
-  "MatBottomSheet should remove bottom sheet if another is shown while its still animating open": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should emit after being dismissed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should be able to pass a result back to the dismissed stream": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should close the bottom sheet when going forwards/backwards in history": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should close the bottom sheet when the location hash changes": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet should allow the consumer to disable closing a bottom sheet on navigation": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet passing in data should be able to pass in data": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet passing in data should default to null if no data is passed": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'hasAttached' of undefined.",
-    "notes": "Unknown"
-  },
-  "MatBottomSheet disableClose option should prevent closing via clicks on the backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet disableClose option should prevent closing via the escape key": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet hasBackdrop option should have a backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet hasBackdrop option should not have a backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet backdropClass option should have default backdrop class": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet backdropClass option should have custom backdrop class": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet focus management should focus the bottom sheet container by default": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet focus management should focus the first tabbable element of the bottom sheet on open whenautoFocus is enabled": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet focus management should allow disabling focus of the first tabbable element": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet focus management should re-focus trigger element when bottom sheet closes": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet focus management should be able to disable focus restoration": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet with parent MatBottomSheet should close bottom sheets opened by parent when opening from child": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet with parent MatBottomSheet should close bottom sheets opened by child when opening from parent": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet with parent MatBottomSheet should not close parent bottom sheet when child is destroyed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet with default options should use the provided defaults": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatBottomSheet with default options should be overridable by open() options": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
   "MatAutocomplete aria should set role of autocomplete panel to listbox": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
@@ -1292,10 +956,6 @@ window.testBlocklist = {
   "MatAutocomplete aria should set aria-owns based on the attached autocomplete": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatAutocomplete Option selection should handle `optionSelections` being accessed too early": {
-    "error": "TypeError: Cannot read property 'autocomplete' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule standard datepicker should open datepicker if opened input is set to true": {
     "error": "Error: Expected null not to be null.",
@@ -1457,48 +1117,12 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'query' of undefined",
     "notes": "Unknown"
   },
-  "MatMenu nested menu should toggle a nested menu when its trigger is hovered": {
-    "error": "Error: Expected mat-menu-item mat-menu-item-submenu-trigger ng-tns-c56347-0 cdk-focused cdk-program-focused to contain 'mat-menu-item-highlighted', 'Expected the trigger to be highlighted'.",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should close all the open sub-menus when the hover state is changed at the root": {
-    "error": "TypeError: Cannot read property 'dispatchEvent' of null",
-    "notes": "Unknown"
-  },
   "MatMenu nested menu should close submenu when hovering over disabled sibling item": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "Unknown"
   },
   "MatMenu nested menu should not open submenu when hovering over disabled trigger": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should toggle a nested menu when its trigger is added after init": {
-    "error": "Error: Expected mat-menu-item mat-menu-item-submenu-trigger ng-star-inserted to contain 'mat-menu-item-highlighted', 'Expected the trigger to be highlighted'.",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should handle the items being rendered in a repeater": {
-    "error": "Error: Expected 1 to be 2, 'Expected two open menus'.",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should be able to trigger the same nested menu from different triggers": {
-    "error": "Error: Expected 1 to be 2, 'Expected two open menus'.",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should close the initial menu if the user moves away while animating": {
-    "error": "Error: Expected 1 to be 2, 'Expected two open menus'.",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should be able to open a submenu through an item that is not a direct descendant of the panel": {
-    "error": "Error: Expected 1 to be 2, 'Expected two open menus'.",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should not close when hovering over a menu item inside a sub-menu panel that is declaredinside the root menu": {
-    "error": "Error: Expected 1 to be 2, 'Expected two open menus'.",
-    "notes": "Unknown"
-  },
-  "MatMenu nested menu should not re-focus a child menu trigger when hovering another trigger": {
-    "error": "Error: Expected 1 to be 2, 'Expected two open menus'.",
     "notes": "Unknown"
   },
   "MatSelect core overlay panel should not throw when attempting to open too early": {
