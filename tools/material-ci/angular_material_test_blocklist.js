@@ -137,218 +137,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render initial state": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the data length": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the viewport size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered range": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered content offset": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the scroll offset": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered content size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should measure range size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set total content size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set total content size in horizontal mode": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set a class based on the orientation": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set the vertical class if an invalid orientation is set": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set rendered range": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set content offset to top of content": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set content offset to bottom of content": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to offset": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to index": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to offset in horizontal mode": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to index in horizontal mode": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should output scrolled index": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls down": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls up": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the end when scrolled to the top": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the start and end when scrolled to the middle": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the start when scrolled to the bottom": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic item size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic buffer size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic item array": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls right in horizontal mode": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls left in horizontal mode": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should work with an Observable": {
-    "error": "TypeError: Cannot read property 'getRenderedRange' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should work with a DataSource": {
-    "error": "TypeError: Cannot read property 'getRenderedRange' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should trackBy value by default": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for detach()",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should trackBy index when specified": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for detach()",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should recycle views when template cache is large enough to accommodate": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for createEmbeddedView()",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should not recycle views when template cache is full": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for createEmbeddedView()",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render up to maxBufferPx when buffer dips below minBufferPx": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should throw if maxBufferPx is less than minBufferPx": {
-    "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should register and degregister with ScrollDispatcher": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should emit on viewChange inside the Angular zone": {
-    "error": "TypeError: Cannot read property 'viewChange' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should not throw when disposing of a view that will not fit in the cache": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with RTL direction should initially be scrolled all the way right and showing the first item in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with RTL direction should scroll through items as user scrolls to the left in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with RTL direction should interpret scrollToOffset amount as an offset from the right in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with RTL direction should scroll to the correct index in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with RTL direction should emit the scrolled to index in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with RTL direction should set total content size": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with RTL direction should set total content size in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should render initial state for uniform items": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should render extra content if first item is smaller than average": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should throw if maxBufferPx is less than minBufferPx": {
-    "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkAccordion should not register nested items to the same accordion": {
-    "error": "TypeError: Cannot read property 'accordion' of undefined",
-    "notes": "Unknown"
-  },
   "CdkTable in a typical simple use case should initialize with a connected data source": {
     "error": "TypeError: Cannot read property 'viewContainer' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
@@ -581,6 +369,218 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'viewContainer' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render initial state": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the data length": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the viewport size": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport size": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered range": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered content offset": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the scroll offset": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered content size": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should measure range size": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set total content size": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set total content size in horizontal mode": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set a class based on the orientation": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set the vertical class if an invalid orientation is set": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set rendered range": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set content offset to top of content": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set content offset to bottom of content": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to offset": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to index": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to offset in horizontal mode": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to index in horizontal mode": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should output scrolled index": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls down": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls up": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the end when scrolled to the top": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the start and end when scrolled to the middle": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the start when scrolled to the bottom": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic item size": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic buffer size": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic item array": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls right in horizontal mode": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls left in horizontal mode": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should work with an Observable": {
+    "error": "TypeError: Cannot read property 'getRenderedRange' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should work with a DataSource": {
+    "error": "TypeError: Cannot read property 'getRenderedRange' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should trackBy value by default": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for detach()",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should trackBy index when specified": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for detach()",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should recycle views when template cache is large enough to accommodate": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for createEmbeddedView()",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should not recycle views when template cache is full": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for createEmbeddedView()",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render up to maxBufferPx when buffer dips below minBufferPx": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should throw if maxBufferPx is less than minBufferPx": {
+    "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should register and degregister with ScrollDispatcher": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should emit on viewChange inside the Angular zone": {
+    "error": "TypeError: Cannot read property 'viewChange' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should not throw when disposing of a view that will not fit in the cache": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with RTL direction should initially be scrolled all the way right and showing the first item in horizontal mode": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with RTL direction should scroll through items as user scrolls to the left in horizontal mode": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with RTL direction should interpret scrollToOffset amount as an offset from the right in horizontal mode": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with RTL direction should scroll to the correct index in horizontal mode": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with RTL direction should emit the scrolled to index in horizontal mode": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with RTL direction should set total content size": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with RTL direction should set total content size in horizontal mode": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should render initial state for uniform items": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should render extra content if first item is smaller than average": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should throw if maxBufferPx is less than minBufferPx": {
+    "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkAccordion should not register nested items to the same accordion": {
+    "error": "TypeError: Cannot read property 'accordion' of undefined",
+    "notes": "Unknown"
+  },
   "CdkDrag standalone draggable should enable native drag interactions when there is a drag handle": {
     "error": "TypeError: Cannot read property 'removeEventListener' of null",
     "notes": "FW-1010: onDestroy hook is called twice for directives that are also used in a provider"
@@ -773,82 +773,6 @@ window.testBlocklist = {
     "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
-  "MatTabHeader focusing should initialize to the selected index": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader focusing should send focus change event": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader focusing should not set focus a disabled tab": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader focusing should move focus right and skip disabled tabs": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader focusing should move focus left and skip disabled tabs": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader focusing should support key down events to move and select focus": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader focusing should move focus to the first tab when pressing HOME": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader focusing should skip disabled items when moving focus using HOME": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader focusing should move focus to the last tab when pressing END": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader focusing should skip disabled items when moving focus using END": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader pagination ltr should show width when tab list width exceeds container": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader pagination ltr should scroll to show the focused tab label": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader pagination ltr should show ripples for pagination buttons": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader pagination ltr should allow disabling ripples for pagination buttons": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader pagination rtl should scroll to show the focused tab label": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader pagination should re-align the ink bar when the direction changes": {
-    "error": "TypeError: Cannot read property '_inkBar' of undefined",
-    "notes": "Unknown"
-  },
-  "MatTabHeader pagination should re-align the ink bar when the window is resized": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabHeader pagination should update arrows when the window is resized": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for _checkPaginationEnabled()",
-    "notes": "Unknown"
-  },
-  "MatTabHeader pagination should update the pagination state if the content of the labels changes": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
   "MatChipList StandardChipList basic behaviors should toggle the chips disabled state based on whether it is disabled": {
     "error": "Error: Expected true to be false.",
     "notes": "Unknown"
@@ -981,12 +905,12 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
-  "MatSlideToggle without forms custom action configuration should not change value on dragging when drag action is noop": {
-    "error": "Error: Expected mat-slide-toggle-thumb-container to contain 'mat-dragging'.",
+  "MatSlideToggle without forms custom action configuration should not change value on click when click action is noop": {
+    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
-  "MatSlideToggle without forms custom action configuration should not change value on click when click action is noop": {
-    "error": "TypeError: this._inputElement is undefined",
+  "MatSlideToggle without forms custom action configuration should not change value on dragging when drag action is noop": {
+    "error": "Error: Expected mat-slide-toggle-thumb-container to contain 'mat-dragging'.",
     "notes": "Unknown"
   },
   "MatDrawer methods should be able to open": {
@@ -1010,7 +934,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer methods should restore focus on close if focus is inside drawer": {
-    "error": "Error: Expected <button class=\"ng-tns-c21113-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <button class=\"ng-tns-c22161-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer methods should not restore focus on close if focus is outside drawer": {
@@ -1022,15 +946,15 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"over\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21408-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c22456-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"push\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21442-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c22490-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should focus the drawer if there are no focusable elements": {
-    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c21510-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c22558-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawerContainer should animate the content when a drawer is added at a later point": {
@@ -1062,7 +986,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c21960-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
+    "error": "Error: Expected ng-tns-c23008-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "Unknown"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
@@ -1075,262 +999,6 @@ window.testBlocklist = {
   },
   "MatSort should use the column definition if used within an mat table": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "Unknown"
-  },
-  "MatAccordion should ensure only one item is expanded at a time": {
-    "error": "Error: Expected undefined to be truthy.",
-    "notes": "Unknown"
-  },
-  "MatAccordion should allow multiple items to be expanded simultaneously": {
-    "error": "Error: Expected undefined to be truthy.",
-    "notes": "Unknown"
-  },
-  "MatAccordion should expand or collapse all enabled items": {
-    "error": "Error: Expected undefined to be truthy.",
-    "notes": "Unknown"
-  },
-  "MatAccordion should not expand or collapse disabled items": {
-    "error": "Error: Expected undefined to be truthy.",
-    "notes": "Unknown"
-  },
-  "MatAccordion should not register nested panels to the same accordion": {
-    "error": "TypeError: Cannot read property 'accordion' of undefined",
-    "notes": "Unknown"
-  },
-  "MatExpansionPanel should toggle the panel when pressing SPACE on the header": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
-    "notes": "Unknown"
-  },
-  "MatExpansionPanel should toggle the panel when pressing ENTER on the header": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
-    "notes": "Unknown"
-  },
-  "MatExpansionPanel should not toggle if a modifier key is pressed": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
-    "notes": "Unknown"
-  },
-  "MatInput without forms validates the type": {
-    "error": "Error: Input type \"file\" isn't supported by matInput.",
-    "notes": "Unknown"
-  },
-  "MatInput without forms should not highlight when focusing a readonly input": {
-    "error": "Error: Expected true to be false.",
-    "notes": "Unknown"
-  },
-  "MatInput with textarea autosize should work in a tab": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatInput with textarea autosize should work in a step": {
-    "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
-    "notes": "Unknown"
-  },
-  "MatTabNavBar basic behavior should change active index on click": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should add the active class if active": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should toggle aria-current based on active state": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should add the disabled class if disabled": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should update aria-disabled if disabled": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should disable the ripples on all tabs when they are disabled on the nav bar": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should have the `disableRipple` from the tab take precendence over the nav bar": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should update the tabindex if links are disabled": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should make disabled links unclickable": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should show ripples for tab links": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should be able to disable ripples on a tab link": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should re-align the ink bar when the direction changes": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should re-align the ink bar when the tabs list change": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should re-align the ink bar when the tab labels change the width": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should re-align the ink bar when the window is resized": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabNavBar basic behavior should hide the ink bar when all the links are inactive": {
-    "error": "TypeError: Cannot read property 'show' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should default to the first tab": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior will properly load content on first change detection pass": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should change selected index on click": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should support two-way binding for selectedIndex": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should set to correct tab on fast change": {
-    "error": "Failed: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should change tabs based on selectedIndex": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should update tab positions when selected index is changed": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should clamp the selected index to the size of the number of tabs": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should not crash when setting the selected index to NaN": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'nativeElement' of undefined.",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should show ripples for tab-group labels": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should allow disabling ripples for tab-group labels": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should set the isActive flag on each of the tabs": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should fire animation done event": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should add the proper `aria-setsize` and `aria-posinset`": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should emit focusChange event on click": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup basic behavior should emit focusChange on arrow key navigation": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup aria labelling should not set aria-label or aria-labelledby attributes if they are not passed in": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup aria labelling should set the aria-label attribute": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup aria labelling should set the aria-labelledby attribute": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup aria labelling should not be able to set both an aria-label and aria-labelledby": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup disable tabs should have one disabled tab": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup disable tabs should set the disabled flag on tab": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup dynamic binding tabs should be able to add a new tab, select it, and have correct origin position": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup dynamic binding tabs should update selected index if the last tab removed while selected": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup dynamic binding tabs should maintain the selected tab if a new tab is added": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup dynamic binding tabs should maintain the selected tab if a tab is removed": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup dynamic binding tabs should be able to select a new tab after creation": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup dynamic binding tabs should not fire `selectedTabChange` when the amount of tabs changes": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup async tabs should show tabs when they are available": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup with simple api should support a tab-group with the simple api": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup with simple api should support @ViewChild in the tab content": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup with simple api should only have the active tab in the DOM": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup with simple api should support setting the header position": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup lazy loaded tabs should lazy load the second tab": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatTabGroup special cases should not throw an error when binding isActive to the view": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'nativeElement' of undefined.",
-    "notes": "Unknown"
-  },
-  "nested MatTabGroup with enabled animations should not throw when creating a component with nested tab groups": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'nativeElement' of undefined.",
     "notes": "Unknown"
   },
   "MatTree flat tree should initialize with rendered dataNodes": {
@@ -1367,6 +1035,42 @@ window.testBlocklist = {
   },
   "MatGridList should throw error if rowHeight ratio is invalid": {
     "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
+    "notes": "Unknown"
+  },
+  "MatInput without forms validates the type": {
+    "error": "Error: Input type \"file\" isn't supported by matInput.",
+    "notes": "Unknown"
+  },
+  "MatInput without forms should not highlight when focusing a readonly input": {
+    "error": "Error: Expected true to be false.",
+    "notes": "Unknown"
+  },
+  "MatInput with textarea autosize should work in a step": {
+    "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should change selected index on click": {
+    "error": "Error: Expected 0 to be 1.",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should support two-way binding for selectedIndex": {
+    "error": "TypeError: ctx_r15939._handleClick is not a function",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should fire animation done event": {
+    "error": "TypeError: ctx_r16335._handleClick is not a function",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should emit focusChange event on click": {
+    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should emit focusChange on arrow key navigation": {
+    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
+    "notes": "Unknown"
+  },
+  "MatTabGroup lazy loaded tabs should lazy load the second tab": {
+    "error": "TypeError: ctx_r17259._handleClick is not a function",
     "notes": "Unknown"
   },
   "Dialog should open a dialog with a component": {
@@ -2330,7 +2034,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatMenu nested menu should toggle a nested menu when its trigger is hovered": {
-    "error": "Error: Expected mat-menu-item mat-menu-item-submenu-trigger ng-tns-c56347-0 cdk-focused cdk-program-focused to contain 'mat-menu-item-highlighted', 'Expected the trigger to be highlighted'.",
+    "error": "Error: Expected mat-menu-item mat-menu-item-submenu-trigger ng-tns-c55433-0 cdk-focused cdk-program-focused to contain 'mat-menu-item-highlighted', 'Expected the trigger to be highlighted'.",
     "notes": "Unknown"
   },
   "MatMenu nested menu should close all the open sub-menus when the hover state is changed at the root": {
@@ -2589,48 +2293,12 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
-  "MatTooltip with OnPush should show and hide the tooltip": {
-    "error": "Error: Expected '' to be 'scale(1)'.",
-    "notes": "Unknown"
-  },
-  "MatTooltip with OnPush should have rendered the tooltip text on init": {
-    "error": "Error: Expected '' to contain 'initial tooltip message'.",
-    "notes": "Unknown"
-  },
   "MatTooltip special cases should clear the `user-select` when a tooltip is set on a text field": {
     "error": "Error: Expected 'none' to be falsy.",
     "notes": "Unknown"
   },
   "MatTooltip special cases should clear the `-webkit-user-drag` on draggable elements": {
     "error": "Error: Expected 'none' to be falsy.",
-    "notes": "Unknown"
-  }, 
-  "MatCalendar standard calendar should emit the selected year on cell clicked in multiyear view": {
-    "error": "TypeError: Cannot read property 'getFullYear' of undefined",
-    "notes": "Unknown"
-  },  
-  "MatCalendar calendar with min and max date should not go back past min date": {
-    "error": "Error: Expected false to be true, 'previous button should be disabled'.",
-    "notes": "Unknown"
-  },
-  "MatCalendar calendar with min and max date should not go forward past max date": {
-    "error": "Error: Expected false to be true, 'next button should be disabled'.",
-    "notes": "Unknown"
-  },
-  "MatCalendar calendar with min and max date should re-render the year view when the minDate changes": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for _init()",
-    "notes": "Unknown"
-  },
-  "MatCalendar calendar with min and max date should re-render the year view when the maxDate changes": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for _init()",
-    "notes": "Unknown"
-  },
-  "MatCalendar calendar with min and max date should re-render the multi-year view when the minDate changes": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for _init()",
-    "notes": "Unknown"
-  },
-  "MatCalendar calendar with min and max date should re-render the multi-year view when the maxDate changes": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for _init()",
     "notes": "Unknown"
   },
   "MatCalendar calendar with min and max date should update the minDate in the child view if it changed after an interaction": {
@@ -2768,6 +2436,22 @@ window.testBlocklist = {
   "MatTable with MatTableDataSource and sort/pagination/filter should sort strings with numbers larger than MAX_SAFE_INTEGER correctly": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "MatExpansionPanel should toggle the panel when pressing SPACE on the header": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+    "notes": "Unknown"
+  },
+  "MatExpansionPanel should toggle the panel when pressing ENTER on the header": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+    "notes": "Unknown"
+  },
+  "MatExpansionPanel should not toggle if a modifier key is pressed": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+    "notes": "Unknown"
+  },
+  "MatAccordion should not register nested panels to the same accordion": {
+    "error": "TypeError: Cannot read property 'accordion' of undefined",
+    "notes": "Unknown"
   }
 };
 // clang-format on
