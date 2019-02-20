@@ -32,7 +32,7 @@ nodejs_binary(
     configuration_env_vars = ["compile"],
     data = [
         ":ngc_lib",
-        "@build_bazel_rules_typescript//third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
+        "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
         "@ngdeps//source-map-support",
         "@ngdeps//tslib",
     ],
@@ -48,4 +48,10 @@ nodejs_binary(
     ],
     entry_point = "angular/packages/bazel/src/ngc-wrapped/extract_i18n.js",
     visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "package_assets",
+    srcs = ["BUILD.bazel"],
+    visibility = ["//packages/bazel:__subpackages__"],
 )

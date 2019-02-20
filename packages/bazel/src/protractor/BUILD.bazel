@@ -4,3 +4,8 @@ exports_files([
     "protractor.conf.js",
     "protractor_web_test.bzl",
 ])
+
+filegroup(
+    name = "package_assets",
+    srcs = glob(["*"]),
+)
