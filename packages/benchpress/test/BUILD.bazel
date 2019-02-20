@@ -9,7 +9,7 @@ ts_library(
         "//packages/benchpress",
         "//packages/core",
         "//packages/core/testing",
-        "@ngdeps//protractor",
+        "@npm//protractor",
     ],
 )
 
@@ -21,6 +21,6 @@ jasmine_node_test(
         "//packages/benchpress",
         "//packages/core/testing",
         "//tools/testing:node",
-        "@ngdeps//protractor",
+        "@npm//protractor",
     ],
 )

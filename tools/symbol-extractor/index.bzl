@@ -18,7 +18,7 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
         golden,
         Label("//tools/symbol-extractor:lib"),
         Label("@bazel_tools//tools/bash/runfiles"),
-        Label("@ngdeps//typescript"),
+        Label("@npm//typescript"),
     ]
     entry_point = "angular/tools/symbol-extractor/cli.js"
 

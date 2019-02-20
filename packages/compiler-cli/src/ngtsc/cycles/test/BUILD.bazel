@@ -13,7 +13,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/cycles",
         "//packages/compiler-cli/src/ngtsc/imports",
         "//packages/compiler-cli/src/ngtsc/testing",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 

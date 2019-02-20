@@ -43,7 +43,7 @@ PACKAGES = [
 PLUGIN_CONFIG = "{sideEffectFreeModules: [\n%s]}" % ",\n".join(
     ["        '.esm5/{0}'".format(p) for p in PACKAGES],
 )
-BO_ROLLUP = "ngdeps/node_modules/@angular-devkit/build-optimizer/src/build-optimizer/rollup-plugin.js"
+BO_ROLLUP = "npm/node_modules/@angular-devkit/build-optimizer/src/build-optimizer/rollup-plugin.js"
 BO_PLUGIN = "require('%s').default(%s)" % (BO_ROLLUP, PLUGIN_CONFIG)
 
 def _use_plain_rollup(ctx):

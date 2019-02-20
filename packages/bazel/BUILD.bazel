@@ -21,8 +21,6 @@ npm_package(
     replacements = {
         "(#|\/\/)\\s+BEGIN-DEV-ONLY[\\w\W]+?(#|\/\/)\\s+END-DEV-ONLY": "",
         "//packages/bazel/": "//",
-        "@ngdeps//": "@npm//",
-        "@angular//:@angular/bazel/ngc-wrapped": "@npm//@angular/bazel/bin:ngc-wrapped",
         "angular/packages/bazel/": "npm_angular_bazel/",
     },
     tags = ["release-with-framework"],

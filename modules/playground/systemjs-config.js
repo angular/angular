@@ -30,8 +30,8 @@ const angularPackages = [
 
 const packagesConfig = {};
 const mapConfig = {
-  'tslib': 'ngdeps/node_modules/tslib/tslib.js',
-  'rxjs': 'ngdeps/node_modules/rxjs/bundles/rxjs.umd.js',
+  'tslib': 'npm/node_modules/tslib/tslib.js',
+  'rxjs': 'npm/node_modules/rxjs/bundles/rxjs.umd.js',
   'rxjs/operators': 'angular/modules/playground/systemjs-rxjs-operators.js',
 };
 

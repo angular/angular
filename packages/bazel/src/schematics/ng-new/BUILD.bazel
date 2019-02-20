@@ -13,8 +13,8 @@ ts_library(
     ],
     deps = [
         "//packages/bazel/src/schematics/ng-add",
-        "@ngdeps//@angular-devkit/schematics",
-        "@ngdeps//@schematics/angular",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
     ],
 )
 
@@ -29,6 +29,6 @@ ts_library(
     ],
     deps = [
         ":ng-new",
-        "@ngdeps//@angular-devkit/schematics",
+        "@npm//@angular-devkit/schematics",
     ],
 )

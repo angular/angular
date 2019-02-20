@@ -11,7 +11,7 @@ ts_library(
     deps = [
         "//packages/common/http",
         "//packages/common/http/testing",
-        "@ngdeps//rxjs",
+        "@npm//rxjs",
     ],
 )
 

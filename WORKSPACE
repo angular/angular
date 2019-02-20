@@ -15,22 +15,13 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "86ea92217dfd4a84e1e335cc07dfd942b12899796b080492546b947f12c5ab77",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.26.0-beta.0/rules_nodejs-0.26.0-beta.0.tar.gz"],
-)
-
-# Use a mock @npm repository while we are building angular from source
-# downstream. Angular will get its npm dependencies with in @ngdeps which
-# is setup in ng_setup_workspace().
-# TODO(gregmagolan): remove @ngdeps once angular is no longer build from source
-#   downstream and have build use @npm for npm dependencies
-local_repository(
-    name = "npm",
-    path = "tools/npm_workspace",
+    sha256 = "5c86b055c57e15bf32d9009a15bcd6d8e190c41b1ff2fb18037b75e0012e4e7c",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.26.0/rules_nodejs-0.26.0.tar.gz"],
 )
 
 # Check the bazel version and download npm dependencies
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
+load("@build_bazel_rules_nodejs//:package.bzl", "check_rules_nodejs_version")
 
 # Bazel version must be at least v0.21.0 because:
 #   - 0.21.0 Using --incompatible_strict_action_env flag fixes cache when running `yarn bazel`
@@ -46,6 +37,12 @@ Try running `yarn bazel` instead.
     minimum_bazel_version = "0.21.0",
 )
 
+# The NodeJS rules version must be at least v0.15.3 because:
+#   - 0.15.2 Re-introduced the prod_only attribute on yarn_install
+#   - 0.15.3 Includes a fix for the `jasmine_node_test` rule ignoring target tags
+#   - 0.16.8 Supports npm installed bazel workspaces
+check_rules_nodejs_version("0.16.8")
+
 # Setup the Node.js toolchain
 node_repositories(
     node_version = "10.9.0",
@@ -54,13 +51,28 @@ node_repositories(
     yarn_version = "1.12.1",
 )
 
-# Setup the angular toolchain which installs npm dependencies into @ngdeps
-load("//tools:ng_setup_workspace.bzl", "ng_setup_workspace")
+yarn_install(
+    name = "npm",
+    data = [
+        "//:tools/npm/@angular_bazel/index.js",
+        "//:tools/npm/@angular_bazel/package.json",
+        "//:tools/postinstall-patches.js",
+        "//:tools/yarn/check-yarn.js",
+    ],
+    package_json = "//:package.json",
+    # Don't install devDependencies, they are large and not used under Bazel
+    prod_only = True,
+    yarn_lock = "//:yarn.lock",
+)
 
-ng_setup_workspace()
+yarn_install(
+    name = "ts-api-guardian_deps",
+    package_json = "@angular//tools/ts-api-guardian:package.json",
+    yarn_lock = "@angular//tools/ts-api-guardian:yarn.lock",
+)
 
-# Install all bazel dependencies of the @ngdeps npm packages
-load("@ngdeps//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
+# Install all bazel dependencies of the @npm npm packages
+load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
 
 install_bazel_dependencies()
 
@@ -86,7 +98,7 @@ load("@npm_bazel_karma//:browser_repositories.bzl", "browser_repositories")
 browser_repositories()
 
 # Setup the rules_typescript tooolchain
-load("@npm_bazel_typescript//:defs.bzl", "ts_setup_workspace")
+load("@npm_bazel_typescript//:index.bzl", "ts_setup_workspace")
 
 ts_setup_workspace()
 

@@ -10,9 +10,9 @@ def example_test(name, srcs, server, data = [], **kwargs):
         deps = [
             "//modules/e2e_util",
             "//packages/private/testing",
-            "@ngdeps//@types/jasminewd2",
-            "@ngdeps//@types/selenium-webdriver",
-            "@ngdeps//protractor",
+            "@npm//@types/jasminewd2",
+            "@npm//@types/selenium-webdriver",
+            "@npm//protractor",
         ],
     )
 
@@ -23,10 +23,10 @@ def example_test(name, srcs, server, data = [], **kwargs):
         server = server,
         deps = [
             ":%s_lib" % name,
-            "@ngdeps//protractor",
-            "@ngdeps//selenium-webdriver",
-            "@ngdeps//yargs",
-            "@ngdeps//source-map",
+            "@npm//protractor",
+            "@npm//selenium-webdriver",
+            "@npm//yargs",
+            "@npm//source-map",
         ],
         **kwargs
     )

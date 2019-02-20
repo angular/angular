@@ -15,8 +15,8 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/core",
-        "@ngdeps//@types/node",
-        "@ngdeps//typescript",
+        "@npm//@types/node",
+        "@npm//typescript",
     ],
 )
 

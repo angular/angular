@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "ng_module")
-load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
@@ -25,12 +25,12 @@ ts_devserver(
     index_html = "index.html",
     port = 4200,
     scripts = [
-        "@ngdeps//node_modules/tslib:tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
     static_files = [
-        "@ngdeps//node_modules/zone.js:dist/zone.js",
-        "@ngdeps//node_modules/reflect-metadata:Reflect.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
     ],
     deps = [":ng2_switch"],
 )

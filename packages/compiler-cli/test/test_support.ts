@@ -126,7 +126,7 @@ export function setupBazelTo(tmpDirPath: string) {
       ({pkgPath, name}) => { fs.symlinkSync(pkgPath, path.join(angularDirectory, name), 'dir'); });
 
   // Link typescript
-  const typeScriptSource = resolveNpmTreeArtifact('ngdeps/node_modules/typescript');
+  const typeScriptSource = resolveNpmTreeArtifact('npm/node_modules/typescript');
   const typescriptDest = path.join(nodeModulesPath, 'typescript');
   fs.symlinkSync(typeScriptSource, typescriptDest, 'dir');
 

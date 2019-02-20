@@ -14,12 +14,17 @@ load(
     _protractor_web_test_suite = "protractor_web_test_suite",
 )
 load("//packages/bazel/src:ng_module.bzl", _ng_module = "ng_module")
-load("//packages/bazel/src:ng_setup_workspace.bzl", _ng_setup_workspace = "ng_setup_workspace")
 
 ng_module = _ng_module
 ng_package = _ng_package
 protractor_web_test = _protractor_web_test
 protractor_web_test_suite = _protractor_web_test_suite
-ng_setup_workspace = _ng_setup_workspace
 # DO NOT ADD PUBLIC API without including in the documentation generation
 # Run `yarn bazel build //packages/bazel/docs` to verify
+
+def ng_setup_workspace():
+    print("""DEPRECATION WARNING:
+    ng_setup_workspace is no longer needed, and will be removed in a future release.
+    We assume you will fetch rules_nodejs in your WORKSPACE file, and no other dependencies remain here.
+    Simply remove any calls to this function and the corresponding load statement.
+    """)

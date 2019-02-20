@@ -10,7 +10,7 @@ importScripts('angular/modules/playground/src/web_workers/worker-configure.js');
 
 System.config({
   map: {
-    'base64-js': 'ngdeps/node_modules/base64-js/base64js.min.js',
+    'base64-js': 'npm/node_modules/base64-js/base64js.min.js',
   },
   packages: {'angular/modules/playground/src/web_workers': {defaultExtension: 'js'}}
 });
