@@ -753,6 +753,22 @@ testing/**                                                      @angular/fw-test
 /tools/**                                                       @angular/fw-dev-infra
 *.bzl                                                           @angular/fw-dev-infra
 
+
+
+# ================================================
+#  Ivy Material Blocklist Owners
+#
+#  This is an override group to enable @angular/fw-core and @angular/fw-dev-infra to approve
+#  changes to the Ivy - Material test blocklist.
+#
+#  In order for this rule to have an effect it must be listed after the "Build & CI Owners"
+#  due to rule precendence order.
+# ================================================
+
+/tools/material-ci/angular_material_test_blocklist.js           @angular/fw-core @angular/fw-dev-infra @angular/framework-global-approvers
+
+
+
 # ================================================
 #  Material CI
 # ================================================
