@@ -11,7 +11,7 @@ import {ElementRef, QueryList, TemplateRef, ViewContainerRef} from '@angular/cor
 
 import {EventEmitter} from '../..';
 import {AttributeMarker, ProvidersFeature, defineComponent, defineDirective, detectChanges} from '../../src/render3/index';
-import {getNativeByIndex} from '../../src/render3/util';
+import {getNativeByIndex} from '../../src/render3/util/view_utils';
 
 import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, reference, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';

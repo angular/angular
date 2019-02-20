@@ -11,7 +11,7 @@ import {assertDefined, assertEqual, throwError} from '../util/assert';
 import {getComponentDef, getNgModuleDef} from './definition';
 import {TNode} from './interfaces/node';
 import {LView} from './interfaces/view';
-import {isLContainer, isLView} from './util';
+import {isLContainer, isLView} from './util/view_utils';
 
 
 export function assertComponentType(

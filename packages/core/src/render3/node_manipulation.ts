@@ -19,7 +19,9 @@ import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection'
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CHILD_HEAD, CLEANUP, FLAGS, HEADER_OFFSET, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {findComponentView, getLViewParent, getNativeByTNode, isComponent, isLContainer, isLView, isRootView, readElementValue, renderStringify} from './util';
+import {renderStringify} from './util/misc_utils';
+import {findComponentView, getLViewParent} from './util/view_traversal_utils';
+import {getNativeByTNode, isComponent, isLContainer, isLView, isRootView, readElementValue} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 

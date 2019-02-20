@@ -22,7 +22,9 @@ import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} fro
 import {appendChild, createTextNode, nativeRemoveNode} from './node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
-import {addAllToArray, getNativeByIndex, getNativeByTNode, getTNode, isLContainer, renderStringify} from './util';
+import {addAllToArray} from './util/array_utils';
+import {renderStringify} from './util/misc_utils';
+import {getNativeByIndex, getNativeByTNode, getTNode, isLContainer} from './util/view_utils';
 
 const MARKER = `�`;
 const ICU_BLOCK_REGEXP = /^\s*(�\d+:?\d*�)\s*,\s*(select|plural)\s*,/;
