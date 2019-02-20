@@ -1,3 +1,13 @@
+<a name="7.2.6"></a>
+## [7.2.6](https://github.com/angular/angular/compare/7.2.5...7.2.6) (2019-02-20)
+
+
+### Bug Fixes
+
+* **compiler-cli:** incorrect bundled metadata for static class member call expressions ([#28762](https://github.com/angular/angular/issues/28762)) ([ab69c31](https://github.com/angular/angular/commit/ab69c31)), closes [/github.com/angular/angular/blob/master/packages/core/src/change_detection/differs/keyvalue_differs.ts#L121](https://github.com//github.com/angular/angular/blob/master/packages/core/src/change_detection/differs/keyvalue_differs.ts/issues/L121) [#28741](https://github.com/angular/angular/issues/28741)
+
+
+
 <a name="8.0.0-beta.4"></a>
 # [8.0.0-beta.4](https://github.com/angular/angular/compare/8.0.0-beta.3...8.0.0-beta.4) (2019-02-15)
 
