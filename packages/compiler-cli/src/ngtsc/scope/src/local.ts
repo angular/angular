@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Reference} from '../../imports';
+import {AliasGenerator, Reexport, Reference, ReferenceEmitter} from '../../imports';
 
 import {ExportScope, ScopeData, ScopeDirective, ScopePipe} from './api';
 import {DtsModuleScopeResolver} from './dependency';
@@ -19,14 +20,10 @@ export interface LocalNgModuleData {
   exports: Reference<ts.Declaration>[];
 }
 
-/**
- * A scope produced for an NgModule declared locally (in the current program being compiled).
- *
- * The `LocalModuleScope` contains the compilation scope, the transitive set of directives and pipes
- * visible to any component declared in this module. It also contains an `ExportScope`, the
- * transitive set of directives and pipes
- */
-export interface LocalModuleScope extends ExportScope { compilation: ScopeData; }
+export interface LocalModuleScope extends ExportScope {
+  compilation: ScopeData;
+  reexports: Reexport[]|null;
+}
 
 /**
  * A registry which collects information about NgModules, Directives, Components, and Pipes which
@@ -91,7 +88,9 @@ export class LocalModuleScopeRegistry {
    */
   private remoteScoping = new Set<ts.Declaration>();
 
-  constructor(private dependencyScopeReader: DtsModuleScopeResolver) {}
+  constructor(
+      private dependencyScopeReader: DtsModuleScopeResolver, private refEmitter: ReferenceEmitter,
+      private aliasGenerator: AliasGenerator|null) {}
 
   /**
    * Add an NgModule's data to the registry.
@@ -151,6 +150,9 @@ export class LocalModuleScopeRegistry {
     const compilationDirectives = new Map<ts.Declaration, ScopeDirective>();
     const compilationPipes = new Map<ts.Declaration, ScopePipe>();
 
+    const declared = new Set<ts.Declaration>();
+    const sourceFile = clazz.getSourceFile();
+
     // Directives and pipes exported to any importing NgModules.
     const exportDirectives = new Map<ts.Declaration, ScopeDirective>();
     const exportPipes = new Map<ts.Declaration, ScopePipe>();
@@ -181,6 +183,8 @@ export class LocalModuleScopeRegistry {
         // ngtools tests rely on analysis of broken components.
         continue;
       }
+
+      declared.add(decl.node);
     }
 
     // 2) process imports.
@@ -229,16 +233,55 @@ export class LocalModuleScopeRegistry {
       }
     }
 
+    const exported = {
+      directives: Array.from(exportDirectives.values()),
+      pipes: Array.from(exportPipes.values()),
+    };
+
+    let reexports: Reexport[]|null = null;
+    if (this.aliasGenerator !== null) {
+      reexports = [];
+      const addReexport = (ref: Reference<ts.Declaration>) => {
+        if (!declared.has(ref.node) && ref.node.getSourceFile() !== sourceFile) {
+          const exportName = this.aliasGenerator !.aliasSymbolName(ref.node, sourceFile);
+          if (ref.alias && ref.alias instanceof ExternalExpr) {
+            reexports !.push({
+              fromModule: ref.alias.value.moduleName !,
+              symbolName: ref.alias.value.name !,
+              asAlias: exportName,
+            });
+          } else {
+            const expr = this.refEmitter.emit(ref.cloneWithNoIdentifiers(), sourceFile);
+            if (!(expr instanceof ExternalExpr) || expr.value.moduleName === null ||
+                expr.value.name === null) {
+              throw new Error('Expected ExternalExpr');
+            }
+            reexports !.push({
+              fromModule: expr.value.moduleName,
+              symbolName: expr.value.name,
+              asAlias: exportName,
+            });
+          }
+        }
+      };
+      for (const {ref} of exported.directives) {
+        addReexport(ref);
+      }
+      for (const {ref} of exported.pipes) {
+        addReexport(ref);
+      }
+    }
+
+
+
     // Finally, produce the `LocalModuleScope` with both the compilation and export scopes.
     const scope = {
       compilation: {
         directives: Array.from(compilationDirectives.values()),
         pipes: Array.from(compilationPipes.values()),
       },
-      exported: {
-        directives: Array.from(exportDirectives.values()),
-        pipes: Array.from(exportPipes.values()),
-      },
+      exported,
+      reexports,
     };
     this.cache.set(clazz, scope);
     return scope;

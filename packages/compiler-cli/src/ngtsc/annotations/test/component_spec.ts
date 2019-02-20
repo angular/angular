@@ -48,8 +48,9 @@ describe('ComponentDecoratorHandler', () => {
     const moduleResolver = new ModuleResolver(program, options, host);
     const importGraph = new ImportGraph(moduleResolver);
     const cycleAnalyzer = new CycleAnalyzer(importGraph);
-    const scopeRegistry =
-        new LocalModuleScopeRegistry(new MetadataDtsModuleScopeResolver(checker, reflectionHost));
+    const scopeRegistry = new LocalModuleScopeRegistry(
+        new MetadataDtsModuleScopeResolver(checker, reflectionHost, null), new ReferenceEmitter([]),
+        null);
     const refEmitter = new ReferenceEmitter([]);
 
     const handler = new ComponentDecoratorHandler(

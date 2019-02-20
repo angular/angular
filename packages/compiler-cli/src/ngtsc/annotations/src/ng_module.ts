@@ -15,7 +15,7 @@ import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry} from '../../scope';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
 
 import {generateSetClassMetadataCall} from './metadata';
@@ -173,6 +173,17 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       },
       factorySymbolName: node.name !== undefined ? node.name.text : undefined,
     };
+  }
+
+  resolve(node: ts.Declaration, analysis: NgModuleAnalysis): ResolveResult {
+    const scope = this.scopeRegistry.getScopeOfModule(node);
+    if (scope === null || scope.reexports === null) {
+      return {};
+    } else {
+      return {
+        reexports: scope.reexports,
+      };
+    }
   }
 
   compile(node: ts.ClassDeclaration, analysis: NgModuleAnalysis): CompileResult[] {

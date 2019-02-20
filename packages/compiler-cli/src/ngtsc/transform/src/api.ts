@@ -9,6 +9,7 @@
 import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {Reexport} from '../../imports';
 import {Decorator} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 
@@ -82,7 +83,7 @@ export interface DecoratorHandler<A, M> {
    * `DecoratorHandler` a chance to leverage information from the whole compilation unit to enhance
    * the `analysis` before the emit phase.
    */
-  resolve?(node: ts.Declaration, analysis: A): void;
+  resolve?(node: ts.Declaration, analysis: A): ResolveResult;
 
   typeCheck?(ctx: TypeCheckContext, node: ts.Declaration, metadata: A): void;
 
@@ -121,3 +122,5 @@ export interface CompileResult {
   statements: Statement[];
   type: Type;
 }
+
+export interface ResolveResult { reexports?: Reexport[]; }

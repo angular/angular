@@ -7,6 +7,7 @@
  */
 
 import {CustomTransformers} from '@angular/compiler-cli';
+import {setAugmentHostForTest} from '@angular/compiler-cli/src/transformers/compiler_host';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -49,6 +50,7 @@ export class NgtscTestEnvironment {
     process.chdir(support.basePath);
 
     setupFakeCore(support);
+    setAugmentHostForTest(null);
 
     const env = new NgtscTestEnvironment(support, outDir);
 
@@ -108,6 +110,15 @@ export class NgtscTestEnvironment {
       };
     }
     this.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
+
+    if (extraOpts['_useHostForImportGeneration'] === true) {
+      const cwd = process.cwd();
+      setAugmentHostForTest({
+        fileNameToModuleName: (importedFilePath: string) => {
+          return 'root' + importedFilePath.substr(cwd.length).replace(/(\.d)?.ts$/, '');
+        }
+      });
+    }
   }
 
   /**

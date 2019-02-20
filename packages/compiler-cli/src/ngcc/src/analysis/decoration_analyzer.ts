@@ -72,9 +72,10 @@ export class DecorationAnalyzer {
     // on whether a bestGuessOwningModule is present in the Reference.
     new LogicalProjectStrategy(this.typeChecker, new LogicalFileSystem(this.rootDirs)),
   ]);
-  dtsModuleScopeResolver =
-      new MetadataDtsModuleScopeResolver(this.typeChecker, this.reflectionHost);
-  scopeRegistry = new LocalModuleScopeRegistry(this.dtsModuleScopeResolver);
+  dtsModuleScopeResolver = new MetadataDtsModuleScopeResolver(
+      this.typeChecker, this.reflectionHost, /* aliasGenerator */ null);
+  scopeRegistry = new LocalModuleScopeRegistry(
+      this.dtsModuleScopeResolver, this.refEmitter, /* aliasGenerator */ null);
   evaluator = new PartialEvaluator(this.reflectionHost, this.typeChecker);
   moduleResolver = new ModuleResolver(this.program, this.options, this.host);
   importGraph = new ImportGraph(this.moduleResolver);

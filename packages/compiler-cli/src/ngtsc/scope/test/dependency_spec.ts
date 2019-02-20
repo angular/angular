@@ -6,16 +6,23 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ExternalExpr, ExternalReference} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Reference} from '../../imports';
+import {AliasGenerator, FileToModuleHost, Reference} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing/in_memory_typescript';
-
 import {ExportScope} from '../src/api';
 import {MetadataDtsModuleScopeResolver} from '../src/dependency';
 
 const MODULE_FROM_NODE_MODULES_PATH = /.*node_modules\/(\w+)\/index\.d\.ts$/;
+
+const testHost: FileToModuleHost = {
+  fileNameToModuleName: function(imported: string): string {
+    const res = MODULE_FROM_NODE_MODULES_PATH.exec(imported) !;
+    return 'root/' + res[1];
+  }
+};
 
 /**
  * Simple metadata types are added to the top of each testing file, for convenience.
@@ -33,7 +40,8 @@ export declare type PipeMeta<A, B> = never;
  * This returns both the `MetadataDtsModuleScopeResolver` and a `refs` object which can be
  * destructured to retrieve references to specific declared classes.
  */
-function makeTestEnv(modules: {[module: string]: string}): {
+function makeTestEnv(
+    modules: {[module: string]: string}, aliasGenerator: AliasGenerator | null = null): {
   refs: {[name: string]: Reference<ts.ClassDeclaration>},
   resolver: MetadataDtsModuleScopeResolver,
 } {
@@ -46,8 +54,8 @@ function makeTestEnv(modules: {[module: string]: string}): {
   });
   const {program} = makeProgram(files);
   const checker = program.getTypeChecker();
-  const resolver =
-      new MetadataDtsModuleScopeResolver(checker, new TypeScriptReflectionHost(checker));
+  const resolver = new MetadataDtsModuleScopeResolver(
+      checker, new TypeScriptReflectionHost(checker), aliasGenerator);
 
   // Resolver for the refs object.
   const get = (target: {}, name: string): Reference<ts.ClassDeclaration> => {
@@ -135,10 +143,143 @@ describe('MetadataDtsModuleScopeResolver', () => {
     // Explicitly verify that the directive has the correct owning module.
     expect(scope.exported.directives[0].ref.ownedByModuleGuess).toBe('declaration');
   });
+
+  it('should write correct aliases for deep dependencies', () => {
+    const {resolver, refs} = makeTestEnv(
+        {
+          'deep': `
+            export declare class DeepDir {
+              static ngDirectiveDef: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
+            }
+
+            export declare class DeepModule {
+              static ngModuleDef: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
+            }
+      `,
+          'middle': `
+            import * as deep from 'deep';
+
+            export declare class MiddleDir {
+              static ngDirectiveDef: DirectiveMeta<MiddleDir, '[middle]', never, never, never, never>;
+            }
+
+            export declare class MiddleModule {
+              static ngModuleDef: ModuleMeta<MiddleModule, [typeof MiddleDir], never, [typeof MiddleDir, typeof deep.DeepModule]>;
+            }
+      `,
+          'shallow': `
+            import * as middle from 'middle';
+
+            export declare class ShallowDir {
+              static ngDirectiveDef: DirectiveMeta<ShallowDir, '[middle]', never, never, never, never>;
+            }
+
+            export declare class ShallowModule {
+              static ngModuleDef: ModuleMeta<ShallowModule, [typeof ShallowDir], never, [typeof ShallowDir, typeof middle.MiddleModule]>;
+            }
+      `,
+        },
+        new AliasGenerator(testHost));
+    const {ShallowModule} = refs;
+    const scope = resolver.resolve(ShallowModule) !;
+    const [DeepDir, MiddleDir, ShallowDir] = scopeToRefs(scope);
+    expect(getAlias(DeepDir)).toEqual({
+      moduleName: 'root/shallow',
+      name: 'ɵng$root$deep$$DeepDir',
+    });
+    expect(getAlias(MiddleDir)).toEqual({
+      moduleName: 'root/shallow',
+      name: 'ɵng$root$middle$$MiddleDir',
+    });
+    expect(getAlias(ShallowDir)).toBeNull();
+  });
+
+  it('should write correct aliases for bare directives in exports', () => {
+    const {resolver, refs} = makeTestEnv(
+        {
+          'deep': `
+            export declare class DeepDir {
+              static ngDirectiveDef: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
+            }
+
+            export declare class DeepModule {
+              static ngModuleDef: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
+            }
+    `,
+          'middle': `
+            import * as deep from 'deep';
+
+            export declare class MiddleDir {
+              static ngDirectiveDef: DirectiveMeta<MiddleDir, '[middle]', never, never, never, never>;
+            }
+
+            export declare class MiddleModule {
+              static ngModuleDef: ModuleMeta<MiddleModule, [typeof MiddleDir], [typeof deep.DeepModule], [typeof MiddleDir, typeof deep.DeepDir]>;
+            }
+    `,
+          'shallow': `
+            import * as middle from 'middle';
+
+            export declare class ShallowDir {
+              static ngDirectiveDef: DirectiveMeta<ShallowDir, '[middle]', never, never, never, never>;
+            }
+
+            export declare class ShallowModule {
+              static ngModuleDef: ModuleMeta<ShallowModule, [typeof ShallowDir], never, [typeof ShallowDir, typeof middle.MiddleModule]>;
+            }
+    `,
+        },
+        new AliasGenerator(testHost));
+    const {ShallowModule} = refs;
+    const scope = resolver.resolve(ShallowModule) !;
+    const [DeepDir, MiddleDir, ShallowDir] = scopeToRefs(scope);
+    expect(getAlias(DeepDir)).toEqual({
+      moduleName: 'root/shallow',
+      name: 'ɵng$root$deep$$DeepDir',
+    });
+    expect(getAlias(MiddleDir)).toEqual({
+      moduleName: 'root/shallow',
+      name: 'ɵng$root$middle$$MiddleDir',
+    });
+    expect(getAlias(ShallowDir)).toBeNull();
+  });
+
+  it('should not use an alias if a directive is declared in the same file as the re-exporting module',
+     () => {
+       const {resolver, refs} = makeTestEnv(
+           {
+             'module': `
+                export declare class DeepDir {
+                  static ngDirectiveDef: DirectiveMeta<DeepDir, '[deep]', never, never, never, never>;
+                }
+
+                export declare class DeepModule {
+                  static ngModuleDef: ModuleMeta<DeepModule, [typeof DeepDir], never, [typeof DeepDir]>;
+                }
+
+                export declare class DeepExportModule {
+                  static ngModuleDef: ModuleMeta<DeepExportModule, never, never, [typeof DeepModule]>;
+                }
+              `,
+           },
+           new AliasGenerator(testHost));
+       const {DeepExportModule} = refs;
+       const scope = resolver.resolve(DeepExportModule) !;
+       const [DeepDir] = scopeToRefs(scope);
+       expect(getAlias(DeepDir)).toBeNull();
+     });
 });
 
-function scopeToRefs(scope: ExportScope): Reference<ts.Declaration>[] {
+function scopeToRefs(scope: ExportScope): Reference<ts.ClassDeclaration>[] {
   const directives = scope.exported.directives.map(dir => dir.ref);
-  const pipes = scope.exported.pipes.map(pipe => pipe.ref);
+  const pipes = scope.exported.pipes.map(pipe => pipe.ref as Reference<ts.ClassDeclaration>);
   return [...directives, ...pipes].sort((a, b) => a.debugName !.localeCompare(b.debugName !));
+}
+
+function getAlias(ref: Reference<ts.ClassDeclaration>): ExternalReference|null {
+  if (ref.alias === null) {
+    return null;
+  } else {
+    return (ref.alias as ExternalExpr).value;
+  }
 }
