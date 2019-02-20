@@ -74,11 +74,16 @@ describe('@angular/core ng_package', () => {
 
 
     describe('typescript support', () => {
-      it('should have an index d.ts file',
-         () => { expect(shx.cat('core.d.ts')).toContain(`export *`); });
+      if (ivyEnabled) {
+        it('should have an index d.ts file',
+           () => { expect(shx.cat('core.d.ts')).toContain(`export *`); });
 
-      it('should not have amd module names',
-         () => { expect(shx.cat('public_api.d.ts')).not.toContain('<amd-module name'); });
+        it('should not have amd module names',
+           () => { expect(shx.cat('public_api.d.ts')).not.toContain('<amd-module name'); });
+      } else {
+        it('should have an index d.ts file',
+           () => { expect(shx.cat('core.d.ts')).toContain('export declare'); });
+      }
     });
 
 
@@ -222,9 +227,15 @@ describe('@angular/core ng_package', () => {
     });
 
     describe('typings', () => {
-      const typingsFile = p `testing/index.d.ts`;
-      it('should have a typings file',
-         () => { expect(shx.cat(typingsFile)).toContain(`export * from './public_api';`); });
+      if (ivyEnabled) {
+        const typingsFile = p `testing/index.d.ts`;
+        it('should have a typings file',
+           () => { expect(shx.cat(typingsFile)).toContain(`export * from './public_api';`); });
+      } else {
+        const typingsFile = p `testing/testing.d.ts`;
+        it('should have a typings file',
+           () => { expect(shx.cat(typingsFile)).toContain('export declare'); });
+      }
 
       obsoleteInIvy(
           'now that we don\'t need metadata files, we don\'t need these redirects to help resolve paths to them')
