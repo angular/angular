@@ -43,6 +43,7 @@ function addDevDependenciesToPackageJson(options: Schema) {
 
     const devDependencies: {[k: string]: string} = {
       '@angular/bazel': angularCoreVersion,
+      '@angular/upgrade': angularCoreVersion,
       // TODO(kyliau): Consider moving this to latest-versions.ts
       '@bazel/bazel': '^0.22.1',
       '@bazel/ibazel': '^0.9.0',
@@ -298,6 +299,39 @@ function upgradeRxjs() {
   };
 }
 
+/**
+ * When using Angular NPM packages and building with AOT compilation, ngc
+ * requires ngsumamry files but they are not shipped. This function adds a
+ * postinstall step to generate these files.
+ */
+function addPostinstallToGenerateNgSummaries() {
+  return (host: Tree, context: SchematicContext) => {
+    if (!host.exists('angular-metadata.tsconfig.json')) {
+      return;
+    }
+    const packageJson = 'package.json';
+    if (!host.exists(packageJson)) {
+      throw new Error(`Could not find ${packageJson}`);
+    }
+    const content = host.read(packageJson).toString();
+    const jsonAst = parseJsonAst(content) as JsonAstObject;
+    const scripts = findPropertyInAstObject(jsonAst, 'scripts') as JsonAstObject;
+    const recorder = host.beginUpdate(packageJson);
+    if (scripts) {
+      insertPropertyInAstObjectInOrder(
+          recorder, scripts, 'postinstall', 'ngc -p ./angular-metadata.tsconfig.json', 4);
+    } else {
+      insertPropertyInAstObjectInOrder(
+          recorder, jsonAst, 'scripts', {
+            postinstall: 'ngc -p ./angular-metadata.tsconfig.json',
+          },
+          2);
+    }
+    host.commitUpdate(recorder);
+    return host;
+  };
+}
+
 export default function(options: Schema): Rule {
   return (host: Tree) => {
     validateProjectName(options.name);
@@ -306,6 +340,7 @@ export default function(options: Schema): Rule {
       schematic('bazel-workspace', options),
       addDevAndProdMainForAot(options),
       addDevDependenciesToPackageJson(options),
+      addPostinstallToGenerateNgSummaries(),
       backupAngularJson(),
       backupTsconfigJson(),
       updateAngularJsonToUseBazelBuilder(options),
