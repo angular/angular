@@ -48,6 +48,8 @@ describe('ng-add schematic', () => {
     expect(dependencies['@angular/material']).toBeDefined();
     expect(dependencies['@angular/cdk']).toBeDefined();
     expect(dependencies['hammerjs']).toBeDefined();
+    expect(dependencies['@angular/forms']).toBe(angularCoreVersion,
+      'Expected the @angular/forms package to have the same version as @angular/core.');
     expect(dependencies['@angular/animations']).toBe(angularCoreVersion,
       'Expected the @angular/animations package to have the same version as @angular/core.');
 
