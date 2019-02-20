@@ -1,5 +1,5 @@
 load("//packages/bazel:index.bzl", "protractor_web_test_suite")
-load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 load("@build_bazel_rules_nodejs//:defs.bzl", "http_server", "rollup_bundle")
 load("//tools:defaults.bzl", "ts_library")
 
@@ -36,8 +36,8 @@ ts_library(
     srcs = ["test.spec.ts"],
     tsconfig = ":tsconfig.test.json",
     deps = [
-        "@ngdeps//@types/selenium-webdriver",
-        "@ngdeps//protractor",
+        "@npm//@types/selenium-webdriver",
+        "@npm//protractor",
     ],
 )
 
@@ -49,7 +49,7 @@ protractor_web_test_suite(
     server = ":prodserver",
     deps = [
         ":ts_spec",
-        "@ngdeps//protractor",
+        "@npm//protractor",
     ],
 )
 
@@ -61,6 +61,6 @@ protractor_web_test_suite(
     server = ":devserver",
     deps = [
         ":ts_spec",
-        "@ngdeps//protractor",
+        "@npm//protractor",
     ],
 )

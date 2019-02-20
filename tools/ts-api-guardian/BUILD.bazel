@@ -3,7 +3,7 @@ load(
     "jasmine_node_test",
     "npm_package",
 )
-load("@npm_bazel_typescript//:defs.bzl", "ts_library")
+load("@npm_bazel_typescript//:index.bzl", "ts_library")
 
 exports_files(["bin/ts-api-guardian"])
 

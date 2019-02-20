@@ -11,9 +11,9 @@ ts_library(
         "index.ts",
     ],
     deps = [
-        "@ngdeps//@bazel/typescript",
-        "@ngdeps//@microsoft/api-extractor",
-        "@ngdeps//@types/node",
+        "@npm//@bazel/typescript",
+        "@npm//@microsoft/api-extractor",
+        "@npm//@types/node",
     ],
 )
 
@@ -22,8 +22,8 @@ nodejs_binary(
     name = "api_extractor",
     data = [
         ":lib",
-        "@ngdeps//@bazel/typescript",
-        "@ngdeps//@microsoft/api-extractor",
+        "@npm//@bazel/typescript",
+        "@npm//@microsoft/api-extractor",
     ],
     entry_point = "angular/packages/bazel/src/api-extractor/index.js",
     visibility = ["//visibility:public"],

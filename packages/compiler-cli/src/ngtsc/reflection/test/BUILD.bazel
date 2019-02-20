@@ -12,7 +12,7 @@ ts_library(
         "//packages:types",
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/testing",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 

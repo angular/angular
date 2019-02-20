@@ -9,7 +9,7 @@ ts_library(
     ]),
     deps = [
         "//packages:types",
-        "@ngdeps//@types/node",
-        "@ngdeps//typescript",
+        "@npm//@types/node",
+        "@npm//typescript",
     ],
 )

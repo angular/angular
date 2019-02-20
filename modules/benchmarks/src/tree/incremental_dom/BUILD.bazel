@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "ts_library")
-load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
@@ -11,7 +11,7 @@ ts_library(
     deps = [
         "//modules/benchmarks/src:util_lib",
         "//modules/benchmarks/src/tree:util_lib",
-        "@ngdeps//@types/node",
+        "@npm//@types/node",
     ],
 )
 
@@ -21,7 +21,7 @@ ts_devserver(
     index_html = "index.html",
     port = 4200,
     static_files = [
-        "@ngdeps//node_modules/incremental-dom:dist/incremental-dom.js",
+        "@npm//node_modules/incremental-dom:dist/incremental-dom.js",
     ],
     deps = [":incremental_dom"],
 )

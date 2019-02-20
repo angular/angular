@@ -9,6 +9,6 @@ ng_module(
     module_name = "example/secondary",
     deps = [
         "//packages/core",
-        "@ngdeps//@types",
+        "@npm//@types",
     ],
 )

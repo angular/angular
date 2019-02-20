@@ -31,7 +31,7 @@ ng_rollup_bundle(
         ":hello_world",
         "//packages/core",
         "//packages/platform-browser",
-        "@ngdeps//rxjs",
+        "@npm//rxjs",
     ],
 )
 

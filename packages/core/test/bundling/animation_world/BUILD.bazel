@@ -32,7 +32,7 @@ ng_rollup_bundle(
     deps = [
         ":animation_world",
         "//packages/core",
-        "@ngdeps//rxjs",
+        "@npm//rxjs",
     ],
 )
 

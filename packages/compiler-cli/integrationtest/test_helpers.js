@@ -38,23 +38,23 @@ const requiredNodeModules = {
   '@angular/router': resolveNpmTreeArtifact('angular/packages/router/npm_package'),
   // Note, @bazel/typescript does not appear here because it's not listed as a dependency of
   // @angular/compiler-cli
-  '@types/jasmine': resolveNpmTreeArtifact('ngdeps/node_modules/@types/jasmine'),
-  '@types/node': resolveNpmTreeArtifact('ngdeps/node_modules/@types/node'),
+  '@types/jasmine': resolveNpmTreeArtifact('npm/node_modules/@types/jasmine'),
+  '@types/node': resolveNpmTreeArtifact('npm/node_modules/@types/node'),
 
   // Transitive dependencies which need to be specified because the Angular NPM packages
   // depend on these without the Angular NPM packages being part of the Bazel managed deps.
   // This means that transitive dependencies need to be manually declared as required.
-  'tslib': resolveNpmTreeArtifact('ngdeps/node_modules/tslib'),
-  'domino': resolveNpmTreeArtifact('ngdeps/node_modules/domino'),
-  'xhr2': resolveNpmTreeArtifact('ngdeps/node_modules/xhr2'),
+  'tslib': resolveNpmTreeArtifact('npm/node_modules/tslib'),
+  'domino': resolveNpmTreeArtifact('npm/node_modules/domino'),
+  'xhr2': resolveNpmTreeArtifact('npm/node_modules/xhr2'),
 
   // Fine grained dependencies which are used by the integration test Angular modules, and
   // need to be symlinked so that they can be resolved by NodeJS or NGC.
-  'reflect-metadata': resolveNpmTreeArtifact('ngdeps/node_modules/reflect-metadata'),
-  'rxjs': resolveNpmTreeArtifact('ngdeps/node_modules/rxjs'),
-  'source-map-support': resolveNpmTreeArtifact('ngdeps/node_modules/source-map-support'),
-  'typescript': resolveNpmTreeArtifact('ngdeps/node_modules/typescript'),
-  'zone.js': resolveNpmTreeArtifact('ngdeps/node_modules/zone.js'),
+  'reflect-metadata': resolveNpmTreeArtifact('npm/node_modules/reflect-metadata'),
+  'rxjs': resolveNpmTreeArtifact('npm/node_modules/rxjs'),
+  'source-map-support': resolveNpmTreeArtifact('npm/node_modules/source-map-support'),
+  'typescript': resolveNpmTreeArtifact('npm/node_modules/typescript'),
+  'zone.js': resolveNpmTreeArtifact('npm/node_modules/zone.js'),
 };
 
 /** Sets up the temporary test directory and returns the path to the directory. */

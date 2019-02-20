@@ -18,7 +18,7 @@ def benchmark_test(name, server, deps, tags = []):
         server = server,
         tags = tags,
         deps = [
-            "@ngdeps//protractor",
-            "@ngdeps//yargs",
+            "@npm//protractor",
+            "@npm//yargs",
         ] + deps,
     )

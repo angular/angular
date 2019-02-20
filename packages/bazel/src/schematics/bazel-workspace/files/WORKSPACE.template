@@ -55,11 +55,9 @@ web_test_repositories()
 load("@npm_bazel_karma//:browser_repositories.bzl", "browser_repositories")
 browser_repositories()
 
-load("@npm_bazel_typescript//:defs.bzl", "ts_setup_workspace")
+load("@npm_bazel_typescript//:index.bzl", "ts_setup_workspace")
 ts_setup_workspace()
 <% if (sass) { %>
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 sass_repositories()
 <% } %>
-load("@npm_angular_bazel//:index.bzl", "ng_setup_workspace")
-ng_setup_workspace()

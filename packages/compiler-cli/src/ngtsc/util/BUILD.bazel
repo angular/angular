@@ -10,7 +10,7 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/compiler-cli/src/ngtsc/path",
-        "@ngdeps//@types/node",
-        "@ngdeps//typescript",
+        "@npm//@types/node",
+        "@npm//typescript",
     ],
 )

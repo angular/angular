@@ -22,7 +22,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/src/ngtsc/util",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 

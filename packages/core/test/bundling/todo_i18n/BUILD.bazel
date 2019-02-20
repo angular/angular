@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ng_rollup_bundle", "ts_library")
 load("@build_bazel_rules_nodejs//:defs.bzl", "http_server")
-load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 
 ng_module(
     name = "todo_i18n",
@@ -37,7 +37,7 @@ ng_rollup_bundle(
         "//packages/common",
         "//packages/core",
         "//packages/core/test/bundling/util:reflect_metadata",
-        "@ngdeps//rxjs",
+        "@npm//rxjs",
     ],
 )
 
@@ -74,7 +74,7 @@ jasmine_node_test(
 genrule(
     name = "tslib",
     srcs = [
-        "@ngdeps//node_modules/tslib:tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
     ],
     outs = [
         "tslib.js",

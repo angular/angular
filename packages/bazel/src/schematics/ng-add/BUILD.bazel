@@ -14,10 +14,10 @@ ts_library(
     deps = [
         "//packages/bazel/src/schematics/bazel-workspace",
         "//packages/bazel/src/schematics/utility",
-        "@ngdeps//@angular-devkit/core",
-        "@ngdeps//@angular-devkit/schematics",
-        "@ngdeps//@schematics/angular",
-        "@ngdeps//typescript",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
+        "@npm//typescript",
     ],
 )
 
@@ -32,6 +32,6 @@ ts_library(
     ],
     deps = [
         ":ng-add",
-        "@ngdeps//@angular-devkit/schematics",
+        "@npm//@angular-devkit/schematics",
     ],
 )
