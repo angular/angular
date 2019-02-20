@@ -17,7 +17,7 @@ import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
-import {AbsoluteModuleStrategy, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
+import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {PartialEvaluator} from './partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from './path';
 import {TypeScriptReflectionHost} from './reflection';
@@ -27,6 +27,7 @@ import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from './scope'
 import {FactoryGenerator, FactoryInfo, GeneratedShimsHostWrapper, ShimGenerator, SummaryGenerator, generatedFactoryTransform} from './shims';
 import {ivySwitchTransform} from './switch';
 import {IvyCompilation, declarationTransformFactory, ivyTransformFactory} from './transform';
+import {aliasTransformFactory} from './transform/src/alias';
 import {TypeCheckContext, TypeCheckProgramHost} from './typecheck';
 import {normalizeSeparators} from './util/src/path';
 import {getRootDirs, isDtsPath} from './util/src/typescript';
@@ -272,10 +273,16 @@ export class NgtscProgram implements api.Program {
         };
 
     const customTransforms = opts && opts.customTransformers;
-    const beforeTransforms = [ivyTransformFactory(
-        compilation, this.reflector, this.importRewriter, this.isCore,
-        this.closureCompilerEnabled)];
-    const afterDeclarationsTransforms = [declarationTransformFactory(compilation)];
+    const beforeTransforms = [
+      ivyTransformFactory(
+          compilation, this.reflector, this.importRewriter, this.isCore,
+          this.closureCompilerEnabled),
+      aliasTransformFactory(compilation.exportStatements) as ts.TransformerFactory<ts.SourceFile>,
+    ];
+    const afterDeclarationsTransforms = [
+      declarationTransformFactory(compilation),
+    ];
+
 
     if (this.factoryToSourceInfo !== null) {
       beforeTransforms.push(
@@ -314,6 +321,8 @@ export class NgtscProgram implements api.Program {
 
   private makeCompilation(): IvyCompilation {
     const checker = this.tsProgram.getTypeChecker();
+
+    let aliasGenerator: AliasGenerator|null = null;
     // Construct the ReferenceEmitter.
     if (this.fileToModuleHost === null || !this.options._useHostForImportGeneration) {
       // The CompilerHost doesn't have fileNameToModuleName, so build an NPM-centric reference
@@ -333,14 +342,19 @@ export class NgtscProgram implements api.Program {
       this.refEmitter = new ReferenceEmitter([
         // First, try to use local identifiers if available.
         new LocalIdentifierStrategy(),
+        // Then use aliased references (this is a workaround to StrictDeps checks).
+        new AliasStrategy(),
         // Then use fileNameToModuleName to emit imports.
         new FileToModuleStrategy(checker, this.fileToModuleHost),
       ]);
+      aliasGenerator = new AliasGenerator(this.fileToModuleHost);
     }
 
     const evaluator = new PartialEvaluator(this.reflector, checker);
-    const depScopeReader = new MetadataDtsModuleScopeResolver(checker, this.reflector);
-    const scopeRegistry = new LocalModuleScopeRegistry(depScopeReader);
+    const depScopeReader =
+        new MetadataDtsModuleScopeResolver(checker, this.reflector, aliasGenerator);
+    const scopeRegistry =
+        new LocalModuleScopeRegistry(depScopeReader, this.refEmitter, aliasGenerator);
 
 
     // If a flat module entrypoint was specified, then track references via a `ReferenceGraph` in

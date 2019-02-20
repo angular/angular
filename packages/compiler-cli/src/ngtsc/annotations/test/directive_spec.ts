@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {ReferenceEmitter} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -39,8 +40,9 @@ describe('DirectiveDecoratorHandler', () => {
     const checker = program.getTypeChecker();
     const reflectionHost = new TestReflectionHost(checker);
     const evaluator = new PartialEvaluator(reflectionHost, checker);
-    const scopeRegistry =
-        new LocalModuleScopeRegistry(new MetadataDtsModuleScopeResolver(checker, reflectionHost));
+    const scopeRegistry = new LocalModuleScopeRegistry(
+        new MetadataDtsModuleScopeResolver(checker, reflectionHost, null), new ReferenceEmitter([]),
+        null);
     const handler = new DirectiveDecoratorHandler(reflectionHost, evaluator, scopeRegistry, false);
 
     const analyzeDirective = (dirName: string) => {

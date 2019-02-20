@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool} from '@angular/compiler';
+import {ConstantPool, ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -58,6 +58,8 @@ export class IvyCompilation {
    * Tracks the `DtsFileTransformer`s for each TS file that needs .d.ts transformations.
    */
   private dtsMap = new Map<string, DtsFileTransformer>();
+
+  private reexportMap = new Map<string, Map<string, [string, string]>>();
   private _diagnostics: ts.Diagnostic[] = [];
 
 
@@ -75,6 +77,8 @@ export class IvyCompilation {
       private reflector: ReflectionHost, private importRewriter: ImportRewriter,
       private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
 
+
+  get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
 
   analyzeSync(sf: ts.SourceFile): void { return this.analyze(sf, false); }
 
@@ -243,7 +247,17 @@ export class IvyCompilation {
       for (const match of ivyClass.matchedHandlers) {
         if (match.handler.resolve !== undefined && match.analyzed !== null &&
             match.analyzed.analysis !== undefined) {
-          match.handler.resolve(node, match.analyzed.analysis);
+          const res = match.handler.resolve(node, match.analyzed.analysis);
+          if (res.reexports !== undefined) {
+            const fileName = node.getSourceFile().fileName;
+            if (!this.reexportMap.has(fileName)) {
+              this.reexportMap.set(fileName, new Map<string, [string, string]>());
+            }
+            const fileReexports = this.reexportMap.get(fileName) !;
+            for (const reexport of res.reexports) {
+              fileReexports.set(reexport.asAlias, [reexport.fromModule, reexport.symbolName]);
+            }
+          }
         }
       }
     });

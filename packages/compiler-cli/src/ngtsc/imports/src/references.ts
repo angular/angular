@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Expression} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {identifierOfNode} from '../../util/src/typescript';
@@ -48,6 +49,8 @@ export class Reference<T extends ts.Node = ts.Node> {
 
   private identifiers: ts.Identifier[] = [];
 
+  private _alias: Expression|null = null;
+
   constructor(readonly node: T, bestGuessOwningModule: OwningModule|null = null) {
     this.bestGuessOwningModule = bestGuessOwningModule;
 
@@ -87,6 +90,9 @@ export class Reference<T extends ts.Node = ts.Node> {
     return id !== null ? id.text : null;
   }
 
+  get alias(): Expression|null { return this._alias; }
+
+
   /**
    * Record a `ts.Identifier` by which it's valid to refer to this node, within the context of this
    * `Reference`.
@@ -99,5 +105,19 @@ export class Reference<T extends ts.Node = ts.Node> {
    */
   getIdentityIn(context: ts.SourceFile): ts.Identifier|null {
     return this.identifiers.find(id => id.getSourceFile() === context) || null;
+  }
+
+  cloneWithAlias(alias: Expression): Reference<T> {
+    const ref = new Reference(this.node, this.bestGuessOwningModule);
+    ref.identifiers = [...this.identifiers];
+    ref._alias = alias;
+    return ref;
+  }
+
+  cloneWithNoIdentifiers(): Reference<T> {
+    const ref = new Reference(this.node, this.bestGuessOwningModule);
+    ref._alias = this._alias;
+    ref.identifiers = [];
+    return ref;
   }
 }
