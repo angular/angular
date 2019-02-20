@@ -156,7 +156,9 @@ class HtmlAstToIvyAst implements html.Visitor {
     let parsedElement: t.Node|undefined;
     if (preparsedElement.type === PreparsedElementType.NG_CONTENT) {
       // `<ng-content>`
-      if (element.children && !element.children.every(isEmptyTextNode)) {
+      if (element.children &&
+          !element.children.every(
+              (node: html.Node) => isEmptyTextNode(node) || isCommentNode(node))) {
         this.reportError(`<ng-content> element cannot have content.`, element.sourceSpan);
       }
       const selector = preparsedElement.selectAttr;
@@ -412,4 +414,8 @@ function addEvents(events: ParsedEvent[], boundEvents: t.BoundEvent[]) {
 
 function isEmptyTextNode(node: html.Node): boolean {
   return node instanceof html.Text && node.value.trim().length == 0;
+}
+
+function isCommentNode(node: html.Node): boolean {
+  return node instanceof html.Comment;
 }
