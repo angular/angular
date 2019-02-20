@@ -137,6 +137,48 @@ describe('compiler compliance: bindings', () => {
       const result = compile(files, angularFiles);
       expect(result.source).not.toContain('i0.ɵelementProperty');
     });
+
+    it('should not remap property names whose names do not correspond to their attribute names',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: \`
+                  <label [for]="forValue"></label>\`
+              })
+              export class MyComponent {
+                forValue = 'some-input';
+              }
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+           }
+         };
+
+         const template = `
+      const $c0$ = [${AttributeMarker.SelectOnly}, "for"];
+
+      // ...
+
+      function MyComponent_Template(rf, ctx) {
+        if (rf & 1) {
+            $i0$.ɵelement(0, "label", _c0);
+        }
+        if (rf & 2) {
+            $i0$.ɵelementProperty(0, "for", $i0$.ɵbind(ctx.forValue));
+        }
+      }`;
+
+         const result = compile(files, angularFiles);
+
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+
   });
 
   describe('host bindings', () => {
