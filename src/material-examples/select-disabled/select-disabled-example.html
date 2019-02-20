@@ -4,7 +4,8 @@
 
 <h4>mat-select</h4>
 <mat-form-field>
-  <mat-select placeholder="Choose an option" [disabled]="disableSelect.value">
+  <mat-label>Choose an option</mat-label>
+  <mat-select [disabled]="disableSelect.value">
     <mat-option value="option1">Option 1</mat-option>
     <mat-option value="option2" disabled>Option 2 (disabled)</mat-option>
     <mat-option value="option3">Option 3</mat-option>
@@ -13,7 +14,8 @@
 
 <h4>native html select</h4>
 <mat-form-field>
-  <select matNativeControl placeholder="Choose an option" [disabled]="disableSelect.value">
+  <mat-label>Choose an option</mat-label>
+  <select matNativeControl [disabled]="disableSelect.value">
     <option value="" selected></option>
     <option value="volvo">Volvo</option>
     <option value="saab" disabled>Saab</option>

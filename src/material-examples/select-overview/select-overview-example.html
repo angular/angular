@@ -1,6 +1,7 @@
 <h4>Basic mat-select</h4>
 <mat-form-field>
-  <mat-select placeholder="Favorite food">
+  <mat-label>Favorite food</mat-label>
+  <mat-select>
     <mat-option *ngFor="let food of foods" [value]="food.value">
       {{food.viewValue}}
     </mat-option>
@@ -9,6 +10,7 @@
 
 <h4>Basic native select</h4>
 <mat-form-field>
+  <mat-label>Cars</mat-label>
   <select matNativeControl required>
     <option value="volvo">Volvo</option>
     <option value="saab">Saab</option>

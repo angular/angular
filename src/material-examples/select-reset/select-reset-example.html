@@ -1,6 +1,7 @@
 <h4>mat-select</h4>
 <mat-form-field>
-  <mat-select placeholder="State">
+  <mat-label>State</mat-label>
+  <mat-select>
     <mat-option>None</mat-option>
     <mat-option *ngFor="let state of states" [value]="state">{{state}}</mat-option>
   </mat-select>
