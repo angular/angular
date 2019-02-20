@@ -22,6 +22,15 @@ const NO_DECORATORS = new Set<ts.Decorator>();
 
 const CLOSURE_FILE_OVERVIEW_REGEXP = /\s+@fileoverview\s+/i;
 
+/**
+ * Metadata to support @fileoverview blocks (Closure annotations) extracting/restoring.
+ */
+interface FileOverviewMeta {
+  comments: ts.SynthesizedComment[];
+  host: ts.Statement;
+  trailing: boolean;
+}
+
 export function ivyTransformFactory(
     compilation: IvyCompilation, reflector: ReflectionHost, importRewriter: ImportRewriter,
     isCore: boolean, isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
@@ -219,33 +228,30 @@ function transformIvySourceFile(
   return sf;
 }
 
-function getFileOverviewComment(statements: ts.NodeArray<ts.Statement>):
-    [ts.SynthesizedComment[], ts.Statement, boolean]|null {
+function getFileOverviewComment(statements: ts.NodeArray<ts.Statement>): FileOverviewMeta|null {
   if (statements.length > 0) {
-    let isTrailing = false;
+    let trailing = false;
     let comments = ts.getSyntheticLeadingComments(statements[0]);
     // If @fileoverview tag is not found in source file, tsickle produces fake node with trailing
     // comment and inject it at the very beginning of the generated file. So we need to check for
     // leading as well as trailing comments.
     if (!comments || comments.length === 0) {
+      trailing = true;
       comments = ts.getSyntheticTrailingComments(statements[0]);
-      isTrailing = true;
     }
     if (comments && comments.length > 0 && CLOSURE_FILE_OVERVIEW_REGEXP.test(comments[0].text)) {
-      return [comments, statements[0], isTrailing];
+      return {comments, host: statements[0], trailing};
     }
   }
   return null;
 }
 
-function setFileOverviewComment(
-    sf: ts.SourceFile,
-    fileoverview: [ts.SynthesizedComment[], ts.Statement, boolean]): ts.SourceFile {
-  const [comments, host, isTrailing] = fileoverview;
+function setFileOverviewComment(sf: ts.SourceFile, fileoverview: FileOverviewMeta): ts.SourceFile {
+  const {comments, host, trailing} = fileoverview;
   // If host statement is no longer the first one, it means that we need to relocate @fileoverview
   // comment and cleanup the original statement that hosted it.
   if (host && host !== sf.statements[0]) {
-    if (isTrailing) {
+    if (trailing) {
       ts.setSyntheticTrailingComments(host, undefined);
     } else {
       ts.setSyntheticLeadingComments(host, undefined);

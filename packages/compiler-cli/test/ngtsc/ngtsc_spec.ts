@@ -2204,7 +2204,7 @@ describe('ngtsc behavioral tests', () => {
       expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
     });
 
-    it('should always be at the very beginning of a script', () => {
+    it('should always be at the very beginning of a script (if placed above imports)', () => {
       env.tsconfig({
         'annotateForClosureCompiler': true,
       });
@@ -2220,6 +2220,34 @@ describe('ngtsc behavioral tests', () => {
           template: '<div class="test"></div>',
         })
         export class SomeComp {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      const fileoverview = `
+        /**
+         *
+         * @fileoverview Some Comp overview
+         * @modName {some_comp}
+         *
+         * @suppress {checkTypes,extraRequire,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+         */
+      `;
+      expect(trim(jsContents).startsWith(trim(fileoverview))).toBeTruthy();
+    });
+
+    it('should always be at the very beginning of a script (if placed above non-imports)', () => {
+      env.tsconfig({
+        'annotateForClosureCompiler': true,
+      });
+      env.write(`test.ts`, `
+        /**
+         * @fileoverview Some Comp overview
+         * @modName {some_comp}
+         */
+
+        const testConst = 'testConstValue';
+        const testFn = function() { return true; }
       `);
 
       env.driveMain();
