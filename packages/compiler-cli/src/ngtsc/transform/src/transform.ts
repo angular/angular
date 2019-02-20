@@ -222,7 +222,7 @@ function transformIvySourceFile(
   sf = addImports(importManager, sf, constants);
 
   if (fileOverviewMeta !== null) {
-    sf = setFileOverviewComment(sf, fileOverviewMeta);
+    setFileOverviewComment(sf, fileOverviewMeta);
   }
 
   return sf;
@@ -230,37 +230,36 @@ function transformIvySourceFile(
 
 function getFileOverviewComment(statements: ts.NodeArray<ts.Statement>): FileOverviewMeta|null {
   if (statements.length > 0) {
+    const host = statements[0];
     let trailing = false;
-    let comments = ts.getSyntheticLeadingComments(statements[0]);
+    let comments = ts.getSyntheticLeadingComments(host);
     // If @fileoverview tag is not found in source file, tsickle produces fake node with trailing
     // comment and inject it at the very beginning of the generated file. So we need to check for
     // leading as well as trailing comments.
     if (!comments || comments.length === 0) {
       trailing = true;
-      comments = ts.getSyntheticTrailingComments(statements[0]);
+      comments = ts.getSyntheticTrailingComments(host);
     }
     if (comments && comments.length > 0 && CLOSURE_FILE_OVERVIEW_REGEXP.test(comments[0].text)) {
-      return {comments, host: statements[0], trailing};
+      return {comments, host, trailing};
     }
   }
   return null;
 }
 
-function setFileOverviewComment(sf: ts.SourceFile, fileoverview: FileOverviewMeta): ts.SourceFile {
+function setFileOverviewComment(sf: ts.SourceFile, fileoverview: FileOverviewMeta): void {
   const {comments, host, trailing} = fileoverview;
-  // If host statement is no longer the first one, it means that we need to relocate @fileoverview
-  // comment and cleanup the original statement that hosted it.
-  if (host && host !== sf.statements[0]) {
+  // If host statement is no longer the first one, it means that extra statements were added at the
+  // very beginning, so we need to relocate @fileoverview comment and cleanup the original statement
+  // that hosted it.
+  if (sf.statements.length > 0 && host !== sf.statements[0]) {
     if (trailing) {
       ts.setSyntheticTrailingComments(host, undefined);
     } else {
       ts.setSyntheticLeadingComments(host, undefined);
     }
-    const commentStmt = ts.createNotEmittedStatement(sf);
-    ts.setSyntheticLeadingComments(commentStmt, comments);
-    sf.statements = ts.createNodeArray([commentStmt, ...sf.statements]);
+    ts.setSyntheticLeadingComments(sf.statements[0], comments);
   }
-  return sf;
 }
 
 function maybeFilterDecorator(
