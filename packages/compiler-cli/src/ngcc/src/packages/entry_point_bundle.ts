@@ -53,7 +53,7 @@ export function makeEntryPointBundle(
   // Create the bundle programs, as necessary.
   const src = makeBundleProgram(isCore, path, 'r3_symbols.js', options, host);
   const dts = transformDts ?
-      makeBundleProgram(isCore, entryPoint.typings, 'r3_symbols.d.ts', options, host) :
+      makeBundleProgram(isCore, entryPoint.typings, 'core.d.ts', options, host) :
       null;
   const isFlat = src.r3SymbolsFile === null;
 

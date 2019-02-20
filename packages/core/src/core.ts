@@ -36,3 +36,4 @@ export * from './core_private_export';
 export * from './core_render3_private_export';
 export {Sanitizer, SecurityContext} from './sanitization/security';
 export * from './codegen_private_exports';
+export * from './r3_symbols';

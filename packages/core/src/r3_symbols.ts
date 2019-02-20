@@ -26,7 +26,6 @@ export {InjectableDef, InjectorDef, defineInjectable, defineInjector} from './di
 export {NgModuleDef, NgModuleDefWithMeta} from './metadata/ng_module';
 export {defineNgModule} from './render3/definition';
 export {setClassMetadata} from './render3/metadata';
-export {NgModuleFactory} from './render3/ng_module_ref';
 
 
 
