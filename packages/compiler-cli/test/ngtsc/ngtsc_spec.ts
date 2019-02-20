@@ -532,10 +532,14 @@ describe('ngtsc behavioral tests', () => {
       })
       export class FooModule {}
     `);
-    env.write('node_modules/foo/index.d.ts', `
-      import * as i0 from '@angular/core';
+    env.write('node_modules/foo/index.ts', `
+      import {Component} from '@angular/core';
+
+      @Component({
+        selector: 'foo',
+        template: '',
+      })
       export class Foo {
-        static ngComponentDef: i0.ɵComponentDef<Foo, 'foo'>;
       }
     `);
 
@@ -950,10 +954,11 @@ describe('ngtsc behavioral tests', () => {
     `);
 
       env.write('node_modules/router/index.d.ts', `
-        import {ModuleWithProviders} from '@angular/core';
+        import {ModuleWithProviders, ɵNgModuleDefWithMeta} from '@angular/core';
 
         declare class RouterModule {
           static forRoot(): ModuleWithProviders<RouterModule>;
+          static ngModuleDef: ɵNgModuleDefWithMeta<RouterModule, never, never, never>;
         }
     `);
 
@@ -990,7 +995,10 @@ describe('ngtsc behavioral tests', () => {
     `);
 
       env.write('node_modules/router/internal.d.ts', `
-        export declare class InternalRouterModule {}
+        import {ɵNgModuleDefWithMeta} from '@angular/core';
+        export declare class InternalRouterModule {
+          static ngModuleDef: ɵNgModuleDefWithMeta<InternalRouterModule, never, never, never>;
+        }
     `);
 
       env.driveMain();
@@ -1018,12 +1026,13 @@ describe('ngtsc behavioral tests', () => {
     `);
 
        env.write('node_modules/router/index.d.ts', `
-        import {ModuleWithProviders} from '@angular/core';
+        import {ModuleWithProviders, ɵNgModuleDefWithMeta} from '@angular/core';
 
         export interface MyType extends ModuleWithProviders {}
 
         declare class RouterModule {
           static forRoot(): (MyType)&{ngModule:RouterModule};
+          static ngModuleDef: ɵNgModuleDefWithMeta<RouterModule, never, never, never>;
         }
     `);
 
@@ -2571,7 +2580,7 @@ describe('ngtsc behavioral tests', () => {
         export declare class RouterModule {
           static forRoot(arg1: any, arg2: any): ModuleWithProviders<RouterModule>;
           static forChild(arg1: any): ModuleWithProviders<RouterModule>;
-          static ngModuleDef: NgModuleDefWithMeta<RouterModule, never, never, never>
+          static ngModuleDef: NgModuleDefWithMeta<RouterModule, never, never, never>;
         }
       `);
     });
@@ -2853,6 +2862,7 @@ describe('ngtsc behavioral tests', () => {
               Test2Module,
             ],
             imports: [
+              Test2Module,
               RouterModule.forRoot([
                 {path: '', loadChildren: './lazy-1/lazy-1#Lazy1Module'},
               ]),
@@ -3191,6 +3201,118 @@ export const Foo = Foo__PRE_R3__;
       const sourceTestOutsideAngularCore = env.getContents('test_outside_angular_core.js');
       const sourceTestInsideAngularCore = env.getContents('test_inside_angular_core.js');
       expect(sourceTestInsideAngularCore).toContain(sourceTestOutsideAngularCore);
+    });
+  });
+
+  describe('NgModule export aliasing', () => {
+    it('should use an alias to import a directive from a deep dependency', () => {
+      env.tsconfig({'_useHostForImportGeneration': true});
+
+      // 'alpha' declares the directive which will ultimately be imported.
+      env.write('alpha.d.ts', `
+        import {ɵDirectiveDefWithMeta, ɵNgModuleDefWithMeta} from '@angular/core';
+
+        export declare class ExternalDir {
+          static ngDirectiveDef: ɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+        }
+
+        export declare class AlphaModule {
+          static ngModuleDef: ɵNgModuleDefWithMeta<AlphaModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+        }
+      `);
+
+      // 'beta' re-exports AlphaModule from alpha.
+      env.write('beta.d.ts', `
+        import {ɵNgModuleDefWithMeta} from '@angular/core';
+        import {AlphaModule} from './alpha';
+
+        export declare class BetaModule {
+          static ngModuleDef: ɵNgModuleDefWithMeta<AlphaModule, never, never, [typeof AlphaModule]>;
+        }
+      `);
+
+      // The application imports BetaModule from beta, gaining visibility of ExternalDir from alpha.
+      env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {BetaModule} from './beta';
+
+        @Component({
+          selector: 'cmp',
+          template: '<div test></div>',
+        })
+        export class Cmp {}
+
+        @NgModule({
+          declarations: [Cmp],
+          imports: [BetaModule],
+        })
+        export class Module {}
+      `);
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+
+      // Expect that ExternalDir from alpha is imported via the re-export from beta.
+      expect(jsContents).toContain('import * as i1 from "root/beta";');
+      expect(jsContents).toContain('directives: [i1.ɵng$root$alpha$$ExternalDir]');
+    });
+
+    it('should write alias ES2015 exports for NgModule exported directives', () => {
+      env.tsconfig({'_useHostForImportGeneration': true});
+      env.write('external.d.ts', `
+        import {ɵDirectiveDefWithMeta, ɵNgModuleDefWithMeta} from '@angular/core';
+        import {LibModule} from './lib';
+
+        export declare class ExternalDir {
+          static ngDirectiveDef: ɵDirectiveDefWithMeta<ExternalDir, '[test]', never, never, never, never>;
+        }
+
+        export declare class ExternalModule {
+          static ngModuleDef: ɵNgModuleDefWithMeta<ExternalModule, [typeof ExternalDir], never, [typeof ExternalDir, typeof LibModule]>;
+        }
+      `);
+      env.write('lib.d.ts', `
+        import {ɵDirectiveDefWithMeta, ɵNgModuleDefWithMeta} from '@angular/core';
+
+        export declare class LibDir {
+          static ngDirectiveDef: ɵDirectiveDefWithMeta<LibDir, '[lib]', never, never, never, never>;
+        }
+
+        export declare class LibModule {
+          static ngModuleDef: ɵNgModuleDefWithMeta<LibModule, [typeof LibDir], never, [typeof LibDir]>;
+        }
+      `);
+      env.write('foo.ts', `
+        import {Directive, NgModule} from '@angular/core';
+        import {ExternalModule} from './external';
+
+        @Directive({selector: '[foo]'})
+        export class FooDir {}
+
+        @NgModule({
+          declarations: [FooDir],
+          exports: [FooDir, ExternalModule]
+        })
+        export class FooModule {}
+      `);
+      env.write('index.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {FooModule} from './foo';
+
+        @Component({
+          selector: 'index',
+          template: '<div foo test lib></div>',
+        })
+        export class IndexCmp {}
+
+        @NgModule({
+          declarations: [IndexCmp],
+          exports: [FooModule],
+        })
+        export class IndexModule {}
+      `);
+      env.driveMain();
+      const jsContents = env.getContents('index.js');
+      expect(jsContents).toContain('export { FooDir as ɵng$root$foo$$FooDir } from "root/foo";');
     });
   });
 });

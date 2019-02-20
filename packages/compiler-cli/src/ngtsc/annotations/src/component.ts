@@ -16,7 +16,7 @@ import {ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry, ScopeDirective, extractDirectiveGuards} from '../../scope';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TypeCheckContext} from '../../typecheck';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 
@@ -326,7 +326,7 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  resolve(node: ts.ClassDeclaration, analysis: ComponentHandlerData): void {
+  resolve(node: ts.ClassDeclaration, analysis: ComponentHandlerData): ResolveResult {
     const context = node.getSourceFile();
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
@@ -361,6 +361,7 @@ export class ComponentDecoratorHandler implements
         this.scopeRegistry.setComponentAsRequiringRemoteScoping(node);
       }
     }
+    return {};
   }
 
   compile(node: ts.ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):

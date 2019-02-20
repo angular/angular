@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Reference} from '../../imports';
+import {Reference, ReferenceEmitter} from '../../imports';
 import {ScopeData, ScopeDirective, ScopePipe} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
 import {LocalModuleScopeRegistry} from '../src/local';
@@ -31,9 +31,12 @@ function registerFakeRefs(registry: LocalModuleScopeRegistry):
 }
 
 describe('LocalModuleScopeRegistry', () => {
+  const refEmitter = new ReferenceEmitter([]);
   let registry !: LocalModuleScopeRegistry;
 
-  beforeEach(() => { registry = new LocalModuleScopeRegistry(new MockDtsModuleScopeResolver()); });
+  beforeEach(() => {
+    registry = new LocalModuleScopeRegistry(new MockDtsModuleScopeResolver(), refEmitter, null);
+  });
 
   it('should produce an accurate LocalModuleScope for a basic NgModule', () => {
     const {Dir1, Dir2, Pipe1, Module} = registerFakeRefs(registry);

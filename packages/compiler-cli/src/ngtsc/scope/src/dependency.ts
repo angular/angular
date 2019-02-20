@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Reference} from '../../imports';
+import {AliasGenerator, Reference} from '../../imports';
 import {ReflectionHost} from '../../reflection';
 
 import {ExportScope, ScopeDirective, ScopePipe} from './api';
@@ -31,7 +31,9 @@ export class MetadataDtsModuleScopeResolver {
    */
   private cache = new Map<ts.ClassDeclaration, ExportScope|null>();
 
-  constructor(private checker: ts.TypeChecker, private reflector: ReflectionHost) {}
+  constructor(
+      private checker: ts.TypeChecker, private reflector: ReflectionHost,
+      private aliasGenerator: AliasGenerator|null) {}
 
   /**
    * Resolve a `Reference`'d NgModule from a .d.ts file and produce a transitive `ExportScope`
@@ -42,9 +44,10 @@ export class MetadataDtsModuleScopeResolver {
    */
   resolve(ref: Reference<ts.ClassDeclaration>): ExportScope|null {
     const clazz = ref.node;
-    if (!clazz.getSourceFile().isDeclarationFile) {
+    const sourceFile = clazz.getSourceFile();
+    if (!sourceFile.isDeclarationFile) {
       throw new Error(
-          `Debug error: DtsModuleScopeResolver.read(${ref.debugName} from ${clazz.getSourceFile().fileName}), but not a .d.ts file`);
+          `Debug error: DtsModuleScopeResolver.read(${ref.debugName} from ${sourceFile.fileName}), but not a .d.ts file`);
     }
 
     if (this.cache.has(clazz)) {
@@ -61,31 +64,64 @@ export class MetadataDtsModuleScopeResolver {
       return null;
     }
 
+    const declarations = new Set<ts.Declaration>();
+    for (const declRef of meta.declarations) {
+      declarations.add(declRef.node);
+    }
+
     // Only the 'exports' field of the NgModule's metadata is important. Imports and declarations
     // don't affect the export scope.
     for (const exportRef of meta.exports) {
       // Attempt to process the export as a directive.
       const directive = this.readScopeDirectiveFromClassWithDef(exportRef);
       if (directive !== null) {
-        directives.push(directive);
+        if (!declarations.has(exportRef.node)) {
+          directives.push(this.maybeAlias(directive, sourceFile));
+        } else {
+          directives.push(directive);
+        }
         continue;
       }
 
       // Attempt to process the export as a pipe.
       const pipe = this.readScopePipeFromClassWithDef(exportRef);
       if (pipe !== null) {
-        pipes.push(pipe);
+        if (!declarations.has(exportRef.node)) {
+          pipes.push(this.maybeAlias(pipe, sourceFile));
+        } else {
+          pipes.push(pipe);
+        }
         continue;
       }
 
       // Attempt to process the export as a module.
       const exportScope = this.resolve(exportRef);
       if (exportScope !== null) {
-        // It is a module. Add exported directives and pipes to the current scope.
-        directives.push(...exportScope.exported.directives);
-        pipes.push(...exportScope.exported.pipes);
-        continue;
+        // It is a module. Add exported directives and pipes to the current scope. This might
+        // involve rewriting the `Reference`s to those types to have an alias expression if one is
+        // required.
+        if (this.aliasGenerator === null) {
+          // Fast path when aliases aren't required.
+          directives.push(...exportScope.exported.directives);
+          pipes.push(...exportScope.exported.pipes);
+        } else {
+          // It's necessary to rewrite the `Reference`s to add alias expressions. This way, imports
+          // generated to these directives and pipes will use a shallow import to `sourceFile`
+          // instead of a deep import directly to the directive or pipe class.
+          //
+          // One important check here is whether the directive/pipe is declared in the same
+          // source file as the re-exporting NgModule. This can happen if both a directive, its
+          // NgModule, and the re-exporting NgModule are all in the same file. In this case,
+          // no import alias is needed as it would go to the same file anyway.
+          for (const directive of exportScope.exported.directives) {
+            directives.push(this.maybeAlias(directive, sourceFile));
+          }
+          for (const pipe of exportScope.exported.pipes) {
+            pipes.push(this.maybeAlias(pipe, sourceFile));
+          }
+        }
       }
+      continue;
 
       // The export was not a directive, a pipe, or a module. This is an error.
       // TODO(alxhub): produce a ts.Diagnostic
@@ -189,6 +225,22 @@ export class MetadataDtsModuleScopeResolver {
     }
     const name = type.literal.text;
     return {ref, name};
+  }
+
+  private maybeAlias<T extends ScopeDirective|ScopePipe>(
+      dirOrPipe: T, maybeAliasFrom: ts.SourceFile): T {
+    if (this.aliasGenerator === null) {
+      return dirOrPipe;
+    }
+    const ref = dirOrPipe.ref;
+    if (ref.node.getSourceFile() !== maybeAliasFrom) {
+      return {
+        ...dirOrPipe,
+        ref: ref.cloneWithAlias(this.aliasGenerator.aliasTo(ref.node, maybeAliasFrom)),
+      };
+    } else {
+      return dirOrPipe;
+    }
   }
 }
 
