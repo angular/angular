@@ -733,73 +733,9 @@ window.testBlocklist = {
     "error": "Error: Expected null not to be null.",
     "notes": "Unknown"
   },
-  "MatDatepicker with MatNativeDateModule datepicker with formControl should update datepicker when formControl changes": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with formControl should update formControl when date is selected": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with formControl should disable input when form control disabled": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with formControl should disable toggle when form control disabled": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should set `aria-haspopup` on the toggle button": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should open calendar when toggle clicked": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should not open calendar when toggle clicked if datepicker is disabled": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should not open calendar when toggle clicked if input is disabled": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should set the `button` type on the trigger to prevent form submissions": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should remove the underlying SVG icon from the tab order": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should restore focus to the toggle after the calendar is closed": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should re-render when the i18n labels change": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
   "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should toggle the active state of the datepicker toggle": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with custom mat-datepicker-toggle icon should be able to override the mat-datepicker-toggle icon": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with tabindex on mat-datepicker-toggle should forward the tabindex to the underlying button": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with tabindex on mat-datepicker-toggle should clear the tabindex from the mat-datepicker-toggle host": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with tabindex on mat-datepicker-toggle should forward focus to the underlying button when the host is focused": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
+    "error": "Error: this._portalOutlet is undefined.",
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker inside mat-form-field should pass the form field theme color to the overlay": {
     "error": "TypeError: Cannot read property 'classList' of null",
@@ -809,37 +745,9 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'classList' of null",
     "notes": "Unknown"
   },
-  "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should use min and max dates specified by the input": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should mark invalid when value is before min": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should mark invalid when value is after max": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should not mark invalid when value equals min": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should not mark invalid when value equals max": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with min and max dates and validation should not mark invalid when value is between min and max": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with filter and validation should mark input invalid": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
-  },
   "MatDatepicker with MatNativeDateModule datepicker with filter and validation should disable filtered calendar cells": {
-    "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
-    "notes": "Unknown"
+    "error": "Error: this._portalOutlet is undefined.",
+    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDialog should set the proper animation states": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",

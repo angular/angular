@@ -76,26 +76,6 @@ describe('elementProperty', () => {
     expect(fixture.html).toEqual('<span id="_otherId_"></span>');
   });
 
-  it('should map properties whose names do not correspond to their attribute names', () => {
-    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-      if (rf & RenderFlags.Create) {
-        element(0, 'label');
-      }
-      if (rf & RenderFlags.Update) {
-        elementProperty(0, 'for', bind(ctx.forValue));
-      }
-    }, 1, 1);
-
-    const fixture = new ComponentFixture(App);
-    fixture.component.forValue = 'some-input';
-    fixture.update();
-    expect(fixture.html).toEqual('<label for="some-input"></label>');
-
-    fixture.component.forValue = 'some-textarea';
-    fixture.update();
-    expect(fixture.html).toEqual('<label for="some-textarea"></label>');
-  });
-
   describe('input properties', () => {
     let button: MyButton;
     let otherDir: OtherDir;
@@ -383,50 +363,6 @@ describe('elementProperty', () => {
       expect(idDir !.idNumber).toEqual('four');
       expect(otherDir !.id).toEqual(3);
     });
-
-    it('should not map properties whose names do not correspond to their attribute names, ' +
-           'if they correspond to inputs',
-       () => {
-         let comp: Comp;
-
-         class Comp {
-           // TODO(issue/24571): remove '!'.
-           // clang-format off
-           for !: string;
-           // clang-format on
-
-            static ngComponentDef = defineComponent({
-              type: Comp,
-              selectors: [['comp']],
-              consts: 0,
-              vars: 0,
-              template: function(rf: RenderFlags, ctx: any) {},
-              factory: () => comp = new Comp(),
-              inputs: {for: 'for'}
-            });
-         }
-
-         /** <comp [for]="forValue"></comp> */
-         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
-           if (rf & RenderFlags.Create) {
-             element(0, 'comp');
-           }
-           if (rf & RenderFlags.Update) {
-             elementProperty(0, 'for', bind(ctx.forValue));
-           }
-         }, 1, 1, [Comp]);
-
-         const fixture = new ComponentFixture(App);
-         fixture.component.forValue = 'hello';
-         fixture.update();
-         expect(fixture.html).toEqual(`<comp></comp>`);
-         expect(comp !.for).toEqual('hello');
-
-         fixture.component.forValue = 'hej';
-         fixture.update();
-         expect(fixture.html).toEqual(`<comp></comp>`);
-         expect(comp !.for).toEqual('hej');
-       });
 
   });
 
