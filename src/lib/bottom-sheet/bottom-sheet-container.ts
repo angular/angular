@@ -63,7 +63,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
   private _breakpointSubscription: Subscription;
 
   /** The portal outlet inside of this container into which the content will be loaded. */
-  @ViewChild(CdkPortalOutlet) _portalOutlet: CdkPortalOutlet;
+  @ViewChild(CdkPortalOutlet, {static: true}) _portalOutlet: CdkPortalOutlet;
 
   /** The state of the bottom sheet animations. */
   _animationState: 'void' | 'visible' | 'hidden' = 'void';

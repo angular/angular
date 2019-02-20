@@ -282,6 +282,8 @@ describe('MatDrawer', () => {
       let fixture = TestBed.createComponent(BasicTestApp);
       let drawer: MatDrawer = fixture.debugElement
           .query(By.directive(MatDrawer)).componentInstance;
+      fixture.detectChanges();
+
       let openButton = fixture.componentInstance.openButton.nativeElement;
       let closeButton = fixture.componentInstance.closeButton.nativeElement;
 

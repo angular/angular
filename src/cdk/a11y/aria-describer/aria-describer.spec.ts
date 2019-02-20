@@ -20,6 +20,7 @@ describe('AriaDescriber', () => {
     fixture = TestBed.createComponent(TestApp);
     component = fixture.componentInstance;
     ariaDescriber = component.ariaDescriber;
+    fixture.detectChanges();
   });
 
   afterEach(() => {

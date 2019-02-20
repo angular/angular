@@ -2352,7 +2352,7 @@ class SimpleAutocomplete implements OnDestroy {
   openedSpy = jasmine.createSpy('autocomplete opened spy');
   closedSpy = jasmine.createSpy('autocomplete closed spy');
 
-  @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
+  @ViewChild(MatAutocompleteTrigger, {static: true}) trigger: MatAutocompleteTrigger;
   @ViewChild(MatAutocomplete) panel: MatAutocomplete;
   @ViewChild(MatFormField) formField: MatFormField;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
