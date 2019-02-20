@@ -126,6 +126,9 @@ class PublishReleaseTask extends BaseReleaseTask {
       repository: this.repositoryName,
       tagName: newVersionName,
       releaseTitle: releaseTitle,
+      // TODO: we cannot insert the real changelog here since the URL would become
+      // way too large and Github would consider this as a malformed page request.
+      body: 'Copy-paste changelog in here!'
     });
 
     console.log();
@@ -133,8 +136,11 @@ class PublishReleaseTask extends BaseReleaseTask {
 
     // Always log out of npm after releasing to prevent unintentional changes to
     // any packages.
-    npmLogout();
-    console.info(green(bold(`  ✓   Logged out of npm`)));
+    if (npmLogout()) {
+      console.info(green(`  ✓   Logged out of npm`));
+    } else {
+      console.error(red(`  ✘   Could not log out of NPM. Please manually log out!`));
+    }
 
     console.info(yellow(`  ⚠   Please draft a new release of the version on Github.`));
     console.info(yellow(`      ${newReleaseUrl}`));
