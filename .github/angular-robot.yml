@@ -57,6 +57,7 @@ merge:
       - "**/.gitkeep"
       - "**/yarn.lock"
       - "**/package.json"
+      - "**/third_party/**"
       - "**/tsconfig-build.json"
       - "**/tsconfig.json"
       - "**/BUILD.bazel"
