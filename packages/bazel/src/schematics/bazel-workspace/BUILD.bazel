@@ -12,9 +12,9 @@ ts_library(
         "schema.json",
     ],
     deps = [
-        "@ngdeps//@angular-devkit/core",
-        "@ngdeps//@angular-devkit/schematics",
-        "@ngdeps//@schematics/angular",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
     ],
 )
 
@@ -29,6 +29,6 @@ ts_library(
     ],
     deps = [
         ":bazel-workspace",
-        "@ngdeps//@angular-devkit/schematics",
+        "@npm//@angular-devkit/schematics",
     ],
 )

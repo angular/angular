@@ -11,7 +11,7 @@ ts_library(
         "//packages/http/testing",
         "//packages/platform-browser",
         "//packages/platform-browser/testing",
-        "@ngdeps//rxjs",
+        "@npm//rxjs",
     ],
 )
 
@@ -28,6 +28,6 @@ ts_web_test_suite(
     name = "test_web",
     deps = [
         ":test_lib",
-        "@ngdeps//karma",
+        "@npm//karma",
     ],
 )

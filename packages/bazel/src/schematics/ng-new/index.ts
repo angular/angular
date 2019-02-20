@@ -11,6 +11,7 @@
 import {SchematicContext, apply, applyTemplates, chain, externalSchematic, MergeStrategy, mergeWith, move, Rule, schematic, Tree, url, SchematicsException, UpdateRecorder,} from '@angular-devkit/schematics';
 import {parseJsonAst, JsonAstObject, strings, JsonValue} from '@angular-devkit/core';
 import {findPropertyInAstObject, insertPropertyInAstObjectInOrder} from '@schematics/angular/utility/json-utils';
+import {isJsonAstObject, replacePropertyInAstObject} from '../utility/json-utils';
 import {validateProjectName} from '@schematics/angular/utility/validation';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {Schema} from './schema';
@@ -43,8 +44,9 @@ function addDevDependenciesToPackageJson(options: Schema) {
       // TODO(kyliau): Consider moving this to latest-versions.ts
       '@bazel/bazel': '^0.23.0',
       '@bazel/ibazel': '^0.9.0',
-      '@bazel/karma': '^0.25.1',
-      '@bazel/typescript': '^0.25.1',
+      '@bazel/jasmine': '^0.26.0',
+      '@bazel/karma': '^0.26.0',
+      '@bazel/typescript': '^0.26.0',
     };
 
     const recorder = host.beginUpdate(packageJson);
@@ -107,21 +109,6 @@ function overwriteGitignore(options: Schema) {
 
     return host;
   };
-}
-
-function replacePropertyInAstObject(
-    recorder: UpdateRecorder, node: JsonAstObject, propertyName: string, value: JsonValue,
-    indent: number) {
-  const property = findPropertyInAstObject(node, propertyName);
-  if (property === null) {
-    throw new Error(`Property ${propertyName} does not exist in JSON object`);
-  }
-  const {start, text} = property;
-  recorder.remove(start.offset, text.length);
-  const indentStr = '\n' +
-      ' '.repeat(indent);
-  const content = JSON.stringify(value, null, '  ').replace(/\n/g, indentStr);
-  recorder.insertLeft(start.offset, content);
 }
 
 function updateWorkspaceFileToUseBazelBuilder(options: Schema): Rule {
@@ -196,6 +183,81 @@ function updateWorkspaceFileToUseBazelBuilder(options: Schema): Rule {
   };
 }
 
+/**
+ * @angular/bazel requires minimum version of rxjs to be 6.4.0. This function
+ * upgrades the version of rxjs in package.json if necessary.
+ */
+function upgradeRxjs(options: Schema) {
+  return (host: Tree, context: SchematicContext) => {
+    const packageJson = `${options.name}/package.json`;
+    if (!host.exists(packageJson)) {
+      throw new Error(`Could not find ${packageJson}`);
+    }
+    const content = host.read(packageJson).toString();
+    const jsonAst = parseJsonAst(content);
+    if (!isJsonAstObject(jsonAst)) {
+      throw new Error(`Failed to parse JSON for ${packageJson}`);
+    }
+    const deps = findPropertyInAstObject(jsonAst, 'dependencies');
+    if (!isJsonAstObject(deps)) {
+      throw new Error(`Failed to find dependencies in ${packageJson}`);
+    }
+    const rxjs = findPropertyInAstObject(deps, 'rxjs');
+    if (!rxjs) {
+      throw new Error(`Failed to find rxjs in dependencies of ${packageJson}`);
+    }
+    const value = rxjs.value as string;  // value can be version or range
+    const match = value.match(/(\d)+\.(\d)+.(\d)+$/);
+    if (match) {
+      const [_, major, minor] = match;
+      if (major < '6' || (major === '6' && minor < '4')) {
+        const recorder = host.beginUpdate(packageJson);
+        replacePropertyInAstObject(recorder, deps, 'rxjs', '~6.4.0');
+        host.commitUpdate(recorder);
+      }
+    } else {
+      context.logger.info(
+          'Could not determine version of rxjs. \n' +
+          'Please make sure that version is at least 6.4.0.');
+    }
+    return host;
+  };
+}
+
+/**
+ * When using Angular NPM packages and building with AOT compilation, ngc
+ * requires ngsumamry files but they are not shipped. This function adds a
+ * postinstall step to generate these files.
+ */
+function addPostinstallToGenerateNgSummaries(options: Schema) {
+  return (host: Tree, context: SchematicContext) => {
+    const angularMetadataTsConfig = `${options.name}/angular-metadata.tsconfig.json`;
+    if (!host.exists(angularMetadataTsConfig)) {
+      return;
+    }
+    const packageJson = `${options.name}/package.json`;
+    if (!host.exists(packageJson)) {
+      throw new Error(`Could not find ${packageJson}`);
+    }
+    const content = host.read(packageJson).toString();
+    const jsonAst = parseJsonAst(content) as JsonAstObject;
+    const scripts = findPropertyInAstObject(jsonAst, 'scripts') as JsonAstObject;
+    const recorder = host.beginUpdate(packageJson);
+    if (scripts) {
+      insertPropertyInAstObjectInOrder(
+          recorder, scripts, 'postinstall', 'ngc -p ./angular-metadata.tsconfig.json', 4);
+    } else {
+      insertPropertyInAstObjectInOrder(
+          recorder, jsonAst, 'scripts', {
+            postinstall: 'ngc -p ./angular-metadata.tsconfig.json',
+          },
+          2);
+    }
+    host.commitUpdate(recorder);
+    return host;
+  };
+}
+
 export default function(options: Schema): Rule {
   return (host: Tree) => {
     validateProjectName(options.name);
@@ -207,11 +269,13 @@ export default function(options: Schema): Rule {
               ...options,
           }),
       addDevDependenciesToPackageJson(options),
+      upgradeRxjs(options),
       addDevAndProdMainForAot(options),
       schematic('bazel-workspace', options, {
         scope: options.name,
       }),
       overwriteGitignore(options),
+      addPostinstallToGenerateNgSummaries(options),
       updateWorkspaceFileToUseBazelBuilder(options),
     ]);
   };

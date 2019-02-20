@@ -22,9 +22,9 @@ ts_library(
     ],
     module_name = "@angular/bazel/src/builders",
     deps = [
-        "@ngdeps//@angular-devkit/architect",
-        "@ngdeps//@angular-devkit/core",
-        "@ngdeps//@types/node",
-        "@ngdeps//rxjs",
+        "@npm//@angular-devkit/architect",
+        "@npm//@angular-devkit/core",
+        "@npm//@types/node",
+        "@npm//rxjs",
     ],
 )

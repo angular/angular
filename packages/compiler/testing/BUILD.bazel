@@ -14,6 +14,6 @@ ng_module(
         "//packages:types",
         "//packages/compiler",
         "//packages/core",
-        "@ngdeps//@types/node",
+        "@npm//@types/node",
     ],
 )

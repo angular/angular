@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("//packages/bazel:index.bzl", "protractor_web_test_suite")
 load("//tools:defaults.bzl", "ng_module", "ts_library")
-load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 
 ng_module(
     name = "forms_examples",
@@ -21,7 +21,7 @@ ng_module(
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/router",
-        "@ngdeps//rxjs",
+        "@npm//rxjs",
     ],
 )
 
@@ -33,8 +33,8 @@ ts_library(
     deps = [
         "//packages/examples/test-utils",
         "//packages/private/testing",
-        "@ngdeps//@types/jasminewd2",
-        "@ngdeps//protractor",
+        "@npm//@types/jasminewd2",
+        "@npm//protractor",
     ],
 )
 
@@ -44,11 +44,11 @@ ts_devserver(
     index_html = "//packages/examples:index.html",
     port = 4200,
     scripts = [
-        "@ngdeps//node_modules/tslib:tslib.js",
+        "@npm//node_modules/tslib:tslib.js",
         "//tools/rxjs:rxjs_umd_modules",
     ],
     static_files = [
-        "@ngdeps//node_modules/zone.js:dist/zone.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
     ],
     tags = ["fixme-ivy-aot"],
     deps = [":forms_examples"],
@@ -62,7 +62,7 @@ protractor_web_test_suite(
     tags = ["fixme-ivy-aot"],
     deps = [
         ":forms_e2e_tests_lib",
-        "@ngdeps//protractor",
-        "@ngdeps//selenium-webdriver",
+        "@npm//protractor",
+        "@npm//selenium-webdriver",
     ],
 )

@@ -14,7 +14,7 @@ ts_library(
     srcs = ["tree_perf_test_utils.ts"],
     deps = [
         "//modules/e2e_util",
-        "@ngdeps//protractor",
+        "@npm//protractor",
     ],
 )
 
@@ -24,7 +24,7 @@ ts_library(
     srcs = ["tree_perf.spec.ts"],
     deps = [
         ":test_utils_lib",
-        "@ngdeps//protractor",
+        "@npm//protractor",
     ],
 )
 
@@ -34,6 +34,6 @@ ts_library(
     srcs = ["tree_perf_detect_changes.spec.ts"],
     deps = [
         ":test_utils_lib",
-        "@ngdeps//protractor",
+        "@npm//protractor",
     ],
 )

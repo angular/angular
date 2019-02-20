@@ -7,8 +7,8 @@ ts_library(
     srcs = ["test.spec.ts"],
     tsconfig = ":tsconfig.json",
     deps = [
-        "@ngdeps//@types/selenium-webdriver",
-        "@ngdeps//protractor",
+        "@npm//@types/selenium-webdriver",
+        "@npm//protractor",
     ],
 )
 
@@ -19,7 +19,7 @@ ts_library(
     tsconfig = ":tsconfig.json",
     deps = [
         "//packages/bazel/src/protractor/utils",
-        "@ngdeps//protractor",
+        "@npm//protractor",
     ],
 )
 
@@ -29,6 +29,6 @@ protractor_web_test_suite(
     data = ["//packages/bazel/src/protractor/utils"],
     deps = [
         ":ts_spec",
-        "@ngdeps//protractor",
+        "@npm//protractor",
     ],
 )

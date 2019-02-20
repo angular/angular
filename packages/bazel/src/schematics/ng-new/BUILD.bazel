@@ -13,10 +13,11 @@ ts_library(
     ],
     deps = [
         "//packages/bazel/src/schematics/bazel-workspace",
-        "@ngdeps//@angular-devkit/core",
-        "@ngdeps//@angular-devkit/schematics",
-        "@ngdeps//@schematics/angular",
-        "@ngdeps//typescript",
+        "//packages/bazel/src/schematics/utility",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
+        "@npm//typescript",
     ],
 )
 
@@ -31,6 +32,6 @@ ts_library(
     ],
     deps = [
         ":ng-new",
-        "@ngdeps//@angular-devkit/schematics",
+        "@npm//@angular-devkit/schematics",
     ],
 )

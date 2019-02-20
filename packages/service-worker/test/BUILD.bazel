@@ -12,7 +12,7 @@ ts_library(
         "//packages/service-worker/testing",
         "//packages/service-worker/worker",
         "//packages/service-worker/worker/testing",
-        "@ngdeps//rxjs",
+        "@npm//rxjs",
     ],
 )
 

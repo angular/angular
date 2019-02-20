@@ -7,7 +7,7 @@ ts_library(
     srcs = glob(["**/*.ts"]),
     tsconfig = "//packages:tsconfig-test",
     deps = [
-        "@ngdeps//@types/jasmine",
-        "@ngdeps//@types/node",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
     ],
 )

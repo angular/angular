@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "ng_module")
-load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 
@@ -14,7 +14,7 @@ ng_module(
         "//packages/core",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
-        "@ngdeps//@types/hammerjs",
+        "@npm//@types/hammerjs",
     ],
 )
 
@@ -23,11 +23,11 @@ ts_devserver(
     entry_module = "angular/modules/playground/src/gestures/index",
     index_html = "index.html",
     port = 4200,
-    scripts = ["@ngdeps//node_modules/tslib:tslib.js"],
+    scripts = ["@npm//node_modules/tslib:tslib.js"],
     static_files = [
-        "@ngdeps//node_modules/hammerjs:hammer.js",
-        "@ngdeps//node_modules/zone.js:dist/zone.js",
-        "@ngdeps//node_modules/reflect-metadata:Reflect.js",
+        "@npm//node_modules/hammerjs:hammer.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
     ],
     deps = [":gestures"],
 )
