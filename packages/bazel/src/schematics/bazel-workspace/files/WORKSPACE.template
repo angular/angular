@@ -20,14 +20,6 @@ http_archive(
     url = "https://github.com/bazelbuild/rules_nodejs/releases/download/%s/rules_nodejs-%s.tar.gz" % (RULES_NODEJS_VERSION, RULES_NODEJS_VERSION),
 )
 
-# The @angular repo contains rule for building Angular applications
-ANGULAR_VERSION = "<%= ANGULAR_VERSION %>"
-http_archive(
-    name = "angular",
-    url = "https://github.com/angular/angular/archive/%s.zip" % ANGULAR_VERSION,
-    strip_prefix = "angular-%s" % ANGULAR_VERSION,
-)
-
 <% if (sass) { %>
 # Rules for compiling sass
 RULES_SASS_VERSION = "<%= RULES_SASS_VERSION %>"
@@ -46,9 +38,7 @@ check_bazel_version("0.18.0")
 node_repositories()
 yarn_install(
     name = "npm",
-    # Need a reference to @angular here so that Bazel sets up the
-    # external repository before calling yarn_install
-    data = ["@angular//:LICENSE"],
+    data = ["//:angular-metadata.tsconfig.json"],
     package_json = "//:package.json",
     yarn_lock = "//:yarn.lock",
 )
@@ -72,5 +62,5 @@ ts_setup_workspace()
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 sass_repositories()
 <% } %>
-load("@angular//:index.bzl", "ng_setup_workspace")
+load("@npm_angular_bazel//:index.bzl", "ng_setup_workspace")
 ng_setup_workspace()
