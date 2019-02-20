@@ -89,7 +89,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   value: any;
 
   /** @internal */
-  _optionMap: Map<string, NgSelectMultipleOption> = new Map<string, NgSelectMultipleOption>();
+  _optionMap: Map<string, ɵNgSelectMultipleOption> = new Map<string, ɵNgSelectMultipleOption>();
   /** @internal */
   _idCounter: number = 0;
 
@@ -131,7 +131,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
    */
   writeValue(value: any): void {
     this.value = value;
-    let optionSelectedStateSetter: (opt: NgSelectMultipleOption, o: any) => void;
+    let optionSelectedStateSetter: (opt: ɵNgSelectMultipleOption, o: any) => void;
     if (Array.isArray(value)) {
       // convert values to ids
       const ids = value.map((v) => this._getOptionId(v));
@@ -194,7 +194,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
   }
 
   /** @internal */
-  _registerOption(value: NgSelectMultipleOption): string {
+  _registerOption(value: ɵNgSelectMultipleOption): string {
     const id: string = (this._idCounter++).toString();
     this._optionMap.set(id, value);
     return id;
@@ -226,7 +226,7 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
  * @publicApi
  */
 @Directive({selector: 'option'})
-export class NgSelectMultipleOption implements OnDestroy {
+export class ɵNgSelectMultipleOption implements OnDestroy {
   // TODO(issue/24571): remove '!'.
   id !: string;
   /** @internal */
@@ -290,3 +290,5 @@ export class NgSelectMultipleOption implements OnDestroy {
     }
   }
 }
+
+export {ɵNgSelectMultipleOption as NgSelectMultipleOption};

@@ -80,5 +80,7 @@ export const REACTIVE_DRIVEN_DIRECTIVES: Type<any>[] =
   declarations: SHARED_FORM_DIRECTIVES,
   exports: SHARED_FORM_DIRECTIVES,
 })
-export class InternalFormsSharedModule {
+export class ɵInternalFormsSharedModule {
 }
+
+export {ɵInternalFormsSharedModule as InternalFormsSharedModule};
