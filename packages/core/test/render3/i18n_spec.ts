@@ -12,7 +12,7 @@ import {defineComponent, defineDirective} from '../../src/render3/definition';
 import {getTranslationForTemplate, i18n, i18nApply, i18nAttributes, i18nEnd, i18nExp, i18nPostprocess, i18nStart} from '../../src/render3/i18n';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
-import {getNativeByIndex, getTNode} from '../../src/render3/util';
+import {getNativeByIndex, getTNode} from '../../src/render3/util/view_utils';
 import {NgIf} from './common_with_def';
 import {allocHostVars, element, elementEnd, elementStart, template, text, nextContext, bind, elementProperty, projectionDef, projection, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
@@ -264,9 +264,9 @@ describe('Runtime i18n', () => {
     });
 
     it('for ICU expressions', () => {
-      const MSG_DIV = `{�0�, plural, 
-        =0 {no <b title="none">emails</b>!} 
-        =1 {one <i>email</i>} 
+      const MSG_DIV = `{�0�, plural,
+        =0 {no <b title="none">emails</b>!}
+        =1 {one <i>email</i>}
         other {�0� <span title="�1�">emails</span>}
       }`;
       const nbConsts = 1;
@@ -377,10 +377,10 @@ describe('Runtime i18n', () => {
 
     it('for nested ICU expressions', () => {
       const MSG_DIV = `{�0�, plural,
-        =0 {zero} 
-        other {�0� {�1�, select, 
-                       cat {cats} 
-                       dog {dogs} 
+        =0 {zero}
+        other {�0� {�1�, select,
+                       cat {cats}
+                       dog {dogs}
                        other {animals}
                      }!}
       }`;
@@ -649,9 +649,9 @@ describe('Runtime i18n', () => {
     });
 
     it('for ICU expressions', () => {
-      const MSG_DIV = `{�0�, plural, 
-        =0 {no <b title="none">emails</b>!} 
-        =1 {one <i>email</i>} 
+      const MSG_DIV = `{�0�, plural,
+        =0 {no <b title="none">emails</b>!}
+        =1 {one <i>email</i>}
         other {�0� <span title="�1�">emails</span>}
       }`;
       const fixture = prepareFixture(() => {
@@ -665,11 +665,11 @@ describe('Runtime i18n', () => {
     });
 
     it('for multiple ICU expressions', () => {
-      const MSG_DIV = `{�0�, plural, 
-        =0 {no <b title="none">emails</b>!} 
-        =1 {one <i>email</i>} 
+      const MSG_DIV = `{�0�, plural,
+        =0 {no <b title="none">emails</b>!}
+        =1 {one <i>email</i>}
         other {�0� <span title="�1�">emails</span>}
-      } - {�0�, select, 
+      } - {�0�, select,
         other {(�0�)}
       }`;
       const fixture = prepareFixture(() => {
@@ -683,11 +683,11 @@ describe('Runtime i18n', () => {
     });
 
     it('for multiple ICU expressions inside html', () => {
-      const MSG_DIV = `�#2�{�0�, plural, 
-        =0 {no <b title="none">emails</b>!} 
-        =1 {one <i>email</i>} 
+      const MSG_DIV = `�#2�{�0�, plural,
+        =0 {no <b title="none">emails</b>!}
+        =1 {one <i>email</i>}
         other {�0� <span title="�1�">emails</span>}
-      }�/#2��#3�{�0�, select, 
+      }�/#2��#3�{�0�, select,
         other {(�0�)}
       }�/#3�`;
       const fixture = prepareFixture(() => {
@@ -763,9 +763,9 @@ describe('Runtime i18n', () => {
     });
 
     it('for ICU expressions inside <ng-container>', () => {
-      const MSG_DIV = `{�0�, plural, 
-        =0 {no <b title="none">emails</b>!} 
-        =1 {one <i>email</i>} 
+      const MSG_DIV = `{�0�, plural,
+        =0 {no <b title="none">emails</b>!}
+        =1 {one <i>email</i>}
         other {�0� <span title="�1�">emails</span>}
       }`;
       const fixture = prepareFixture(
@@ -790,10 +790,10 @@ describe('Runtime i18n', () => {
 
     it('for nested ICU expressions', () => {
       const MSG_DIV = `{�0�, plural,
-        =0 {zero} 
-        other {�0� {�1�, select, 
-                       cat {cats} 
-                       dog {dogs} 
+        =0 {zero}
+        other {�0� {�1�, select,
+                       cat {cats}
+                       dog {dogs}
                        other {animals}
                      }!}
       }`;
@@ -1017,9 +1017,9 @@ describe('Runtime i18n', () => {
     });
 
     it('for ICU expressions', () => {
-      const MSG_DIV = `{�0�, plural, 
-        =0 {no <b title="none">emails</b>!} 
-        =1 {one <i>email</i>} 
+      const MSG_DIV = `{�0�, plural,
+        =0 {no <b title="none">emails</b>!}
+        =1 {one <i>email</i>}
         other {�0� <span title="�1�">emails</span>}
       }`;
       const ctx = {value0: 0, value1: 'emails label'};
@@ -1062,11 +1062,11 @@ describe('Runtime i18n', () => {
     });
 
     it('for multiple ICU expressions', () => {
-      const MSG_DIV = `{�0�, plural, 
-        =0 {no <b title="none">emails</b>!} 
-        =1 {one <i>email</i>} 
+      const MSG_DIV = `{�0�, plural,
+        =0 {no <b title="none">emails</b>!}
+        =1 {one <i>email</i>}
         other {�0� <span title="�1�">emails</span>}
-      } - {�0�, select, 
+      } - {�0�, select,
         other {(�0�)}
       }`;
       const ctx = {value0: 0, value1: 'emails label'};
@@ -1114,11 +1114,11 @@ describe('Runtime i18n', () => {
     });
 
     it('for multiple ICU expressions', () => {
-      const MSG_DIV = `�#2�{�0�, plural, 
-        =0 {no <b title="none">emails</b>!} 
-        =1 {one <i>email</i>} 
+      const MSG_DIV = `�#2�{�0�, plural,
+        =0 {no <b title="none">emails</b>!}
+        =1 {one <i>email</i>}
         other {�0� <span title="�1�">emails</span>}
-      }�/#2��#3�{�0�, select, 
+      }�/#2��#3�{�0�, select,
         other {(�0�)}
       }�/#3�`;
       const ctx = {value0: 0, value1: 'emails label'};
@@ -1175,10 +1175,10 @@ describe('Runtime i18n', () => {
 
     it('for nested ICU expressions', () => {
       const MSG_DIV = `{�0�, plural,
-        =0 {zero} 
-        other {�0� {�1�, select, 
-                       cat {cats} 
-                       dog {dogs} 
+        =0 {zero}
+        other {�0� {�1�, select,
+                       cat {cats}
+                       dog {dogs}
                        other {animals}
                      }!}
       }`;
@@ -1372,9 +1372,9 @@ describe('Runtime i18n', () => {
       //       }
       // </div>
 
-      const MSG_DIV_1 = `trad {�0�, plural, 
-        =0 {no <b title="none">emails</b>!} 
-        =1 {one <i>email</i>} 
+      const MSG_DIV_1 = `trad {�0�, plural,
+        =0 {no <b title="none">emails</b>!}
+        =1 {one <i>email</i>}
         other {�0� emails}
       }`;
       const MSG_DIV_1_ATTR_1 = ['title', `start �1� middle �0� end`];

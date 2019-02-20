@@ -13,7 +13,7 @@ import {RElement, Renderer3, RendererStyleFlags3, isProceduralRenderer} from '..
 import {DirectiveOwnerAndPlayerBuilderIndex, DirectiveRegistryValues, DirectiveRegistryValuesIndex, InitialStylingValues, InitialStylingValuesIndex, MapBasedOffsetValues, MapBasedOffsetValuesIndex, SinglePropOffsetValues, SinglePropOffsetValuesIndex, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {LView, RootContext} from '../interfaces/view';
 import {NO_CHANGE} from '../tokens';
-import {getRootContext} from '../util';
+import {getRootContext} from '../util/view_traversal_utils';
 
 import {BoundPlayerFactory} from './player_factory';
 import {addPlayerInternal, allocPlayerContext, allocateDirectiveIntoContext, createEmptyStylingContext, getPlayerContext} from './util';

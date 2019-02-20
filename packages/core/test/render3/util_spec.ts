@@ -8,7 +8,8 @@
 
 import {devModeEqual} from '@angular/core/src/change_detection/change_detection_util';
 
-import {flatten, isDifferent} from '../../src/render3/util';
+import {flatten} from '../../src/render3/util/array_utils';
+import {isDifferent} from '../../src/render3/util/misc_utils';
 
 describe('util', () => {
 

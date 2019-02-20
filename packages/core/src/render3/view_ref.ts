@@ -15,7 +15,8 @@ import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootVie
 import {TNode, TNodeType, TViewNode} from './interfaces/node';
 import {FLAGS, HOST, LView, LViewFlags, PARENT, T_HOST} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
-import {getLViewParent, getNativeByTNode} from './util';
+import {getLViewParent} from './util/view_traversal_utils';
+import {getNativeByTNode} from './util/view_utils';
 
 
 

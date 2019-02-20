@@ -7,16 +7,17 @@
  */
 import {LifecycleHooksFeature, renderComponent, whenRendered} from './component';
 import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe, setComponentScope} from './definition';
-import {getComponent, getDirectives, getHostElement, getRenderedText} from './discovery_utils';
 import {InheritDefinitionFeature} from './features/inherit_definition_feature';
 import {NgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ProvidersFeature} from './features/providers_feature';
 import {BaseDef, ComponentDef, ComponentDefWithMeta, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefWithMeta, DirectiveType, PipeDef, PipeDefWithMeta} from './interfaces/definition';
+import {getComponent, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
 
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
 export {getFactoryOf, getInheritedFactory} from './di';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
+
 
 
 // clang-format off
@@ -146,7 +147,7 @@ export {
 
 export {templateRefExtractor} from './view_engine_compatibility_prebound';
 
-export {resolveWindow, resolveDocument, resolveBody} from './util';
+export {resolveWindow, resolveDocument, resolveBody} from './util/misc_utils';
 
 // clang-format on
 

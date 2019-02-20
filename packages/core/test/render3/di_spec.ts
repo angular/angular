@@ -16,7 +16,7 @@ import {ProvidersFeature, defineDirective, elementProperty, load, templateRefExt
 import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLView, createTView, directiveInject, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, injectAttribute, interpolation2, projection, projectionDef, reference, template, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {isProceduralRenderer, RElement} from '../../src/render3/interfaces/renderer';
 import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
-import {getNativeByIndex} from '../../src/render3/util';
+import {getNativeByIndex} from '../../src/render3/util/view_utils';
 import {LViewFlags} from '../../src/render3/interfaces/view';
 import {enterView, leaveView, getLView} from '../../src/render3/state';
 import {ViewRef} from '../../src/render3/view_ref';

@@ -6,16 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector} from '../di/injector';
+import {Injector} from '../../di/injector';
 
-import {assertLView} from './assert';
-import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from './context_discovery';
-import {NodeInjector} from './di';
-import {LContext} from './interfaces/context';
-import {DirectiveDef} from './interfaces/definition';
-import {TElementNode, TNode, TNodeProviderIndexes} from './interfaces/node';
-import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, TVIEW} from './interfaces/view';
-import {getLViewParent, getRootContext, readElementValue, renderStringify} from './util';
+import {assertLView} from '../assert';
+import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
+import {NodeInjector} from '../di';
+import {LContext} from '../interfaces/context';
+import {DirectiveDef} from '../interfaces/definition';
+import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
+import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, TVIEW} from '../interfaces/view';
+import {renderStringify} from './misc_utils';
+import {getLViewParent, getRootContext} from './view_traversal_utils';
+import {readElementValue} from './view_utils';
 
 
 

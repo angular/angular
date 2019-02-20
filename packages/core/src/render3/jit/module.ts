@@ -19,7 +19,7 @@ import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../d
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {NgModuleType} from '../ng_module_ref';
-import {renderStringify} from '../util';
+import {renderStringify} from '../util/misc_utils';
 
 import {angularCoreEnv} from './environment';
 

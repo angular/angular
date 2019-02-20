@@ -33,7 +33,7 @@ import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, LView} from '../../src/render3/interfaces/view';
 import {destroyLView} from '../../src/render3/node_manipulation';
-import {getRootView} from '../../src/render3/util';
+import {getRootView} from '../../src/render3/util/view_traversal_utils';
 import {Sanitizer} from '../../src/sanitization/security';
 
 import {getRendererFactory2} from './imported_renderer2';

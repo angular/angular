@@ -262,7 +262,7 @@ export {getModuleFactory__POST_R3__ as ɵgetModuleFactory__POST_R3__} from './li
 export {
   publishGlobalUtil as ɵpublishGlobalUtil,
   publishDefaultGlobalUtils as ɵpublishDefaultGlobalUtils
-} from './render3/global_utils';
+} from './render3/util/global_utils';
 
 export {createInjector as ɵcreateInjector} from './di/r3_injector';
 

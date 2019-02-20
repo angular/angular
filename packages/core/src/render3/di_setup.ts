@@ -18,7 +18,7 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNodeFlags, TNodeProviderIndexes} from './interfaces/node';
 import {LView, TData, TVIEW, TView} from './interfaces/view';
 import {getLView, getPreviousOrParentTNode} from './state';
-import {isComponentDef} from './util';
+import {isComponentDef} from './util/view_utils';
 
 
 

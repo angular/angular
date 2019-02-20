@@ -21,7 +21,10 @@ import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TN
 import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
-import {findComponentView, getParentInjectorIndex, getParentInjectorView, hasParentInjector, isComponent, isComponentDef, renderStringify} from './util';
+import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from './util/injector_utils';
+import {renderStringify} from './util/misc_utils';
+import {findComponentView} from './util/view_traversal_utils';
+import {isComponent, isComponentDef} from './util/view_utils';
 
 
 

@@ -16,7 +16,7 @@ import {PlayState, Player, PlayerContext, PlayerIndex} from '../interfaces/playe
 import {RElement} from '../interfaces/renderer';
 import {InitialStylingValues, InitialStylingValuesIndex, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {HEADER_OFFSET, HOST, LView, RootContext} from '../interfaces/view';
-import {getTNode} from '../util';
+import {getTNode} from '../util/view_utils';
 
 import {CorePlayerHandler} from './core_player_handler';
 
