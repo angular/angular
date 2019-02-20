@@ -11,6 +11,12 @@
     "modify_tsconfig": "./src/modify_tsconfig.js"
   },
   "typings": "./src/ngc-wrapped/index.d.ts",
+  "bazelWorkspaces": {
+    "npm_angular_bazel": {
+      "version": "0.0.0-PLACEHOLDER",
+      "rootPath": "."
+    }
+  },
   "dependencies": {
     "@angular-devkit/architect": "^0.10.6",
     "@angular-devkit/core": "^7.0.4",
@@ -35,8 +41,5 @@
   "schematics": "./src/schematics/collection.json",
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
-  },
-  "scripts": {
-    "postinstall": "node ./check_version.js"
   }
 }
