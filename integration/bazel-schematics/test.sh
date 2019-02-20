@@ -1,7 +1,22 @@
 #!/usr/bin/env bash
 
 set -eux -o pipefail
-readonly pwd=$(pwd)
+
+function installLocalPackages() {
+  # Install Angular packages that are built locally from HEAD.
+  # This also gets around the bug whereby yarn caches local `file://` urls.
+  # See https://github.com/yarnpkg/yarn/issues/2165
+  readonly pwd=$(pwd)
+  readonly packages=(
+    animations common compiler core forms platform-browser
+    platform-browser-dynamic router bazel compiler-cli language-service upgrade
+  )
+  local local_packages=()
+  for package in "${packages[@]}"; do
+    local_packages+=("@angular/${package}@file:${pwd}/../../../dist/packages-dist/${package}")
+  done
+  yarn add "${local_packages[@]}"
+}
 
 function testBazel() {
   # Set up
@@ -11,10 +26,8 @@ function testBazel() {
   # Create project
   ng new demo --collection=@angular/bazel --defaults --skip-git --skip-install --style=scss
   cd demo
-  cp ../package.json.replace ./package.json
-  sed -i "s#file:../angular#${pwd}/../..#" ./package.json
-  yarn
-  yarn webdriver-manager update --gecko=false --standalone=false $CI_CHROMEDRIVER_VERSION_ARG
+  installLocalPackages
+  yarn webdriver-manager update --gecko=false --standalone=false ${CI_CHROMEDRIVER_VERSION_ARG:---versions.chrome 2.45}
   ng generate component widget --style=css
   ng build
   ng test
@@ -26,7 +39,6 @@ function testNonBazel() {
   mv ./angular.json.bak ./angular.json
   mv ./tsconfig.json.bak ./tsconfig.json
   rm -rf dist src/main.dev.ts src/main.prod.ts
-  sed -i 's/"es5BrowserSupport": true//' angular.json
   ng build --progress=false
   ng test --progress=false --watch=false
   ng e2e --configuration=production --webdriver-update=false
