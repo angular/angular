@@ -12,7 +12,7 @@ ls_rollup_bundle(
     visibility = ["//packages/language-service:__pkg__"],
     deps = [
         "//packages/language-service",
-        "@ngdeps//rxjs",
-        "@ngdeps//tslib",
+        "@npm//rxjs",
+        "@npm//tslib",
     ],
 )

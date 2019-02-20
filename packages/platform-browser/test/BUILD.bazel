@@ -23,7 +23,7 @@ ts_library(
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "@ngdeps//rxjs",
+        "@npm//rxjs",
     ],
 )
 

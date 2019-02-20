@@ -9,31 +9,11 @@
  */
 
 import {strings} from '@angular-devkit/core';
-import {Rule, SchematicContext, SchematicsException, Tree, apply, applyTemplates, mergeWith, move, url} from '@angular-devkit/schematics';
+import {Rule, SchematicContext, Tree, apply, applyTemplates, mergeWith, url} from '@angular-devkit/schematics';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import {latestVersions} from '@schematics/angular/utility/latest-versions';
 import {validateProjectName} from '@schematics/angular/utility/validation';
 
 import {Schema as BazelWorkspaceOptions} from './schema';
-
-
-/**
- * Look for package.json file for package with `packageName` in node_modules and
- * extract its version.
- */
-function findVersion(packageName: string, host: Tree): string|null {
-  const candidate = `node_modules/${packageName}/package.json`;
-  if (host.exists(candidate)) {
-    try {
-      const packageJson = JSON.parse(host.read(candidate).toString());
-      if (packageJson.name === packageName && packageJson.version) {
-        return packageJson.version;
-      }
-    } catch {
-    }
-  }
-  return null;
-}
 
 /**
  * Clean the version string and return version in the form "1.2.3". Return
@@ -72,26 +52,15 @@ export default function(options: BazelWorkspaceOptions): Rule {
     }
     validateProjectName(name);
 
-    // If the project already has some deps installed, Bazel should use existing
-    // versions.
-    const existingVersions = {
-      Angular: findVersion('@angular/core', host),
-      RxJs: findVersion('rxjs', host),
-    };
-
-    Object.keys(existingVersions).forEach((name: 'Angular' | 'RxJs') => {
-      const version = existingVersions[name] as string;
-      if (version) {
-        context.logger.info(`Bazel will reuse existing version for ${name}: ${version}`);
-      }
-    });
+    if (!host.exists('yarn.lock')) {
+      host.create('yarn.lock', '');
+    }
 
     const workspaceVersions = {
-      'RULES_NODEJS_VERSION': '0.18.6',
-      'RULES_NODEJS_SHA256': '1416d03823fed624b49a0abbd9979f7c63bbedfd37890ddecedd2fe25cccebc6',
-      'ANGULAR_VERSION': existingVersions.Angular || clean(latestVersions.Angular),
-      // TODO(kyliau): Consider moving this to latest-versions.ts
-      'RULES_SASS_VERSION': '1.15.1',
+      'RULES_NODEJS_VERSION': '0.26.0',
+      'RULES_NODEJS_SHA256': '5c86b055c57e15bf32d9009a15bcd6d8e190c41b1ff2fb18037b75e0012e4e7c',
+      'RULES_SASS_VERSION': '1.17.2',
+      'RULES_SASS_SHA256': 'e5316ee8a09d1cbb732d3938b400836bf94dba91a27476e9e27706c4c0edae1f',
     };
 
     return mergeWith(apply(url('./files'), [

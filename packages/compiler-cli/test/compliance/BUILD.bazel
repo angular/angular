@@ -11,7 +11,7 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler/test:test_utils",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )
 

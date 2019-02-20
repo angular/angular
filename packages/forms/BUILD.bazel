@@ -13,7 +13,7 @@ ng_module(
     deps = [
         "//packages/core",
         "//packages/platform-browser",
-        "@ngdeps//rxjs",
+        "@npm//rxjs",
     ],
 )
 

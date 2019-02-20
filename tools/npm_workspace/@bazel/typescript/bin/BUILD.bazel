@@ -1,7 +1,0 @@
-package(default_visibility = ["//visibility:public"])
-
-# Alias here so that references actual in @ngdeps
-alias(
-    name = "tsc_wrapped",
-    actual = "@ngdeps//@bazel/typescript/bin:tsc_wrapped",
-)

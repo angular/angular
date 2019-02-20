@@ -12,8 +12,8 @@ ng_module(
     ),
     deps = [
         "//packages:types",
-        "@ngdeps//rxjs",
-        "@ngdeps//zone.js",
+        "@npm//rxjs",
+        "@npm//zone.js",
     ],
 )
 
