@@ -98,9 +98,9 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
     implements AfterContentChecked, AfterContentInit, AfterViewInit, OnDestroy, CanDisableRipple {
 
   @ContentChildren(MatTabLabelWrapper) _labelWrappers: QueryList<MatTabLabelWrapper>;
-  @ViewChild(MatInkBar) _inkBar: MatInkBar;
-  @ViewChild('tabListContainer') _tabListContainer: ElementRef;
-  @ViewChild('tabList') _tabList: ElementRef;
+  @ViewChild(MatInkBar, {static: true}) _inkBar: MatInkBar;
+  @ViewChild('tabListContainer', {static: true}) _tabListContainer: ElementRef;
+  @ViewChild('tabList', {static: true}) _tabList: ElementRef;
   @ViewChild('nextPaginator') _nextPaginator: ElementRef<HTMLElement>;
   @ViewChild('previousPaginator') _previousPaginator: ElementRef<HTMLElement>;
 

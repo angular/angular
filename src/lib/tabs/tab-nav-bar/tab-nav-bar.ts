@@ -81,7 +81,7 @@ export class MatTabNav extends _MatTabNavMixinBase
   private _activeLinkChanged: boolean;
   private _activeLinkElement: ElementRef<HTMLElement> | null;
 
-  @ViewChild(MatInkBar) _inkBar: MatInkBar;
+  @ViewChild(MatInkBar, {static: true}) _inkBar: MatInkBar;
 
   /** Query list of all tab links of the tab navigation. */
   @ContentChildren(forwardRef(() => MatTabLink), {descendants: true})

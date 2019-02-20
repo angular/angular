@@ -49,10 +49,11 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
   /**
    * Template provided in the tab content that will be used if present, used to enable lazy-loading
    */
-  @ContentChild(MatTabContent, {read: TemplateRef}) _explicitContent: TemplateRef<any>;
+  @ContentChild(MatTabContent, {read: TemplateRef, static: true})
+  _explicitContent: TemplateRef<any>;
 
   /** Template inside the MatTab view that contains an `<ng-content>`. */
-  @ViewChild(TemplateRef) _implicitContent: TemplateRef<any>;
+  @ViewChild(TemplateRef, {static: true}) _implicitContent: TemplateRef<any>;
 
   /** Plain text label for the tab, used when there is no template label. */
   @Input('label') textLabel: string = '';

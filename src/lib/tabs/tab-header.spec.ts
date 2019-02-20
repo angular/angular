@@ -641,7 +641,7 @@ class SimpleTabHeaderApp {
   tabs: Tab[] = [{label: 'tab one'}, {label: 'tab one'}, {label: 'tab one'}, {label: 'tab one'}];
   dir: Direction = 'ltr';
 
-  @ViewChild(MatTabHeader) tabHeader: MatTabHeader;
+  @ViewChild(MatTabHeader, {static: true}) tabHeader: MatTabHeader;
 
   constructor() {
     this.tabs[this.disabledTabIndex].disabled = true;
