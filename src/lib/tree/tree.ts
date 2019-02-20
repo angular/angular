@@ -29,5 +29,5 @@ import {MatTreeNodeOutlet} from './outlet';
 })
 export class MatTree<T> extends CdkTree<T> {
   // Outlets within the tree's template where the dataNodes will be inserted.
-  @ViewChild(MatTreeNodeOutlet) _nodeOutlet: MatTreeNodeOutlet;
+  @ViewChild(MatTreeNodeOutlet, {static: true}) _nodeOutlet: MatTreeNodeOutlet;
 }

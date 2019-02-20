@@ -99,7 +99,7 @@ export class CdkTree<T>
   @Input() trackBy: TrackByFunction<T>;
 
   // Outlets within the tree's template where the dataNodes will be inserted.
-  @ViewChild(CdkTreeNodeOutlet) _nodeOutlet: CdkTreeNodeOutlet;
+  @ViewChild(CdkTreeNodeOutlet, {static: true}) _nodeOutlet: CdkTreeNodeOutlet;
 
   /** The tree node template for the tree */
   @ContentChildren(CdkTreeNodeDef) _nodeDefs: QueryList<CdkTreeNodeDef<T>>;
