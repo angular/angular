@@ -137,238 +137,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
-  "CdkTable in a typical simple use case should initialize with a connected data source": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with a rendered header with the right number of header cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with rendered rows with right number of row cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with column class names provided to header and data row cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with the right accessibility roles": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should disconnect the data source when table is destroyed": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should re-render the rows when the data changes": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should clear the `mostRecentCellOutlet` on destroy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should correctly use the differ to add/remove/move rows when the data is heterogeneous": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should correctly use the differ to add/remove/move rows when the data contains multiple occurrences of the same object instance": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should clear the row view containers on destroy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should match the right table content with dynamic data": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should be able to dynamically change the columns for header and rows": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should render no rows when the data is null": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to render multiple header and footer rows": {
-    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Attempting to access content children before view is initialized"
-  },
-  "CdkTable should be able to render and change multiple header and footer rows": {
-    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Attempting to access content children before view is initialized"
-  },
-  "CdkTable with different data inputs other than data source should render with data array input": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with different data inputs other than data source should render with data stream input": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with different data inputs other than data source should throw an error if the data source is not valid": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable missing row defs should be able to render without a header row def": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable missing row defs should be able to render without a data row def": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable missing row defs should be able to render without a footer row def": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should render correctly when using native HTML tags": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable should render cells even if row data is falsy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to apply class-friendly css class names for the column cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should not clobber an existing table role": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should throw an error if two column definitions have the same name": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should throw an error if a column definition is requested but not defined": {
-    "error": "Error: Expected function to throw an exception with message 'Could not find column with id \"column_a\".', but it threw an exception with message 'Cannot read property 'viewContainer' of undefined'.",
-    "notes": "Unknown"
-  },
-  "CdkTable should throw an error if the row definitions are missing": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should not throw an error if columns are undefined on initialization": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to dynamically add/remove column definitions": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to register column, row, and header row definitions outside content": {
-    "error": "TypeError: Cannot read property 'addColumnDef' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkTable using when predicate should be able to display different row templates based on the row data": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate should error if there is row data that does not have a matching row template": {
-    "error": "Error: Expected function to throw an Error.",
-    "notes": "Unknown"
-  },
-  "CdkTable using when predicate should fail when multiple rows match data without multiTemplateDataRows": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate with multiTemplateDataRows should be able to render multiple rows per data object": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate with multiTemplateDataRows should have the correct data and row indicies": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate with multiTemplateDataRows should have the correct data and row indicies when data contains multiple instances of the same object instance": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick headers": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick footers": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick left columns": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick right columns": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should reverse directions for sticky columns in rtl": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick combination of sticky header, footer, and columns": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick headers": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick footers": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick tfoot when all rows are stuck": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick left columns": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick right columns": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick combination of sticky header, footer, and columns": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with trackBy should add/remove/move rows with reference-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should add/remove/move rows with changed references without property-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should add/remove/move rows with changed references with property-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should add/remove/move rows with changed references with index-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should change row implicit data even when trackBy finds no changes": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should match the right table content with dynamic data source": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to apply classes to rows based on their context": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to apply classes to cells based on their row context": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render initial state": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
@@ -645,6 +413,238 @@ window.testBlocklist = {
     "error": "Error: Expected cdk-drag cdk-drag-placeholder to contain 'custom-placeholder'.",
     "notes": "Unknown"
   },
+  "CdkTable in a typical simple use case should initialize with a connected data source": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should initialize with a rendered header with the right number of header cells": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should initialize with rendered rows with right number of row cells": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should initialize with column class names provided to header and data row cells": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should initialize with the right accessibility roles": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should disconnect the data source when table is destroyed": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should re-render the rows when the data changes": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should clear the `mostRecentCellOutlet` on destroy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should correctly use the differ to add/remove/move rows when the data is heterogeneous": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should correctly use the differ to add/remove/move rows when the data contains multiple occurrences of the same object instance": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should clear the row view containers on destroy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should match the right table content with dynamic data": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable in a typical simple use case should be able to dynamically change the columns for header and rows": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should render no rows when the data is null": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to render multiple header and footer rows": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Attempting to access content children before view is initialized"
+  },
+  "CdkTable should be able to render and change multiple header and footer rows": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Attempting to access content children before view is initialized"
+  },
+  "CdkTable with different data inputs other than data source should render with data array input": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with different data inputs other than data source should render with data stream input": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with different data inputs other than data source should throw an error if the data source is not valid": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable missing row defs should be able to render without a header row def": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable missing row defs should be able to render without a data row def": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable missing row defs should be able to render without a footer row def": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should render correctly when using native HTML tags": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable should render cells even if row data is falsy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to apply class-friendly css class names for the column cells": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should not clobber an existing table role": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should throw an error if two column definitions have the same name": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should throw an error if a column definition is requested but not defined": {
+    "error": "Error: Expected function to throw an exception with message 'Could not find column with id \"column_a\".', but it threw an exception with message 'Cannot read property 'viewContainer' of undefined'.",
+    "notes": "Unknown"
+  },
+  "CdkTable should throw an error if the row definitions are missing": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should not throw an error if columns are undefined on initialization": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to dynamically add/remove column definitions": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to register column, row, and header row definitions outside content": {
+    "error": "TypeError: Cannot read property 'addColumnDef' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkTable using when predicate should be able to display different row templates based on the row data": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable using when predicate should error if there is row data that does not have a matching row template": {
+    "error": "Error: Expected function to throw an Error.",
+    "notes": "Unknown"
+  },
+  "CdkTable using when predicate should fail when multiple rows match data without multiTemplateDataRows": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable using when predicate with multiTemplateDataRows should be able to render multiple rows per data object": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable using when predicate with multiTemplateDataRows should have the correct data and row indicies": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable using when predicate with multiTemplateDataRows should have the correct data and row indicies when data contains multiple instances of the same object instance": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick headers": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick footers": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick left columns": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick right columns": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should reverse directions for sticky columns in rtl": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick combination of sticky header, footer, and columns": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick headers": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick footers": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with sticky positioning on native table layout should stick tfoot when all rows are stuck": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick left columns": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick right columns": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick combination of sticky header, footer, and columns": {
+    "error": "TypeError: Cannot read property 'elementRef' of undefined",
+    "notes": "FW-856: Attempting to access content children before view is initialized"
+  },
+  "CdkTable with trackBy should add/remove/move rows with reference-based trackBy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with trackBy should add/remove/move rows with changed references without property-based trackBy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with trackBy should add/remove/move rows with changed references with property-based trackBy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with trackBy should add/remove/move rows with changed references with index-based trackBy": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable with trackBy should change row implicit data even when trackBy finds no changes": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should match the right table content with dynamic data source": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to apply classes to rows based on their context": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
+  "CdkTable should be able to apply classes to cells based on their row context": {
+    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
+    "notes": "FW-1019: Design new API to replace static queries"
+  },
   "CdkTree should clear out the `mostRecentTreeNode` on destroy": {
     "error": "Error: Expected false to be true.",
     "notes": "Unknown"
@@ -717,6 +717,22 @@ window.testBlocklist = {
     "error": "Error: Expected 0 to be 5.",
     "notes": "Unknown"
   },
+  "MatAccordion should not register nested panels to the same accordion": {
+    "error": "TypeError: Cannot read property 'accordion' of undefined",
+    "notes": "Unknown"
+  },
+  "MatExpansionPanel should toggle the panel when pressing SPACE on the header": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+    "notes": "Unknown"
+  },
+  "MatExpansionPanel should toggle the panel when pressing ENTER on the header": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+    "notes": "Unknown"
+  },
+  "MatExpansionPanel should not toggle if a modifier key is pressed": {
+    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+    "notes": "Unknown"
+  },
   "MatButton should apply class based on color attribute": {
     "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "Unknown"
@@ -772,6 +788,18 @@ window.testBlocklist = {
   "MatButton button ripples should disable the ripple when the button is disabled": {
     "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
     "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
+  },
+  "MatInput without forms validates the type": {
+    "error": "Error: Input type \"file\" isn't supported by matInput.",
+    "notes": "Unknown"
+  },
+  "MatInput without forms should not highlight when focusing a readonly input": {
+    "error": "Error: Expected true to be false.",
+    "notes": "Unknown"
+  },
+  "MatInput with textarea autosize should work in a step": {
+    "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
+    "notes": "Unknown"
   },
   "MatChipList StandardChipList basic behaviors should toggle the chips disabled state based on whether it is disabled": {
     "error": "Error: Expected true to be false.",
@@ -845,6 +873,10 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'focus' of undefined",
     "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
   },
+  "MatGridList should throw error if rowHeight ratio is invalid": {
+    "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
+    "notes": "Unknown"
+  },
   "MatStepper basic stepper should go to next available step when the next button is clicked": {
     "error": "Error: Expected 2 to be 1.",
     "notes": "Unknown"
@@ -913,6 +945,38 @@ window.testBlocklist = {
     "error": "Error: Expected mat-slide-toggle-thumb-container to contain 'mat-dragging'.",
     "notes": "Unknown"
   },
+  "MatTabGroup basic behavior should change selected index on click": {
+    "error": "Error: Expected 0 to be 1.",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should support two-way binding for selectedIndex": {
+    "error": "TypeError: ctx_r13779._handleClick is not a function",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should fire animation done event": {
+    "error": "TypeError: ctx_r14175._handleClick is not a function",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should emit focusChange event on click": {
+    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
+    "notes": "Unknown"
+  },
+  "MatTabGroup basic behavior should emit focusChange on arrow key navigation": {
+    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
+    "notes": "Unknown"
+  },
+  "MatTabGroup lazy loaded tabs should lazy load the second tab": {
+    "error": "TypeError: ctx_r15099._handleClick is not a function",
+    "notes": "Unknown"
+  },
+  "MatSidenav should be fixed position when in fixed mode": {
+    "error": "Error: Expected ng-tns-c28983-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
+    "notes": "Unknown"
+  },
+  "MatSidenav should set fixed bottom and top when in fixed mode": {
+    "error": "Error: Expected '' to be '20px'.",
+    "notes": "Unknown"
+  },
   "MatDrawer methods should be able to open": {
     "error": "Error: Expected 0 to be 1.",
     "notes": "Unknown"
@@ -934,7 +998,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer methods should restore focus on close if focus is inside drawer": {
-    "error": "Error: Expected <button class=\"ng-tns-c22161-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <button class=\"ng-tns-c29407-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer methods should not restore focus on close if focus is outside drawer": {
@@ -946,15 +1010,15 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"over\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c22456-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c29702-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"push\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c22490-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c29736-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should focus the drawer if there are no focusable elements": {
-    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c22558-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c29804-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawerContainer should animate the content when a drawer is added at a later point": {
@@ -983,14 +1047,6 @@ window.testBlocklist = {
   },
   "MatDrawerContainer should be able to explicitly enable the backdrop in `side` mode": {
     "error": "TypeError: Cannot set property 'mode' of undefined",
-    "notes": "Unknown"
-  },
-  "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c23008-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
-    "notes": "Unknown"
-  },
-  "MatSidenav should set fixed bottom and top when in fixed mode": {
-    "error": "Error: Expected '' to be '20px'.",
     "notes": "Unknown"
   },
   "MatSort should use the column definition if used within a cdk table": {
@@ -1033,301 +1089,9 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'click' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
-  "MatGridList should throw error if rowHeight ratio is invalid": {
-    "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
-    "notes": "Unknown"
-  },
-  "MatInput without forms validates the type": {
-    "error": "Error: Input type \"file\" isn't supported by matInput.",
-    "notes": "Unknown"
-  },
-  "MatInput without forms should not highlight when focusing a readonly input": {
-    "error": "Error: Expected true to be false.",
-    "notes": "Unknown"
-  },
-  "MatInput with textarea autosize should work in a step": {
-    "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should change selected index on click": {
-    "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should support two-way binding for selectedIndex": {
-    "error": "TypeError: ctx_r15939._handleClick is not a function",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should fire animation done event": {
-    "error": "TypeError: ctx_r16335._handleClick is not a function",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should emit focusChange event on click": {
-    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should emit focusChange on arrow key navigation": {
-    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
-    "notes": "Unknown"
-  },
-  "MatTabGroup lazy loaded tabs should lazy load the second tab": {
-    "error": "TypeError: ctx_r17259._handleClick is not a function",
-    "notes": "Unknown"
-  },
-  "Dialog should open a dialog with a component": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should open a dialog with a template": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should emit when dialog opening animation is complete": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should use injector from viewContainerRef for DialogInjector": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should open a dialog with a component and no ViewContainerRef": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should apply the configured role to the dialog element": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should apply the specified `aria-describedby`": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should close a dialog and get back a result": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should only emit the afterCloseEvent once when closed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should close a dialog and get back a result before it is closed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should close a dialog via the escape key": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should close from a ViewContainerRef with OnPush change detection": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should close when clicking on the overlay backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should emit the backdropClick stream when clicking on the overlay backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should emit the keyboardEvent stream when key events target the overlay": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should notify the observers if all open dialogs have finished closing": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should override the width of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should override the height of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should override the min-width of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should override the max-width of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should override the min-height of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should override the max-height of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should override the top offset of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should override the bottom offset of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should override the left offset of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should override the right offset of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should allow for the position to be updated": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should allow for the dimensions to be updated": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should allow setting the layout direction": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should inject the correct layout direction in the component instance": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should fall back to injecting the global direction if none is passed by the config": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should close all of the dialogs": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
   "Dialog should set the proper animation states": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should close all dialogs when the user goes forwards/backwards in history": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should close all open dialogs when the location hash changes": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should have the componentInstance available in the afterClosed callback": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should close all open dialogs on destroy": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should complete the various lifecycle streams on destroy": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog passing in data should be able to pass in data": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog passing in data should default to null if no data is passed": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'hasAttached' of undefined.",
+    "error": "TypeError: Cannot read property 'componentInstance' of null",
     "notes": "Unknown"
-  },
-  "Dialog should not keep a reference to the component after the dialog is closed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should assign a unique id to each dialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should allow for the id to be overwritten": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should throw when trying to open a dialog with the same id as another dialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog should be able to find a dialog by id": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog disableClose option should prevent closing via clicks on the backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog disableClose option should prevent closing via the escape key": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog disableClose option should allow for the disableClose option to be updated while open": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog hasBackdrop option should have a backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog hasBackdrop option should not have a backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog panelClass option should have custom panel class": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog backdropClass option should have default backdrop class": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog backdropClass option should have custom backdrop class": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog focus management should focus the first tabbable element of the dialog on open": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog focus management should allow disabling focus of the first tabbable element": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog focus management should re-focus trigger element when dialog closes": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog focus management should allow the consumer to shift focus in afterClosed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog focus management should move focus to the container if there are no focusable elements in the dialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog aria-label should be able to set a custom aria-label": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog aria-label should not set the aria-labelledby automatically if it has an aria-label": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog with a parent Dialog should close dialogs opened by a parent when calling closeAll on a child Dialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog with a parent Dialog should close dialogs opened by a child when calling closeAll on a parent Dialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog with a parent Dialog should not close the parent dialogs, when a child is destroyed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "Dialog with a parent Dialog should close the top dialog via the escape key": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
   },
   "FullscreenOverlayContainer should open an overlay inside a fullscreen element and move it to the body": {
     "error": "Error: Must provide a portal to attach",
@@ -1340,18 +1104,6 @@ window.testBlocklist = {
   "OverlayContainer should remove the overlay container element from the DOM on destruction": {
     "error": "Error: Must provide a portal to attach",
     "notes": "Unknown"
-  },
-  "MatAutocomplete aria should set role of autocomplete panel to listbox": {
-    "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatAutocomplete aria should set aria-owns based on the attached autocomplete": {
-    "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatAutocomplete Option selection should handle `optionSelections` being accessed too early": {
-    "error": "TypeError: Cannot read property 'autocomplete' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatBottomSheet should open a bottom sheet with a component": {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
@@ -1533,33 +1285,21 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'hasAttached' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
-  "MatDatepicker with MatNativeDateModule standard datepicker touch should open dialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+  "MatAutocomplete aria should set role of autocomplete panel to listbox": {
+    "error": "TypeError: Cannot read property 'nativeElement' of null",
+    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
-  "MatDatepicker with MatNativeDateModule standard datepicker should not be able to open more than one dialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
+  "MatAutocomplete aria should set aria-owns based on the attached autocomplete": {
+    "error": "TypeError: Cannot read property 'nativeElement' of null",
+    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
+  },
+  "MatAutocomplete Option selection should handle `optionSelections` being accessed too early": {
+    "error": "TypeError: Cannot read property 'autocomplete' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule standard datepicker should open datepicker if opened input is set to true": {
     "error": "Error: Expected null not to be null.",
     "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker close should close dialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker setting selected via click should update input and close calendar": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker setting selected via enter press should update input and close calendar": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDatepicker with MatNativeDateModule standard datepicker input should aria-owns calendar after opened in touch mode": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDatepicker with MatNativeDateModule datepicker with formControl should update datepicker when formControl changes": {
     "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
@@ -1669,349 +1409,33 @@ window.testBlocklist = {
     "error": "Error: Template error: Can't bind to 'htmlFor' since it isn't a known property of 'mat-datepicker-toggle'.",
     "notes": "Unknown"
   },
-  "MatDatepicker with MatNativeDateModule datepicker with change and input events should fire dateChange and dateInput events when user selects calendar date": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker directionality should pass along the directionality to the dialog in touch mode": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should open a dialog with a component": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should open a dialog with a template": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should emit when dialog opening animation is complete": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should use injector from viewContainerRef for DialogInjector": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should open a dialog with a component and no ViewContainerRef": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should apply the configured role to the dialog element": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should apply the specified `aria-describedby`": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should close a dialog and get back a result": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should dispatch the beforeClose and afterClose events when the overlay is detached externally": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should close a dialog and get back a result before it is closed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should close a dialog via the escape key": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should close from a ViewContainerRef with OnPush change detection": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should close when clicking on the overlay backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should emit the backdropClick stream when clicking on the overlay backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should emit the keyboardEvent stream when key events target the overlay": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should notify the observers if all open dialogs have finished closing": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should override the width of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should override the height of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should override the min-width of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should override the max-width of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should override the min-height of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should override the max-height of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should override the top offset of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should override the bottom offset of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should override the left offset of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should override the right offset of the overlay pane": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should allow for the position to be updated": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should allow for the dimensions to be updated": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should reset the overlay dimensions to their initial size": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should allow setting the layout direction": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should inject the correct layout direction in the component instance": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should fall back to injecting the global direction if none is passed by the config": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should close all of the dialogs": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
   "MatDialog should set the proper animation states": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should close all dialogs when the user goes forwards/backwards in history": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should close all open dialogs when the location hash changes": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should close all of the dialogs when the injectable is destroyed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should allow the consumer to disable closing a dialog on navigation": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should have the componentInstance available in the afterClosed callback": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should be able to attach a custom scroll strategy": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog passing in data should be able to pass in data": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog passing in data should default to null if no data is passed": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'hasAttached' of undefined.",
+    "error": "TypeError: Cannot read property 'componentInstance' of null",
     "notes": "Unknown"
   },
-  "MatDialog should not keep a reference to the component after the dialog is closed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should assign a unique id to each dialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should allow for the id to be overwritten": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should throw when trying to open a dialog with the same id as another dialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should be able to find a dialog by id": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should toggle `aria-hidden` on the overlay container siblings": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should restore `aria-hidden` to the overlay container siblings on close": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog should not set `aria-hidden` on `aria-live` elements": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog disableClose option should prevent closing via clicks on the backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog disableClose option should prevent closing via the escape key": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog disableClose option should allow for the disableClose option to be updated while open": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog hasBackdrop option should have a backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog hasBackdrop option should not have a backdrop": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog panelClass option should have custom panel class": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog backdropClass option should have default backdrop class": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog backdropClass option should have custom backdrop class": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog focus management should focus the first tabbable element of the dialog on open": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog focus management should allow disabling focus of the first tabbable element": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog focus management should re-focus trigger element when dialog closes": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog focus management should allow the consumer to shift focus in afterClosed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog focus management should move focus to the container if there are no focusable elements in the dialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog focus management should be able to disable focus restoration": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
   "MatDialog dialog content elements inside component dialog should close the dialog when clicking on the close button": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Expected 0 to be 1.",
+    "notes": "Unknown"
   },
   "MatDialog dialog content elements inside component dialog should not close if [mat-dialog-close] is applied on a non-button node": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog dialog content elements inside component dialog should allow for a user-specified aria-label on the close button": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog dialog content elements inside component dialog should override the \"type\" attribute of the close button": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog dialog content elements inside component dialog should return the [mat-dialog-close] result when clicking the close button": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog dialog content elements inside component dialog should set the aria-labelledby attribute to the id of the title": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Expected 0 to be 1.",
+    "notes": "Unknown"
   },
   "MatDialog dialog content elements inside template portal should close the dialog when clicking on the close button": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Expected 0 to be 1.",
+    "notes": "Unknown"
   },
   "MatDialog dialog content elements inside template portal should not close if [mat-dialog-close] is applied on a non-button node": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog dialog content elements inside template portal should allow for a user-specified aria-label on the close button": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog dialog content elements inside template portal should override the \"type\" attribute of the close button": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Expected 0 to be 1.",
+    "notes": "Unknown"
   },
   "MatDialog dialog content elements inside template portal should return the [mat-dialog-close] result when clicking the close button": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Uncaught TypeError: Cannot read property 'close' of null thrown",
+    "notes": "Unknown"
   },
   "MatDialog dialog content elements inside template portal should set the aria-labelledby attribute to the id of the title": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog aria-label should be able to set a custom aria-label": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog aria-label should not set the aria-labelledby automatically if it has an aria-label": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog with a parent MatDialog should close dialogs opened by a parent when calling closeAll on a child MatDialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog with a parent MatDialog should close dialogs opened by a child when calling closeAll on a parent MatDialog": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog with a parent MatDialog should close the top dialog via the escape key": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog with a parent MatDialog should not close the parent dialogs when a child is destroyed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog with default options should use the provided defaults": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatDialog with default options should be overridable by open() options": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Expected null to be 'mat-dialog-title-12', 'Expected the aria-labelledby to match the title id.'.",
+    "notes": "Unknown"
   },
   "MatMenu should open a custom menu": {
     "error": "Error: Expected function not to throw an Error, but it threw TypeError.",
@@ -2034,7 +1458,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatMenu nested menu should toggle a nested menu when its trigger is hovered": {
-    "error": "Error: Expected mat-menu-item mat-menu-item-submenu-trigger ng-tns-c55433-0 cdk-focused cdk-program-focused to contain 'mat-menu-item-highlighted', 'Expected the trigger to be highlighted'.",
+    "error": "Error: Expected mat-menu-item mat-menu-item-submenu-trigger ng-tns-c56347-0 cdk-focused cdk-program-focused to contain 'mat-menu-item-highlighted', 'Expected the trigger to be highlighted'.",
     "notes": "Unknown"
   },
   "MatMenu nested menu should close all the open sub-menus when the hover state is changed at the root": {
@@ -2101,197 +1525,9 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'selected' of undefined",
     "notes": "Unknown"
   },
-  "MatSnackBar should have the role of `alert` with an `assertive` politeness if no announcement message is provided": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should have the role of `status` with an `assertive` politeness if an announcement message is provided": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should have the role of `status` with a `polite` politeness": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should remove the role if the politeness is turned off": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should open and close a snackbar without a ViewContainerRef": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should open a simple message with a button": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should open a simple message with no button": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should dismiss the snack bar and remove itself from the view": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should default to the passed message for the announcement message": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should be able to specify a custom announcement message": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should be able to get dismissed through the service": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should clean itself up when the view container gets destroyed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should set the animation state to visible on entry": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should set the animation state to complete on exit": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should set the old snack bar animation state to complete and the new snack bar animation\n      state to visible on entry of new snack bar": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should open a new snackbar after dismissing a previous snackbar": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should remove past snackbars when opening new snackbars": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should remove snackbar if another is shown while its still animating open": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should dismiss the snackbar when the action is called, notifying of both action and dismiss": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should allow manually dismissing with an action": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should indicate in `afterClosed` whether it was dismissed by an action": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should complete the onAction stream when not closing via an action": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should dismiss automatically after a specified timeout": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should clear the dismiss timeout when dismissed before timeout expiration": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should add extra classes to the container": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should set the layout direction": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should be able to override the default config": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar should dismiss the open snack bar on destroy": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar with custom component should open a custom component": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar with custom component should inject the snack bar reference into the component": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar with custom component should be able to inject arbitrary user data": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar with custom component should allow manually dismissing with an action": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
   "MatSnackBar with TemplateRef should be able to open a snack bar using a TemplateRef": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar with TemplateRef should be able to pass in contextual data when opening with a TemplateRef": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar with parent MatSnackBar should close snackBars opened by parent when opening from child": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar with parent MatSnackBar should close snackBars opened by child when opening from parent": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar with parent MatSnackBar should not dismiss parent snack bar if child is destroyed": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar Positioning should default to bottom center": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar Positioning should be in the bottom left corner": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar Positioning should be in the bottom right corner": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar Positioning should be in the bottom center": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar Positioning should be in the top left corner": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar Positioning should be in the top right corner": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar Positioning should be in the top center": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar Positioning should handle start based on direction (rtl)": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar Positioning should handle start based on direction (ltr)": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar Positioning should handle end based on direction (rtl)": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSnackBar Positioning should handle end based on direction (ltr)": {
-    "error": "TypeError: Cannot read property 'hasAttached' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "Error: Expected ' Fries Pizza  ' to contain 'Pasta'.",
+    "notes": "Unknown"
   },
   "MatTooltip special cases should clear the `user-select` when a tooltip is set on a text field": {
     "error": "Error: Expected 'none' to be falsy.",
@@ -2436,22 +1672,6 @@ window.testBlocklist = {
   "MatTable with MatTableDataSource and sort/pagination/filter should sort strings with numbers larger than MAX_SAFE_INTEGER correctly": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatExpansionPanel should toggle the panel when pressing SPACE on the header": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
-    "notes": "Unknown"
-  },
-  "MatExpansionPanel should toggle the panel when pressing ENTER on the header": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
-    "notes": "Unknown"
-  },
-  "MatExpansionPanel should not toggle if a modifier key is pressed": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
-    "notes": "Unknown"
-  },
-  "MatAccordion should not register nested panels to the same accordion": {
-    "error": "TypeError: Cannot read property 'accordion' of undefined",
-    "notes": "Unknown"
   }
 };
 // clang-format on
