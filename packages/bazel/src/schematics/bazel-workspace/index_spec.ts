@@ -61,7 +61,7 @@ describe('Bazel-workspace Schematic', () => {
     host = schematicRunner.runSchematic('bazel-workspace', options, host);
     expect(host.files).toContain('/src/BUILD.bazel');
     const content = host.readContent('/src/BUILD.bazel');
-    expect(content).toContain('@angular//packages/router');
+    expect(content).toContain('@npm//@angular/router');
   });
 
   describe('WORKSPACE', () => {
