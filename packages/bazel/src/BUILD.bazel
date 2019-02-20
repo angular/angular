@@ -1,9 +1,8 @@
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//packages/bazel:__subpackages__"])
 
 filegroup(
     name = "package_assets",
-    srcs = ["modify_tsconfig.js"],
-    visibility = ["//packages/bazel:__subpackages__"],
+    srcs = glob(["*"]),
 )
 
 # For generating skydoc
@@ -22,6 +21,12 @@ nodejs_binary(
     ],
     entry_point = "ngdeps/node_modules/rollup/bin/rollup",
     install_source_map_support = False,
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "empty_node_modules",
+    srcs = [],
 )
 
 nodejs_binary(
@@ -29,4 +34,6 @@ nodejs_binary(
     data = ["modify_tsconfig.js"],
     entry_point = "angular/packages/bazel/src/modify_tsconfig.js",
     install_source_map_support = False,
+    node_modules = ":empty_node_modules",
+    visibility = ["//visibility:public"],
 )
