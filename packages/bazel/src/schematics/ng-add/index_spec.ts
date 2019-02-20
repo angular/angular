@@ -17,45 +17,54 @@ describe('ng-add schematic', () => {
 
   beforeEach(() => {
     host = new UnitTestTree(new HostTree());
-    host.create('package.json', JSON.stringify({
-      name: 'demo',
-      dependencies: {
-        '@angular/core': '1.2.3',
-        'rxjs': '~6.3.3',
-      },
-      devDependencies: {
-        'typescript': '3.2.2',
-      },
-    }));
-    host.create('tsconfig.json', JSON.stringify({
-      compileOnSave: false,
-      compilerOptions: {
-        baseUrl: './',
-        outDir: './dist/out-tsc',
-      }
-    }));
-    host.create('angular.json', JSON.stringify({
-      projects: {
-        'demo': {
-          architect: {
-            build: {},
-            serve: {},
-            test: {},
-            'extract-i18n': {
-              builder: '@angular-devkit/build-angular:extract-i18n',
-            },
-          },
-        },
-        'demo-e2e': {
-          architect: {
-            e2e: {},
-            lint: {
-              builder: '@angular-devkit/build-angular:tslint',
-            },
-          },
-        },
-      },
-    }));
+    host.create(
+        'package.json', JSON.stringify(
+                            {
+                              name: 'demo',
+                              dependencies: {
+                                '@angular/core': '1.2.3',
+                                'rxjs': '~6.3.3',
+                              },
+                              devDependencies: {
+                                'typescript': '3.2.2',
+                              },
+                            },
+                            null, 2));
+    host.create(
+        'tsconfig.json', JSON.stringify(
+                             {
+                               compileOnSave: false,
+                               compilerOptions: {
+                                 baseUrl: './',
+                                 outDir: './dist/out-tsc',
+                               }
+                             },
+                             null, 2));
+    host.create(
+        'angular.json', JSON.stringify(
+                            {
+                              projects: {
+                                'demo': {
+                                  architect: {
+                                    build: {},
+                                    serve: {},
+                                    test: {},
+                                    'extract-i18n': {
+                                      builder: '@angular-devkit/build-angular:extract-i18n',
+                                    },
+                                  },
+                                },
+                                'demo-e2e': {
+                                  architect: {
+                                    e2e: {},
+                                    lint: {
+                                      builder: '@angular-devkit/build-angular:tslint',
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                            null, 2));
     schematicRunner =
         new SchematicTestRunner('@angular/bazel', require.resolve('../collection.json'));
   });
@@ -217,16 +226,19 @@ describe('ng-add schematic', () => {
     ];
     for (const [version, upgrade] of cases) {
       it(`should ${upgrade ? '' : 'not '}upgrade v${version}')`, () => {
-        host.overwrite('package.json', JSON.stringify({
-          name: 'demo',
-          dependencies: {
-            '@angular/core': '1.2.3',
-            'rxjs': version,
-          },
-          devDependencies: {
-            'typescript': '3.2.2',
-          },
-        }));
+        host.overwrite(
+            'package.json', JSON.stringify(
+                                {
+                                  name: 'demo',
+                                  dependencies: {
+                                    '@angular/core': '1.2.3',
+                                    'rxjs': version,
+                                  },
+                                  devDependencies: {
+                                    'typescript': '3.2.2',
+                                  },
+                                },
+                                null, 2));
         host = schematicRunner.runSchematic('ng-add', defaultOptions, host);
         expect(host.files).toContain('/package.json');
         const content = host.readContent('/package.json');
@@ -238,5 +250,13 @@ describe('ng-add schematic', () => {
         }
       });
     }
+  });
+
+  it('should add a postinstall step to package.json', () => {
+    host = schematicRunner.runSchematic('ng-add', defaultOptions, host);
+    expect(host.files).toContain('/package.json');
+    const content = host.readContent('/package.json');
+    const json = JSON.parse(content);
+    expect(json.scripts.postinstall).toBe('ngc -p ./angular-metadata.tsconfig.json');
   });
 });
