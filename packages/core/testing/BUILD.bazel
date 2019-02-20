@@ -9,6 +9,7 @@ ng_module(
     srcs = glob(
         ["**/*.ts"],
     ),
+    bundle_dts = True,
     deps = [
         "//packages:types",
         "//packages/compiler",
