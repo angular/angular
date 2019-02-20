@@ -1834,6 +1834,26 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('ɵsetClassMetadata(TestPipe, ');
   });
 
+  it('should not throw in case whitespaces and HTML comments are present inside <ng-content>',
+     () => {
+       env.tsconfig();
+       env.write('test.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'cmp-a',
+            template: \`
+              <ng-content>
+                <!-- Some comments -->
+              </ng-content>
+            \`,
+          })
+          class CmpA {}
+       `);
+       const errors = env.driveDiagnostics();
+       expect(errors.length).toBe(0);
+     });
+
   it('should compile a template using multiple directives with the same selector', () => {
     env.tsconfig();
     env.write('test.ts', `
