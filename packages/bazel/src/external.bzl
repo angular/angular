@@ -33,7 +33,7 @@ compile_ts = _compile_ts
 DEPS_ASPECTS = _DEPS_ASPECTS
 ts_providers_dict_to_struct = _ts_providers_dict_to_struct
 
-DEFAULT_NG_COMPILER = "@angular//:@angular/bazel/ngc-wrapped"
+DEFAULT_NG_COMPILER = "@npm//@angular/bazel/bin:ngc-wrapped"
 DEFAULT_NG_XI18N = "@npm//@angular/bazel/bin:xi18n"
 FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 TsConfigInfo = _TsConfigInfo

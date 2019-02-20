@@ -10,9 +10,9 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/routing",
         "//packages/compiler-cli/src/ngtsc/util",
         "//packages/compiler-cli/test:test_utils",
-        "@ngdeps//@types/source-map",
-        "@ngdeps//source-map",
-        "@ngdeps//typescript",
+        "@npm//@types/source-map",
+        "@npm//source-map",
+        "@npm//typescript",
     ],
 )
 
@@ -25,6 +25,6 @@ jasmine_node_test(
     deps = [
         ":ngtsc_lib",
         "//tools/testing:node_no_angular",
-        "@ngdeps//minimist",
+        "@npm//minimist",
     ],
 )

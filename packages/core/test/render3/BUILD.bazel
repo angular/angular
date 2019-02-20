@@ -30,7 +30,7 @@ ts_library(
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "@ngdeps//rxjs",
+        "@npm//rxjs",
     ],
 )
 
@@ -45,7 +45,7 @@ ts_library(
         "//packages/compiler",
         "//packages/platform-browser",
         "//packages/platform-server",
-        "@ngdeps//zone.js",
+        "@npm//zone.js",
     ],
 )
 
@@ -66,7 +66,7 @@ jasmine_node_test(
     ],
     deps = [
         ":render3_node_lib",
-        "@ngdeps//zone.js",
+        "@npm//zone.js",
     ],
 )
 

@@ -14,7 +14,7 @@ const {runCommand, setupTestDirectory} = require('./test_helpers');
 const ngcBin = require.resolve('./ngc_bin');
 const xi18nBin = require.resolve('./ng_xi18n');
 const nodeBin = require.resolve(`nodejs/bin/node${(os.platform() === 'win32' ? '.cmd' : '')}`);
-const jasmineBin = require.resolve('ngdeps/node_modules/jasmine/bin/jasmine.js');
+const jasmineBin = require.resolve('npm/node_modules/jasmine/bin/jasmine.js');
 
 // Prepare the test directory before building the integration test output. This ensures that
 // the test runs in an hermetic way and works on Windows.

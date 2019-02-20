@@ -21,7 +21,7 @@
     "@angular-devkit/architect": "^0.10.6",
     "@angular-devkit/core": "^7.0.4",
     "@angular-devkit/schematics": "^7.3.0-rc.0",
-    "@bazel/typescript": "^0.26.0-beta.0",
+    "@bazel/typescript": "^0.26.0",
     "@microsoft/api-extractor": "^7.0.17",
     "@schematics/angular": "^7.0.4",
     "@types/node": "6.0.84",

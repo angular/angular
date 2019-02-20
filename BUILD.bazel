@@ -16,15 +16,15 @@ filegroup(
     name = "web_test_bootstrap_scripts",
     # do not sort
     srcs = [
-        "@ngdeps//node_modules/core-js:client/core.js",
-        "@ngdeps//node_modules/zone.js:dist/zone.js",
-        "@ngdeps//node_modules/zone.js:dist/zone-testing.js",
-        "@ngdeps//node_modules/zone.js:dist/task-tracking.js",
+        "@npm//node_modules/core-js:client/core.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
+        "@npm//node_modules/zone.js:dist/zone-testing.js",
+        "@npm//node_modules/zone.js:dist/task-tracking.js",
         "//:test-events.js",
         "//:shims_for_IE.js",
         # Including systemjs because it defines `__eval`, which produces correct stack traces.
-        "@ngdeps//node_modules/systemjs:dist/system.src.js",
-        "@ngdeps//node_modules/reflect-metadata:Reflect.js",
+        "@npm//node_modules/systemjs:dist/system.src.js",
+        "@npm//node_modules/reflect-metadata:Reflect.js",
     ],
 )
 
@@ -33,32 +33,16 @@ filegroup(
     srcs = [
         # We also declare the unminfied AngularJS files since these can be used for
         # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
-        "@ngdeps//node_modules/angular:angular.js",
-        "@ngdeps//node_modules/angular:angular.min.js",
-        "@ngdeps//node_modules/angular-1.5:angular.js",
-        "@ngdeps//node_modules/angular-1.5:angular.min.js",
-        "@ngdeps//node_modules/angular-1.6:angular.js",
-        "@ngdeps//node_modules/angular-1.6:angular.min.js",
-        "@ngdeps//node_modules/angular-mocks:angular-mocks.js",
-        "@ngdeps//node_modules/angular-mocks-1.5:angular-mocks.js",
-        "@ngdeps//node_modules/angular-mocks-1.6:angular-mocks.js",
+        "@npm//node_modules/angular:angular.js",
+        "@npm//node_modules/angular:angular.min.js",
+        "@npm//node_modules/angular-1.5:angular.js",
+        "@npm//node_modules/angular-1.5:angular.min.js",
+        "@npm//node_modules/angular-1.6:angular.js",
+        "@npm//node_modules/angular-1.6:angular.min.js",
+        "@npm//node_modules/angular-mocks:angular-mocks.js",
+        "@npm//node_modules/angular-mocks-1.5:angular-mocks.js",
+        "@npm//node_modules/angular-mocks-1.6:angular-mocks.js",
     ],
-)
-
-# A nodejs_binary for @angular/bazel/ngc-wrapped to use by default in
-# ng_module that depends on @npm//@angular/bazel instead of the
-# output of the //packages/bazel/src/ngc-wrapped ts_library rule. This
-# default is for downstream users that depend on the @angular/bazel npm
-# package. The generated @npm//@angular/bazel/ngc-wrapped target
-# does not work because it does not have the node `--expose-gc` flag
-# set which is required to support the call to `global.gc()`.
-nodejs_binary(
-    name = "@angular/bazel/ngc-wrapped",
-    configuration_env_vars = ["compile"],
-    data = ["@npm//@angular/bazel"],
-    entry_point = "@angular/bazel/src/ngc-wrapped/index.js",
-    install_source_map_support = False,
-    templated_args = ["--node_options=--expose-gc"],
 )
 
 # To run a karma_web_test target locally on SauceLabs:

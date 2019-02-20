@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "ng_module")
-load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
+load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
 
 package(default_visibility = ["//modules/playground:__subpackages__"])
 
@@ -14,7 +14,7 @@ ng_module(
         "//packages/core",
         "//packages/platform-webworker",
         "//packages/platform-webworker-dynamic",
-        "@ngdeps//@types/base64-js",
+        "@npm//@types/base64-js",
     ],
 )
 
@@ -24,20 +24,20 @@ ts_devserver(
     additional_root_paths = ["angular"],
     data = [
         "//modules/playground/src/web_workers:worker-config",
-        "@ngdeps//node_modules/base64-js:base64js.min.js",
-        "@ngdeps//node_modules/rxjs:bundles/rxjs.umd.js",
-        "@ngdeps//node_modules/tslib:tslib.js",
+        "@npm//node_modules/base64-js:base64js.min.js",
+        "@npm//node_modules/rxjs:bundles/rxjs.umd.js",
+        "@npm//node_modules/tslib:tslib.js",
         "loader.js",
     ] + glob(["**/*.css"]),
     entry_module = "angular/modules/playground/src/web_workers/images/index",
     index_html = "index.html",
     port = 4200,
-    scripts = ["@ngdeps//node_modules/tslib:tslib.js"],
+    scripts = ["@npm//node_modules/tslib:tslib.js"],
     static_files = [
-        "@ngdeps//node_modules/zone.js:dist/zone.js",
-        "@ngdeps//node_modules/materialize-css:dist/js/materialize.min.js",
-        "@ngdeps//node_modules/materialize-css:dist/css/materialize.min.css",
-        "@ngdeps//node_modules/jquery:dist/jquery.min.js",
+        "@npm//node_modules/zone.js:dist/zone.js",
+        "@npm//node_modules/materialize-css:dist/js/materialize.min.js",
+        "@npm//node_modules/materialize-css:dist/css/materialize.min.css",
+        "@npm//node_modules/jquery:dist/jquery.min.js",
         "//third_party/github.com/google/material-design-icons",
     ],
     deps = [":images"],

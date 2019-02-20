@@ -8,8 +8,8 @@ ts_library(
     ],
     deps = [
         "//packages/core/testing",
-        "@ngdeps//@types/jasmine",
-        "@ngdeps//@types/node",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
     ],
 )
 

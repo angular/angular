@@ -39,6 +39,9 @@
     "@angular-devkit/core" "7.3.2"
     rxjs "6.3.3"
 
+"@angular/bazel@file:./tools/npm/@angular_bazel":
+  version "0.0.0"
+
 "@angular/cli@^7.3.2":
   version "7.3.2"
   resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-7.3.2.tgz#2664bfa5b00259440066a5cf851c74f6099dd4f9"
@@ -105,17 +108,17 @@
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.9.0.tgz#fd60023acd36313d304cc2f8c2e181b88b5445cd"
   integrity sha512-E31cefDcdJsx/oii6p/gqKZXSVw0kEg1O73DD2McFcSvnf/p1GYWcQtVgdRQmlviBEytJkJgdX8rtThitRvcow==
 
-"@bazel/jasmine@0.26.0-beta.0":
-  version "0.26.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.26.0-beta.0.tgz#77243fea16dd7b31c60e0aa78bb89b7dcf0a9443"
-  integrity sha512-6dTuxGitXP6VcmgNwB9D9KqatDGX+Xw9GXDTJNnAT7wNDaakggiRg1ocLe8/xDMB+EXVg1qKOKS5NhZYHq3jVQ==
+"@bazel/jasmine@0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.26.0.tgz#f7aed169b057b5af547d2573657b394ecbda0b5d"
+  integrity sha512-lkvzPHdbSEe1zitnV1hIBwodriXqp/ClHSZQJ5Y486UaLQ6Sm7k7gV2phOwtg7LqLVZnElZDmFLSI0/O1UYYyQ==
   dependencies:
     jasmine "~3.3.1"
 
-"@bazel/karma@0.26.0-beta.0":
-  version "0.26.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.26.0-beta.0.tgz#0a83bac1adaa0cfec8e3fb4acb49d02e05b141ed"
-  integrity sha512-N2doztMGN6TMT3Gi4R4dfB7ypZI4tF3U1HG09lP7MVmr46czVNp/lwTnjyfJgbababYBfhiGgrXD9VOC9QqKnA==
+"@bazel/karma@0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.26.0.tgz#6ad796686f5775df33a96fa5ef3df76a66aed3b2"
+  integrity sha512-yZv0fgAjVrfrM0ld8e+wNaPIpYCpwBzVQi2GUErsKStUZXPUUofpBwBjlYsdY1Osn5/FmAF9e6xDkk1JWn/wSg==
   dependencies:
     jasmine-core "2.8.0"
     karma "^4.0.0"
@@ -129,10 +132,10 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/typescript@0.26.0-beta.0":
-  version "0.26.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.26.0-beta.0.tgz#aa025951563f47baca302c8ebcf24eb596724426"
-  integrity sha512-Ot7k3sfLQAdf14IDmsc6wSgfySctJdW6Uwg7YmD4Zv1sGWkjKaWEtQDFgjtf5kEgFpC0aeM5uK+heqz1CC+VcQ==
+"@bazel/typescript@0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.26.0.tgz#c06139d76c8b9d3a3ed98a721b776fedb4b11c82"
+  integrity sha512-dh/Y/SZzmeChsLap8FVHYl0FuaeLh/6t9WBVhm5nOgyVrqfEyVpNzy4W20E4NqnmJY2/PqmD5qncf+Oo1q9h1A==
   dependencies:
     jasmine-core "2.8.0"
     protobufjs "5.0.3"

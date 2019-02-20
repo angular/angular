@@ -16,11 +16,11 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/reflection",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/compiler-cli/src/ngtsc/transform",
-        "@ngdeps//@types/convert-source-map",
-        "@ngdeps//@types/mock-fs",
-        "@ngdeps//canonical-path",
-        "@ngdeps//magic-string",
-        "@ngdeps//typescript",
+        "@npm//@types/convert-source-map",
+        "@npm//@types/mock-fs",
+        "@npm//canonical-path",
+        "@npm//magic-string",
+        "@npm//typescript",
     ],
 )
 
@@ -30,7 +30,7 @@ jasmine_node_test(
     deps = [
         ":test_lib",
         "//tools/testing:node_no_angular",
-        "@ngdeps//canonical-path",
-        "@ngdeps//convert-source-map",
+        "@npm//canonical-path",
+        "@npm//convert-source-map",
     ],
 )

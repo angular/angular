@@ -1,8 +1,0 @@
-package(default_visibility = ["//visibility:public"])
-
-# Empty filegroup here so that @npm//@angular/bazel is a valid Bazel target
-# for the @angular//:@angular/bazel/ngc-wrapped target
-filegroup(
-    name = "bazel",
-    srcs = [],
-)

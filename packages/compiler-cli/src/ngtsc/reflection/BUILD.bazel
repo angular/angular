@@ -7,5 +7,5 @@ ts_library(
     srcs = ["index.ts"] + glob([
         "src/**/*.ts",
     ]),
-    deps = ["@ngdeps//typescript"],
+    deps = ["@npm//typescript"],
 )

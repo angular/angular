@@ -57,8 +57,8 @@ export default function(options: BazelWorkspaceOptions): Rule {
     }
 
     const workspaceVersions = {
-      'RULES_NODEJS_VERSION': '0.18.6',
-      'RULES_NODEJS_SHA256': '1416d03823fed624b49a0abbd9979f7c63bbedfd37890ddecedd2fe25cccebc6',
+      'RULES_NODEJS_VERSION': '0.26.0',
+      'RULES_NODEJS_SHA256': '5c86b055c57e15bf32d9009a15bcd6d8e190c41b1ff2fb18037b75e0012e4e7c',
       'RULES_SASS_VERSION': '1.17.2',
       'RULES_SASS_SHA256': 'e5316ee8a09d1cbb732d3938b400836bf94dba91a27476e9e27706c4c0edae1f',
     };

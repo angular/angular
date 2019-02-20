@@ -11,7 +11,7 @@ ng_module(
     flat_module_out_file = "flat_module_filename",
     module_name = "some_npm_module",
     ng_xi18n = "//packages/bazel/src/ngc-wrapped:xi18n",
-    node_modules = "@ngdeps//typescript:typescript__typings",
+    node_modules = "@npm//typescript:typescript__typings",
     tags = [
         # Disabled as this test is specific to the flat module indexing of metadata.json files that
         # the old ngc compiler does. Ivy has no metadata.json files so this test does not apply.
@@ -19,7 +19,7 @@ ng_module(
     ],
     deps = [
         "//packages/core",
-        "@ngdeps//@types",
+        "@npm//@types",
     ],
 )
 

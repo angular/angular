@@ -9,6 +9,6 @@ ts_library(
     ]),
     deps = [
         "//packages/compiler",
-        "@ngdeps//typescript",
+        "@npm//typescript",
     ],
 )

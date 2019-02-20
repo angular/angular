@@ -18,7 +18,7 @@ ts_library(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/testing",
         "//packages/private/testing",
-        "@ngdeps//zone.js",
+        "@npm//zone.js",
     ],
 )
 
@@ -28,8 +28,8 @@ jasmine_node_test(
     deps = [
         ":acceptance_lib",
         "//tools/testing:node",
-        "@ngdeps//base64-js",
-        "@ngdeps//source-map",
-        "@ngdeps//zone.js",
+        "@npm//base64-js",
+        "@npm//source-map",
+        "@npm//zone.js",
     ],
 )
