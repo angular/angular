@@ -29,5 +29,7 @@ import {Directive} from '@angular/core';
   selector: 'form:not([ngNoForm]):not([ngNativeValidate])',
   host: {'novalidate': ''},
 })
-export class NgNoValidate {
+export class ɵNgNoValidate {
 }
+
+export {ɵNgNoValidate as NgNoValidate};

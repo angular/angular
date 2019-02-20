@@ -32,7 +32,7 @@ export {NgForm} from './directives/ng_form';
 export {NgFormSelectorWarning} from './directives/ng_form_selector_warning';
 export {NgModel} from './directives/ng_model';
 export {NgModelGroup} from './directives/ng_model_group';
-export {NgNoValidate as ɵNgNoValidate} from './directives/ng_no_validate_directive';
+export {ɵNgNoValidate} from './directives/ng_no_validate_directive';
 export {NumberValueAccessor} from './directives/number_value_accessor';
 export {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
 export {RangeValueAccessor} from './directives/range_value_accessor';
