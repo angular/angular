@@ -48,7 +48,7 @@ node_repositories(
     node_version = "10.9.0",
     package_json = ["//:package.json"],
     preserve_symlinks = True,
-    yarn_version = "1.12.1",
+    vendored_yarn = "@angular//third_party/github.com/yarnpkg/yarn/releases/download:v1.13.0",
 )
 
 # Setup the angular toolchain which installs npm dependencies into @ngdeps
