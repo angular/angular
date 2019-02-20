@@ -862,6 +862,13 @@
             "rev": true,
             "title": "StrongBrew",
             "url": "https://strongbrew.io/"
+          },
+          "angular.de": {
+            "desc": "Onsite Angular Training delivered by the greatest community in the german speaking area in Germany, Austria and Switzerland. We also regularly post articles and tutorials on our blog.",
+            "logo": "https://angular.de/assets/img/angular-de-logo.svg",
+            "rev": true,
+            "title": "Angular.de (German)",
+            "url": "https://angular.de/"
           }
         }
       }
