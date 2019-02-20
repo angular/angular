@@ -55,7 +55,7 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
   private _destroyed = false;
 
   /** The portal outlet inside of this container into which the snack bar content will be loaded. */
-  @ViewChild(CdkPortalOutlet) _portalOutlet: CdkPortalOutlet;
+  @ViewChild(CdkPortalOutlet, {static: true}) _portalOutlet: CdkPortalOutlet;
 
   /** Subject for notifying that the snack bar has exited from view. */
   readonly _onExit: Subject<any> = new Subject();
