@@ -233,238 +233,6 @@ window.testBlocklist = {
     "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
-  "CdkTable in a typical simple use case should initialize with a connected data source": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with a rendered header with the right number of header cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with rendered rows with right number of row cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with column class names provided to header and data row cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should initialize with the right accessibility roles": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should disconnect the data source when table is destroyed": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should re-render the rows when the data changes": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should clear the `mostRecentCellOutlet` on destroy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should correctly use the differ to add/remove/move rows when the data is heterogeneous": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should correctly use the differ to add/remove/move rows when the data contains multiple occurrences of the same object instance": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should clear the row view containers on destroy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should match the right table content with dynamic data": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable in a typical simple use case should be able to dynamically change the columns for header and rows": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should render no rows when the data is null": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to render multiple header and footer rows": {
-    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Attempting to access content children before view is initialized"
-  },
-  "CdkTable should be able to render and change multiple header and footer rows": {
-    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Attempting to access content children before view is initialized"
-  },
-  "CdkTable with different data inputs other than data source should render with data array input": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with different data inputs other than data source should render with data stream input": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with different data inputs other than data source should throw an error if the data source is not valid": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable missing row defs should be able to render without a header row def": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable missing row defs should be able to render without a data row def": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable missing row defs should be able to render without a footer row def": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should render correctly when using native HTML tags": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable should render cells even if row data is falsy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to apply class-friendly css class names for the column cells": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should not clobber an existing table role": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should throw an error if two column definitions have the same name": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should throw an error if a column definition is requested but not defined": {
-    "error": "Error: Expected function to throw an exception with message 'Could not find column with id \"column_a\".', but it threw an exception with message 'Cannot read property 'viewContainer' of undefined'.",
-    "notes": "Unknown"
-  },
-  "CdkTable should throw an error if the row definitions are missing": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should not throw an error if columns are undefined on initialization": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to dynamically add/remove column definitions": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to register column, row, and header row definitions outside content": {
-    "error": "TypeError: Cannot read property 'addColumnDef' of undefined",
-    "notes": "Unknown"
-  },
-  "CdkTable using when predicate should be able to display different row templates based on the row data": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate should error if there is row data that does not have a matching row template": {
-    "error": "Error: Expected function to throw an Error.",
-    "notes": "Unknown"
-  },
-  "CdkTable using when predicate should fail when multiple rows match data without multiTemplateDataRows": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate with multiTemplateDataRows should be able to render multiple rows per data object": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate with multiTemplateDataRows should have the correct data and row indicies": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable using when predicate with multiTemplateDataRows should have the correct data and row indicies when data contains multiple instances of the same object instance": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick headers": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick footers": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick left columns": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick right columns": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should reverse directions for sticky columns in rtl": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on \"display: flex\" table style should stick and unstick combination of sticky header, footer, and columns": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick headers": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick footers": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick tfoot when all rows are stuck": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick left columns": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick right columns": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with sticky positioning on native table layout should stick and unstick combination of sticky header, footer, and columns": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
-  },
-  "CdkTable with trackBy should add/remove/move rows with reference-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should add/remove/move rows with changed references without property-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should add/remove/move rows with changed references with property-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should add/remove/move rows with changed references with index-based trackBy": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable with trackBy should change row implicit data even when trackBy finds no changes": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should match the right table content with dynamic data source": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to apply classes to rows based on their context": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "CdkTable should be able to apply classes to cells based on their row context": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
   "CdkAccordion should not register nested items to the same accordion": {
     "error": "TypeError: Cannot read property 'accordion' of undefined",
     "notes": "Unknown"
@@ -531,6 +299,58 @@ window.testBlocklist = {
   },
   "CdkDrag in a drop container should be able to customize the placeholder": {
     "error": "Error: Expected cdk-drag cdk-drag-placeholder to contain 'custom-placeholder'.",
+    "notes": "Unknown"
+  },
+  "CdkTable should be able to render multiple header and footer rows": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Attempting to access content children before view is initialized"
+  },
+  "CdkTable should be able to render and change multiple header and footer rows": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Attempting to access content children before view is initialized"
+  },
+  "CdkTable should render correctly when using native HTML tags": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Unknown"
+  },
+  "CdkTable should be able to register column, row, and header row definitions outside content": {
+    "error": "TypeError: Cannot read property 'addColumnDef' of undefined",
+    "notes": "Unknown"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick headers": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Unknown"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick footers": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Unknown"
+  },
+  "CdkTable with sticky positioning on native table layout should stick tfoot when all rows are stuck": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Unknown"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick left columns": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Unknown"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick right columns": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Unknown"
+  },
+  "CdkTable with sticky positioning on native table layout should stick and unstick combination of sticky header, footer, and columns": {
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Unknown"
+  },
+  "CdkTable with trackBy should change row implicit data even when trackBy finds no changes": {
+    "error": "Error: Expected 'a_1 b_1' to be 'a_2 b_2'.",
+    "notes": "Unknown"
+  },
+  "CdkTable should be able to apply classes to rows based on their context": {
+    "error": "Error: Expected false to be true.",
+    "notes": "Unknown"
+  },
+  "CdkTable should be able to apply classes to cells based on their row context": {
+    "error": "Error: Expected false to be true.",
     "notes": "Unknown"
   },
   "CdkTree flat tree should initialize should be able to use units different from px for the indentation": {
@@ -761,6 +581,10 @@ window.testBlocklist = {
     "error": "Error: Expected mat-slide-toggle-thumb-container to contain 'mat-dragging'.",
     "notes": "Unknown"
   },
+  "MatSort should use the column definition if used within an mat table": {
+    "error": "TypeError: Cannot read property 'diff' of undefined",
+    "notes": "Unknown"
+  },
   "MatDrawer methods should be able to open": {
     "error": "Error: Expected 0 to be 1.",
     "notes": "Unknown"
@@ -782,7 +606,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer methods should restore focus on close if focus is inside drawer": {
-    "error": "Error: Expected <button class=\"ng-tns-c21113-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <button class=\"ng-tns-c24047-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer attributes should bind 2-way bind on opened property": {
@@ -790,15 +614,15 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"over\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21408-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c24342-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"push\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c21442-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c24376-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should focus the drawer if there are no focusable elements": {
-    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c21510-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c24444-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawerContainer should animate the content when a drawer is added at a later point": {
@@ -830,19 +654,11 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c21960-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
+    "error": "Error: Expected ng-tns-c24894-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "Unknown"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
     "error": "Error: Expected '' to be '20px'.",
-    "notes": "Unknown"
-  },
-  "MatSort should use the column definition if used within a cdk table": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
-  "MatSort should use the column definition if used within an mat table": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "Unknown"
   },
   "MatTree flat tree should initialize with rendered dataNodes": {
@@ -877,8 +693,8 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'click' of undefined",
     "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
-  "MatAccordion should not register nested panels to the same accordion": {
-    "error": "TypeError: Cannot read property 'accordion' of undefined",
+  "MatGridList should throw error if rowHeight ratio is invalid": {
+    "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
     "notes": "Unknown"
   },
   "MatExpansionPanel should toggle the panel when pressing SPACE on the header": {
@@ -891,6 +707,10 @@ window.testBlocklist = {
   },
   "MatExpansionPanel should not toggle if a modifier key is pressed": {
     "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
+    "notes": "Unknown"
+  },
+  "MatAccordion should not register nested panels to the same accordion": {
+    "error": "TypeError: Cannot read property 'accordion' of undefined",
     "notes": "Unknown"
   },
   "MatInput without forms validates the type": {
@@ -910,11 +730,11 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatTabGroup basic behavior should support two-way binding for selectedIndex": {
-    "error": "TypeError: ctx_r16149._handleClick is not a function",
+    "error": "TypeError: ctx_r16151._handleClick is not a function",
     "notes": "Unknown"
   },
   "MatTabGroup basic behavior should fire animation done event": {
-    "error": "TypeError: ctx_r16545._handleClick is not a function",
+    "error": "TypeError: ctx_r16547._handleClick is not a function",
     "notes": "Unknown"
   },
   "MatTabGroup basic behavior should emit focusChange event on click": {
@@ -926,11 +746,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatTabGroup lazy loaded tabs should lazy load the second tab": {
-    "error": "TypeError: ctx_r17469._handleClick is not a function",
-    "notes": "Unknown"
-  },
-  "MatGridList should throw error if rowHeight ratio is invalid": {
-    "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
+    "error": "TypeError: ctx_r17471._handleClick is not a function",
     "notes": "Unknown"
   },
   "Dialog should set the proper animation states": {
@@ -956,6 +772,10 @@ window.testBlocklist = {
   "MatAutocomplete aria should set aria-owns based on the attached autocomplete": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
+  },
+  "MatBottomSheet should position the bottom sheet at the bottom center of the screen": {
+    "error": "Error: Expected 511 to be 512.",
+    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule standard datepicker should open datepicker if opened input is set to true": {
     "error": "Error: Expected null not to be null.",
@@ -1227,75 +1047,75 @@ window.testBlocklist = {
   },
   "MatTable with basic data source should be able to create a table with the right content and without when row": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with basic data source should create a table with special when row": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "TypeError: Cannot read property 'diff' of undefined",
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with basic data source should create a table with multiTemplateDataRows true": {
-    "error": "TypeError: Cannot read property 'viewContainer' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "error": "TypeError: Cannot read property 'diff' of undefined",
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable should be able to render a table correctly with native elements": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Unknown"
   },
   "MatTable should render with MatTableDataSource and sort": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable should render with MatTableDataSource and pagination": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable should apply custom sticky CSS class to sticky cells": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-856: Attempting to access content children before view is initialized"
+    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
+    "notes": "Unknown"
   },
   "MatTable should not throw when a row definition is on an ng-container": {
     "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'diff' of undefined.",
-    "notes": "Unknown"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should create table and display data source contents": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter changing data should update the table contents": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should be able to filter the table contents": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should not match concatenated words": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should be able to sort the table contents": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should by default correctly sort an empty string": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should by default correctly sort undefined values": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should sort zero correctly": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should be able to page the table contents": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should sort strings with numbers larger than MAX_SAFE_INTEGER correctly": {
     "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1019: Design new API to replace static queries"
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   }
 };
 // clang-format on
