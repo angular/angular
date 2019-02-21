@@ -728,7 +728,7 @@ const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any
 
       const baseDef = constructor.ngBaseDef;
       const defProp = getProp(baseDef);
-      defProp[name] = args[0];
+      defProp[name] = args[0] || name;
     };
 
 /**
