@@ -11,6 +11,7 @@ import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, copy
 import {AnimationDriver} from '../animation_driver';
 import {CssKeyframesDriver} from '../css_keyframes/css_keyframes_driver';
 import {containsElement, invokeQuery, isBrowser, matchesElement, validateStyleProperty} from '../shared';
+import {packageSpecialStyles} from '../special_cased_styles';
 
 import {WebAnimationsPlayer} from './web_animations_player';
 
@@ -66,7 +67,8 @@ export class WebAnimationsDriver implements AnimationDriver {
 
     keyframes = keyframes.map(styles => copyStyles(styles, false));
     keyframes = balancePreviousStylesIntoKeyframes(element, keyframes, previousStyles);
-    return new WebAnimationsPlayer(element, keyframes, playerOptions);
+    const specialStyles = packageSpecialStyles(element, keyframes);
+    return new WebAnimationsPlayer(element, keyframes, playerOptions, specialStyles);
   }
 }
 

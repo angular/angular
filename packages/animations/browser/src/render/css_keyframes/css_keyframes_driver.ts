@@ -10,6 +10,7 @@ import {AnimationPlayer, ɵStyleData} from '@angular/animations';
 import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, computeStyle} from '../../util';
 import {AnimationDriver} from '../animation_driver';
 import {containsElement, hypenatePropsObject, invokeQuery, matchesElement, validateStyleProperty} from '../shared';
+import {packageSpecialStyles} from '../special_cased_styles';
 
 import {CssKeyframesPlayer} from './css_keyframes_player';
 import {DirectStylePlayer} from './direct_style_player';
@@ -105,8 +106,9 @@ export class CssKeyframesDriver implements AnimationDriver {
     const kfElm = this.buildKeyframeElement(element, animationName, keyframes);
     document.querySelector('head') !.appendChild(kfElm);
 
+    const specialStyles = packageSpecialStyles(element, keyframes);
     const player = new CssKeyframesPlayer(
-        element, keyframes, animationName, duration, delay, easing, finalStyles);
+        element, keyframes, animationName, duration, delay, easing, finalStyles, specialStyles);
 
     player.onDestroy(() => removeElement(kfElm));
     return player;
