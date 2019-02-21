@@ -31,11 +31,13 @@ var_3: &cache_key v2-angular-node-10.12-{{ checksum "yarn.lock" }}-{{ checksum "
 # Initializes the CI environment by setting up common environment variables.
 var_4: &init_environment
   run:
-    name: Initializing environment (setting up variables, removing Yarn)
-    # Remove the yarn installed in the docker container; we want our own version
+    name: Initializing environment (setting up variables, overwriting Yarn)
+    # Overwrite the yarn installed in the docker container with our own version.
     command: |
-      sudo rm /usr/local/bin/yarn
-      source ./.circleci/env.sh
+      ./.circleci/env.sh
+      ourYarn=$(realpath ./third_party/github.com/yarnpkg/yarn/releases/download/v1.13.0/bin/yarn.js)
+      sudo chmod a+x $ourYarn
+      sudo ln -fs $ourYarn /usr/local/bin/yarn
       echo "Yarn version: $(yarn --version)"
 
 var_5: &setup_bazel_remote_execution
@@ -107,8 +109,6 @@ jobs:
       - run: 'yarn bazel:lint ||
               (echo -e "\n.bzl files have lint errors. Please run ''yarn bazel:lint-fix''"; exit 1)'
 
-      # Use `yarn gulp ...` (instead of `node_modules/.bin/gulp ...`) to ensure that yarn
-      # (which is an exported bash function) will be available to processes spawned by gulp.
       - run: yarn gulp lint
 
   test:
