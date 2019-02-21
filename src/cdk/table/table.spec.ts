@@ -2137,7 +2137,7 @@ class WrapperCdkTableApp<T> implements AfterContentInit {
   @ContentChild(CdkHeaderRowDef) headerRowDef: CdkHeaderRowDef;
   @ContentChildren(CdkRowDef) rowDefs: QueryList<CdkRowDef<T>>;
 
-  @ViewChild(CdkTable) table: CdkTable<T>;
+  @ViewChild(CdkTable, {static: true}) table: CdkTable<T>;
 
   @Input() columns: string[];
   @Input() dataSource: DataSource<T>;
