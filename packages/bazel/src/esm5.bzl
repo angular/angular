@@ -12,8 +12,10 @@ However we need to publish this flavor on NPM, so it's necessary to be able
 to produce it.
 """
 
+# BEGIN-INTERNAL
 load(":external.bzl", "DEFAULT_NG_COMPILER")
 
+# END-INTERNAL
 # The provider downstream rules use to access the outputs
 ESM5Info = provider(
     doc = "Typescript compilation outputs in ES5 syntax with ES Modules",

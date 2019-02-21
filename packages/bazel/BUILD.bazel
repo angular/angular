@@ -19,11 +19,11 @@ npm_package(
         "//packages/bazel/docs",
     ],
     replacements = {
-        "(#|\/\/)\\s+BEGIN-DEV-ONLY[\\w\W]+?(#|\/\/)\\s+END-DEV-ONLY": "",
         "//packages/bazel/": "//",
         "@ngdeps//": "@npm//",
         "@angular//:@angular/bazel/ngc-wrapped": "@npm//@angular/bazel/bin:ngc-wrapped",
         "angular/packages/bazel/": "npm_angular_bazel/",
+        "DEFAULT_NG_COMPILER": "\"@npm//@angular/bazel/bin:ngc-wrapped\"",
     },
     tags = ["release-with-framework"],
     # Do not add more to this list.

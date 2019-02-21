@@ -2,7 +2,7 @@ package(default_visibility = ["//packages/bazel:__subpackages__"])
 
 filegroup(
     name = "package_assets",
-    srcs = glob(["*"]),
+    srcs = glob(["*"], exclude = ["external.bzl"]),
 )
 
 # For generating skydoc

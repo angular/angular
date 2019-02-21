@@ -2,7 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
-# BEGIN-DEV-ONLY
+# BEGIN-INTERNAL
 load("@npm_bazel_typescript//:defs.bzl", "ts_library")
 
 ts_library(
@@ -16,7 +16,7 @@ ts_library(
     ],
 )
 
-# END-DEV-ONLY
+# END-INTERNAL
 nodejs_binary(
     name = "packager",
     data = [
