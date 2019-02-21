@@ -7,15 +7,6 @@ load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_pac
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver", "ts_library")
 <% if (sass) { %>load("@io_bazel_rules_sass//:defs.bzl", "multi_sass_binary")
 
-filegroup(
-    name = "rxjs_umd_modules",
-    srcs = [
-        # do not sort
-        "@npm//node_modules/rxjs:bundles/rxjs.umd.js",
-        ":rxjs_shims.js",
-    ],
-)
-
 multi_sass_binary(
     name = "styles",
     srcs = glob(["**/*.scss"]),
@@ -71,6 +62,15 @@ history_server(
     name = "prodserver",
     data = [":prodapp"],
     templated_args = ["src/prodapp"],
+)
+
+filegroup(
+    name = "rxjs_umd_modules",
+    srcs = [
+        # do not sort
+        "@npm//node_modules/rxjs:bundles/rxjs.umd.js",
+        ":rxjs_shims.js",
+    ],
 )
 
 ts_devserver(
