@@ -127,8 +127,6 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
           }
         }
       }
-
-      break;
     } else {
       // Even if we don't have a definition, check the type for the hooks and use those if need be
       const superPrototype = superType.prototype;
