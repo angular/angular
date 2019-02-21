@@ -9,11 +9,11 @@ import {animate, query, state, style, transition, trigger} from '@angular/animat
 import {AnimationDriver, ɵAnimationEngine, ɵWebAnimationsDriver, ɵWebAnimationsPlayer, ɵsupportsWebAnimations} from '@angular/animations/browser';
 import {TransitionAnimationPlayer} from '@angular/animations/browser/src/render/transition_animation_engine';
 import {AnimationGroupPlayer} from '@angular/animations/src/players/animation_group_player';
-import {Component} from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-import {fixmeIvy} from '@angular/private/testing';
+import {ivyEnabled} from '@angular/private/testing';
 
 (function() {
   // these tests are only mean't to be run within the DOM (for now)
@@ -245,8 +245,8 @@ import {fixmeIvy} from '@angular/private/testing';
     it('should treat * styles as ! for queried items that are collected in a container that is being removed',
        () => {
          @Component({
-            selector: 'my-app',
-            styles: [`
+          selector: 'my-app',
+          styles: [`
               .list .outer {
                 overflow:hidden;
               }
@@ -254,7 +254,7 @@ import {fixmeIvy} from '@angular/private/testing';
                 line-height:50px;
               }
             `],
-            template: `
+          template: `
               <button (click)="empty()">Empty</button>
               <button (click)="middle()">Middle</button>
               <button (click)="full()">Full</button>
@@ -267,22 +267,22 @@ import {fixmeIvy} from '@angular/private/testing';
                 </div>
               </div>
             `,
-            animations: [
-              trigger('list', [
-                transition(':enter', []),
-                transition('* => empty', [
-                  query(':leave', [
-                    animate(500, style({ height: '0px' }))
-                  ])
-                ]),
-                transition('* => full', [
-                  query(':enter', [
-                    style({ height: '0px' }),
-                    animate(500, style({ height: '*' }))
-                  ])
-                ]),
-              ])
-            ]
+          animations: [
+            trigger('list', [
+              transition(':enter', []),
+              transition('* => empty', [
+                query(':leave', [
+                  animate(500, style({height: '0px'}))
+                ])
+              ]),
+              transition('* => full', [
+                query(':enter', [
+                  style({height: '0px'}),
+                  animate(500, style({height: '*'}))
+                ])
+              ]),
+            ])
+          ]
         })
         class Cmp {
            items: any[] = [];
@@ -454,6 +454,62 @@ import {fixmeIvy} from '@angular/private/testing';
            expect(approximate(parseFloat(p.keyframes[0]['height'] as string), 500))
                .toBeLessThan(0.05);
          }
+       });
+
+    it('should apply the `display` and `position` styles as regular inline styles for the duration of the animation',
+       () => {
+         @Component({
+           selector: 'ani-cmp',
+           template: `
+          <div #elm [@myAnimation]="myAnimationExp" style="display:table; position:fixed"></div>
+        `,
+           animations: [
+             trigger(
+                 'myAnimation',
+                 [
+                   state('go', style({display: 'inline-block'})),
+                   transition(
+                       '* => go',
+                       [
+                         style({display: 'inline', position: 'absolute', opacity: 0}),
+                         animate('1s', style({display: 'inline', opacity: 1, position: 'static'})),
+                         animate('1s', style({display: 'flexbox', opacity: 0})),
+                       ])
+                 ]),
+           ]
+         })
+         class Cmp {
+           @ViewChild('elm') public element: any;
+
+           public myAnimationExp = '';
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp]});
+
+         const engine = TestBed.get(ɵAnimationEngine);
+         const fixture = TestBed.createComponent(Cmp);
+         const cmp = fixture.componentInstance;
+
+         // In Ivy, change detection needs to run before the ViewQuery for cmp.element will resolve.
+         // Keeping this test enabled since we still want to test the animation logic in Ivy.
+         if (ivyEnabled) fixture.detectChanges();
+
+         const elm = cmp.element.nativeElement;
+         expect(elm.style.getPropertyValue('display')).toEqual('table');
+         expect(elm.style.getPropertyValue('position')).toEqual('fixed');
+
+         cmp.myAnimationExp = 'go';
+         fixture.detectChanges();
+
+         expect(elm.style.getPropertyValue('display')).toEqual('inline');
+         expect(elm.style.getPropertyValue('position')).toEqual('absolute');
+
+         const player = engine.players.pop();
+         player.finish();
+         player.destroy();
+
+         expect(elm.style.getPropertyValue('display')).toEqual('inline-block');
+         expect(elm.style.getPropertyValue('position')).toEqual('fixed');
        });
   });
 })();
