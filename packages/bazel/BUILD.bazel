@@ -14,7 +14,6 @@ npm_package(
         exclude = ["yarn.lock"],
     ) + [
         "//packages/bazel/src:package_assets",
-        "//packages/bazel/src/api-extractor:package_assets",
         "//packages/bazel/src/builders:package_assets",
         "//packages/bazel/src/ng_package:package_assets",
         "//packages/bazel/src/ngc-wrapped:package_assets",
@@ -38,7 +37,6 @@ npm_package(
     visibility = ["//visibility:private"],
     deps = [
         ":copy_browser_repositories",
-        "//packages/bazel/src/api-extractor:lib",
         "//packages/bazel/src/builders",
         "//packages/bazel/src/ng_package:lib",
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
