@@ -3626,41 +3626,77 @@ Use them, alone or in combination, to stay focused on the testing the primary co
 
 {@a stub-component}
 
+<!--
 ##### Stubbing unneeded components
+-->
+##### 필요없는 컴포넌트 목으로 대체하기
 
+<!--
 In the first technique, you create and declare stub versions of the components
 and directive that play little or no role in the tests.
+-->
+첫번째 방법은 테스트에 영향을 주지 않는 컴포넌트와 디렉티브를 목으로 만들어서 원래 컴포넌트나 디렉티브를 대체하는 방법입니다.
 
+<!--
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="component-stubs"
   header="app/app.component.spec.ts (stub declaration)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/app.component.spec.ts"
+  region="component-stubs"
+  header="app/app.component.spec.ts (목 클래스 선언)" linenums="false">
+</code-example>
 
+<!--
 The stub selectors match the selectors for the corresponding real components.
 But their templates and classes are empty.
 
 Then declare them in the `TestBed` configuration next to the
 components, directives, and pipes that need to be real.
+-->
+이 때 목 컴포넌트의 셀렉터는 실제 컴포넌트의 셀렉터와 같지만, 템플릿과 클래스는 비어있습니다.
 
+그리고 이 컴포넌트들을 `TestBed` 환경 설정에 등록해서 실제로 사용하는 컴포넌트를 대체합니다.
+디렉티브와 파이프도 모두 같은 방식으로 대체합니다.
+
+<!--
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="testbed-stubs"
   header="app/app.component.spec.ts (TestBed stubs)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/app.component.spec.ts"
+  region="testbed-stubs"
+  header="app/app.component.spec.ts (TestBed 설정)" linenums="false">
+</code-example>
 
+<!--
 The `AppComponent` is the test subject, so of course you declare the real version.
 
 The `RouterLinkDirectiveStub`, [described later](#routerlink), is a test version
 of the real `RouterLink` that helps with the link tests.
 
 The rest are stubs.
+-->
+물론 `AppComponent`는 테스트해야 하는 대상이기 때문에 이 컴포넌트는 실제 컴포넌트를 등록해야 합니다.
+
+이 코드에 사용된 `RouterLinkDirectiveStub`는 링크에 사용된 `RouterLink`를 대체하는 클래스입니다. 이 클래스는 [아래](#routerlink)에서 자세하게 다룹니다.
+
+이제 `AppComponent`를 제외한 모든 컴포넌트와 디렉티브는 목 클래스로 대체되었습니다.
 
 {@a no-errors-schema}
 
 #### _NO_ERRORS_SCHEMA_
 
+<!--
 In the second approach, add `NO_ERRORS_SCHEMA` to the `TestBed.schemas` metadata.
+-->
+또 다른 방법은 `TestBed.schemas` 메타데이터에 `NO_ERRORS_SCHEMA`를 추가하는 것입니다.
 
 <code-example
   path="testing/src/app/app.component.spec.ts"
@@ -3668,6 +3704,7 @@ In the second approach, add `NO_ERRORS_SCHEMA` to the `TestBed.schemas` metadata
   header="app/app.component.spec.ts (NO_ERRORS_SCHEMA)" linenums="false">
 </code-example>
 
+<!--
 The `NO_ERRORS_SCHEMA` tells the Angular compiler to ignore unrecognized elements and attributes.
 
 The compiler will recognize the `<app-root>` element and the `routerLink` attribute
@@ -3678,9 +3715,23 @@ But the compiler won't throw an error when it encounters `<app-banner>`, `<app-w
 It simply renders them as empty tags and the browser ignores them.
 
 You no longer need the stub components.
+-->
+`NO_ERRORS_SCHEMA`를 사용하면 확인되지 않은 엘리먼트와 어트리뷰트가 있더라도 Angular 컴파일러가 이것을 에러로 처리하지 않습니다.
 
+템플릿에 사용된 `<app-root>` 엘리먼트에는 `AppComponent`가 매칭되어야 하며, `routerLink` 어트리뷰트에는 `RouterLinkDirectiveStub`가 매칭됩니다.
+이것은 모두 `TestBed`에 `AppComponent`와 `RouterLinkDirectiveStub`를 등록했기 때문입니다.
+
+그리고 이제는 `NO_ERRORS_SCHEMA`를 사용했기 때문에 Angular 컴파일러가 `<app-banner>`와 `<app-welcome>`, `<router-outlet>` 엘리먼트를 처리하더라도 에러가 발생하지 않습니다.
+이 엘리먼트들은 모두 빈 태그로 대체되며 아무 역할도 하지 않습니다.
+
+이제는 목 컴포넌트들을 신경쓰지 않아도 됩니다.
+
+<!--
 #### Use both techniques together
+-->
+#### 두 가지 방법 함께 사용하기
 
+<!--
 These are techniques for _Shallow Component Testing_ ,
 so-named because they reduce the visual surface of the component to just those elements
 in the component's template that matter for tests.
@@ -3698,16 +3749,41 @@ need to interact with them in some way.
 
 In practice you will combine the two techniques in the same setup,
 as seen in this example.
+-->
+위에서 설명한 두 테크닉은 모두 테스트하려는 컴포넌트 외의 구성요소를 모두 다른 것으로 대체해서 테스트 코드를 간단하게 만드는 테크닉입니다.
+그래서 이런 테스트 방식을 _얕은 컴포넌트 테스트(Shallow Component Testing)_ 라고 합니다.
 
+두 방법 중에서는 `NO_ERRORS_SCHEMA`를 사용하는 방법이 좀 더 간단하지만, 이 방법을 남용하면 안됩니다.
+
+`NO_ERRORS_SCHEMA`를 사용하면 Angular 컴포넌트가 검사해야 하는 많은 과정을 생략합니다.
+그리고 의도하지 않은 오타가 있어서 컴포넌트나 어트리뷰트가 누락되더라도 에러로 처리하지 않습니다.
+이런 문제가 발생하면 버그를 해결하기 위해 꽤 많은 시간을 들여야 할 수도 있습니다.
+
+그리고 _컴포넌트를 목으로 대체_ 할 때 좋은 점이 하나 더 있습니다.
+이 예제에서 다룬 목 클래스들의 템플릿과 클래스 코드는 모두 비어있지만, 테스트하는 컴포넌트가 자식 컴포넌트와 상호작용해야 하는 부분이 있으면 필요한 내용을 추가로 구현해서 처리할 수 있습니다.
+
+실제로 테스트 스펙을 작성하다보면 다음과 같이 두 가지 방식을 모두 사용하는 경우가 많습니다.
+
+<!--
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="mixed-setup"
   header="app/app.component.spec.ts (mixed setup)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/app.component.spec.ts"
+  region="mixed-setup"
+  header="app/app.component.spec.ts (두가지 방식을 모두 적용한 환경 설정)" linenums="false">
+</code-example>
 
+<!--
 The Angular compiler creates the `BannerComponentStub` for the `<app-banner>` element
 and applies the `RouterLinkStubDirective` to the anchors with the `routerLink` attribute,
 but it ignores the `<app-welcome>` and `<router-outlet>` tags.
+-->
+테스트 환경을 이렇게 구성하면 `<app-banner>` 엘리먼트에는 `BannerComponentStub`이 사용되며 `routerLink` 어트리뷰트가 사용된 앵커에는 `RouterLinkStubDirective`가 사용됩니다.
+`<app-welcome>`과 `<router-outlet>` 태그는 무시됩니다.
 
 <hr>
 
