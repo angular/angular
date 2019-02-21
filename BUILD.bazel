@@ -69,6 +69,8 @@ nodejs_binary(
 #          "sauce-connect": "https://saucelabs.com/downloads/sc-4.5.3-linux.tar.gz".
 #          On OSX or Windows you'll need to use the appropriate sauce-connect binary.
 # 3) run target with `yarn bazel test --config=saucelabs <target>`
+#    NOTE: --config=saucelabs is required as it makes the SAUCE_XXX environment variables available to
+#          the action. See /.bazelrc.
 karma_web_test(
     name = "test_web_all",
     tags = [
