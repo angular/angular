@@ -273,10 +273,6 @@ window.testBlocklist = {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
     "notes": "Unknown"
   },
-  "CdkTable should be able to register column, row, and header row definitions outside content": {
-    "error": "TypeError: Cannot read property 'addColumnDef' of undefined",
-    "notes": "Unknown"
-  },
   "CdkTable with sticky positioning on native table layout should stick and unstick headers": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
     "notes": "Unknown"
@@ -533,16 +529,8 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
-  "MatSlideToggle without forms custom action configuration should not change value on click when click action is noop": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
   "MatSlideToggle without forms custom action configuration should not change value on dragging when drag action is noop": {
     "error": "Error: Expected mat-slide-toggle-thumb-container to contain 'mat-dragging'.",
-    "notes": "Unknown"
-  },
-  "MatSort should use the column definition if used within an mat table": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
     "notes": "Unknown"
   },
   "MatDrawer methods should be able to open": {
@@ -566,7 +554,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer methods should restore focus on close if focus is inside drawer": {
-    "error": "Error: Expected <button class=\"ng-tns-c24047-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <button class=\"ng-tns-c22565-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer attributes should bind 2-way bind on opened property": {
@@ -574,15 +562,15 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"over\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c24342-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c22860-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should trap focus when opened in \"push\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c24376-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c22894-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawer focus trapping behavior should focus the drawer if there are no focusable elements": {
-    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c24444-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
+    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c22962-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
     "notes": "Unknown"
   },
   "MatDrawerContainer should animate the content when a drawer is added at a later point": {
@@ -614,12 +602,16 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c24894-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
+    "error": "Error: Expected ng-tns-c23412-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "Unknown"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
     "error": "Error: Expected '' to be '20px'.",
     "notes": "Unknown"
+  },
+  "MatSort should use the column definition if used within an mat table": {
+    "error": "TypeError: Cannot read property 'diff' of undefined",
+    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
   },
   "MatTree flat tree should initialize with rendered dataNodes": {
     "error": "TypeError: Cannot read property 'classList' of undefined",
@@ -725,6 +717,10 @@ window.testBlocklist = {
     "error": "Error: Must provide a portal to attach",
     "notes": "Unknown"
   },
+  "MatBottomSheet should position the bottom sheet at the bottom center of the screen": {
+    "error": "Error: Expected 511 to be 512.",
+    "notes": "Unknown"
+  },
   "MatAutocomplete aria should set role of autocomplete panel to listbox": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
@@ -732,10 +728,6 @@ window.testBlocklist = {
   "MatAutocomplete aria should set aria-owns based on the attached autocomplete": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatBottomSheet should position the bottom sheet at the bottom center of the screen": {
-    "error": "Error: Expected 511 to be 512.",
-    "notes": "Unknown"
   },
   "MatDatepicker with MatNativeDateModule standard datepicker should open datepicker if opened input is set to true": {
     "error": "Error: Expected null not to be null.",
@@ -943,66 +935,6 @@ window.testBlocklist = {
   },
   "MatCalendar calendar with min and max date should update the minDate in the child view if it changed after an interaction": {
     "error": "Error: This PortalOutlet has already been disposed",
-    "notes": "Unknown"
-  },
-  "MatPaginator when navigating with the next and previous buttons should be able to go to the next page": {
-    "error": "TypeError: Cannot read property 'pageIndex' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator when navigating with the next and previous buttons should be able to go to the previous page": {
-    "error": "TypeError: Cannot set property 'pageIndex' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator should mark itself as initialized": {
-    "error": "TypeError: Cannot read property 'initialized' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator should not allow a negative pageSize": {
-    "error": "TypeError: Cannot set property 'pageSize' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator should not allow a negative pageIndex": {
-    "error": "TypeError: Cannot set property 'pageSize' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator when showing the first and last button should be able to go to the last page via the last page button": {
-    "error": "TypeError: Cannot read property 'pageIndex' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator when showing the first and last button should be able to go to the first page via the first page button": {
-    "error": "TypeError: Cannot set property 'pageIndex' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator when showing the first and last button should disable navigating to the next page if at last page": {
-    "error": "TypeError: Cannot read property 'pageIndex' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator when showing the first and last button should disable navigating to the previous page if at first page": {
-    "error": "TypeError: Cannot read property 'pageIndex' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator should mark for check when inputs are changed directly": {
-    "error": "TypeError: Cannot set property 'length' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator should show a sorted list of page size options including the current page size": {
-    "error": "TypeError: Cannot read property '_displayedPageSizeOptions' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator should be able to change the page size while keeping the first item present": {
-    "error": "TypeError: Cannot read property 'pageIndex' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator should keep track of the right number of pages": {
-    "error": "TypeError: Cannot read property 'getNumberOfPages' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator should show a select only if there are multiple options": {
-    "error": "TypeError: Cannot read property '_displayedPageSizeOptions' of undefined",
-    "notes": "Unknown"
-  },
-  "MatPaginator should handle the number inputs being passed in as strings": {
-    "error": "TypeError: Cannot read property 'pageIndex' of undefined",
     "notes": "Unknown"
   },
   "MatTable with basic data source should be able to create a table with the right content and without when row": {
