@@ -27,7 +27,7 @@
     "preinstall": "node ./tools/npm/check-npm.js",
     "format": "git-clang-format"
   },
-  "version": "7.3.2",
+  "version": "7.3.3",
   "requiredAngularVersion": ">=7.0.0",
   "dependencies": {
     "@angular/animations": "^7.2.1",

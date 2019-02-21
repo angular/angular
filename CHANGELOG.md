@@ -1,3 +1,17 @@
+## 7.3.3 "cashmere-armor" (2019-02-20)
+
+
+### Bug Fixes
+
+* **theming**: fix errors when building theme using CSS variables ([#15140](https://github.com/angular/material2/issues/15140)) ([96f6e06](https://github.com/angular/material2/commit/96f6e06)), closes [#15107](https://github.com/angular/material2/issues/15107)
+* **bidi:** handle uppercase values correctly ([#14773](https://github.com/angular/material2/issues/14773)) ([0029cde](https://github.com/angular/material2/commit/0029cde))
+* **dialog:** don't assign aria-label to close button if button has text ([#11093](https://github.com/angular/material2/issues/11093)) ([9bf368d](https://github.com/angular/material2/commit/9bf368d)), closes [#11084](https://github.com/angular/material2/issues/11084)
+* **list:** disableRipple on selection list not affecting list options after init ([#14858](https://github.com/angular/material2/issues/14858)) ([edf4541](https://github.com/angular/material2/commit/edf4541))
+* **schematics:** do not generate invalid stylesheet files ([#15235](https://github.com/angular/material2/issues/15235)) ([e7422e4](https://github.com/angular/material2/commit/e7422e4)), closes [#15164](https://github.com/angular/material2/issues/15164)
+* **table:** add missing rowgroup roles ([#15131](https://github.com/angular/material2/issues/15131)) ([2c7bc1c](https://github.com/angular/material2/commit/2c7bc1c))
+
+
+
 ## 7.3.2 "jute-box" (2019-02-11)
 
 
