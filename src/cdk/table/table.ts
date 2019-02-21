@@ -356,9 +356,9 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       new BehaviorSubject<{start: number, end: number}>({start: 0, end: Number.MAX_VALUE});
 
   // Outlets in the table's template where the header, data rows, and footer will be inserted.
-  @ViewChild(DataRowOutlet) _rowOutlet: DataRowOutlet;
-  @ViewChild(HeaderRowOutlet) _headerRowOutlet: HeaderRowOutlet;
-  @ViewChild(FooterRowOutlet) _footerRowOutlet: FooterRowOutlet;
+  @ViewChild(DataRowOutlet, {static: true}) _rowOutlet: DataRowOutlet;
+  @ViewChild(HeaderRowOutlet, {static: true}) _headerRowOutlet: HeaderRowOutlet;
+  @ViewChild(FooterRowOutlet, {static: true}) _footerRowOutlet: FooterRowOutlet;
 
   /**
    * The column definitions provided by the user that contain what the header, data, and footer
