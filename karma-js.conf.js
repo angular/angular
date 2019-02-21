@@ -145,6 +145,9 @@ module.exports = function(config) {
     browserNoActivityTimeout: 300000,
   }
 
+  // When running under Bazel with karma_web_test, SAUCE_TUNNEL_IDENTIFIER and KARMA_WEB_TEST_MODE
+  // will only be available when `--config=saucelabs` is set. See //:test_web_all target
+  // and /.bazelrc.
   if (process.env['SAUCE_TUNNEL_IDENTIFIER']) {
     console.log(`SAUCE_TUNNEL_IDENTIFIER: ${process.env.SAUCE_TUNNEL_IDENTIFIER}`);
 
