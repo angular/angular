@@ -77,6 +77,10 @@ karma_web_test(
         "saucelabs",
     ],
     deps = [
+        # We combine all tests into a single karma_web_test target
+        # as running them as seperate targets in parallel leads to too many
+        # browsers being acquired at once in SauceLabs and the tests flake out
+        # TODO: this is an example subset of tests below, add all remaining angular tests
         "//packages/common/http/test:test_lib",
         "//packages/common/http/testing/test:test_lib",
         "//packages/common/test:test_lib",
