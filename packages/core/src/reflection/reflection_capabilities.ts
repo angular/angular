@@ -210,6 +210,13 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return propMetadata;
   }
 
+  ownPropMetadata(typeOrFunc: any): {[key: string]: any[]} {
+    if (!isType(typeOrFunc)) {
+      return {};
+    }
+    return this._ownPropMetadata(typeOrFunc, Object) || {};
+  }
+
   hasLifecycleHook(type: any, lcProperty: string): boolean {
     return type instanceof Type && lcProperty in type.prototype;
   }
