@@ -47,7 +47,6 @@ function addDevDependenciesToPackageJson(options: Schema) {
       '@bazel/bazel': '^0.22.1',
       '@bazel/ibazel': '^0.9.0',
       '@bazel/karma': '^0.25.1',
-      '@bazel/typescript': '^0.25.1',
     };
 
     const recorder = host.beginUpdate(packageJson);

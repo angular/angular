@@ -105,10 +105,17 @@
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.9.0.tgz#fd60023acd36313d304cc2f8c2e181b88b5445cd"
   integrity sha512-E31cefDcdJsx/oii6p/gqKZXSVw0kEg1O73DD2McFcSvnf/p1GYWcQtVgdRQmlviBEytJkJgdX8rtThitRvcow==
 
-"@bazel/karma@0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.25.1.tgz#246286299b6e96fa4a91d240d3c3d7386164adaf"
-  integrity sha512-e5qyZkeHdxEYTIcHg04pmPF1SR8jy8I1mQLgDxX6NJDVx3JT7iIFeISqlS8hjBiykyX/XZ0CsVzkKYU/sG3ilg==
+"@bazel/jasmine@0.26.0-beta.0":
+  version "0.26.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-0.26.0-beta.0.tgz#77243fea16dd7b31c60e0aa78bb89b7dcf0a9443"
+  integrity sha512-6dTuxGitXP6VcmgNwB9D9KqatDGX+Xw9GXDTJNnAT7wNDaakggiRg1ocLe8/xDMB+EXVg1qKOKS5NhZYHq3jVQ==
+  dependencies:
+    jasmine "~3.3.1"
+
+"@bazel/karma@0.26.0-beta.0":
+  version "0.26.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.26.0-beta.0.tgz#0a83bac1adaa0cfec8e3fb4acb49d02e05b141ed"
+  integrity sha512-N2doztMGN6TMT3Gi4R4dfB7ypZI4tF3U1HG09lP7MVmr46czVNp/lwTnjyfJgbababYBfhiGgrXD9VOC9QqKnA==
   dependencies:
     jasmine-core "2.8.0"
     karma "^4.0.0"
@@ -122,10 +129,10 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/typescript@0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.25.1.tgz#71564de50ff6976fb37d90f2f7a479e87b158943"
-  integrity sha512-QFitUUXIWQMfVk5EwI9J9d5iNPfT+kUjPbahiJbJVZz1Fz9zNZ8+CR6FESfnxuUKlZK3Oy0VWFcz7mlHaceL/Q==
+"@bazel/typescript@0.26.0-beta.0":
+  version "0.26.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.26.0-beta.0.tgz#aa025951563f47baca302c8ebcf24eb596724426"
+  integrity sha512-Ot7k3sfLQAdf14IDmsc6wSgfySctJdW6Uwg7YmD4Zv1sGWkjKaWEtQDFgjtf5kEgFpC0aeM5uK+heqz1CC+VcQ==
   dependencies:
     jasmine-core "2.8.0"
     protobufjs "5.0.3"
@@ -5630,10 +5637,15 @@ jasmine-core@2.8.0, jasmine-core@~2.8.0:
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.8.0.tgz#bcc979ae1f9fd05701e45e52e65d3a5d63f1a24e"
   integrity sha1-vMl5rh+f0FcB5F5S5l06XWPxok4=
 
-jasmine-core@^3.1.0, jasmine-core@~3.1.0:
+jasmine-core@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.1.0.tgz#a4785e135d5df65024dfc9224953df585bd2766c"
   integrity sha1-pHheE11d9lAk38kiSVPfWFvSdmw=
+
+jasmine-core@~3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.3.0.tgz#dea1cdc634bc93c7e0d4ad27185df30fa971b10e"
+  integrity sha512-3/xSmG/d35hf80BEN66Y6g9Ca5l/Isdeg/j6zvbTYlTzeKinzmaTM4p9am5kYqOmE05D7s1t8FGjzdSnbUbceA==
 
 jasmine@2.8.0:
   version "2.8.0"
@@ -5644,13 +5656,13 @@ jasmine@2.8.0:
     glob "^7.0.6"
     jasmine-core "~2.8.0"
 
-jasmine@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-3.1.0.tgz#2bd59fd7ec6ec0e8acb64e09f45a68ed2ad1952a"
-  integrity sha1-K9Wf1+xuwOistk4J9Fpo7SrRlSo=
+jasmine@^3.1.0, jasmine@~3.3.1:
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-3.3.1.tgz#d61bb1dd8888859bd11ea83074a78ee13d949905"
+  integrity sha512-/vU3/H7U56XsxIXHwgEuWpCgQ0bRi2iiZeUpx7Nqo8n1TpoDHfZhkPIc7CO8I4pnMzYsi3XaSZEiy8cnTfujng==
   dependencies:
     glob "^7.0.6"
-    jasmine-core "~3.1.0"
+    jasmine-core "~3.3.0"
 
 jasminewd2@^2.1.0:
   version "2.2.0"
