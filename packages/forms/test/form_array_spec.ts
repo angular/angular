@@ -59,6 +59,20 @@ import {of } from 'rxjs';
         expect(a.controls).toEqual([c1, c3]);
       });
 
+      it('should support clearing', () => {
+        a.push(c1);
+        a.push(c2);
+        a.push(c3);
+
+        a.clear();
+
+        expect(a.controls).toEqual([]);
+
+        a.clear();
+
+        expect(a.controls).toEqual([]);
+      });
+
       it('should support inserting', () => {
         a.push(c1);
         a.push(c3);
