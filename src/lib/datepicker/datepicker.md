@@ -346,7 +346,7 @@ the native input and toggle button elements respectively, and they trigger a cal
 should have a placeholder or be given a meaningful label via `aria-label`, `aria-labelledby` or
 `MatDatepickerIntl`.
 
-#### Keyboard shortcuts
+#### Keyboard interaction
 
 The datepicker supports the following keyboard shortcuts:
 

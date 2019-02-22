@@ -126,7 +126,7 @@ Tabs without text or labels should be given a meaningful label via `aria-label` 
 `aria-labelledby`. For `MatTabNav`, the `<nav>` element should have a label as well.
 
 
-#### Keyboard shortcuts
+#### Keyboard interaction
 
 | Shortcut             | Action                     |
 |----------------------|----------------------------|

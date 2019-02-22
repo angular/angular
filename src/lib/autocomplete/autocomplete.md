@@ -112,9 +112,10 @@ autocomplete is attached to using the `matAutocompleteOrigin` directive together
 ```
 
 ### Keyboard interaction
-- <kbd>DOWN_ARROW</kbd>: Next option becomes active.
-- <kbd>UP_ARROW</kbd>: Previous option becomes active.
-- <kbd>ENTER</kbd>: Select currently active item.
+- <kbd>DOWN_ARROW</kbd>: Next option becomes active
+- <kbd>UP_ARROW</kbd>: Previous option becomes active
+- <kbd>ENTER</kbd>: Selects currently active item
+- <kbd>ESCAPE</kbd>: Closes the autocomplete panel
 
 ### Option groups
 `mat-option` can be collected into groups using the `mat-optgroup` element:

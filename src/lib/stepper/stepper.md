@@ -234,9 +234,11 @@ The stepper can now show error states by simply providing the `showError` option
 ### Keyboard interaction
 - <kbd>LEFT_ARROW</kbd>: Focuses the previous step header
 - <kbd>RIGHT_ARROW</kbd>: Focuses the next step header
+- <kbd>HOME</kbd>: Focuses the first step header
+- <kbd>END</kbd>: Focuses the last step header
 - <kbd>ENTER</kbd>, <kbd>SPACE</kbd>: Selects the step that the focus is currently on
 - <kbd>TAB</kbd>: Focuses the next tabbable element
-- <kbd>TAB</kbd>+<kbd>SHIFT</kbd>: Focuses the previous tabbable element
+- <kbd>SHIFT</kbd>+<kbd>TAB</kbd>: Focuses the previous tabbable element
 
 ### Localizing labels
 Labels used by the stepper are provided through `MatStepperIntl`. Localization of these messages
