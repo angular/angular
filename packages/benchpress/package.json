@@ -21,9 +21,6 @@
     "angular",
     "benchmarks"
   ],
-  "contributors": [
-    "Tobias Bosch <tbosch@google.com> (https://angular.io/)"
-  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
