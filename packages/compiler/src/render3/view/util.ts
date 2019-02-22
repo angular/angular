@@ -92,7 +92,8 @@ function mapToExpression(
     minifiedName = declaredName;
     return {
       key: minifiedName,
-      quoted: false,
+      // put quotes around keys that contain potentially unsafe characters
+      quoted: /\W/.test(minifiedName),
       value: (keepDeclared && publicName !== declaredName) ?
           o.literalArr([asLiteral(publicName), asLiteral(declaredName)]) :
           asLiteral(publicName)
