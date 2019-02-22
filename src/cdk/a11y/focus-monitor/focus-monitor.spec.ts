@@ -139,7 +139,7 @@ describe('FocusMonitor', () => {
     expect(changeHandler).toHaveBeenCalledWith('mouse');
   }));
 
-  it('focusVia mouse should simulate mouse focus', fakeAsync(() => {
+  it('focusVia touch should simulate touch focus', fakeAsync(() => {
     focusMonitor.focusVia(buttonElement, 'touch');
     fixture.detectChanges();
     flush();
