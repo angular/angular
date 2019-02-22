@@ -70,8 +70,8 @@ export class FormBuilder {
         updateOn = options.updateOn != null ? options.updateOn : undefined;
       } else {
         // `options` are legacy form group options
-        validators = options.validator != null ? options.validator : null;
-        asyncValidators = options.asyncValidator != null ? options.asyncValidator : null;
+        validators = options['validator'] != null ? options['validator'] : null;
+        asyncValidators = options['asyncValidator'] != null ? options['asyncValidator'] : null;
       }
     }
 
