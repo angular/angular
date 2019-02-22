@@ -703,6 +703,36 @@ describe('CdkDrag', () => {
       }).toThrowError(/^cdkDrag must be attached to an element node/);
     }));
 
+    it('should allow for the dragging sequence to be delayed', fakeAsync(() => {
+      // We can't use Jasmine's `clock` because Zone.js interferes with it.
+      spyOn(Date, 'now').and.callFake(() => currentTime);
+      let currentTime = 0;
+
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.componentInstance.dragStartDelay = 1000;
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy('Expected element not to be moved by default.');
+
+      startDraggingViaMouse(fixture, dragElement);
+      currentTime += 750;
+      dispatchMouseEvent(document, 'mousemove', 50, 100);
+      fixture.detectChanges();
+
+      expect(dragElement.style.transform)
+          .toBeFalsy('Expected element not to be moved if the drag timeout has not passed.');
+
+      // The first `mousemove` here starts the sequence and the second one moves the element.
+      currentTime += 500;
+      dispatchMouseEvent(document, 'mousemove', 50, 100);
+      dispatchMouseEvent(document, 'mousemove', 50, 100);
+      fixture.detectChanges();
+
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)',
+          'Expected element to be dragged after all the time has passed.');
+    }));
+
   });
 
   describe('draggable with a handle', () => {
@@ -2832,6 +2862,7 @@ describe('CdkDrag', () => {
       <div
         cdkDrag
         [cdkDragBoundary]="boundarySelector"
+        [cdkDragStartDelay]="dragStartDelay"
         (cdkDragStarted)="startedSpy($event)"
         (cdkDragReleased)="releasedSpy($event)"
         (cdkDragEnded)="endedSpy($event)"
@@ -2847,6 +2878,7 @@ class StandaloneDraggable {
   endedSpy = jasmine.createSpy('ended spy');
   releasedSpy = jasmine.createSpy('released spy');
   boundarySelector: string;
+  dragStartDelay: number;
 }
 
 @Component({

@@ -110,6 +110,12 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
    */
   @Input('cdkDragBoundary') boundaryElementSelector: string;
 
+  /**
+   * Amount of milliseconds to wait after the user has put their
+   * pointer down before starting to drag the element.
+   */
+  @Input('cdkDragStartDelay') dragStartDelay: number = 0;
+
   /** Whether starting to drag this element is disabled. */
   @Input('cdkDragDisabled')
   get disabled(): boolean {
@@ -303,6 +309,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
 
         ref.disabled = this.disabled;
         ref.lockAxis = this.lockAxis;
+        ref.dragStartDelay = this.dragStartDelay;
         ref
           .withBoundaryElement(this._getBoundaryElement())
           .withPlaceholderTemplate(placeholder)

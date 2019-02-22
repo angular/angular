@@ -14,6 +14,7 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDes
     boundaryElementSelector: string;
     data: T;
     disabled: boolean;
+    dragStartDelay: number;
     dropContainer: CdkDropList;
     dropped: EventEmitter<CdkDragDrop<any>>;
     element: ElementRef<HTMLElement>;
@@ -204,6 +205,7 @@ export declare class DragRef<T = any> {
     beforeStarted: Subject<void>;
     data: T;
     disabled: boolean;
+    dragStartDelay: number;
     dropped: Subject<{
         previousIndex: number;
         currentIndex: number;

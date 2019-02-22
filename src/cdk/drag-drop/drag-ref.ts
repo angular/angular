@@ -167,6 +167,9 @@ export class DragRef<T = any> {
    */
   private _lastTouchEventTime: number;
 
+  /** Time at which the last dragging sequence was started. */
+  private _dragStartTime: number;
+
   /** Cached reference to the boundary element. */
   private _boundaryElement: HTMLElement | null = null;
 
@@ -199,6 +202,12 @@ export class DragRef<T = any> {
 
   /** Axis along which dragging is locked. */
   lockAxis: 'x' | 'y';
+
+  /**
+   * Amount of milliseconds to wait after the user has put their
+   * pointer down before starting to drag the element.
+   */
+  dragStartDelay: number = 0;
 
   /** Whether starting to drag this element is disabled. */
   get disabled(): boolean {
@@ -474,12 +483,13 @@ export class DragRef<T = any> {
       const pointerPosition = this._getPointerPositionOnPage(event);
       const distanceX = Math.abs(pointerPosition.x - this._pickupPositionOnPage.x);
       const distanceY = Math.abs(pointerPosition.y - this._pickupPositionOnPage.y);
+      const isOverThreshold = distanceX + distanceY >= this._config.dragStartThreshold;
 
       // Only start dragging after the user has moved more than the minimum distance in either
       // direction. Note that this is preferrable over doing something like `skip(minimumDistance)`
       // in the `pointerMove` subscription, because we're not guaranteed to have one move event
       // per pixel of movement (e.g. if the user moves their pointer quickly).
-      if (distanceX + distanceY >= this._config.dragStartThreshold) {
+      if (isOverThreshold && (Date.now() >= this._dragStartTime + (this.dragStartDelay || 0))) {
         this._hasStartedDragging = true;
         this._ngZone.run(() => this._startDragSequence(event));
       }
@@ -675,6 +685,7 @@ export class DragRef<T = any> {
     const pointerPosition = this._pickupPositionOnPage = this._getPointerPositionOnPage(event);
     this._pointerDirectionDelta = {x: 0, y: 0};
     this._pointerPositionAtLastDirectionChange = {x: pointerPosition.x, y: pointerPosition.y};
+    this._dragStartTime = Date.now();
     this._dragDropRegistry.startDragging(this, event);
   }
 
