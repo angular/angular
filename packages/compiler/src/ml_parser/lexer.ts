@@ -128,6 +128,7 @@ class _Tokenizer {
   private _peek: number = -1;
   private _nextPeek: number = -1;
   private _index: number;
+  private _indexDuringEscapeSequence: number = -1;
   private _line: number;
   private _column: number;
   private _currentTokenStart: ParseLocation|null = null;
@@ -141,8 +142,7 @@ class _Tokenizer {
   /**
    * @param _file The html source
    * @param _getTagDefinition
-   * @param _tokenizeIcu Whether to tokenize ICU messages (considered as text nodes when false)
-   * @param _interpolationConfig
+   * @param options - the tokenize options
    */
   constructor(
       private _file: ParseSourceFile, private _getTagDefinition: (tagName: string) => TagDefinition,
@@ -245,8 +245,13 @@ class _Tokenizer {
     return false;
   }
 
+  private _getMostAdvancedIndex() {
+    return this._indexDuringEscapeSequence > this._index ? this._indexDuringEscapeSequence :
+                                                           this._index;
+  }
+
   private _getLocation(): ParseLocation {
-    return new ParseLocation(this._file, this._index, this._line, this._column);
+    return new ParseLocation(this._file, this._getMostAdvancedIndex(), this._line, this._column);
   }
 
   private _getSpan(
@@ -290,19 +295,24 @@ class _Tokenizer {
   }
 
   private _advance(processingEscapeSequence?: boolean) {
-    if (this._index >= this._end) {
+    const index = this._getMostAdvancedIndex();
+    if (index >= this._end) {
       throw this._createError(_unexpectedCharacterErrorMsg(chars.$EOF), this._getSpan());
     }
     // The actual character in the input might be different to the _peek if we are processing
     // escape characters. We only want to track "real" new lines.
-    const actualChar = this._input.charCodeAt(this._index);
+    const actualChar = this._input.charCodeAt(index);
     if (actualChar === chars.$LF) {
       this._line++;
       this._column = 0;
     } else if (!chars.isNewLine(actualChar)) {
       this._column++;
     }
-    this._index++;
+    if (processingEscapeSequence) {
+      this._indexDuringEscapeSequence++;
+    } else {
+      this._index = this._getMostAdvancedIndex() + 1;
+    }
     this._initPeek(processingEscapeSequence);
   }
 
@@ -311,11 +321,12 @@ class _Tokenizer {
    * @param processingEscapeSequence whether we are in the middle of processing an escape sequence.
    */
   private _initPeek(processingEscapeSequence?: boolean) {
-    this._peek = this._index >= this._end ? chars.$EOF : this._input.charCodeAt(this._index);
-    this._nextPeek =
-        this._index + 1 >= this._end ? chars.$EOF : this._input.charCodeAt(this._index + 1);
+    const index = this._getMostAdvancedIndex();
+    this._peek = index >= this._end ? chars.$EOF : this._input.charCodeAt(index);
+    this._nextPeek = index + 1 >= this._end ? chars.$EOF : this._input.charCodeAt(index + 1);
     if (this._peek === chars.$BACKSLASH && processingEscapeSequence !== true &&
         this._escapedString) {
+      this._indexDuringEscapeSequence = this._index;
       this._processEscapeSequence();
     }
   }
@@ -358,7 +369,8 @@ class _Tokenizer {
 
   private _attemptStr(chars: string): boolean {
     const len = chars.length;
-    if (this._index + len > this._end) {
+    const index = this._getMostAdvancedIndex();
+    if (index + len > this._end) {
       return false;
     }
     const initialPosition = this._savePosition();
@@ -398,7 +410,8 @@ class _Tokenizer {
   private _requireCharCodeUntilFn(predicate: (code: number) => boolean, len: number) {
     const start = this._getLocation();
     this._attemptCharCodeUntilFn(predicate);
-    if (this._index - start.offset < len) {
+    const index = this._getMostAdvancedIndex();
+    if (index - start.offset < len) {
       throw this._createError(
           _unexpectedCharacterErrorMsg(this._peek), this._getSpan(start, start));
     }
@@ -500,7 +513,7 @@ class _Tokenizer {
         while (this._peekChar() !== chars.$RBRACE) {
           this._advance(true);
         }
-        this._decodeHexDigits(start, this._index - start.offset);
+        this._decodeHexDigits(start, this._getMostAdvancedIndex() - start.offset);
       } else {
         // Fixed length Unicode, e.g. `\u1234`
         this._parseFixedHexSequence(4);
@@ -515,7 +528,7 @@ class _Tokenizer {
 
     else if (chars.isOctalDigit(this._peekChar())) {
       // Octal char code, e.g. `\012`,
-      const start = this._index;
+      const start = this._getMostAdvancedIndex();
       let length = 1;
       // Note that we work with `_nextPeek` because, although we check the next character
       // after the sequence to find the end of the sequence,
@@ -585,9 +598,10 @@ class _Tokenizer {
       if (this._attemptCharCode(firstCharOfEnd) && attemptEndRest()) {
         break;
       }
-      if (this._index > tagCloseStart.offset) {
+      const index = this._getMostAdvancedIndex();
+      if (index > tagCloseStart.offset) {
         // add the characters consumed by the previous if statement to the output
-        parts.push(this._input.substring(tagCloseStart.offset, this._index));
+        parts.push(this._input.substring(tagCloseStart.offset, index));
       }
       while (this._peek !== firstCharOfEnd) {
         parts.push(this._readChar(decodeEntities));

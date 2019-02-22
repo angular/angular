@@ -1033,6 +1033,28 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             ]);
       });
 
+      it('should parse over escaped new line in tag definitions', () => {
+        const text = '<t\\n></t>';
+        expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
+          [lex.TokenType.TAG_OPEN_START, null, 't'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TAG_CLOSE, null, 't'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should parse over escaped new line in attribute values', () => {
+        const text = '<t a=b\\n></t>';
+        expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
+          [lex.TokenType.TAG_OPEN_START, null, 't'],
+          [lex.TokenType.ATTR_NAME, null, 'a'],
+          [lex.TokenType.ATTR_VALUE, 'b'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TAG_CLOSE, null, 't'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
       it('should tokenize the correct span when there are escape sequences', () => {
         const text =
             'selector: "app-root",\ntemplate: "line 1\\n\\"line 2\\"\\nline 3",\ninputs: []';
