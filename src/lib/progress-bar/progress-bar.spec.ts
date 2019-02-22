@@ -141,6 +141,49 @@ describe('MatProgressBar', () => {
 
         expect(rect.getAttribute('fill')).toMatch(/^url\(['"]?\/another-fake-path#.*['"]?\)$/);
       });
+
+      it('should remove the `aria-valuenow` attribute in indeterminate mode', () => {
+        const fixture = createComponent(BasicProgressBar);
+        fixture.detectChanges();
+
+        const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
+        const progressComponent = progressElement.componentInstance;
+
+        progressComponent.mode = 'determinate';
+        progressComponent.value = 50;
+        fixture.detectChanges();
+
+        expect(progressElement.nativeElement.getAttribute('aria-valuenow'))
+            .toBe('50', 'Expected aria-valuenow to be set in determinate mode.');
+
+        progressComponent.mode = 'indeterminate';
+        fixture.detectChanges();
+
+        expect(progressElement.nativeElement.hasAttribute('aria-valuenow'))
+            .toBe(false, 'Expect aria-valuenow to be cleared in indeterminate mode.');
+      });
+
+      it('should remove the `aria-valuenow` attribute in query mode', () => {
+        const fixture = createComponent(BasicProgressBar);
+        fixture.detectChanges();
+
+        const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
+        const progressComponent = progressElement.componentInstance;
+
+        progressComponent.mode = 'determinate';
+        progressComponent.value = 50;
+        fixture.detectChanges();
+
+        expect(progressElement.nativeElement.getAttribute('aria-valuenow'))
+            .toBe('50', 'Expected aria-valuenow to be set in determinate mode.');
+
+        progressComponent.mode = 'query';
+        fixture.detectChanges();
+
+        expect(progressElement.nativeElement.hasAttribute('aria-valuenow'))
+            .toBe(false, 'Expect aria-valuenow to be cleared in query mode.');
+      });
+
     });
 
     describe('animation trigger on determinate setting', () => {
