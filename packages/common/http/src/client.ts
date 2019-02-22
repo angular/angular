@@ -65,7 +65,7 @@ export type HttpObserve = 'body' | 'events' | 'response';
  * searchHeroes(term: string): observable<Hero[]>{
  *
  *  const params = new HttpParams({fromString: 'name=term'});
- *    return this.httpClient.request("GET", this.heroesUrl, {responseType:"json",params});
+ *    return this.httpClient.request('GET', this.heroesUrl, {responseType:'json', params});
  * }
  * ```
  * ### JSONP Example
@@ -1439,14 +1439,18 @@ export class HttpClient {
   jsonp<T>(url: string, callbackParam: string): Observable<T>;
 
   /**
-   * Constructs an `Observable` that, when subscribed, causes a request
-   * with the special method `JSONP` to be dispatched via the interceptor pipeline.
-   * The JSONP request resolves the issue of CORS . JSONP treats the endpoint API as a
-   * javascript file and tricks the browser to process the requests. The endpoint API must support
-   * JSONP callback for JSONP requests to work. The reaource API returns the JSON response
-   * wrapped in a callback function. You can pass
-   * the callback function name as one of the query parameters. Note that JSONP requests can only
-   * be used with `GET` requests.
+   * Constructs an `Observable` that, when subscribed, causes a request with the special method
+   * `JSONP` to be dispatched via the interceptor pipeline.
+   * The [JSONP pattern](https://en.wikipedia.org/wiki/JSONP) works around limitations of certain
+   * API endpoints that don't support newer,
+   * and preferable [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) protocol.
+   * JSONP treats the endpoint API as a JavaScript file and tricks the browser to process the
+   * requests even if the API endpoint is not located on the same domain (origin) as the client-side
+   * application making the request.
+   * The endpoint API must support JSONP callback for JSONP requests to work.
+   * The resource API returns the JSON response wrapped in a callback function.
+   * You can pass the callback function name as one of the query parameters.
+   * Note that JSONP requests can only be used with `GET` requests.
    *
    * @param url The resource URL.
    * @param callbackParam The callback function name.
