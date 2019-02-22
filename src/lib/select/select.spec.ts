@@ -1006,6 +1006,27 @@ describe('MatSelect', () => {
         expect(pane.style.minWidth).toBe('200px');
       }));
 
+      it('should update the width of the panel on resize', fakeAsync(() => {
+        trigger.style.width = '300px';
+
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+        const initialWidth = parseInt(pane.style.minWidth || '0');
+
+        expect(initialWidth).toBeGreaterThan(0);
+
+        trigger.style.width = '400px';
+        dispatchFakeEvent(window, 'resize');
+        fixture.detectChanges();
+        tick(1000);
+        fixture.detectChanges();
+
+        expect(parseInt(pane.style.minWidth || '0')).toBeGreaterThan(initialWidth);
+      }));
+
       it('should not attempt to open a select that does not have any options', fakeAsync(() => {
         fixture.componentInstance.foods = [];
         fixture.detectChanges();
