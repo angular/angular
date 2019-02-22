@@ -14,7 +14,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import {async, ComponentFixture, fakeAsync, TestBed, tick, flush} from '@angular/core/testing';
-import {MatRipple, defaultRippleAnimationConfig} from '@angular/material/core';
+import {MatRipple, defaultRippleAnimationConfig, ThemePalette} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {
   MatListModule,
@@ -121,6 +121,33 @@ describe('MatSelectionList without forms', () => {
       expect(listOptions[1].nativeElement.getAttribute('aria-selected')).toBe('true');
       expect(listOptions[1].nativeElement.getAttribute('aria-disabled')).toBe('false');
       expect(listOptions[2].nativeElement.getAttribute('aria-disabled')).toBe('false');
+    });
+
+    it('should be able to specify a color for list options', () => {
+      const optionNativeElements = listOptions.map(option => option.nativeElement);
+
+      expect(optionNativeElements.every(option => !option.classList.contains('mat-primary')))
+        .toBe(true);
+      expect(optionNativeElements.every(option => !option.classList.contains('mat-warn')))
+        .toBe(true);
+
+      // All options will be set to the "warn" color.
+      fixture.componentInstance.selectionListColor = 'warn';
+      fixture.detectChanges();
+
+      expect(optionNativeElements.every(option => !option.classList.contains('mat-primary')))
+        .toBe(true);
+      expect(optionNativeElements.every(option => option.classList.contains('mat-warn')))
+        .toBe(true);
+
+      // Color will be set explicitly for an option and should take precedence.
+      fixture.componentInstance.firstOptionColor = 'primary';
+      fixture.detectChanges();
+
+      expect(optionNativeElements[0].classList).toContain('mat-primary');
+      expect(optionNativeElements[0].classList).not.toContain('mat-warn');
+      expect(optionNativeElements.slice(1).every(option => option.classList.contains('mat-warn')))
+        .toBe(true);
     });
 
     it('should be able to deselect an option', () => {
@@ -1122,8 +1149,10 @@ describe('MatSelectionList with forms', () => {
   <mat-selection-list
     id="selection-list-1"
     (selectionChange)="onValueChange($event)"
-    [disableRipple]="listRippleDisabled">
-    <mat-list-option checkboxPosition="before" disabled="true" value="inbox">
+    [disableRipple]="listRippleDisabled"
+    [color]="selectionListColor">
+    <mat-list-option checkboxPosition="before" disabled="true" value="inbox"
+                     [color]="firstOptionColor">
       Inbox (disabled selection-option)
     </mat-list-option>
     <mat-list-option id="testSelect" checkboxPosition="before" class="test-native-focus"
@@ -1140,6 +1169,8 @@ describe('MatSelectionList with forms', () => {
 class SelectionListWithListOptions {
   showLastOption: boolean = true;
   listRippleDisabled = false;
+  selectionListColor: ThemePalette;
+  firstOptionColor: ThemePalette;
 
   onValueChange(_change: MatSelectionListChange) {}
 }

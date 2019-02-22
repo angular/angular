@@ -48,6 +48,7 @@ export declare class MatListOption extends _MatListOptionMixinBase implements Af
     _lines: QueryList<MatLine>;
     _text: ElementRef;
     checkboxPosition: 'before' | 'after';
+    color: ThemePalette;
     disabled: any;
     selected: boolean;
     selectionList: MatSelectionList;
@@ -84,6 +85,7 @@ export declare class MatNavList extends _MatListMixinBase implements CanDisableR
 export declare class MatSelectionList extends _MatSelectionListMixinBase implements FocusableOption, CanDisableRipple, AfterContentInit, ControlValueAccessor, OnDestroy, OnChanges {
     _keyManager: FocusKeyManager<MatListOption>;
     _onTouched: () => void;
+    color: ThemePalette;
     compareWith: (o1: any, o2: any) => boolean;
     disabled: boolean;
     options: QueryList<MatListOption>;

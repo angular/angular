@@ -46,6 +46,7 @@ import {
   MatLine,
   setLines,
   mixinDisableRipple,
+  ThemePalette,
 } from '@angular/material/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Subscription} from 'rxjs';
@@ -97,6 +98,11 @@ export class MatSelectionListChange {
     'tabindex': '-1',
     '[class.mat-list-item-disabled]': 'disabled',
     '[class.mat-list-item-with-avatar]': '_avatar || _icon',
+    // Manually set the "primary" or "warn" class if the color has been explicitly
+    // set to "primary" or "warn". The pseudo checkbox picks up these classes for
+    // its theme. The accent theme palette is the default and doesn't need to be set.
+    '[class.mat-primary]': 'color === "primary"',
+    '[class.mat-warn]': 'color === "warn"',
     '[attr.aria-selected]': 'selected.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
   },
@@ -120,6 +126,12 @@ export class MatListOption extends _MatListOptionMixinBase
 
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
   @Input() checkboxPosition: 'before' | 'after' = 'after';
+
+  /** Theme color of the list option. This sets the color of the checkbox. */
+  @Input()
+  get color(): ThemePalette { return this._color || this.selectionList.color; }
+  set color(newValue: ThemePalette) { this._color = newValue; }
+  private _color: ThemePalette;
 
   /** Value of the option */
   @Input()
@@ -316,6 +328,9 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   /** Tabindex of the selection list. */
   @Input() tabIndex: number = 0;
 
+  /** Theme color of the selection list. This sets the checkbox color for all list options. */
+  @Input() color: ThemePalette = 'accent';
+
   /**
    * Function used for comparing an option against the selected value when determining which
    * options should appear as selected. The first argument is the value of an options. The second
@@ -389,8 +404,10 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
   ngOnChanges(changes: SimpleChanges) {
     const disableRippleChanges = changes.disableRipple;
+    const colorChanges = changes.color;
 
-    if (disableRippleChanges && !disableRippleChanges.firstChange) {
+    if ((disableRippleChanges && !disableRippleChanges.firstChange) ||
+        (colorChanges && !colorChanges.firstChange)) {
       this._markOptionsForCheck();
     }
   }
