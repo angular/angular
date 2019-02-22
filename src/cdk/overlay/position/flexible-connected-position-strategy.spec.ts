@@ -2226,6 +2226,19 @@ describe('FlexibleConnectedPositionStrategy', () => {
       expect(overlayRef.overlayElement.classList).toContain('is-under');
     });
 
+    it('should not throw if an empty string is passed in as a panel class', () => {
+      positionStrategy.withPositions([{
+        originX: 'start',
+        originY: 'bottom',
+        overlayX: 'start',
+        overlayY: 'top',
+        panelClass: ['is-below', '']
+      }]);
+
+      expect(() => attachOverlay({positionStrategy})).not.toThrow();
+      expect(overlayRef.overlayElement.classList).toContain('is-below');
+    });
+
     it('should remove the panel class when detaching', () => {
       positionStrategy.withPositions([{
         originX: 'start',

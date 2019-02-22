@@ -1081,7 +1081,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   private _addPanelClasses(cssClasses: string | string[]) {
     if (this._pane) {
       coerceArray(cssClasses).forEach(cssClass => {
-        if (this._appliedPanelClasses.indexOf(cssClass) === -1) {
+        if (cssClass !== '' && this._appliedPanelClasses.indexOf(cssClass) === -1) {
           this._appliedPanelClasses.push(cssClass);
           this._pane.classList.add(cssClass);
         }
@@ -1092,7 +1092,9 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   /** Clears the classes that the position strategy has applied from the overlay panel. */
   private _clearPanelClasses() {
     if (this._pane) {
-      this._appliedPanelClasses.forEach(cssClass => this._pane.classList.remove(cssClass));
+      this._appliedPanelClasses.forEach(cssClass => {
+        this._pane.classList.remove(cssClass);
+      });
       this._appliedPanelClasses = [];
     }
   }
