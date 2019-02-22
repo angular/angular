@@ -1392,6 +1392,21 @@ describe('CdkDrag', () => {
       expect(preview.getAttribute('id')).toBeFalsy();
     }));
 
+    it('should clear the ids from descendants of the preview', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+      const extraChild = document.createElement('div');
+      extraChild.id = 'child-id';
+      extraChild.classList.add('preview-child');
+      item.appendChild(extraChild);
+
+      startDraggingViaMouse(fixture, item);
+
+      expect(document.querySelectorAll('.preview-child').length).toBeGreaterThan(1);
+      expect(document.querySelectorAll('[id="child-id"]').length).toBe(1);
+    }));
+
     it('should not create a preview if the element was not dragged far enough', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone, [], 5);
       fixture.detectChanges();
@@ -1595,6 +1610,21 @@ describe('CdkDrag', () => {
       const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
 
       expect(placeholder.getAttribute('id')).toBeFalsy();
+    }));
+
+    it('should clear the ids from descendants of the placeholder', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+      const extraChild = document.createElement('div');
+      extraChild.id = 'child-id';
+      extraChild.classList.add('placeholder-child');
+      item.appendChild(extraChild);
+
+      startDraggingViaMouse(fixture, item);
+
+      expect(document.querySelectorAll('.placeholder-child').length).toBeGreaterThan(1);
+      expect(document.querySelectorAll('[id="child-id"]').length).toBe(1);
     }));
 
     it('should not create placeholder if the element was not dragged far enough', fakeAsync(() => {

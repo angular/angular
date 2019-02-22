@@ -1003,8 +1003,15 @@ function getTransform(x: number, y: number): string {
 /** Creates a deep clone of an element. */
 function deepCloneNode(node: HTMLElement): HTMLElement {
   const clone = node.cloneNode(true) as HTMLElement;
+  const descendantsWithId = clone.querySelectorAll('[id]');
+
   // Remove the `id` to avoid having multiple elements with the same id on the page.
   clone.removeAttribute('id');
+
+  for (let i = 0; i < descendantsWithId.length; i++) {
+    descendantsWithId[i].removeAttribute('id');
+  }
+
   return clone;
 }
 
