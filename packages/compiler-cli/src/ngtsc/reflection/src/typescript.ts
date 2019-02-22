@@ -196,6 +196,16 @@ export class TypeScriptReflectionHost implements ReflectionHost {
    * @internal
    */
   protected getDeclarationOfSymbol(symbol: ts.Symbol): Declaration|null {
+    // If the symbol points to a ShorthandPropertyAssignment, resolve it.
+    if (symbol.valueDeclaration !== undefined &&
+        ts.isShorthandPropertyAssignment(symbol.valueDeclaration)) {
+      const shorthandSymbol =
+          this.checker.getShorthandAssignmentValueSymbol(symbol.valueDeclaration);
+      if (shorthandSymbol === undefined) {
+        return null;
+      }
+      return this.getDeclarationOfSymbol(shorthandSymbol);
+    }
     let viaModule: string|null = null;
     // Look through the Symbol's immediate declarations, and see if any of them are import-type
     // statements.
