@@ -1,7 +1,7 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Component, ElementRef, Input, OnDestroy} from '@angular/core';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {Component, ElementRef, Input, OnDestroy, Optional, Self} from '@angular/core';
+import {FormBuilder, FormGroup, ControlValueAccessor, NgControl} from '@angular/forms';
 import {MatFormFieldControl} from '@angular/material';
 import {Subject} from 'rxjs';
 
@@ -30,17 +30,18 @@ export class MyTel {
     '[attr.aria-describedby]': 'describedBy',
   }
 })
-export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
+export class MyTelInput implements ControlValueAccessor, MatFormFieldControl<MyTel>, OnDestroy {
   static nextId = 0;
 
   parts: FormGroup;
   stateChanges = new Subject<void>();
   focused = false;
-  ngControl = null;
   errorState = false;
   controlType = 'example-tel-input';
   id = `example-tel-input-${MyTelInput.nextId++}`;
   describedBy = '';
+  onChange = (_: any) => {};
+  onTouched = () => {};
 
   get empty() {
     const {value: {area, exchange, subscriber}} = this.parts;
@@ -89,7 +90,12 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
     this.stateChanges.next();
   }
 
-  constructor(fb: FormBuilder, private fm: FocusMonitor, private elRef: ElementRef<HTMLElement>) {
+  constructor(
+    fb: FormBuilder,
+    private fm: FocusMonitor,
+    private elRef: ElementRef<HTMLElement>,
+    @Optional() @Self() public ngControl: NgControl) {
+
     this.parts = fb.group({
       area: '',
       exchange: '',
@@ -97,9 +103,16 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
     });
 
     fm.monitor(elRef, true).subscribe(origin => {
+      if (this.focused && !origin) {
+        this.onTouched();
+      }
       this.focused = !!origin;
       this.stateChanges.next();
     });
+
+    if (this.ngControl != null) {
+      this.ngControl.valueAccessor = this;
+    }
   }
 
   ngOnDestroy() {
@@ -115,5 +128,25 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
     if ((event.target as Element).tagName.toLowerCase() != 'input') {
       this.elRef.nativeElement.querySelector('input')!.focus();
     }
+  }
+
+  writeValue(tel: MyTel | null): void {
+    this.value = tel;
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.disabled = isDisabled;
+  }
+
+  _handleInput(): void {
+    this.onChange(this.parts.value);
   }
 }
