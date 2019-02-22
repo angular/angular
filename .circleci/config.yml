@@ -126,7 +126,7 @@ var_13: &attach_options
 
 version: 2
 jobs:
-  install:
+  setup:
     <<: *job_defaults
     steps:
       - checkout
@@ -502,22 +502,22 @@ workflows:
   version: 2
   default_workflow:
     jobs:
-      - install
+      - setup
       - lint:
           requires:
-          - install
+          - setup
       - test:
           requires:
-          - install
+          - setup
       - test_ivy_aot:
           requires:
-          - install
+          - setup
       - build-npm-packages:
           requires:
-          - install
+          - setup
       - test_aio:
           requires:
-          - install
+          - setup
       - deploy_aio:
           requires:
             - test_aio
@@ -541,7 +541,7 @@ workflows:
       #       - build-npm-packages
       - aio_preview:
           requires:
-            - install
+            - setup
           # Only run on PR builds. (There can be no previews for non-PR builds.)
           filters:
             branches:
