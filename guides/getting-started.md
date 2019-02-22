@@ -82,9 +82,7 @@ import {MatButtonModule, MatCheckboxModule} from '@angular/material';
 export class PizzaPartyAppModule { }
 ```
 
-Alternatively, you can create a separate NgModule that imports all of the
-Angular Material components that you will use in your application. You can then
-include this module wherever you'd like to use the components.
+Alternatively, you can create a separate NgModule that imports and then re-exports all of the Anguar Material components that you will use in your application. By exporting them again, other modules can simply include your `CustomMaterialModule` wherever Material components are needed, and automatically get all of the exported Material modules. A good place for importing/exporting the application-wide Material modules is the [SharedModule](https://angular.io/guide/ngmodule-faq#sharedmodule).
 
 ```ts
 import {MatButtonModule, MatCheckboxModule} from '@angular/material';
