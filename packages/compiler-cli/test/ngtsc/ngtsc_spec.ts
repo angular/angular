@@ -2148,6 +2148,28 @@ describe('ngtsc behavioral tests', () => {
     });
   });
 
+  it('should wrap "inputs" and "outputs" keys if they contain unsafe characters', () => {
+    env.tsconfig({});
+    env.write(`test.ts`, `
+      import {Directive} from '@angular/core';
+
+      @Directive({
+        selector: '[somedir]',
+        inputs: ['input-track-type', 'inputTrackName'],
+        outputs: ['output-track-type', 'outputTrackName']
+      })
+      export class SomeDir {}
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    const inputsAndOutputs = `
+      inputs: { "input-track-type": "input-track-type", inputTrackName: "inputTrackName" },
+      outputs: { "output-track-type": "output-track-type", outputTrackName: "outputTrackName" }
+    `;
+    expect(trim(jsContents)).toContain(trim(inputsAndOutputs));
+  });
+
   it('should compile programs with typeRoots', () => {
     // Write out a custom tsconfig.json that includes 'typeRoots' and 'files'. 'files' is necessary
     // because otherwise TS picks up the testTypeRoot/test/index.d.ts file into the program
