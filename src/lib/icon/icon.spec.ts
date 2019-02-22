@@ -42,7 +42,9 @@ describe('MatIcon', () => {
   let fakePath: string;
 
   beforeEach(async(() => {
-    fakePath = '/fake-path';
+    // The $ prefix tells Karma not to try to process the
+    // request so that we don't get warnings in our logs.
+    fakePath = '/$fake-path';
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, MatIconModule],
@@ -630,7 +632,7 @@ describe('MatIcon', () => {
 
       // We use a regex to match here, rather than the exact value, because different browsers
       // return different quotes through `getAttribute`, while some even omit the quotes altogether.
-      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/fake-path#blur['"]?\)$/);
+      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/\$fake-path#blur['"]?\)$/);
 
       tick();
     }));
@@ -651,17 +653,18 @@ describe('MatIcon', () => {
       fixture.detectChanges();
       let circle = fixture.nativeElement.querySelector('mat-icon svg circle');
 
-      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/fake-path#blur['"]?\)$/);
+      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/\$fake-path#blur['"]?\)$/);
       tick();
       fixture.destroy();
 
-      fakePath = '/another-fake-path';
+      fakePath = '/$another-fake-path';
       fixture = TestBed.createComponent(IconFromSvgName);
       fixture.componentInstance.iconName = 'fido';
       fixture.detectChanges();
       circle = fixture.nativeElement.querySelector('mat-icon svg circle');
 
-      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/another-fake-path#blur['"]?\)$/);
+      expect(circle.getAttribute('filter'))
+          .toMatch(/^url\(['"]?\/\$another-fake-path#blur['"]?\)$/);
       tick();
     }));
 
@@ -683,13 +686,13 @@ describe('MatIcon', () => {
 
       // We use a regex to match here, rather than the exact value, because different browsers
       // return different quotes through `getAttribute`, while some even omit the quotes altogether.
-      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/fake-path#blur['"]?\)$/);
+      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/\$fake-path#blur['"]?\)$/);
       tick();
 
-      fakePath = '/different-path';
+      fakePath = '/$different-path';
       fixture.detectChanges();
 
-      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/different-path#blur['"]?\)$/);
+      expect(circle.getAttribute('filter')).toMatch(/^url\(['"]?\/\$different-path#blur['"]?\)$/);
     }));
 
   });

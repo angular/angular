@@ -5,6 +5,7 @@ module.exports = config => {
   config.set({
     basePath: path.join(__dirname, '..'),
     frameworks: ['jasmine'],
+    middleware: ['fake-url'],
     plugins: [
       require('karma-jasmine'),
       require('karma-browserstack-launcher'),
@@ -12,6 +13,18 @@ module.exports = config => {
       require('karma-chrome-launcher'),
       require('karma-firefox-launcher'),
       require('karma-sourcemap-loader'),
+      {'middleware:fake-url': ['factory', function() {
+        // Middleware that avoids triggering 404s during tests that need to reference
+        // image paths. Assumes that the image path will start with `/$`.
+        return function(request, response, next) {
+          if (request.url.indexOf('/$') === 0) {
+            response.writeHead(200);
+            return response.end();
+          }
+
+          next();
+        }
+      }]}
     ],
     files: [
       {pattern: 'node_modules/core-js/client/core.min.js', included: true, watched: false},
