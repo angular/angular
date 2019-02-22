@@ -107,7 +107,6 @@ describe('ng-add schematic', () => {
     expect(devDeps).toContain('@bazel/bazel');
     expect(devDeps).toContain('@bazel/ibazel');
     expect(devDeps).toContain('@bazel/karma');
-    expect(devDeps).toContain('@bazel/typescript');
   });
 
   it('should create Bazel workspace file', () => {
