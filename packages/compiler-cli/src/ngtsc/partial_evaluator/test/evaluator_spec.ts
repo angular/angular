@@ -267,6 +267,20 @@ describe('ngtsc metadata', () => {
     ]);
     expect(value instanceof Reference).toBe(true);
   });
+
+  it('should resolve shorthand properties to values', () => {
+    const {program} = makeProgram([
+      {name: 'entry.ts', contents: `const prop = 42; const target$ = {prop};`},
+    ]);
+    const checker = program.getTypeChecker();
+    const reflectionHost = new TypeScriptReflectionHost(checker);
+    const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
+    const expr = result.initializer !as ts.ObjectLiteralExpression;
+    const prop = expr.properties[0] as ts.ShorthandPropertyAssignment;
+    const evaluator = new PartialEvaluator(reflectionHost, checker);
+    const resolved = evaluator.evaluate(prop.name);
+    expect(resolved).toBe(42);
+  });
 });
 
 function owningModuleOf(ref: Reference): string|null {
