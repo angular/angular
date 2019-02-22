@@ -383,6 +383,21 @@ describe('MatSelect', () => {
           flush();
         })));
 
+        it('should not throw when reaching a reset option using the arrow keys on a closed select',
+           fakeAsync(() => {
+             fixture.componentInstance.foods =
+                 [{value: 'steak-0', viewValue: 'Steak'}, {value: null, viewValue: 'None'}];
+             fixture.detectChanges();
+             fixture.componentInstance.control.setValue('steak-0');
+
+             expect(() => {
+               dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+               fixture.detectChanges();
+             }).not.toThrow();
+
+             flush();
+           }));
+
         it('should open a single-selection select using ALT + DOWN_ARROW', fakeAsync(() => {
           const {control: formControl, select: selectInstance} = fixture.componentInstance;
 
