@@ -65,7 +65,7 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
   updateDecoratorMetadata(loader: StaticResourceLoader, arg: MetadataObject): MetadataObject {
     if (arg['templateUrl']) {
       arg['template'] = loader.get(arg['templateUrl']);
-      delete arg.templateUrl;
+      delete arg['templateUrl'];
     }
 
     const styles = arg['styles'] || [];
@@ -76,7 +76,7 @@ export class InlineResourcesMetadataTransformer implements MetadataTransformer {
     styles.push(...styleUrls.map(styleUrl => loader.get(styleUrl)));
     if (styles.length > 0) {
       arg['styles'] = styles;
-      delete arg.styleUrls;
+      delete arg['styleUrls'];
     }
 
     return arg;
