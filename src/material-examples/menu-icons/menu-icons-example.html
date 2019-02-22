@@ -1,4 +1,4 @@
-<button mat-icon-button [matMenuTriggerFor]="menu">
+<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
   <mat-icon>more_vert</mat-icon>
 </button>
 <mat-menu #menu="matMenu">
@@ -8,7 +8,7 @@
   </button>
   <button mat-menu-item disabled>
     <mat-icon>voicemail</mat-icon>
-    <span>Check voicemail</span>
+    <span>Check voice mail</span>
   </button>
   <button mat-menu-item>
     <mat-icon>notifications_off</mat-icon>
