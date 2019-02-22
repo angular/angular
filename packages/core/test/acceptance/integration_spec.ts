@@ -97,4 +97,18 @@ describe('acceptance integration tests', () => {
     expect(subInstance.dirs.first).toBeAnInstanceOf(SomeDir);
   });
 
+  it('should render host class and style on the root component', () => {
+    @Component({template: '...', host: {class: 'foo', style: 'color: red'}})
+    class MyApp {
+    }
+
+    TestBed.configureTestingModule({declarations: [MyApp]});
+    const fixture = TestBed.createComponent(MyApp);
+    const element = fixture.nativeElement;
+    fixture.detectChanges();
+
+    expect(element.style['color']).toEqual('red');
+    expect(element.classList.contains('foo')).toBeTruthy();
+  });
+
 });

@@ -99,6 +99,9 @@
     "name": "RENDERER_FACTORY"
   },
   {
+    "name": "RendererStyleFlags3"
+  },
+  {
     "name": "SANITIZER"
   },
   {
@@ -411,6 +414,15 @@
     "name": "renderEmbeddedTemplate"
   },
   {
+    "name": "renderInitialClasses"
+  },
+  {
+    "name": "renderInitialStyles"
+  },
+  {
+    "name": "renderInitialStylingValues"
+  },
+  {
     "name": "renderStringify"
   },
   {
@@ -418,6 +430,9 @@
   },
   {
     "name": "setBindingRoot"
+  },
+  {
+    "name": "setClass"
   },
   {
     "name": "setCurrentDirectiveDef"
@@ -439,6 +454,9 @@
   },
   {
     "name": "setPreviousOrParentTNode"
+  },
+  {
+    "name": "setStyle"
   },
   {
     "name": "setTNodeAndViewData"

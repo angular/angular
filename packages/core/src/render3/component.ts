@@ -22,9 +22,10 @@ import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition'
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, FLAGS, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {applyOnCreateInstructions} from './node_util';
 import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
+import {renderInitialClasses, renderInitialStyles} from './styling/class_and_style_bindings';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, renderStringify} from './util/misc_utils';
 import {getRootContext, getRootView} from './util/view_traversal_utils';
@@ -201,12 +202,18 @@ export function createRootComponent<T>(
 
   hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
 
+  const rootTNode = getPreviousOrParentTNode();
   if (tView.firstTemplatePass && componentDef.hostBindings) {
-    const rootTNode = getPreviousOrParentTNode();
     const expando = tView.expandoInstructions !;
     invokeHostBindingsInCreationMode(
         componentDef, expando, component, rootTNode, tView.firstTemplatePass);
     rootTNode.onElementCreationFns && applyOnCreateInstructions(rootTNode);
+  }
+
+  if (rootTNode.stylingTemplate) {
+    const native = componentView[HOST] !as RElement;
+    renderInitialClasses(native, rootTNode.stylingTemplate, componentView[RENDERER]);
+    renderInitialStyles(native, rootTNode.stylingTemplate, componentView[RENDERER]);
   }
 
   return component;
