@@ -477,7 +477,7 @@ export function updateStylingMap(
   const classesValue = classesPlayerBuilder ?
       (classesInput as BoundPlayerFactory<{[key: string]: any}|string>) !.value :
       classesInput;
-  const stylesValue = stylesPlayerBuilder ? stylesInput !.value : stylesInput;
+  const stylesValue = stylesPlayerBuilder ? stylesInput !['value'] : stylesInput;
   // early exit (this is what's done to avoid using ctx.bind() to cache the value)
   const ignoreAllClassUpdates = limitToSingleClasses(context) || classesValue === NO_CHANGE ||
       classesValue === context[StylingIndex.CachedClassValueOrInitialClassString];

@@ -249,7 +249,7 @@ class ToJsonSerializer extends ValueTransformer {
    */
   visitStringMap(map: {[key: string]: any}, context: any): any {
     if (map['__symbolic'] === 'resolved') {
-      return visitValue(map.symbol, this, context);
+      return visitValue(map['symbol'], this, context);
     }
     if (map['__symbolic'] === 'error') {
       delete map['line'];

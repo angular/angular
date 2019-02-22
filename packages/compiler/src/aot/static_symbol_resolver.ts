@@ -420,18 +420,18 @@ export class StaticSymbolResolver {
             if (!filePath) {
               return {
                 __symbolic: 'error',
-                message:
-                    `Could not resolve ${module} relative to ${self.host.getMetadataFor(sourceSymbol.filePath)}.`,
-                line: map.line,
-                character: map.character,
+                message: `Could not resolve ${module} relative to ${
+                    self.host.getMetadataFor(sourceSymbol.filePath)}.`,
+                line: map['line'],
+                character: map['character'],
                 fileName: getOriginalName()
               };
             }
             return {
               __symbolic: 'resolved',
               symbol: self.getStaticSymbol(filePath, name),
-              line: map.line,
-              character: map.character,
+              line: map['line'],
+              character: map['character'],
               fileName: getOriginalName()
             };
           } else if (functionParams.indexOf(name) >= 0) {

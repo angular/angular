@@ -45,7 +45,7 @@ export class CssKeyframesDriver implements AnimationDriver {
     let tab = '';
     keyframes.forEach(kf => {
       tab = TAB_SPACE;
-      const offset = parseFloat(kf.offset);
+      const offset = parseFloat(kf['offset']);
       keyframeStr += `${tab}${offset * 100}% {\n`;
       tab += TAB_SPACE;
       Object.keys(kf).forEach(prop => {
