@@ -613,7 +613,7 @@ export class DragRef<T = any> {
       // from the DOM completely, because iOS will stop firing all subsequent events in the chain.
       element.style.display = 'none';
       this._document.body.appendChild(element.parentNode!.replaceChild(placeholder, element));
-      this._document.body.appendChild(preview);
+      getPreviewInsertionPoint(this._document).appendChild(preview);
       this._dropContainer.start();
     }
   }
@@ -1026,4 +1026,16 @@ function removeElement(element: HTMLElement | null) {
 /** Determines whether an event is a touch event. */
 function isTouchEvent(event: MouseEvent | TouchEvent): event is TouchEvent {
   return event.type.startsWith('touch');
+}
+
+/** Gets the element into which the drag preview should be inserted. */
+function getPreviewInsertionPoint(documentRef: any): HTMLElement {
+  // We can't use the body if the user is in fullscreen mode,
+  // because the preview will render under the fullscreen element.
+  // TODO(crisbeto): dedupe this with the `FullscreenOverlayContainer` eventually.
+  return documentRef.fullscreenElement ||
+         documentRef.webkitFullscreenElement ||
+         documentRef.mozFullScreenElement ||
+         documentRef.msFullscreenElement ||
+         documentRef.body;
 }

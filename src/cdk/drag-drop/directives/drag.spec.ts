@@ -12,6 +12,7 @@ import {
   ChangeDetectionStrategy,
 } from '@angular/core';
 import {TestBed, ComponentFixture, fakeAsync, flush, tick} from '@angular/core/testing';
+import {DOCUMENT} from '@angular/common';
 import {DragDropModule} from '../drag-drop-module';
 import {
   createMouseEvent,
@@ -1319,6 +1320,41 @@ describe('CdkDrag', () => {
       expect(item.style.display).toBeFalsy('Expected element to be visible');
       expect(preview.parentNode).toBeFalsy('Expected preview to be removed from the DOM');
     }));
+
+    it('should create the preview inside the fullscreen element when in fullscreen mode',
+      fakeAsync(() => {
+        // Provide a limited stub of the document since we can't trigger fullscreen
+        // mode in unit tests and there are some issues with doing it in e2e tests.
+        const fakeDocument = {
+          body: document.body,
+          fullscreenElement: document.createElement('div'),
+          ELEMENT_NODE: Node.ELEMENT_NODE,
+          querySelectorAll: function() {
+            return document.querySelectorAll.apply(document, arguments);
+          },
+          addEventListener: function() {
+            document.addEventListener.apply(document, arguments);
+          },
+          removeEventListener: function() {
+            document.addEventListener.apply(document, arguments);
+          }
+        };
+        const fixture = createComponent(DraggableInDropZone, [{
+          provide: DOCUMENT,
+          useFactory: () => fakeDocument
+        }]);
+        fixture.detectChanges();
+        const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+        document.body.appendChild(fakeDocument.fullscreenElement);
+        startDraggingViaMouse(fixture, item);
+        flush();
+
+        const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+
+        expect(preview.parentNode).toBe(fakeDocument.fullscreenElement);
+        fakeDocument.fullscreenElement.parentNode!.removeChild(fakeDocument.fullscreenElement);
+      }));
 
     it('should be able to constrain the preview position', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
