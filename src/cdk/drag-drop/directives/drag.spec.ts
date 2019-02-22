@@ -2241,6 +2241,59 @@ describe('CdkDrag', () => {
           .toEqual(['Zero', 'One', 'Two', 'Three']);
     }));
 
+    it('should not sort an item if sorting the list is disabled', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const dropInstance = fixture.componentInstance.dropInstance;
+      const dragItems = fixture.componentInstance.dragItems;
+
+      dropInstance.sortingDisabled = true;
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      const firstItem = dragItems.first;
+      const thirdItemRect = dragItems.toArray()[2].element.nativeElement.getBoundingClientRect();
+      const targetX = thirdItemRect.left + 1;
+      const targetY = thirdItemRect.top + 1;
+
+      startDraggingViaMouse(fixture, firstItem.element.nativeElement);
+
+      const placeholder = document.querySelector('.cdk-drag-placeholder') as HTMLElement;
+
+      dispatchMouseEvent(document, 'mousemove', targetX, targetY);
+      fixture.detectChanges();
+
+      expect(getElementIndexByPosition(placeholder, 'top'))
+          .toBe(0, 'Expected placeholder to stay in place.');
+
+      dispatchMouseEvent(document, 'mouseup', targetX, targetY);
+      fixture.detectChanges();
+
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      // Assert the event like this, rather than `toHaveBeenCalledWith`, because Jasmine will
+      // go into an infinite loop trying to stringify the event, if the test fails.
+      expect(event).toEqual({
+        previousIndex: 0,
+        currentIndex: 0,
+        item: firstItem,
+        container: dropInstance,
+        previousContainer: dropInstance,
+        isPointerOverContainer: true
+      });
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+    }));
+
+
   });
 
   describe('in a connected drop container', () => {
@@ -2850,6 +2903,54 @@ describe('CdkDrag', () => {
           isPointerOverContainer: false
         }));
 
+      }));
+
+    it('should return the item to its initial position, if sorting in the source container ' +
+      'was disabled', fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems;
+        const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+        const item = groups[0][1];
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        fixture.componentInstance.dropInstances.first.sortingDisabled = true;
+        startDraggingViaMouse(fixture, item.element.nativeElement);
+
+        const placeholder = dropZones[0].querySelector('.cdk-drag-placeholder')!;
+
+        expect(placeholder).toBeTruthy();
+        expect(dropZones[0].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be inside the first container.');
+        expect(getElementIndexByPosition(placeholder, 'top'))
+            .toBe(1, 'Expected placeholder to be at item index.');
+
+        dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[1].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be inside second container.');
+        expect(getElementIndexByPosition(placeholder, 'top'))
+            .toBe(3, 'Expected placeholder to be at the target index.');
+
+        const firstInitialSiblingRect = groups[0][0].element
+            .nativeElement.getBoundingClientRect();
+
+        // Return the item to an index that is different from the initial one.
+        dispatchMouseEvent(document, 'mousemove', firstInitialSiblingRect.left + 1,
+            firstInitialSiblingRect.top + 1);
+        fixture.detectChanges();
+
+        expect(dropZones[0].contains(placeholder))
+            .toBe(true, 'Expected placeholder to be back inside first container.');
+        expect(getElementIndexByPosition(placeholder, 'top'))
+            .toBe(1, 'Expected placeholder to be back at the initial index.');
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
       }));
 
   });

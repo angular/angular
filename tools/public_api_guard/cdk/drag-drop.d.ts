@@ -128,6 +128,7 @@ export declare class CdkDropList<T = any> implements CdkDropListContainer, After
     lockAxis: 'x' | 'y';
     orientation: 'horizontal' | 'vertical';
     sorted: EventEmitter<CdkDragSortEvent<T>>;
+    sortingDisabled: boolean;
     constructor(
     element: ElementRef<HTMLElement>, dragDropRegistry: DragDropRegistry<DragRef, DropListRef>, _changeDetectorRef: ChangeDetectorRef, _dir?: Directionality | undefined, _group?: CdkDropListGroup<CdkDropList<any>> | undefined, _document?: any,
     dragDrop?: DragDrop);
@@ -296,6 +297,7 @@ export declare class DropListRef<T = any> {
         container: DropListRef<any>;
         item: DragRef;
     }>;
+    sortingDisabled: boolean;
     constructor(element: ElementRef<HTMLElement> | HTMLElement, _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>, _document: any);
     _canReceive(item: DragRef, x: number, y: number): boolean;
     _getSiblingContainerFromPosition(item: DragRef, x: number, y: number): DropListRef | undefined;

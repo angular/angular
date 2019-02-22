@@ -63,6 +63,9 @@ export class DropListRef<T = any> {
   /** Whether starting a dragging sequence from this container is disabled. */
   disabled: boolean = false;
 
+  /** Whether sorting items within the list is disabled. */
+  sortingDisabled: boolean = true;
+
   /** Locks the position of the draggable elements inside the container along the specified axis. */
   lockAxis: 'x' | 'y';
 
@@ -189,17 +192,32 @@ export class DropListRef<T = any> {
     this.entered.next({item, container: this});
     this.start();
 
-    // We use the coordinates of where the item entered the drop
-    // zone to figure out at which index it should be inserted.
-    const newIndex = this._getItemIndexFromPointerPosition(item, pointerX, pointerY);
-    const currentIndex = this._activeDraggables.indexOf(item);
-    const newPositionReference = this._activeDraggables[newIndex];
+    // If sorting is disabled, we want the item to return to its starting
+    // position if the user is returning it to its initial container.
+    let newIndex = this.sortingDisabled ? this._draggables.indexOf(item) : -1;
+
+    if (newIndex === -1) {
+      // We use the coordinates of where the item entered the drop
+      // zone to figure out at which index it should be inserted.
+      newIndex = this._getItemIndexFromPointerPosition(item, pointerX, pointerY);
+    }
+
+    const activeDraggables = this._activeDraggables;
+    const currentIndex = activeDraggables.indexOf(item);
     const placeholder = item.getPlaceholderElement();
+    let newPositionReference: DragRef | undefined = activeDraggables[newIndex];
+
+    // If the item at the new position is the same as the item that is being dragged,
+    // it means that we're trying to restore the item to its initial position. In this
+    // case we should use the next item from the list as the reference.
+    if (newPositionReference === item) {
+      newPositionReference = activeDraggables[newIndex + 1];
+    }
 
     // Since the item may be in the `activeDraggables` already (e.g. if the user dragged it
     // into another container and back again), we have to ensure that it isn't duplicated.
     if (currentIndex > -1) {
-      this._activeDraggables.splice(currentIndex, 1);
+      activeDraggables.splice(currentIndex, 1);
     }
 
     // Don't use items that are being dragged as a reference, because
@@ -207,10 +225,10 @@ export class DropListRef<T = any> {
     if (newPositionReference && !this._dragDropRegistry.isDragging(newPositionReference)) {
       const element = newPositionReference.getRootElement();
       element.parentElement!.insertBefore(placeholder, element);
-      this._activeDraggables.splice(newIndex, 0, item);
+      activeDraggables.splice(newIndex, 0, item);
     } else {
       this.element.appendChild(placeholder);
-      this._activeDraggables.push(item);
+      activeDraggables.push(item);
     }
 
     // The transform needs to be cleared so it doesn't throw off the measurements.
@@ -321,8 +339,8 @@ export class DropListRef<T = any> {
    */
   _sortItem(item: DragRef, pointerX: number, pointerY: number,
             pointerDelta: {x: number, y: number}): void {
-    // Don't sort the item if it's out of range.
-    if (!this._isPointerNearDropContainer(pointerX, pointerY)) {
+    // Don't sort the item if sorting is disabled or it's out of range.
+    if (this.sortingDisabled || !this._isPointerNearDropContainer(pointerX, pointerY)) {
       return;
     }
 
