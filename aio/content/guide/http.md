@@ -865,6 +865,9 @@ with the `reportProgress` option set true to enable tracking of progress events.
 
 Every progress event triggers change detection, so only turn them on if you truly intend to report progress in the UI.
 
+When using [`HttpClient#request()`](api/common/http/HttpClient#request) with an HTTP method, configure with
+[`observe: 'events'`](api/common/http/HttpClient#request) to see all events, including the progress of transfers.
+
 </div>
 
 Next, pass this request object to the `HttpClient.request()` method, which
