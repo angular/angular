@@ -1,6 +1,7 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
-load("@build_bazel_rules_nodejs//:defs.bzl", _jasmine_node_test = "jasmine_node_test", _nodejs_binary = "nodejs_binary", _npm_package = "npm_package")
+load("@build_bazel_rules_nodejs//:defs.bzl", _nodejs_binary = "nodejs_binary", _npm_package = "npm_package")
+load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
 load("@npm_bazel_karma//:defs.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite", _ts_web_test = "ts_web_test", _ts_web_test_suite = "ts_web_test_suite")
 load("@npm_bazel_typescript//:defs.bzl", _ts_library = "ts_library")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
@@ -279,7 +280,6 @@ def jasmine_node_test(deps = [], **kwargs):
         # Very common dependencies for tests
         "@ngdeps//chokidar",
         "@ngdeps//domino",
-        "@ngdeps//jasmine",
         "@ngdeps//jasmine-core",
         "@ngdeps//mock-fs",
         "@ngdeps//reflect-metadata",
@@ -291,6 +291,7 @@ def jasmine_node_test(deps = [], **kwargs):
         deps = deps,
         # Pass-thru --define=compile=foo as an environment variable
         configuration_env_vars = ["compile"],
+        jasmine = "@ngdeps//jasmine",
         **kwargs
     )
 
