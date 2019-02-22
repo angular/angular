@@ -113,9 +113,12 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 
   // Once the thumb container is being dragged around, we remove the transition duration to
   // make the drag feeling fast and not delayed.
-  &.mat-dragging, &:active {
-    @include cursor-grabbing;
+  &.mat-dragging {
     transition-duration: 0ms;
+  }
+
+  &:active {
+    @include cursor-grabbing;
   }
 
   ._mat-animation-noopable & {
