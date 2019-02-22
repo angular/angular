@@ -568,7 +568,7 @@ export function updateStylingMap(
   const classesValue = classesPlayerBuilder ?
       (classesInput as BoundPlayerFactory<{[key: string]: any}|string>) !.value :
       classesInput;
-  const stylesValue = stylesPlayerBuilder ? stylesInput !.value : stylesInput;
+  const stylesValue = stylesPlayerBuilder ? stylesInput !['value'] : stylesInput;
 
   let classNames: string[] = EMPTY_ARRAY;
   let applyAllClasses = false;

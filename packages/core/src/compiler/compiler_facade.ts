@@ -10,7 +10,7 @@ import {CompilerFacade, ExportedCompilerFacade} from './compiler_facade_interfac
 export * from './compiler_facade_interface';
 
 export function getCompilerFacade(): CompilerFacade {
-  const globalNg: ExportedCompilerFacade = global.ng;
+  const globalNg: ExportedCompilerFacade = global['ng'];
   if (!globalNg || !globalNg.ɵcompilerFacade) {
     throw new Error(
         `Angular JIT compilation failed: '@angular/compiler' not loaded!\n` +
