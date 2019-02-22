@@ -296,6 +296,31 @@ describe('MatProgressSpinner', () => {
     expect(progressElement.componentInstance.strokeWidth).toBe(7);
   });
 
+  it('should set `aria-valuenow` to the current value in determinate mode', () => {
+    const fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    fixture.componentInstance.mode = 'determinate';
+    fixture.componentInstance.value = 37;
+    fixture.detectChanges();
+
+    expect(progressElement.nativeElement.getAttribute('aria-valuenow')).toBe('37');
+  });
+
+  it('should clear `aria-valuenow` in indeterminate mode', () => {
+    const fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    fixture.componentInstance.mode = 'determinate';
+    fixture.componentInstance.value = 89;
+    fixture.detectChanges();
+
+    expect(progressElement.nativeElement.hasAttribute('aria-valuenow')).toBe(true);
+
+    fixture.componentInstance.mode = 'indeterminate';
+    fixture.detectChanges();
+
+    expect(progressElement.nativeElement.hasAttribute('aria-valuenow')).toBe(false);
+  });
+
 });
 
 
