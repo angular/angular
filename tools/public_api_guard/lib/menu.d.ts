@@ -112,6 +112,7 @@ export declare class MatMenuTrigger implements AfterContentInit, OnDestroy {
     readonly menuOpened: EventEmitter<void>;
     readonly onMenuClose: EventEmitter<void>;
     readonly onMenuOpen: EventEmitter<void>;
+    restoreFocus: boolean;
     constructor(_overlay: Overlay, _element: ElementRef<HTMLElement>, _viewContainerRef: ViewContainerRef, scrollStrategy: any, _parentMenu: MatMenu, _menuItemInstance: MatMenuItem, _dir: Directionality, _focusMonitor?: FocusMonitor | undefined);
     _handleClick(event: MouseEvent): void;
     _handleKeydown(event: KeyboardEvent): void;

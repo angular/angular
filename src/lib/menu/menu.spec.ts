@@ -159,6 +159,27 @@ describe('MatMenu', () => {
     expect(document.activeElement).toBe(triggerEl);
   }));
 
+  it('should not restore focus to the trigger if focus restoration is disabled', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+    const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
+
+    fixture.componentInstance.restoreFocus = false;
+    fixture.detectChanges();
+
+    // A click without a mousedown before it is considered a keyboard open.
+    triggerEl.click();
+    fixture.detectChanges();
+
+    expect(overlayContainerElement.querySelector('.mat-menu-panel')).toBeTruthy();
+
+    fixture.componentInstance.trigger.closeMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    expect(document.activeElement).not.toBe(triggerEl);
+  }));
+
   it('should be able to set a custom class on the backdrop', fakeAsync(() => {
     const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
 
@@ -1976,7 +1997,10 @@ describe('MatMenu default overrides', () => {
 
 @Component({
   template: `
-    <button [matMenuTriggerFor]="menu" #triggerEl>Toggle menu</button>
+    <button
+      [matMenuTriggerFor]="menu"
+      [matMenuTriggerRestoreFocus]="restoreFocus"
+      #triggerEl>Toggle menu</button>
     <mat-menu
       #menu="matMenu"
       [class]="panelClass"
@@ -2002,6 +2026,7 @@ class SimpleMenu {
   closeCallback = jasmine.createSpy('menu closed callback');
   backdropClass: string;
   panelClass: string;
+  restoreFocus = true;
 }
 
 @Component({
