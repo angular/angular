@@ -37,10 +37,6 @@
     "angular",
     "compiler"
   ],
-  "contributors": [
-    "Tobias Bosch <tbosch@google.com> (https://angular.io/)",
-    "Alex Eagle <alexeagle@google.com> (https://angular.io/)"
-  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
