@@ -787,7 +787,17 @@ export const Output: OutputDecorator = makePropDecorator(
  * @publicApi
  */
 export interface HostBindingDecorator {
-  /**
+  (hostPropertyName?: string): any;
+  new (hostPropertyName?: string): any;
+}
+
+/**
+ * Type of the HostBinding metadata.
+ *
+ * @publicApi
+ */
+export interface HostBinding { hostPropertyName?: string; }
+/**
    * Decorator that marks a DOM property as a host-binding property and supplies configuration
    * metadata.
    * Angular automatically checks host property bindings during change detection, and
@@ -816,17 +826,6 @@ export interface HostBindingDecorator {
    * ```
    *
    */
-  (hostPropertyName?: string): any;
-  new (hostPropertyName?: string): any;
-}
-
-/**
- * Type of the HostBinding metadata.
- *
- * @publicApi
- */
-export interface HostBinding { hostPropertyName?: string; }
-
 /**
  * @Annotation
  * @publicApi
