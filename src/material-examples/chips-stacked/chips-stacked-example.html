@@ -1,4 +1,4 @@
-<mat-chip-list class="mat-chip-list-stacked">
+<mat-chip-list class="mat-chip-list-stacked" aria-label="Color selection">
   <mat-chip *ngFor="let chip of availableColors" selected [color]="chip.color">
     {{chip.name}}
   </mat-chip>
