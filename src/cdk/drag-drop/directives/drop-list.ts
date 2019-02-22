@@ -315,6 +315,7 @@ export class CdkDropList<T = any> implements CdkDropListContainer, AfterContentI
         });
       }
 
+      ref.disabled = this.disabled;
       ref.lockAxis = this.lockAxis;
       ref.sortingDisabled = this.sortingDisabled;
       ref

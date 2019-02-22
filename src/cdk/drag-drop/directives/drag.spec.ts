@@ -892,6 +892,25 @@ describe('CdkDrag', () => {
       expect(fixture.componentInstance.dropInstance.data).toBe(fixture.componentInstance.items);
     });
 
+    it('should sync the drop list inputs with the drop list ref', () => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const dropInstance = fixture.componentInstance.dropInstance;
+      const dropListRef = dropInstance._dropListRef;
+
+      expect(dropListRef.lockAxis).toBeFalsy();
+      expect(dropListRef.disabled).toBe(false);
+
+      dropInstance.lockAxis = 'x';
+      dropInstance.disabled = true;
+
+      dropListRef.beforeStarted.next();
+
+      expect(dropListRef.lockAxis).toBe('x');
+      expect(dropListRef.disabled).toBe(true);
+    });
+
     it('should be able to attach data to a drag item', () => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
