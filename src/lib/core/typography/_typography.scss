@@ -19,11 +19,13 @@
 
 // Represents a collection of typography levels.
 // Defaults come from https://material.io/guidelines/style/typography.html
+// Note: The spec doesn't mention letter spacing. The values here come from
+// eyeballing it until it looked exactly like the spec examples.
 @function mat-typography-config(
   $font-family:   'Roboto, "Helvetica Neue", sans-serif',
-  $display-4:     mat-typography-level(112px, 112px, 300),
-  $display-3:     mat-typography-level(56px, 56px, 400),
-  $display-2:     mat-typography-level(45px, 48px, 400),
+  $display-4:     mat-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
+  $display-3:     mat-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
+  $display-2:     mat-typography-level(45px, 48px, 400, $letter-spacing: -0.005em),
   $display-1:     mat-typography-level(34px, 40px, 400),
   $headline:      mat-typography-level(24px, 32px, 400),
   $title:         mat-typography-level(20px, 32px, 500),
@@ -130,24 +132,19 @@
     @include mat-typography-level-to-styles($config, caption);
   }
 
-  // Note: The spec doesn't mention letter spacing. The value comes from
-  // eyeballing it until it looked exactly like the spec examples.
   .mat-display-4, #{$selector} .mat-display-4 {
     @include mat-typography-level-to-styles($config, display-4);
     margin: 0 0 56px;
-    letter-spacing: -0.05em;
   }
 
   .mat-display-3, #{$selector} .mat-display-3 {
     @include mat-typography-level-to-styles($config, display-3);
     margin: 0 0 64px;
-    letter-spacing: -0.02em;
   }
 
   .mat-display-2, #{$selector} .mat-display-2 {
     @include mat-typography-level-to-styles($config, display-2);
     margin: 0 0 64px;
-    letter-spacing: -0.005em;
   }
 
   .mat-display-1, #{$selector} .mat-display-1 {
