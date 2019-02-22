@@ -703,7 +703,7 @@ window.testBlocklist = {
   },
   "Dialog should set the proper animation states": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
-    "notes": "Unknown"
+    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
   "FullscreenOverlayContainer should open an overlay inside a fullscreen element and move it to the body": {
     "error": "Error: Must provide a portal to attach",
@@ -751,31 +751,31 @@ window.testBlocklist = {
   },
   "MatDialog should set the proper animation states": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
-    "notes": "Unknown"
+    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
   "MatDialog dialog content elements inside component dialog should close the dialog when clicking on the close button": {
     "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
+    "notes": "FW-1097: Static host classes and styles don't work on root component"
   },
   "MatDialog dialog content elements inside component dialog should not close if [mat-dialog-close] is applied on a non-button node": {
     "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
+    "notes": "FW-1097: Static host classes and styles don't work on root component"
   },
   "MatDialog dialog content elements inside template portal should close the dialog when clicking on the close button": {
     "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
+    "notes": "FW-1097: Static host classes and styles don't work on root component"
   },
   "MatDialog dialog content elements inside template portal should not close if [mat-dialog-close] is applied on a non-button node": {
     "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
+    "notes": "FW-1097: Static host classes and styles don't work on root component"
   },
   "MatDialog dialog content elements inside template portal should return the [mat-dialog-close] result when clicking the close button": {
     "error": "Uncaught TypeError: Cannot read property 'close' of null thrown",
-    "notes": "Unknown"
+    "notes": "FW-1097: Static host classes and styles don't work on root component"
   },
   "MatDialog dialog content elements inside template portal should set the aria-labelledby attribute to the id of the title": {
     "error": "Error: Expected null to be 'mat-dialog-title-12', 'Expected the aria-labelledby to match the title id.'.",
-    "notes": "Unknown"
+    "notes": "FW-1097: Static host classes and styles don't work on root component"
   },
   "MatMenu should open a custom menu": {
     "error": "Error: Expected function not to throw an Error, but it threw TypeError.",
