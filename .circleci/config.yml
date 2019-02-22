@@ -26,7 +26,7 @@ var_2: &browsers_docker_image circleci/node:10.12-browsers
 # **NOTE 1 **: If you change the cache key prefix, also sync the restore_cache fallback to match.
 # **NOTE 2 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
 # See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
-var_3: &cache_key v2-angular-node-10.12-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}
+var_3: &cache_key v3-angular-node-10.12-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
 
 # Initializes the CI environment by setting up common environment variables.
 var_4: &init_environment
@@ -39,6 +39,15 @@ var_4: &init_environment
       sudo chmod a+x $ourYarn
       sudo ln -fs $ourYarn /usr/local/bin/yarn
       echo "Yarn version: $(yarn --version)"
+
+      # Add GitHub to known hosts.
+      mkdir -p ~/.ssh
+      echo 'github.com ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==' >> ~/.ssh/known_hosts
+
+      # use git+ssh instead of https
+      git config --global url."ssh://git@github.com".insteadOf "https://github.com" || true
+      git config --global gc.auto 0 || true
+
 
 var_5: &setup_bazel_remote_execution
   run:
@@ -97,7 +106,7 @@ var_10: &restore_cache
     keys:
       - *cache_key
       # This fallback should be the cache_key without variables.
-      - v2-angular-node-10.12-
+      - v3-angular-node-10.12-
 
 # Branch filter that can be specified for jobs that should only run on publish branches
 # (e.g. master or the patch branch)
@@ -108,16 +117,36 @@ var_12: &publish_branches_filter
       # e.g. 7.0.x, 7.1.x, etc.
       - /\d+\.\d+\.x/
 
+# Workspace initially persisted by the `install` job, and then enhanced by test_aio and
+# build-npm-packages.
+# https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
+# https://circleci.com/blog/deep-diving-into-circleci-workspaces/
+var_13: &attach_options
+  at: .
+
 version: 2
 jobs:
-  lint:
+  install:
     <<: *job_defaults
     steps:
       - checkout
       - *post_checkout
+      # This cache is saved in the build-npm-packages so that Bazel cache is also included.
       - *restore_cache
       - *init_environment
       - *yarn_install
+      - run: yarn --cwd aio install --frozen-lockfile --non-interactive
+      # Persist any changes at this point to be reused by further jobs.
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./*
+
+  lint:
+    <<: *job_defaults
+    steps:
+      - attach_workspace: *attach_options
+      - *init_environment
 
       - run: 'yarn bazel:format -mode=check ||
               (echo "BUILD files not formatted. Please run ''yarn bazel:format''" ; exit 1)'
@@ -131,11 +160,8 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
+      - attach_workspace: *attach_options
       - *init_environment
-      - *yarn_install
       - *setup_circleci_bazel_config
 
       # Setup remote execution and run RBE-compatible tests.
@@ -150,11 +176,8 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
+      - attach_workspace: *attach_options
       - *init_environment
-      - *yarn_install
       - *setup_circleci_bazel_config
       - *setup_bazel_remote_execution
 
@@ -219,9 +242,7 @@ jobs:
       # Needed because the AIO tests and the PWA score test depend on Chrome being available.
       - image: *browsers_docker_image
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
+      - attach_workspace: *attach_options
       - *init_environment
         # Build aio
       - run: yarn --cwd aio build --progress=false
@@ -246,9 +267,7 @@ jobs:
     # Needed because before deploying the deploy-production script runs the PWA score tests.
     - image: *browsers_docker_image
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
+      - attach_workspace: *attach_options
       - *init_environment
         # Deploy angular.io to production (if necessary)
       - run: setPublicVar CI_STABLE_BRANCH "$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')"
@@ -260,11 +279,7 @@ jobs:
       # Needed because the AIO tests and the PWA score test depend on Chrome being available.
       - image: *browsers_docker_image
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
-      - attach_workspace:
-          at: dist
+      - attach_workspace: *attach_options
       - *init_environment
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local --progress=false
@@ -279,11 +294,7 @@ jobs:
   test_aio_local_ivy:
     <<: *job_defaults
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
-      - attach_workspace:
-          at: dist
+      - attach_workspace: *attach_options
       - *init_environment
         # Build aio with Ivy (using local Angular packages)
       - run: yarn --cwd aio build-with-ivy --progress=false
@@ -291,11 +302,7 @@ jobs:
   test_aio_tools:
     <<: *job_defaults
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
-      - attach_workspace:
-          at: dist
+      - attach_workspace: *attach_options
       - *init_environment
         # Install
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
@@ -311,11 +318,7 @@ jobs:
       - image: *browsers_docker_image
     parallelism: 3
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
-      - attach_workspace:
-          at: dist
+      - attach_workspace: *attach_options
       - *init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
@@ -331,11 +334,7 @@ jobs:
       - image: *browsers_docker_image
     parallelism: 3
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
-      - attach_workspace:
-          at: dist
+      - attach_workspace: *attach_options
       - *init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
@@ -350,9 +349,7 @@ jobs:
     environment:
        AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
+      - attach_workspace: *attach_options
       - *init_environment
       - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CI_PULL_REQUEST $CI_COMMIT
       - store_artifacts:
@@ -369,9 +366,7 @@ jobs:
       # Needed because the test-preview script runs e2e tests and the PWA score test with Chrome.
       - image: *browsers_docker_image
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
+      - attach_workspace: *attach_options
       - *init_environment
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run:
@@ -391,27 +386,24 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
+      - attach_workspace: *attach_options
       - *init_environment
-      - *yarn_install
       - *setup_circleci_bazel_config
       - *setup_bazel_remote_execution
 
       - run: scripts/build-packages-dist.sh
 
       # Save the npm packages from //packages/... for other workflow jobs to read
-      # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
       - persist_to_workspace:
-          root: dist
+          root: .
           paths:
-            - packages-dist
+            - dist/packages-dist
 
       - save_cache:
           key: *cache_key
           paths:
             - "node_modules"
+            - "aio/node_modules"
             - "~/bazel_repository_cache"
 
 
@@ -420,22 +412,18 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
+      - attach_workspace: *attach_options
       - *init_environment
-      - *yarn_install
       - *setup_circleci_bazel_config
       - *setup_bazel_remote_execution
 
       - run: scripts/build-ivy-npm-packages.sh
 
       # Save the npm packages from //packages/... for other workflow jobs to read
-      # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
       - persist_to_workspace:
-          root: dist
+          root: .
           paths:
-            - packages-dist-ivy-aot
+            - dist/packages-dist-ivy-aot
 
   # We run the integration tests outside of Bazel for now.
   # They are a separate workflow job so that they can be easily re-run.
@@ -454,14 +442,8 @@ jobs:
     # on a 4G worker so we use a larger machine here too.
     resource_class: xlarge
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
-      - attach_workspace:
-          at: dist
+      - attach_workspace: *attach_options
       - *init_environment
-      # Some integration tests get their dependencies from the root `node_modules/`.
-      - *yarn_install
       # Runs the integration tests in parallel across multiple CircleCI container instances. The
       # amount of container nodes for this job is controlled by the "parallelism" option.
       - run: ./integration/run_tests.sh ${CIRCLE_NODE_INDEX} ${CIRCLE_NODE_TOTAL}
@@ -471,8 +453,7 @@ jobs:
   publish_snapshot:
     <<: *job_defaults
     steps:
-      - checkout
-      - *post_checkout
+      - attach_workspace: *attach_options
       - *init_environment
       # See below - ideally this job should not trigger for non-upstream builds.
       # But since it does, we have to check this condition.
@@ -484,8 +465,6 @@ jobs:
               || "$CI_REPO_OWNER" != "angular"
               || "$CI_REPO_NAME" != "angular"
           ]] && circleci step halt || true'
-      - attach_workspace:
-          at: dist
       # CircleCI has a config setting to force SSH for all github connections
       # This is not compatible with our mechanism of using a Personal Access Token
       # Clear the global setting
@@ -523,11 +502,8 @@ jobs:
     # and therefore the tunnel and Karma need to process a lot of file requests and tests.
     resource_class: xlarge
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
+      - attach_workspace: *attach_options
       - *init_environment
-      - *yarn_install
       - run:
           name: Preparing environment for running tests on Saucelabs.
           command: |
@@ -548,13 +524,8 @@ jobs:
   legacy-misc-tests:
     <<: *job_defaults
     steps:
-      - checkout
-      - *post_checkout
-      - *restore_cache
+      - attach_workspace: *attach_options
       - *init_environment
-      - *yarn_install
-      - attach_workspace:
-          at: dist
       - run: yarn gulp check-cycle
       # TODO: disabled because the Bazel packages-dist does not seem to have map files for
       # the ESM5/ES2015 output. See: https://github.com/angular/angular/issues/27966
@@ -568,23 +539,33 @@ jobs:
     docker:
       - image: *browsers_docker_image
     steps:
-      - checkout
-      - *post_checkout
+      - attach_workspace: *attach_options
       - *init_environment
-      - attach_workspace:
-          at: dist
       - run: ./scripts/ci/run_angular_material_unit_tests.sh
 
 workflows:
   version: 2
   default_workflow:
     jobs:
-      - lint
-      - test
-      - test_ivy_aot
-      - build-npm-packages
-      - build-ivy-npm-packages
-      - test_aio
+      - install
+      - lint:
+          requires:
+          - install
+      - test:
+          requires:
+          - install
+      - test_ivy_aot:
+          requires:
+          - install
+      - build-npm-packages:
+          requires:
+          - install
+      - build-ivy-npm-packages:
+          requires:
+          - install
+      - test_aio:
+          requires:
+          - install
       - deploy_aio:
           requires:
             - test_aio
@@ -607,6 +588,8 @@ workflows:
           requires:
             - build-npm-packages
       - aio_preview:
+          requires:
+            - install
           # Only run on PR builds. (There can be no previews for non-PR builds.)
           filters:
             branches:
