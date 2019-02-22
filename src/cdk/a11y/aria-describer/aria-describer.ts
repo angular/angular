@@ -83,7 +83,7 @@ export class AriaDescriber implements OnDestroy {
 
   /** Removes the host element's aria-describedby reference to the message element. */
   removeDescription(hostElement: Element, message: string) {
-    if (!this._canBeDescribed(hostElement, message)) {
+    if (!this._isElementNode(hostElement)) {
       return;
     }
 
@@ -218,10 +218,22 @@ export class AriaDescriber implements OnDestroy {
 
   /** Determines whether a message can be described on a particular element. */
   private _canBeDescribed(element: Element, message: string): boolean {
-    return element.nodeType === this._document.ELEMENT_NODE && message != null &&
-        !!`${message}`.trim();
+    if (!this._isElementNode(element)) {
+      return false;
+    }
+
+    const trimmedMessage = message == null ? '' : `${message}`.trim();
+    const ariaLabel = element.getAttribute('aria-label');
+
+    // We shouldn't set descriptions if they're exactly the same as the `aria-label` of the element,
+    // because screen readers will end up reading out the same text twice in a row.
+    return trimmedMessage ? (!ariaLabel || ariaLabel.trim() !== trimmedMessage) : false;
   }
 
+  /** Checks whether a node is an Element node. */
+  private _isElementNode(element: Node): element is Element {
+    return element.nodeType === this._document.ELEMENT_NODE;
+  }
 }
 
 
