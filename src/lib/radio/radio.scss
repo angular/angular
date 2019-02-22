@@ -26,6 +26,9 @@ $mat-radio-ripple-radius: 20px;
   align-items: center;
   white-space: nowrap;
   vertical-align: middle;
+
+  // Have the label span the rest of the radio button for maximum clickable area.
+  width: 100%;
 }
 
 // Container for radio circles and ripple.
