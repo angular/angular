@@ -20,5 +20,5 @@ If a problem has been fixed, you can regenerate the blocklist by:
 3. Run `yarn`
 4. Run `scripts/ivy/install-angular.sh path/to/local/angular/repo`
 5. Run `gulp test`. Let it finish. It will take a few minutes.
-6. Run `scripts/ivy/generate-blocklist.js`
+6. Run `scripts/ivy/generate-blocklist.js path/to/local/angular/repo`
 7. Copy the new blocklist from `dist/angular_material_test_blocklist.js`

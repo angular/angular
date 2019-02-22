@@ -493,10 +493,6 @@ window.testBlocklist = {
     "error": "Error: Expected $.length = 0 to equal 3.",
     "notes": "Unknown"
   },
-  "MatStepper basic stepper should adjust the index when removing a step before the current one": {
-    "error": "Error: Expected 2 to be 1.",
-    "notes": "Unknown"
-  },
   "MatStepper linear stepper should not move to next step if current step is pending": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
@@ -609,10 +605,6 @@ window.testBlocklist = {
     "error": "Error: Expected '' to be '20px'.",
     "notes": "Unknown"
   },
-  "MatSort should use the column definition if used within an mat table": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
-  },
   "MatTree flat tree should initialize with rendered dataNodes": {
     "error": "TypeError: Cannot read property 'classList' of undefined",
     "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
@@ -669,10 +661,6 @@ window.testBlocklist = {
     "error": "Error: Input type \"file\" isn't supported by matInput.",
     "notes": "Unknown"
   },
-  "MatInput without forms should not highlight when focusing a readonly input": {
-    "error": "Error: Expected true to be false.",
-    "notes": "Unknown"
-  },
   "MatInput with textarea autosize should work in a step": {
     "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
     "notes": "Unknown"
@@ -717,10 +705,6 @@ window.testBlocklist = {
     "error": "Error: Must provide a portal to attach",
     "notes": "Unknown"
   },
-  "MatBottomSheet should position the bottom sheet at the bottom center of the screen": {
-    "error": "Error: Expected 511 to be 512.",
-    "notes": "Unknown"
-  },
   "MatAutocomplete aria should set role of autocomplete panel to listbox": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
@@ -733,10 +717,6 @@ window.testBlocklist = {
     "error": "Error: Expected null not to be null.",
     "notes": "Unknown"
   },
-  "MatDatepicker with MatNativeDateModule datepicker with mat-datepicker-toggle should toggle the active state of the datepicker toggle": {
-    "error": "Error: this._portalOutlet is undefined.",
-    "notes": "FW-1019: Design new API to replace static queries"
-  },
   "MatDatepicker with MatNativeDateModule datepicker inside mat-form-field should pass the form field theme color to the overlay": {
     "error": "TypeError: Cannot read property 'classList' of null",
     "notes": "Unknown"
@@ -744,10 +724,6 @@ window.testBlocklist = {
   "MatDatepicker with MatNativeDateModule datepicker inside mat-form-field should prefer the datepicker color over the form field one": {
     "error": "TypeError: Cannot read property 'classList' of null",
     "notes": "Unknown"
-  },
-  "MatDatepicker with MatNativeDateModule datepicker with filter and validation should disable filtered calendar cells": {
-    "error": "Error: this._portalOutlet is undefined.",
-    "notes": "FW-1019: Design new API to replace static queries"
   },
   "MatDialog should set the proper animation states": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
@@ -846,76 +822,72 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatTable with basic data source should be able to create a table with the right content and without when row": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable with basic data source should create a table with special when row": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable with basic data source should create a table with multiTemplateDataRows true": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable should be able to render a table correctly with native elements": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
     "notes": "Unknown"
   },
   "MatTable should render with MatTableDataSource and sort": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable should render with MatTableDataSource and pagination": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable should apply custom sticky CSS class to sticky cells": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
     "notes": "Unknown"
   },
-  "MatTable should not throw when a row definition is on an ng-container": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'diff' of undefined.",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
-  },
   "MatTable with MatTableDataSource and sort/pagination/filter should create table and display data source contents": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter changing data should update the table contents": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should be able to filter the table contents": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should not match concatenated words": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should be able to sort the table contents": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should by default correctly sort an empty string": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should by default correctly sort undefined values": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should sort zero correctly": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should be able to page the table contents": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should sort strings with numbers larger than MAX_SAFE_INTEGER correctly": {
-    "error": "TypeError: Cannot read property 'diff' of undefined",
-    "notes": "FW-1082: ngOnChanges hooks aren't inherited from grand-superclasses"
+    "error": "TypeError: Cannot read property 'querySelectorAll' of null",
+    "notes": "Unknown"
   }
 };
 // clang-format on
