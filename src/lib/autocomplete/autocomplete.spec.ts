@@ -1966,6 +1966,31 @@ describe('MatAutocomplete', () => {
       expect(panel.classList).toContain('class-two');
     }));
 
+    it('should remove old classes when the panel class changes', fakeAsync(() => {
+         const fixture = createComponent(SimpleAutocomplete);
+         fixture.detectChanges();
+
+         fixture.componentInstance.trigger.openPanel();
+         tick();
+         fixture.detectChanges();
+
+         const classList =
+             overlayContainerElement.querySelector('.mat-autocomplete-panel')!.classList;
+
+         expect(classList).toContain('mat-autocomplete-visible');
+         expect(classList).toContain('class-one');
+         expect(classList).toContain('class-two');
+
+         fixture.componentInstance.panelClass = 'class-three class-four';
+         fixture.detectChanges();
+
+         expect(classList).not.toContain('class-one');
+         expect(classList).not.toContain('class-two');
+         expect(classList).toContain('mat-autocomplete-visible');
+         expect(classList).toContain('class-three');
+         expect(classList).toContain('class-four');
+       }));
+
     it('should reset correctly when closed programmatically', fakeAsync(() => {
       const scrolledSubject = new Subject();
       const fixture = createComponent(SimpleAutocomplete, [
@@ -2307,7 +2332,7 @@ describe('MatAutocomplete', () => {
         [formControl]="stateCtrl">
     </mat-form-field>
 
-    <mat-autocomplete class="class-one class-two" #auto="matAutocomplete" [displayWith]="displayFn"
+    <mat-autocomplete [class]="panelClass" #auto="matAutocomplete" [displayWith]="displayFn"
       [disableRipple]="disableRipple" (opened)="openedSpy()" (closed)="closedSpy()">
       <mat-option *ngFor="let state of filteredStates" [value]="state">
         <span>{{ state.code }}: {{ state.name }}</span>
@@ -2323,6 +2348,7 @@ class SimpleAutocomplete implements OnDestroy {
   width: number;
   disableRipple = false;
   autocompleteDisabled = false;
+  panelClass = 'class-one class-two';
   openedSpy = jasmine.createSpy('autocomplete opened spy');
   closedSpy = jasmine.createSpy('autocomplete closed spy');
 
@@ -2361,7 +2387,6 @@ class SimpleAutocomplete implements OnDestroy {
   ngOnDestroy() {
     this.valueSub.unsubscribe();
   }
-
 }
 
 @Component({
