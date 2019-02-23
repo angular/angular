@@ -109,7 +109,7 @@ export function resolveNgModuleDep(
     } else if (
         (injectableDef = getInjectableDef(depDef.token)) && targetsModule(data, injectableDef)) {
       const index = data._providers.length;
-      data._def.providersByKey[depDef.tokenKey] = {
+      data._def.providers[index] = data._def.providersByKey[depDef.tokenKey] = {
         flags: NodeFlags.TypeFactoryProvider | NodeFlags.LazyProvider,
         value: injectableDef.factory,
         deps: [], index,
