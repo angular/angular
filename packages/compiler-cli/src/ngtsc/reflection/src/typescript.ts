@@ -68,16 +68,30 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       }
 
       // It's not possible to get a value expression if the parameter doesn't even have a type.
-      if (typeNode) {
+      if (typeNode && ts.isTypeReferenceNode(typeNode)) {
         // It's only valid to convert a type reference to a value reference if the type actually has
         // a value declaration associated with it.
-        let type: ts.Type|null = this.checker.getTypeFromTypeNode(typeNode);
+        let symbol: ts.Symbol|undefined = this.checker.getSymbolAtLocation(typeNode.typeName);
 
-        if (type && type.symbol !== undefined && type.symbol.valueDeclaration !== undefined) {
-          // The type points to a valid value declaration. Rewrite the TypeReference into an
-          // Expression
-          // which references the value pointed to by the TypeReference, if possible.
-          typeValueExpr = typeNodeToValueExpr(typeNode);
+        if (symbol !== undefined) {
+          let resolvedSymbol = symbol;
+          if (symbol.flags & ts.SymbolFlags.Alias) {
+            resolvedSymbol = this.checker.getAliasedSymbol(symbol);
+          }
+          if (resolvedSymbol.valueDeclaration !== undefined) {
+            // The type points to a valid value declaration. Rewrite the TypeReference into an
+            // Expression which references the value pointed to by the TypeReference, if possible.
+            const firstDecl = symbol.declarations && symbol.declarations[0];
+            if (firstDecl && ts.isImportSpecifier(firstDecl)) {
+              // Making sure TS produces the necessary imports in case a symbol was declared in a
+              // different script and imported. To do that we check symbol's first declaration and
+              // if it's an import - use its identifier. The `Identifier` from the `ImportSpecifier`
+              // knows it could be a value reference, and will emit as one if needed.
+              typeValueExpr = ts.updateIdentifier(firstDecl.name);
+            } else {
+              typeValueExpr = typeNodeToValueExpr(typeNode);
+            }
+          }
         }
       }
 

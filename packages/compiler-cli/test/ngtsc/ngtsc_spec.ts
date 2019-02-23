@@ -1843,6 +1843,103 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('ɵsetClassMetadata(TestPipe, ');
   });
 
+  it('should use imported types in setClassMetadata if they can be represented as values', () => {
+    env.tsconfig({});
+
+    env.write(`types.ts`, `
+      export class MyType {}
+    `);
+    env.write(`test.ts`, `
+      import {Component, Inject, Injectable} from '@angular/core';
+      import {MyType} from './types';
+
+      @Injectable({providedIn: 'root'})
+      export class SomeService {
+        constructor(arg: MyType) {}
+      }
+
+      @Component({
+        selector: 'some-comp',
+        template: '...',
+      })
+      export class SomeComp {
+        constructor(@Inject('arg-token') arg: MyType) {}
+      }
+    `);
+
+    const injectableMeta = `
+      setClassMetadata(SomeService, [{
+        type: Injectable,
+        args: [{ providedIn: 'root' }]
+      }], function () { return [{
+        type: MyType
+      }]; }, null);
+    `;
+    const componentMeta = `
+      setClassMetadata(SomeComp, [{
+        type: Component,
+        args: [{
+            selector: 'some-comp',
+            template: '...',
+        }]
+      }], function () { return [{
+        type: MyType,
+        decorators: [{
+            type: Inject,
+            args: ['arg-token']
+        }]
+      }]; }, null);
+    `;
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(trim(jsContents)).toContain(trim(injectableMeta));
+    expect(trim(jsContents)).toContain(trim(componentMeta));
+  });
+
+  it('should use `undefined` in setClassMetadata if types can\'t be represented as values', () => {
+    env.tsconfig({});
+
+    env.write(`types.ts`, `
+      export interface MyType {
+        key: string;
+      }
+    `);
+    env.write(`test.ts`, `
+      import {Component, Inject, Injectable} from '@angular/core';
+      import {MyType} from './types';
+
+      @Component({
+        selector: 'some-comp',
+        template: '...',
+      })
+      export class SomeComp {
+        constructor(@Inject('arg-token') arg: MyType) {}
+      }
+    `);
+
+    // Note: `type: undefined` below, since MyType can't be represented as a value
+    const componentMeta = `
+      setClassMetadata(SomeComp, [{
+        type: Component,
+        args: [{
+            selector: 'some-comp',
+            template: '...',
+        }]
+      }], function () { return [{
+        type: undefined,
+        decorators: [{
+            type: Inject,
+            args: ['arg-token']
+        }]
+      }]; }, null);
+    `;
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(trim(jsContents)).toContain(trim(componentMeta));
+  });
+
   it('should not throw in case whitespaces and HTML comments are present inside <ng-content>',
      () => {
        env.tsconfig();
