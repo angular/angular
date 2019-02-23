@@ -2066,7 +2066,7 @@ describe('ViewContainerRef', () => {
               element(0, 'div', ['bar', ''], ['foo', '']);
             }
             // testing only
-            fooEl = getNativeByIndex(0, getLView());
+            fooEl = getNativeByIndex(0, getLView()) as RElement;
           },
           viewQuery: function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {

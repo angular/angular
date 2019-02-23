@@ -54,9 +54,6 @@
     "name": "INJECTOR_BLOOM_PARENT_SIZE"
   },
   {
-    "name": "LCONTAINER_LENGTH"
-  },
-  {
     "name": "MONKEY_PATCH_KEY_NAME"
   },
   {
@@ -106,6 +103,9 @@
   },
   {
     "name": "TVIEW"
+  },
+  {
+    "name": "TYPE"
   },
   {
     "name": "T_HOST"
@@ -384,9 +384,6 @@
     "name": "queueComponentIndexForCheck"
   },
   {
-    "name": "readElementValue"
-  },
-  {
     "name": "readPatchedData"
   },
   {
@@ -454,6 +451,9 @@
   },
   {
     "name": "tickRootContext"
+  },
+  {
+    "name": "unwrapRNode"
   },
   {
     "name": "viewAttached"
