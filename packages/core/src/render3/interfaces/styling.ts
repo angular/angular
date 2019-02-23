@@ -261,6 +261,11 @@ import {PlayerContext} from './player';
 export interface StylingContext extends
     Array<{[key: string]: any}|number|string|boolean|RElement|StyleSanitizeFn|PlayerContext|null> {
   /**
+   * Location of element that is used as a target for this context.
+   */
+  [StylingIndex.ElementPosition]: RElement|null;
+
+  /**
    * A numeric value representing the configuration status (whether the context is dirty or not)
    * mixed together (using bit shifting) with a index value which tells the starting index value
    * of where the multi style entries begin.
@@ -288,11 +293,6 @@ export interface StylingContext extends
    * need to take into account any style values that exist in the context.
    */
   [StylingIndex.SinglePropOffsetPositions]: SinglePropOffsetValues;
-
-  /**
-   * Location of element that is used as a target for this context.
-   */
-  [StylingIndex.ElementPosition]: RElement|null;
 
   /**
    * The last class value that was interpreted by elementStylingMap. This is cached
@@ -614,18 +614,18 @@ export const enum StylingFlags {
 
 /** Used as numeric pointer values to determine what cells to update in the `StylingContext` */
 export const enum StylingIndex {
-  // Index of location where the start of single properties are stored. (`updateStyleProp`)
-  MasterFlagPosition = 0,
-  // Position of where the registered directives exist for this styling context
-  DirectiveRegistryPosition = 1,
-  // Position of where the initial styles are stored in the styling context
-  InitialStyleValuesPosition = 2,
-  InitialClassValuesPosition = 3,
-  // Index of location where the class index offset value is located
-  SinglePropOffsetPositions = 4,
   // Position of where the initial styles are stored in the styling context
   // This index must align with HOST, see interfaces/view.ts
-  ElementPosition = 5,
+  ElementPosition = 0,
+  // Index of location where the start of single properties are stored. (`updateStyleProp`)
+  MasterFlagPosition = 1,
+  // Position of where the registered directives exist for this styling context
+  DirectiveRegistryPosition = 2,
+  // Position of where the initial styles are stored in the styling context
+  InitialStyleValuesPosition = 3,
+  InitialClassValuesPosition = 4,
+  // Index of location where the class index offset value is located
+  SinglePropOffsetPositions = 5,
   // Position of where the last string-based CSS class value was stored (or a cached version of the
   // initial styles when a [class] directive is present)
   CachedMultiClasses = 6,

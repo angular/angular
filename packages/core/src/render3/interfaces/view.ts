@@ -27,12 +27,12 @@ import {StylingContext} from './styling';
 // Below are constants for LView indices to help us look up LView members
 // without having to remember the specific indices.
 // Uglify will inline these when minifying so there shouldn't be a cost.
-export const TVIEW = 0;
-export const FLAGS = 1;
-export const PARENT = 2;
-export const NEXT = 3;
-export const QUERIES = 4;
-export const HOST = 5;
+export const HOST = 0;
+export const TVIEW = 1;
+export const FLAGS = 2;
+export const PARENT = 3;
+export const NEXT = 4;
+export const QUERIES = 5;
 export const T_HOST = 6;
 export const BINDING_INDEX = 7;
 export const CLEANUP = 8;
@@ -69,6 +69,13 @@ export interface OpaqueViewState {
  */
 export interface LView extends Array<any> {
   /**
+   * The host node for this LView instance, if this is a component view.
+   *
+   * If this is an embedded view, HOST will be null.
+   */
+  [HOST]: RElement|StylingContext|null;
+
+  /**
    * The static data for this view. We need a reference to this so we can easily walk up the
    * node tree in DI and get the TView.data array associated with a node (where the
    * directive defs are stored).
@@ -102,13 +109,6 @@ export interface LView extends Array<any> {
 
   /** Queries active for this view - nodes from a view are reported to those queries. */
   [QUERIES]: LQueries|null;
-
-  /**
-   * The host node for this LView instance, if this is a component view.
-   *
-   * If this is an embedded view, HOST will be null.
-   */
-  [HOST]: RElement|StylingContext|null;
 
   /**
    * Pointer to the `TViewNode` or `TElementNode` which represents the root of the view.

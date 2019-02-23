@@ -177,6 +177,7 @@ export function createLView<T>(
     rendererFactory?: RendererFactory3 | null, renderer?: Renderer3 | null,
     sanitizer?: Sanitizer | null, injector?: Injector | null): LView {
   const lView = tView.blueprint.slice() as LView;
+  lView[HOST] = host;
   lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass;
   lView[PARENT] = lView[DECLARATION_VIEW] = parentLView;
   lView[CONTEXT] = context;
@@ -186,7 +187,6 @@ export function createLView<T>(
   ngDevMode && assertDefined(lView[RENDERER], 'Renderer is required');
   lView[SANITIZER] = sanitizer || parentLView && parentLView[SANITIZER] || null !;
   lView[INJECTOR as any] = injector || parentLView && parentLView[INJECTOR] || null;
-  lView[HOST] = host;
   lView[T_HOST] = tHostNode;
   ngDevMode && attachLViewDebug(lView);
   return lView;
@@ -2216,12 +2216,12 @@ export function createLContainer(
   ngDevMode && assertDomNode(native);
   ngDevMode && assertLView(currentView);
   const lContainer: LContainer = [
+    hostNative,                      // host native
     isForViewContainerRef ? -1 : 0,  // active index
     [],                              // views
     currentView,                     // parent
     null,                            // next
     null,                            // queries
-    hostNative,                      // host native
     native,                          // native
   ];
   ngDevMode && attachLContainerDebug(lContainer);

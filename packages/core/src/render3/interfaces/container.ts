@@ -17,8 +17,8 @@ import {HOST, LView, NEXT, PARENT, QUERIES} from './view';
  * without having to remember the specific indices.
  * Uglify will inline these when minifying so there shouldn't be a cost.
  */
-export const ACTIVE_INDEX = 0;
-export const VIEWS = 1;
+export const ACTIVE_INDEX = 1;
+export const VIEWS = 2;
 // PARENT, NEXT, QUERIES, and HOST are indices 2, 3, 4, and 5.
 // As we already have these constants in LView, we don't need to re-create them.
 export const NATIVE = 6;
@@ -40,6 +40,17 @@ export const LCONTAINER_LENGTH = 7;
  * of type.
  */
 export interface LContainer extends Array<any> {
+  /**
+   * The host element of this LContainer.
+   *
+   * The host could be an LView if this container is on a component node.
+   * In that case, the component LView is its HOST.
+   *
+   * It could also be a styling context if this is a node with a style/class
+   * binding.
+   */
+  readonly[HOST]: RElement|RComment|StylingContext|LView;
+
   /**
    * The next active index in the views array to read or write to. This helps us
    * keep track of where we are in the views array.
@@ -75,17 +86,6 @@ export interface LContainer extends Array<any> {
    * this container are reported to queries referenced here.
    */
   [QUERIES]: LQueries|null;
-
-  /**
-   * The host element of this LContainer.
-   *
-   * The host could be an LView if this container is on a component node.
-   * In that case, the component LView is its HOST.
-   *
-   * It could also be a styling context if this is a node with a style/class
-   * binding.
-   */
-  readonly[HOST]: RElement|RComment|StylingContext|LView;
 
   /** The comment element that serves as an anchor for this LContainer. */
   readonly[NATIVE]: RComment;
