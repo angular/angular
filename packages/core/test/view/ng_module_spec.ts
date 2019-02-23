@@ -200,6 +200,28 @@ describe('NgModuleRef_ injector', () => {
     expect(Service.destroyed).toBe(1);
   });
 
+  it('calls ngOnDestroy on scoped providers', () => {
+    class Module {}
+
+    class Service {
+      static destroyed = 0;
+
+      ngOnDestroy(): void { Service.destroyed++; }
+
+      static ngInjectableDef: InjectableDef<Service> = defineInjectable({
+        factory: () => new Service(),
+        providedIn: 'root',
+      });
+    }
+
+    const ref = createNgModuleRef(Module, Injector.NULL, [], makeFactoryProviders([], [Module]));
+
+    expect(ref.injector.get(Service)).toBeDefined();
+    expect(Service.destroyed).toBe(0);
+    ref.destroy();
+    expect(Service.destroyed).toBe(1);
+  });
+
   it('only calls ngOnDestroy once per instance', () => {
     class Module {}
 
