@@ -1867,6 +1867,9 @@ describe('ngtsc behavioral tests', () => {
       }
     `);
 
+    const imports = `
+      import { MyType } from './types';
+    `;
     const injectableMeta = `
       setClassMetadata(SomeService, [{
         type: Injectable,
@@ -1892,9 +1895,10 @@ describe('ngtsc behavioral tests', () => {
     `;
 
     env.driveMain();
-    const jsContents = env.getContents('test.js');
-    expect(trim(jsContents)).toContain(trim(injectableMeta));
-    expect(trim(jsContents)).toContain(trim(componentMeta));
+    const jsContents = trim(env.getContents('test.js'));
+    expect(jsContents).toContain(trim(imports));
+    expect(jsContents).toContain(trim(injectableMeta));
+    expect(jsContents).toContain(trim(componentMeta));
   });
 
   it('should use `undefined` in setClassMetadata if types can\'t be represented as values', () => {
@@ -1918,6 +1922,9 @@ describe('ngtsc behavioral tests', () => {
       }
     `);
 
+    const imports = `
+      import { MyType } from './types';
+    `;
     // Note: `type: undefined` below, since MyType can't be represented as a value
     const componentMeta = `
       setClassMetadata(SomeComp, [{
@@ -1936,8 +1943,9 @@ describe('ngtsc behavioral tests', () => {
     `;
 
     env.driveMain();
-    const jsContents = env.getContents('test.js');
-    expect(trim(jsContents)).toContain(trim(componentMeta));
+    const jsContents = trim(env.getContents('test.js'));
+    expect(jsContents).not.toContain(trim(imports));
+    expect(jsContents).toContain(trim(componentMeta));
   });
 
   it('should not throw in case whitespaces and HTML comments are present inside <ng-content>',
