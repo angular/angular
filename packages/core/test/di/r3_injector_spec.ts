@@ -200,11 +200,14 @@ describe('InjectorDef-based createInjector()', () => {
     });
   }
 
+  let scopedServiceDestroyed = false;
   class ScopedService {
     static ngInjectableDef = defineInjectable({
       providedIn: Module,
       factory: () => new ScopedService(),
     });
+
+    ngOnDestroy(): void { scopedServiceDestroyed = true; }
   }
 
   class WrongScopeService {
@@ -323,8 +326,16 @@ describe('InjectorDef-based createInjector()', () => {
 
   it('calls ngOnDestroy on services when destroyed', () => {
     injector.get(DeepService);
+    expect(deepServiceDestroyed).toBe(false, 'DeepService already destroyed');
     (injector as R3Injector).destroy();
     expect(deepServiceDestroyed).toBe(true, 'DeepService not destroyed');
+  });
+
+  it('calls ngOnDestroy on scoped providers', () => {
+    injector.get(ScopedService);
+    expect(scopedServiceDestroyed).toBe(false, 'ScopedService already destroyed');
+    (injector as R3Injector).destroy();
+    expect(scopedServiceDestroyed).toBe(true, 'ScopedService not destroyed');
   });
 
   it('does not allow injection after destroy', () => {
