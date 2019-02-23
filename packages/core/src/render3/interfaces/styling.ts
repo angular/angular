@@ -7,7 +7,10 @@
  */
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {RElement} from '../interfaces/renderer';
+import {LContainer} from './container';
 import {PlayerContext} from './player';
+import {LView} from './view';
+
 
 /**
  * The styling context acts as a styling manifest (shaped as an array) for determining which
@@ -263,7 +266,7 @@ export interface StylingContext extends
   /**
    * Location of element that is used as a target for this context.
    */
-  [StylingIndex.ElementPosition]: RElement|null;
+  [StylingIndex.ElementPosition]: LContainer|LView|RElement|null;
 
   /**
    * A numeric value representing the configuration status (whether the context is dirty or not)

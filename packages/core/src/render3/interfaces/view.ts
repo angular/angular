@@ -72,6 +72,9 @@ export interface LView extends Array<any> {
    * The host node for this LView instance, if this is a component view.
    *
    * If this is an embedded view, HOST will be null.
+   *
+   * If the component uses host bindings for styling that the `RElement` will be wrapped with
+   * `StylingContext`.
    */
   [HOST]: RElement|StylingContext|null;
 

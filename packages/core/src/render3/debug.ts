@@ -14,7 +14,7 @@ import {LQueries} from './interfaces/query';
 import {RComment, RElement} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, TView, T_HOST} from './interfaces/view';
-import {readElementValue} from './util/view_utils';
+import {unwrapRNode} from './util/view_utils';
 
 /*
  * This file contains conditionally attached classes which provide human readable (debug) level
@@ -77,7 +77,7 @@ export function toDebug(obj: any): any {
  * (will not serialize child elements).
  */
 function toHtml(value: any, includeChildren: boolean = false): string|null {
-  const node: HTMLElement|null = readElementValue(value) as any;
+  const node: HTMLElement|null = unwrapRNode(value) as any;
   if (node) {
     const isTextNode = node.nodeType === Node.TEXT_NODE;
     const outerHTML = (isTextNode ? node.textContent : node.outerHTML) || '';
@@ -182,7 +182,7 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
     let tNodeCursor: TNode|null = tNode;
     while (tNodeCursor) {
       const rawValue = lView[tNode.index];
-      const native = readElementValue(rawValue);
+      const native = unwrapRNode(rawValue);
       const componentLViewDebug = toDebug(readLViewValue(rawValue));
       debugNodes.push({
         html: toHtml(native),

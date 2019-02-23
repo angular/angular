@@ -21,7 +21,7 @@ import {CHILD_HEAD, CLEANUP, FLAGS, HEADER_OFFSET, HookData, LView, LViewFlags, 
 import {assertNodeType} from './node_assert';
 import {renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, isComponent, isLContainer, isLView, isRootView, readElementValue} from './util/view_utils';
+import {getNativeByTNode, isComponent, isLContainer, isLView, isRootView, unwrapRNode} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -200,8 +200,8 @@ function walkTNodeTree(
  * being passed as an argument.
  */
 function executeNodeAction(
-    action: WalkTNodeTreeAction, renderer: Renderer3, parent: RElement | null,
-    node: RComment | RElement | RText, tNode: TNode, beforeNode?: RNode | null) {
+    action: WalkTNodeTreeAction, renderer: Renderer3, parent: RElement | null, node: RNode,
+    tNode: TNode, beforeNode?: RNode | null) {
   if (action === WalkTNodeTreeAction.Insert) {
     nativeInsertBefore(renderer, parent !, node, beforeNode || null);
   } else if (action === WalkTNodeTreeAction.Detach) {
@@ -454,7 +454,7 @@ function removeListeners(lView: LView): void {
         const idxOrTargetGetter = tCleanup[i + 1];
         const target = typeof idxOrTargetGetter === 'function' ?
             idxOrTargetGetter(lView) :
-            readElementValue(lView[idxOrTargetGetter]);
+            unwrapRNode(lView[idxOrTargetGetter]);
         const listener = lCleanup[tCleanup[i + 2]];
         const useCaptureOrSubIdx = tCleanup[i + 3];
         if (typeof useCaptureOrSubIdx === 'boolean') {

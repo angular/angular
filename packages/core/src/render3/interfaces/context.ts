@@ -7,7 +7,7 @@
  */
 
 
-import {RElement} from './renderer';
+import {RNode} from './renderer';
 import {LView} from './view';
 
 /**
@@ -39,7 +39,7 @@ export interface LContext {
   /**
    * The instance of the DOM node that is attached to the lNode.
    */
-  native: RElement;
+  native: RNode;
 
   /**
    * The instance of the Component node.

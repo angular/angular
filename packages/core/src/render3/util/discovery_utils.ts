@@ -17,7 +17,7 @@ import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {CLEANUP, CONTEXT, FLAGS, HOST, LView, LViewFlags, TVIEW} from '../interfaces/view';
 import {renderStringify} from './misc_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
-import {readElementValue} from './view_utils';
+import {unwrapRNode} from './view_utils';
 
 
 
@@ -297,7 +297,7 @@ export function getListeners(element: Element): Listener[] {
       const secondParam = tCleanup[i++];
       if (typeof firstParam === 'string') {
         const name: string = firstParam;
-        const listenerElement = readElementValue(lView[secondParam]) as any as Element;
+        const listenerElement = unwrapRNode(lView[secondParam]) as any as Element;
         const callback: (value: any) => any = lCleanup[tCleanup[i++]];
         const useCaptureOrIndx = tCleanup[i++];
         // if useCaptureOrIndx is boolean then report it as is.

@@ -9,25 +9,25 @@ import '../../util/ng_dev_mode';
 
 import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {getLContext} from '../context_discovery';
-import {LCONTAINER_LENGTH, LContainer} from '../interfaces/container';
+import {LContainer} from '../interfaces/container';
 import {LContext} from '../interfaces/context';
 import {AttributeMarker, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {PlayState, Player, PlayerContext, PlayerIndex} from '../interfaces/player';
 import {RElement} from '../interfaces/renderer';
-import {InitialStylingValues, InitialStylingValuesIndex, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
+import {InitialStylingValues, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {HEADER_OFFSET, HOST, LView, RootContext} from '../interfaces/view';
-import {getTNode} from '../util/view_utils';
+import {getTNode, isStylingContext} from '../util/view_utils';
 
 import {CorePlayerHandler} from './core_player_handler';
 
 export const ANIMATION_PROP_PREFIX = '@';
 
 export function createEmptyStylingContext(
-    element?: RElement | null, sanitizer?: StyleSanitizeFn | null,
+    wrappedElement?: LContainer | LView | RElement | null, sanitizer?: StyleSanitizeFn | null,
     initialStyles?: InitialStylingValues | null,
     initialClasses?: InitialStylingValues | null): StylingContext {
   const context: StylingContext = [
-    element || null,                 // Element
+    wrappedElement || null,          // Element
     0,                               // MasterFlags
     [] as any,                       // DirectiveRefs (this gets filled below)
     initialStyles || [null, null],   // InitialStyles
@@ -95,7 +95,7 @@ export function getStylingContext(index: number, viewData: LView): StylingContex
   }
 
   if (isStylingContext(wrapper)) {
-    return wrapper as StylingContext;
+    return wrapper;
   } else {
     // This is an LView or an LContainer
     const stylingTemplate = getTNode(index - HEADER_OFFSET, viewData).stylingTemplate;
@@ -110,15 +110,6 @@ export function getStylingContext(index: number, viewData: LView): StylingContex
   }
 }
 
-export function isStylingContext(value: any): boolean {
-  // Not an LView or an LContainer
-  if (Array.isArray(value) && value.length >= StylingIndex.SingleStylesStartPosition) {
-    return typeof value[StylingIndex.MasterFlagPosition] === 'number' &&
-        value[StylingIndex.InitialClassValuesPosition]
-             [InitialStylingValuesIndex.DefaultNullValuePosition] === null;
-  }
-  return false;
-}
 
 export function isAnimationProp(name: string): boolean {
   return name[0] === ANIMATION_PROP_PREFIX;
