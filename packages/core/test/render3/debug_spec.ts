@@ -22,9 +22,11 @@ describe('Debug Representation', () => {
         consts: 2,
         factory: () => new MyComponent(),
         template: function(rf: RenderFlags, ctx: MyComponent) {
-          elementStart(0, 'div', ['id', '123']);
-          text(1, 'Hello World');
-          elementEnd();
+          if (rf == RenderFlags.Create) {
+            elementStart(0, 'div', ['id', '123']);
+            text(1, 'Hello World');
+            elementEnd();
+          }
         }
       });
     }

@@ -72,8 +72,8 @@ export function toDebug(obj: any): any {
  * reading.
  *
  * @param value possibly wrapped native DOM node.
- * @param includeChildren If `true` than the serialized HTML form will include child elements (same
- * as `outerHTML`). If `false` than the serialized HTML form will only contain the element itself
+ * @param includeChildren If `true` then the serialized HTML form will include child elements (same
+ * as `outerHTML`). If `false` then the serialized HTML form will only contain the element itself
  * (will not serialize child elements).
  */
 function toHtml(value: any, includeChildren: boolean = false): string|null {
@@ -121,7 +121,7 @@ export class LViewDebug {
    */
   get nodes(): DebugNode[]|null {
     const lView = this._raw_lView;
-    const tNode = this.__other__.tView.firstChild;
+    const tNode = lView[TVIEW].firstChild;
     return toDebugNodes(tNode, lView);
   }
   /**
@@ -224,7 +224,8 @@ export function readLViewValue(value: any): LView|null {
   while (Array.isArray(value)) {
     // This check is not quite right, as it does not take into account `StylingContext`
     // This is why it is in debug, not in util.ts
-    if (value.length >= HEADER_OFFSET - 1) value = value[HOST] as any;
+    if (value.length >= HEADER_OFFSET - 1) return value as LView;
+    value = value[HOST];
   }
   return null;
 }
