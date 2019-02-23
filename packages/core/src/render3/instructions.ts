@@ -21,6 +21,7 @@ import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_
 import {assertHasParent, assertLContainerOrUndefined, assertLView, assertPreviousIsParent} from './assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from './bindings';
 import {attachPatchData, getComponentViewByInstance} from './context_discovery';
+import {attachLContainerDebug, attachLViewDebug} from './debug';
 import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreateNodeInjectorForNode, injectAttributeImpl} from './di';
 import {throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, registerPostOrderHooks, registerPreOrderHooks} from './hooks';
@@ -187,6 +188,7 @@ export function createLView<T>(
   lView[INJECTOR as any] = injector || parentLView && parentLView[INJECTOR] || null;
   lView[HOST] = host;
   lView[T_HOST] = tHostNode;
+  ngDevMode && attachLViewDebug(lView);
   return lView;
 }
 
@@ -2213,7 +2215,7 @@ export function createLContainer(
     isForViewContainerRef?: boolean): LContainer {
   ngDevMode && assertDomNode(native);
   ngDevMode && assertLView(currentView);
-  return [
+  const lContainer: LContainer = [
     isForViewContainerRef ? -1 : 0,  // active index
     [],                              // views
     currentView,                     // parent
@@ -2222,6 +2224,8 @@ export function createLContainer(
     hostNative,                      // host native
     native,                          // native
   ];
+  ngDevMode && attachLContainerDebug(lContainer);
+  return lContainer;
 }
 
 /**
