@@ -27,12 +27,12 @@ export function createEmptyStylingContext(
     initialStyles?: InitialStylingValues | null,
     initialClasses?: InitialStylingValues | null): StylingContext {
   const context: StylingContext = [
+    element || null,                 // Element
     0,                               // MasterFlags
     [] as any,                       // DirectiveRefs (this gets filled below)
     initialStyles || [null, null],   // InitialStyles
     initialClasses || [null, null],  // InitialClasses
     [0, 0],                          // SinglePropOffsets
-    element || null,                 // Element
     [0],                             // CachedMultiClassValue
     [0],                             // CachedMultiStyleValue
     null,                            // PlayerContext
