@@ -26,6 +26,9 @@ const contentQueryRegExp = (predicate: string, descend: boolean, ref?: string): 
   return new RegExp(`i0\\.ɵcontentQuery\\(dirIndex, ${predicate}, ${descend}, ${maybeRef}\\)`);
 };
 
+const setClassMetadataRegExp = (expectedType: string): RegExp =>
+    new RegExp(`setClassMetadata(.*?${expectedType}.*?)`);
+
 describe('ngtsc behavioral tests', () => {
   let env !: NgtscTestEnvironment;
 
@@ -1841,6 +1844,97 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('ɵsetClassMetadata(TestInjectable, ');
     expect(jsContents).toContain('ɵsetClassMetadata(TestNgModule, ');
     expect(jsContents).toContain('ɵsetClassMetadata(TestPipe, ');
+  });
+
+  it('should use imported types in setClassMetadata if they can be represented as values', () => {
+    env.tsconfig({});
+
+    env.write(`types.ts`, `
+      export class MyTypeA {}
+      export class MyTypeB {}
+    `);
+    env.write(`test.ts`, `
+      import {Component, Inject, Injectable} from '@angular/core';
+      import {MyTypeA, MyTypeB} from './types';
+
+      @Injectable({providedIn: 'root'})
+      export class SomeService {
+        constructor(arg: MyTypeA) {}
+      }
+
+      @Component({
+        selector: 'some-comp',
+        template: '...',
+      })
+      export class SomeComp {
+        constructor(@Inject('arg-token') arg: MyTypeB) {}
+      }
+    `);
+
+    env.driveMain();
+    const jsContents = trim(env.getContents('test.js'));
+    expect(jsContents).toContain(`import { MyTypeA, MyTypeB } from './types';`);
+    expect(jsContents).toMatch(setClassMetadataRegExp('type: MyTypeA'));
+    expect(jsContents).toMatch(setClassMetadataRegExp('type: MyTypeB'));
+  });
+
+  it('should use imported types in setClassMetadata if they can be represented as values and imported as `* as foo`',
+     () => {
+       env.tsconfig({});
+
+       env.write(`types.ts`, `
+         export class MyTypeA {}
+         export class MyTypeB {}
+       `);
+       env.write(`test.ts`, `
+         import {Component, Inject, Injectable} from '@angular/core';
+         import * as types from './types';
+
+         @Injectable({providedIn: 'root'})
+         export class SomeService {
+           constructor(arg: types.MyTypeA) {}
+         }
+
+         @Component({
+           selector: 'some-comp',
+           template: '...',
+         })
+         export class SomeComp {
+           constructor(@Inject('arg-token') arg: types.MyTypeB) {}
+         }
+       `);
+
+       env.driveMain();
+       const jsContents = trim(env.getContents('test.js'));
+       expect(jsContents).toContain(`import * as types from './types';`);
+       expect(jsContents).toMatch(setClassMetadataRegExp('type: types.MyTypeA'));
+       expect(jsContents).toMatch(setClassMetadataRegExp('type: types.MyTypeB'));
+     });
+
+  it('should use `undefined` in setClassMetadata if types can\'t be represented as values', () => {
+    env.tsconfig({});
+
+    env.write(`types.ts`, `
+      export type MyType = Map<any, any>;
+    `);
+    env.write(`test.ts`, `
+      import {Component, Inject, Injectable} from '@angular/core';
+      import {MyType} from './types';
+
+      @Component({
+        selector: 'some-comp',
+        template: '...',
+      })
+      export class SomeComp {
+        constructor(@Inject('arg-token') arg: MyType) {}
+      }
+    `);
+
+    env.driveMain();
+    const jsContents = trim(env.getContents('test.js'));
+    expect(jsContents).not.toContain(`import { MyType } from './types';`);
+    // Note: `type: undefined` below, since MyType can't be represented as a value
+    expect(jsContents).toMatch(setClassMetadataRegExp('type: undefined'));
   });
 
   it('should not throw in case whitespaces and HTML comments are present inside <ng-content>',

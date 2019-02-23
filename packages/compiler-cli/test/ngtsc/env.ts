@@ -56,6 +56,7 @@ export class NgtscTestEnvironment {
 
     env.write('tsconfig-base.json', `{
       "compilerOptions": {
+        "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "skipLibCheck": true,
         "noImplicitAny": true,
