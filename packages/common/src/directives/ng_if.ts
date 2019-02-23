@@ -76,6 +76,11 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  *
  * {@example common/ngIf/ts/module.ts region='NgIfElse'}
  *
+ * ### Attaching a custom context to the `else` template
+ *
+ * When using an external `else` template, you can attach a custom context to the provided
+ * `<ng-template>` using `elseContext`
+ *
  * ### Using an external `then` template
  *
  * In the previous example, the then-clause template is specified inline, as the content of the
@@ -154,7 +159,9 @@ export class NgIf<T = unknown> {
   private _thenTemplateRef: TemplateRef<NgIfContext<T>>|null = null;
   private _elseTemplateRef: TemplateRef<NgIfContext<T>>|null = null;
   private _thenViewRef: EmbeddedViewRef<NgIfContext<T>>|null = null;
-  private _elseViewRef: EmbeddedViewRef<NgIfContext<T>>|null = null;
+  private _elseViewRef: EmbeddedViewRef<NgIfContext<T>|Object>|null = null;
+  private _condition: T|null = null;
+  private _elseTemplateContext: Object|NgIfContext|undefined;
 
   constructor(private _viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>) {
     this._thenTemplateRef = templateRef;
@@ -165,6 +172,7 @@ export class NgIf<T = unknown> {
    */
   @Input()
   set ngIf(condition: T) {
+    this._condition = condition;
     this._context.$implicit = this._context.ngIf = condition;
     this._updateView();
   }
@@ -191,8 +199,17 @@ export class NgIf<T = unknown> {
     this._updateView();
   }
 
+  /**
+   * A context to assign to else template
+   */
+  @Input()
+  set ngIfElseContext(context: Object) {
+    this._elseTemplateContext = context;
+  }
+
+
   private _updateView() {
-    if (this._context.$implicit) {
+    if (this._condition) {
       if (!this._thenViewRef) {
         this._viewContainer.clear();
         this._elseViewRef = null;
@@ -206,8 +223,8 @@ export class NgIf<T = unknown> {
         this._viewContainer.clear();
         this._thenViewRef = null;
         if (this._elseTemplateRef) {
-          this._elseViewRef =
-              this._viewContainer.createEmbeddedView(this._elseTemplateRef, this._context);
+          this._elseViewRef = this._viewContainer.createEmbeddedView(
+              this._elseTemplateRef, this._elseTemplateContext || this._context);
         }
       }
     }

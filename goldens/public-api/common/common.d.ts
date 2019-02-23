@@ -239,6 +239,7 @@ export declare class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> 
 export declare class NgIf<T = unknown> {
     set ngIf(condition: T);
     set ngIfElse(templateRef: TemplateRef<NgIfContext<T>> | null);
+    set ngIfElseContext(context: Object);
     set ngIfThen(templateRef: TemplateRef<NgIfContext<T>> | null);
     constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>);
     static ngTemplateGuard_ngIf: 'binding';

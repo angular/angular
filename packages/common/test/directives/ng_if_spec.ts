@@ -250,6 +250,37 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
            fixture.detectChanges();
            expect(fixture.nativeElement).toHaveText('false');
          }));
+
+      it('should support elseContext', waitForAsync(() => {
+           const template =
+               '<span *ngIf="booleanCondition; else elseBlock; elseContext {$implicit: \'TEST\'}">TRUE</span>' +
+               '<ng-template #elseBlock let-test>{{test}}</ng-template>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('TRUE');
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('TEST');
+         }));
+
+      it('should support elseContext and then', waitForAsync(() => {
+           const template =
+               '<span *ngIf="booleanCondition; then thenBlock; else elseBlock; elseContext {$implicit: \'TEST\'}">IGNORE</span>' +
+               '<ng-template #thenBlock>THEN</ng-template>' +
+               '<ng-template #elseBlock let-test>{{test}}</ng-template>';
+
+           fixture = createTestComponent(template);
+
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('THEN');
+
+           getComponent().booleanCondition = false;
+           fixture.detectChanges();
+           expect(fixture.nativeElement).toHaveText('TEST');
+         }));
     });
 
     describe('Type guarding', () => {
