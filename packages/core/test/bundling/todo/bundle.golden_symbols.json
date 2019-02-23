@@ -105,9 +105,6 @@
     "name": "IterableDiffers"
   },
   {
-    "name": "LCONTAINER_LENGTH"
-  },
-  {
     "name": "MONKEY_PATCH_KEY_NAME"
   },
   {
@@ -217,6 +214,9 @@
   },
   {
     "name": "TVIEW"
+  },
+  {
+    "name": "TYPE"
   },
   {
     "name": "T_HOST"
@@ -1086,9 +1086,6 @@
     "name": "readClassValueFromTNode"
   },
   {
-    "name": "readElementValue"
-  },
-  {
     "name": "readPatchedData"
   },
   {
@@ -1282,6 +1279,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "unwrapRNode"
   },
   {
     "name": "updateClassProp"

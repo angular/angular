@@ -16,7 +16,7 @@ import {getUrlSanitizer, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sani
 import {SecurityContext} from '../../src/sanitization/security';
 
 function fakeLView(): LView {
-  return Array.from({length: HEADER_OFFSET}) as LView;
+  return [null, {}] as LView;
 }
 
 describe('sanitization', () => {

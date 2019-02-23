@@ -61,7 +61,7 @@ export function createElementRef(
     // TODO: Fix class name, should be ElementRef, but there appears to be a rollup bug
     R3ElementRef = class ElementRef_ extends ElementRefToken {};
   }
-  return new R3ElementRef(getNativeByTNode(tNode, view));
+  return new R3ElementRef(getNativeByTNode(tNode, view) as RElement);
 }
 
 let R3TemplateRef: {

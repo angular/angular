@@ -1532,7 +1532,7 @@ describe('di', () => {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'div', ['dir', '', 'dirSame', '']);
             elementEnd();
-            div = getNativeByIndex(0, getLView());
+            div = getNativeByIndex(0, getLView()) as RElement;
           }
         }, 1, 0, [Directive, DirectiveSameInstance]);
 
