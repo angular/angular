@@ -12,10 +12,10 @@ import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions';
-import {TNode, TNodeType, TViewNode} from './interfaces/node';
-import {FLAGS, HOST, LView, LViewFlags, PARENT, T_HOST} from './interfaces/view';
+import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
+import {FLAGS, HOST, LView, LViewFlags, T_HOST} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
-import {getLViewParent} from './util/view_traversal_utils';
+import {findComponentView, getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode} from './util/view_utils';
 
 
@@ -291,9 +291,21 @@ function collectNativeNodes(lView: LView, parentTNode: TNode, result: any[]): an
   let tNodeChild = parentTNode.child;
 
   while (tNodeChild) {
-    result.push(getNativeByTNode(tNodeChild, lView));
+    const nativeNode = getNativeByTNode(tNodeChild, lView);
+    nativeNode && result.push(nativeNode);
     if (tNodeChild.type === TNodeType.ElementContainer) {
       collectNativeNodes(lView, tNodeChild, result);
+    } else if (tNodeChild.type === TNodeType.Projection) {
+      const componentView = findComponentView(lView);
+      const componentHost = componentView[T_HOST] as TElementNode;
+      const parentView = getLViewParent(componentView);
+      let currentProjectedNode: TNode|null =
+          (componentHost.projection as(TNode | null)[])[tNodeChild.projection as number];
+
+      while (currentProjectedNode && parentView) {
+        result.push(getNativeByTNode(currentProjectedNode, parentView));
+        currentProjectedNode = currentProjectedNode.next;
+      }
     }
     tNodeChild = tNodeChild.next;
   }
