@@ -685,10 +685,6 @@ window.testBlocklist = {
     "error": "Error: Expected null to be 'mat-dialog-title-12', 'Expected the aria-labelledby to match the title id.'.",
     "notes": "FW-1097: Static host classes and styles don't work on root component"
   },
-  "MatMenu should open a custom menu": {
-    "error": "Error: Expected function not to throw an Error, but it threw TypeError.",
-    "notes": "Unknown"
-  },
   "MatMenu should close the menu when using the CloseScrollStrategy": {
     "error": "TypeError: Cannot read property 'openMenu' of undefined",
     "notes": "Unknown"
