@@ -763,23 +763,23 @@ window.testBlocklist = {
   },
   "MatMenu animations should enable ripples on items by default": {
     "error": "TypeError: Cannot read property 'query' of null",
-    "notes": "Unknown"
+    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
   "MatMenu animations should disable ripples on disabled items": {
     "error": "TypeError: Cannot read property 'query' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
   "MatMenu animations should disable ripples if disableRipple is set": {
     "error": "TypeError: Cannot read property 'query' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
   "MatMenu nested menu should close submenu when hovering over disabled sibling item": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
   "MatMenu nested menu should not open submenu when hovering over disabled trigger": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
-    "notes": "Unknown"
+    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
   "MatSelect core overlay panel should not throw when attempting to open too early": {
     "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'open' of undefined.",
