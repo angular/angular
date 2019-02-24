@@ -27,11 +27,11 @@ import {readElementValue} from './util/view_utils';
  * `ngDevMode` mode. (see: https://jsperf.com/array-vs-monkey-patch-array)
  *
  * So instead of seeing:
- *
  * ```
  * Array(30) [Object, 659, null, …]
  * ```
  *
+ * You get to see:
  * ```
  * LViewDebug {
  *   views: [...],
