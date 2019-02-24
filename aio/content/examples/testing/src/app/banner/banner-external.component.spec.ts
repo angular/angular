@@ -18,7 +18,7 @@ describe('BannerComponent (external files)', () => {
       TestBed.configureTestingModule({
         declarations: [ BannerComponent ],
       })
-      .compileComponents();  // compile template and css
+      .compileComponents();  // 템플릿과 CSS를 컴파일합니다.
     }));
     // #enddocregion async-before-each
 
@@ -26,7 +26,7 @@ describe('BannerComponent (external files)', () => {
     // #docregion sync-before-each
     beforeEach(() => {
       fixture = TestBed.createComponent(BannerComponent);
-      component = fixture.componentInstance; // BannerComponent test instance
+      component = fixture.componentInstance; // BannerComponent 인스턴스를 참조합니다.
       h1 = fixture.nativeElement.querySelector('h1');
     });
     // #enddocregion sync-before-each

@@ -3982,20 +3982,30 @@ tests with the `RouterTestingModule`.
 
 {@a page-object}
 
+<!--
 ### Use a _page_ object
+-->
+### _page_ 객체 사용하기
 
+<!--
 The `HeroDetailComponent` is a simple view with a title, two hero fields, and two buttons.
+-->
+`HeroDetailComponent`는 페이지 제목과 필드 2개, 버튼이 2개 있는 간단한 컴포넌트입니다.
 
 <figure>
   <img src='generated/images/guide/testing/hero-detail.component.png' alt="HeroDetailComponent in action">
 </figure>
 
+<!--
 But there's plenty of template complexity even in this simple form.
+-->
+하지만 이렇게 간단한 폼을 구성하더라도 컴포넌트 템플릿이 간단하지만은 않습니다.
 
 <code-example
   path="testing/src/app/hero/hero-detail.component.html" header="app/hero/hero-detail.component.html" linenums="false">
 </code-example>
 
+<!--
 Tests that exercise the component need ...
 
 - to wait until a hero arrives before elements appear in the DOM.
@@ -4010,6 +4020,20 @@ Tame the complexity with a `Page` class that handles access to component propert
 and encapsulates the logic that sets them.
 
 Here is such a `Page` class for the `hero-detail.component.spec.ts`
+-->
+이 컴포넌트를 테스트하려면 ...
+
+- `hero` 프로퍼티가 준비되기 전까지 엘리먼트들은 DOM에 표시되지 않아야 합니다.
+- 컴포넌트 제목 엘리먼트를 참조해야 합니다.
+- 히어로의 이름이 표시되는 입력 필드를 찾아서 이 필드의 값을 설정해야 합니다.
+- 두 개의 버튼을 참조해야 하며, 이 버튼들은 클릭할 수 있어야 합니다.
+- 컴포넌트 메소드나 라우터 메소드에 스파이를 적용해야 합니다.
+
+이렇게 간단한 폼에서도 수많은 테스트를 실행할 수 있기 때문에, 이 컴포넌트를 테스트하는 환경과 CSS 엘리먼트는 준비하는 것은 아주 괴로운 일이 될 수 있습니다.
+
+그래서 이 컴포넌트를 준비하는 로직을 캡슐화해서 컴포넌트의 프로퍼티를 효율적으로 조작하기 위해 `Page` 클래스를 도입하는 것이 좋습니다.
+
+`hero-detail.component.spec.ts` 파일에 정의된 `Page` 클래스는 다음과 같습니다:
 
 <code-example
   path="testing/src/app/hero/hero-detail.component.spec.ts"
@@ -4017,9 +4041,14 @@ Here is such a `Page` class for the `hero-detail.component.spec.ts`
   header="app/hero/hero-detail.component.spec.ts (Page)" linenums="false">
 </code-example>
 
+<!--
 Now the important hooks for component manipulation and inspection are neatly organized and accessible from an instance of `Page`.
 
 A `createComponent` method creates a `page` object and fills in the blanks once the `hero` arrives.
+-->
+이제 컴포넌트를 조작하거나 검사하는 로직은 모두 `Page` 인스턴스를 통해서 처리할 수 있습니다.
+
+그리고 `createComponent` 메소드는 `page` 객체의 인스턴스를 생성한 이후에 `hero` 데이터를 받아와서 화면을 갱신하는 동작까지 실행합니다.
 
 <code-example
   path="testing/src/app/hero/hero-detail.component.spec.ts"
@@ -4027,30 +4056,55 @@ A `createComponent` method creates a `page` object and fills in the blanks once 
   header="app/hero/hero-detail.component.spec.ts (createComponent)" linenums="false">
 </code-example>
 
+<!--
 The [_HeroDetailComponent_ tests](#tests-w-test-double) in an earlier section demonstrate how `createComponent` and `page`
 keep the tests short and _on message_.
 There are no distractions: no waiting for promises to resolve and no searching the DOM for element values to compare.
 
 Here are a few more `HeroDetailComponent` tests to reinforce the point.
+-->
+그래서 이전 섹션에서 살펴봤던 [_HeroDetailComponent_ 테스트](#tests-w-test-double)는 `createComponent` 메소드와 `page` 객체를 사용했기 때문에, 간단하지만 _이해하기 쉽게_ 테스트 코드를 작성할 수 있었습니다.
+테스트 코드를 복잡하게 할 수 있는 것은 아무것도 없습니다: 해결해야 할 Promise도 없고 DOM에서 엘리먼트를 참조하는 코드도 없습니다.
 
+이 내용을 확실하게 확인하기 위해 `HeroDetailComponent`를 다양하게 테스트하는 코드를 살펴봅시다.
+
+<!--
 <code-example
   path="testing/src/app/hero/hero-detail.component.spec.ts"
   region="selected-tests"
   header="app/hero/hero-detail.component.spec.ts (selected tests)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/hero/hero-detail.component.spec.ts"
+  region="selected-tests"
+  header="app/hero/hero-detail.component.spec.ts (테스트 일부)" linenums="false">
+</code-example>
 
 <hr>
 
 {@a compile-components}
+
+<!--
 ### Calling _compileComponents()_
+-->
+### _compileComponents()_ 실행하기
+
 <div class="alert is-helpful">
 
+<!--
 You can ignore this section if you _only_ run tests with the CLI `ng test` command
 because the CLI compiles the application before running the tests.
+-->
+`ng test` _명령을_ 사용해서 테스트를 실행한다면 이 섹션은 건너뛰어도 됩니다.
+Angular CLI는 테스트를 실행하기 전에 애플리케이션을 자동으로 컴파일합니다.
 
 </div>
 
+<!--
 If you run tests in a **non-CLI environment**, the tests may fail with a message like this one:
+-->
+**Angular CLI가 아닌 환경으로** 테스트를 실행한다면 다음과 같은 메시지가 출력되면서 테스트가 실패하는 경우가 있습니다:
 
 <code-example language="sh" class="code-shell" hideCopy>
 Error: This test module uses the component BannerComponent
@@ -4058,24 +4112,46 @@ which is using a "templateUrl" or "styleUrls", but they were never compiled.
 Please call "TestBed.compileComponents" before your test.
 </code-example>
 
+<!--
 The root of the problem is at least one of the components involved in the test
 specifies an external template or CSS file as
 the following version of the `BannerComponent` does.
+-->
+이 에러가 발생한 원인은, 테스트에 사용된 컴포넌트 중 하나에 외부 템플릿이나 외부 CSS 파일이 사용되었기 때문입니다.
+`BannerComponent`를 다음과 같이 선언한 경우가 그렇습니다:
 
+<!--
 <code-example
   path="testing/src/app/banner/banner-external.component.ts"
   header="app/banner/banner-external.component.ts (external template & css)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/banner/banner-external.component.ts"
+  header="app/banner/banner-external.component.ts (외부 템플릿 & css)" linenums="false">
+</code-example>
 
+<!--
 The test fails when the `TestBed` tries to create the component.
+-->
+이 테스트 코드는 `TestBed`가 컴포넌트를 생성하려고 하는 시점에 실패합니다.
 
+<!--
 <code-example
   path="testing/src/app/banner/banner.component.spec.ts"
   region="configure-and-create"
   header="app/banner/banner.component.spec.ts (setup that fails)"
   avoid linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/banner/banner.component.spec.ts"
+  region="configure-and-create"
+  header="app/banner/banner.component.spec.ts (테스트에 실패하는 환경 설정)"
+  avoid linenums="false">
+</code-example>
 
+<!--
 Recall that the app hasn't been compiled.
 So when you call `createComponent()`, the `TestBed` compiles implicitly.
 
@@ -4088,16 +4164,35 @@ If the `TestBed` were allowed to continue, the tests would run and fail mysterio
 before the compiler could finished.
 
 The preemptive error message tells you to compile explicitly with `compileComponents()`.
+-->
+애플리케이션이 아직 컴파일되지 않았다는 것을 명심하세요.
+그렇다면 테스트할 컴포넌트를 생성하기 위해 `TestBed.createComponent()`를 실행하면 될 것이라 생각할 수 있습니다.
 
+하지만 이렇게 해도 테스트는 실패합니다.
+`BannerComponent`를 컴파일하려면 컴포넌트에 사용하는 외부 파일을 읽기 위해 파일 시스템을 읽어야 하는데, 이 동작은 _비동기_ 로 실행됩니다.
+
+그래서 `TestBed`로 이후 작업을 계속하려고 하면, 컴파일러의 동작이 아직 끝나지 않은 상태에서 테스트를 실행했기 때문에 실패하는 것입니다.
+
+위에서 출력된 에러메시지에서 확인할 수 있듯이, 외부 파일이 사용된 컴포넌트를 제대로 컴파일하려면 `createComponent()` 를 실행하기 전에 `compileComponents()`를 먼저 실행해야 합니다.
+
+<!--
 #### _compileComponents()_ is async
+-->
+#### _compileComponents()_ 는 비동기로 실행됩니다.
 
+<!--
 You must call `compileComponents()` within an asynchronous test function.
+-->
+이 문제를 해결하려면 비동기 테스트 로직에서 `compileComponents()`를 실행해야 합니다.
 
 <div class="alert is-critical">
 
+<!--
 If you neglect to make the test function async
 (e.g., forget to use `async()` as described below),
 you'll see this error message
+-->
+이 예제에서 `async()`와 같은 비동기 테스트 함수를 명시적으로 사용하지 않으면 다음과 같은 에러가 발생합니다.
 
 <code-example language="sh" class="code-shell" hideCopy>
 Error: ViewDestroyedError: Attempt to use a destroyed view
@@ -4105,28 +4200,50 @@ Error: ViewDestroyedError: Attempt to use a destroyed view
 
 </div>
 
+<!--
 A typical approach is to divide the setup logic into two separate `beforeEach()` functions:
 
 1.  An async `beforeEach()` that compiles the components
 1.  A synchronous `beforeEach()` that performs the remaining setup.
 
 To follow this pattern, import the `async()` helper with the other testing symbols.
+-->
+서로 다른 환경설정 로직이 있다면 이 로직은 각각 `beforeEach()` 함수로 나눠서 정의하는 것이 일반적입니다. 이 방식을 사용해 봅시다:
+
+1. 컴포넌트를 컴파일하는 로직은 비동기 `beforeEach()`에 작성합니다.
+1. 나머지 환경설정은 동기 `beforeEach()`에 작성합니다.
+
+이렇게 작성하려면 먼저 테스트 패키지에서 `async()` 헬퍼를 로드해야 합니다.
 
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
   region="import-async">
 </code-example>
 
+<!--
 #### The async _beforeEach_
+-->
+#### 비동기 _beforeEach_
 
+<!--
 Write the first async `beforeEach` like this.
+-->
+첫번째 비동기 `beforeEach`는 다음과 같이 작성합니다.
 
+<!--
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
   region="async-before-each"
   header="app/banner/banner-external.component.spec.ts (async beforeEach)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/banner/banner-external.component.spec.ts"
+  region="async-before-each"
+  header="app/banner/banner-external.component.spec.ts (비동기 beforeEach)" linenums="false">
+</code-example>
 
+<!--
 The `async()` helper function takes a parameterless function with the body of the setup.
 
 The `TestBed.configureTestingModule()` method returns the `TestBed` class so you can chain
@@ -4138,55 +4255,118 @@ and may import application modules that hold yet more components.
 Any of them could be require external files.
 
 The `TestBed.compileComponents` method asynchronously compiles all components configured in the testing module.
+-->
+`async()` 헬퍼 함수는 인자가 없는 함수를 받아서 실행합니다.
+
+그리고 `TestBed.configureTestingModule()` 메소드는 `TestBed` 클래스를 반환하기 때문에, 이 메소드를 체이닝하면서 바로 `compileComponents()` 메소드를 실행할 수 있습니다.
+
+이 예제에서 컴파일 대상이 되는 컴포넌트는 `BannerComponent` 하나뿐입니다.
+다른 예제에서는 컴포넌트 여러개를 테스트 모듈에 등록할 수도 있으며, 컴포넌트가 등록된 다른 모듈을 로드해야 할 수도 있습니다.
+그리고 이 때 불러오는 컴포넌트들이 외부 파일을 참조하는 경우도 있을 수 있습니다.
+
+이제 `TestBed.compileComponents` 메소드를 실행하면 테스트 모듈에 있는 모든 컴포넌트를 비동기로 컴파일합니다.
 
 <div class="alert is-important">
 
+<!--
 Do not re-configure the `TestBed` after calling `compileComponents()`.
+-->
+`compileComponents()`를 실행한 후에 `TestBed` 설정을 변경하지 마세요.
 
 </div>
 
+<!--
 Calling `compileComponents()` closes the current `TestBed` instance to further configuration.
 You cannot call any more `TestBed` configuration methods, not `configureTestingModule()`
 nor any of the `override...` methods. The `TestBed` throws an error if you try.
 
 Make `compileComponents()` the last step
 before calling `TestBed.createComponent()`.
+-->
+`compileComponents()`를 실행하면 현재 설정중인 `TestBed` 인스턴스 설정을 확정하며, 더이상 설정을 변경할 수 없습니다.
+그래서 이 메소드를 실행한 이후부터 `TestBed`에서 환경을 설정하는 메소드를 실행할 수 없습니다.
+이 메소드에는 `configureTestingModule()`이나 `override...` 메소드가 모두 해당됩니다.
+`compileComponents()`를 실행한 뒤에 이 메소드들을 실행하면 에러가 발생합니다.
 
+그래서 `compileComponents()`는 `TestBed.createComponent()`를 실행하기 전 마지막 단계로 실행해야 합니다.
+
+<!--
 #### The synchronous _beforeEach_
+-->
+#### 동기 _beforeEach_
 
+<!--
 The second, synchronous `beforeEach()` contains the remaining setup steps,
 which include creating the component and querying for elements to inspect.
+-->
+그 다음에는 아직 남은 환경설정을 위해 동기로 동작하는 `beforeEach()`를 정의해야 합니다.
+이 함수에는 컴포넌트를 생성하고 엘리먼트를 쿼리하는 로직이 들어갈 것입니다.
 
+<!--
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
   region="sync-before-each"
   header="app/banner/banner-external.component.spec.ts (synchronous beforeEach)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/banner/banner-external.component.spec.ts"
+  region="sync-before-each"
+  header="app/banner/banner-external.component.spec.ts (동기 beforeEach)" linenums="false">
+</code-example>
 
+<!--
 You can count on the test runner to wait for the first asynchronous `beforeEach` to finish before calling the second.
+-->
+하지만 이 `beforeEach()`는 위에서 살펴본 비동기 `beforeEach()`가 끝난 후에 실행되어야 하기 때문에, 이렇게 작성할 수 없습니다.
 
+<!--
 #### Consolidated setup
+-->
+#### 통합 환경설정
 
+<!--
 You can consolidate the two `beforeEach()` functions into a single, async `beforeEach()`.
 
 The `compileComponents()` method returns a promise so you can perform the
 synchronous setup tasks _after_ compilation by moving the synchronous code
 into a `then(...)` callback.
+-->
+두 `beforeEach()` 함수는 비동기 `beforeEach()` 하나로 통합할 수 있습니다.
 
+`compileComponents()` 메소드는 `Promise`를 반환하기 때문에, 테스트 모듈을 컴파일한 _이후에_ 필요한 로직을 `then(...)` 콜백으로 연결할 수 있습니다.
+
+<!--
 <code-example
   path="testing/src/app/banner/banner-external.component.spec.ts"
   region="one-before-each"
   header="app/banner/banner-external.component.spec.ts (one beforeEach)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/banner/banner-external.component.spec.ts"
+  region="one-before-each"
+  header="app/banner/banner-external.component.spec.ts (통합된 beforeEach)" linenums="false">
+</code-example>
 
+<!--
 #### _compileComponents()_ is harmless
+-->
+#### _compileComponents()_ 를 잘못 사용해도 에러가 발생하지 않습니다.
 
+<!--
 There's no harm in calling `compileComponents()` when it's not required.
 
 The component test file generated by the CLI calls `compileComponents()`
 even though it is never required when running `ng test`.
 
 The tests in this guide only call `compileComponents` when necessary.
+-->
+`compileComponents()`는 이 함수가 필요하지 않을 때 실행하더라도 에러가 발생하지 않습니다.
+
+심지어 Angular CLI가 자동으로 생성한 컴포넌트 테스트 파일은 `ng test`를 실행할 때 전혀 필요하지 않은데도 `compileComponents()`를 실행합니다.
+
+하지만 이 가이드 문서에서는 꼭 필요할 때만 `compileComponents`를 실행하는 것을 권장합니다.
 
 <hr>
 

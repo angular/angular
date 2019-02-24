@@ -179,8 +179,8 @@ function heroModuleSetup() {
     });
 
     it('should save when click save but not navigate immediately', () => {
-      // Get service injected into component and spy on its`saveHero` method.
-      // It delegates to fake `HeroService.updateHero` which delivers a safe test result.
+      // 컴포넌트로 의존성 주입된 서비스를 참조하고, `saveHero` 메소드에 스파이를 연결합니다.
+      // 테스트 코드를 안전하게 실행하기 위해, `HeroDetailService.saveHero` 메소드는 목 클래스에 만든 `HeroService.updateHero`를 사용합니다.
       const hds = fixture.debugElement.injector.get(HeroDetailService);
       const saveSpy = spyOn(hds, 'saveHero').and.callThrough();
 
@@ -191,7 +191,7 @@ function heroModuleSetup() {
 
     it('should navigate when click save and save resolves', fakeAsync(() => {
       click(page.saveBtn);
-      tick(); // wait for async save to complete
+      tick(); // 비동기 저장 작업이 종료될 때까지 기다립니다.
       expect(page.navigateSpy.calls.any()).toBe(true, 'router.navigate called');
     }));
 
@@ -328,16 +328,16 @@ function sharedModuleSetup() {
 /////////// Helpers /////
 
 // #docregion create-component
-/** Create the HeroDetailComponent, initialize it, set test variables  */
+/** HeroDetailComponent의 인스턴스를 생성하고, 초기화하며, 테스트 변수를 할당합니다. */
 function createComponent() {
   fixture = TestBed.createComponent(HeroDetailComponent);
   component = fixture.componentInstance;
   page = new Page(fixture);
 
-  // 1st change detection triggers ngOnInit which gets a hero
+  // 첫번째 변화 감지 로직이 동작하면 히어로 데이터를 가져오는 ngOnInit이 실행됩니다.
   fixture.detectChanges();
   return fixture.whenStable().then(() => {
-    // 2nd change detection displays the async-fetched hero
+    // 두번째 변화 감지 로직이 동작하면 비동기로 가져온 히어로 데이터가 화면에 표시됩니다.
     fixture.detectChanges();
   });
 }
@@ -345,7 +345,7 @@ function createComponent() {
 
 // #docregion page
 class Page {
-  // getter properties wait to query the DOM until called.
+  // DOM에서 원하는 엘리먼트를 참조하는 게터 함수를 정의합니다.
   get buttons()     { return this.queryAll<HTMLButtonElement>('button'); }
   get saveBtn()     { return this.buttons[0]; }
   get cancelBtn()   { return this.buttons[1]; }
@@ -356,16 +356,16 @@ class Page {
   navigateSpy:  jasmine.Spy;
 
   constructor(fixture: ComponentFixture<HeroDetailComponent>) {
-    // get the navigate spy from the injected router spy object
+    // 의존성 객체로 주입된 라우터 스파이 객체를 참조합니다.
     const routerSpy = <any> fixture.debugElement.injector.get(Router);
     this.navigateSpy = routerSpy.navigate;
 
-    // spy on component's `gotoList()` method
+    // 컴포넌트의 `gotoList()` 메소드에 스파이를 적용합니다.
     const component = fixture.componentInstance;
     this.gotoListSpy = spyOn(component, 'gotoList').and.callThrough();
   }
 
-  //// query helpers ////
+  //// 쿼리 헬퍼 ////
   private query<T>(selector: string): T {
     return fixture.nativeElement.querySelector(selector);
   }
