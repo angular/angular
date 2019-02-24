@@ -79,12 +79,13 @@ export function toDebug(obj: any): any {
 function toHtml(value: any, includeChildren: boolean = false): string|null {
   const node: HTMLElement|null = readElementValue(value) as any;
   if (node) {
-    const outerHTML = node.outerHTML;
-    const innerHTML = node.innerHTML;
-    if (includeChildren || innerHTML == null) {
+    const isTextNode = node.nodeType === Node.TEXT_NODE;
+    const outerHTML = (isTextNode ? node.textContent : node.outerHTML) || '';
+    if (includeChildren || isTextNode) {
       return outerHTML;
     } else {
-      return outerHTML.replace('>' + innerHTML, '>ɵ').split('ɵ').shift() || null;
+      const innerHTML = node.innerHTML;
+      return outerHTML.split(innerHTML)[0] || null;
     }
   } else {
     return null;
