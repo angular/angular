@@ -107,14 +107,13 @@ function tests() {
 
   // #docregion test-setup
   beforeEach(() => {
-    fixture.detectChanges(); // trigger initial data binding
+    fixture.detectChanges(); //초기 데이터 바인딩을 실행합니다.
 
-    // find DebugElements with an attached RouterLinkStubDirective
+    // RouterLinkStubDirective가 사용된 DebugElement를 쿼리합니다.
     linkDes = fixture.debugElement
       .queryAll(By.directive(RouterLinkDirectiveStub));
 
-    // get attached link directive instances
-    // using each DebugElement's injector
+    // DebugElement의 인젝터를 사용해서 개별 디렉티브 인스턴스를 참조합니다.
     routerLinks = linkDes.map(de => de.injector.get(RouterLinkDirectiveStub));
   });
   // #enddocregion test-setup
@@ -132,8 +131,8 @@ function tests() {
   });
 
   it('can click Heroes link in template', () => {
-    const heroesLinkDe = linkDes[1];   // heroes link DebugElement
-    const heroesLink = routerLinks[1]; // heroes link directive
+    const heroesLinkDe = linkDes[1];   // 히어로 목록으로 가는 링크를 표현하는 DebugElement
+    const heroesLink = routerLinks[1]; // 히어로 목록으로 가는 링크와 연결된 디렉티브
 
     expect(heroesLink.navigatedTo).toBeNull('should not have navigated yet');
 

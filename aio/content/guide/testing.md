@@ -3788,8 +3788,12 @@ but it ignores the `<app-welcome>` and `<router-outlet>` tags.
 <hr>
 
 {@a routerlink}
+<!--
 ### Components with _RouterLink_
+-->
+### _RouterLink_ 를 사용하는 컴포넌트
 
+<!--
 The real `RouterLinkDirective` is quite complicated and entangled with other components
 and directives of the `RouterModule`.
 It requires challenging setup to mock and use in tests.
@@ -3797,6 +3801,11 @@ It requires challenging setup to mock and use in tests.
 The `RouterLinkDirectiveStub` in this sample code replaces the real directive
 with an alternative version designed to validate the kind of anchor tag wiring
 seen in the `AppComponent` template.
+-->
+`RouterLinkDirective`는 디렉티브 자체도 많이 복잡하지만 `RouterModule`에 있는 다른 컴포넌트나 디렉티브와 긴밀하게 연결되어 있기도 합니다.
+그래서 이 디렉티브를 테스트 환경에서 모킹하는 것은 아주 어렵습니다.
+
+`AppComponent`의 템플릿에 있는 앵커 태그에도 이 디렉티브가 사용되었는데, 이번 테스트 코드에서는 실제 디렉티브 대신 `RouterLinkDirectiveStub`를 사용해서 테스트에 필요한 로직만 검증해 봅시다.
 
 <code-example
   path="testing/src/testing/router-link-directive-stub.ts"
@@ -3804,6 +3813,7 @@ seen in the `AppComponent` template.
   header="testing/router-link-directive-stub.ts (RouterLinkDirectiveStub)" linenums="false">
 </code-example>
 
+<!--
 The URL bound to the `[routerLink]` attribute flows in to the directive's `linkParams` property.
 
 The `host` metadata property wires the click event of the host element
@@ -3813,27 +3823,50 @@ Clicking the anchor should trigger the `onClick()` method,
 which sets the stub's telltale `navigatedTo` property.
 Tests inspect `navigatedTo` to confirm that clicking the anchor
 set the expected route definition.
+-->
+`[routerLink]` 어트리뷰트로 전달된 URL은 디렉티브의 `linkParams` 프로퍼티로 바인딩됩니다.
+
+그리고 호스트 엘리먼트(`AppComponent`에 있는 `<a>` 앵커 엘리먼트)에서 발생하는 클릭 이벤트는 `host` 메타데이터 프로퍼티를 사용해서 디렉티브의 `onClick` 메소드와 연결합니다.
+
+이제 앵커 태그를 클릭하면 디렉티브에 정의된 `onClick()` 메소드가 실행되는데, 클릭 동작 이후에 디렉티브의 `navigateTo` 프로퍼티를 확인하면 원하는 주소로 이동하려고 하는 것인지 확인할 수 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 Whether the router is configured properly to navigate with that route definition is a
 question for a separate set of tests.
+-->
+라우터가 해당 주소로 이동할 수 있도록 라우팅 규칙을 올바르게 구성했는지 여부는 이 테스트 코드에서 확인하지 않습니다.
 
 </div>
 
 {@a by-directive}
 {@a inject-directive}
 
+<!--
 #### _By.directive_ and injected directives
+-->
+#### _By.directive_ 와 의존성으로 주입되는 디렉티브
 
+<!--
 A little more setup triggers the initial data binding and gets references to the navigation links:
+-->
+네비게이션 링크에 초기 데이터를 바인딩하려면 설정해야 할 것이 조금 더 있습니다:
 
+<!--
 <code-example
   path="testing/src/app/app.component.spec.ts"
   region="test-setup"
   header="app/app.component.spec.ts (test setup)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/app.component.spec.ts"
+  region="test-setup"
+  header="app/app.component.spec.ts (테스트환경 설정)" linenums="false">
+</code-example>
 
+<!--
 Three points of special interest:
 
 1.  You can locate the anchor elements with an attached directive using `By.directive`.
@@ -3844,22 +3877,46 @@ Three points of special interest:
     specific instance of the directive attached to that element.
 
 The `AppComponent` links to validate are as follows:
+-->
+이 코드에서 세 부분이 중요합니다:
 
+1. `By.directive`를 사용하면 특정 디렉티브가 사용된 앵커 엘리먼트를 가져올 수 있습니다.
+
+1. 엘리먼트는 `DebugElement` 래퍼(wrapper)로 반환됩니다.
+
+1. 엘리먼트에 의존성으로 주입된 디렉티브 인스턴스를 참조하려면 각 `DebugElement`의 인젝터를 사용하면 됩니다.
+
+`AppComponent`에 사용된 링크를 다시 한 번 봅시다:
+
+<!--
 <code-example
   path="testing/src/app/app.component.html"
   region="links"
   header="app/app.component.html (navigation links)" linenums="false">
 </code-example>
+-->
+<code-example
+  path="testing/src/app/app.component.html"
+  region="links"
+  header="app/app.component.html (네비게이션 링크)" linenums="false">
+</code-example>
 
 {@a app-component-tests}
 
+<!--
 Here are some tests that confirm those links are wired to the `routerLink` directives
 as expected:
+-->
+이 링크들이 `routerLink` 디렉티브와 제대로 연결되었는지 확인하는 테스트 코드는 다음과 같이 작성하면 됩니다:
 
+<!--
 <code-example path="testing/src/app/app.component.spec.ts" region="tests" header="app/app.component.spec.ts (selected tests)" linenums="false"></code-example>
+-->
+<code-example path="testing/src/app/app.component.spec.ts" region="tests" header="app/app.component.spec.ts (테스트 코드)" linenums="false"></code-example>
 
 <div class="alert is-helpful">
 
+<!--
 The "click" test _in this example_ is misleading.
 It tests the `RouterLinkDirectiveStub` rather than the _component_.
 This is a common failing of directive stubs.
@@ -3869,13 +3926,24 @@ It demonstrates how to find a `RouterLink` element, click it, and inspect a resu
 without engaging the full router machinery.
 This is a skill you may need to test a more sophisticated component, one that changes the display,
 re-calculates parameters, or re-arranges navigation options when the user clicks the link.
+-->
+_이 테스트 코드_ 중에 "click" 부분은 어울리지 않는 코드라고 생각할 수도 있습니다.
+해당 코드는 _컴포넌트_ 를 테스트하는 것이 아니라 `RouterLinkDirectiveStub`을 테스트하는 코드이기 때문입니다.
+하지만 디렉티브를 대체하는 경우에는 이런 테크닉을 사용해야만 하는 경우가 종종 있습니다.
+
+이 테스트 코드는 `RouterLink`가 사용된 엘리먼트를 찾아서, 이 엘리먼트를 클릭하고, 결과를 확인하는 과정에 실제 라우터의 기능은 하나도 활용하지 않습니다.
+그래서 이후에도 사용자가 링크를 클릭했을 때 컴포넌트가 화면의 내용을 바꾸거나, 인자를 다시 계산하고, 네비게이션 옵션을 수정하는 동작을 테스트할 때도 이와 비슷한 방식을 사용하면 테스트 코드를 조금 더 간단하게 작성할 수 있습니다.
 
 </div>
 
 {@a why-stubbed-routerlink-tests}
 
+<!--
 #### What good are these tests?
+-->
+#### 왜 _RouterLink_ 를 목 클래스로 사용하나요?
 
+<!--
 Stubbed `RouterLink` tests can confirm that a component with links and an outlet is setup properly,
 that the component has the links it should have, and that they are all pointing in the expected direction.
 These tests do not concern whether the app will succeed in navigating to the target component when the user clicks a link.
@@ -3888,11 +3956,25 @@ That's not the fault of the `AppComponent` and no change to that component could
 
 A _different_ battery of tests can explore whether the application navigates as expected
 in the presence of conditions that influence guards such as whether the user is authenticated and authorized.
+-->
+`RouterLink`를 목 클래스로 테스트하면 컴포넌트에 존재하는 링크와 라우팅 영역이 제대로 설정되었는지, 미리 지정된 주소로 제대로 이동하는지 확인할 수 있습니다.
+그리고 이 테스트 코드는 사용자가 링크를 클릭했을 때 실제로 페이지를 전환하는지는 신경쓰지 않습니다.
+
+`RouterLink`와 `RouterOutlet`를 목 클래스로 대체하는 것은 테스트 범위를 제한하기 위해서입니다.
+이 테스트에서 실제 라우터를 사용한다면 테스트 코드는 훨씬 더 복잡해집니다.
+그리고 테스트하려는 컴포넌트 외부에서 발생한 어떤 이유 때문에 테스트가 실패할 수도 잇습니다.
+예를 들면 로그인하지 않은 사용자가 `HeroListComponent`를 방문하는 것을 막는 라우터 가드가 동작할 수도 있습니다.
+이런 문제는 `AppComponent`의 문제가 아니면서도, 테스트를 정상적으로 실행하기 위해 `AppComponent`가 할 수 있는 일은 없습니다.
+
+사용자가 로그인했거나 로그인하지 않은 상태에 따라 애플리케이션의 네비게이션 동작이 다르게 실행되어야 한다면, 지금까지 설명한 방법이 아닌 다른 방법을 활용해야 합니다.
 
 <div class="alert is-helpful">
 
+<!--
 A future guide update will explain how to write such
 tests with the `RouterTestingModule`.
+-->
+이 섹션에서 다룬 테스트 코드는 `RouterTestingModule`에 대해 다룰 때 다시 한 번 언급합니다.
 
 </div>
 
