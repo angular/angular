@@ -373,8 +373,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   i18nUpdateRef(context: I18nContext): void {
-    const {icus, meta, isRoot, isResolved} = context;
-    if (isRoot && isResolved && !isSingleI18nIcu(meta)) {
+    const {icus, meta, isRoot, isResolved, isEmitted} = context;
+    if (isRoot && isResolved && !isEmitted && !isSingleI18nIcu(meta)) {
+      context.isEmitted = true;
       const placeholders = context.getSerializedPlaceholders();
       let icuMapping: {[name: string]: o.Expression} = {};
       let params: {[name: string]: o.Expression} =
