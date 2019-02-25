@@ -537,9 +537,9 @@ describe('MatMenu', () => {
         useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.close()
       }
     ], [FakeIcon]);
+    fixture.detectChanges();
     const trigger = fixture.componentInstance.trigger;
 
-    fixture.detectChanges();
     trigger.openMenu();
     fixture.detectChanges();
 
