@@ -42,6 +42,7 @@ export class I18nContext {
   public readonly id: number;
   public bindings = new Set<o.Expression>();
   public placeholders = new Map<string, any[]>();
+  public isEmitted: boolean = false;
 
   private _registry !: any;
   private _unresolvedCtxCount: number = 0;
