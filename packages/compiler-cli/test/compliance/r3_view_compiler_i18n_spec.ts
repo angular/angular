@@ -764,6 +764,37 @@ describe('i18n support in the view compiler', () => {
       verify(input, output, {inputArgs: {interpolation: ['{%', '%}']}});
     });
 
+    it('should support interpolations with complex expressions', () => {
+      const input = `
+        <div i18n>
+          {{ valueA | async }}
+          {{ valueA?.a?.b }}
+        </div>
+      `;
+
+      const output = String.raw `
+        const $MSG_EXTERNAL_1482713963707913023$$APP_SPEC_TS_0$ = goog.getMsg(" {$interpolation} {$interpolation_1} ", {
+          "interpolation": "\uFFFD0\uFFFD",
+          "interpolation_1": "\uFFFD1\uFFFD"
+        });
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div");
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_1482713963707913023$$APP_SPEC_TS_0$);
+            $r3$.ɵpipe(2, "async");
+            $r3$.ɵelementEnd();
+          }
+          if (rf & 2) {
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 2, ctx.valueA)));
+            $r3$.ɵi18nExp($r3$.ɵbind(((ctx.valueA == null) ? null : ((ctx.valueA.a == null) ? null : ctx.valueA.a.b))));
+            $r3$.ɵi18nApply(1);
+          }
+        }
+      `;
+      verify(input, output);
+    });
+
     it('should handle i18n attributes with bindings in content', () => {
       const input = `
         <div i18n>My i18n block #{{ one }}</div>
@@ -800,7 +831,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 2) {
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.one));
             $r3$.ɵi18nApply(1);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 0, ctx.two)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 3, ctx.two)));
             $r3$.ɵi18nApply(3);
             $r3$.ɵi18nExp($r3$.ɵbind(((ctx.three + ctx.four) + ctx.five)));
             $r3$.ɵi18nApply(6);
@@ -868,7 +899,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 2) {
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.one));
             $r3$.ɵi18nApply(1);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(5, 0, ctx.two)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(5, 3, ctx.two)));
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.nestedInBlockTwo));
             $r3$.ɵi18nApply(4);
           }
@@ -941,7 +972,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵi18nApply(1);
             $r3$.ɵi18nExp($r3$.ɵbind(ctx.valueE));
             $r3$.ɵi18nApply(8);
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(6, 0, ctx.valueD)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(6, 5, ctx.valueD)));
             $r3$.ɵi18nApply(5);
           }
         }
@@ -988,7 +1019,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵnextContext();
             $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.valueA));
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 0, $ctx_r0$.valueB)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 2, $ctx_r0$.valueB)));
             $r3$.ɵi18nApply(2);
           }
         }
@@ -1118,7 +1149,7 @@ describe('i18n support in the view compiler', () => {
             const $ctx_r0$ = $r3$.ɵnextContext();
             $r3$.ɵelementProperty(4, "ngIf", $r3$.ɵbind($ctx_r0$.exists));
             $r3$.ɵi18nExp($r3$.ɵbind($ctx_r0$.valueA));
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(3, 0, $ctx_r0$.valueB)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(3, 3, $ctx_r0$.valueB)));
             $r3$.ɵi18nApply(0);
           }
         }
@@ -1148,7 +1179,7 @@ describe('i18n support in the view compiler', () => {
           if (rf & 2) {
             const $ctx_r1$ = $r3$.ɵnextContext();
             $r3$.ɵi18nExp($r3$.ɵbind(($ctx_r1$.valueE + $ctx_r1$.valueF)));
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(3, 0, $ctx_r1$.valueG)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(3, 2, $ctx_r1$.valueG)));
             $r3$.ɵi18nApply(0);
           }
         }
@@ -1347,7 +1378,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementContainerEnd();
           }
           if (rf & 2) {
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 0, ctx.valueA)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(2, 1, ctx.valueA)));
             $r3$.ɵi18nApply(1);
           }
         }
@@ -1371,7 +1402,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵpipe(1, "uppercase");
           } if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 0, $ctx_r0$.valueA)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 1, $ctx_r0$.valueA)));
             $r3$.ɵi18nApply(0);
           }
         }
@@ -1412,7 +1443,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 0, $ctx_r0$.valueA)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 1, $ctx_r0$.valueA)));
             $r3$.ɵi18nApply(0);
           }
         }
@@ -1431,7 +1462,7 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 0, ctx.valueB)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(4, 1, ctx.valueB)));
             $r3$.ɵi18nApply(1);
           }
         }
@@ -1540,7 +1571,7 @@ describe('i18n support in the view compiler', () => {
           }
           if (rf & 2) {
             const $ctx_r0$ = $r3$.ɵnextContext();
-            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 0, $ctx_r0$.valueA)));
+            $r3$.ɵi18nExp($r3$.ɵbind($r3$.ɵpipeBind1(1, 1, $ctx_r0$.valueA)));
             $r3$.ɵi18nApply(0);
           }
         }

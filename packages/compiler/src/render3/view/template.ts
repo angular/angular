@@ -329,12 +329,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   i18nAppendBindings(expressions: AST[]) {
-    if (!this.i18n || !expressions.length) return;
-    const implicit = o.variable(CONTEXT_NAME);
-    expressions.forEach(expression => {
-      const binding = this.convertExpressionBinding(implicit, expression);
-      this.i18n !.appendBinding(binding);
-    });
+    if (expressions.length > 0) {
+      expressions.forEach(expression => this.i18n !.appendBinding(expression));
+    }
   }
 
   i18nBindProps(props: {[key: string]: t.Text | t.BoundText}): {[key: string]: o.Expression} {
@@ -452,7 +449,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // setup accumulated bindings
     const {index, bindings} = this.i18n;
     if (bindings.size) {
-      bindings.forEach(binding => this.updateInstruction(span, R3.i18nExp, [binding]));
+      bindings.forEach(binding => {
+        this.updateInstruction(
+            span, R3.i18nExp,
+            () => [this.convertPropertyBinding(o.variable(CONTEXT_NAME), binding)]);
+      });
       this.updateInstruction(span, R3.i18nApply, [o.literal(index)]);
     }
     if (!selfClosing) {

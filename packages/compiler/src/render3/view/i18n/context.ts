@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AST} from '../../../expression_parser/ast';
 import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
 
@@ -40,7 +41,7 @@ function setupRegistry() {
  */
 export class I18nContext {
   public readonly id: number;
-  public bindings = new Set<o.Expression>();
+  public bindings = new Set<AST>();
   public placeholders = new Map<string, any[]>();
   public isEmitted: boolean = false;
 
@@ -75,7 +76,7 @@ export class I18nContext {
   }
 
   // public API to accumulate i18n-related content
-  appendBinding(binding: o.Expression) { this.bindings.add(binding); }
+  appendBinding(binding: AST) { this.bindings.add(binding); }
   appendIcu(name: string, ref: o.Expression) {
     updatePlaceholderMap(this._registry.icus, name, ref);
   }

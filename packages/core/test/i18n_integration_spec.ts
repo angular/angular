@@ -23,6 +23,7 @@ class DirectiveWithTplRef {
 class MyComp {
   name = 'John';
   items = ['1', '2', '3'];
+  obj = {a: {b: 'value'}};
   visible = true;
   age = 20;
   count = 2;
@@ -42,6 +43,7 @@ const TRANSLATIONS: any = {
   'Item {$interpolation}': 'Article {$interpolation}',
   '\'Single quotes\' and "Double quotes"': '\'Guillemets simples\' et "Guillemets doubles"',
   'My logo': 'Mon logo',
+  '{$interpolation} - {$interpolation_1}': '{$interpolation} - {$interpolation_1} (fr)',
   '{$startTagSpan}My logo{$tagImg}{$closeTagSpan}':
       '{$startTagSpan}Mon logo{$tagImg}{$closeTagSpan}',
   '{$startTagNgTemplate} Hello {$closeTagNgTemplate}{$startTagNgContainer} Bye {$closeTagNgContainer}':
@@ -173,6 +175,13 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
 
       const element = fixture.nativeElement.firstChild;
       expect(element).toHaveText('Bonjour John');
+    });
+
+    it('should support interpolations with complex expressions', () => {
+      const template = `<div i18n>{{ name | uppercase }} - {{ obj?.a?.b }}</div>`;
+      const fixture = getFixtureWithOverrides({template});
+      const element = fixture.nativeElement.firstChild;
+      expect(element).toHaveText('JOHN - value (fr)');
     });
 
     it('should properly escape quotes in content', () => {
