@@ -117,12 +117,13 @@ var_12: &publish_branches_filter
       # e.g. 7.0.x, 7.1.x, etc.
       - /\d+\.\d+\.x/
 
-# Workspace initially persisted by the `install` job, and then enhanced by test_aio and
-# build-npm-packages.
+# Workspace initially persisted by the `install` job, and then enhanced by `test_aio` and
+# `build-npm-packages`.
 # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
 # https://circleci.com/blog/deep-diving-into-circleci-workspaces/
-var_13: &attach_options
-  at: .
+var_13: &attach_workspace
+  attach_workspace:
+    at: ~/
 
 version: 2
 jobs:
@@ -136,16 +137,26 @@ jobs:
       - *init_environment
       - *yarn_install
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
+      # Make the bazel directories and add a file to them if they don't exist already so that
+      # persist_to_workspace does not fail.
+      - run: |
+          if [ ! -d ~/bazel_repository_cache ]; then
+            mkdir ~/bazel_repository_cache
+            touch ~/bazel_repository_cache/MARKER
+          fi
       # Persist any changes at this point to be reused by further jobs.
+      # **NOTE 1 **: Folders persisted here should be kept in sync with `var_13: &attach_workspace`.
+      # **NOTE 2 **: To add new content to the workspace, always persist on the same root.
       - persist_to_workspace:
-          root: .
+          root: ~/
           paths:
-            - ./*
+            - ./ng
+            - ./bazel_repository_cache
 
   lint:
     <<: *job_defaults
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
 
       - run: 'yarn bazel:format -mode=check ||
@@ -160,7 +171,7 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       - *setup_circleci_bazel_config
 
@@ -176,7 +187,7 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       - *setup_circleci_bazel_config
       - *setup_bazel_remote_execution
@@ -212,7 +223,7 @@ jobs:
     # and therefore the tunnel and Karma need to process a lot of file requests and tests.
     resource_class: xlarge
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       - run:
           name: Preparing environment for running tests on Saucelabs.
@@ -239,7 +250,7 @@ jobs:
       # Needed because the AIO tests and the PWA score test depend on Chrome being available.
       - image: *browsers_docker_image
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
         # Build aio
       - run: yarn --cwd aio build --progress=false
@@ -264,7 +275,7 @@ jobs:
     # Needed because before deploying the deploy-production script runs the PWA score tests.
     - image: *browsers_docker_image
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
         # Deploy angular.io to production (if necessary)
       - run: setPublicVar CI_STABLE_BRANCH "$(npm info @angular/core dist-tags.latest | sed -r 's/^\s*([0-9]+\.[0-9]+)\.[0-9]+.*$/\1.x/')"
@@ -276,7 +287,7 @@ jobs:
       # Needed because the AIO tests and the PWA score test depend on Chrome being available.
       - image: *browsers_docker_image
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
         # Build aio (with local Angular packages)
       - run: yarn --cwd aio build-local --progress=false
@@ -291,7 +302,7 @@ jobs:
   test_aio_local_ivy:
     <<: *job_defaults
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
         # Build aio with Ivy (using local Angular packages)
       - run: yarn --cwd aio build-with-ivy --progress=false
@@ -299,7 +310,7 @@ jobs:
   test_aio_tools:
     <<: *job_defaults
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
         # Install
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
@@ -315,7 +326,7 @@ jobs:
       - image: *browsers_docker_image
     parallelism: 3
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
@@ -331,7 +342,7 @@ jobs:
       - image: *browsers_docker_image
     parallelism: 3
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
@@ -346,7 +357,7 @@ jobs:
     environment:
        AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CI_PULL_REQUEST $CI_COMMIT
       - store_artifacts:
@@ -363,7 +374,7 @@ jobs:
       # Needed because the test-preview script runs e2e tests and the PWA score test with Chrome.
       - image: *browsers_docker_image
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
       - run:
@@ -383,7 +394,7 @@ jobs:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       - *setup_circleci_bazel_config
       - *setup_bazel_remote_execution
@@ -392,10 +403,11 @@ jobs:
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:
-          root: .
+          root: ~/
           paths:
-            - dist/packages-dist
+            - ng/dist/packages-dist
 
+      # Save dependencies and bazel repository cache to use on subsequent runs.
       - save_cache:
           key: *cache_key
           paths:
@@ -403,13 +415,12 @@ jobs:
             - "aio/node_modules"
             - "~/bazel_repository_cache"
 
-
   # Build the ivy npm packages.
   build-ivy-npm-packages:
     <<: *job_defaults
     resource_class: xlarge
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       - *setup_circleci_bazel_config
       - *setup_bazel_remote_execution
@@ -418,9 +429,9 @@ jobs:
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       - persist_to_workspace:
-          root: .
+          root: ~/
           paths:
-            - dist/packages-dist-ivy-aot
+            - ng/dist/packages-dist-ivy-aot
 
   # We run the integration tests outside of Bazel for now.
   # They are a separate workflow job so that they can be easily re-run.
@@ -439,7 +450,7 @@ jobs:
     # on a 4G worker so we use a larger machine here too.
     resource_class: xlarge
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       # Runs the integration tests in parallel across multiple CircleCI container instances. The
       # amount of container nodes for this job is controlled by the "parallelism" option.
@@ -450,7 +461,7 @@ jobs:
   publish_snapshot:
     <<: *job_defaults
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       # See below - ideally this job should not trigger for non-upstream builds.
       # But since it does, we have to check this condition.
@@ -499,7 +510,7 @@ jobs:
     # and therefore the tunnel and Karma need to process a lot of file requests and tests.
     resource_class: xlarge
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       - run:
           name: Preparing environment for running tests on Saucelabs.
@@ -521,7 +532,7 @@ jobs:
   legacy-misc-tests:
     <<: *job_defaults
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       - run: yarn gulp check-cycle
       # TODO: disabled because the Bazel packages-dist does not seem to have map files for
@@ -536,7 +547,7 @@ jobs:
     docker:
       - image: *browsers_docker_image
     steps:
-      - attach_workspace: *attach_options
+      - *attach_workspace
       - *init_environment
       - run: ./scripts/ci/run_angular_material_unit_tests.sh
 
