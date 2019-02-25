@@ -23,9 +23,10 @@ describe('MatGridList', () => {
   });
 
   it('should throw error if rowHeight ratio is invalid', () => {
-    const fixture = createComponent(GridListWithInvalidRowHeightRatio);
-
-    expect(() => fixture.detectChanges()).toThrowError(/invalid ratio given for row-height/);
+    expect(() => {
+      const fixture = createComponent(GridListWithInvalidRowHeightRatio);
+      fixture.detectChanges();
+    }).toThrowError(/invalid ratio given for row-height/);
   });
 
   it('should throw error if tile colspan is wider than total cols', () => {
