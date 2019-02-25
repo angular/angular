@@ -24,17 +24,21 @@ const angularFiles = setup({
 
 const htmlParser = new HtmlParser();
 
+const EXTRACT_GENERATED_TRANSLATIONS_REGEXP =
+    /const\s*(.*?)\s*=\s*goog\.getMsg\("(.*?)",?\s*(.*?)\)/g;
+
 const diff = (a: Set<string>, b: Set<string>): Set<string> =>
     new Set([...Array.from(a)].filter(x => !b.has(x)));
 
-const extract = (from: string, regex: any, transformFn: (match: any[]) => any) => {
-  const result = new Set<string>();
-  let item;
-  while ((item = regex.exec(from)) !== null) {
-    result.add(transformFn(item));
-  }
-  return result;
-};
+const extract =
+    (from: string, regex: any, transformFn: (match: any[], state?: Set<any>) => any) => {
+      const result = new Set<any>();
+      let item;
+      while ((item = regex.exec(from)) !== null) {
+        result.add(transformFn(item, result));
+      }
+      return result;
+    };
 
 // verify that we extracted all the necessary translations
 // and their ids match the ones extracted via 'ng xi18n'
@@ -73,8 +77,7 @@ const verifyTranslationIds =
 // placeholders object defined as goog.getMsg function argument
 const verifyPlaceholdersIntegrity = (output: string) => {
   const extactTranslations = (from: string) => {
-    const regex = /const\s*(.*?)\s*=\s*goog\.getMsg\("(.*?)",?\s*(.*?)\)/g;
-    return extract(from, regex, v => [v[2], v[3]]);
+    return extract(from, EXTRACT_GENERATED_TRANSLATIONS_REGEXP, v => [v[2], v[3]]);
   };
   const extractPlaceholdersFromBody = (body: string) => {
     const regex = /{\$(.*?)}/g;
@@ -92,6 +95,19 @@ const verifyPlaceholdersIntegrity = (output: string) => {
       return false;
     }
   });
+  return true;
+};
+
+const verifyUniqueConsts = (output: string) => {
+  extract(
+      output, EXTRACT_GENERATED_TRANSLATIONS_REGEXP,
+      (current: string[], state: Set<any>): string => {
+        const key = current[1];
+        if (state.has(key)) {
+          throw new Error(`Duplicate const ${key} found in generated output!`);
+        }
+        return key;
+      });
   return true;
 };
 
@@ -134,6 +150,7 @@ const verify = (input: string, output: string, extra: any = {}): void => {
     const result = compile(files, angularFiles, opts(false));
     maybePrint(result.source, extra.verbose);
     expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
+    expect(verifyUniqueConsts(result.source)).toBe(true);
     expectEmit(result.source, output, 'Incorrect template');
   }
 
@@ -147,6 +164,7 @@ const verify = (input: string, output: string, extra: any = {}): void => {
     expect(verifyTranslationIds(input, result.source, extra.exceptions, interpolationConfig))
         .toBe(true);
     expect(verifyPlaceholdersIntegrity(result.source)).toBe(true);
+    expect(verifyUniqueConsts(result.source)).toBe(true);
     expectEmit(result.source, output, 'Incorrect template');
   }
 };
@@ -1623,6 +1641,27 @@ describe('i18n support in the view compiler', () => {
             $r3$.ɵtemplate(3, MyComponent_ng_template_3_Template, 2, 0, "ng-template");
           }
         }
+      `;
+
+      verify(input, output);
+    });
+
+    it('should not emit duplicate i18n consts for nested <ng-container>s', () => {
+      const input = `
+        <ng-template i18n>
+          Root content
+          <ng-container *ngIf="visible">
+            Nested content
+          </ng-container>
+        </ng-template>
+      `;
+
+      const output = String.raw `
+        const $MSG_EXTERNAL_8537814667662432133$$APP_SPEC_TS__0$ = goog.getMsg(" Root content {$startTagNgContainer} Nested content {$closeTagNgContainer}", {
+          "startTagNgContainer": "\uFFFD*1:1\uFFFD\uFFFD#1:1\uFFFD",
+          "closeTagNgContainer": "\uFFFD/#1:1\uFFFD\uFFFD/*1:1\uFFFD"
+        });
+        …
       `;
 
       verify(input, output);
