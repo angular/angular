@@ -1666,6 +1666,24 @@ describe('i18n support in the view compiler', () => {
 
       verify(input, output);
     });
+
+    it('should not emit duplicate i18n consts for elements with the same content', () => {
+      const input = `
+        <div i18n>Test</div>
+        <div i18n>Test</div>
+      `;
+
+      // TODO(FW-635): currently we generate unique consts for each i18n block even though it might
+      // contain the same content. This should be optimized by translation statements caching, that
+      // can be implemented in the future within FW-635.
+      const output = String.raw `
+        const $MSG_EXTERNAL_6563391987554512024$$APP_SPEC_TS_0$ = goog.getMsg("Test");
+        const $MSG_EXTERNAL_6563391987554512024$$APP_SPEC_TS_1$ = goog.getMsg("Test");
+        …
+      `;
+
+      verify(input, output);
+    });
   });
 
   describe('whitespace preserving mode', () => {
