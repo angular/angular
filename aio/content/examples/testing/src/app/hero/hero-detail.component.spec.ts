@@ -38,12 +38,12 @@ function overrideSetup() {
   class HeroDetailServiceSpy {
     testHero: Hero = {id: 42, name: 'Test Hero' };
 
-    /* emit cloned test hero */
+    /* 히어로 객체를 복사해서 보냅니다. */
     getHero = jasmine.createSpy('getHero').and.callFake(
       () => asyncData(Object.assign({}, this.testHero))
     );
 
-    /* emit clone of test hero, with changes merged in */
+    /* 복사한 히어로 객체에 변경사항을 반영해서 보냅니다. */
     saveHero = jasmine.createSpy('saveHero').and.callFake(
       (hero: Hero) => asyncData(Object.assign(this.testHero, hero))
     );
@@ -70,7 +70,7 @@ function overrideSetup() {
       ]
     })
 
-    // Override component's own provider
+    // 컴포넌트에 등록된 프로바이더를 오버라이드합니다.
     // #docregion override-component-method
     .overrideComponent(HeroDetailComponent, {
       set: {
@@ -90,7 +90,7 @@ function overrideSetup() {
 
   beforeEach(async(() => {
     createComponent();
-    // get the component's injected HeroDetailServiceSpy
+    // 컴포넌트에 주입된 HeroDetailServiceSpy를 참조합니다.
     hdsSpy = fixture.debugElement.injector.get(HeroDetailService) as any;
   }));
 
@@ -107,7 +107,7 @@ function overrideSetup() {
     const newName = 'New Name';
 
     page.nameInput.value = newName;
-    page.nameInput.dispatchEvent(newEvent('input')); // tell Angular
+    page.nameInput.dispatchEvent(newEvent('input')); // 값이 변경되었다는 이벤트를 보냅니다.
 
     expect(component.hero.name).toBe(newName, 'component hero has new name');
     expect(hdsSpy.testHero.name).toBe(origName, 'service hero unchanged before save');
@@ -115,7 +115,7 @@ function overrideSetup() {
     click(page.saveBtn);
     expect(hdsSpy.saveHero.calls.count()).toBe(1, 'saveHero called once');
 
-    tick(); // wait for async save to complete
+    tick(); // 비동기 저장 로직이 끝나는 것을 기다립니다.
     expect(hdsSpy.testHero.name).toBe(newName, 'service hero has new name after save');
     expect(page.navigateSpy.calls.any()).toBe(true, 'router.navigate called');
   }));
