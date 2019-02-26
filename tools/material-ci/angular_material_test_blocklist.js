@@ -649,29 +649,13 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
   },
-  "MatSelect core overlay panel should not throw when attempting to open too early": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'open' of undefined.",
-    "notes": "Unknown"
-  },
-  "MatSelect core selection logic should handle accessing `optionSelectionChanges` before the options are initialized": {
-    "error": "TypeError: Cannot read property 'options' of undefined",
-    "notes": "Unknown"
-  },
-  "MatSelect core keyboard scrolling should skip option group labels": {
-    "error": "ObjectUnsubscribedError: object unsubscribed",
-    "notes": "Unknown"
-  },
   "MatSelect when the select's value is accessed on initialization should not throw when trying to access the selected value on init": {
     "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'selected' of undefined.",
-    "notes": "Unknown"
-  },
-  "MatSelect with custom value accessor should support use inside a custom value accessor": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for writeValue()",
-    "notes": "Unknown"
+    "notes": "FW-1051: Property values changed in ngOnChanges throw ExpressionChanged errors"
   },
   "MatSelect with custom trigger should allow the user to customize the label": {
     "error": "TypeError: Cannot read property 'selected' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1051: Property values changed in ngOnChanges throw ExpressionChanged errors"
   },
   "MatSnackBar with TemplateRef should be able to open a snack bar using a TemplateRef": {
     "error": "Error: Expected ' Fries Pizza  ' to contain 'Pasta'.",
