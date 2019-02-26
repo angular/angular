@@ -623,7 +623,7 @@ class _Tokenizer {
 
   private _consumePrefixAndName(): string[] {
     const nameOrPrefixStart = this._index;
-    let prefix: string = null !;
+    let prefix: string = '';
     while (this._peek !== chars.$COLON && !isPrefixEnd(this._peek)) {
       this._advance();
     }
@@ -643,15 +643,15 @@ class _Tokenizer {
   private _consumeTagOpen(start: ParseLocation) {
     const savedPos = this._savePosition();
     let tagName: string;
-    let lowercaseTagName: string;
+    let prefix: string;
+    let openTagToken: Token|undefined;
     try {
       if (!chars.isAsciiLetter(this._peek)) {
         throw this._createError(_unexpectedCharacterErrorMsg(this._peek), this._getSpan());
       }
-      const nameStart = this._index;
-      this._consumeTagOpenStart(start);
-      tagName = this._input.substring(nameStart, this._index);
-      lowercaseTagName = tagName.toLowerCase();
+      openTagToken = this._consumeTagOpenStart(start);
+      prefix = openTagToken.parts[0];
+      tagName = openTagToken.parts[1];
       this._attemptCharCodeUntilFn(isNotWhitespace);
       while (this._peek !== chars.$SLASH && this._peek !== chars.$GT) {
         this._consumeAttributeName();
@@ -679,28 +679,28 @@ class _Tokenizer {
     const contentTokenType = this._getTagDefinition(tagName).contentType;
 
     if (contentTokenType === TagContentType.RAW_TEXT) {
-      this._consumeRawTextWithTagClose(lowercaseTagName, false);
+      this._consumeRawTextWithTagClose(prefix, tagName, false);
     } else if (contentTokenType === TagContentType.ESCAPABLE_RAW_TEXT) {
-      this._consumeRawTextWithTagClose(lowercaseTagName, true);
+      this._consumeRawTextWithTagClose(prefix, tagName, true);
     }
   }
 
-  private _consumeRawTextWithTagClose(lowercaseTagName: string, decodeEntities: boolean) {
+  private _consumeRawTextWithTagClose(prefix: string, tagName: string, decodeEntities: boolean) {
     const textToken = this._consumeRawText(decodeEntities, chars.$LT, () => {
       if (!this._attemptCharCode(chars.$SLASH)) return false;
       this._attemptCharCodeUntilFn(isNotWhitespace);
-      if (!this._attemptStrCaseInsensitive(lowercaseTagName)) return false;
+      if (!this._attemptStrCaseInsensitive(tagName)) return false;
       this._attemptCharCodeUntilFn(isNotWhitespace);
       return this._attemptCharCode(chars.$GT);
     });
     this._beginToken(TokenType.TAG_CLOSE, textToken.sourceSpan.end);
-    this._endToken([null !, lowercaseTagName]);
+    this._endToken([prefix, tagName]);
   }
 
   private _consumeTagOpenStart(start: ParseLocation) {
     this._beginToken(TokenType.TAG_OPEN_START, start);
     const parts = this._consumePrefixAndName();
-    this._endToken(parts);
+    return this._endToken(parts);
   }
 
   private _consumeAttributeName() {
