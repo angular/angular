@@ -18,17 +18,17 @@ import {eraseStyles, setStyles} from '../util';
  *
  * @returns an instance of `SpecialCasedStyles` if any special styles are detected otherwise `null`
  */
-export function packageSpecialStyles(
+export function packageNonAnimatableStyles(
     element: any, styles: {[key: string]: any} | {[key: string]: any}[]): SpecialCasedStyles|null {
   let startStyles: {[key: string]: any}|null = null;
   let endStyles: {[key: string]: any}|null = null;
   if (Array.isArray(styles) && styles.length) {
-    startStyles = filterSpecialStyles(styles[0]);
+    startStyles = filterNonAnimatableStyles(styles[0]);
     if (styles.length > 1) {
-      endStyles = filterSpecialStyles(styles[styles.length - 1]);
+      endStyles = filterNonAnimatableStyles(styles[styles.length - 1]);
     }
   } else if (styles) {
-    startStyles = filterSpecialStyles(styles);
+    startStyles = filterNonAnimatableStyles(styles);
   }
 
   return (startStyles || endStyles) ? new SpecialCasedStyles(element, startStyles, endStyles) :
@@ -98,6 +98,16 @@ export class SpecialCasedStyles {
   }
 }
 
+/**
+ * An enum of states reflective of what the status of `SpecialCasedStyles` is.
+ *
+ * Depending on how `SpecialCasedStyles` is interacted with, the start and end
+ * styles may not be applied in the same way. This enum ensures that if and when
+ * the ending styles are applied then the starting styles are applied. It is
+ * also used to reflect what the current status of the special cased styles are
+ * which helps prevent the starting/ending styles not be applied twice. It is
+ * also used to cleanup the styles once `SpecialCasedStyles` is destroyed.
+ */
 const enum SpecialCasedStylesState {
   Pending = 0,
   Started = 1,
@@ -105,12 +115,12 @@ const enum SpecialCasedStylesState {
   Destroyed = 3,
 }
 
-function filterSpecialStyles(styles: {[key: string]: any}) {
+function filterNonAnimatableStyles(styles: {[key: string]: any}) {
   let result: {[key: string]: any}|null = null;
   const props = Object.keys(styles);
   for (let i = 0; i < props.length; i++) {
     const prop = props[i];
-    if (isSpecialStyle(prop)) {
+    if (isNonAnimatableStyle(prop)) {
       result = result || {};
       result[prop] = styles[prop];
     }
@@ -118,6 +128,6 @@ function filterSpecialStyles(styles: {[key: string]: any}) {
   return result;
 }
 
-function isSpecialStyle(prop: string) {
+function isNonAnimatableStyle(prop: string) {
   return prop === 'display' || prop === 'position';
 }
