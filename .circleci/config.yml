@@ -346,6 +346,12 @@ jobs:
       - *init_environment
         # Install aio
       - run: yarn --cwd aio install --frozen-lockfile --non-interactive
+        # Rename the Ivy packages dist folder to "dist/packages-dist" as the AIO
+        # package installer picks up the locally built packages from that location.
+        # *Note*: We could also adjust the packages installer, but given we won't have
+        # two different folders of Angular distributions in the future, we should keep
+        # the packages installer unchanged.
+      - run: mv dist/packages-dist-ivy-aot dist/packages-dist
         # Run examples tests with ivy. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
         # Since the parallelism is set to "3", there will be three parallel CircleCI containers
         # with either "0", "1" or "2" as node index. This can be passed to the "--shard" argument.
@@ -596,7 +602,7 @@ workflows:
             - build-npm-packages
       - test_docs_examples_ivy:
           requires:
-            - build-npm-packages
+            - build-ivy-npm-packages
       - aio_preview:
           requires:
             - setup
