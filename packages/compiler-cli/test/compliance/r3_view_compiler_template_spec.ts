@@ -117,6 +117,63 @@ describe('compiler compliance: template', () => {
     expectEmit(result.source, template, 'Incorrect template');
   });
 
+  it('should correctly bind to context in nested template with many bindings', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: \`
+                  <div *ngFor="let d of _data; let i = index" (click)="_handleClick(d, i)"></div>
+                \`
+              })
+              export class MyComponent {
+                _data = [1,2,3];
+                _handleClick(d: any, i: any) {}
+              }
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+      }
+    };
+
+    const template = `
+        const $t0_attrs$ = ["ngFor", "", ${AttributeMarker.SelectOnly}, "ngForOf"];
+        const $e_attrs$ = [${AttributeMarker.SelectOnly}, "click"];
+
+        function MyComponent_div_0_Template(rf, ctx) {
+          if (rf & 1) {
+            const $s$ = $r3$.ɵgetCurrentView();
+            $r3$.ɵelementStart(0, "div", $e_attrs$);
+            $r3$.ɵlistener("click", function MyComponent_div_0_Template_div_click_0_listener($event) {
+              $r3$.ɵrestoreView($s$);
+              const $d$ = ctx.$implicit;
+              const $i$ = ctx.index;
+              const $comp$ = $r3$.ɵnextContext();
+              return $comp$._handleClick($d$, $i$);
+            });
+            $r3$.ɵelementEnd();
+          }
+        }
+        // ...
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", $t0_attrs$);
+          }
+          if (rf & 2) {
+            $r3$.ɵelementProperty(0, "ngForOf", $r3$.ɵbind(ctx._data));
+          }
+        }
+        `;
+
+    const result = compile(files, angularFiles);
+
+    expectEmit(result.source, template, 'Incorrect template');
+  });
+
   it('should support ngFor context variables', () => {
     const files = {
       app: {
