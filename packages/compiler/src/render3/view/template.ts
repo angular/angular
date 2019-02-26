@@ -329,7 +329,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   i18nAppendBindings(expressions: AST[]) {
-    if (this.i18n && expressions.length > 0) {
+    if (expressions.length > 0) {
       expressions.forEach(expression => this.i18n !.appendBinding(expression));
     }
   }

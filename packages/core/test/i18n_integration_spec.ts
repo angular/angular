@@ -177,7 +177,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       expect(element).toHaveText('Bonjour John');
     });
 
-    it('should interpolations with complex expressions', () => {
+    it('should support interpolations with complex expressions', () => {
       const template = `<div i18n>{{ name | uppercase }} - {{ obj?.a?.b }}</div>`;
       const fixture = getFixtureWithOverrides({template});
       const element = fixture.nativeElement.firstChild;
