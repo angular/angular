@@ -402,9 +402,9 @@ class _TreeBuilder {
 
   private _getElementFullName(prefix: string, localName: string, parentElement: html.Element|null):
       string {
-    if (prefix == null) {
-      prefix = this.getTagDefinition(localName).implicitNamespacePrefix !;
-      if (prefix == null && parentElement != null) {
+    if (prefix === '') {
+      prefix = this.getTagDefinition(localName).implicitNamespacePrefix || '';
+      if (prefix === '' && parentElement != null) {
         prefix = getNsPrefix(parentElement.name);
       }
     }
