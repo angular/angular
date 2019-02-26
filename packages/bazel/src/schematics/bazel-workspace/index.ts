@@ -59,7 +59,8 @@ export default function(options: BazelWorkspaceOptions): Rule {
     const workspaceVersions = {
       'RULES_NODEJS_VERSION': '0.18.6',
       'RULES_NODEJS_SHA256': '1416d03823fed624b49a0abbd9979f7c63bbedfd37890ddecedd2fe25cccebc6',
-      'RULES_SASS_VERSION': '1.17.0',
+      'RULES_SASS_VERSION': '1.17.2',
+      'RULES_SASS_SHA256': 'e5316ee8a09d1cbb732d3938b400836bf94dba91a27476e9e27706c4c0edae1f',
     };
 
     return mergeWith(apply(url('./files'), [
