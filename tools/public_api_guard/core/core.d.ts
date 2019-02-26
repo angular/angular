@@ -574,6 +574,11 @@ export interface NgModule {
 
 export declare const NgModule: NgModuleDecorator;
 
+export interface NgModuleDecorator {
+    (obj?: NgModule): TypeDecorator;
+    new (obj?: NgModule): NgModule;
+}
+
 export declare abstract class NgModuleFactory<T> {
     abstract readonly moduleType: Type<T>;
     abstract create(parentInjector: Injector | null): NgModuleRef<T>;
