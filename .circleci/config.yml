@@ -324,7 +324,7 @@ jobs:
     docker:
       # Needed because the example e2e tests depend on Chrome.
       - image: *browsers_docker_image
-    parallelism: 3
+    parallelism: 4
     steps:
       - *attach_workspace
       - *init_environment
@@ -340,7 +340,10 @@ jobs:
     docker:
       # Needed because the example e2e tests depend on Chrome.
       - image: *browsers_docker_image
-    parallelism: 3
+    # We increase the parallelism here to five while the "test_docs_examples" job runs with
+    # a parallelism of four. This is necessary because this job also need to run NGCC which
+    # takes up more time and we don't want these jobs to impact the overall CI turnaround.
+    parallelism: 5
     steps:
       - *attach_workspace
       - *init_environment
