@@ -60,11 +60,9 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
     // `angularCompilerOptions` will be considered. As this code is going to be
     // removed with Ivy, the added complication of handling recursive extends
     // is likely not needed.
-    let userConfigFile =
-        resolveNormalizedPath(path.dirname(project), config['extends']);
+    let userConfigFile = resolveNormalizedPath(path.dirname(project), config['extends']);
     if (!userConfigFile.endsWith('.json')) userConfigFile += '.json';
-    const {config: userConfig, error} =
-        ts.readConfigFile(userConfigFile, ts.sys.readFile);
+    const {config: userConfig, error} = ts.readConfigFile(userConfigFile, ts.sys.readFile);
     if (error) {
       console.error(ng.formatDiagnostics([error]));
       return false;
@@ -73,37 +71,40 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
     // All user angularCompilerOptions values that a user has control
     // over should be collected here
     if (userConfig.angularCompilerOptions) {
-        angularCompilerOptions.diagnostics = angularCompilerOptions.diagnostics ||
-            userConfig.angularCompilerOptions.diagnostics;
-        angularCompilerOptions.trace = angularCompilerOptions.trace ||
-            userConfig.angularCompilerOptions.trace;
+      angularCompilerOptions.diagnostics =
+          angularCompilerOptions.diagnostics || userConfig.angularCompilerOptions.diagnostics;
+      angularCompilerOptions.trace =
+          angularCompilerOptions.trace || userConfig.angularCompilerOptions.trace;
 
-        angularCompilerOptions.disableExpressionLowering = angularCompilerOptions.disableExpressionLowering ||
-            userConfig.angularCompilerOptions.disableExpressionLowering;
-        angularCompilerOptions.disableTypeScriptVersionCheck = angularCompilerOptions.disableTypeScriptVersionCheck ||
-            userConfig.angularCompilerOptions.disableTypeScriptVersionCheck;
+      angularCompilerOptions.disableExpressionLowering =
+          angularCompilerOptions.disableExpressionLowering ||
+          userConfig.angularCompilerOptions.disableExpressionLowering;
+      angularCompilerOptions.disableTypeScriptVersionCheck =
+          angularCompilerOptions.disableTypeScriptVersionCheck ||
+          userConfig.angularCompilerOptions.disableTypeScriptVersionCheck;
 
-        angularCompilerOptions.i18nOutLocale = angularCompilerOptions.i18nOutLocale ||
-            userConfig.angularCompilerOptions.i18nOutLocale;
-        angularCompilerOptions.i18nOutFormat = angularCompilerOptions.i18nOutFormat ||
-            userConfig.angularCompilerOptions.i18nOutFormat;
-        angularCompilerOptions.i18nOutFile = angularCompilerOptions.i18nOutFile ||
-            userConfig.angularCompilerOptions.i18nOutFile;
+      angularCompilerOptions.i18nOutLocale =
+          angularCompilerOptions.i18nOutLocale || userConfig.angularCompilerOptions.i18nOutLocale;
+      angularCompilerOptions.i18nOutFormat =
+          angularCompilerOptions.i18nOutFormat || userConfig.angularCompilerOptions.i18nOutFormat;
+      angularCompilerOptions.i18nOutFile =
+          angularCompilerOptions.i18nOutFile || userConfig.angularCompilerOptions.i18nOutFile;
 
-        angularCompilerOptions.i18nInFormat = angularCompilerOptions.i18nInFormat ||
-            userConfig.angularCompilerOptions.i18nInFormat;
-        angularCompilerOptions.i18nInLocale = angularCompilerOptions.i18nInLocale ||
-            userConfig.angularCompilerOptions.i18nInLocale;
-        angularCompilerOptions.i18nInFile = angularCompilerOptions.i18nInFile ||
-            userConfig.angularCompilerOptions.i18nInFile;
+      angularCompilerOptions.i18nInFormat =
+          angularCompilerOptions.i18nInFormat || userConfig.angularCompilerOptions.i18nInFormat;
+      angularCompilerOptions.i18nInLocale =
+          angularCompilerOptions.i18nInLocale || userConfig.angularCompilerOptions.i18nInLocale;
+      angularCompilerOptions.i18nInFile =
+          angularCompilerOptions.i18nInFile || userConfig.angularCompilerOptions.i18nInFile;
 
-        angularCompilerOptions.i18nInMissingTranslations = angularCompilerOptions.i18nInMissingTranslations ||
-            userConfig.angularCompilerOptions.i18nInMissingTranslations;
-        angularCompilerOptions.i18nUseExternalIds = angularCompilerOptions.i18nUseExternalIds ||
-            userConfig.angularCompilerOptions.i18nUseExternalIds;
+      angularCompilerOptions.i18nInMissingTranslations =
+          angularCompilerOptions.i18nInMissingTranslations ||
+          userConfig.angularCompilerOptions.i18nInMissingTranslations;
+      angularCompilerOptions.i18nUseExternalIds = angularCompilerOptions.i18nUseExternalIds ||
+          userConfig.angularCompilerOptions.i18nUseExternalIds;
 
-        angularCompilerOptions.preserveWhitespaces = angularCompilerOptions.preserveWhitespaces ||
-            userConfig.angularCompilerOptions.preserveWhitespaces;
+      angularCompilerOptions.preserveWhitespaces = angularCompilerOptions.preserveWhitespaces ||
+          userConfig.angularCompilerOptions.preserveWhitespaces;
     }
   }
 
