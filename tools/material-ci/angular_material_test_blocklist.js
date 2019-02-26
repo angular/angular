@@ -597,30 +597,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
     "notes": "Unknown"
   },
-  "MatTabGroup basic behavior should change selected index on click": {
-    "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should support two-way binding for selectedIndex": {
-    "error": "TypeError: ctx_r16151._handleClick is not a function",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should fire animation done event": {
-    "error": "TypeError: ctx_r16547._handleClick is not a function",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should emit focusChange event on click": {
-    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
-    "notes": "Unknown"
-  },
-  "MatTabGroup basic behavior should emit focusChange on arrow key navigation": {
-    "error": "Error: Expected spy handleFocus to have been called once. It was called 0 times.",
-    "notes": "Unknown"
-  },
-  "MatTabGroup lazy loaded tabs should lazy load the second tab": {
-    "error": "TypeError: ctx_r17471._handleClick is not a function",
-    "notes": "Unknown"
-  },
   "Dialog should set the proper animation states": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
