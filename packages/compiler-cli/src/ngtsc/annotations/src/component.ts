@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, R3ComponentMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, R3ComponentMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -50,6 +50,13 @@ export class ComponentDecoratorHandler implements
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
 
+  /**
+   * During the asynchronous preanalyze phase, it's necessary to parse the template to extract
+   * any potential <link> tags which might need to be loaded. This cache ensures that work is not
+   * thrown away, and the parsed template is reused during the analyze phase.
+   */
+  private preanalyzeTemplateCache = new Map<ts.Declaration, ParsedTemplate>();
+
   readonly precedence = HandlerPrecedence.PRIMARY;
 
   detect(node: ts.Declaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
@@ -69,44 +76,54 @@ export class ComponentDecoratorHandler implements
   }
 
   preanalyze(node: ts.ClassDeclaration, decorator: Decorator): Promise<void>|undefined {
+    // In preanalyze, resource URLs associated with the component are asynchronously preloaded via
+    // the resourceLoader. This is the only time async operations are allowed for a component.
+    // These resources are:
+    //
+    // - the templateUrl, if there is one
+    // - any styleUrls if present
+    // - any stylesheets referenced from <link> tags in the template itself
+    //
+    // As a result of the last one, the template must be parsed as part of preanalysis to extract
+    // <link> tags, which may involve waiting for the templateUrl to be resolved first.
+
+    // If preloading isn't possible, then skip this step.
     if (!this.resourceLoader.canPreload) {
       return undefined;
     }
 
     const meta = this._resolveLiteral(decorator);
     const component = reflectObjectLiteral(meta);
-    const promises: Promise<void>[] = [];
     const containingFile = node.getSourceFile().fileName;
 
-    if (component.has('templateUrl')) {
-      const templateUrlExpr = component.get('templateUrl') !;
-      const templateUrl = this.evaluator.evaluate(templateUrlExpr);
-      if (typeof templateUrl !== 'string') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
-      }
-      const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
+    // Convert a styleUrl string into a Promise to preload it.
+    const resolveStyleUrl = (styleUrl: string): Promise<void> => {
+      const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
       const promise = this.resourceLoader.preload(resourceUrl);
-      if (promise !== undefined) {
-        promises.push(promise);
-      }
-    }
+      return promise || Promise.resolve();
+    };
 
-    const styleUrls = this._extractStyleUrls(component);
-    if (styleUrls !== null) {
-      for (const styleUrl of styleUrls) {
-        const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
-        const promise = this.resourceLoader.preload(resourceUrl);
-        if (promise !== undefined) {
-          promises.push(promise);
-        }
-      }
-    }
+    // A Promise that waits for the template and all <link>ed styles within it to be preloaded.
+    const templateAndTemplateStyleResources =
+        this._preloadAndParseTemplate(node, decorator, component, containingFile).then(template => {
+          if (template === null) {
+            return undefined;
+          } else {
+            return Promise.all(template.styleUrls.map(resolveStyleUrl)).then(() => undefined);
+          }
+        });
 
-    if (promises.length !== 0) {
-      return Promise.all(promises).then(() => undefined);
+    // Extract all the styleUrls in the decorator.
+    const styleUrls = this._extractStyleUrls(component, []);
+
+    if (styleUrls === null) {
+      // A fast path exists if there are no styleUrls, to just wait for
+      // templateAndTemplateStyleResources.
+      return templateAndTemplateStyleResources;
     } else {
-      return undefined;
+      // Wait for both the template and all styleUrl resources to resolve.
+      return Promise.all([templateAndTemplateStyleResources, ...styleUrls.map(resolveStyleUrl)])
+          .then(() => undefined);
     }
   }
 
@@ -142,89 +159,56 @@ export class ComponentDecoratorHandler implements
       }
     }, undefined) !;
 
-    let templateStr: string|null = null;
-    let templateUrl: string = '';
-    let templateRange: LexerRange|undefined;
-    let escapedString: boolean = false;
-
-    if (component.has('templateUrl')) {
-      const templateUrlExpr = component.get('templateUrl') !;
-      const evalTemplateUrl = this.evaluator.evaluate(templateUrlExpr);
-      if (typeof evalTemplateUrl !== 'string') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
-      }
-      templateUrl = this.resourceLoader.resolve(evalTemplateUrl, containingFile);
-      templateStr = this.resourceLoader.load(templateUrl);
-      if (!tsSourceMapBug29300Fixed()) {
-        // By removing the template URL we are telling the translator not to try to
-        // map the external source file to the generated code, since the version
-        // of TS that is running does not support it.
-        templateUrl = '';
-      }
-    } else if (component.has('template')) {
-      const templateExpr = component.get('template') !;
-      // We only support SourceMaps for inline templates that are simple string literals.
-      if (ts.isStringLiteral(templateExpr) || ts.isNoSubstitutionTemplateLiteral(templateExpr)) {
-        // the start and end of the `templateExpr` node includes the quotation marks, which we must
-        // strip
-        templateRange = getTemplateRange(templateExpr);
-        templateStr = templateExpr.getSourceFile().text;
-        templateUrl = relativeContextFilePath;
-        escapedString = true;
-      } else {
-        const resolvedTemplate = this.evaluator.evaluate(templateExpr);
-        if (typeof resolvedTemplate !== 'string') {
-          throw new FatalDiagnosticError(
-              ErrorCode.VALUE_HAS_WRONG_TYPE, templateExpr, 'template must be a string');
-        }
-        templateStr = resolvedTemplate;
-      }
-    } else {
-      throw new FatalDiagnosticError(
-          ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node, 'component is missing a template');
-    }
-
-    let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
-    if (component.has('preserveWhitespaces')) {
-      const expr = component.get('preserveWhitespaces') !;
-      const value = this.evaluator.evaluate(expr);
-      if (typeof value !== 'boolean') {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, 'preserveWhitespaces must be a boolean');
-      }
-      preserveWhitespaces = value;
-    }
-
     const viewProviders: Expression|null = component.has('viewProviders') ?
         new WrappedNodeExpr(component.get('viewProviders') !) :
         null;
 
-    let interpolation: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG;
-    if (component.has('interpolation')) {
-      const expr = component.get('interpolation') !;
-      const value = this.evaluator.evaluate(expr);
-      if (!Array.isArray(value) || value.length !== 2 ||
-          !value.every(element => typeof element === 'string')) {
-        throw new FatalDiagnosticError(
-            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
-            'interpolation must be an array with 2 elements of string type');
+    // Parse the template.
+    // If a preanalyze phase was executed, the template may already exist in parsed form, so check
+    // the preanalyzeTemplateCache.
+    let template: ParsedTemplate;
+    if (this.preanalyzeTemplateCache.has(node)) {
+      // The template was parsed in preanalyze. Use it and delete it to save memory.
+      template = this.preanalyzeTemplateCache.get(node) !;
+      this.preanalyzeTemplateCache.delete(node);
+    } else {
+      // The template was not already parsed. Either there's a templateUrl, or an inline template.
+      if (component.has('templateUrl')) {
+        const templateUrlExpr = component.get('templateUrl') !;
+        const evalTemplateUrl = this.evaluator.evaluate(templateUrlExpr);
+        if (typeof evalTemplateUrl !== 'string') {
+          throw new FatalDiagnosticError(
+              ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
+        }
+        const templateUrl = this.resourceLoader.resolve(evalTemplateUrl, containingFile);
+        const templateStr = this.resourceLoader.load(templateUrl);
+
+        template = this._parseTemplate(
+            component, templateStr, sourceMapUrl(templateUrl), /* templateRange */ undefined,
+            /* escapedString */ false);
+      } else {
+        // Expect an inline template to be present.
+        const inlineTemplate = this._extractInlineTemplate(component, relativeContextFilePath);
+        if (inlineTemplate === null) {
+          throw new FatalDiagnosticError(
+              ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node,
+              'component is missing a template');
+        }
+        const {templateStr, templateUrl, templateRange, escapedString} = inlineTemplate;
+        template =
+            this._parseTemplate(component, templateStr, templateUrl, templateRange, escapedString);
       }
-      interpolation = InterpolationConfig.fromArray(value as[string, string]);
     }
 
-    const template = parseTemplate(templateStr, templateUrl, {
-      preserveWhitespaces,
-      interpolationConfig: interpolation,
-      range: templateRange, escapedString
-    });
     if (template.errors !== undefined) {
       throw new Error(
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
     }
 
-    // If the component has a selector, it should be registered with the `LocalModuleScopeRegistry`
-    // so that when this component appears in an `@NgModule` scope, its selector can be determined.
+    // If the component has a selector, it should be registered with the
+    // `LocalModuleScopeRegistry`
+    // so that when this component appears in an `@NgModule` scope, its selector can be
+    // determined.
     if (metadata.selector !== null) {
       const ref = new Reference(node);
       this.scopeRegistry.registerDirective({
@@ -255,20 +239,37 @@ export class ComponentDecoratorHandler implements
       viewQueries.push(...queriesFromDecorator.view);
     }
 
+    // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
+    // precede inline styles, and styles defined in the template override styles defined in the
+    // component.
     let styles: string[]|null = null;
-    if (component.has('styles')) {
-      styles = parseFieldArrayValue(component, 'styles', this.evaluator);
-    }
 
-    let styleUrls = this._extractStyleUrls(component);
+    const styleUrls = this._extractStyleUrls(component, template.styleUrls);
     if (styleUrls !== null) {
       if (styles === null) {
         styles = [];
       }
-      styleUrls.forEach(styleUrl => {
+      for (const styleUrl of styleUrls) {
         const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
-        styles !.push(this.resourceLoader.load(resourceUrl));
-      });
+        styles.push(this.resourceLoader.load(resourceUrl));
+      }
+    }
+    if (component.has('styles')) {
+      const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
+      if (litStyles !== null) {
+        if (styles === null) {
+          styles = litStyles;
+        } else {
+          styles.push(...litStyles);
+        }
+      }
+    }
+    if (template.styles.length > 0) {
+      if (styles === null) {
+        styles = template.styles;
+      } else {
+        styles.push(...template.styles);
+      }
     }
 
     const encapsulation: number =
@@ -289,7 +290,7 @@ export class ComponentDecoratorHandler implements
           template,
           viewQueries,
           encapsulation,
-          interpolation,
+          interpolation: template.interpolation,
           styles: styles || [],
 
           // These will be replaced during the compilation step, after all `NgModule`s have been
@@ -416,9 +417,10 @@ export class ComponentDecoratorHandler implements
     return resolved;
   }
 
-  private _extractStyleUrls(component: Map<string, ts.Expression>): string[]|null {
+  private _extractStyleUrls(component: Map<string, ts.Expression>, extraUrls: string[]):
+      string[]|null {
     if (!component.has('styleUrls')) {
-      return null;
+      return extraUrls.length > 0 ? extraUrls : null;
     }
 
     const styleUrlsExpr = component.get('styleUrls') !;
@@ -427,7 +429,124 @@ export class ComponentDecoratorHandler implements
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, styleUrlsExpr, 'styleUrls must be an array of strings');
     }
+    styleUrls.push(...extraUrls);
     return styleUrls as string[];
+  }
+
+  private _preloadAndParseTemplate(
+      node: ts.Declaration, decorator: Decorator, component: Map<string, ts.Expression>,
+      containingFile: string): Promise<ParsedTemplate|null> {
+    if (component.has('templateUrl')) {
+      // Extract the templateUrl and preload it.
+      const templateUrlExpr = component.get('templateUrl') !;
+      const templateUrl = this.evaluator.evaluate(templateUrlExpr);
+      if (typeof templateUrl !== 'string') {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, templateUrlExpr, 'templateUrl must be a string');
+      }
+      const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
+      const templatePromise = this.resourceLoader.preload(resourceUrl);
+
+      // If the preload worked, then actually load and parse the template, and wait for any style
+      // URLs to resolve.
+      if (templatePromise !== undefined) {
+        return templatePromise.then(() => {
+          const templateStr = this.resourceLoader.load(resourceUrl);
+          const template = this._parseTemplate(
+              component, templateStr, sourceMapUrl(resourceUrl), /* templateRange */ undefined,
+              /* escapedString */ false);
+          this.preanalyzeTemplateCache.set(node, template);
+          return template;
+        });
+      } else {
+        return Promise.resolve(null);
+      }
+    } else {
+      const inlineTemplate = this._extractInlineTemplate(component, containingFile);
+      if (inlineTemplate === null) {
+        throw new FatalDiagnosticError(
+            ErrorCode.COMPONENT_MISSING_TEMPLATE, decorator.node,
+            'component is missing a template');
+      }
+
+      const {templateStr, templateUrl, escapedString, templateRange} = inlineTemplate;
+      const template =
+          this._parseTemplate(component, templateStr, templateUrl, templateRange, escapedString);
+      this.preanalyzeTemplateCache.set(node, template);
+      return Promise.resolve(template);
+    }
+  }
+
+  private _extractInlineTemplate(
+      component: Map<string, ts.Expression>, relativeContextFilePath: string): {
+    templateStr: string,
+    templateUrl: string,
+    templateRange: LexerRange|undefined,
+    escapedString: boolean
+  }|null {
+    // If there is no inline template, then return null.
+    if (!component.has('template')) {
+      return null;
+    }
+    const templateExpr = component.get('template') !;
+    let templateStr: string;
+    let templateUrl: string = '';
+    let templateRange: LexerRange|undefined = undefined;
+    let escapedString = false;
+    // We only support SourceMaps for inline templates that are simple string literals.
+    if (ts.isStringLiteral(templateExpr) || ts.isNoSubstitutionTemplateLiteral(templateExpr)) {
+      // the start and end of the `templateExpr` node includes the quotation marks, which we
+      // must
+      // strip
+      templateRange = getTemplateRange(templateExpr);
+      templateStr = templateExpr.getSourceFile().text;
+      templateUrl = relativeContextFilePath;
+      escapedString = true;
+    } else {
+      const resolvedTemplate = this.evaluator.evaluate(templateExpr);
+      if (typeof resolvedTemplate !== 'string') {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, templateExpr, 'template must be a string');
+      }
+      templateStr = resolvedTemplate;
+    }
+    return {templateStr, templateUrl, templateRange, escapedString};
+  }
+
+  private _parseTemplate(
+      component: Map<string, ts.Expression>, templateStr: string, templateUrl: string,
+      templateRange: LexerRange|undefined, escapedString: boolean): ParsedTemplate {
+    let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
+    if (component.has('preserveWhitespaces')) {
+      const expr = component.get('preserveWhitespaces') !;
+      const value = this.evaluator.evaluate(expr);
+      if (typeof value !== 'boolean') {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, expr, 'preserveWhitespaces must be a boolean');
+      }
+      preserveWhitespaces = value;
+    }
+
+    let interpolation: InterpolationConfig = DEFAULT_INTERPOLATION_CONFIG;
+    if (component.has('interpolation')) {
+      const expr = component.get('interpolation') !;
+      const value = this.evaluator.evaluate(expr);
+      if (!Array.isArray(value) || value.length !== 2 ||
+          !value.every(element => typeof element === 'string')) {
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
+            'interpolation must be an array with 2 elements of string type');
+      }
+      interpolation = InterpolationConfig.fromArray(value as[string, string]);
+    }
+
+    return {
+        interpolation, ...parseTemplate(templateStr, templateUrl, {
+          preserveWhitespaces,
+          interpolationConfig: interpolation,
+          range: templateRange, escapedString
+        }),
+    };
   }
 
   private _isCyclicImport(expr: Expression, origin: ts.SourceFile): boolean {
@@ -470,4 +589,23 @@ function isExpressionForwardReference(
 
 function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<ts.Node> {
   return expr instanceof WrappedNodeExpr;
+}
+
+function sourceMapUrl(resourceUrl: string): string {
+  if (!tsSourceMapBug29300Fixed()) {
+    // By removing the template URL we are telling the translator not to try to
+    // map the external source file to the generated code, since the version
+    // of TS that is running does not support it.
+    return '';
+  } else {
+    return resourceUrl;
+  }
+}
+
+interface ParsedTemplate {
+  interpolation: InterpolationConfig;
+  errors?: ParseError[]|undefined;
+  nodes: TmplAstNode[];
+  styleUrls: string[];
+  styles: string[];
 }
