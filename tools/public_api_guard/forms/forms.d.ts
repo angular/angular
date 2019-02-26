@@ -19,6 +19,9 @@ export declare abstract class AbstractControl {
     readonly value: any;
     readonly valueChanges: Observable<any>;
     constructor(validator: ValidatorFn | null, asyncValidator: AsyncValidatorFn | null);
+    addError(error: string, errorValue: any, opts?: {
+        emitEvent?: boolean;
+    }): void;
     clearAsyncValidators(): void;
     clearValidators(): void;
     disable(opts?: {
@@ -50,6 +53,9 @@ export declare abstract class AbstractControl {
         onlySelf?: boolean;
     }): void;
     abstract patchValue(value: any, options?: Object): void;
+    removeError(error: string, opts?: {
+        emitEvent?: boolean;
+    }): void;
     abstract reset(value?: any, options?: Object): void;
     setAsyncValidators(newValidator: AsyncValidatorFn | AsyncValidatorFn[] | null): void;
     setErrors(errors: ValidationErrors | null, opts?: {

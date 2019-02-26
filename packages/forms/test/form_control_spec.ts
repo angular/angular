@@ -886,6 +886,65 @@ import {FormArray} from '@angular/forms/src/model';
       });
     });
 
+    describe('addError', () => {
+      it('should add an error on a control', () => {
+        const c = new FormControl('someValue');
+
+        c.setErrors(null);
+        c.addError('someError', true);
+
+        expect(c.valid).toEqual(false);
+        expect(c.errors).toEqual({'someError': true});
+
+        c.addError('someOtherError', 'errorValue');
+
+        expect(c.valid).toEqual(false);
+        expect(c.errors).toEqual({'someError': true, 'someOtherError': 'errorValue'});
+      });
+
+      it('should update the value error if it is already present', () => {
+        const c = new FormControl('someValue');
+
+        c.setErrors({'someError': true});
+        c.addError('someError', 'otherValue');
+
+        expect(c.valid).toEqual(false);
+        expect(c.errors).toEqual({'someError': 'otherValue'});
+      });
+    });
+
+    describe('removeError', () => {
+      it('should remove an error on a control', () => {
+        const c = new FormControl('someValue');
+
+        c.setErrors({'someError': true, 'someOtherError': 'errorValue'});
+        c.removeError('someOtherError');
+
+        expect(c.valid).toEqual(false);
+        expect(c.errors).toEqual({'someError': true});
+      });
+
+      it('should remove the last error on a control and make it valid again', () => {
+        const c = new FormControl('someValue');
+
+        c.setErrors({'someError': true});
+        c.removeError('someError');
+
+        expect(c.valid).toEqual(true);
+        expect(c.errors).toEqual(null);
+      });
+
+      it('should do nothing if the error is not present', () => {
+        const c = new FormControl('someValue');
+
+        c.setErrors(null);
+        c.removeError('someOtherError');
+
+        expect(c.valid).toEqual(true);
+        expect(c.errors).toEqual(null);
+      });
+    });
+
     describe('disable() & enable()', () => {
 
       it('should mark the control as disabled', () => {

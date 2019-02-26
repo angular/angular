@@ -672,6 +672,72 @@ export abstract class AbstractControl {
   }
 
   /**
+   * Adds an error on a form control when running validations manually,
+   * rather than automatically.
+   *
+   * Calling `addError` also updates the validity of the parent control.
+   *
+   * @usageNotes
+   * ### Manually add an error for a control
+   *
+   * ```
+   * const login = new FormControl('someLogin');
+   * login.addError('notUnique', true);
+   * login.addError('tooComplicated', 'errorValue');
+   *
+   * expect(login.valid).toEqual(false);
+   * expect(login.errors).toEqual({ notUnique: true, tooComplicated: 'errorValue' });
+   *
+   * login.setValue('someOtherLogin');
+   *
+   * expect(login.valid).toEqual(true);
+   * ```
+   */
+  addError(error: string, errorValue: any, opts: {emitEvent?: boolean} = {}): void {
+    const validationErrors = (this as{errors: ValidationErrors | null}).errors;
+    if (validationErrors) {
+      validationErrors[error] = errorValue;
+      this.setErrors(validationErrors, opts);
+    } else {
+      this.setErrors({[error]: errorValue}, opts);
+    }
+  }
+
+  /**
+   * Removes an error on a form control when running validations manually,
+   * rather than automatically.
+   *
+   * Calling `removeError` also updates the validity of the parent control.
+   *
+   * @usageNotes
+   * ### Manually remove an error for a control
+   *
+   * ```
+   * const login = new FormControl('someLogin');
+   * login.setErrors({
+   *   notUnique: true,
+   *   tooComplicated: 'errorValue'
+   * });
+   *
+   * expect(login.valid).toEqual(false);
+   * expect(login.errors).toEqual({ notUnique: true, tooComplicated: 'errorValue' });
+   *
+   * login.removeError('tooComplicated');
+   *
+   * expect(login.valid).toEqual(false);
+   * expect(login.errors).toEqual({ notUnique: true });
+   * ```
+   */
+  removeError(error: string, opts: {emitEvent?: boolean} = {}): void {
+    const validationErrors = (this as{errors: ValidationErrors | null}).errors;
+    if (validationErrors) {
+      delete validationErrors[error];
+      const noErrors = Object.keys(validationErrors).length === 0;
+      this.setErrors(noErrors ? null : validationErrors, opts);
+    }
+  }
+
+  /**
    * Retrieves a child control given the control's name or path.
    *
    * @param path A dot-delimited string or array of string/number values that define the path to the
