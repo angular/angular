@@ -750,14 +750,29 @@ testing/**                                                      @angular/fw-test
 /packages/*                                                     @angular/fw-dev-infra
 /scripts/**                                                     @angular/fw-dev-infra
 /third_party/**                                                 @angular/fw-dev-infra
-/tools/**                                                       @angular/fw-dev-infra
+/tools/build/**                                                 @angular/fw-dev-infra
+/tools/cjs-jasmine/**                                           @angular/fw-dev-infra
+/tools/gulp-tasks/**                                            @angular/fw-dev-infra
+/tools/ngcontainer/**                                           @angular/fw-dev-infra
+/tools/npm/**                                                   @angular/fw-dev-infra
+/tools/npm_workspace/**                                         @angular/fw-dev-infra
+/tools/public_api_guard/**                                      @angular/fw-dev-infra
+/tools/rxjs/**                                                  @angular/fw-dev-infra
+/tools/source-map-test/**                                       @angular/fw-dev-infra
+/tools/symbol-extractor/**                                      @angular/fw-dev-infra
+/tools/testing/**                                               @angular/fw-dev-infra
+/tools/ts-api-guardian/**                                       @angular/fw-dev-infra
+/tools/tslint/**                                                @angular/fw-dev-infra
+/tools/validate-commit-message/**                               @angular/fw-dev-infra
+/tools/yarn/**                                                  @angular/fw-dev-infra
+/tools/*
 *.bzl                                                           @angular/fw-dev-infra
 
 # ================================================
 #  Material CI
 # ================================================
 
-/tools/material-ci/**                                           @angular/fw-core @angular/fw-dev-infra
+/tools/material-ci/**                                           @angular/fw-core @angular/framework-global-approvers
 
 
 # ================================================
