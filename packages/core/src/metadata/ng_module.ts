@@ -117,10 +117,12 @@ export const NO_ERRORS_SCHEMA: SchemaMetadata = {
 
 /**
  * Type of the NgModule decorator / constructor function.
+ *
+ * @publicApi
  */
 export interface NgModuleDecorator {
   /**
-   * Marks a class as an NgModule and supplies configuration metadata.
+   * Decorator that marks a class as an NgModule and supplies configuration metadata.
    */
   (obj?: NgModule): TypeDecorator;
   new (obj?: NgModule): NgModule;
