@@ -585,7 +585,10 @@ workflows:
 
   saucelabs_tests:
     jobs:
-      - legacy-unit-tests-saucelabs
+      - setup
+      - legacy-unit-tests-saucelabs:
+          requires:
+            - setup
     triggers:
       - schedule:
           # Runs the Saucelabs legacy tests every hour. We still want to run Saucelabs
