@@ -456,7 +456,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           lex.TokenType.TEXT,
           'Unknown entity "tbo" - use the "&#<decimal>;" or  "&#x<hex>;" syntax', '0:0'
         ]]);
-        expect(tokenizeAndHumanizeErrors('&#asdf;')).toEqual([
+        expect(tokenizeAndHumanizeErrors('&#3sdf;')).toEqual([
           [lex.TokenType.TEXT, 'Unexpected character "s"', '0:3']
         ]);
         expect(tokenizeAndHumanizeErrors('&#xasdf;')).toEqual([
@@ -891,7 +891,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             .toEqual([
               [lex.TokenType.TEXT, '\' \" \` \\ \n \n \v \t \b \f'],
               [lex.TokenType.EOF],
-
             ]);
       });
 
@@ -1033,6 +1032,68 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             ]);
       });
 
+      it('should parse over escaped new line in tag definitions', () => {
+        const text = '<t\\n></t>';
+        expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
+          [lex.TokenType.TAG_OPEN_START, '', 't'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TAG_CLOSE, '', 't'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should parse over escaped characters in tag definitions', () => {
+        const text = '<t\u{000013}></t>';
+        expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
+          [lex.TokenType.TAG_OPEN_START, '', 't'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TAG_CLOSE, '', 't'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should unescape characters in tag names', () => {
+        const text = '<t\\x64></t\\x64>';
+        expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
+          [lex.TokenType.TAG_OPEN_START, '', 'td'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TAG_CLOSE, '', 'td'],
+          [lex.TokenType.EOF],
+        ]);
+        expect(tokenizeAndHumanizeSourceSpans(text, {escapedString: true})).toEqual([
+          [lex.TokenType.TAG_OPEN_START, '<t\\x64'],
+          [lex.TokenType.TAG_OPEN_END, '>'],
+          [lex.TokenType.TAG_CLOSE, '</t\\x64>'],
+          [lex.TokenType.EOF, ''],
+        ]);
+      });
+
+      it('should unescape characters in attributes', () => {
+        const text = '<t \\x64="\\x65"></t>';
+        expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
+          [lex.TokenType.TAG_OPEN_START, '', 't'],
+          [lex.TokenType.ATTR_NAME, '', 'd'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
+          [lex.TokenType.ATTR_VALUE, 'e'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TAG_CLOSE, '', 't'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should parse over escaped new line in attribute values', () => {
+        const text = '<t a=b\\n></t>';
+        expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
+          [lex.TokenType.TAG_OPEN_START, '', 't'],
+          [lex.TokenType.ATTR_NAME, '', 'a'],
+          [lex.TokenType.ATTR_VALUE, 'b'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.TAG_CLOSE, '', 't'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
       it('should tokenize the correct span when there are escape sequences', () => {
         const text =
             'selector: "app-root",\ntemplate: "line 1\\n\\"line 2\\"\\nline 3",\ninputs: []';
@@ -1057,7 +1118,6 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
             '<t>line 2</t>\\n' +          // <- escaped line break
             '<t>line 3\\\n' +             // <- line continuation
             '</t>';
-
         expect(tokenizeAndHumanizeParts(text, {escapedString: true})).toEqual([
           [lex.TokenType.TAG_OPEN_START, '', 't'], [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.TEXT, 'line 1'], [lex.TokenType.TAG_CLOSE, '', 't'],
@@ -1084,7 +1144,7 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TAG_OPEN_END, '1:2'],
           [lex.TokenType.TEXT, '1:3'],
           [lex.TokenType.TAG_CLOSE, '1:9'],
-          [lex.TokenType.TEXT, '1:14'],  // <- escaped newline does not increment the row
+          [lex.TokenType.TEXT, '1:13'],  // <- escaped newline does not increment the row
 
           [lex.TokenType.TAG_OPEN_START, '1:15'],
           [lex.TokenType.TAG_OPEN_END, '1:17'],
@@ -1099,8 +1159,8 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.TEXT, '\n'],
 
           [lex.TokenType.TAG_OPEN_START, '<t'], [lex.TokenType.TAG_OPEN_END, '>'],
-          [lex.TokenType.TEXT, 'line 2'], [lex.TokenType.TAG_CLOSE, '</t>\\'],
-          [lex.TokenType.TEXT, 'n'],
+          [lex.TokenType.TEXT, 'line 2'], [lex.TokenType.TAG_CLOSE, '</t>'],
+          [lex.TokenType.TEXT, '\\n'],
 
           [lex.TokenType.TAG_OPEN_START, '<t'], [lex.TokenType.TAG_OPEN_END, '>'],
           [lex.TokenType.TEXT, 'line 3\\\n'], [lex.TokenType.TAG_CLOSE, '</t>'],
