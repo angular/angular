@@ -1,11 +1,9 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@npm_angular_bazel//:index.bzl", "ng_module")
-load("@build_bazel_rules_nodejs//:defs.bzl", "http_server", "nodejs_binary", "rollup_bundle")
+load("@build_bazel_rules_nodejs//:defs.bzl", "http_server", "rollup_bundle")
 load("@build_bazel_rules_nodejs//internal/web_package:web_package.bzl", "web_package")
 load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
-
-package(default_visibility = ["//visibility:public"])
 
 # Allow targets under sub-packages to reference the tsconfig.json file
 exports_files(["tsconfig.json"])
