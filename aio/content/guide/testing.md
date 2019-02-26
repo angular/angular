@@ -4414,12 +4414,12 @@ In addition to the support it receives from the default testing module `CommonMo
 
 One approach is to configure the testing module from the individual pieces as in this example:
 -->
-`DashboardComponent`는 간단합니다. 이 컴포넌트를 테스트하는 코드를 작성하는 것도 그리 어렵지 않을 것입니다.
+`DashboardComponent`는 간단합니다. 그래서 이 컴포넌트를 테스트하는 코드를 작성하는 것도 그리 어렵지 않습니다.
 하지만 컴포넌트가 다른 컴포넌트와 연동되어야 한다던지, 디렉티브나 파이프, 프로바이더를 사용해야 하면 테스팅 모듈에 이 구성요소를 모두 등록해야 합니다.
 
-하지만 다행히도, `TestBed.configureTestingModule`에 전달하는 인자는 `@NgModule` 데코레이터에 전달하는 메타데이터와 거의 비슷하기 때문에, `TestBed`에도 `providers`와 `imports` 배열을 지정할 수 있습니다.
+하지만 다행히도 `TestBed.configureTestingModule`에 전달하는 인자는 `@NgModule` 데코레이터에 전달하는 메타데이터와 거의 비슷하기 때문에, `TestBed`에도 `providers`와 `imports` 배열을 지정할 수 있습니다.
 
-`HeroDetailComponent`는 아주 간단하지만 이 컴포넌트를 테스트하려면 많은 내용을 준비해야 합니다.
+`HeroDetailComponent` 자체는 아주 간단하지만 이 컴포넌트를 테스트하려면 많은 내용을 준비해야 합니다.
 준비해야 하는 항목들은 이렇습니다:
 
 - 양방향 데이터 바인딩을 연결하기 위해 `NgModel`과 `FormsModule`이 필요합니다.
@@ -4452,7 +4452,7 @@ As explained in [_Calling compileComponents()_](#compile-components) above,
 these tests could be run in a non-CLI environment
 where Angular would have to compile them in the browser.
 -->
-`HeroDetailComponent`는 외부 템플릿 파일과 외부 CSS 파일을 사용하기 때문에 `beforeEach()`는 비동기로 동작해야 하며 이 함수 안에서 `TestBed.compileComponents()`가 실행되어야 합니다.
+`HeroDetailComponent`는 외부 템플릿 파일과 외부 CSS 파일을 사용하기 때문에 `beforeEach()`는 비동기로 동작해야 하며 이 함수 안에서 `TestBed.compileComponents()`를 실행해야 합니다.
 
 그리고 이전에 [_compileComponents() 실행하기_](#compile-components)에서 설명했던 것처럼, Angular CLI를 사용하지 않는 환경에서도 브라우저에서 컴포넌트를 컴파일하기 위해 이 함수를 반드시 실행해야 합니다.
 
@@ -4489,7 +4489,7 @@ The test configuration can use the `SharedModule` too as seen in this alternativ
 <!--
 It's a bit tighter and smaller, with fewer import statements (not shown).
 -->
-이제 테스트 코드는 약간이나마 간단해졌습니다.
+이제 테스트 코드는 조금 간단해졌습니다.
 
 {@a feature-module-import}
 
@@ -4503,7 +4503,7 @@ The `HeroDetailComponent` is part of the `HeroModule` [Feature Module](guide/fea
 including the `SharedModule`.
 Try a test configuration that imports the `HeroModule` like this one:
 -->
-`HeroDetailComponent`는 `HeroModule` [기능 모듈](guide/feature-modules)의 구성요소이며, `HeroModule`은 `SharedModule` 기능을 사용하기 위해 내부적으로 이 모듈을 로드합니다.
+`HeroDetailComponent`는 `HeroModule` [기능 모듈](guide/feature-modules)의 구성요소이며, `HeroModule`은 `SharedModule`을 내부적으로 로드합니다.
 그러면 테스트 환경설정은 `HeroModule`을 사용해서 다음과 같이 수정할 수 있습니다:
 
 
@@ -4520,7 +4520,7 @@ In fact, if you try to declare it, Angular will throw an error because
 created by the `TestBed`.
 -->
 좀 더 간결해졌습니다. 이제는 `providers`에 있는 _목 클래스_ 들만 처리하면 됩니다.
-이제는 `HeroDetailComponent`를 등록하는 코드도 없어졌습니다.
+`HeroDetailComponent`를 등록하는 코드도 없어졌습니다.
 
 만약 `HeroDetailComponent`를 테스트 모듈에 등록하면, 이 컴포넌트는 `HeroModule`과 `TestBed`가 생성하는 `DynamicTestModule` 양쪽에 동시에 등록되기 때문에 에러가 발생합니다.
 
@@ -4586,10 +4586,10 @@ There might not be a remote server to call.
 
 Fortunately, the `HeroDetailService` delegates responsibility for remote data access to an injected `HeroService`.
 -->
-`HeroDetailService`가 리모트 서버로 XHR 요청을 보낸다면 이 테스트 코드가 실패하거나 타임아웃이 발생할 수 잇습니다.
+`HeroDetailService`가 리모트 서버로 XHR 요청을 보낸다면 테스트가 실패하거나 타임아웃이 발생할 수 있습니다.
 리모트 서버로 요청을 보내는 코드는 없어야 합니다.
 
-다행히, `HeroDetailService`에서 데이터를 가져오는 로직은 `HeroService`를 활용하기 때문에, 리모트 서버로 보내는 요청은 `HeroService`에서 처리할 수 있습니다.
+다행히 `HeroDetailService`에서 데이터를 가져오는 로직은 `HeroService`를 활용하기 때문에, 리모트 서버로 보내는 요청은 `HeroService`에서 처리할 수 있습니다.
 
 <!--
 <code-example path="testing/src/app/hero/hero-detail.service.ts" region="prototype" header="app/hero/hero-detail.service.ts (prototype)" linenums="false"></code-example>
@@ -4647,7 +4647,7 @@ It takes two arguments: the component type to override (`HeroDetailComponent`) a
 The [override metadata object](#metadata-override-object) is a generic defined as follows:
 -->
 이 메소드는 프로바이더가 등록된 컴포넌트 타입(`HeroDetailComponent`)과 오버라이드 메타데이터 객체, 총 2개의 인자를 받습니다.
-이 때 [오버라이드 메타데이터 객체](#metadata-override-object)는 다음과 같이 제네릭으로 정의되어 있습니다:
+이 때 [메타데이터 오버라이드 객체(metadata override object)](#metadata-override-object)는 다음과 같이 제네릭으로 정의되어 있습니다:
 
 <!--
 <code-example format="." language="javascript">
@@ -4673,7 +4673,7 @@ This example resets the component's `providers` metadata.
 The type parameter, `T`, is the kind of metadata you'd pass to the `@Component` decorator:
 -->
 메타데이터 오버라이드 객체는 컴포넌트에 적용된 메타데이터 프로퍼티를 추가하거나 제거할 수도 있고, 완전히 새로운 값으로 교체할 수도 있습니다.
-위에서 사용한 예제 코드는 컴포넌트의 `providers` 메타데이터를 새로운 값으로 설정하는 코드입니다.
+위에서 사용한 예제 코드는 컴포넌트의 `providers` 메타데이터를 새로운 값으로 교체하는 코드입니다.
 
 그리고 타입 인자 `T`는 `@Component` 데코레이터에 전달하는 메타데이터 중 하나를 사용할 수 있습니다:
 
@@ -4747,7 +4747,7 @@ for digging into and replacing parts of these other classes.
 
 Explore the options and combinations on your own.
 -->
-`TestBed.overrideComponent` 메소드는 같은 컴포넌트나 여러 컴포넌트를 대상으로 여러번 실행할 수 있습니다.
+`TestBed.overrideComponent` 메소드는 특정 컴포넌트나 여러 컴포넌트를 대상으로 여러번 실행할 수 있습니다.
 그리고 `TestBed`는 `overrideComponent`와 비슷하게 동작하는 `overrideDirective`나 `overrideModule`, `overridePipe` 메소드도 제공합니다.
 컴포넌트가 아닌 다른 Angular 구성요소도 얼마든지 조작할 수 있습니다.
 
@@ -4757,8 +4757,12 @@ Explore the options and combinations on your own.
 
 {@a attribute-directive}
 
+<!--
 ## Attribute Directive Testing
+-->
+## 어트리뷰트 디렉티브 테스트
 
+<!--
 An _attribute directive_ modifies the behavior of an element, component or another directive.
 Its name reflects the way the directive is applied: as an attribute on a host element.
 
@@ -4766,10 +4770,19 @@ The sample application's `HighlightDirective` sets the background color of an el
 based on either a data bound color or a default color (lightgray).
 It also sets a custom property of the element (`customProperty`) to `true`
 for no reason other than to show that it can.
+-->
+_어트리뷰트 디렉티브(attribute directive)_ 는 엘리먼트나 컴포넌트, 다른 디렉티브의 행동을 조작합니다.
+그리고 이름에서 알 수 있듯이, 이 디렉티브는 호스트 엘리먼트에 어트리뷰트처럼 사용합니다.
+
+예제 애플리케이션에서 `HighlightDirective`는 엘리먼트의 배경을 변경하는데, 이 때 바인딩 받거나 기본값(lightgray)으로 지정된 색상을 사용합니다.
+그리고 설명을 위해서만 사용하지만, 이 디렉티브는 엘리먼트의 커스텀 프로퍼티(`customProperty`)를 `true` 값으로 설정하는 역할도 합니다.
 
 <code-example path="testing/src/app/shared/highlight.directive.ts" header="app/shared/highlight.directive.ts" linenums="false"></code-example>
 
+<!--
 It's used throughout the application, perhaps most simply in the `AboutComponent`:
+-->
+이 디렉티브를 `AboutComponent`에 사용한다면 다음과 같이 사용할 수 있습니다:
 
 <code-example path="testing/src/app/about/about.component.ts" header="app/about/about.component.ts" linenums="false"></code-example>
 
@@ -4777,11 +4790,12 @@ It's used throughout the application, perhaps most simply in the `AboutComponent
 Testing the specific use of the `HighlightDirective` within the `AboutComponent` requires only the
 techniques explored above (in particular the ["Shallow test"](#nested-component-tests) approach).
 -->
-Testing the specific use of the `HighlightDirective` within the `AboutComponent` requires only the
-techniques explored above (in particular the ["Shallow test"](#중첩된-컴포넌트-테스트) approach).
+`HighlightDirective`를 `AboutComponent`에 사용하는 것을 테스트하는 것은 위에서 살펴본 것으로 충분합니다.
+더 자세한 내용은 [중첩된 컴포넌트 테스트](#중첩된-컴포넌트-테스트) 섹션을 참고하세요.
 
 <code-example path="testing/src/app/about/about.component.spec.ts" region="tests" header="app/about/about.component.spec.ts" linenums="false"></code-example>
 
+<!--
 However, testing a single use case is unlikely to explore the full range of a directive's capabilities.
 Finding and testing all components that use the directive is tedious, brittle, and almost as unlikely to afford full coverage.
 
@@ -4791,6 +4805,14 @@ Isolated unit tests don't touch the DOM and, therefore,
 do not inspire confidence in the directive's efficacy.
 
 A better solution is to create an artificial test component that demonstrates all ways to apply the directive.
+-->
+그런데 한가지 사용방법을 테스트했다고 해서 이 디렉티브의 모든 내용을 확인했다고 하기는 어렵습니다.
+하지만 그렇다고 해서 이 디렉티브를 사용하는 모든 컴포넌트를 찾아서 테스트하는 것은 번거롭고 귀찮은 일이며, 꼭 그렇게 할 필요도 없습니다.
+
+_클래스만 테스트하는 것_ 은 간단하지만 어트리뷰트 디렉티브는 DOM을 조작하기 위해 만들어진 것입니다.
+그래서 DOM을 배제한 상태로 유닛 테스트를 진행하는 것은 디렉티브를 제대로 테스트했다고 할 수 없습니다.
+
+이런 경우에는 테스트 컴포넌트를 따로 정의해서 이 컴포넌트를 대상으로 디렉티브를 다양하게 적용해보는 것이 더 좋습니다.
 
 <code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="test-component" header="app/shared/highlight.directive.spec.ts (TestComponent)" linenums="false"></code-example>
 
@@ -4800,15 +4822,26 @@ A better solution is to create an artificial test component that demonstrates al
 
 <div class="alert is-helpful">
 
+<!--
 The `<input>` case binds the `HighlightDirective` to the name of a color value in the input box.
 The initial value is the word "cyan" which should be the background color of the input box.
+-->
+`<input>`는 `HighlightDirective`와 입력 필드에 입력된 색상을 바인딩합니다.
+이 때 초기값은 "cyan"으로 지정했습니다.
 
 </div>
 
+<!--
 Here are some tests of this component:
+-->
+이 디렉티브는 다음과 같이 테스트할 수 있습니다:
 
+<!--
 <code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="selected-tests" header="app/shared/highlight.directive.spec.ts (selected tests)"></code-example>
+-->
+<code-example path="testing/src/app/shared/highlight.directive.spec.ts" region="selected-tests" header="app/shared/highlight.directive.spec.ts (테스트 일부)"></code-example>
 
+<!--
 A few techniques are noteworthy:
 
 - The `By.directive` predicate is a great way to get the elements that have this directive _when their element types are unknown_.
@@ -4825,11 +4858,30 @@ A few techniques are noteworthy:
   and its `defaultColor`.
 
 - `DebugElement.properties` affords access to the artificial custom property that is set by the directive.
+-->
+이 테스트 코드에서 이런 내용이 중요합니다:
+
+- `By.directive`를 사용하면 _엘리먼트의 타입을 알지 못하더라도_ 원하는 디렉티브가 적용된 엘리먼트를 간단하게 쿼리할 수 있습니다.
+
+- `By.css('h2:not([highlight])')`라고 사용할 때 <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/:not">가상 클래스(pseudo-class) `:not`</a>을 사용했기 때문에 이 디렉티브가 _사용되지 않은_ `<h2>` 엘리먼트를 가져왔습니다.
+  `By.css('*:not([highlight])')`라고 사용하면 이 디렉티브가 사용되지 않은 _모든_ 엘리먼트를 쿼리합니다.
+
+- `DebugElement.styles`를 사용하면 실제 브라우저에 없는 엘리먼트 스타일에도 접근할 수 있습니다. 이것은 모두 `DebugElement`가 추상화된 객체인 덕분입니다.
+  하지만 추상화된 클래스보다는 실제 엘리먼트 클래스인 `nativeElement`를 사용하는 것이 더 간단하고 명확하긴 합니다.
+
+- Angular는 디렉티브가 적용된 엘리먼트의 인젝터에 이 디렉티브를 등록합니다.
+  그래서 두번째 `<h2>` 엘리먼트를 테스트할 때는 엘리먼트 인젝터로 `HighlightDirective`의 인스턴스를 가져온 후에 이 디렉티브의 `defaultColor` 프로퍼티에 직접 접근하는 방법을 사용했습니다.
+
+- `DebugElement.properties`를 사용하면 디렉티브가 엘리먼트에 설정한 커스텀 프로퍼티를 참조할 수 있습니다.
 
 <hr>
 
+<!--
 ## Pipe Testing
+-->
+## 파이프 테스트
 
+<!--
 Pipes are easy to test without the Angular testing utilities.
 
 A pipe class has one method, `transform`, that manipulates the input
@@ -4840,24 +4892,50 @@ metadata and an interface.
 
 Consider a `TitleCasePipe` that capitalizes the first letter of each word.
 Here's a naive implementation with a regular expression.
+-->
+파이프는 Angular의 테스트 유틸리티를 사용하지 않더라도 테스트하기 쉽습니다.
+
+파이프는 입력으로 받은 값을 어떤 형태로 변환하는 역할만 하기 때문에 파이프에는 `transform` 메소드 하나만 정의되어 있습니다.
+그리고 `transform` 메소드는 DOM과 상호작용하는 일도 거의 없습니다.
+게다가 파이프는 `@Pipe` 메타데이터와 인터페이스 외에 또 다른 Angular 구성요소를 의존성으로 주입받는 일도 거의 없습니다.
+
+각 단어의 첫 글자를 대문자로 변환하는 `TitleCasePipe`를 살펴봅시다.
+이 파이프는 정규 표현식을 사용해서 간단하게 구현된 파이프입니다.
 
 <code-example path="testing/src/app/shared/title-case.pipe.ts" header="app/shared/title-case.pipe.ts" linenums="false"></code-example>
 
+<!--
 Anything that uses a regular expression is worth testing thoroughly.
 Use simple Jasmine to explore the expected cases and the edge cases.
+-->
+정규표현식을 사용하는 로직은 충분히 테스트할 필요가 있습니다.
+그래서 경계 조건을 포함해서 다양한 시나리오를 검토해보는 것이 좋습니다.
+이 테스트 스펙들은 Jasmine을 사용해서 다음과 같이 작성할 수 있습니다.
 
 <code-example path="testing/src/app/shared/title-case.pipe.spec.ts" region="excerpt" header="app/shared/title-case.pipe.spec.ts"></code-example>
 
 {@a write-tests}
 
+<!--
 #### Write DOM tests too
+-->
+#### DOM 조작 테스트
 
+<!--
 These are tests of the pipe _in isolation_.
 They can't tell if the `TitleCasePipe` is working properly as applied in the application components.
 
 Consider adding component tests such as this one:
+-->
+지금까지는 _분리된 환경에서_ 파이프를 테스트해 봤습니다.
+그래서 이 테스트 코드들만으로는 `TitleCasePipe`가 애플리케이션에 있는 컴포넌트에 적용되었을 때도 제대로 동작한다고 할 수 없습니다.
 
+그렇다면 다음과 같이 컴포넌트에 적용해서 테스트하는 코드를 작성하는 것도 좋습니다:
+
+<!--
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" header="app/hero/hero-detail.component.spec.ts (pipe test)"></code-example>
+-->
+<code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" header="app/hero/hero-detail.component.spec.ts (파이프 테스트)"></code-example>
 
 <hr>
 

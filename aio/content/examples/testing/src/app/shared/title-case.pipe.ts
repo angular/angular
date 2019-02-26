@@ -2,7 +2,7 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({name: 'titlecase', pure: true})
-/** Transform to Title Case: uppercase the first letter of the words in a string.*/
+/** 문자열의 각 단어 중 첫글자를 대문자로 변환합니다. */
 export class TitleCasePipe implements PipeTransform {
   transform(input: string): string {
     return input.length === 0 ? '' :

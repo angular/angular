@@ -4,7 +4,7 @@ import { TitleCasePipe } from './title-case.pipe';
 
 // #docregion excerpt, mini-excerpt
 describe('TitleCasePipe', () => {
-  // This pipe is a pure, stateless function so no need for BeforeEach
+  // 파이프는 순수 함수이며 스테이트도 없습니다. 따라서 BeforeEach는 필요 없습니다.
   let pipe = new TitleCasePipe();
 
   it('transforms "abc" to "Abc"', () => {
@@ -16,7 +16,7 @@ describe('TitleCasePipe', () => {
     expect(pipe.transform('abc def')).toBe('Abc Def');
   });
 
-  // ... more tests ...
+  // ... 테스트 계속 ...
 // #enddocregion excerpt
   it('leaves "Abc Def" unchanged', () => {
     expect(pipe.transform('Abc Def')).toBe('Abc Def');

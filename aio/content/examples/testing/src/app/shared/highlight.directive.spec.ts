@@ -29,16 +29,16 @@ describe('HighlightDirective', () => {
     })
     .createComponent(TestComponent);
 
-    fixture.detectChanges(); // initial binding
+    fixture.detectChanges(); // 초기 바인딩
 
-    // all elements with an attached HighlightDirective
+    // HighlightDirective를 사용한 엘리먼트를 모두 쿼리합니다.
     des = fixture.debugElement.queryAll(By.directive(HighlightDirective));
 
-    // the h2 without the HighlightDirective
+    // HighlightDirective를 사용하지 않은 h2를 쿼리합니다.
     bareH2 = fixture.debugElement.query(By.css('h2:not([highlight])'));
   });
 
-  // color tests
+  // 색상 테스트
   it('should have three highlighted elements', () => {
     expect(des.length).toBe(3);
   });
@@ -55,11 +55,11 @@ describe('HighlightDirective', () => {
   });
 
   it('should bind <input> background to value color', () => {
-    // easier to work with nativeElement
+    // nativeElement를 사용하면 편합니다.
     const input = des[2].nativeElement as HTMLInputElement;
     expect(input.style.backgroundColor).toBe('cyan', 'initial backgroundColor');
 
-    // dispatch a DOM event so that Angular responds to the input value change.
+    // 입력 필드의 값을 변경하고 DOM 이벤트를 보내면 Angular가 이 이벤트에 반응합니다.
     input.value = 'green';
     input.dispatchEvent(newEvent('input'));
     fixture.detectChanges();

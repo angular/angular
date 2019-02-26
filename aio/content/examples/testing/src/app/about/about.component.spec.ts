@@ -14,7 +14,7 @@ describe('AboutComponent (highlightDirective)', () => {
       schemas:      [ NO_ERRORS_SCHEMA ]
     })
     .createComponent(AboutComponent);
-    fixture.detectChanges(); // initial binding
+    fixture.detectChanges(); // 초기 바인딩
   });
 
   it('should have skyblue <h2>', () => {

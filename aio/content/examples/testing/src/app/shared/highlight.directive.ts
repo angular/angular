@@ -2,8 +2,7 @@
 import { Directive, ElementRef, Input, OnChanges } from '@angular/core';
 
 @Directive({ selector: '[highlight]' })
-/** Set backgroundColor for the attached element to highlight color
- *  and set the element's customProperty to true */
+/** 엘리먼트의 배경색을 변경하고 customProperty를 true로 설정합니다. */
 export class HighlightDirective implements OnChanges {
 
   defaultColor =  'rgb(211, 211, 211)'; // lightgray
