@@ -8,7 +8,7 @@
 
 import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
 import {formatCurrency, formatNumber, formatPercent} from '../i18n/format_number';
-import {getCurrencySymbol} from '../i18n/locale_data_api';
+import {getCurrencySymbol, getLocaleCurrencySymbol} from '../i18n/locale_data_api';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 /**
@@ -205,7 +205,7 @@ export class CurrencyPipe implements PipeTransform {
       display = display ? 'symbol' : 'code';
     }
 
-    let currency: string = currencyCode || 'USD';
+    let currency: string = currencyCode || getLocaleCurrencySymbol(locale) || 'USD';
     if (display !== 'code') {
       if (display === 'symbol' || display === 'symbol-narrow') {
         currency = getCurrencySymbol(currency, display === 'symbol' ? 'wide' : 'narrow', locale);
