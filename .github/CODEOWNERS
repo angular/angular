@@ -275,6 +275,7 @@
 #  @angular/fw-docs-intro
 # ===========================================================
 #
+#   - jenniferfell
 #   - brandonroberts
 #   - IgorMinar
 #   - stephenfluin
@@ -305,6 +306,18 @@
 #   - hansl
 #   - IgorMinar
 #   - mgechev
+
+
+# ===========================================================
+#  @angular/tools-docs-schematics
+# ===========================================================
+#
+#   - alan-agius4
+#   - alexeagle
+#   - hansl
+#   - IgorMinar
+#   - mgechev
+
 
 
 # ===========================================================
@@ -764,7 +777,6 @@ testing/**                                                      @angular/fw-test
 /aio/content/images/guide/getting-started/**                    @angular/fw-docs-intro @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
-
 # ================================================
 #  Docs: observables
 # ================================================
@@ -807,6 +819,17 @@ testing/**                                                      @angular/fw-test
 /aio/content/guide/creating-libraries.md                        @angular/tools-docs-libraries @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/libraries.md                                 @angular/tools-docs-libraries @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/guide/using-libraries.md                           @angular/tools-docs-libraries @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
+
+# ================================================
+#  Docs: schematics
+# ================================================
+
+/aio/content/guide/schematics.md                               @angular/tools-docs-schematics @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/schematics-authoring.md                     @angular/tools-docs-schematics @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/guide/schematics-for-libraries.md                 @angular/tools-docs-schematics @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/images/guide/schematics/**                        @angular/tools-docs-schematics @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/schematics-for-libraries/**              @angular/tools-docs-schematics @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 
 
 
