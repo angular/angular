@@ -2,7 +2,6 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 package(default_visibility = ["//visibility:public"])
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "node_modules_filegroup")
 load("//tools:defaults.bzl", "karma_web_test")
 
 exports_files([
