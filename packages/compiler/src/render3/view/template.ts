@@ -1431,7 +1431,8 @@ export class BindingScope implements LocalResolver {
   }
 
   maybeGenerateSharedContextVar(value: BindingData) {
-    if (value.priority === DeclarationPriority.CONTEXT) {
+    if (value.priority === DeclarationPriority.CONTEXT &&
+        value.retrievalLevel < this.bindingLevel) {
       const sharedCtxObj = this.map.get(SHARED_CONTEXT_KEY + value.retrievalLevel);
       if (sharedCtxObj) {
         sharedCtxObj.declare = true;
