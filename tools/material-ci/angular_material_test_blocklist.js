@@ -529,81 +529,13 @@ window.testBlocklist = {
     "error": "Error: Expected mat-slide-toggle-thumb-container to contain 'mat-dragging'.",
     "notes": "Unknown"
   },
-  "MatDrawer methods should be able to open": {
-    "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
-  },
-  "MatDrawer methods should be able to close": {
-    "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
-  },
-  "MatDrawer methods should be able to close while the open animation is running": {
-    "error": "Error: Expected 0 to be 1.",
-    "notes": "Unknown"
-  },
-  "MatDrawer methods should close when pressing escape": {
-    "error": "Error: Expected 0 to be 1, 'Expected one open event.'.",
-    "notes": "Unknown"
-  },
-  "MatDrawer methods should fire the open event when open on init": {
-    "error": "Error: Expected spy open callback to have been called once. It was called 0 times.",
-    "notes": "Unknown"
-  },
-  "MatDrawer methods should restore focus on close if focus is inside drawer": {
-    "error": "Error: Expected <button class=\"ng-tns-c22565-0\">...</button> to be <button class=\"open\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
-    "notes": "Unknown"
-  },
-  "MatDrawer attributes should bind 2-way bind on opened property": {
-    "error": "Error: Expected false to be true.",
-    "notes": "Unknown"
-  },
-  "MatDrawer focus trapping behavior should trap focus when opened in \"over\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c22860-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
-    "notes": "Unknown"
-  },
-  "MatDrawer focus trapping behavior should trap focus when opened in \"push\" mode": {
-    "error": "Error: Expected <input type=\"text\" class=\"input2\"> to be <input type=\"text\" class=\"input1 ng-tns-c22894-0\">. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
-    "notes": "Unknown"
-  },
-  "MatDrawer focus trapping behavior should focus the drawer if there are no focusable elements": {
-    "error": "Error: Expected <body style=\"\">...</body> to be <mat-drawer position=\"start\" mode=\"over\" class=\"ng-tns-c22962-1 mat-drawer ng-star-inserted ng-trigger ng-trigger-transform mat-drawer-over\" tabindex=\"-1\" style=\"transform: none; visibility: visible;\">...</mat-drawer>. Tip: To check for deep equality, use .toEqual() instead of .toBe().",
-    "notes": "Unknown"
-  },
-  "MatDrawerContainer should animate the content when a drawer is added at a later point": {
-    "error": "Error: Expected NaN to be greater than 0.",
-    "notes": "Unknown"
-  },
-  "MatDrawerContainer should recalculate the margin if a drawer is destroyed": {
-    "error": "Error: Expected NaN to be greater than 0.",
-    "notes": "Unknown"
-  },
-  "MatDrawerContainer should recalculate the margin if the drawer mode is changed": {
-    "error": "Error: Expected NaN to be greater than 0.",
-    "notes": "Unknown"
-  },
-  "MatDrawerContainer should recalculate the margin if the direction has changed": {
-    "error": "Error: Expected NaN to be greater than 0.",
-    "notes": "Unknown"
-  },
-  "MatDrawerContainer should recalculate the margin if a drawer changes size while open in autosize mode": {
-    "error": "Error: Expected NaN to be greater than 0.",
-    "notes": "Unknown"
-  },
-  "MatDrawerContainer should not set a style property if it would be zero": {
-    "error": "Error: Expected '' not to be '', 'Margin should be present when drawer is open'.",
-    "notes": "Unknown"
-  },
-  "MatDrawerContainer should be able to explicitly enable the backdrop in `side` mode": {
-    "error": "TypeError: Cannot set property 'mode' of undefined",
-    "notes": "Unknown"
-  },
   "MatSidenav should be fixed position when in fixed mode": {
     "error": "Error: Expected ng-tns-c23412-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
-    "notes": "Unknown"
+    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
     "error": "Error: Expected '' to be '20px'.",
-    "notes": "Unknown"
+    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
   "MatTree flat tree should initialize with rendered dataNodes": {
     "error": "TypeError: Cannot read property 'classList' of undefined",
