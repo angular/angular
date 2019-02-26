@@ -1618,8 +1618,8 @@ export interface ParseTemplateOptions {
  * @param options options to modify how the template is parsed
  */
 export function parseTemplate(
-    template: string, templateUrl: string,
-    options: ParseTemplateOptions = {}): {errors?: ParseError[], nodes: t.Node[]} {
+    template: string, templateUrl: string, options: ParseTemplateOptions = {}):
+    {errors?: ParseError[], nodes: t.Node[], styleUrls: string[], styles: string[]} {
   const {interpolationConfig, preserveWhitespaces} = options;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
@@ -1627,7 +1627,7 @@ export function parseTemplate(
       htmlParser.parse(template, templateUrl, {...options, tokenizeExpansionForms: true});
 
   if (parseResult.errors && parseResult.errors.length > 0) {
-    return {errors: parseResult.errors, nodes: []};
+    return {errors: parseResult.errors, nodes: [], styleUrls: [], styles: []};
   }
 
   let rootNodes: html.Node[] = parseResult.rootNodes;
@@ -1650,12 +1650,12 @@ export function parseTemplate(
         new I18nMetaVisitor(interpolationConfig, /* keepI18nAttrs */ false), rootNodes);
   }
 
-  const {nodes, errors} = htmlAstToRender3Ast(rootNodes, bindingParser);
+  const {nodes, errors, styleUrls, styles} = htmlAstToRender3Ast(rootNodes, bindingParser);
   if (errors && errors.length > 0) {
-    return {errors, nodes: []};
+    return {errors, nodes: [], styleUrls: [], styles: []};
   }
 
-  return {nodes};
+  return {nodes, styleUrls, styles};
 }
 
 /**

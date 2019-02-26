@@ -3315,6 +3315,43 @@ export const Foo = Foo__PRE_R3__;
       expect(jsContents).toContain('export { FooDir as ɵng$root$foo$$FooDir } from "root/foo";');
     });
   });
+
+  describe('inline resources', () => {
+    it('should process inline <style> tags', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<style>h1 {font-size: larger}</style>',
+        })
+        export class TestCmp {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('styles: ["h1[_ngcontent-%COMP%] {font-size: larger}"]');
+    });
+
+    it('should process inline <link> tags', () => {
+      env.tsconfig();
+      env.write('style.css', `h1 {font-size: larger}`);
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<link rel="stylesheet" href="./style.css">',
+        })
+        export class TestCmp {}
+      `);
+
+      env.driveMain();
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('styles: ["h1[_ngcontent-%COMP%] {font-size: larger}"]');
+    });
+  });
 });
 
 function expectTokenAtPosition<T extends ts.Node>(

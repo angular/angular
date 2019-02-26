@@ -47,9 +47,12 @@ const IDENT_EVENT_IDX = 10;
 const TEMPLATE_ATTR_PREFIX = '*';
 
 // Result of the html AST to Ivy AST transformation
-export type Render3ParseResult = {
-  nodes: t.Node[]; errors: ParseError[];
-};
+export interface Render3ParseResult {
+  nodes: t.Node[];
+  errors: ParseError[];
+  styles: string[];
+  styleUrls: string[];
+}
 
 export function htmlAstToRender3Ast(
     htmlNodes: html.Node[], bindingParser: BindingParser): Render3ParseResult {
@@ -68,28 +71,33 @@ export function htmlAstToRender3Ast(
   return {
     nodes: ivyNodes,
     errors: allErrors,
+    styleUrls: transformer.styleUrls,
+    styles: transformer.styles,
   };
 }
 
 class HtmlAstToIvyAst implements html.Visitor {
   errors: ParseError[] = [];
+  styles: string[] = [];
+  styleUrls: string[] = [];
 
   constructor(private bindingParser: BindingParser) {}
 
   // HTML visitor
   visitElement(element: html.Element): t.Node|null {
     const preparsedElement = preparseElement(element);
-    if (preparsedElement.type === PreparsedElementType.SCRIPT ||
-        preparsedElement.type === PreparsedElementType.STYLE) {
-      // Skipping <script> for security reasons
-      // Skipping <style> as we already processed them
-      // in the StyleCompiler
+    if (preparsedElement.type === PreparsedElementType.SCRIPT) {
       return null;
-    }
-    if (preparsedElement.type === PreparsedElementType.STYLESHEET &&
+    } else if (preparsedElement.type === PreparsedElementType.STYLE) {
+      const contents = textContents(element);
+      if (contents !== null) {
+        this.styles.push(contents);
+      }
+      return null;
+    } else if (
+        preparsedElement.type === PreparsedElementType.STYLESHEET &&
         isStyleUrlResolvable(preparsedElement.hrefAttr)) {
-      // Skipping stylesheets with either relative urls or package scheme as we already processed
-      // them in the StyleCompiler
+      this.styleUrls.push(preparsedElement.hrefAttr);
       return null;
     }
 
@@ -418,4 +426,12 @@ function isEmptyTextNode(node: html.Node): boolean {
 
 function isCommentNode(node: html.Node): boolean {
   return node instanceof html.Comment;
+}
+
+function textContents(node: html.Element): string|null {
+  if (node.children.length !== 1 || !(node.children[0] instanceof html.Text)) {
+    return null;
+  } else {
+    return (node.children[0] as html.Text).value;
+  }
 }
