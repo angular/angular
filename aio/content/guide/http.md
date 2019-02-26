@@ -467,6 +467,8 @@ in order to initiate the request.
 
 We have discussed the basic HTTP functionality in `@angular/common/http`, but sometimes you need to do more than make simple requests and get data back.
 
+
+{@a intercepting-requests-and-responses }
 ### HTTP interceptors
 
 _HTTP Interception_ is a major feature of `@angular/common/http`.
