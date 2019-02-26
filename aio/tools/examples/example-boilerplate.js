@@ -104,7 +104,12 @@ class ExampleBoilerPlate {
     }
 
     if (ivy) {
-      shelljs.exec(`yarn --cwd ${SHARED_PATH} ivy-ngcc`);
+      // We only need the "fesm5" bundles as the CLI webpack build does not need
+      // any other formats for building and serving. Ngcc currently only updates
+      // the module typings if we specified an "es2015" format. This means that
+      // we also need to build with "fesm2015" in order to get updated typings
+      // which are needed for compilation.
+      shelljs.exec(`yarn --cwd ${SHARED_PATH} ivy-ngcc --formats fesm2015 fesm5`);
     }
 
     exampleFolders.forEach(exampleFolder => {
