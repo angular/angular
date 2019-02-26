@@ -237,12 +237,10 @@ export const Host: HostDecorator = makeParamDecorator('Host');
  */
 export interface AttributeDecorator {
   /**
-   * Specifies that a constant attribute value should be injected.
-   *
-   * The directive can inject constant string literals of host element attributes.
+   * A parameter decorator for a directive constructor that designates
+   * a host-element attribute whose value is injected as a constant string literal.
    *
    * @usageNotes
-   * ### Example
    *
    * Suppose we have an `<input>` element and want to know its `type`.
    *
@@ -250,7 +248,7 @@ export interface AttributeDecorator {
    * <input type="text">
    * ```
    *
-   * A decorator can inject string literal `text` like so:
+   * The following example uses the decorator to inject the string literal `text`.
    *
    * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
    *
@@ -258,20 +256,6 @@ export interface AttributeDecorator {
    *
    * {@example core/ts/metadata/metadata.ts region='attributeFactory'}
    *
-   * ### Example as ES5 annotation
-   *
-   * ```
-   * var MyComponent = function(title) {
-   *   ...
-   * };
-   *
-   * MyComponent.annotations = [
-   *   new ng.Component({...})
-   * ]
-   * MyComponent.parameters = [
-   *   [new ng.Attribute('title')]
-   * ]
-   * ```
    */
   (name: string): any;
   new (name: string): Attribute;
@@ -282,7 +266,12 @@ export interface AttributeDecorator {
  *
  * @publicApi
  */
-export interface Attribute { attributeName?: string; }
+export interface Attribute {
+  /**
+   * The name of the attribute whose value can be injected.
+   */
+  attributeName?: string;
+}
 
 /**
  * Attribute decorator and metadata.
