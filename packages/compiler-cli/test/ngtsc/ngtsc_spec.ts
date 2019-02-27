@@ -1847,15 +1847,16 @@ describe('ngtsc behavioral tests', () => {
     env.tsconfig({});
 
     env.write(`types.ts`, `
-      export class MyType {}
+      export class MyTypeA {}
+      export class MyTypeB {}
     `);
     env.write(`test.ts`, `
       import {Component, Inject, Injectable} from '@angular/core';
-      import {MyType} from './types';
+      import {MyTypeA, MyTypeB} from './types';
 
       @Injectable({providedIn: 'root'})
       export class SomeService {
-        constructor(arg: MyType) {}
+        constructor(arg: MyTypeA) {}
       }
 
       @Component({
@@ -1863,51 +1864,24 @@ describe('ngtsc behavioral tests', () => {
         template: '...',
       })
       export class SomeComp {
-        constructor(@Inject('arg-token') arg: MyType) {}
+        constructor(@Inject('arg-token') arg: MyTypeB) {}
       }
     `);
 
-    const imports = `
-      import { MyType } from './types';
-    `;
-    const injectableMeta = `
-      setClassMetadata(SomeService, [{
-        type: Injectable,
-        args: [{ providedIn: 'root' }]
-      }], function () { return [{
-        type: MyType
-      }]; }, null);
-    `;
-    const componentMeta = `
-      setClassMetadata(SomeComp, [{
-        type: Component,
-        args: [{
-            selector: 'some-comp',
-            template: '...',
-        }]
-      }], function () { return [{
-        type: MyType,
-        decorators: [{
-            type: Inject,
-            args: ['arg-token']
-        }]
-      }]; }, null);
-    `;
-
     env.driveMain();
+    const setClassMetadataRegExp = (expectedType: string): RegExp =>
+        new RegExp(`setClassMetadata(.*?${expectedType}.*?)`);
     const jsContents = trim(env.getContents('test.js'));
-    expect(jsContents).toContain(trim(imports));
-    expect(jsContents).toContain(trim(injectableMeta));
-    expect(jsContents).toContain(trim(componentMeta));
+    expect(jsContents).toContain(`import { MyTypeA, MyTypeB } from './types';`);
+    expect(jsContents).toMatch(setClassMetadataRegExp('type: MyTypeA'));
+    expect(jsContents).toMatch(setClassMetadataRegExp('type: MyTypeB'));
   });
 
   it('should use `undefined` in setClassMetadata if types can\'t be represented as values', () => {
     env.tsconfig({});
 
     env.write(`types.ts`, `
-      export interface MyType {
-        key: string;
-      }
+      export type MyType = Map<any, any>;
     `);
     env.write(`test.ts`, `
       import {Component, Inject, Injectable} from '@angular/core';
