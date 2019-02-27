@@ -26,6 +26,9 @@ const contentQueryRegExp = (predicate: string, descend: boolean, ref?: string): 
   return new RegExp(`i0\\.ɵcontentQuery\\(dirIndex, ${predicate}, ${descend}, ${maybeRef}\\)`);
 };
 
+const setClassMetadataRegExp = (expectedType: string): RegExp =>
+    new RegExp(`setClassMetadata(.*?${expectedType}.*?)`);
+
 describe('ngtsc behavioral tests', () => {
   let env !: NgtscTestEnvironment;
 
@@ -1869,8 +1872,6 @@ describe('ngtsc behavioral tests', () => {
     `);
 
     env.driveMain();
-    const setClassMetadataRegExp = (expectedType: string): RegExp =>
-        new RegExp(`setClassMetadata(.*?${expectedType}.*?)`);
     const jsContents = trim(env.getContents('test.js'));
     expect(jsContents).toContain(`import { MyTypeA, MyTypeB } from './types';`);
     expect(jsContents).toMatch(setClassMetadataRegExp('type: MyTypeA'));
@@ -1896,30 +1897,11 @@ describe('ngtsc behavioral tests', () => {
       }
     `);
 
-    const imports = `
-      import { MyType } from './types';
-    `;
-    // Note: `type: undefined` below, since MyType can't be represented as a value
-    const componentMeta = `
-      setClassMetadata(SomeComp, [{
-        type: Component,
-        args: [{
-            selector: 'some-comp',
-            template: '...',
-        }]
-      }], function () { return [{
-        type: undefined,
-        decorators: [{
-            type: Inject,
-            args: ['arg-token']
-        }]
-      }]; }, null);
-    `;
-
     env.driveMain();
     const jsContents = trim(env.getContents('test.js'));
-    expect(jsContents).not.toContain(trim(imports));
-    expect(jsContents).toContain(trim(componentMeta));
+    expect(jsContents).not.toContain(`import { MyType } from './types';`);
+    // Note: `type: undefined` below, since MyType can't be represented as a value
+    expect(jsContents).toMatch(setClassMetadataRegExp('type: undefined'));
   });
 
   it('should not throw in case whitespaces and HTML comments are present inside <ng-content>',
