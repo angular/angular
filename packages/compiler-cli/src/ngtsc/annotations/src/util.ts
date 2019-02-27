@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportMode, Reference, ReferenceEmitter} from '../../imports';
+import {ForeignFunctionResolver} from '../../partial_evaluator';
 import {ClassMemberKind, CtorParameter, Decorator, ReflectionHost} from '../../reflection';
 
 export enum ConstructorDepErrorKind {
@@ -212,4 +213,22 @@ export function forwardRefResolver(
     return null;
   }
   return expandForwardRef(args[0]);
+}
+
+/**
+ * Combines an array of resolver functions into a one.
+ * @param resolvers Resolvers to be combined.
+ */
+export function combineResolvers(resolvers: ForeignFunctionResolver[]): ForeignFunctionResolver {
+  return (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration>,
+          args: ts.Expression[]): ts.Expression |
+      null => {
+    for (const resolver of resolvers) {
+      const resolved = resolver(ref, args);
+      if (resolved !== null) {
+        return resolved;
+      }
+    }
+    return null;
+  };
 }
