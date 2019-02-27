@@ -53,7 +53,7 @@ web_package(
         ":bundle.min.js",
     ],
     data = [
-        ":bundle",
+        "favicon.ico",
     ],
     index_html = "index.html",
 )
@@ -88,6 +88,9 @@ ts_devserver(
     ],
     static_files = [
         "@npm//node_modules/zone.js:dist/zone.min.js",
+    ],
+    data = [
+        "favicon.ico",
     ],
     index_html = "index.html",
     deps = [":src"],
