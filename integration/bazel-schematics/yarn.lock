@@ -49,12 +49,12 @@
     rxjs "6.3.3"
 
 "@angular/bazel@file:../../dist/packages-dist/bazel":
-  version "8.0.0-beta.5"
+  version "8.0.0-beta.6"
   dependencies:
     "@angular-devkit/architect" "^0.10.6"
     "@angular-devkit/core" "^7.0.4"
     "@angular-devkit/schematics" "^7.3.0-rc.0"
-    "@bazel/typescript" "^0.25.1"
+    "@bazel/typescript" "^0.26.0"
     "@microsoft/api-extractor" "^7.0.17"
     "@schematics/angular" "^7.0.4"
     "@types/node" "6.0.84"
@@ -101,10 +101,10 @@
     "@bazel/bazel-linux_x64" "0.22.0"
     "@bazel/bazel-win32_x64" "0.22.0"
 
-"@bazel/typescript@^0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.25.1.tgz#71564de50ff6976fb37d90f2f7a479e87b158943"
-  integrity sha512-QFitUUXIWQMfVk5EwI9J9d5iNPfT+kUjPbahiJbJVZz1Fz9zNZ8+CR6FESfnxuUKlZK3Oy0VWFcz7mlHaceL/Q==
+"@bazel/typescript@^0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.26.0.tgz#c06139d76c8b9d3a3ed98a721b776fedb4b11c82"
+  integrity sha512-dh/Y/SZzmeChsLap8FVHYl0FuaeLh/6t9WBVhm5nOgyVrqfEyVpNzy4W20E4NqnmJY2/PqmD5qncf+Oo1q9h1A==
   dependencies:
     jasmine-core "2.8.0"
     protobufjs "5.0.3"
