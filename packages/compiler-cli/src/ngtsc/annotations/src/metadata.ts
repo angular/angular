@@ -19,7 +19,9 @@ import {CtorParameter, Decorator, ReflectionHost} from '../../reflection';
  * as a `Statement` for inclusion along with the class.
  */
 export function generateSetClassMetadataCall(
-    clazz: ts.Declaration, reflection: ReflectionHost, isCore: boolean): Statement|null {
+    clazz: ts.Declaration, reflection: ReflectionHost, isCore: boolean,
+    decoratorArgsOverrideFn?: (args: ts.NodeArray<ts.ObjectLiteralElementLike>) =>
+        ts.NodeArray<ts.ObjectLiteralElementLike>): Statement|null {
   if (!reflection.isClass(clazz) || clazz.name === undefined || !ts.isIdentifier(clazz.name)) {
     return null;
   }
@@ -31,8 +33,8 @@ export function generateSetClassMetadataCall(
   if (classDecorators === null) {
     return null;
   }
-  const ngClassDecorators =
-      classDecorators.filter(dec => isAngularDecorator(dec, isCore)).map(decoratorToMetadata);
+  const ngClassDecorators = classDecorators.filter(dec => isAngularDecorator(dec, isCore))
+                                .map(dec => decoratorToMetadata(dec, decoratorArgsOverrideFn));
   if (ngClassDecorators.length === 0) {
     return null;
   }
@@ -94,8 +96,8 @@ function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): ts.Expr
 
   // If the parameter has decorators, include the ones from Angular.
   if (param.decorators !== null) {
-    const ngDecorators =
-        param.decorators.filter(dec => isAngularDecorator(dec, isCore)).map(decoratorToMetadata);
+    const ngDecorators = param.decorators.filter(dec => isAngularDecorator(dec, isCore))
+                             .map(dec => decoratorToMetadata(dec));
     properties.push(ts.createPropertyAssignment('decorators', ts.createArrayLiteral(ngDecorators)));
   }
   return ts.createObjectLiteral(properties, true);
@@ -106,8 +108,8 @@ function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): ts.Expr
  */
 function classMemberToMetadata(
     name: string, decorators: Decorator[], isCore: boolean): ts.PropertyAssignment {
-  const ngDecorators =
-      decorators.filter(dec => isAngularDecorator(dec, isCore)).map(decoratorToMetadata);
+  const ngDecorators = decorators.filter(dec => isAngularDecorator(dec, isCore))
+                           .map(dec => decoratorToMetadata(dec));
   const decoratorMeta = ts.createArrayLiteral(ngDecorators);
   return ts.createPropertyAssignment(name, decoratorMeta);
 }
@@ -115,14 +117,23 @@ function classMemberToMetadata(
 /**
  * Convert a reflected decorator to metadata.
  */
-function decoratorToMetadata(decorator: Decorator): ts.ObjectLiteralExpression {
+function decoratorToMetadata(
+    decorator: Decorator,
+    propsOverrideFn?: (props: ts.NodeArray<ts.ObjectLiteralElementLike>) =>
+        ts.NodeArray<ts.ObjectLiteralElementLike>): ts.ObjectLiteralExpression {
   // Decorators have a type.
   const properties: ts.ObjectLiteralElementLike[] = [
     ts.createPropertyAssignment('type', ts.updateIdentifier(decorator.identifier)),
   ];
   // Sometimes they have arguments.
   if (decorator.args !== null && decorator.args.length > 0) {
-    const args = decorator.args.map(arg => ts.getMutableClone(arg));
+    const args = decorator.args.map(arg => {
+      const mutableArg = ts.getMutableClone(arg);
+      if (propsOverrideFn && ts.isObjectLiteralExpression(mutableArg)) {
+        mutableArg.properties = propsOverrideFn(mutableArg.properties);
+      }
+      return mutableArg;
+    });
     properties.push(ts.createPropertyAssignment('args', ts.createArrayLiteral(args)));
   }
   return ts.createObjectLiteral(properties, true);

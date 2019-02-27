@@ -651,6 +651,105 @@ describe('ngtsc behavioral tests', () => {
             'i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestPipe, typeof TestCmp], never, never>');
   });
 
+  describe('replace templateUrl and styleUrls with resolved content in class metadata', () => {
+    it('should handle `templateUrl` and `styleUrls`', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-comp',
+          templateUrl: './template.html',
+          styleUrls: ['./style-a.css', './style-b.css']
+        })
+        export class TestComp {}
+      `);
+      env.write('template.html', `<p>Hello World</p>`);
+      env.write('style-a.css', 'body { color: green; }');
+      env.write('style-b.css', 'div { color: orange; }');
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).not.toContain('styleUrls');
+      expect(jsContents).not.toContain('templateUrl');
+      expect(jsContents).toContain('template: "<p>Hello World</p>"');
+      expect(jsContents).toContain('styles: ["body { color: green; }", "div { color: orange; }"]');
+    });
+
+    it('should handle `templateUrl` and `styleUrls` with `annotateForClosureCompiler`', () => {
+      env.tsconfig({annotateForClosureCompiler: true});
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-comp',
+          templateUrl: './template.html',
+          styleUrls: ['./style-a.css', './style-b.css']
+        })
+        export class TestComp {}
+      `);
+      env.write('template.html', `<p>Hello World</p>`);
+      env.write('style-a.css', 'body { color: green; }');
+      env.write('style-b.css', 'div { color: orange; }');
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).not.toContain('styleUrls');
+      expect(jsContents).not.toContain('templateUrl');
+      expect(jsContents).toContain('template: "<p>Hello World</p>"');
+      expect(jsContents).toContain('styles: ["body { color: green; }", "div { color: orange; }"]');
+    });
+
+    it('should work when both `template` and `templateUrl` are present', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Component, Injectable, Input} from '@angular/core';
+
+        @Component({
+          selector: 'test-comp',
+          template: 'Hello from Component template',
+          templateUrl: './template.html'
+        })
+        export class TestComp {}
+      `);
+      env.write('template.html', `<p>Hello World</p>`);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).not.toContain(`template: 'Hello from Component template'`);
+      expect(jsContents).toContain('template: "<p>Hello World</p>"');
+    });
+
+    it('should work when both `styles` and `styleUrls` are present', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-comp',
+          template: 'Some template',
+          styles: ['p { color: red; }'],
+          styleUrls: ['./style-a.css', './style-b.css']
+        })
+        export class TestComp {}
+      `);
+      env.write('template.html', `<p>Hello World</p>`);
+      env.write('style-a.css', 'body { color: green; }');
+      env.write('style-b.css', 'div { color: orange; }');
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).not.toContain('styleUrls');
+      expect(jsContents)
+          .toContain(
+              'styles: ["body { color: green; }", "div { color: orange; }", "p { color: red; }"]');
+    });
+  });
+
   describe('multiple decorators on classes', () => {
     it('should compile @Injectable on Components, Directives, Pipes, and Modules', () => {
       env.tsconfig();
