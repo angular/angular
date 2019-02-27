@@ -14,7 +14,7 @@ import {attachPatchData} from './context_discovery';
 import {LContainer, NATIVE, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {ComponentDef} from './interfaces/definition';
 import {NodeInjectorFactory} from './interfaces/injector';
-import {TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CHILD_HEAD, CLEANUP, FLAGS, HEADER_OFFSET, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
@@ -718,6 +718,41 @@ export function nativeRemoveNode(renderer: Renderer3, rNode: RNode, isHostElemen
 }
 
 /**
+ * Appends nodes to a target projection place. Nodes to insert were previously re-distribution and
+ * stored on a component host level.
+ * @param lView A LView where nodes are inserted (target VLview)
+ * @param tProjectionNode A projection node where previously re-distribution should be appended
+ * (target insertion place)
+ * @param selectorIndex A bucket from where nodes to project should be taken
+ * @param componentView A where projectable nodes were initially created (source view)
+ */
+export function appendProjectedNodes(
+    lView: LView, tProjectionNode: TProjectionNode, selectorIndex: number,
+    componentView: LView): void {
+  const projectedView = componentView[PARENT] !as LView;
+  const componentNode = componentView[T_HOST] as TElementNode;
+  let nodeToProject = (componentNode.projection as(TNode | null)[])[selectorIndex];
+
+  if (Array.isArray(nodeToProject)) {
+    appendChild(nodeToProject, tProjectionNode, lView);
+  } else {
+    while (nodeToProject) {
+      if (nodeToProject.type === TNodeType.Projection) {
+        appendProjectedNodes(
+            lView, tProjectionNode, (nodeToProject as TProjectionNode).projection,
+            findComponentView(projectedView));
+      } else {
+        // This flag must be set now or we won't know that this node is projected
+        // if the nodes are inserted into a container later.
+        nodeToProject.flags |= TNodeFlags.isProjected;
+        appendProjectedNode(nodeToProject, tProjectionNode, lView, projectedView);
+      }
+      nodeToProject = nodeToProject.next;
+    }
+  }
+}
+
+/**
  * Appends a projected node to the DOM, or in the case of a projected container,
  * appends the nodes from all of the container's active views to the DOM.
  *
@@ -726,7 +761,7 @@ export function nativeRemoveNode(renderer: Renderer3, rNode: RNode, isHostElemen
  * @param currentView Current LView
  * @param projectionView Projection view (view above current)
  */
-export function appendProjectedNode(
+function appendProjectedNode(
     projectedTNode: TNode, tProjectionNode: TNode, currentView: LView,
     projectionView: LView): void {
   const native = getNativeByTNode(projectedTNode, projectionView);
