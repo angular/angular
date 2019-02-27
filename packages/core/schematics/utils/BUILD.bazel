@@ -1,0 +1,27 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "utils",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*_spec.ts"],
+    ),
+    tsconfig = "//packages/core/schematics:tsconfig.json",
+    visibility = ["//packages/core/schematics:__subpackages__"],
+    deps = ["@ngdeps//@angular-devkit/schematics"],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*_spec.ts"]),
+    deps = [
+        ":utils",
+        "@ngdeps//@angular-devkit/schematics",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    deps = [":test_lib"],
+)

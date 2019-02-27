@@ -1,0 +1,9 @@
+{
+  "schematics": {
+    "migration-v8-static-queries": {
+      "version": "8",
+      "description": "Migrates ViewChild and ContentChild to explicit query timing",
+      "factory": "./migrations/static-queries/index"
+    }
+  }
+}

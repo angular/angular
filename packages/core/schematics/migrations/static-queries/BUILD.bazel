@@ -1,0 +1,37 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "static-queries",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["index_spec.ts"],
+    ),
+    tsconfig = "//packages/core/schematics:tsconfig.json",
+    visibility = ["//packages/core/schematics:__pkg__"],
+    deps = [
+        "//packages/core/schematics/utils",
+        "@ngdeps//@angular-devkit/schematics",
+        "@ngdeps//@types/node",
+        "@ngdeps//typescript",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = ["index_spec.ts"],
+    data = [
+        "//packages/core/schematics:migrations.json",
+        "@ngdeps//shelljs",
+    ],
+    deps = [
+        ":static-queries",
+        "@ngdeps//@angular-devkit/schematics",
+        "@ngdeps//@types/shelljs",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    deps = [":test_lib"],
+)
