@@ -297,15 +297,16 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
   /**
    * Retrieve an `NgModule` identifier (T) from the specified `type`, if it is of the form:
-   * `A|B|{ngModule: T}|C`.
+   * `A|B|{ngModule: T}|C` or `{ngModule: T}`.
    * @param type The type to reflect on.
    * @returns the identifier of the NgModule type if found, or null otherwise.
    */
   private _reflectModuleFromLiteralType(type: ts.TypeNode): ts.Expression|null {
-    if (!ts.isIntersectionTypeNode(type)) {
+    if (!ts.isIntersectionTypeNode(type) && !ts.isTypeLiteralNode(type)) {
       return null;
     }
-    for (const t of type.types) {
+    const types = ts.isTypeLiteralNode(type) ? [type] : type.types;
+    for (const t of types) {
       if (ts.isTypeLiteralNode(t)) {
         for (const m of t.members) {
           const ngModuleType = ts.isPropertySignature(m) && ts.isIdentifier(m.name) &&
