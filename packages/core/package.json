@@ -24,6 +24,7 @@
     "url": "https://github.com/angular/angular.git"
   },
   "ng-update": {
+    "migrations":"./schematics/migrations.json",
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
   "sideEffects": false
