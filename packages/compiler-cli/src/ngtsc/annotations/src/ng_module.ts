@@ -20,7 +20,7 @@ import {getSourceFile} from '../../util/src/typescript';
 
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
-import {getValidConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
+import {combineResolvers, forwardRefResolver, getValidConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
@@ -83,34 +83,37 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       return {};
     }
 
+    const moduleResolvers = combineResolvers([
+      ref => this._extractModuleFromModuleWithProvidersFn(ref.node),
+      forwardRefResolver,
+    ]);
+
     // Extract the module declarations, imports, and exports.
     let declarations: Reference<ts.Declaration>[] = [];
     if (ngModule.has('declarations')) {
       const expr = ngModule.get('declarations') !;
-      const declarationMeta = this.evaluator.evaluate(expr);
+      const declarationMeta = this.evaluator.evaluate(expr, forwardRefResolver);
       declarations = this.resolveTypeList(expr, declarationMeta, 'declarations');
     }
     let imports: Reference<ts.Declaration>[] = [];
     let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
       rawImports = ngModule.get('imports') !;
-      const importsMeta = this.evaluator.evaluate(
-          rawImports, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
+      const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
       imports = this.resolveTypeList(rawImports, importsMeta, 'imports');
     }
     let exports: Reference<ts.Declaration>[] = [];
     let rawExports: ts.Expression|null = null;
     if (ngModule.has('exports')) {
       rawExports = ngModule.get('exports') !;
-      const exportsMeta = this.evaluator.evaluate(
-          rawExports, ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
+      const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
       exports = this.resolveTypeList(rawExports, exportsMeta, 'exports');
       this.referencesRegistry.add(node, ...exports);
     }
     let bootstrap: Reference<ts.Declaration>[] = [];
     if (ngModule.has('bootstrap')) {
       const expr = ngModule.get('bootstrap') !;
-      const bootstrapMeta = this.evaluator.evaluate(expr);
+      const bootstrapMeta = this.evaluator.evaluate(expr, forwardRefResolver);
       bootstrap = this.resolveTypeList(expr, bootstrapMeta, 'bootstrap');
     }
 
