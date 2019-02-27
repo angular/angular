@@ -345,9 +345,6 @@
     "name": "NG_LOC_ID_DEF"
   },
   {
-    "name": "NG_MODEL_WITH_FORM_CONTROL_WARNING"
-  },
-  {
     "name": "NG_MOD_DEF"
   },
   {
@@ -1246,9 +1243,6 @@
   },
   {
     "name": "isPromise"
-  },
-  {
-    "name": "isPropertyUpdated"
   },
   {
     "name": "isRootView"

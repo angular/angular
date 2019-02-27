@@ -241,12 +241,9 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     get control(): FormControl;
     form: FormControl;
     set isDisabled(isDisabled: boolean);
-    /** @deprecated */ model: any;
     get path(): string[];
-    /** @deprecated */ update: EventEmitter<any>;
     get validator(): ValidatorFn | null;
-    viewModel: any;
-    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
+    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
     ngOnChanges(changes: SimpleChanges): void;
     viewToModelUpdate(newValue: any): void;
 }
@@ -256,12 +253,10 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     readonly control: FormControl;
     get formDirective(): any;
     set isDisabled(isDisabled: boolean);
-    /** @deprecated */ model: any;
     name: string | number | null;
     get path(): string[];
-    /** @deprecated */ update: EventEmitter<any>;
     get validator(): ValidatorFn | null;
-    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
+    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
@@ -477,8 +472,6 @@ export declare class RangeValueAccessor implements ControlValueAccessor {
 }
 
 export declare class ReactiveFormsModule {
-    static withConfig(opts: { warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
-    }): ModuleWithProviders<ReactiveFormsModule>;
 }
 
 export declare class RequiredValidator implements Validator {

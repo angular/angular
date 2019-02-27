@@ -1857,21 +1857,6 @@
     "packages/forms/src/directives/ng_model_group.ts"
   ],
   [
-    "packages/forms/src/directives/reactive_directives/form_control_directive.ts",
-    "packages/forms/src/directives/shared.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_name.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
-    "packages/forms/src/directives/reactive_directives/form_control_name.ts"
-  ],
-  [
-    "packages/forms/src/directives/reactive_directives/form_control_directive.ts",
-    "packages/forms/src/model.ts",
-    "packages/forms/src/directives/shared.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_name.ts",
-    "packages/forms/src/directives/reactive_directives/form_group_directive.ts",
-    "packages/forms/src/directives/reactive_directives/form_control_name.ts"
-  ],
-  [
     "packages/forms/src/directives/reactive_directives/form_control_name.ts",
     "packages/forms/src/directives/reactive_directives/form_group_directive.ts"
   ],
