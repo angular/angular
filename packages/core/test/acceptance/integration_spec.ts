@@ -9,7 +9,7 @@ import {Component, Directive, HostBinding, HostListener, QueryList, ViewChildren
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('acceptance integration tests', () => {
   onlyInIvy('[style] and [class] bindings are a new feature')
@@ -111,4 +111,45 @@ describe('acceptance integration tests', () => {
     expect(element.classList.contains('foo')).toBeTruthy();
   });
 
+  it('should combine the inherited static styles of a parent and child component', () => {
+    @Component({template: '...', host: {'style': 'width:100px; height:100px;'}})
+    class ParentCmp {
+    }
+
+    @Component({template: '...', host: {'style': 'width:200px; color:red'}})
+    class ChildCmp extends ParentCmp {
+    }
+
+    TestBed.configureTestingModule({declarations: [ChildCmp]});
+    const fixture = TestBed.createComponent(ChildCmp);
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement;
+    if (ivyEnabled) {
+      expect(element.style['height']).toEqual('100px');
+    }
+    expect(element.style['width']).toEqual('200px');
+    expect(element.style['color']).toEqual('red');
+  });
+
+  it('should combine the inherited static classes of a parent and child component', () => {
+    @Component({template: '...', host: {'class': 'foo bar'}})
+    class ParentCmp {
+    }
+
+    @Component({template: '...', host: {'class': 'foo baz'}})
+    class ChildCmp extends ParentCmp {
+    }
+
+    TestBed.configureTestingModule({declarations: [ChildCmp]});
+    const fixture = TestBed.createComponent(ChildCmp);
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement;
+    if (ivyEnabled) {
+      expect(element.classList.contains('bar')).toBeTruthy();
+    }
+    expect(element.classList.contains('foo')).toBeTruthy();
+    expect(element.classList.contains('baz')).toBeTruthy();
+  });
 });

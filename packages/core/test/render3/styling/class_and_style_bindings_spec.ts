@@ -202,7 +202,7 @@ describe('style and class based bindings', () => {
         assertContext(template, [
           element,
           masterConfig(9),
-          [null, 2, false, null],
+          [null, null, 2, false, null],
           [null, null],
           [null, null],
           [0, 0, 0, 0],
@@ -217,7 +217,7 @@ describe('style and class based bindings', () => {
         assertContext(template, [
           element,
           masterConfig(9),
-          [null, 2, false, null],
+          [null, null, 2, false, null],
           [null, null, 'color', 'red', 'width', '10px'],
           [null, null, 'foo', true, 'bar', true],
           [0, 0, 0, 0],
@@ -439,7 +439,7 @@ describe('style and class based bindings', () => {
            assertContext(ctx, [
              null,
              masterConfig(17, false, false),  //
-             [null, 2, false, null],
+             [null, null, 2, false, null],
              [null, null, 'width', null],
              [null, null, 'foo', false],
              [1, 1, 1, 1, 9, 13],
@@ -477,7 +477,7 @@ describe('style and class based bindings', () => {
            assertContext(ctx, [
              null,
              masterConfig(25, false, false),  //
-             [null, 2, false, null, 'SOME DIRECTIVE', 6, false, null],
+             [null, null, 2, false, null, 'SOME DIRECTIVE', null, 6, false, null],
              [null, null, 'width', null, 'height', null],
              [null, null, 'foo', false, 'bar', false],
              [2, 2, 1, 1, 9, 17, 2, 1, 9, 13, 21],
@@ -541,8 +541,9 @@ describe('style and class based bindings', () => {
              null,
              masterConfig(33, false, false),  //
              [
-               null, 2, false, null, 'SOME DIRECTIVE', 6, false, null, 'SOME DIRECTIVE 2', 11,
-               false, null
+               null, null, 2, false, null,                 //
+               'SOME DIRECTIVE', null, 6, false, null,     //
+               'SOME DIRECTIVE 2', null, 11, false, null,  //
              ],
              [null, null, 'width', null, 'height', null, 'opacity', null],
              [null, null, 'foo', false, 'bar', false, 'baz', false],
@@ -1147,7 +1148,7 @@ describe('style and class based bindings', () => {
         assertContext(stylingContext, [
           element,
           masterConfig(13, true),  //
-          [null, 2, true, null],
+          [null, null, 2, true, null],
           [null, null, 'height', null],
           [null, null],
           [1, 0, 1, 0, 9],
@@ -1179,7 +1180,7 @@ describe('style and class based bindings', () => {
         assertContext(stylingContext, [
           element,
           masterConfig(13, false),  //
-          [null, 2, false, null],
+          [null, null, 2, false, null],
           [null, null, 'height', null],
           [null, null],
           [1, 0, 1, 0, 9],
@@ -1716,18 +1717,22 @@ describe('style and class based bindings', () => {
            const ctx = allocStylingContext(element, template);
            expect(ctx[StylingIndex.DirectiveRegistryPosition]).toEqual([
              null,                 //
+             null,                 //
              -1,                   //
              false,                //
              null,                 //
              dirWithSanitizer1,    //
+             null,                 //
              2,                    //
              false,                //
              sanitizer1,           //
              dirWithSanitizer2,    //
+             null,                 //
              5,                    //
              false,                //
              sanitizer2,           //
              dirWithoutSanitizer,  //
+             null,                 //
              8,                    //
              false,                //
              null
@@ -1765,10 +1770,12 @@ describe('style and class based bindings', () => {
            const ctx = allocStylingContext(element, template);
            expect(ctx[StylingIndex.DirectiveRegistryPosition]).toEqual([
              null,      //
+             null,      //
              -1,        //
              false,     //
              null,      //
              knownDir,  //
+             null,      //
              2,         //
              false,     //
              null,      //
@@ -1785,14 +1792,17 @@ describe('style and class based bindings', () => {
            updateStylingMap(ctx, 'foo', null, foreignDir);
            expect(ctx[StylingIndex.DirectiveRegistryPosition]).toEqual([
              null,        //
+             null,        //
              -1,          //
              false,       //
              null,        //
              knownDir,    //
+             null,        //
              2,           //
              false,       //
              null,        //
              foreignDir,  //
+             null,        //
              -1,          //
              true,        //
              null,        //
@@ -1848,7 +1858,7 @@ describe('style and class based bindings', () => {
       assertContext(template, [
         element,
         masterConfig(17, false),  //
-        [null, 2, false, null],
+        [null, null, 2, false, null],
         [null, null],
         [null, null, 'one', false, 'two', false],
         [0, 2, 0, 2, 9, 13],
@@ -1929,7 +1939,7 @@ describe('style and class based bindings', () => {
          assertContext(stylingContext, [
            element,
            masterConfig(25, false),  //
-           [null, 2, false, null],
+           [null, null, 2, false, null],
            [null, null, 'width', '100px', 'height', null],
            [null, null, 'wide', true, 'tall', false],
            [2, 2, 2, 2, 9, 13, 17, 21],
@@ -1993,7 +2003,7 @@ describe('style and class based bindings', () => {
          assertContext(stylingContext, [
            element,
            masterConfig(25, true),  //
-           [null, 2, true, null],
+           [null, null, 2, true, null],
            [null, null, 'width', '100px', 'height', null],
            [null, null, 'wide', true, 'tall', false],
            [2, 2, 2, 2, 9, 13, 17, 21],
@@ -2075,7 +2085,7 @@ describe('style and class based bindings', () => {
          assertContext(stylingContext, [
            element,
            masterConfig(25, true),  //
-           [null, 2, true, null],
+           [null, null, 2, true, null],
            [null, null, 'width', '100px', 'height', null],
            [null, null, 'wide', true, 'tall', false],
            [2, 2, 2, 2, 9, 13, 17, 21],
@@ -2169,15 +2179,15 @@ describe('style and class based bindings', () => {
          getStylesAndClasses(stylingContext);
 
          assertContext(stylingContext, [
-           element,                    //
-           masterConfig(9, false),     //
-           [null, 2, false, null],     //
-           [null, null],               //
-           [null, null],               //
-           [0, 0, 0, 0],               //
-           [1, 0, 13, classesMap, 1],  //
-           [1, 0, 9, stylesMap, 1],    //
-           null,                       //
+           element,                       //
+           masterConfig(9, false),        //
+           [null, null, 2, false, null],  //
+           [null, null],                  //
+           [null, null],                  //
+           [0, 0, 0, 0],                  //
+           [1, 0, 13, classesMap, 1],     //
+           [1, 0, 9, stylesMap, 1],       //
+           null,                          //
 
            // #9
            cleanStyle(0, 0), 'width', '200px', 0,
@@ -2195,15 +2205,15 @@ describe('style and class based bindings', () => {
          getStylesAndClasses(stylingContext);
 
          assertContext(stylingContext, [
-           element,                    //
-           masterConfig(9, false),     //
-           [null, 2, false, null],     //
-           [null, null],               //
-           [null, null],               //
-           [0, 0, 0, 0],               //
-           [1, 0, 13, classesMap, 1],  //
-           [1, 0, 9, stylesMap, 1],    //
-           null,                       //
+           element,                       //
+           masterConfig(9, false),        //
+           [null, null, 2, false, null],  //
+           [null, null],                  //
+           [null, null],                  //
+           [0, 0, 0, 0],                  //
+           [1, 0, 13, classesMap, 1],     //
+           [1, 0, 9, stylesMap, 1],       //
+           null,                          //
 
            // #9
            cleanStyle(0, 0), 'width', '200px', 0,
@@ -2226,7 +2236,7 @@ describe('style and class based bindings', () => {
       assertContext(stylingContext, [
         element,
         masterConfig(9, false),  //
-        [null, 2, false, null],
+        [null, null, 2, false, null],
         [null, null],
         [null, null],
         [0, 0, 0, 0],
@@ -2590,15 +2600,15 @@ describe('style and class based bindings', () => {
          };
 
          assertContext(context, [
-           element,                      //
-           masterConfig(17, false),      //
-           [null, 2, false, null],       //
-           [null, null, 'color', null],  //
-           [null, null, 'foo', false],   //
-           [1, 1, 1, 1, 9, 13],          //
-           [1, 0, 21, null, 1],          //
-           [1, 0, 17, null, 1],          //
-           null,                         //
+           element,                       //
+           masterConfig(17, false),       //
+           [null, null, 2, false, null],  //
+           [null, null, 'color', null],   //
+           [null, null, 'foo', false],    //
+           [1, 1, 1, 1, 9, 13],           //
+           [1, 0, 21, null, 1],           //
+           [1, 0, 17, null, 1],           //
+           null,                          //
 
            // #9
            cleanStyle(3, 17),
@@ -2655,7 +2665,7 @@ describe('style and class based bindings', () => {
          assertContext(context, [
            element,                                   //
            masterConfig(17, false),                   //
-           [null, 2, false, null],                    //
+           [null, null, 2, false, null],              //
            [null, null, 'color', null],               //
            [null, null, 'foo', false],                //
            [1, 1, 1, 1, 9, 13],                       //
@@ -2716,7 +2726,7 @@ describe('style and class based bindings', () => {
          assertContext(context, [
            element,                        //
            masterConfig(17, false),        //
-           [null, 2, false, null],         //
+           [null, null, 2, false, null],   //
            [null, null, 'color', null],    //
            [null, null, 'foo', false],     //
            [1, 1, 1, 1, 9, 13],            //

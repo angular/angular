@@ -470,6 +470,7 @@ export const enum InitialStylingValuesIndex {
  */
 export interface DirectiveRegistryValues extends Array<null|{}|boolean|number|StyleSanitizeFn> {
   [DirectiveRegistryValuesIndex.DirectiveValueOffset]: null;
+  [DirectiveRegistryValuesIndex.TypeValueOffset]: null;
   [DirectiveRegistryValuesIndex.SinglePropValuesIndexOffset]: number;
   [DirectiveRegistryValuesIndex.DirtyFlagOffset]: boolean;
   [DirectiveRegistryValuesIndex.StyleSanitizerOffset]: StyleSanitizeFn|null;
@@ -481,10 +482,11 @@ export interface DirectiveRegistryValues extends Array<null|{}|boolean|number|St
  */
 export const enum DirectiveRegistryValuesIndex {
   DirectiveValueOffset = 0,
-  SinglePropValuesIndexOffset = 1,
-  DirtyFlagOffset = 2,
-  StyleSanitizerOffset = 3,
-  Size = 4
+  TypeValueOffset = 1,
+  SinglePropValuesIndexOffset = 2,
+  DirtyFlagOffset = 3,
+  StyleSanitizerOffset = 4,
+  Size = 5
 }
 
 /**

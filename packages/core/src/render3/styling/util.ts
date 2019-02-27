@@ -41,9 +41,14 @@ export function createEmptyStylingContext(
   return context;
 }
 
-export function allocateDirectiveIntoContext(context: StylingContext, directiveRef: any | null) {
+/**
+ * Creates a new directive entry within the context and inserts the provided diretive and type
+ * values into it.
+ */
+export function allocateDirectiveIntoContext(
+    context: StylingContext, directiveRef: any | null, type?: any | null) {
   // this is a new directive which we have not seen yet.
-  context[StylingIndex.DirectiveRegistryPosition].push(directiveRef, -1, false, null);
+  context[StylingIndex.DirectiveRegistryPosition].push(directiveRef, type || null, -1, false, null);
 }
 
 /**

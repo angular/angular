@@ -982,7 +982,7 @@ describe('compiler compliance: styling', () => {
           …
           hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵelementHostAttrs(ctx, $e0_attrs$);
+              $r3$.ɵelementHostAttrs(MyComponent, ctx, $e0_attrs$);
               $r3$.ɵelementStyling($e0_classBindings$, $e0_styleBindings$, $r3$.ɵdefaultStyleSanitizer, ctx);
             }
             if (rf & 2) {
@@ -1273,7 +1273,7 @@ describe('compiler compliance: styling', () => {
       hostBindings: function MyComponent_HostBindings(rf, ctx, elIndex) {
         if (rf & 1) {
           $r3$.ɵallocHostVars(2);
-          $r3$.ɵelementHostAttrs(ctx, $_c0$);
+          $r3$.ɵelementHostAttrs(MyComponent, ctx, $_c0$);
           $r3$.ɵelementStyling(null, null, $r3$.ɵdefaultStyleSanitizer, ctx);
         }
         if (rf & 2) {

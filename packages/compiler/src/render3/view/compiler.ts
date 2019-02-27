@@ -80,7 +80,7 @@ function baseDirectiveFields(
 
   const elVarExp = o.variable('elIndex');
   const contextVarExp = o.variable(CONTEXT_NAME);
-  const styleBuilder = new StylingBuilder(elVarExp, contextVarExp);
+  const styleBuilder = new StylingBuilder(elVarExp, contextVarExp, meta.type);
 
   const allOtherAttributes: any = {};
   const attrNames = Object.getOwnPropertyNames(meta.host.attributes);
@@ -256,7 +256,7 @@ export function compileComponentFromMetadata(
   const templateBuilder = new TemplateDefinitionBuilder(
       constantPool, BindingScope.ROOT_SCOPE, 0, templateTypeName, null, null, templateName,
       directiveMatcher, directivesUsed, meta.pipes, pipesUsed, R3.namespaceHTML,
-      meta.relativeContextFilePath, meta.i18nUseExternalIds);
+      meta.relativeContextFilePath, meta.i18nUseExternalIds, meta.type);
 
   const templateFunctionExpression = templateBuilder.buildTemplateFunction(template.nodes, []);
 

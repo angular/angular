@@ -480,7 +480,7 @@ describe('render3 integration test', () => {
           vars: 0,
           hostBindings: function(rf, ctx, elIndex) {
             if (rf & RenderFlags.Create) {
-              elementHostAttrs(ctx, ['role', 'button']);
+              elementHostAttrs(HostAttributeComp, ctx, ['role', 'button']);
             }
           },
           template: (rf: RenderFlags, ctx: HostAttributeComp) => {},
@@ -1765,7 +1765,7 @@ describe('render3 integration test', () => {
                hostBindings: function(
                    rf: RenderFlags, ctx: DirWithInitialStyling, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
-                   elementHostAttrs(ctx, [
+                   elementHostAttrs(DirWithInitialStyling, ctx, [
                      'title', 'foo', AttributeMarker.Classes, 'heavy', 'golden',
                      AttributeMarker.Styles, 'color', 'purple', 'font-weight', 'bold'
                    ]);
@@ -1817,7 +1817,7 @@ describe('render3 integration test', () => {
                    rf: RenderFlags, ctx: DirWithSingleStylingBindings, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
                    elementHostAttrs(
-                       ctx,
+                       DirWithSingleStylingBindings, ctx,
                        [AttributeMarker.Classes, 'def', AttributeMarker.Styles, 'width', '555px']);
                    elementStyling(['xyz'], ['width', 'height'], null, ctx);
                  }
@@ -1916,7 +1916,7 @@ describe('render3 integration test', () => {
                factory: () => dir2Instance = new Dir2WithStyle(),
                hostBindings: function(rf: RenderFlags, ctx: Dir2WithStyle, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
-                   elementHostAttrs(ctx, [AttributeMarker.Styles, 'width', '111px']);
+                   elementHostAttrs(Dir2WithStyle, ctx, [AttributeMarker.Styles, 'width', '111px']);
                    elementStyling(null, ['width'], null, ctx);
                  }
                  if (rf & RenderFlags.Update) {
@@ -2015,7 +2015,8 @@ describe('render3 integration test', () => {
                factory: () => dir2Instance = new Dir2WithStyling(),
                hostBindings: function(rf: RenderFlags, ctx: Dir2WithStyling, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
-                   elementHostAttrs(ctx, [AttributeMarker.Styles, 'width', '111px']);
+                   elementHostAttrs(
+                       Dir2WithStyling, ctx, [AttributeMarker.Styles, 'width', '111px']);
                    elementStyling(null, null, null, ctx);
                  }
                  if (rf & RenderFlags.Update) {

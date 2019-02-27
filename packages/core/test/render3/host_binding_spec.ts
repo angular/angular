@@ -968,7 +968,7 @@ describe('host bindings', () => {
         factory: () => new HostAttributeDir(),
         hostBindings: function(rf, ctx, elIndex) {
           if (rf & RenderFlags.Create) {
-            elementHostAttrs(ctx, ['role', 'listbox']);
+            elementHostAttrs(HostAttributeDir, ctx, ['role', 'listbox']);
           }
         }
       });
@@ -1202,7 +1202,7 @@ describe('host bindings', () => {
           vars: 0,
           hostBindings: (rf: RenderFlags, ctx: StaticHostClass, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              elementHostAttrs(ctx, [AttributeMarker.Classes, 'mat-toolbar']);
+              elementHostAttrs(StaticHostClass, ctx, [AttributeMarker.Classes, 'mat-toolbar']);
               elementStyling(['mat-toolbar'], null, null, ctx);
             }
             if (rf & RenderFlags.Update) {

@@ -1548,13 +1548,15 @@ function initElementStyling(
  *
  * NOTE: This instruction is meant to used from `hostBindings` function only.
  *
+ * @param type A reference to the component/directive class type (this is used to help the
+ *          styling code differentiate between the directive instance and its definition)
  * @param directive A directive instance the styling is associated with.
  * @param attrs An array of static values (attributes, classes and styles) with the correct marker
  * values.
  *
  * @publicApi
  */
-export function elementHostAttrs(directive: any, attrs: TAttributes) {
+export function elementHostAttrs(type: any, directive: any, attrs: TAttributes) {
   const tNode = getPreviousOrParentTNode();
   if (!tNode.stylingTemplate) {
     tNode.stylingTemplate = initializeStaticStylingContext(attrs);
@@ -1562,7 +1564,7 @@ export function elementHostAttrs(directive: any, attrs: TAttributes) {
   const lView = getLView();
   const native = getNativeByTNode(tNode, lView) as RElement;
   const i = setUpAttributes(native, attrs);
-  patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, i, directive);
+  patchContextWithStaticAttrs(tNode.stylingTemplate !, attrs, i, directive, type);
 }
 
 /**

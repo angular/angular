@@ -110,7 +110,9 @@ export class StylingBuilder {
   // this is checked each time new styles are encountered
   private _useDefaultSanitizer = false;
 
-  constructor(private _elementIndexExpr: o.Expression, private _directiveExpr: o.Expression|null) {}
+  constructor(
+      private _elementIndexExpr: o.Expression, private _directiveExpr: o.Expression|null,
+      private _typeExpr: o.Expression) {}
 
   /**
    * Registers a given input to the styling builder to be later used when producing AOT code.
@@ -256,9 +258,15 @@ export class StylingBuilder {
         reference: R3.elementHostAttrs,
         allocateBindingSlots: 0,
         buildParams: () => {
-          // params => elementHostAttrs(directive, attrs)
+          // params => elementHostAttrs(type, directive, attrs)
           this.populateInitialStylingAttrs(attrs);
-          return [this._directiveExpr !, getConstantLiteralFromArray(constantPool, attrs)];
+
+          // the `typeExpr` value is used to help the instruction determine where the stlying
+          // data is coming from incase a child component/directive extends a parent (which
+          // means that the `directiveExpr` value is the same, but the type is different).
+          return [
+            this._typeExpr, this._directiveExpr !, getConstantLiteralFromArray(constantPool, attrs)
+          ];
         }
       };
     }

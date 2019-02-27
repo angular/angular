@@ -77,15 +77,37 @@ export function initializeStaticContext(attrs: TAttributes): StylingContext {
  * @param directiveRef the directive instance with which static data is associated with.
  */
 export function patchContextWithStaticAttrs(
-    context: StylingContext, attrs: TAttributes, startingIndex: number, directiveRef: any): void {
+    context: StylingContext, attrs: TAttributes, startingIndex: number, directiveRef: any,
+    type?: any | null): void {
   // If the styling context has already been patched with the given directive's bindings,
   // then there is no point in doing it again. The reason why this may happen (the directive
   // styling being patched twice) is because the `stylingBinding` function is called each time
   // an element is created (both within a template function and within directive host bindings).
   const directives = context[StylingIndex.DirectiveRegistryPosition];
-  if (getDirectiveRegistryValuesIndexOf(directives, directiveRef) == -1) {
+  const existingIndex = getDirectiveRegistryValuesIndexOf(directives, directiveRef);
+
+  // if a directive is detected (which means it was set earlier) then we will do one more check
+  // to see if it is a inherited directive (i.e. ParentCmp > ChildCmp) and if this is the case
+  // (which means the types differ, but the directive instance is the same) then we check to see
+  // if the type value was set in the context at any point. If not then we know that we are
+  // dealing with a new allocation of styling values.
+  let doPatchStyling = existingIndex === -1;
+  let allowValueOverride = false;
+  if (!doPatchStyling && type) {
+    const typeIndex = getDirectiveRegistryTypeIndexOf(directives, type, existingIndex);
+    if (typeIndex === -1) {
+      doPatchStyling = true;
+
+      // because this case can only happen when a child directive inherits styling from a parent
+      // then this means that the child's styling values will override any existing static styling
+      // values which may or may not be present in the context.
+      allowValueOverride = true;
+    }
+  }
+
+  if (doPatchStyling) {
     // this is a new directive which we have not seen yet.
-    allocateDirectiveIntoContext(context, directiveRef);
+    allocateDirectiveIntoContext(context, directiveRef, type);
 
     let initialClasses: InitialStylingValues|null = null;
     let initialStyles: InitialStylingValues|null = null;
@@ -97,10 +119,10 @@ export function patchContextWithStaticAttrs(
         mode = attr;
       } else if (mode == AttributeMarker.Classes) {
         initialClasses = initialClasses || context[StylingIndex.InitialClassValuesPosition];
-        patchInitialStylingValue(initialClasses, attr, true);
+        patchInitialStylingValue(initialClasses, attr, true, allowValueOverride);
       } else if (mode == AttributeMarker.Styles) {
         initialStyles = initialStyles || context[StylingIndex.InitialStyleValuesPosition];
-        patchInitialStylingValue(initialStyles, attr, attrs[++i]);
+        patchInitialStylingValue(initialStyles, attr, attrs[++i], allowValueOverride);
       }
     }
   }
@@ -115,7 +137,8 @@ export function patchContextWithStaticAttrs(
  * of initial styling values.
  */
 function patchInitialStylingValue(
-    initialStyling: InitialStylingValues, prop: string, value: any): void {
+    initialStyling: InitialStylingValues, prop: string, value: any,
+    forceOverrideValue: boolean): void {
   // Even values are keys; Odd numbers are values; Search keys only
   for (let i = InitialStylingValuesIndex.KeyValueStartPosition; i < initialStyling.length;) {
     const key = initialStyling[i];
@@ -124,7 +147,7 @@ function patchInitialStylingValue(
 
       // If there is no previous style value (when `null`) or no previous class
       // applied (when `false`) then we update the the newly given value.
-      if (existingValue == null || existingValue == false) {
+      if (forceOverrideValue || existingValue == null || existingValue == false) {
         initialStyling[i + InitialStylingValuesIndex.ValueOffset] = value;
       }
       return;
@@ -1611,7 +1634,8 @@ export function getDirectiveIndexFromEntry(context: StylingContext, index: numbe
   return value & DirectiveOwnerAndPlayerBuilderIndex.BitMask;
 }
 
-function getDirectiveIndexFromRegistry(context: StylingContext, directiveRef: any) {
+function getDirectiveIndexFromRegistry(
+    context: StylingContext, directiveRef: any, type?: any | null) {
   let directiveIndex: number;
 
   const dirs = context[StylingIndex.DirectiveRegistryPosition];
@@ -1622,11 +1646,7 @@ function getDirectiveIndexFromRegistry(context: StylingContext, directiveRef: an
     index = dirs.length;
     directiveIndex = index > 0 ? index / DirectiveRegistryValuesIndex.Size : 0;
 
-    dirs.push(null, null, null, null);
-    dirs[index + DirectiveRegistryValuesIndex.DirectiveValueOffset] = directiveRef;
-    dirs[index + DirectiveRegistryValuesIndex.DirtyFlagOffset] = false;
-    dirs[index + DirectiveRegistryValuesIndex.SinglePropValuesIndexOffset] = -1;
-
+    allocateDirectiveIntoContext(context, directiveRef, type);
     const classesStartIndex =
         getMultiClassesStartIndex(context) || StylingIndex.SingleStylesStartPosition;
     registerMultiMapEntry(context, directiveIndex, true, context.length);
@@ -1638,10 +1658,27 @@ function getDirectiveIndexFromRegistry(context: StylingContext, directiveRef: an
   return directiveIndex;
 }
 
+/**
+ * Searches through the provided directives array to find where the provided directive value is
+ * located.
+ */
 function getDirectiveRegistryValuesIndexOf(
     directives: DirectiveRegistryValues, directive: {}): number {
   for (let i = 0; i < directives.length; i += DirectiveRegistryValuesIndex.Size) {
-    if (directives[i] === directive) {
+    if (directives[i + DirectiveRegistryValuesIndex.DirectiveValueOffset] === directive) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/**
+ * Searches through the provided directives array to find where the provided type value is located.
+ */
+function getDirectiveRegistryTypeIndexOf(
+    directives: DirectiveRegistryValues, type: {}, startIndex: number = 0): number {
+  for (let i = startIndex; i < directives.length; i += DirectiveRegistryValuesIndex.Size) {
+    if (directives[i + DirectiveRegistryValuesIndex.TypeValueOffset] === type) {
       return i;
     }
   }
