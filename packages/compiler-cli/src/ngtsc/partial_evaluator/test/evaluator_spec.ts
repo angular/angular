@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
+import {DynamicValue} from '../src/dynamic';
 import {PartialEvaluator} from '../src/interface';
 import {EnumValue, ResolvedValue} from '../src/result';
 
@@ -280,6 +281,31 @@ describe('ngtsc metadata', () => {
     const evaluator = new PartialEvaluator(reflectionHost, checker);
     const resolved = evaluator.evaluate(prop.name);
     expect(resolved).toBe(42);
+  });
+
+  it('should resolve dynamic values in object literals', () => {
+    const {program} = makeProgram([
+      {name: 'decl.d.ts', contents: 'export declare const fn: any;'},
+      {
+        name: 'entry.ts',
+        contents: `import {fn} from './decl'; const prop = fn.foo(); const target$ = {value: prop};`
+      },
+    ]);
+    const checker = program.getTypeChecker();
+    const reflectionHost = new TypeScriptReflectionHost(checker);
+    const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
+    const expr = result.initializer !as ts.ObjectLiteralExpression;
+    const evaluator = new PartialEvaluator(reflectionHost, checker);
+    const resolved = evaluator.evaluate(expr);
+    if (!(resolved instanceof Map)) {
+      return fail('Should have resolved to a Map');
+    }
+    const value = resolved.get('value') !;
+    if (!(value instanceof DynamicValue)) {
+      return fail(`Should have resolved 'value' to a DynamicValue`);
+    }
+    const prop = expr.properties[0] as ts.PropertyAssignment;
+    expect(value.node).toBe(prop.initializer);
   });
 });
 
