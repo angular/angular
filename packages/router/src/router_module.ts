@@ -317,51 +317,34 @@ export interface ExtraOptions {
   /**
    * Configures if the scroll position needs to be restored when navigating back.
    *
-   * * 'disabled'--does nothing (default).
-   * * 'top'--set the scroll position to 0,0..
-   * * 'enabled'--set the scroll position to the stored position. This option will be the default in
-   * the future.
+   * * 'disabled'--does nothing (default).  Scroll position will be maintained on navigation.
+   * * 'top'--set the scroll position to x = 0, y = 0 on all navigation.
+   * * 'enabled'--restores the previous scroll position on backward navigation, else sets the
+   * position to the anchor if one is provided, or sets the scroll position to [0, 0] (forward
+   * navigation). This option will be the default in the future.
    *
-   * When enabled, the router stores and restores scroll positions during navigation.
-   * When navigating forward, the scroll position will be set to [0, 0], or to the anchor
-   * if one is provided.
-   *
-   * You can implement custom scroll restoration behavior as follows.
+   * You can implement custom scroll restoration behavior by adapting the enabled behavior as
+   * follows:
    * ```typescript
    * class AppModule {
-   *  constructor(router: Router, viewportScroller: ViewportScroller, store: Store<AppState>) {
-   *    router.events.pipe(filter(e => e instanceof Scroll), switchMap(e => {
-   *      return store.pipe(first(), timeout(200), map(() => e));
-   *    }).subscribe(e => {
-   *      if (e.position) {
-   *        viewportScroller.scrollToPosition(e.position);
-   *      } else if (e.anchor) {
-   *        viewportScroller.scrollToAnchor(e.anchor);
-   *      } else {
-   *        viewportScroller.scrollToPosition([0, 0]);
-   *      }
-   *    });
-   *  }
-   * }
-   * ```
-   *
-   * You can also implement component-specific scrolling like this:
-   *
-   * ```typescript
-   * class ListComponent {
-   *   list: any[];
-   *   constructor(router: Router, viewportScroller: ViewportScroller, fetcher: ListFetcher) {
-   *     const scrollEvents = router.events.filter(e => e instanceof Scroll);
-   *     listFetcher.fetch().pipe(withLatestFrom(scrollEvents)).subscribe(([list, e]) => {
-   *       this.list = list;
-   *       if (e.position) {
-   *         viewportScroller.scrollToPosition(e.position);
-   *       } else {
-   *         viewportScroller.scrollToPosition([0, 0]);
-   *       }
-   *     });
-   *   }
-   * }
+    *   constructor(router: Router, viewportScroller: ViewportScroller) {
+    *     router.events.pipe(
+    *       filter((e: Event): e is Scroll => e instanceof Scroll)
+    *     ).subscribe(e => {
+    *       if (e.position) {
+    *         // backward navigation
+    *         viewportScroller.scrollToPosition(e.position);
+    *       } else if (e.anchor) {
+    *         // anchor navigation
+    *         viewportScroller.scrollToAnchor(e.anchor);
+    *       } else {
+    *         // forward navigation
+    *         viewportScroller.scrollToPosition([0, 0]);
+    *       }
+    *     });
+    *   }
+    * }
+    * ```
    */
   scrollPositionRestoration?: 'disabled'|'enabled'|'top';
 
