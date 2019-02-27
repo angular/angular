@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    data = [
+        "//packages/core/schematics:migrations.json",
+        "@npm//shelljs",
+    ],
+    deps = [
+        "//packages/core/schematics/migrations/static-queries",
+        "//packages/core/schematics/utils",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@types/shelljs",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    deps = [":test_lib"],
+)
