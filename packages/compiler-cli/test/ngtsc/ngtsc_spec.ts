@@ -1878,6 +1878,39 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toMatch(setClassMetadataRegExp('type: MyTypeB'));
   });
 
+  it('should use imported types in setClassMetadata if they can be represented as values and imported as `* as foo`',
+     () => {
+       env.tsconfig({});
+
+       env.write(`types.ts`, `
+         export class MyTypeA {}
+         export class MyTypeB {}
+       `);
+       env.write(`test.ts`, `
+         import {Component, Inject, Injectable} from '@angular/core';
+         import * as types from './types';
+
+         @Injectable({providedIn: 'root'})
+         export class SomeService {
+           constructor(arg: types.MyTypeA) {}
+         }
+
+         @Component({
+           selector: 'some-comp',
+           template: '...',
+         })
+         export class SomeComp {
+           constructor(@Inject('arg-token') arg: types.MyTypeB) {}
+         }
+       `);
+
+       env.driveMain();
+       const jsContents = trim(env.getContents('test.js'));
+       expect(jsContents).toContain(`import * as types from './types';`);
+       expect(jsContents).toMatch(setClassMetadataRegExp('type: types.MyTypeA'));
+       expect(jsContents).toMatch(setClassMetadataRegExp('type: types.MyTypeB'));
+     });
+
   it('should use `undefined` in setClassMetadata if types can\'t be represented as values', () => {
     env.tsconfig({});
 
