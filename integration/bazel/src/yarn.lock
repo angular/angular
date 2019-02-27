@@ -59,18 +59,18 @@
     "@angular-devkit/core" "7.3.3"
     rxjs "6.3.3"
 
-"@angular/animations@file:../../../../../../../Users/greg/google/gregmagolan/angular/dist/packages-dist/animations":
-  version "8.0.0-beta.5"
+"@angular/animations@file:../../../../../../../Users/greg/google/gregmagolan/angular-2/dist/packages-dist/animations":
+  version "8.0.0-beta.6"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/bazel@file:../../../../../../../Users/greg/google/gregmagolan/angular/dist/packages-dist/bazel":
-  version "8.0.0-beta.5"
+"@angular/bazel@file:../../../../../../../Users/greg/google/gregmagolan/angular-2/dist/packages-dist/bazel":
+  version "8.0.0-beta.6"
   dependencies:
     "@angular-devkit/architect" "^0.10.6"
     "@angular-devkit/core" "^7.0.4"
     "@angular-devkit/schematics" "^7.3.0-rc.0"
-    "@bazel/typescript" "^0.25.1"
+    "@bazel/typescript" "^0.26.0"
     "@microsoft/api-extractor" "^7.0.17"
     "@schematics/angular" "^7.0.4"
     "@types/node" "6.0.84"
@@ -78,13 +78,13 @@
     shelljs "0.8.2"
     tsickle "0.34.0"
 
-"@angular/common@file:../../../../../../../Users/greg/google/gregmagolan/angular/dist/packages-dist/common":
-  version "8.0.0-beta.5"
+"@angular/common@file:../../../../../../../Users/greg/google/gregmagolan/angular-2/dist/packages-dist/common":
+  version "8.0.0-beta.6"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/compiler-cli@file:../../../../../../../Users/greg/google/gregmagolan/angular/dist/packages-dist/compiler-cli":
-  version "8.0.0-beta.5"
+"@angular/compiler-cli@file:../../../../../../../Users/greg/google/gregmagolan/angular-2/dist/packages-dist/compiler-cli":
+  version "8.0.0-beta.6"
   dependencies:
     canonical-path "1.0.0"
     chokidar "^2.1.1"
@@ -98,30 +98,30 @@
     tslib "^1.9.0"
     yargs "9.0.1"
 
-"@angular/compiler@file:../../../../../../../Users/greg/google/gregmagolan/angular/dist/packages-dist/compiler":
-  version "8.0.0-beta.5"
+"@angular/compiler@file:../../../../../../../Users/greg/google/gregmagolan/angular-2/dist/packages-dist/compiler":
+  version "8.0.0-beta.6"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/core@file:../../../../../../../Users/greg/google/gregmagolan/angular/dist/packages-dist/core":
-  version "8.0.0-beta.5"
+"@angular/core@file:../../../../../../../Users/greg/google/gregmagolan/angular-2/dist/packages-dist/core":
+  version "8.0.0-beta.6"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/platform-browser-dynamic@file:../../../../../../../Users/greg/google/gregmagolan/angular/dist/packages-dist/platform-browser-dynamic":
-  version "8.0.0-beta.5"
+"@angular/platform-browser-dynamic@file:../../../../../../../Users/greg/google/gregmagolan/angular-2/dist/packages-dist/platform-browser-dynamic":
+  version "8.0.0-beta.6"
   dependencies:
     tslib "^1.9.0"
 
-"@angular/platform-browser@file:../../../../../../../Users/greg/google/gregmagolan/angular/dist/packages-dist/platform-browser":
-  version "8.0.0-beta.5"
+"@angular/platform-browser@file:../../../../../../../Users/greg/google/gregmagolan/angular-2/dist/packages-dist/platform-browser":
+  version "8.0.0-beta.6"
   dependencies:
     tslib "^1.9.0"
 
-"@bazel/karma@0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.25.1.tgz#246286299b6e96fa4a91d240d3c3d7386164adaf"
-  integrity sha512-e5qyZkeHdxEYTIcHg04pmPF1SR8jy8I1mQLgDxX6NJDVx3JT7iIFeISqlS8hjBiykyX/XZ0CsVzkKYU/sG3ilg==
+"@bazel/karma@0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-0.26.0.tgz#6ad796686f5775df33a96fa5ef3df76a66aed3b2"
+  integrity sha512-yZv0fgAjVrfrM0ld8e+wNaPIpYCpwBzVQi2GUErsKStUZXPUUofpBwBjlYsdY1Osn5/FmAF9e6xDkk1JWn/wSg==
   dependencies:
     jasmine-core "2.8.0"
     karma "^4.0.0"
@@ -135,10 +135,10 @@
     semver "5.6.0"
     tmp "0.0.33"
 
-"@bazel/typescript@0.25.1", "@bazel/typescript@^0.25.1":
-  version "0.25.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.25.1.tgz#71564de50ff6976fb37d90f2f7a479e87b158943"
-  integrity sha512-QFitUUXIWQMfVk5EwI9J9d5iNPfT+kUjPbahiJbJVZz1Fz9zNZ8+CR6FESfnxuUKlZK3Oy0VWFcz7mlHaceL/Q==
+"@bazel/typescript@^0.26.0":
+  version "0.26.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.26.0.tgz#c06139d76c8b9d3a3ed98a721b776fedb4b11c82"
+  integrity sha512-dh/Y/SZzmeChsLap8FVHYl0FuaeLh/6t9WBVhm5nOgyVrqfEyVpNzy4W20E4NqnmJY2/PqmD5qncf+Oo1q9h1A==
   dependencies:
     jasmine-core "2.8.0"
     protobufjs "5.0.3"
