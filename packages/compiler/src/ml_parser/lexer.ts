@@ -132,10 +132,9 @@ class _Tokenizer {
   errors: TokenError[] = [];
 
   /**
-   * @param _file The html source
-   * @param _getTagDefinition
-   * @param _tokenizeIcu Whether to tokenize ICU messages (considered as text nodes when false)
-   * @param _interpolationConfig
+   * @param _file The html source file being tokenized.
+   * @param _getTagDefinition A function that will retrieve a tag definition for a given tag name.
+   * @param options Configuration of the tokenization.
    */
   constructor(
       _file: ParseSourceFile, private _getTagDefinition: (tagName: string) => TagDefinition,
