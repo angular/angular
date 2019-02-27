@@ -791,6 +791,8 @@ class PlainCharacterCursor implements CharacterCursor {
   protected input: string;
   protected end: number;
 
+  constructor(fileOrCursor: PlainCharacterCursor);
+  constructor(fileOrCursor: ParseSourceFile, range: LexerRange);
   constructor(fileOrCursor: ParseSourceFile|PlainCharacterCursor, range?: LexerRange) {
     if (fileOrCursor instanceof PlainCharacterCursor) {
       this.file = fileOrCursor.file;
@@ -859,12 +861,17 @@ class PlainCharacterCursor implements CharacterCursor {
 }
 
 class EscapedCharacterCursor extends PlainCharacterCursor {
-  protected internalState: CursorState = this.state;
+  protected internalState: CursorState;
 
+  constructor(fileOrCursor: EscapedCharacterCursor);
+  constructor(fileOrCursor: ParseSourceFile, range: LexerRange);
   constructor(fileOrCursor: ParseSourceFile|EscapedCharacterCursor, range?: LexerRange) {
-    super(fileOrCursor, range);
     if (fileOrCursor instanceof EscapedCharacterCursor) {
+      super(fileOrCursor);
       this.internalState = {...fileOrCursor.internalState};
+    } else {
+      super(fileOrCursor, range !);
+      this.internalState = this.state;
     }
   }
 
