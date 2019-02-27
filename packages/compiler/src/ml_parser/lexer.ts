@@ -779,9 +779,6 @@ interface CharacterCursor {
 }
 
 interface CursorState {
-  file: ParseSourceFile;
-  input: string;
-  end: number;
   peek: number;
   offset: number;
   line: number;
@@ -790,19 +787,25 @@ interface CursorState {
 
 class PlainCharacterCursor implements CharacterCursor {
   protected state: CursorState;
+  protected file: ParseSourceFile;
+  protected input: string;
+  protected end: number;
 
   constructor(fileOrCursor: ParseSourceFile|PlainCharacterCursor, range?: LexerRange) {
     if (fileOrCursor instanceof PlainCharacterCursor) {
+      this.file = fileOrCursor.file;
+      this.input = fileOrCursor.input;
+      this.end = fileOrCursor.end;
       this.state = {...fileOrCursor.state};
     } else {
       if (!range) {
         throw new Error(
             'Programming error: the range argument must be provided with a file argument.');
       }
+      this.file = fileOrCursor;
+      this.input = fileOrCursor.content;
+      this.end = range.endPos;
       this.state = {
-        file: fileOrCursor,
-        input: fileOrCursor.content,
-        end: range.endPos,
         peek: -1,
         offset: range.startPos,
         line: range.startLine,
@@ -814,7 +817,7 @@ class PlainCharacterCursor implements CharacterCursor {
   clone(): PlainCharacterCursor { return new PlainCharacterCursor(this); }
 
   peek() { return this.state.peek; }
-  charsLeft() { return this.state.end - this.state.offset; }
+  charsLeft() { return this.end - this.state.offset; }
   diff(other: this) { return this.state.offset - other.state.offset; }
 
   advance(): void { this.advanceState(this.state); }
@@ -824,19 +827,18 @@ class PlainCharacterCursor implements CharacterCursor {
   getSpan(start?: this): ParseSourceSpan {
     start = start || this;
     return new ParseSourceSpan(
-        new ParseLocation(
-            start.state.file, start.state.offset, start.state.line, start.state.column),
-        new ParseLocation(this.state.file, this.state.offset, this.state.line, this.state.column));
+        new ParseLocation(start.file, start.state.offset, start.state.line, start.state.column),
+        new ParseLocation(this.file, this.state.offset, this.state.line, this.state.column));
   }
 
   getChars(start: this): string {
-    return this.state.input.substring(start.state.offset, this.state.offset);
+    return this.input.substring(start.state.offset, this.state.offset);
   }
 
-  charAt(pos: number): number { return this.state.input.charCodeAt(pos); }
+  charAt(pos: number): number { return this.input.charCodeAt(pos); }
 
   protected advanceState(state: CursorState) {
-    if (state.offset >= state.end) {
+    if (state.offset >= this.end) {
       this.state = state;
       throw new CursorError('Unexpected character "EOF"', this);
     }
@@ -852,7 +854,7 @@ class PlainCharacterCursor implements CharacterCursor {
   }
 
   protected updatePeek(state: CursorState): void {
-    state.peek = state.offset >= state.end ? chars.$EOF : this.charAt(state.offset);
+    state.peek = state.offset >= this.end ? chars.$EOF : this.charAt(state.offset);
   }
 }
 
@@ -869,13 +871,11 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
   advance(): void {
     this.state = this.internalState;
     super.advance();
-    this.internalState = {...this.state};
     this.processEscapeSequence();
   }
 
   init(): void {
     super.init();
-    this.internalState = {...this.state};
     this.processEscapeSequence();
   }
 
@@ -900,6 +900,10 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
     const peek = () => this.internalState.peek;
 
     if (peek() === chars.$BACKSLASH) {
+      // We have hit an escape sequence so we need the internal state to become independent
+      // of the external state.
+      this.internalState = {...this.state};
+
       // Move past the backslash
       this.advanceState(this.internalState);
 
@@ -982,7 +986,7 @@ class EscapedCharacterCursor extends PlainCharacterCursor {
   }
 
   protected decodeHexDigits(start: EscapedCharacterCursor, length: number): number {
-    const hex = this.state.input.substr(start.internalState.offset, length);
+    const hex = this.input.substr(start.internalState.offset, length);
     const charCode = parseInt(hex, 16);
     if (!isNaN(charCode)) {
       return charCode;
