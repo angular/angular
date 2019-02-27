@@ -301,35 +301,6 @@ Here are the features which may require additional polyfills:
 
     <td>
 
-    If you use the following deprecated i18n pipes:
-    
-
-     [date](api/common/DeprecatedDatePipe), 
-     
-     [currency](api/common/DeprecatedCurrencyPipe),
-     
-     [decimal](api/common/DeprecatedDecimalPipe), 
-     
-     [percent](api/common/DeprecatedPercentPipe)
-
-    </td>
-
-    <td>
-
-      [Intl API](guide/browser-support#intl)
-
-    </td>
-
-    <td>
-      All but Chrome, Firefox, Edge, IE11 and Safari 10
-    </td>
-
-  </tr>
-
-  <tr style="vertical-align: top">
-
-    <td>
-
        [NgClass](api/common/NgClass) 
        
        on SVG elements
