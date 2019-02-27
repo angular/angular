@@ -5,10 +5,10 @@
 
 ## Starting a new project using Ivy
 
-To start a new project with Ivy enabled, use the `--experimental-ivy` flag with the [`ng new`](cli/new) command:
+To start a new project with Ivy enabled, use the `--enable-ivy` flag with the [`ng new`](cli/new) command:
 
 ```sh
-ng new shiny-ivy-app --experimental-ivy
+ng new shiny-ivy-app --enable-ivy
 ```
 
 Everything will be configured for you:
