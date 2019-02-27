@@ -86,6 +86,7 @@ export class StaticInterpreter {
   }
 
   private visitExpression(node: ts.Expression, context: Context): ResolvedValue {
+    let result: ResolvedValue;
     if (node.kind === ts.SyntaxKind.TrueKeyword) {
       return true;
     } else if (node.kind === ts.SyntaxKind.FalseKeyword) {
@@ -95,38 +96,42 @@ export class StaticInterpreter {
     } else if (ts.isNoSubstitutionTemplateLiteral(node)) {
       return node.text;
     } else if (ts.isTemplateExpression(node)) {
-      return this.visitTemplateExpression(node, context);
+      result = this.visitTemplateExpression(node, context);
     } else if (ts.isNumericLiteral(node)) {
       return parseFloat(node.text);
     } else if (ts.isObjectLiteralExpression(node)) {
-      return this.visitObjectLiteralExpression(node, context);
+      result = this.visitObjectLiteralExpression(node, context);
     } else if (ts.isIdentifier(node)) {
-      return this.visitIdentifier(node, context);
+      result = this.visitIdentifier(node, context);
     } else if (ts.isPropertyAccessExpression(node)) {
-      return this.visitPropertyAccessExpression(node, context);
+      result = this.visitPropertyAccessExpression(node, context);
     } else if (ts.isCallExpression(node)) {
-      return this.visitCallExpression(node, context);
+      result = this.visitCallExpression(node, context);
     } else if (ts.isConditionalExpression(node)) {
-      return this.visitConditionalExpression(node, context);
+      result = this.visitConditionalExpression(node, context);
     } else if (ts.isPrefixUnaryExpression(node)) {
-      return this.visitPrefixUnaryExpression(node, context);
+      result = this.visitPrefixUnaryExpression(node, context);
     } else if (ts.isBinaryExpression(node)) {
-      return this.visitBinaryExpression(node, context);
+      result = this.visitBinaryExpression(node, context);
     } else if (ts.isArrayLiteralExpression(node)) {
-      return this.visitArrayLiteralExpression(node, context);
+      result = this.visitArrayLiteralExpression(node, context);
     } else if (ts.isParenthesizedExpression(node)) {
-      return this.visitParenthesizedExpression(node, context);
+      result = this.visitParenthesizedExpression(node, context);
     } else if (ts.isElementAccessExpression(node)) {
-      return this.visitElementAccessExpression(node, context);
+      result = this.visitElementAccessExpression(node, context);
     } else if (ts.isAsExpression(node)) {
-      return this.visitExpression(node.expression, context);
+      result = this.visitExpression(node.expression, context);
     } else if (ts.isNonNullExpression(node)) {
-      return this.visitExpression(node.expression, context);
+      result = this.visitExpression(node.expression, context);
     } else if (this.host.isClass(node)) {
-      return this.visitDeclaration(node, context);
+      result = this.visitDeclaration(node, context);
     } else {
       return DynamicValue.fromUnknownExpressionType(node);
     }
+    if (result instanceof DynamicValue && result.node !== node) {
+      return DynamicValue.fromDynamicInput(node, result);
+    }
+    return result;
   }
 
   private visitArrayLiteralExpression(node: ts.ArrayLiteralExpression, context: Context):
@@ -211,6 +216,8 @@ export class StaticInterpreter {
         this.visitDeclaration(decl.node, {...context, ...joinModuleContext(context, node, decl)});
     if (result instanceof Reference) {
       result.addIdentifier(node);
+    } else if (result instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, result);
     }
     return result;
   }
@@ -365,10 +372,9 @@ export class StaticInterpreter {
     }
 
     if (!(lhs instanceof Reference)) {
-      throw new Error(`attempting to call something that is not a function: ${lhs}`);
+      return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
     } else if (!isFunctionOrMethodReference(lhs)) {
-      throw new Error(
-          `calling something that is not a function declaration? ${ts.SyntaxKind[lhs.node.kind]} (${node.getText()})`);
+      return DynamicValue.fromInvalidExpressionType(node.expression, lhs);
     }
 
     const fn = this.host.getDefinitionOfFunction(lhs.node);
