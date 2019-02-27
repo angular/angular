@@ -24,7 +24,11 @@ const fixmeIvyExamples = [
   // fixmeIvy('FW-1069: ngtsc does not support inline <style> and <link>')
   'component-styles',
   // fixmeIvy('unknown') app fails at runtime due to missing external service (goog is undefined)
-  'i18n'
+  'i18n',
+  // fixmeIvy('unknown') JIT app fails with external resources not loaded.
+  'upgrade-phonecat-2-hybrid',
+  // fixmeIvy('unknown') JIT app fails with external resources not loaded.
+  'upgrade-phonecat-3-final',
 ];
 
 if (argv.ivy) {
