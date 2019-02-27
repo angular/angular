@@ -573,22 +573,6 @@ window.testBlocklist = {
     "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
     "notes": "Unknown"
   },
-  "MatExpansionPanel should toggle the panel when pressing SPACE on the header": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
-    "notes": "Unknown"
-  },
-  "MatExpansionPanel should toggle the panel when pressing ENTER on the header": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
-    "notes": "Unknown"
-  },
-  "MatExpansionPanel should not toggle if a modifier key is pressed": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for toggle()",
-    "notes": "Unknown"
-  },
-  "MatAccordion should not register nested panels to the same accordion": {
-    "error": "TypeError: Cannot read property 'accordion' of undefined",
-    "notes": "Unknown"
-  },
   "MatInput without forms validates the type": {
     "error": "Error: Input type \"file\" isn't supported by matInput.",
     "notes": "Unknown"
