@@ -89,6 +89,7 @@ var_13: &ignore_presubmit_branch_filter
   branches:
     ignore:
       - "_presubmit"
+      - "ivy-2019"
 
 # Runs a script that sets up the Bazel remote execution. This will be used by jobs that run
 # Bazel primarily and should benefit from remote caching and execution.
