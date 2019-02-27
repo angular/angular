@@ -37,7 +37,7 @@ import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {appendChild, appendProjectedNode, createTextNode, insertView, removeView} from './node_manipulation';
+import {appendChild, appendProjectedNodes, createTextNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {applyOnCreateInstructions} from './node_util';
 import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from './state';
@@ -2625,14 +2625,6 @@ export function projectionDef(selectors?: CssSelectorList[], textSelectors?: str
   }
 }
 
-/**
- * Stack used to keep track of projection nodes in projection() instruction.
- *
- * This is deliberately created outside of projection() to avoid allocating
- * a new array each time the function is called. Instead the array will be
- * re-used by each invocation. This works because the function is not reentrant.
- */
-const projectionNodeStack: (LView | TNode)[] = [];
 
 /**
  * Inserts previously re-distributed projected nodes. This instruction must be preceded by a call
@@ -2655,52 +2647,7 @@ export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?:
   setIsParent(false);
 
   // re-distribution of projectable nodes is stored on a component's view level
-  const componentView = findComponentView(lView);
-  const componentNode = componentView[T_HOST] as TElementNode;
-  let nodeToProject = (componentNode.projection as(TNode | null)[])[selectorIndex];
-  let projectedView = componentView[PARENT] !as LView;
-  ngDevMode && assertLView(projectedView);
-  let projectionNodeIndex = -1;
-
-  if (Array.isArray(nodeToProject)) {
-    appendChild(nodeToProject, tProjectionNode, lView);
-  } else {
-    while (nodeToProject) {
-      if (nodeToProject.type === TNodeType.Projection) {
-        // This node is re-projected, so we must go up the tree to get its projected nodes.
-        const currentComponentView = findComponentView(projectedView);
-        const currentComponentHost = currentComponentView[T_HOST] as TElementNode;
-        const firstProjectedNode = (currentComponentHost.projection as(
-            TNode | null)[])[nodeToProject.projection as number];
-
-        if (firstProjectedNode) {
-          if (Array.isArray(firstProjectedNode)) {
-            appendChild(firstProjectedNode, tProjectionNode, lView);
-          } else {
-            projectionNodeStack[++projectionNodeIndex] = nodeToProject;
-            projectionNodeStack[++projectionNodeIndex] = projectedView;
-
-            nodeToProject = firstProjectedNode;
-            projectedView = getLViewParent(currentComponentView) !;
-            continue;
-          }
-        }
-      } else {
-        // This flag must be set now or we won't know that this node is projected
-        // if the nodes are inserted into a container later.
-        nodeToProject.flags |= TNodeFlags.isProjected;
-        appendProjectedNode(nodeToProject, tProjectionNode, lView, projectedView);
-      }
-
-      // If we are finished with a list of re-projected nodes, we need to get
-      // back to the root projection node that was re-projected.
-      if (nodeToProject.next === null && projectedView !== componentView[PARENT] !) {
-        projectedView = projectionNodeStack[projectionNodeIndex--] as LView;
-        nodeToProject = projectionNodeStack[projectionNodeIndex--] as TNode;
-      }
-      nodeToProject = nodeToProject.next;
-    }
-  }
+  appendProjectedNodes(lView, tProjectionNode, selectorIndex, findComponentView(lView));
 }
 
 /**
