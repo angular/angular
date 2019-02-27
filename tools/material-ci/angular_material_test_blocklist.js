@@ -27,211 +27,211 @@ window.testBlocklist = {
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render initial state": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the data length": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the viewport size": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport size": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered range": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered content offset": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the scroll offset": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered content size": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should measure range size": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set total content size": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set total content size in horizontal mode": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set a class based on the orientation": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set the vertical class if an invalid orientation is set": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set rendered range": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set content offset to top of content": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set content offset to bottom of content": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to offset": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to index": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to offset in horizontal mode": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to index in horizontal mode": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should output scrolled index": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls down": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls up": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the end when scrolled to the top": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the start and end when scrolled to the middle": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the start when scrolled to the bottom": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic item size": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic buffer size": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic item array": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls right in horizontal mode": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls left in horizontal mode": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should work with an Observable": {
     "error": "TypeError: Cannot read property 'getRenderedRange' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should work with a DataSource": {
     "error": "TypeError: Cannot read property 'getRenderedRange' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should trackBy value by default": {
     "error": "Error: <spyOn> : could not find an object to spy upon for detach()",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should trackBy index when specified": {
     "error": "Error: <spyOn> : could not find an object to spy upon for detach()",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should recycle views when template cache is large enough to accommodate": {
     "error": "Error: <spyOn> : could not find an object to spy upon for createEmbeddedView()",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should not recycle views when template cache is full": {
     "error": "Error: <spyOn> : could not find an object to spy upon for createEmbeddedView()",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render up to maxBufferPx when buffer dips below minBufferPx": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should throw if maxBufferPx is less than minBufferPx": {
     "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should register and degregister with ScrollDispatcher": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should emit on viewChange inside the Angular zone": {
     "error": "TypeError: Cannot read property 'viewChange' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should not throw when disposing of a view that will not fit in the cache": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with RTL direction should initially be scrolled all the way right and showing the first item in horizontal mode": {
     "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with RTL direction should scroll through items as user scrolls to the left in horizontal mode": {
     "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with RTL direction should interpret scrollToOffset amount as an offset from the right in horizontal mode": {
     "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with RTL direction should scroll to the correct index in horizontal mode": {
     "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with RTL direction should emit the scrolled to index in horizontal mode": {
     "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with RTL direction should set total content size": {
     "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with RTL direction should set total content size in horizontal mode": {
     "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should render initial state for uniform items": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should render extra content if first item is smaller than average": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should throw if maxBufferPx is less than minBufferPx": {
     "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
+    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
   },
   "CdkAccordion should not register nested items to the same accordion": {
     "error": "TypeError: Cannot read property 'accordion' of undefined",
