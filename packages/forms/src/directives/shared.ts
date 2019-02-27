@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {ɵlooseIdentical as looseIdentical} from '@angular/core';
 
 import {FormArray, FormControl, FormGroup} from '../model';
 import {Validators} from '../validators';
@@ -22,7 +22,6 @@ import {NumberValueAccessor} from './number_value_accessor';
 import {RadioControlValueAccessor} from './radio_control_value_accessor';
 import {RangeValueAccessor} from './range_value_accessor';
 import {FormArrayName} from './reactive_directives/form_group_name';
-import {ReactiveErrors} from './reactive_errors';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
@@ -221,18 +220,4 @@ export function selectValueAccessor(
 export function removeDir<T>(list: T[], el: T): void {
   const index = list.indexOf(el);
   if (index > -1) list.splice(index, 1);
-}
-
-// TODO(kara): remove after deprecation period
-export function _ngModelWarning(
-    name: string, type: {_ngModelWarningSentOnce: boolean},
-    instance: {_ngModelWarningSent: boolean}, warningConfig: string | null) {
-  if (!isDevMode() || warningConfig === 'never') return;
-
-  if (((warningConfig === null || warningConfig === 'once') && !type._ngModelWarningSentOnce) ||
-      (warningConfig === 'always' && !instance._ngModelWarningSent)) {
-    ReactiveErrors.ngModelWarning(name);
-    type._ngModelWarningSentOnce = true;
-    instance._ngModelWarningSent = true;
-  }
 }

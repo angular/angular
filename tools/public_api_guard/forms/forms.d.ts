@@ -238,12 +238,9 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     readonly control: FormControl;
     form: FormControl;
     isDisabled: boolean;
-    /** @deprecated */ model: any;
     readonly path: string[];
-    /** @deprecated */ update: EventEmitter<{}>;
     readonly validator: ValidatorFn | null;
-    viewModel: any;
-    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
+    constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
     ngOnChanges(changes: SimpleChanges): void;
     viewToModelUpdate(newValue: any): void;
 }
@@ -253,12 +250,10 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     readonly control: FormControl;
     readonly formDirective: any;
     isDisabled: boolean;
-    /** @deprecated */ model: any;
     name: string;
     readonly path: string[];
-    /** @deprecated */ update: EventEmitter<{}>;
     readonly validator: ValidatorFn | null;
-    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
+    constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
@@ -480,8 +475,6 @@ export declare class RangeValueAccessor implements ControlValueAccessor {
 }
 
 export declare class ReactiveFormsModule {
-    static withConfig(opts: { warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
-    }): ModuleWithProviders<ReactiveFormsModule>;
 }
 
 export declare class RequiredValidator implements Validator {
