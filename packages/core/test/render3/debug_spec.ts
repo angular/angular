@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {RenderFlags, defineComponent, elementEnd, elementStart, text} from '@angular/core/src/render3';
-import {getLContext} from '@angular/core/src/render3/context_discovery';
-import {LViewDebug, toDebug} from '@angular/core/src/render3/debug';
+import {getLContext} from '../../src/render3/context_discovery';
+import {LViewDebug, toDebug} from '../../src/render3/debug';
+import {RenderFlags, defineComponent, elementEnd, elementStart, text} from '../../src/render3/index';
 
 import {ComponentFixture} from './render_util';
 
