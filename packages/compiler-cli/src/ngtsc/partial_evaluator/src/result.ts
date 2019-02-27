@@ -21,7 +21,7 @@ import {DynamicValue} from './dynamic';
  * available statically.
  */
 export type ResolvedValue = number | boolean | string | null | undefined | Reference | EnumValue |
-    ResolvedValueArray | ResolvedValueMap | BuiltinFn | DynamicValue<{}>;
+    ResolvedValueArray | ResolvedValueMap | BuiltinFn | DynamicValue<unknown>;
 
 /**
  * An array of `ResolvedValue`s.
