@@ -72,7 +72,7 @@ export class Location {
   /**
    * Returns the normalized URL path.
    *
-   * @param includeHash Boolean representing whether path has an anchor fragment.
+   * @param includeHash Whether path has an anchor fragment.
    *
    * @returns The normalized URL path.
    */
@@ -127,7 +127,7 @@ export class Location {
 
   // TODO: rename this method to pushState
   /**
-   * Changes the browsers URL to the normalized version of the given URL, and pushes a
+   * Changes the browsers URL to a normalized version of the given URL, and pushes a
    * new item onto the platform's history.
    *
    * @param path  URL path to normalizze
@@ -140,7 +140,7 @@ export class Location {
   }
 
   /**
-   * Changes the browsers URL to the normalized version of the given URL, and replaces
+   * Changes the browsers URL to a normalized version of the given URL, and replaces
    * the top item on the platform's history stack.
    *
    * @param path  URL path to normalizze
@@ -176,8 +176,8 @@ export class Location {
   }
 
   /**
-   * Given a string of url parameters, prepend with `?` if needed, otherwise return parameters as
-   * is.
+   * Given a string of url parameters, prepend with `?` if needed, otherwise return the
+   * parameters as is.
    *
    *  @param  params String of URL parameters
    *
