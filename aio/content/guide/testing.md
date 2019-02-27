@@ -4941,8 +4941,12 @@ Consider adding component tests such as this one:
 
 {@a test-debugging}
 
+<!--
 ## Test debugging
+-->
+## 테스트 디버깅하기
 
+<!--
 Debug specs in the browser in the same way that you debug an application.
 
 1. Reveal the karma browser window (hidden earlier).
@@ -4952,6 +4956,16 @@ Debug specs in the browser in the same way that you debug an application.
 1. Open the `1st.spec.ts` test file (Control/Command-P, then start typing the name of the file).
 1. Set a breakpoint in the test.
 1. Refresh the browser, and it stops at the breakpoint.
+-->
+테스트 스펙을 디버깅하는 방법은 브라우저에서 애플리케이션을 디버깅하는 방법과 같습니다.
+
+1. Karma가 실행되고 있는 브라우저를 찾습니다.
+1. **DEBUG** 버튼을 누릅니다. 그러면 새로운 브라우저 탭이 열리면서 테스트가 다시 시작됩니다.
+1. 브라우저에서 "개발자 도구"를 엽니다. (윈도우에서는 `Ctrl-Shift-I`, OSX에서는 `Command-Option-I`)
+1. "Sources" 탭을 선택합니다.
+1. `1st.spec.ts` 테스트 파일을 엽니다. (Control/Common-P를 누르고 파일 이름을 입력하면 됩니다.)
+1. 테스트 파일에 중단점을 지정합니다.
+1. 브라우저를 새로고침합니다. 그러면 중단점으로 설정했던 코드에서 코드 실행이 멈춥니다.
 
 <figure>
   <img src='generated/images/guide/testing/karma-1st-spec-debug.png' alt="Karma debugging">
@@ -4961,22 +4975,41 @@ Debug specs in the browser in the same way that you debug an application.
 
 {@a atu-apis}
 
+<!--
 ## Testing Utility APIs
+-->
+## 테스트 유틸리티
 
+<!--
 This section takes inventory of the most useful Angular testing features and summarizes what they do.
 
 The Angular testing utilities include the `TestBed`, the `ComponentFixture`, and a handful of functions that control the test environment.
 The [_TestBed_](#testbed-api-summary) and [_ComponentFixture_](#component-fixture-api-summary) classes are covered separately.
 
 Here's a summary of the stand-alone functions, in order of likely utility:
+-->
+이 섹션에서는 테스트 코드를 작성하면서 자주 사용하는 Angular 테스트 유틸리티에 대해 알아봅니다.
+
+`TestBed`나 `ComponentFixture`에서 제공하는 테스트 유틸리티를 활용하면 테스트 환경을 자유롭게 조작할 수 있습니다.
+그래서 이번 섹션에서는[_TestBed_](#testbed-api-summary)와 [_ComponentFixture_](#component-fixture-api-summary)를 하나씩 다루면서 자세하게 살펴볼 것입니다.
+
+자주 사용하는 테스트 함수 중 단독으로 사용할 수 있는 함수들은 이런 것들이 있습니다:
 
 <table>
   <tr>
+    <!--
     <th>
       Function
     </th>
     <th>
       Description
+    </th>
+    -->
+    <th>
+      함수
+    </th>
+    <th>
+      설명
     </th>
   </tr>
 
@@ -4987,8 +5020,12 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
     <td>
 
+      <!--
       Runs the body of a test (`it`) or setup (`beforeEach`) function within a special _async test zone_.
       See [discussion above](#async).
+      -->
+      테스트 스펙의 몸체(`it`)나 환경설정 로직(`beforeEach`)를 _async 테스트 존_ 에서 실행합니다.
+      자세한 내용은 [위에서 설명한 것](#async)을 참고하세요.
 
     </td>
   </tr>
@@ -5000,8 +5037,12 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
     <td>
 
+      <!--
       Runs the body of a test (`it`) within a special _fakeAsync test zone_, enabling
       a linear control flow coding style. See [discussion above](#fake-async).
+      -->
+      테스트 스펙의 몸체(`it`)를 _fakeAsync 테스트 존_ 에서 실행하며, 비동기 로직을 선형으로 제어할 수 있습니다.
+      자세한 내용은 [위에서 설명한 것](#fake-async)을 참고하세요.
 
     </td>
   </tr>
@@ -5013,20 +5054,30 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
     <td>
 
+      <!--
       Simulates the passage of time and the completion of pending asynchronous activities
       by flushing both _timer_ and _micro-task_ queues within the _fakeAsync test zone_.
+      -->
+      테스트가 실행되는 환경의 시간을 빠르게 돌려서 _fakeAsync 테스트 존_ 에서 아직 처리되지 않은 _타이머_ 나 _마이크로 태스크_ 를 처리합니다.
 
       <div class="alert is-helpful">
 
+      <!--
       The curious, dedicated reader might enjoy this lengthy blog post,
       ["_Tasks, microtasks, queues and schedules_"](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/).
+      -->
+      ["_Tasks, microtasks, queues and schedules_"](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/) 블로그 글도 한 번 읽어보세요.
 
       </div>
 
+      <!--
       Accepts an optional argument that moves the virtual clock forward
       by the specified number of milliseconds,
       clearing asynchronous activities scheduled within that timeframe.
       See [discussion above](#tick).
+      -->
+      숫자를 밀리초단위로 전달하면 해당 시간만큼 흐른 것을 처리할 수 있으며, 이 시간동안 실행되는 비동기 작업도 모두 완료됩니다.
+      자세한 내용은 [위에서 설명한 것](#tick)을 참고하세요.
 
     </td>
   </tr>
@@ -5043,9 +5094,9 @@ Here's a summary of the stand-alone functions, in order of likely utility:
       It cannot inject a service provided by the component itself.
       See discussion of the [debugElement.injector](#get-injected-services).
       -->
-      Injects one or more services from the current `TestBed` injector into a test function.
-      It cannot inject a service provided by the component itself.
-      See discussion of the [debugElement.injector](#의존성으로-주입한-서비스-가져오기).
+      `TestBed` 인젝터를 사용해서 테스트 스펙에 서비스를 의존성으로 주입합니다.
+      컴포넌트에 프로바이더로 등록된 서비스는 주입할 수 없습니다.
+      자세한 내용은 [debugElement.injector](#의존성으로-주입한-서비스-가져오기)을 참고하세요.
 
     </td>
   </tr>
@@ -5057,12 +5108,19 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
     <td>
 
+      <!--
       When a `fakeAsync()` test ends with pending timer event _tasks_ (queued `setTimeOut` and `setInterval` callbacks),
       the test fails with a clear error message.
 
       In general, a test should end with no queued tasks.
       When pending timer tasks are expected, call `discardPeriodicTasks` to flush the _task_ queue
       and avoid the error.
+      -->
+      아직 처리되지 않은 타이머 이벤트 _태스크_ (`setTimeout`, `setInterval` 콜백)가 있는 상태로 `fakeAsync()` 테스트가 끝나면 에러가 발생합니다.
+
+      일반적으로 테스트 스펙은 태스크 큐에 아무 태스크가 없는 상태에서 끝나야 합니다.
+      하지만 `discardPeriodicTasks` 함수를 사용하면 아직 처리되지 않은 타이머가 있다는 것을 의도한 것으로 처리하기 때문에, 바로 _태스크_ 큐를 비우면서 테스트를 종료합니다.
+      에러도 발생하지 않습니다.
 
     </td>
   </tr>
@@ -5074,12 +5132,19 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
     <td>
 
+      <!--
       When a `fakeAsync()` test ends with pending _micro-tasks_ such as unresolved promises,
       the test fails with a clear error message.
 
       In general, a test should wait for micro-tasks to finish.
       When pending microtasks are expected, call `flushMicrotasks` to flush the  _micro-task_ queue
       and avoid the error.
+      -->
+      아직 처리되지 않은 _마이크로 태스크_ (끝나지 않은 Promise 등)가 있는 상태로 `fakeAsync()` 테스트가 끝나면 에러가 발생합니다.
+
+      일반적으로 테스트 스펙은 마이크로 태스크들이 모두 종료된 이후에 끝나야 합니다.
+      하지만 `flushMicroTasks`를 사용하면 아직 처리되지 않은 마이크로 태스크가 있다는 것을 의도한 것으로 처리하기 때문에, 바로 _마이크로 태스크_ 큐를 비우면서 테스트를 종료합니다.
+      에러도 발생하지 않습니다.
 
     </td>
   </tr>
@@ -5094,7 +5159,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
       <!--
       A provider token for a service that turns on [automatic change detection](#automatic-change-detection).
       -->
-      A provider token for a service that turns on [변화감지 자동으로 실행하기](#변화감지-자동으로-실행하기).
+      [변화감지를 자동으로 실행할 때](#변화감지-자동으로-실행하기) 사용하는 서비스 프로바이더 토큰입니다.
 
     </td>
   </tr>
@@ -5106,10 +5171,15 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
     <td>
 
+      <!--
       Gets the current instance of the `TestBed`.
       Usually unnecessary because the static class methods of the `TestBed` class are typically sufficient.
       The `TestBed` instance exposes a few rarely used members that are not available as
       static methods.
+      -->
+      현재 사용하고 있는 `TestBed` 인스턴스를 참조합니다.
+      일반적으로 `TestBed` 클래스는 정적 클래스 메소드로 제공되는 기능을 활용하는 것만으로도 충분합니다.
+      하지만 정적 메소드로 제공되지 않는 일부 멤버를 참조해야하는 일이 생기면 이 때 `TestBed` 인스턴스를 참조할 수 있습니다.
 
     </td>
   </tr>
