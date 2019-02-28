@@ -461,18 +461,20 @@ jobs:
   publish_snapshot:
     <<: *job_defaults
     steps:
-      - *attach_workspace
-      - *init_environment
       # See below - ideally this job should not trigger for non-upstream builds.
       # But since it does, we have to check this condition.
       - run:
           name: Skip this job for Pull Requests and Fork builds
-          # Note, `|| true` on the end makes this step always exit 0
-          command: '[[
-              "$CI_PULL_REQUEST" != "false"
-              || "$CI_REPO_OWNER" != "angular"
-              || "$CI_REPO_NAME" != "angular"
-          ]] && circleci step halt || true'
+          # Note: Using `CIRCLE_*` env variables (instead of those defined in `env.sh` so that this
+          #       step can be run before `init_environment`.
+          command: >
+            if [[ -n "${CIRCLE_PR_NUMBER}" ]] ||
+                [[ "$CIRCLE_PROJECT_USERNAME" != "angular" ]] ||
+                [[ "$CIRCLE_PROJECT_REPONAME" != "angular" ]]; then
+              circleci step halt
+            fi
+      - *attach_workspace
+      - *init_environment
       # CircleCI has a config setting to force SSH for all github connections
       # This is not compatible with our mechanism of using a Personal Access Token
       # Clear the global setting
