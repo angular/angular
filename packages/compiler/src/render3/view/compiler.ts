@@ -82,30 +82,18 @@ function baseDirectiveFields(
   const contextVarExp = o.variable(CONTEXT_NAME);
   const styleBuilder = new StylingBuilder(elVarExp, contextVarExp);
 
-  const allOtherAttributes: any = {};
-  const attrNames = Object.getOwnPropertyNames(meta.host.attributes);
-  for (let i = 0; i < attrNames.length; i++) {
-    const attr = attrNames[i];
-    const value = meta.host.attributes[attr];
-    switch (attr) {
-      // style attributes are handled in the styling context
-      case 'style':
-        styleBuilder.registerStyleAttr(value);
-        break;
-      // class attributes are handled in the styling context
-      case 'class':
-        styleBuilder.registerClassAttr(value);
-        break;
-      default:
-        allOtherAttributes[attr] = value;
-        break;
-    }
+  const {styleAttr, classAttr} = meta.host.specialAttributes;
+  if (styleAttr !== undefined) {
+    styleBuilder.registerStyleAttr(styleAttr);
+  }
+  if (classAttr !== undefined) {
+    styleBuilder.registerClassAttr(classAttr);
   }
 
   // e.g. `hostBindings: (rf, ctx, elIndex) => { ... }
   definitionMap.set(
       'hostBindings', createHostBindingsFunction(
-                          meta, elVarExp, contextVarExp, allOtherAttributes, styleBuilder,
+                          meta, elVarExp, contextVarExp, meta.host.attributes, styleBuilder,
                           bindingParser, constantPool, hostVarsCount));
 
   // e.g 'inputs: {a: 'a'}`
@@ -412,34 +400,8 @@ export function compileComponentFromRender2(
 function directiveMetadataFromGlobalMetadata(
     directive: CompileDirectiveMetadata, outputCtx: OutputContext,
     reflector: CompileReflector): R3DirectiveMetadata {
-  const summary = directive.toSummary();
-  const name = identifierName(directive.type) !;
-  name || error(`Cannot resolver the name of ${directive.type}`);
-
-  return {
-    name,
-    type: outputCtx.importExpr(directive.type.reference),
-    typeArgumentCount: 0,
-    typeSourceSpan:
-        typeSourceSpan(directive.isComponent ? 'Component' : 'Directive', directive.type),
-    selector: directive.selector,
-    deps: dependenciesFromGlobalMetadata(directive.type, outputCtx, reflector),
-    queries: queriesFromGlobalMetadata(directive.queries, outputCtx),
-    lifecycle: {
-      usesOnChanges:
-          directive.type.lifecycleHooks.some(lifecycle => lifecycle == LifecycleHooks.OnChanges),
-    },
-    host: {
-      attributes: directive.hostAttributes,
-      listeners: summary.hostListeners,
-      properties: summary.hostProperties,
-    },
-    inputs: directive.inputs,
-    outputs: directive.outputs,
-    usesInheritance: false,
-    exportAs: null,
-    providers: directive.providers.length > 0 ? new o.WrappedNodeExpr(directive.providers) : null
-  };
+  // The global-analysis based Ivy mode in ngc is no longer utilized/supported.
+  throw new Error('unsupported');
 }
 
 /**
@@ -501,11 +463,12 @@ function createDirectiveSelector(selector: string | null): o.Expression {
   return asLiteral(core.parseSelectorToR3Selector(selector));
 }
 
-function convertAttributesToExpressions(attributes: any): o.Expression[] {
+function convertAttributesToExpressions(attributes: {[name: string]: o.Expression}):
+    o.Expression[] {
   const values: o.Expression[] = [];
   for (let key of Object.getOwnPropertyNames(attributes)) {
     const value = attributes[key];
-    values.push(o.literal(key), o.literal(value));
+    values.push(o.literal(key), value);
   }
   return values;
 }
@@ -622,8 +585,9 @@ function createViewQueriesFunction(
 // Return a host binding function or null if one is not necessary.
 function createHostBindingsFunction(
     meta: R3DirectiveMetadata, elVarExp: o.ReadVarExpr, bindingContext: o.ReadVarExpr,
-    staticAttributesAndValues: any[], styleBuilder: StylingBuilder, bindingParser: BindingParser,
-    constantPool: ConstantPool, hostVarsCount: number): o.Expression|null {
+    staticAttributesAndValues: {[name: string]: o.Expression}, styleBuilder: StylingBuilder,
+    bindingParser: BindingParser, constantPool: ConstantPool, hostVarsCount: number): o.Expression|
+    null {
   const createStatements: o.Statement[] = [];
   const updateStatements: o.Statement[] = [];
 
@@ -826,7 +790,9 @@ function createHostListeners(
 function metadataAsSummary(meta: R3DirectiveMetadata): CompileDirectiveSummary {
   // clang-format off
   return {
-    hostAttributes: meta.host.attributes,
+    // This is used by the BindingParser, which only deals with listeners and properties. There's no
+    // need to pass attributes to it.
+    hostAttributes: {},
     hostListeners: meta.host.listeners,
     hostProperties: meta.host.properties,
   } as CompileDirectiveSummary;
@@ -855,32 +821,65 @@ const enum HostBindingGroup {
 // Defines Host Bindings structure that contains attributes, listeners, and properties,
 // parsed from the `host` object defined for a Type.
 export interface ParsedHostBindings {
-  attributes: {[key: string]: string};
+  attributes: {[key: string]: o.Expression};
   listeners: {[key: string]: string};
   properties: {[key: string]: string};
+  specialAttributes: {styleAttr?: string; classAttr?: string;};
 }
 
-export function parseHostBindings(host: {[key: string]: string}): ParsedHostBindings {
-  const attributes: {[key: string]: string} = {};
+export function parseHostBindings(host: {[key: string]: string | o.Expression}):
+    ParsedHostBindings {
+  const attributes: {[key: string]: o.Expression} = {};
   const listeners: {[key: string]: string} = {};
   const properties: {[key: string]: string} = {};
+  const specialAttributes: {styleAttr?: string; classAttr?: string;} = {};
 
-  Object.keys(host).forEach(key => {
+  for (const key of Object.keys(host)) {
     const value = host[key];
     const matches = key.match(HOST_REG_EXP);
+
     if (matches === null) {
-      attributes[key] = value;
+      switch (key) {
+        case 'class':
+          if (typeof value !== 'string') {
+            // TODO(alxhub): make this a diagnostic.
+            throw new Error(`Class binding must be string`);
+          }
+          specialAttributes.classAttr = value;
+          break;
+        case 'style':
+          if (typeof value !== 'string') {
+            // TODO(alxhub): make this a diagnostic.
+            throw new Error(`Style binding must be string`);
+          }
+          specialAttributes.styleAttr = value;
+          break;
+        default:
+          if (typeof value === 'string') {
+            attributes[key] = o.literal(value);
+          } else {
+            attributes[key] = value;
+          }
+      }
     } else if (matches[HostBindingGroup.Binding] != null) {
+      if (typeof value !== 'string') {
+        // TODO(alxhub): make this a diagnostic.
+        throw new Error(`Property binding must be string`);
+      }
       // synthetic properties (the ones that have a `@` as a prefix)
       // are still treated the same as regular properties. Therefore
       // there is no point in storing them in a separate map.
       properties[matches[HostBindingGroup.Binding]] = value;
     } else if (matches[HostBindingGroup.Event] != null) {
+      if (typeof value !== 'string') {
+        // TODO(alxhub): make this a diagnostic.
+        throw new Error(`Event binding must be string`);
+      }
       listeners[matches[HostBindingGroup.Event]] = value;
     }
-  });
+  }
 
-  return {attributes, listeners, properties};
+  return {attributes, listeners, properties, specialAttributes};
 }
 
 /**

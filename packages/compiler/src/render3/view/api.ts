@@ -59,9 +59,9 @@ export interface R3DirectiveMetadata {
    */
   host: {
     /**
-     * A mapping of attribute binding keys to unparsed expressions.
+     * A mapping of attribute binding keys to `o.Expression`s.
      */
-    attributes: {[key: string]: string};
+    attributes: {[key: string]: o.Expression};
 
     /**
      * A mapping of event binding keys to unparsed expressions.
@@ -72,6 +72,8 @@ export interface R3DirectiveMetadata {
      * A mapping of property binding keys to unparsed expressions.
      */
     properties: {[key: string]: string};
+
+    specialAttributes: {styleAttr?: string; classAttr?: string;}
   };
 
   /**
