@@ -545,7 +545,7 @@ NG_MODULE_ATTRIBUTES = {
 }
 
 NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
-    "tsconfig": attr.label(allow_files = True, single_file = True),
+    "tsconfig": attr.label(allow_single_file = True),
     "node_modules": attr.label(
         doc = """The npm packages which should be available during the compile.
 

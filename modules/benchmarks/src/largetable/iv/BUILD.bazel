@@ -1,4 +1,3 @@
-load("//tools:defaults.bzl", "ts_library")
 load("@npm_bazel_typescript//:defs.bzl", "ts_devserver")
 load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
 
