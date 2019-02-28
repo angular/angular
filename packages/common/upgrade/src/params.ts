@@ -12,21 +12,18 @@
  *
  * @publicApi
  **/
-export interface UrlCodec {
-  encodePath(path: string): string;
-  decodePath(path: string): string;
+export abstract class UrlCodec {
+  abstract encodePath(path: string): string;
+  abstract decodePath(path: string): string;
 
-  encodeKey(key: string): string;
-  encodeValue(value: string): string;
+  abstract encodeSearch(search: string|{[k: string]: unknown}): string;
+  abstract decodeSearch(search: string): {[k: string]: unknown};
 
-  decodeKey(key: string): string;
-  decodeValue(value: string): string;
+  abstract encodeHash(hash: string): string;
+  abstract decodeHash(hash: string): string;
 
-  encodeSearch(search: string|{[k: string]: unknown}): string;
-  decodeSearch(search: string): {[k: string]: unknown};
-
-  encodeHash(hash: string): string;
-  decodeHash(hash: string): string;
+  abstract normalize(path: string, search: {[k: string]: unknown}, hash: string, baseUrl?: string):
+      string;
 }
 
 /**
@@ -44,7 +41,8 @@ export class AngularJSUrlCodec implements UrlCodec {
       segments[i] = encodeUriSegment(segments[i].replace(/%2F/g, '/'));
     }
 
-    return segments.join('/');
+    path = segments.join('/');
+    return (path && path[0] !== '/' && '/' || '') + path;
   }
 
   encodeSearch(search: string|{[k: string]: unknown}): string {
@@ -56,11 +54,10 @@ export class AngularJSUrlCodec implements UrlCodec {
     return search ? '?' + search : '';
   }
 
-  encodeHash(hash: string) { return encodeUriSegment(hash); }
-
-  encodeKey(key: string): string { return encodeUriQuery(key); }
-
-  encodeValue(value: string): string { return encodeUriQuery(value); }
+  encodeHash(hash: string) {
+    hash = encodeUriSegment(hash);
+    return hash ? '#' + hash : '';
+  }
 
   decodePath(path: string, html5Mode = true): string {
     var segments = path.split('/'), i = segments.length;
@@ -76,15 +73,30 @@ export class AngularJSUrlCodec implements UrlCodec {
     return segments.join('/');
   }
 
-  decodeKey(key: string): string { return decodeURIComponent(key); }
-
-  decodeValue(value: string) { return decodeURIComponent(value); }
-
   decodeSearch(search: string) { return parseKeyValue(search); }
 
-  decodeHash(hash: string) { return decodeURIComponent(hash); }
+  decodeHash(hash: string) {
+    hash = decodeURIComponent(hash);
+    return hash[0] === '#' ? hash.substring(1) : hash;
+  }
+
+  normalize(path: string, search: {[k: string]: unknown}, hash: string, baseUrl: string = ''):
+      string {
+    const encPath = this.encodePath(path);
+    const encSearch = search && this.encodeSearch(search) || '';
+    const encHash = hash && this.encodeHash(hash) || '';
+    if (baseUrl) {
+      if (baseUrl[baseUrl.length - 1] != '/' && !encPath) {
+        baseUrl = baseUrl + '/';
+      }
+    }
+    return _stripIndexHtml(baseUrl + encPath + encSearch + encHash);
+  }
 }
 
+function _stripIndexHtml(url: string): string {
+  return url.replace(/\/index.html$/, '');
+}
 
 /**
  * Tries to decode the URI component without throwing an exception.
