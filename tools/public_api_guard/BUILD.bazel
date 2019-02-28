@@ -1,7 +1,7 @@
 load("//tools/ts-api-guardian:index.bzl", "ts_api_guardian_test")
 load(":public_api_guard.bzl", "generate_targets")
 
-generate_targets(glob(["*/**/*.d.ts"]))
+generate_targets(golden_files = glob(["*/**/*.d.ts"]))
 
 ts_api_guardian_test(
     name = "ng_global_utils_api",

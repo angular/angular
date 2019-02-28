@@ -149,14 +149,12 @@ _protractor_web_test = rule(
             doc = "Optional server executable target",
             executable = True,
             cfg = "target",
-            single_file = False,
             allow_files = True,
         ),
         "protractor": attr.label(
             doc = "Protractor executable target (set by protractor_web_test macro)",
             executable = True,
             cfg = "target",
-            single_file = False,
             allow_files = True,
         ),
         "_conf_tmpl": attr.label(

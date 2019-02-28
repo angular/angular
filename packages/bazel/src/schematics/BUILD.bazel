@@ -8,7 +8,7 @@ filegroup(
     visibility = ["//packages/bazel:__subpackages__"],
 )
 
-load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
 
 jasmine_node_test(
     name = "test",
