@@ -53,6 +53,15 @@ import {HttpParams} from '@angular/common/http/src/params';
         const mutated = body.delete('a', '2').delete('a', '4');
         expect(mutated.getAll('a')).toEqual(['1', '3', '5']);
       });
+
+      it('should not repeat mutations that have already been materialized', () => {
+        const body = new HttpParams({fromString: 'a=b'});
+        const mutated = body.append('a', 'c');
+        expect(mutated.toString()).toEqual('a=b&a=c');
+        const mutated2 = mutated.append('c', 'd');
+        expect(mutated.toString()).toEqual('a=b&a=c');
+        expect(mutated2.toString()).toEqual('a=b&a=c&c=d');
+      });
     });
 
     describe('read operations', () => {
