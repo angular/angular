@@ -1,6 +1,6 @@
 {
   "rulesDirectory": [
-    "dist/tools/tslint",
+    "tools/tslint",
     "node_modules/vrsource-tslint-rules/rules",
     "node_modules/tslint-eslint-rules/dist/rules"
   ],
