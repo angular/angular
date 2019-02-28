@@ -10,26 +10,66 @@ import {Location, PlatformLocation} from '@angular/common';
 import {LocationStrategy} from '@angular/common/src/common';
 import {Injectable, InjectionToken} from '@angular/core';
 
-import {AngularJSUrlCodec} from './params';
+import {UrlCodec} from './params';
 
+const PATH_MATCH = /^([^?#]*)(\?([^#]*))?(#(.*))?$/;
 const DEFAULT_PORTS: {[key: string]: number} = {
   'http:': 80,
   'https:': 443,
   'ftp:': 21
 };
 
-export type SearchParams = string | number | []
-    /**
-     * A Location service that provides properties and methods to match AngularJS's `$location`
-     * service. It is recommended that this LocationUpgradeService be used in place of
-     * `$location` in any hybrid Angular/AngularJS applications.
-     */
-    @Injectable() export class LocationUpgradeService {
-  private paramCodec = new AngularJSUrlCodec();
+function stripPrefix(val: string, prefix: string): string {
+  // strip prefix
+  return val.startsWith(prefix) ? val.substring(prefix.length) : val;
+}
+
+/**
+ * A Location service that provides properties and methods to match AngularJS's `$location`
+ * service. It is recommended that this LocationUpgradeService be used in place of
+ * `$location` in any hybrid Angular/AngularJS applications.
+ */
+@Injectable()
+export class LocationUpgradeService {
+  private urlParts: {path: string, search: {[k: string]: unknown}, hash: string}|null = null;
 
   constructor(
       private location: Location, private platformLocation: PlatformLocation,
-      private locationStrategy: LocationStrategy) {}
+      private locationStrategy: LocationStrategy, private urlCodec: UrlCodec) {}
+
+  /**
+   * Get the current set of URL parts, or parse the current URL into it's parts.
+   */
+  private getUrlParts() {
+    if (!this.urlParts) {
+      const path = this.path();
+      const search = this.search();
+      const hash = this.hash();
+
+      this.urlParts = {path, search, hash};
+    }
+    return this.urlParts;
+  }
+
+  /**
+   * Saves the URL in urlParts.
+   */
+  private updateUrl() {
+    if (!this.urlParts) {
+      return;
+    }
+    const url = this.urlCodec.normalize(
+        this.urlParts.path, this.urlParts.search, this.urlParts.hash,
+        this.locationStrategy.getBaseHref());
+    // Set the URL
+    this.locationStrategy.pushState(null, '', url, '');
+    this.urlParts = null;
+  }
+
+  private getServerBase() {
+    const port = this.platformLocation.port;
+    return `${this.platformLocation.protocol}//${this.platformLocation.hostname}${port ? ':' + port : ''}`;
+  }
 
   /**
    * This method is getter only.
@@ -48,21 +88,25 @@ export type SearchParams = string | number | []
     let url = `${this.platformLocation.protocol}//${this.platformLocation.hostname}`;
     const port = this.platformLocation.port;
     url += port ? ':' + port : '';
-    const baseHref = this.locationStrategy.getBaseHref();
-    url += baseHref;
-    let path = this.locationStrategy.path(true);
-    if (path[0] !== '/') {
-      url += '/';
-    }
+
+    const urlParts = this.getUrlParts();
+    url += this.urlCodec.normalize(
+        urlParts.path, urlParts.search, urlParts.hash, this.locationStrategy.getBaseHref());
+    // const baseHref = this.locationStrategy.getBaseHref();
+    // url += baseHref;
+    // let path = this.locationStrategy.path(true);
+    // if (path[0] !== '/') {
+    //   url += '/';
+    // }
     // Remove baseHref if it's prefixed. This can happen with HashLocationStrategy
-    path = path.indexOf(baseHref) === 0 ? path.slice(baseHref.length) : path;
+    // path = path.indexOf(baseHref) === 0 ? path.slice(baseHref.length) : path;
 
     // Add slash after hash if it's not there to match AngularJS functionaltiy
-    if (path.length > 1 && path[1] === '#' && path[2] !== '/') {
-      path = `/#/${path.substring(2)}`;
-    }
+    // if (path.length > 1 && path[1] === '#' && path[2] !== '/') {
+    //   path = `/#/${path.substring(2)}`;
+    // }
 
-    return url + path;
+    return url;
   }
 
   /**
@@ -87,6 +131,7 @@ export type SearchParams = string | number | []
         url = '/';
       }
 
+
       // Verify URL doesn't start with double slashes
       var DOUBLE_SLASH_REGEX = /^\s*[\\/]{2,}/;
       if (DOUBLE_SLASH_REGEX.test(url)) {
@@ -97,27 +142,34 @@ export type SearchParams = string | number | []
       if (url[0] === '#') {
         return this.hash(url.substring(1));
       }
-      // If the first character is '?', only set the query params
-      if (url[0] === '?') {
-        url = this.path() + url;
+      const match = PATH_MATCH.exec(url);
+      if (!match) return this;
+      // If the first character is '?', only set the query params & hash
+      if (url[0] !== '?') {
+        const urlParts = this.getUrlParts();
+        urlParts.path = stripPrefix(match[1] || '', this.locationStrategy.getBaseHref());
       }
+      this.search(match[3] || '');
+      this.hash(match[5] || '');
+
+
       // Set the URL
-      this.locationStrategy.pushState(null, '', url, '');
+      this.updateUrl();
 
       // Chainable method
       return this;
     }
 
-    return this.locationStrategy.path(true);
+    const urlParts = this.getUrlParts();
+    return this.urlCodec.encodePath(urlParts.path) + this.urlCodec.encodeSearch(urlParts.search) +
+        this.urlCodec.encodeHash(urlParts.hash);
   }
 
   $$parse(url: string) {
     // Remove protocol & hostname if URL starts with it
-    const port = this.platformLocation.port;
-    const serverUrl =
-        `${this.platformLocation.protocol}//${this.platformLocation.hostname}${port ? ':' + port : ''}`;
+    const serverUrl = this.getServerBase();
     if (url.startsWith(serverUrl)) {
-      url = url.substring(serverUrl.length);
+      url = stripPrefix(url, serverUrl);
     } else {
       throw new Error(`Invalid url "${url}", missing path prefix "${serverUrl}".`);
     }
@@ -133,20 +185,16 @@ export type SearchParams = string | number | []
     }
 
     // Remove protocol & hostname if URL starts with it
-    const port = this.platformLocation.port;
-    const serverUrl =
-        `${this.platformLocation.protocol}//${this.platformLocation.hostname}${port ? ':' + port : ''}`;
+    const serverUrl = this.getServerBase();
 
     // If the link is targeting a different hostname/port than the current app, do nothing
     if (!this.location.normalize(url).startsWith(this.location.normalize(serverUrl))) {
       return false;
     }
-
     // Strip serverUrl
-    url = url.substring(serverUrl.length);
-
+    url = stripPrefix(url, serverUrl);
     // Strip prefix if URL starts with it
-    url = this.location.normalize(url);
+    url = stripPrefix(url, this.locationStrategy.getBaseHref());
     // Set the URL
     this.url(url);
     return true;
@@ -235,26 +283,23 @@ export type SearchParams = string | number | []
   path(path: string|number|null): this;
   path(path?: string|number|null): string|this {
     if (typeof path === 'undefined') {
-      path = this.platformLocation.pathname;
+      if (this.urlParts) {
+        return this.urlParts.path;
+      }
+      path = this.urlCodec.decodePath(this.platformLocation.pathname);
       // strip prefix
-      const prefix = this.locationStrategy.getBaseHref();
-      path = path.startsWith(prefix) ? path.substring(prefix.length) : path;
-      return this.paramCodec.decodePath(path);
+      return stripPrefix(path, this.locationStrategy.getBaseHref());
     }
+
+    const urlParts = this.getUrlParts();
 
     // null path converts to empty string. Prepend with "/" if needed.
     path = path !== null ? path.toString() : '';
     path = path.charAt(0) === '/' ? path : '/' + path;
-    path = this.paramCodec.encodePath(path);
 
-    // Only changing path, so append search and hash
-    let origPath = this.locationStrategy.path(true);
-    const searchIdx = origPath.indexOf('?');
-    if (searchIdx > -1) {
-      path += origPath.substring(searchIdx);
-    }
+    urlParts.path = stripPrefix(path, this.locationStrategy.getBaseHref());
 
-    this.locationStrategy.pushState(null, '', path, '');
+    this.updateUrl();
     return this;
   }
 
@@ -309,25 +354,17 @@ export type SearchParams = string | number | []
       paramValue?: null|undefined|string|number|boolean|string[]): {[key: string]: unknown}|this {
     switch (arguments.length) {
       case 0:
+        if (this.urlParts) {
+          return this.urlParts.search;
+        }
         const params = this.platformLocation.search;
 
-        return this.paramCodec.decodeSearch(params[0] === '?' ? params.substring(1) : params);
+        return this.urlCodec.decodeSearch(params[0] === '?' ? params.substring(1) : params);
       case 1:
-        let path = this.locationStrategy.path(true);
+        const urlParts = this.getUrlParts();
 
-        // Parse out the hash value
-        const hashIdx = path.indexOf('#');
-        const hash = hashIdx > -1 ? path.substring(hashIdx) : '';
-        path = hashIdx > -1 ? path.substring(0, hashIdx) : path;
-
-        // Get path up to search params
-        const searchIdx = path.indexOf('?');
-        path = path.substring(0, searchIdx > -1 ? searchIdx : Infinity);
         if (typeof search === 'string' || typeof search === 'number') {
-          search = this.paramCodec.encodeSearch(search.toString());
-
-          return this.url(`${path}${search}${hash}`);
-
+          urlParts.search = this.urlCodec.decodeSearch(search.toString());
         } else if (typeof search === 'object') {
           // Copy the object so it's never mutated
           search = {...search};
@@ -337,12 +374,12 @@ export type SearchParams = string | number | []
           }
 
           // Convert to string
-          search = this.paramCodec.encodeSearch(search);
-          return this.url(`${path}${search}${hash}`);
+          urlParts.search = search;
         } else {
           throw new Error(
               'LocationUpgradeService.search(): First argument must be a string or an object.');
         }
+        this.updateUrl();
         break;
       default:
         if (typeof search === 'string') {
@@ -376,22 +413,22 @@ export type SearchParams = string | number | []
   hash(): string;
   hash(hash: string|number|null): this;
   hash(hash?: string|number|null): string|this {
-    if (typeof hash === 'undefined') {
-      const hash = this.platformLocation.hash;
-      return this.paramCodec.decodeValue(hash[0] === '#' ? hash.substring(1) : hash);
-    }
-    hash = hash !== null ? hash.toString() : '';
-    if (hash) {
-      hash = '#' + this.paramCodec.encodeHash(hash);
+    if (arguments.length === 0) {
+      if (this.urlParts) {
+        return this.urlParts.hash;
+      }
+      // We have to get the hash through path. This is because path and hash values are different
+      // depending on the strategy used. Pulling hash out of the path makes this consistent.
+      const path = this.locationStrategy.path(true);
+      const hashIdx = path.indexOf('#');
+      const hash = hashIdx !== -1 ? path.substring(hashIdx) : '';
+      return this.urlCodec.decodeHash(hash);
     }
 
-    let path = this.location.path(true);
-    // Get path up to the first instance of a hash, since we are replacing the hash
-    const hashIdx = path.indexOf('#');
-    if (hashIdx !== -1) {
-      path = path.substring(0, path.indexOf('#'));
-    }
-    this.locationStrategy.pushState(null, '', path + hash, '');
+    const urlParts = this.getUrlParts();
+    urlParts.hash = hash != null ? hash.toString() : '';
+
+    this.updateUrl();
     return this;
   }
 
