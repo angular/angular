@@ -143,6 +143,7 @@ function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
           options: {
             targetLabel: '//src:devserver',
             bazelCommand: 'run',
+            watch: true,
           },
           configurations: {
             production: {
