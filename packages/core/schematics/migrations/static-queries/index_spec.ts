@@ -328,5 +328,30 @@ describe('static-queries migration', () => {
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
+
+    it('should detect static queries within nested inheritance', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test') query: any;
+        }
+        
+        export class A extends MyComp {}
+        export class B extends A {
+        
+          ngOnInit() {
+            this.query.testFn();
+          }
+        
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
   }
 });

@@ -13,6 +13,7 @@ import * as ts from 'typescript';
 import {analyzeNgQueryUsage} from './angular/analyze_query_usage';
 import {NgQueryResolveVisitor} from './angular/ng_query_visitor';
 import {NgQueryDefinition, QueryTiming} from './angular/query-definition';
+import {getPropertyNameText} from './typescript/property_name';
 import {parseTsconfigFile} from './typescript/tsconfig';
 
 /**
@@ -74,8 +75,7 @@ function recordQueryUsageTransformation(
     // In case the options already contains a property for the "static" flag, we just
     // skip this query and leave it untouched.
     if (existingOptions.properties.some(
-            p => !!p.name && (ts.isIdentifier(p.name) || ts.isStringLiteralLike(p.name)) &&
-                p.name.text === 'static')) {
+            p => !!p.name && getPropertyNameText(p.name) === 'static')) {
       return;
     }
 
