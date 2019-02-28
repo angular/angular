@@ -1306,6 +1306,31 @@ describe('ngtsc behavioral tests', () => {
     expect(trim(jsContents)).toContain(trim(hostBindingsFn));
   });
 
+  it('should accept dynamic host attribute bindings', () => {
+    env.tsconfig();
+    env.write('other.d.ts', `
+      export declare const foo: any;
+    `);
+    env.write('test.ts', `
+      import {Component} from '@angular/core';
+      import {foo} from './other';
+
+      const test = foo.bar();
+
+      @Component({
+        selector: 'test',
+        template: '',
+        host: {
+          'test': test,
+        },
+      })
+      export class TestCmp {}
+    `);
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('i0.ɵelementHostAttrs(ctx, ["test", test])');
+  });
+
   it('should accept enum values as host bindings', () => {
     env.tsconfig();
     env.write(`test.ts`, `
