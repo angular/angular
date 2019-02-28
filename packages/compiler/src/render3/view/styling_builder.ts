@@ -258,7 +258,10 @@ export class StylingBuilder {
         buildParams: () => {
           // params => elementHostAttrs(directive, attrs)
           this.populateInitialStylingAttrs(attrs);
-          return [this._directiveExpr !, getConstantLiteralFromArray(constantPool, attrs)];
+          const attrArray = !attrs.some(attr => attr instanceof o.WrappedNodeExpr) ?
+              getConstantLiteralFromArray(constantPool, attrs) :
+              o.literalArr(attrs);
+          return [this._directiveExpr !, attrArray];
         }
       };
     }

@@ -21,7 +21,7 @@ import {R3InjectorMetadata, R3NgModuleMetadata, compileInjector, compileNgModule
 import {compilePipeFromMetadata} from './render3/r3_pipe_compiler';
 import {R3Reference} from './render3/util';
 import {R3DirectiveMetadata, R3QueryMetadata} from './render3/view/api';
-import {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
+import {ParsedHostBindings, compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 
@@ -281,11 +281,7 @@ function convertR3DependencyMetadataArray(facades: R3DependencyMetadataFacade[] 
 
 function extractHostBindings(
     host: {[key: string]: string}, propMetadata: {[key: string]: any[]},
-    sourceSpan: ParseSourceSpan): {
-  attributes: StringMap,
-  listeners: StringMap,
-  properties: StringMap,
-} {
+    sourceSpan: ParseSourceSpan): ParsedHostBindings {
   // First parse the declarations from the metadata.
   const bindings = parseHostBindings(host || {});
 

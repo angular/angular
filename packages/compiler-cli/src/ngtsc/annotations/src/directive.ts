@@ -6,12 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, ParseError, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
+import {ConstantPool, Expression, ParseError, ParsedHostBindings, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
+
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Reference} from '../../imports';
-import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
+import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope/src/local';
 import {extractDirectiveGuards} from '../../scope/src/util';
@@ -441,18 +442,14 @@ function isPropertyTypeMember(member: ClassMember): boolean {
       member.kind === ClassMemberKind.Property;
 }
 
-type StringMap = {
-  [key: string]: string
+type StringMap<T> = {
+  [key: string]: T;
 };
 
 function extractHostBindings(
     metadata: Map<string, ts.Expression>, members: ClassMember[], evaluator: PartialEvaluator,
-    coreModule: string | undefined): {
-  attributes: StringMap,
-  listeners: StringMap,
-  properties: StringMap,
-} {
-  let hostMetadata: StringMap = {};
+    coreModule: string | undefined): ParsedHostBindings {
+  let hostMetadata: StringMap<string|Expression> = {};
   if (metadata.has('host')) {
     const expr = metadata.get('host') !;
     const hostMetaMap = evaluator.evaluate(expr);
@@ -466,10 +463,19 @@ function extractHostBindings(
         value = value.resolved;
       }
 
-      if (typeof value !== 'string' || typeof key !== 'string') {
-        throw new Error(`Decorator host metadata must be a string -> string object, got ${value}`);
+      if (typeof key !== 'string') {
+        throw new Error(
+            `Decorator host metadata must be a string -> string object, but found unparseable key ${key}`);
       }
-      hostMetadata[key] = value;
+
+      if (typeof value == 'string') {
+        hostMetadata[key] = value;
+      } else if (value instanceof DynamicValue) {
+        hostMetadata[key] = new WrappedNodeExpr(value.node as ts.Expression);
+      } else {
+        throw new Error(
+            `Decorator host metadata must be a string -> string object, but found unparseable value ${value}`);
+      }
     });
   }
 
