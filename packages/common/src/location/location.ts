@@ -110,7 +110,7 @@ export class Location {
   /**
    * Given a string representing a URL, returns the platform-specific external URL path.
    * If the given URL doesn't begin with a leading slash (`'/'`), this method adds one
-   * before normalizing. This method will also add a hash if `HashLocationStrategy` is
+   * before normalizing. This method also adds a hash if `HashLocationStrategy` is
    * used, or the `APP_BASE_HREF` if the `PathLocationStrategy` is in use.
    *
    *
@@ -140,7 +140,7 @@ export class Location {
   }
 
   /**
-   * Changes the browsers URL to a normalized version of the given URL, and replaces
+   * Changes the browser's URL to a normalized version of the given URL, and replaces
    * the top item on the platform's history stack.
    *
    * @param path  URL path to normalizze
