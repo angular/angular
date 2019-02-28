@@ -4,6 +4,7 @@
 
   // List of extensions which should be recommended for users of this workspace.
   "recommendations": [
+    "devondcarew.bazel-code",
     "gkalpak.aio-docs-utils",
     "ms-vscode.vscode-typescript-tslint-plugin",
     "xaver.clang-format",
