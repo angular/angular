@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, R3ComponentMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {BoundTarget, ConstantPool, CssSelector, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, ParseError, R3ComponentMetadata, R3TargetBinder, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
@@ -48,6 +48,7 @@ export class ComponentDecoratorHandler implements
       private refEmitter: ReferenceEmitter) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
+  private boundTemplateCache = new Map<ts.Declaration, BoundTarget<ScopeDirective>>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
 
   /**
@@ -323,7 +324,8 @@ export class ComponentDecoratorHandler implements
       for (const meta of scope.compilation.directives) {
         matcher.addSelectables(CssSelector.parse(meta.selector), meta);
       }
-      ctx.addTemplate(node as ts.ClassDeclaration, meta.parsedTemplate, matcher);
+      const bound = new R3TargetBinder(matcher).bind({template: meta.parsedTemplate});
+      ctx.addTemplate(node, bound);
     }
   }
 
@@ -337,8 +339,17 @@ export class ComponentDecoratorHandler implements
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during resolve() the whole compilation unit has been
       // fully analyzed.
-      const directives = scope.compilation.directives.map(
-          dir => ({selector: dir.selector, expression: this.refEmitter.emit(dir.ref, context)}));
+
+      const matcher = new SelectorMatcher<ScopeDirective&{expression: Expression}>();
+      const directives: {selector: string, expression: Expression}[] = [];
+
+      for (const dir of scope.compilation.directives) {
+        const {ref, selector} = dir;
+        const expression = this.refEmitter.emit(ref, context);
+        directives.push({selector, expression});
+
+        matcher.addSelectables(CssSelector.parse(selector), {...dir, expression});
+      }
       const pipes = new Map<string, Expression>();
       for (const pipe of scope.compilation.pipes) {
         pipes.set(pipe.name, this.refEmitter.emit(pipe.ref, context));
@@ -346,18 +357,35 @@ export class ComponentDecoratorHandler implements
 
       // Scan through the references of the `scope.directives` array and check whether
       // any import which needs to be generated for the directive would create a cycle.
-      const origin = node.getSourceFile();
-      const cycleDetected = directives.some(dir => this._isCyclicImport(dir.expression, origin)) ||
-          Array.from(pipes.values()).some(pipe => this._isCyclicImport(pipe, origin));
+      const cycleDetected = directives.some(dir => this._isCyclicImport(dir.expression, context)) ||
+          Array.from(pipes.values()).some(pipe => this._isCyclicImport(pipe, context));
       if (!cycleDetected) {
         const wrapDirectivesAndPipesInClosure =
             directives.some(
-                dir => isExpressionForwardReference(dir.expression, node.name !, origin)) ||
+                dir => isExpressionForwardReference(dir.expression, node.name !, context)) ||
             Array.from(pipes.values())
-                .some(pipe => isExpressionForwardReference(pipe, node.name !, origin));
+                .some(pipe => isExpressionForwardReference(pipe, node.name !, context));
         metadata.directives = directives;
         metadata.pipes = pipes;
         metadata.wrapDirectivesAndPipesInClosure = wrapDirectivesAndPipesInClosure;
+        for (const dir of directives) {
+          this._recordSyntheticImport(dir.expression, context);
+        }
+        for (const [name, pipe] of pipes) {
+          this._recordSyntheticImport(pipe, context);
+        }
+
+        const binder = new R3TargetBinder(matcher);
+        const bound = binder.bind({template: metadata.template.nodes});
+        for (const {expression} of bound.getUsedDirectives()) {
+          this._recordSyntheticImport(expression, context);
+        }
+
+        for (const name of bound.getUsedPipes()) {
+          if (pipes.has(name)) {
+            this._recordSyntheticImport(pipes.get(name) !, context);
+          }
+        }
       } else {
         this.scopeRegistry.setComponentAsRequiringRemoteScoping(node);
       }
@@ -549,19 +577,32 @@ export class ComponentDecoratorHandler implements
     };
   }
 
-  private _isCyclicImport(expr: Expression, origin: ts.SourceFile): boolean {
+  private _expressionToImportedFile(expr: Expression, origin: ts.SourceFile): ts.SourceFile|null {
     if (!(expr instanceof ExternalExpr)) {
-      return false;
+      return null;
     }
 
     // Figure out what file is being imported.
-    const imported = this.moduleResolver.resolveModuleName(expr.value.moduleName !, origin);
+    return this.moduleResolver.resolveModuleName(expr.value.moduleName !, origin);
+  }
+
+  private _isCyclicImport(expr: Expression, origin: ts.SourceFile): boolean {
+    const imported = this._expressionToImportedFile(expr, origin);
     if (imported === null) {
       return false;
     }
 
     // Check whether the import is legal.
     return this.cycleAnalyzer.wouldCreateCycle(origin, imported);
+  }
+
+  private _recordSyntheticImport(expr: Expression, origin: ts.SourceFile): void {
+    const imported = this._expressionToImportedFile(expr, origin);
+    if (imported === null) {
+      return;
+    }
+
+    this.cycleAnalyzer.recordSyntheticImport(origin, imported);
   }
 }
 
