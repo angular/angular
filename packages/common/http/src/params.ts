@@ -225,7 +225,7 @@ export class HttpParams {
             }
         }
       });
-      this.cloneFrom = null;
+      this.cloneFrom = this.updates = null;
     }
   }
 }
