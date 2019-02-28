@@ -2045,6 +2045,41 @@ describe('ngtsc behavioral tests', () => {
               /i\d\.ɵsetComponentScope\(NormalComponent,\s+\[NormalComponent,\s+CyclicComponent\],\s+\[\]\)/);
       expect(jsContents).not.toContain('/*__PURE__*/ i0.ɵsetComponentScope');
     });
+
+    it('should detect a cycle added entirely during compilation', () => {
+      env.tsconfig();
+      env.write('test.ts', `
+        import {NgModule} from '@angular/core';
+        import {ACmp} from './a';
+        import {BCmp} from './b';
+
+        @NgModule({declarations: [ACmp, BCmp]})
+        export class Module {}
+      `);
+      env.write('a.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'a-cmp',
+          template: '<b-cmp></b-cmp>',
+        })
+        export class ACmp {}
+      `);
+      env.write('b.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'b-cmp',
+          template: '<a-cmp></a-cmp>',
+        })
+        export class BCmp {}
+      `);
+      env.driveMain();
+      const aJsContents = env.getContents('a.js');
+      const bJsContents = env.getContents('b.js');
+      expect(aJsContents).toMatch(/import \* as i\d? from ".\/b"/);
+      expect(bJsContents).not.toMatch(/import \* as i\d? from ".\/a"/);
+    });
   });
 
   describe('multiple local refs', () => {

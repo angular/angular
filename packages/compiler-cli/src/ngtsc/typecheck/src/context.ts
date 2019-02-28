@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3TargetBinder, SelectorMatcher, TmplAstNode} from '@angular/compiler';
+import {BoundTarget} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {NoopImportRewriter, ReferenceEmitter} from '../../imports';
@@ -47,21 +47,12 @@ export class TypeCheckContext {
    * @param template AST nodes of the template being recorded.
    * @param matcher `SelectorMatcher` which tracks directives that are in scope for this template.
    */
-  addTemplate(
-      node: ts.ClassDeclaration, template: TmplAstNode[],
-      matcher: SelectorMatcher<TypeCheckableDirectiveMeta>): void {
+  addTemplate(node: ts.ClassDeclaration, boundTarget: BoundTarget<TypeCheckableDirectiveMeta>):
+      void {
     // Only write TCBs for named classes.
     if (node.name === undefined) {
       throw new Error(`Assertion: class must be named`);
     }
-
-    // Bind the template, which will:
-    //   - Extract the metadata needed to generate type check blocks.
-    //   - Perform directive matching, which informs the context which directives are used in the
-    //     template. This allows generation of type constructors for only those directives which
-    //     are actually used by the templates.
-    const binder = new R3TargetBinder(matcher);
-    const boundTarget = binder.bind({template});
 
     // Get all of the directives used in the template and record type constructors for all of them.
     boundTarget.getUsedDirectives().forEach(dir => {
