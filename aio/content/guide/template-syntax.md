@@ -956,7 +956,7 @@ The following event binding listens for the button's click events, calling
 the component's `onSave()` method whenever a click occurs:
 
 <figure>
-  <img src='generated/images/guide/event-binding/syntax-diagram.svg' alt="Syntax diagram">
+  <img src='generated/images/guide/template-syntax/syntax-diagram.svg' alt="Syntax diagram">
 </figure>
 
 ### Target event
