@@ -17,11 +17,11 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {CHILD_HEAD, CLEANUP, FLAGS, HEADER_OFFSET, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {CHILD_HEAD, CLEANUP, FLAGS, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
 import {renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
-import {getNativeByTNode, isComponent, isLContainer, isLView, isRootView, unwrapRNode} from './util/view_utils';
+import {getNativeByTNode, isComponent, isLContainer, isLView, isRootView, unwrapRNode, viewAttachedToContainer} from './util/view_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -350,7 +350,8 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView {
   views.splice(removeIndex, 1);
   addRemoveViewFromContainer(viewToDetach, false);
 
-  if (viewToDetach[QUERIES]) {
+  if ((viewToDetach[FLAGS] & LViewFlags.Attached) &&
+      !(viewToDetach[FLAGS] & LViewFlags.Destroyed) && viewToDetach[QUERIES]) {
     viewToDetach[QUERIES] !.removeView();
   }
   viewToDetach[PARENT] = null;
@@ -422,10 +423,8 @@ export function getParentState(lViewOrLContainer: LView | LContainer, rootView: 
  *
  * @param view The LView to clean up
  */
-function cleanUpView(viewOrContainer: LView | LContainer): void {
-  if ((viewOrContainer as LView).length >= HEADER_OFFSET) {
-    const view = viewOrContainer as LView;
-
+function cleanUpView(view: LView | LContainer): void {
+  if (isLView(view) && !(view[FLAGS] & LViewFlags.Destroyed)) {
     // Usually the Attached flag is removed when the view is detached from its parent, however
     // if it's a root view, the flag won't be unset hence why we're also removing on destroy.
     view[FLAGS] &= ~LViewFlags.Attached;
@@ -444,6 +443,10 @@ function cleanUpView(viewOrContainer: LView | LContainer): void {
     if (hostTNode && hostTNode.type === TNodeType.Element && isProceduralRenderer(view[RENDERER])) {
       ngDevMode && ngDevMode.rendererDestroy++;
       (view[RENDERER] as ProceduralRenderer3).destroy();
+    }
+    // For embedded views still attached to a container: remove query result from this view.
+    if (viewAttachedToContainer(view) && view[QUERIES]) {
+      view[QUERIES] !.removeView();
     }
   }
 }
