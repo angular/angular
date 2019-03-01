@@ -1821,7 +1821,7 @@ export const locale_fi = [
 ];
 
 function plural_fr(n: number): number {
-  let i = Math.floor(Math.abs(n));
+  let i = Math.floor(Math.abs(parseFloat(n.toString().replace(',', '.'))));
   if (i === 0 || i === 1) return 1;
   return 5;
 }
@@ -1899,7 +1899,7 @@ export const locale_fr = [
 ];
 
 function plural_fr_CA(n: number): number {
-  let i = Math.floor(Math.abs(n));
+  let i = Math.floor(Math.abs(parseFloat(n.toString().replace(',', '.'))));
   if (i === 0 || i === 1) return 1;
   return 5;
 }
