@@ -363,6 +363,9 @@
     "name": "addComponentLogic"
   },
   {
+    "name": "addOrUpdateStaticStyle"
+  },
+  {
     "name": "addPlayerInternal"
   },
   {
@@ -400,6 +403,9 @@
   },
   {
     "name": "attachPatchData"
+  },
+  {
+    "name": "attrsStylingIndexOf"
   },
   {
     "name": "baseResolveDirective"
@@ -855,9 +861,6 @@
     "name": "hasStyleInput"
   },
   {
-    "name": "hasStyling"
-  },
-  {
     "name": "hasTagAndTypeMatch"
   },
   {
@@ -1063,6 +1066,12 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "patchContextWithStaticAttrs"
+  },
+  {
+    "name": "patchInitialStylingValue"
   },
   {
     "name": "pointers"

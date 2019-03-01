@@ -41,29 +41,10 @@ import {addPlayerInternal, allocPlayerContext, allocateDirectiveIntoContext, cre
 /**
  * Creates a new StylingContext an fills it with the provided static styling attribute values.
  */
-export function initializeStaticContext(attrs: TAttributes): StylingContext {
+export function initializeStaticContext(
+    attrs: TAttributes, stylingStartIndex: number, directiveRef?: any | null): StylingContext {
   const context = createEmptyStylingContext();
-  const initialClasses: InitialStylingValues = context[StylingIndex.InitialClassValuesPosition] =
-      [null, null];
-  const initialStyles: InitialStylingValues = context[StylingIndex.InitialStyleValuesPosition] =
-      [null, null];
-
-  // The attributes array has marker values (numbers) indicating what the subsequent
-  // values represent. When we encounter a number, we set the mode to that type of attribute.
-  let mode = -1;
-  for (let i = 0; i < attrs.length; i++) {
-    const attr = attrs[i];
-    if (typeof attr == 'number') {
-      mode = attr;
-    } else if (mode === AttributeMarker.Styles) {
-      initialStyles.push(attr as string, attrs[++i] as string);
-    } else if (mode === AttributeMarker.Classes) {
-      initialClasses.push(attr as string, true);
-    } else if (mode === AttributeMarker.SelectOnly) {
-      break;
-    }
-  }
-
+  patchContextWithStaticAttrs(context, attrs, stylingStartIndex, directiveRef);
   return context;
 }
 
@@ -74,34 +55,41 @@ export function initializeStaticContext(attrs: TAttributes): StylingContext {
  * @param context the existing styling context
  * @param attrs an array of new static styling attributes that will be
  *              assigned to the context
+ * @param attrsStylingStartIndex what index to start iterating within the
+ *              provided `attrs` array to start reading style and class values
  * @param directiveRef the directive instance with which static data is associated with.
  */
 export function patchContextWithStaticAttrs(
-    context: StylingContext, attrs: TAttributes, startingIndex: number, directiveRef: any): void {
+    context: StylingContext, attrs: TAttributes, attrsStylingStartIndex: number,
+    directiveRef?: any | null): void {
+  // this means the context has already been set and instantiated
+  if (context[StylingIndex.MasterFlagPosition] & StylingFlags.BindingAllocationLocked) return;
+
   // If the styling context has already been patched with the given directive's bindings,
   // then there is no point in doing it again. The reason why this may happen (the directive
   // styling being patched twice) is because the `stylingBinding` function is called each time
   // an element is created (both within a template function and within directive host bindings).
   const directives = context[StylingIndex.DirectiveRegistryPosition];
-  if (getDirectiveRegistryValuesIndexOf(directives, directiveRef) == -1) {
+  let detectedIndex = getDirectiveRegistryValuesIndexOf(directives, directiveRef || null);
+  if (detectedIndex === -1) {
     // this is a new directive which we have not seen yet.
-    allocateDirectiveIntoContext(context, directiveRef);
+    detectedIndex = allocateDirectiveIntoContext(context, directiveRef);
+  }
+  const directiveIndex = detectedIndex / DirectiveRegistryValuesIndex.Size;
 
-    let initialClasses: InitialStylingValues|null = null;
-    let initialStyles: InitialStylingValues|null = null;
-
-    let mode = -1;
-    for (let i = startingIndex; i < attrs.length; i++) {
-      const attr = attrs[i];
-      if (typeof attr == 'number') {
-        mode = attr;
-      } else if (mode == AttributeMarker.Classes) {
-        initialClasses = initialClasses || context[StylingIndex.InitialClassValuesPosition];
-        patchInitialStylingValue(initialClasses, attr, true);
-      } else if (mode == AttributeMarker.Styles) {
-        initialStyles = initialStyles || context[StylingIndex.InitialStyleValuesPosition];
-        patchInitialStylingValue(initialStyles, attr, attrs[++i]);
-      }
+  let initialClasses: InitialStylingValues|null = null;
+  let initialStyles: InitialStylingValues|null = null;
+  let mode = -1;
+  for (let i = attrsStylingStartIndex; i < attrs.length; i++) {
+    const attr = attrs[i];
+    if (typeof attr == 'number') {
+      mode = attr;
+    } else if (mode == AttributeMarker.Classes) {
+      initialClasses = initialClasses || context[StylingIndex.InitialClassValuesPosition];
+      patchInitialStylingValue(initialClasses, attr, true, directiveIndex);
+    } else if (mode == AttributeMarker.Styles) {
+      initialStyles = initialStyles || context[StylingIndex.InitialStyleValuesPosition];
+      patchInitialStylingValue(initialStyles, attr, attrs[++i], directiveIndex);
     }
   }
 }
@@ -110,29 +98,44 @@ export function patchContextWithStaticAttrs(
  * Designed to add a style or class value into the existing set of initial styles.
  *
  * The function will search and figure out if a style/class value is already present
- * within the provided initial styling array. If and when a style/class value is not
- * present (or if it's value is falsy) then it will be inserted/updated in the list
- * of initial styling values.
+ * within the provided initial styling array. If and when a style/class value is
+ * present (allocated) then the code below will set the new value depending on the
+ * following cases:
+ *
+ *  1) if the existing value is falsy (this happens because a `[class.prop]` or
+ *     `[style.prop]` binding was set, but there wasn't a matching static style
+ *     or class present on the context)
+ *  2) if the value was set already by the template, component or directive, but the
+ *     new value is set on a higher level (i.e. a sub component which extends a parent
+ *     component sets its value after the parent has already set the same one)
+ *  3) if the same directive provides a new set of styling values to set
+ *
+ * @param initialStyling the initial styling array where the new styling entry will be added to
+ * @param prop the property value of the new entry (e.g. `width` (styles) or `foo` (classes))
+ * @param value the styling value of the new entry (e.g. `absolute` (styles) or `true` (classes))
+ * @param directiveOwnerIndex the directive owner index value of the styling source responsible
+ *        for these styles (see `interfaces/styling.ts#directives` for more info)
  */
 function patchInitialStylingValue(
-    initialStyling: InitialStylingValues, prop: string, value: any): void {
-  // Even values are keys; Odd numbers are values; Search keys only
-  for (let i = InitialStylingValuesIndex.KeyValueStartPosition; i < initialStyling.length;) {
-    const key = initialStyling[i];
+    initialStyling: InitialStylingValues, prop: string, value: any,
+    directiveOwnerIndex: number): void {
+  for (let i = InitialStylingValuesIndex.KeyValueStartPosition; i < initialStyling.length;
+       i += InitialStylingValuesIndex.Size) {
+    const key = initialStyling[i + InitialStylingValuesIndex.PropOffset];
     if (key === prop) {
-      const existingValue = initialStyling[i + InitialStylingValuesIndex.ValueOffset];
-
-      // If there is no previous style value (when `null`) or no previous class
-      // applied (when `false`) then we update the the newly given value.
-      if (existingValue == null || existingValue == false) {
-        initialStyling[i + InitialStylingValuesIndex.ValueOffset] = value;
+      const existingValue =
+          initialStyling[i + InitialStylingValuesIndex.ValueOffset] as string | null | boolean;
+      const existingOwner =
+          initialStyling[i + InitialStylingValuesIndex.DirectiveOwnerOffset] as number;
+      if (allowValueChange(existingValue, value, existingOwner, directiveOwnerIndex)) {
+        addOrUpdateStaticStyle(i, initialStyling, prop, value, directiveOwnerIndex);
       }
       return;
     }
-    i = i + InitialStylingValuesIndex.Size;
   }
+
   // We did not find existing key, add a new one.
-  initialStyling.push(prop, value);
+  addOrUpdateStaticStyle(null, initialStyling, prop, value, directiveOwnerIndex);
 }
 
 /**
@@ -377,8 +380,10 @@ export function updateContextWithBindings(
     let initialValuesToLookup = entryIsClassBased ? initialClasses : initialStyles;
     let indexForInitial = getInitialStylingValuesIndexOf(initialValuesToLookup, propName);
     if (indexForInitial === -1) {
-      indexForInitial = initialValuesToLookup.length + InitialStylingValuesIndex.ValueOffset;
-      initialValuesToLookup.push(propName, entryIsClassBased ? false : null);
+      indexForInitial = addOrUpdateStaticStyle(
+                            null, initialValuesToLookup, propName, entryIsClassBased ? false : null,
+                            directiveIndex) +
+          InitialStylingValuesIndex.ValueOffset;
     } else {
       indexForInitial += InitialStylingValuesIndex.ValueOffset;
     }
@@ -1262,7 +1267,7 @@ function getInitialValue(context: StylingContext, flag: number): string|boolean|
   const entryIsClassBased = flag & StylingFlags.Class;
   const initialValues = entryIsClassBased ? context[StylingIndex.InitialClassValuesPosition] :
                                             context[StylingIndex.InitialStyleValuesPosition];
-  return initialValues[index];
+  return initialValues[index] as string | boolean | null;
 }
 
 function getInitialIndex(flag: number): number {
@@ -1769,7 +1774,7 @@ function allowValueChange(
  */
 export function getInitialClassNameValue(context: StylingContext): string {
   const initialClassValues = context[StylingIndex.InitialClassValuesPosition];
-  let className = initialClassValues[InitialStylingValuesIndex.InitialClassesStringPosition];
+  let className = initialClassValues[InitialStylingValuesIndex.CachedStringValuePosition];
   if (className === null) {
     className = '';
     for (let i = InitialStylingValuesIndex.KeyValueStartPosition; i < initialClassValues.length;
@@ -1779,7 +1784,7 @@ export function getInitialClassNameValue(context: StylingContext): string {
         className += (className.length ? ' ' : '') + initialClassValues[i];
       }
     }
-    initialClassValues[InitialStylingValuesIndex.InitialClassesStringPosition] = className;
+    initialClassValues[InitialStylingValuesIndex.CachedStringValuePosition] = className;
   }
   return className;
 }
@@ -1797,7 +1802,7 @@ export function getInitialClassNameValue(context: StylingContext): string {
  */
 export function getInitialStyleStringValue(context: StylingContext): string {
   const initialStyleValues = context[StylingIndex.InitialStyleValuesPosition];
-  let styleString = initialStyleValues[InitialStylingValuesIndex.InitialClassesStringPosition];
+  let styleString = initialStyleValues[InitialStylingValuesIndex.CachedStringValuePosition];
   if (styleString === null) {
     styleString = '';
     for (let i = InitialStylingValuesIndex.KeyValueStartPosition; i < initialStyleValues.length;
@@ -1807,7 +1812,7 @@ export function getInitialStyleStringValue(context: StylingContext): string {
         styleString += (styleString.length ? ';' : '') + `${initialStyleValues[i]}:${value}`;
       }
     }
-    initialStyleValues[InitialStylingValuesIndex.InitialClassesStringPosition] = styleString;
+    initialStyleValues[InitialStylingValuesIndex.CachedStringValuePosition] = styleString;
   }
   return styleString;
 }
@@ -1955,4 +1960,31 @@ function registerMultiMapEntry(
     }
   }
   cachedValues.push(0, startPosition, null, count);
+}
+
+/**
+ * Inserts or updates an existing entry in the provided `staticStyles` collection.
+ *
+ * @param index the index representing an existing styling entry in the collection:
+ *  if provided (numeric): then it will update the existing entry at the given position
+ *  if null: then it will insert a new entry within the collection
+ * @param staticStyles a collection of style or class entries where the value will
+ *  be inserted or patched
+ * @param prop the property value of the entry (e.g. `width` (styles) or `foo` (classes))
+ * @param value the styling value of the entry (e.g. `absolute` (styles) or `true` (classes))
+ * @param directiveOwnerIndex the directive owner index value of the styling source responsible
+ *        for these styles (see `interfaces/styling.ts#directives` for more info)
+ * @returns the index of the updated or new entry within the collection
+ */
+function addOrUpdateStaticStyle(
+    index: number | null, staticStyles: InitialStylingValues, prop: string,
+    value: string | boolean | null, directiveOwnerIndex: number) {
+  if (index === null) {
+    index = staticStyles.length;
+    staticStyles.push(null, null, null);
+    staticStyles[index + InitialStylingValuesIndex.PropOffset] = prop;
+  }
+  staticStyles[index + InitialStylingValuesIndex.ValueOffset] = value;
+  staticStyles[index + InitialStylingValuesIndex.DirectiveOwnerOffset] = directiveOwnerIndex;
+  return index;
 }
