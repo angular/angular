@@ -836,9 +836,9 @@ function triggerScroll(viewport: CdkVirtualScrollViewport, offset?: number) {
   encapsulation: ViewEncapsulation.None,
 })
 class FixedSizeVirtualScroll {
-  @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
+  @ViewChild(CdkVirtualScrollViewport, {static: true}) viewport: CdkVirtualScrollViewport;
   // Casting virtualForOf as any so we can spy on private methods
-  @ViewChild(CdkVirtualForOf) virtualForOf: any;
+  @ViewChild(CdkVirtualForOf, {static: true}) virtualForOf: any;
 
   @Input() orientation = 'vertical';
   @Input() viewportSize = 200;
@@ -888,7 +888,7 @@ class FixedSizeVirtualScroll {
   encapsulation: ViewEncapsulation.None,
 })
 class FixedSizeVirtualScrollWithRtlDirection {
-  @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
+  @ViewChild(CdkVirtualScrollViewport, {static: true}) viewport: CdkVirtualScrollViewport;
 
   @Input() orientation = 'vertical';
   @Input() viewportSize = 200;
