@@ -283,40 +283,10 @@ export class ComponentDecoratorHandler implements
       animations = new WrappedNodeExpr(component.get('animations') !);
     }
 
-    // Replace `templateUrl` and `styleUrls` with resolved content in class metadata.
-    // This is needed to let AOT-compiled components be recompiled in JIT mode when some metadata
-    // changes as a result of overrides application.
-    // TODO(FW-1104): method is not efficient and we should revist that: TestBed overrides should
-    // not require full Component recompilation.
-    const decoratorArgsOverrideFn = (args: ts.NodeArray<ts.ObjectLiteralElementLike>):
-                                        ts.NodeArray<ts.ObjectLiteralElementLike> => {
-      const hasTemplateUrl = component.has('templateUrl');
-      const hasStyleUrls = styleUrls && styleUrls.length > 0;
-
-      // Filter out fields related to external resources
-      const overriddenArgs = args.filter((arg) => {
-        if (ts.isPropertyAssignment(arg) && ts.isIdentifier(arg.name)) {
-          const field = arg.name.text;
-          return field !== 'styleUrls' && field !== 'templateUrl' &&  //
-              !(field === 'styles' && hasStyleUrls) &&                //
-              !(field === 'template' && hasTemplateUrl);
-        }
-        return true;
-      });
-
-      // Append template content in case `templateUrl` field is present
-      if (hasTemplateUrl) {
-        const templateLiteral = ts.createLiteral(template.templateStr);
-        overriddenArgs.push(ts.createPropertyAssignment('template', templateLiteral));
-      }
-
-      // Append styles in case `styleUrls` field is present
-      if (hasStyleUrls) {
-        const stylesLiteral = ts.createArrayLiteral(styles !.map(style => ts.createLiteral(style)));
-        overriddenArgs.push(ts.createPropertyAssignment('styles', stylesLiteral));
-      }
-      return ts.createNodeArray(overriddenArgs);
-    };
+    const decoratorArgsOverrideFn = createDecoratorArgsOverrideFn(
+        /* hasTemplateUrl */ component.has('templateUrl'),
+        /* hasStyleUrls */ styleUrls !== null && styleUrls.length > 0,
+        /* template */ template.templateStr, styles);
 
     const output = {
       analysis: {
@@ -636,6 +606,41 @@ function sourceMapUrl(resourceUrl: string): string {
   } else {
     return resourceUrl;
   }
+}
+
+// Replace `templateUrl` and `styleUrls` with resolved content in class metadata.
+// This is needed to let AOT-compiled components be recompiled in JIT mode when some metadata
+// changes as a result of overrides application.
+// TODO(FW-1104): this method is not efficient and we should revist it: TestBed overrides should
+// not require full Component recompilation.
+function createDecoratorArgsOverrideFn(
+    hasTemplateUrl: boolean, hasStyleUrls: boolean, template: string, styles: string[] | null) {
+  return (args: ts.NodeArray<ts.ObjectLiteralElementLike>):
+             ts.NodeArray<ts.ObjectLiteralElementLike> => {
+    // Filter out fields related to external resources
+    const overriddenArgs = args.filter((arg: ts.ObjectLiteralElementLike) => {
+      if (ts.isPropertyAssignment(arg) && ts.isIdentifier(arg.name)) {
+        const field = arg.name.text;
+        return field !== 'styleUrls' && field !== 'templateUrl' &&  //
+            !(field === 'styles' && hasStyleUrls) &&                //
+            !(field === 'template' && hasTemplateUrl);
+      }
+      return true;
+    });
+
+    // Append template content in case `templateUrl` field is present
+    if (hasTemplateUrl) {
+      const templateLiteral = ts.createLiteral(template);
+      overriddenArgs.push(ts.createPropertyAssignment('template', templateLiteral));
+    }
+
+    // Append styles in case `styleUrls` field is present
+    if (hasStyleUrls) {
+      const stylesLiteral = ts.createArrayLiteral(styles !.map(style => ts.createLiteral(style)));
+      overriddenArgs.push(ts.createPropertyAssignment('styles', stylesLiteral));
+    }
+    return ts.createNodeArray(overriddenArgs);
+  };
 }
 
 interface ParsedTemplate {
