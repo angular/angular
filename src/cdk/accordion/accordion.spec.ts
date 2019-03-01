@@ -77,6 +77,6 @@ class SetOfItems {
     </cdk-accordion-item>
   </cdk-accordion>`})
 class NestedItems {
-  @ViewChild('outerItem') outerItem: CdkAccordionItem;
-  @ViewChild('innerItem') innerItem: CdkAccordionItem;
+  @ViewChild('outerItem', {static: true}) outerItem: CdkAccordionItem;
+  @ViewChild('innerItem', {static: true}) innerItem: CdkAccordionItem;
 }
