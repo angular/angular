@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, Directive, HostBinding, HostListener, QueryList, ViewChildren} from '@angular/core';
+import {Component, Directive, HostBinding, HostListener, Input, QueryList, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -109,6 +109,42 @@ describe('acceptance integration tests', () => {
 
     expect(element.style['color']).toEqual('red');
     expect(element.classList.contains('foo')).toBeTruthy();
+  });
+
+  it('should not set inputs after destroy', () => {
+    @Directive({
+      selector: '[no-assign-after-destroy]',
+    })
+    class NoAssignAfterDestroy {
+      private _isDestroyed = false;
+
+      @Input()
+      get value() { return this._value; }
+      set value(newValue: any) {
+        if (this._isDestroyed) {
+          throw Error('Cannot assign to value after destroy.');
+        }
+
+        this._value = newValue;
+      }
+      private _value: any;
+
+      ngOnDestroy() { this._isDestroyed = true; }
+    }
+
+    @Component({template: '<div no-assign-after-destroy [value]="directiveValue"></div>'})
+    class App {
+      directiveValue = 'initial-value';
+    }
+
+    TestBed.configureTestingModule({declarations: [NoAssignAfterDestroy, App]});
+    let fixture = TestBed.createComponent(App);
+    fixture.destroy();
+
+    expect(() => {
+      fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+    }).not.toThrow();
   });
 
 });
