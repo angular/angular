@@ -1694,6 +1694,22 @@ describe('ngtsc behavioral tests', () => {
     expect(emptyFactory).toContain(`export var ɵNonEmptyModule = true;`);
   });
 
+  it('should copy a top-level comment into a factory stub', () => {
+    env.tsconfig({'allowEmptyCodegenFiles': true});
+
+    env.write('test.ts', `/** I am a top-level comment. */
+        import {NgModule} from '@angular/core';
+
+        @NgModule({})
+        export class TestModule {}
+    `);
+
+    env.driveMain();
+
+    const factoryContents = env.getContents('test.ngfactory.js');
+    expect(factoryContents).toMatch(/^\/\*\* I am a top-level comment\. \*\//);
+  });
+
   it('should be able to compile an app using the factory shim', () => {
     env.tsconfig({'allowEmptyCodegenFiles': true});
 
