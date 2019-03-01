@@ -13,6 +13,7 @@ import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
 import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
+import {resetPreOrderHookFlags} from './util/view_utils';
 
 
 
@@ -304,9 +305,10 @@ export function leaveView(newView: LView): void {
     lView[FLAGS] &= ~LViewFlags.CreationMode;
   } else {
     try {
+      resetPreOrderHookFlags(lView);
       executeHooks(
           lView, tView.viewHooks, tView.viewCheckHooks, checkNoChangesMode,
-          InitPhaseState.AfterViewInitHooksToBeRun);
+          InitPhaseState.AfterViewInitHooksToBeRun, undefined);
     } finally {
       // Views are clean and in update mode after being checked, so these bits are cleared
       lView[FLAGS] &= ~(LViewFlags.Dirty | LViewFlags.FirstLViewPass);

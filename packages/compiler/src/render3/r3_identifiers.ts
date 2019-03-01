@@ -31,6 +31,8 @@ export class Identifiers {
 
   static elementProperty: o.ExternalReference = {name: 'ɵelementProperty', moduleName: CORE};
 
+  static flushHooksUpTo: o.ExternalReference = {name: 'ɵflushHooksUpTo', moduleName: CORE};
+
   static componentHostSyntheticProperty:
       o.ExternalReference = {name: 'ɵcomponentHostSyntheticProperty', moduleName: CORE};
 

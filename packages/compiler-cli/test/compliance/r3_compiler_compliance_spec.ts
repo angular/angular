@@ -798,6 +798,7 @@ describe('compiler compliance', () => {
           if (rf & 2) {
             const $myComp$ = $r3$.ɵnextContext();
             const $foo$ = $r3$.ɵreference(1);
+            $r3$.ɵflushHooksUpTo(1);
             $r3$.ɵtextBinding(1, $r3$.ɵinterpolation2("", $myComp$.salutation, " ", $foo$, ""));
           }
         }
@@ -1255,6 +1256,7 @@ describe('compiler compliance', () => {
             }
             if (rf & 2) {
               $r3$.ɵelementProperty(0, "ngIf", $r3$.ɵbind(ctx.visible));
+              $r3$.ɵflushHooksUpTo(1);
               $r3$.ɵelementProperty(1, "ngIf", $r3$.ɵbind(ctx.visible));
             }
           }
@@ -1947,6 +1949,7 @@ describe('compiler compliance', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵtextBinding(0, $r3$.ɵinterpolation1("", $r3$.ɵpipeBind2(1, 3, $r3$.ɵpipeBind2(2, 6, ctx.name, ctx.size), ctx.size), ""));
+                  $r3$.ɵflushHooksUpTo(4);
                   $r3$.ɵtextBinding(4, $r3$.ɵinterpolation2("", $r3$.ɵpipeBindV(5, 9, $r3$.ɵpureFunction1(18, $c0$, ctx.name)), " ", (ctx.name ? 1 : $r3$.ɵpipeBind1(6, 16, 2)), ""));
                 }
               },
@@ -2061,6 +2064,7 @@ describe('compiler compliance', () => {
             }
             if (rf & 2) {
               const $user$ = $r3$.ɵreference(1);
+              $r3$.ɵflushHooksUpTo(2);
               $r3$.ɵtextBinding(2, $r3$.ɵinterpolation1("Hello ", $user$.value, "!"));
             }
           },
@@ -2123,6 +2127,7 @@ describe('compiler compliance', () => {
             $r3$.ɵnextContext();
             const $foo$ = $r3$.ɵreference(1);
             const $baz$ = $r3$.ɵreference(5);
+            $r3$.ɵflushHooksUpTo(1);
             $r3$.ɵtextBinding(1, $r3$.ɵinterpolation3("", $foo$, "-", $bar$, "-", $baz$, ""));
           }
         }
@@ -2138,6 +2143,7 @@ describe('compiler compliance', () => {
             const $bar$ = $r3$.ɵreference(4);
             $r3$.ɵnextContext();
             const $foo$ = $r3$.ɵreference(1);
+            $r3$.ɵflushHooksUpTo(1);
             $r3$.ɵtextBinding(1, $r3$.ɵinterpolation2(" ", $foo$, "-", $bar$, " "));
           }
         }
@@ -2157,6 +2163,7 @@ describe('compiler compliance', () => {
             }
             if (rf & 2) {
               const $foo$ = $r3$.ɵreference(1);
+              $r3$.ɵflushHooksUpTo(2);
               $r3$.ɵtextBinding(2, $r3$.ɵinterpolation1(" ", $foo$, " "));
             }
           },
@@ -2209,6 +2216,7 @@ describe('compiler compliance', () => {
         if (rf & 2) {
           const $item$ = $i0$.ɵnextContext().$implicit;
           const $foo$ = $i0$.ɵreference(2);
+          $r3$.ɵflushHooksUpTo(1);
           $i0$.ɵtextBinding(1, $i0$.ɵinterpolation2(" ", $foo$, " - ", $item$, " "));
         }
       }
@@ -2222,6 +2230,7 @@ describe('compiler compliance', () => {
         }
         if (rf & 2) {
           const $app$ = $i0$.ɵnextContext();
+          $r3$.ɵflushHooksUpTo(3);
           $i0$.ɵelementProperty(3, "ngIf", $i0$.ɵbind($app$.showing));
         }
       }
@@ -2313,6 +2322,7 @@ describe('compiler compliance', () => {
               }
               if (rf & 2) {
                 $r3$.ɵelementProperty(0, "name", $r3$.ɵbind(ctx.name1));
+                $r3$.ɵflushHooksUpTo(1);
                 $r3$.ɵelementProperty(1, "name", $r3$.ɵbind(ctx.name2));
               }
             },
@@ -2443,7 +2453,10 @@ describe('compiler compliance', () => {
                     $r3$.ɵtemplate(1, MyComponent__svg_g_1_Template, 2, 0, "g", $t1_attrs$);
                     $r3$.ɵelementEnd();
                   }
-                  if (rf & 2) { $r3$.ɵelementProperty(1,"forOf",$r3$.ɵbind(ctx.items)); }
+                  if (rf & 2) {
+                    $r3$.ɵflushHooksUpTo(1);
+                    $r3$.ɵelementProperty(1,"forOf",$r3$.ɵbind(ctx.items));
+                  }
                 },
                 directives: function() { return [ForOfDirective]; },
                 encapsulation: 2
@@ -2505,6 +2518,7 @@ describe('compiler compliance', () => {
             }
             if (rf & 2) {
               const $item$ = ctx.$implicit;
+              $r3$.ɵflushHooksUpTo(1);
               $r3$.ɵtextBinding(1, $r3$.ɵinterpolation1("", $item$.name, ""));
             }
           }
@@ -2522,6 +2536,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
+                $r3$.ɵflushHooksUpTo(1);
                 $r3$.ɵelementProperty(1, "forOf", $r3$.ɵbind(ctx.items));
               }
             },
@@ -2586,6 +2601,7 @@ describe('compiler compliance', () => {
             if (rf & 2) {
               const $info$ = ctx.$implicit;
               const $item$ = $r3$.ɵnextContext().$implicit;
+              $r3$.ɵflushHooksUpTo(1);
               $r3$.ɵtextBinding(1, $r3$.ɵinterpolation2(" ", $item$.name, ": ", $info$.description, " "));
             }
           }
@@ -2603,7 +2619,9 @@ describe('compiler compliance', () => {
             }
             if (rf & 2) {
               const $item$ = ctx.$implicit;
+              $r3$.ɵflushHooksUpTo(2);
               $r3$.ɵtextBinding(2, $r3$.ɵinterpolation1("", IDENT.name, ""));
+              $r3$.ɵflushHooksUpTo(4);
               $r3$.ɵelementProperty(4, "forOf", $r3$.ɵbind(IDENT.infos));
             }
           }
@@ -2622,6 +2640,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
+                $r3$.ɵflushHooksUpTo(1);
                 $r3$.ɵelementProperty(1, "forOf", $r3$.ɵbind(ctx.items));
               }
             },

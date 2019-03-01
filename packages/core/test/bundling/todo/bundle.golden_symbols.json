@@ -180,6 +180,9 @@
     "name": "PARENT_INJECTOR"
   },
   {
+    "name": "PREORDER_HOOK_FLAGS"
+  },
+  {
     "name": "QUERIES"
   },
   {
@@ -432,6 +435,9 @@
     "name": "cacheMatchingLocalNames"
   },
   {
+    "name": "callHook"
+  },
+  {
     "name": "callHooks"
   },
   {
@@ -585,13 +591,13 @@
     "name": "executeHooks"
   },
   {
-    "name": "executeInitHooks"
-  },
-  {
     "name": "executeNodeAction"
   },
   {
     "name": "executeOnDestroys"
+  },
+  {
+    "name": "executePreOrderHooks"
   },
   {
     "name": "executeViewQueryFn"
@@ -619,6 +625,9 @@
   },
   {
     "name": "findViaComponent"
+  },
+  {
+    "name": "flushHooksUpTo"
   },
   {
     "name": "forwardRef"
@@ -1156,6 +1165,9 @@
   },
   {
     "name": "resetComponentState"
+  },
+  {
+    "name": "resetPreOrderHookFlags"
   },
   {
     "name": "resolveDirectives"

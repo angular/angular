@@ -93,6 +93,9 @@
     "name": "PARENT_INJECTOR"
   },
   {
+    "name": "PREORDER_HOOK_FLAGS"
+  },
+  {
     "name": "RENDERER"
   },
   {
@@ -148,6 +151,9 @@
   },
   {
     "name": "bloomAdd"
+  },
+  {
+    "name": "callHook"
   },
   {
     "name": "callHooks"
@@ -207,7 +213,7 @@
     "name": "executeHooks"
   },
   {
-    "name": "executeInitHooks"
+    "name": "executePreOrderHooks"
   },
   {
     "name": "executeViewQueryFn"
@@ -427,6 +433,9 @@
   },
   {
     "name": "resetComponentState"
+  },
+  {
+    "name": "resetPreOrderHookFlags"
   },
   {
     "name": "setBindingRoot"

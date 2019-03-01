@@ -6,14 +6,18 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, Type} from '@angular/core';
+import {Component, Directive, DoCheck, Input, OnChanges, OnInit, SimpleChanges, Type} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {onlyInIvy} from '@angular/private/testing';
+import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 describe('exports', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule(
-        {declarations: [AppComp, ComponentToReference, DirToReference, DirWithCompInput]});
+    TestBed.configureTestingModule({
+      declarations: [
+        AppComp, ComponentToReference, DirToReference, DirToReferenceWithPreOrderHooks,
+        DirWithCompInput
+      ]
+    });
   });
 
   it('should support export of DOM element', () => {
@@ -34,6 +38,68 @@ describe('exports', () => {
     const fixture = initWithTemplate(AppComp, '<div dir #myDir="dir"></div> {{ myDir.name }}');
     fixture.detectChanges();
     expect(fixture.nativeElement.innerHTML).toEqual('<div dir=""></div> Drew');
+  });
+
+  describe('input changes in hooks', () => {
+    it('should support forward reference', () => {
+      const fixture = initWithTemplate(
+          AppComp, '<div dirOnChange #myDir="dirOnChange" [in]="true"></div> {{ myDir.name }}');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual('<div dironchange="" ng-reflect-in="true" title="Drew!?@"></div> Drew!?@');
+    });
+
+    modifiedInIvy('Supporting input changes in hooks is limited in Ivy')
+        .it('should support backward reference', () => {
+          const fixture = initWithTemplate(
+              AppComp, '{{ myDir.name }} <div dirOnChange #myDir="dirOnChange" [in]="true"></div>');
+          fixture.detectChanges();
+          expect(fixture.nativeElement.innerHTML)
+              .toEqual('Drew!?@ <div dironchange="" ng-reflect-in="true" title="Drew!?@"></div>');
+        });
+
+    onlyInIvy('Supporting input changes in hooks is limited in Ivy')
+        .it('should not support backward reference', () => {
+          expect(() => {
+            const fixture = initWithTemplate(
+                AppComp,
+                '{{ myDir.name }} <div dirOnChange #myDir="dirOnChange" [in]="true"></div>');
+            fixture.detectChanges();
+          })
+              .toThrowError(
+                  /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked/);
+        });
+
+    modifiedInIvy('Supporting input changes in hooks is limited in Ivy')
+        .it('should support reference on the same node', () => {
+          const fixture = initWithTemplate(
+              AppComp,
+              '<div dirOnChange #myDir="dirOnChange" [in]="true" [id]="myDir.name"></div>');
+          fixture.detectChanges();
+          expect(fixture.nativeElement.innerHTML)
+              .toEqual(
+                  '<div dironchange="" ng-reflect-in="true" id="Drew!?@" title="Drew!?@"></div>');
+        });
+
+    onlyInIvy('Supporting input changes in hooks is limited in Ivy')
+        .it('should not support reference on the same node', () => {
+          expect(() => {
+            const fixture = initWithTemplate(
+                AppComp,
+                '<div dirOnChange #myDir="dirOnChange" [in]="true" [id]="myDir.name"></div>');
+            fixture.detectChanges();
+          })
+              .toThrowError(
+                  /ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked/);
+        });
+
+    it('should support input referenced by host binding on that directive', () => {
+      const fixture =
+          initWithTemplate(AppComp, '<div dirOnChange #myDir="dirOnChange" [in]="true"></div>');
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML)
+          .toEqual('<div dironchange="" ng-reflect-in="true" title="Drew!?@"></div>');
+    });
   });
 
   onlyInIvy('Different error message is thrown in View Engine')
@@ -94,4 +160,13 @@ class DirToReference {
 @Directive({selector: '[dirWithInput]'})
 class DirWithCompInput {
   @Input('dirWithInput') comp: ComponentToReference|null = null;
+}
+
+@Directive({selector: '[dirOnChange]', exportAs: 'dirOnChange', host: {'[title]': 'name'}})
+class DirToReferenceWithPreOrderHooks implements OnInit, OnChanges, DoCheck {
+  @Input() in : any = null;
+  name = 'Drew';
+  ngOnChanges(changes: SimpleChanges) { this.name += '!'; }
+  ngOnInit() { this.name += '?'; }
+  ngDoCheck() { this.name += '@'; }
 }
