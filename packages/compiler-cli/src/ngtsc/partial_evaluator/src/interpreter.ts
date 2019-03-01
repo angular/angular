@@ -193,7 +193,10 @@ export class StaticInterpreter {
     const pieces: string[] = [node.head.text];
     for (let i = 0; i < node.templateSpans.length; i++) {
       const span = node.templateSpans[i];
-      const value = this.visit(span.expression, context);
+      let value = this.visit(span.expression, context);
+      if (value instanceof EnumValue) {
+        value = value.resolved;
+      }
       if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' ||
           value == null) {
         pieces.push(`${value}`);
