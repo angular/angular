@@ -17,7 +17,7 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {CHILD_HEAD, CLEANUP, FLAGS, HEADER_OFFSET, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {CHILD_HEAD, CLEANUP, FLAGS, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
 import {renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
@@ -421,10 +421,8 @@ export function getParentState(lViewOrLContainer: LView | LContainer, rootView: 
  *
  * @param view The LView to clean up
  */
-function cleanUpView(viewOrContainer: LView | LContainer): void {
-  if ((viewOrContainer as LView).length >= HEADER_OFFSET) {
-    const view = viewOrContainer as LView;
-
+function cleanUpView(view: LView | LContainer): void {
+  if (isLView(view) && !(view[FLAGS] & LViewFlags.Destroyed)) {
     // Mark the LView as destroyed *before* executing the onDestroy hooks. An onDestroy hook
     // runs arbitrary user code, which could include its own `viewRef.destroy()` (or similar). If
     // We don't flag the view as destroyed before the hooks, this could lead to an infinite loop.
@@ -439,6 +437,10 @@ function cleanUpView(viewOrContainer: LView | LContainer): void {
     if (hostTNode && hostTNode.type === TNodeType.Element && isProceduralRenderer(view[RENDERER])) {
       ngDevMode && ngDevMode.rendererDestroy++;
       (view[RENDERER] as ProceduralRenderer3).destroy();
+    }
+    // For embedded views that are still inserted into a container: remove query results.
+    if (isLContainer(view[PARENT]) && view[QUERIES]) {
+      view[QUERIES] !.removeView();
     }
   }
 }
