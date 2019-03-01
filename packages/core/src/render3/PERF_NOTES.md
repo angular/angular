@@ -67,6 +67,7 @@ for (var i = 0, keys = Object.keys(obj); i < keys.length; i++) {
 
 ## Recursive functions
 Avoid recursive functions when possible because they cannot be inlined.
+https://jsperf.com/cost-of-recursion
 
 ## Function Inlining
 
