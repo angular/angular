@@ -78,6 +78,9 @@
     "name": "FLAGS"
   },
   {
+    "name": "FLAGS_MORE"
+  },
+  {
     "name": "FactoryPrototype"
   },
   {
@@ -133,6 +136,9 @@
   },
   {
     "name": "NG_TEMPLATE_SELECTOR"
+  },
+  {
+    "name": "NOOP"
   },
   {
     "name": "NOT_FOUND"
@@ -585,13 +591,13 @@
     "name": "executeHooks"
   },
   {
-    "name": "executeInitHooks"
-  },
-  {
     "name": "executeNodeAction"
   },
   {
     "name": "executeOnDestroys"
+  },
+  {
+    "name": "executePreOrderHooks"
   },
   {
     "name": "executeViewQueryFn"
@@ -619,6 +625,9 @@
   },
   {
     "name": "findViaComponent"
+  },
+  {
+    "name": "flushHooksUpTo"
   },
   {
     "name": "forwardRef"

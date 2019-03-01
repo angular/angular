@@ -9,7 +9,7 @@
 import {ComponentFactoryResolver, OnDestroy, SimpleChange, SimpleChanges, ViewContainerRef} from '../../src/core';
 import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, injectComponentFactoryResolver} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, template, text} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, flushHooksUpTo, listener, markDirty, projection, projectionDef, store, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -139,6 +139,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(1);
           elementProperty(1, 'val', 2);
         }
       }, 2, 0, directives);
@@ -289,8 +290,11 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(1);
           elementProperty(1, 'val', 1);
+          flushHooksUpTo(2);
           elementProperty(2, 'val', 2);
+          flushHooksUpTo(3);
           elementProperty(3, 'val', 2);
         }
       }, 4, 0, directives);
@@ -345,6 +349,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(2);
           elementProperty(2, 'val', 5);
           containerRefreshStart(1);
           {
@@ -385,6 +390,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(2);
           elementProperty(2, 'val', 5);
           containerRefreshStart(1);
           {
@@ -623,6 +629,7 @@ describe('lifecycles', () => {
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'val', 1);
+        flushHooksUpTo(3);
         elementProperty(3, 'val', 4);
         containerRefreshStart(2);
         {
@@ -746,6 +753,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(2);
           elementProperty(2, 'val', 2);
         }
       }, 4, 0, directives);
@@ -814,8 +822,11 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(1);
           elementProperty(1, 'val', 1);
+          flushHooksUpTo(3);
           elementProperty(3, 'val', 2);
+          flushHooksUpTo(4);
           elementProperty(4, 'val', 2);
         }
       }, 6, 0, directives);
@@ -844,6 +855,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(3);
           elementProperty(3, 'val', 4);
           containerRefreshStart(2);
           {
@@ -1091,6 +1103,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(1);
           elementProperty(1, 'val', 2);
         }
       }, 2, 0, defs);
@@ -1138,8 +1151,11 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(1);
           elementProperty(1, 'val', 1);
+          flushHooksUpTo(2);
           elementProperty(2, 'val', 2);
+          flushHooksUpTo(3);
           elementProperty(3, 'val', 2);
         }
       }, 4, 0, defs);
@@ -1162,6 +1178,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', bind(ctx.val));
+          flushHooksUpTo(1);
           elementProperty(1, 'val', bind(ctx.val));
         }
       }, 2, 2, [Comp, ProjectedComp]);
@@ -1177,6 +1194,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(1);
           elementProperty(1, 'val', 2);
         }
       }, 2, 0, [ParentComp]);
@@ -1201,6 +1219,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(2);
           elementProperty(2, 'val', 4);
           containerRefreshStart(1);
           {
@@ -1240,6 +1259,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(2);
           elementProperty(2, 'val', 4);
           containerRefreshStart(1);
           {
@@ -1325,6 +1345,7 @@ describe('lifecycles', () => {
           }
           if (rf & RenderFlags.Update) {
             elementProperty(0, 'val', 1);
+            flushHooksUpTo(2);
             elementProperty(2, 'val', 4);
             containerRefreshStart(1);
             {
@@ -1486,6 +1507,7 @@ describe('lifecycles', () => {
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val', bind('1'));
+                flushHooksUpTo(1);
                 elementProperty(1, 'val', bind('2'));
               }
               embeddedViewEnd();
@@ -1602,8 +1624,11 @@ describe('lifecycles', () => {
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val', 1);
+                flushHooksUpTo(1);
                 elementProperty(1, 'val', 1);
+                flushHooksUpTo(2);
                 elementProperty(2, 'val', 2);
+                flushHooksUpTo(3);
                 elementProperty(3, 'val', 2);
               }
               embeddedViewEnd();
@@ -1648,6 +1673,7 @@ describe('lifecycles', () => {
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val', bind('1'));
+                flushHooksUpTo(2);
                 elementProperty(2, 'val', bind('3'));
                 containerRefreshStart(1);
                 {
@@ -1741,6 +1767,7 @@ describe('lifecycles', () => {
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val', bind('1'));
+                flushHooksUpTo(2);
                 elementProperty(2, 'val', bind('5'));
                 containerRefreshStart(1);
                 {
@@ -2134,6 +2161,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
           elementProperty(0, 'publicVal2', bind(1));
+          flushHooksUpTo(1);
           elementProperty(1, 'val1', bind(2));
           elementProperty(1, 'publicVal2', bind(2));
         }
@@ -2271,6 +2299,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
           elementProperty(0, 'publicVal2', bind(1));
+          flushHooksUpTo(1);
           elementProperty(1, 'val1', bind(2));
           elementProperty(1, 'publicVal2', bind(2));
         }
@@ -2318,10 +2347,13 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
           elementProperty(0, 'publicVal2', bind(1));
+          flushHooksUpTo(1);
           elementProperty(1, 'val1', bind(2));
           elementProperty(1, 'publicVal2', bind(2));
+          flushHooksUpTo(2);
           elementProperty(2, 'val1', bind(3));
           elementProperty(2, 'publicVal2', bind(3));
+          flushHooksUpTo(3);
           elementProperty(3, 'val1', bind(4));
           elementProperty(3, 'publicVal2', bind(4));
         }
@@ -2452,6 +2484,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
           elementProperty(0, 'publicVal2', bind(1));
+          flushHooksUpTo(2);
           elementProperty(2, 'val1', bind(5));
           elementProperty(2, 'publicVal2', bind(5));
           containerRefreshStart(1);
@@ -2538,6 +2571,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
           elementProperty(0, 'publicVal2', bind(1));
+          flushHooksUpTo(2);
           elementProperty(2, 'val1', bind(5));
           elementProperty(2, 'publicVal2', bind(5));
           containerRefreshStart(1);
@@ -2757,6 +2791,7 @@ describe('lifecycles', () => {
         // even though the *value* itself never changed.
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(1);
           elementProperty(1, 'val', 2);
         }
       }, 2, 0, [Comp]);
@@ -2800,6 +2835,7 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
+          flushHooksUpTo(1);
           elementProperty(1, 'val', 2);
         }
       }, 2, 0, [Parent]);
@@ -2843,6 +2879,7 @@ describe('lifecycles', () => {
           element(1, 'view');
         }
         if (rf & RenderFlags.Update) {
+          flushHooksUpTo(1);
           elementProperty(1, 'val', bind(ctx.val));
         }
       }, 2, 1, [View]);
@@ -2866,8 +2903,11 @@ describe('lifecycles', () => {
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', bind(1));
+          flushHooksUpTo(1);
           elementProperty(1, 'val', bind(1));
+          flushHooksUpTo(2);
           elementProperty(2, 'val', bind(2));
+          flushHooksUpTo(3);
           elementProperty(3, 'val', bind(2));
         }
       }, 4, 4, [Parent, Content]);

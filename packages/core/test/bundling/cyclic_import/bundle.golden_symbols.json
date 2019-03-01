@@ -45,6 +45,9 @@
     "name": "FLAGS"
   },
   {
+    "name": "FLAGS_MORE"
+  },
+  {
     "name": "FactoryPrototype"
   },
   {
@@ -88,6 +91,9 @@
   },
   {
     "name": "NG_TEMPLATE_SELECTOR"
+  },
+  {
+    "name": "NOOP"
   },
   {
     "name": "NO_CHANGE"
@@ -282,7 +288,7 @@
     "name": "executeHooks"
   },
   {
-    "name": "executeInitHooks"
+    "name": "executePreOrderHooks"
   },
   {
     "name": "executeViewQueryFn"

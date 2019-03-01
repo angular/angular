@@ -39,6 +39,9 @@
     "name": "FLAGS"
   },
   {
+    "name": "FLAGS_MORE"
+  },
+  {
     "name": "FactoryPrototype"
   },
   {
@@ -73,6 +76,9 @@
   },
   {
     "name": "NG_PIPE_DEF"
+  },
+  {
+    "name": "NOOP"
   },
   {
     "name": "NO_CHANGE"
@@ -207,7 +213,7 @@
     "name": "executeHooks"
   },
   {
-    "name": "executeInitHooks"
+    "name": "executePreOrderHooks"
   },
   {
     "name": "executeViewQueryFn"

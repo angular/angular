@@ -104,6 +104,7 @@ export {
   elementStyleProp as ɵelementStyleProp,
   elementStylingApply as ɵelementStylingApply,
   elementClassProp as ɵelementClassProp,
+  flushHooksUpTo as ɵflushHooksUpTo,
   textBinding as ɵtextBinding,
   template as ɵtemplate,
   embeddedViewEnd as ɵembeddedViewEnd,

@@ -24,7 +24,7 @@ import {attachPatchData, getComponentViewByInstance} from './context_discovery';
 import {attachLContainerDebug, attachLViewDebug} from './debug';
 import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreateNodeInjectorForNode, injectAttributeImpl} from './di';
 import {throwMultipleComponentError} from './errors';
-import {executeHooks, executeInitHooks, registerPostOrderHooks, registerPreOrderHooks} from './hooks';
+import {executeHooks, executePreOrderHooks, registerPostOrderHooks, registerPreOrderHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from './interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from './interfaces/injector';
@@ -35,7 +35,7 @@ import {LQueries} from './interfaces/query';
 import {GlobalTargetResolver, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from './interfaces/view';
+import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, FLAGS_MORE, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNodes, createTextNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
@@ -84,13 +84,14 @@ export function refreshDescendantViews(lView: LView) {
   if (!creationMode) {
     const checkNoChangesMode = getCheckNoChangesMode();
 
-    executeInitHooks(lView, tView, checkNoChangesMode);
+    executePreOrderHooks(lView, tView, checkNoChangesMode);
 
     refreshDynamicEmbeddedViews(lView);
 
     // Content query results must be refreshed before content hooks are called.
     refreshContentQueries(tView, lView);
 
+    lView[FLAGS_MORE] = 0;
     executeHooks(
         lView, tView.contentHooks, tView.contentCheckHooks, checkNoChangesMode,
         InitPhaseState.AfterContentInitHooksToBeRun);
@@ -180,6 +181,7 @@ export function createLView<T>(
   const lView = tView.blueprint.slice() as LView;
   lView[HOST] = host;
   lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass;
+  lView[FLAGS_MORE] = 0;
   lView[PARENT] = lView[DECLARATION_VIEW] = parentLView;
   lView[CONTEXT] = context;
   lView[RENDERER_FACTORY] = (rendererFactory || parentLView && parentLView[RENDERER_FACTORY]) !;
@@ -405,6 +407,7 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       setPreviousOrParentTNode(null !);
 
       oldView = enterView(viewToRender, viewToRender[T_HOST]);
+      viewToRender[FLAGS_MORE] = 0;
       namespaceHTML();
       tView.template !(getRenderFlags(viewToRender), context);
       // This must be set to false immediately after the first creation run because in an
@@ -459,6 +462,7 @@ function renderComponentOrTemplate<T>(
     }
 
     // update mode pass
+    hostView[FLAGS_MORE] = 0;
     templateFn && templateFn(RenderFlags.Update, context);
     refreshDescendantViews(hostView);
   } finally {
@@ -807,8 +811,8 @@ export function createTView(
     firstTemplatePass: true,
     staticViewQueries: false,
     staticContentQueries: false,
-    initHooks: null,
-    checkHooks: null,
+    preOrderHooks: null,
+    preOrderCheckHooks: null,
     contentHooks: null,
     contentCheckHooks: null,
     viewHooks: null,
@@ -1054,6 +1058,17 @@ export function elementEnd(): void {
         lView, previousOrParentTNode.inputs !['style'] !,
         getInitialStyleStringValue(stylingContext));
   }
+}
+
+
+/**
+ * Flushes all the lifecycle hooks for directives up until (and excluding) that node index
+ *
+ * @param index The index of the element in the data array
+ */
+export function flushHooksUpTo(index: number): void {
+  const lView = getLView();
+  executePreOrderHooks(lView, lView[TVIEW], getCheckNoChangesMode(), index);
 }
 
 /**
@@ -1748,6 +1763,7 @@ function resolveDirectives(
       if (def.providersResolver) def.providersResolver(def);
     }
     generateExpandoInstructionBlock(tView, tNode, directives.length);
+    let wasNodeIndexAdded = false;
     for (let i = 0; i < directives.length; i++) {
       const def = directives[i] as DirectiveDef<any>;
 
@@ -1758,7 +1774,10 @@ function resolveDirectives(
 
       // Init hooks are queued now so ngOnInit is called in host components before
       // any projected components.
-      registerPreOrderHooks(directiveDefIdx, def, tView);
+      wasNodeIndexAdded = registerPreOrderHooks(
+                              directiveDefIdx, def, tView,
+                              wasNodeIndexAdded ? undefined : tNode.index - HEADER_OFFSET) ||
+          wasNodeIndexAdded;
     }
   }
   if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
@@ -2276,7 +2295,7 @@ export function containerRefreshStart(index: number): void {
 
   // We need to execute init hooks here so ngOnInit hooks are called in top level views
   // before they are called in embedded views (for backwards compatibility).
-  executeInitHooks(lView, tView, getCheckNoChangesMode());
+  executePreOrderHooks(lView, tView, getCheckNoChangesMode());
 }
 
 /**
@@ -2440,6 +2459,7 @@ export function embeddedViewEnd(): void {
     refreshDescendantViews(lView);  // creation mode pass
     lView[FLAGS] &= ~LViewFlags.CreationMode;
   }
+  lView[FLAGS_MORE] = 0;
   refreshDescendantViews(lView);  // update mode pass
   const lContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainerOrUndefined(lContainer);
@@ -2834,6 +2854,7 @@ export function checkView<T>(hostView: LView, component: T) {
   const creationMode = isCreationMode(hostView);
 
   try {
+    hostView[FLAGS_MORE] = 0;
     namespaceHTML();
     creationMode && executeViewQueryFn(RenderFlags.Create, hostTView, component);
     templateFn(getRenderFlags(hostView), component);
