@@ -30,9 +30,9 @@ import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from './interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
 import {PlayerFactory} from './interfaces/player';
-import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
+import {CssSelectorList} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {GlobalTargetResolver, ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {GlobalTargetResolver, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from './interfaces/view';
@@ -43,8 +43,9 @@ import {applyOnCreateInstructions} from './node_util';
 import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from './state';
 import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling/class_and_style_bindings';
 import {BoundPlayerFactory} from './styling/player_factory';
-import {ANIMATION_PROP_PREFIX, allocateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContext, hasClassInput, hasStyleInput, hasStyling, isAnimationProp} from './styling/util';
+import {ANIMATION_PROP_PREFIX, allocateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContext, hasClassInput, hasStyleInput, isAnimationProp} from './styling/util';
 import {NO_CHANGE} from './tokens';
+import {attrsStylingIndexOf, setUpAttributes} from './util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent, getRootContext, getRootView} from './util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readPatchedLView, unwrapRNode, viewAttachedToChangeDetector} from './util/view_utils';
@@ -620,15 +621,21 @@ export function elementStart(
   const tNode = createNodeAtIndex(index, TNodeType.Element, native !, name, attrs || null);
 
   if (attrs) {
+    const lastAttrIndex = setUpAttributes(native, attrs);
+
     // it's important to only prepare styling-related datastructures once for a given
     // tNode and not each time an element is created. Also, the styling code is designed
-    // to be patched and constructed at various points, but only up until the first element
-    // is created. Then the styling context is locked and can only be instantiated for each
-    // successive element that is created.
-    if (tView.firstTemplatePass && !tNode.stylingTemplate && hasStyling(attrs)) {
-      tNode.stylingTemplate = initializeStaticStylingContext(attrs);
+    // to be patched and constructed at various points, but only up until the styling
+    // template is first allocated (which happens when the very first style/class binding
+    // value is evaluated). When the template is allocated (when it turns into a context)
+    // then the styling template is locked and cannot be further extended (it can only be
+    // instantiated into a context per element)
+    if (tView.firstTemplatePass && !tNode.stylingTemplate) {
+      const stylingAttrsStartIndex = attrsStylingIndexOf(attrs, lastAttrIndex);
+      if (stylingAttrsStartIndex >= 0) {
+        tNode.stylingTemplate = initializeStaticStylingContext(attrs, stylingAttrsStartIndex);
+      }
     }
-    setUpAttributes(native, attrs);
   }
 
   appendChild(native, tNode, lView);
@@ -823,87 +830,6 @@ function createViewBlueprint(bindingStartIndex: number, initialViewLength: numbe
                         .fill(NO_CHANGE, bindingStartIndex) as LView;
   blueprint[BINDING_INDEX] = bindingStartIndex;
   return blueprint;
-}
-
-/**
- * Assigns all attribute values to the provided element via the inferred renderer.
- *
- * This function accepts two forms of attribute entries:
- *
- * default: (key, value):
- *  attrs = [key1, value1, key2, value2]
- *
- * namespaced: (NAMESPACE_MARKER, uri, name, value)
- *  attrs = [NAMESPACE_MARKER, uri, name, value, NAMESPACE_MARKER, uri, name, value]
- *
- * The `attrs` array can contain a mix of both the default and namespaced entries.
- * The "default" values are set without a marker, but if the function comes across
- * a marker value then it will attempt to set a namespaced value. If the marker is
- * not of a namespaced value then the function will quit and return the index value
- * where it stopped during the iteration of the attrs array.
- *
- * See [AttributeMarker] to understand what the namespace marker value is.
- *
- * Note that this instruction does not support assigning style and class values to
- * an element. See `elementStart` and `elementHostAttrs` to learn how styling values
- * are applied to an element.
- *
- * @param native The element that the attributes will be assigned to
- * @param attrs The attribute array of values that will be assigned to the element
- * @returns the index value that was last accessed in the attributes array
- */
-function setUpAttributes(native: RElement, attrs: TAttributes): number {
-  const renderer = getLView()[RENDERER];
-  const isProc = isProceduralRenderer(renderer);
-
-  let i = 0;
-  while (i < attrs.length) {
-    const value = attrs[i];
-    if (typeof value === 'number') {
-      // only namespaces are supported. Other value types (such as style/class
-      // entries) are not supported in this function.
-      if (value !== AttributeMarker.NamespaceURI) {
-        break;
-      }
-
-      // we just landed on the marker value ... therefore
-      // we should skip to the next entry
-      i++;
-
-      const namespaceURI = attrs[i++] as string;
-      const attrName = attrs[i++] as string;
-      const attrVal = attrs[i++] as string;
-      ngDevMode && ngDevMode.rendererSetAttribute++;
-      isProc ?
-          (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal, namespaceURI) :
-          native.setAttributeNS(namespaceURI, attrName, attrVal);
-    } else {
-      /// attrName is string;
-      const attrName = value as string;
-      const attrVal = attrs[++i];
-      if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
-        // Standard attributes
-        ngDevMode && ngDevMode.rendererSetAttribute++;
-        if (isAnimationProp(attrName)) {
-          if (isProc) {
-            (renderer as ProceduralRenderer3).setProperty(native, attrName, attrVal);
-          }
-        } else {
-          isProc ?
-              (renderer as ProceduralRenderer3)
-                  .setAttribute(native, attrName as string, attrVal as string) :
-              native.setAttribute(attrName as string, attrVal as string);
-        }
-      }
-      i++;
-    }
-  }
-
-  // another piece of code may iterate over the same attributes array. Therefore
-  // it may be helpful to return the exact spot where the attributes array exited
-  // whether by running into an unsupported marker or if all the static values were
-  // iterated over.
-  return i;
 }
 
 export function createError(text: string, token: any) {
@@ -1556,13 +1482,18 @@ function initElementStyling(
  */
 export function elementHostAttrs(directive: any, attrs: TAttributes) {
   const tNode = getPreviousOrParentTNode();
-  if (!tNode.stylingTemplate) {
-    tNode.stylingTemplate = initializeStaticStylingContext(attrs);
-  }
   const lView = getLView();
   const native = getNativeByTNode(tNode, lView) as RElement;
-  const i = setUpAttributes(native, attrs);
-  patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, i, directive);
+  const lastAttrIndex = setUpAttributes(native, attrs);
+  const stylingAttrsStartIndex = attrsStylingIndexOf(attrs, lastAttrIndex);
+  if (stylingAttrsStartIndex >= 0) {
+    if (tNode.stylingTemplate) {
+      patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, stylingAttrsStartIndex, directive);
+    } else {
+      tNode.stylingTemplate =
+          initializeStaticStylingContext(attrs, stylingAttrsStartIndex, directive);
+    }
+  }
 }
 
 /**

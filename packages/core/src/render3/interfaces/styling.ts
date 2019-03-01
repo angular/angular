@@ -323,9 +323,9 @@ export interface StylingContext extends
  *
  * See [InitialStylingValuesIndex] for a breakdown of how all this works.
  */
-export interface InitialStylingValues extends Array<string|boolean|null> {
+export interface InitialStylingValues extends Array<string|boolean|number|null> {
   [InitialStylingValuesIndex.DefaultNullValuePosition]: null;
-  [InitialStylingValuesIndex.InitialClassesStringPosition]: string|null;
+  [InitialStylingValuesIndex.CachedStringValuePosition]: string|null;
 }
 
 /**
@@ -432,12 +432,48 @@ export interface InitialStylingValues extends Array<string|boolean|null> {
  * ```
  */
 export const enum InitialStylingValuesIndex {
+  /**
+   * The first value is always `null` so that `styles[0] == null` for unassigned values
+   */
   DefaultNullValuePosition = 0,
-  InitialClassesStringPosition = 1,
+
+  /**
+   * Used for non-styling code to examine what the style or className string is:
+   * styles: ['width', '100px', 0, 'opacity', null, 0, 'height', '200px', 0]
+   *    => initialStyles[CachedStringValuePosition] = 'width:100px;height:200px';
+   * classes: ['foo', true, 0, 'bar', false, 0, 'baz', true, 0]
+   *    => initialClasses[CachedStringValuePosition] = 'foo bar';
+   *
+   * Note that this value is `null` by default and it will only be populated
+   * once `getInitialStyleStringValue` or `getInitialClassNameValue` is executed.
+   */
+  CachedStringValuePosition = 1,
+
+  /**
+   * Where the style or class values start in the tuple
+   */
   KeyValueStartPosition = 2,
+
+  /**
+   * The offset value (index + offset) for the property value for each style/class entry
+   */
   PropOffset = 0,
+
+  /**
+   * The offset value (index + offset) for the style/class value for each style/class entry
+   */
   ValueOffset = 1,
-  Size = 2
+
+  /**
+   * The offset value (index + offset) for the style/class directive owner for each style/class
+     entry
+   */
+  DirectiveOwnerOffset = 2,
+
+  /**
+   * The total size for each style/class entry (prop + value + directiveOwner)
+   */
+  Size = 3
 }
 
 /**

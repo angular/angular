@@ -39,7 +39,7 @@ describe('style and class based bindings', () => {
     return lView;
   }
 
-  function initContext(
+  function createStylingTemplate(
       initialStyles?: (number | string)[] | null, styleBindings?: string[] | null,
       initialClasses?: (string | number | boolean)[] | null, classBindings?: string[] | null,
       sanitizer?: StyleSanitizeFn | null): StylingContext {
@@ -53,8 +53,17 @@ describe('style and class based bindings', () => {
       attrsWithStyling.push(...initialStyles as any);
     }
 
-    const tpl = initializeStaticContext(attrsWithStyling) !;
+    const tpl = initializeStaticContext(attrsWithStyling, 0) !;
     updateContextWithBindings(tpl, null, classBindings || null, styleBindings || null, sanitizer);
+    return tpl;
+  }
+
+  function createStylingContext(
+      initialStyles?: (number | string)[] | null, styleBindings?: string[] | null,
+      initialClasses?: (string | number | boolean)[] | null, classBindings?: string[] | null,
+      sanitizer?: StyleSanitizeFn | null): StylingContext {
+    const tpl = createStylingTemplate(
+        initialStyles, styleBindings, initialClasses, classBindings, sanitizer);
     return allocStylingContext(element, tpl);
   }
 
@@ -198,7 +207,7 @@ describe('style and class based bindings', () => {
   describe('styles', () => {
     describe('static styling properties within a context', () => {
       it('should initialize empty template', () => {
-        const template = initContext();
+        const template = createStylingContext();
         assertContext(template, [
           element,
           masterConfig(9),
@@ -213,13 +222,14 @@ describe('style and class based bindings', () => {
       });
 
       it('should initialize static styles and classes', () => {
-        const template = initContext(['color', 'red', 'width', '10px'], null, ['foo', 'bar']);
+        const template =
+            createStylingContext(['color', 'red', 'width', '10px'], null, ['foo', 'bar']);
         assertContext(template, [
           element,
           masterConfig(9),
           [null, 2, false, null],
-          [null, null, 'color', 'red', 'width', '10px'],
-          [null, null, 'foo', true, 'bar', true],
+          [null, null, 'color', 'red', 0, 'width', '10px', 0],
+          [null, null, 'foo', true, 0, 'bar', true, 0],
           [0, 0, 0, 0],
           [0, 0, 9, null, 0],
           [0, 0, 9, null, 0],
@@ -227,91 +237,133 @@ describe('style and class based bindings', () => {
         ]);
       });
 
-      it('should initialize and then patch static styling inline with existing static styling',
+      it('should initialize and then patch static styling inline with existing static styling and also replace values if the same directive runs twice',
          () => {
-           const template = initContext(['color', 'red'], null, ['foo']);
+           const template = createStylingTemplate(['color', 'red'], null, ['foo']);
            expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
              null,
              null,
              'color',
              'red',
+             0,
            ]);
            expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
              null,
              null,
              'foo',
              true,
+             0,
            ]);
 
            patchContext(template, ['color', 'black', 'height', '200px'], ['bar', 'foo'], '1');
            expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
-             null, null, 'color', 'red', 'height', '200px'
+             null,
+             null,
+             'color',
+             'red',
+             0,
+             'height',
+             '200px',
+             1,
            ]);
            expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
-             null, null, 'foo', true, 'bar', true
+             null,
+             null,
+             'foo',
+             true,
+             0,
+             'bar',
+             true,
+             1,
+           ]);
+
+           patchContext(template, ['color', 'orange'], []);
+           expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
+             null,
+             null,
+             'color',
+             'orange',
+             0,
+             'height',
+             '200px',
+             1,
+           ]);
+           expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
+             null,
+             null,
+             'foo',
+             true,
+             0,
+             'bar',
+             true,
+             1,
            ]);
          });
 
-      it('should only populate static styles for a given directive once', () => {
-        const template = initContext(['color', 'red'], null, ['foo']);
-        expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
-          null,
-          null,
-          'color',
-          'red',
-        ]);
-        expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
-          null,
-          null,
-          'foo',
-          true,
-        ]);
+      it('should only populate static styles for a given directive once only when the context is allocated',
+         () => {
+           const template = createStylingTemplate(['color', 'red'], null, ['foo']);
+           expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
+             null,
+             null,
+             'color',
+             'red',
+             0,
+           ]);
+           expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
+             null,
+             null,
+             'foo',
+             true,
+             0,
+           ]);
 
-        patchContext(template, ['color', 'black', 'height', '200px'], ['bar', 'foo']);
-        expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
-          null,
-          null,
-          'color',
-          'red',
-        ]);
-        expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
-          null,
-          null,
-          'foo',
-          true,
-        ]);
+           patchContext(template, ['color', 'black', 'height', '200px'], ['bar', 'foo']);
+           expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
+             null,
+             null,
+             'color',
+             'black',
+             0,
+             'height',
+             '200px',
+             0,
+           ]);
+           expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
+             null,
+             null,
+             'foo',
+             true,
+             0,
+             'bar',
+             true,
+             0,
+           ]);
 
-        patchContext(template, ['color', 'black', 'height', '200px'], ['bar', 'foo'], '1');
-        expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
-          null,
-          null,
-          'color',
-          'red',
-          'height',
-          '200px',
-        ]);
-        expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
-          null, null, 'foo', true, 'bar', true
-        ]);
+           allocStylingContext(element, template);
 
-        patchContext(template, ['color', 'black', 'height', '200px'], ['bar', 'foo'], '1');
-        expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
-          null,
-          null,
-          'color',
-          'red',
-          'height',
-          '200px',
-        ]);
-        expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
-          null,
-          null,
-          'foo',
-          true,
-          'bar',
-          true,
-        ]);
-      });
+           patchContext(template, ['color', 'black', 'height', '200px'], ['bar', 'foo'], '1');
+           expect(template[StylingIndex.InitialStyleValuesPosition]).toEqual([
+             null,
+             null,
+             'color',
+             'black',
+             0,
+             'height',
+             '200px',
+             0,
+           ]);
+           expect(template[StylingIndex.InitialClassValuesPosition]).toEqual([
+             null,
+             null,
+             'foo',
+             true,
+             0,
+             'bar',
+             true,
+             0,
+           ]);
+         });
     });
 
     describe('instructions', () => {
@@ -440,8 +492,8 @@ describe('style and class based bindings', () => {
              null,
              masterConfig(17, false, false),  //
              [null, 2, false, null],
-             [null, null, 'width', null],
-             [null, null, 'foo', false],
+             [null, null, 'width', null, 0],
+             [null, null, 'foo', false, 0],
              [1, 1, 1, 1, 9, 13],
              [1, 0, 21, null, 1],
              [1, 0, 17, null, 1],
@@ -478,8 +530,8 @@ describe('style and class based bindings', () => {
              null,
              masterConfig(25, false, false),  //
              [null, 2, false, null, 'SOME DIRECTIVE', 6, false, null],
-             [null, null, 'width', null, 'height', null],
-             [null, null, 'foo', false, 'bar', false],
+             [null, null, 'width', null, 0, 'height', null, 1],
+             [null, null, 'foo', false, 0, 'bar', false, 1],
              [2, 2, 1, 1, 9, 17, 2, 1, 9, 13, 21],
              [2, 0, 33, null, 1, 0, 37, null, 1],
              [2, 0, 25, null, 1, 0, 29, null, 1],
@@ -492,7 +544,7 @@ describe('style and class based bindings', () => {
              0,
 
              // #13
-             cleanStyle(5, 29),
+             cleanStyle(6, 29),
              'height',
              null,
              1,
@@ -504,7 +556,7 @@ describe('style and class based bindings', () => {
              0,
 
              // #21
-             cleanClass(5, 37),
+             cleanClass(6, 37),
              'bar',
              null,
              1,
@@ -516,7 +568,7 @@ describe('style and class based bindings', () => {
              0,
 
              // #29
-             cleanStyle(5, 13),
+             cleanStyle(6, 13),
              'height',
              null,
              1,
@@ -528,7 +580,7 @@ describe('style and class based bindings', () => {
              0,
 
              // #37
-             cleanClass(5, 21),
+             cleanClass(6, 21),
              'bar',
              null,
              1,
@@ -544,8 +596,8 @@ describe('style and class based bindings', () => {
                null, 2, false, null, 'SOME DIRECTIVE', 6, false, null, 'SOME DIRECTIVE 2', 11,
                false, null
              ],
-             [null, null, 'width', null, 'height', null, 'opacity', null],
-             [null, null, 'foo', false, 'bar', false, 'baz', false],
+             [null, null, 'width', null, 0, 'height', null, 1, 'opacity', null, 2],
+             [null, null, 'foo', false, 0, 'bar', false, 1, 'baz', false, 2],
              [3, 3, 1, 1, 9, 21, 2, 1, 9, 13, 25, 3, 3, 17, 9, 13, 29, 25, 21],
              [3, 0, 45, null, 1, 0, 49, null, 1, 0, 53, null, 1],
              [3, 0, 33, null, 1, 0, 37, null, 1, 0, 41, null, 1],
@@ -558,13 +610,13 @@ describe('style and class based bindings', () => {
              0,
 
              // #13
-             cleanStyle(5, 37),
+             cleanStyle(6, 37),
              'height',
              null,
              1,
 
              // #17
-             cleanStyle(7, 41),
+             cleanStyle(9, 41),
              'opacity',
              null,
              2,
@@ -576,13 +628,13 @@ describe('style and class based bindings', () => {
              0,
 
              // #25
-             cleanClass(5, 49),
+             cleanClass(6, 49),
              'bar',
              null,
              1,
 
              // #29
-             cleanClass(7, 53),
+             cleanClass(9, 53),
              'baz',
              null,
              2,
@@ -594,13 +646,13 @@ describe('style and class based bindings', () => {
              0,
 
              // #37
-             cleanStyle(5, 13),
+             cleanStyle(6, 13),
              'height',
              null,
              1,
 
              // #41
-             cleanStyle(7, 17),
+             cleanStyle(9, 17),
              'opacity',
              null,
              2,
@@ -612,13 +664,13 @@ describe('style and class based bindings', () => {
              0,
 
              // #49
-             cleanClass(5, 25),
+             cleanClass(6, 25),
              'bar',
              null,
              1,
 
              // #53
-             cleanClass(7, 29),
+             cleanClass(9, 29),
              'baz',
              null,
              2,
@@ -642,7 +694,7 @@ describe('style and class based bindings', () => {
 
       it('should build a list of multiple styling values', () => {
         const getStyles = trackStylesFactory();
-        const stylingContext = initContext();
+        const stylingContext = createStylingContext();
         updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
@@ -652,7 +704,7 @@ describe('style and class based bindings', () => {
       });
 
       it('should evaluate the delta between style changes when rendering occurs', () => {
-        const stylingContext = initContext(['width', '100px'], ['width', 'height']);
+        const stylingContext = createStylingContext(['width', '100px'], ['width', 'height']);
         updateStyles(stylingContext, {
           height: '200px',
         });
@@ -674,7 +726,7 @@ describe('style and class based bindings', () => {
 
       it('should update individual values on a set of styles', () => {
         const getStyles = trackStylesFactory();
-        const stylingContext = initContext(null, ['width', 'height']);
+        const stylingContext = createStylingContext(null, ['width', 'height']);
         updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
@@ -684,7 +736,7 @@ describe('style and class based bindings', () => {
       });
 
       it('should only mark itself as updated when one or more properties have been applied', () => {
-        const stylingContext = initContext();
+        const stylingContext = createStylingContext();
         expect(isContextDirty(stylingContext)).toBeFalsy();
 
         updateStyles(stylingContext, {
@@ -709,7 +761,7 @@ describe('style and class based bindings', () => {
       });
 
       it('should only mark itself as updated when any single properties have been applied', () => {
-        const stylingContext = initContext(null, ['height']);
+        const stylingContext = createStylingContext(null, ['height']);
         updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
@@ -729,7 +781,7 @@ describe('style and class based bindings', () => {
       it('should prioritize multi and single styles over initial styles', () => {
         const getStyles = trackStylesFactory();
 
-        const stylingContext = initContext(
+        const stylingContext = createStylingContext(
             ['width', '100px', 'height', '100px', 'opacity', '0'], ['width', 'height', 'opacity']);
 
         expect(getStyles(stylingContext)).toEqual({});
@@ -764,7 +816,7 @@ describe('style and class based bindings', () => {
       });
 
       it('should cleanup removed styles from the context once the styles are built', () => {
-        const stylingContext = initContext(null, ['width', 'height']);
+        const stylingContext = createStylingContext(null, ['width', 'height']);
         const getStyles = trackStylesFactory();
         updateStyles(stylingContext, {width: '100px', height: '100px'});
 
@@ -776,7 +828,7 @@ describe('style and class based bindings', () => {
           0,
 
           // #13
-          cleanStyle(5, 21),
+          cleanStyle(6, 21),
           'height',
           null,
           0,
@@ -788,7 +840,7 @@ describe('style and class based bindings', () => {
           0,
 
           // #21
-          dirtyStyle(5, 13),
+          dirtyStyle(6, 13),
           'height',
           '100px',
           0,
@@ -805,7 +857,7 @@ describe('style and class based bindings', () => {
           0,
 
           // #13
-          cleanStyle(5, 25),
+          cleanStyle(6, 25),
           'height',
           null,
           0,
@@ -823,7 +875,7 @@ describe('style and class based bindings', () => {
           0,
 
           // #25
-          dirtyStyle(5, 13),
+          dirtyStyle(6, 13),
           'height',
           null,
           0,
@@ -838,7 +890,7 @@ describe('style and class based bindings', () => {
           0,
 
           // #13
-          cleanStyle(5, 25),
+          cleanStyle(6, 25),
           'height',
           null,
           0,
@@ -856,7 +908,7 @@ describe('style and class based bindings', () => {
           0,
 
           // #23
-          cleanStyle(5, 13),
+          cleanStyle(6, 13),
           'height',
           null,
           0,
@@ -873,7 +925,7 @@ describe('style and class based bindings', () => {
           0,
 
           // #13
-          cleanStyle(5, 25),
+          cleanStyle(6, 25),
           'height',
           null,
           0,
@@ -891,7 +943,7 @@ describe('style and class based bindings', () => {
           0,
 
           // #23
-          cleanStyle(5, 13),
+          cleanStyle(6, 13),
           'height',
           null,
           0,
@@ -908,7 +960,7 @@ describe('style and class based bindings', () => {
           0,
 
           // #13
-          cleanStyle(5, 25),
+          cleanStyle(6, 25),
           'height',
           null,
           0,
@@ -926,7 +978,7 @@ describe('style and class based bindings', () => {
           0,
 
           // #23
-          cleanStyle(5, 13),
+          cleanStyle(6, 13),
           'height',
           null,
           0,
@@ -935,7 +987,7 @@ describe('style and class based bindings', () => {
 
       it('should find the next available space in the context when data is added after being removed before',
          () => {
-           const stylingContext = initContext(null, ['line-height']);
+           const stylingContext = createStylingContext(null, ['line-height']);
            const getStyles = trackStylesFactory();
 
            updateStyles(stylingContext, {width: '100px', height: '100px', opacity: '0.5'});
@@ -1137,7 +1189,7 @@ describe('style and class based bindings', () => {
 
       it('should render all data as not being dirty after the styles are built', () => {
         const getStyles = trackStylesFactory();
-        const stylingContext = initContext(null, ['height']);
+        const stylingContext = createStylingContext(null, ['height']);
 
         const cachedStyleValue = {width: '100px'};
 
@@ -1148,7 +1200,7 @@ describe('style and class based bindings', () => {
           element,
           masterConfig(13, true),  //
           [null, 2, true, null],
-          [null, null, 'height', null],
+          [null, null, 'height', null, 0],
           [null, null],
           [1, 0, 1, 0, 9],
           [0, 0, 21, null, 0],
@@ -1180,7 +1232,7 @@ describe('style and class based bindings', () => {
           element,
           masterConfig(13, false),  //
           [null, 2, false, null],
-          [null, null, 'height', null],
+          [null, null, 'height', null, 0],
           [null, null],
           [1, 0, 1, 0, 9],
           [0, 0, 21, null, 0],
@@ -1212,7 +1264,8 @@ describe('style and class based bindings', () => {
            const getStyles = trackStylesFactory();
            const styleBindings = ['border-image', 'border-width'];
            const styleSanitizer = defaultStyleSanitizer;
-           const stylingContext = initContext(null, styleBindings, null, null, styleSanitizer);
+           const stylingContext =
+               createStylingContext(null, styleBindings, null, null, styleSanitizer);
 
            updateStyleProp(stylingContext, 0, 'url(foo.jpg)');
            updateStyleProp(stylingContext, 1, '100px');
@@ -1225,7 +1278,7 @@ describe('style and class based bindings', () => {
              0,
 
              // #13
-             dirtyStyle(5, 21),
+             dirtyStyle(6, 21),
              'border-width',
              '100px',
              0,
@@ -1237,7 +1290,7 @@ describe('style and class based bindings', () => {
              0,
 
              // #21
-             cleanStyle(5, 13),
+             cleanStyle(6, 13),
              'border-width',
              null,
              0,
@@ -1253,7 +1306,7 @@ describe('style and class based bindings', () => {
              0,
 
              // #13
-             dirtyStyle(5, 25),
+             dirtyStyle(6, 25),
              'border-width',
              '100px',
              0,
@@ -1271,7 +1324,7 @@ describe('style and class based bindings', () => {
              0,
 
              // #23
-             cleanStyle(5, 13),
+             cleanStyle(6, 13),
              'border-width',
              null,
              0,
@@ -1287,7 +1340,7 @@ describe('style and class based bindings', () => {
              0,
 
              // #13
-             cleanStyle(5, 25),
+             cleanStyle(6, 25),
              'border-width',
              '100px',
              0,
@@ -1305,7 +1358,7 @@ describe('style and class based bindings', () => {
              0,
 
              // #23
-             cleanStyle(5, 13),
+             cleanStyle(6, 13),
              'border-width',
              null,
              0,
@@ -1427,7 +1480,7 @@ describe('style and class based bindings', () => {
              1,
 
              // #13
-             cleanStyle(5, 21),
+             cleanStyle(6, 21),
              'height',
              null,
              1,
@@ -1439,7 +1492,7 @@ describe('style and class based bindings', () => {
              1,
 
              // #21
-             dirtyStyle(5, 13),
+             dirtyStyle(6, 13),
              'height',
              '99px',
              1,
@@ -1463,7 +1516,7 @@ describe('style and class based bindings', () => {
              1,
 
              // #13
-             cleanStyle(5, 25),
+             cleanStyle(6, 25),
              'height',
              null,
              1,
@@ -1481,7 +1534,7 @@ describe('style and class based bindings', () => {
              2,
 
              // #25
-             dirtyStyle(5, 13),
+             dirtyStyle(6, 13),
              'height',
              '999px',
              3,
@@ -1499,7 +1552,7 @@ describe('style and class based bindings', () => {
              1,
 
              // #13
-             cleanStyle(5, 25),
+             cleanStyle(6, 25),
              'height',
              null,
              1,
@@ -1517,7 +1570,7 @@ describe('style and class based bindings', () => {
              2,
 
              // #25
-             dirtyStyle(5, 13),
+             dirtyStyle(6, 13),
              'height',
              '999px',
              3,
@@ -1560,7 +1613,7 @@ describe('style and class based bindings', () => {
              1,
 
              // #13
-             cleanClass(5, 33),
+             cleanClass(6, 33),
              'green',
              null,
              1,
@@ -1590,7 +1643,7 @@ describe('style and class based bindings', () => {
              3,
 
              // #33
-             dirtyClass(5, 13),
+             dirtyClass(6, 13),
              'green',
              true,
              3,
@@ -1608,7 +1661,7 @@ describe('style and class based bindings', () => {
              1,
 
              // #13
-             cleanClass(5, 29),
+             cleanClass(6, 29),
              'green',
              null,
              1,
@@ -1632,7 +1685,7 @@ describe('style and class based bindings', () => {
              2,
 
              // #29
-             dirtyClass(5, 13),
+             dirtyClass(6, 13),
              'green',
              true,
              3,
@@ -1656,13 +1709,13 @@ describe('style and class based bindings', () => {
              1,
 
              // #13
-             cleanClass(5, 17),
+             cleanClass(6, 17),
              'green',
              null,
              1,
 
              // #17
-             dirtyClass(5, 13),
+             dirtyClass(6, 13),
              'green',
              true,
              1,
@@ -1813,7 +1866,7 @@ describe('style and class based bindings', () => {
     });
 
     it('should skip issuing style updates if there is nothing to update upon first render', () => {
-      const stylingContext = initContext(null, ['color']);
+      const stylingContext = createStylingContext(null, ['color']);
       const store = new MockStylingStore(element as HTMLElement, BindingType.Class);
       const getStyles = trackStylesFactory(store);
       const otherDirective = {};
@@ -1844,13 +1897,13 @@ describe('style and class based bindings', () => {
 
   describe('classes', () => {
     it('should initialize with the provided class bindings', () => {
-      const template = initContext(null, null, null, ['one', 'two']);
+      const template = createStylingContext(null, null, null, ['one', 'two']);
       assertContext(template, [
         element,
         masterConfig(17, false),  //
         [null, 2, false, null],
         [null, null],
-        [null, null, 'one', false, 'two', false],
+        [null, null, 'one', false, 0, 'two', false, 0],
         [0, 2, 0, 2, 9, 13],
         [2, 0, 17, null, 2],
         [0, 0, 17, null, 0],
@@ -1863,7 +1916,7 @@ describe('style and class based bindings', () => {
         0,
 
         // #13
-        cleanClass(5, 21),
+        cleanClass(6, 21),
         'two',
         null,
         0,
@@ -1875,7 +1928,7 @@ describe('style and class based bindings', () => {
         0,
 
         // #21
-        cleanClass(5, 13),
+        cleanClass(6, 13),
         'two',
         null,
         0,
@@ -1884,7 +1937,7 @@ describe('style and class based bindings', () => {
 
     it('should update multi class properties against the static classes', () => {
       const getClasses = trackClassesFactory();
-      const stylingContext = initContext(null, null, ['bar'], ['bar', 'foo']);
+      const stylingContext = createStylingContext(null, null, ['bar'], ['bar', 'foo']);
       expect(getClasses(stylingContext)).toEqual({});
       updateClasses(stylingContext, {foo: true, bar: false});
       expect(getClasses(stylingContext)).toEqual({'foo': true, 'bar': false});
@@ -1894,7 +1947,7 @@ describe('style and class based bindings', () => {
 
     it('should update single class properties despite static classes being present', () => {
       const getClasses = trackClassesFactory();
-      const stylingContext = initContext(null, null, ['bar'], ['bar', 'foo']);
+      const stylingContext = createStylingContext(null, null, ['bar'], ['bar', 'foo']);
       expect(getClasses(stylingContext)).toEqual({});
 
       updateClassProp(stylingContext, 0, true);
@@ -1909,7 +1962,7 @@ describe('style and class based bindings', () => {
     it('should understand updating multi-classes using a string-based value while respecting single class-based props',
        () => {
          const getClasses = trackClassesFactory();
-         const stylingContext = initContext(null, null, null, ['baz']);
+         const stylingContext = createStylingContext(null, null, null, ['baz']);
          expect(getClasses(stylingContext)).toEqual({});
 
          updateStylingMap(stylingContext, 'foo bar baz');
@@ -1924,14 +1977,14 @@ describe('style and class based bindings', () => {
     it('should place styles within the context and work alongside style-based values in harmony',
        () => {
          const getStylesAndClasses = trackStylesAndClasses();
-         const stylingContext =
-             initContext(['width', '100px'], ['width', 'height'], ['wide'], ['wide', 'tall']);
+         const stylingContext = createStylingContext(
+             ['width', '100px'], ['width', 'height'], ['wide'], ['wide', 'tall']);
          assertContext(stylingContext, [
            element,
            masterConfig(25, false),  //
            [null, 2, false, null],
-           [null, null, 'width', '100px', 'height', null],
-           [null, null, 'wide', true, 'tall', false],
+           [null, null, 'width', '100px', 0, 'height', null, 0],
+           [null, null, 'wide', true, 0, 'tall', false, 0],
            [2, 2, 2, 2, 9, 13, 17, 21],
            [2, 0, 33, null, 2],
            [2, 0, 25, null, 2],
@@ -1944,7 +1997,7 @@ describe('style and class based bindings', () => {
            0,
 
            // #13
-           cleanStyle(5, 29),
+           cleanStyle(6, 29),
            'height',
            null,
            0,
@@ -1956,7 +2009,7 @@ describe('style and class based bindings', () => {
            0,
 
            // #21
-           cleanClass(5, 37),
+           cleanClass(6, 37),
            'tall',
            null,
            0,
@@ -1968,7 +2021,7 @@ describe('style and class based bindings', () => {
            0,
 
            // #29
-           cleanStyle(5, 13),
+           cleanStyle(6, 13),
            'height',
            null,
            0,
@@ -1980,7 +2033,7 @@ describe('style and class based bindings', () => {
            0,
 
            // #37
-           cleanClass(5, 21),
+           cleanClass(6, 21),
            'tall',
            null,
            0,
@@ -1994,8 +2047,8 @@ describe('style and class based bindings', () => {
            element,
            masterConfig(25, true),  //
            [null, 2, true, null],
-           [null, null, 'width', '100px', 'height', null],
-           [null, null, 'wide', true, 'tall', false],
+           [null, null, 'width', '100px', 0, 'height', null, 0],
+           [null, null, 'wide', true, 0, 'tall', false, 0],
            [2, 2, 2, 2, 9, 13, 17, 21],
            [2, 0, 37, 'tall round', 2],
            [2, 0, 25, cachedStyleMap, 2],
@@ -2008,7 +2061,7 @@ describe('style and class based bindings', () => {
            0,
 
            // #13
-           cleanStyle(5, 33),
+           cleanStyle(6, 33),
            'height',
            null,
            0,
@@ -2020,7 +2073,7 @@ describe('style and class based bindings', () => {
            0,
 
            // #21
-           cleanClass(5, 37),
+           cleanClass(6, 37),
            'tall',
            null,
            0,
@@ -2038,13 +2091,13 @@ describe('style and class based bindings', () => {
            0,
 
            // #33
-           cleanStyle(5, 13),
+           cleanStyle(6, 13),
            'height',
            null,
            0,
 
            // #37
-           dirtyClass(5, 21),
+           dirtyClass(6, 21),
            'tall',
            true,
            0,
@@ -2076,8 +2129,8 @@ describe('style and class based bindings', () => {
            element,
            masterConfig(25, true),  //
            [null, 2, true, null],
-           [null, null, 'width', '100px', 'height', null],
-           [null, null, 'wide', true, 'tall', false],
+           [null, null, 'width', '100px', 0, 'height', null, 0],
+           [null, null, 'wide', true, 0, 'tall', false, 0],
            [2, 2, 2, 2, 9, 13, 17, 21],
            [2, 0, 37, cachedClassMap, 2],
            [1, 0, 25, cachedStyleMap, 1],
@@ -2090,7 +2143,7 @@ describe('style and class based bindings', () => {
            0,
 
            // #13
-           cleanStyle(5, 33),
+           cleanStyle(6, 33),
            'height',
            null,
            0,
@@ -2102,7 +2155,7 @@ describe('style and class based bindings', () => {
            0,
 
            // #21
-           cleanClass(5, 37),
+           cleanClass(6, 37),
            'tall',
            null,
            0,
@@ -2120,13 +2173,13 @@ describe('style and class based bindings', () => {
            0,
 
            // #33
-           cleanStyle(5, 13),
+           cleanStyle(6, 13),
            'height',
            null,
            0,
 
            // #37
-           cleanClass(5, 21),
+           cleanClass(6, 21),
            'tall',
            true,
            0,
@@ -2158,7 +2211,7 @@ describe('style and class based bindings', () => {
 
     it('should skip updating multi classes and styles if the input identity has not changed',
        () => {
-         const stylingContext = initContext();
+         const stylingContext = createStylingContext();
          const getStylesAndClasses = trackStylesAndClasses();
 
          const stylesMap = {width: '200px'};
@@ -2214,7 +2267,7 @@ describe('style and class based bindings', () => {
        });
 
     it('should skip updating multi classes if the string-based identity has not changed', () => {
-      const stylingContext = initContext();
+      const stylingContext = createStylingContext();
       const getClasses = trackClassesFactory();
 
       const classes = 'apple orange banana';
@@ -2262,7 +2315,7 @@ describe('style and class based bindings', () => {
     });
 
     it('should skip issuing class updates if there is nothing to update upon first render', () => {
-      const stylingContext = initContext(null, null, ['blue'], ['blue']);
+      const stylingContext = createStylingContext(null, null, ['blue'], ['blue']);
       const store = new MockStylingStore(element as HTMLElement, BindingType.Class);
       const getClasses = trackClassesFactory(store);
 
@@ -2292,7 +2345,7 @@ describe('style and class based bindings', () => {
 
   describe('players', () => {
     it('should build a player with the computed styles and classes', () => {
-      const context = initContext();
+      const context = createStylingContext();
 
       const styles = {width: '100px', height: '200px'};
       const classes = 'foo bar';
@@ -2332,7 +2385,7 @@ describe('style and class based bindings', () => {
     });
 
     it('should only build one player for a given style map', () => {
-      const context = initContext(null, []);
+      const context = createStylingContext(null, []);
 
       let count = 0;
       const buildFn = (element: HTMLElement, type: BindingType, value: any) => {
@@ -2355,7 +2408,7 @@ describe('style and class based bindings', () => {
     });
 
     it('should only build one player for a given class map', () => {
-      const context = initContext(null, []);
+      const context = createStylingContext(null, []);
 
       let count = 0;
       const buildFn = (element: HTMLElement, type: BindingType, value: any) => {
@@ -2377,7 +2430,7 @@ describe('style and class based bindings', () => {
     });
 
     it('should store active players in the player context and remove them once destroyed', () => {
-      const context = initContext(null, []);
+      const context = createStylingContext(null, []);
       const handler = new CorePlayerHandler();
       const lView = createMockViewData(handler, context);
 
@@ -2439,7 +2492,7 @@ describe('style and class based bindings', () => {
 
     it('should kick off single property change players alongside map-based ones and remove the players',
        () => {
-         const context = initContext(null, ['width', 'height'], null, ['foo', 'bar']);
+         const context = createStylingContext(null, ['width', 'height'], null, ['foo', 'bar']);
          const handler = new CorePlayerHandler();
          const lView = createMockViewData(handler, context);
 
@@ -2536,7 +2589,7 @@ describe('style and class based bindings', () => {
 
     it('should destroy an existing player that was queued before it is flushed once the binding updates',
        () => {
-         const context = initContext(null, ['width']);
+         const context = createStylingContext(null, ['width']);
          const handler = new CorePlayerHandler();
          const lView = createMockViewData(handler, context);
 
@@ -2571,7 +2624,7 @@ describe('style and class based bindings', () => {
 
     it('should nullify style map and style property factories if any follow up expressions not use them',
        () => {
-         const context = initContext(null, ['color'], null, ['foo']);
+         const context = createStylingContext(null, ['color'], null, ['foo']);
          const handler = new CorePlayerHandler();
          const lView = createMockViewData(handler, context);
 
@@ -2590,15 +2643,15 @@ describe('style and class based bindings', () => {
          };
 
          assertContext(context, [
-           element,                      //
-           masterConfig(17, false),      //
-           [null, 2, false, null],       //
-           [null, null, 'color', null],  //
-           [null, null, 'foo', false],   //
-           [1, 1, 1, 1, 9, 13],          //
-           [1, 0, 21, null, 1],          //
-           [1, 0, 17, null, 1],          //
-           null,                         //
+           element,                         //
+           masterConfig(17, false),         //
+           [null, 2, false, null],          //
+           [null, null, 'color', null, 0],  //
+           [null, null, 'foo', false, 0],   //
+           [1, 1, 1, 1, 9, 13],             //
+           [1, 0, 21, null, 1],             //
+           [1, 0, 17, null, 1],             //
+           null,                            //
 
            // #9
            cleanStyle(3, 17),
@@ -2656,8 +2709,8 @@ describe('style and class based bindings', () => {
            element,                                   //
            masterConfig(17, false),                   //
            [null, 2, false, null],                    //
-           [null, null, 'color', null],               //
-           [null, null, 'foo', false],                //
+           [null, null, 'color', null, 0],            //
+           [null, null, 'foo', false, 0],             //
            [1, 1, 1, 1, 9, 13],                       //
            [1, 0, 25, classMapWithPlayerFactory, 1],  //
            [1, 0, 17, styleMapWithPlayerFactory, 1],  //
@@ -2714,14 +2767,14 @@ describe('style and class based bindings', () => {
          ] as PlayerContext);
 
          assertContext(context, [
-           element,                        //
-           masterConfig(17, false),        //
-           [null, 2, false, null],         //
-           [null, null, 'color', null],    //
-           [null, null, 'foo', false],     //
-           [1, 1, 1, 1, 9, 13],            //
-           [1, 0, 25, cachedClassMap, 1],  //
-           [1, 0, 17, cachedStyleMap, 1],  //
+           element,                         //
+           masterConfig(17, false),         //
+           [null, 2, false, null],          //
+           [null, null, 'color', null, 0],  //
+           [null, null, 'foo', false, 0],   //
+           [1, 1, 1, 1, 9, 13],             //
+           [1, 0, 25, cachedClassMap, 1],   //
+           [1, 0, 17, cachedStyleMap, 1],   //
            playerContext,
 
            // #9
@@ -2763,7 +2816,7 @@ describe('style and class based bindings', () => {
        });
 
     it('should not call a factory if no style and/or class values have been updated', () => {
-      const context = initContext([]);
+      const context = createStylingContext([]);
       const handler = new CorePlayerHandler();
       const lView = createMockViewData(handler, context);
 
@@ -2813,7 +2866,7 @@ describe('style and class based bindings', () => {
 
     it('should invoke a single prop player over a multi style player when present and delegate back if not',
        () => {
-         const context = initContext(null, ['color']);
+         const context = createStylingContext(null, ['color']);
          const handler = new CorePlayerHandler();
          const lView = createMockViewData(handler, context);
 
@@ -2860,7 +2913,7 @@ describe('style and class based bindings', () => {
        });
 
     it('should return the old player for styles when a follow-up player is instantiated', () => {
-      const context = initContext([]);
+      const context = createStylingContext([]);
       const handler = new CorePlayerHandler();
       const lView = createMockViewData(handler, context);
 
@@ -2890,7 +2943,7 @@ describe('style and class based bindings', () => {
     });
 
     it('should return the old player for classes when a follow-up player is instantiated', () => {
-      const context = initContext();
+      const context = createStylingContext();
       const handler = new CorePlayerHandler();
       const lView = createMockViewData(handler, context);
 
@@ -2932,7 +2985,7 @@ describe('style and class based bindings', () => {
         }
       }) as StyleSanitizeFn;
 
-      const context = initContext(null, null, null, null, sanitizer);
+      const context = createStylingContext(null, null, null, null, sanitizer);
       const handler = new CorePlayerHandler();
       const lView = createMockViewData(handler, context);
 
@@ -2959,7 +3012,7 @@ describe('style and class based bindings', () => {
 
     it('should automatically destroy existing players when the follow-up binding is not apart of a factory',
        () => {
-         const context = initContext(null, ['width'], null, ['foo', 'bar']);
+         const context = createStylingContext(null, ['width'], null, ['foo', 'bar']);
          const handler = new CorePlayerHandler();
          const lView = createMockViewData(handler, context);
 

@@ -1678,7 +1678,7 @@ describe('render3 integration test', () => {
              if (rf & RenderFlags.Create) {
                elementStart(
                    0, 'div',
-                   ['DirWithClass', AttributeMarker.Classes, 'apple', 'orange', 'banana']);
+                   ['DirWithClass', '', AttributeMarker.Classes, 'apple', 'orange', 'banana']);
                elementStyling();
                elementEnd();
              }
@@ -1698,9 +1698,9 @@ describe('render3 integration test', () => {
             */
            const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
-               elementStart(
-                   0, 'div',
-                   ['DirWithStyle', AttributeMarker.Styles, 'width', '100px', 'height', '200px']);
+               elementStart(0, 'div', [
+                 'DirWithStyle', '', AttributeMarker.Styles, 'width', '100px', 'height', '200px'
+               ]);
                elementStyling();
                elementEnd();
              }

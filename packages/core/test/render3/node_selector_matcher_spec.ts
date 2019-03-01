@@ -317,7 +317,7 @@ describe('css selector matching', () => {
            expect(isMatching('div', tNode, selector)).toBeTruthy();
 
            // <div class="abc"> (with styling context but without attrs)
-           tNode.stylingTemplate = initializeStaticContext([AttributeMarker.Classes, 'abc']);
+           tNode.stylingTemplate = initializeStaticContext([AttributeMarker.Classes, 'abc'], 0);
            tNode.attrs = null;
            expect(isMatching('div', tNode, selector)).toBeTruthy();
          });
