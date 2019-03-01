@@ -3,13 +3,11 @@
   "description": "example and integration test for building Angular apps with Bazel",
   "version": "0.0.0",
   "license": "MIT",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "@bazel/bazel": "file:../../node_modules/@bazel/bazel"
   },
   "scripts": {
-    "//": "deps are listed in src/package.json which is used by yarn_install",
     "//": "this package.json file is only here so that `yarn test` can be called by /integration/run_tests.sh",
     "pretest": "./pretest.sh",
     "test": "bazel build ... --noshow_progress && bazel test ..."

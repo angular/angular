@@ -30,7 +30,7 @@
     "@angular/cli": "~7.2.1",
     "@angular/compiler-cli": "file:../angular/dist/packages-dist/compiler-cli",
     "@angular/language-service": "file:../angular/dist/packages-dist/language-service",
-    "@bazel/bazel": "^0.21.0",
+    "@bazel/bazel": "^0.23.0",
     "@bazel/ibazel": "^0.9.0",
     "@bazel/karma": "^0.25.1",
     "@bazel/typescript": "^0.25.1",
