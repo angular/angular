@@ -5189,8 +5189,12 @@ Here's a summary of the stand-alone functions, in order of likely utility:
 
 {@a testbed-class-summary}
 
+<!--
 #### _TestBed_ class summary
+-->
+#### _TestBed_ 클래스
 
+<!--
 The `TestBed` class is one of the principal Angular testing utilities.
 Its API is quite large and can be overwhelming until you've explored it,
 a little at a time. Read the early part of this guide first
@@ -5198,6 +5202,12 @@ to get the basics before trying to absorb the full API.
 
 The module definition passed to `configureTestingModule`
 is a subset of the `@NgModule` metadata properties.
+-->
+`TestBed` 클래스는 Angular가 제공하는 테스트 유틸리티에서도 가장 중요한 클래스 중 하나입니다.
+`TestBed`가 제공하는 API는 상당히 방대하기 때문에 이 클래스를 훑어보는 것만으로도 부담이 될 수 있습니다.
+하지만 처음부터 모든 API를 알아야 하는 것은 아니기 때문에 이 문서에서 다룬 것처럼 필요한 것을 하나씩 찾아서 활용하는 것이 좋습니다.
+
+`configureTestingModule` 메소드에 전달하는 모듈 정의는 `@NgModule` 메타데이터 프로퍼티의 서브셋입니다.
 
 <code-example format="." language="javascript">
   type TestModuleMetadata = {
@@ -5210,10 +5220,15 @@ is a subset of the `@NgModule` metadata properties.
 
 {@a metadata-override-object}
 
+<!--
 Each override method takes a `MetadataOverride<T>` where `T` is the kind of metadata
 appropriate to the method, that is, the parameter of an `@NgModule`,
 `@Component`, `@Directive`, or `@Pipe`.
+-->
+이와 비슷하게 오버라이드 메소드가 인자로 받는 객체는 `MetadataOverride<T>` 타입인데, 이 때 `T`는 메소드에 해당하는 메타데이터 타입을 의미합니다.
+그래서 메소드 인자는 `@NgModule`이나 `@Component`, `@Directive`, `@Pipe`에 사용하는 메타데이터와 비슷하게 사용합니다.
 
+<!--
 <code-example format="." language="javascript">
   type MetadataOverride<T> = {
     add?: Partial<T>;
@@ -5221,10 +5236,19 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
     set?: Partial<T>;
   };
 </code-example>
+-->
+<code-example format="." language="javascript">
+  type MetadataOverride&lt;T> = {
+    add?: Partial&lt;T>;
+    remove?: Partial&lt;T>;
+    set?: Partial&lt;T>;
+  };
+</code-example>
 
 {@a testbed-methods}
 {@a testbed-api-summary}
 
+<!--
 The `TestBed` API consists of static class methods that either update or reference a _global_ instance of the`TestBed`.
 
 Internally, all static methods cover methods of the current runtime `TestBed` instance,
@@ -5233,14 +5257,29 @@ which is also returned by the `getTestBed()` function.
 Call `TestBed` methods _within_ a `beforeEach()` to ensure a fresh start before each individual test.
 
 Here are the most important static methods, in order of likely utility.
+-->
+`TestBed`가 제공하는 API 중 정적 클래스 메소드로 제공되는 것들은 _전역_ 에 존재하는 `TestBed` 인스턴스를 조작하거나 참조하는 것들입니다.
+
+내부적으로 정적 메소드들은 현재 테스트 환경에서 사용되고 있는 `TestBed` 인스턴스가 실행하는 메소드를 모두 처리합니다.
+`TestBed` 인스턴스를 반환하는 `getTestBed()` 함수도 마찬가지입니다.
+
+`beforeEach()` 안에서 `TestBed` 메소드를 실행하면 환경설정이 깔끔하게 된 상태로 개별 테스트를 실행할 수 있습니다.
+
+정적 메소드 중에서 가장 중요하고 자주 사용하는 메소드들에 대해 알아봅시다.
 
 <table>
   <tr>
     <th>
+      <!--
       Methods
+      -->
+      메소드
     </th>
     <th>
+      <!--
       Description
+      -->
+      설명
     </th>
   </tr>
 
@@ -5251,12 +5290,19 @@ Here are the most important static methods, in order of likely utility.
 
     <td>
 
+      <!--
       The testing shims (`karma-test-shim`, `browser-test-shim`)
       establish the [initial test environment](guide/testing) and a default testing module.
       The default testing module is configured with basic declaratives and some Angular service substitutes that every tester needs.
 
       Call `configureTestingModule` to refine the testing module configuration for a particular set of tests
       by adding and removing imports, declarations (of components, directives, and pipes), and providers.
+      -->
+      `karma-test-shim`과 `browser-test-shim`을 사용해서 [기본 테스트 환경](guide/testing)과 테스트 모듈을 구성합니다.
+      기본 테스트 모듈은 테스트 스펙에 필요한 Angular 구성요소와 서비스를 등록해서 구성합니다.
+
+      `configureTestingModule`를 실행하면 특정 테스트 스펙에 필요한 설정으로 테스트 모듈을 다시 설정할 수 있습니다.
+      테스트 모듈이 로드하는 모듈 목록에 새로운 항목을 추가하거나 뺄 수 있고 컴포넌트, 디렉티브, 파이프 목록을 변경할 수 있으며, 프로바이더도 변경할 수 있습니다.
 
     </td>
   </tr>
@@ -5268,25 +5314,37 @@ Here are the most important static methods, in order of likely utility.
 
     <td>
 
+      <!--
       Compile the testing module asynchronously after you've finished configuring it.
       You **must** call this method if _any_ of the testing module components have a `templateUrl`
       or `styleUrls` because fetching component template and style files is necessarily asynchronous.
       See [above](#compile-components).
 
       After calling `compileComponents`, the `TestBed` configuration is frozen for the duration of the current spec.
+      -->
+      테스트 모듈 설정을 끝냈으면 이 모듈을 비동기로 컴파일할 때 사용합니다.
+      테스트 모듈에 포함된 컴포넌트 중에서 `templateUrl`과 `styleUrls`를 사용하는 컴포넌트가 있다면, 이 컴포넌트 템플릿 파일과 스타일 파일이 비동기로 로드되어야 하기 때문에 **반드시** 이 함수를 실행해야 합니다.
+      [위에서 설명한 내용](#compile-components)을 참고하세요.
 
     </td>
   </tr>
 
   <tr>
     <td style="vertical-align: top">
+      <!--
       <code>createComponent<T></code>
+      -->
+      <code>createComponent&lt;T></code>
     </td>
 
     <td>
 
+      <!--
       Create an instance of a component of type `T` based on the current `TestBed` configuration.
       After calling `compileComponent`, the `TestBed` configuration is frozen for the duration of the current spec.
+      -->
+      현재 설정된 `TestBed` 환경으로 `T` 타입의 컴포넌트 인스턴스를 생성합니다.
+      `compileComponent`를 실행하고 나면 `TestBed` 환경 설정이 확정되기 때문에 해당 블럭에서 동작하는 테스트 스펙이 끝날 때까지 `TestBed` 설정을 변경할 수 없습니다.
 
     </td>
   </tr>
@@ -5297,9 +5355,14 @@ Here are the most important static methods, in order of likely utility.
     </td>
     <td>
 
+      <!--
       Replace metadata for the given `NgModule`. Recall that modules can import other modules.
       The `overrideModule` method can reach deeply into the current testing module to
       modify one of these inner modules.
+      -->
+      `NgModule`에 설정된 메타데이터를 변경합니다.
+      모듈은 다른 모듈을 로드할 수 있다는 것을 기억하세요.
+      `overrideModule` 메소드를 사용하면 현재 사용하는 테스트 모듈은 물론 테스트 모듈이 로드하는 다른 모듈 설정도 변경할 수 있습니다.
 
     </td>
   </tr>
@@ -5311,8 +5374,12 @@ Here are the most important static methods, in order of likely utility.
 
     <td>
 
+      <!--
       Replace metadata for the given component class, which could be nested deeply
       within an inner module.
+      -->
+      컴포넌트 클래스에 설정된 메타데이터를 변경합니다.
+      테스트 모듈이 로드하는 다른 모듈의 컴포넌트 메타데이터도 변경할 수 있습니다.
 
     </td>
   </tr>
@@ -5324,8 +5391,12 @@ Here are the most important static methods, in order of likely utility.
 
     <td>
 
+      <!--
       Replace metadata for the given directive class, which could be nested deeply
       within an inner module.
+      -->
+      디렉티브 클래스에 설정된 메타데이터를 변경합니다.
+      테스트 모듈이 로드하는 다른 모듈의 디렉티브 메타데이터도 변경할 수 있습니다.
 
     </td>
   </tr>
@@ -5336,8 +5407,12 @@ Here are the most important static methods, in order of likely utility.
     </td>
     <td>
 
+      <!--
       Replace metadata for the given pipe class, which could be nested deeply
       within an inner module.
+      -->
+      파이프 클래스에 설정된 메타데이터를 변경합니다.
+      테스트 모듈이 로드하는 다른 모듈의 파이프 메타데이터도 변경할 수 있습니다.
 
     </td>
   </tr>
@@ -5350,6 +5425,7 @@ Here are the most important static methods, in order of likely utility.
 
     <td>
 
+      <!--
       Retrieve a service from the current `TestBed` injector.
 
       The `inject` function is often adequate for this purpose.
@@ -5360,10 +5436,22 @@ Here are the most important static methods, in order of likely utility.
       The `TestBed.get()` method takes an optional second parameter,
       the object to return if Angular can't find the provider
       (`null` in this example):
+      -->
+      현재 사용하는 `TestBed` 인젝터를 사용해서 서비스를 참조합니다.
+
+      이런 용도라면 `get` 대신 `inject` 함수를 사용해도 됩니다.
+      하지만 프로바이더로 등록되지 않은 서비스는 `inject`로 참조할 때 에러가 발생합니다.
+
+      만약 서비스가 옵션 항목이라면 어떻게 해야 할까요?
+
+      `TestBed.get()` 메소드의 두번째 인자는 옵션항목인데, 이 옵션을 지정하면 Angular가 서비스 프로바이더를 찾을 수 없을 때 옵션으로 지정된 객체를 사용합니다(이 예제에서는 `null`을 대신 사용합니다):
 
       <code-example path="testing/src/app/demo/demo.testbed.spec.ts" region="testbed-get-w-null" header="app/demo/demo.testbed.spec.ts" linenums="false"></code-example>
 
+      <!--
       After calling `get`, the `TestBed` configuration is frozen for the duration of the current spec.
+      -->
+      `get`을 실행하고 나면 `TestBed` 환경 설정이 확정되기 때문에 해당 블럭에서 동작하는 테스트 스펙이 끝날 때까지 `TestBed` 설정을 변경할 수 없습니다.
 
     </td>
   </tr>
@@ -5375,6 +5463,7 @@ Here are the most important static methods, in order of likely utility.
     </td>
     <td>
 
+      <!--
       Initialize the testing environment for the entire test run.
 
       The testing shims (`karma-test-shim`, `browser-test-shim`) call it for you
@@ -5386,6 +5475,16 @@ Here are the most important static methods, in order of likely utility.
       Specify the Angular compiler factory, a `PlatformRef`, and a default Angular testing module.
       Alternatives for non-browser platforms are available in the general form
       `@angular/platform-<platform_name>/testing/<platform_name>`.
+      -->
+      모든 테스트 스펙에 적용되는 테스트 환경을 초기화합니다.
+
+      이 메소드는 `karma-test-shim`과 `browser-test-shim`이 자동으로 실행하기 때문에 이 메소드를 직접 실행할 일은 별로 없습니다.
+
+      하지만 이 메소드를 직접 실행해야 하는 경우가 _딱 하나_ 있습니다.
+      테스트를 실행하는 도중에 테스트 환경 설정의 기본값을 바꾸게 되면 먼저 `resetTestEnvironment`를 실행해야 합니다.
+
+      그리고 `PlatformRef`과 같은 Angular 컴파일러 팩토리나 기본 Angular 테스트 모듈을 지정합니다.
+      브라우저를 사용하지 않는 플랫폼은 일반적으로 `@angular/platform-<platform_name>/testing/<platform_name>` 패키지로 제공됩니다.
 
     </td>
   </tr>
@@ -5396,39 +5495,66 @@ Here are the most important static methods, in order of likely utility.
     </td>
     <td>
 
+      <!--
       Reset the initial test environment, including the default testing module.
+      -->
+      테스트 환경을 초기화합니다. 이 메소드를 실행하면 기본 테스트 모듈도 함께 초기화됩니다.
 
     </td>
   </tr>
-</table
+</table>
 
+<!--
 A few of the `TestBed` instance methods are not covered by static `TestBed` _class_ methods.
 These are rarely needed.
+-->
+`TestBed` _클래스_ 의 메소드 중에는 정적 메소드가 처리하지 않는 함수도 있습니다.
+이 메소드들은 거의 사용하지 않습니다.
 
 {@a component-fixture-api-summary}
 
+<!--
 #### The _ComponentFixture_
+-->
+#### _ComponentFixture_
 
+<!--
 The `TestBed.createComponent<T>`
 creates an instance of the component `T`
 and returns a strongly typed `ComponentFixture` for that component.
 
 The `ComponentFixture` properties and methods provide access to the component,
 its DOM representation, and aspects of its Angular environment.
+-->
+`TestBed.createComponent<T>`를 실행하면 컴포넌트 `T`의 인스턴스를 생성하며, 이렇게 생성된 인스턴스를 `ComponentFixture` 타입으로 반환합니다.
+
+그러면 `ComponentFixture`의 프로퍼티와 메소드를 사용해서 컴포넌트에 직접 접근할 수 있으며, DOM에도 접근할 수 있고 이 컴포넌트가 사용하는 Angular 구성요소에도 접근할 수 있습니다.
 
 {@a component-fixture-properties}
 
+<!--
 #### _ComponentFixture_ properties
+-->
+#### _ComponentFixture_ 의 프로퍼티
 
+<!--
 Here are the most important properties for testers, in order of likely utility.
+-->
+테스트 스펙을 작성하면서 가장 중요하고 자주 사용하는 프로퍼티에 대해 알아봅시다.
 
 <table>
   <tr>
     <th>
+      <!--
       Properties
+      -->
+      프로퍼티
     </th>
     <th>
+      <!--
       Description
+      -->
+      설명
     </th>
   </tr>
 
@@ -5439,7 +5565,10 @@ Here are the most important properties for testers, in order of likely utility.
 
     <td>
 
+      <!--
       The instance of the component class created by `TestBed.createComponent`.
+      -->
+      `TestBed.createComponent`로 생성한 컴포넌트 클래스의 인스턴스가 할당됩니다.
 
     </td>
   </tr>
@@ -5451,10 +5580,17 @@ Here are the most important properties for testers, in order of likely utility.
 
     <td>
 
+      <!--
       The `DebugElement` associated with the root element of the component.
 
       The `debugElement` provides insight into the component and its DOM element during test and debugging.
       It's a critical property for testers. The most interesting members are covered [below](#debug-element-details).
+      -->
+      `DebugElement`는 컴포넌트의 루트 엘리먼트와 관련이 있습니다.
+
+      `debugElement`는 테스트를 실행하거나 디버깅할 때 컴포넌트 내부를 직접 참조하거나 DOM 엘리먼트를 참조하는 용도로 사용할 수 있습니다.
+      그리고 테스트 스펙을 작성할 때 가장 중요한 프로퍼티이기도 합니다.
+      이 클래스의 멤버중 가장 흥미로운 멤버는 [아래](#debug-element-details)에서 자세하게 다룹니다.
 
     </td>
   </tr>
@@ -5466,7 +5602,10 @@ Here are the most important properties for testers, in order of likely utility.
 
     <td>
 
+      <!--
       The native DOM element at the root of the component.
+      -->
+      컴포넌트의 최상위 네이티브 DOM 엘리먼트가 할당됩니다.
 
     </td>
   </tr>
@@ -5478,11 +5617,17 @@ Here are the most important properties for testers, in order of likely utility.
 
     <td>
 
+      <!--
       The `ChangeDetectorRef` for the component.
 
       The `ChangeDetectorRef` is most valuable when testing a
       component that has the `ChangeDetectionStrategy.OnPush` method
       or the component's change detection is under your programmatic control.
+      -->
+      컴포넌트의 `ChangeDetectorRef`가 할당됩니다.
+
+      `ChangeDetectorRef`는 컴포넌트를 테스트할 때 가장 중요한 클래스입니다.
+      컴포넌트를 조작하고 나면 컴포넌트의 변화 감지 로직을 실행하기 위해 `ChangeDetectionStrategy.OnPush` 메소드나 컴포넌트 픽스쳐의 `detectChange` 메소드를 실행할 수 있습니다.
 
     </td>
   </tr>

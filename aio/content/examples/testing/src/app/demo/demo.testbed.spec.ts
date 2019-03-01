@@ -60,7 +60,7 @@ describe('demo (with TestBed):', () => {
 
     it('can inject a default value when service is not provided', () => {
       // #docregion testbed-get-w-null
-      service = TestBed.get(NotProvided, null); // service is null
+      service = TestBed.get(NotProvided, null); // service에는 null이 할당됩니다.
       // #enddocregion testbed-get-w-null
     });
 
