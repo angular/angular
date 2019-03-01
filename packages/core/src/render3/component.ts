@@ -29,7 +29,7 @@ import {renderInitialClasses, renderInitialStyles} from './styling/class_and_sty
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, renderStringify} from './util/misc_utils';
 import {getRootContext, getRootView} from './util/view_traversal_utils';
-import {readPatchedLView} from './util/view_utils';
+import {readPatchedLView, resetPreOrderHookFlags} from './util/view_utils';
 
 
 
@@ -142,6 +142,7 @@ export function renderComponent<T>(
 
     refreshDescendantViews(rootView);  // creation mode pass
     rootView[FLAGS] &= ~LViewFlags.CreationMode;
+    resetPreOrderHookFlags(rootView);
     refreshDescendantViews(rootView);  // update mode pass
   } finally {
     leaveView(oldView);
@@ -248,7 +249,7 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
   const rootTView = readPatchedLView(component) ![TVIEW];
   const dirIndex = rootTView.data.length - 1;
 
-  registerPreOrderHooks(dirIndex, def, rootTView);
+  registerPreOrderHooks(dirIndex, def, rootTView, -1, -1, -1);
   // TODO(misko): replace `as TNode` with createTNode call. (needs refactoring to lose dep on
   // LNode).
   registerPostOrderHooks(

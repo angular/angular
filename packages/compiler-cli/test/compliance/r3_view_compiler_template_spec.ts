@@ -75,6 +75,7 @@ describe('compiler compliance: template', () => {
           const $outer1$ = $i0$.ɵnextContext().$implicit;
           const $myComp1$ = $i0$.ɵnextContext();
           $i0$.ɵelementProperty(0, "title", $i0$.ɵbind($myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component)));
+          $r3$.ɵflushHooksUpTo(1);
           $i0$.ɵtextBinding(1, $i0$.ɵinterpolation1(" ", $myComp1$.format($outer1$, $middle1$, $inner1$, $myComp1$.component), " "));
         }
       }
@@ -87,6 +88,7 @@ describe('compiler compliance: template', () => {
         }
         if (rf & 2) {
           const $myComp2$ = $i0$.ɵnextContext(2);
+          $r3$.ɵflushHooksUpTo(1);
           $i0$.ɵelementProperty(1, "ngForOf", $i0$.ɵbind($myComp2$.items));
         }
       }
@@ -99,6 +101,7 @@ describe('compiler compliance: template', () => {
         }
         if (rf & 2) {
           const $outer2$ = ctx.$implicit;
+          $r3$.ɵflushHooksUpTo(1);
           $i0$.ɵelementProperty(1, "ngForOf", $i0$.ɵbind($outer2$.items));
         }
       }
@@ -207,6 +210,7 @@ describe('compiler compliance: template', () => {
         if (rf & 2) {
           const $item$ = ctx.$implicit;
           const $i$ = ctx.index;
+          $r3$.ɵflushHooksUpTo(1);
           $i0$.ɵtextBinding(1, $i0$.ɵinterpolation2(" ", $i$, " - ", $item$, " "));
         }
       }
@@ -262,6 +266,7 @@ describe('compiler compliance: template', () => {
           const $div$ = $i0$.ɵnextContext();
           const $i$ = $div$.index;
           const $item$ = $div$.$implicit;
+          $r3$.ɵflushHooksUpTo(1);
           $i0$.ɵtextBinding(1, $i0$.ɵinterpolation2(" ", $i$, " - ", $item$, " "));
         }
       }
@@ -274,6 +279,7 @@ describe('compiler compliance: template', () => {
         }
         if (rf & 2) {
           const $app$ = $i0$.ɵnextContext();
+          $r3$.ɵflushHooksUpTo(1);
           $i0$.ɵelementProperty(1, "ngIf", $i0$.ɵbind($app$.showing));
         }
       }
@@ -330,6 +336,7 @@ describe('compiler compliance: template', () => {
         if (rf & 2) {
           const $middle$ = $i0$.ɵnextContext().$implicit;
           const $myComp$ = $i0$.ɵnextContext(2);
+          $r3$.ɵflushHooksUpTo(1);
           $i0$.ɵtextBinding(1, $i0$.ɵinterpolation2(" ", $middle$.value, " - ", $myComp$.name, " "));
         }
       }
@@ -342,6 +349,7 @@ describe('compiler compliance: template', () => {
         }
         if (rf & 2) {
           const $middle$ = ctx.$implicit;
+          $r3$.ɵflushHooksUpTo(1);
           $i0$.ɵelementProperty(1, "ngForOf", $i0$.ɵbind($middle$.items));
         }
       }
@@ -354,6 +362,7 @@ describe('compiler compliance: template', () => {
         }
         if (rf & 2) {
           const $outer$ = ctx.$implicit;
+          $r3$.ɵflushHooksUpTo(1);
           $i0$.ɵelementProperty(1, "ngForOf", $i0$.ɵbind($outer$.items));
         }
       }

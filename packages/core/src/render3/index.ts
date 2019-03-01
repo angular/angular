@@ -57,6 +57,8 @@ export {
   elementStyleProp,
   elementStylingApply,
 
+  flushHooksUpTo,
+
   listener,
   store,
   load,

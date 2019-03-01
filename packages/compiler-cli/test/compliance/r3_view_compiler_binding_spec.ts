@@ -44,6 +44,7 @@ describe('compiler compliance: bindings', () => {
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
+          $r3$.ɵflushHooksUpTo(1);
           $i0$.ɵtextBinding(1, $i0$.ɵinterpolation1("Hello ", $ctx$.name, ""));
         }
       }`;
@@ -473,6 +474,7 @@ describe('compiler compliance: bindings', () => {
           }
           if (rf & 2) {
             const $_r0$ = $i0$.ɵreference(1);
+            $r3$.ɵflushHooksUpTo(4);
             $i0$.ɵtextBinding(4, $i0$.ɵinterpolation1(" ", $_r0$.id, " "));
           }
         }

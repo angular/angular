@@ -24,7 +24,7 @@ import {attachPatchData, getComponentViewByInstance} from './context_discovery';
 import {attachLContainerDebug, attachLViewDebug} from './debug';
 import {diPublicInInjector, getNodeInjectable, getOrCreateInjectable, getOrCreateNodeInjectorForNode, injectAttributeImpl} from './di';
 import {throwMultipleComponentError} from './errors';
-import {executeHooks, executeInitHooks, registerPostOrderHooks, registerPreOrderHooks} from './hooks';
+import {executeHooks, executePreOrderHooks, registerPostOrderHooks, registerPreOrderHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, VIEWS} from './interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from './interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from './interfaces/injector';
@@ -48,7 +48,7 @@ import {NO_CHANGE} from './tokens';
 import {attrsStylingIndexOf, setUpAttributes} from './util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent, getRootContext, getRootView} from './util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readPatchedLView, unwrapRNode, viewAttachedToChangeDetector} from './util/view_utils';
+import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from './util/view_utils';
 
 
 
@@ -84,16 +84,17 @@ export function refreshDescendantViews(lView: LView) {
   if (!creationMode) {
     const checkNoChangesMode = getCheckNoChangesMode();
 
-    executeInitHooks(lView, tView, checkNoChangesMode);
+    executePreOrderHooks(lView, tView, checkNoChangesMode, undefined);
 
     refreshDynamicEmbeddedViews(lView);
 
     // Content query results must be refreshed before content hooks are called.
     refreshContentQueries(tView, lView);
 
+    resetPreOrderHookFlags(lView);
     executeHooks(
         lView, tView.contentHooks, tView.contentCheckHooks, checkNoChangesMode,
-        InitPhaseState.AfterContentInitHooksToBeRun);
+        InitPhaseState.AfterContentInitHooksToBeRun, undefined);
 
     setHostBindings(tView, lView);
   }
@@ -180,6 +181,7 @@ export function createLView<T>(
   const lView = tView.blueprint.slice() as LView;
   lView[HOST] = host;
   lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass;
+  resetPreOrderHookFlags(lView);
   lView[PARENT] = lView[DECLARATION_VIEW] = parentLView;
   lView[CONTEXT] = context;
   lView[RENDERER_FACTORY] = (rendererFactory || parentLView && parentLView[RENDERER_FACTORY]) !;
@@ -405,6 +407,7 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       setPreviousOrParentTNode(null !);
 
       oldView = enterView(viewToRender, viewToRender[T_HOST]);
+      resetPreOrderHookFlags(viewToRender);
       namespaceHTML();
       tView.template !(getRenderFlags(viewToRender), context);
       // This must be set to false immediately after the first creation run because in an
@@ -459,6 +462,7 @@ function renderComponentOrTemplate<T>(
     }
 
     // update mode pass
+    resetPreOrderHookFlags(hostView);
     templateFn && templateFn(RenderFlags.Update, context);
     refreshDescendantViews(hostView);
   } finally {
@@ -807,8 +811,8 @@ export function createTView(
     firstTemplatePass: true,
     staticViewQueries: false,
     staticContentQueries: false,
-    initHooks: null,
-    checkHooks: null,
+    preOrderHooks: null,
+    preOrderCheckHooks: null,
     contentHooks: null,
     contentCheckHooks: null,
     viewHooks: null,
@@ -1054,6 +1058,17 @@ export function elementEnd(): void {
         lView, previousOrParentTNode.inputs !['style'] !,
         getInitialStyleStringValue(stylingContext));
   }
+}
+
+
+/**
+ * Flushes all the lifecycle hooks for directives up until (and excluding) that node index
+ *
+ * @param index The index of the element in the `LView`
+ */
+export function flushHooksUpTo(index: number): void {
+  const lView = getLView();
+  executePreOrderHooks(lView, lView[TVIEW], getCheckNoChangesMode(), index);
 }
 
 /**
@@ -1748,6 +1763,10 @@ function resolveDirectives(
       if (def.providersResolver) def.providersResolver(def);
     }
     generateExpandoInstructionBlock(tView, tNode, directives.length);
+    const initialPreOrderHooksLength = (tView.preOrderHooks && tView.preOrderHooks.length) || 0;
+    const initialPreOrderCheckHooksLength =
+        (tView.preOrderCheckHooks && tView.preOrderCheckHooks.length) || 0;
+    const nodeIndex = tNode.index - HEADER_OFFSET;
     for (let i = 0; i < directives.length; i++) {
       const def = directives[i] as DirectiveDef<any>;
 
@@ -1758,7 +1777,9 @@ function resolveDirectives(
 
       // Init hooks are queued now so ngOnInit is called in host components before
       // any projected components.
-      registerPreOrderHooks(directiveDefIdx, def, tView);
+      registerPreOrderHooks(
+          directiveDefIdx, def, tView, nodeIndex, initialPreOrderHooksLength,
+          initialPreOrderCheckHooksLength);
     }
   }
   if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
@@ -2276,7 +2297,7 @@ export function containerRefreshStart(index: number): void {
 
   // We need to execute init hooks here so ngOnInit hooks are called in top level views
   // before they are called in embedded views (for backwards compatibility).
-  executeInitHooks(lView, tView, getCheckNoChangesMode());
+  executePreOrderHooks(lView, tView, getCheckNoChangesMode(), undefined);
 }
 
 /**
@@ -2440,6 +2461,7 @@ export function embeddedViewEnd(): void {
     refreshDescendantViews(lView);  // creation mode pass
     lView[FLAGS] &= ~LViewFlags.CreationMode;
   }
+  resetPreOrderHookFlags(lView);
   refreshDescendantViews(lView);  // update mode pass
   const lContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainerOrUndefined(lContainer);
@@ -2834,6 +2856,7 @@ export function checkView<T>(hostView: LView, component: T) {
   const creationMode = isCreationMode(hostView);
 
   try {
+    resetPreOrderHookFlags(hostView);
     namespaceHTML();
     creationMode && executeViewQueryFn(RenderFlags.Create, hostTView, component);
     templateFn(getRenderFlags(hostView), component);

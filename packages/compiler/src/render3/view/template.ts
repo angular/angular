@@ -120,6 +120,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    * all local refs and context variables are available for matching.
    */
   private _updateCodeFns: (() => o.Statement)[] = [];
+  /**
+   * Memorizes the last node index for which a flushHooksUpTo instruction has been generated.
+   * Initialized to 0 to avoid generating a useless flushHooksUpTo(0).
+   */
+  private _lastNodeIndexWithFlush: number = 0;
   /** Temporary variable declarations generated from visiting pipes, literals, etc. */
   private _tempVariables: o.Statement[] = [];
   /**
@@ -451,10 +456,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (bindings.size) {
       bindings.forEach(binding => {
         this.updateInstruction(
-            span, R3.i18nExp,
+            index, span, R3.i18nExp,
             () => [this.convertPropertyBinding(o.variable(CONTEXT_NAME), binding)]);
       });
-      this.updateInstruction(span, R3.i18nApply, [o.literal(index)]);
+      this.updateInstruction(index, span, R3.i18nApply, [o.literal(index)]);
     }
     if (!selfClosing) {
       this.creationInstruction(span, R3.i18nEnd);
@@ -639,7 +644,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
               converted.expressions.forEach(expression => {
                 hasBindings = true;
                 const binding = this.convertExpressionBinding(implicit, expression);
-                this.updateInstruction(element.sourceSpan, R3.i18nExp, [binding]);
+                this.updateInstruction(elementIndex, element.sourceSpan, R3.i18nExp, [binding]);
               });
             }
           }
@@ -649,7 +654,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           const args = this.constantPool.getConstLiteral(o.literalArr(i18nAttrArgs), true);
           this.creationInstruction(element.sourceSpan, R3.i18nAttributes, [index, args]);
           if (hasBindings) {
-            this.updateInstruction(element.sourceSpan, R3.i18nApply, [index]);
+            this.updateInstruction(elementIndex, element.sourceSpan, R3.i18nApply, [index]);
           }
         }
       }
@@ -711,7 +716,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         const hasValue = value instanceof LiteralPrimitive ? !!value.value : true;
         this.allocateBindingSlots(value);
         const bindingName = prepareSyntheticPropertyName(input.name);
-        this.updateInstruction(input.sourceSpan, R3.elementProperty, () => {
+        this.updateInstruction(elementIndex, input.sourceSpan, R3.elementProperty, () => {
           return [
             o.literal(elementIndex), o.literal(bindingName),
             (hasValue ? this.convertPropertyBinding(implicit, value) : emptyValueBindInstruction)
@@ -737,7 +742,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
             }
           }
           this.allocateBindingSlots(value);
-          this.updateInstruction(input.sourceSpan, instruction, () => {
+          this.updateInstruction(elementIndex, input.sourceSpan, instruction, () => {
             return [
               o.literal(elementIndex), o.literal(attrName),
               this.convertPropertyBinding(implicit, value), ...params
@@ -839,7 +844,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     template.inputs.forEach(input => {
       const value = input.value.visit(this._valueConverter);
       this.allocateBindingSlots(value);
-      this.updateInstruction(template.sourceSpan, R3.elementProperty, () => {
+      this.updateInstruction(templateIndex, template.sourceSpan, R3.elementProperty, () => {
         return [
           o.literal(templateIndex), o.literal(input.name),
           this.convertPropertyBinding(context, value)
@@ -880,7 +885,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const value = text.value.visit(this._valueConverter);
     this.allocateBindingSlots(value);
     this.updateInstruction(
-        text.sourceSpan, R3.textBinding,
+        nodeIndex, text.sourceSpan, R3.textBinding,
         () => [o.literal(nodeIndex), this.convertPropertyBinding(o.variable(CONTEXT_NAME), value)]);
   }
 
@@ -966,7 +971,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (createMode) {
         this.creationInstruction(instruction.sourceSpan, instruction.reference, paramsFn);
       } else {
-        this.updateInstruction(instruction.sourceSpan, instruction.reference, paramsFn);
+        this.updateInstruction(-1, instruction.sourceSpan, instruction.reference, paramsFn);
       }
     }
   }
@@ -978,8 +983,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private updateInstruction(
-      span: ParseSourceSpan|null, reference: o.ExternalReference,
+      nodeIndex: number, span: ParseSourceSpan|null, reference: o.ExternalReference,
       paramsOrFn?: o.Expression[]|(() => o.Expression[])) {
+    if (this._lastNodeIndexWithFlush < nodeIndex) {
+      this.instructionFn(this._updateCodeFns, span, R3.flushHooksUpTo, [o.literal(nodeIndex)]);
+      this._lastNodeIndexWithFlush = nodeIndex;
+    }
     this.instructionFn(this._updateCodeFns, span, reference, paramsOrFn || []);
   }
 
