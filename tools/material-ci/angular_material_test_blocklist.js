@@ -25,218 +25,6 @@ window.testBlocklist = {
     "error": "Error: Expected '<pizza-msg><p>Pizza</p><p>Chocolate</p></pizza-msg>' to be '', 'Expected the DomPortalOutlet to be empty after detach'.",
     "notes": "Unknown"
   },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render initial state": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the data length": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the viewport size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered range": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered content offset": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the scroll offset": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should get the rendered content size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should measure range size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set total content size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set total content size in horizontal mode": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set a class based on the orientation": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set the vertical class if an invalid orientation is set": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set rendered range": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set content offset to top of content": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should set content offset to bottom of content": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to offset": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to index": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to offset in horizontal mode": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should scroll to index in horizontal mode": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should output scrolled index": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls down": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls up": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the end when scrolled to the top": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the start and end when scrolled to the middle": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render buffer element at the start when scrolled to the bottom": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic item size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic buffer size": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should handle dynamic item array": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls right in horizontal mode": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should update viewport as user scrolls left in horizontal mode": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should work with an Observable": {
-    "error": "TypeError: Cannot read property 'getRenderedRange' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should work with a DataSource": {
-    "error": "TypeError: Cannot read property 'getRenderedRange' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should trackBy value by default": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for detach()",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should trackBy index when specified": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for detach()",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should recycle views when template cache is large enough to accommodate": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for createEmbeddedView()",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should not recycle views when template cache is full": {
-    "error": "Error: <spyOn> : could not find an object to spy upon for createEmbeddedView()",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should render up to maxBufferPx when buffer dips below minBufferPx": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should throw if maxBufferPx is less than minBufferPx": {
-    "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should register and degregister with ScrollDispatcher": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should emit on viewChange inside the Angular zone": {
-    "error": "TypeError: Cannot read property 'viewChange' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with FixedSizeVirtualScrollStrategy should not throw when disposing of a view that will not fit in the cache": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with RTL direction should initially be scrolled all the way right and showing the first item in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with RTL direction should scroll through items as user scrolls to the left in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with RTL direction should interpret scrollToOffset amount as an offset from the right in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with RTL direction should scroll to the correct index in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with RTL direction should emit the scrolled to index in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with RTL direction should set total content size": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with RTL direction should set total content size in horizontal mode": {
-    "error": "TypeError: Cannot read property 'elementRef' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should render initial state for uniform items": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should render extra content if first item is smaller than average": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkVirtualScrollViewport with AutoSizeVirtualScrollStrategy should throw if maxBufferPx is less than minBufferPx": {
-    "error": "Error: Uncaught (in promise): TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1114: Ivy doesn't support inserting same view instance multiple times"
-  },
-  "CdkAccordion should not register nested items to the same accordion": {
-    "error": "TypeError: Cannot read property 'accordion' of undefined",
-    "notes": "Unknown"
-  },
   "CdkDrag in a drop container should be able to customize the preview element": {
     "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
     "notes": "Unknown"
@@ -341,61 +129,13 @@ window.testBlocklist = {
     "error": "Error: Failed: Expected node descendant num to be 2 but was 0",
     "notes": "Unknown"
   },
-  "MatButton should apply class based on color attribute": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
+  "MatInput without forms validates the type": {
+    "error": "Error: Input type \"file\" isn't supported by matInput.",
     "notes": "Unknown"
   },
-  "MatButton should expose the ripple instance": {
-    "error": "Error: Expected undefined to be truthy.",
+  "MatInput with textarea autosize should work in a step": {
+    "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
     "notes": "Unknown"
-  },
-  "MatButton should not clear previous defined classes": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatButton button[mat-fab] should have accent palette by default": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatButton button[mat-mini-fab] should have accent palette by default": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatButton button[mat-button] should not increment if disabled": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatButton button[mat-button] should disable the native button element": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatButton a[mat-button] should not redirect if disabled": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatButton a[mat-button] should remove tabindex if disabled": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatButton a[mat-button] should add aria-disabled attribute if disabled": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatButton a[mat-button] should not add aria-disabled attribute if disabled is false": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatButton a[mat-button] should be able to set a custom tabindex": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatButton button ripples should disable the ripple if matRippleDisabled input is set": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
-  },
-  "MatButton button ripples should disable the ripple when the button is disabled": {
-    "error": "Error: Template error: Can't bind to 'disabled' since it isn't a known property of 'a'.",
-    "notes": "FW-1037: Host bindings for host objects in metadata are inherited"
   },
   "MatChipList StandardChipList basic behaviors should toggle the chips disabled state based on whether it is disabled": {
     "error": "Error: Expected true to be false.",
@@ -525,12 +265,8 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
-  "MatSlideToggle without forms custom action configuration should not change value on dragging when drag action is noop": {
-    "error": "Error: Expected mat-slide-toggle-thumb-container to contain 'mat-dragging'.",
-    "notes": "Unknown"
-  },
   "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c23412-0 mat-drawer ng-trigger ng-trigger-transform mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
+    "error": "Error: Expected ng-tns-c28435-0 ng-trigger ng-trigger-transform mat-drawer mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
@@ -569,33 +305,9 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'click' of undefined",
     "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
   },
-  "MatGridList should throw error if rowHeight ratio is invalid": {
-    "error": "Error: mat-grid-list: invalid ratio given for row-height: \"4:3:2\"",
-    "notes": "Unknown"
-  },
-  "MatInput without forms validates the type": {
-    "error": "Error: Input type \"file\" isn't supported by matInput.",
-    "notes": "Unknown"
-  },
-  "MatInput with textarea autosize should work in a step": {
-    "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
-    "notes": "Unknown"
-  },
   "Dialog should set the proper animation states": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "FullscreenOverlayContainer should open an overlay inside a fullscreen element and move it to the body": {
-    "error": "Error: Must provide a portal to attach",
-    "notes": "Unknown"
-  },
-  "FullscreenOverlayContainer should open an overlay inside the body and move it to a fullscreen element": {
-    "error": "Error: Must provide a portal to attach",
-    "notes": "Unknown"
-  },
-  "OverlayContainer should remove the overlay container element from the DOM on destruction": {
-    "error": "Error: Must provide a portal to attach",
-    "notes": "Unknown"
   },
   "MatAutocomplete aria should set role of autocomplete panel to listbox": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
@@ -608,10 +320,6 @@ window.testBlocklist = {
   "MatDialog should set the proper animation states": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatMenu should close the menu when using the CloseScrollStrategy": {
-    "error": "TypeError: Cannot read property 'openMenu' of undefined",
-    "notes": "Unknown"
   },
   "MatMenu animations should enable ripples on items by default": {
     "error": "TypeError: Cannot read property 'query' of null",

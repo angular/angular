@@ -47,7 +47,7 @@ import {ANIMATION_PROP_PREFIX, allocateDirectiveIntoContext, createEmptyStylingC
 import {NO_CHANGE} from './tokens';
 import {INTERPOLATION_DELIMITER, renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent, getRootContext, getRootView} from './util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readPatchedLView, unwrapRNode} from './util/view_utils';
+import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readPatchedLView, unwrapRNode, viewAttachedToChangeDetector} from './util/view_utils';
 
 
 
@@ -2531,7 +2531,8 @@ export function componentRefresh<T>(adjustedElementIndex: number): void {
   ngDevMode && assertNodeType(lView[TVIEW].data[adjustedElementIndex] as TNode, TNodeType.Element);
 
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
-  if (viewAttached(hostView) && hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
+  if (viewAttachedToChangeDetector(hostView) &&
+      hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
     syncViewWithBlueprint(hostView);
     checkView(hostView, hostView[CONTEXT]);
   }
@@ -2568,11 +2569,6 @@ function syncViewWithBlueprint(componentView: LView) {
   for (let i = componentView.length; i < componentTView.blueprint.length; i++) {
     componentView[i] = componentTView.blueprint[i];
   }
-}
-
-/** Returns a boolean for whether the view is attached */
-export function viewAttached(view: LView): boolean {
-  return (view[FLAGS] & LViewFlags.Attached) === LViewFlags.Attached;
 }
 
 /**

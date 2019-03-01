@@ -22,14 +22,14 @@ import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbedd
 import {ACTIVE_INDEX, LContainer, NATIVE, VIEWS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';
-import {CONTEXT, LView, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
+import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, QUERIES, RENDERER, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode, removeView} from './node_manipulation';
 import {getParentInjectorTNode} from './node_util';
 import {getLView, getPreviousOrParentTNode} from './state';
 import {getParentInjectorView, hasParentInjector} from './util/injector_utils';
 import {findComponentView} from './util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer, isRootView} from './util/view_utils';
+import {getComponentViewByIndex, getNativeByTNode, isComponent, isLContainer, isRootView, viewAttachedToChangeDetector, viewAttachedToContainer} from './util/view_utils';
 import {ViewRef} from './view_ref';
 
 
@@ -236,6 +236,12 @@ export function createContainerRef(
         const lView = (viewRef as ViewRef<any>)._lView !;
         const adjustedIdx = this._adjustIndex(index);
 
+        if (viewAttachedToContainer(lView)) {
+          // If view is already attached, fall back to move() so we clean up
+          // references appropriately.
+          return this.move(viewRef, adjustedIdx);
+        }
+
         insertView(lView, this._lContainer, adjustedIdx);
 
         const beforeNode =
@@ -253,8 +259,8 @@ export function createContainerRef(
           throw new Error('Cannot move a destroyed View in a ViewContainer!');
         }
         const index = this.indexOf(viewRef);
-        this.detach(index);
-        this.insert(viewRef, this._adjustIndex(newIndex));
+        if (index !== -1) this.detach(index);
+        this.insert(viewRef, newIndex);
         return viewRef;
       }
 

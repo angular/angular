@@ -354,6 +354,7 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView {
     viewToDetach[QUERIES] !.removeView();
   }
   viewToDetach[PARENT] = null;
+  viewToDetach[NEXT] = null;
   // Unsets the attached flag
   viewToDetach[FLAGS] &= ~LViewFlags.Attached;
   return viewToDetach;
