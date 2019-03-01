@@ -283,10 +283,9 @@ export class ComponentDecoratorHandler implements
       animations = new WrappedNodeExpr(component.get('animations') !);
     }
 
-    const decoratorArgsOverrideFn = createDecoratorArgsOverrideFn(
-        /* hasTemplateUrl */ component.has('templateUrl'),
-        /* hasStyleUrls */ styleUrls !== null && styleUrls.length > 0,
-        /* template */ template.templateStr, styles);
+    const decoratorArgsOverrideFn = createExternalResourcesMetaOverrideFn(
+        component.has('templateUrl') ? template.templateStr : null,
+        styleUrls !== null && styleUrls.length > 0 ? styles : null);
 
     const output = {
       analysis: {
@@ -608,34 +607,57 @@ function sourceMapUrl(resourceUrl: string): string {
   }
 }
 
-// Replace `templateUrl` and `styleUrls` with resolved content in class metadata.
-// This is needed to let AOT-compiled components be recompiled in JIT mode when some metadata
-// changes as a result of overrides application.
-// TODO(FW-1104): this method is not efficient and we should revist it: TestBed overrides should
-// not require full Component recompilation.
-function createDecoratorArgsOverrideFn(
-    hasTemplateUrl: boolean, hasStyleUrls: boolean, template: string, styles: string[] | null) {
+/**
+ * Generates a function that is used to override external resources metadata in @Component decorator
+ * arguments.
+ *
+ * Replace `templateUrl` and `styleUrls` with resolved content in class metadata. This is needed to
+ * let AOT-compiled components be recompiled in JIT mode when some metadata changes as a result of
+ * overrides application.
+ *
+ * TODO(FW-1104): this method is not efficient and we should revist it: TestBed overrides should not
+ * require full Component recompilation.
+ *
+ * @param template string representation of a template for this coponent
+ * @param styles accumulated styles that should be applied for this component
+ * @returns generated function to override metadata @Component decorator arguments
+ */
+function createExternalResourcesMetaOverrideFn(template: string | null, styles: string[] | null) {
   return (args: ts.NodeArray<ts.ObjectLiteralElementLike>):
              ts.NodeArray<ts.ObjectLiteralElementLike> => {
     // Filter out fields related to external resources
     const overriddenArgs = args.filter((arg: ts.ObjectLiteralElementLike) => {
       if (ts.isPropertyAssignment(arg) && ts.isIdentifier(arg.name)) {
         const field = arg.name.text;
-        return field !== 'styleUrls' && field !== 'templateUrl' &&  //
-            !(field === 'styles' && hasStyleUrls) &&                //
-            !(field === 'template' && hasTemplateUrl);
+        // Always exclude `styleUrls` and `templateUrl` fields
+        if (field === 'styleUrls' || field === 'templateUrl') {
+          return false;
+        }
+        // Exclude `template` field in case we have content fetched from `templateUrl` URL
+        if (field === 'template' && template !== null) {
+          return false;
+        }
+        // Exclude `styles` field in case we need to override it with styles accumulated from:
+        // - `styles` field on @Component decorator
+        // - <style> tags in a template
+        // - content fetched using URLs from `styleUrls` field
+        // The `styles` argument contains accumulated value and we'll add it into arguments in the
+        // code below.
+        if (field === 'styles' && styles !== null) {
+          return false;
+        }
       }
       return true;
     });
 
-    // Append template content in case `templateUrl` field is present
-    if (hasTemplateUrl) {
+    // Append template content if provided
+    if (template !== null) {
       const templateLiteral = ts.createLiteral(template);
       overriddenArgs.push(ts.createPropertyAssignment('template', templateLiteral));
     }
 
-    // Append styles in case `styleUrls` field is present
-    if (hasStyleUrls) {
+    // Append accumulated styles if provided
+    if (styles !== null) {
       const stylesLiteral = ts.createArrayLiteral(styles !.map(style => ts.createLiteral(style)));
       overriddenArgs.push(ts.createPropertyAssignment('styles', stylesLiteral));
     }
