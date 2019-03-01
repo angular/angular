@@ -49,22 +49,23 @@ export function getConstructorDependencies(
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
-      if (dec.name === 'Inject') {
+      const name = isCore || dec.import === null ? dec.name : dec.import !.name;
+      if (name === 'Inject') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
               ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
               `Unexpected number of arguments to @Inject().`);
         }
         tokenExpr = dec.args[0];
-      } else if (dec.name === 'Optional') {
+      } else if (name === 'Optional') {
         optional = true;
-      } else if (dec.name === 'SkipSelf') {
+      } else if (name === 'SkipSelf') {
         skipSelf = true;
-      } else if (dec.name === 'Self') {
+      } else if (name === 'Self') {
         self = true;
-      } else if (dec.name === 'Host') {
+      } else if (name === 'Host') {
         host = true;
-      } else if (dec.name === 'Attribute') {
+      } else if (name === 'Attribute') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new FatalDiagnosticError(
               ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
@@ -74,8 +75,7 @@ export function getConstructorDependencies(
         resolved = R3ResolvedDependencyType.Attribute;
       } else {
         throw new FatalDiagnosticError(
-            ErrorCode.DECORATOR_UNEXPECTED, dec.node,
-            `Unexpected decorator ${dec.name} on parameter.`);
+            ErrorCode.DECORATOR_UNEXPECTED, dec.node, `Unexpected decorator ${name} on parameter.`);
       }
     });
     if (tokenExpr === null) {
