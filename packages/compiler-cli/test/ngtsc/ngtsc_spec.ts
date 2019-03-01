@@ -160,6 +160,24 @@ describe('ngtsc behavioral tests', () => {
     expect(dtsContents).toContain('static ngInjectableDef: i0.ɵInjectableDef<Service>;');
   });
 
+  it('should compile @Injectable with an @Optional dependency', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+      import {Injectable, Optional as Opt} from '@angular/core';
+
+      @Injectable()
+      class Dep {}
+
+      @Injectable()
+      class Service {
+        constructor(@Opt() dep: Dep) {}
+      }
+    `);
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('inject(Dep, 8)');
+  });
+
   it('should compile Components (inline template) without errors', () => {
     env.tsconfig();
     env.write('test.ts', `
