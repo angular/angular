@@ -229,18 +229,18 @@ describe('NewUrl', function() {
   it('search() should accept object', function() {
     setupUrl();
     location.search({one: 1, two: true});
-    expect(location.search()).toEqual({one: '1', two: true});
+    expect(location.search()).toEqual({one: 1, two: true});
     expect(location.absUrl()).toBe('http://www.domain.com:9877/path/b?one=1&two#hash');
   });
 
 
   it('search() should copy object', function() {
     setupUrl();
-    var obj = {one: 1, two: true, three: null};
+    let obj = {one: 1, two: true, three: null};
     location.search(obj);
     expect(obj).toEqual({one: 1, two: true, three: null});
     obj.one = 100;  // changed value
-    expect(location.search()).toEqual({one: '1', two: true});
+    expect(location.search()).toEqual({one: 1, two: true});
     expect(location.absUrl()).toBe('http://www.domain.com:9877/path/b?one=1&two#hash');
   });
 
@@ -266,7 +266,7 @@ describe('NewUrl', function() {
   it('search() should remove multiple parameters', function() {
     setupUrl();
     location.search({one: 1, two: true});
-    expect(location.search()).toEqual({one: '1', two: true});
+    expect(location.search()).toEqual({one: 1, two: true});
     location.search({one: null, two: null});
     expect(location.search()).toEqual({});
     expect(location.absUrl()).toBe('http://www.domain.com:9877/path/b#hash');

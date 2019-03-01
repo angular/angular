@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './location';
-export * from './location_module';
+export * from './location_upgrade_service';
+export * from './location_upgrade_module';

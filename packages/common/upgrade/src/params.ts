@@ -34,7 +34,8 @@ export abstract class UrlCodec {
  */
 export class AngularJSUrlCodec implements UrlCodec {
   encodePath(path: string): string {
-    var segments = path.split('/'), i = segments.length;
+    const segments = path.split('/');
+    let i = segments.length;
 
     while (i--) {
       // decode forward slashes to prevent them from being double encoded
@@ -42,7 +43,7 @@ export class AngularJSUrlCodec implements UrlCodec {
     }
 
     path = segments.join('/');
-    return (path && path[0] !== '/' && '/' || '') + path;
+    return _stripIndexHtml((path && path[0] !== '/' && '/' || '') + path);
   }
 
   encodeSearch(search: string|{[k: string]: unknown}): string {
@@ -60,7 +61,8 @@ export class AngularJSUrlCodec implements UrlCodec {
   }
 
   decodePath(path: string, html5Mode = true): string {
-    var segments = path.split('/'), i = segments.length;
+    const segments = path.split('/');
+    let i = segments.length;
 
     while (i--) {
       segments[i] = decodeURIComponent(segments[i]);
@@ -90,7 +92,7 @@ export class AngularJSUrlCodec implements UrlCodec {
         baseUrl = baseUrl + '/';
       }
     }
-    return _stripIndexHtml(baseUrl + encPath + encSearch + encHash);
+    return baseUrl + encPath + encSearch + encHash;
   }
 }
 
@@ -120,9 +122,9 @@ function tryDecodeURIComponent(value: string) {
  * @returns {Object.<string,boolean|Array>}
  */
 function parseKeyValue(keyValue: string): {[k: string]: unknown} {
-  var obj: {[k: string]: unknown} = {};
+  const obj: {[k: string]: unknown} = {};
   (keyValue || '').split('&').forEach((keyValue) => {
-    var splitPoint, key, val;
+    let splitPoint, key, val;
     if (keyValue) {
       key = keyValue = keyValue.replace(/\+/g, '%20');
       splitPoint = keyValue.indexOf('=');
@@ -147,7 +149,7 @@ function parseKeyValue(keyValue: string): {[k: string]: unknown} {
 }
 
 function toKeyValue(obj: {[k: string]: unknown}) {
-  var parts: unknown[] = [];
+  const parts: unknown[] = [];
   for (const key in obj) {
     let value = obj[key];
     if (Array.isArray(value)) {

@@ -92,19 +92,6 @@ export class LocationUpgradeService {
     const urlParts = this.getUrlParts();
     url += this.urlCodec.normalize(
         urlParts.path, urlParts.search, urlParts.hash, this.locationStrategy.getBaseHref());
-    // const baseHref = this.locationStrategy.getBaseHref();
-    // url += baseHref;
-    // let path = this.locationStrategy.path(true);
-    // if (path[0] !== '/') {
-    //   url += '/';
-    // }
-    // Remove baseHref if it's prefixed. This can happen with HashLocationStrategy
-    // path = path.indexOf(baseHref) === 0 ? path.slice(baseHref.length) : path;
-
-    // Add slash after hash if it's not there to match AngularJS functionaltiy
-    // if (path.length > 1 && path[1] === '#' && path[2] !== '/') {
-    //   path = `/#/${path.substring(2)}`;
-    // }
 
     return url;
   }
@@ -133,7 +120,7 @@ export class LocationUpgradeService {
 
 
       // Verify URL doesn't start with double slashes
-      var DOUBLE_SLASH_REGEX = /^\s*[\\/]{2,}/;
+      const DOUBLE_SLASH_REGEX = /^\s*[\\/]{2,}/;
       if (DOUBLE_SLASH_REGEX.test(url)) {
         throw new Error(`Bad Path - URL cannot start with double slashes: ${url}`);
       }
@@ -151,10 +138,6 @@ export class LocationUpgradeService {
       }
       this.search(match[3] || '');
       this.hash(match[5] || '');
-
-
-      // Set the URL
-      this.updateUrl();
 
       // Chainable method
       return this;
@@ -299,7 +282,6 @@ export class LocationUpgradeService {
 
     urlParts.path = stripPrefix(path, this.locationStrategy.getBaseHref());
 
-    this.updateUrl();
     return this;
   }
 
@@ -379,7 +361,6 @@ export class LocationUpgradeService {
           throw new Error(
               'LocationUpgradeService.search(): First argument must be a string or an object.');
         }
-        this.updateUrl();
         break;
       default:
         if (typeof search === 'string') {
@@ -428,7 +409,6 @@ export class LocationUpgradeService {
     const urlParts = this.getUrlParts();
     urlParts.hash = hash != null ? hash.toString() : '';
 
-    this.updateUrl();
     return this;
   }
 
