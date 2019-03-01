@@ -307,6 +307,12 @@ describe('ngtsc metadata', () => {
     const prop = expr.properties[0] as ts.PropertyAssignment;
     expect(value.node).toBe(prop.initializer);
   });
+
+  it('should resolve enums in template expressions', () => {
+    const value =
+        evaluate(`enum Test { VALUE = 'test', } const value = \`a.\${Test.VALUE}.b\`;`, 'value');
+    expect(value).toBe('a.test.b');
+  });
 });
 
 function owningModuleOf(ref: Reference): string|null {
