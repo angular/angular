@@ -1296,7 +1296,10 @@
     "name": "valueExists"
   },
   {
-    "name": "viewAttached"
+    "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "viewAttachedToContainer"
   },
   {
     "name": "walkTNodeTree"

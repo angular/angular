@@ -474,6 +474,6 @@
     "name": "unwrapRNode"
   },
   {
-    "name": "viewAttached"
+    "name": "viewAttachedToChangeDetector"
   }
 ]
