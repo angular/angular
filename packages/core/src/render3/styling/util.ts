@@ -14,7 +14,7 @@ import {LContext} from '../interfaces/context';
 import {AttributeMarker, TAttributes, TNode, TNodeFlags} from '../interfaces/node';
 import {PlayState, Player, PlayerContext, PlayerIndex} from '../interfaces/player';
 import {RElement} from '../interfaces/renderer';
-import {InitialStylingValues, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
+import {DirectiveRegistryValuesIndex, InitialStylingValues, StylingContext, StylingFlags, StylingIndex} from '../interfaces/styling';
 import {HEADER_OFFSET, HOST, LView, RootContext} from '../interfaces/view';
 import {getTNode, isStylingContext} from '../util/view_utils';
 
@@ -37,13 +37,48 @@ export function createEmptyStylingContext(
     [0],                             // CachedMultiStyleValue
     null,                            // PlayerContext
   ];
+
+  // whenever a context is created there is always a `null` directive
+  // that is registered (which is a placeholder for the "template").
   allocateDirectiveIntoContext(context, null);
   return context;
 }
 
-export function allocateDirectiveIntoContext(context: StylingContext, directiveRef: any | null) {
+/**
+ * Allocates (registers) a directive into the directive registry within the provided styling
+ * context.
+ *
+ * For each and every `[style]`, `[style.prop]`, `[class]`, `[class.name]` binding
+ * (as well as static style and class attributes) a directive, component or template
+ * is marked as the owner. When an owner is determined (this happens when the template
+ * is first passed over) the directive owner is allocated into the styling context. When
+ * this happens, each owner gets its own index value. This then ensures that once any
+ * style and/or class binding are assigned into the context then they are marked to
+ * that directive's index value.
+ *
+ * @param context the target StylingContext
+ * @param directiveRef the directive that will be allocated into the context
+ * @returns the index where the directive was inserted into
+ */
+export function allocateDirectiveIntoContext(
+    context: StylingContext, directiveRef: any | null): number {
   // this is a new directive which we have not seen yet.
-  context[StylingIndex.DirectiveRegistryPosition].push(directiveRef, -1, false, null);
+  const dirs = context[StylingIndex.DirectiveRegistryPosition];
+  const i = dirs.length;
+
+  // we preemptively make space into the directives array and then
+  // assign values slot-by-slot to ensure that if the directive ordering
+  // changes then it will still function
+  dirs.push(null, null, null, null);
+  dirs[i + DirectiveRegistryValuesIndex.DirectiveValueOffset] = directiveRef;
+  dirs[i + DirectiveRegistryValuesIndex.DirtyFlagOffset] = false;
+  dirs[i + DirectiveRegistryValuesIndex.StyleSanitizerOffset] = null;
+
+  // -1 is used to signal that the directive has been allocated, but
+  // no actual style or class bindings have been registered yet...
+  dirs[i + DirectiveRegistryValuesIndex.SinglePropValuesIndexOffset] = -1;
+
+  return i;
 }
 
 /**
@@ -227,12 +262,4 @@ export function allocPlayerContext(data: StylingContext): PlayerContext {
 
 export function throwInvalidRefError() {
   throw new Error('Only elements that exist in an Angular application can be used for animations');
-}
-
-export function hasStyling(attrs: TAttributes): boolean {
-  for (let i = 0; i < attrs.length; i++) {
-    const attr = attrs[i];
-    if (attr == AttributeMarker.Classes || attr == AttributeMarker.Styles) return true;
-  }
-  return false;
 }

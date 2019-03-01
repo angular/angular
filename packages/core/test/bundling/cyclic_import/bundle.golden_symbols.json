@@ -159,6 +159,9 @@
     "name": "addComponentLogic"
   },
   {
+    "name": "addOrUpdateStaticStyle"
+  },
+  {
     "name": "addToViewTree"
   },
   {
@@ -168,6 +171,9 @@
     "name": "allocateDirectiveIntoContext"
   },
   {
+    "name": "allowValueChange"
+  },
+  {
     "name": "appendChild"
   },
   {
@@ -175,6 +181,9 @@
   },
   {
     "name": "attachPatchData"
+  },
+  {
+    "name": "attrsStylingIndexOf"
   },
   {
     "name": "baseResolveDirective"
@@ -324,6 +333,9 @@
     "name": "getDirectiveDef"
   },
   {
+    "name": "getDirectiveRegistryValuesIndexOf"
+  },
+  {
     "name": "getElementDepthCount"
   },
   {
@@ -415,9 +427,6 @@
   },
   {
     "name": "hasStyleInput"
-  },
-  {
-    "name": "hasStyling"
   },
   {
     "name": "hasTagAndTypeMatch"
@@ -523,6 +532,12 @@
   },
   {
     "name": "noSideEffects"
+  },
+  {
+    "name": "patchContextWithStaticAttrs"
+  },
+  {
+    "name": "patchInitialStylingValue"
   },
   {
     "name": "postProcessBaseDirective"
