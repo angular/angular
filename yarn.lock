@@ -220,12 +220,12 @@
     through2 "^2.0.0"
     xdg-basedir "^3.0.0"
 
-"@microsoft/api-extractor@^7.0.17":
-  version "7.0.17"
-  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.0.17.tgz#fadb376908a57144ba4a8eb18787d6337bfe6b56"
-  integrity sha512-Mm+6x5/1HRAKno0vow4DyMKcVtB+b6wehMUx21huN+FSpfxID5kAEqKw9OR9XCp7YBXjiISqFBlY4dVYq/bdCw==
+"@microsoft/api-extractor@^7.0.21":
+  version "7.0.21"
+  resolved "https://registry.yarnpkg.com/@microsoft/api-extractor/-/api-extractor-7.0.21.tgz#d5ff9bba4ff7283503aac83ad489b16cad293fc7"
+  integrity sha512-7lFcHNykVz0tvgOz9juXqP+a1j0EmnJ9J080CBE/171IxL4fBrpslPhqN86dNuavuPragRpBLc8Okv/bV7FJPQ==
   dependencies:
-    "@microsoft/node-core-library" "3.10.0"
+    "@microsoft/node-core-library" "3.12.0"
     "@microsoft/ts-command-line" "4.2.3"
     "@microsoft/tsdoc" "0.12.5"
     "@types/node" "8.5.8"
@@ -236,10 +236,10 @@
     typescript "~3.1.6"
     z-schema "~3.18.3"
 
-"@microsoft/node-core-library@3.10.0":
-  version "3.10.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.10.0.tgz#70e089534d8e20f6a0f9c7a4a12a6aeafd6a1ddb"
-  integrity sha512-1SbU+XNYAabhV9noGXHtsUVPc5ELV+oEuJQtZQoCncbOd6WAMeTgB1xFwh96hmdEXyKQyML/pnByiKocmh/nbQ==
+"@microsoft/node-core-library@3.12.0":
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/node-core-library/-/node-core-library-3.12.0.tgz#f9c27b8bb6b55d60b91d4e1962f42b03b9f8f47f"
+  integrity sha512-9T2dEXmmxZqnqcpHuIB8mTAOM/DNSi/QcAwKYDjvZvkd+PGT5lCUXjM9GL7SaR2NPa3UrWDGgFhNoqLqLfEPbw==
   dependencies:
     "@types/fs-extra" "5.0.4"
     "@types/jju" "~1.4.0"

@@ -89,6 +89,9 @@ export function runMain(
       enabled: !!dtsBundleOut,
       publishFolder: dtsBundleOut && path.resolve(path.dirname(dtsBundleOut)),
       mainDtsRollupPath: dtsBundleOut && path.basename(dtsBundleOut),
+    },
+    tsdocMetadata: {
+      enabled: false,
     }
   };
 
