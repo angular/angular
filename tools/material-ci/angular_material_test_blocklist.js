@@ -361,10 +361,6 @@ window.testBlocklist = {
     "error": "Error: Expected 'none' to be falsy.",
     "notes": "Unknown"
   },
-  "MatCalendar calendar with min and max date should update the minDate in the child view if it changed after an interaction": {
-    "error": "Error: This PortalOutlet has already been disposed",
-    "notes": "Unknown"
-  },
   "MatTable with basic data source should be able to create a table with the right content and without when row": {
     "error": "TypeError: Cannot read property 'querySelectorAll' of null",
     "notes": "Unknown"

@@ -426,6 +426,10 @@ function cleanUpView(viewOrContainer: LView | LContainer): void {
   if ((viewOrContainer as LView).length >= HEADER_OFFSET) {
     const view = viewOrContainer as LView;
 
+    // Usually the Attached flag is removed when the view is detached from its parent, however
+    // if it's a root view, the flag won't be unset hence why we're also removing on destroy.
+    view[FLAGS] &= ~LViewFlags.Attached;
+
     // Mark the LView as destroyed *before* executing the onDestroy hooks. An onDestroy hook
     // runs arbitrary user code, which could include its own `viewRef.destroy()` (or similar). If
     // We don't flag the view as destroyed before the hooks, this could lead to an infinite loop.
