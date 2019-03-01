@@ -517,7 +517,7 @@ describe('demo (with TestBed):', () => {
       expect(el.references['nc']).toBe(comp, '#nc reference to component');
 
       // #docregion custom-predicate
-      // Filter for DebugElements with a #content reference
+      // #content 라는 템플릿 변수가 존재하는 DbugElement들을 쿼리합니다.
       const contentRefs = el.queryAll( de => de.references['content']);
       // #enddocregion custom-predicate
       expect(contentRefs.length).toBe(4, 'elements w/ a #content reference');

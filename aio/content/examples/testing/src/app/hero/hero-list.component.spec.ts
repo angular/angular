@@ -80,7 +80,7 @@ describe('HeroListComponent', () => {
 
   it('should find `HighlightDirective` with `By.directive', () => {
     // #docregion by
-    // Can find DebugElement either by css selector or by directive
+    // CSS 셀렉터나 디렉티브 토큰을 사용해서 DebugElement를 쿼리할 수 있습니다.
     const h2        = fixture.debugElement.query(By.css('h2'));
     const directive = fixture.debugElement.query(By.directive(HighlightDirective));
     // #enddocregion by
