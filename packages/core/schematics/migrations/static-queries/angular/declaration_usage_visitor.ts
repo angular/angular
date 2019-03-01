@@ -30,7 +30,8 @@ export class DeclarationUsageVisitor {
 
     // Note that we should not add previously visited symbols to the queue as this
     // could cause cycles.
-    if (callExprSymbol && !this.visitedJumpExprSymbols.has(callExprSymbol)) {
+    if (callExprSymbol && callExprSymbol.valueDeclaration &&
+        !this.visitedJumpExprSymbols.has(callExprSymbol)) {
       this.visitedJumpExprSymbols.add(callExprSymbol);
       nodeQueue.push(callExprSymbol.valueDeclaration);
     }
@@ -42,7 +43,8 @@ export class DeclarationUsageVisitor {
     // Only handle new expressions which resolve to classes. Technically "new" could
     // also call void functions or objects with a constructor signature. Also note that
     // we should not visit already visited symbols as this could cause cycles.
-    if (!newExprSymbol || !ts.isClassDeclaration(newExprSymbol.valueDeclaration) ||
+    if (!newExprSymbol || !newExprSymbol.valueDeclaration ||
+        !ts.isClassDeclaration(newExprSymbol.valueDeclaration) ||
         this.visitedJumpExprSymbols.has(newExprSymbol)) {
       return;
     }

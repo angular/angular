@@ -7,7 +7,7 @@
  */
 
 import {Tree, UpdateRecorder} from '@angular-devkit/schematics';
-import {dirname} from 'path';
+import {dirname, relative, resolve} from 'path';
 import * as ts from 'typescript';
 
 import {analyzeNgQueryUsage} from './angular/analyze_query_usage';
@@ -22,7 +22,7 @@ import {parseTsconfigFile} from './typescript/tsconfig';
  * the current usage of the query property. e.g. a view query that is not used in any
  * lifecycle hook does not need to be static and can be set up with "static: false".
  */
-export function runStaticQueryMigration(tree: Tree, tsconfigPath: string) {
+export function runStaticQueryMigration(tree: Tree, tsconfigPath: string, basePath: string) {
   const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
   const host = ts.createCompilerHost(parsed.options, true);
   const program = ts.createProgram(parsed.fileNames, parsed.options, host);
@@ -34,19 +34,19 @@ export function runStaticQueryMigration(tree: Tree, tsconfigPath: string) {
   // Analyze source files by detecting queries and class relations.
   rootSourceFiles.forEach(sourceFile => queryVisitor.visitNode(sourceFile));
 
-  const {resolvedQueries, derivedClasses} = queryVisitor;
+  const {resolvedQueries, classMetadata} = queryVisitor;
 
   // Walk through all source files that contain resolved queries and update
   // the source files if needed. Note that we need to update multiple queries
   // within a source file within the same recorder in order to not throw off
   // the TypeScript node offsets.
   resolvedQueries.forEach((queries, sourceFile) => {
-    const update = tree.beginUpdate(sourceFile.fileName);
+    const update = tree.beginUpdate(relative(basePath, sourceFile.fileName));
 
     // Compute the query usage for all resolved queries and update the
     // query definitions to explicitly declare the query timing (static or dynamic)
     queries.forEach(q => {
-      const timing = analyzeNgQueryUsage(q, derivedClasses, typeChecker);
+      const timing = analyzeNgQueryUsage(q, classMetadata, typeChecker);
       recordQueryUsageTransformation(q, update, timing, printer, sourceFile);
     });
 

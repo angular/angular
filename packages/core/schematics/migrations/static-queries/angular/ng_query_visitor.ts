@@ -9,22 +9,33 @@
 import * as ts from 'typescript';
 
 import {findParentClassDeclaration, getBaseTypeIdentifiers} from '../typescript/class_declaration';
+
 import {getAngularDecorators} from './decorators';
+import {getInputNamesOfClass} from './directive_inputs';
 import {NgQueryDefinition, QueryType} from './query-definition';
 
-export type DerivedClassesMap = Map<ts.ClassDeclaration, ts.ClassDeclaration[]>;
+/** Resolved metadata of a given class. */
+export interface ClassMetadata {
+  /** List of class declarations that derive from the given class. */
+  derivedClasses: ts.ClassDeclaration[];
+  /** List of property names that declare an Angular input within the given class. */
+  ngInputNames: string[];
+}
+
+/** Type that describes a map which can be used to get a class declaration's metadata. */
+export type ClassMetadataMap = Map<ts.ClassDeclaration, ClassMetadata>;
 
 /**
  * Visitor that can be used to determine Angular queries within given TypeScript nodes.
- * Besides resolving queries, the visitor also records class relations which can be used
- * to analyze the usage of a given query.
+ * Besides resolving queries, the visitor also records class relations and searches for
+ * Angular input setters which can be used to analyze the timing usage of a given query.
  */
 export class NgQueryResolveVisitor {
   /** Resolved Angular query definitions. */
   resolvedQueries = new Map<ts.SourceFile, NgQueryDefinition[]>();
 
-  /** Maps a class declaration to all class declarations that derive from it. */
-  derivedClasses: DerivedClassesMap = new Map<ts.ClassDeclaration, ts.ClassDeclaration[]>();
+  /** Maps a class declaration to its class metadata. */
+  classMetadata: ClassMetadataMap = new Map();
 
   constructor(public typeChecker: ts.TypeChecker) {}
 
@@ -74,6 +85,22 @@ export class NgQueryResolveVisitor {
   }
 
   private visitClassDeclaration(node: ts.ClassDeclaration) {
+    this._recordClassInputSetters(node);
+    this._recordClassInheritances(node);
+  }
+
+  private _recordClassInputSetters(node: ts.ClassDeclaration) {
+    const resolvedInputNames = getInputNamesOfClass(node, this.typeChecker);
+
+    if (resolvedInputNames) {
+      const classMetadata = this._getClassMetadata(node);
+
+      classMetadata.ngInputNames = resolvedInputNames;
+      this.classMetadata.set(node, classMetadata);
+    }
+  }
+
+  private _recordClassInheritances(node: ts.ClassDeclaration) {
     const baseTypes = getBaseTypeIdentifiers(node);
 
     if (!baseTypes || !baseTypes.length) {
@@ -86,18 +113,19 @@ export class NgQueryResolveVisitor {
       // contain a value declaration as the value is not declared locally.
       const symbol = this.typeChecker.getTypeAtLocation(baseTypeIdentifier).getSymbol();
 
-      if (symbol && symbol.valueDeclaration) {
-        this._recordClassInheritance(node, symbol.valueDeclaration as ts.ClassDeclaration);
+      if (symbol && symbol.valueDeclaration && ts.isClassDeclaration(symbol.valueDeclaration)) {
+        const extendedClass = symbol.valueDeclaration;
+        const classMetadata = this._getClassMetadata(extendedClass);
+
+        // Record all classes that derive from the given class. This makes it easy to
+        // determine all classes that could potentially use inherited queries statically.
+        classMetadata.derivedClasses.push(node);
+        this.classMetadata.set(extendedClass, classMetadata);
       }
     });
   }
 
-  private _recordClassInheritance(
-      derivedClass: ts.ClassDeclaration, baseClass: ts.ClassDeclaration) {
-    const existingInheritances = this.derivedClasses.get(baseClass) || [];
-
-    // Record all classes that derive from a given class. This makes it easy to
-    // determine all classes that could potentially use inherited queries statically.
-    this.derivedClasses.set(baseClass, existingInheritances.concat(derivedClass));
+  private _getClassMetadata(node: ts.ClassDeclaration): ClassMetadata {
+    return this.classMetadata.get(node) || {derivedClasses: [], ngInputNames: []};
   }
 }

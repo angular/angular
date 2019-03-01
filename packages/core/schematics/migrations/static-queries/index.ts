@@ -14,6 +14,7 @@ import {runStaticQueryMigration} from './migration';
 export default function(): Rule {
   return (tree: Tree) => {
     const projectTsConfigPaths = getProjectTsConfigPaths(tree);
+    const basePath = process.cwd();
 
     if (!projectTsConfigPaths.length) {
       throw new SchematicsException(
@@ -22,7 +23,7 @@ export default function(): Rule {
     }
 
     for (const tsconfigPath of projectTsConfigPaths) {
-      runStaticQueryMigration(tree, tsconfigPath);
+      runStaticQueryMigration(tree, tsconfigPath, basePath);
     }
   };
 }

@@ -10,9 +10,9 @@ ts_library(
     visibility = ["//packages/core/schematics:__pkg__"],
     deps = [
         "//packages/core/schematics/utils",
-        "@ngdeps//@angular-devkit/schematics",
-        "@ngdeps//@types/node",
-        "@ngdeps//typescript",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@types/node",
+        "@npm//typescript",
     ],
 )
 
@@ -22,12 +22,12 @@ ts_library(
     srcs = ["index_spec.ts"],
     data = [
         "//packages/core/schematics:migrations.json",
-        "@ngdeps//shelljs",
+        "@npm//shelljs",
     ],
     deps = [
         ":static-queries",
-        "@ngdeps//@angular-devkit/schematics",
-        "@ngdeps//@types/shelljs",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@types/shelljs",
     ],
 )
 

@@ -131,10 +131,6 @@ describe('static-queries migration', () => {
     });
   });
 
-  // Create tests for "ViewChild" and "ContentChild".
-  createQueryTests('ViewChild');
-  createQueryTests('ContentChild');
-
   function writeFile(filePath: string, contents: string) {
     host.sync.write(normalize(filePath), virtualFs.stringToFileBuffer(contents));
   }
@@ -351,6 +347,177 @@ describe('static-queries migration', () => {
       runMigration();
 
       expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should detect static queries used within input setters', () => {
+      writeFile('/index.ts', `
+        import {Component, Input, ${queryType}} from '@angular/core';
+        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test') query: any;
+          
+          @Input()
+          get myVal() { return null; }
+          set myVal(newVal: any) {
+            this.query.classList.add('setter');
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should detect inputs defined in metadata', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({
+          template: '<span #test></span>',
+          inputs: ["myVal"],
+        })
+        export class MyComp {
+          @${queryType}('test') query: any;
+          
+          // We don't use the input decorator here as we want to verify
+          // that it properly detects the input through the component metadata.
+          get myVal() { return null; }
+          set myVal(newVal: any) {
+            this.query.classList.add('setter');
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should detect aliased inputs declared in metadata', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({
+          template: '<span #test></span>',
+          inputs: ['prop: publicName'],
+        })
+        export class MyComp {
+          @${queryType}('test') query: any;
+          
+          set prop(val: any) {
+            this.query.test();
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should not mark query as static if query is used in non-input setter', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test') query: any;
+          
+          set myProperty(val: any) {
+            this.query.test();
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: false }) query: any;`);
+    });
+
+    it('should detect input decorator on setter', () => {
+      writeFile('/index.ts', `
+        import {Input, Component, ${queryType}} from '@angular/core';
+        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test') query: any;
+          
+          get myProperty() { return null; }
+          
+          // Usually the decorator is set on the get accessor, but it's also possible
+          // to declare the input on the setter. This ensures that it is handled properly.
+          @Input()
+          set myProperty(val: any) {
+            this.query.test();
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should detect setter inputs in derived classes', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({
+          template: '<span #test></span>',
+          inputs: ['childSetter'],
+        })
+        export class MyComp {
+          protected @${queryType}('test') query: any;
+        }
+        
+        export class B extends MyComp {
+          set childSetter(newVal: any) {
+            this.query.test();
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should properly detect static query in external derived class', () => {
+      writeFile('/src/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test') query: any;
+        }
+      `);
+
+      writeFile('/src/external.ts', `
+        import {MyComp} from './index';
+        
+        export class ExternalComp extends MyComp {
+          ngOnInit() {
+            this.query.test();
+          }
+        }
+      `);
+
+      // Move the tsconfig into a subdirectory. This ensures that the update is properly
+      // recorded for TypeScript projects not at the schematic tree root.
+      host.sync.rename(normalize('/tsconfig.json'), normalize('/src/tsconfig.json'));
+
+      runMigration();
+
+      expect(tree.readContent('/src/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
   }
