@@ -41,7 +41,7 @@ function addDevDependenciesToPackageJson(options: Schema) {
     const devDependencies: {[k: string]: string} = {
       '@angular/bazel': angularCoreVersion,
       // TODO(kyliau): Consider moving this to latest-versions.ts
-      '@bazel/bazel': '^0.22.1',
+      '@bazel/bazel': '^0.23.0',
       '@bazel/ibazel': '^0.9.0',
       '@bazel/karma': '^0.25.1',
       '@bazel/typescript': '^0.25.1',

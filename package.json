@@ -68,8 +68,8 @@
     "diff": "^3.5.0",
     "domino": "2.1.0",
     "fs-extra": "4.0.2",
-    "incremental-dom": "0.4.1",
     "hammerjs": "2.0.8",
+    "incremental-dom": "0.4.1",
     "jasmine": "^3.1.0",
     "jasmine-core": "^3.1.0",
     "jquery": "3.0.0",
@@ -104,7 +104,7 @@
   "// 3": "when updating @bazel/bazel version you also need to update the RBE settings in .bazelrc (see https://github.com/angular/angular/pull/27935)",
   "devDependencies": {
     "@angular/cli": "^7.3.0-rc.0",
-    "@bazel/bazel": "~0.22.0",
+    "@bazel/bazel": "0.23.0",
     "@bazel/buildifier": "^0.19.2",
     "@bazel/ibazel": "~0.9.0",
     "@types/minimist": "^1.2.0",
