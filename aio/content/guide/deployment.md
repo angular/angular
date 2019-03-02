@@ -3,8 +3,11 @@
 -->
 # 배포
 
+<!--
 When you are ready to deploy your Angular application to a remote server, you have various options for
 deployment.
+-->
+이 문서는 Angular 애플리케이션을 리모트 서버에 배포하는 방법에 대해 자세하게 안내합시다.
 
 {@a dev-deploy}
 {@a copy-files}
@@ -34,25 +37,42 @@ For the simplest deployment, create a production build and copy the output direc
 -->
 2. 빌드 결과물이 생성된 폴더(기본 위치는 `dist/`)에 있는 _모든 파일_ 을 서버로 복사합니다.
 
+<!--
 3. Configure the server to redirect requests for missing files to `index.html`.
 Learn more about server-side redirects [below](#fallback).
 
 This is the simplest production-ready deployment of your application.
+-->
+3. 서버로 오는 요청 중에서 실제로 존재하지 않는 파일에 대한 요청은 `index.html`로 리다이렉트하도록 합니다.
+자세한 내용은 [아래](#fallback)에서 다룹니다.
+
+이 방법이 애플리케이션을 배포하는 방법 중 가장 간단한 방법입니다.
 
 {@a deploy-to-github}
 
+<!--
 ## Deploy to GitHub pages
+-->
+## GitHub 페이지에 배포하기
 
+<!--
 Another simple way to deploy your Angular app is to use [GitHub Pages](https://help.github.com/articles/what-is-github-pages/).
 
 1. You need to [create a GitHub account](https://github.com/join) if you don't have one, and then [create a repository](https://help.github.com/articles/create-a-repo/) for your project.
 Make a note of the user name and project name in GitHub.
 
 1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
+-->
+또 다른 방법은 Angular 앱을 [GitHub Pages](https://help.github.com/articles/what-is-github-pages/)에 배포하는 것입니다.
+
+1. GitHub 페이지에 배포하려면 먼저 [GitHub 계정을 생성](https://github.com/join)해야 합니다. 그리고 프로젝트가 위치할 [코드 저장소를 하나 만듭니다](https://help.github.com/articles/create-a-repo/).
+
+1. Github 프로젝트 이름을 기본 주소로 지정하면서 Angular 프로젝트를 빌드합니다. [`ng build`](cli/build)를 실행할 때 옵션을 다음과 같이 사용하면 됩니다:
    <code-example language="none" class="code-shell">
      ng build --prod --output-path docs --base-href <project_name>
     </code-example>
 
+<!--
 1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`.
 
 1. Commit your changes and push.
@@ -60,10 +80,22 @@ Make a note of the user name and project name in GitHub.
 1. On the GitHub project page, configure it to [publish from the docs folder](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch).
 
 You can see your deployed page at `https://<user_name>.github.io/<project_name>/`.
+-->
+3. 빌드가 끝나면 `docs/index.html` 파일을 복사해서 `docs/404.html` 파일을 생성합니다.
+
+1. 변경사항을 커밋하고 레파지토리에 푸시합니다.
+
+1. GitHub 프로젝트 페이지에서 [docs 폴더가 static으로 동작하도록 설정](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch)합니다.
+
+이제 `https://<user_name>.github.io/<project_name>/`에 접속하면 Angular 애플리케이션이 동작하는 것을 확인할 수 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
+-->
+[angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages)도 확인해 보세요.
+이 프로젝트를 활용하면 Angular CLI를 사용하는 환경에서 GitHub 페이지 설정을 더 간단하고 다양하게 할 수 있습니다.
 
 </div>
 
@@ -71,23 +103,39 @@ Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpa
 
 {@a server-configuration}
 
+<!--
 ## Server configuration
+-->
+## 서버 설정
 
+<!--
 This section covers changes you may have make to the server or to files deployed to the server.
+-->
+이 섹션에서는 Angular 애플리케이션을 서버에 배포할 때 수정해야 할 수도 있는 서버 설정에 대해 다룹니다.
 
 {@a fallback}
 
+<!--
 ### Routed apps must fallback to `index.html`
+-->
+### Angular 앱이 동작해야 하는 경우는 모두 `index.html`로 보내야 합니다.
 
+<!--
 Angular apps are perfect candidates for serving with a simple static HTML server.
 You don't need a server-side engine to dynamically compose application pages because
 Angular does that on the client-side.
 
 If the app uses the Angular router, you must configure the server
 to return the application's host page (`index.html`) when asked for a file that it does not have.
+-->
+Angular 애플리케이션은 간단한 정적 HTML 서버로 호스팅하는 것도 아주 간단합니다.
+이 경우에는 Angular 애플리케이션이 클라이언트에서 실행되기 때문에 서버에서 동적으로 애플리케이션 페이지를 처리해야 하는 엔진도 필요 없습니다.
+
+그런데 Angular 애플리케이션을 이렇게 활용하는 경우에는 실제로 존재하는 파일을 요청하지 않는 이상 모든 GET 요청이 Angular 호스트 페이지(`index.html`)로 향하도록(fallback) 서버 설정을 조정해야 합니다.
 
 {@a deep-link}
 
+<!--
 A routed application should support "deep links".
 A _deep link_ is a URL that specifies a path to a component inside the app.
 For example, `http://www.mysite.com/heroes/42` is a _deep link_ to the hero detail page
@@ -104,9 +152,26 @@ The browser makes a direct request to the server for that URL, bypassing the rou
 A static server routinely returns `index.html` when it receives a request for `http://www.mysite.com/`.
 But it rejects `http://www.mysite.com/heroes/42` and returns a `404 - Not Found` error *unless* it is
 configured to return `index.html` instead.
+-->
+Angular 라우터를 사용하는 애플리케이션은 "딥 링크(deep links)"를 지원해야 합니다.
+Angular에서 _딥 링크_ 란 Angular 애플리케이션 안에 있는 특정 컴포넌트를 가리키는 URL을 의미합니다.
+그래서 `http://www.mysite.com/heroes/42`라는 _딥 링크_ 는 `id: 42`에 해당하는 히어로의 상세 정보를 표현하는 페이지를 가리킵니다.
 
+이 주소는 클라이언트쪽에서 네비게이션하는 방식으로 이동했을 때는 전혀 문제가 없습니다.
+Angular 라우터가 이 URL을 확인하면 해당 페이지로 이동하고 원하는 히어로의 정보도 화면에 표시할 것입니다.
+
+그런데 이메일에 있는 링크를 클릭하거나 브라우저 주소표시줄에 이 주소를 직접 입력했을 때, 히어로 상세정보 페이지에서 브라우저를 새로고침한 경우에는 이 주소를 브라우저가 직접 처리하기 때문에 Angular 애플리케이션이 관여하는 영역을 _벗어나게_ 됩니다.
+그래서 이 경우에는 브라우저가 Angular 라우터를 건너뛰고 해당 URL로 직접 서버 요청을 보냅니다.
+
+일반적으로 정적 서버는 `http://www.mysite.com`과 같은 요청을 받았을 때 `index.html`을 반환합니다.
+하지만 `http://www.mysite.com/heroes/42`라는 요청을 정적 서버가 받으면 `index.html`을 보내도록 따로 설정하지 않은 이상 `404 - Not Found`를 반환합니다.
+
+<!--
 #### Fallback configuration examples
+-->
+#### 폴백(fallback) 설정 예
 
+<!--
 There is no single configuration that works for every server.
 The following sections describe configurations for some of the most popular servers.
 The list is by no means exhaustive, but should provide you with a good starting point.
@@ -114,30 +179,42 @@ The list is by no means exhaustive, but should provide you with a good starting 
 * [Apache](https://httpd.apache.org/): add a
 [rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html) to the `.htaccess` file as shown
   (https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/):
+-->
+모든 서버에 동일하게 적용할 수 있는 만능 설정은 없습니다.
+그래서 이제부터는 개발자들이 많이 사용하는 서버를 대상으로 폴백을 어떻게 설정할 수 있는지 알아봅시다.
+이 문서에서 모든 서버를 다루지는 않지만, 이렇게 사용한다는 것을 참고하면 설명하지 않은 서버를 설정할 때도 도움이 될 것입니다.
+
+* [Apache](https://httpd.apache.org/): `.htaccess` 파일에 [rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html)을 추가합니다. ([참고](https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/))
 
   <code-example format=".">
     RewriteEngine On
-    &#35 If an existing asset or directory is requested go to it as it is
+    &#35 서버에 존재하는 리소스나 폴더를 요청하면 해당 리소스를 보냅니다.
     RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
     RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
     RewriteRule ^ - [L]
 
-    &#35 If the requested resource doesn't exist, use index.html
+    &#35 실제로 존재하지 않는 리소스를 요청하면 index.html을 보냅니다.
     RewriteRule ^ /index.html
   </code-example>
 
 
+<!--
 * [Nginx](http://nginx.org/): use `try_files`, as described in
 [Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps),
 modified to serve `index.html`:
+-->
+* [Nginx](http://nginx.org/): [Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps)에서 설명하는 대로 `try_files`를 사용해서 `index.html`을 보내도록 설정합니다.
 
   <code-example format=".">
     try_files $uri $uri/ /index.html;
   </code-example>
 
 
+<!--
 * [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
 [here](http://stackoverflow.com/a/26152011/2116927):
+-->
+* [IIS](https://www.iis.net/): [이 글](http://stackoverflow.com/a/26152011/2116927)에서 설명한 것과 비슷하게 `web.config`에 rewrite rule을 추가합니다.
 
   <code-example format='.'>
     &lt;system.webServer&gt;
@@ -157,7 +234,7 @@ modified to serve `index.html`:
 
   </code-example>
 
-
+<!--
 * [GitHub Pages](https://pages.github.com/): you can't
 [directly configure](https://github.com/isaacs/github/issues/408)
 the GitHub Pages server, but you can add a 404 page.
@@ -167,10 +244,18 @@ It's also a good idea to
 [serve from `docs/` on master](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch)
 and to
 [create a `.nojekyll` file](https://www.bennadel.com/blog/3181-including-node-modules-and-vendors-folders-in-your-github-pages-site.htm)
+-->
+* [GitHub Pages](https://pages.github.com/): 개발자가 GitHub Pages 서버 설정을 [직접 변경할 수는 없지만](https://github.com/isaacs/github/issues/408), 404 페이지를 활용할 수 있습니다.
+이 방법은 아주 간단합니다.
+`index.html` 파일을 복사해서 `404.html` 파일로 만들기만 하면 됩니다.
+그러면 서버가 404 응답을 반환하더라도 브라우저는 Angular 앱을 실행하기 때문에 원하는 페이지로 접근할 수 있습니다.
+이 방법 외에도 [master 브랜치의 `docs/` 폴더](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch)에서 Angular 애플리케이션을 서비스하거나, [`.nojekyll` 파일을 만들어서](https://www.bennadel.com/blog/3181-including-node-modules-and-vendors-folders-in-your-github-pages-site.htm) 설정하는 방법도 있습니다.
 
-
+<!--
 * [Firebase hosting](https://firebase.google.com/docs/hosting/): add a
 [rewrite rule](https://firebase.google.com/docs/hosting/url-redirects-rewrites#section-rewrites).
+-->
+* [Firebase hosting](https://firebase.google.com/docs/hosting/): [rewrite rule](https://firebase.google.com/docs/hosting/url-redirects-rewrites#section-rewrites)을 다음과 같이 추가합니다.
 
   <code-example format=".">
     "rewrites": [ {
@@ -182,8 +267,12 @@ and to
 
 {@a cors}
 
+<!--
 ### Requesting services from a different server (CORS)
+-->
+### 다른 서버로 요청 보내기 (CORS)
 
+<!--
 Angular developers may encounter a
 <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing" title="Cross-origin resource sharing">
 <i>cross-origin resource sharing</i></a> error when making a service request (typically a data service request)
@@ -194,14 +283,28 @@ There isn't anything the client application can do about these errors.
 The server must be configured to accept the application's requests.
 Read about how to enable CORS for specific servers at
 <a href="http://enable-cors.org/server.html" title="Enabling CORS server">enable-cors.org</a>.
+-->
+Angular 애플리케이션을 개발하다보면 애플리케이션이 호스팅되는 서버와 다른 서버로 요청을 보낼 때 <a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing" title="Cross-origin resource sharing">
+<i>교차 출처 리소스 공유(cross-origin resource sharing, CORS)</i></a> 에러가 발생하는 일이 종종 있습니다.
+이 에러는 서버에서 명시적으로 허용하지 않는 한 거절됩니다.
+
+이 에러가 발생할 때 클라이언트 애플리케이션 쪽에서 처리할 수 있는 것은 아무것도 없습니다.
+클라이언트 애플리케이션이 요청하는 것을 서버가 처리할 수 있도록 서버의 설정을 변경해야 합니다.
+서버 종류에 따라 CORS를 허용하는 방법은 <a href="http://enable-cors.org/server.html" title="Enabling CORS server">enable-cors.org</a> 문서를 참고하세요.
 
 <hr>
 
 {@a optimize}
 
+<!--
 ## Production optimizations
+-->
+## 운영 배포 최적화
 
+<!--
 The `--prod` _meta-flag_ engages the following build optimization features.
+-->
+`--prod` _메타 플래그_ 를 사용하면 Angular 애플리케이션을 운영용으로 최적화해서 빌드할 수 있습니다.
 
 <!--
 * [Ahead-of-Time (AOT) Compilation](guide/aot-compiler): pre-compiles Angular component templates.
@@ -215,10 +318,13 @@ The `--prod` _meta-flag_ engages the following build optimization features.
 * [운영 모드](#enable-prod-mode) 활성화: 애플리케이션이 동작하는 환경을 _운영 모드_ 로 변경합니다.
 * 번들링(Bundling): 애플리케이션 파일과 라이브러리 파일들을 묶어서 몇개의 번들링 파일로 생성합니다.
 * 코드 압축(Minification): 공백 문자, 주석, 옵션 토큰을 제거합니다.
-* 난독화(Uglification): 변수와 함수 이름을 난독화하고 이름의 길이도 짧게 줄입니다.
+* 난독화(Uglification): 변수와 함수 이름을 난독화하고 길이도 짧게 줄입니다.
 * 데드 코드 제거: 사용하지 않는 모듈과 코드를 제거합니다.
 
+<!--
 See [`ng build`](cli/build) for more about CLI build options and what they do.
+-->
+이 때 활용할 수 있는 Angular CLI 빌드 옵션은 [`ng build`](cli/build) 문서를 참고하세요.
 
 
 {@a enable-prod-mode}
@@ -228,7 +334,11 @@ See [`ng build`](cli/build) for more about CLI build options and what they do.
 -->
 ### 운영 모드 활성화하기
 
+<!--
 In addition to build optimizations, Angular also has a runtime production mode. Angular apps run in development mode by default, as you can see by the following message on the browser console:
+-->
+빌드 최적화와 함께 Angular에도 운영 모드가 존재합니다.
+Angular 애플리케이션은 기본적으로 개발모드로 동작하며, 이 모드에서는 브라우저 콘솔에 다음과 같은 메시지가 출력됩니다:
 
 <code-example format="nocode">
   Angular is running in the development mode. Call enableProdMode() to enable the production mode.
@@ -239,7 +349,10 @@ Switching to _production mode_ makes it run faster by disabling development spec
 -->
 애플리케이션이 동작하는 환경을 _운영 모드_ 로 변경하면 개발 모드에서 동작하는 이중 변화 감지 로직이 생략되기 때문에 애플리케이션 실행속도가 조금 더 빨라집니다.
 
+<!--
 When you enable production builds via `--prod` command line flag, the runtime production mode is enabled as well.
+-->
+Angular 애플리케이션을 빌드할 때 `--prod` 플래그를 사용하면 Angular 실행 환경이 자동으로 운영 모드로 변경됩니다.
 
 {@a lazy-loading}
 
@@ -252,7 +365,7 @@ When you enable production builds via `--prod` command line flag, the runtime pr
 You can dramatically reduce launch time by only loading the application modules that
 absolutely must be present when the app starts.
 -->
-전체 모듈 중에서 애플리케이션 초기 실행에 필요한 모듈만 로딩하면 애플리케이션 초기 실행 속도를 훨씬 빠르게 만들 수 있습니다.
+전체 모듈 중에서 애플리케이션 초기 실행에 필요한 모듈만 로딩하면 애플리케이션 초기 실행 속도를 더 빠르게 만들 수 있습니다.
 
 <!--
 Configure the Angular Router to defer loading of all other modules (and their associated code), either by
@@ -262,10 +375,14 @@ them on demand.
 -->
 그리고 애플리케이션 초기 실행과 관련되지 않은 모듈은 Angular 라우터로 지연로딩하거나 [애플리케이션이 시작된 직후에](guide/router#preloading  "Preloading") 로딩할 수 있습니다.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
+<!--
 #### Don't eagerly import something from a lazy-loaded module
+-->
+#### 지연로딩하는 모듈에 있는 심볼을 즉시로딩하지 마세요.
 
+<!--
 If you mean to lazy-load a module, be careful not import it
 in a file that's eagerly loaded when the app starts (such as the root `AppModule`).
 If you do that, the module will be loaded immediately.
@@ -274,6 +391,14 @@ The bundling configuration must take lazy loading into consideration.
 Because lazy-loaded modules aren't imported in JavaScript, bundlers exclude them by default.
 Bundlers don't know about the router configuration and can't create separate bundles for lazy-loaded modules.
 You would have to create these bundles manually.
+-->
+지연로딩하는 모듈이 있다면 애플리케이션이 시작할 때 즉시 로드되는 모듈(ex. `AppModule`)에서 지연로딩되는 모듈의 구성요소를 로드하지 않도록 주의해야 합니다.
+이런 경우에는 모듈이 지연로딩되지 않고 즉시 로드됩니다.
+
+번들링 설정에서도 지연로딩을 고려해야 합니다.
+왜냐하면 지연로딩되는 모듈은 기본 번들링 결과물에 포함되지 않고 따로 번들링되기 때문입니다.
+하지만 번들러는 라우터 설정이나 지연로딩되는 모듈을 스스로 인식해서 가장 효율적인 방법으로 번들링하지는 않습니다.
+이런 설정은 개발자가 직접 해줘야 합니다.
 
 <!--
 The CLI runs the
@@ -308,7 +433,7 @@ The
 <a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" title="Chrome DevTools Network Performance">
 Chrome DevTools Network Performance page</a> is a good place to start learning about measuring performance.
 -->
-애플리케이션의 성능을 측정할 때는 <a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" title="Chrome DevTools Network Performance">Chrome 개발자도구의 네트워크 퍼포먼트 페이지</a>를 사용하는 것도 좋습니다.
+애플리케이션의 성능을 측정할 때는 <a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" title="Chrome DevTools Network Performance">Chrome 개발자도구의 네트워크 퍼포먼트 페이지</a>를 사용하는 것이 좋습니다.
 
 <!--
 The [WebPageTest](https://www.webpagetest.org/) tool is another good choice
@@ -332,7 +457,7 @@ tool is a great way to inspect the generated JavaScript bundles after a producti
 <!--
 Install `source-map-explorer`:
 -->
-`source-map-explorer`는 다음 명령어로 설치합니다:
+`source-map-explorer`는 다음 명령을 실행해서 설치합니다:
 
 <code-example language="none" class="code-shell">
   npm install source-map-explorer --save-dev
@@ -341,7 +466,7 @@ Install `source-map-explorer`:
 <!--
 Build your app for production _including the source maps_
 -->
-그리고 애플리케이션을 운영용으로 빌드하면서 _소스 맵_ 을 함께 생성합니다.
+그리고 애플리케이션을 운영용으로 빌드할 때 _소스 맵_ 을 함께 생성하도록 다음과 같이 실행합니다.
 
 <code-example language="none" class="code-shell">
   ng build --prod --source-map
@@ -371,7 +496,7 @@ The following example displays the graph for the _main_ bundle.
 The `source-map-explorer` analyzes the source map generated with the bundle and draws a map of all dependencies,
 showing exactly which classes are included in the bundle.
 -->
-그러면 `source-map-explorer`가 번들링 결과물과 소스 맵을 분석해서 이 번들링 파일에 어떤 클래스가 포함되어 있는지 분석할 수 있습니다.
+그러면 `source-map-explorer`가 번들링 결과물과 소스 맵을 처리해서 이 번들링 파일에 어떤 클래스가 포함되어 있는지 분석할 수 있는 정보를 제공합니다.
 
 <!--
 Here's the output for the _main_ bundle of the QuickStart.
@@ -405,7 +530,7 @@ During navigation, the Angular router uses the _base href_ as the base path to c
 <!--
 See also the [*APP_BASE_HREF*](api/common/APP_BASE_HREF "API: APP_BASE_HREF") alternative.
 -->
-[*APP_BASE_HREF*](api/common/APP_BASE_HREF "API: APP_BASE_HREF")를 사용하면 이 동작을 대체할 수 있습니다.
+[*APP_BASE_HREF*](api/common/APP_BASE_HREF "API: APP_BASE_HREF")를 사용하면 이 설정을 대체할 수 있습니다.
 
 </div>
 
@@ -428,15 +553,25 @@ the subfolder is `my/app/` and you should add `<base href="/my/app/">` to the se
 When the `base` tag is mis-configured, the app fails to load and the browser console displays `404 - Not Found` errors
 for the missing files. Look at where it _tried_ to find those files and adjust the base tag appropriately.
 -->
-`base` 태그가 잘못된 값으로 설정되면 애플리케이션 파일을 찾을 수 없기 때문에 애플리케이션을 실행할 수 없고 브라우저 콘솔에 `404 - Not Found` 에러가 출력됩니다.
+`base` 태그가 잘못된 값으로 설정되면 애플리케이션 파일을 찾을 수 없기 때문에 애플리케이션을 실행할 수 없어서 브라우저 콘솔에 `404 - Not Found` 에러가 출력됩니다.
 이 에러가 발생하면 `base` 태그값을 바꿔보면서 정확한 위치를 지정해야 합니다.
 
+<!--
 ## Building and serving for deployment
+-->
+## 배포용으로 빌드하고 서비스하기
 
+<!--
 When you are designing and developing applications, you typically use `ng serve` to build your app for fast, local, iterative development.
 When you are ready to deploy, however, you must use the `ng build` command to build the app and deploy the build artifacts elsewhere.
 
 Both `ng build` and `ng serve` clear the output folder before they build the project, but only the `ng build` command writes the generated build artifacts to the output folder.
+-->
+애플리케이션을 설계하고 개발하는 과정에는 일반적으로 `ng serve` 명령을 실행해서 애플리케이션을 빌드합니다.
+이 방법이 애플리케이션을 빠르게 빌드하고 계속 수정되는 코드를 반영할 수 있는 최선의 방법입니다.
+하지만 애플리케이션을 배포해야 하는 시점에는 `ng build` 명령을 사용해서 애플리케이션 빌드 결과물을 어딘가에 생성해야 합니다.
+
+`ng build` 명령이나 `ng serve` 명령을 실행하면 프로젝트를 빌드하기 전에 빌드 결과물이 생성될 폴더를 비우지만, 해당 폴더에 빌드 결과물을 실제로 생성하는 것은 `ng build` 명령뿐입니다.
 
 <div class="alert is-helpful">
 
@@ -449,13 +584,24 @@ To output to a different folder, change the `outputPath` in `angular.json`.
 
 </div>
 
+<!--
 The `ng serve` command builds, watches, and serves the application from local memory, using a local development server.
 When you have deployed your app to another server, however, you might still want to serve the app so that you can continue to see changes that you make in it.
 You can do this by adding the `--watch` option to the `ng build` command.
+-->
+`ng serve` 명령을 실행하면 애플리케이션이 빌드되고, 워치 모드로 동작하며, 서비스되는 것이 모두 로컬 개발 서버의 메모리에서 처리됩니다.
+하지만 애플리케이션을 어딘가에 배포해야 하는 상황에서도 변경사항을 계속 확인하기 위해 애플리케이션을 워치모드로 빌드하고 싶을 수도 있습니다.
+이런 경우에는 `ng build` 명령을 실행하면서 `--watch` 옵션을 함께 사용하면 됩니다.
 
 ```
 ng build --watch
 ```
+
+<!--
 Like the `ng serve` command, this regenerates output files when source files change.
 
 For complete details of the CLI commands, see the [CLI command reference](cli).
+-->
+그러면 `ng serve` 명령을 실행했을 때와 같이 소스 파일이 변경되었을 때 빌드 결과물도 새로 생성됩니다.
+
+자세한 내용은 [Angular CLI 문서](cli)를 참고하세요.
