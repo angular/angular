@@ -355,11 +355,11 @@ window.testBlocklist = {
   },
   "MatTooltip special cases should clear the `user-select` when a tooltip is set on a text field": {
     "error": "Error: Expected 'none' to be falsy.",
-    "notes": "Unknown"
+    "notes": "FW-1133: Inline styles are not applied before constructor is run"
   },
   "MatTooltip special cases should clear the `-webkit-user-drag` on draggable elements": {
     "error": "Error: Expected 'none' to be falsy.",
-    "notes": "Unknown"
+    "notes": "FW-1133: Inline styles are not applied before constructor is run"
   },
   "MatTable with basic data source should be able to create a table with the right content and without when row": {
     "error": "TypeError: Cannot read property 'querySelectorAll' of null",
