@@ -267,11 +267,11 @@ window.testBlocklist = {
   },
   "MatSidenav should be fixed position when in fixed mode": {
     "error": "Error: Expected ng-tns-c28435-0 ng-trigger ng-trigger-transform mat-drawer mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
-    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
+    "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
     "error": "Error: Expected '' to be '20px'.",
-    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
+    "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
   },
   "MatTree flat tree should initialize with rendered dataNodes": {
     "error": "TypeError: Cannot read property 'classList' of undefined",
