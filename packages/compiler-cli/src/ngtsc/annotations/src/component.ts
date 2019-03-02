@@ -371,9 +371,7 @@ export class ComponentDecoratorHandler implements
         for (const dir of directives) {
           this._recordSyntheticImport(dir.expression, context);
         }
-        for (const [name, pipe] of pipes) {
-          this._recordSyntheticImport(pipe, context);
-        }
+        pipes.forEach((pipe: Expression) => this._recordSyntheticImport(pipe, context));
 
         const binder = new R3TargetBinder(matcher);
         const bound = binder.bind({template: metadata.template.nodes});
