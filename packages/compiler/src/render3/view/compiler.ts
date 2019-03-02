@@ -792,7 +792,7 @@ function createHostListeners(
   return eventBindings.map(binding => {
     let bindingName = binding.name && sanitizeIdentifier(binding.name);
     const bindingFnName = binding.type === ParsedEventType.Animation ?
-        prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase) :
+        prepareSyntheticListenerFunctionName(bindingName, binding.targetOrPhase !) :
         bindingName;
     const handlerName =
         meta.name && bindingName ? `${meta.name}_${bindingFnName}_HostBindingHandler` : null;

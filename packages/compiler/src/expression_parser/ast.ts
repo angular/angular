@@ -698,7 +698,7 @@ export class ParsedEvent {
   // Regular events have a target
   // Animation events have a phase
   constructor(
-      public name: string, public targetOrPhase: string, public type: ParsedEventType,
+      public name: string, public targetOrPhase: string|null, public type: ParsedEventType,
       public handler: AST, public sourceSpan: ParseSourceSpan,
       public handlerSpan: ParseSourceSpan) {}
 }

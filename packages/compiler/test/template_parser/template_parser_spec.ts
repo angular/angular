@@ -851,6 +851,13 @@ Binding to attribute 'onEvent' is disallowed for security reasons ("<my-componen
           ]);
         });
 
+        it('should parse verbatim event names', () => {
+          expect(humanizeTplAst(parse('<div (^window:event)="v">', []))).toEqual([
+            [ElementAst, 'div'],
+            [BoundEventAst, 'window:event', null, 'v'],
+          ]);
+        });
+
         it('should report an error on empty expression', () => {
           expect(() => parse('<div (event)="">', []))
               .toThrowError(/Empty expressions are not allowed/);

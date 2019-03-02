@@ -350,8 +350,15 @@ export class BindingParser {
   private _parseRegularEvent(
       name: string, expression: string, sourceSpan: ParseSourceSpan, handlerSpan: ParseSourceSpan,
       targetMatchableAttrs: string[][], targetEvents: ParsedEvent[]) {
-    // long format: 'target: eventName'
-    const [target, eventName] = splitAtColon(name, [null !, name]);
+    let target: string|null = null;
+    let eventName: string;
+
+    if (name.startsWith('^')) {
+      eventName = name.substring(1);
+    } else {
+      // long format: 'target: eventName'
+      [target, eventName] = splitAtColon(name, [null !, name]);
+    }
     const ast = this._parseAction(expression, handlerSpan);
     targetMatchableAttrs.push([name !, ast.source !]);
     targetEvents.push(
