@@ -13,6 +13,13 @@ import * as t from '../r3_ast';
 import {R3QueryMetadata} from './api';
 import {isI18nAttribute} from './i18n/util';
 
+/**
+ * Checks whether an object key contains potentially unsafe chars, thus the key should be wrapped in
+ * quotes. Note: we do not wrap all keys into quotes, as it may have impact on minification and may
+ * bot work in some cases when object keys are mangled by minifier.
+ */
+const UNSAFE_OBJECT_KEY_NAME_REGEXP = /-/g;
+
 /** Name of the temporary to use during data binding */
 export const TEMPORARY_NAME = '_t';
 
@@ -93,7 +100,7 @@ function mapToExpression(
     return {
       key: minifiedName,
       // put quotes around keys that contain potentially unsafe characters
-      quoted: /\W/.test(minifiedName),
+      quoted: UNSAFE_OBJECT_KEY_NAME_REGEXP.test(minifiedName),
       value: (keepDeclared && publicName !== declaredName) ?
           o.literalArr([asLiteral(publicName), asLiteral(declaredName)]) :
           asLiteral(publicName)
