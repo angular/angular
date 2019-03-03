@@ -39,9 +39,14 @@ export interface CompilerFacade {
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3ComponentMetadataFacade): any;
 
   R3ResolvedDependencyType: typeof R3ResolvedDependencyType;
+  ResourceLoader: {new (): ResourceLoader};
 }
 
 export interface CoreEnvironment { [name: string]: Function; }
+
+export type ResourceLoader = {
+  get(url: string): Promise<string>| string;
+};
 
 export type StringMap = {
   [key: string]: string;

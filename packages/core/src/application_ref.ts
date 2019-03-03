@@ -15,13 +15,15 @@ import {Console} from './console';
 import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
 import {ErrorHandler} from './error_handler';
 import {isDevMode} from './is_dev_mode';
-import {CompilerFactory, CompilerOptions} from './linker/compiler';
+import {COMPILER_OPTIONS, CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 import {InternalViewRef, ViewRef} from './linker/view_ref';
+import {isComponentResourceResolutionQueueEmpty, resolveComponentResources} from './metadata/resource_loading';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
 import {assertNgModuleType} from './render3/assert';
+import {getCompilerFacade} from './render3/jit/compiler_facade';
 import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {Type} from './type';
@@ -47,7 +49,30 @@ export function compileNgModuleFactory__POST_R3__<M>(
     injector: Injector, options: CompilerOptions,
     moduleType: Type<M>): Promise<NgModuleFactory<M>> {
   ngDevMode && assertNgModuleType(moduleType);
-  return Promise.resolve(new R3NgModuleFactory(moduleType));
+  const moduleFactory = new R3NgModuleFactory(moduleType);
+
+  if (isComponentResourceResolutionQueueEmpty()) {
+    return Promise.resolve(moduleFactory);
+  }
+
+  const compilerOptions = injector.get(COMPILER_OPTIONS, []).concat(options);
+  const compilerProviders = _mergeArrays(compilerOptions.map(o => o.providers !));
+
+  // In case there are no compiler providers, we just return the module factory as
+  // there won't be any resource loader. This can happen with Ivy, because AOT compiled
+  // modules can be still passed through "bootstrapModule". In that case we shouldn't
+  // unnecessarily require the JIT compiler.
+  if (compilerProviders.length === 0) {
+    return Promise.resolve(moduleFactory);
+  }
+
+  const compiler = getCompilerFacade();
+  const compilerInjector = Injector.create({providers: compilerProviders});
+  const resourceLoader = compilerInjector.get(compiler.ResourceLoader);
+  // The resource loader can also return a string while the "resolveComponentResources"
+  // always expects a promise. Therefore we need to wrap the returned value in a promise.
+  return resolveComponentResources(url => Promise.resolve(resourceLoader.get(url)))
+      .then(() => moduleFactory);
 }
 
 export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultipleToken');
@@ -660,4 +685,10 @@ function remove<T>(list: T[], el: T): void {
   if (index > -1) {
     list.splice(index, 1);
   }
+}
+
+function _mergeArrays(parts: any[][]): any[] {
+  const result: any[] = [];
+  parts.forEach((part) => part && result.push(...part));
+  return result;
 }
