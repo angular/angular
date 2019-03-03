@@ -139,11 +139,11 @@ window.testBlocklist = {
   },
   "MatChipList StandardChipList basic behaviors should toggle the chips disabled state based on whether it is disabled": {
     "error": "Error: Expected true to be false.",
-    "notes": "Unknown"
+    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
   },
   "MatChipList StandardChipList focus behaviors should focus the first chip on focus": {
     "error": "Error: Expected -1 to be 0.",
-    "notes": "Unknown"
+    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
   },
   "MatChipList StandardChipList focus behaviors should watch for chip focus": {
     "error": "TypeError: Cannot read property 'focus' of undefined",
@@ -187,23 +187,23 @@ window.testBlocklist = {
   },
   "MatChipList FormFieldChipList keyboard behavior should maintain focus if the active chip is deleted": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1064: debugElement.query does not find directive when that directive precedes another"
   },
   "MatChipList FormFieldChipList keyboard behavior when the input has focus should not focus the last chip when press DELETE": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1064: debugElement.query does not find directive when that directive precedes another"
   },
   "MatChipList FormFieldChipList keyboard behavior when the input has focus should focus the last chip when press BACKSPACE": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1064: debugElement.query does not find directive when that directive precedes another"
   },
   "MatChipList FormFieldChipList should complete the stateChanges stream on destroy": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1064: debugElement.query does not find directive when that directive precedes another"
   },
   "MatChipList FormFieldChipList should point the label id to the chip input": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1064: debugElement.query does not find directive when that directive precedes another"
   },
   "MatChipList with chip remove should properly focus next item if chip is removed through click": {
     "error": "TypeError: Cannot read property 'focus' of undefined",
