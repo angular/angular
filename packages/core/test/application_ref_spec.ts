@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ResourceLoader} from '@angular/compiler';
 import {APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, Compiler, CompilerFactory, Component, InjectionToken, NgModule, NgZone, PlatformRef, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ApplicationRef} from '@angular/core/src/application_ref';
 import {ErrorHandler} from '@angular/core/src/error_handler';
@@ -41,7 +42,8 @@ class SomeComponent {
       getDOM().appendChild(doc.body, rootEl);
     }
 
-    type CreateModuleOptions = {providers?: any[], ngDoBootstrap?: any, bootstrap?: any[]};
+    type CreateModuleOptions =
+        {providers?: any[], ngDoBootstrap?: any, bootstrap?: any[], component?: Type<any>};
 
     function createModule(providers?: any[]): Type<any>;
     function createModule(options: CreateModuleOptions): Type<any>;
@@ -62,8 +64,8 @@ class SomeComponent {
       @NgModule({
         providers: [{provide: ErrorHandler, useValue: errorHandler}, options.providers || []],
         imports: [platformModule],
-        declarations: [SomeComponent],
-        entryComponents: [SomeComponent],
+        declarations: [options.component || SomeComponent],
+        entryComponents: [options.component || SomeComponent],
         bootstrap: options.bootstrap || []
       })
       class MyModule {
@@ -303,6 +305,27 @@ class SomeComponent {
                  expect(ngZone instanceof NoopNgZone).toBe(true);
                });
          }));
+
+      it('should resolve component resources when creating module factory', async() => {
+        @Component({
+          selector: 'with-templates-app',
+          templateUrl: '/test-template.html',
+        })
+        class WithTemplateUrlComponent {
+        }
+
+        const loadResourceSpy = jasmine.createSpy('load resource').and.returnValue('fakeContent');
+        const testModule = createModule({component: WithTemplateUrlComponent});
+
+        await defaultPlatform.bootstrapModule(testModule, {
+          providers: [
+            {provide: ResourceLoader, useValue: {get: loadResourceSpy}},
+          ]
+        });
+
+        expect(loadResourceSpy).toHaveBeenCalledTimes(1);
+        expect(loadResourceSpy).toHaveBeenCalledWith('/test-template.html');
+      });
     });
 
     describe('bootstrapModuleFactory', () => {
