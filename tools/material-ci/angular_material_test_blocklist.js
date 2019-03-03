@@ -27,27 +27,27 @@ window.testBlocklist = {
   },
   "CdkDrag in a drop container should be able to customize the preview element": {
     "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkDrag in a drop container should position custom previews next to the pointer": {
     "error": "Error: Expected 'translate3d(8px, 33px, 0px)' to be 'translate3d(50px, 50px, 0px)'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkDrag in a drop container should lock position inside a drop container along the x axis": {
     "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkDrag in a drop container should lock position inside a drop container along the y axis": {
     "error": "Error: Expected 'translate3d(8px, 83px, 0px)' to be 'translate3d(50px, 100px, 0px)'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkDrag in a drop container should inherit the position locking from the drop container": {
     "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkDrag in a drop container should be able to customize the placeholder": {
     "error": "Error: Expected cdk-drag cdk-drag-placeholder to contain 'custom-placeholder'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkTable should be able to render multiple header and footer rows": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
