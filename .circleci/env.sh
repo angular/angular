@@ -54,6 +54,7 @@ else
   setPublicVar SAUCE_USERNAME "angular-ci";
   setSecretVar SAUCE_ACCESS_KEY "9b988f434ff8-fbca-8aa4-4ae3-35442987";
 fi
+setPublicVar SAUCE_LOG_FILE /tmp/angular/sauce-connect.log
 setPublicVar SAUCE_READY_FILE /tmp/angular/sauce-connect-ready-file.lock
 setPublicVar SAUCE_PID_FILE /tmp/angular/sauce-connect-pid-file.lock
 setPublicVar SAUCE_TUNNEL_IDENTIFIER "angular-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_INDEX}"

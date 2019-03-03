@@ -7,6 +7,11 @@ readonly currentDir=$(cd $(dirname $0); pwd)
 # Command arguments that will be passed to sauce-connect.
 sauceArgs=""
 
+if [[ ! -z "${SAUCE_LOG_FILE:-}" ]]; then
+  mkdir -p $(dirname ${SAUCE_LOG_FILE})
+  sauceArgs="${sauceArgs} --logfile ${SAUCE_LOG_FILE}"
+fi
+
 if [[ ! -z "${SAUCE_READY_FILE:-}" ]]; then
   mkdir -p $(dirname ${SAUCE_READY_FILE})
   sauceArgs="${sauceArgs} --readyfile ${SAUCE_READY_FILE}"
