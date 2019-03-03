@@ -739,7 +739,7 @@ If you are not using the CLI, you should add your polyfill scripts directly to t
 
 <!--
 <code-example header="src/index.html">
-  &lt;!-- pre-zone polyfills -->
+  &lt;!-- pre-zone polyfills --&gt;
   &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
   &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>
   &lt;script>
@@ -764,7 +764,7 @@ If you are not using the CLI, you should add your polyfill scripts directly to t
   &lt;!-- application polyfills --&gt;
 </code-example>
 -->
-<code-example title="src/index.html">
+<code-example header="src/index.html">
   &lt;!-- 폴리필에 필요한 스크립트 --&gt;
   &lt;script src="node_modules/core-js/client/shim.min.js">&lt;/script>
   &lt;script src="node_modules/web-animations-js/web-animations.min.js">&lt;/script>
