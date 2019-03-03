@@ -13,8 +13,10 @@ while [[ ! -f ${SAUCE_READY_FILE} ]]; do
   # Counter needs to be multiplied by two because the while loop only sleeps a half second.
   # This has been made in favor of better progress logging (printing dots every half second)
   if [ $counter -gt $[${SAUCE_READY_FILE_TIMEOUT} * 2] ]; then
+    echo "Timed out after ${SAUCE_READY_FILE_TIMEOUT} seconds waiting for tunnel ready file."
+    echo "Printing logfile output:"
     echo ""
-    echo "Timed out after ${SAUCE_READY_FILE_TIMEOUT} seconds waiting for tunnel ready file"
+    cat ${SAUCE_LOG_FILE}
     exit 5
   fi
 
