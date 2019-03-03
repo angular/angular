@@ -7,13 +7,14 @@
  */
 
 import {Component} from '../../src/core';
-import {clearResolutionOfComponentResourcesQueue, resolveComponentResources} from '../../src/metadata/resource_loading';
+import {clearResolutionOfComponentResourcesQueue, isComponentResourceResolutionQueueEmpty, resolveComponentResources} from '../../src/metadata/resource_loading';
 import {ComponentType} from '../../src/render3/interfaces/definition';
 import {compileComponent} from '../../src/render3/jit/directive';
 
 describe('resource_loading', () => {
+  afterEach(clearResolutionOfComponentResourcesQueue);
+
   describe('error handling', () => {
-    afterEach(clearResolutionOfComponentResourcesQueue);
     it('should throw an error when compiling component that has unresolved templateUrl', () => {
       const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
       compileComponent(MyComponent, {templateUrl: 'someUrl'});
@@ -111,6 +112,16 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
       expect(metadata.styles).toEqual(['existing', 'first', 'second']);
     });
 
+    it('should not add components without external resources to resolution queue', () => {
+      const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
+      const MyComponent2: ComponentType<any> = (class MyComponent{}) as any;
+
+      compileComponent(MyComponent, {template: ''});
+      expect(isComponentResourceResolutionQueueEmpty()).toBe(true);
+
+      compileComponent(MyComponent2, {templateUrl: 'test://template'});
+      expect(isComponentResourceResolutionQueueEmpty()).toBe(false);
+    });
   });
 
   describe('fetch', () => {

@@ -99,6 +99,10 @@ export function clearResolutionOfComponentResourcesQueue() {
   componentResourceResolutionQueue.clear();
 }
 
+export function isComponentResourceResolutionQueueEmpty() {
+  return componentResourceResolutionQueue.size === 0;
+}
+
 function unwrapResponse(response: string | {text(): Promise<string>}): string|Promise<string> {
   return typeof response == 'string' ? response : response.text();
 }

@@ -41,9 +41,14 @@ export interface CompilerFacade {
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
   R3ResolvedDependencyType: typeof R3ResolvedDependencyType;
+  ResourceLoader: {new (): ResourceLoader};
 }
 
 export interface CoreEnvironment { [name: string]: Function; }
+
+export type ResourceLoader = {
+  get(url: string): Promise<string>| string;
+};
 
 export type StringMap = {
   [key: string]: string;
