@@ -225,6 +225,7 @@ jobs:
     steps:
       - *attach_workspace
       - *init_environment
+      - *setup_circleci_bazel_config
       - run:
           name: Preparing environment for running tests on Saucelabs.
           command: setSecretVar SAUCE_ACCESS_KEY $(echo $SAUCE_ACCESS_KEY | rev)
