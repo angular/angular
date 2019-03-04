@@ -116,12 +116,38 @@ describe('reflector', () => {
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(2);
-      expectParameter(args[0], 'bar', 'Bar');
-      expectParameter(args[1], 'otherBar', 'star.Bar');
+      expectParameter(args[0], 'bar', {moduleName: './bar', name: 'Bar'});
+      expectParameter(args[1], 'otherBar', {moduleName: './bar', name: 'Bar'});
     });
 
+    it('should reflect an argument from an aliased import', () => {
+      const {program} = makeProgram([
+        {
+          name: 'bar.ts',
+          contents: `
+          export class Bar {}
+        `
+        },
+        {
+          name: 'entry.ts',
+          contents: `
+            import {Bar as LocalBar} from './bar';
 
-    it('should reflect an nullable argument', () => {
+            class Foo {
+              constructor(bar: LocalBar) {}
+            }
+        `
+        }
+      ]);
+      const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
+      const checker = program.getTypeChecker();
+      const host = new TypeScriptReflectionHost(checker);
+      const args = host.getConstructorParameters(clazz) !;
+      expect(args.length).toBe(1);
+      expectParameter(args[0], 'bar', {moduleName: './bar', name: 'Bar'});
+    });
+
+    it('should reflect a nullable argument', () => {
       const {program} = makeProgram([
         {
           name: 'bar.ts',
@@ -145,7 +171,7 @@ describe('reflector', () => {
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(1);
-      expectParameter(args[0], 'bar', 'Bar');
+      expectParameter(args[0], 'bar', {moduleName: './bar', name: 'Bar'});
     });
   });
 
@@ -193,14 +219,24 @@ describe('reflector', () => {
 });
 
 function expectParameter(
-    param: CtorParameter, name: string, type?: string, decorator?: string,
-    decoratorFrom?: string): void {
+    param: CtorParameter, name: string, type?: string | {name: string, moduleName: string},
+    decorator?: string, decoratorFrom?: string): void {
   expect(param.name !).toEqual(name);
   if (type === undefined) {
-    expect(param.typeExpression).toBeNull();
+    expect(param.typeValueReference).toBeNull();
   } else {
-    expect(param.typeExpression).not.toBeNull();
-    expect(argExpressionToString(param.typeExpression !)).toEqual(type);
+    if (param.typeValueReference === null) {
+      return fail(`Expected parameter ${name} to have a typeValueReference`);
+    }
+    if (param.typeValueReference.local && typeof type === 'string') {
+      expect(argExpressionToString(param.typeValueReference.expression)).toEqual(type);
+    } else if (!param.typeValueReference.local && typeof type !== 'string') {
+      expect(param.typeValueReference.moduleName).toEqual(type.moduleName);
+      expect(param.typeValueReference.name).toEqual(type.name);
+    } else {
+      return fail(
+          `Mismatch between typeValueReference and expected type: ${param.name} / ${param.typeValueReference.local}`);
+    }
   }
   if (decorator !== undefined) {
     expect(param.decorators).not.toBeNull();

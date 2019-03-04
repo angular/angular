@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, ExternalExpr, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportMode, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver} from '../../partial_evaluator';
-import {ClassMemberKind, CtorParameter, Decorator, ReflectionHost} from '../../reflection';
+import {ClassMemberKind, CtorParameter, Decorator, ReflectionHost, TypeValueReference} from '../../reflection';
 
 export enum ConstructorDepErrorKind {
   NO_SUITABLE_TOKEN,
@@ -45,7 +45,7 @@ export function getConstructorDependencies(
     }
   }
   ctorParams.forEach((param, idx) => {
-    let tokenExpr = param.typeExpression;
+    let token = valueReferenceToExpression(param.typeValueReference);
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
@@ -56,7 +56,7 @@ export function getConstructorDependencies(
               ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
               `Unexpected number of arguments to @Inject().`);
         }
-        tokenExpr = dec.args[0];
+        token = new WrappedNodeExpr(dec.args[0]);
       } else if (name === 'Optional') {
         optional = true;
       } else if (name === 'SkipSelf') {
@@ -71,20 +71,19 @@ export function getConstructorDependencies(
               ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
               `Unexpected number of arguments to @Attribute().`);
         }
-        tokenExpr = dec.args[0];
+        token = new WrappedNodeExpr(dec.args[0]);
         resolved = R3ResolvedDependencyType.Attribute;
       } else {
         throw new FatalDiagnosticError(
             ErrorCode.DECORATOR_UNEXPECTED, dec.node, `Unexpected decorator ${name} on parameter.`);
       }
     });
-    if (tokenExpr === null) {
+    if (token === null) {
       errors.push({
         index: idx,
         kind: ConstructorDepErrorKind.NO_SUITABLE_TOKEN, param,
       });
     } else {
-      const token = new WrappedNodeExpr(tokenExpr);
       deps.push({token, optional, self, skipSelf, host, resolved});
     }
   });
@@ -92,6 +91,27 @@ export function getConstructorDependencies(
     return {deps};
   } else {
     return {deps: null, errors};
+  }
+}
+
+/**
+ * Convert a `TypeValueReference` to an `Expression` which refers to the type as a value.
+ *
+ * Local references are converted to a `WrappedNodeExpr` of the TypeScript expression, and non-local
+ * references are converted to an `ExternalExpr`. Note that this is only valid in the context of the
+ * file in which the `TypeValueReference` originated.
+ */
+export function valueReferenceToExpression(valueRef: TypeValueReference): Expression;
+export function valueReferenceToExpression(valueRef: null): null;
+export function valueReferenceToExpression(valueRef: TypeValueReference | null): Expression|null;
+export function valueReferenceToExpression(valueRef: TypeValueReference | null): Expression|null {
+  if (valueRef === null) {
+    return null;
+  } else if (valueRef.local) {
+    return new WrappedNodeExpr(valueRef.expression);
+  } else {
+    // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
+    return new ExternalExpr(valueRef as{moduleName: string, name: string});
   }
 }
 

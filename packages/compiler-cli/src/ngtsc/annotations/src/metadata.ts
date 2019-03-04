@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ExternalExpr, Identifiers, InvokeFunctionExpr, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, ReturnStatement, Statement, WrappedNodeExpr, literalMap} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {CtorParameter, Decorator, ReflectionHost} from '../../reflection';
+
+import {valueReferenceToExpression} from './util';
 
 /**
  * Given a class declaration, generate a call to `setClassMetadata` with the Angular metadata
@@ -39,18 +41,13 @@ export function generateSetClassMetadataCall(
   const metaDecorators = ts.createArrayLiteral(ngClassDecorators);
 
   // Convert the constructor parameters to metadata, passing null if none are present.
-  let metaCtorParameters: ts.Expression = ts.createNull();
+  let metaCtorParameters: Expression = new LiteralExpr(null);
   const classCtorParameters = reflection.getConstructorParameters(clazz);
   if (classCtorParameters !== null) {
-    const ctorParameters = ts.createArrayLiteral(
-        classCtorParameters.map(param => ctorParameterToMetadata(param, isCore)));
-    metaCtorParameters = ts.createFunctionExpression(
-        /* modifiers */ undefined,
-        /* asteriskToken */ undefined,
-        /* name */ undefined,
-        /* typeParameters */ undefined,
-        /* parameters */ undefined,
-        /* type */ undefined, ts.createBlock([ts.createReturn(ctorParameters)]));
+    const ctorParameters = classCtorParameters.map(param => ctorParameterToMetadata(param, isCore));
+    metaCtorParameters = new FunctionExpr([], [
+      new ReturnStatement(new LiteralArrayExpr(ctorParameters)),
+    ]);
   }
 
   // Do the same for property decorators.
@@ -71,7 +68,7 @@ export function generateSetClassMetadataCall(
       [
         new WrappedNodeExpr(id),
         new WrappedNodeExpr(metaDecorators),
-        new WrappedNodeExpr(metaCtorParameters),
+        metaCtorParameters,
         new WrappedNodeExpr(metaPropDecorators),
       ],
       /* type */ undefined,
@@ -83,22 +80,25 @@ export function generateSetClassMetadataCall(
 /**
  * Convert a reflected constructor parameter to metadata.
  */
-function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): ts.Expression {
+function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): Expression {
   // Parameters sometimes have a type that can be referenced. If so, then use it, otherwise
   // its type is undefined.
-  const type =
-      param.typeExpression !== null ? param.typeExpression : ts.createIdentifier('undefined');
-  const properties: ts.ObjectLiteralElementLike[] = [
-    ts.createPropertyAssignment('type', type),
+  const type = param.typeValueReference !== null ?
+      valueReferenceToExpression(param.typeValueReference) :
+      new LiteralExpr(undefined);
+
+  const mapEntries: {key: string, value: Expression, quoted: false}[] = [
+    {key: 'type', value: type, quoted: false},
   ];
 
   // If the parameter has decorators, include the ones from Angular.
   if (param.decorators !== null) {
     const ngDecorators =
         param.decorators.filter(dec => isAngularDecorator(dec, isCore)).map(decoratorToMetadata);
-    properties.push(ts.createPropertyAssignment('decorators', ts.createArrayLiteral(ngDecorators)));
+    const value = new WrappedNodeExpr(ts.createArrayLiteral(ngDecorators));
+    mapEntries.push({key: 'decorators', value, quoted: false});
   }
-  return ts.createObjectLiteral(properties, true);
+  return literalMap(mapEntries);
 }
 
 /**

@@ -46,7 +46,7 @@ describe('ngtsc setClassMetadata converter', () => {
     }
     `);
     expect(res).toContain(
-        `function () { return [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: Injector }]; }, null);`);
+        `function () { return [{ type: undefined, decorators: [{ type: Inject, args: [FOO] }] }, { type: i0.Injector }]; }, null);`);
   });
 
   it('should convert decorated field metadata', () => {
