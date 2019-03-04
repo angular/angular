@@ -740,8 +740,8 @@ describe('compiler compliance', () => {
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) {
              return new (t || MyComponent)(
-                $r3$.ɵdirectiveInject(ElementRef), $r3$.ɵdirectiveInject(ViewContainerRef),
-                $r3$.ɵdirectiveInject(ChangeDetectorRef));
+                $r3$.ɵdirectiveInject($i$.ElementRef), $r3$.ɵdirectiveInject($i$.ViewContainerRef),
+                $r3$.ɵdirectiveInject($i$.ChangeDetectorRef));
           },
           consts: 0,
           vars: 0,
@@ -784,7 +784,7 @@ describe('compiler compliance', () => {
         IfDirective.ngDirectiveDef = $r3$.ɵdefineDirective({
           type: IfDirective,
           selectors: [["", "if", ""]],
-          factory: function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵdirectiveInject(TemplateRef)); }
+          factory: function IfDirective_Factory(t) { return new (t || IfDirective)($r3$.ɵdirectiveInject($i$.TemplateRef)); }
         });`;
       const MyComponentDefinition = `
         const $c1$ = ["foo", ""];

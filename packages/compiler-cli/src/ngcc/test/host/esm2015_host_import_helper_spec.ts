@@ -12,6 +12,8 @@ import {ClassMemberKind, Import} from '../../../ngtsc/reflection';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {convertToDirectTsLibImport, getDeclaration, makeTestProgram} from '../helpers/utils';
 
+import {expectTypeValueReferencesForParameters} from './util';
+
 const FILES = [
   {
     name: '/some_directive.js',
@@ -262,8 +264,10 @@ describe('Fesm2015ReflectionHost [import helper style]', () => {
           expect(parameters !.map(parameter => parameter.name)).toEqual([
             '_viewContainer', '_template', 'injected'
           ]);
-          expect(parameters !.map(parameter => parameter.typeExpression !.getText())).toEqual([
-            'ViewContainerRef', 'TemplateRef', 'String'
+          expectTypeValueReferencesForParameters(parameters !, [
+            'ViewContainerRef',
+            'TemplateRef',
+            'String',
           ]);
         });
 
@@ -296,7 +300,10 @@ describe('Fesm2015ReflectionHost [import helper style]', () => {
           const classNode = getDeclaration(
               program, '/some_directive.js', 'SomeDirective', ts.isVariableDeclaration);
           const ctrDecorators = host.getConstructorParameters(classNode) !;
-          const identifierOfViewContainerRef = ctrDecorators[0].typeExpression !as ts.Identifier;
+          const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference !as{
+                                                 local: true,
+                                                 expression: ts.Identifier
+                                               }).expression;
 
           const expectedDeclarationNode = getDeclaration(
               program, '/some_directive.js', 'ViewContainerRef', ts.isClassDeclaration);

@@ -152,6 +152,31 @@ export interface ClassMember {
 }
 
 /**
+ * A reference to a value that originated from a type position.
+ *
+ * For example, a constructor parameter could be declared as `foo: Foo`. A `TypeValueReference`
+ * extracted from this would refer to the value of the class `Foo` (assuming it was actually a
+ * type).
+ *
+ * There are two kinds of such references. A reference with `local: false` refers to a type that was
+ * imported, and gives the symbol `name` and the `moduleName` of the import. Note that this
+ * `moduleName` may be a relative path, and thus is likely only valid within the context of the file
+ * which contained the original type reference.
+ *
+ * A reference with `local: true` refers to any other kind of type via a `ts.Expression` that's
+ * valid within the local file where the type was referenced.
+ */
+export type TypeValueReference = {
+  local: true; expression: ts.Expression;
+} |
+{
+  local: false;
+  name: string;
+  moduleName: string;
+  valueDeclaration: ts.Declaration;
+};
+
+/**
  * A parameter to a constructor.
  */
 export interface CtorParameter {
@@ -172,18 +197,22 @@ export interface CtorParameter {
   nameNode: ts.BindingName;
 
   /**
-   * TypeScript `ts.Expression` representing the type value of the parameter, if the type is a
-   * simple
-   * expression type that can be converted to a value.
+   * Reference to the value of the parameter's type annotation, if it's possible to refer to the
+   * parameter's type as a value.
    *
-   * If the type is not present or cannot be represented as an expression, `type` is `null`.
+   * This can either be a reference to a local value, in which case it has `local` set to `true` and
+   * contains a `ts.Expression`, or it's a reference to an imported value, in which case `local` is
+   * set to `false` and the symbol and module name of the imported value are provided instead.
+   *
+   * If the type is not present or cannot be represented as an expression, `typeValueReference` is
+   * `null`.
    */
-  typeExpression: ts.Expression|null;
+  typeValueReference: TypeValueReference|null;
 
   /**
    * TypeScript `ts.TypeNode` representing the type node found in the type position.
    *
-   * This field can be used for diagnostics reporting if `typeExpression` is `null`.
+   * This field can be used for diagnostics reporting if `typeValueReference` is `null`.
    *
    * Can be null, if the param has no type declared.
    */

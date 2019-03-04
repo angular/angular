@@ -895,7 +895,13 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           paramInfo[index] :
           {decorators: null, typeExpression: null};
       const nameNode = node.name;
-      return {name: getNameText(nameNode), nameNode, typeExpression, typeNode: null, decorators};
+      return {
+        name: getNameText(nameNode),
+        nameNode,
+        typeValueReference:
+            typeExpression !== null ? {local: true as true, expression: typeExpression} : null,
+        typeNode: null, decorators
+      };
     });
   }
 

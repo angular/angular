@@ -1104,7 +1104,7 @@ describe('ngtsc behavioral tests', () => {
     const jsContents = env.getContents('test.js');
     expect(jsContents)
         .toContain(
-            `factory: function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵinjectAttribute("test"), i0.ɵdirectiveInject(ChangeDetectorRef), i0.ɵdirectiveInject(ElementRef), i0.ɵdirectiveInject(Injector), i0.ɵdirectiveInject(Renderer2), i0.ɵdirectiveInject(TemplateRef), i0.ɵdirectiveInject(ViewContainerRef)); }`);
+            `factory: function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵinjectAttribute("test"), i0.ɵdirectiveInject(i0.ChangeDetectorRef), i0.ɵdirectiveInject(i0.ElementRef), i0.ɵdirectiveInject(i0.Injector), i0.ɵdirectiveInject(i0.Renderer2), i0.ɵdirectiveInject(i0.TemplateRef), i0.ɵdirectiveInject(i0.ViewContainerRef)); }`);
   });
 
   it('should generate queries for components', () => {
@@ -1932,9 +1932,9 @@ describe('ngtsc behavioral tests', () => {
 
     env.driveMain();
     const jsContents = trim(env.getContents('test.js'));
-    expect(jsContents).toContain(`import { MyTypeA, MyTypeB } from './types';`);
-    expect(jsContents).toMatch(setClassMetadataRegExp('type: MyTypeA'));
-    expect(jsContents).toMatch(setClassMetadataRegExp('type: MyTypeB'));
+    expect(jsContents).toContain(`import * as i1 from "./types";`);
+    expect(jsContents).toMatch(setClassMetadataRegExp('type: i1\\.MyTypeA'));
+    expect(jsContents).toMatch(setClassMetadataRegExp('type: i1\\.MyTypeB'));
   });
 
   it('should use imported types in setClassMetadata if they can be represented as values and imported as `* as foo`',
@@ -1961,13 +1961,13 @@ describe('ngtsc behavioral tests', () => {
          export class SomeComp {
            constructor(@Inject('arg-token') arg: types.MyTypeB) {}
          }
-       `);
+      `);
 
        env.driveMain();
        const jsContents = trim(env.getContents('test.js'));
        expect(jsContents).toContain(`import * as types from './types';`);
-       expect(jsContents).toMatch(setClassMetadataRegExp('type: types.MyTypeA'));
-       expect(jsContents).toMatch(setClassMetadataRegExp('type: types.MyTypeB'));
+       expect(jsContents).toMatch(setClassMetadataRegExp('type: i\\d\\.MyTypeA'));
+       expect(jsContents).toMatch(setClassMetadataRegExp('type: i\\d\\.MyTypeB'));
      });
 
   it('should use `undefined` in setClassMetadata if types can\'t be represented as values', () => {
