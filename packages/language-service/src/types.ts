@@ -27,7 +27,7 @@ export {
  * The information `LanguageService` needs from the `LanguageServiceHost` to describe the content of
  * a template and the language context the template is in.
  *
- * A host interface; see `LanguageSeriviceHost`.
+ * A host interface; see `LanguageServiceHost`.
  *
  * @publicApi
  */
@@ -71,7 +71,7 @@ export interface TemplateSource {
 /**
  * A sequence of template sources.
  *
- * A host type; see `LanguageSeriviceHost`.
+ * A host type; see `LanguageServiceHost`.
  *
  * @publicApi
  */
@@ -102,12 +102,12 @@ export interface DeclarationError {
  * Information about the component declarations.
  *
  * A file might contain a declaration without a template because the file contains only
- * templateUrl references. However, the compoennt declaration might contain errors that
+ * templateUrl references. However, the component declaration might contain errors that
  * need to be reported such as the template string is missing or the component is not
  * declared in a module. These error should be reported on the declaration, not the
  * template.
  *
- * A host type; see `LanguageSeriviceHost`.
+ * A host type; see `LanguageServiceHost`.
  *
  * @publicApi
  */
@@ -137,7 +137,7 @@ export interface Declaration {
 /**
  * A sequence of declarations.
  *
- * A host type; see `LanguageSeriviceHost`.
+ * A host type; see `LanguageServiceHost`.
  *
  * @publicApi
  */
@@ -145,8 +145,7 @@ export type Declarations = Declaration[];
 
 /**
  * The host for a `LanguageService`. This provides all the `LanguageService` requires to respond
- * to
- * the `LanguageService` requests.
+ * to the `LanguageService` requests.
  *
  * This interface describes the requirements of the `LanguageService` on its host.
  *
@@ -186,8 +185,7 @@ export interface LanguageServiceHost {
 
   /**
    * Return the template source information for all templates in `fileName` or for `fileName` if
-   * it
-   * is a template file.
+   * it is a template file.
    */
   getTemplates(fileName: string): TemplateSources;
 
@@ -216,7 +214,7 @@ export interface LanguageServiceHost {
  */
 export interface Completion {
   /**
-   * The kind of comletion.
+   * The kind of completion.
    */
   kind: DeclarationKind;
 
@@ -353,7 +351,7 @@ export interface Hover {
  * beginning of the file reference by `fileName`.
  *
  * This interface and all interfaces and types marked as `LanguageService` types, describe  a
- * particlar implementation of the Angular language service and is not intented to be
+ * particular implementation of the Angular language service and is not intended to be
  * implemented. Adding members to the interface will not be considered a breaking change as
  * defined by SemVer.
  *
