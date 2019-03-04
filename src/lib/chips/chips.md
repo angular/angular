@@ -25,7 +25,7 @@ Whenever the selection state changes, a `ChipSelectionChange` event will be emit
 
 ### Disabled chips
 Individual chips may be disabled by applying the `disabled` attribute to the chip. When disabled,
-chips are neither selectable nor focusable. Currently, disabled chips receive no special styling.
+chips are neither selectable nor focusable.
 
 ### Chip input
 The `MatChipInput` directive can be used together with a chip-list to streamline the interaction
