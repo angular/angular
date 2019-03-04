@@ -28,42 +28,98 @@ function stripPrefix(val: string, prefix: string): string {
  * A Location service that provides properties and methods to match AngularJS's `$location`
  * service. It is recommended that this LocationUpgradeService be used in place of
  * `$location` in any hybrid Angular/AngularJS applications.
+ *
+ * @publicApi
  */
 @Injectable()
 export class LocationUpgradeService {
-  private urlParts: {path: string, search: {[k: string]: unknown}, hash: string}|null = null;
+  private locationChanges:
+      {path: string, search: {[k: string]: unknown}, hash: string, state: unknown}|null = null;
+  private lastLocationChanges:
+      {path: string, search: {[k: string]: unknown}, hash: string, state: unknown, absUrl: string};
+  private replaceHistory: boolean = false;
 
   constructor(
       private location: Location, private platformLocation: PlatformLocation,
-      private locationStrategy: LocationStrategy, private urlCodec: UrlCodec) {}
-
-  /**
-   * Get the current set of URL parts, or parse the current URL into it's parts.
-   */
-  private getUrlParts() {
-    if (!this.urlParts) {
-      const path = this.path();
-      const search = this.search();
-      const hash = this.hash();
-
-      this.urlParts = {path, search, hash};
-    }
-    return this.urlParts;
+      private locationStrategy: LocationStrategy, private urlCodec: UrlCodec) {
+    // Get current location changes & set lastLocationChanges defaults
+    this.lastLocationChanges = {...this.getLocationChanges(), absUrl: this.absUrl()};
+    // TODO(jasonaden): smelly... needing to reset `locationChanges` to `null` after this read.
+    // Needs adjustment.
+    this.locationChanges = null;
   }
 
   /**
-   * Saves the URL in urlParts.
+   * Get the current set of location changes, or parse the current location into it's parts.
    */
-  private updateUrl() {
-    if (!this.urlParts) {
+  private getLocationChanges() {
+    if (!this.locationChanges) {
+      const path = this.path();
+      const search = this.search();
+      const hash = this.hash();
+      const state = this.state();
+
+      this.locationChanges = {path, search, hash, state};
+    }
+    return this.locationChanges;
+  }
+
+  /**
+   * Used to determine if there are outstanding changes to be saved.
+   */
+  getLastUrl(): string { return this.lastLocationChanges.absUrl; }
+
+  /**
+   * Used to determine if there are outstanding changes to be saved.
+   */
+  getLastState(): unknown { return this.lastLocationChanges.state; }
+
+  /**
+   * Allows subscribing to the `popstate` and `hashchange` events through `Location` service.
+   */
+  onUrlChange(fn: (oldUrl: string, oldState: unknown, newUrl: string, newState: unknown) => void):
+      void {
+    this.location.subscribe(evt => {
+      // Grab the current URL. This is either the current, pending URL if one exists (this should be
+      // rare as it means a URL change was started but left incomplete).
+      // TODO(jasonaden): There is a problem with this code because it looks like it will grab from
+      // the browser after this event has fired. Need to use lastLocationChanges and parse the URL
+      // from there.
+      const oldUrl = this.absUrl();
+      const oldState = this.state();
+
+      // If there are pending changes, they should be blown away because by the time this event
+      // fires, the URL has been updated
+      this.locationChanges = null;
+
+      fn(oldUrl, oldState, this.absUrl(), this.state());
+
+      // Reset locationChanges
+      // TODO(jasonaden): I don't like mutating this property, and setting to `null` twice here
+      // seems odd. Need a better way to manage current URL and clean it up when needed.
+      this.locationChanges = null;
+    });
+  }
+
+  /**
+   * Saves the URL currently stored in this.locationChanges.
+   */
+  updateLocation() {
+    if (!this.locationChanges) {
       return;
     }
     const url = this.urlCodec.normalize(
-        this.urlParts.path, this.urlParts.search, this.urlParts.hash,
+        this.locationChanges.path, this.locationChanges.search, this.locationChanges.hash,
         this.locationStrategy.getBaseHref());
     // Set the URL
-    this.locationStrategy.pushState(null, '', url, '');
-    this.urlParts = null;
+    if (this.replaceHistory) {
+      this.locationStrategy.replaceState(null, '', url, '');
+    } else {
+      this.locationStrategy.pushState(null, '', url, '');
+    }
+    this.replaceHistory = false;
+    this.lastLocationChanges = {...this.locationChanges, absUrl: this.absUrl()};
+    this.locationChanges = null;
   }
 
   private getServerBase() {
@@ -89,9 +145,10 @@ export class LocationUpgradeService {
     const port = this.platformLocation.port;
     url += port ? ':' + port : '';
 
-    const urlParts = this.getUrlParts();
+    const locationChanges = this.getLocationChanges();
     url += this.urlCodec.normalize(
-        urlParts.path, urlParts.search, urlParts.hash, this.locationStrategy.getBaseHref());
+        locationChanges.path, locationChanges.search, locationChanges.hash,
+        this.locationStrategy.getBaseHref());
 
     return url;
   }
@@ -133,8 +190,8 @@ export class LocationUpgradeService {
       if (!match) return this;
       // If the first character is '?', only set the query params & hash
       if (url[0] !== '?') {
-        const urlParts = this.getUrlParts();
-        urlParts.path = stripPrefix(match[1] || '', this.locationStrategy.getBaseHref());
+        const locationChanges = this.getLocationChanges();
+        locationChanges.path = stripPrefix(match[1] || '', this.locationStrategy.getBaseHref());
       }
       this.search(match[3] || '');
       this.hash(match[5] || '');
@@ -143,11 +200,15 @@ export class LocationUpgradeService {
       return this;
     }
 
-    const urlParts = this.getUrlParts();
-    return this.urlCodec.encodePath(urlParts.path) + this.urlCodec.encodeSearch(urlParts.search) +
-        this.urlCodec.encodeHash(urlParts.hash);
+    const locationChanges = this.getLocationChanges();
+    return this.urlCodec.encodePath(locationChanges.path) +
+        this.urlCodec.encodeSearch(locationChanges.search) +
+        this.urlCodec.encodeHash(locationChanges.hash);
   }
 
+  // TODO(jasonaden): Confirm the difference between these two methods in AngularJS source. Check
+  // why fallback in "update browser" section passes oldUrl to $$parse (they both remove server
+  // portion of the URL).
   $$parse(url: string) {
     // Remove protocol & hostname if URL starts with it
     const serverUrl = this.getServerBase();
@@ -266,21 +327,21 @@ export class LocationUpgradeService {
   path(path: string|number|null): this;
   path(path?: string|number|null): string|this {
     if (typeof path === 'undefined') {
-      if (this.urlParts) {
-        return this.urlParts.path;
+      if (this.locationChanges) {
+        return this.locationChanges.path;
       }
       path = this.urlCodec.decodePath(this.platformLocation.pathname);
       // strip prefix
       return stripPrefix(path, this.locationStrategy.getBaseHref());
     }
 
-    const urlParts = this.getUrlParts();
+    const locationChanges = this.getLocationChanges();
 
     // null path converts to empty string. Prepend with "/" if needed.
     path = path !== null ? path.toString() : '';
     path = path.charAt(0) === '/' ? path : '/' + path;
 
-    urlParts.path = stripPrefix(path, this.locationStrategy.getBaseHref());
+    locationChanges.path = stripPrefix(path, this.locationStrategy.getBaseHref());
 
     return this;
   }
@@ -336,17 +397,17 @@ export class LocationUpgradeService {
       paramValue?: null|undefined|string|number|boolean|string[]): {[key: string]: unknown}|this {
     switch (arguments.length) {
       case 0:
-        if (this.urlParts) {
-          return this.urlParts.search;
+        if (this.locationChanges) {
+          return this.locationChanges.search;
         }
         const params = this.platformLocation.search;
 
         return this.urlCodec.decodeSearch(params[0] === '?' ? params.substring(1) : params);
       case 1:
-        const urlParts = this.getUrlParts();
+        const locationChanges = this.getLocationChanges();
 
         if (typeof search === 'string' || typeof search === 'number') {
-          urlParts.search = this.urlCodec.decodeSearch(search.toString());
+          locationChanges.search = this.urlCodec.decodeSearch(search.toString());
         } else if (typeof search === 'object') {
           // Copy the object so it's never mutated
           search = {...search};
@@ -356,7 +417,7 @@ export class LocationUpgradeService {
           }
 
           // Convert to string
-          urlParts.search = search;
+          locationChanges.search = search;
         } else {
           throw new Error(
               'LocationUpgradeService.search(): First argument must be a string or an object.');
@@ -395,8 +456,8 @@ export class LocationUpgradeService {
   hash(hash: string|number|null): this;
   hash(hash?: string|number|null): string|this {
     if (arguments.length === 0) {
-      if (this.urlParts) {
-        return this.urlParts.hash;
+      if (this.locationChanges) {
+        return this.locationChanges.hash;
       }
       // We have to get the hash through path. This is because path and hash values are different
       // depending on the strategy used. Pulling hash out of the path makes this consistent.
@@ -406,9 +467,19 @@ export class LocationUpgradeService {
       return this.urlCodec.decodeHash(hash);
     }
 
-    const urlParts = this.getUrlParts();
-    urlParts.hash = hash != null ? hash.toString() : '';
+    const locationChanges = this.getLocationChanges();
+    locationChanges.hash = hash != null ? hash.toString() : '';
 
+    return this;
+  }
+
+  /**
+   * If called, all changes to $location during the current `$digest` will replace the current
+   * history
+   * record, instead of adding a new one.
+   */
+  replace(): this {
+    this.replaceHistory = true;
     return this;
   }
 
@@ -428,11 +499,15 @@ export class LocationUpgradeService {
   state(): unknown;
   state(state: unknown): this;
   state(state?: unknown): unknown|this {
-    if (arguments.length) {
-      this.platformLocation.replaceState(state, '', this.platformLocation.href);
-      return this;
-    } else {
+    if (typeof state === 'undefined') {
+      if (this.locationChanges) {
+        return this.locationChanges.state;
+      }
       return this.platformLocation.getState();
     }
+
+    const locationChanges = this.getLocationChanges();
+    locationChanges.state = state;
+    return this;
   }
 }

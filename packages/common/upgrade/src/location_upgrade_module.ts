@@ -12,6 +12,11 @@ import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@
 import {LocationUpgradeService} from './location_upgrade_service';
 import {AngularJSUrlCodec, UrlCodec} from './params';
 
+/**
+ * Configuration options for LocationUpgrade.
+ *
+ * @publicApi
+ */
 export interface LocationUpgradeConfig {
   useHash?: boolean;
   urlCodec?: typeof UrlCodec;
@@ -20,20 +25,19 @@ export interface LocationUpgradeConfig {
 }
 
 /**
- * @description
- *
- * Is used in DI to configure the router.
+ * Is used in DI to configure the location upgrade package.
  *
  * @publicApi
  */
 export const LOCATION_UPGRADE_CONFIGURATION =
     new InjectionToken<LocationUpgradeConfig>('LOCATION_UPGRADE_CONFIGURATION');
 
-
-export const APP_BASE_HREF_RESOLVED = new InjectionToken<string>('APP_BASE_HREF_RESOLVED');
+const APP_BASE_HREF_RESOLVED = new InjectionToken<string>('APP_BASE_HREF_RESOLVED');
 
 /**
  * Module used for configuring Angular's LocationUpgradeService.
+ *
+ * @publicApi
  */
 @NgModule({imports: [CommonModule]})
 export class LocationUpgradeModule {
@@ -43,25 +47,12 @@ export class LocationUpgradeModule {
       providers: [
         Location,
         LocationUpgradeService,
-        {
-          provide: UrlCodec,
-          useFactory: () => {
-            const codec = config && config.urlCodec || AngularJSUrlCodec;
-            return new (codec as any)();
-          }
-        },
         {provide: LOCATION_UPGRADE_CONFIGURATION, useValue: config ? config : {}},
+        {provide: UrlCodec, useFactory: provideUrlCodec, deps: [LOCATION_UPGRADE_CONFIGURATION]},
         {
           provide: APP_BASE_HREF_RESOLVED,
-          useFactory: (appBaseHref?: string) => {
-            if (config && config.appBaseHref != null) {
-              return config.appBaseHref;
-            } else if (appBaseHref != null) {
-              return appBaseHref;
-            }
-            return '';
-          },
-          deps: [[new Inject(APP_BASE_HREF), new Optional()]]
+          useFactory: provideAppBaseHref,
+          deps: [LOCATION_UPGRADE_CONFIGURATION, [new Inject(APP_BASE_HREF), new Optional()]]
         },
         {
           provide: LocationStrategy,
@@ -77,6 +68,23 @@ export class LocationUpgradeModule {
   }
 }
 
+export function provideAppBaseHref(config: LocationUpgradeConfig, appBaseHref?: string) {
+  if (config && config.appBaseHref != null) {
+    return config.appBaseHref;
+  } else if (appBaseHref != null) {
+    return appBaseHref;
+  }
+  return '';
+}
+
+export function provideUrlCodec(config: LocationUpgradeConfig) {
+  const codec = config && config.urlCodec || AngularJSUrlCodec;
+  return new (codec as any)();
+}
+
+/**
+ * @publicApi
+ */
 export function provideLocationStrategy(
     platformLocationStrategy: PlatformLocation, baseHref: string,
     options: LocationUpgradeConfig = {}) {

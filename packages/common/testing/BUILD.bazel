@@ -11,6 +11,6 @@ ng_module(
         "//packages/common",
         "//packages/core",
         "@npm//rxjs",
-        "@ngdeps//@types/node",
+        "@npm//@types/node",
     ],
 )
