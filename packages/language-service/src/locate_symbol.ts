@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAst, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
+import {AST, Attribute, BoundDirectivePropertyAst, BoundEventAst, ElementAst, TemplateAstPath, findNode, tokenReference} from '@angular/compiler';
 import {getExpressionScope} from '@angular/compiler-cli/src/language_services';
 
 import {TemplateInfo} from './common';
 import {getExpressionSymbol} from './expressions';
-import {Definition, Location, Span, Symbol, SymbolTable} from './types';
+import {Definition, Span, Symbol} from './types';
 import {diagnosticInfoFromTemplateInfo, findTemplateAstAt, inSpan, offsetSpan, spanOf} from './utils';
 
 export interface SymbolInfo {

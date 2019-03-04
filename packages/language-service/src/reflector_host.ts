@@ -7,7 +7,7 @@
  */
 
 import {StaticSymbolResolverHost} from '@angular/compiler';
-import {CompilerOptions, MetadataCollector, MetadataReaderCache, MetadataReaderHost, createMetadataReaderCache, readMetadata} from '@angular/compiler-cli/src/language_services';
+import {CompilerOptions, MetadataCollector, MetadataReaderHost, createMetadataReaderCache, readMetadata} from '@angular/compiler-cli/src/language_services';
 import * as path from 'path';
 import * as ts from 'typescript';
 
