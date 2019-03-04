@@ -38,7 +38,7 @@ export class DocsMarkdownRenderer extends Renderer {
     // We only want to fix up markdown links that are relative and do not refer to guides already.
     // Otherwise we always map the link to the "guide/" path.
     // TODO(devversion): remove this logic and just disallow relative paths.
-    if (!href.startsWith('http') && !href.includes('guide/')) {
+    if (!href.startsWith('http') && !href.startsWith('#') && !href.includes('guide/')) {
       return super.link(`guide/${basename(href, extname(href))}`, title, text);
     }
 
