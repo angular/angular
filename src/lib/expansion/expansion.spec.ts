@@ -118,6 +118,7 @@ describe('MatExpansionPanel', () => {
 
   it('should toggle the panel when pressing SPACE on the header', () => {
     const fixture = TestBed.createComponent(PanelWithContent);
+    fixture.detectChanges();
     const headerEl = fixture.nativeElement.querySelector('.mat-expansion-panel-header');
 
     spyOn(fixture.componentInstance.panel, 'toggle');
@@ -132,6 +133,7 @@ describe('MatExpansionPanel', () => {
 
   it('should toggle the panel when pressing ENTER on the header', () => {
     const fixture = TestBed.createComponent(PanelWithContent);
+    fixture.detectChanges();
     const headerEl = fixture.nativeElement.querySelector('.mat-expansion-panel-header');
 
     spyOn(fixture.componentInstance.panel, 'toggle');
@@ -146,6 +148,7 @@ describe('MatExpansionPanel', () => {
 
   it('should not toggle if a modifier key is pressed', () => {
     const fixture = TestBed.createComponent(PanelWithContent);
+    fixture.detectChanges();
     const headerEl = fixture.nativeElement.querySelector('.mat-expansion-panel-header');
 
     spyOn(fixture.componentInstance.panel, 'toggle');

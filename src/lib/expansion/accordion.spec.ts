@@ -113,6 +113,8 @@ describe('MatAccordion', () => {
 
   it('should not register nested panels to the same accordion', () => {
     const fixture = TestBed.createComponent(NestedPanel);
+    fixture.detectChanges();
+
     const innerPanel = fixture.componentInstance.innerPanel;
     const outerPanel = fixture.componentInstance.outerPanel;
 
