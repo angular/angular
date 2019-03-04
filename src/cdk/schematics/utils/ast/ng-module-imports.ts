@@ -49,7 +49,7 @@ function resolveIdentifierOfExpression(expression: ts.Expression): ts.Identifier
   if (ts.isIdentifier(expression)) {
     return expression;
   } else if (ts.isPropertyAccessExpression(expression)) {
-    return resolveIdentifierOfExpression(expression.expression);
+    return expression.name;
   }
   return null;
 }
