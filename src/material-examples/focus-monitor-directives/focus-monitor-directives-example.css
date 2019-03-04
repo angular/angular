@@ -17,3 +17,7 @@
 .example-focus-monitor .cdk-program-focused {
   background: rgba(255, 0, 255, 0.5);
 }
+
+button {
+  margin-right: 12px;
+}

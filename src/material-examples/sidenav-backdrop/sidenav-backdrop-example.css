@@ -1,6 +1,13 @@
 .example-container {
   width: 400px;
   height: 200px;
-  margin: 10px;
+  margin: 12px;
   border: 1px solid #555;
+}
+
+mat-drawer-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }

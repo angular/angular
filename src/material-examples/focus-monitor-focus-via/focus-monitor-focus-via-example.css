@@ -21,3 +21,8 @@
 .example-focus-monitor button:focus {
   box-shadow: 0 0 30px cyan;
 }
+
+mat-form-field,
+button {
+  margin-right: 12px;
+}
