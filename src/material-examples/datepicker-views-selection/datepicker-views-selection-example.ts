@@ -51,9 +51,9 @@ export class DatepickerViewsSelectionExample {
     this.date.setValue(ctrlValue);
   }
 
-  chosenMonthHandler(normlizedMonth: Moment, datepicker: MatDatepicker<Moment>) {
+  chosenMonthHandler(normalizedMonth: Moment, datepicker: MatDatepicker<Moment>) {
     const ctrlValue = this.date.value;
-    ctrlValue.month(normlizedMonth.month());
+    ctrlValue.month(normalizedMonth.month());
     this.date.setValue(ctrlValue);
     datepicker.close();
   }
