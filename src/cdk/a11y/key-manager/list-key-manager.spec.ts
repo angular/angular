@@ -176,7 +176,7 @@ describe('Key managers', () => {
         expect(fakeKeyEvents.rightArrow.defaultPrevented).toBe(false);
       });
 
-      it('should ignore the horizontal keys when only in horizontal mode', () => {
+      it('should ignore the vertical keys when only in horizontal mode', () => {
         keyManager.withVerticalOrientation(false).withHorizontalOrientation('ltr');
 
         expect(keyManager.activeItemIndex).toBe(0);
