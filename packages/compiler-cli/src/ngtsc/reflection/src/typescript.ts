@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost} from './host';
+import {ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost, TypeValueReference} from './host';
 
 /**
  * reflector.ts implements static reflection of declarations using the TypeScript `ts.TypeChecker`.
@@ -48,7 +48,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
       // It may or may not be possible to write an expression that refers to the value side of the
       // type named for the parameter.
-      let typeValueExpr: ts.Expression|null = null;
+      let typeValueExpr: TypeValueReference|null = null;
       let originalTypeNode = node.type || null;
       let typeNode = originalTypeNode;
 
@@ -69,27 +69,57 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
       // It's not possible to get a value expression if the parameter doesn't even have a type.
       if (typeNode && ts.isTypeReferenceNode(typeNode)) {
-        // It's only valid to convert a type reference to a value reference if the type actually has
-        // a value declaration associated with it.
-        let symbol: ts.Symbol|undefined = this.checker.getSymbolAtLocation(typeNode.typeName);
-
-        if (symbol !== undefined) {
-          let resolvedSymbol = symbol;
-          if (symbol.flags & ts.SymbolFlags.Alias) {
-            resolvedSymbol = this.checker.getAliasedSymbol(symbol);
-          }
-          if (resolvedSymbol.valueDeclaration !== undefined) {
+        const symbols = resolveTypeSymbols(typeNode, this.checker);
+        if (symbols !== null) {
+          const {local, decl} = symbols;
+          // It's only valid to convert a type reference to a value reference if the type actually
+          // has a value declaration associated with it.
+          if (decl.valueDeclaration !== undefined) {
             // The type points to a valid value declaration. Rewrite the TypeReference into an
             // Expression which references the value pointed to by the TypeReference, if possible.
-            const firstDecl = symbol.declarations && symbol.declarations[0];
+
+            // Look at the local `ts.Symbol`'s declarations and see if it comes from an import
+            // statement. If so, extract the module specifier and the name of the imported type.
+            const firstDecl = local.declarations && local.declarations[0];
+
             if (firstDecl && ts.isImportSpecifier(firstDecl)) {
-              // Making sure TS produces the necessary imports in case a symbol was declared in a
-              // different script and imported. To do that we check symbol's first declaration and
-              // if it's an import - use its identifier. The `Identifier` from the `ImportSpecifier`
-              // knows it could be a value reference, and will emit as one if needed.
-              typeValueExpr = ts.updateIdentifier(firstDecl.name);
+              // The symbol was imported by name, in a ts.ImportSpecifier.
+              const name = (firstDecl.propertyName || firstDecl.name).text;
+              const moduleSpecifier = firstDecl.parent.parent.parent.moduleSpecifier;
+              if (!ts.isStringLiteral(moduleSpecifier)) {
+                throw new Error('not a module specifier');
+              }
+              const moduleName = moduleSpecifier.text;
+              typeValueExpr = {
+                local: false,
+                name,
+                moduleName,
+                valueDeclaration: decl.valueDeclaration,
+              };
+            } else if (
+                firstDecl && ts.isNamespaceImport(firstDecl) && symbols.importName !== null) {
+              // The symbol was imported via a namespace import. In this case, the name to use when
+              // importing it was extracted by resolveTypeSymbols.
+              const name = symbols.importName;
+              const moduleSpecifier = firstDecl.parent.parent.moduleSpecifier;
+              if (!ts.isStringLiteral(moduleSpecifier)) {
+                throw new Error('not a module specifier');
+              }
+              const moduleName = moduleSpecifier.text;
+              typeValueExpr = {
+                local: false,
+                name,
+                moduleName,
+                valueDeclaration: decl.valueDeclaration,
+              };
             } else {
-              typeValueExpr = typeNodeToValueExpr(typeNode);
+              const expression = typeNodeToValueExpr(typeNode);
+              if (expression !== null) {
+                typeValueExpr = {
+                  local: true,
+                  expression,
+                };
+              }
             }
           }
         }
@@ -98,7 +128,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       return {
         name,
         nameNode: node.name,
-        typeExpression: typeValueExpr,
+        typeValueReference: typeValueExpr,
         typeNode: originalTypeNode, decorators,
       };
     });
@@ -485,4 +515,49 @@ function propertyNameToString(node: ts.PropertyName): string|null {
   } else {
     return null;
   }
+}
+
+/**
+ * Resolve a `TypeReference` node to the `ts.Symbol`s for both its declaration and its local source.
+ *
+ * In the event that the `TypeReference` refers to a locally declared symbol, these will be the
+ * same. If the `TypeReference` refers to an imported symbol, then `decl` will be the fully resolved
+ * `ts.Symbol` of the referenced symbol. `local` will be the `ts.Symbol` of the `ts.Identifer` which
+ * points to the import statement by which the symbol was imported.
+ */
+function resolveTypeSymbols(typeRef: ts.TypeReferenceNode, checker: ts.TypeChecker):
+    {local: ts.Symbol, decl: ts.Symbol, importName: string | null}|null {
+  const typeName = typeRef.typeName;
+  // typeRefSymbol is the ts.Symbol of the entire type reference.
+  const typeRefSymbol: ts.Symbol|undefined = checker.getSymbolAtLocation(typeName);
+  if (typeRefSymbol === undefined) {
+    return null;
+  }
+
+  // local is the ts.Symbol for the local ts.Identifier for the type.
+  // If the type is actually locally declared or is imported by name, for example:
+  //   import {Foo} from './foo';
+  // then it'll be the same as top. If the type is imported via a namespace import, for example:
+  //   import * as foo from './foo';
+  // and then referenced as:
+  //   constructor(f: foo.Foo)
+  // then local will be the ts.Symbol of `foo`, whereas top will be the ts.Symbol of `foo.Foo`.
+  // This allows tracking of the import behind whatever type reference exists.
+  let local = typeRefSymbol;
+  let importName: string|null = null;
+  if (ts.isQualifiedName(typeName) && ts.isIdentifier(typeName.left) &&
+      ts.isIdentifier(typeName.right)) {
+    const localTmp = checker.getSymbolAtLocation(typeName.left);
+    if (localTmp !== undefined) {
+      local = localTmp;
+      importName = typeName.right.text;
+    }
+  }
+
+  // De-alias the top-level type reference symbol to get the symbol of the actual declaration.
+  let decl = typeRefSymbol;
+  if (typeRefSymbol.flags & ts.SymbolFlags.Alias) {
+    decl = checker.getAliasedSymbol(typeRefSymbol);
+  }
+  return {local, decl, importName};
 }
