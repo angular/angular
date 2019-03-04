@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
-import {COMPILER_OPTIONS, Compiler, CompilerFactory, Component, Injectable, Injector, NgModule, NgModuleFactory} from '@angular/core';
+import {Component, Injectable, Injector, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {JitCompilerFactory} from '@angular/platform-browser-dynamic';
-
 
 
 // #docregion SimpleExample
@@ -63,65 +60,23 @@ export class NgTemplateOutletCompleteExample {
 }
 // #enddocregion
 
-// #docregion NgModuleFactoryExample
-@Component({selector: 'other-module-component', template: `Other Module Component!`})
-export class OtherModuleComponent {
-}
-
-@Component({
-  selector: 'ng-component-outlet-other-module-example',
-  template: `
-    <ng-container *ngComponentOutlet="OtherModuleComponent;
-                                      ngModuleFactory: myModule;"></ng-container>`
-})
-export class NgTemplateOutletOtherModuleExample {
-  // This field is necessary to expose OtherModuleComponent to the template.
-  OtherModuleComponent = OtherModuleComponent;
-  myModule: NgModuleFactory<any>;
-
-  constructor(compiler: Compiler) { this.myModule = compiler.compileModuleSync(OtherModule); }
-}
-// #enddocregion
-
 
 @Component({
   selector: 'example-app',
   template: `<ng-component-outlet-simple-example></ng-component-outlet-simple-example>
              <hr/>
-             <ng-component-outlet-complete-example></ng-component-outlet-complete-example>
-             <hr/>
-             <ng-component-outlet-other-module-example></ng-component-outlet-other-module-example>`
+             <ng-component-outlet-complete-example></ng-component-outlet-complete-example>`
 })
 export class AppComponent {
 }
 
 @NgModule({
-  imports: [CommonModule],
-  declarations: [OtherModuleComponent],
-  entryComponents: [OtherModuleComponent]
-})
-export class OtherModule {
-}
-
-export function createCompiler(compilerFactory: CompilerFactory) {
-  return compilerFactory.createCompiler();
-}
-
-@NgModule({
   imports: [BrowserModule],
   declarations: [
-    AppComponent, NgTemplateOutletSimpleExample, NgTemplateOutletCompleteExample,
-    NgTemplateOutletOtherModuleExample, HelloWorld, CompleteComponent
+    AppComponent, NgTemplateOutletSimpleExample, NgTemplateOutletCompleteExample, HelloWorld,
+    CompleteComponent
   ],
-  entryComponents: [HelloWorld, CompleteComponent],
-  providers: [
-    // Setup the JIT compiler that is not set up by default because the examples
-    // are bootstrapped using their NgModule factory. Since this example uses the
-    // JIT compiler, we manually set it up for this module.
-    {provide: COMPILER_OPTIONS, useValue: {}, multi: true},
-    {provide: CompilerFactory, useClass: JitCompilerFactory, deps: [COMPILER_OPTIONS]},
-    {provide: Compiler, useFactory: createCompiler, deps: [CompilerFactory]}
-  ]
+  entryComponents: [HelloWorld, CompleteComponent]
 })
 export class AppModule {
 }
