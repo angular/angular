@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
 /**
- * @title Tag group with dynamic height based on tab contents
+ * @title Tab group with dynamic height based on tab contents
  */
 @Component({
   selector: 'tab-group-dynamic-height-example',
