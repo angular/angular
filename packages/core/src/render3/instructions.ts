@@ -35,7 +35,7 @@ import {LQueries} from './interfaces/query';
 import {GlobalTargetResolver, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, FLAGS_MORE, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from './interfaces/view';
+import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNodes, createTextNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
@@ -48,7 +48,7 @@ import {NO_CHANGE} from './tokens';
 import {attrsStylingIndexOf, setUpAttributes} from './util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent, getRootContext, getRootView} from './util/view_traversal_utils';
-import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readPatchedLView, unwrapRNode, viewAttachedToChangeDetector} from './util/view_utils';
+import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from './util/view_utils';
 
 
 
@@ -91,10 +91,10 @@ export function refreshDescendantViews(lView: LView) {
     // Content query results must be refreshed before content hooks are called.
     refreshContentQueries(tView, lView);
 
-    lView[FLAGS_MORE] = 0;
+    resetPreOrderHookFlags(lView);
     executeHooks(
         lView, tView.contentHooks, tView.contentCheckHooks, checkNoChangesMode,
-        InitPhaseState.AfterContentInitHooksToBeRun);
+        InitPhaseState.AfterContentInitHooksToBeRun, undefined);
 
     setHostBindings(tView, lView);
   }
@@ -181,7 +181,7 @@ export function createLView<T>(
   const lView = tView.blueprint.slice() as LView;
   lView[HOST] = host;
   lView[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.FirstLViewPass;
-  lView[FLAGS_MORE] = 0;
+  resetPreOrderHookFlags(lView);
   lView[PARENT] = lView[DECLARATION_VIEW] = parentLView;
   lView[CONTEXT] = context;
   lView[RENDERER_FACTORY] = (rendererFactory || parentLView && parentLView[RENDERER_FACTORY]) !;
@@ -407,7 +407,7 @@ export function renderEmbeddedTemplate<T>(viewToRender: LView, tView: TView, con
       setPreviousOrParentTNode(null !);
 
       oldView = enterView(viewToRender, viewToRender[T_HOST]);
-      viewToRender[FLAGS_MORE] = 0;
+      resetPreOrderHookFlags(viewToRender);
       namespaceHTML();
       tView.template !(getRenderFlags(viewToRender), context);
       // This must be set to false immediately after the first creation run because in an
@@ -462,7 +462,7 @@ function renderComponentOrTemplate<T>(
     }
 
     // update mode pass
-    hostView[FLAGS_MORE] = 0;
+    resetPreOrderHookFlags(hostView);
     templateFn && templateFn(RenderFlags.Update, context);
     refreshDescendantViews(hostView);
   } finally {
@@ -1064,7 +1064,7 @@ export function elementEnd(): void {
 /**
  * Flushes all the lifecycle hooks for directives up until (and excluding) that node index
  *
- * @param index The index of the element in the data array
+ * @param index The index of the element in the `LView`
  */
 export function flushHooksUpTo(index: number): void {
   const lView = getLView();
@@ -1763,7 +1763,9 @@ function resolveDirectives(
       if (def.providersResolver) def.providersResolver(def);
     }
     generateExpandoInstructionBlock(tView, tNode, directives.length);
-    let wasNodeIndexAdded = false;
+    const initialPreOrderHooksLength = (tView.preOrderHooks && tView.preOrderHooks.length) || 0;
+    const initialPreOrderCheckHooksLength =
+        (tView.preOrderCheckHooks && tView.preOrderCheckHooks.length) || 0;
     for (let i = 0; i < directives.length; i++) {
       const def = directives[i] as DirectiveDef<any>;
 
@@ -1774,10 +1776,8 @@ function resolveDirectives(
 
       // Init hooks are queued now so ngOnInit is called in host components before
       // any projected components.
-      wasNodeIndexAdded = registerPreOrderHooks(
-                              directiveDefIdx, def, tView,
-                              wasNodeIndexAdded ? undefined : tNode.index - HEADER_OFFSET) ||
-          wasNodeIndexAdded;
+      registerPreOrderHooks(
+          directiveDefIdx, def, tView, initialPreOrderHooksLength, initialPreOrderCheckHooksLength);
     }
   }
   if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
@@ -2459,7 +2459,7 @@ export function embeddedViewEnd(): void {
     refreshDescendantViews(lView);  // creation mode pass
     lView[FLAGS] &= ~LViewFlags.CreationMode;
   }
-  lView[FLAGS_MORE] = 0;
+  resetPreOrderHookFlags(lView);
   refreshDescendantViews(lView);  // update mode pass
   const lContainer = lView[PARENT] as LContainer;
   ngDevMode && assertLContainerOrUndefined(lContainer);
@@ -2854,7 +2854,7 @@ export function checkView<T>(hostView: LView, component: T) {
   const creationMode = isCreationMode(hostView);
 
   try {
-    hostView[FLAGS_MORE] = 0;
+    resetPreOrderHookFlags(hostView);
     namespaceHTML();
     creationMode && executeViewQueryFn(RenderFlags.Create, hostTView, component);
     templateFn(getRenderFlags(hostView), component);

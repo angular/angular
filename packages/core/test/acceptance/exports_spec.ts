@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Input, OnChanges, SimpleChanges, Type} from '@angular/core';
+import {Component, Directive, DoCheck, Input, OnChanges, OnInit, SimpleChanges, Type} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
@@ -14,7 +14,8 @@ describe('exports', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [
-        AppComp, ComponentToReference, DirToReference, DirToReferenceWithOnChange, DirWithCompInput
+        AppComp, ComponentToReference, DirToReference, DirToReferenceWithPreOrderHooks,
+        DirWithCompInput
       ]
     });
   });
@@ -45,7 +46,7 @@ describe('exports', () => {
           AppComp, '<div dirOnChange #myDir="dirOnChange" [in]="true"></div> {{ myDir.name }}');
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual('<div dironchange="" ng-reflect-in="true" title="Drew!"></div> Drew!');
+          .toEqual('<div dironchange="" ng-reflect-in="true" title="Drew!?@"></div> Drew!?@');
     });
 
     modifiedInIvy('Supporting input changes in hooks is limited in Ivy')
@@ -54,7 +55,7 @@ describe('exports', () => {
               AppComp, '{{ myDir.name }} <div dirOnChange #myDir="dirOnChange" [in]="true"></div>');
           fixture.detectChanges();
           expect(fixture.nativeElement.innerHTML)
-              .toEqual('Drew! <div dironchange="" ng-reflect-in="true" title="Drew!"></div>');
+              .toEqual('Drew!?@ <div dironchange="" ng-reflect-in="true" title="Drew!?@"></div>');
         });
 
     onlyInIvy('Supporting input changes in hooks is limited in Ivy')
@@ -76,7 +77,8 @@ describe('exports', () => {
               '<div dirOnChange #myDir="dirOnChange" [in]="true" [id]="myDir.name"></div>');
           fixture.detectChanges();
           expect(fixture.nativeElement.innerHTML)
-              .toEqual('<div dironchange="" ng-reflect-in="true" id="Drew!" title="Drew!"></div>');
+              .toEqual(
+                  '<div dironchange="" ng-reflect-in="true" id="Drew!?@" title="Drew!?@"></div>');
         });
 
     onlyInIvy('Supporting input changes in hooks is limited in Ivy')
@@ -96,7 +98,7 @@ describe('exports', () => {
           initWithTemplate(AppComp, '<div dirOnChange #myDir="dirOnChange" [in]="true"></div>');
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual('<div dironchange="" ng-reflect-in="true" title="Drew!"></div>');
+          .toEqual('<div dironchange="" ng-reflect-in="true" title="Drew!?@"></div>');
     });
   });
 
@@ -161,8 +163,10 @@ class DirWithCompInput {
 }
 
 @Directive({selector: '[dirOnChange]', exportAs: 'dirOnChange', host: {'[title]': 'name'}})
-class DirToReferenceWithOnChange implements OnChanges {
+class DirToReferenceWithPreOrderHooks implements OnInit, OnChanges, DoCheck {
   @Input() in : any = null;
   name = 'Drew';
   ngOnChanges(changes: SimpleChanges) { this.name += '!'; }
+  ngOnInit() { this.name += '?'; }
+  ngDoCheck() { this.name += '@'; }
 }

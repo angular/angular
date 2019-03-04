@@ -45,9 +45,6 @@
     "name": "FLAGS"
   },
   {
-    "name": "FLAGS_MORE"
-  },
-  {
     "name": "FactoryPrototype"
   },
   {
@@ -93,9 +90,6 @@
     "name": "NG_TEMPLATE_SELECTOR"
   },
   {
-    "name": "NOOP"
-  },
-  {
     "name": "NO_CHANGE"
   },
   {
@@ -112,6 +106,9 @@
   },
   {
     "name": "PARENT_INJECTOR"
+  },
+  {
+    "name": "PREORDER_HOOK_FLAGS"
   },
   {
     "name": "QUERIES"
@@ -199,6 +196,9 @@
   },
   {
     "name": "cacheMatchingLocalNames"
+  },
+  {
+    "name": "callHook"
   },
   {
     "name": "callHooks"
@@ -604,6 +604,9 @@
   },
   {
     "name": "resetComponentState"
+  },
+  {
+    "name": "resetPreOrderHookFlags"
   },
   {
     "name": "resolveDirectives"

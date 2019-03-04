@@ -13,7 +13,7 @@ import {ComponentDef, DirectiveDef} from '../interfaces/definition';
 import {TNode, TNodeFlags} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer';
 import {StylingContext} from '../interfaces/styling';
-import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, TData, TVIEW} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, TData, TVIEW} from '../interfaces/view';
 
 
 
@@ -196,4 +196,12 @@ export function viewAttachedToChangeDetector(view: LView): boolean {
 /** Returns a boolean for whether the view is attached to a container. */
 export function viewAttachedToContainer(view: LView): boolean {
   return isLContainer(view[PARENT]);
+}
+
+/**
+ * Resets the pre-order hook flags of the view.
+ * @param lView the LView on which the flags are reset
+ */
+export function resetPreOrderHookFlags(lView: LView) {
+  lView[PREORDER_HOOK_FLAGS] = 0;
 }

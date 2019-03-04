@@ -45,7 +45,7 @@ export const CHILD_HEAD = 14;
 export const CHILD_TAIL = 15;
 export const CONTENT_QUERIES = 16;
 export const DECLARATION_VIEW = 17;
-export const FLAGS_MORE = 18;
+export const PREORDER_HOOK_FLAGS = 18;
 /** Size of LView's header. Necessary to adjust for it when setting slots.  */
 export const HEADER_OFFSET = 20;
 
@@ -220,7 +220,7 @@ export interface LView extends Array<any> {
   /**
    * More flags for this view. See LViewFlagsMore for more info.
    */
-  [FLAGS_MORE]: LViewFlagsMore;
+  [PREORDER_HOOK_FLAGS]: LViewFlagsMore;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */
@@ -611,17 +611,16 @@ export interface RootContext {
 /**
  * Array of hooks that should be executed for a view and their directive indices.
  *
- * Even indices: Directive index
- * Odd indices: Hook function
+ * For each node of the view, the following data is stored:
+ * 1) Node index (optional)
+ * 2) A serie of number/function pairs where:
+ *  - even indices are directive indices
+ *  - odd indices are hook functions
  *
  * Special cases:
  *  - a negative directive index flags an init hook (ngOnInit, ngAfterContentInit, ngAfterViewInit)
- *  - a NOOP hook function flags the previous index as a node index, to which are attached the
- * following directive indices
  */
 export type HookData = (number | (() => void))[];
-
-export const NOOP = function() {};
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.

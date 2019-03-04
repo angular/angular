@@ -22,14 +22,14 @@ import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition'
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, FLAGS, FLAGS_MORE, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, RENDERER, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
 import {applyOnCreateInstructions} from './node_util';
 import {enterView, getPreviousOrParentTNode, leaveView, resetComponentState, setCurrentDirectiveDef} from './state';
 import {renderInitialClasses, renderInitialStyles} from './styling/class_and_style_bindings';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler, renderStringify} from './util/misc_utils';
 import {getRootContext, getRootView} from './util/view_traversal_utils';
-import {readPatchedLView} from './util/view_utils';
+import {readPatchedLView, resetPreOrderHookFlags} from './util/view_utils';
 
 
 
@@ -142,7 +142,7 @@ export function renderComponent<T>(
 
     refreshDescendantViews(rootView);  // creation mode pass
     rootView[FLAGS] &= ~LViewFlags.CreationMode;
-    rootView[FLAGS_MORE] = 0;
+    resetPreOrderHookFlags(rootView);
     refreshDescendantViews(rootView);  // update mode pass
   } finally {
     leaveView(oldView);
@@ -249,7 +249,7 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
   const rootTView = readPatchedLView(component) ![TVIEW];
   const dirIndex = rootTView.data.length - 1;
 
-  registerPreOrderHooks(dirIndex, def, rootTView);
+  registerPreOrderHooks(dirIndex, def, rootTView, -1, -1);
   // TODO(misko): replace `as TNode` with createTNode call. (needs refactoring to lose dep on
   // LNode).
   registerPostOrderHooks(
