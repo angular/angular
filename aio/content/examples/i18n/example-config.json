@@ -5,7 +5,8 @@
       "cmd": "yarn",
       "args": [
         "e2e",
-        "--no-webdriver-update"
+        "--no-webdriver-update",
+        "--port={PORT}"
       ]
     }
   ]
