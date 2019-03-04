@@ -140,6 +140,14 @@ describe('MatList', () => {
     expect(items.length).toBeGreaterThan(0);
   });
 
+  it('should set the proper class on the action list host', () => {
+    const fixture = TestBed.createComponent(ActionListWithoutType);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement.querySelector('mat-action-list');
+    expect(host.classList).toContain('mat-action-list');
+  });
+
   it('should enable ripples for action lists by default', () => {
     const fixture = TestBed.createComponent(ActionListWithoutType);
     fixture.detectChanges();

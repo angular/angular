@@ -27,7 +27,8 @@
   }
 
   .mat-list-option,
-  .mat-nav-list .mat-list-item {
+  .mat-nav-list .mat-list-item,
+  .mat-action-list .mat-list-item {
     &:hover, &:focus {
       background: mat-color($background, 'hover');
     }
