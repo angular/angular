@@ -361,6 +361,23 @@ describe('MatStepper', () => {
       const stepHeaders = fixture.debugElement.queryAll(By.css('.mat-vertical-stepper-header'));
       assertSelectKeyWithModifierInteraction(fixture, stepHeaders, 'vertical', SPACE);
     });
+
+    it('should set the proper tabindex', () => {
+      let stepContents = fixture.debugElement.queryAll(By.css(`.mat-vertical-stepper-content`));
+      let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
+      let firstStepContentEl = stepContents[0].nativeElement;
+      let secondStepContentEl = stepContents[1].nativeElement;
+
+      expect(firstStepContentEl.getAttribute('tabindex')).toBe('0');
+      expect(secondStepContentEl.getAttribute('tabindex')).toBeFalsy();
+
+      stepperComponent.selectedIndex = 1;
+      fixture.detectChanges();
+
+      expect(firstStepContentEl.getAttribute('tabindex')).toBeFalsy();
+      expect(secondStepContentEl.getAttribute('tabindex')).toBe('0');
+    });
+
   });
 
   describe('basic stepper when attempting to set the selected step too early', () => {

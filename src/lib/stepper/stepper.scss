@@ -124,9 +124,13 @@ $mat-stepper-line-gap: 8px !default;
   }
 }
 
-.mat-horizontal-stepper-content[aria-expanded='false'] {
-  height: 0;
-  overflow: hidden;
+.mat-horizontal-stepper-content {
+  outline: 0;
+
+  &[aria-expanded='false'] {
+    height: 0;
+    overflow: hidden;
+  }
 }
 
 .mat-horizontal-content-container {
@@ -162,6 +166,7 @@ $mat-stepper-line-gap: 8px !default;
 
 .mat-vertical-stepper-content {
   overflow: hidden;
+  outline: 0;
 }
 
 .mat-vertical-content {
