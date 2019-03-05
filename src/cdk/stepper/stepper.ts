@@ -34,7 +34,6 @@ import {
   InjectionToken,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
-import {AbstractControl} from '@angular/forms';
 import {CdkStepLabel} from './step-label';
 import {Observable, Subject, of as obaservableOf} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
@@ -125,7 +124,12 @@ export class CdkStep implements OnChanges {
   @ViewChild(TemplateRef) content: TemplateRef<any>;
 
   /** The top level abstract control of the step. */
-  @Input() stepControl: AbstractControl;
+  @Input() stepControl: {
+    valid: boolean;
+    invalid: boolean;
+    pending: boolean;
+    reset: () => void;
+  };
 
   /** Whether user has seen the expanded step content or not. */
   interacted = false;

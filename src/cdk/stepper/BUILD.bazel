@@ -9,7 +9,6 @@ ng_module(
   deps = [
     "@angular//packages/common",
     "@angular//packages/core",
-    "@angular//packages/forms",
     "@rxjs",
     "@rxjs//operators",
     "//src/cdk/a11y",
