@@ -32,6 +32,7 @@
     "bazel",
     "common/locales",
     "compiler-cli/integrationtest",
+    "core/schematics",
     "elements/schematics",
     // Do not build the example e2e spec files since those require custom typings and
     // aren't required to build all packages.
