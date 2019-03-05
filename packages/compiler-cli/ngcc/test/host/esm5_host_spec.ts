@@ -700,7 +700,20 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     export {SomeService, InternalModule};
     `
   },
-  {name: '/src/module', contents: 'export class ExternalModule {}'},
+  {
+    name: '/src/aliased_class.js',
+    contents: `
+    var AliasedModule = (function() {
+      function AliasedModule() {}
+      AliasedModule_1 = AliasedModule;
+      AliasedModule.forRoot = function() { return { ngModule: AliasedModule_1 }; };
+      var AliasedModule_1;
+      return AliasedModule;
+    }());
+    export { AliasedModule };
+    `
+  },
+  {name: '/src/module.js', contents: 'export class ExternalModule {}'},
 ];
 
 describe('Esm5ReflectionHost', () => {
@@ -1832,12 +1845,13 @@ describe('Esm5ReflectionHost', () => {
          const host = new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/functions.js') !;
          const fns = host.getModuleWithProvidersFunctions(file);
-         expect(fns.map(info => [info.declaration.name !.getText(), info.ngModule.text])).toEqual([
-           ['ngModuleIdentifier', 'InternalModule'],
-           ['ngModuleWithEmptyProviders', 'InternalModule'],
-           ['ngModuleWithProviders', 'InternalModule'],
-           ['externalNgModule', 'ExternalModule'],
-         ]);
+         expect(fns.map(fn => [fn.declaration.name !.getText(), fn.ngModule.node.name.text]))
+             .toEqual([
+               ['ngModuleIdentifier', 'InternalModule'],
+               ['ngModuleWithEmptyProviders', 'InternalModule'],
+               ['ngModuleWithProviders', 'InternalModule'],
+               ['externalNgModule', 'ExternalModule'],
+             ]);
        });
 
     it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
@@ -1846,7 +1860,7 @@ describe('Esm5ReflectionHost', () => {
          const host = new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/methods.js') !;
          const fn = host.getModuleWithProvidersFunctions(file);
-         expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.text])).toEqual([
+         expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
            [
              'function() { return { ngModule: InternalModule }; }',
              'InternalModule',
@@ -1865,5 +1879,16 @@ describe('Esm5ReflectionHost', () => {
            ],
          ]);
        });
+
+    // https://github.com/angular/angular/issues/29078
+    it('should resolve aliased module references to their original declaration', () => {
+      const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
+      const host = new Esm5ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
+      const file = srcProgram.getSourceFile('/src/aliased_class.js') !;
+      const fn = host.getModuleWithProvidersFunctions(file);
+      expect(fn.map(fn => [fn.declaration.getText(), fn.ngModule.node.name.text])).toEqual([
+        ['function() { return { ngModule: AliasedModule_1 }; }', 'AliasedModule'],
+      ]);
+    });
   });
 });

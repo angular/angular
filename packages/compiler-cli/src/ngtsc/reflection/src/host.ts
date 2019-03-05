@@ -317,11 +317,11 @@ export interface Import {
  * The declaration of a symbol, along with information about how it was imported into the
  * application.
  */
-export interface Declaration {
+export interface Declaration<T extends ts.Declaration = ts.Declaration> {
   /**
    * TypeScript reference to the declaration itself.
    */
-  node: ts.Declaration;
+  node: T;
 
   /**
    * The absolute module path from which the symbol was imported into the application, if the symbol

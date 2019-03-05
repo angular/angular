@@ -25,7 +25,7 @@ export function isFromDtsFile(node: ts.Node): boolean {
   if (sf === undefined) {
     sf = ts.getOriginalNode(node).getSourceFile();
   }
-  return sf !== undefined && D_TS.test(sf.fileName);
+  return sf !== undefined && sf.isDeclarationFile;
 }
 
 export function nodeNameForError(node: ts.Node & {name?: ts.Node}): string {

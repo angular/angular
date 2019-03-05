@@ -85,6 +85,7 @@ const FILES = [
         };
       }
     };
+    HttpClientXsrfModule.staticProperty = 'static';
     HttpClientXsrfModule = HttpClientXsrfModule_1 = tslib_1.__decorate([
       NgModule({
         providers: [],
@@ -223,6 +224,22 @@ describe('Fesm2015ReflectionHost [import helper style]', () => {
           expect(ts.isPropertyAccessExpression(staticProperty.implementation !)).toEqual(true);
           expect(staticProperty.value !.getText()).toEqual(`'static'`);
         });
+
+        it('should find static properties on a class that has an intermediate variable assignment',
+           () => {
+             const program = makeTestProgram(fileSystem.files[2]);
+             const host =
+                 new Esm2015ReflectionHost(new MockLogger(), false, program.getTypeChecker());
+             const classNode = getDeclaration(
+                 program, '/ngmodule.js', 'HttpClientXsrfModule', isNamedVariableDeclaration);
+
+             const members = host.getMembersOfClass(classNode);
+             const staticProperty = members.find(member => member.name === 'staticProperty') !;
+             expect(staticProperty.kind).toEqual(ClassMemberKind.Property);
+             expect(staticProperty.isStatic).toEqual(true);
+             expect(ts.isPropertyAccessExpression(staticProperty.implementation !)).toEqual(true);
+             expect(staticProperty.value !.getText()).toEqual(`'static'`);
+           });
 
         it('should use `getImportOfIdentifier()` to retrieve import info', () => {
           const spy =
