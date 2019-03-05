@@ -193,6 +193,9 @@ select.mat-input-element {
     right: 0;
     margin-top: -$arrow-size / 2;
 
+    // Make the arrow non-clickable so the user can click on the form control under it.
+    pointer-events: none;
+
     [dir='rtl'] & {
       right: auto;
       left: 0;
