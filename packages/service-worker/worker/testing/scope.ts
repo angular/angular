@@ -306,6 +306,7 @@ export class ConfigBuilder {
     const hashTable = {};
     return {
       configVersion: 1,
+      timestamp: 1234567890123,
       index: '/index.html', assetGroups,
       navigationUrls: [], hashTable,
     };
