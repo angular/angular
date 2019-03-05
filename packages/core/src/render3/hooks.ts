@@ -10,8 +10,7 @@ import {assertEqual} from '../util/assert';
 
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
-import {FLAGS, HEADER_OFFSET, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
-import {getPreviousOrParentTNode} from './state';
+import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
 
 
 
@@ -26,13 +25,14 @@ import {getPreviousOrParentTNode} from './state';
  * @param directiveIndex The index of the directive in LView
  * @param directiveDef The definition containing the hooks to setup in tView
  * @param tView The current TView
+ * @param nodeIndex The index of the node to which the directive is attached
  * @param initialPreOrderHooksLength the number of pre-order hooks already registered before the
  * current process, used to know if the node index has to be added to the array. If it is -1,
  * the node index is never added.
  * @param initialPreOrderCheckHooksLength same as previous for pre-order check hooks
  */
 export function registerPreOrderHooks(
-    directiveIndex: number, directiveDef: DirectiveDef<any>, tView: TView,
+    directiveIndex: number, directiveDef: DirectiveDef<any>, tView: TView, nodeIndex: number,
     initialPreOrderHooksLength: number, initialPreOrderCheckHooksLength: number): void {
   ngDevMode &&
       assertEqual(tView.firstTemplatePass, true, 'Should only be called on first template pass');
@@ -41,7 +41,6 @@ export function registerPreOrderHooks(
   if (initialPreOrderHooksLength >= 0 &&
       (!tView.preOrderHooks || initialPreOrderHooksLength === tView.preOrderHooks.length) &&
       (onChanges || onInit || doCheck)) {
-    const nodeIndex = getPreviousOrParentTNode().index - HEADER_OFFSET;
     (tView.preOrderHooks || (tView.preOrderHooks = [])).push(nodeIndex);
   }
 
@@ -49,7 +48,6 @@ export function registerPreOrderHooks(
       (!tView.preOrderCheckHooks ||
        initialPreOrderCheckHooksLength === tView.preOrderCheckHooks.length) &&
       (onChanges || doCheck)) {
-    const nodeIndex = getPreviousOrParentTNode().index - HEADER_OFFSET;
     (tView.preOrderCheckHooks || (tView.preOrderCheckHooks = [])).push(nodeIndex);
   }
 

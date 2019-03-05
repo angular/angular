@@ -1766,6 +1766,7 @@ function resolveDirectives(
     const initialPreOrderHooksLength = (tView.preOrderHooks && tView.preOrderHooks.length) || 0;
     const initialPreOrderCheckHooksLength =
         (tView.preOrderCheckHooks && tView.preOrderCheckHooks.length) || 0;
+    const nodeIndex = tNode.index - HEADER_OFFSET;
     for (let i = 0; i < directives.length; i++) {
       const def = directives[i] as DirectiveDef<any>;
 
@@ -1777,7 +1778,8 @@ function resolveDirectives(
       // Init hooks are queued now so ngOnInit is called in host components before
       // any projected components.
       registerPreOrderHooks(
-          directiveDefIdx, def, tView, initialPreOrderHooksLength, initialPreOrderCheckHooksLength);
+          directiveDefIdx, def, tView, nodeIndex, initialPreOrderHooksLength,
+          initialPreOrderCheckHooksLength);
     }
   }
   if (exportsMap) cacheMatchingLocalNames(tNode, localRefs, exportsMap);
