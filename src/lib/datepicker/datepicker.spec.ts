@@ -1538,6 +1538,15 @@ describe('MatDatepicker', () => {
     });
   });
 
+  describe('datepicker toggle without a datepicker', () => {
+    it('should not throw on init if toggle does not have a datepicker', () => {
+      expect(() => {
+        const fixture = createComponent(DatepickerToggleWithNoDatepicker, [MatNativeDateModule]);
+        fixture.detectChanges();
+      }).not.toThrow();
+    });
+  });
+
   describe('popup positioning', () => {
     let fixture: ComponentFixture<StandardDatepicker>;
     let testComponent: StandardDatepicker;
@@ -1963,7 +1972,6 @@ class DelayedDatepicker {
 }
 
 
-
 @Component({
   template: `
     <input [matDatepicker]="d">
@@ -1974,3 +1982,11 @@ class DelayedDatepicker {
   `,
 })
 class DatepickerWithTabindexOnToggle {}
+
+
+@Component({
+  template: `
+    <mat-datepicker-toggle></mat-datepicker-toggle>
+  `,
+})
+class DatepickerToggleWithNoDatepicker {}
