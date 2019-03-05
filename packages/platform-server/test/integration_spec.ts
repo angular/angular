@@ -57,6 +57,24 @@ function getMetaRenderHook(doc: any) {
   };
 }
 
+function getAsyncTitleRenderHook(doc: any) {
+  return () => {
+    // Async set the title as part of the render hook.
+    return new Promise(resolve => {
+      setTimeout(() => {
+        doc.title = 'AsyncRenderHook';
+        resolve();
+      });
+    });
+  };
+}
+
+function asyncRejectRenderHook() {
+  return () => {
+    return new Promise((_resolve, reject) => { setTimeout(() => { reject('reject'); }); });
+  };
+}
+
 @NgModule({
   bootstrap: [MyServerApp],
   declarations: [MyServerApp],
@@ -79,6 +97,39 @@ class RenderHookModule {
   ]
 })
 class MultiRenderHookModule {
+}
+
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  providers: [
+    {
+      provide: BEFORE_APP_SERIALIZED,
+      useFactory: getAsyncTitleRenderHook,
+      multi: true,
+      deps: [DOCUMENT]
+    },
+  ]
+})
+class AsyncRenderHookModule {
+}
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  providers: [
+    {provide: BEFORE_APP_SERIALIZED, useFactory: getMetaRenderHook, multi: true, deps: [DOCUMENT]},
+    {
+      provide: BEFORE_APP_SERIALIZED,
+      useFactory: getAsyncTitleRenderHook,
+      multi: true,
+      deps: [DOCUMENT]
+    },
+    {provide: BEFORE_APP_SERIALIZED, useFactory: asyncRejectRenderHook, multi: true},
+  ]
+})
+class AsyncMultiRenderHookModule {
 }
 
 @Component({selector: 'app', template: `Works too!`})
@@ -694,6 +745,28 @@ class HiddenModule {
              // title should be added by the render hook.
              expect(output).toBe(
                  '<html><head><title>RenderHook</title><meta name="description"></head>' +
+                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             expect(consoleSpy).toHaveBeenCalled();
+             called = true;
+           });
+         }));
+
+      it('should call async render hooks', async(() => {
+           renderModule(AsyncRenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><title>AsyncRenderHook</title></head><body>' +
+                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should call multiple async and sync render hooks', async(() => {
+           const consoleSpy = spyOn(console, 'warn');
+           renderModule(AsyncMultiRenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><meta name="description"><title>AsyncRenderHook</title></head>' +
                  '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
              expect(consoleSpy).toHaveBeenCalled();
              called = true;
