@@ -41,6 +41,7 @@ export class SelectDemo {
   currentAppearanceValue: string | null;
   latestChangeEvent: MatSelectChange;
   floatLabel = 'auto';
+  drinksWidth = 'default';
   foodControl = new FormControl('pizza-1');
   topHeightCtrl = new FormControl(0);
   drinksTheme = 'primary';

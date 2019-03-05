@@ -83,6 +83,12 @@ $mat-select-placeholder-arrow-space: 2 * ($mat-select-arrow-size + $mat-select-a
   margin: 0 $mat-select-arrow-margin;
 }
 
+.mat-select-panel-wrap {
+  // Prevents width-issues of mat-select-panel with width: calc(100% + 32px)
+  // in IE11 due to the parents display: flex;
+  flex-basis: 100%;
+}
+
 .mat-select-panel {
   @include mat-menu-base();
   padding-top: 0;

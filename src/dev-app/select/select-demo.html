@@ -168,7 +168,8 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
   <mat-card>
     <mat-card-subtitle>ngModel</mat-card-subtitle>
 
-    <mat-form-field [floatLabel]="floatLabel" [color]="drinksTheme">
+    <mat-form-field [floatLabel]="floatLabel" [color]="drinksTheme"
+                    [class.demo-drinks-width-large]="drinksWidth === '400px'">
       <mat-label>Drink</mat-label>
       <mat-select [(ngModel)]="currentDrink" [required]="drinksRequired"
         [disabled]="drinksDisabled" #drinkControl="ngModel">
@@ -191,6 +192,13 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
         <option value="auto">Auto</option>
         <option value="always">Always</option>
         <option value="never">Never</option>
+      </select>
+    </p>
+    <p>
+      <label for="drinks-width">Width:</label>
+      <select [(ngModel)]="drinksWidth" id="drinks-width">
+        <option value="default">Default</option>
+        <option value="400px">400px</option>
       </select>
     </p>
     <p>
