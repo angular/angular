@@ -51,6 +51,7 @@ const brokenFs = new MockFileSystemBuilder().addFile('/foo.txt', 'this is foo').
 
 const brokenManifest: Manifest = {
   configVersion: 1,
+  timestamp: 1234567890123,
   index: '/foo.txt',
   assetGroups: [{
     name: 'assets',
@@ -86,6 +87,7 @@ const manifestOld: ManifestV5 = {
 
 const manifest: Manifest = {
   configVersion: 1,
+  timestamp: 1234567890123,
   appData: {
     version: 'original',
   },
@@ -133,6 +135,7 @@ const manifest: Manifest = {
 
 const manifestUpdate: Manifest = {
   configVersion: 1,
+  timestamp: 1234567890123,
   appData: {
     version: 'update',
   },
@@ -185,12 +188,16 @@ const manifestUpdate: Manifest = {
   hashTable: tmpHashTableForFs(distUpdate),
 };
 
-const server = new MockServerStateBuilder()
-                   .withStaticFiles(dist)
-                   .withManifest(manifest)
-                   .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
-                   .withError('/error.txt')
-                   .build();
+const serverBuilderBase =
+    new MockServerStateBuilder()
+        .withStaticFiles(dist)
+        .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
+        .withError('/error.txt');
+
+const server = serverBuilderBase.withManifest(manifest).build();
+
+const serverRollback =
+    serverBuilderBase.withManifest({...manifest, timestamp: manifest.timestamp + 1}).build();
 
 const serverUpdate =
     new MockServerStateBuilder()
@@ -370,6 +377,19 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
 
       expect(await makeRequest(scope, '/bar.txt')).toEqual('this is bar');
       serverUpdate.assertNoOtherRequests();
+    });
+
+    async_it('detects new version even if only `manifest.timestamp` is different', async() => {
+      expect(await makeRequest(scope, '/foo.txt', 'newClient')).toEqual('this is foo');
+      await driver.initialized;
+
+      scope.updateServerState(serverUpdate);
+      expect(await driver.checkForUpdate()).toEqual(true);
+      expect(await makeRequest(scope, '/foo.txt', 'newerClient')).toEqual('this is foo v2');
+
+      scope.updateServerState(serverRollback);
+      expect(await driver.checkForUpdate()).toEqual(true);
+      expect(await makeRequest(scope, '/foo.txt', 'newestClient')).toEqual('this is foo');
     });
 
     async_it('updates a specific client to new content on request', async() => {
