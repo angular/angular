@@ -643,5 +643,13 @@
     "website": "https://medium.com/@zizzamia",
     "bio": "Leonardo is a Senior Software Engineer at Coinbase. He is deeply passionate about web performance and most recently developed Perfume.js to help companies prioritize roadmaps and business, through performance analytics. From 2018, co-organizer of the Angular San Francisco Meetup group and NGRome Conference.",
     "group": "GDE"
+  },
+  "tomastrajan": {
+    "name": "Tomas Trajan",
+    "picture": "tomastrajan.jpg",
+    "twitter": "tomastrajan",
+    "website": "https://medium.com/@tomastrajan",
+    "bio": "Tomas is a Senior Software Engineer with passion for frontend and especially Angular. He always strives to provide lots of value and to empower teams he is working with by sharing know-how, introducing best practices and automating mundane task to enable full focus on creating value for the users! He likes to share his Angular know-how by blogging, speaking and recording video content. He is a co-organizer of Angular Meetup Zurich.",
+    "group": "GDE"
   }
 }
