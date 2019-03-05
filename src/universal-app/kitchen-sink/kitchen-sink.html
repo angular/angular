@@ -372,3 +372,11 @@
   <li cdkDrag>One</li>
   <li cdkDrag>Two</li>
 </ul>
+
+<h2>Virtual scroll</h2>
+
+<cdk-virtual-scroll-viewport itemSize="50">
+  <div *cdkVirtualFor="let size of virtualScrollData; let i = index" style="height: 50px">
+    Item #{{i}}
+  </div>
+</cdk-virtual-scroll-viewport>

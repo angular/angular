@@ -1,4 +1,4 @@
-import {ViewportRuler} from '@angular/cdk/scrolling';
+import {ViewportRuler, ScrollingModule} from '@angular/cdk/scrolling';
 import {
   CdkTableModule,
   DataSource
@@ -77,6 +77,9 @@ export class KitchenSink {
   /** Data source for the CDK and Material table. */
   tableDataSource = new TableDataSource();
 
+  /** Data used to render a virtual scrolling list. */
+  virtualScrollData = Array(10000).fill(50);
+
   constructor(
     snackBar: MatSnackBar,
     dialog: MatDialog,
@@ -135,6 +138,7 @@ export class KitchenSink {
     MatSortModule,
     MatTableModule,
     MatStepperModule,
+    ScrollingModule,
 
     // CDK Modules
     CdkTableModule,
