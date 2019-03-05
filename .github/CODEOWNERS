@@ -257,4 +257,5 @@
 # Misc
 /*                                                 @jelbourn
 /.github/**                                        @jelbourn
+/.vscode/**                                        @mmalerba
 /src/*                                             @jelbourn
