@@ -88,7 +88,13 @@ export class MockServerStateBuilder {
     return this;
   }
 
-  build(): MockServerState { return new MockServerState(this.resources, this.errors); }
+  build(): MockServerState {
+    // Take a "snapshot" of the current `resources` and `errors`.
+    const resources = new Map(this.resources.entries());
+    const errors = new Set(this.errors.values());
+
+    return new MockServerState(resources, errors);
+  }
 }
 
 export class MockServerState {
@@ -187,6 +193,7 @@ export function tmpManifestSingleAssetGroup(fs: MockFileSystem): Manifest {
   files.forEach(path => { hashTable[path] = fs.lookup(path) !.hash; });
   return {
     configVersion: 1,
+    timestamp: 1234567890123,
     index: '/index.html',
     assetGroups: [
       {

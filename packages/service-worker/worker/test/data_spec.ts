@@ -39,6 +39,7 @@ const distUpdate = new MockFileSystemBuilder()
 
 const manifest: Manifest = {
   configVersion: 1,
+  timestamp: 1234567890123,
   index: '/index.html',
   assetGroups: [
     {

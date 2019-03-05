@@ -31,6 +31,7 @@ function obsToSinglePromise<T>(obs: Observable<T>): Promise<T> {
 
 const manifest: Manifest = {
   configVersion: 1,
+  timestamp: 1234567890123,
   appData: {version: '1'},
   index: '/only.txt',
   assetGroups: [{
@@ -46,6 +47,7 @@ const manifest: Manifest = {
 
 const manifestUpdate: Manifest = {
   configVersion: 1,
+  timestamp: 1234567890123,
   appData: {version: '2'},
   index: '/only.txt',
   assetGroups: [{
