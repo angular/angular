@@ -23,27 +23,27 @@ window.testBlocklist = {
   },
   "CdkDrag in a drop container should be able to customize the preview element": {
     "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkDrag in a drop container should position custom previews next to the pointer": {
     "error": "Error: Expected 'translate3d(8px, 33px, 0px)' to be 'translate3d(50px, 50px, 0px)'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkDrag in a drop container should lock position inside a drop container along the x axis": {
     "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkDrag in a drop container should lock position inside a drop container along the y axis": {
     "error": "Error: Expected 'translate3d(8px, 83px, 0px)' to be 'translate3d(50px, 100px, 0px)'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkDrag in a drop container should inherit the position locking from the drop container": {
     "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkDrag in a drop container should be able to customize the placeholder": {
     "error": "Error: Expected cdk-drag cdk-drag-placeholder to contain 'custom-placeholder'.",
-    "notes": "Unknown"
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkTable should be able to render multiple header and footer rows": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
@@ -127,11 +127,11 @@ window.testBlocklist = {
   },
   "MatChipList StandardChipList basic behaviors should toggle the chips disabled state based on whether it is disabled": {
     "error": "Error: Expected true to be false.",
-    "notes": "Unknown"
+    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
   },
   "MatChipList StandardChipList focus behaviors should focus the first chip on focus": {
     "error": "Error: Expected -1 to be 0.",
-    "notes": "Unknown"
+    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
   },
   "MatChipList StandardChipList focus behaviors should watch for chip focus": {
     "error": "TypeError: Cannot read property 'focus' of undefined",
@@ -175,23 +175,23 @@ window.testBlocklist = {
   },
   "MatChipList FormFieldChipList keyboard behavior should maintain focus if the active chip is deleted": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1064: debugElement.query does not find directive when that directive precedes another"
   },
   "MatChipList FormFieldChipList keyboard behavior when the input has focus should not focus the last chip when press DELETE": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1064: debugElement.query does not find directive when that directive precedes another"
   },
   "MatChipList FormFieldChipList keyboard behavior when the input has focus should focus the last chip when press BACKSPACE": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1064: debugElement.query does not find directive when that directive precedes another"
   },
   "MatChipList FormFieldChipList should complete the stateChanges stream on destroy": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1064: debugElement.query does not find directive when that directive precedes another"
   },
   "MatChipList FormFieldChipList should point the label id to the chip input": {
     "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "Unknown"
+    "notes": "FW-1064: debugElement.query does not find directive when that directive precedes another"
   },
   "MatChipList with chip remove should properly focus next item if chip is removed through click": {
     "error": "TypeError: Cannot read property 'focus' of undefined",
@@ -235,11 +235,11 @@ window.testBlocklist = {
   },
   "MatSidenav should be fixed position when in fixed mode": {
     "error": "Error: Expected ng-tns-c21962-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
-    "notes": "Unknown"
+    "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
     "error": "Error: Expected '' to be '20px'.",
-    "notes": "FW-1081: Static host classes don't work if component has superclass with host classes"
+    "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
   },
   "MatTree flat tree with toggle should expand/collapse the node": {
     "error": "Error: Expected 0 to be 1, 'Expect node expanded one level'.",
@@ -315,11 +315,11 @@ window.testBlocklist = {
   },
   "MatTooltip special cases should clear the `user-select` when a tooltip is set on a text field": {
     "error": "Error: Expected 'none' to be falsy.",
-    "notes": "Unknown"
+    "notes": "FW-1133: Inline styles are not applied before constructor is run"
   },
   "MatTooltip special cases should clear the `-webkit-user-drag` on draggable elements": {
     "error": "Error: Expected 'none' to be falsy.",
-    "notes": "Unknown"
+    "notes": "FW-1133: Inline styles are not applied before constructor is run"
   },
   "MatTable should be able to render a table correctly with native elements": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
