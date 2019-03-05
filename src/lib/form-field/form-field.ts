@@ -302,11 +302,18 @@ export class MatFormField extends _MatFormFieldMixinBase
 
     // @breaking-change 7.0.0 Remove this check once _ngZone is required. Also reconsider
     // whether the `ngAfterContentChecked` below is still necessary.
-    if (this._ngZone) {
-      this._ngZone.onStable.asObservable().pipe(takeUntil(this._destroyed)).subscribe(() => {
-        if (this._outlineGapCalculationNeededOnStable) {
-          this.updateOutlineGap();
-        }
+    const zone = this._ngZone;
+
+    if (zone) {
+      // Note that we have to run outside of the `NgZone` explicitly,
+      // in order to avoid throwing users into an infinite loop
+      // if `zone-patch-rxjs` is included.
+      zone.runOutsideAngular(() => {
+        zone.onStable.asObservable().pipe(takeUntil(this._destroyed)).subscribe(() => {
+          if (this._outlineGapCalculationNeededOnStable) {
+            this.updateOutlineGap();
+          }
+        });
       });
     }
 
