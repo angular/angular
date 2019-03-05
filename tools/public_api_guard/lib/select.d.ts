@@ -95,6 +95,7 @@ export declare class MatSelect extends _MatSelectMixinBase implements AfterConte
 }
 
 export declare const matSelectAnimations: {
+    readonly transformPanelWrap: AnimationTriggerMetadata;
     readonly transformPanel: AnimationTriggerMetadata;
     readonly fadeInContent: AnimationTriggerMetadata;
 };
