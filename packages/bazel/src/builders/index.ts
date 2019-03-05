@@ -9,34 +9,35 @@
  */
 
 import {BuildEvent, Builder, BuilderConfiguration, BuilderContext} from '@angular-devkit/architect';
-import {getSystemPath, resolve} from '@angular-devkit/core';
-import {Observable, of } from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
-
-import {checkInstallation, runBazel} from './bazel';
+import {Path} from '@angular-devkit/core';
+import {Observable, from} from 'rxjs';
+import {checkInstallation, copyBazelFiles, deleteBazelFiles, getTemplateDir, runBazel} from './bazel';
 import {Schema} from './schema';
 
 class BazelBuilder implements Builder<Schema> {
   constructor(private context: BuilderContext) {}
 
-  run(builderConfig: BuilderConfiguration<Partial<Schema>>): Observable<BuildEvent> {
-    const projectRoot = getSystemPath(resolve(this.context.workspace.root, builderConfig.root));
-    const targetLabel = builderConfig.options.targetLabel;
+  run(config: BuilderConfiguration<Partial<Schema>>): Observable<BuildEvent> {
+    const {host, logger, workspace} = this.context;
+    const root: Path = workspace.root;
+    const {bazelCommand, targetLabel, watch} = config.options as Schema;
+    const executable = watch ? 'ibazel' : 'bazel';
+    const binary = checkInstallation(executable, root) as Path;
 
-    const executable = builderConfig.options.watch ? 'ibazel' : 'bazel';
-
-    if (!checkInstallation(executable, projectRoot)) {
-      throw new Error(
-          `Could not run ${executable}. Please make sure that the ` +
-          `"${executable}" command is installed by running ` +
-          `"npm install" or "yarn install".`);
-    }
-
-    // TODO: Support passing flags.
-    return runBazel(
-               projectRoot, executable, builderConfig.options.bazelCommand !, targetLabel !,
-               [] /* flags */)
-        .pipe(map(() => ({success: true})), catchError(() => of ({success: false})), );
+    return from(Promise.resolve().then(async() => {
+      const templateDir = await getTemplateDir(host, root);
+      const bazelFiles = await copyBazelFiles(host, root, templateDir);
+      try {
+        const flags: string[] = [];
+        await runBazel(root, binary, bazelCommand, targetLabel, flags);
+        return {success: true};
+      } catch (err) {
+        logger.error(err.message);
+        return {success: false};
+      } finally {
+        await deleteBazelFiles(host, bazelFiles);  // this will never throw
+      }
+    }));
   }
 }
 
