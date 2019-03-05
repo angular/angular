@@ -22,6 +22,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  *
  * @see `Route`
  * @see `Router`
+ * @publicApi
  */
 export type Routes = Route[];
 
@@ -32,7 +33,7 @@ export type Routes = Route[];
  * * `posParams` is a map of positional parameters.
  *
  * @see `UrlMatcher()`
- *
+ * @publicApi
  */
 export type UrlMatchResult = {
   consumed: UrlSegment[]; posParams?: {[name: string]: UrlSegment};
@@ -60,6 +61,7 @@ export type UrlMatchResult = {
  * export const routes = [{ matcher: htmlFiles, component: AnyComponent }];
  * ```
  *
+ * @publicApi
  */
 export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) =>
     UrlMatchResult;
@@ -70,6 +72,7 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
  *
  * @see `Route#data`
  *
+ * @publicApi
  */
 export type Data = {
   [name: string]: any
@@ -81,6 +84,7 @@ export type Data = {
  *
  * @see `Route#resolve`.
  *
+ * @publicApi
  */
 export type ResolveData = {
   [name: string]: any
@@ -91,7 +95,7 @@ export type ResolveData = {
  * A function that is called to resolve a collection of lazy-loaded routes.
  *
  * @see `Route#loadChildren`.
- *
+ * @publicApi
  */
 export type LoadChildrenCallback = () =>
     Type<any>| NgModuleFactory<any>| Promise<Type<any>>| Observable<Type<any>>;
@@ -102,7 +106,7 @@ export type LoadChildrenCallback = () =>
  * or a function that returns such a set.
  *
  * @see `Route#loadChildren`.
- *
+ * @publicApi
  */
 export type LoadChildren = string | LoadChildrenCallback;
 
@@ -114,7 +118,7 @@ export type LoadChildren = string | LoadChildrenCallback;
  * - `preserve` : Preserve current parameters.
  *
  * @see `RouterLink#queryParamsHandling`.
- *
+ * @publicApi
  */
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
 
@@ -123,6 +127,7 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
  * A policy for when to run guards and resolvers on a route.
  *
  * @see `Route#runGuardsAndResolvers`
+ * @publicApi
  */
 export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParamsChange' |
     'paramsChange' | 'paramsOrQueryParamsChange' | 'always' |
@@ -344,6 +349,7 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
  * }]
  * ```
  *
+ * @publicApi
  */
 export interface Route {
   /**
