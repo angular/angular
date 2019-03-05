@@ -11,7 +11,7 @@ export declare class MatBadge extends _MatBadgeMixinBase implements OnDestroy, C
     position: MatBadgePosition;
     size: MatBadgeSize;
     constructor(_document: any, _ngZone: NgZone, _elementRef: ElementRef<HTMLElement>, _ariaDescriber: AriaDescriber,
-    _renderer?: Renderer2 | undefined);
+    _renderer?: Renderer2 | undefined, _animationMode?: string | undefined);
     isAbove(): boolean;
     isAfter(): boolean;
     ngOnDestroy(): void;

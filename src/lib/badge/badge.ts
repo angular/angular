@@ -20,6 +20,7 @@ import {
   Renderer2,
 } from '@angular/core';
 import {ThemePalette, mixinDisabled, CanDisableCtor, CanDisable} from '@angular/material/core';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 
 let nextId = 0;
@@ -128,9 +129,10 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, CanDisabl
       private _elementRef: ElementRef<HTMLElement>,
       private _ariaDescriber: AriaDescriber,
       /** @breaking-change 8.0.0 Make _renderer a required param and remove _document. */
-      private _renderer?: Renderer2) {
-        super();
-      }
+      private _renderer?: Renderer2,
+      @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string) {
+      super();
+    }
 
   /** Whether the badge is above the host or not */
   isAbove(): boolean {
@@ -180,6 +182,10 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, CanDisabl
     badgeElement.classList.add('mat-badge-content');
     badgeElement.textContent = this.content;
 
+    if (this._animationMode === 'NoopAnimations') {
+      badgeElement.classList.add('_mat-animation-noopable');
+    }
+
     if (this.description) {
       badgeElement.setAttribute('aria-label', this.description);
     }
@@ -187,7 +193,7 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, CanDisabl
     this._elementRef.nativeElement.appendChild(badgeElement);
 
     // animate in after insertion
-    if (typeof requestAnimationFrame === 'function') {
+    if (typeof requestAnimationFrame === 'function' && this._animationMode !== 'NoopAnimations') {
       this._ngZone.runOutsideAngular(() => {
         requestAnimationFrame(() => {
           badgeElement.classList.add(activeClass);

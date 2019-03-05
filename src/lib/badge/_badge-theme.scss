@@ -163,6 +163,11 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
     pointer-events: none;
   }
 
+  .ng-animate-disabled .mat-badge-content,
+  .mat-badge-content._mat-animation-noopable {
+    transition: none;
+  }
+
   // The active class is added after the element is added
   // so it can animate scale to default
   .mat-badge-content.mat-badge-active {
