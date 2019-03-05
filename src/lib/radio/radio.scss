@@ -181,3 +181,9 @@ $mat-radio-ripple-radius: 20px;
   bottom: 0;
   left: 50%;
 }
+
+@include cdk-high-contrast {
+  .mat-radio-disabled {
+    opacity: 0.5;
+  }
+}
