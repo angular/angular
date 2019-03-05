@@ -218,9 +218,9 @@ export interface LView extends Array<any> {
   [DECLARATION_VIEW]: LView|null;
 
   /**
-   * More flags for this view. See LViewFlagsMore for more info.
+   * More flags for this view. See PreOrderHookFlags for more info.
    */
-  [PREORDER_HOOK_FLAGS]: LViewFlagsMore;
+  [PREORDER_HOOK_FLAGS]: PreOrderHookFlags;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */
@@ -303,7 +303,7 @@ export const enum InitPhaseState {
 }
 
 /** More flags associated with an LView (saved in LView[FLAGS_MORE]) */
-export const enum LViewFlagsMore {
+export const enum PreOrderHookFlags {
   /** The index of the next pre-order hook to be called in the hooks array, on the first 16
      bits */
   IndexOfTheNextPreOrderHookMaskMask = 0b01111111111111111,
@@ -613,7 +613,7 @@ export interface RootContext {
  *
  * For each node of the view, the following data is stored:
  * 1) Node index (optional)
- * 2) A serie of number/function pairs where:
+ * 2) A series of number/function pairs where:
  *  - even indices are directive indices
  *  - odd indices are hook functions
  *

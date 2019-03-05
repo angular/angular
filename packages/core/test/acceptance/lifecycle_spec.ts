@@ -123,3 +123,49 @@ it('should call all hooks in correct order when several directives on same node'
     'afterViewChecked3'
   ]);
 });
+
+it('should call hooks after setting directives inputs', () => {
+  let log: string[] = [];
+
+  @Directive({selector: 'div'})
+  class DirA {
+    @Input() a: number = 0;
+    ngOnInit() { log.push('onInitA' + this.a); }
+  }
+
+  @Directive({selector: 'div'})
+  class DirB {
+    @Input() b: number = 0;
+    ngOnInit() { log.push('onInitB' + this.b); }
+    ngDoCheck() { log.push('doCheckB' + this.b); }
+  }
+
+  @Directive({selector: 'div'})
+  class DirC {
+    @Input() c: number = 0;
+    ngOnInit() { log.push('onInitC' + this.c); }
+    ngDoCheck() { log.push('doCheckC' + this.c); }
+  }
+
+  @Component({
+    selector: 'app-comp',
+    template: '<div [a]="id" [b]="id" [c]="id"></div><div [a]="id" [b]="id" [c]="id"></div>'
+  })
+  class AppComp {
+    id = 0;
+  }
+
+  TestBed.configureTestingModule({declarations: [AppComp, DirA, DirB, DirC]});
+  const fixture = TestBed.createComponent(AppComp);
+  fixture.detectChanges();
+
+  expect(log).toEqual([
+    'onInitA0', 'onInitB0', 'doCheckB0', 'onInitC0', 'doCheckC0', 'onInitA0', 'onInitB0',
+    'doCheckB0', 'onInitC0', 'doCheckC0'
+  ]);
+
+  log = [];
+  fixture.componentInstance.id = 1;
+  fixture.detectChanges();
+  expect(log).toEqual(['doCheckB1', 'doCheckC1', 'doCheckB1', 'doCheckC1']);
+});

@@ -84,7 +84,7 @@ export function refreshDescendantViews(lView: LView) {
   if (!creationMode) {
     const checkNoChangesMode = getCheckNoChangesMode();
 
-    executePreOrderHooks(lView, tView, checkNoChangesMode);
+    executePreOrderHooks(lView, tView, checkNoChangesMode, undefined);
 
     refreshDynamicEmbeddedViews(lView);
 
@@ -2295,7 +2295,7 @@ export function containerRefreshStart(index: number): void {
 
   // We need to execute init hooks here so ngOnInit hooks are called in top level views
   // before they are called in embedded views (for backwards compatibility).
-  executePreOrderHooks(lView, tView, getCheckNoChangesMode());
+  executePreOrderHooks(lView, tView, getCheckNoChangesMode(), undefined);
 }
 
 /**

@@ -10,7 +10,7 @@ import {assertEqual} from '../util/assert';
 
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
-import {FLAGS, HEADER_OFFSET, HookData, InitPhaseState, LView, LViewFlags, LViewFlagsMore, PREORDER_HOOK_FLAGS, TView} from './interfaces/view';
+import {FLAGS, HEADER_OFFSET, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
 import {getPreviousOrParentTNode} from './state';
 
 
@@ -157,7 +157,7 @@ export function registerPostOrderHooks(tView: TView, tNode: TNode): void {
  */
 export function executePreOrderHooks(
     currentView: LView, tView: TView, checkNoChangesMode: boolean,
-    currentNodeIndex?: number): void {
+    currentNodeIndex: number | undefined): void {
   if (!checkNoChangesMode) {
     executeHooks(
         currentView, tView.preOrderHooks, tView.preOrderCheckHooks, checkNoChangesMode,
@@ -220,7 +220,7 @@ function callHooks(
     currentView: LView, arr: HookData, initPhase: InitPhaseState,
     currentNodeIndex: number | null | undefined): void {
   const startIndex = currentNodeIndex !== undefined ?
-      (currentView[PREORDER_HOOK_FLAGS] & LViewFlagsMore.IndexOfTheNextPreOrderHookMaskMask) :
+      (currentView[PREORDER_HOOK_FLAGS] & PreOrderHookFlags.IndexOfTheNextPreOrderHookMaskMask) :
       0;
   const nodeIndexLimit = currentNodeIndex != null ? currentNodeIndex : -1;
   let lastNodeIndexFound = 0;
@@ -234,11 +234,12 @@ function callHooks(
     } else {
       const isInitHook = arr[i] < 0;
       if (isInitHook)
-        currentView[PREORDER_HOOK_FLAGS] += LViewFlagsMore.NumberOfInitHooksCalledIncrementer;
+        currentView[PREORDER_HOOK_FLAGS] += PreOrderHookFlags.NumberOfInitHooksCalledIncrementer;
       if (lastNodeIndexFound < nodeIndexLimit || nodeIndexLimit == -1) {
         callHook(currentView, initPhase, arr, i);
         currentView[PREORDER_HOOK_FLAGS] =
-            (currentView[PREORDER_HOOK_FLAGS] & LViewFlagsMore.NumberOfInitHooksCalledMask) + i + 2;
+            (currentView[PREORDER_HOOK_FLAGS] & PreOrderHookFlags.NumberOfInitHooksCalledMask) + i +
+            2;
       }
       i++;
     }
@@ -263,7 +264,7 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
     // The init phase state must be always checked here as it may have been recursively
     // updated
     if (indexWithintInitPhase <
-            (currentView[PREORDER_HOOK_FLAGS] >> LViewFlagsMore.NumberOfInitHooksCalledShift) &&
+            (currentView[PREORDER_HOOK_FLAGS] >> PreOrderHookFlags.NumberOfInitHooksCalledShift) &&
         (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
       currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementer;
       hook.call(directive);
