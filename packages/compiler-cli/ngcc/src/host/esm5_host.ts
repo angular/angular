@@ -34,11 +34,6 @@ import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignme
  */
 export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   /**
-   * Check whether the given node actually represents a class.
-   */
-  isClass(node: ts.Node): node is ClassDeclaration { return !!this.getClassDeclaration(node); }
-
-  /**
    * Determines whether the given declaration, which should be a "class", has a base "class".
    *
    * In ES5 code, we need to determine if the IIFE wrapper takes a `_super` parameter .
@@ -180,7 +175,10 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @throws if `declaration` does not resolve to a class declaration.
    */
   getMembersOfClass(clazz: ClassDeclaration): ClassMember[] {
-    if (super.isClass(clazz)) return super.getMembersOfClass(clazz);
+    // Do not follow ES5's resolution logic when the node resides in a .d.ts file.
+    if (clazz.getSourceFile().isDeclarationFile) {
+      return super.getMembersOfClass(clazz);
+    }
 
     // The necessary info is on the inner function declaration (inside the ES5 class IIFE).
     const innerFunctionSymbol = this.getInnerFunctionSymbolFromClassDeclaration(clazz);

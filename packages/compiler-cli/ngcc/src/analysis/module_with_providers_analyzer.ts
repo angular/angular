@@ -44,11 +44,7 @@ export class ModuleWithProvidersAnalyzer {
             null;
         if (!typeParam || isAnyKeyword(typeParam)) {
           // Either we do not have a parameterized type or the type is `any`.
-          let ngModule = this.host.getDeclarationOfIdentifier(fn.ngModule);
-          if (!ngModule) {
-            throw new Error(
-                `Cannot find a declaration for NgModule ${fn.ngModule.text} referenced in ${fn.declaration.getText()}`);
-          }
+          let ngModule = fn.ngModule;
           // For internal (non-library) module references, redirect the module's value declaration
           // to its type declaration.
           if (ngModule.viaModule === null) {
@@ -62,9 +58,7 @@ export class ModuleWithProvidersAnalyzer {
                   `The referenced NgModule in ${fn.declaration.getText()} is not a class declaration in the typings program; instead we get ${dtsNgModule.getText()}`);
             }
             // Record the usage of the internal module as it needs to become an exported symbol
-            const reference = new Reference(ngModule.node);
-            reference.addIdentifier(fn.ngModule);
-            this.referencesRegistry.add(ngModule.node, reference);
+            this.referencesRegistry.add(ngModule.node, new Reference(ngModule.node));
 
             ngModule = {node: dtsNgModule, viaModule: null};
           }

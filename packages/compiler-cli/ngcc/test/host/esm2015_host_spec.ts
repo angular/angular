@@ -83,6 +83,15 @@ const SIMPLE_CLASS_FILE = {
   `,
 };
 
+const CLASS_EXPRESSION_FILE = {
+  name: '/class_expression.js',
+  contents: `
+    var IntermediateAssignmentClass_1;
+    let EmptyClass = class EmptyClass {};
+    let IntermediateAssignmentClass = IntermediateAssignmentClass_1 = class IntermediateAssignmentClass {};
+  `,
+};
+
 const FOO_FUNCTION_FILE = {
   name: '/foo_function.js',
   contents: `
@@ -551,7 +560,17 @@ const MODULE_WITH_PROVIDERS_PROGRAM = [
     }
     `
   },
-  {name: '/src/module', contents: 'export class ExternalModule {}'},
+  {
+    name: '/src/intermediate_var.js',
+    contents: `
+    var IntermediateModule_1;
+    let IntermediateModule = IntermediateModule_1 = class IntermediateModule {
+      static forRoot() { return { ngModule: IntermediateModule_1, providers: [] }; }
+    };
+    export { IntermediateModule };
+    `
+  },
+  {name: '/src/module.js', contents: 'export class ExternalModule {}'},
 ];
 
 describe('Esm2015ReflectionHost', () => {
@@ -1327,6 +1346,18 @@ describe('Esm2015ReflectionHost', () => {
       expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
       expect(actualDeclaration !.viaModule).toBe('@angular/core');
     });
+
+    it('should return the original declaration of an intermediately assigned class', () => {
+      const program = makeTestProgram(CLASS_EXPRESSION_FILE);
+      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const node = getDeclaration(
+          program, CLASS_EXPRESSION_FILE.name, 'IntermediateAssignmentClass',
+          ts.isVariableDeclaration);
+      const intermediateIdentifier =
+          (node.initializer as ts.BinaryExpression).left as ts.Identifier;
+      expect(intermediateIdentifier.text).toBe('IntermediateAssignmentClass_1');
+      expect(host.getDeclarationOfIdentifier(intermediateIdentifier) !.node).toBe(node);
+    });
   });
 
   describe('getExportsOfModule()', () => {
@@ -1372,6 +1403,24 @@ describe('Esm2015ReflectionHost', () => {
           getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
       expect(host.isClass(node)).toBe(true);
     });
+
+    it('should return true if a given node is a class expression assigned into a variable', () => {
+      const program = makeTestProgram(CLASS_EXPRESSION_FILE);
+      const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+      const node = getDeclaration(
+          program, CLASS_EXPRESSION_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
+      expect(host.isClass(node)).toBe(true);
+    });
+
+    it('should return true if a given node is a class expression assigned into two variables',
+       () => {
+         const program = makeTestProgram(CLASS_EXPRESSION_FILE);
+         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
+         const node = getDeclaration(
+             program, CLASS_EXPRESSION_FILE.name, 'IntermediateAssignmentClass',
+             ts.isVariableDeclaration);
+         expect(host.isClass(node)).toBe(true);
+       });
 
     it('should return false if a given node is a TS function declaration', () => {
       const program = makeTestProgram(FOO_FUNCTION_FILE);
@@ -1547,6 +1596,10 @@ describe('Esm2015ReflectionHost', () => {
   });
 
   describe('getModuleWithProvidersFunctions()', () => {
+    function getNgModuleName(ngModule: ts.Declaration & {name?: ts.Identifier}): string {
+      return ngModule.name !.text;
+    }
+
     it('should find every exported function that returns an object that looks like a ModuleWithProviders object',
        () => {
          const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
@@ -1554,12 +1607,13 @@ describe('Esm2015ReflectionHost', () => {
              new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/functions.js') !;
          const fns = host.getModuleWithProvidersFunctions(file);
-         expect(fns.map(info => [info.declaration.name !.getText(), info.ngModule.text])).toEqual([
-           ['ngModuleIdentifier', 'InternalModule'],
-           ['ngModuleWithEmptyProviders', 'InternalModule'],
-           ['ngModuleWithProviders', 'InternalModule'],
-           ['externalNgModule', 'ExternalModule'],
-         ]);
+         expect(fns.map(fn => [fn.declaration.name !.getText(), getNgModuleName(fn.ngModule.node)]))
+             .toEqual([
+               ['ngModuleIdentifier', 'InternalModule'],
+               ['ngModuleWithEmptyProviders', 'InternalModule'],
+               ['ngModuleWithProviders', 'InternalModule'],
+               ['externalNgModule', 'ExternalModule'],
+             ]);
        });
 
     it('should find every static method on exported classes that return an object that looks like a ModuleWithProviders object',
@@ -1569,12 +1623,25 @@ describe('Esm2015ReflectionHost', () => {
              new Esm2015ReflectionHost(new MockLogger(), false, srcProgram.getTypeChecker());
          const file = srcProgram.getSourceFile('/src/methods.js') !;
          const fn = host.getModuleWithProvidersFunctions(file);
-         expect(fn.map(fn => [fn.declaration.name !.getText(), fn.ngModule.text])).toEqual([
-           ['ngModuleIdentifier', 'InternalModule'],
-           ['ngModuleWithEmptyProviders', 'InternalModule'],
-           ['ngModuleWithProviders', 'InternalModule'],
-           ['externalNgModule', 'ExternalModule'],
-         ]);
+         expect(fn.map(fn => [fn.declaration.name !.getText(), getNgModuleName(fn.ngModule.node)]))
+             .toEqual([
+               ['ngModuleIdentifier', 'InternalModule'],
+               ['ngModuleWithEmptyProviders', 'InternalModule'],
+               ['ngModuleWithProviders', 'InternalModule'],
+               ['externalNgModule', 'ExternalModule'],
+             ]);
        });
+
+    // https://github.com/angular/angular/issues/29078
+    it('should resolve intermediate module references to their original declaration', () => {
+      const srcProgram = makeTestProgram(...MODULE_WITH_PROVIDERS_PROGRAM);
+      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker());
+      const file = srcProgram.getSourceFile('/src/intermediate_var.js') !;
+      const fn = host.getModuleWithProvidersFunctions(file);
+      expect(fn.map(fn => [fn.declaration.name !.getText(), getNgModuleName(fn.ngModule.node)]))
+          .toEqual([
+            ['forRoot', 'IntermediateModule'],
+          ]);
+    });
   });
 });
