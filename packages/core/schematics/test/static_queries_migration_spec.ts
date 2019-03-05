@@ -20,7 +20,7 @@ describe('static-queries migration', () => {
   let previousWorkingDir: string;
 
   beforeEach(() => {
-    runner = new SchematicTestRunner('test', require.resolve('../../migrations.json'));
+    runner = new SchematicTestRunner('test', require.resolve('../migrations.json'));
     host = new TempScopedNodeJsSyncHost();
     tree = new UnitTestTree(new HostTree(host));
 

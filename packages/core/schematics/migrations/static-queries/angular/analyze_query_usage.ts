@@ -62,6 +62,7 @@ function isQueryUsedStatically(
         knownInputNames.indexOf(m.name.text) !== -1) {
       return true;
     }
+    return false;
   });
 
   // In case nodes that can possibly access a query statically have been found, check

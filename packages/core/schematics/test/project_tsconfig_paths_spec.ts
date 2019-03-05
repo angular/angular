@@ -8,7 +8,7 @@
 
 import {HostTree} from '@angular-devkit/schematics';
 import {UnitTestTree} from '@angular-devkit/schematics/testing';
-import {getProjectTsConfigPaths} from './project_tsconfig_paths';
+import {getProjectTsConfigPaths} from '../utils/project_tsconfig_paths';
 
 describe('project tsconfig paths', () => {
   let testTree: UnitTestTree;
