@@ -262,6 +262,7 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   set activeDate(value: D) {
     this._clampedActiveDate = this._dateAdapter.clampDate(value, this.minDate, this.maxDate);
     this.stateChanges.next();
+    this._changeDetectorRef.markForCheck();
   }
   private _clampedActiveDate: D;
 
@@ -270,6 +271,7 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   set currentView(value: MatCalendarView) {
     this._currentView = value;
     this._moveFocusOnNextTick = true;
+    this._changeDetectorRef.markForCheck();
   }
   private _currentView: MatCalendarView;
 

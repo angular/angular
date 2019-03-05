@@ -188,17 +188,13 @@ describe('MatCalendar', () => {
         });
 
         it('should move focus to the active cell when the view changes', () => {
-          const activeCell =
-              calendarBodyEl.querySelector('.mat-calendar-body-active')! as HTMLElement;
-
-          spyOn(activeCell, 'focus').and.callThrough();
-          fixture.detectChanges();
-          zone.simulateZoneExit();
-
-          expect(activeCell.focus).not.toHaveBeenCalled();
-
           calendarInstance.currentView = 'multi-year';
           fixture.detectChanges();
+
+          const activeCell =
+              calendarBodyEl.querySelector('.mat-calendar-body-active')! as HTMLElement;
+          spyOn(activeCell, 'focus').and.callThrough();
+
           zone.simulateZoneExit();
 
           expect(activeCell.focus).toHaveBeenCalled();
