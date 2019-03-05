@@ -433,7 +433,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
   /** Sets the focused option of the selection-list. */
   _setFocusedOption(option: MatListOption) {
-    this._keyManager.updateActiveItemIndex(this._getOptionIndex(option));
+    this._keyManager.updateActiveItem(option);
   }
 
   /**
