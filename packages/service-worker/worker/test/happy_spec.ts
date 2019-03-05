@@ -194,15 +194,10 @@ const serverBuilderBase =
         .withRedirect('/redirected.txt', '/redirect-target.txt', 'this was a redirect')
         .withError('/error.txt');
 
-const server =
-    serverBuilderBase
-        .withManifest(manifest)
-        .build();
+const server = serverBuilderBase.withManifest(manifest).build();
 
 const serverRollback =
-    serverBuilderBase
-        .withManifest({...manifest, timestamp: manifest.timestamp + 1})
-        .build();
+    serverBuilderBase.withManifest({...manifest, timestamp: manifest.timestamp + 1}).build();
 
 const serverUpdate =
     new MockServerStateBuilder()
