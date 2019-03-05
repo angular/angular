@@ -11,6 +11,7 @@ ng_module(
   deps = [
     "@angular//packages/common",
     "@angular//packages/core",
+    "@angular//packages/platform-browser/animations",
     "//src/cdk/a11y",
     "//src/cdk/coercion",
     "//src/lib/core",
