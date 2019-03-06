@@ -97,6 +97,7 @@ function _extractId(valueString: string): string {
 })
 export class SelectControlValueAccessor implements ControlValueAccessor {
   value: any;
+  private valueString: string;
   /** @internal */
   _optionMap: Map<string, any> = new Map<string, any>();
   /** @internal */
@@ -123,8 +124,7 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     if (id == null) {
       this._renderer.setProperty(this._elementRef.nativeElement, 'selectedIndex', -1);
     }
-    const valueString = _buildValueString(id, value);
-    this._renderer.setProperty(this._elementRef.nativeElement, 'value', valueString);
+    this.setValueString(_buildValueString(id, value));
   }
 
   registerOnChange(fn: (value: any) => any): void {
@@ -139,8 +139,36 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
+  private setValueString(valueString: string): void {
+    this.valueString = valueString;
+    this._renderer.setProperty(this._elementRef.nativeElement, 'value', valueString);
+  }
+
   /** @internal */
   _registerOption(): string { return (this._idCounter++).toString(); }
+
+  /** @internal */
+  _setOption(id: string, value: any): void {
+    this._optionMap.set(id, value);
+    const valueString = _buildValueString(id, value);
+
+    if (this._compareWith(this.value, value)) {
+      this.setValueString(valueString);
+    } else if (this.valueString === valueString) {
+      // unset previously selected option
+      this._renderer.setProperty(this._elementRef.nativeElement, 'selectedIndex', -1);
+      this.setValueString(_buildValueString(null, this.value));
+    }
+  }
+
+  /** @internal */
+  _removeOption(id: string): void {
+    if (this._compareWith(this._optionMap.get(id), this.value)) {
+      this._renderer.setProperty(this._elementRef.nativeElement, 'selectedIndex', -1);
+      this.setValueString(_buildValueString(null, this.value));
+    }
+    this._optionMap.delete(id);
+  }
 
   /** @internal */
   _getOptionId(value: any): string|null {
@@ -179,9 +207,8 @@ export class NgSelectOption implements OnDestroy {
   @Input('ngValue')
   set ngValue(value: any) {
     if (this._select == null) return;
-    this._select._optionMap.set(this.id, value);
     this._setElementValue(_buildValueString(this.id, value));
-    this._select.writeValue(this._select.value);
+    this._select._setOption(this.id, value);
   }
 
   @Input('value')
@@ -197,8 +224,7 @@ export class NgSelectOption implements OnDestroy {
 
   ngOnDestroy(): void {
     if (this._select) {
-      this._select._optionMap.delete(this.id);
-      this._select.writeValue(this._select.value);
+      this._select._removeOption(this.id);
     }
   }
 }
