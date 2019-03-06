@@ -10,6 +10,7 @@ ng_module(
         ["**/*.ts"],
         exclude = ["testing.ts"],
     ),
+    bundle_dts = False,
     deps = [
         "//packages:types",
         "//packages/compiler",
