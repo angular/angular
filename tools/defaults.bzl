@@ -99,7 +99,7 @@ def ts_library(tsconfig = None, testonly = False, deps = [], module_name = None,
         **kwargs
     )
 
-def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, **kwargs):
+def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps = [], module_name = None, bundle_dts = True, **kwargs):
     """Default values for ng_module"""
     deps = deps + ["@npm//tslib"]
     if testonly:
@@ -121,6 +121,7 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         tsconfig = tsconfig,
         entry_point = entry_point,
         testonly = testonly,
+        bundle_dts = bundle_dts,
         deps = deps,
         compiler = _INTERNAL_NG_MODULE_COMPILER,
         ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
