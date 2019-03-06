@@ -53,22 +53,25 @@ function isQueryUsedStatically(
   // access it statically. e.g.
   //  (1) queries used in the "ngOnInit" lifecycle hook are static.
   //  (2) inputs with setters can access queries statically.
-  const possibleStaticQueryNodes: ts.Node[] = classDecl.members.filter(m => {
-    if (ts.isMethodDeclaration(m) && hasPropertyNameText(m.name) &&
-        STATIC_QUERY_LIFECYCLE_HOOKS[query.type].indexOf(m.name.text) !== -1) {
-      return true;
-    } else if (
-        knownInputNames && ts.isSetAccessor(m) && hasPropertyNameText(m.name) &&
-        knownInputNames.indexOf(m.name.text) !== -1) {
-      return true;
-    }
-    return false;
-  });
+  const possibleStaticQueryNodes: ts.Node[] =
+      classDecl.members
+          .filter(m => {
+            if (ts.isMethodDeclaration(m) && m.body && hasPropertyNameText(m.name) &&
+                STATIC_QUERY_LIFECYCLE_HOOKS[query.type].indexOf(m.name.text) !== -1) {
+              return true;
+            } else if (
+                knownInputNames && ts.isSetAccessor(m) && m.body && hasPropertyNameText(m.name) &&
+                knownInputNames.indexOf(m.name.text) !== -1) {
+              return true;
+            }
+            return false;
+          })
+          .map((member: ts.SetAccessorDeclaration | ts.MethodDeclaration) => member.body !);
 
   // In case nodes that can possibly access a query statically have been found, check
-  // if the query declaration is used within any of these nodes.
+  // if the query declaration is synchronously used within any of these nodes.
   if (possibleStaticQueryNodes.length &&
-      possibleStaticQueryNodes.some(hookNode => usageVisitor.isUsedInNode(hookNode))) {
+      possibleStaticQueryNodes.some(n => usageVisitor.isSynchronouslyUsedInNode(n))) {
     return true;
   }
 
