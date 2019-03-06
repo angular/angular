@@ -2167,21 +2167,34 @@ describe('ngtsc behavioral tests', () => {
   it('should wrap "inputs" and "outputs" keys if they contain unsafe characters', () => {
     env.tsconfig({});
     env.write(`test.ts`, `
-      import {Directive} from '@angular/core';
+      import {Directive, Input} from '@angular/core';
 
       @Directive({
         selector: '[somedir]',
-        inputs: ['input-track-type', 'inputTrackName'],
-        outputs: ['output-track-type', 'outputTrackName']
+        inputs: ['track-type', 'track-name', 'inputTrackName'],
+        outputs: ['output-track-type', 'output-track-name', 'outputTrackName']
       })
-      export class SomeDir {}
+      export class SomeDir {
+        @Input('track-type') trackType: string;
+        @Input('track-name') trackName: string;
+      }
     `);
 
     env.driveMain();
     const jsContents = env.getContents('test.js');
     const inputsAndOutputs = `
-      inputs: { "input-track-type": "input-track-type", inputTrackName: "inputTrackName" },
-      outputs: { "output-track-type": "output-track-type", outputTrackName: "outputTrackName" }
+      inputs: {
+        "track-type": "track-type",
+        "track-name": "track-name",
+        inputTrackName: "inputTrackName",
+        trackType: ["track-type", "trackType"],
+        trackName: ["track-name", "trackName"]
+      },
+      outputs: {
+        "output-track-type": "output-track-type",
+        "output-track-name": "output-track-name",
+        outputTrackName: "outputTrackName"
+      }
     `;
     expect(trim(jsContents)).toContain(trim(inputsAndOutputs));
   });
