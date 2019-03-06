@@ -48,7 +48,7 @@ import {CdkDragPlaceholder} from './drag-placeholder';
 import {CdkDragPreview} from './drag-preview';
 import {CDK_DROP_LIST} from '../drop-list-container';
 import {CDK_DRAG_PARENT} from '../drag-parent';
-import {DragRef, DragRefConfig} from '../drag-ref';
+import {DragRef, DragRefConfig, Point} from '../drag-ref';
 import {DropListRef} from '../drop-list-ref';
 import {CdkDropListInternal as CdkDropList} from './drop-list';
 import {DragDrop} from '../drag-drop';
@@ -126,6 +126,14 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
     this._dragRef.disabled = this._disabled;
   }
   private _disabled = false;
+
+  /**
+   * Function that can be used to customize the logic of how the position of the drag item
+   * is limited while it's being dragged. Gets called with a point containing the current position
+   * of the user's pointer on the page and should return a point describing where the item should
+   * be rendered.
+   */
+  @Input('cdkDragConstrainPosition') constrainPosition?: (point: Point) => Point;
 
   /** Emits when the user starts dragging the item. */
   @Output('cdkDragStarted') started: EventEmitter<CdkDragStart> = new EventEmitter<CdkDragStart>();
@@ -310,6 +318,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
         ref.disabled = this.disabled;
         ref.lockAxis = this.lockAxis;
         ref.dragStartDelay = this.dragStartDelay;
+        ref.constrainPosition = this.constrainPosition;
         ref
           .withBoundaryElement(this._getBoundaryElement())
           .withPlaceholderTemplate(placeholder)

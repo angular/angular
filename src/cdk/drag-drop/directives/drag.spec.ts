@@ -30,7 +30,7 @@ import {CdkDropList} from './drop-list';
 import {CdkDragHandle} from './drag-handle';
 import {CdkDropListGroup} from './drop-list-group';
 import {extendStyles} from '../drag-styling';
-import {DragRefConfig} from '../drag-ref';
+import {DragRefConfig, Point} from '../drag-ref';
 
 const ITEM_HEIGHT = 25;
 const ITEM_WIDTH = 75;
@@ -695,6 +695,24 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBeFalsy();
       dragElementViaMouse(fixture, dragElement, 300, 300);
       expect(dragElement.style.transform).toBe('translate3d(100px, 100px, 0px)');
+    }));
+
+    it('should allow for the position constrain logic to be customized', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      const spy = jasmine.createSpy('constrain position spy').and.returnValue({
+        x: 50,
+        y: 50
+      } as Point);
+
+      fixture.componentInstance.constrainPosition = spy;
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, dragElement, 300, 300);
+
+      expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({x: 300, y: 300}));
+      expect(dragElement.style.transform).toBe('translate3d(50px, 50px, 0px)');
     }));
 
     it('should throw if attached to an ng-container', fakeAsync(() => {
@@ -2105,6 +2123,33 @@ describe('CdkDrag', () => {
       expect(Math.floor(previewRect.right)).toBe(Math.floor(listRect.right));
     }));
 
+    it('should be able to constrain the preview position with a custom function', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
+      const spy = jasmine.createSpy('constrain position spy').and.returnValue({
+        x: 50,
+        y: 50
+      } as Point);
+
+      fixture.componentInstance.constrainPosition = spy;
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      startDraggingViaMouse(fixture, item);
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+
+      startDraggingViaMouse(fixture, item, 200, 200);
+      flush();
+      dispatchMouseEvent(document, 'mousemove', 200, 200);
+      fixture.detectChanges();
+
+      const previewRect = preview.getBoundingClientRect();
+
+      expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({x: 200, y: 200}));
+      expect(Math.floor(previewRect.top)).toBe(50);
+      expect(Math.floor(previewRect.left)).toBe(50);
+    }));
+
     it('should revert the element back to its parent after dragging with a custom ' +
       'preview has stopped', fakeAsync(() => {
         const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
@@ -3049,6 +3094,7 @@ describe('CdkDrag', () => {
         cdkDrag
         [cdkDragBoundary]="boundarySelector"
         [cdkDragStartDelay]="dragStartDelay"
+        [cdkDragConstrainPosition]="constrainPosition"
         (cdkDragStarted)="startedSpy($event)"
         (cdkDragReleased)="releasedSpy($event)"
         (cdkDragEnded)="endedSpy($event)"
@@ -3065,6 +3111,7 @@ class StandaloneDraggable {
   releasedSpy = jasmine.createSpy('released spy');
   boundarySelector: string;
   dragStartDelay: number;
+  constrainPosition: (point: Point) => Point;
 }
 
 @Component({
@@ -3263,6 +3310,7 @@ class DraggableInHorizontalDropZone {
       <div
         *ngFor="let item of items"
         cdkDrag
+        [cdkDragConstrainPosition]="constrainPosition"
         [cdkDragBoundary]="boundarySelector"
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">
           {{item}}
@@ -3283,6 +3331,7 @@ class DraggableInDropZoneWithCustomPreview {
   items = ['Zero', 'One', 'Two', 'Three'];
   boundarySelector: string;
   renderCustomPreview = true;
+  constrainPosition: (point: Point) => Point;
 }
 
 

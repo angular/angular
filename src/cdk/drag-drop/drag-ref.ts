@@ -273,6 +273,14 @@ export class DragRef<T = any> {
   /** Arbitrary data that can be attached to the drag item. */
   data: T;
 
+  /**
+   * Function that can be used to customize the logic of how the position of the drag item
+   * is limited while it's being dragged. Gets called with a point containing the current position
+   * of the user's pointer on the page and should return a point describing where the item should
+   * be rendered.
+   */
+  constrainPosition?: (point: Point) => Point;
+
   constructor(
     element: ElementRef<HTMLElement> | HTMLElement,
     private _config: DragRefConfig,
@@ -909,12 +917,13 @@ export class DragRef<T = any> {
   /** Gets the pointer position on the page, accounting for any position constraints. */
   private _getConstrainedPointerPosition(event: MouseEvent | TouchEvent): Point {
     const point = this._getPointerPositionOnPage(event);
+    const constrainedPoint = this.constrainPosition ? this.constrainPosition(point) : point;
     const dropContainerLock = this._dropContainer ? this._dropContainer.lockAxis : null;
 
     if (this.lockAxis === 'x' || dropContainerLock === 'x') {
-      point.y = this._pickupPositionOnPage.y;
+      constrainedPoint.y = this._pickupPositionOnPage.y;
     } else if (this.lockAxis === 'y' || dropContainerLock === 'y') {
-      point.x = this._pickupPositionOnPage.x;
+      constrainedPoint.x = this._pickupPositionOnPage.x;
     }
 
     if (this._boundaryRect) {
@@ -926,11 +935,11 @@ export class DragRef<T = any> {
       const minX = boundaryRect.left + pickupX;
       const maxX = boundaryRect.right - (previewRect.width - pickupX);
 
-      point.x = clamp(point.x, minX, maxX);
-      point.y = clamp(point.y, minY, maxY);
+      constrainedPoint.x = clamp(constrainedPoint.x, minX, maxX);
+      constrainedPoint.y = clamp(constrainedPoint.y, minY, maxY);
     }
 
-    return point;
+    return constrainedPoint;
   }
 
 
@@ -984,7 +993,7 @@ export class DragRef<T = any> {
 }
 
 /** Point on the page or within an element. */
-interface Point {
+export interface Point {
   x: number;
   y: number;
 }
