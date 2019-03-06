@@ -1308,6 +1308,7 @@ export function createTNode(
     outputs: undefined,
     tViews: null,
     next: null,
+    projectionNext: null,
     child: null,
     parent: tParent,
     stylingTemplate: null,
@@ -2550,26 +2551,24 @@ export function projectionDef(selectors?: CssSelectorList[], textSelectors?: str
 
   if (!componentNode.projection) {
     const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
-    const pData: (TNode | null)[] = componentNode.projection =
+    const projectionHeads: (TNode | null)[] = componentNode.projection =
         new Array(noOfNodeBuckets).fill(null);
-    const tails: (TNode | null)[] = pData.slice();
+    const tails: (TNode | null)[] = projectionHeads.slice();
 
     let componentChild: TNode|null = componentNode.child;
 
     while (componentChild !== null) {
       const bucketIndex =
           selectors ? matchingSelectorIndex(componentChild, selectors, textSelectors !) : 0;
-      const nextNode = componentChild.next;
 
       if (tails[bucketIndex]) {
-        tails[bucketIndex] !.next = componentChild;
+        tails[bucketIndex] !.projectionNext = componentChild;
       } else {
-        pData[bucketIndex] = componentChild;
+        projectionHeads[bucketIndex] = componentChild;
       }
-      componentChild.next = null;
       tails[bucketIndex] = componentChild;
 
-      componentChild = nextNode;
+      componentChild = componentChild.next;
     }
   }
 }

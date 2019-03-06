@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, Directive, ElementRef, Injector, Input, NgModule, OnInit, TemplateRef, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -222,6 +222,44 @@ describe('projection', () => {
     viewportDirective.hide();
     main.detectChanges();
     expect(main.nativeElement).toHaveText('(, BC)');
+  });
+
+  it('should redistribute non-continuous blocks of nodes when the shadow dom changes', () => {
+    @Component({
+      selector: 'child',
+      template:
+          `<ng-content></ng-content>(<ng-template [ngIf]="showing"><ng-content select="div"></ng-content></ng-template>)`
+    })
+    class Child {
+      @Input() showing !: boolean;
+    }
+
+    @Component({
+      selector: 'app',
+      template: `<child [showing]="showing">
+        <div>A</div>
+        <span>B</span>
+        <div>A</div>
+        <span>B</span>
+      </child>`
+    })
+    class App {
+      showing = false;
+    }
+
+    TestBed.configureTestingModule({declarations: [App, Child]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement).toHaveText('BB()');
+
+    fixture.componentInstance.showing = true;
+    fixture.detectChanges();
+    expect(fixture.nativeElement).toHaveText('BB(AA)');
+
+    fixture.componentInstance.showing = false;
+    fixture.detectChanges();
+    expect(fixture.nativeElement).toHaveText('BB()');
   });
 
   // GH-2095 - https://github.com/angular/angular/issues/2095
