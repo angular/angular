@@ -7,7 +7,7 @@
  */
 
 import {Inject, Injectable} from '@angular/core';
-import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {DOCUMENT} from '@angular/platform-browser';
 
 import {serializeDocument} from './domino_adapter';
 

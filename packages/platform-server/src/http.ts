@@ -8,10 +8,10 @@
 
 const xhr2: any = require('xhr2');
 
-import {Injectable, Injector, Optional, Provider, InjectFlags} from '@angular/core';
+import {Injectable, Injector, Provider} from '@angular/core';
 import {BrowserXhr, Connection, ConnectionBackend, Http, ReadyState, Request, RequestOptions, Response, XHRBackend, XSRFStrategy} from '@angular/http';
 
-import {HttpEvent, HttpRequest, HttpHandler, HttpInterceptor, HTTP_INTERCEPTORS, HttpBackend, XhrFactory, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
+import {HttpEvent, HttpRequest, HttpHandler, HttpBackend, XhrFactory, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
 
 import {Observable, Observer, Subscription} from 'rxjs';
 

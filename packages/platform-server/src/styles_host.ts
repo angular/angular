@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, Inject, Injectable, Optional} from '@angular/core';
-import {DOCUMENT, ɵDomAdapter as DomAdapter, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {Inject, Injectable, Optional} from '@angular/core';
+import {DOCUMENT, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 @Injectable()
 export class ServerStylesHost extends SharedStylesHost {
-  private head: any = null;
+  private readonly head: any = null;
 
   constructor(
       @Inject(DOCUMENT) private doc: any,
