@@ -13,6 +13,5 @@ ng_module(
         "*.ts",
         "src/**/*.ts",
     ]),
-    bundle_dts = True,
     deps = ["//packages/core"],
 )

@@ -5,7 +5,6 @@ package(default_visibility = ["//packages/bazel/test:__subpackages__"])
 ng_module(
     name = "example",
     srcs = glob(["*.ts"]),
-    bundle_dts = True,
     module_name = "example",
     deps = [
         "//packages/bazel/test/ng_package/example/secondary",
