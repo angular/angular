@@ -9,7 +9,7 @@
 import {ɵAnimationEngine} from '@angular/animations/browser';
 import {PlatformLocation, ViewportScroller, ɵNullViewportScroller as NullViewportScroller, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
-import {Injector, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, Provider, RendererFactory2, StaticProvider, Testability, createPlatformFactory, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
+import {Injector, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, StaticProvider, Testability, createPlatformFactory, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
 import {HttpModule} from '@angular/http';
 import {BrowserModule, DOCUMENT, EVENT_MANAGER_PLUGINS, ɵSharedStylesHost as SharedStylesHost, ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
