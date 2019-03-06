@@ -287,6 +287,16 @@ describe('static-queries migration', () => {
           
           ngOnInit() {
             new A(this);
+            
+            new class Inline {
+              constructor(private ctx: MyComp) {
+                this.a();
+              }
+              
+              a() {
+                this.ctx.query2.useStatically();
+              }
+            }(this);
           }
         }
         
@@ -302,7 +312,33 @@ describe('static-queries migration', () => {
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
       expect(tree.readContent('/index.ts'))
-          .toContain(`@${queryType}('test', { static: false }) query2: any;`);
+          .toContain(`@${queryType}('test', { static: true }) query2: any;`);
+    });
+
+    it('should detect queries used in parenthesized new expressions', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          @${queryType}('test') query: any;
+          
+          ngOnInit() {
+            new ((A))(this);
+          }
+        }
+        
+        export class A {
+          constructor(ctx: MyComp) {
+            ctx.query.test();
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
     });
 
     it('should detect queries in lifecycle hook with string literal name', () => {
@@ -519,6 +555,160 @@ describe('static-queries migration', () => {
 
       expect(tree.readContent('/src/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
+    it('should not mark queries used in promises as static', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+                        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          private @${queryType}('test') query: any;
+          private @${queryType}('test') query2: any;
+        
+          ngOnInit() {
+            const a = Promise.resolve();
+          
+            Promise.resolve().then(() => {
+              this.query.doSomething();
+            });
+            
+            Promise.reject().catch(() => {
+              this.query.doSomething();
+            });
+            
+            a.then(() => {}).then(() => {
+              this.query.doSomething();
+            });
+                        
+            Promise.resolve().then(this.createPromiseCb());
+          }
+          
+          createPromiseCb() {
+            this.query2.doSomething();
+            return () => { /* empty callback */}
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: false }) query: any;`);
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query2: any;`);
+    });
+
+    it('should not mark queries used in setTimeout as static', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+                                
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          private @${queryType}('test') query: any;
+          private @${queryType}('test') query2: any;
+          private @${queryType}('test') query3: any;
+        
+          ngOnInit() {
+            setTimeout(function() {
+              this.query.doSomething();
+            });
+            
+            setTimeout(createCallback(this));
+          }
+        }
+        
+        function createCallback(instance: MyComp) {
+          instance.query2.doSomething();
+          return () => instance.query3.doSomething();
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: false }) query: any;`);
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query2: any;`);
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: false }) query3: any;`);
+    });
+
+    it('should not mark queries used in "addEventListener" as static', () => {
+      writeFile('/index.ts', `
+        import {Component, ElementRef, ${queryType}} from '@angular/core';
+                        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          private @${queryType}('test') query: any;
+        
+          constructor(private elementRef: ElementRef) {}
+        
+          ngOnInit() {
+            this.elementRef.addEventListener(() => {
+              this.query.classList.add('test');
+            });
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: false }) query: any;`);
+    });
+
+    it('should not mark queries used in "requestAnimationFrame" as static', () => {
+      writeFile('/index.ts', `
+        import {Component, ElementRef, ${queryType}} from '@angular/core';
+                        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          private @${queryType}('test') query: any;
+        
+          constructor(private elementRef: ElementRef) {}
+        
+          ngOnInit() {
+            requestAnimationFrame(() => {
+              this.query.classList.add('test');
+            });
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: false }) query: any;`);
+    });
+
+    it('should mark queries used in immediately-invoked function expression as static', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+                        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          private @${queryType}('test') query: any;
+          private @${queryType}('test') query2: any;
+                
+          ngOnInit() {
+            (() => {
+              this.query.usedStatically();
+            })();
+            
+            (function(ctx) {
+              ctx.query2.useStatically();
+            })(this);
+          }
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query2: any;`);
     });
   }
 });
