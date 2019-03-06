@@ -1,6 +1,6 @@
 package(default_visibility=["//visibility:public"])
 
-load("@angular//:index.bzl", "protractor_web_test_suite")
+load("@npm_angular_bazel//:index.bzl", "protractor_web_test_suite")
 load("//tools:defaults.bzl", "ts_library")
 
 ts_library(
@@ -8,8 +8,8 @@ ts_library(
   srcs = glob(["util/**/*.ts"]),
   tsconfig = ":tsconfig.json",
   deps = [
-    "@matdeps//@types/jasmine",
-    "@matdeps//protractor"
+    "@npm//@types/jasmine",
+    "@npm//protractor"
   ]
 )
 
@@ -20,8 +20,8 @@ ts_library(
    srcs = [spec_file],
    tsconfig = ":tsconfig.json",
    deps = [
-     "@matdeps//@types/jasmine",
-     "@matdeps//protractor",
+     "@npm//@types/jasmine",
+     "@npm//protractor",
      ":e2e_utils_lib",
    ]
  ) for spec_file in glob(["components/**/*.spec.ts"])]
@@ -34,7 +34,7 @@ ts_library(
   on_prepare = ":start-devserver.js",
   server = "//src/e2e-app:devserver",
   deps = [
-    "@matdeps//protractor",
+    "@npm//protractor",
     ":%s_specs_lib" % spec_file,
     ":e2e_utils_lib",
   ],

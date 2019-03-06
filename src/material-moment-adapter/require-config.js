@@ -2,6 +2,6 @@
 // load AMD modules which are not explicitly named in their output bundle.
 require.config({
   paths: {
-    'moment': '/base/matdeps/node_modules/moment/min/moment-with-locales.min'
+    'moment': '/base/npm/node_modules/moment/min/moment-with-locales.min'
   }
 });

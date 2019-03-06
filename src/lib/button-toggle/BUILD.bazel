@@ -10,8 +10,8 @@ ng_module(
   module_name = "@angular/material/button-toggle",
   assets = [":button-toggle.css"] + glob(["**/*.html"]),
   deps = [
-    "@angular//packages/core",
-    "@angular//packages/forms",
+    "@npm//@angular/core",
+    "@npm//@angular/forms",
     "//src/cdk/collections",
     "//src/cdk/coercion",
     "//src/cdk/a11y",
@@ -38,8 +38,8 @@ ng_test_library(
   name = "button_toggle_test_sources",
   srcs = glob(["**/*.spec.ts"]),
   deps = [
-    "@angular//packages/forms",
-    "@angular//packages/platform-browser",
+    "@npm//@angular/forms",
+    "@npm//@angular/platform-browser",
     "//src/cdk/testing",
     ":button-toggle",
   ]

@@ -7,8 +7,8 @@ ts_library(
   name = "sass_bundle_lib",
   srcs = ["sass-bundle.ts"],
   deps = [
-    "@matdeps//@types/node",
-    "@matdeps//scss-bundle",
+    "@npm//@types/node",
+    "@npm//scss-bundle",
   ],
   tsconfig = "bazel-tools-tsconfig.json",
 )
@@ -17,8 +17,8 @@ ts_library(
 nodejs_binary(
   name = "sass_bundle",
   data = [
-   "@matdeps//scss-bundle",
-   "@matdeps//source-map-support",
+   "@npm//scss-bundle",
+   "@npm//source-map-support",
     ":sass_bundle_lib",
   ],
   entry_point = "angular_material/tools/sass-bundle.js",

@@ -7,9 +7,9 @@ nodejs_binary(
   name = "dgeni",
   entry_point = "angular_material/tools/dgeni/bazel-bin.js",
   data = [
-    "@matdeps//source-map-support",
-    "@matdeps//dgeni",
-    "@matdeps//dgeni-packages",
+    "@npm//source-map-support",
+    "@npm//dgeni",
+    "@npm//dgeni-packages",
     ":sources",
   ],
 )
@@ -18,9 +18,9 @@ ts_library(
   name = "sources",
   srcs = glob(["**/*.ts"]),
   deps = [
-    "@matdeps//@types/node",
-    "@matdeps//dgeni",
-    "@matdeps//dgeni-packages",
+    "@npm//@types/node",
+    "@npm//dgeni",
+    "@npm//dgeni-packages",
     "//tools/highlight-files:sources",
   ],
   tsconfig = ":tsconfig.json",

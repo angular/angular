@@ -37,11 +37,11 @@ if (require.main === module) {
   const packagePath = join(execRootPath, bazelLabelPackagePath);
 
   // Configure the Dgeni docs package to respect our passed options from the Bazel rule.
-  apiDocsPackage.config((readTypeScriptModules: ReadTypeScriptModules,
-                         tsParser: TsParser,
-                         templateFinder: any,
-                         writeFilesProcessor: any,
-                         readFilesProcessor: any) => {
+  apiDocsPackage.config(function(readTypeScriptModules: ReadTypeScriptModules,
+                                 tsParser: TsParser,
+                                 templateFinder: any,
+                                 writeFilesProcessor: any,
+                                 readFilesProcessor: any) {
 
     // Set the base path for the "readFilesProcessor" to the execroot. This is necessary because
     // otherwise the "writeFilesProcessor" is not able to write to the specified output path.
@@ -88,7 +88,7 @@ if (require.main === module) {
     // as the Angular packages which might be needed for doc items. e.g. if a class implements
     // the "AfterViewInit" interface from "@angular/core". This needs to be relative to the
     // "baseUrl" that has been specified for the "tsParser" compiler options.
-    tsParser.options.paths!['*'] = [relative(packagePath, 'external/matdeps/node_modules/*')];
+    tsParser.options.paths!['*'] = [relative(packagePath, 'external/npm/node_modules/*')];
 
     // Since our base directory is the Bazel execroot, we need to make sure that Dgeni can
     // find all templates needed to output the API docs.

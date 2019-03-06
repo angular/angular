@@ -34,7 +34,7 @@ build:remote --host_javabase=@bazel_toolchains//configs/ubuntu16_04_clang/1.1:jd
 build:remote --javabase=@bazel_toolchains//configs/ubuntu16_04_clang/1.1:jdk8
 build:remote --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
 build:remote --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
-build:remote --crosstool_top=@bazel_toolchains//configs/ubuntu16_04_clang/1.1/bazel_0.18.0/default:toolchain
+build:remote --crosstool_top=@bazel_toolchains//configs/ubuntu16_04_clang/1.1/bazel_0.22.0/default:toolchain
 build:remote --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 # Platform flags:
 # The toolchain container used for execution is defined in the target indicated
@@ -44,7 +44,7 @@ build:remote --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 # "extra_toolchains" to be selected (given constraints defined in
 # "exec_compatible_with").
 # More about platforms: https://docs.bazel.build/versions/master/platforms.html
-build:remote --extra_toolchains=@bazel_toolchains//configs/ubuntu16_04_clang/1.1/bazel_0.18.0/cpp:cc-toolchain-clang-x86_64-default
+build:remote --extra_toolchains=@bazel_toolchains//configs/ubuntu16_04_clang/1.1/bazel_0.22.0/cpp:cc-toolchain-clang-x86_64-default
 build:remote --extra_execution_platforms=@bazel_toolchains//configs/ubuntu16_04_clang/1.1:rbe_ubuntu1604
 build:remote --host_platform=@bazel_toolchains//configs/ubuntu16_04_clang/1.1:rbe_ubuntu1604
 build:remote --platforms=@bazel_toolchains//configs/ubuntu16_04_clang/1.1:rbe_ubuntu1604
@@ -104,7 +104,7 @@ build:results-local --bes_results_url="https://source.cloud.google.com/results/i
 # with the rbe-ubuntu16-04 container. Use of these flags is still experimental.
 build:docker-sandbox --host_javabase=@bazel_toolchains//configs/ubuntu16_04_clang/1.1:jdk8
 build:docker-sandbox --javabase=@bazel_toolchains//configs/ubuntu16_04_clang/1.1:jdk8
-build:docker-sandbox --crosstool_top=@bazel_toolchains//configs/ubuntu16_04_clang/1.1/bazel_0.18.0/default:toolchain
+build:docker-sandbox --crosstool_top=@bazel_toolchains//configs/ubuntu16_04_clang/1.1/bazel_0.22.0/default:toolchain
 build:docker-sandbox --experimental_docker_image=gcr.io/cloud-marketplace/google/rbe-ubuntu16-04@sha256:9bd8ba020af33edb5f11eff0af2f63b3bcb168cd6566d7b27c6685e717787928
 build:docker-sandbox --spawn_strategy=docker
 build:docker-sandbox --strategy=Javac=docker
@@ -118,7 +118,6 @@ build:docker-sandbox --experimental_enable_docker_sandbox
 # across machines, developers, and workspaces.
 build:remote-cache --remote_cache=remotebuildexecution.googleapis.com
 build:remote-cache --tls_enabled=true
-build:remote-cache --experimental_strict_action_env=true
 build:remote-cache --remote_timeout=3600
 build:remote-cache --auth_enabled=true
 build:remote-cache --spawn_strategy=standalone

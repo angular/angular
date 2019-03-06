@@ -8,9 +8,8 @@ ng_module(
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk/observers",
   deps = [
-    "@angular//packages/core",
-    "@rxjs",
-    "@rxjs//operators",
+    "@npm//@angular/core",
+    "@npm//rxjs",
     "//src/cdk/coercion",
   ],
 )

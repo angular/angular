@@ -1,6 +1,6 @@
 package(default_visibility=["//visibility:public"])
 
-load("//:packages.bzl", "MATERIAL_TARGETS")
+load("//:packages.bzl", "MATERIAL_TARGETS", "CDK_TARGETS")
 load("//tools:defaults.bzl", "ng_module")
 load("//tools:sass_generate_binaries.bzl", "sass_generate_binaries")
 
@@ -12,8 +12,11 @@ ng_module(
   srcs = glob(["**/*.ts"]),
   assets = glob(["**/*.html"]) + [":a11y_demo_scss"],
   deps = [
-    "@angular//packages/core",
-    "@angular//packages/router",
-    "//src/cdk/table",
-  ] + MATERIAL_TARGETS
+    "@npm//rxjs",
+    "@npm//@angular/core",
+    "@npm//@angular/common",
+    "@npm//@angular/animations",
+    "@npm//@angular/forms",
+    "@npm//@angular/router",
+  ] + CDK_TARGETS + MATERIAL_TARGETS
 )

@@ -1,9 +1,0 @@
-package(default_visibility = ["//visibility:public"])
-
-# Create an alias so that "@npm//@angular/bazel" is a valid Bazel target that refers to the
-# actual Bazel rules code from NPM. This is required by the "@angular//:@angular/bazel/ngc-wrapped
-# target. See: https://github.com/angular/angular/blob/master/BUILD.bazel#L45
-alias(
-  name = "bazel",
-  actual = "@matdeps//@angular/bazel",
-)

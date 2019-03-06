@@ -305,7 +305,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     return this._zone.onStable
         .asObservable()
         .pipe(take(1), switchMap(() => this.optionSelections));
-  });
+  }) as Observable<MatOptionSelectionChange>;
 
   /** The currently active option, coerced to MatOption type. */
   get activeOption(): MatOption | null {

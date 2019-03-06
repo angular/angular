@@ -9,9 +9,8 @@ ng_module(
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk/text-field",
   deps = [
-    "@angular//packages/core",
-    "@rxjs",
-    "@rxjs//operators",
+    "@npm//@angular/core",
+    "@npm//rxjs",
     "//src/cdk/coercion",
     "//src/cdk/platform",
   ],
@@ -32,10 +31,9 @@ ng_test_library(
   name = "text-field_test_sources",
   srcs = glob(["**/*.spec.ts"]),
   deps = [
-    "@angular//packages/forms",
-    "@angular//packages/platform-browser",
-    "@angular//packages/platform-browser/animations",
-    "@rxjs",
+    "@npm//@angular/forms",
+    "@npm//@angular/platform-browser",
+    "@npm//rxjs",
     "//src/cdk/platform",
     "//src/cdk/testing",
     ":text-field"

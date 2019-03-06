@@ -7,9 +7,9 @@ ts_library(
   name = "transform-markdown",
   srcs = glob(["**/*.ts"]),
   deps = [
-    "@matdeps//@types/node",
-    "@matdeps//@types/marked",
-    "@matdeps//marked",
+    "@npm//@types/node",
+    "@npm//@types/marked",
+    "@npm//marked",
     "//tools/highlight-files:sources",
   ],
   tsconfig = ":tsconfig.json",
@@ -19,7 +19,7 @@ nodejs_binary(
   name = "markdown-to-html",
   entry_point = "angular_material/tools/markdown-to-html/transform-markdown.js",
   data = [
-    "@matdeps//source-map-support",
+    "@npm//source-map-support",
     ":transform-markdown",
   ],
 )

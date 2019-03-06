@@ -9,7 +9,7 @@ ng_module(
   module_name = "@angular/material/card",
   assets = [":card.css"] + glob(["**/*.html"]),
   deps = [
-    "@angular//packages/core",
+    "@npm//@angular/core",
     "//src/lib/core",
   ],
 )

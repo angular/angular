@@ -1,15 +1,15 @@
 # Re-export of Bazel rules with repository-wide defaults
 
-load("@angular//:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("@build_bazel_rules_nodejs//:defs.bzl", _jasmine_node_test = "jasmine_node_test")
-load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library",
-  _ts_web_test_suite = "ts_web_test_suite")
+load("@npm_angular_bazel//:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
+load("@npm_bazel_jasmine//:index.bzl", _jasmine_node_test = "jasmine_node_test")
+load("@npm_bazel_typescript//:defs.bzl", _ts_library = "ts_library")
+load("@npm_bazel_karma//:defs.bzl", _ts_web_test_suite = "ts_web_test_suite")
 load("//tools/markdown-to-html:index.bzl", _markdown_to_html = "markdown_to_html")
-load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
+load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS", "ANGULAR_LIBRARY_UMDS")
 
 _DEFAULT_TSCONFIG_BUILD = "//src:bazel-tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//src:bazel-tsconfig-test.json"
-_DEFAULT_TS_TYPINGS = "@matdeps//typescript:typescript__typings"
+_DEFAULT_TS_TYPINGS = "@npm//typescript:typescript__typings"
 
 # Re-exports to simplify build file load statements
 markdown_to_html = _markdown_to_html
@@ -22,7 +22,7 @@ def _getDefaultTsConfig(testonly):
 
 def ts_library(tsconfig = None, deps = [], testonly = False, **kwargs):
   # Add tslib because we use import helpers for all public packages.
-  local_deps = ["@matdeps//tslib"] + deps
+  local_deps = ["@npm//tslib"] + deps
 
   if not tsconfig:
     tsconfig = _getDefaultTsConfig(testonly)
@@ -41,12 +41,18 @@ def ng_module(deps = [], tsconfig = None, testonly = False, **kwargs):
 
   local_deps = [
     # Add tslib because we use import helpers for all public packages.
-    "@matdeps//tslib",
+    "@npm//tslib",
+    "@npm//@angular/platform-browser",
 
     # Depend on the module typings for each `ng_module`. Since all components within the project
     # need to use `module.id` when creating components, this is always a dependency.
     "//src:module-typings"
-  ] + deps
+  ]
+
+  # Append given deps only if they're not in the default set of deps
+  for d in deps:
+    if d not in local_deps:
+      local_deps = local_deps + [d]
 
   _ng_module(
     deps = local_deps,
@@ -71,23 +77,21 @@ def ng_package(name, readme_md = None, **kwargs):
 
 def jasmine_node_test(deps = [], **kwargs):
   local_deps = [
-    # Workaround for: https://github.com/bazelbuild/rules_nodejs/issues/344
-    "@matdeps//jasmine",
-    "@matdeps//source-map-support",
+    "@npm//source-map-support",
   ] + deps
 
   _jasmine_node_test(
     deps = local_deps,
+    jasmine = "@npm//jasmine",
     **kwargs
   )
 
 def ng_test_library(deps = [], tsconfig = None, **kwargs):
   local_deps = [
-    # We declare "@angular/core" and "@angular/core/testing" as default dependencies because
+    # We declare "@angular/core" as default dependencies because
     # all Angular component unit tests use the `TestBed` and `Component` exports.
-    "@angular//packages/core",
-    "@angular//packages/core/testing",
-    "@matdeps//@types/jasmine",
+    "@npm//@angular/core",
+    "@npm//@types/jasmine",
   ] + deps;
 
   ts_library(
@@ -96,10 +100,14 @@ def ng_test_library(deps = [], tsconfig = None, **kwargs):
     **kwargs
   )
 
-def ts_web_test_suite(srcs = [], **kwargs):
+def ts_web_test_suite(deps = [], srcs = [], **kwargs):
   _ts_web_test_suite(
+    deps = ["//tools/rxjs:rxjs_umd_modules"] + deps,
     # Required for running the compiled ng modules that use TypeScript import helpers.
-    srcs = ["@matdeps//node_modules/tslib:tslib.js"] + srcs,
+    # TODO(jelbourn): remove UMDs from here once we don't have to manually include them
+    srcs = [
+      "@npm//node_modules/tslib:tslib.js",
+    ] + ANGULAR_LIBRARY_UMDS + srcs,
     **kwargs
   )
 
@@ -139,11 +147,13 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
 
   ts_web_test_suite(
     # Depend on our custom test initialization script. This needs to be the first dependency.
-    deps = ["//test:angular_test_init"] + deps,
+    deps = [
+      "//test:angular_test_init",
+    ] + deps,
     bootstrap = [
-      "@matdeps//node_modules/zone.js:dist/zone-testing-bundle.js",
-      "@matdeps//node_modules/reflect-metadata:Reflect.js",
-      "@matdeps//node_modules/hammerjs:hammer.js",
+      "@npm//node_modules/zone.js:dist/zone-testing-bundle.js",
+      "@npm//node_modules/reflect-metadata:Reflect.js",
+      "@npm//node_modules/hammerjs:hammer.js",
     ] + bootstrap,
     **kwargs
   )

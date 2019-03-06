@@ -11,10 +11,11 @@ ng_module(
   module_name = "@angular/material-examples",
   assets = glob(["**/*.html", "**/*.css"]),
   deps = [
-    "@angular//packages/common",
-    "@angular//packages/core",
-    "@angular//packages/forms",
-    "@matdeps//moment",
+    "@npm//@angular/animations",
+    "@npm//@angular/common",
+    "@npm//@angular/core",
+    "@npm//@angular/forms",
+    "@npm//moment",
     "//src/material-moment-adapter",
   ] + CDK_TARGETS + MATERIAL_TARGETS,
   # Specify the tsconfig that is also used by Gulp. We need to explicitly use this tsconfig

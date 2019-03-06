@@ -7,7 +7,7 @@ nodejs_binary(
   name = "package-docs-content",
   entry_point = "angular_material/tools/package-docs-content/package-docs-content.js",
   data = [
-    "@matdeps//source-map-support",
+    "@npm//source-map-support",
     ":sources",
   ],
 )
@@ -15,6 +15,6 @@ nodejs_binary(
 ts_library(
   name = "sources",
   srcs = glob(["**/*.ts"]),
-  deps = ["@matdeps//@types/node"],
+  deps = ["@npm//@types/node"],
   tsconfig = ":tsconfig.json",
 )

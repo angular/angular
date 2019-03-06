@@ -25,7 +25,11 @@ dgeni_api_docs(
     # Add all Angular packages to the sources because some Material exports use
     # Angular exports and these should not cause any warnings when Dgeni uses the
     # type checker to parse our TypeScript sources.
-    "@matdeps//@angular"
+    "@npm//@angular/core",
+    "@npm//@angular/common",
+    "@npm//@angular/forms",
+    "@npm//@angular/animations",
+    "@npm//@angular/platform-browser",
   ],
   entry_points = {
     "cdk": CDK_PACKAGES,

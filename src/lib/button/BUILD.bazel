@@ -10,9 +10,10 @@ ng_module(
   module_name = "@angular/material/button",
   assets = [":button.css"] + glob(["**/*.html"]),
   deps = [
-    "@angular//packages/common",
-    "@angular//packages/core",
-    "@angular//packages/platform-browser/animations",
+    "@npm//@angular/common",
+    "@npm//@angular/core",
+    "@npm//@angular/platform-browser",
+    "@npm//@angular/animations",
     "//src/cdk/platform",
     "//src/cdk/a11y",
     "//src/lib/core",
@@ -39,7 +40,7 @@ ng_test_library(
   name = "button_test_sources",
   srcs = glob(["**/*.spec.ts"]),
   deps = [
-    "@angular//packages/platform-browser",
+    "@npm//@angular/platform-browser",
     "//src/lib/core",
     ":button"
   ]

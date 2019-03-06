@@ -10,10 +10,9 @@ ng_module(
   module_name = "@angular/material/tree",
   assets = [":tree.css"] + glob(["**/*.html"]),
   deps = [
-    "@angular//packages/common",
-    "@angular//packages/core",
-    "@rxjs",
-    "@rxjs//operators",
+    "@npm//@angular/common",
+    "@npm//@angular/core",
+    "@npm//rxjs",
     "//src/cdk/collections",
     "//src/cdk/tree",
     "//src/lib/core",
@@ -35,7 +34,7 @@ ng_test_library(
   name = "tree_test_sources",
   srcs = glob(["**/*.spec.ts"]),
   deps = [
-    "@rxjs",
+    "@npm//rxjs",
     "//src/cdk/tree",
     ":tree",
   ]

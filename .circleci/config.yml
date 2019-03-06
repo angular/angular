@@ -7,7 +7,7 @@
 # To validate changes, use an online parser, eg.
 # http://yaml-online-parser.appspot.com/
 
-var_1: &docker_image angular/ngcontainer:0.7.0
+var_1: &docker_image angular/ngcontainer:0.10.0
 var_2: &cache_key v2-ng-mat-{{ checksum "WORKSPACE" }}-{{ checksum "yarn.lock" }}-0.7.0
 
 # Settings common to each job
@@ -367,8 +367,10 @@ workflows:
 
   integration_tests:
     jobs:
-      - e2e_tests:
-          filters: *ignore_presubmit_branch_filter
+      # Temporarily disable e2e tests until https://github.com/angular/angular/issues/29123
+      # is resolved.
+      # - e2e_tests:
+      #     filters: *ignore_presubmit_branch_filter
       - prerender_build:
           filters: *ignore_presubmit_branch_filter
 

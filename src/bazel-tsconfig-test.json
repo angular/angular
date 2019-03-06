@@ -8,6 +8,9 @@
     "types": ["jasmine"]
   },
   "bazelOptions": {
-    "suppressTsconfigOverrideWarnings": true
+    "suppressTsconfigOverrideWarnings": true,
+
+    // See https://github.com/angular/angular/issues/29107
+    "devmodeTargetOverride": "es5"
   }
 }

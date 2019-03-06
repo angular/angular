@@ -6,6 +6,6 @@ filegroup(
     "index.js",
     "build-message.js",
     # "axe-webdriver" is required to run "axe-protractor".
-    "@matdeps//axe-webdriverjs",
+    "@npm//axe-webdriverjs",
   ],
 )

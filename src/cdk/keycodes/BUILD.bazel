@@ -12,7 +12,7 @@ ts_library(
   name = "keycodes_test_sources",
   srcs = glob(["**/*.spec.ts"]),
   deps = [
-    "@matdeps//@types/jasmine",
+    "@npm//@types/jasmine",
     "//src/cdk/testing",
     ":keycodes"
   ],

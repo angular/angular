@@ -10,11 +10,11 @@ ng_module(
   module_name = "@angular/material/progress-bar",
   assets = [":progress-bar.css"] + glob(["**/*.html"]),
   deps = [
-    "@angular//packages/common",
-    "@angular//packages/core",
-    "@angular//packages/platform-browser/animations",
-    "@rxjs",
-    "@rxjs//operators",
+    "@npm//@angular/common",
+    "@npm//@angular/core",
+    "@npm//@angular/platform-browser",
+    "@npm//@angular/animations",
+    "@npm//rxjs",
     "//src/lib/core",
   ],
 )
@@ -38,8 +38,7 @@ ng_test_library(
   name = "progress_bar_test_sources",
   srcs = glob(["**/*.spec.ts"]),
   deps = [
-    "@angular//packages/platform-browser",
-    "@angular//packages/platform-browser/animations",
+    "@npm//@angular/platform-browser",
     "//src/cdk/testing",
     ":progress-bar",
   ]

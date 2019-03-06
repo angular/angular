@@ -450,7 +450,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     return this._ngZone.onStable
       .asObservable()
       .pipe(take(1), switchMap(() => this.optionSelectionChanges));
-  });
+  }) as Observable<MatOptionSelectionChange>;
 
   /** Event emitted when the select panel has been toggled. */
   @Output() readonly openedChange: EventEmitter<boolean> = new EventEmitter<boolean>();
