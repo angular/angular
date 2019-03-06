@@ -591,6 +591,11 @@ function readBazelWrittenFilesFrom(
   }
   try {
     processDirectory(bazelPackageRoot, path.join('/node_modules/@angular', packageName));
+    // todo: check why we always need an index.d.ts
+    if (fs.existsSync(path.join(bazelPackageRoot, `${packageName}.d.ts`))) {
+      const content = fs.readFileSync(path.join(bazelPackageRoot, `${packageName}.d.ts`), 'utf8');
+      map.set(path.join('/node_modules/@angular', packageName, 'index.d.ts'), content);
+    }
   } catch (e) {
     console.error(
         `Consider adding //packages/${packageName} as a data dependency in the BUILD.bazel rule for the failing test`);
