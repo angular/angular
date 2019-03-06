@@ -293,19 +293,28 @@ export class NgtscProgram implements api.Program {
       beforeTransforms.push(...customTransforms.beforeTs);
     }
 
+    const emitResults: ts.EmitResult[] = [];
+    for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
+      if (targetSourceFile.isDeclarationFile) {
+        continue;
+      }
+
+      emitResults.push(emitCallback({
+        targetSourceFile,
+        program: this.tsProgram,
+        host: this.host,
+        options: this.options,
+        emitOnlyDtsFiles: false, writeFile,
+        customTransformers: {
+          before: beforeTransforms,
+          after: customTransforms && customTransforms.afterTs,
+          afterDeclarations: afterDeclarationsTransforms,
+        },
+      }));
+    }
+
     // Run the emit, including a custom transformer that will downlevel the Ivy decorators in code.
-    const emitResult = emitCallback({
-      program: this.tsProgram,
-      host: this.host,
-      options: this.options,
-      emitOnlyDtsFiles: false, writeFile,
-      customTransformers: {
-        before: beforeTransforms,
-        after: customTransforms && customTransforms.afterTs,
-        afterDeclarations: afterDeclarationsTransforms,
-      },
-    });
-    return emitResult;
+    return ((opts && opts.mergeEmitResultsCallback) || mergeEmitResults)(emitResults);
   }
 
   private compileTypeCheckProgram(ctx: TypeCheckContext): ReadonlyArray<ts.Diagnostic> {
