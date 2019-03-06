@@ -34,9 +34,9 @@ ivy-ngcc
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it transform @angular/core typing files correctly?
-  grep "import [*] as ɵngcc0 from './r3_symbols';" node_modules/@angular/core/src/application_module.d.ts
+  grep "import [*] as ɵngcc0 from './src/r3_symbols';" node_modules/@angular/core/core.d.ts
   if [[ $? != 0 ]]; then exit 1; fi
-  grep "static ngInjectorDef: ɵngcc0.InjectorDef<ApplicationModule>;" node_modules/@angular/core/src/application_module.d.ts
+  grep "static ngInjectorDef: ɵngcc0.InjectorDef<ApplicationModule>;" node_modules/@angular/core/core.d.ts
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it generate a base factory call for synthesized constructors correctly?
