@@ -100,8 +100,8 @@ fi
   yarn payload-size
 
   # Deploy to Firebase
-  firebase use "$projectId" --token "$firebaseToken"
-  firebase deploy --message "Commit: $TRAVIS_COMMIT" --non-interactive --token "$firebaseToken"
+  yarn firebase use "$projectId" --token "$firebaseToken"
+  yarn firebase deploy --message "Commit: $TRAVIS_COMMIT" --non-interactive --token "$firebaseToken"
 
   # Run PWA-score tests
   yarn test-pwa-score "$deployedUrl" "$AIO_MIN_PWA_SCORE"
