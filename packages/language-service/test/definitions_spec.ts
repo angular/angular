@@ -64,7 +64,7 @@ describe('definitions', () => {
 
   it('should be able to find a pipe', () => {
     reference(
-        'async_pipe.d.ts',
+        'common.d.ts',
         ` @Component({template: '<div *ngIf="input | «async»"></div>'}) export class MyComponent { input: EventEmitter; }`);
   });
 
