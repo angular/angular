@@ -84,7 +84,7 @@ const projectionNodeStack: (LView | TNode)[] = [];
  */
 function walkTNodeTree(
     viewToWalk: LView, action: WalkTNodeTreeAction, renderer: Renderer3,
-    renderParent: RElement | null, beforeNode?: RNode | null) {
+    renderParent: RElement | null, beforeNode?: RNode | null): void {
   const rootTNode = viewToWalk[TVIEW].node as TViewNode;
   let projectionNodeIndex = -1;
   let currentView = viewToWalk;
@@ -141,11 +141,11 @@ function walkTNodeTree(
 
     if (nextTNode === null) {
       // this last node was projected, we need to get back down to its projection node
-      if (tNode.next === null && (tNode.flags & TNodeFlags.isProjected)) {
+      if (tNode.projectionNext === null && (tNode.flags & TNodeFlags.isProjected)) {
         currentView = projectionNodeStack[projectionNodeIndex--] as LView;
         tNode = projectionNodeStack[projectionNodeIndex--] as TNode;
       }
-      nextTNode = tNode.next;
+      nextTNode = (tNode.flags & TNodeFlags.isProjected) ? tNode.projectionNext : tNode.next;
 
       /**
        * Find the next node in the TNode tree, taking into account the place where a node is
@@ -158,7 +158,7 @@ function walkTNodeTree(
         // If parent is null, we're crossing the view boundary, so we should get the host TNode.
         tNode = tNode.parent || currentView[T_HOST];
 
-        if (tNode === null || tNode === rootTNode) return null;
+        if (tNode === null || tNode === rootTNode) return;
 
         // When exiting a container, the beforeNode must be restored to the previous value
         if (tNode.type === TNodeType.Container) {
@@ -176,7 +176,7 @@ function walkTNodeTree(
            */
           while (!currentView[NEXT] && currentView[PARENT] &&
                  !(tNode.parent && tNode.parent.next)) {
-            if (tNode === rootTNode) return null;
+            if (tNode === rootTNode) return;
             currentView = currentView[PARENT] as LView;
             tNode = currentView[T_HOST] !;
           }
@@ -755,7 +755,7 @@ export function appendProjectedNodes(
         nodeToProject.flags |= TNodeFlags.isProjected;
         appendProjectedNode(nodeToProject, tProjectionNode, lView, projectedView);
       }
-      nodeToProject = nodeToProject.next;
+      nodeToProject = nodeToProject.projectionNext;
     }
   }
 }
