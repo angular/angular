@@ -127,14 +127,9 @@ function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
         recorder, architect, 'build', {
           builder: '@angular/bazel:build',
           options: {
-            targetLabel: '//src:bundle.js',
+            targetLabel: '//src:prodapp',
             bazelCommand: 'build',
-          },
-          configurations: {
-            production: {
-              targetLabel: '//src:bundle',
-            },
-          },
+          }
         },
         indent);
     replacePropertyInAstObject(
