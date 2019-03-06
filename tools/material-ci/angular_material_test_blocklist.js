@@ -21,30 +21,6 @@ window.testBlocklist = {
     "error": "Error: Expected '<pizza-msg><p>Pizza</p><p>Chocolate</p></pizza-msg>' to be '', 'Expected the DomPortalOutlet to be empty after detach'.",
     "notes": "Unknown"
   },
-  "CdkDrag in a drop container should be able to customize the preview element": {
-    "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
-  "CdkDrag in a drop container should position custom previews next to the pointer": {
-    "error": "Error: Expected 'translate3d(8px, 33px, 0px)' to be 'translate3d(50px, 50px, 0px)'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
-  "CdkDrag in a drop container should lock position inside a drop container along the x axis": {
-    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
-  "CdkDrag in a drop container should lock position inside a drop container along the y axis": {
-    "error": "Error: Expected 'translate3d(8px, 83px, 0px)' to be 'translate3d(50px, 100px, 0px)'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
-  "CdkDrag in a drop container should inherit the position locking from the drop container": {
-    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
-  "CdkDrag in a drop container should be able to customize the placeholder": {
-    "error": "Error: Expected cdk-drag cdk-drag-placeholder to contain 'custom-placeholder'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
   "CdkTable should be able to render multiple header and footer rows": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
     "notes": "Attempting to access content children before view is initialized"
@@ -92,6 +68,30 @@ window.testBlocklist = {
   "CdkTable should be able to apply classes to cells based on their row context": {
     "error": "Error: Expected false to be true.",
     "notes": "Unknown"
+  },
+  "CdkDrag in a drop container should be able to customize the preview element": {
+    "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
+  },
+  "CdkDrag in a drop container should position custom previews next to the pointer": {
+    "error": "Error: Expected 'translate3d(8px, 33px, 0px)' to be 'translate3d(50px, 50px, 0px)'.",
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
+  },
+  "CdkDrag in a drop container should lock position inside a drop container along the x axis": {
+    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
+  },
+  "CdkDrag in a drop container should lock position inside a drop container along the y axis": {
+    "error": "Error: Expected 'translate3d(8px, 83px, 0px)' to be 'translate3d(50px, 100px, 0px)'.",
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
+  },
+  "CdkDrag in a drop container should inherit the position locking from the drop container": {
+    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
+  },
+  "CdkDrag in a drop container should be able to customize the placeholder": {
+    "error": "Error: Expected cdk-drag cdk-drag-placeholder to contain 'custom-placeholder'.",
+    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
   },
   "CdkTree flat tree should initialize should be able to use units different from px for the indentation": {
     "error": "Error: Failed: Expected node level to be 15rem but was 28px",
@@ -214,7 +214,7 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c21962-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
+    "error": "Error: Expected ng-tns-c24896-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
@@ -280,14 +280,6 @@ window.testBlocklist = {
   "MatMenu nested menu should not open submenu when hovering over disabled trigger": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatSelect when the select's value is accessed on initialization should not throw when trying to access the selected value on init": {
-    "error": "Error: Expected function not to throw, but it threw TypeError: Cannot read property 'selected' of undefined.",
-    "notes": "FW-1051: Property values changed in ngOnChanges throw ExpressionChanged errors"
-  },
-  "MatSelect with custom trigger should allow the user to customize the label": {
-    "error": "TypeError: Cannot read property 'selected' of undefined",
-    "notes": "FW-1051: Property values changed in ngOnChanges throw ExpressionChanged errors"
   },
   "MatSnackBar with TemplateRef should be able to open a snack bar using a TemplateRef": {
     "error": "Error: Expected ' Fries Pizza  ' to contain 'Pasta'.",
