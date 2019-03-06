@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Injector, Input, NgModule, Output, Renderer2, ViewEncapsulation, destroyPlatform} from '@angular/core';
+import {Component, NgModule, ViewEncapsulation} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
@@ -15,8 +15,6 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 if (browserDetection.supportsShadowDom) {
   describe('ShadowDOM Support', () => {
-
-    let testContainer: HTMLDivElement;
 
     beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
 

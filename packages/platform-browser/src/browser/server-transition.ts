@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_INITIALIZER, ApplicationInitStatus, Inject, InjectionToken, Injector, StaticProvider} from '@angular/core';
+import {APP_INITIALIZER, ApplicationInitStatus, InjectionToken, Injector, StaticProvider} from '@angular/core';
 
 import {getDOM} from '../dom/dom_adapter';
 import {DOCUMENT} from '../dom/dom_tokens';

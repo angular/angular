@@ -5,13 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationPlayer, AnimationTriggerMetadata, animate, state, style, transition, trigger} from '@angular/animations';
+import {AnimationPlayer, AnimationTriggerMetadata, animate, style, transition, trigger} from '@angular/animations';
 import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
 import {Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory, ɵInjectableAnimationEngine as InjectableAnimationEngine} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
-import {fixmeIvy} from '@angular/private/testing';
 
 import {el} from '../../testing/src/browser_util';
 

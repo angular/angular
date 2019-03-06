@@ -9,7 +9,7 @@
 
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule, BrowserTransferStateModule, TransferState} from '@angular/platform-browser';
-import {StateKey, escapeHtml, makeStateKey, unescapeHtml} from '@angular/platform-browser/src/browser/transfer_state';
+import {escapeHtml, makeStateKey, unescapeHtml} from '@angular/platform-browser/src/browser/transfer_state';
 import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
 
 (function() {

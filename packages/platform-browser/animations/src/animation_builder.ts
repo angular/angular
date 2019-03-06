@@ -14,7 +14,7 @@ import {AnimationRenderer} from './animation_renderer';
 @Injectable()
 export class BrowserAnimationBuilder extends AnimationBuilder {
   private _nextAnimationId = 0;
-  private _renderer: AnimationRenderer;
+  private readonly _renderer: AnimationRenderer;
 
   constructor(rootRenderer: RendererFactory2, @Inject(DOCUMENT) doc: any) {
     super();
