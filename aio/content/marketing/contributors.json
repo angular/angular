@@ -679,5 +679,11 @@
     "group": "Collaborator",
     "mentor": "vikerman",
     "picture": "CaerusKaru.jpg"
+  }, 
+  "jbedard": {
+    "name": "Jason Bedard",
+    "group": "Collaborator",
+    "mentor": "kyliau",
+    "picture": "jbedard.png"
   }
 }
