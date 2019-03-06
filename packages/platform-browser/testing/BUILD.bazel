@@ -7,7 +7,6 @@ exports_files(["package.json"])
 ng_module(
     name = "testing",
     srcs = glob(["**/*.ts"]),
-    bundle_dts = True,
     deps = [
         "//packages/core",
         "//packages/core/testing",

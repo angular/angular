@@ -12,7 +12,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    bundle_dts = True,
     deps = [
         "//packages/animations",
         "//packages/animations/browser",
