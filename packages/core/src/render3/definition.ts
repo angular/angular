@@ -19,7 +19,9 @@ import {stringify} from '../util/stringify';
 import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {BaseDef, ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveType, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
-import {CssSelectorList} from './interfaces/projection';
+// while SelectorFlags is unused here, it's required so that types don't get resolved lazily
+// see: https://github.com/Microsoft/web-build-tools/issues/1050
+import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 let _renderCompCount = 0;
 
