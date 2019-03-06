@@ -7,6 +7,7 @@
  */
 
 import * as ts from 'typescript';
+import {isFunctionLikeDeclaration, unwrapExpression} from '../typescript/functions';
 
 /**
  * Class that can be used to determine if a given TypeScript node is used within
@@ -26,19 +27,33 @@ export class DeclarationUsageVisitor {
   }
 
   private addJumpExpressionToQueue(node: ts.Expression, nodeQueue: ts.Node[]) {
+    // In case the given expression is already referring to a function-like declaration,
+    // we don't need to resolve the symbol of the expression as the jump expression is
+    // defined inline and we can just add the given node to the queue.
+    if (isFunctionLikeDeclaration(node) && node.body) {
+      nodeQueue.push(node.body);
+      return;
+    }
+
     const callExprSymbol = this.typeChecker.getSymbolAtLocation(node);
 
-    // Note that we should not add previously visited symbols to the queue as this
-    // could cause cycles.
-    if (callExprSymbol && callExprSymbol.valueDeclaration &&
-        !this.visitedJumpExprSymbols.has(callExprSymbol)) {
+    if (!callExprSymbol || !callExprSymbol.valueDeclaration ||
+        !isFunctionLikeDeclaration(callExprSymbol.valueDeclaration)) {
+      return;
+    }
+
+    const expressionDecl = callExprSymbol.valueDeclaration;
+
+    // Note that we should not add previously visited symbols to the queue as
+    // this could cause cycles.
+    if (expressionDecl.body && !this.visitedJumpExprSymbols.has(callExprSymbol)) {
       this.visitedJumpExprSymbols.add(callExprSymbol);
-      nodeQueue.push(callExprSymbol.valueDeclaration);
+      nodeQueue.push(expressionDecl.body);
     }
   }
 
   private addNewExpressionToQueue(node: ts.NewExpression, nodeQueue: ts.Node[]) {
-    const newExprSymbol = this.typeChecker.getSymbolAtLocation(node.expression);
+    const newExprSymbol = this.typeChecker.getSymbolAtLocation(unwrapExpression(node.expression));
 
     // Only handle new expressions which resolve to classes. Technically "new" could
     // also call void functions or objects with a constructor signature. Also note that
@@ -50,15 +65,15 @@ export class DeclarationUsageVisitor {
     }
 
     const targetConstructor =
-        newExprSymbol.valueDeclaration.members.find(d => ts.isConstructorDeclaration(d));
+        newExprSymbol.valueDeclaration.members.find(ts.isConstructorDeclaration);
 
-    if (targetConstructor) {
+    if (targetConstructor && targetConstructor.body) {
       this.visitedJumpExprSymbols.add(newExprSymbol);
-      nodeQueue.push(targetConstructor);
+      nodeQueue.push(targetConstructor.body);
     }
   }
 
-  isUsedInNode(searchNode: ts.Node): boolean {
+  isSynchronouslyUsedInNode(searchNode: ts.Node): boolean {
     const nodeQueue: ts.Node[] = [searchNode];
     this.visitedJumpExprSymbols.clear();
 
@@ -72,7 +87,7 @@ export class DeclarationUsageVisitor {
       // Handle call expressions within TypeScript nodes that cause a jump in control
       // flow. We resolve the call expression value declaration and add it to the node queue.
       if (ts.isCallExpression(node)) {
-        this.addJumpExpressionToQueue(node.expression, nodeQueue);
+        this.addJumpExpressionToQueue(unwrapExpression(node.expression), nodeQueue);
       }
 
       // Handle new expressions that cause a jump in control flow. We resolve the
@@ -81,7 +96,12 @@ export class DeclarationUsageVisitor {
         this.addNewExpressionToQueue(node, nodeQueue);
       }
 
-      nodeQueue.push(...node.getChildren());
+      // Do not visit nodes that declare a block of statements but are not executed
+      // synchronously (e.g. function declarations). We only want to check TypeScript
+      // nodes which are synchronously executed in the control flow.
+      if (!isFunctionLikeDeclaration(node)) {
+        nodeQueue.push(...node.getChildren());
+      }
     }
     return false;
   }
