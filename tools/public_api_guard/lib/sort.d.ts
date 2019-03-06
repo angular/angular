@@ -71,6 +71,7 @@ export declare class MatSortHeader extends _MatSortHeaderMixinBase implements Ca
     _handleClick(): void;
     _isDisabled(): boolean;
     _isSorted(): boolean;
+    _renderArrow(): boolean;
     _setAnimationTransitionState(viewState: ArrowViewStateTransition): void;
     _setIndicatorHintVisible(visible: boolean): void;
     _updateArrowDirection(): void;

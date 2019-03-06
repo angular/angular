@@ -31,7 +31,6 @@ import {
 
 describe('MatSort', () => {
   let fixture: ComponentFixture<SimpleMatSortApp>;
-
   let component: SimpleMatSortApp;
 
   beforeEach(async(() => {
@@ -384,6 +383,32 @@ describe('MatSort', () => {
       expect(button.getAttribute('aria-label')).toBe('Sort all of the things');
     })
   );
+
+  it('should not render the arrow if sorting is disabled for that column', fakeAsync(() => {
+    const sortHeaderElement = fixture.nativeElement.querySelector('#defaultA');
+
+    // Switch sorting to a different column before asserting.
+    component.sort('defaultB');
+    fixture.componentInstance.disabledColumnSort = true;
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    expect(sortHeaderElement.querySelector('.mat-sort-header-arrow')).toBeFalsy();
+  }));
+
+  it('should render the arrow if a disabled column is being sorted by', fakeAsync(() => {
+    const sortHeaderElement = fixture.nativeElement.querySelector('#defaultA');
+
+    component.sort('defaultA');
+    fixture.componentInstance.disabledColumnSort = true;
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    expect(sortHeaderElement.querySelector('.mat-sort-header-arrow')).toBeTruthy();
+  }));
+
 });
 
 /**

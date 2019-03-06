@@ -11,6 +11,7 @@
 
   <!-- Disable animations while a current animation is running -->
   <div class="mat-sort-header-arrow"
+       *ngIf="_renderArrow()"
        [@arrowOpacity]="_getArrowViewState()"
        [@arrowPosition]="_getArrowViewState()"
        [@allowChildren]="_getArrowDirectionState()"

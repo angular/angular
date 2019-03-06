@@ -289,4 +289,9 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
 
     return this._sort.direction == 'asc' ? 'ascending' : 'descending';
   }
+
+  /** Whether the arrow inside the sort header should be rendered. */
+  _renderArrow() {
+    return !this._isDisabled() || this._isSorted();
+  }
 }
