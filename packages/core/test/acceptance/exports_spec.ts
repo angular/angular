@@ -45,8 +45,8 @@ describe('exports', () => {
       const fixture = initWithTemplate(
           AppComp, '<div dir-on-change #myDir="dirOnChange" [in]="true"></div> {{ myDir.name }}');
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML)
-          .toEqual('<div dir-on-change="" ng-reflect-in="true" title="Drew!?@"></div> Drew!?@');
+      expect(fixture.nativeElement.firstChild.title).toBe('Drew!?@');            // div element
+      expect(fixture.nativeElement.lastChild.textContent).toContain('Drew!?@');  // text node
     });
 
     modifiedInIvy('Supporting input changes in hooks is limited in Ivy')
@@ -55,8 +55,8 @@ describe('exports', () => {
               AppComp,
               '{{ myDir.name }} <div dir-on-change #myDir="dirOnChange" [in]="true"></div>');
           fixture.detectChanges();
-          expect(fixture.nativeElement.innerHTML)
-              .toEqual('Drew!?@ <div dir-on-change="" ng-reflect-in="true" title="Drew!?@"></div>');
+          expect(fixture.nativeElement.firstChild.textContent).toContain('Drew!?@');  // text node
+          expect(fixture.nativeElement.lastChild.title).toBe('Drew!?@');              // div element
         });
 
     onlyInIvy('Supporting input changes in hooks is limited in Ivy')
@@ -77,9 +77,8 @@ describe('exports', () => {
               AppComp,
               '<div dir-on-change #myDir="dirOnChange" [in]="true" [id]="myDir.name"></div>');
           fixture.detectChanges();
-          expect(fixture.nativeElement.innerHTML)
-              .toEqual(
-                  '<div dir-on-change="" ng-reflect-in="true" id="Drew!?@" title="Drew!?@"></div>');
+          expect(fixture.nativeElement.firstChild.id).toBe('Drew!?@');
+          expect(fixture.nativeElement.firstChild.title).toBe('Drew!?@');
         });
 
     onlyInIvy('Supporting input changes in hooks is limited in Ivy')
@@ -98,8 +97,7 @@ describe('exports', () => {
       const fixture =
           initWithTemplate(AppComp, '<div dir-on-change #myDir="dirOnChange" [in]="true"></div>');
       fixture.detectChanges();
-      expect(fixture.nativeElement.innerHTML)
-          .toEqual('<div dir-on-change="" ng-reflect-in="true" title="Drew!?@"></div>');
+      expect(fixture.nativeElement.firstChild.title).toBe('Drew!?@');
     });
   });
 
