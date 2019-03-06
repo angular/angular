@@ -114,5 +114,19 @@ api-extractor: running with
   }
 
   const [tsConfig, entryPoint, dtsBundleOut] = process.argv.slice(2);
-  process.exitCode = runMain(tsConfig, entryPoint, dtsBundleOut);
+  const entryPoints = entryPoint.split(',');
+  const dtsBundleOuts = dtsBundleOut.split(',');
+
+  if (entryPoints.length !== entryPoints.length) {
+    throw new Error(
+        `Entry points count (${entryPoints.length}) does not match Bundle out count (${dtsBundleOuts.length})`);
+  }
+
+  for (let i = 0; i < entryPoints.length; i++) {
+    process.exitCode = runMain(tsConfig, entryPoints[i], dtsBundleOuts[i]);
+
+    if (process.exitCode !== 0) {
+      break;
+    }
+  }
 }

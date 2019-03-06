@@ -10,8 +10,6 @@ ng_module(
             "src/**/*.ts",
         ],
     ),
-    # PR to support this https://github.com/angular/angular/pull/28884
-    bundle_dts = False,
     deps = [
         "//packages:types",
         "//packages/core/src/compiler",
