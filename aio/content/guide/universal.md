@@ -8,8 +8,7 @@ the client. This means that the application generally renders more quickly, givi
 layout before it becomes fully interactive.
 
 For a more detailed look at different techniques and concepts surrounding SSR, please check out this 
-[article](https://developers.google.com/web/updates/2019/02/rendering-on-the-web). For reference, Angular Universal
-falls under the category of "SSR with (Re)Hydration".
+[article](https://developers.google.com/web/updates/2019/02/rendering-on-the-web).
 
 You can easily prepare an app for server-side rendering using the [Angular CLI](guide/glossary#cli). 
 The CLI schematic `@nguniversal/express-engine` performs the required steps, as described below.
@@ -74,15 +73,16 @@ Navigation via `routerLinks` works correctly because they use the native anchor 
 You can go from the Dashboard to the Heroes page and back.
 You can click a hero on the Dashboard page to display its Details page.
 
-Notice, however, that clicks, mouse-moves, and keyboard entries are inert.
-
+If you throttle your network speed so that the client-side scripts take longer to download (instructions below), 
+you'll notice:
 * Clicking a hero on the Heroes page does nothing.
 * You can't add or delete a hero.
 * The search box on the Dashboard page is ignored.
 * The *Back* and *Save* buttons on the Details page don't work.
 
 User events other than `routerLink` clicks aren't supported.
-You must wait for the full client app to bootstrap and run.
+You must wait for the full client app to bootstrap and run, or buffer the events using libraries like 
+[preboot](https://github.com/angular/preboot), which allow you to replay these events once the client-side scripts load.
 
 The transition from the server-rendered app to the client app happens quickly on a development machine, but you should
 always test your apps in real-world scenarios.
@@ -100,9 +100,9 @@ The server-rendered app still launches quickly but the full client app may take 
 
 There are three main reasons to create a Universal version of your app.
 
-1. Facilitate web crawlers (search engine optimization, aka SEO)
+1. Facilitate web crawlers through [search engine optimization (SEO)](https://static.googleusercontent.com/media/www.google.com/en//webmasters/docs/search-engine-optimization-starter-guide.pdf)
 1. Improve performance on mobile and low-powered devices
-1. Show the first page quickly (first-contentful paint, aka FCP)
+1. Show the first page quickly with a [first-contentful paint (FCP)](https://developers.google.com/web/tools/lighthouse/audits/first-contentful-paint)
 
 {@a seo}
 {@a web-crawlers}
@@ -114,9 +114,6 @@ These web crawlers may be unable to navigate and index your highly interactive A
 
 Angular Universal can generate a static version of your app that is easily searchable, linkable, and navigable without JavaScript.
 Universal also makes a site preview available since each URL returns a fully rendered page.
-
-Enabling web crawlers is often referred to as
-[search engine optimization (SEO)](https://static.googleusercontent.com/media/www.google.com/en//webmasters/docs/search-engine-optimization-starter-guide.pdf).
 
 {@a no-javascript}
 ### Improve performance on mobile and low-powered devices
@@ -214,7 +211,7 @@ import {HttpInterceptor, HttpHandler, HttpRequest, HttpHeaders} from '@angular/c
 import {Request} from 'express';
 import {REQUEST} from '@nguniversal/express-engine/tokens';
 
-@Injectable({providedIn: 'root'})
+@Injectable()
 export class UniversalInterceptor implements HttpInterceptor {
 
   constructor(@Optional() @Inject(REQUEST) protected request: Request) {}
