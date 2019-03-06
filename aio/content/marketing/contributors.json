@@ -770,5 +770,11 @@
     "groups": ["GDE"],
     "picture": "bonnie.jpg",
     "bio": "Bonnie has been specializing in Angular since 2013. She is the founder of ngHouston Angular Meetup and a regular panelist on Angular Air. She is also the very proud parent component of @thelittlestdev!"
+  },
+  "globegitter": {
+    "name": "Markus Padourek",
+    "groups": ["Collaborator"],
+    "mentor": "gregmagolan",
+    "picture": "globegitter.jpg"
   }
 }
