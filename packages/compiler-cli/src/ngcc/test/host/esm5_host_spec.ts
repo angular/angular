@@ -520,6 +520,15 @@ const DECORATED_FILES = [
   }
 ];
 
+const UNWANTED_PROTOTYPE_EXPORT_FILE = {
+  name: '/library.d.ts',
+  contents: `
+    export declare class SomeParam {
+      someInstanceMethod(): void;
+      static someStaticProp: any;
+    }`
+};
+
 describe('Esm5ReflectionHost', () => {
 
   describe('getDecoratorsOfDeclaration()', () => {
@@ -906,6 +915,16 @@ describe('Esm5ReflectionHost', () => {
         expect(decorators[0].args).toEqual([]);
       });
     });
+
+    it('should ignore the prototype pseudo-static property on class imported from typings files',
+       () => {
+         const program = makeTestProgram(UNWANTED_PROTOTYPE_EXPORT_FILE);
+         const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+         const classNode = getDeclaration(
+             program, UNWANTED_PROTOTYPE_EXPORT_FILE.name, 'SomeParam', ts.isClassDeclaration);
+         const members = host.getMembersOfClass(classNode);
+         expect(members.find(m => m.name === 'prototype')).toBeUndefined();
+       });
   });
 
   describe('getConstructorParameters', () => {
