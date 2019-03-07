@@ -37,56 +37,6 @@ export declare function formatNumber(value: number, locale: string, digitsInfo?:
 
 export declare function formatPercent(value: number, locale: string, digitsInfo?: string): string;
 
-export declare enum FormatWidth {
-    Short = 0,
-    Medium = 1,
-    Long = 2,
-    Full = 3
-}
-
-export declare enum FormStyle {
-    Format = 0,
-    Standalone = 1
-}
-
-export declare function getCurrencySymbol(code: string, format: 'wide' | 'narrow', locale?: string): string;
-
-export declare function getLocaleCurrencyName(locale: string): string | null;
-
-export declare function getLocaleCurrencySymbol(locale: string): string | null;
-
-export declare function getLocaleDateFormat(locale: string, width: FormatWidth): string;
-
-export declare function getLocaleDateTimeFormat(locale: string, width: FormatWidth): string;
-
-export declare function getLocaleDayNames(locale: string, formStyle: FormStyle, width: TranslationWidth): string[];
-
-export declare function getLocaleDayPeriods(locale: string, formStyle: FormStyle, width: TranslationWidth): [string, string];
-
-export declare function getLocaleEraNames(locale: string, width: TranslationWidth): [string, string];
-
-export declare function getLocaleExtraDayPeriodRules(locale: string): (Time | [Time, Time])[];
-
-export declare function getLocaleExtraDayPeriods(locale: string, formStyle: FormStyle, width: TranslationWidth): string[];
-
-export declare function getLocaleFirstDayOfWeek(locale: string): WeekDay;
-
-export declare function getLocaleId(locale: string): string;
-
-export declare function getLocaleMonthNames(locale: string, formStyle: FormStyle, width: TranslationWidth): string[];
-
-export declare function getLocaleNumberFormat(locale: string, type: NumberFormatStyle): string;
-
-export declare function getLocaleNumberSymbol(locale: string, symbol: NumberSymbol): string;
-
-export declare function getLocalePluralCase(locale: string): (value: number) => Plural;
-
-export declare function getLocaleTimeFormat(locale: string, width: FormatWidth): string;
-
-export declare function getLocaleWeekEndRange(locale: string): [WeekDay, WeekDay];
-
-export declare function getNumberOfCurrencyDigits(code: string): number;
-
 export declare class HashLocationStrategy extends LocationStrategy {
     constructor(_platformLocation: PlatformLocation, _baseHref?: string);
     back(): void;
@@ -304,30 +254,6 @@ export declare class NgTemplateOutlet implements OnChanges {
     ngOnChanges(changes: SimpleChanges): void;
 }
 
-export declare enum NumberFormatStyle {
-    Decimal = 0,
-    Percent = 1,
-    Currency = 2,
-    Scientific = 3
-}
-
-export declare enum NumberSymbol {
-    Decimal = 0,
-    Group = 1,
-    List = 2,
-    PercentSign = 3,
-    PlusSign = 4,
-    MinusSign = 5,
-    Exponential = 6,
-    SuperscriptingExponent = 7,
-    PerMille = 8,
-    Infinity = 9,
-    NaN = 10,
-    TimeSeparator = 11,
-    CurrencyDecimal = 12,
-    CurrencyGroup = 13
-}
-
 export declare class PathLocationStrategy extends LocationStrategy {
     constructor(_platformLocation: PlatformLocation, href?: string);
     back(): void;
@@ -358,15 +284,6 @@ export declare abstract class PlatformLocation {
     abstract replaceState(state: any, title: string, url: string): void;
 }
 
-export declare enum Plural {
-    Zero = 0,
-    One = 1,
-    Two = 2,
-    Few = 3,
-    Many = 4,
-    Other = 5
-}
-
 export interface PopStateEvent {
     pop?: boolean;
     state?: any;
@@ -374,26 +291,12 @@ export interface PopStateEvent {
     url?: string;
 }
 
-export declare function registerLocaleData(data: any, localeId?: string | any, extraData?: any): void;
-
 export declare class SlicePipe implements PipeTransform {
     transform(value: any, start: number, end?: number): any;
 }
 
-export declare type Time = {
-    hours: number;
-    minutes: number;
-};
-
 export declare class TitleCasePipe implements PipeTransform {
     transform(value: string): string;
-}
-
-export declare enum TranslationWidth {
-    Narrow = 0,
-    Abbreviated = 1,
-    Wide = 2,
-    Short = 3
 }
 
 export declare class UpperCasePipe implements PipeTransform {
@@ -409,14 +312,4 @@ export declare abstract class ViewportScroller {
     abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
     abstract setOffset(offset: [number, number] | (() => [number, number])): void;
     static ngInjectableDef: never;
-}
-
-export declare enum WeekDay {
-    Sunday = 0,
-    Monday = 1,
-    Tuesday = 2,
-    Wednesday = 3,
-    Thursday = 4,
-    Friday = 5,
-    Saturday = 6
 }

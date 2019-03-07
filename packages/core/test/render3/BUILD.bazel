@@ -20,6 +20,7 @@ ts_library(
         "//packages/animations/browser",
         "//packages/animations/browser/testing",
         "//packages/common",
+        "//packages/common/locales",
         "//packages/compiler",
         "//packages/core",
         "//packages/core/src/di/interface",

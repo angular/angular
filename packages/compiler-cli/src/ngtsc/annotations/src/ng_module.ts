@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
+import {Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, Statement, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
+import {STRING_TYPE} from '@angular/compiler/src/output/output_ast';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -17,7 +18,6 @@ import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {getSourceFile} from '../../util/src/typescript';
-
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, forwardRefResolver, getValidConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
@@ -39,7 +39,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
-      private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter) {}
+      private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter,
+      private localeId?: string) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -217,7 +218,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         ngModuleStatements.push(callExpr.toStmt());
       }
     }
-    return [
+    const res: CompileResult[] = [
       {
         name: 'ngModuleDef',
         initializer: ngModuleDef.expression,
@@ -229,8 +230,19 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         initializer: ngInjectorDef.expression,
         statements: ngInjectorDef.statements,
         type: ngInjectorDef.type,
-      },
+      }
     ];
+
+    if (this.localeId) {
+      res.push({
+        name: 'ngLocaleIdDef',
+        initializer: new LiteralExpr(this.localeId),
+        statements: [],
+        type: STRING_TYPE
+      });
+    }
+
+    return res;
   }
 
   private _toR3Reference(

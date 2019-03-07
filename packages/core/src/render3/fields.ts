@@ -12,6 +12,7 @@ export const NG_COMPONENT_DEF = getClosureSafeProperty({ngComponentDef: getClosu
 export const NG_DIRECTIVE_DEF = getClosureSafeProperty({ngDirectiveDef: getClosureSafeProperty});
 export const NG_PIPE_DEF = getClosureSafeProperty({ngPipeDef: getClosureSafeProperty});
 export const NG_MODULE_DEF = getClosureSafeProperty({ngModuleDef: getClosureSafeProperty});
+export const NG_LOCALE_ID_DEF = getClosureSafeProperty({ngLocaleIdDef: getClosureSafeProperty});
 export const NG_BASE_DEF = getClosureSafeProperty({ngBaseDef: getClosureSafeProperty});
 
 /**

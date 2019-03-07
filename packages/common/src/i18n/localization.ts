@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, LOCALE_ID} from '@angular/core';
-import {Plural, getLocalePluralCase} from './locale_data_api';
+import {Inject, Injectable, LOCALE_ID, ɵgetPluralCase} from '@angular/core';
 
 
 /**
@@ -54,21 +53,6 @@ export class NgLocaleLocalization extends NgLocalization {
   constructor(@Inject(LOCALE_ID) protected locale: string) { super(); }
 
   getPluralCategory(value: any, locale?: string): string {
-    const plural = getLocalePluralCase(locale || this.locale)(value);
-
-    switch (plural) {
-      case Plural.Zero:
-        return 'zero';
-      case Plural.One:
-        return 'one';
-      case Plural.Two:
-        return 'two';
-      case Plural.Few:
-        return 'few';
-      case Plural.Many:
-        return 'many';
-      default:
-        return 'other';
-    }
+    return ɵgetPluralCase(value, locale || this.locale);
   }
 }

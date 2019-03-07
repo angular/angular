@@ -102,7 +102,9 @@ export {
   i18nStart,
   i18nEnd,
   i18nApply,
-  i18nPostprocess
+  i18nPostprocess,
+  getLocaleId,
+  setLocaleId,
 } from './i18n';
 
 export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';

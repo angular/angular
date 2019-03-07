@@ -126,6 +126,7 @@ export {
   i18nEnd as ɵi18nEnd,
   i18nApply as ɵi18nApply,
   i18nPostprocess as ɵi18nPostprocess,
+  setLocaleId as ɵsetLocaleId,
   setClassMetadata as ɵsetClassMetadata,
   resolveWindow as ɵresolveWindow,
   resolveDocument as ɵresolveDocument,

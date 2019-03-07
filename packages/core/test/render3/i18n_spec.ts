@@ -7,7 +7,8 @@
  */
 
 import {noop} from '../../../compiler/src/render3/view/util';
-import {Component as _Component} from '../../src/core';
+import {registerLocaleData} from '../../../core/src/i18n/locale_data';
+import {Component as _Component, defineInjector, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {defineComponent, defineDirective} from '../../src/render3/definition';
 import {getTranslationForTemplate, i18n, i18nApply, i18nAttributes, i18nEnd, i18nExp, i18nPostprocess, i18nStart} from '../../src/render3/i18n';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -18,6 +19,8 @@ import {allocHostVars, element, elementEnd, elementStart, template, text, nextCo
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {ComponentFixture, TemplateFixture} from './render_util';
+import {NgModuleFactory} from '../../src/render3/ng_module_ref';
+import localeRo from '@angular/common/locales/ro';
 
 const Component: typeof _Component = function(...args: any[]): any {
   // In test we use @Component for documentation only so it's safe to mock out the implementation.
@@ -2055,4 +2058,56 @@ describe('Runtime i18n', () => {
     });
   });
 
+  it('should return the correct plural form for ICU expressions when using a specific locale',
+     () => {
+       registerLocaleData(localeRo);
+       const MSG_DIV = `{�0�, plural, 
+            =0 {no email} 
+            =one {one email} 
+            =few {a few emails} 
+            =other {lots of emails} 
+          }`;
+       const ctx = {value: 0};
+
+       class MyAppModule {
+         static ngLocaleIdDef = 'ro';
+         static ngInjectorDef = defineInjector({factory: () => new MyAppModule()});
+         static ngModuleDef: NgModuleDef<any> = { bootstrap: [] } as any;
+       }
+       const myAppModuleFactory = new NgModuleFactory(MyAppModule);
+       const ngModuleRef = myAppModuleFactory.create(null);
+
+       const fixture = prepareFixture(
+           () => {
+             elementStart(0, 'div');
+             i18n(1, MSG_DIV);
+             elementEnd();
+           },
+           () => {
+             i18nExp(bind(ctx.value));
+             i18nApply(1);
+           },
+           2, 1);
+       expect(fixture.html).toEqual('<div>no email<!--ICU 3--></div>');
+
+       // Change detection cycle, no model changes
+       fixture.update();
+       expect(fixture.html).toEqual('<div>no email<!--ICU 3--></div>');
+
+       ctx.value = 1;
+       fixture.update();
+       expect(fixture.html).toEqual('<div>one email<!--ICU 3--></div>');
+
+       ctx.value = 10;
+       fixture.update();
+       expect(fixture.html).toEqual('<div>a few emails<!--ICU 3--></div>');
+
+       ctx.value = 20;
+       fixture.update();
+       expect(fixture.html).toEqual('<div>lots of emails<!--ICU 3--></div>');
+
+       ctx.value = 0;
+       fixture.update();
+       expect(fixture.html).toEqual('<div>no email<!--ICU 3--></div>');
+     });
 });
