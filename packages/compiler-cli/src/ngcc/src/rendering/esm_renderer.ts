@@ -23,9 +23,17 @@ export class EsmRenderer extends Renderer {
   /**
    *  Add the imports at the top of the file
    */
-  addImports(output: MagicString, imports: {name: string; as: string;}[]): void {
+  addImports(output: MagicString, imports: {
+    specifier: string; qualifier: string; isDefault: boolean
+  }[]): void {
     // The imports get inserted at the very top of the file.
-    imports.forEach(i => { output.appendLeft(0, `import * as ${i.as} from '${i.name}';\n`); });
+    imports.forEach(i => {
+      if (!i.isDefault) {
+        output.appendLeft(0, `import * as ${i.qualifier} from '${i.specifier}';\n`);
+      } else {
+        output.appendLeft(0, `import ${i.qualifier} from '${i.specifier}';\n`);
+      }
+    });
   }
 
   addExports(output: MagicString, entryPointBasePath: string, exports: {

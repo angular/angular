@@ -19,10 +19,22 @@ export function addImports(
     extraStatements: ts.Statement[] = []): ts.SourceFile {
   // Generate the import statements to prepend.
   const addedImports = importManager.getAllImports(sf.fileName).map(i => {
+    const qualifier = ts.createIdentifier(i.qualifier);
+    let importClause: ts.ImportClause;
+    if (!i.isDefault) {
+      importClause = ts.createImportClause(
+          /* name */ undefined,
+          /* namedBindings */ ts.createNamespaceImport(qualifier));
+    } else {
+      importClause = ts.createImportClause(
+          /* name */ qualifier,
+          /* namedBindings */ undefined);
+    }
     return ts.createImportDeclaration(
-        undefined, undefined,
-        ts.createImportClause(undefined, ts.createNamespaceImport(ts.createIdentifier(i.as))),
-        ts.createLiteral(i.name));
+        /* decorators */ undefined,
+        /* modifiers */ undefined,
+        /* importClause */ importClause,
+        /* moduleSpecifier */ ts.createLiteral(i.specifier));
   });
 
   // Filter out the existing imports and the source file body. All new statements

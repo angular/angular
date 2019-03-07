@@ -245,7 +245,9 @@ export abstract class Renderer {
 
   protected abstract addConstants(output: MagicString, constants: string, file: ts.SourceFile):
       void;
-  protected abstract addImports(output: MagicString, imports: {name: string, as: string}[]): void;
+  protected abstract addImports(
+      output: MagicString,
+      imports: {specifier: string, qualifier: string, isDefault: boolean}[]): void;
   protected abstract addExports(output: MagicString, entryPointBasePath: string, exports: {
     identifier: string,
     from: string
