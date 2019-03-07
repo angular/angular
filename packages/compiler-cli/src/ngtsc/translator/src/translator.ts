@@ -10,6 +10,7 @@ import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinTyp
 import * as ts from 'typescript';
 
 import {ImportRewriter, NoopImportRewriter} from '../../imports';
+import {DEFAULT_EXPORT_NAME} from '../../reflection';
 
 export class Context {
   constructor(readonly isStatement: boolean) {}
@@ -38,11 +39,9 @@ const BINARY_OPERATORS = new Map<BinaryOperator, ts.BinaryOperator>([
   [BinaryOperator.Plus, ts.SyntaxKind.PlusToken],
 ]);
 
-
-
 export class ImportManager {
-  private moduleToIndex = new Map<string, string>();
-  private importedModules = new Set<string>();
+  private nonDefaultImports = new Map<string, string>();
+  private defaultImports = new Map<string, string>();
   private nextIndex = 0;
 
   constructor(protected rewriter: ImportRewriter = new NoopImportRewriter(), private prefix = 'i') {
@@ -61,20 +60,39 @@ export class ImportManager {
     }
 
     // If not, this symbol will be imported. Allocate a prefix for the imported module if needed.
-    if (!this.moduleToIndex.has(moduleName)) {
-      this.moduleToIndex.set(moduleName, `${this.prefix}${this.nextIndex++}`);
-    }
-    const moduleImport = this.moduleToIndex.get(moduleName) !;
 
-    return {moduleImport, symbol};
+    const isDefault = symbol === DEFAULT_EXPORT_NAME;
+
+    // Use a different map for non-default vs default imports. This allows the same module to be
+    // imported in both ways simultaneously.
+    const trackingMap = !isDefault ? this.nonDefaultImports : this.defaultImports;
+
+    if (!trackingMap.has(moduleName)) {
+      trackingMap.set(moduleName, `${this.prefix}${this.nextIndex++}`);
+    }
+    const moduleImport = trackingMap.get(moduleName) !;
+
+    if (isDefault) {
+      // For an import of a module's default symbol, the moduleImport *is* the name to use to refer
+      // to the import.
+      return {moduleImport: null, symbol: moduleImport};
+    } else {
+      // Non-default imports have a qualifier and the symbol name to import.
+      return {moduleImport, symbol};
+    }
   }
 
-  getAllImports(contextPath: string): {name: string, as: string}[] {
-    return Array.from(this.moduleToIndex.keys()).map(name => {
-      const as = this.moduleToIndex.get(name) !;
-      name = this.rewriter.rewriteSpecifier(name, contextPath);
-      return {name, as};
+  getAllImports(contextPath: string): {specifier: string, qualifier: string, isDefault: boolean}[] {
+    const imports: {specifier: string, qualifier: string, isDefault: boolean}[] = [];
+    this.nonDefaultImports.forEach((qualifier, specifier) => {
+      specifier = this.rewriter.rewriteSpecifier(specifier, contextPath);
+      imports.push({specifier, qualifier, isDefault: false});
     });
+    this.defaultImports.forEach((qualifier, specifier) => {
+      specifier = this.rewriter.rewriteSpecifier(specifier, contextPath);
+      imports.push({specifier, qualifier, isDefault: true});
+    });
+    return imports;
   }
 }
 
