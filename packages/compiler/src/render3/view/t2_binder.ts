@@ -282,27 +282,21 @@ class DirectiveBinder<DirectiveT extends DirectiveMeta> implements Visitor {
       }
     });
 
-    // Associate bindings on the node with directives or with the node itself.
-
-    // Inputs:
-    [...node.attributes, ...node.inputs].forEach(binding => {
-      let dir = directives.find(dir => dir.inputs.hasOwnProperty(binding.name));
+    // Associate attributes/bindings on the node with directives or with the node itself.
+    const processAttribute = (attribute: BoundAttribute | BoundEvent | TextAttribute) => {
+      let dir = directives.find(dir => dir.inputs.hasOwnProperty(attribute.name));
       if (dir !== undefined) {
-        this.bindings.set(binding, dir);
+        this.bindings.set(attribute, dir);
       } else {
-        this.bindings.set(binding, node);
+        this.bindings.set(attribute, node);
       }
-    });
-
-    // Outputs:
-    node.outputs.forEach(binding => {
-      let dir = directives.find(dir => dir.outputs.hasOwnProperty(binding.name));
-      if (dir !== undefined) {
-        this.bindings.set(binding, dir);
-      } else {
-        this.bindings.set(binding, node);
-      }
-    });
+    };
+    node.attributes.forEach(processAttribute);
+    node.inputs.forEach(processAttribute);
+    node.outputs.forEach(processAttribute);
+    if (node instanceof Template) {
+      node.templateAttrs.forEach(processAttribute);
+    }
 
     // Recurse into the node's children.
     node.children.forEach(child => child.visit(this));
@@ -378,10 +372,12 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
 
   private ingest(template: Template|Node[]): void {
     if (template instanceof Template) {
-      // For <ng-template>s, process inputs, outputs, variables, and child nodes. References were
-      // processed in the scope of the containing template.
+      // For <ng-template>s, process inputs, outputs, template attributes,
+      // variables, and child nodes.
+      // References were processed in the scope of the containing template.
       template.inputs.forEach(this.visitNode);
       template.outputs.forEach(this.visitNode);
+      template.templateAttrs.forEach(this.visitNode);
       template.variables.forEach(this.visitNode);
       template.children.forEach(this.visitNode);
 
@@ -394,16 +390,17 @@ class TemplateBinder extends RecursiveAstVisitor implements Visitor {
   }
 
   visitElement(element: Element) {
-    // Vist the inputs, outputs, and children of the element.
+    // Visit the inputs, outputs, and children of the element.
     element.inputs.forEach(this.visitNode);
     element.outputs.forEach(this.visitNode);
     element.children.forEach(this.visitNode);
   }
 
   visitTemplate(template: Template) {
-    // First, visit the inputs, outputs of the template node.
+    // First, visit inputs, outputs and template attributes of the template node.
     template.inputs.forEach(this.visitNode);
     template.outputs.forEach(this.visitNode);
+    template.templateAttrs.forEach(this.visitNode);
 
     // References are also evaluated in the outer context.
     template.references.forEach(this.visitNode);
