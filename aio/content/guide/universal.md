@@ -88,6 +88,7 @@ The transition from the server-rendered app to the client app happens quickly on
 always test your apps in real-world scenarios.
 
 You can simulate a slower network to see the transition more clearly as follows:
+
 1. Open the Chrome Dev Tools and go to the Network tab.
 1. Find the [Network Throttling](https://developers.google.com/web/tools/chrome-devtools/network-performance/reference#throttling) 
 dropdown on the far right of the menu bar.
