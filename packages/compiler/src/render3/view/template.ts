@@ -576,9 +576,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       attributes.push(...getAttributeNameLiterals(attr.name), o.literal(attr.value));
     });
 
-    // this will build the instructions so that they fall into the following syntax
-    // add attributes for directive matching purposes
-    attributes.push(...this.prepareBindingsAttrs(allOtherInputs, element.outputs, stylingBuilder));
+    // add attributes for directive and projection matching purposes
+    attributes.push(...this.prepareNonRenderAttrs(allOtherInputs, element.outputs, stylingBuilder));
     parameters.push(this.toAttrsParam(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -774,6 +773,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   visitTemplate(template: t.Template) {
+    const NG_TEMPLATE_TAG_NAME = 'ng-template';
     const templateIndex = this.allocateDataSlot();
 
     if (this.i18n) {
@@ -794,13 +794,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     ];
 
     // find directives matching on a given <ng-template> node
-    this.matchDirectives('ng-template', template);
+    this.matchDirectives(NG_TEMPLATE_TAG_NAME, template);
 
     // prepare attributes parameter (including attributes used for directive matching)
     const attrsExprs: o.Expression[] = [];
     template.attributes.forEach(
         (a: t.TextAttribute) => { attrsExprs.push(asLiteral(a.name), asLiteral(a.value)); });
-    attrsExprs.push(...this.prepareBindingsAttrs(template.inputs, template.outputs));
+    attrsExprs.push(...this.prepareNonRenderAttrs(
+        template.inputs, template.outputs, undefined, template.templateAttrs));
     parameters.push(this.toAttrsParam(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -840,23 +841,19 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // handle property bindings e.g. ɵelementProperty(1, 'ngForOf', ɵbind(ctx.items));
     const context = o.variable(CONTEXT_NAME);
-    template.inputs.forEach(input => {
-      const value = input.value.visit(this._valueConverter);
-      this.allocateBindingSlots(value);
-      this.updateInstruction(templateIndex, template.sourceSpan, R3.elementProperty, () => {
-        return [
-          o.literal(templateIndex), o.literal(input.name),
-          this.convertPropertyBinding(context, value)
-        ];
-      });
-    });
+    this.templatePropertyBindings(template, templateIndex, context, template.templateAttrs);
 
-    // Generate listeners for directive output
-    template.outputs.forEach((outputAst: t.BoundEvent) => {
-      this.creationInstruction(
-          outputAst.sourceSpan, R3.listener,
-          this.prepareListenerParameter('ng_template', outputAst, templateIndex));
-    });
+    // Only add normal input/output binding instructions on explicit ng-template elements.
+    if (template.tagName === NG_TEMPLATE_TAG_NAME) {
+      // Add the input bindings
+      this.templatePropertyBindings(template, templateIndex, context, template.inputs);
+      // Generate listeners for directive output
+      template.outputs.forEach((outputAst: t.BoundEvent) => {
+        this.creationInstruction(
+            outputAst.sourceSpan, R3.listener,
+            this.prepareListenerParameter('ng_template', outputAst, templateIndex));
+      });
+    }
   }
 
   // These should be handled in the template or element directly.
@@ -948,6 +945,23 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private bindingContext() { return `${this._bindingContext++}`; }
+
+  private templatePropertyBindings(
+      template: t.Template, templateIndex: number, context: o.ReadVarExpr,
+      attrs: (t.BoundAttribute|t.TextAttribute)[]) {
+    attrs.forEach(input => {
+      if (input instanceof t.BoundAttribute) {
+        const value = input.value.visit(this._valueConverter);
+        this.allocateBindingSlots(value);
+        this.updateInstruction(templateIndex, template.sourceSpan, R3.elementProperty, () => {
+          return [
+            o.literal(templateIndex), o.literal(input.name),
+            this.convertPropertyBinding(context, value)
+          ];
+        });
+      }
+    });
+  }
 
   // Bindings must only be resolved after all local refs have been visited, so all
   // instructions are queued in callbacks that execute once the initial pass has completed.
@@ -1051,9 +1065,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    * Note that this function will fully ignore all synthetic (@foo) attribute values
    * because those values are intended to always be generated as property instructions.
    */
-  private prepareBindingsAttrs(
-      inputs: t.BoundAttribute[], outputs: t.BoundEvent[],
-      styles?: StylingBuilder): o.Expression[] {
+  private prepareNonRenderAttrs(
+      inputs: t.BoundAttribute[], outputs: t.BoundEvent[], styles?: StylingBuilder,
+      templateAttrs: (t.BoundAttribute|t.TextAttribute)[] = []): o.Expression[] {
     const alreadySeen = new Set<string>();
     const attrExprs: o.Expression[] = [];
 
@@ -1100,6 +1114,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       if (attrExprs.length) {
         attrExprs.splice(attrsStartIndex, 0, o.literal(core.AttributeMarker.Bindings));
       }
+    }
+
+    if (templateAttrs.length) {
+      attrExprs.push(o.literal(core.AttributeMarker.Template));
+      templateAttrs.forEach(attr => addAttrExpr(attr.name));
     }
 
     return attrExprs;

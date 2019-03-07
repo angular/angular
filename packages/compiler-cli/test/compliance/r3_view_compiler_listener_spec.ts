@@ -133,7 +133,7 @@ describe('compiler compliance: listen()', () => {
     };
 
     const template = `
-        const $t0_attrs$ = [${AttributeMarker.Bindings}, "ngIf"];
+        const $t0_attrs$ = [${AttributeMarker.Template}, "ngIf"];
         const $e_attrs$ = [${AttributeMarker.Bindings}, "click"];
 
         function MyComponent_div_0_Template(rf, ctx) {

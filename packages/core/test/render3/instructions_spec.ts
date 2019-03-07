@@ -304,12 +304,13 @@ describe('instructions', () => {
 
   describe('performance counters', () => {
     it('should create tViews only once for each nested level', () => {
-      const _c0 = ['ngFor', '', 'ngForOf', ''];
+      const _c0 = [AttributeMarker.Template, 'ngFor', 'ngForOf'];
+      const _c1 = [AttributeMarker.Template, 'ngFor', 'ngForOf'];
 
       function ToDoAppComponent_NgForOf_Template_0(rf: RenderFlags, ctx0: NgForOfContext<any>) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'ul');
-          template(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', _c0);
+          template(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, 'li', _c1);
           elementEnd();
         }
         if (rf & RenderFlags.Update) {

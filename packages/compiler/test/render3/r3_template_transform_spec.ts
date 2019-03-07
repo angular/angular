@@ -32,6 +32,8 @@ class R3AstHumanizer implements t.Visitor<void> {
     this.visitAll([
       template.attributes,
       template.inputs,
+      template.outputs,
+      template.templateAttrs,
       template.references,
       template.variables,
       template.children,

@@ -177,8 +177,9 @@ class HtmlAstToIvyAst implements html.Visitor {
       const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
 
       parsedElement = new t.Template(
-          element.name, attributes, attrs.bound, boundEvents, children, references, variables,
-          element.sourceSpan, element.startSourceSpan, element.endSourceSpan, element.i18n);
+          element.name, attributes, attrs.bound, boundEvents, [/* no template attributes */],
+          children, references, variables, element.sourceSpan, element.startSourceSpan,
+          element.endSourceSpan, element.i18n);
     } else {
       const attrs = this.extractAttributes(element.name, parsedProperties, i18nAttrsMeta);
       parsedElement = new t.Element(
@@ -187,10 +188,25 @@ class HtmlAstToIvyAst implements html.Visitor {
     }
 
     if (elementHasInlineTemplate) {
+      // If this node is an inline-template (e.g. has *ngFor) then we need to create a template
+      // node that contains this node.
+      // Moreover, if the node is an element, then we need to hoist its attributes to the template
+      // node for matching against content projection selectors.
       const attrs = this.extractAttributes('ng-template', templateParsedProperties, i18nAttrsMeta);
+      const templateAttrs: (t.TextAttribute | t.BoundAttribute)[] = [];
+      attrs.literal.forEach(attr => templateAttrs.push(attr));
+      attrs.bound.forEach(attr => templateAttrs.push(attr));
+      const hoistedAttrs = parsedElement instanceof t.Element ?
+          {
+            attributes: parsedElement.attributes,
+            inputs: parsedElement.inputs,
+            outputs: parsedElement.outputs,
+          } :
+          {attributes: [], inputs: [], outputs: []};
       // TODO(pk): test for this case
       parsedElement = new t.Template(
-          (parsedElement as t.Element).name, attrs.literal, attrs.bound, [], [parsedElement], [],
+          (parsedElement as t.Element).name, hoistedAttrs.attributes, hoistedAttrs.inputs,
+          hoistedAttrs.outputs, templateAttrs, [parsedElement], [/* no references */],
           templateVariables, element.sourceSpan, element.startSourceSpan, element.endSourceSpan,
           element.i18n);
     }

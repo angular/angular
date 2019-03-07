@@ -149,10 +149,6 @@ export const enum AttributeMarker {
   Template = 4,
 }
 
-export function isNameOnlyAttributeMarker(marker: string | AttributeMarker) {
-  return marker === AttributeMarker.Bindings || marker === AttributeMarker.Template;
-}
-
 /**
  * A combination of:
  * - attribute names and values

@@ -87,7 +87,9 @@ describe('array literals', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        template(0, IfTemplate, 1, 3, 'my-comp', [AttributeMarker.Bindings, 'ngIf']);
+        template(
+            0, IfTemplate, 1, 3, 'my-comp',
+            [AttributeMarker.Bindings, 'names', AttributeMarker.Template, 'ngIf']);
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'ngIf', bind(ctx.showing));

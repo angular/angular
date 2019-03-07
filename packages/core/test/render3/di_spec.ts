@@ -490,7 +490,7 @@ describe('di', () => {
         const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'div', ['dirB', '']);
-            { template(1, IfTemplate, 4, 1, 'div', [AttributeMarker.Bindings, 'ngIf', '']); }
+            { template(1, IfTemplate, 4, 1, 'div', [AttributeMarker.Template, 'ngIf']); }
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
@@ -1245,7 +1245,10 @@ describe('di', () => {
           const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'div', ['dirB', '']);
-              { template(1, IfTemplate, 1, 0, 'div', ['ngIf', '']); }
+              {
+                template(
+                    1, IfTemplate, 1, 0, 'div', ['dirA', '', AttributeMarker.Template, 'ngIf']);
+              }
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
@@ -1787,7 +1790,7 @@ describe('di', () => {
 
       it('should inject current component ChangeDetectorRef into directives on the same node as components',
          () => {
-           /** <my-comp dir dirSameInstance #dir="dir"></my-comp> {{ dir.value }} */
+           /** <my-comp dir dirSame #dir="dir"></my-comp> {{ dir.value }} */
            const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
                element(0, 'my-comp', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
@@ -1821,7 +1824,7 @@ describe('di', () => {
                consts: 3,
                vars: 1,
                factory: () => new MyApp(directiveInject(ChangeDetectorRef as any)),
-               /** <div dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
+               /** <div dir dirSame #dir="dir"> {{ dir.value }} </div> */
                template: function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
@@ -1859,7 +1862,7 @@ describe('di', () => {
                factory: () => new MyApp(directiveInject(ChangeDetectorRef as any)),
                /**
                 * <my-comp>
-                *   <div dir dirSameInstance #dir="dir"></div>
+                *   <div dir dirSame #dir="dir"></div>
                 * </my-comp>
                 * {{ dir.value }}
                 */
@@ -1903,7 +1906,7 @@ describe('di', () => {
             vars: 0,
             /**
              * % if (showing) {
-           *   <div dir dirSameInstance #dir="dir"> {{ dir.value }} </div>
+           *   <div dir dirSame #dir="dir"> {{ dir.value }} </div>
            * % }
              */
             template: function(rf: RenderFlags, ctx: MyApp) {
@@ -1967,10 +1970,15 @@ describe('di', () => {
             factory: () => new MyApp(directiveInject(ChangeDetectorRef as any)),
             consts: 1,
             vars: 0,
-            /** <div *ngIf="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
+            /** <div *ngIf="showing" dir dirSame #dir="dir"> {{ dir.value }} </div> */
             template: function(rf: RenderFlags, ctx: MyApp) {
               if (rf & RenderFlags.Create) {
-                template(0, C1, 3, 1, 'div', ['ngIf', 'showing']);
+                template(
+                    0, C1, 3, 1, 'div',
+                    ['dir', '', 'dirSame', '', AttributeMarker.Template, 'ngIf']);
+              }
+              if (rf & RenderFlags.Update) {
+                elementProperty(0, 'ngIf', bind(ctx.showing));
               }
             },
             directives: directives
