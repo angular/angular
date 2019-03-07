@@ -209,13 +209,13 @@ export function getProjectAsAttrValue(tNode: TNode): string|null {
 }
 
 /**
- * Checks a given node against matching selectors and returns
+ * Checks a given node against matching projection selectors and returns
  * selector index (or 0 if none matched).
  *
  * This function takes into account the ngProjectAs attribute: if present its value will be compared
  * to the raw (un-parsed) CSS selector instead of using standard selector matching logic.
  */
-export function matchingSelectorIndex(
+export function matchingProjectionSelectorIndex(
     tNode: TNode, selectors: CssSelectorList[], textSelectors: string[]): number {
   const ngProjectAsAttrVal = getProjectAsAttrValue(tNode);
   for (let i = 0; i < selectors.length; i++) {
