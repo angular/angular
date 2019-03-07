@@ -1044,7 +1044,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    * attrs = [prop, value, prop2, value2,
    *   CLASSES, class1, class2,
    *   STYLES, style1, value1, style2, value2,
-   *   BINDINGS, name1, name2, name3, ...]
+   *   BINDINGS, name1, name2, name3,
+   *   TEMPLATE, name4, name5, ...]
    * ```
    *
    * Note that this function will fully ignore all synthetic (@foo) attribute values
@@ -1068,8 +1069,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     }
 
-    // it's important that this occurs before BINDINGS because once `elementStart`
-    // comes across the BINDINGS marker then it will continue reading each value as
+    // it's important that this occurs before BINDINGS and TEMPLATE because once `elementStart`
+    // comes across the BINDINGS or TEMPLATE markers then it will continue reading each value as
     // as single property value cell by cell.
     if (styles) {
       styles.populateInitialStylingAttrs(attrExprs);
