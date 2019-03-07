@@ -1270,6 +1270,28 @@ describe('i18n support in the view compiler', () => {
 
       verify(input, output);
     });
+
+    it('should generate event listeners instructions before i18n ones', () => {
+      const input = `
+        <div i18n (click)="onClick()">Hello</div>
+      `;
+
+      const output = String.raw `
+        const $_c0$ = [${AttributeMarker.Bindings}, "click"];
+        const $MSG_EXTERNAL_3902961887793684628$$APP_SPEC_TS_1$ = goog.getMsg("Hello");
+        …
+        template: function MyComponent_Template(rf, ctx) {
+          if (rf & 1) {
+            $r3$.ɵelementStart(0, "div", $_c0$);
+            $r3$.ɵlistener("click", function MyComponent_Template_div_click_0_listener($event) { return ctx.onClick(); });
+            $r3$.ɵi18n(1, $MSG_EXTERNAL_3902961887793684628$$APP_SPEC_TS_1$);
+            $r3$.ɵelementEnd();
+          }
+        }
+      `;
+
+      verify(input, output);
+    });
   });
 
   describe('self-closing i18n instructions', () => {
