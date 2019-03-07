@@ -12,7 +12,6 @@ ts_library(
         "schema.json",
     ],
     deps = [
-        "//packages/bazel/src/schematics/bazel-workspace",
         "//packages/bazel/src/schematics/utility",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
