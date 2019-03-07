@@ -193,8 +193,8 @@ export class TransformVisitor implements Visitor<Node> {
     const newReferences = transformAll(this, template.references);
     const newVariables = transformAll(this, template.variables);
     if (newAttributes != template.attributes || newInputs != template.inputs ||
-        newChildren != template.children || newVariables != template.variables ||
-        newReferences != template.references) {
+        newOutputs != template.outputs || newChildren != template.children ||
+        newReferences != template.references || newVariables != template.variables) {
       return new Template(
           template.tagName, newAttributes, newInputs, newOutputs, newChildren, newReferences,
           newVariables, template.sourceSpan, template.startSourceSpan, template.endSourceSpan);
