@@ -12,7 +12,7 @@ import {MessageBus} from '../shared/message_bus';
 import {EVENT_2_CHANNEL, RENDERER_2_CHANNEL} from '../shared/messaging_api';
 import {RenderStore} from '../shared/render_store';
 import {Serializer, SerializerTypes} from '../shared/serializer';
-import {ServiceMessageBroker, ServiceMessageBrokerFactory} from '../shared/service_message_broker';
+import {ServiceMessageBrokerFactory} from '../shared/service_message_broker';
 import {EventDispatcher} from '../ui/event_dispatcher';
 
 @Injectable()
