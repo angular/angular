@@ -17,15 +17,7 @@
 // tslint:disable
 
 window.testBlocklist = {
-  "Portals DomPortalOutlet should attach and detach a component portal without a ViewContainerRef": {
-    "error": "Error: Expected '<pizza-msg><p>Pizza</p><p>Chocolate</p></pizza-msg>' to be '', 'Expected the DomPortalOutlet to be empty after detach'.",
-    "notes": "Unknown"
-  },
   "CdkTable should be able to render multiple header and footer rows": {
-    "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Attempting to access content children before view is initialized"
-  },
-  "CdkTable should be able to render and change multiple header and footer rows": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
     "notes": "Attempting to access content children before view is initialized"
   },

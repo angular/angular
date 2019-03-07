@@ -14,7 +14,7 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEn
 import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupFn} from './instructions';
 import {TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {FLAGS, HOST, LView, LViewFlags, T_HOST} from './interfaces/view';
-import {destroyLView} from './node_manipulation';
+import {destroyLView, renderDetachView} from './node_manipulation';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode} from './util/view_utils';
 
@@ -262,7 +262,10 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
     this._viewContainerRef = vcRef;
   }
 
-  detachFromAppRef() { this._appRef = null; }
+  detachFromAppRef() {
+    this._appRef = null;
+    renderDetachView(this._lView);
+  }
 
   attachToAppRef(appRef: ApplicationRef) {
     if (this._viewContainerRef) {
