@@ -20,7 +20,7 @@ class BazelBuilder implements Builder<Schema> {
   run(config: BuilderConfiguration<Partial<Schema>>): Observable<BuildEvent> {
     const {host, logger, workspace} = this.context;
     const root: Path = workspace.root;
-    const {bazelCommand, targetLabel, watch} = config.options as Schema;
+    const {bazelCommand, leaveBazelFilesOnDisk, targetLabel, watch} = config.options as Schema;
     const executable = watch ? 'ibazel' : 'bazel';
     const binary = checkInstallation(executable, root) as Path;
 
@@ -35,7 +35,9 @@ class BazelBuilder implements Builder<Schema> {
         logger.error(err.message);
         return {success: false};
       } finally {
-        await deleteBazelFiles(host, bazelFiles);  // this will never throw
+        if (!leaveBazelFilesOnDisk) {
+          await deleteBazelFiles(host, bazelFiles);  // this will never throw
+        }
       }
     }));
   }
