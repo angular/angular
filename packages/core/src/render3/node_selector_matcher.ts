@@ -9,7 +9,8 @@
 import '../util/ng_dev_mode';
 
 import {assertDefined, assertNotEqual} from '../util/assert';
-import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
+
+import {AttributeMarker, TAttributes, TNode, TNodeType, isNameOnlyAttributeMarker, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 import {getInitialClassNameValue} from './styling/class_and_style_bindings';
 
@@ -61,7 +62,16 @@ export function isNodeMatchingSelector(
   ngDevMode && assertDefined(selector[0], 'Selector should have a tag name');
   let mode: SelectorFlags = SelectorFlags.ELEMENT;
   const nodeAttrs = tNode.attrs || [];
-  const nameOnlyMarkerIdx = nodeAttrs.indexOf(AttributeMarker.Bindings);
+
+  // Find the index of first attribute that has no value, only a name.
+  let nameOnlyMarkerIdx = nodeAttrs && nodeAttrs.length;
+  for (let i = 0; i < nodeAttrs.length; i++) {
+    const nodeAttr = nodeAttrs[i];
+    if (isNameOnlyAttributeMarker(nodeAttr)) {
+      nameOnlyMarkerIdx = i;
+      break;
+    }
+  }
 
   // When processing ":not" selectors, we skip to the next ":not" if the
   // current one doesn't match
@@ -174,7 +184,7 @@ function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
       // NOTE(benlesh): will not find namespaced attributes. This is by design.
       i += 4;
     } else {
-      if (maybeAttrName === AttributeMarker.Bindings) {
+      if (isNameOnlyAttributeMarker(maybeAttrName)) {
         nameOnlyMode = true;
       }
       i += nameOnlyMode ? 1 : 2;

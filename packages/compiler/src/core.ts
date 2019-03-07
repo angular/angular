@@ -450,4 +450,29 @@ export const enum AttributeMarker {
    * ```
    */
   Bindings = 3,
+
+  /**
+   * Signals that the following attribute names were hoisted from an inline-template declaration.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div *ngFor="let value of values; trackBy:trackBy" dirA [dirB]="value">
+   * ```
+   *
+   * the generated code for the `template()` instruction would include:
+   *
+   * ```
+   * ['dirA', '', AttributeMarker.Bindings, 'dirB', AttributeMarker.Template, 'ngFor', 'ngForOf',
+   * 'ngForTrackBy', 'let-value']
+   * ```
+   *
+   * while the generated code for the `element()` instruction inside the template function would
+   * include:
+   *
+   * ```
+   * ['dirA', '', AttributeMarker.Bindings, 'dirB']
+   * ```
+   */
+  Template = 4,
 }
