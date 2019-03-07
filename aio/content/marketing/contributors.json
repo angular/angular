@@ -659,5 +659,12 @@
     "website": "http://www.samjulien.com/",
     "bio": "Sam Julien builds software, articles, video courses, and campfires. A developer, speaker, writer, and GDE in the Pacific Northwest, Sam's favorite thing in the world is changing someone's life by teaching them to code.",
     "group": "GDE"
+  },
+  "JiaLiPassion": {
+    "name": "JiaLi Passion",
+    "group": "Collaborator",
+    "mentor": "mhevery",
+    "picture": "JiaLiPassion.jpg",
+    "bio": "A programmer with passion, angular/zone.js guy! Web frontend engineer @sylabs"
   }
 }
