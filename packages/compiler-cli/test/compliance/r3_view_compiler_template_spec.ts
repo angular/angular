@@ -50,13 +50,14 @@ describe('compiler compliance: template', () => {
 
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
-      const $c0$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
-      const $e0_attrs$ = [${AttributeMarker.Bindings}, "title", "click"];
+      const $c0$ = [${AttributeMarker.Template}, "ngFor", "ngForOf"];
+      const $c1$ = [${AttributeMarker.Bindings}, "title", "click", ${AttributeMarker.Template}, "ngFor", "ngForOf"];
+      const $c2$ = [${AttributeMarker.Bindings}, "title", "click"];
       function MyComponent_ul_0_li_1_div_1_Template(rf, ctx) {
 
         if (rf & 1) {
           const $s$ = $i0$.ɵgetCurrentView();
-          $i0$.ɵelementStart(0, "div", $e0_attrs$);
+          $i0$.ɵelementStart(0, "div", $c2$);
           $i0$.ɵlistener("click", function MyComponent_ul_0_li_1_div_1_Template_div_click_0_listener($event){
             $i0$.ɵrestoreView($s$);
             const $inner$ = ctx.$implicit;
@@ -83,7 +84,7 @@ describe('compiler compliance: template', () => {
       function MyComponent_ul_0_li_1_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "li");
-          $i0$.ɵtemplate(1, MyComponent_ul_0_li_1_div_1_Template, 2, 2, "div", _c0);
+          $i0$.ɵtemplate(1, MyComponent_ul_0_li_1_div_1_Template, 2, 2, "div", $c1$);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -96,7 +97,7 @@ describe('compiler compliance: template', () => {
       function MyComponent_ul_0_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "ul");
-          $i0$.ɵtemplate(1, MyComponent_ul_0_li_1_Template, 2, 1, "li", _c0);
+          $i0$.ɵtemplate(1, MyComponent_ul_0_li_1_Template, 2, 1, "li", $c0$);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -108,7 +109,7 @@ describe('compiler compliance: template', () => {
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_ul_0_Template, 2, 1, "ul", _c0);
+          $i0$.ɵtemplate(0, MyComponent_ul_0_Template, 2, 1, "ul", $c0$);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
@@ -144,7 +145,7 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-        const $t0_attrs$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
+        const $t0_attrs$ = [${AttributeMarker.Bindings}, "click", ${AttributeMarker.Template}, "ngFor", "ngForOf"];
         const $e_attrs$ = [${AttributeMarker.Bindings}, "click"];
 
         function MyComponent_div_0_Template(rf, ctx) {
@@ -199,7 +200,7 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-      const $c0$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
+      const $c0$ = [${AttributeMarker.Template}, "ngFor", "ngForOf"];
 
       function MyComponent_span_0_Template(rf, ctx) {
         if (rf & 1) {
@@ -253,8 +254,8 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-      const $c0$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
-      const $c1$ = [${AttributeMarker.Bindings}, "ngIf"];
+      const $c0$ = [${AttributeMarker.Template}, "ngFor", "ngForOf"];
+      const $c1$ = [${AttributeMarker.Template}, "ngIf"];
 
       function MyComponent_div_0_span_1_Template(rf, ctx) {
         if (rf & 1) {
@@ -326,7 +327,7 @@ describe('compiler compliance: template', () => {
 
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
-      const $c0$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
+      const $c0$ = [${AttributeMarker.Template}, "ngFor", "ngForOf"];
       function MyComponent_div_0_div_1_div_1_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
@@ -344,7 +345,7 @@ describe('compiler compliance: template', () => {
       function MyComponent_div_0_div_1_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
-          $i0$.ɵtemplate(1, MyComponent_div_0_div_1_div_1_Template, 2, 2, "div", _c0);
+          $i0$.ɵtemplate(1, MyComponent_div_0_div_1_div_1_Template, 2, 2, "div", $c0$);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -357,7 +358,7 @@ describe('compiler compliance: template', () => {
       function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
-          $i0$.ɵtemplate(1, MyComponent_div_0_div_1_Template, 2, 1, "div", _c0);
+          $i0$.ɵtemplate(1, MyComponent_div_0_div_1_Template, 2, 1, "div", $c0$);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -369,7 +370,7 @@ describe('compiler compliance: template', () => {
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", _c0);
+          $i0$.ɵtemplate(0, MyComponent_div_0_Template, 2, 1, "div", $c0$);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
@@ -645,7 +646,7 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-      const $c0$ = [${AttributeMarker.Bindings}, "ngIf"];
+      const $c0$ = [${AttributeMarker.Template}, "ngIf"];
 
       function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {

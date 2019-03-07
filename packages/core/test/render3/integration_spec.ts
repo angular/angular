@@ -721,8 +721,7 @@ describe('render3 integration test', () => {
          const TestCmpt =
              createComponent('test-cmpt', function(rf: RenderFlags, ctx: {value: any}) {
                if (rf & RenderFlags.Create) {
-                 template(
-                     0, ngIfTemplate, 2, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
+                 template(0, ngIfTemplate, 2, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
                }
                if (rf & RenderFlags.Update) {
                  elementProperty(0, 'ngIf', bind(ctx.value));

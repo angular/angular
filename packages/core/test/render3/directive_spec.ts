@@ -208,7 +208,7 @@ describe('directive', () => {
             if (rf & RenderFlags.Create) {
               template(
                   0, MyComponent_ng_container_Template_0, 2, 0, 'ng-container',
-                  [AttributeMarker.Bindings, 'ngIf']);
+                  ['directiveA', '', AttributeMarker.Template, 'ngIf']);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngIf', bind(ctx.visible));

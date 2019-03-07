@@ -1392,7 +1392,8 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(0, Cmpt_Template_1, 2, 0, 'ng-template', ['ngIf', '']);
+                template(
+                    0, Cmpt_Template_1, 2, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
               }
               if (rf & RenderFlags.Update) {
                 elementProperty(0, 'ngIf', bind(ctx.value));
@@ -2207,7 +2208,7 @@ describe('query', () => {
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             template(
-                0, AppComponent_Template_1, 1, 0, 'div', [AttributeMarker.Bindings, 'someDir']);
+                0, AppComponent_Template_1, 1, 0, 'div', [AttributeMarker.Template, 'someDir']);
             element(1, 'div', null, ['foo', '']);
           }
         },
@@ -2392,7 +2393,7 @@ describe('query', () => {
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'shallow-comp');
-          { template(1, IfTemplate, 2, 0, 'div', [AttributeMarker.Bindings, 'ngIf', '']); }
+          { template(1, IfTemplate, 2, 0, 'div', [AttributeMarker.Template, 'ngIf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
