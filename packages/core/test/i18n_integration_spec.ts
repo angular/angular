@@ -28,6 +28,9 @@ class MyComp {
   age = 20;
   count = 2;
   otherLabel = 'other label';
+  clicks = 0;
+
+  onClick() { this.clicks++; }
 }
 
 const TRANSLATIONS: any = {
@@ -253,6 +256,23 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
 
       const element = fixture.nativeElement.firstChild;
       expect(element).toHaveText('Bonjour John');
+    });
+
+    it('should work correctly with event listeners', () => {
+      const content = 'Hello {{ name }}';
+      const template = `
+        <div i18n (click)="onClick()">${content}</div>
+      `;
+      const fixture = getFixtureWithOverrides({template});
+
+      const element = fixture.nativeElement.firstChild;
+      const instance = fixture.componentInstance;
+
+      expect(element).toHaveText('Bonjour John');
+      expect(instance.clicks).toBe(0);
+
+      element.click();
+      expect(instance.clicks).toBe(1);
     });
   });
 
