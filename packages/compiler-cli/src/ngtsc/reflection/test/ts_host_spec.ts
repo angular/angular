@@ -147,6 +147,33 @@ describe('reflector', () => {
       expectParameter(args[0], 'bar', {moduleName: './bar', name: 'Bar'});
     });
 
+    it('should reflect an argument from a default import', () => {
+      const {program} = makeProgram([
+        {
+          name: 'bar.ts',
+          contents: `
+          export default class Bar {}
+        `
+        },
+        {
+          name: 'entry.ts',
+          contents: `
+            import Bar from './bar';
+
+            class Foo {
+              constructor(bar: Bar) {}
+            }
+        `
+        }
+      ]);
+      const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
+      const checker = program.getTypeChecker();
+      const host = new TypeScriptReflectionHost(checker);
+      const args = host.getConstructorParameters(clazz) !;
+      expect(args.length).toBe(1);
+      expectParameter(args[0], 'bar', {moduleName: './bar', name: '*'});
+    });
+
     it('should reflect a nullable argument', () => {
       const {program} = makeProgram([
         {

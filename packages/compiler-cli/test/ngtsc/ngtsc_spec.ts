@@ -1970,6 +1970,34 @@ describe('ngtsc behavioral tests', () => {
        expect(jsContents).toMatch(setClassMetadataRegExp('type: i\\d\\.MyTypeB'));
      });
 
+  it('should use default-imported types if they can be represented as values', () => {
+    env.tsconfig({});
+
+    env.write(`types.ts`, `
+            export default class Default {}
+            export class Other {}
+          `);
+    env.write(`test.ts`, `
+            import {Component} from '@angular/core';
+            import {Other} from './types';
+            import Default from './types';
+   
+            @Component({selector: 'test', template: 'test'})
+            export class SomeCmp {
+              constructor(arg: Default, other: Other) {}
+            }
+         `);
+
+    env.driveMain();
+    const jsContents = trim(env.getContents('test.js'));
+    expect(jsContents).toContain(`import i1 from "./types";`);
+    expect(jsContents).toContain(`import * as i2 from "./types";`);
+    expect(jsContents).toContain('i0.ɵdirectiveInject(i1)');
+    expect(jsContents).toContain('i0.ɵdirectiveInject(i2.Other)');
+    expect(jsContents).toMatch(setClassMetadataRegExp('type: i1'));
+    expect(jsContents).toMatch(setClassMetadataRegExp('type: i2.Other'));
+  });
+
   it('should use `undefined` in setClassMetadata if types can\'t be represented as values', () => {
     env.tsconfig({});
 
