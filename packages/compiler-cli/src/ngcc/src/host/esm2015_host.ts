@@ -775,6 +775,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
     if (!node) {
+      // If the symbol has been imported from a TypeScript typings file then the compiler
+      // may pass the `prototype` symbol as an export of the class.
+      // But this has no declaration. In this case we just quietly ignore it.
       return null;
     }
 
