@@ -2970,7 +2970,7 @@ describe('lifecycles', () => {
       function conditionTpl(rf: RenderFlags, ctx: Cmpt) {
         if (rf & RenderFlags.Create) {
           template(
-              0, null, 0, 1, 'ng-template', [AttributeMarker.SelectOnly, 'onDestroyDirective']);
+              0, null, 0, 1, 'ng-template', [AttributeMarker.Bindings, 'onDestroyDirective']);
         }
       }
 
@@ -2981,7 +2981,7 @@ describe('lifecycles', () => {
        */
       function cmptTpl(rf: RenderFlags, cmpt: Cmpt) {
         if (rf & RenderFlags.Create) {
-          template(0, conditionTpl, 1, 1, 'ng-template', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(0, conditionTpl, 1, 1, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'ngIf', bind(cmpt.showing));

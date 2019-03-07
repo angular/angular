@@ -973,7 +973,7 @@ describe('@angular/common integration', () => {
                 }
               }, 1, 0, 'ng-template', undefined, ['tpl', ''], templateRefExtractor);
               template(
-                  2, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+                  2, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'ngTemplateOutlet']);
             }
             if (rf & RenderFlags.Update) {
               const tplRef = load(1);
@@ -1016,7 +1016,7 @@ describe('@angular/common integration', () => {
                   text(0, 'from tpl');
                 }
               }, 1, 0, 'ng-template', undefined, ['tpl', ''], templateRefExtractor);
-              elementContainerStart(2, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+              elementContainerStart(2, [AttributeMarker.Bindings, 'ngTemplateOutlet']);
               elementContainerEnd();
             }
             if (rf & RenderFlags.Update) {

@@ -107,7 +107,7 @@ describe('host bindings', () => {
       });
     }
 
-    function Template() { element(0, 'span', [AttributeMarker.SelectOnly, 'dir']); }
+    function Template() { element(0, 'span', [AttributeMarker.Bindings, 'dir']); }
 
     const fixture = new TemplateFixture(Template, () => {}, 1, 0, [Directive]);
     expect(fixture.html).toEqual('<span class="foo"></span>');
