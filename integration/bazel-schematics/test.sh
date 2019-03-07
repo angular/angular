@@ -32,6 +32,10 @@ function testBazel() {
   ng build
   ng test
   ng e2e
+  if [ -e 'WORKSPACE' ] || [ -e 'BUILD.bazel' ]; then
+    echo 'WORKSPACE / BUILD.bazel file should not exist in project'
+    exit 1
+  fi
 }
 
 function testNonBazel() {
