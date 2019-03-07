@@ -1392,19 +1392,19 @@ describe('Runtime i18n', () => {
           directives: [Directive],
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div', [AttributeMarker.SelectOnly, 'dir']);
+              elementStart(0, 'div', [AttributeMarker.Bindings, 'dir']);
               {
                 i18nAttributes(1, MSG_DIV_1_ATTR_1);
                 i18nStart(2, MSG_DIV_1);
                 {
-                  elementStart(3, 'b', [AttributeMarker.SelectOnly, 'dir']);  // Will be removed
+                  elementStart(3, 'b', [AttributeMarker.Bindings, 'dir']);  // Will be removed
                   { i18nAttributes(4, MSG_DIV_1_ATTR_1); }
                   elementEnd();
                 }
                 i18nEnd();
               }
               elementEnd();
-              element(5, 'div', [AttributeMarker.SelectOnly, 'dir']);
+              element(5, 'div', [AttributeMarker.Bindings, 'dir']);
             }
             if (rf & RenderFlags.Update) {
               i18nExp(bind(ctx.exp1));

@@ -578,8 +578,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // this will build the instructions so that they fall into the following syntax
     // add attributes for directive matching purposes
-    attributes.push(
-        ...this.prepareSelectOnlyAttrs(allOtherInputs, element.outputs, stylingBuilder));
+    attributes.push(...this.prepareBindingsAttrs(allOtherInputs, element.outputs, stylingBuilder));
     parameters.push(this.toAttrsParam(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -801,7 +800,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const attrsExprs: o.Expression[] = [];
     template.attributes.forEach(
         (a: t.TextAttribute) => { attrsExprs.push(asLiteral(a.name), asLiteral(a.value)); });
-    attrsExprs.push(...this.prepareSelectOnlyAttrs(template.inputs, template.outputs));
+    attrsExprs.push(...this.prepareBindingsAttrs(template.inputs, template.outputs));
     parameters.push(this.toAttrsParam(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -1045,13 +1044,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
    * attrs = [prop, value, prop2, value2,
    *   CLASSES, class1, class2,
    *   STYLES, style1, value1, style2, value2,
-   *   SELECT_ONLY, name1, name2, name2, ...]
+   *   BINDINGS, name1, name2, name3, ...]
    * ```
    *
    * Note that this function will fully ignore all synthetic (@foo) attribute values
    * because those values are intended to always be generated as property instructions.
    */
-  private prepareSelectOnlyAttrs(
+  private prepareBindingsAttrs(
       inputs: t.BoundAttribute[], outputs: t.BoundEvent[],
       styles?: StylingBuilder): o.Expression[] {
     const alreadySeen = new Set<string>();
@@ -1069,8 +1068,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     }
 
-    // it's important that this occurs before SelectOnly because once `elementStart`
-    // comes across the SelectOnly marker then it will continue reading each value as
+    // it's important that this occurs before BINDINGS because once `elementStart`
+    // comes across the BINDINGS marker then it will continue reading each value as
     // as single property value cell by cell.
     if (styles) {
       styles.populateInitialStylingAttrs(attrExprs);
@@ -1098,7 +1097,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // to the expressions. The marker is important because it tells the runtime
       // code that this is where attributes without values start...
       if (attrExprs.length) {
-        attrExprs.splice(attrsStartIndex, 0, o.literal(core.AttributeMarker.SelectOnly));
+        attrExprs.splice(attrsStartIndex, 0, o.literal(core.AttributeMarker.Bindings));
       }
     }
 

@@ -74,7 +74,7 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-      const $e0_attrs$ = [${AttributeMarker.SelectOnly}, "title"];
+      const $e0_attrs$ = [${AttributeMarker.Bindings}, "title"];
       …
       template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
@@ -108,7 +108,7 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-      const $e0_attrs$ = [${AttributeMarker.SelectOnly}, "title"];
+      const $e0_attrs$ = [${AttributeMarker.Bindings}, "title"];
       …
       template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
@@ -162,7 +162,7 @@ describe('compiler compliance: bindings', () => {
          };
 
          const template = `
-      const $c0$ = [${AttributeMarker.SelectOnly}, "for"];
+      const $c0$ = [${AttributeMarker.Bindings}, "for"];
 
       // ...
 

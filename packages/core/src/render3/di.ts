@@ -272,7 +272,9 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
   if (attrs) {
     for (let i = 0; i < attrs.length; i = i + 2) {
       const attrName = attrs[i];
-      if (attrName === AttributeMarker.SelectOnly) break;
+      if (attrName === AttributeMarker.Bindings) break;
+      // TODO: What happens here if an attribute has a namespace?
+      // TODO: What happens here if the attribute name happens to match a CSS class or style?
       if (attrName == attrNameToInject) {
         return attrs[i + 1] as string;
       }

@@ -600,7 +600,7 @@ describe('InheritDefinitionFeature', () => {
      */
     const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div', [AttributeMarker.SelectOnly, 'sub-dir']);
+        elementStart(0, 'div', [AttributeMarker.Bindings, 'sub-dir']);
         {
           element(1, 'span', null, ['foo', '']);
           element(3, 'span', null, ['bar', '']);

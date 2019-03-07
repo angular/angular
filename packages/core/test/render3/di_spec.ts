@@ -490,7 +490,7 @@ describe('di', () => {
         const App = createComponent('app', (rf: RenderFlags, ctx: any) => {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'div', ['dirB', '']);
-            { template(1, IfTemplate, 4, 1, 'div', [AttributeMarker.SelectOnly, 'ngIf', '']); }
+            { template(1, IfTemplate, 4, 1, 'div', [AttributeMarker.Bindings, 'ngIf', '']); }
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
@@ -2135,7 +2135,7 @@ describe('di', () => {
 
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['exist', 'existValue', AttributeMarker.SelectOnly, 'nonExist']);
+          elementStart(0, 'div', ['exist', 'existValue', AttributeMarker.Bindings, 'nonExist']);
           exist = injectAttribute('exist');
           nonExist = injectAttribute('nonExist');
         }
@@ -2153,7 +2153,7 @@ describe('di', () => {
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div', [
-            'exist', 'existValue', AttributeMarker.SelectOnly, 'binding1', 'nonExist', 'binding2'
+            'exist', 'existValue', AttributeMarker.Bindings, 'binding1', 'nonExist', 'binding2'
           ]);
           exist = injectAttribute('exist');
           nonExist = injectAttribute('nonExist');

@@ -108,7 +108,7 @@ describe('TemplateRef', () => {
 
       function embeddedTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          template(0, ngIfTemplate, 1, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(0, ngIfTemplate, 1, 0, 'ng-template', [AttributeMarker.Bindings, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'ngIf', bind(ctx.showing));

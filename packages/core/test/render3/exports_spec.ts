@@ -232,7 +232,7 @@ describe('exports', () => {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'input', ['value', 'one'], ['outerInput', '']);
           elementEnd();
-          template(2, outerTemplate, 5, 2, 'div', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(2, outerTemplate, 5, 2, 'div', [AttributeMarker.Bindings, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(2, 'ngIf', bind(app.outer));
@@ -246,7 +246,7 @@ describe('exports', () => {
             text(1);
             elementStart(2, 'input', ['value', 'two'], ['innerInput', '']);
             elementEnd();
-            template(4, innerTemplate, 2, 2, 'div', [AttributeMarker.SelectOnly, 'ngIf']);
+            template(4, innerTemplate, 2, 2, 'div', [AttributeMarker.Bindings, 'ngIf']);
           }
           elementEnd();
         }

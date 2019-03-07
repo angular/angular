@@ -417,7 +417,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = ["ngFor", "", ${AttributeMarker.SelectOnly}, "ngForOf"];
+        const $_c0$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
         /**
          * @desc d
          * @meaning m
@@ -548,7 +548,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = ["ngFor", "", ${AttributeMarker.SelectOnly}, "ngForOf"];
+        const $_c0$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
         /**
          * @desc d
          * @meaning m
@@ -1011,7 +1011,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c0$ = [${AttributeMarker.Bindings}, "ngIf"];
         const $MSG_EXTERNAL_7679414751795588050$$APP_SPEC_TS__1$ = goog.getMsg(" Some other content {$interpolation} {$startTagDiv} More nested levels with bindings {$interpolation_1} {$closeTagDiv}", {
           "interpolation": "\uFFFD0\uFFFD",
           "startTagDiv": "\uFFFD#3\uFFFD",
@@ -1067,7 +1067,7 @@ describe('i18n support in the view compiler', () => {
 
       const output = String.raw `
         const $_c0$ = ["src", "logo.png"];
-        const $_c1$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c1$ = [${AttributeMarker.Bindings}, "ngIf"];
         function MyComponent_img_1_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelement(0, "img", $_c0$);
@@ -1136,7 +1136,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c0$ = [${AttributeMarker.Bindings}, "ngIf"];
         function MyComponent_div_2_div_4_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵi18nStart(0, $I18N_EXTERNAL_1221890473527419724$$APP_SPEC_TS_0$, 2);
@@ -1232,7 +1232,7 @@ describe('i18n support in the view compiler', () => {
       `;
 
       const output = String.raw `
-        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c0$ = [${AttributeMarker.Bindings}, "ngIf"];
         const $MSG_EXTERNAL_119975189388320493$$APP_SPEC_TS__1$ = goog.getMsg("Some other content {$startTagSpan}{$interpolation}{$closeTagSpan}", {
           "startTagSpan": "\uFFFD#2\uFFFD",
           "interpolation": "\uFFFD0\uFFFD",
@@ -1864,7 +1864,7 @@ describe('i18n support in the view compiler', () => {
         const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_0$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c0$ = [${AttributeMarker.Bindings}, "ngIf"];
         const $_c1$ = ["title", "icu only"];
         const $MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} other {other}}");
         const $I18N_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_8806993169187953163$$APP_SPEC_TS__3$, {
@@ -2113,7 +2113,7 @@ describe('i18n support in the view compiler', () => {
         const $I18N_APP_SPEC_TS_2$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS_2$, {
           "VAR_SELECT": "\uFFFD1\uFFFD"
         });
-        const $_c3$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c3$ = [${AttributeMarker.Bindings}, "ngIf"];
         const $MSG_APP_SPEC_TS__4$ = goog.getMsg("{VAR_SELECT, select, male {male} female {female} other {other}}");
         const $I18N_APP_SPEC_TS__4$ = $r3$.ɵi18nPostprocess($MSG_APP_SPEC_TS__4$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
@@ -2223,7 +2223,7 @@ describe('i18n support in the view compiler', () => {
         const $I18N_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7842238767399919809$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c0$ = [${AttributeMarker.Bindings}, "ngIf"];
         const $MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other}}");
         const $I18N_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7068143081688428291$$APP_SPEC_TS__3$, {
           "VAR_SELECT": "\uFFFD0:1\uFFFD"
@@ -2287,7 +2287,7 @@ describe('i18n support in the view compiler', () => {
         const $I18N_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$ = $r3$.ɵi18nPostprocess($MSG_EXTERNAL_7825031864601787094$$APP_SPEC_TS_1$, {
           "VAR_SELECT": "\uFFFD0\uFFFD"
         });
-        const $_c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+        const $_c0$ = [${AttributeMarker.Bindings}, "ngIf"];
         const $MSG_EXTERNAL_2310343208266678305$$APP_SPEC_TS__3$ = goog.getMsg("{VAR_SELECT, select, 10 {ten} 20 {twenty} 30 {thirty} other {other: {$interpolation}}}", {
           "interpolation": "\uFFFD1:1\uFFFD"
         });

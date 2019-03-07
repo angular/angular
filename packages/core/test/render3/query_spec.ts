@@ -1540,7 +1540,7 @@ describe('query', () => {
                    template(
                        4, Cmpt_Template_5, 2, 1, 'ng-template', null, ['tpl2', ''],
                        templateRefExtractor);
-                   template(6, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'vc']);
+                   template(6, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
@@ -1637,8 +1637,8 @@ describe('query', () => {
                    template(
                        0, Cmpt_Template_1, 2, 1, 'ng-template', [], ['tpl', ''],
                        templateRefExtractor);
-                   template(2, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'vc']);
-                   template(3, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'vc']);
+                   template(2, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'vc']);
+                   template(3, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
@@ -1711,7 +1711,7 @@ describe('query', () => {
                     0, MyApp_Template_1, 2, 0, 'ng-template', undefined, ['tpl', ''],
                     templateRefExtractor);
                 template(
-                    2, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+                    2, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'ngTemplateOutlet']);
               }
               if (rf & RenderFlags.Update) {
                 const tplRef = reference(1);
@@ -2207,7 +2207,7 @@ describe('query', () => {
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             template(
-                0, AppComponent_Template_1, 1, 0, 'div', [AttributeMarker.SelectOnly, 'someDir']);
+                0, AppComponent_Template_1, 1, 0, 'div', [AttributeMarker.Bindings, 'someDir']);
             element(1, 'div', null, ['foo', '']);
           }
         },
@@ -2295,7 +2295,7 @@ describe('query', () => {
        */
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', [AttributeMarker.SelectOnly, 'with-content']);
+          elementStart(0, 'div', [AttributeMarker.Bindings, 'with-content']);
           { element(1, 'span', null, ['foo', '']); }
           elementEnd();
         }
@@ -2334,7 +2334,7 @@ describe('query', () => {
             for (let i = 0; i < 3; i++) {
               let rf = embeddedViewStart(1, 3, 0);
               if (rf & RenderFlags.Create) {
-                elementStart(0, 'div', [AttributeMarker.SelectOnly, 'with-content']);
+                elementStart(0, 'div', [AttributeMarker.Bindings, 'with-content']);
                 { element(1, 'span', null, ['foo', '']); }
                 elementEnd();
               }
@@ -2392,7 +2392,7 @@ describe('query', () => {
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'shallow-comp');
-          { template(1, IfTemplate, 2, 0, 'div', [AttributeMarker.SelectOnly, 'ngIf', '']); }
+          { template(1, IfTemplate, 2, 0, 'div', [AttributeMarker.Bindings, 'ngIf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -2531,10 +2531,10 @@ describe('query', () => {
            */
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div', [AttributeMarker.SelectOnly, 'query'], ['out', 'query']);
+              elementStart(0, 'div', [AttributeMarker.Bindings, 'query'], ['out', 'query']);
               {
                 element(2, 'span', ['id', 'foo'], ['foo', '']);
-                elementStart(4, 'div', [AttributeMarker.SelectOnly, 'query'], ['in', 'query']);
+                elementStart(4, 'div', [AttributeMarker.Bindings, 'query'], ['in', 'query']);
                 { element(6, 'span', ['id', 'bar'], ['bar', '']); }
                 elementEnd();
                 element(8, 'span', ['id', 'baz'], ['baz', '']);
@@ -2732,7 +2732,7 @@ describe('query', () => {
              function(rf: RenderFlags, ctx: any) {
                if (rf & RenderFlags.Create) {
                  elementStart(
-                     0, 'div', [AttributeMarker.SelectOnly, 'shallow-query', 'deep-query'],
+                     0, 'div', [AttributeMarker.Bindings, 'shallow-query', 'deep-query'],
                      ['shallow', 'shallow-query', 'deep', 'deep-query']);
                  {
                    element(3, 'span', null, ['foo', '']);

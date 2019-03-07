@@ -60,8 +60,8 @@ export function isNodeMatchingSelector(
     tNode: TNode, selector: CssSelector, isProjectionMode: boolean): boolean {
   ngDevMode && assertDefined(selector[0], 'Selector should have a tag name');
   let mode: SelectorFlags = SelectorFlags.ELEMENT;
-  const nodeAttrs = tNode.attrs !;
-  const selectOnlyMarkerIdx = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.SelectOnly) : -1;
+  const nodeAttrs = tNode.attrs || [];
+  const nameOnlyMarkerIdx = nodeAttrs.indexOf(AttributeMarker.Bindings);
 
   // When processing ":not" selectors, we skip to the next ":not" if the
   // current one doesn't match
@@ -116,7 +116,7 @@ export function isNodeMatchingSelector(
       if (selectorAttrValue !== '') {
         let nodeAttrValue: string;
         const maybeAttrName = nodeAttrs[attrIndexInNode];
-        if (selectOnlyMarkerIdx > -1 && attrIndexInNode > selectOnlyMarkerIdx) {
+        if (attrIndexInNode > nameOnlyMarkerIdx) {
           nodeAttrValue = '';
         } else {
           ngDevMode && assertNotEqual(
@@ -154,7 +154,7 @@ function readClassValueFromTNode(tNode: TNode): string {
 }
 
 /**
- * Examines an attributes definition array from a node to find the index of the
+ * Examines an attribute's definition array from a node to find the index of the
  * attribute with the specified name.
  *
  * NOTE: Will not find namespaced attributes.
@@ -164,7 +164,7 @@ function readClassValueFromTNode(tNode: TNode): string {
  */
 function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
   if (attrs === null) return -1;
-  let selectOnlyMode = false;
+  let nameOnlyMode = false;
   let i = 0;
   while (i < attrs.length) {
     const maybeAttrName = attrs[i];
@@ -174,10 +174,10 @@ function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
       // NOTE(benlesh): will not find namespaced attributes. This is by design.
       i += 4;
     } else {
-      if (maybeAttrName === AttributeMarker.SelectOnly) {
-        selectOnlyMode = true;
+      if (maybeAttrName === AttributeMarker.Bindings) {
+        nameOnlyMode = true;
       }
-      i += selectOnlyMode ? 1 : 2;
+      i += nameOnlyMode ? 1 : 2;
     }
   }
 

@@ -50,8 +50,8 @@ describe('compiler compliance: template', () => {
 
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
-      const $c0$ = ["ngFor", "", ${AttributeMarker.SelectOnly}, "ngForOf"];
-      const $e0_attrs$ = [${AttributeMarker.SelectOnly}, "title", "click"];
+      const $c0$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
+      const $e0_attrs$ = [${AttributeMarker.Bindings}, "title", "click"];
       function MyComponent_ul_0_li_1_div_1_Template(rf, ctx) {
 
         if (rf & 1) {
@@ -144,8 +144,8 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-        const $t0_attrs$ = ["ngFor", "", ${AttributeMarker.SelectOnly}, "ngForOf"];
-        const $e_attrs$ = [${AttributeMarker.SelectOnly}, "click"];
+        const $t0_attrs$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
+        const $e_attrs$ = [${AttributeMarker.Bindings}, "click"];
 
         function MyComponent_div_0_Template(rf, ctx) {
           if (rf & 1) {
@@ -199,7 +199,7 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-      const $c0$ = ["ngFor", "", ${AttributeMarker.SelectOnly}, "ngForOf"];
+      const $c0$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
 
       function MyComponent_span_0_Template(rf, ctx) {
         if (rf & 1) {
@@ -253,8 +253,8 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-      const $c0$ = ["ngFor", "", ${AttributeMarker.SelectOnly}, "ngForOf"];
-      const $c1$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+      const $c0$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
+      const $c1$ = [${AttributeMarker.Bindings}, "ngIf"];
 
       function MyComponent_div_0_span_1_Template(rf, ctx) {
         if (rf & 1) {
@@ -326,7 +326,7 @@ describe('compiler compliance: template', () => {
 
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
-      const $c0$ = ["ngFor", "", ${AttributeMarker.SelectOnly}, "ngForOf"];
+      const $c0$ = ["ngFor", "", ${AttributeMarker.Bindings}, "ngForOf"];
       function MyComponent_div_0_div_1_div_1_Template(rf, ctx) {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
@@ -403,7 +403,7 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-      const $c0$ = ["attr", "l", ${AttributeMarker.SelectOnly}, "boundAttr"];
+      const $c0$ = ["attr", "l", ${AttributeMarker.Bindings}, "boundAttr"];
 
       function MyComponent_ng_template_0_Template(rf, ctx) {
         if (rf & 1) {
@@ -488,7 +488,7 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-      const $t0_attrs$ = [${AttributeMarker.SelectOnly}, "outDirective"];
+      const $t0_attrs$ = [${AttributeMarker.Bindings}, "outDirective"];
 
       function MyComponent_ng_template_0_Template(rf, ctx) { }
 
@@ -645,7 +645,7 @@ describe('compiler compliance: template', () => {
     };
 
     const template = `
-      const $c0$ = [${AttributeMarker.SelectOnly}, "ngIf"];
+      const $c0$ = [${AttributeMarker.Bindings}, "ngIf"];
 
       function MyComponent_div_0_Template(rf, ctx) {
         if (rf & 1) {

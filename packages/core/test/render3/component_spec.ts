@@ -186,7 +186,7 @@ it('should not invoke renderer destroy method for embedded views', () => {
           elementStart(0, 'div');
           text(1, 'Root view');
           elementEnd();
-          template(2, MyComponent_div_Template_2, 2, 0, null, [AttributeMarker.SelectOnly, 'ngIf']);
+          template(2, MyComponent_div_Template_2, 2, 0, null, [AttributeMarker.Bindings, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(2, 'ngIf', bind(ctx.visible));
@@ -514,8 +514,8 @@ describe('recursive components', () => {
 
         if (rf & RenderFlags.Create) {
           text(0);
-          template(1, IfTemplate, 1, 1, 'ng-if-tree', [AttributeMarker.SelectOnly, 'ngIf']);
-          template(2, IfTemplate2, 1, 1, 'ng-if-tree', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(1, IfTemplate, 1, 1, 'ng-if-tree', [AttributeMarker.Bindings, 'ngIf']);
+          template(2, IfTemplate2, 1, 1, 'ng-if-tree', [AttributeMarker.Bindings, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           textBinding(0, bind(ctx.data.value));

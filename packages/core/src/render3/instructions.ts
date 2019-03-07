@@ -2126,15 +2126,15 @@ function generateInitialInputs(
   let i = 0;
   while (i < attrs.length) {
     const attrName = attrs[i];
-    // If we hit Select-Only, Classes or Styles, we're done anyway. None of those are valid inputs.
-    if (attrName === AttributeMarker.SelectOnly || attrName === AttributeMarker.Classes ||
-        attrName === AttributeMarker.Styles)
-      break;
     if (attrName === AttributeMarker.NamespaceURI) {
       // We do not allow inputs on namespaced attributes.
       i += 4;
       continue;
     }
+
+    // If we hit any other attribute markers, we're done anyway. None of those are valid inputs.
+    if (typeof attrName === 'number') break;
+
     const minifiedInputName = inputs[attrName];
     const attrValue = attrs[i + 1];
 
