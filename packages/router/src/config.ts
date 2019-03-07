@@ -134,8 +134,10 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
     ((from: ActivatedRouteSnapshot, to: ActivatedRouteSnapshot) => boolean);
 
 /**
- * Collects and stores the properties of a navigation route.
- * A set of routes collected in a `Routes` object defines a router configuration.
+ * A configuration object that defines a single route.
+ * A set of routes are collected in a `Routes` array to define a `Router` configuration.
+ * The router attempts to match segments of a given URL against each route,
+ * using the configuration options defined in this object.
  *
  * Supports static, parameterized, redirect, and wildcard routes, as well as
  * custom route data and resolve methods.
@@ -146,8 +148,9 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
  *
  * ### Simple Configuration
  *
- * When navigating to `/team/11/user/bob`, the router will create the team component with the user
- * component in it.
+ * The following route specifies that when navigating to, for example,
+ * `/team/11/user/bob`, the router creates the 'Team' component
+ * with the 'User' child component in it.
  *
  * ```
  * [{
@@ -162,8 +165,9 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
  *
  * ### Multiple Outlets
  *
- * When navigating to `/team/11(aux:chat/jim)`, the router will create the team component next to
- * the chat component. The chat component will be placed into the aux outlet.
+ * The following route creates sibling components with multiple outlets.
+ * When navigating to `/team/11(aux:chat/jim)`, the router creates the 'Team' component next to
+ * the 'Chat' component. The 'Chat' component is placed into the 'aux' outlet.
  *
  * ```
  * [{
@@ -176,23 +180,26 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
  * }]
  * ```
  *
- *
  * ### Wild Cards
  *
- * Regardless of where you navigate to, the router will instantiate the sink component.
+ * The following route uses wild-card notation to specify a component
+ * that is always instantiated regardless of where you navigate to.
  *
  * ```
  * [{
  *   path: '**',
- *   component: Sink
+ *   component: WildcardComponent
  * }]
  * ```
  *
  * ### Redirects
  *
- * When navigating to '/team/11/legacy/user/jim', the router will change the URL to
- * '/team/11/user/jim', and then instantiate the team component with the user component
- * in it.
+ * The following route uses the `redirectTo` property to ignore a segment of
+ * a given URL when looking for a child path.
+ *
+ * When navigating to '/team/11/legacy/user/jim', the router changes the URL segment
+ * '/team/11/legacy/user/jim' to '/team/11/user/jim', and then instantiates
+ * the Team component with the User child component in it.
  *
  * ```
  * [{
@@ -208,15 +215,17 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
  * }]
  * ```
  *
- * Note that if the `redirectTo` value starts with a '/', then it is an absolute redirect.
- * If we change the `redirectTo` in the example to `/user/:name`, the result URL
- * is '/user/jim'.
+ * The redirect path can be relative, as shown in this example, or absolute.
+ * If we change the `redirectTo` value in the example to the absolute URL segment '/user/:name',
+ * the result URL is also absolute, '/user/jim'.
 
  * ### Empty Path
  *
  * Empty-path route configurations can be used to instantiate components that do not 'consume'
- * any URL segments. In the following configuration, when navigating to
- * `/team/11`, the router will instantiate the 'AllUsers' component.
+ * any URL segments.
+ *
+ * In the following configuration, when navigating to
+ * `/team/11`, the router instantiates the 'AllUsers' component.
  *
  * ```
  * [{
@@ -233,7 +242,7 @@ export type RunGuardsAndResolvers = 'pathParamsChange' | 'pathParamsOrQueryParam
  * ```
  *
  * Empty-path routes can have children. In the following example, when navigating
- * to `/team/11/user/jim`, the router will instantiate the wrapper component with
+ * to `/team/11/user/jim`, the router instantiates the wrapper component with
  * the user component in it.
  *
  * Note that an empty path route inherits its parent's parameters and data.
