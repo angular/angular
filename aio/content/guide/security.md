@@ -1,5 +1,9 @@
+<!--
 # Security
+-->
+# 보안
 
+<!--
 This page describes Angular's built-in
 protections against common web-application vulnerabilities and attacks such as cross-site
 scripting attacks. It doesn't cover application-level security, such as authentication (_Who is
@@ -8,28 +12,42 @@ this user?_) and authorization (_What can this user do?_).
 For more information about the attacks and mitigations described below, see [OWASP Guide Project](https://www.owasp.org/index.php/Category:OWASP_Guide_Project).
 
 You can run the <live-example></live-example> in Stackblitz and download the code from there.
+-->
+이 문서는 일반적인 웹 애플리케이션에 존재하는 취약점이나 크로스-사이트 스크립트 공격과 같은 악성 공격을 Angular가 어떻게 방어하는지 소개합니다.
+다만, 이 문서에서는 인증(_이 사용자는 누구인가?_)이나 권한(_이 사용자는 무엇을 할 수 있나?_)과 같은 애플리케이션 레벨의 보안에 대해서는 다루지 않습니다.
 
+이 문서에서 다루는 공격 방법에 대해 자세하게 알아보려면 [OWASP Guide Project](https://www.owasp.org/index.php/Category:OWASP_Guide_Project)를 참고하세요.
 
+이 문서에서 다루는 예제 코드는 <live-example></live-example>에서 직접 실행하거나 다운받아 확인할 수 있습니다.
 
 <h2 id='report-issues'>
+  <!--
   Reporting vulnerabilities
+  -->
+  취약점 제보하기
 </h2>
 
 
-
+<!--
 To report vulnerabilities in Angular itself, email us at [security@angular.io](mailto:security@angular.io).
 
 For more information about how Google handles security issues, see [Google's security
 philosophy](https://www.google.com/about/appsecurity/).
+-->
+Angular에 존재하는 취약점을 제보하려면 [security@angular.io](mailto:security@angular.io)로 메일을 보내주세요.
 
+Google이 처리하는 보안 이슈에 대해 더 알아보려면 [Google의 보안 철학](https://www.google.com/about/appsecurity/) 문서를 참고하세요.
 
 
 <h2 id='best-practices'>
+  <!--
   Best practices
+  -->
+  권장사항
 </h2>
 
 
-
+<!--
 * **Keep current with the latest Angular library releases.**
 We regularly update the Angular libraries, and these updates may fix security defects discovered in
 previous versions. Check the Angular [change
@@ -42,15 +60,28 @@ community and make a pull request.
 
 * **Avoid Angular APIs marked in the documentation as “_Security Risk_.”**
 For more information, see the [Trusting safe values](guide/security#bypass-security-apis) section of this page.
+-->
+* **Angular 라이브러리는 최신 버전으로 유지하세요.**
+Angular 팀은 주기적으로 Angular 라이브러리를 업데이트하면서 이전 버전에 발견된 보안 문제를 함께 수정하고 있습니다.
+[체인지 로그](https://github.com/angular/angular/blob/master/CHANGELOG.md)에서 보안과 관련된 업데이트 내용을 확인해 보세요.
 
+* **Angular 코드를 직접 수정하지 마세요.**
+Angular 코드를 직접 수정해서 사용하면 해당 버전의 기능이 일부 동작하지 않을 수 있는데, 이 때 중요한 보안 패치나 방어 로직이 동작하지 않을 수 있습니다.
+Angular를 직접 수정하기 보다는 커뮤니티에 수정을 요청하거나 풀 리퀘스트를 활용하세요.
+
+* **문서에 "_Security Risk_" 라고 표시된 API는 되도록 사용하지 마세요.**
+더 자세한 내용은 이 문서의 [안전한 값으로 간주하기](guide/security#bypass-security-apis) 섹션에서 설명합니다.
 
 
 <h2 id='xss'>
+  <!--
   Preventing cross-site scripting (XSS)
+  -->
+  크로스 사이트 스크립트 공격(cross-site scripting, XSS) 방어하기
 </h2>
 
 
-
+<!--
 [Cross-site scripting (XSS)](https://en.wikipedia.org/wiki/Cross-site_scripting) enables attackers
 to inject malicious code into web pages. Such code can then, for example, steal user data (in
 particular, login data) or perform actions to impersonate the user. This is one of the most
@@ -61,9 +92,23 @@ attackers can trick you into inserting a `<script>` tag in the DOM, they can run
 your website. The attack isn't limited to `<script>` tags&mdash;many elements and properties in the
 DOM allow code execution, for example, `<img onerror="...">` and `<a href="javascript:...">`. If
 attacker-controlled data enters the DOM, expect security vulnerabilities.
+-->
+[크로스-사이트 스크립트 공격(cross-site scripting, XSS)](https://en.wikipedia.org/wiki/Cross-site_scripting)은 공격자가 웹 페이지 안에 악성 코드를 주입해서 실행하는 것을 의미합니다.
+이런 공격은 웹에서 가장 흔한 공격 방식 중 하나인데, 보통 로그인 데이터와 같은 사용자의 정보를 탈취하거나 비정상적인 동작을 실행합니다.
 
+XSS 공격을 방어하려면 DOM(Document Object Model)에 악성 코드가 추가되는 것을 막아야 합니다.
+공격자가 DOM 안에 `<script>` 태그를 심을 수 있다면, 이 태그를 통해 악성 코드를 실행할 수 있습니다.
+하지만 XSS 공격이 꼭 `<script>` 태그에만 한정된 것은 아닙니다.
+`<img onerror="...">`나 `<a href="javascript:...">`와 같은 코드도 XSS 공격에 활용될 수 있습니다.
+그래서 공격자가 DOM에 데이터를 추가할 수 있다면 보안 취약점이 존재한다고 볼 수 있습니다.
+
+
+<!--
 ### Angular’s cross-site scripting security model
+-->
+### Angular의 XSS 방어 모델
 
+<!--
 To systematically block XSS bugs, Angular treats all values as untrusted by default. When a value
 is inserted into the DOM from a template, via property, attribute, style, class binding, or interpolation,
 Angular sanitizes and escapes untrusted values.
@@ -74,12 +119,21 @@ prevent values that an attacker can control from ever making it into the source 
 template. Never generate template source code by concatenating user input and templates.
 To prevent these vulnerabilities, use
 the [offline template compiler](guide/security#offline-template-compiler), also known as _template injection_.
+-->
+프레임워크 계층에서 XSS 공격을 방어하기 위해 기본적으로 Angular는 모든 값을 신뢰할 수 없는 것으로 간주합니다.
+그래서 템플릿에서 DOM에 추가되는 값이나 프로퍼티, 어트리뷰트, 스타일, 클래스 바인딩, 문자열 바인딩은 모두 Angular가 안전성을 검사하고 보안에 위배되는 값을 제거합니다.
+
+_Angular 템플릿은 실행되는 코드라고 볼 수 있습니다._: 그래서 템플릿에 존재하는 HTML이나 어트리뷰트, 바인딩 표현식은 모두 안전한 코드가 되어야 합니다.
+그래서 애플리케이션은 XSS 공격자가 템플릿에 소스 코드를 추가할 수 없도록 해야 합니다.
+사용자가 입력한 내용으로 템플릿을 구성하는 방식은 절대로 사용하면 안됩니다.
+이 기능이 꼭 필요하다면 [오프라인 템플릿 컴파일러](guide/security#offline-template-compiler)를 사용해야 합니다. 이 방식은 _템플릿 주입(template injection)_ 이라고도 합니다.
 
 <!--
 ### Sanitization and security contexts
 -->
 ### 코드 안전성 검사와 보안 영역
 
+<!--
 _Sanitization_ is the inspection of an untrusted value, turning it into a value that's safe to insert into
 the DOM. In many cases, sanitization doesn't change a value at all. Sanitization depends on context:
 a value that's harmless in CSS is potentially dangerous in a URL.
@@ -94,35 +148,65 @@ Angular defines the following security contexts:
 Angular sanitizes untrusted values for HTML, styles, and URLs; sanitizing resource URLs isn't
 possible because they contain arbitrary code. In development mode, Angular prints a console warning
 when it has to change a value during sanitization.
+-->
+_코드 안전성 검사(Sanitization)_ 란 안전성이 확인되지 않은 값을 검사해서 DOM에 추가할 수 있는 안전한 값으로 변환하는 것을 의미합니다.
+일반적으로 코드 안전성 검사가 실행되었을 때 값 전체를 한번에 변경되지는 않습니다.
+코드 안전성 검사는 해당 컨텍스트에 필요한 부분만 처리됩니다.
+그래서 CSS에는 위험하니 않은 코드라도 URL에 사용되면 위험할 수 있는 경우도 있습니다.
 
+Angular는 다음과 같은 보안 영역을 구성합니다:
+
+* 어떤 값이 HTML로 변환되는 경우에는 **HTML** 보안 영역이 구성됩니다. `innerHtml`로 바인딩되는 경우가 해당됩니다.
+* `style` 프로퍼티로 CSS 코드가 바인딩되는 경우에는 **스타일** 보안 영역이 구성됩니다.
+* `<a href>`와 같은 엘리먼트에 URL 프로퍼티가 사용되면 **URL** 보안 영역이 구성됩니다.
+* `<script src>`와 같이 외부 코드를 로드해서 실행하는 경우에는 **리소스 URL** 보안 영역이 구성됩니다.
+
+Angular는 HTML이나 스타일, URL로 사용되는 값에 모두 안전성 검사를 실행하지만, 리소스 URL에는 미처 처리되지 않은 악성 코드가 포함되어 있을 수도 있습니다.
+그래서 개발 모드에서는 추가 안전성 검사가 필요하다고 판단하는 경우에는 콘솔에 경고 메시지를 출력합니다.
+
+<!--
 ### Sanitization example
+-->
+### 안전성 검사 예제
 
+<!--
 The following template binds the value of `htmlSnippet`, once by interpolating it into an element's
 content, and once by binding it to the `innerHTML` property of an element:
-
+-->
+아래 템플릿 코드에서 `htmlSnippet`는 엘리먼트의 내용에 문자열 바인딩되면서 한 번, 엘리먼트의 `innerHTML` 프로퍼티에 바인딩되면서 한 번 실행됩니다:
 
 <code-example path="security/src/app/inner-html-binding.component.html" header="src/app/inner-html-binding.component.html">
 
 </code-example>
 
 
-
+<!--
 Interpolated content is always escaped&mdash;the HTML isn't interpreted and the browser displays
 angle brackets in the element's text content.
 
 For the HTML to be interpreted, bind it to an HTML property such as `innerHTML`. But binding
 a value that an attacker might control into `innerHTML` normally causes an XSS
 vulnerability. For example, code contained in a `<script>` tag is executed:
+-->
+문자열 바인딩되는 내용은 언제나 안전하게 처리됩니다. 이 내용이 HTML 코드라면 이 코드는 HTML로 처리되지 않고 일반 문자열로 표시될 것입니다.
 
+HTML 코드를 그대로 사용하려면 이 코드는 `innerHTML`과 같은 HTML 프로퍼티에 바인딩되어야 합니다.
+하지만 이 코드를 아무 처리없이 바인딩하는 것은 공격자가 XSS 취약점을 사용하도록 하는 것과 같습니다.
+예를 들어 `htmlSnippet`의 내용 안에 `<script>` 태그가 포함되어 있다고 합시다:
 
+<!--
 <code-example path="security/src/app/inner-html-binding.component.ts" linenums="false" header="src/app/inner-html-binding.component.ts (class)" region="class">
+-->
+<code-example path="security/src/app/inner-html-binding.component.ts" linenums="false" header="src/app/inner-html-binding.component.ts (클래스)" region="class">
 
 </code-example>
 
 
-
+<!--
 Angular recognizes the value as unsafe and automatically sanitizes it, which removes the `<script>`
 tag but keeps safe content such as the `<b>` element.
+-->
+Angular는 이 코드에서 `<script>`와 같이 위험한 부분을 자동으로 제거하지만 `<b>` 엘리먼트와 같이 안전한 코드는 그대로 둡니다.
 
 
 <figure>

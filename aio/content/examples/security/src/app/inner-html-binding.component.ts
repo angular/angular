@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
 })
 // #docregion class
 export class InnerHtmlBindingComponent {
-  // For example, a user/attacker-controlled value from a URL.
+  // URL을 통해 악성 코드가 실행될 수 있습니다.
   htmlSnippet = 'Template <script>alert("0wned")</script> <b>Syntax</b>';
 }
