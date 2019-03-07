@@ -228,7 +228,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   protected reflectMembers(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
       ClassMember[]|null {
     const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
-    const propertyDefinition = getPropertyDefinition(node);
+    const propertyDefinition = node && getPropertyDefinition(node);
     if (propertyDefinition) {
       const members: ClassMember[] = [];
       if (propertyDefinition.setter) {
