@@ -54,11 +54,11 @@ window.testBlocklist = {
     "notes": "Unknown"
   },
   "CdkTable should be able to apply classes to rows based on their context": {
-    "error": "Error: Expected false to be true.",
+    "error": "FW-842: View engine dirty-checks projected views when the declaration place is checked",
     "notes": "Unknown"
   },
   "CdkTable should be able to apply classes to cells based on their row context": {
-    "error": "Error: Expected false to be true.",
+    "error": "FW-842: View engine dirty-checks projected views when the declaration place is checked",
     "notes": "Unknown"
   },
   "CdkDrag in a drop container should be able to customize the preview element": {
