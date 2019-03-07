@@ -105,3 +105,14 @@ export function attrsStylingIndexOf(attrs: TAttributes, startIndex: number): num
   }
   return -1;
 }
+
+/**
+ * Test whether the given value is a marker that indicates that the following
+ * attribute values in a `TAttributes` array are only the names of attributes,
+ * and not name-value pairs.
+ * @param marker The attribute marker to test.
+ * @returns true if the marker is a "name-only" marker (e.g. `Bindings` or `Template`).
+ */
+export function isNameOnlyAttributeMarker(marker: string | AttributeMarker) {
+  return marker === AttributeMarker.Bindings || marker === AttributeMarker.Template;
+}
