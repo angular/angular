@@ -23,31 +23,31 @@ window.testBlocklist = {
   },
   "CdkTable should render correctly when using native HTML tags": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Unknown"
+    "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
   "CdkTable with sticky positioning on native table layout should stick and unstick headers": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Unknown"
+    "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
   "CdkTable with sticky positioning on native table layout should stick and unstick footers": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Unknown"
+    "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
   "CdkTable with sticky positioning on native table layout should stick tfoot when all rows are stuck": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Unknown"
+    "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
   "CdkTable with sticky positioning on native table layout should stick and unstick left columns": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Unknown"
+    "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
   "CdkTable with sticky positioning on native table layout should stick and unstick right columns": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Unknown"
+    "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
   "CdkTable with sticky positioning on native table layout should stick and unstick combination of sticky header, footer, and columns": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Unknown"
+    "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
   "CdkTable with trackBy should change row implicit data even when trackBy finds no changes": {
     "error": "Error: Expected 'a_1 b_1' to be 'a_2 b_2'.",
@@ -287,11 +287,11 @@ window.testBlocklist = {
   },
   "MatTable should be able to render a table correctly with native elements": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Unknown"
+    "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
   "MatTable should apply custom sticky CSS class to sticky cells": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Unknown"
+    "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should be able to filter the table contents": {
     "error": "TypeError: Cannot read property 'length' of undefined",
