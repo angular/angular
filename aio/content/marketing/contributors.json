@@ -666,5 +666,12 @@
     "mentor": "mhevery",
     "picture": "JiaLiPassion.jpg",
     "bio": "A programmer with passion, angular/zone.js guy! Web frontend engineer @sylabs"
+  },
+  "cexbrayat": {
+    "name": "Cédric Exbrayat",
+    "mentor": "petebacondarwin",
+    "group": "Collaborator",
+    "picture": "cexbrayat.jpg",
+    "bio": "Author of `Become a ninja with Angular (2+)` https://books.ninja-squad.com/angular - Angular trainer and @Ninja-Squad co-founder"
   }
 }
