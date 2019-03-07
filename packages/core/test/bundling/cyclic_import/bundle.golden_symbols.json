@@ -375,6 +375,9 @@
     "name": "getLViewParent"
   },
   {
+    "name": "getNameOnlyMarkerIndex"
+  },
+  {
     "name": "getNativeAnchorNode"
   },
   {
@@ -495,6 +498,9 @@
     "name": "isLView"
   },
   {
+    "name": "isNameOnlyAttributeMarker"
+  },
+  {
     "name": "isNodeMatchingSelector"
   },
   {
@@ -517,6 +523,9 @@
   },
   {
     "name": "locateHostElement"
+  },
+  {
+    "name": "matchTemplateAttribute"
   },
   {
     "name": "namespaceHTML"

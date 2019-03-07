@@ -324,7 +324,19 @@
     "name": "_c18"
   },
   {
+    "name": "_c19"
+  },
+  {
     "name": "_c2"
+  },
+  {
+    "name": "_c20"
+  },
+  {
+    "name": "_c21"
+  },
+  {
+    "name": "_c22"
   },
   {
     "name": "_c3"
@@ -750,6 +762,9 @@
     "name": "getMultiStylesStartIndex"
   },
   {
+    "name": "getNameOnlyMarkerIndex"
+  },
+  {
     "name": "getNativeAnchorNode"
   },
   {
@@ -984,6 +999,9 @@
     "name": "isListLikeIterable"
   },
   {
+    "name": "isNameOnlyAttributeMarker"
+  },
+  {
     "name": "isNodeMatchingSelector"
   },
   {
@@ -1039,6 +1057,9 @@
   },
   {
     "name": "markViewDirty"
+  },
+  {
+    "name": "matchTemplateAttribute"
   },
   {
     "name": "namespaceHTML"
