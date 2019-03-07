@@ -53,7 +53,7 @@ describe('directive', () => {
        */
       function createTemplate() {
         // using 2 bindings to show example shape of attributes array
-        element(0, 'span', ['class', 'fade', AttributeMarker.SelectOnly, 'test', 'other']);
+        element(0, 'span', ['class', 'fade', AttributeMarker.Bindings, 'test', 'other']);
       }
 
       function updateTemplate() { elementProperty(0, 'test', bind(false)); }
@@ -105,7 +105,7 @@ describe('directive', () => {
          function createTemplate() {
            // putting name (test) in the "usual" value position
            element(
-               0, 'span', ['class', 'fade', AttributeMarker.SelectOnly, 'prop1', 'test', 'prop2']);
+               0, 'span', ['class', 'fade', AttributeMarker.Bindings, 'prop1', 'test', 'prop2']);
          }
 
          function updateTemplate() {
@@ -208,7 +208,7 @@ describe('directive', () => {
             if (rf & RenderFlags.Create) {
               template(
                   0, MyComponent_ng_container_Template_0, 2, 0, 'ng-container',
-                  [AttributeMarker.SelectOnly, 'ngIf']);
+                  [AttributeMarker.Bindings, 'ngIf']);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngIf', bind(ctx.visible));
@@ -240,7 +240,7 @@ describe('directive', () => {
        * <span (out)="someVar = true"></span>
        */
       function createTemplate() {
-        elementStart(0, 'span', [AttributeMarker.SelectOnly, 'out']);
+        elementStart(0, 'span', [AttributeMarker.Bindings, 'out']);
         { listener('out', () => {}); }
         elementEnd();
       }
@@ -274,7 +274,7 @@ describe('directive', () => {
        */
       const Cmpt = createComponent('Cmpt', function(rf: RenderFlags, ctx: {value: any}) {
         if (rf & RenderFlags.Create) {
-          template(0, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'out']);
+          template(0, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'out']);
           listener('out', () => { ctx.value = true; });
         }
       }, 1, 0, [Directive]);
@@ -295,7 +295,7 @@ describe('directive', () => {
        */
       const Cmpt = createComponent('Cmpt', function(rf: RenderFlags, ctx: {value: any}) {
         if (rf & RenderFlags.Create) {
-          elementContainerStart(0, [AttributeMarker.SelectOnly, 'out']);
+          elementContainerStart(0, [AttributeMarker.Bindings, 'out']);
           {
             listener('out', () => { ctx.value = true; });
           }

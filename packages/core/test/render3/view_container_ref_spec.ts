@@ -542,7 +542,7 @@ describe('ViewContainerRef', () => {
                vars: 2,
                template: function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   elementStart(0, 'div', [AttributeMarker.SelectOnly, 'tplDir']);
+                   elementStart(0, 'div', [AttributeMarker.Bindings, 'tplDir']);
                    { text(1); }
                    elementEnd();
                  }
@@ -628,7 +628,7 @@ describe('ViewContainerRef', () => {
             vars: 2,
             template: function(rf: RenderFlags, loop: any) {
               if (rf & RenderFlags.Create) {
-                template(0, null, 0, 0, 'ng-template', [AttributeMarker.SelectOnly, 'ngForOf']);
+                template(0, null, 0, 0, 'ng-template', [AttributeMarker.Bindings, 'ngForOf']);
               }
 
               if (rf & RenderFlags.Update) {

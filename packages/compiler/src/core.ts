@@ -435,10 +435,19 @@ export const enum AttributeMarker {
   Styles = 2,
 
   /**
-   * This marker indicates that the following attribute names were extracted from bindings (ex.:
-   * [foo]="exp") and / or event handlers (ex. (bar)="doSth()").
-   * Taking the above bindings and outputs as an example an attributes array could look as follows:
-   * ['class', 'fade in', AttributeMarker.SelectOnly, 'foo', 'bar']
+   * Signals that the following attribute names were extracted from input or output bindings.
+   *
+   * For example, given the following HTML:
+   *
+   * ```
+   * <div moo="car" [foo]="exp" (bar)="doSth()">
+   * ```
+   *
+   * the generated code is:
+   *
+   * ```
+   * var _c1 = ['moo', 'car', AttributeMarker.Bindings, 'foo', 'bar'];
+   * ```
    */
-  SelectOnly = 3,
+  Bindings = 3,
 }
