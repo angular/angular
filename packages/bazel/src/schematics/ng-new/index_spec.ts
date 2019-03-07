@@ -25,12 +25,11 @@ describe('ng-new schematic', () => {
     expect(files).toContain('/demo/package.json');
   });
 
-  it('should call ng-add to generate Bazel files', () => {
+  it('should call ng-add to generate additional files needed by Bazel', () => {
     const options = {...defaultOptions};
     const host = schematicRunner.runSchematic('ng-new', options);
     const {files} = host;
-    expect(files).toContain('/demo/WORKSPACE');
-    expect(files).toContain('/demo/BUILD.bazel');
-    expect(files).toContain('/demo/src/BUILD.bazel');
+    expect(files).toContain('/demo/src/main.dev.ts');
+    expect(files).toContain('/demo/src/main.prod.ts');
   });
 });
