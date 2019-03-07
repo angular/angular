@@ -101,14 +101,6 @@ window.testBlocklist = {
     "error": "Error: Failed: Expected node level to be 40px but was ",
     "notes": "Unknown"
   },
-  "CdkTree flat tree with trackBy should add/remove/move nodes with property-based trackBy": {
-    "error": "Error: Expected null to be '1'.",
-    "notes": "Unknown"
-  },
-  "CdkTree flat tree with trackBy should add/remove/move nodes with index-based trackBy": {
-    "error": "Error: Expected null to be '0'.",
-    "notes": "Unknown"
-  },
   "CdkTree nested tree with toggle should expand/collapse the node multiple times": {
     "error": "Error: Expected 3 to be 1, 'Expect node expanded'.",
     "notes": "Unknown"
