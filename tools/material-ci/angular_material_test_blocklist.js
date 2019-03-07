@@ -239,7 +239,7 @@ window.testBlocklist = {
   },
   "MatInput without forms validates the type": {
     "error": "Error: Input type \"file\" isn't supported by matInput.",
-    "notes": "Unknown"
+    "notes": "Breaking change: Static directive inputs evaluated in creation mode - material test to be updated"
   },
   "MatInput with textarea autosize should work in a step": {
     "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
