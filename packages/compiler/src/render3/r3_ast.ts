@@ -81,10 +81,10 @@ export class Element implements Node {
 export class Template implements Node {
   constructor(
       public tagName: string, public attributes: TextAttribute[], public inputs: BoundAttribute[],
-      public outputs: BoundEvent[], public children: Node[], public references: Reference[],
-      public variables: Variable[], public sourceSpan: ParseSourceSpan,
-      public startSourceSpan: ParseSourceSpan|null, public endSourceSpan: ParseSourceSpan|null,
-      public i18n?: I18nAST) {}
+      public outputs: BoundEvent[], public templateAttrs: (BoundAttribute|TextAttribute)[],
+      public children: Node[], public references: Reference[], public variables: Variable[],
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
+      public endSourceSpan: ParseSourceSpan|null, public i18n?: I18nAST) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitTemplate(this); }
 }
 
@@ -189,15 +189,18 @@ export class TransformVisitor implements Visitor<Node> {
     const newAttributes = transformAll(this, template.attributes);
     const newInputs = transformAll(this, template.inputs);
     const newOutputs = transformAll(this, template.outputs);
+    const newTemplateAttrs = transformAll(this, template.templateAttrs);
     const newChildren = transformAll(this, template.children);
     const newReferences = transformAll(this, template.references);
     const newVariables = transformAll(this, template.variables);
     if (newAttributes != template.attributes || newInputs != template.inputs ||
-        newOutputs != template.outputs || newChildren != template.children ||
-        newReferences != template.references || newVariables != template.variables) {
+        newOutputs != template.outputs || newTemplateAttrs != template.templateAttrs ||
+        newChildren != template.children || newReferences != template.references ||
+        newVariables != template.variables) {
       return new Template(
-          template.tagName, newAttributes, newInputs, newOutputs, newChildren, newReferences,
-          newVariables, template.sourceSpan, template.startSourceSpan, template.endSourceSpan);
+          template.tagName, newAttributes, newInputs, newOutputs, newTemplateAttrs, newChildren,
+          newReferences, newVariables, template.sourceSpan, template.startSourceSpan,
+          template.endSourceSpan);
     }
     return template;
   }

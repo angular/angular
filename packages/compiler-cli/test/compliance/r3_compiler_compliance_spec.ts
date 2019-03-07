@@ -788,7 +788,7 @@ describe('compiler compliance', () => {
         });`;
       const MyComponentDefinition = `
         const $c1$ = ["foo", ""];
-        const $c2$ = ["if", ""];
+        const $c2$ = [${AttributeMarker.Template}, "if"];
         function MyComponent_li_2_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "li");
@@ -1223,17 +1223,18 @@ describe('compiler compliance', () => {
           }
         };
         const output = `
-          const $_c0$ = [${AttributeMarker.Bindings}, "ngIf"];
-          const $_c1$ = ["id", "second"];
+          const $_c0$ = ["id", "second", ${AttributeMarker.Template}, "ngIf"];
+          const $_c1$ = ["id", "third", ${AttributeMarker.Template}, "ngIf"];
+          const $_c2$ = ["id", "second"];
           function Cmp_div_0_Template(rf, ctx) { if (rf & 1) {
-              $r3$.ɵelementStart(0, "div", $_c1$);
-              $r3$.ɵprojection(1, 1);
-              $r3$.ɵelementEnd();
+            $r3$.ɵelementStart(0, "div", $_c2$);
+            $r3$.ɵprojection(1, 1);
+            $r3$.ɵelementEnd();
           } }
-          const $_c4$ = ["id", "third"];
+          const $_c3$ = ["id", "third"];
           function Cmp_div_1_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵelementStart(0, "div", $_c4$);
+              $r3$.ɵelementStart(0, "div", $_c3$);
               $r3$.ɵtext(1, " No ng-content, no instructions generated. ");
               $r3$.ɵelementEnd();
             }
@@ -1244,14 +1245,14 @@ describe('compiler compliance', () => {
               $r3$.ɵprojection(1);
             }
           }
-          const $_c2$ = [[["span", "title", "tofirst"]]];
-          const $_c3$ = ["span[title=toFirst]"];
+          const $_c4$ = [[["span", "title", "tofirst"]]];
+          const $_c5$ = ["span[title=toFirst]"];
           …
           template: function Cmp_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵprojectionDef($_c2$, $_c3$);
+              $r3$.ɵprojectionDef($_c4$, $_c5$);
               $r3$.ɵtemplate(0, Cmp_div_0_Template, 2, 0, "div", $_c0$);
-              $r3$.ɵtemplate(1, Cmp_div_1_Template, 2, 0, "div", $_c0$);
+              $r3$.ɵtemplate(1, Cmp_div_1_Template, 2, 0, "div", $_c1$);
               $r3$.ɵtemplate(2, Cmp_ng_template_2_Template, 2, 0, "ng-template");
             }
             if (rf & 2) {
@@ -2112,7 +2113,7 @@ describe('compiler compliance', () => {
 
       const MyComponentDefinition = `
         const $c1$ = ["foo", ""];
-        const $c2$ = ["if", ""];
+        const $c2$ = [${AttributeMarker.Template}, "if"];
         const $c3$ = ["baz", ""];
         const $c4$ = ["bar", ""];
         function MyComponent_div_3_span_2_Template(rf, ctx) {
@@ -2203,9 +2204,9 @@ describe('compiler compliance', () => {
       };
 
       const template = `
-      const $c0$ = ["ngFor", "" , ${AttributeMarker.Bindings}, "ngForOf"];
+      const $c0$ = [${AttributeMarker.Template}, "ngFor", "ngForOf"];
       const $c1$ = ["foo", ""];
-      const $c2$ = [${AttributeMarker.Bindings}, "ngIf"];
+      const $c2$ = [${AttributeMarker.Template}, "ngIf"];
 
       function MyComponent_div_0_span_3_Template(rf, ctx) {
         if (rf & 1) {
@@ -2430,7 +2431,7 @@ describe('compiler compliance', () => {
             `;
 
         const MyComponentDefinition = `
-              const $t1_attrs$ = ["for", "", ${AttributeMarker.Bindings}, "forOf"];
+              const $t1_attrs$ = [${AttributeMarker.Template}, "for", "forOf"];
               function MyComponent__svg_g_1_Template(rf, ctx) {
                 if (rf & 1) {
                   $r3$.ɵnamespaceSVG();
@@ -2509,7 +2510,7 @@ describe('compiler compliance', () => {
         `;
 
         const MyComponentDefinition = `
-          const $t1_attrs$ = ["for", "", ${AttributeMarker.Bindings}, "forOf"];
+          const $t1_attrs$ = [${AttributeMarker.Template}, "for", "forOf"];
           function MyComponent_li_1_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "li");
@@ -2591,7 +2592,7 @@ describe('compiler compliance', () => {
         };
 
         const MyComponentDefinition = `
-          const $t4_attrs$ = ["for", "", ${AttributeMarker.Bindings}, "forOf"];
+          const $t4_attrs$ = [${AttributeMarker.Template}, "for", "forOf"];
           function MyComponent_li_1_li_4_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "li");

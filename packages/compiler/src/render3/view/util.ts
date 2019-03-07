@@ -173,5 +173,9 @@ export function getAttrsForDirectiveMatching(elOrTpl: t.Element | t.Template):
   elOrTpl.inputs.forEach(i => { attributesMap[i.name] = ''; });
   elOrTpl.outputs.forEach(o => { attributesMap[o.name] = ''; });
 
+  if (elOrTpl instanceof t.Template) {
+    elOrTpl.templateAttrs.forEach(a => attributesMap[a.name] = '');
+  }
+
   return attributesMap;
 }
