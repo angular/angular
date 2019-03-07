@@ -78,7 +78,7 @@ export function getRootDirs(host: ts.CompilerHost, options: ts.CompilerOptions):
   } else {
     rootDirs.push(host.getCurrentDirectory());
   }
-  return rootDirs.map(rootDir => AbsoluteFsPath.fromUnchecked(rootDir));
+  return rootDirs.map(rootDir => AbsoluteFsPath.from(rootDir));
 }
 
 export function nodeDebugInfo(node: ts.Node): string {
