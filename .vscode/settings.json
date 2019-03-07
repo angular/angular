@@ -1,10 +1,4 @@
 {
-  "[javascript]": {
-    "editor.formatOnSave": true,
-  },
-  "[typescript]": {
-    "editor.formatOnSave": true,
-  },
   // Please install https://marketplace.visualstudio.com/items?itemName=xaver.clang-format to take advantage of `clang-format` in VSCode.
   // (See https://clang.llvm.org/docs/ClangFormat.html for more info `clang-format`.)
   "clang-format.executable": "${workspaceRoot}/node_modules/.bin/clang-format",
