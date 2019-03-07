@@ -1146,6 +1146,9 @@
     "name": "renderComponentOrTemplate"
   },
   {
+    "name": "renderDetachView"
+  },
+  {
     "name": "renderEmbeddedTemplate"
   },
   {

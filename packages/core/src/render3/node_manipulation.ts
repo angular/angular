@@ -244,6 +244,15 @@ export function addRemoveViewFromContainer(
 }
 
 /**
+ * Detach a `LView` from the DOM by detaching its nodes.
+ *
+ * @param lView the `LView` to be detached.
+ */
+export function renderDetachView(lView: LView) {
+  walkTNodeTree(lView, WalkTNodeTreeAction.Detach, lView[RENDERER], null);
+}
+
+/**
  * Traverses down and up the tree of views and containers to remove listeners and
  * call onDestroy callbacks.
  *
