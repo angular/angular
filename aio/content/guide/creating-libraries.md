@@ -2,7 +2,7 @@
 
 You can create and publish new libraries to extend Angular functionality. If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
 
-An simple example might be a button that sends users to your company website, that would be included in all apps that your company builds.
+A simple example might be a button that sends users to your company website, that would be included in all apps that your company builds.
 
 ## Getting started
 
