@@ -12,8 +12,8 @@ import * as ts from 'typescript';
 import {FileToModuleHost, ReferenceEmitStrategy} from './emitter';
 import {ImportMode, Reference} from './references';
 
-// Escape anything that isn't alphanumeric, '/', '_', '.', or '$'.
-const CHARS_TO_ESCAPE = /[^a-zA-Z0-9/_\.$]/g;
+// Escape anything that isn't alphanumeric, '/' or '_'.
+const CHARS_TO_ESCAPE = /[^a-zA-Z0-9/_]/g;
 
 export class AliasGenerator {
   constructor(private fileToModuleHost: FileToModuleHost) {}
