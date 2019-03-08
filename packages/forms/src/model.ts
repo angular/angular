@@ -1639,7 +1639,7 @@ export class FormGroup extends AbstractControl {
  *
  * ### Adding or removing controls from a form array
  *
- * To change the controls in the array, use the `push`, `insert`, or `removeAt` methods
+ * To change the controls in the array, use the `push`, `insert`, `removeAt` or `clear` methods
  * in `FormArray` itself. These methods ensure the controls are properly tracked in the
  * form's hierarchy. Do not modify the array of `AbstractControl`s used to instantiate
  * the `FormArray` directly, as that result in strange and unexpected behavior such
