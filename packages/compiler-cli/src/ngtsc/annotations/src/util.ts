@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportMode, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver} from '../../partial_evaluator';
-import {ClassMemberKind, CtorParameter, Decorator, ReflectionHost, TypeValueReference} from '../../reflection';
+import {ClassMemberKind, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference} from '../../reflection';
 
 export enum ConstructorDepErrorKind {
   NO_SUITABLE_TOKEN,
@@ -149,12 +149,26 @@ export function toR3Reference(
   return {value, type};
 }
 
-export function isAngularCore(decorator: Decorator): boolean {
+export function isAngularCore(decorator: Decorator): decorator is Decorator&{import: Import} {
   return decorator.import !== null && decorator.import.from === '@angular/core';
 }
 
-export function isAngularCoreReference(reference: Reference, symbolName: string) {
+export function isAngularCoreReference(reference: Reference, symbolName: string): boolean {
   return reference.ownedByModuleGuess === '@angular/core' && reference.debugName === symbolName;
+}
+
+export function findAngularDecorator(
+    decorators: Decorator[], name: string, isCore: boolean): Decorator|undefined {
+  return decorators.find(decorator => isAngularDecorator(decorator, name, isCore));
+}
+
+export function isAngularDecorator(decorator: Decorator, name: string, isCore: boolean): boolean {
+  if (isCore) {
+    return decorator.name === name;
+  } else if (isAngularCore(decorator)) {
+    return decorator.import.name === name;
+  }
+  return false;
 }
 
 /**

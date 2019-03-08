@@ -14,7 +14,7 @@ import {Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection'
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
-import {getConstructorDependencies, getValidConstructorDependencies, isAngularCore, validateConstructorDependencies} from './util';
+import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, validateConstructorDependencies} from './util';
 
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;
@@ -36,8 +36,7 @@ export class InjectableDecoratorHandler implements
     if (!decorators) {
       return undefined;
     }
-    const decorator = decorators.find(
-        decorator => decorator.name === 'Injectable' && (this.isCore || isAngularCore(decorator)));
+    const decorator = findAngularDecorator(decorators, 'Injectable', this.isCore);
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,

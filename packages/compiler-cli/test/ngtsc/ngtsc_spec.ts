@@ -293,6 +293,75 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('/** @nocollapse */ TestCmp.ngComponentDef');
   });
 
+  it('should recognize aliased decorators', () => {
+    env.tsconfig({});
+    env.write('test.ts', `
+      import {
+        Component as AngularComponent,
+        Directive as AngularDirective,
+        Pipe as AngularPipe,
+        Injectable as AngularInjectable,
+        NgModule as AngularNgModule,
+        Input as AngularInput,
+        Output as AngularOutput
+      } from '@angular/core';
+
+      export class TestBase {
+        @AngularInput() input: any;
+        @AngularOutput() output: any;
+      }
+
+      @AngularComponent({
+        selector: 'test-component',
+        template: '...'
+      })
+      export class TestComponent {
+        @AngularInput() input: any;
+        @AngularOutput() output: any;
+      }
+
+      @AngularDirective({
+        selector: 'test-directive'
+      })
+      export class TestDirective {}
+
+      @AngularPipe({
+        name: 'test-pipe'
+      })
+      export class TestPipe {}
+
+      @AngularInjectable({})
+      export class TestInjectable {}
+
+      @AngularNgModule({
+        declarations: [
+          TestComponent,
+          TestDirective,
+          TestPipe
+        ],
+        exports: [
+          TestComponent,
+          TestDirective,
+          TestPipe
+        ]
+      })
+      class MyModule {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('TestBase.ngBaseDef = i0.ɵdefineBase');
+    expect(jsContents).toContain('TestComponent.ngComponentDef = i0.ɵdefineComponent');
+    expect(jsContents).toContain('TestDirective.ngDirectiveDef = i0.ɵdefineDirective');
+    expect(jsContents).toContain('TestPipe.ngPipeDef = i0.ɵdefinePipe');
+    expect(jsContents).toContain('TestInjectable.ngInjectableDef = i0.defineInjectable');
+    expect(jsContents).toContain('MyModule.ngModuleDef = i0.ɵdefineNgModule');
+    expect(jsContents).toContain('MyModule.ngInjectorDef = i0.defineInjector');
+    expect(jsContents).toContain('inputs: { input: "input" }');
+    expect(jsContents).toContain('outputs: { output: "output" }');
+  });
+
   it('should compile Components with a templateUrl in a different rootDir', () => {
     env.tsconfig({}, ['./extraRootDir']);
     env.write('extraRootDir/test.html', '<p>Hello World</p>');
