@@ -23,7 +23,7 @@ import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
 import {generateSetClassMetadataCall} from './metadata';
-import {isAngularCore, isAngularCoreReference, unwrapExpression} from './util';
+import {findAngularDecorator, isAngularCoreReference, unwrapExpression} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -64,8 +64,7 @@ export class ComponentDecoratorHandler implements
     if (!decorators) {
       return undefined;
     }
-    const decorator = decorators.find(
-        decorator => decorator.name === 'Component' && (this.isCore || isAngularCore(decorator)));
+    const decorator = findAngularDecorator(decorators, 'Component', this.isCore);
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,
