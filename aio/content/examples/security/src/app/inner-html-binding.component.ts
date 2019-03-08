@@ -7,6 +7,6 @@ import { Component } from '@angular/core';
 })
 // #docregion class
 export class InnerHtmlBindingComponent {
-  // URL을 통해 악성 코드가 실행될 수 있습니다.
+  // HTML 코드에 악성 코드가 포함되어 있을 수 있습니다.
   htmlSnippet = 'Template <script>alert("0wned")</script> <b>Syntax</b>';
 }
