@@ -279,6 +279,11 @@ mat-action-list {
     outline: inherit;
     -webkit-tap-highlight-color: transparent;
 
+    text-align: left;
+    [dir='rtl'] & {
+      text-align: right;
+    }
+
     &::-moz-focus-inner {
       border: 0;
     }
