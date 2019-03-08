@@ -153,8 +153,21 @@ export function isAngularCore(decorator: Decorator): boolean {
   return decorator.import !== null && decorator.import.from === '@angular/core';
 }
 
-export function isAngularCoreReference(reference: Reference, symbolName: string) {
+export function isAngularCoreReference(reference: Reference, symbolName: string): boolean {
   return reference.ownedByModuleGuess === '@angular/core' && reference.debugName === symbolName;
+}
+
+export function findAngularDecorator(
+    decorators: Decorator[], name: string, isCore: boolean): Decorator|undefined {
+  return decorators.find(decorator => isAngularDecorator(decorator, name, isCore));
+}
+
+export function isAngularDecorator(decorator: Decorator, name: string, isCore: boolean): boolean {
+  if (isCore) {
+    return decorator.name === name;
+  } else {
+    return decorator.import !== null && decorator.import.name === name;
+  }
 }
 
 /**

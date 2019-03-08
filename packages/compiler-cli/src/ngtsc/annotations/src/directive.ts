@@ -7,7 +7,6 @@
  */
 
 import {ConstantPool, Expression, ParseError, ParsedHostBindings, R3DirectiveMetadata, R3QueryMetadata, Statement, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings, verifyHostBindings} from '@angular/compiler';
-
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -19,7 +18,7 @@ import {extractDirectiveGuards} from '../../scope/src/util';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
-import {getValidConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwardRef} from './util';
+import {findAngularDecorator, getValidConstructorDependencies, unwrapExpression, unwrapForwardRef} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
@@ -39,8 +38,7 @@ export class DirectiveDecoratorHandler implements
     if (!decorators) {
       return undefined;
     }
-    const decorator = decorators.find(
-        decorator => decorator.name === 'Directive' && (this.isCore || isAngularCore(decorator)));
+    const decorator = findAngularDecorator(decorators, 'Directive', this.isCore);
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,
