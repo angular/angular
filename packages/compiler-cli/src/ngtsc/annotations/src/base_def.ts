@@ -19,10 +19,10 @@ function containsNgTopLevelDecorator(decorators: Decorator[] | null, isCore: boo
   if (!decorators) {
     return false;
   }
-  return decorators.find(
-             decorator => isAngularDecorator(decorator, 'Component', isCore) ||
-                 isAngularDecorator(decorator, 'Directive', isCore) ||
-                 isAngularDecorator(decorator, 'NgModule', isCore)) !== undefined;
+  return decorators.some(
+      decorator => isAngularDecorator(decorator, 'Component', isCore) ||
+          isAngularDecorator(decorator, 'Directive', isCore) ||
+          isAngularDecorator(decorator, 'NgModule', isCore));
 }
 
 export class BaseDefDecoratorHandler implements

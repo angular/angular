@@ -293,7 +293,7 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('/** @nocollapse */ TestCmp.ngComponentDef');
   });
 
-  it('should recognize aliases decorators', () => {
+  it('should recognize aliased decorators', () => {
     env.tsconfig({});
     env.write('test.ts', `
       import {
