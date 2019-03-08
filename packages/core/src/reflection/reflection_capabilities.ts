@@ -214,7 +214,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     if (!isType(typeOrFunc)) {
       return {};
     }
-    return this._ownPropMetadata(typeOrFunc, Object) || {};
+    return this._ownPropMetadata(typeOrFunc, getParentCtor(typeOrFunc)) || {};
   }
 
   hasLifecycleHook(type: any, lcProperty: string): boolean {

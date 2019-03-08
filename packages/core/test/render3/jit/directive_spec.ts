@@ -6,8 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WrappedNodeExpr} from '@angular/compiler';
-import {convertToR3QueryMetadata, extendsDirectlyFromObject} from '../../../src/render3/jit/directive';
+import {Directive, HostListener} from '@angular/core';
+import {setClassMetadata} from '@angular/core/src/render3/metadata';
+
+import {convertToR3QueryMetadata, directiveMetadata, extendsDirectlyFromObject} from '../../../src/render3/jit/directive';
 
 describe('jit directive helper functions', () => {
 
@@ -95,5 +97,38 @@ describe('jit directive helper functions', () => {
       expect(converted.read).toEqual(Directive);
     });
 
+  });
+
+  describe('directiveMetadata', () => {
+    it('should not inherit propMetadata from super class', () => {
+      class SuperDirective {}
+      setClassMetadata(
+          SuperDirective, [{type: Directive, args: []}], null,
+          {handleClick: [{type: HostListener, args: ['click']}]});
+
+      class SubDirective extends SuperDirective {}
+      setClassMetadata(SubDirective, [{type: Directive, args: []}], null, null);
+
+      expect(directiveMetadata(SuperDirective, {}).propMetadata.handleClick).toBeTruthy();
+      expect(directiveMetadata(SubDirective, {}).propMetadata.handleClick).toBeFalsy();
+    });
+
+    it('should not inherit propMetadata from grand super class', () => {
+      class SuperSuperDirective {}
+      setClassMetadata(
+          SuperSuperDirective, [{type: Directive, args: []}], null,
+          {handleClick: [{type: HostListener, args: ['click']}]});
+
+      class SuperDirective {}
+      setClassMetadata(SuperDirective, [{type: Directive, args: []}], null, null);
+
+      class SubDirective extends SuperDirective {}
+
+      setClassMetadata(SubDirective, [{type: Directive, args: []}], null, null);
+
+      expect(directiveMetadata(SuperSuperDirective, {}).propMetadata.handleClick).toBeTruthy();
+      expect(directiveMetadata(SuperDirective, {}).propMetadata.handleClick).toBeFalsy();
+      expect(directiveMetadata(SubDirective, {}).propMetadata.handleClick).toBeFalsy();
+    });
   });
 });
