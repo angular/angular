@@ -197,6 +197,26 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
+  "MatStepper basic stepper should not do anything when pressing the ENTER key with a modifier": {
+    "error": "Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'",
+    "notes": "FW-1146: Components should be able to inherit view queries from directives"
+  },
+  "MatStepper basic stepper should not do anything when pressing the SPACE key with a modifier": {
+    "error": "Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'",
+    "notes": "FW-1146: Components should be able to inherit view queries from directives"
+  },
+  "MatStepper vertical stepper should support using the left/right arrows to move focus": {
+    "error": "Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'",
+    "notes": "FW-1146: Components should be able to inherit view queries from directives"
+  },
+  "MatStepper vertical stepper should support using the up/down arrows to move focus": {
+    "error": "Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'",
+    "notes": "FW-1146: Components should be able to inherit view queries from directives"
+  },
+  "MatStepper vertical stepper should reverse arrow key focus in RTL mode": {
+    "error": "Expected 0 to be 1",
+    "notes": "FW-1146: Components should be able to inherit view queries from directives"
+  },
   "MatSidenav should be fixed position when in fixed mode": {
     "error": "Error: Expected ng-tns-c24896-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
