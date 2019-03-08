@@ -247,15 +247,26 @@ export class IvyCompilation {
       for (const match of ivyClass.matchedHandlers) {
         if (match.handler.resolve !== undefined && match.analyzed !== null &&
             match.analyzed.analysis !== undefined) {
-          const res = match.handler.resolve(node, match.analyzed.analysis);
-          if (res.reexports !== undefined) {
-            const fileName = node.getSourceFile().fileName;
-            if (!this.reexportMap.has(fileName)) {
-              this.reexportMap.set(fileName, new Map<string, [string, string]>());
+          try {
+            const res = match.handler.resolve(node, match.analyzed.analysis);
+            if (res.reexports !== undefined) {
+              const fileName = node.getSourceFile().fileName;
+              if (!this.reexportMap.has(fileName)) {
+                this.reexportMap.set(fileName, new Map<string, [string, string]>());
+              }
+              const fileReexports = this.reexportMap.get(fileName) !;
+              for (const reexport of res.reexports) {
+                fileReexports.set(reexport.asAlias, [reexport.fromModule, reexport.symbolName]);
+              }
             }
-            const fileReexports = this.reexportMap.get(fileName) !;
-            for (const reexport of res.reexports) {
-              fileReexports.set(reexport.asAlias, [reexport.fromModule, reexport.symbolName]);
+            if (res.diagnostics !== undefined) {
+              this._diagnostics.push(...res.diagnostics);
+            }
+          } catch (err) {
+            if (err instanceof FatalDiagnosticError) {
+              this._diagnostics.push(err.toDiagnostic());
+            } else {
+              throw err;
             }
           }
         }

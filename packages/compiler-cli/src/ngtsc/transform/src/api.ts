@@ -123,4 +123,7 @@ export interface CompileResult {
   type: Type;
 }
 
-export interface ResolveResult { reexports?: Reexport[]; }
+export interface ResolveResult {
+  reexports?: Reexport[];
+  diagnostics?: ts.Diagnostic[];
+}
