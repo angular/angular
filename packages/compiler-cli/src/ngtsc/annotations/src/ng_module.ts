@@ -20,7 +20,7 @@ import {getSourceFile} from '../../util/src/typescript';
 
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
-import {combineResolvers, forwardRefResolver, getValidConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
+import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, toR3Reference, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
@@ -47,8 +47,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     if (!decorators) {
       return undefined;
     }
-    const decorator = decorators.find(
-        decorator => decorator.name === 'NgModule' && (this.isCore || isAngularCore(decorator)));
+    const decorator = findAngularDecorator(decorators, 'NgModule', this.isCore);
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,

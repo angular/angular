@@ -17,7 +17,7 @@ import {LocalModuleScopeRegistry} from '../../scope/src/local';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
-import {getValidConstructorDependencies, isAngularCore, unwrapExpression} from './util';
+import {findAngularDecorator, getValidConstructorDependencies, unwrapExpression} from './util';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
@@ -35,8 +35,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     if (!decorators) {
       return undefined;
     }
-    const decorator = decorators.find(
-        decorator => decorator.name === 'Pipe' && (this.isCore || isAngularCore(decorator)));
+    const decorator = findAngularDecorator(decorators, 'Pipe', this.isCore);
     if (decorator !== undefined) {
       return {
         trigger: decorator.node,

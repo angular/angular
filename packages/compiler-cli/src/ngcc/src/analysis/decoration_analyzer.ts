@@ -81,7 +81,7 @@ export class DecorationAnalyzer {
   importGraph = new ImportGraph(this.moduleResolver);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
   handlers: DecoratorHandler<any, any>[] = [
-    new BaseDefDecoratorHandler(this.reflectionHost, this.evaluator),
+    new BaseDefDecoratorHandler(this.reflectionHost, this.evaluator, this.isCore),
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore, this.resourceManager,
         this.rootDirs, /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
