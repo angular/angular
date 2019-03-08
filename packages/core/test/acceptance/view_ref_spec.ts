@@ -47,10 +47,10 @@ describe('ViewRef', () => {
     const appComponent = fixture.componentInstance;
     appComponent.create();
     fixture.detectChanges();
-    expect(document.body.querySelector('dynamic-cpt')).not.toBeUndefined();
+    expect(document.body.querySelector('dynamic-cpt')).not.toBeFalsy();
 
     appComponent.destroy();
     fixture.detectChanges();
-    expect(document.body.querySelector('dynamic-cpt')).toBeUndefined();
+    expect(document.body.querySelector('dynamic-cpt')).toBeFalsy();
   });
 });
