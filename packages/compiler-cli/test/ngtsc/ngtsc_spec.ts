@@ -3565,6 +3565,36 @@ export const Foo = Foo__PRE_R3__;
       const jsContents = env.getContents('index.js');
       expect(jsContents).toContain('export { FooDir as ɵng$root$foo$$FooDir } from "root/foo";');
     });
+
+    it('should escape unusual characters in aliased filenames', () => {
+      env.tsconfig({'_useHostForImportGeneration': true});
+      env.write('other._$test.ts', `
+        import {Directive, NgModule} from '@angular/core';
+
+        @Directive({selector: 'test'})
+        export class TestDir {}
+
+        @NgModule({
+          declarations: [TestDir],
+          exports: [TestDir],
+        })
+        export class OtherModule {}
+      `);
+      env.write('index.ts', `
+        import {NgModule} from '@angular/core';
+        import {OtherModule} from './other._$test';
+
+        @NgModule({
+          exports: [OtherModule],
+        })
+        export class IndexModule {}
+      `);
+      env.driveMain();
+      const jsContents = env.getContents('index.js');
+      expect(jsContents)
+          .toContain(
+              'export { TestDir as ɵng$root$other___test$$TestDir } from "root/other._$test";');
+    });
   });
 
   describe('inline resources', () => {
