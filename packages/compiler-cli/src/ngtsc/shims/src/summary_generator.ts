@@ -34,16 +34,31 @@ export class SummaryGenerator implements ShimGenerator {
     // to semantically understand which decorators are Angular decorators. It's okay to output an
     // overly broad set of summary exports as the exports are no-ops anyway, and summaries are a
     // compatibility layer which will be removed after Ivy is enabled.
-    const symbolNames = original
-                            .statements
-                            // Pick out top level class declarations...
-                            .filter(ts.isClassDeclaration)
-                            // which are named, exported, and have decorators.
-                            .filter(
-                                decl => isExported(decl) && decl.decorators !== undefined &&
-                                    decl.name !== undefined)
-                            // Grab the symbol name.
-                            .map(decl => decl.name !.text);
+    const symbolNames: string[] = [];
+    for (const stmt of original.statements) {
+      if (ts.isClassDeclaration(stmt)) {
+        // If the class isn't exported, or if it's not decorated, then skip it.
+        if (!isExported(stmt) || stmt.decorators === undefined || stmt.name === undefined) {
+          continue;
+        }
+        symbolNames.push(stmt.name.text);
+      } else if (ts.isExportDeclaration(stmt)) {
+        // Look for an export statement of the form "export {...};". If it doesn't match that, then
+        // skip it.
+        if (stmt.exportClause === undefined || stmt.moduleSpecifier !== undefined) {
+          continue;
+        }
+
+        for (const specifier of stmt.exportClause.elements) {
+          // At this point, there is no guarantee that specifier here refers to a class declaration,
+          // but that's okay.
+
+          // Use specifier.name as that's guaranteed to be the exported name, regardless of whether
+          // specifier.propertyName is set.
+          symbolNames.push(specifier.name.text);
+        }
+      }
+    }
 
     const varLines = symbolNames.map(name => `export const ${name}NgSummary: any = null;`);
 
