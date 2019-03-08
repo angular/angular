@@ -17,7 +17,7 @@ import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {NG_ELEMENT_ID} from './fields';
 import {DirectiveDef} from './interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorFactory, PARENT_INJECTOR, RelativeInjectorLocation, RelativeInjectorLocationFlags, TNODE, isFactory} from './interfaces/injector';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
+import {AttributeMarker, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType} from './interfaces/node';
 import {DECLARATION_VIEW, INJECTOR, LView, TData, TVIEW, TView, T_HOST} from './interfaces/view';
 import {assertNodeOfPossibleTypes} from './node_assert';
 import {getLView, getPreviousOrParentTNode, setTNodeAndViewData} from './state';
@@ -271,14 +271,39 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
   ngDevMode && assertDefined(tNode, 'expecting tNode');
   const attrs = tNode.attrs;
   if (attrs) {
-    for (let i = 0; i < attrs.length; i = i + 2) {
-      const attrName = attrs[i];
+    const attrsLength = attrs.length;
+    let i = 0;
+    while (i < attrsLength) {
+      const value = attrs[i];
+
       // If we hit a `Bindings` or `Template` marker then we are done.
-      if (isNameOnlyAttributeMarker(attrName)) break;
-      // TODO(FW-1137): Skip namespaced attributes
-      // TODO(FW-1139): supports classes/styles in @Attribute injection
-      if (attrName == attrNameToInject) {
+      if (isNameOnlyAttributeMarker(value)) break;
+
+      if (typeof value === 'number') {
+        // Skip to the first value of the marked attribute.
+        i++;
+        if (value === AttributeMarker.Classes && attrNameToInject === 'class') {
+          let accumulatedClasses = '';
+          while (i < attrsLength && typeof attrs[i] === 'string') {
+            accumulatedClasses += ' ' + attrs[i++];
+          }
+          return accumulatedClasses.trim();
+        } else if (value === AttributeMarker.Styles && attrNameToInject === 'style') {
+          let accumulatedStyles = '';
+          while (i < attrsLength && typeof attrs[i] === 'string') {
+            accumulatedStyles += `${attrs[i++]}: ${attrs[i++]}; `;
+          }
+          return accumulatedStyles.trim();
+        } else {
+          while (i < attrsLength && typeof attrs[i] === 'string') {
+            i++;
+          }
+        }
+      } else if (value === attrNameToInject) {
+        // TODO(FW-1137): Skip namespaced attributes
         return attrs[i + 1] as string;
+      } else {
+        i = i + 2;
       }
     }
   }
