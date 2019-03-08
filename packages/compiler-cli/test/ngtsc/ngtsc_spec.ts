@@ -1768,6 +1768,24 @@ describe('ngtsc behavioral tests', () => {
     expect(summaryContents).toEqual(`export var TestModuleNgSummary = null;\n`);
   });
 
+  it('should generate a summary stub for classes exported via exports', () => {
+    env.tsconfig({'allowEmptyCodegenFiles': true});
+
+    env.write('test.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+
+        @NgModule({})
+        class NotDirectlyExported {}
+
+        export {NotDirectlyExported};
+    `);
+
+    env.driveMain();
+
+    const summaryContents = env.getContents('test.ngsummary.js');
+    expect(summaryContents).toEqual(`export var NotDirectlyExportedNgSummary = null;\n`);
+  });
+
   it('it should generate empty export when there are no other summary symbols, to ensure the output is a valid ES module',
      () => {
        env.tsconfig({'allowEmptyCodegenFiles': true});
