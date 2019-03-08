@@ -60,6 +60,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<NgModuleAnalysis> {
+    const name = node.name !.text;
     if (decorator.args === null || decorator.args.length > 1) {
       throw new FatalDiagnosticError(
           ErrorCode.DECORATOR_ARITY_WRONG, decorator.node,
@@ -93,28 +94,28 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     if (ngModule.has('declarations')) {
       const expr = ngModule.get('declarations') !;
       const declarationMeta = this.evaluator.evaluate(expr, forwardRefResolver);
-      declarations = this.resolveTypeList(expr, declarationMeta, 'declarations');
+      declarations = this.resolveTypeList(expr, declarationMeta, name, 'declarations');
     }
     let imports: Reference<ts.Declaration>[] = [];
     let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
       rawImports = ngModule.get('imports') !;
       const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
-      imports = this.resolveTypeList(rawImports, importsMeta, 'imports');
+      imports = this.resolveTypeList(rawImports, importsMeta, name, 'imports');
     }
     let exports: Reference<ts.Declaration>[] = [];
     let rawExports: ts.Expression|null = null;
     if (ngModule.has('exports')) {
       rawExports = ngModule.get('exports') !;
       const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
-      exports = this.resolveTypeList(rawExports, exportsMeta, 'exports');
+      exports = this.resolveTypeList(rawExports, exportsMeta, name, 'exports');
       this.referencesRegistry.add(node, ...exports);
     }
     let bootstrap: Reference<ts.Declaration>[] = [];
     if (ngModule.has('bootstrap')) {
       const expr = ngModule.get('bootstrap') !;
       const bootstrapMeta = this.evaluator.evaluate(expr, forwardRefResolver);
-      bootstrap = this.resolveTypeList(expr, bootstrapMeta, 'bootstrap');
+      bootstrap = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap');
     }
 
     // Register this module's information with the LocalModuleScopeRegistry. This ensures that
@@ -156,12 +157,11 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
 
     if (this.routeAnalyzer !== null) {
-      this.routeAnalyzer.add(
-          node.getSourceFile(), node.name !.text, rawImports, rawExports, rawProviders);
+      this.routeAnalyzer.add(node.getSourceFile(), name, rawImports, rawExports, rawProviders);
     }
 
     const ngInjectorDef: R3InjectorMetadata = {
-      name: node.name !.text,
+      name,
       type: new WrappedNodeExpr(node.name !),
       deps: getValidConstructorDependencies(node, this.reflector, this.isCore), providers,
       imports: new LiteralArrayExpr(injectorImports),
@@ -180,10 +180,12 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
   resolve(node: ts.Declaration, analysis: NgModuleAnalysis): ResolveResult {
     const scope = this.scopeRegistry.getScopeOfModule(node);
+    const diagnostics = this.scopeRegistry.getDiagnosticsOfModule(node) || undefined;
     if (scope === null || scope.reexports === null) {
-      return {};
+      return {diagnostics};
     } else {
       return {
+        diagnostics,
         reexports: scope.reexports,
       };
     }
@@ -324,12 +326,14 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
   /**
    * Compute a list of `Reference`s from a resolved metadata value.
    */
-  private resolveTypeList(expr: ts.Node, resolvedList: ResolvedValue, name: string):
-      Reference<ts.Declaration>[] {
+  private resolveTypeList(
+      expr: ts.Node, resolvedList: ResolvedValue, className: string,
+      arrayName: string): Reference<ts.Declaration>[] {
     const refList: Reference<ts.Declaration>[] = [];
     if (!Array.isArray(resolvedList)) {
       throw new FatalDiagnosticError(
-          ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `Expected array when reading property ${name}`);
+          ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
+          `Expected array when reading property ${arrayName}`);
     }
 
     resolvedList.forEach((entry, idx) => {
@@ -341,17 +345,19 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
       if (Array.isArray(entry)) {
         // Recurse into nested arrays.
-        refList.push(...this.resolveTypeList(expr, entry, name));
+        refList.push(...this.resolveTypeList(expr, entry, className, arrayName));
       } else if (isDeclarationReference(entry)) {
         if (!this.reflector.isClass(entry.node)) {
           throw new FatalDiagnosticError(
               ErrorCode.VALUE_HAS_WRONG_TYPE, entry.node,
-              `Entry is not a type, but is used as such in ${name} array`);
+              `Value at position ${idx} in the NgModule.${arrayName}s of ${className} is not a class`);
         }
         refList.push(entry);
       } else {
-        // TODO(alxhub): expand ModuleWithProviders.
-        throw new Error(`Value at position ${idx} in ${name} array is not a reference: ${entry}`);
+        // TODO(alxhub): Produce a better diagnostic here - the array index may be an inner array.
+        throw new FatalDiagnosticError(
+            ErrorCode.VALUE_HAS_WRONG_TYPE, expr,
+            `Value at position ${idx} in the NgModule.${arrayName}s of ${className} is not a reference: ${entry}`);
       }
     });
 

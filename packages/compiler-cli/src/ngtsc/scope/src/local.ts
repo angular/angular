@@ -9,7 +9,9 @@
 import {ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {ErrorCode, makeDiagnostic} from '../../diagnostics';
 import {AliasGenerator, Reexport, Reference, ReferenceEmitter} from '../../imports';
+import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
 
 import {ExportScope, ScopeData, ScopeDirective, ScopePipe} from './api';
 import {DtsModuleScopeResolver} from './dependency';
@@ -40,6 +42,9 @@ export interface LocalModuleScope extends ExportScope {
  * `getScopeOfModule` or `getScopeForComponent` can be called, which traverses the NgModule graph
  * and applies the NgModule logic to generate a `LocalModuleScope`, the full scope for the given
  * module or component.
+ *
+ * The `LocalModuleScopeRegistry` is also capable of producing `ts.Diagnostic` errors when Angular
+ * semantics are violated.
  */
 export class LocalModuleScopeRegistry {
   /**
@@ -75,8 +80,11 @@ export class LocalModuleScopeRegistry {
 
   /**
    * A cache of calculated `LocalModuleScope`s for each NgModule declared in the current program.
+   *
+   * A value of `undefined` indicates the scope was invalid and produced errors (therefore,
+   * diagnostics should exist in the `scopeErrors` map).
    */
-  private cache = new Map<ts.Declaration, LocalModuleScope>();
+  private cache = new Map<ts.Declaration, LocalModuleScope|undefined>();
 
   /**
    * Tracks whether a given component requires "remote scoping".
@@ -87,6 +95,11 @@ export class LocalModuleScopeRegistry {
    * tracked here for convenience.
    */
   private remoteScoping = new Set<ts.Declaration>();
+
+  /**
+   * Tracks errors accumulated in the processing of scopes for each module declaration.
+   */
+  private scopeErrors = new Map<ts.Declaration, ts.Diagnostic[]>();
 
   constructor(
       private dependencyScopeReader: DtsModuleScopeResolver, private refEmitter: ReferenceEmitter,
@@ -124,15 +137,43 @@ export class LocalModuleScopeRegistry {
    * Collects registered data for a module and its directives/pipes and convert it into a full
    * `LocalModuleScope`.
    *
-   * This method implements the logic of NgModule imports and exports.
+   * This method implements the logic of NgModule imports and exports. It returns the
+   * `LocalModuleScope` for the given NgModule if one can be produced, and `null` if no scope is
+   * available or the scope contains errors.
    */
   getScopeOfModule(clazz: ts.Declaration): LocalModuleScope|null {
+    const scope = this.getScopeOfModuleInternal(clazz);
+    // Translate undefined -> null.
+    return scope !== undefined ? scope : null;
+  }
+
+  /**
+   * Retrieves any `ts.Diagnostic`s produced during the calculation of the `LocalModuleScope` for
+   * the given NgModule, or `null` if no errors were present.
+   */
+  getDiagnosticsOfModule(clazz: ts.Declaration): ts.Diagnostic[]|null {
+    // Required to ensure the errors are populated for the given class. If it has been processed
+    // before, this will be a no-op due to the scope cache.
+    this.getScopeOfModule(clazz);
+
+    if (this.scopeErrors.has(clazz)) {
+      return this.scopeErrors.get(clazz) !;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Implementation of `getScopeOfModule` which differentiates between no scope being available
+   * (returns `null`) and a scope being produced with errors (returns `undefined`).
+   */
+  private getScopeOfModuleInternal(clazz: ts.Declaration): LocalModuleScope|null|undefined {
     // Seal the registry to protect the integrity of the `LocalModuleScope` cache.
     this.sealed = true;
 
     // Look for cached data if available.
     if (this.cache.has(clazz)) {
-      return this.cache.get(clazz) !;
+      return this.cache.get(clazz);
     }
 
     // `clazz` should be an NgModule previously added to the registry. If not, a scope for it
@@ -141,6 +182,10 @@ export class LocalModuleScopeRegistry {
       return null;
     }
     const ngModule = this.ngModuleData.get(clazz) !;
+
+    // Errors produced during computation of the scope are recorded here. At the end, if this array
+    // isn't empty then `undefined` will be cached and returned to indicate this scope is invalid.
+    const diagnostics: ts.Diagnostic[] = [];
 
     // At this point, the goal is to produce two distinct transitive sets:
     // - the directives and pipes which are visible to components declared in the NgModule.
@@ -189,10 +234,17 @@ export class LocalModuleScopeRegistry {
 
     // 2) process imports.
     for (const decl of ngModule.imports) {
-      const importScope = this.getExportedScope(decl);
+      const importScope = this.getExportedScope(decl, diagnostics, clazz, 'import');
       if (importScope === null) {
-        // TODO(alxhub): produce a ts.Diagnostic
-        throw new Error(`Unknown import: ${decl.debugName}`);
+        // An import wasn't an NgModule, so record an error.
+        diagnostics.push(invalidRef(clazz, decl, 'import'));
+        continue;
+      } else if (importScope === undefined) {
+        // An import was an NgModule but contained errors of its own. Record this as an error too,
+        // because this scope is always going to be incorrect if one of its imports could not be
+        // read.
+        diagnostics.push(invalidTransitiveNgModuleRef(clazz, decl, 'import'));
+        continue;
       }
       for (const directive of importScope.exported.directives) {
         compilationDirectives.set(directive.ref.node, directive);
@@ -209,8 +261,14 @@ export class LocalModuleScopeRegistry {
     // imported types.
     for (const decl of ngModule.exports) {
       // Attempt to resolve decl as an NgModule.
-      const importScope = this.getExportedScope(decl);
-      if (importScope !== null) {
+      const importScope = this.getExportedScope(decl, diagnostics, clazz, 'export');
+      if (importScope === undefined) {
+        // An export was an NgModule but contained errors of its own. Record this as an error too,
+        // because this scope is always going to be incorrect if one of its exports could not be
+        // read.
+        diagnostics.push(invalidTransitiveNgModuleRef(clazz, decl, 'export'));
+        continue;
+      } else if (importScope !== null) {
         // decl is an NgModule.
         for (const directive of importScope.exported.directives) {
           exportDirectives.set(directive.ref.node, directive);
@@ -228,8 +286,12 @@ export class LocalModuleScopeRegistry {
         exportPipes.set(decl.node, pipe);
       } else {
         // decl is an unknown export.
-        // TODO(alxhub): produce a ts.Diagnostic
-        throw new Error(`Unknown export: ${decl.debugName}`);
+        if (this.directiveData.has(decl.node) || this.pipeData.has(decl.node)) {
+          diagnostics.push(invalidReexport(clazz, decl));
+        } else {
+          diagnostics.push(invalidRef(clazz, decl, 'export'));
+        }
+        continue;
       }
     }
 
@@ -272,7 +334,17 @@ export class LocalModuleScopeRegistry {
       }
     }
 
+    // Check if this scope had any errors during production.
+    if (diagnostics.length > 0) {
+      // Cache undefined, to mark the fact that the scope is invalid.
+      this.cache.set(clazz, undefined);
 
+      // Save the errors for retrieval.
+      this.scopeErrors.set(clazz, diagnostics);
+
+      // Return undefined to indicate the scope is invalid.
+      return undefined;
+    }
 
     // Finally, produce the `LocalModuleScope` with both the compilation and export scopes.
     const scope = {
@@ -302,18 +374,30 @@ export class LocalModuleScopeRegistry {
    *
    * The NgModule in question may be declared locally in the current ts.Program, or it may be
    * declared in a .d.ts file.
+   *
+   * This function will return `null` if no scope could be found, or `undefined` if an invalid scope
+   * was found. It can also contribute diagnostics of its own by adding to the given `diagnostics`
+   * array parameter.
    */
-  private getExportedScope(ref: Reference<ts.Declaration>): ExportScope|null {
+  private getExportedScope(
+      ref: Reference<ts.Declaration>, diagnostics: ts.Diagnostic[], ownerForErrors: ts.Declaration,
+      type: 'import'|'export'): ExportScope|null|undefined {
     if (ref.node.getSourceFile().isDeclarationFile) {
       // The NgModule is declared in a .d.ts file. Resolve it with the `DependencyScopeReader`.
       if (!ts.isClassDeclaration(ref.node)) {
-        // TODO(alxhub): produce a ts.Diagnostic
-        throw new Error(`Reference to an NgModule ${ref.debugName} which isn't a class?`);
+        // The NgModule is in a .d.ts file but is not declared as a ts.ClassDeclaration. This is an
+        // error in the .d.ts metadata.
+        const code = type === 'import' ? ErrorCode.NGMODULE_INVALID_IMPORT :
+                                         ErrorCode.NGMODULE_INVALID_EXPORT;
+        diagnostics.push(makeDiagnostic(
+            code, identifierOfNode(ref.node) || ref.node,
+            `Appears in the NgModule.${type}s of ${nodeNameForError(ownerForErrors)}, but could not be resolved to an NgModule`));
+        return undefined;
       }
       return this.dependencyScopeReader.resolve(ref as Reference<ts.ClassDeclaration>);
     } else {
       // The NgModule is declared locally in the current program. Resolve it from the registry.
-      return this.getScopeOfModule(ref.node);
+      return this.getScopeOfModuleInternal(ref.node);
     }
   }
 
@@ -322,4 +406,41 @@ export class LocalModuleScopeRegistry {
       throw new Error(`Assertion: LocalModuleScopeRegistry is not COLLECTING`);
     }
   }
+}
+
+/**
+ * Produce a `ts.Diagnostic` for an invalid import or export from an NgModule.
+ */
+function invalidRef(
+    clazz: ts.Declaration, decl: Reference<ts.Declaration>,
+    type: 'import' | 'export'): ts.Diagnostic {
+  const code =
+      type === 'import' ? ErrorCode.NGMODULE_INVALID_IMPORT : ErrorCode.NGMODULE_INVALID_EXPORT;
+  const resolveTarget = type === 'import' ? 'NgModule' : 'NgModule, Component, Directive, or Pipe';
+  return makeDiagnostic(
+      code, identifierOfNode(decl.node) || decl.node,
+      `Appears in the NgModule.${type}s of ${nodeNameForError(clazz)}, but could not be resolved to an ${resolveTarget} class`);
+}
+
+/**
+ * Produce a `ts.Diagnostic` for an import or export which itself has errors.
+ */
+function invalidTransitiveNgModuleRef(
+    clazz: ts.Declaration, decl: Reference<ts.Declaration>,
+    type: 'import' | 'export'): ts.Diagnostic {
+  const code =
+      type === 'import' ? ErrorCode.NGMODULE_INVALID_IMPORT : ErrorCode.NGMODULE_INVALID_EXPORT;
+  return makeDiagnostic(
+      code, identifierOfNode(decl.node) || decl.node,
+      `Appears in the NgModule.${type}s of ${nodeNameForError(clazz)}, but itself has errors`);
+}
+
+/**
+ * Produce a `ts.Diagnostic` for an exported directive or pipe which was not declared or imported
+ * by the NgModule in question.
+ */
+function invalidReexport(clazz: ts.Declaration, decl: Reference<ts.Declaration>): ts.Diagnostic {
+  return makeDiagnostic(
+      ErrorCode.NGMODULE_INVALID_REEXPORT, identifierOfNode(decl.node) || decl.node,
+      `Present in the NgModule.exports of ${nodeNameForError(clazz)} but neither declared nor imported`);
 }
