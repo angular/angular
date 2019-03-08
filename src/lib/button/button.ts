@@ -70,7 +70,7 @@ export const _MatButtonMixinBase:
              button[mat-flat-button]`,
   exportAs: 'matButton',
   host: {
-    '[disabled]': 'disabled || null',
+    '[attr.disabled]': 'disabled || null',
     '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
   },
   templateUrl: 'button.html',

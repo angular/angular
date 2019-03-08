@@ -43,8 +43,9 @@ describe('MatButton', () => {
 
   it('should expose the ripple instance', () => {
     const fixture = TestBed.createComponent(TestApp);
-    const button = fixture.debugElement.query(By.css('button')).componentInstance as MatButton;
+    fixture.detectChanges();
 
+    const button = fixture.debugElement.query(By.directive(MatButton)).componentInstance;
     expect(button.ripple).toBeTruthy();
   });
 
