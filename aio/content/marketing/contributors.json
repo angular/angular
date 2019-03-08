@@ -651,5 +651,13 @@
     "website": "https://medium.com/@tomastrajan",
     "bio": "Tomas is a Senior Software Engineer with passion for frontend and especially Angular. He always strives to provide lots of value and to empower teams he is working with by sharing know-how, introducing best practices and automating mundane task to enable full focus on creating value for the users! He likes to share his Angular know-how by blogging, speaking and recording video content. He is a co-organizer of Angular Meetup Zurich.",
     "group": "GDE"
+  },
+  "samjulien": {
+    "name": "Sam Julien",
+    "picture": "samjulien.jpg",
+    "twitter": "samjulien",
+    "website": "http://www.samjulien.com/",
+    "bio": "Sam Julien builds software, articles, video courses, and campfires. A developer, speaker, writer, and GDE in the Pacific Northwest, Sam's favorite thing in the world is changing someone's life by teaching them to code.",
+    "group": "GDE"
   }
 }
