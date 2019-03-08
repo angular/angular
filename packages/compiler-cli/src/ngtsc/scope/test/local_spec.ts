@@ -126,7 +126,13 @@ describe('LocalModuleScopeRegistry', () => {
     registry.registerNgModule(ModuleA.node, {exports: [Dir], imports: [], declarations: []});
     registry.registerNgModule(ModuleB.node, {declarations: [Dir], exports: [Dir], imports: []});
 
-    expect(() => registry.getScopeOfModule(ModuleA.node)).toThrow();
+    expect(registry.getScopeOfModule(ModuleA.node)).toBe(null);
+
+    // ModuleA should have associated diagnostics as it exports `Dir` without declaring it.
+    expect(registry.getDiagnosticsOfModule(ModuleA.node)).not.toBeNull();
+
+    // ModuleB should have no diagnostics as it correctly declares `Dir`.
+    expect(registry.getDiagnosticsOfModule(ModuleB.node)).toBeNull();
   });
 });
 
