@@ -177,9 +177,12 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, CanDisabl
     const rootNode = this._renderer || this._document;
     const badgeElement = rootNode.createElement('span');
     const activeClass = 'mat-badge-active';
+    const contentClass = 'mat-badge-content';
 
+    // Clear any existing badges which may have persisted from a server-side render.
+    this._clearExistingBadges(contentClass);
     badgeElement.setAttribute('id', `mat-badge-content-${this._id}`);
-    badgeElement.classList.add('mat-badge-content');
+    badgeElement.classList.add(contentClass);
     badgeElement.textContent = this.content;
 
     if (this._animationMode === 'NoopAnimations') {
@@ -232,4 +235,18 @@ export class MatBadge extends _MatBadgeMixinBase implements OnDestroy, CanDisabl
     }
   }
 
+  /** Clears any existing badges that might be left over from server-side rendering. */
+  private _clearExistingBadges(cssClass: string) {
+    const element = this._elementRef.nativeElement;
+    let childCount = element.children.length;
+
+    // Use a reverse while, because we'll be removing elements from the list as we're iterating.
+    while (childCount--) {
+      const currentChild = element.children[childCount];
+
+      if (currentChild.classList.contains(cssClass)) {
+        element.removeChild(currentChild);
+      }
+    }
+  }
 }

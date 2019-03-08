@@ -11,10 +11,12 @@ describe('MatBadge', () => {
   let badgeDebugElement: DebugElement;
 
   beforeEach(fakeAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [MatBadgeModule],
-      declarations: [BadgeTestApp],
-    }).compileComponents();
+    TestBed
+        .configureTestingModule({
+          imports: [MatBadgeModule],
+          declarations: [BadgeTestApp, PreExistingBadge, NestedBadge],
+        })
+        .compileComponents();
 
     fixture = TestBed.createComponent(BadgeTestApp);
     testComponent = fixture.debugElement.componentInstance;
@@ -184,6 +186,20 @@ describe('MatBadge', () => {
     expect(badgeContent.hasAttribute('aria-label')).toBe(false);
   });
 
+  it('should clear any pre-existing badges', () => {
+    const preExistingFixture = TestBed.createComponent(PreExistingBadge);
+    preExistingFixture.detectChanges();
+
+    expect(preExistingFixture.nativeElement.querySelectorAll('.mat-badge-content').length).toBe(1);
+  });
+
+  it('should not clear badge content from child elements', () => {
+    const preExistingFixture = TestBed.createComponent(NestedBadge);
+    preExistingFixture.detectChanges();
+
+    expect(preExistingFixture.nativeElement.querySelectorAll('.mat-badge-content').length).toBe(2);
+  });
+
 });
 
 /** Test component that contains a MatBadge. */
@@ -213,4 +229,28 @@ class BadgeTestApp {
   badgeOverlap = false;
   badgeDescription: string;
   badgeDisabled = false;
+}
+
+
+@Component({
+  template: `
+    <span matBadge="Hello">
+      home
+      <div class="mat-badge-content">Pre-existing badge</div>
+    </span>
+  `
+})
+class PreExistingBadge {
+}
+
+
+@Component({
+  template: `
+    <span matBadge="Hello">
+      home
+      <span matBadge="Hi">Something</span>
+    </span>
+  `
+})
+class NestedBadge {
 }
