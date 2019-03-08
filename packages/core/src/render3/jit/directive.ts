@@ -137,7 +137,7 @@ export function extendsDirectlyFromObject(type: Type<any>): boolean {
  * Extract the `R3DirectiveMetadata` for a particular directive (either a `Directive` or a
  * `Component`).
  */
-function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMetadataFacade {
+export function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMetadataFacade {
   // Reflect inputs and outputs.
   const propMetadata = getReflect().ownPropMetadata(type);
 
