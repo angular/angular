@@ -710,5 +710,30 @@ describe('static-queries migration', () => {
       expect(tree.readContent('/index.ts'))
           .toContain(`@${queryType}('test', { static: true }) query2: any;`);
     });
+
+    it('should properly handle multiple tsconfig files', () => {
+      writeFile('/src/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+                        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          private @${queryType}('test') query: any;
+        }
+      `);
+
+      writeFile('/src/tsconfig.json', JSON.stringify({
+        compilerOptions: {
+          lib: ['es2015'],
+        }
+      }));
+
+      // The migration runs for "/tsconfig.json" and "/src/tsconfig.json" which both
+      // contain the "src/index.ts" file. This test ensures that we don't incorrectly
+      // apply the code transformation multiple times with outdated offsets.
+      runMigration();
+
+      expect(tree.readContent('/src/index.ts'))
+          .toContain(`@${queryType}('test', { static: false }) query: any;`);
+    });
   }
 });
