@@ -6,6 +6,7 @@ ng_module(
     name = "test_module",
     testonly = True,
     srcs = glob(["*.ts"]),
+    api_extractor = "//packages/bazel/src/api-extractor:api_extractor",
     compiler = "//packages/bazel/src/ngc-wrapped",
     entry_point = "index.ts",
     flat_module_out_file = "flat_module_filename",
