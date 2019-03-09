@@ -165,9 +165,10 @@ export function findAngularDecorator(
 export function isAngularDecorator(decorator: Decorator, name: string, isCore: boolean): boolean {
   if (isCore) {
     return decorator.name === name;
-  } else {
-    return decorator.import !== null && decorator.import.name === name;
+  } else if (isAngularCore(decorator)) {
+    return decorator.import !.name === name;
   }
+  return false;
 }
 
 /**
