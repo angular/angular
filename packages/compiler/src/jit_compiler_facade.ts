@@ -88,6 +88,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       imports: facade.imports.map(wrapReference),
       exports: facade.exports.map(wrapReference),
       emitInline: true,
+      containsForwardDecls: false,
       schemas: facade.schemas ? facade.schemas.map(wrapReference) : null,
     };
     const res = compileNgModule(meta);

@@ -76,3 +76,14 @@ export const INTERPOLATION_DELIMITER = `�`;
 export function isPropMetadataString(str: string): boolean {
   return str.indexOf(INTERPOLATION_DELIMITER) >= 0;
 }
+
+/**
+ * Unwrap a value which might be behind a closure (for forward declaration reasons).
+ */
+export function maybeUnwrapFn<T>(value: T | (() => T)): T {
+  if (value instanceof Function) {
+    return value();
+  } else {
+    return value;
+  }
+}
