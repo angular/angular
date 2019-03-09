@@ -35,7 +35,8 @@ export class DeclarationUsageVisitor {
       return;
     }
 
-    const callExprSymbol = this.typeChecker.getSymbolAtLocation(node);
+    const callExprType = this.typeChecker.getTypeAtLocation(node);
+    const callExprSymbol = callExprType.getSymbol();
 
     if (!callExprSymbol || !callExprSymbol.valueDeclaration ||
         !isFunctionLikeDeclaration(callExprSymbol.valueDeclaration)) {

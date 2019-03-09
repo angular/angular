@@ -711,6 +711,35 @@ describe('static-queries migration', () => {
           .toContain(`@${queryType}('test', { static: true }) query2: any;`);
     });
 
+    it('should detect static queries used in external function-like declaration', () => {
+      writeFile('/index.ts', `
+        import {Component, ${queryType}} from '@angular/core';
+        import {externalFn} from './external';
+                        
+        @Component({template: '<span #test></span>'})
+        export class MyComp {
+          private @${queryType}('test') query: any;
+                
+          ngOnInit() {
+            externalFn(this);
+          }
+        }
+      `);
+
+      writeFile('/external.ts', `
+        import {MyComp} from './index';
+        
+        export function externalFn(ctx: MyComp) {
+          ctx.query.usedStatically();
+        }
+      `);
+
+      runMigration();
+
+      expect(tree.readContent('/index.ts'))
+          .toContain(`@${queryType}('test', { static: true }) query: any;`);
+    });
+
     it('should properly handle multiple tsconfig files', () => {
       writeFile('/src/index.ts', `
         import {Component, ${queryType}} from '@angular/core';
