@@ -227,7 +227,7 @@ function updateTsconfigJson(): Rule {
     if (!host.exists(tsconfigPath)) {
       return host;
     }
-    const contentRaw = host.read(tsconfigPath).toString();
+    const contentRaw = host.read(tsconfigPath) !.toString();
     if (!contentRaw) {
       return host;
     }
