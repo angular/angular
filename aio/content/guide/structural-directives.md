@@ -590,7 +590,7 @@ The drop down works properly.
   <img src='generated/images/guide/structural-directives/select-ngcontainer-anim.gif' alt="ngcontainer options work properly">
 </figure>
 
-
+<i>Note: You need to import the FormsModule package from @angular/forms in your Angular app.module.ts file to try the above example. ngModel is under FormsModule.</i>
 
 The `<ng-container>` is a syntax element recognized by the Angular parser.
 It's not a directive, component, class, or interface.
