@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {normalize} from '@angular-devkit/core';
 import {Tree} from '@angular-devkit/schematics';
 
 /** Name of the default Angular CLI workspace configuration files. */
@@ -18,9 +19,9 @@ const defaultWorkspaceConfigPaths = ['/angular.json', '/.angular.json'];
 export function getProjectTsConfigPaths(tree: Tree): string[] {
   // Start with some tsconfig paths that are generally used within CLI projects.
   const tsconfigPaths = new Set<string>([
-    './tsconfig.json',
-    './src/tsconfig.json',
-    './src/tsconfig.app.json',
+    'tsconfig.json',
+    'src/tsconfig.json',
+    'src/tsconfig.app.json',
   ]);
 
   // Add any tsconfig directly referenced in a build or test task of the angular.json workspace.
@@ -32,13 +33,13 @@ export function getProjectTsConfigPaths(tree: Tree): string[] {
       ['build', 'test'].forEach(targetName => {
         if (project.targets && project.targets[targetName] && project.targets[targetName].options &&
             project.targets[targetName].options.tsConfig) {
-          tsconfigPaths.add(project.targets[targetName].options.tsConfig);
+          tsconfigPaths.add(normalize(project.targets[targetName].options.tsConfig));
         }
 
         if (project.architect && project.architect[targetName] &&
             project.architect[targetName].options &&
             project.architect[targetName].options.tsConfig) {
-          tsconfigPaths.add(project.architect[targetName].options.tsConfig);
+          tsconfigPaths.add(normalize(project.architect[targetName].options.tsConfig));
         }
       });
     }
