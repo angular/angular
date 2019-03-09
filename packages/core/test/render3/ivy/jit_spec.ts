@@ -158,6 +158,9 @@ ivyEnabled && describe('render3 jit', () => {
 
     const moduleDef: NgModuleDef<Module> = (Module as any).ngModuleDef;
     expect(moduleDef).toBeDefined();
+    if (!Array.isArray(moduleDef.declarations)) {
+      return fail('Expected an array');
+    }
     expect(moduleDef.declarations.length).toBe(1);
     expect(moduleDef.declarations[0]).toBe(Cmp);
   });

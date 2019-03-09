@@ -59,6 +59,11 @@ export interface R3NgModuleMetadata {
   emitInline: boolean;
 
   /**
+   * Whether to generate closure wrappers for bootstrap, declarations, imports, and exports.
+   */
+  containsForwardDecls: boolean;
+
+  /**
    * The set of schemas that declare elements to be allowed in the NgModule.
    */
   schemas: R3Reference[]|null;
@@ -68,33 +73,42 @@ export interface R3NgModuleMetadata {
  * Construct an `R3NgModuleDef` for the given `R3NgModuleMetadata`.
  */
 export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
-  const {type: moduleType, bootstrap, declarations, imports, exports, schemas} = meta;
+  const {
+    type: moduleType,
+    bootstrap,
+    declarations,
+    imports,
+    exports,
+    schemas,
+    containsForwardDecls
+  } = meta;
+
   const definitionMap = {
     type: moduleType
   } as{
     type: o.Expression,
-    bootstrap: o.LiteralArrayExpr,
-    declarations: o.LiteralArrayExpr,
-    imports: o.LiteralArrayExpr,
-    exports: o.LiteralArrayExpr,
+    bootstrap: o.Expression,
+    declarations: o.Expression,
+    imports: o.Expression,
+    exports: o.Expression,
     schemas: o.LiteralArrayExpr
   };
 
   // Only generate the keys in the metadata if the arrays have values.
   if (bootstrap.length) {
-    definitionMap.bootstrap = o.literalArr(bootstrap.map(ref => ref.value));
+    definitionMap.bootstrap = refsToArray(bootstrap, containsForwardDecls);
   }
 
   if (declarations.length) {
-    definitionMap.declarations = o.literalArr(declarations.map(ref => ref.value));
+    definitionMap.declarations = refsToArray(declarations, containsForwardDecls);
   }
 
   if (imports.length) {
-    definitionMap.imports = o.literalArr(imports.map(ref => ref.value));
+    definitionMap.imports = refsToArray(imports, containsForwardDecls);
   }
 
   if (exports.length) {
-    definitionMap.exports = o.literalArr(exports.map(ref => ref.value));
+    definitionMap.exports = refsToArray(exports, containsForwardDecls);
   }
 
   if (schemas && schemas.length) {
@@ -181,4 +195,9 @@ function accessExportScope(module: o.Expression): o.Expression {
 function tupleTypeOf(exp: R3Reference[]): o.Type {
   const types = exp.map(ref => o.typeofExpr(ref.type));
   return exp.length > 0 ? o.expressionType(o.literalArr(types)) : o.NONE_TYPE;
+}
+
+function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean): o.Expression {
+  const values = o.literalArr(refs.map(ref => ref.value));
+  return shouldForwardDeclare ? o.fn([], [new o.ReturnStatement(values)]) : values;
 }

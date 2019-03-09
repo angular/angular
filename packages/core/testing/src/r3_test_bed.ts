@@ -732,7 +732,7 @@ export class TestBedRender3 implements Injector, TestBed {
    * @internal
    */
   _getComponentFactories(moduleType: NgModuleType): ComponentFactory<any>[] {
-    return moduleType.ngModuleDef.declarations.reduce((factories, declaration) => {
+    return maybeUnwrapFn(moduleType.ngModuleDef.declarations).reduce((factories, declaration) => {
       const componentDef = (declaration as any).ngComponentDef;
       componentDef && factories.push(new ComponentFactory(componentDef, this._moduleRef));
       return factories;
@@ -819,4 +819,15 @@ class R3TestCompiler implements Compiler {
 /** Error handler used for tests. Rethrows errors rather than logging them out. */
 class R3TestErrorHandler extends ErrorHandler {
   handleError(error: any) { throw error; }
+}
+
+/**
+ * Unwrap a value which might be behind a closure (for forward declaration reasons).
+ */
+function maybeUnwrapFn<T>(value: T | (() => T)): T {
+  if (value instanceof Function) {
+    return value();
+  } else {
+    return value;
+  }
 }

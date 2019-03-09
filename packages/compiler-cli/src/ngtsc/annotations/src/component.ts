@@ -23,7 +23,7 @@ import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, isAngularCoreReference, unwrapExpression} from './util';
+import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, unwrapExpression} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -614,20 +614,6 @@ function getTemplateRange(templateExpr: ts.Expression) {
     startCol: character,
     endPos: templateExpr.getEnd() - 1,
   };
-}
-
-function isExpressionForwardReference(
-    expr: Expression, context: ts.Node, contextSource: ts.SourceFile): boolean {
-  if (isWrappedTsNodeExpr(expr)) {
-    const node = ts.getOriginalNode(expr.node);
-    return node.getSourceFile() === contextSource && context.pos < node.pos;
-  } else {
-    return false;
-  }
-}
-
-function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<ts.Node> {
-  return expr instanceof WrappedNodeExpr;
 }
 
 function sourceMapUrl(resourceUrl: string): string {

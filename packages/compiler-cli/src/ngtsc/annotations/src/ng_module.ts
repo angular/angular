@@ -20,7 +20,7 @@ import {getSourceFile} from '../../util/src/typescript';
 
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
-import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, toR3Reference, unwrapExpression} from './util';
+import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, toR3Reference, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
@@ -90,38 +90,39 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     ]);
 
     // Extract the module declarations, imports, and exports.
-    let declarations: Reference<ts.Declaration>[] = [];
+    let declarationRefs: Reference<ts.Declaration>[] = [];
     if (ngModule.has('declarations')) {
       const expr = ngModule.get('declarations') !;
       const declarationMeta = this.evaluator.evaluate(expr, forwardRefResolver);
-      declarations = this.resolveTypeList(expr, declarationMeta, name, 'declarations');
+      declarationRefs = this.resolveTypeList(expr, declarationMeta, name, 'declarations');
     }
-    let imports: Reference<ts.Declaration>[] = [];
+    let importRefs: Reference<ts.Declaration>[] = [];
     let rawImports: ts.Expression|null = null;
     if (ngModule.has('imports')) {
       rawImports = ngModule.get('imports') !;
       const importsMeta = this.evaluator.evaluate(rawImports, moduleResolvers);
-      imports = this.resolveTypeList(rawImports, importsMeta, name, 'imports');
+      importRefs = this.resolveTypeList(rawImports, importsMeta, name, 'imports');
     }
-    let exports: Reference<ts.Declaration>[] = [];
+    let exportRefs: Reference<ts.Declaration>[] = [];
     let rawExports: ts.Expression|null = null;
     if (ngModule.has('exports')) {
       rawExports = ngModule.get('exports') !;
       const exportsMeta = this.evaluator.evaluate(rawExports, moduleResolvers);
-      exports = this.resolveTypeList(rawExports, exportsMeta, name, 'exports');
-      this.referencesRegistry.add(node, ...exports);
+      exportRefs = this.resolveTypeList(rawExports, exportsMeta, name, 'exports');
+      this.referencesRegistry.add(node, ...exportRefs);
     }
-    let bootstrap: Reference<ts.Declaration>[] = [];
+    let bootstrapRefs: Reference<ts.Declaration>[] = [];
     if (ngModule.has('bootstrap')) {
       const expr = ngModule.get('bootstrap') !;
       const bootstrapMeta = this.evaluator.evaluate(expr, forwardRefResolver);
-      bootstrap = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap');
+      bootstrapRefs = this.resolveTypeList(expr, bootstrapMeta, name, 'bootstrap');
     }
 
     // Register this module's information with the LocalModuleScopeRegistry. This ensures that
     // during the compile() phase, the module's metadata is available for selector scope
     // computation.
-    this.scopeRegistry.registerNgModule(node, {declarations, imports, exports});
+    this.scopeRegistry.registerNgModule(
+        node, {declarations: declarationRefs, imports: importRefs, exports: exportRefs});
 
     const valueContext = node.getSourceFile();
 
@@ -131,13 +132,26 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       typeContext = typeNode.getSourceFile();
     }
 
+    const bootstrap =
+        bootstrapRefs.map(bootstrap => this._toR3Reference(bootstrap, valueContext, typeContext));
+    const declarations =
+        declarationRefs.map(decl => this._toR3Reference(decl, valueContext, typeContext));
+    const imports = importRefs.map(imp => this._toR3Reference(imp, valueContext, typeContext));
+    const exports = exportRefs.map(exp => this._toR3Reference(exp, valueContext, typeContext));
+
+    const isForwardReference = (ref: R3Reference) =>
+        isExpressionForwardReference(ref.value, node.name !, valueContext);
+    const containsForwardDecls = bootstrap.some(isForwardReference) ||
+        declarations.some(isForwardReference) || imports.some(isForwardReference) ||
+        exports.some(isForwardReference);
+
     const ngModuleDef: R3NgModuleMetadata = {
       type: new WrappedNodeExpr(node.name !),
-      bootstrap:
-          bootstrap.map(bootstrap => this._toR3Reference(bootstrap, valueContext, typeContext)),
-      declarations: declarations.map(decl => this._toR3Reference(decl, valueContext, typeContext)),
-      exports: exports.map(exp => this._toR3Reference(exp, valueContext, typeContext)),
-      imports: imports.map(imp => this._toR3Reference(imp, valueContext, typeContext)),
+      bootstrap,
+      declarations,
+      exports,
+      imports,
+      containsForwardDecls,
       emitInline: false,
       // TODO: to be implemented as a part of FW-1004.
       schemas: [],
@@ -173,7 +187,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       analysis: {
         ngModuleDef,
         ngInjectorDef,
-        declarations,
+        declarations: declarationRefs,
         metadataStmt: generateSetClassMetadataCall(
             node, this.reflector, this.defaultImportRecorder, this.isCore),
       },
