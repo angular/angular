@@ -643,6 +643,86 @@ describe('ngtsc behavioral tests', () => {
     expect(dtsContents).toContain('as i1 from "foo";');
   });
 
+  it('should compile NgModules with references to forward declared bootstrap components', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+      import {Component, forwardRef, NgModule} from '@angular/core';
+
+      @NgModule({
+        bootstrap: [forwardRef(() => Foo)],
+      })
+      export class FooModule {}
+
+      @Component({selector: 'foo', template: 'foo'})
+      export class Foo {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('bootstrap: function () { return [Foo]; }');
+  });
+
+  it('should compile NgModules with references to forward declared directives', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+      import {Directive, forwardRef, NgModule} from '@angular/core';
+
+      @NgModule({
+        declarations: [forwardRef(() => Foo)],
+      })
+      export class FooModule {}
+
+      @Directive({selector: 'foo'})
+      export class Foo {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('declarations: function () { return [Foo]; }');
+  });
+
+  it('should compile NgModules with references to forward declared imports', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+      import {forwardRef, NgModule} from '@angular/core';
+
+      @NgModule({
+        imports: [forwardRef(() => BarModule)],
+      })
+      export class FooModule {}
+
+      @NgModule({})
+      export class BarModule {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('imports: function () { return [BarModule]; }');
+  });
+
+  it('should compile NgModules with references to forward declared exports', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+      import {forwardRef, NgModule} from '@angular/core';
+
+      @NgModule({
+        exports: [forwardRef(() => BarModule)],
+      })
+      export class FooModule {}
+
+      @NgModule({})
+      export class BarModule {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('exports: function () { return [BarModule]; }');
+  });
+
   it('should compile Pipes without errors', () => {
     env.tsconfig();
     env.write('test.ts', `

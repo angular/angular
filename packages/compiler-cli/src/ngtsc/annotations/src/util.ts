@@ -278,3 +278,17 @@ export function combineResolvers(resolvers: ForeignFunctionResolver[]): ForeignF
     return null;
   };
 }
+
+export function isExpressionForwardReference(
+    expr: Expression, context: ts.Node, contextSource: ts.SourceFile): boolean {
+  if (isWrappedTsNodeExpr(expr)) {
+    const node = ts.getOriginalNode(expr.node);
+    return node.getSourceFile() === contextSource && context.pos < node.pos;
+  } else {
+    return false;
+  }
+}
+
+export function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<ts.Node> {
+  return expr instanceof WrappedNodeExpr;
+}
