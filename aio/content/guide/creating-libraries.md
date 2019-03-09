@@ -42,7 +42,7 @@ This builder, among other things, ensures that the library is always built with 
 
 To make library code reusable you must define a public API for it. This "user layer" defines what is available to consumers of your library. A user of your library should be able to access public functionality (such as NgModules, service providers and general utility functions) through a single import path.
 
-The public API for your library is maintained in the `index.ts` file of your library folder.
+The public API for your library is maintained in the `public-api.ts` file in your library folder.
 Anything exported from this file is made public when your library is imported into an application.
 Use an NgModule to expose services and components.
 
