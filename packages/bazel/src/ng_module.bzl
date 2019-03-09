@@ -9,6 +9,7 @@ load(
     ":external.bzl",
     "COMMON_ATTRIBUTES",
     "COMMON_OUTPUTS",
+    "DEFAULT_API_EXTRACTOR",
     "DEFAULT_NG_COMPILER",
     "DEFAULT_NG_XI18N",
     "DEPS_ASPECTS",
@@ -450,7 +451,7 @@ def ngc_compile_action(
         ctx.actions.run(
             progress_message = "Bundling DTS %s" % str(ctx.label),
             mnemonic = "APIExtractor",
-            executable = ctx.executable._api_extractor,
+            executable = ctx.executable.api_extractor,
             inputs = filter_inputs,
             outputs = dts_bundles_out,
             arguments = [
@@ -716,8 +717,8 @@ NG_MODULE_RULE_ATTRS = dict(dict(COMMON_ATTRIBUTES, **NG_MODULE_ATTRIBUTES), **{
     # https://github.com/angular/angular/blob/master/packages/compiler-cli/src/transformers/api.ts
     "flat_module_out_file": attr.string(),
     "bundle_dts": attr.bool(default = False),
-    "_api_extractor": attr.label(
-        default = Label("//packages/bazel/src/api-extractor:api_extractor"),
+    "api_extractor": attr.label(
+        default = Label(DEFAULT_API_EXTRACTOR),
         executable = True,
         cfg = "host",
     ),

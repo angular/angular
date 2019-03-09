@@ -9,6 +9,7 @@ load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup
 
 _DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
 _DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
+_INTERNAL_NG_MODULE_API_EXTRACTOR = "//packages/bazel/src/api-extractor:api_extractor"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
 _INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"
 _INTERNAL_NG_PACKAGER_PACKAGER = "//packages/bazel/src/ng_package:packager"
@@ -124,6 +125,7 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         bundle_dts = bundle_dts,
         deps = deps,
         compiler = _INTERNAL_NG_MODULE_COMPILER,
+        api_extractor = _INTERNAL_NG_MODULE_API_EXTRACTOR,
         ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
         module_name = module_name,
         **kwargs
