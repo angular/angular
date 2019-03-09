@@ -8,5 +8,8 @@ ts_library(
     ),
     tsconfig = "//packages/core/schematics:tsconfig.json",
     visibility = ["//packages/core/schematics:__subpackages__"],
-    deps = ["@npm//@angular-devkit/schematics"],
+    deps = [
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+    ],
 )
