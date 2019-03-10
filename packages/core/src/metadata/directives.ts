@@ -274,7 +274,7 @@ export interface Directive {
    * To listen to global events, add the target to the event name.
    * The target can be `window`, `document` or `body`.
    * - The value is the statement to execute when the event occurs. If the
-   * statement evalueates to `false`, then `preventDefault` is applied on the DOM
+   * statement evaluates to `false`, then `preventDefault` is applied on the DOM
    * event. A handler method can refer to the `$event` local variable.
    *
    */
