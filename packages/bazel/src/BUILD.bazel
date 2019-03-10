@@ -16,6 +16,7 @@ nodejs_binary(
         "@npm//@angular-devkit/build-optimizer",
         "@npm//is-builtin-module",
         "@npm//rollup",
+        "@npm//rollup-plugin-commonjs",
         "@npm//rollup-plugin-node-resolve",
         "@npm//rollup-plugin-sourcemaps",
     ],
