@@ -10,7 +10,7 @@ import {Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, R3Identi
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Reference, ReferenceEmitter} from '../../imports';
+import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
@@ -39,7 +39,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
-      private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter) {}
+      private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter,
+      private defaultImportRecorder: DefaultImportRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -162,7 +163,9 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const ngInjectorDef: R3InjectorMetadata = {
       name,
       type: new WrappedNodeExpr(node.name !),
-      deps: getValidConstructorDependencies(node, this.reflector, this.isCore), providers,
+      deps: getValidConstructorDependencies(
+          node, this.reflector, this.defaultImportRecorder, this.isCore),
+      providers,
       imports: new LiteralArrayExpr(injectorImports),
     };
 
@@ -171,7 +174,8 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         ngModuleDef,
         ngInjectorDef,
         declarations,
-        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
+        metadataStmt: generateSetClassMetadataCall(
+            node, this.reflector, this.defaultImportRecorder, this.isCore),
       },
       factorySymbolName: node.name !== undefined ? node.name.text : undefined,
     };

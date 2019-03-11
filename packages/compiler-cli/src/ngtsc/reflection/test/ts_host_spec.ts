@@ -171,7 +171,12 @@ describe('reflector', () => {
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(1);
-      expectParameter(args[0], 'bar', {moduleName: './bar', name: '*'});
+      const param = args[0].typeValueReference;
+      if (param === null || !param.local) {
+        return fail('Expected local parameter');
+      }
+      expect(param).not.toBeNull();
+      expect(param.defaultImportStatement).not.toBeNull();
     });
 
     it('should reflect a nullable argument', () => {
