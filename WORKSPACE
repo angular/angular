@@ -12,6 +12,7 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 #    path = "../rules_typescript",
 #)
 
+
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
