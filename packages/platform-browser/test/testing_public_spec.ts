@@ -900,17 +900,24 @@ class CompWithUrlTemplate {
            () => {
              const itPromise = patchJasmineIt();
 
+             @Component({
+               selector: 'comp',
+               templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
+             })
+             class InlineCompWithUrlTemplate {
+             }
+
              expect(
-                 () =>
-                     it('should fail', withModule(
-                                           {declarations: [CompWithUrlTemplate]},
-                                           () => TestBed.createComponent(CompWithUrlTemplate))))
+                 () => it(
+                     'should fail', withModule(
+                                        {declarations: [InlineCompWithUrlTemplate]},
+                                        () => TestBed.createComponent(InlineCompWithUrlTemplate))))
                  .toThrowError(
                      ivyEnabled ?
-                         `Component 'CompWithUrlTemplate' is not resolved:
+                         `Component 'InlineCompWithUrlTemplate' is not resolved:
  - templateUrl: /base/angular/packages/platform-browser/test/static_assets/test.html
 Did you run and wait for 'resolveComponentResources()'?` :
-                         `This test module uses the component ${stringify(CompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
+                         `This test module uses the component ${stringify(InlineCompWithUrlTemplate)} which is using a "templateUrl" or "styleUrls", but they were never compiled. ` +
                              `Please call "TestBed.compileComponents" before your test.`);
 
              restoreJasmineIt();

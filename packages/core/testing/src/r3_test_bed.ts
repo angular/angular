@@ -51,11 +51,12 @@ import {
   CompilerOptions,
   StaticProvider,
   COMPILER_OPTIONS,
+  ɵDirectiveDef as DirectiveDef,
 } from '@angular/core';
 // clang-format on
 import {ResourceLoader} from '@angular/compiler';
 
-import {clearResolutionOfComponentResourcesQueue, componentNeedsResolution, resolveComponentResources} from '../../src/metadata/resource_loading';
+import {clearResolutionOfComponentResourcesQueue, componentNeedsResolution, resolveComponentResources, maybeQueueResolutionOfComponentResources, isComponentDefPendingResolution, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
@@ -260,10 +261,12 @@ export class TestBedRender3 implements Injector, TestBed {
   private _instantiated: boolean = false;
   private _globalCompilationChecked = false;
 
+  private _originalComponentResolutionQueue: Map<Type<any>, Component>|null = null;
+
   // Map that keeps initial version of component/directive/pipe defs in case
   // we compile a Type again, thus overriding respective static fields. This is
   // required to make sure we restore defs to their initial states between test runs
-  private _initiaNgDefs: Map<Type<any>, [string, PropertyDescriptor|undefined]> = new Map();
+  private _initialNgDefs: Map<Type<any>, [string, PropertyDescriptor|undefined]> = new Map();
 
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
@@ -337,7 +340,7 @@ export class TestBedRender3 implements Injector, TestBed {
     this._activeFixtures = [];
 
     // restore initial component/directive/pipe defs
-    this._initiaNgDefs.forEach((value: [string, PropertyDescriptor], type: Type<any>) => {
+    this._initialNgDefs.forEach((value: [string, PropertyDescriptor], type: Type<any>) => {
       const [prop, descriptor] = value;
       if (!descriptor) {
         // Delete operations are generally undesirable since they have performance implications on
@@ -351,8 +354,8 @@ export class TestBedRender3 implements Injector, TestBed {
         Object.defineProperty(type, prop, descriptor);
       }
     });
-    this._initiaNgDefs.clear();
-    clearResolutionOfComponentResourcesQueue();
+    this._initialNgDefs.clear();
+    this._restoreComponentResolutionQueue();
   }
 
   configureCompiler(config: {providers?: any[]; useJit?: boolean;}): void {
@@ -383,21 +386,40 @@ export class TestBedRender3 implements Injector, TestBed {
   }
 
   compileComponents(): Promise<any> {
+    this._clearComponentResolutionQueue();
+
     const resolvers = this._getResolvers();
     const declarations: Type<any>[] = flatten(this._declarations || EMPTY_ARRAY, resolveForwardRef);
 
     const componentOverrides: [Type<any>, Component][] = [];
+    const providerOverrides: (() => void)[] = [];
     let hasAsyncResources = false;
 
     // Compile the components declared by this module
+    // TODO(FW-1178): `compileComponents` should not duplicate `_compileNgModule` logic
     declarations.forEach(declaration => {
       const component = resolvers.component.resolve(declaration);
       if (component) {
-        // We make a copy of the metadata to ensure that we don't mutate the original metadata
-        const metadata = {...component};
-        compileComponent(declaration, metadata);
-        componentOverrides.push([declaration, metadata]);
-        hasAsyncResources = hasAsyncResources || componentNeedsResolution(component);
+        if (!declaration.hasOwnProperty(NG_COMPONENT_DEF) ||
+            isComponentDefPendingResolution(declaration) ||  //
+            // Compiler provider overrides (like ResourceLoader) might affect the outcome of
+            // compilation, so we trigger `compileComponent` in case we have compilers overrides.
+            this._compilerProviders.length > 0 ||
+            this._hasTypeOverrides(declaration, this._componentOverrides) ||
+            this._hasTemplateOverrides(declaration)) {
+          this._storeNgDef(NG_COMPONENT_DEF, declaration);
+          // We make a copy of the metadata to ensure that we don't mutate the original metadata
+          const metadata = {...component};
+          compileComponent(declaration, metadata);
+          componentOverrides.push([declaration, metadata]);
+          hasAsyncResources = hasAsyncResources || componentNeedsResolution(component);
+        } else if (this._hasProviderOverrides(component.providers)) {
+          // Queue provider override operations, since fetching ngComponentDef (to patch it) might
+          // trigger re-compilation, which will fail because component resources are not yet fully
+          // resolved at this moment. The queue is drained once all resources are resolved.
+          providerOverrides.push(
+              () => this._patchDefWithProviderOverrides(declaration, NG_COMPONENT_DEF));
+        }
       }
     });
 
@@ -407,6 +429,7 @@ export class TestBedRender3 implements Injector, TestBed {
         // are only available until the next TestBed reset (when `resetTestingModule` is called)
         this.overrideComponent(override[0], {set: override[1]});
       });
+      providerOverrides.forEach((overrideFn: () => void) => overrideFn());
     };
 
     // If the component has no async resources (templateUrl, styleUrls), we can finish
@@ -558,9 +581,9 @@ export class TestBedRender3 implements Injector, TestBed {
   }
 
   private _storeNgDef(prop: string, type: Type<any>) {
-    if (!this._initiaNgDefs.has(type)) {
+    if (!this._initialNgDefs.has(type)) {
       const currentDef = Object.getOwnPropertyDescriptor(type, prop);
-      this._initiaNgDefs.set(type, [prop, currentDef]);
+      this._initialNgDefs.set(type, [prop, currentDef]);
     }
   }
 
@@ -651,16 +674,56 @@ export class TestBedRender3 implements Injector, TestBed {
     return this._compilerInjector;
   }
 
+  /**
+   * Clears current components resolution queue, but stores the state of the queue, so we can
+   * restore it later. Clearing the queue is required before we try to compile components (via
+   * `TestBed.compileComponents`), so that component defs are in sync with the resolution queue.
+   */
+  private _clearComponentResolutionQueue() {
+    if (this._originalComponentResolutionQueue === null) {
+      this._originalComponentResolutionQueue = new Map();
+    }
+    clearResolutionOfComponentResourcesQueue().forEach(
+        (value, key) => this._originalComponentResolutionQueue !.set(key, value));
+  }
+
+  /**
+   * Restores component resolution queue to the previously saved state. This operation is performed
+   * as a part of restoring the state after completion of the current set of tests (that might
+   * potentially mutate the state).
+   */
+  private _restoreComponentResolutionQueue() {
+    if (this._originalComponentResolutionQueue !== null) {
+      restoreComponentResolutionQueue(this._originalComponentResolutionQueue);
+      this._originalComponentResolutionQueue = null;
+    }
+  }
+
+  // TODO(FW-1179): define better types for all Provider-related operations, avoid using `any`.
+  private _getProvidersOverrides(providers: any): any[] {
+    if (!providers || !providers.length) return [];
+    // There are two flattening operations here. The inner flatten() operates on the metadata's
+    // providers and applies a mapping function which retrieves overrides for each incoming
+    // provider. The outer flatten() then flattens the produced overrides array. If this is not
+    // done, the array can contain other empty arrays (e.g. `[[], []]`) which leak into the
+    // providers array and contaminate any error messages that might be generated.
+    return flatten(flatten(providers, (provider: any) => this._getProviderOverrides(provider)));
+  }
+
+  private _hasProviderOverrides(providers: any) {
+    return this._getProvidersOverrides(providers).length > 0;
+  }
+
+  private _hasTypeOverrides(type: Type<any>, overrides: [Type<any>, MetadataOverride<any>][]) {
+    return overrides.some((override: [Type<any>, MetadataOverride<any>]) => override[0] === type);
+  }
+
+  private _hasTemplateOverrides(type: Type<any>) { return this._templateOverrides.has(type); }
+
   private _getMetaWithOverrides(meta: Component|Directive|NgModule, type?: Type<any>) {
     const overrides: {providers?: any[], template?: string} = {};
     if (meta.providers && meta.providers.length) {
-      // There are two flattening operations here. The inner flatten() operates on the metadata's
-      // providers and applies a mapping function which retrieves overrides for each incoming
-      // provider. The outer flatten() then flattens the produced overrides array. If this is not
-      // done, the array can contain other empty arrays (e.g. `[[], []]`) which leak into the
-      // providers array and contaminate any error messages that might be generated.
-      const providerOverrides =
-          flatten(flatten(meta.providers, (provider: any) => this._getProviderOverrides(provider)));
+      const providerOverrides = this._getProvidersOverrides(meta.providers);
       if (providerOverrides.length) {
         overrides.providers = [...meta.providers, ...providerOverrides];
       }
@@ -670,6 +733,19 @@ export class TestBedRender3 implements Injector, TestBed {
       overrides.template = this._templateOverrides.get(type !);
     }
     return Object.keys(overrides).length ? {...meta, ...overrides} : meta;
+  }
+
+  private _patchDefWithProviderOverrides(declaration: Type<any>, field: string) {
+    const def = (declaration as any)[field];
+    if (def && def.providersResolver) {
+      this._storeNgDef(field, declaration);
+      const resolver = def.providersResolver;
+      const processProvidersFn = (providers: any[]) => {
+        const overrides = this._getProvidersOverrides(providers);
+        return [...providers, ...overrides];
+      };
+      def.providersResolver = (ngDef: DirectiveDef<any>) => resolver(ngDef, processProvidersFn);
+    }
   }
 
   /**
@@ -694,31 +770,45 @@ export class TestBedRender3 implements Injector, TestBed {
 
     const declarations: Type<any>[] =
         flatten(ngModule.declarations || EMPTY_ARRAY, resolveForwardRef);
-    const compiledComponents: Type<any>[] = [];
+    const declaredComponents: Type<any>[] = [];
 
     // Compile the components, directives and pipes declared by this module
     declarations.forEach(declaration => {
       const component = this._resolvers.component.resolve(declaration);
       if (component) {
-        this._storeNgDef(NG_COMPONENT_DEF, declaration);
-        const metadata = this._getMetaWithOverrides(component, declaration);
-        compileComponent(declaration, metadata);
-        compiledComponents.push(declaration);
+        if (!declaration.hasOwnProperty(NG_COMPONENT_DEF) ||
+            this._hasTypeOverrides(declaration, this._componentOverrides) ||
+            this._hasTemplateOverrides(declaration)) {
+          this._storeNgDef(NG_COMPONENT_DEF, declaration);
+          const metadata = this._getMetaWithOverrides(component, declaration);
+          compileComponent(declaration, metadata);
+        } else if (this._hasProviderOverrides(component.providers)) {
+          this._patchDefWithProviderOverrides(declaration, NG_COMPONENT_DEF);
+        }
+        declaredComponents.push(declaration);
         return;
       }
 
       const directive = this._resolvers.directive.resolve(declaration);
       if (directive) {
-        this._storeNgDef(NG_DIRECTIVE_DEF, declaration);
-        const metadata = this._getMetaWithOverrides(directive);
-        compileDirective(declaration, metadata);
+        if (!declaration.hasOwnProperty(NG_DIRECTIVE_DEF) ||
+            this._hasTypeOverrides(declaration, this._directiveOverrides)) {
+          this._storeNgDef(NG_DIRECTIVE_DEF, declaration);
+          const metadata = this._getMetaWithOverrides(directive);
+          compileDirective(declaration, metadata);
+        } else if (this._hasProviderOverrides(directive.providers)) {
+          this._patchDefWithProviderOverrides(declaration, NG_DIRECTIVE_DEF);
+        }
         return;
       }
 
       const pipe = this._resolvers.pipe.resolve(declaration);
       if (pipe) {
-        this._storeNgDef(NG_PIPE_DEF, declaration);
-        compilePipe(declaration, pipe);
+        if (!declaration.hasOwnProperty(NG_PIPE_DEF) ||
+            this._hasTypeOverrides(declaration, this._pipeOverrides)) {
+          this._storeNgDef(NG_PIPE_DEF, declaration);
+          compilePipe(declaration, pipe);
+        }
         return;
       }
     });
@@ -727,7 +817,7 @@ export class TestBedRender3 implements Injector, TestBed {
     const calcTransitiveScopesFor = (moduleType: NgModuleType) => transitiveScopesFor(
         moduleType, (ngModule: NgModuleType) => this._compileNgModule(ngModule));
     const transitiveScope = calcTransitiveScopesFor(moduleType);
-    compiledComponents.forEach(cmp => {
+    declaredComponents.forEach(cmp => {
       const scope = this._templateOverrides.has(cmp) ?
           // if we have template override via `TestBed.overrideTemplateUsingTestingModule` -
           // define Component scope as TestingModule scope, instead of the scope of NgModule
