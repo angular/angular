@@ -14,15 +14,11 @@ export enum TagContentType {
 
 export interface TagDefinition {
   closedByParent: boolean;
-  requiredParents: {[key: string]: boolean};
-  parentToAdd: string;
   implicitNamespacePrefix: string|null;
   contentType: TagContentType;
   isVoid: boolean;
   ignoreFirstLf: boolean;
   canSelfClose: boolean;
-
-  requireExtraParent(currentParent: string): boolean;
 
   isClosedByChild(name: string): boolean;
 }
