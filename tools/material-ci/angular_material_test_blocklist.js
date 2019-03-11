@@ -109,58 +109,6 @@ window.testBlocklist = {
     "error": "Error: Failed: Expected node descendant num to be 2 but was 0",
     "notes": "Breaking change: Content queries and descendants flag (fix test by removing <div> in NestedCdkTreeAppWithToggle)"
   },
-  "MatChipList StandardChipList basic behaviors should toggle the chips disabled state based on whether it is disabled": {
-    "error": "Error: Expected true to be false.",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList focus behaviors should focus the first chip on focus": {
-    "error": "Error: Expected -1 to be 0.",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList focus behaviors should watch for chip focus": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList focus behaviors on chip destroy should focus the next item": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList focus behaviors on chip destroy should focus the previous item": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList focus behaviors on chip destroy should not focus if chip list is not focused": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList keyboard behavior LTR (default) should focus previous item when press LEFT ARROW": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList keyboard behavior LTR (default) should focus next item when press RIGHT ARROW": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList keyboard behavior LTR (default) should focus the first item when pressing HOME": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList keyboard behavior RTL should focus previous item when press RIGHT ARROW": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList keyboard behavior RTL should focus next item when press LEFT ARROW": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList StandardChipList keyboard behavior should account for the direction changing": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
-  "MatChipList with chip remove should properly focus next item if chip is removed through click": {
-    "error": "TypeError: Cannot read property 'focus' of undefined",
-    "notes": "MatChipList does not find MatChip content children because descendants is not true anymore. TODO: Fix spec so that it does not have the wrapping div"
-  },
   "MatStepper basic stepper should go to next available step when the next button is clicked": {
     "error": "Error: Expected 2 to be 1.",
     "notes": "Unknown"
