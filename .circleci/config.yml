@@ -63,26 +63,19 @@ var_6: &job_defaults
   docker:
   - image: *default_docker_image
 
-# After checkout, rebase on top of master.
-# Similar to travis behavior, but not quite the same.
-# See https://discuss.circleci.com/t/1662
+# After checkout, rebase on top of target branch.
 var_7: &post_checkout
   run:
-    name: Post checkout step
+    name: Rebase PR on target branch
     command: >
       if [[ -n "${CIRCLE_PR_NUMBER}" ]]; then
-        # Fetch the head and merge commits for this PR.
-        git fetch origin +refs/pull/$CIRCLE_PR_NUMBER/head:pr/$CIRCLE_PR_NUMBER/head
-        git fetch origin +refs/pull/$CIRCLE_PR_NUMBER/merge:pr/$CIRCLE_PR_NUMBER/merge || (echo "Could not fetch merge result with master for this PR. Please check and fix any merge conflicts." ; exit 1)
-        # Checkout the merged PR for testing as CircleCI will just use the PR head otherwise.
-        git checkout -qf pr/$CIRCLE_PR_NUMBER/merge
-        # Reset the merge commit into its PR head.
-        git reset pr/$CIRCLE_PR_NUMBER/head
-        # Commit the merge changes into the head of the PR.
-        # This way we keep the last commit message.
+        # User is required for rebase.
         git config user.name "angular-ci"
         git config user.email "angular-ci"
-        git commit . --amend --no-edit
+        # Rebase PR on top of target branch.
+        node tools/rebase-pr.js angular/angular ${CIRCLE_PR_NUMBER}
+      else
+        echo "This build is not over a PR, nothing to do."
       fi
 
 var_8: &yarn_install
