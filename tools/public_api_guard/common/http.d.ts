@@ -1,3 +1,8 @@
+export declare class BrowserXhr implements XhrFactory {
+    constructor();
+    build(): any;
+}
+
 export declare const HTTP_INTERCEPTORS: InjectionToken<HttpInterceptor[]>;
 
 export declare abstract class HttpBackend implements HttpHandler {

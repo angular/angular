@@ -40,7 +40,7 @@ export abstract class XhrFactory { abstract build(): XMLHttpRequest; }
 /**
  * A factory for @{link HttpXhrBackend} that uses the `XMLHttpRequest` browser API.
  *
- *
+ * @publicApi
  */
 @Injectable()
 export class BrowserXhr implements XhrFactory {
