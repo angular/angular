@@ -10,7 +10,7 @@ import {LiteralExpr, R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFrom
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Reference} from '../../imports';
+import {DefaultImportRecorder, Reference} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope/src/local';
@@ -27,7 +27,8 @@ export interface PipeHandlerData {
 export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private scopeRegistry: LocalModuleScopeRegistry, private isCore: boolean) {}
+      private scopeRegistry: LocalModuleScopeRegistry,
+      private defaultImportRecorder: DefaultImportRecorder, private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -98,9 +99,12 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
           name,
           type,
           pipeName,
-          deps: getValidConstructorDependencies(clazz, this.reflector, this.isCore), pure,
+          deps: getValidConstructorDependencies(
+              clazz, this.reflector, this.defaultImportRecorder, this.isCore),
+          pure,
         },
-        metadataStmt: generateSetClassMetadataCall(clazz, this.reflector, this.isCore),
+        metadataStmt: generateSetClassMetadataCall(
+            clazz, this.reflector, this.defaultImportRecorder, this.isCore),
       },
     };
   }

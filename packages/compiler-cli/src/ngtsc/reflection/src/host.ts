@@ -167,7 +167,7 @@ export interface ClassMember {
  * valid within the local file where the type was referenced.
  */
 export type TypeValueReference = {
-  local: true; expression: ts.Expression;
+  local: true; expression: ts.Expression; defaultImportStatement: ts.ImportDeclaration | null;
 } |
 {
   local: false;

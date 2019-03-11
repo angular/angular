@@ -901,8 +901,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return {
         name: getNameText(nameNode),
         nameNode,
-        typeValueReference:
-            typeExpression !== null ? {local: true as true, expression: typeExpression} : null,
+        typeValueReference: typeExpression !== null ?
+            {local: true as true, expression: typeExpression, defaultImportStatement: null} :
+            null,
         typeNode: null, decorators
       };
     });

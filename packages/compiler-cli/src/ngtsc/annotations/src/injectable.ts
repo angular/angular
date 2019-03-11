@@ -10,6 +10,7 @@ import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3R
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
+import {DefaultImportRecorder} from '../../imports';
 import {Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
@@ -27,8 +28,8 @@ export interface InjectableHandlerData {
 export class InjectableDecoratorHandler implements
     DecoratorHandler<InjectableHandlerData, Decorator> {
   constructor(
-      private reflector: ReflectionHost, private isCore: boolean, private strictCtorDeps: boolean) {
-  }
+      private reflector: ReflectionHost, private defaultImportRecorder: DefaultImportRecorder,
+      private isCore: boolean, private strictCtorDeps: boolean) {}
 
   readonly precedence = HandlerPrecedence.SHARED;
 
@@ -51,8 +52,10 @@ export class InjectableDecoratorHandler implements
     return {
       analysis: {
         meta: extractInjectableMetadata(
-            node, decorator, this.reflector, this.isCore, this.strictCtorDeps),
-        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
+            node, decorator, this.reflector, this.defaultImportRecorder, this.isCore,
+            this.strictCtorDeps),
+        metadataStmt: generateSetClassMetadataCall(
+            node, this.reflector, this.defaultImportRecorder, this.isCore),
       },
     };
   }
@@ -78,7 +81,8 @@ export class InjectableDecoratorHandler implements
  * A `null` return value indicates this is @Injectable has invalid data.
  */
 function extractInjectableMetadata(
-    clazz: ts.ClassDeclaration, decorator: Decorator, reflector: ReflectionHost, isCore: boolean,
+    clazz: ts.ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
+    defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
     strictCtorDeps: boolean): R3InjectableMetadata {
   if (clazz.name === undefined) {
     throw new FatalDiagnosticError(
@@ -101,9 +105,10 @@ function extractInjectableMetadata(
     // signature does not work for DI then an ngInjectableDef that throws.
     let ctorDeps: R3DependencyMetadata[]|'invalid'|null = null;
     if (strictCtorDeps) {
-      ctorDeps = getValidConstructorDependencies(clazz, reflector, isCore);
+      ctorDeps = getValidConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
     } else {
-      const possibleCtorDeps = getConstructorDependencies(clazz, reflector, isCore);
+      const possibleCtorDeps =
+          getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
       if (possibleCtorDeps !== null) {
         if (possibleCtorDeps.deps !== null) {
           // This use of @Injectable has valid constructor dependencies.
@@ -124,7 +129,7 @@ function extractInjectableMetadata(
       providedIn: new LiteralExpr(null), ctorDeps,
     };
   } else if (decorator.args.length === 1) {
-    const rawCtorDeps = getConstructorDependencies(clazz, reflector, isCore);
+    const rawCtorDeps = getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
     let ctorDeps: R3DependencyMetadata[]|'invalid'|null = null;
 
     // rawCtorDeps will be null if the class has no constructor.

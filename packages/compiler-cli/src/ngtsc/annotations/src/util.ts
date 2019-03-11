@@ -10,7 +10,7 @@ import {Expression, ExternalExpr, R3DependencyMetadata, R3Reference, R3ResolvedD
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {ImportMode, Reference, ReferenceEmitter} from '../../imports';
+import {DefaultImportRecorder, ImportMode, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver} from '../../partial_evaluator';
 import {ClassMemberKind, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference} from '../../reflection';
 
@@ -33,7 +33,8 @@ export interface ConstructorDepError {
 }
 
 export function getConstructorDependencies(
-    clazz: ts.ClassDeclaration, reflector: ReflectionHost, isCore: boolean): ConstructorDeps|null {
+    clazz: ts.ClassDeclaration, reflector: ReflectionHost,
+    defaultImportRecorder: DefaultImportRecorder, isCore: boolean): ConstructorDeps|null {
   const deps: R3DependencyMetadata[] = [];
   const errors: ConstructorDepError[] = [];
   let ctorParams = reflector.getConstructorParameters(clazz);
@@ -45,7 +46,7 @@ export function getConstructorDependencies(
     }
   }
   ctorParams.forEach((param, idx) => {
-    let token = valueReferenceToExpression(param.typeValueReference);
+    let token = valueReferenceToExpression(param.typeValueReference, defaultImportRecorder);
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
@@ -101,13 +102,24 @@ export function getConstructorDependencies(
  * references are converted to an `ExternalExpr`. Note that this is only valid in the context of the
  * file in which the `TypeValueReference` originated.
  */
-export function valueReferenceToExpression(valueRef: TypeValueReference): Expression;
-export function valueReferenceToExpression(valueRef: null): null;
-export function valueReferenceToExpression(valueRef: TypeValueReference | null): Expression|null;
-export function valueReferenceToExpression(valueRef: TypeValueReference | null): Expression|null {
+export function valueReferenceToExpression(
+    valueRef: TypeValueReference, defaultImportRecorder: DefaultImportRecorder): Expression;
+export function valueReferenceToExpression(
+    valueRef: null, defaultImportRecorder: DefaultImportRecorder): null;
+export function valueReferenceToExpression(
+    valueRef: TypeValueReference | null, defaultImportRecorder: DefaultImportRecorder): Expression|
+    null;
+export function valueReferenceToExpression(
+    valueRef: TypeValueReference | null, defaultImportRecorder: DefaultImportRecorder): Expression|
+    null {
   if (valueRef === null) {
     return null;
   } else if (valueRef.local) {
+    if (defaultImportRecorder !== null && valueRef.defaultImportStatement !== null &&
+        ts.isIdentifier(valueRef.expression)) {
+      defaultImportRecorder.recordImportedIdentifier(
+          valueRef.expression, valueRef.defaultImportStatement);
+    }
     return new WrappedNodeExpr(valueRef.expression);
   } else {
     // TODO(alxhub): this cast is necessary because the g3 typescript version doesn't narrow here.
@@ -116,10 +128,10 @@ export function valueReferenceToExpression(valueRef: TypeValueReference | null):
 }
 
 export function getValidConstructorDependencies(
-    clazz: ts.ClassDeclaration, reflector: ReflectionHost, isCore: boolean): R3DependencyMetadata[]|
-    null {
+    clazz: ts.ClassDeclaration, reflector: ReflectionHost,
+    defaultImportRecorder: DefaultImportRecorder, isCore: boolean): R3DependencyMetadata[]|null {
   return validateConstructorDependencies(
-      clazz, getConstructorDependencies(clazz, reflector, isCore));
+      clazz, getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore));
 }
 
 export function validateConstructorDependencies(
