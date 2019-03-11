@@ -122,7 +122,6 @@ PRs also have additional label categories that should be used to signal their st
 
 Every triaged PR must have a `pr_action` label assigned to it:
 
-* `PR action: review` - work is complete and comment is needed from the reviewers.
 * `PR action: cleanup` - more work is needed from the author.
 * `PR action: discuss` - discussion is needed, to be led by the author.
 * `PR action: merge` - the PR author is ready for the changes to be merged by the caretaker as soon as the PR is green (or merge-assistance label is applied and caretaker has deemed it acceptable manually). In other words, this label indicates to "auto submit when ready".
@@ -132,6 +131,8 @@ In addition, PRs can have the following states:
 
 * `PR state: WIP` - PR is experimental or rapidly changing. Not ready for review or triage.
 * `PR state: blocked` - PR is blocked on an issue or other PR. Not ready for review or triage or merge.
+
+When a PR is ready for review, a review should be requested using the Reviewers interface in Github.
 
 
 ## PR Target
