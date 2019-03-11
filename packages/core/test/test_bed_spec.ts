@@ -294,8 +294,8 @@ describe('TestBed', () => {
           TestBed.resetTestingModule();
 
           const defAfterReset = (SomeComponent as any).ngComponentDef;
-          expect(defAfterReset.pipeDefs().length).toEqual(0);
-          expect(defAfterReset.directiveDefs().length).toEqual(1);  // component
+          expect(defAfterReset.pipeDefs).toBe(null);
+          expect(defAfterReset.directiveDefs).toBe(null);
         });
 
         it('should cleanup ng defs for classes with no ng annotations (in case of inheritance)',

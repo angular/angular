@@ -7,6 +7,7 @@
  */
 
 import {SchemaMetadata, ViewEncapsulation} from '../../core';
+import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
 import {CssSelectorList} from './projection';
 
@@ -138,7 +139,9 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   type: Type<T>;
 
   /** Function that resolves providers and publishes them into the DI system. */
-  providersResolver: (<U extends T>(def: DirectiveDef<U>) => void)|null;
+  providersResolver:
+      (<U extends T>(def: DirectiveDef<U>, processProvidersFn?: ProcessProvidersFunction) =>
+           void)|null;
 
   /** The selectors that will be used to match nodes to this directive. */
   readonly selectors: CssSelectorList;
