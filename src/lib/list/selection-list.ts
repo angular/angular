@@ -300,7 +300,6 @@ export class MatListOption extends _MatListOptionMixinBase
     'role': 'listbox',
     '[tabIndex]': 'tabIndex',
     'class': 'mat-selection-list mat-list-base',
-    '(focus)': 'focus()',
     '(blur)': '_onTouched()',
     '(keydown)': '_keydown($event)',
     'aria-multiselectable': 'true',
@@ -416,7 +415,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
     this._modelChanges.unsubscribe();
   }
 
-  /** Focuses the last active list option. */
+  /** Focuses the selection list. */
   focus() {
     this._element.nativeElement.focus();
   }
@@ -446,9 +445,9 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
     if (optionIndex > -1 && this._keyManager.activeItemIndex === optionIndex) {
       // Check whether the option is the last item
       if (optionIndex > 0) {
-        this._keyManager.updateActiveItemIndex(optionIndex - 1);
+        this._keyManager.updateActiveItem(optionIndex - 1);
       } else if (optionIndex === 0 && this.options.length > 1) {
-        this._keyManager.updateActiveItemIndex(Math.min(optionIndex + 1, this.options.length - 1));
+        this._keyManager.updateActiveItem(Math.min(optionIndex + 1, this.options.length - 1));
       }
     }
 
