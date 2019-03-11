@@ -136,6 +136,15 @@ function declareTests(config?: {useJit: boolean}) {
     }
 
     function createComp<T>(compType: Type<T>, moduleType: Type<any>): ComponentFixture<T> {
+      const componentDef = (compType as any).ngComponentDef;
+      if (componentDef) {
+        // Since we avoid Components/Directives/Pipes recompiling in case there are no overrides, we
+        // may face a problem where previously compiled defs available to a given
+        // Component/Directive are cached in TView and may become stale (in case any of these defs
+        // gets recompiled). In order to avoid this problem, we force fresh TView to be created.
+        componentDef.template.ngPrivateData = null;
+      }
+
       const ngModule = createModule(moduleType, injector);
 
       const cf = ngModule.componentFactoryResolver.resolveComponentFactory(compType) !;

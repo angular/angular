@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Type} from '../interface/type';
 import {Component} from './directives';
 
 
@@ -42,9 +43,9 @@ import {Component} from './directives';
  * contents of the resolved URL. Browser's `fetch()` method is a good default implementation.
  */
 export function resolveComponentResources(
-    resourceResolver: (url: string) => (Promise<string|{text(): Promise<string>}>)): Promise<null> {
+    resourceResolver: (url: string) => (Promise<string|{text(): Promise<string>}>)): Promise<void> {
   // Store all promises which are fetching the resources.
-  const urlFetches: Promise<string>[] = [];
+  const componentResolved: Promise<void>[] = [];
 
   // Cache so that we don't fetch the same resource more than once.
   const urlMap = new Map<string, Promise<string>>();
@@ -53,41 +54,51 @@ export function resolveComponentResources(
     if (!promise) {
       const resp = resourceResolver(url);
       urlMap.set(url, promise = resp.then(unwrapResponse));
-      urlFetches.push(promise);
     }
     return promise;
   }
 
-  componentResourceResolutionQueue.forEach((component: Component) => {
+  componentResourceResolutionQueue.forEach((component: Component, type: Type<any>) => {
+    const promises: Promise<void>[] = [];
     if (component.templateUrl) {
-      cachedResourceResolve(component.templateUrl).then((template) => {
+      promises.push(cachedResourceResolve(component.templateUrl).then((template) => {
         component.template = template;
-      });
+      }));
     }
     const styleUrls = component.styleUrls;
     const styles = component.styles || (component.styles = []);
     const styleOffset = component.styles.length;
     styleUrls && styleUrls.forEach((styleUrl, index) => {
       styles.push('');  // pre-allocate array.
-      cachedResourceResolve(styleUrl).then((style) => {
+      promises.push(cachedResourceResolve(styleUrl).then((style) => {
         styles[styleOffset + index] = style;
         styleUrls.splice(styleUrls.indexOf(styleUrl), 1);
         if (styleUrls.length == 0) {
           component.styleUrls = undefined;
         }
-      });
+      }));
     });
+    const fullyResolved = Promise.all(promises).then(() => componentDefResolved(type));
+    componentResolved.push(fullyResolved);
   });
   clearResolutionOfComponentResourcesQueue();
-  return Promise.all(urlFetches).then(() => null);
+  return Promise.all(componentResolved).then(() => undefined);
 }
 
-const componentResourceResolutionQueue: Set<Component> = new Set();
+let componentResourceResolutionQueue = new Map<Type<any>, Component>();
 
-export function maybeQueueResolutionOfComponentResources(metadata: Component) {
+// Track when existing ngComponentDef for a Type is waiting on resources.
+const componentDefPendingResolution = new Set<Type<any>>();
+
+export function maybeQueueResolutionOfComponentResources(type: Type<any>, metadata: Component) {
   if (componentNeedsResolution(metadata)) {
-    componentResourceResolutionQueue.add(metadata);
+    componentResourceResolutionQueue.set(type, metadata);
+    componentDefPendingResolution.add(type);
   }
+}
+
+export function isComponentDefPendingResolution(type: Type<any>): boolean {
+  return componentDefPendingResolution.has(type);
 }
 
 export function componentNeedsResolution(component: Component): boolean {
@@ -95,8 +106,16 @@ export function componentNeedsResolution(component: Component): boolean {
       (component.templateUrl && !component.template) ||
       component.styleUrls && component.styleUrls.length);
 }
-export function clearResolutionOfComponentResourcesQueue() {
-  componentResourceResolutionQueue.clear();
+export function clearResolutionOfComponentResourcesQueue(): Map<Type<any>, Component> {
+  const old = componentResourceResolutionQueue;
+  componentResourceResolutionQueue = new Map();
+  return old;
+}
+
+export function restoreComponentResolutionQueue(queue: Map<Type<any>, Component>): void {
+  componentDefPendingResolution.clear();
+  queue.forEach((_, type) => componentDefPendingResolution.add(type));
+  componentResourceResolutionQueue = queue;
 }
 
 export function isComponentResourceResolutionQueueEmpty() {
@@ -105,4 +124,8 @@ export function isComponentResourceResolutionQueueEmpty() {
 
 function unwrapResponse(response: string | {text(): Promise<string>}): string|Promise<string> {
   return typeof response == 'string' ? response : response.text();
+}
+
+function componentDefResolved(type: Type<any>): void {
+  componentDefPendingResolution.delete(type);
 }
