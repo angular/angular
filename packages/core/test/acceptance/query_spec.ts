@@ -401,6 +401,33 @@ describe('query logic', () => {
 
   });
 
+  describe('descendants', () => {
+
+    it('should match directives on elements that used to be wrapped by a required parent in HTML parser',
+       () => {
+
+         @Directive({selector: '[myDef]'})
+         class MyDef {
+         }
+
+         @Component({selector: 'my-container', template: ``})
+         class MyContainer {
+           @ContentChildren(MyDef) myDefs !: QueryList<MyDef>;
+         }
+         @Component(
+             {selector: 'test-cmpt', template: `<my-container><tr myDef></tr></my-container>`})
+         class TestCmpt {
+         }
+
+         TestBed.configureTestingModule({declarations: [TestCmpt, MyContainer, MyDef]});
+         const fixture = TestBed.createComponent(TestCmpt);
+         const cmptWithQuery = fixture.debugElement.children[0].injector.get(MyContainer);
+
+         fixture.detectChanges();
+         expect(cmptWithQuery.myDefs.length).toBe(1);
+       });
+  });
+
   describe('observable interface', () => {
 
     it('should allow observing changes to query list', () => {

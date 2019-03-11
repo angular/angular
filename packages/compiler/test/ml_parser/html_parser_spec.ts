@@ -113,73 +113,17 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn} from './ast_spe
               ]);
         });
 
-        it('should add the requiredParent', () => {
-          expect(
-              humanizeDom(parser.parse(
-                  '<table><thead><tr head></tr></thead><tr noparent></tr><tbody><tr body></tr></tbody><tfoot><tr foot></tr></tfoot></table>',
-                  'TestComp')))
-              .toEqual([
-                [html.Element, 'table', 0],
-                [html.Element, 'thead', 1],
-                [html.Element, 'tr', 2],
-                [html.Attribute, 'head', ''],
-                [html.Element, 'tbody', 1],
-                [html.Element, 'tr', 2],
-                [html.Attribute, 'noparent', ''],
-                [html.Element, 'tbody', 1],
-                [html.Element, 'tr', 2],
-                [html.Attribute, 'body', ''],
-                [html.Element, 'tfoot', 1],
-                [html.Element, 'tr', 2],
-                [html.Attribute, 'foot', ''],
-              ]);
-        });
-
-        it('should append the required parent considering ng-container', () => {
-          expect(humanizeDom(parser.parse(
-                     '<table><ng-container><tr></tr></ng-container></table>', 'TestComp')))
-              .toEqual([
-                [html.Element, 'table', 0],
-                [html.Element, 'tbody', 1],
-                [html.Element, 'ng-container', 2],
-                [html.Element, 'tr', 3],
-              ]);
-        });
-
-        it('should append the required parent considering top level ng-container', () => {
-          expect(humanizeDom(
-                     parser.parse('<ng-container><tr></tr></ng-container><p></p>', 'TestComp')))
-              .toEqual([
-                [html.Element, 'ng-container', 0],
-                [html.Element, 'tr', 1],
-                [html.Element, 'p', 0],
-              ]);
-        });
-
-        it('should special case ng-container when adding a required parent', () => {
-          expect(humanizeDom(parser.parse(
-                     '<table><thead><ng-container><tr></tr></ng-container></thead></table>',
-                     'TestComp')))
-              .toEqual([
-                [html.Element, 'table', 0],
-                [html.Element, 'thead', 1],
-                [html.Element, 'ng-container', 2],
-                [html.Element, 'tr', 3],
-              ]);
-        });
-
-        it('should not add the requiredParent when the parent is a <ng-template>', () => {
-          expect(humanizeDom(parser.parse('<ng-template><tr></tr></ng-template>', 'TestComp')))
-              .toEqual([
-                [html.Element, 'ng-template', 0],
-                [html.Element, 'tr', 1],
-              ]);
-        });
-
-        // https://github.com/angular/angular/issues/5967
-        it('should not add the requiredParent to a template root element', () => {
-          expect(humanizeDom(parser.parse('<tr></tr>', 'TestComp'))).toEqual([
-            [html.Element, 'tr', 0],
+        /**
+         * Certain elements (like <tr> or <col>) require parent elements of a certain type (ex. <tr>
+         * can only be inside <tbody> / <thead>). The Angular HTML parser doesn't validate those
+         * HTML compliancy rules as "problematic" elements can be projected - in such case HTML (as
+         * written in an Angular template) might be "invalid" (spec-wise) but the resulting DOM will
+         * still be correct.
+         */
+        it('should not wraps elements in a required parent', () => {
+          expect(humanizeDom(parser.parse('<div><tr></tr></div>', 'TestComp'))).toEqual([
+            [html.Element, 'div', 0],
+            [html.Element, 'tr', 1],
           ]);
         });
 
