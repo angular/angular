@@ -1,0 +1,26 @@
+<div cdkDropListGroup>
+  <div class="example-container">
+    <h2>Available items</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="items"
+      class="example-list"
+      cdkDropListSortingDisabled
+      (cdkDropListDropped)="drop($event)">
+      <div class="example-box" *ngFor="let item of items" cdkDrag>{{item}}</div>
+    </div>
+  </div>
+
+  <div class="example-container">
+    <h2>Shopping basket</h2>
+
+    <div
+      cdkDropList
+      [cdkDropListData]="basket"
+      class="example-list"
+      (cdkDropListDropped)="drop($event)">
+      <div class="example-box" *ngFor="let item of basket" cdkDrag>{{item}}</div>
+    </div>
+  </div>
+</div>

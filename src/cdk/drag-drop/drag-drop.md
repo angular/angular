@@ -179,3 +179,12 @@ using the `cdkDropListDisabled` input on a `cdkDropList` or a particular handle 
 `cdkDragHandleDisabled` on `cdkDragHandle`.
 
 <!-- example(cdk-drag-drop-disabled) -->
+
+### Disabled sorting
+There are cases where draggable items can be dragged out of one list into another, however
+the user shouldn't be able to sort them within the source list. For these cases you can set the
+`cdkDropListSortingDisabled` input which will prevent the items in a `cdkDropList` from sorting,
+in addition to preserving the dragged item's initial position in the source list, if the user
+decides to return the item.
+
+<!-- example(cdk-drag-drop-disabled-sorting) -->
