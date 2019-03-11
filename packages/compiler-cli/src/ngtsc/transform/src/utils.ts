@@ -20,16 +20,9 @@ export function addImports(
   // Generate the import statements to prepend.
   const addedImports = importManager.getAllImports(sf.fileName).map(i => {
     const qualifier = ts.createIdentifier(i.qualifier);
-    let importClause: ts.ImportClause;
-    if (!i.isDefault) {
-      importClause = ts.createImportClause(
-          /* name */ undefined,
-          /* namedBindings */ ts.createNamespaceImport(qualifier));
-    } else {
-      importClause = ts.createImportClause(
-          /* name */ qualifier,
-          /* namedBindings */ undefined);
-    }
+    const importClause = ts.createImportClause(
+        /* name */ undefined,
+        /* namedBindings */ ts.createNamespaceImport(qualifier));
     return ts.createImportDeclaration(
         /* decorators */ undefined,
         /* modifiers */ undefined,

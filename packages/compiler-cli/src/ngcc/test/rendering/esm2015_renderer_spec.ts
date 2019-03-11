@@ -116,22 +116,13 @@ describe('Esm2015Renderer', () => {
       const {renderer} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
       renderer.addImports(output, [
-        {specifier: '@angular/core', qualifier: 'i0', isDefault: false},
-        {specifier: '@angular/common', qualifier: 'i1', isDefault: false}
+        {specifier: '@angular/core', qualifier: 'i0'},
+        {specifier: '@angular/common', qualifier: 'i1'}
       ]);
       expect(output.toString()).toContain(`import * as i0 from '@angular/core';
 import * as i1 from '@angular/common';
 
 /* A copyright notice */`);
-    });
-
-    it('should insert a default import at the start of the source file', () => {
-      const {renderer} = setup(PROGRAM);
-      const output = new MagicString(PROGRAM.contents);
-      renderer.addImports(output, [
-        {specifier: 'test', qualifier: 'i0', isDefault: true},
-      ]);
-      expect(output.toString()).toContain(`import i0 from 'test';`);
     });
   });
 

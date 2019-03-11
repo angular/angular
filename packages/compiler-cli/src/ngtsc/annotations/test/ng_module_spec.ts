@@ -10,7 +10,7 @@ import {WrappedNodeExpr} from '@angular/compiler';
 import {R3Reference} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
-import {LocalIdentifierStrategy, ReferenceEmitter} from '../../imports';
+import {LocalIdentifierStrategy, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -61,7 +61,8 @@ describe('NgModuleDecoratorHandler', () => {
     const refEmitter = new ReferenceEmitter([new LocalIdentifierStrategy()]);
 
     const handler = new NgModuleDecoratorHandler(
-        reflectionHost, evaluator, scopeRegistry, referencesRegistry, false, null, refEmitter);
+        reflectionHost, evaluator, scopeRegistry, referencesRegistry, false, null, refEmitter,
+        NOOP_DEFAULT_IMPORT_RECORDER);
     const TestModule = getDeclaration(program, 'entry.ts', 'TestModule', ts.isClassDeclaration);
     const detected =
         handler.detect(TestModule, reflectionHost.getDecoratorsOfDeclaration(TestModule));
