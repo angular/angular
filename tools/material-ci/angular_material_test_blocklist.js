@@ -51,7 +51,7 @@ window.testBlocklist = {
   },
   "CdkTable with trackBy should change row implicit data even when trackBy finds no changes": {
     "error": "Error: Expected 'a_1 b_1' to be 'a_2 b_2'.",
-    "notes": "Unknown"
+    "notes": "FW-842: View engine dirty-checks projected views when the declaration place is checked"
   },
   "CdkTable should be able to apply classes to rows based on their context": {
     "error": "Error: Expected false to be true.",
