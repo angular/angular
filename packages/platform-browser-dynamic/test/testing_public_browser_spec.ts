@@ -144,9 +144,7 @@ if (isBrowser) {
            });
          }),
          10000);  // Long timeout here because this test makes an actual ResourceLoader
-                  // request, and
-                  // is slow
-                  // on Edge.
+                  // request, and is slow on Edge.
     });
   });
 }

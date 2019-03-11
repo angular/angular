@@ -37,7 +37,7 @@ import {flushModuleScopingQueueAsMuchAsPossible, patchComponentDefWithScope, tra
 export function compileComponent(type: Type<any>, metadata: Component): void {
   let ngComponentDef: any = null;
   // Metadata may have resources which need to be resolved.
-  maybeQueueResolutionOfComponentResources(metadata);
+  maybeQueueResolutionOfComponentResources(type, metadata);
   Object.defineProperty(type, NG_COMPONENT_DEF, {
     get: () => {
       const compiler = getCompilerFacade();

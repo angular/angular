@@ -357,6 +357,12 @@ export function patchComponentDefWithScope<C>(
   componentDef.pipeDefs = () =>
       Array.from(transitiveScopes.compilation.pipes).map(pipe => getPipeDef(pipe) !);
   componentDef.schemas = transitiveScopes.schemas;
+
+  // Since we avoid Components/Directives/Pipes recompiling in case there are no overrides, we
+  // may face a problem where previously compiled defs available to a given Component/Directive
+  // are cached in TView and may become stale (in case any of these defs gets recompiled). In
+  // order to avoid this problem, we force fresh TView to be created.
+  componentDef.template.ngPrivateData = undefined;
 }
 
 /**
