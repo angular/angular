@@ -61,6 +61,11 @@ function collectExampleMetadata(sourceFiles: string[], baseFile: string): Exampl
   const exampleMetadata: ExampleMetadata[] = [];
 
   for (const sourceFile of sourceFiles) {
+    // Avoid parsing non-example files.
+    if (!path.basename(sourceFile, path.extname(sourceFile)).endsWith('-example')) {
+      continue;
+    }
+
     const sourceContent = fs.readFileSync(sourceFile, 'utf-8');
     const {primaryComponent, secondaryComponents} = parseExampleFile(sourceFile, sourceContent);
 
@@ -96,6 +101,9 @@ function collectExampleMetadata(sourceFiles: string[], baseFile: string): Exampl
       }
 
       exampleMetadata.push(example);
+    } else {
+        throw Error(`Could not find a primary example component in ${sourceFile}. ` +
+                    `Ensure that there's a component with an @title annotation.`);
     }
   }
 
