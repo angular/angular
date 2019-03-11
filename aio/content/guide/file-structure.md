@@ -20,9 +20,9 @@ It is compatible with earlier Angular versions, which did not support workspaces
 
 When you add more projects (apps or libraries) to the workspace, they go into a `projects/` subfolder of the workspace.
 
-<div class="callout is-helpful">
+<div class="callout is-helpful" >
 
-#### Setting up for a multi-project workspace
+<header>Setting up for a multi-project workspace</header>
 
 A multi-project workspace is suitable for an enterprise that uses a single repository and global configuration for all Angular projects (the "mono-repo" model). A multi-project workspace also supports library development.
 
