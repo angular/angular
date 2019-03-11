@@ -13,7 +13,7 @@ import {basename, dirname, relative, resolve} from 'canonical-path';
 import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import * as ts from 'typescript';
 
-import {NoopImportRewriter, ImportRewriter, R3SymbolsImportRewriter} from '@angular/compiler-cli/src/ngtsc/imports';
+import {NoopImportRewriter, ImportRewriter, R3SymbolsImportRewriter, NOOP_DEFAULT_IMPORT_RECORDER} from '@angular/compiler-cli/src/ngtsc/imports';
 import {CompileResult} from '@angular/compiler-cli/src/ngtsc/transform';
 import {translateStatement, translateType, ImportManager} from '../../../ngtsc/translator';
 import {NgccFlatImportRewriter} from './ngcc_import_rewriter';
@@ -245,9 +245,8 @@ export abstract class Renderer {
 
   protected abstract addConstants(output: MagicString, constants: string, file: ts.SourceFile):
       void;
-  protected abstract addImports(
-      output: MagicString,
-      imports: {specifier: string, qualifier: string, isDefault: boolean}[]): void;
+  protected abstract addImports(output: MagicString, imports: {specifier: string,
+                                                               qualifier: string}[]): void;
   protected abstract addExports(
       output: MagicString, entryPointBasePath: string, exports: ExportInfo[]): void;
   protected abstract addDefinitions(
@@ -464,7 +463,8 @@ export function mergeSourceMaps(
 export function renderConstantPool(
     sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: ImportManager): string {
   const printer = ts.createPrinter();
-  return constantPool.statements.map(stmt => translateStatement(stmt, imports))
+  return constantPool.statements
+      .map(stmt => translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER))
       .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
       .join('\n');
 }
@@ -481,12 +481,13 @@ export function renderDefinitions(
     sourceFile: ts.SourceFile, compiledClass: CompiledClass, imports: ImportManager): string {
   const printer = ts.createPrinter();
   const name = (compiledClass.declaration as ts.NamedDeclaration).name !;
+  const translate = (stmt: Statement) =>
+      translateStatement(stmt, imports, NOOP_DEFAULT_IMPORT_RECORDER);
   const definitions =
       compiledClass.compilation
           .map(
-              c => c.statements.map(statement => translateStatement(statement, imports))
-                       .concat(translateStatement(
-                           createAssignmentStatement(name, c.name, c.initializer), imports))
+              c => c.statements.map(statement => translate(statement))
+                       .concat(translate(createAssignmentStatement(name, c.name, c.initializer)))
                        .map(
                            statement =>
                                printer.printNode(ts.EmitHint.Unspecified, statement, sourceFile))

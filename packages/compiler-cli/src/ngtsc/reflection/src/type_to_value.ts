@@ -10,8 +10,6 @@ import * as ts from 'typescript';
 
 import {TypeValueReference} from './host';
 
-export const DEFAULT_EXPORT_NAME = '*';
-
 /**
  * Potentially convert a `ts.TypeNode` to a `TypeValueReference`, which indicates how to use the
  * type given in the `ts.TypeNode` in a value position.
@@ -45,7 +43,16 @@ export function typeToValue(
   // statement. If so, extract the module specifier and the name of the imported type.
   const firstDecl = local.declarations && local.declarations[0];
 
-  if (firstDecl && isImportSource(firstDecl)) {
+  if (firstDecl && ts.isImportClause(firstDecl) && firstDecl.name !== undefined) {
+    // This is a default import.
+    return {
+      local: true,
+      // Copying the name here ensures the generated references will be correctly transformed along
+      // with the import.
+      expression: ts.updateIdentifier(firstDecl.name),
+      defaultImportStatement: firstDecl.parent,
+    };
+  } else if (firstDecl && isImportSource(firstDecl)) {
     const origin = extractModuleAndNameFromImport(firstDecl, symbols.importName);
     return {local: false, valueDeclaration: decl.valueDeclaration, ...origin};
   } else {
@@ -54,6 +61,7 @@ export function typeToValue(
       return {
         local: true,
         expression,
+        defaultImportStatement: null,
       };
     } else {
       return null;
@@ -143,9 +151,8 @@ function entityNameToValue(node: ts.EntityName): ts.Expression|null {
   }
 }
 
-function isImportSource(node: ts.Declaration): node is(
-    ts.ImportSpecifier | ts.NamespaceImport | ts.ImportClause) {
-  return ts.isImportSpecifier(node) || ts.isNamespaceImport(node) || ts.isImportClause(node);
+function isImportSource(node: ts.Declaration): node is(ts.ImportSpecifier | ts.NamespaceImport) {
+  return ts.isImportSpecifier(node) || ts.isNamespaceImport(node);
 }
 
 function extractModuleAndNameFromImport(
@@ -168,10 +175,6 @@ function extractModuleAndNameFromImport(
       }
       name = localName;
       moduleSpecifier = node.parent.parent.moduleSpecifier;
-      break;
-    case ts.SyntaxKind.ImportClause:
-      name = DEFAULT_EXPORT_NAME;
-      moduleSpecifier = node.parent.moduleSpecifier;
       break;
     default:
       throw new Error(`Unreachable: ${ts.SyntaxKind[(node as ts.Node).kind]}`);

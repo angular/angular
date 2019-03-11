@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ReferenceEmitter} from '../../imports';
+import {NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
@@ -43,7 +43,8 @@ describe('DirectiveDecoratorHandler', () => {
     const scopeRegistry = new LocalModuleScopeRegistry(
         new MetadataDtsModuleScopeResolver(checker, reflectionHost, null), new ReferenceEmitter([]),
         null);
-    const handler = new DirectiveDecoratorHandler(reflectionHost, evaluator, scopeRegistry, false);
+    const handler = new DirectiveDecoratorHandler(
+        reflectionHost, evaluator, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER, false);
 
     const analyzeDirective = (dirName: string) => {
       const DirNode = getDeclaration(program, 'entry.ts', dirName, ts.isClassDeclaration);

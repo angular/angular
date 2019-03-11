@@ -7,5 +7,5 @@
  */
 
 export * from './src/host';
-export {DEFAULT_EXPORT_NAME, typeNodeToValueExpr} from './src/type_to_value';
+export {typeNodeToValueExpr} from './src/type_to_value';
 export {TypeScriptReflectionHost, filterToMembersWithDecorator, reflectIdentifierOfDeclaration, reflectNameOfDeclaration, reflectObjectLiteral, reflectTypeEntityToDeclaration} from './src/typescript';

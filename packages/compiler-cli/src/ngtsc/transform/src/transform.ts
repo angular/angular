@@ -9,12 +9,11 @@
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ImportRewriter} from '../../imports';
+import {DefaultImportRecorder, ImportRewriter} from '../../imports';
 import {Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager, translateExpression, translateStatement} from '../../translator';
 import {VisitListEntryResult, Visitor, visit} from '../../util/src/visitor';
 
-import {CompileResult} from './api';
 import {IvyCompilation} from './compilation';
 import {addImports} from './utils';
 
@@ -33,11 +32,13 @@ interface FileOverviewMeta {
 
 export function ivyTransformFactory(
     compilation: IvyCompilation, reflector: ReflectionHost, importRewriter: ImportRewriter,
-    isCore: boolean, isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
+    defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
+    isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     return (file: ts.SourceFile): ts.SourceFile => {
       return transformIvySourceFile(
-          compilation, context, reflector, importRewriter, file, isCore, isClosureCompilerEnabled);
+          compilation, context, reflector, importRewriter, file, isCore, isClosureCompilerEnabled,
+          defaultImportRecorder);
     };
   };
 }
@@ -45,8 +46,8 @@ export function ivyTransformFactory(
 class IvyVisitor extends Visitor {
   constructor(
       private compilation: IvyCompilation, private reflector: ReflectionHost,
-      private importManager: ImportManager, private isCore: boolean,
-      private constantPool: ConstantPool) {
+      private importManager: ImportManager, private defaultImportRecorder: DefaultImportRecorder,
+      private isCore: boolean, private constantPool: ConstantPool) {
     super();
   }
 
@@ -63,14 +64,16 @@ class IvyVisitor extends Visitor {
 
       res.forEach(field => {
         // Translate the initializer for the field into TS nodes.
-        const exprNode = translateExpression(field.initializer, this.importManager);
+        const exprNode =
+            translateExpression(field.initializer, this.importManager, this.defaultImportRecorder);
 
         // Create a static property declaration for the new field.
         const property = ts.createProperty(
             undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], field.name, undefined,
             undefined, exprNode);
 
-        field.statements.map(stmt => translateStatement(stmt, this.importManager))
+        field.statements
+            .map(stmt => translateStatement(stmt, this.importManager, this.defaultImportRecorder))
             .forEach(stmt => statements.push(stmt));
 
         members.push(property);
@@ -202,17 +205,20 @@ class IvyVisitor extends Visitor {
 function transformIvySourceFile(
     compilation: IvyCompilation, context: ts.TransformationContext, reflector: ReflectionHost,
     importRewriter: ImportRewriter, file: ts.SourceFile, isCore: boolean,
-    isClosureCompilerEnabled: boolean): ts.SourceFile {
+    isClosureCompilerEnabled: boolean,
+    defaultImportRecorder: DefaultImportRecorder): ts.SourceFile {
   const constantPool = new ConstantPool();
   const importManager = new ImportManager(importRewriter);
 
   // Recursively scan through the AST and perform any updates requested by the IvyCompilation.
-  const visitor = new IvyVisitor(compilation, reflector, importManager, isCore, constantPool);
+  const visitor = new IvyVisitor(
+      compilation, reflector, importManager, defaultImportRecorder, isCore, constantPool);
   let sf = visit(file, visitor, context);
 
   // Generate the constant statements first, as they may involve adding additional imports
   // to the ImportManager.
-  const constants = constantPool.statements.map(stmt => translateStatement(stmt, importManager));
+  const constants = constantPool.statements.map(
+      stmt => translateStatement(stmt, importManager, defaultImportRecorder));
 
   // Preserve @fileoverview comments required by Closure, since the location might change as a
   // result of adding extra imports and constant pool statements.

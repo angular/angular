@@ -133,6 +133,10 @@ export function getDeclaration<T extends ts.Declaration>(
       if (stmt.name !== undefined && stmt.name.text === name) {
         chosenDecl = stmt;
       }
+    } else if (
+        ts.isImportDeclaration(stmt) && stmt.importClause !== undefined &&
+        stmt.importClause.name !== undefined && stmt.importClause.name.text === name) {
+      chosenDecl = stmt.importClause;
     }
   });
 

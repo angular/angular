@@ -23,8 +23,7 @@ class TestRenderer extends Renderer {
   constructor(host: Esm2015ReflectionHost, isCore: boolean, bundle: EntryPointBundle) {
     super(host, isCore, bundle, '/src', '/dist');
   }
-  addImports(
-      output: MagicString, imports: {specifier: string, qualifier: string, isDefault: boolean}[]) {
+  addImports(output: MagicString, imports: {specifier: string, qualifier: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');
   }
   addExports(output: MagicString, baseEntryPointPath: string, exports: {
@@ -172,7 +171,7 @@ A.ngComponentDef = ɵngcc0.ɵdefineComponent({ type: A, selectors: [["a"]], fact
            const addImportsSpy = renderer.addImports as jasmine.Spy;
            expect(addImportsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
            expect(addImportsSpy.calls.first().args[1]).toEqual([
-             {specifier: '@angular/core', qualifier: 'ɵngcc0', isDefault: false}
+             {specifier: '@angular/core', qualifier: 'ɵngcc0'}
            ]);
          });
 
@@ -289,7 +288,7 @@ A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""
             .toContain(`/*@__PURE__*/ ɵngcc0.setClassMetadata(`);
         const addImportsSpy = renderer.addImports as jasmine.Spy;
         expect(addImportsSpy.calls.first().args[1]).toEqual([
-          {specifier: './r3_symbols', qualifier: 'ɵngcc0', isDefault: false}
+          {specifier: './r3_symbols', qualifier: 'ɵngcc0'}
         ]);
       });
 
@@ -505,9 +504,9 @@ A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""
             export declare function withProviders8(): (MyModuleWithProviders)&{ngModule:SomeModule};`);
 
         expect(renderer.addImports).toHaveBeenCalledWith(jasmine.any(MagicString), [
-          {specifier: './module', qualifier: 'ɵngcc0', isDefault: false},
-          {specifier: '@angular/core', qualifier: 'ɵngcc1', isDefault: false},
-          {specifier: 'some-library', qualifier: 'ɵngcc2', isDefault: false},
+          {specifier: './module', qualifier: 'ɵngcc0'},
+          {specifier: '@angular/core', qualifier: 'ɵngcc1'},
+          {specifier: 'some-library', qualifier: 'ɵngcc2'},
         ]);
 
 

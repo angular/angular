@@ -10,7 +10,7 @@ import {ConstantPool, Expression, ParseError, ParsedHostBindings, R3DirectiveMet
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {Reference} from '../../imports';
+import {DefaultImportRecorder, Reference} from '../../imports';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope/src/local';
@@ -30,7 +30,8 @@ export class DirectiveDecoratorHandler implements
     DecoratorHandler<DirectiveHandlerData, Decorator> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
-      private scopeRegistry: LocalModuleScopeRegistry, private isCore: boolean) {}
+      private scopeRegistry: LocalModuleScopeRegistry,
+      private defaultImportRecorder: DefaultImportRecorder, private isCore: boolean) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -50,8 +51,8 @@ export class DirectiveDecoratorHandler implements
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<DirectiveHandlerData> {
-    const directiveResult =
-        extractDirectiveMetadata(node, decorator, this.reflector, this.evaluator, this.isCore);
+    const directiveResult = extractDirectiveMetadata(
+        node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore);
     const analysis = directiveResult && directiveResult.metadata;
 
     // If the directive has a selector, it should be registered with the `SelectorScopeRegistry` so
@@ -77,7 +78,8 @@ export class DirectiveDecoratorHandler implements
     return {
       analysis: {
         meta: analysis,
-        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
+        metadataStmt: generateSetClassMetadataCall(
+            node, this.reflector, this.defaultImportRecorder, this.isCore),
       }
     };
   }
@@ -103,7 +105,8 @@ export class DirectiveDecoratorHandler implements
  */
 export function extractDirectiveMetadata(
     clazz: ts.ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
-    evaluator: PartialEvaluator, isCore: boolean, defaultSelector: string | null = null): {
+    evaluator: PartialEvaluator, defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
+    defaultSelector: string | null = null): {
   decorator: Map<string, ts.Expression>,
   metadata: R3DirectiveMetadata,
   decoratedElements: ClassMember[],
@@ -205,7 +208,7 @@ export function extractDirectiveMetadata(
   const usesInheritance = reflector.hasBaseClass(clazz);
   const metadata: R3DirectiveMetadata = {
     name: clazz.name !.text,
-    deps: getValidConstructorDependencies(clazz, reflector, isCore), host,
+    deps: getValidConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore), host,
     lifecycle: {
         usesOnChanges,
     },

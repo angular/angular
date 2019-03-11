@@ -9,7 +9,7 @@
 import {AST, BindingType, BoundTarget, ImplicitReceiver, PropertyRead, TmplAstBoundAttribute, TmplAstBoundText, TmplAstElement, TmplAstNode, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Reference, ReferenceEmitter} from '../../imports';
+import {NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
 import {ImportManager, translateExpression} from '../../translator';
 
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
@@ -83,7 +83,7 @@ class Context {
     }
 
     // Use `translateExpression` to convert the `Expression` into a `ts.Expression`.
-    return translateExpression(ngExpr, this.importManager);
+    return translateExpression(ngExpr, this.importManager, NOOP_DEFAULT_IMPORT_RECORDER);
   }
 }
 

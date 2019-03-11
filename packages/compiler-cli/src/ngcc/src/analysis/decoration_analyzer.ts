@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 
 import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../ngtsc/cycles';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, ReferenceEmitter} from '../../../ngtsc/imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../../ngtsc/imports';
 import {PartialEvaluator} from '../../../ngtsc/partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from '../../../ngtsc/path';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../ngtsc/scope';
@@ -85,14 +85,18 @@ export class DecorationAnalyzer {
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore, this.resourceManager,
         this.rootDirs, /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
-        this.moduleResolver, this.cycleAnalyzer, this.refEmitter),
+        this.moduleResolver, this.cycleAnalyzer, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER),
     new DirectiveDecoratorHandler(
-        this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore),
-    new InjectableDecoratorHandler(this.reflectionHost, this.isCore, /* strictCtorDeps */ false),
+        this.reflectionHost, this.evaluator, this.scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
+        this.isCore),
+    new InjectableDecoratorHandler(
+        this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore, /* strictCtorDeps */ false),
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.scopeRegistry, this.referencesRegistry,
-        this.isCore, /* routeAnalyzer */ null, this.refEmitter),
-    new PipeDecoratorHandler(this.reflectionHost, this.evaluator, this.scopeRegistry, this.isCore),
+        this.isCore, /* routeAnalyzer */ null, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER),
+    new PipeDecoratorHandler(
+        this.reflectionHost, this.evaluator, this.scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
+        this.isCore),
   ];
 
   constructor(

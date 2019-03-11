@@ -1276,7 +1276,8 @@ describe('Esm5ReflectionHost', () => {
       const ctrDecorators = host.getConstructorParameters(classNode) !;
       const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference !as{
                                              local: true,
-                                             expression: ts.Identifier
+                                             expression: ts.Identifier,
+                                             defaultImportStatement: null,
                                            }).expression;
 
       const expectedDeclarationNode = getDeclaration(

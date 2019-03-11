@@ -17,7 +17,7 @@ import {BaseDefDecoratorHandler} from './annotations/src/base_def';
 import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
-import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
+import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {PartialEvaluator} from './partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from './path';
 import {TypeScriptReflectionHost} from './reflection';
@@ -56,6 +56,7 @@ export class NgtscProgram implements api.Program {
 
   private refEmitter: ReferenceEmitter|null = null;
   private fileToModuleHost: FileToModuleHost|null = null;
+  private defaultImportTracker: DefaultImportTracker;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
@@ -132,6 +133,7 @@ export class NgtscProgram implements api.Program {
     this.entryPoint = entryPoint !== null ? this.tsProgram.getSourceFile(entryPoint) || null : null;
     this.moduleResolver = new ModuleResolver(this.tsProgram, options, this.host);
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
+    this.defaultImportTracker = new DefaultImportTracker();
   }
 
   getTsProgram(): ts.Program { return this.tsProgram; }
@@ -273,11 +275,13 @@ export class NgtscProgram implements api.Program {
         };
 
     const customTransforms = opts && opts.customTransformers;
+
     const beforeTransforms = [
       ivyTransformFactory(
-          compilation, this.reflector, this.importRewriter, this.isCore,
+          compilation, this.reflector, this.importRewriter, this.defaultImportTracker, this.isCore,
           this.closureCompilerEnabled),
       aliasTransformFactory(compilation.exportStatements) as ts.TransformerFactory<ts.SourceFile>,
+      this.defaultImportTracker.importPreservingTransformer(),
     ];
     const afterDeclarationsTransforms = [
       declarationTransformFactory(compilation),
@@ -386,14 +390,17 @@ export class NgtscProgram implements api.Program {
           this.reflector, evaluator, scopeRegistry, this.isCore, this.resourceManager,
           this.rootDirs, this.options.preserveWhitespaces || false,
           this.options.i18nUseExternalIds !== false, this.moduleResolver, this.cycleAnalyzer,
-          this.refEmitter),
-      new DirectiveDecoratorHandler(this.reflector, evaluator, scopeRegistry, this.isCore),
+          this.refEmitter, this.defaultImportTracker),
+      new DirectiveDecoratorHandler(
+          this.reflector, evaluator, scopeRegistry, this.defaultImportTracker, this.isCore),
       new InjectableDecoratorHandler(
-          this.reflector, this.isCore, this.options.strictInjectionParameters || false),
+          this.reflector, this.defaultImportTracker, this.isCore,
+          this.options.strictInjectionParameters || false),
       new NgModuleDecoratorHandler(
           this.reflector, evaluator, scopeRegistry, referencesRegistry, this.isCore,
-          this.routeAnalyzer, this.refEmitter),
-      new PipeDecoratorHandler(this.reflector, evaluator, scopeRegistry, this.isCore),
+          this.routeAnalyzer, this.refEmitter, this.defaultImportTracker),
+      new PipeDecoratorHandler(
+          this.reflector, evaluator, scopeRegistry, this.defaultImportTracker, this.isCore),
     ];
 
     return new IvyCompilation(
