@@ -22,7 +22,9 @@ import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/co
     'class': 'mat-table',
   },
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // See note on CdkTable for explanation on why this uses the default change detection strategy.
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class MatTable<T> extends CdkTable<T> {
   /** Overrides the sticky CSS class set by the `CdkTable`. */

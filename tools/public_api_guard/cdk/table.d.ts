@@ -11,9 +11,8 @@ export declare class BaseCdkCell {
 export declare abstract class BaseRowDef implements OnChanges {
     protected _columnsDiffer: IterableDiffer<any>;
     protected _differs: IterableDiffers;
-    columns: Iterable<string>;
-    template: TemplateRef<any>;
-    constructor(/** @docs-private */ template: TemplateRef<any>, _differs: IterableDiffers);
+    columns: Iterable<string>; template: TemplateRef<any>;
+    constructor( template: TemplateRef<any>, _differs: IterableDiffers);
     extractCellTemplate(column: CdkColumnDef): TemplateRef<any>;
     getColumnsDiff(): IterableChanges<any> | null;
     ngOnChanges(changes: SimpleChanges): void;

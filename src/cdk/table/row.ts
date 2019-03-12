@@ -18,7 +18,7 @@ import {
   SimpleChanges,
   TemplateRef,
   ViewContainerRef,
-  ViewEncapsulation,
+  ViewEncapsulation
 } from '@angular/core';
 import {CanStick, CanStickCtor, mixinHasStickyInput} from './can-stick';
 import {CdkCellDef, CdkColumnDef} from './cell';
@@ -40,8 +40,9 @@ export abstract class BaseRowDef implements OnChanges {
   /** Differ used to check if any changes were made to the columns. */
   protected _columnsDiffer: IterableDiffer<any>;
 
-  constructor(/** @docs-private */ public template: TemplateRef<any>,
-              protected _differs: IterableDiffers) { }
+  constructor(
+      /** @docs-private */ public template: TemplateRef<any>, protected _differs: IterableDiffers) {
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     // Create a new columns differ if one does not yet exist. Initialize it based on initial value
@@ -57,7 +58,7 @@ export abstract class BaseRowDef implements OnChanges {
    * Returns the difference between the current columns and the columns from the last diff, or null
    * if there is no difference.
    */
-  getColumnsDiff(): IterableChanges<any> | null {
+  getColumnsDiff(): IterableChanges<any>|null {
     return this._columnsDiffer.diff(this.columns);
   }
 
@@ -65,7 +66,8 @@ export abstract class BaseRowDef implements OnChanges {
   extractCellTemplate(column: CdkColumnDef): TemplateRef<any> {
     if (this instanceof CdkHeaderRowDef) {
       return column.headerCell.template;
-    } if (this instanceof CdkFooterRowDef) {
+    }
+    if (this instanceof CdkFooterRowDef) {
       return column.footerCell.template;
     } else {
       return column.cell.template;
@@ -76,7 +78,7 @@ export abstract class BaseRowDef implements OnChanges {
 // Boilerplate for applying mixins to CdkHeaderRowDef.
 /** @docs-private */
 export class CdkHeaderRowDefBase extends BaseRowDef {}
-export const _CdkHeaderRowDefBase: CanStickCtor & typeof CdkHeaderRowDefBase =
+export const _CdkHeaderRowDefBase: CanStickCtor&typeof CdkHeaderRowDefBase =
     mixinHasStickyInput(CdkHeaderRowDefBase);
 
 /**
@@ -102,7 +104,7 @@ export class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements CanStick, O
 // Boilerplate for applying mixins to CdkFooterRowDef.
 /** @docs-private */
 export class CdkFooterRowDefBase extends BaseRowDef {}
-export const _CdkFooterRowDefBase: CanStickCtor & typeof CdkFooterRowDefBase =
+export const _CdkFooterRowDefBase: CanStickCtor&typeof CdkFooterRowDefBase =
     mixinHasStickyInput(CdkFooterRowDefBase);
 
 /**
@@ -224,7 +226,7 @@ export class CdkCellOutlet implements OnDestroy {
    * a handle to provide that component's cells and context. After init, the CdkCellOutlet will
    * construct the cells with the provided context.
    */
-  static mostRecentCellOutlet: CdkCellOutlet | null = null;
+  static mostRecentCellOutlet: CdkCellOutlet|null = null;
 
   constructor(public _viewContainer: ViewContainerRef) {
     CdkCellOutlet.mostRecentCellOutlet = this;
@@ -248,10 +250,13 @@ export class CdkCellOutlet implements OnDestroy {
     'class': 'cdk-header-row',
     'role': 'row',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // See note on CdkTable for explanation on why this uses the default change detection strategy.
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
 })
-export class CdkHeaderRow { }
+export class CdkHeaderRow {
+}
 
 
 /** Footer template container that contains the cell outlet. Adds the right class and role. */
@@ -263,10 +268,13 @@ export class CdkHeaderRow { }
     'class': 'cdk-footer-row',
     'role': 'row',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // See note on CdkTable for explanation on why this uses the default change detection strategy.
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
 })
-export class CdkFooterRow { }
+export class CdkFooterRow {
+}
 
 /** Data row template container that contains the cell outlet. Adds the right class and role. */
 @Component({
@@ -277,7 +285,10 @@ export class CdkFooterRow { }
     'class': 'cdk-row',
     'role': 'row',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // See note on CdkTable for explanation on why this uses the default change detection strategy.
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
 })
-export class CdkRow { }
+export class CdkRow {
+}

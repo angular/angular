@@ -7,18 +7,15 @@
  */
 
 import {
-  ChangeDetectionStrategy,
-  Component,
-  Directive,
-  ViewEncapsulation
-} from '@angular/core';
-import {
-  CDK_ROW_TEMPLATE, CdkFooterRow, CdkFooterRowDef,
+  CDK_ROW_TEMPLATE,
+  CdkFooterRow,
+  CdkFooterRowDef,
   CdkHeaderRow,
   CdkHeaderRowDef,
   CdkRow,
-  CdkRowDef,
+  CdkRowDef
 } from '@angular/cdk/table';
+import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '@angular/core';
 
 /**
  * Header row definition for the mat-table.
@@ -29,7 +26,8 @@ import {
   providers: [{provide: CdkHeaderRowDef, useExisting: MatHeaderRowDef}],
   inputs: ['columns: matHeaderRowDef', 'sticky: matHeaderRowDefSticky'],
 })
-export class MatHeaderRowDef extends CdkHeaderRowDef {}
+export class MatHeaderRowDef extends CdkHeaderRowDef {
+}
 
 /**
  * Footer row definition for the mat-table.
@@ -40,7 +38,8 @@ export class MatHeaderRowDef extends CdkHeaderRowDef {}
   providers: [{provide: CdkFooterRowDef, useExisting: MatFooterRowDef}],
   inputs: ['columns: matFooterRowDef', 'sticky: matFooterRowDefSticky'],
 })
-export class MatFooterRowDef extends CdkFooterRowDef {}
+export class MatFooterRowDef extends CdkFooterRowDef {
+}
 
 /**
  * Data row definition for the mat-table.
@@ -52,7 +51,8 @@ export class MatFooterRowDef extends CdkFooterRowDef {}
   providers: [{provide: CdkRowDef, useExisting: MatRowDef}],
   inputs: ['columns: matRowDefColumns', 'when: matRowDefWhen'],
 })
-export class MatRowDef<T> extends CdkRowDef<T> {}
+export class MatRowDef<T> extends CdkRowDef<T> {
+}
 
 /** Footer template container that contains the cell outlet. Adds the right class and role. */
 @Component({
@@ -63,12 +63,15 @@ export class MatRowDef<T> extends CdkRowDef<T> {}
     'class': 'mat-header-row',
     'role': 'row',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // See note on CdkTable for explanation on why this uses the default change detection strategy.
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matHeaderRow',
   providers: [{provide: CdkHeaderRow, useExisting: MatHeaderRow}],
 })
-export class MatHeaderRow extends CdkHeaderRow { }
+export class MatHeaderRow extends CdkHeaderRow {
+}
 
 /** Footer template container that contains the cell outlet. Adds the right class and role. */
 @Component({
@@ -79,12 +82,15 @@ export class MatHeaderRow extends CdkHeaderRow { }
     'class': 'mat-footer-row',
     'role': 'row',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // See note on CdkTable for explanation on why this uses the default change detection strategy.
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matFooterRow',
   providers: [{provide: CdkFooterRow, useExisting: MatFooterRow}],
 })
-export class MatFooterRow extends CdkFooterRow { }
+export class MatFooterRow extends CdkFooterRow {
+}
 
 /** Data row template container that contains the cell outlet. Adds the right class and role. */
 @Component({
@@ -95,9 +101,12 @@ export class MatFooterRow extends CdkFooterRow { }
     'class': 'mat-row',
     'role': 'row',
   },
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // See note on CdkTable for explanation on why this uses the default change detection strategy.
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matRow',
   providers: [{provide: CdkRow, useExisting: MatRow}],
 })
-export class MatRow extends CdkRow { }
+export class MatRow extends CdkRow {
+}
