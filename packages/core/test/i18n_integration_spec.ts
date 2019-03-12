@@ -610,4 +610,15 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           .toEqual(`<div-query><!--ng-container-->Contenu<!--container--></div-query>`);
     });
   });
+
+  it('should handle multiple i18n sections', () => {
+    const template = `
+    <div i18n>Section 1</div>
+    <div i18n>Section 2</div>
+    <div i18n>Section 3</div>
+  `;
+    const fixture = getFixtureWithOverrides({template});
+    expect(fixture.nativeElement.innerHTML)
+        .toBe('<div>Section 1</div><div>Section 2</div><div>Section 3</div>');
+  });
 });
