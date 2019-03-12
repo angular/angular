@@ -104,14 +104,6 @@ window.testBlocklist = {
   "MatSnackBar with TemplateRef should be able to open a snack bar using a TemplateRef": {
     "error": "Error: Expected ' Fries Pizza  ' to contain 'Pasta'.",
     "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatSnackBarContainer is OnPush)"
-  },
-  "MatTooltip special cases should clear the `user-select` when a tooltip is set on a text field": {
-    "error": "Error: Expected 'none' to be falsy.",
-    "notes": "FW-1133: Inline styles are not applied before constructor is run"
-  },
-  "MatTooltip special cases should clear the `-webkit-user-drag` on draggable elements": {
-    "error": "Error: Expected 'none' to be falsy.",
-    "notes": "FW-1133: Inline styles are not applied before constructor is run"
   }
 };
 // clang-format on

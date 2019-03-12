@@ -619,10 +619,13 @@ export function elementStart(
   ngDevMode && ngDevMode.rendererCreateElement++;
 
   const native = elementCreate(name);
+  const renderer = lView[RENDERER];
 
   ngDevMode && assertDataInRange(lView, index - 1);
 
   const tNode = createNodeAtIndex(index, TNodeType.Element, native !, name, attrs || null);
+  let initialStylesIndex = 0;
+  let initialClassesIndex = 0;
 
   if (attrs) {
     const lastAttrIndex = setUpAttributes(native, attrs);
@@ -639,6 +642,14 @@ export function elementStart(
       if (stylingAttrsStartIndex >= 0) {
         tNode.stylingTemplate = initializeStaticStylingContext(attrs, stylingAttrsStartIndex);
       }
+    }
+
+    if (tNode.stylingTemplate) {
+      // the initial style/class values are rendered immediately after having been
+      // initialized into the context so the element styling is ready when directives
+      // are initialized (since they may read style/class values in their constructor)
+      initialStylesIndex = renderInitialStyles(native, tNode.stylingTemplate, renderer);
+      initialClassesIndex = renderInitialClasses(native, tNode.stylingTemplate, renderer);
     }
   }
 
@@ -667,11 +678,11 @@ export function elementStart(
     }
   }
 
-  // There is no point in rendering styles when a class directive is present since
-  // it will take that over for us (this will be removed once #FW-882 is in).
+  // we render the styling again below in case any directives have set any `style` and/or
+  // `class` host attribute values...
   if (tNode.stylingTemplate) {
-    renderInitialClasses(native, tNode.stylingTemplate, lView[RENDERER]);
-    renderInitialStyles(native, tNode.stylingTemplate, lView[RENDERER]);
+    renderInitialClasses(native, tNode.stylingTemplate, renderer, initialClassesIndex);
+    renderInitialStyles(native, tNode.stylingTemplate, renderer, initialStylesIndex);
   }
 
   const currentQueries = lView[QUERIES];
