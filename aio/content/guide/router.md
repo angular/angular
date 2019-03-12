@@ -3849,7 +3849,7 @@ Update the `AuthGuard` to provide a `session_id` query that will remain after na
 
 Add an `anchor` element so you can jump to a certain point on the page.
 
-Add the `NavigationExtras` object to the `router.navigate` method that navigates you to the `/login` route.
+Add the `NavigationExtras` object to the `router.navigate()` method that navigates you to the `/login` route.
 
 
 <code-example path="router/src/app/auth/auth.guard.4.ts" linenums="false" header="src/app/auth/auth.guard.ts (v3)">
@@ -3860,7 +3860,7 @@ Add the `NavigationExtras` object to the `router.navigate` method that navigates
 
 You can also preserve query parameters and fragments across navigations without having to provide them
 again when navigating. In the `LoginComponent`, you'll add an *object* as the
-second argument in the `router.navigate` function
+second argument in the `router.navigateUrl()` function
 and provide the `queryParamsHandling` and `preserveFragment` to pass along the current query parameters
 and fragment to the next route.
 
