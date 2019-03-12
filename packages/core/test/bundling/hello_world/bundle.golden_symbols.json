@@ -420,13 +420,7 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderInitialClasses"
-  },
-  {
-    "name": "renderInitialStyles"
-  },
-  {
-    "name": "renderInitialStylingValues"
+    "name": "renderInitialStyling"
   },
   {
     "name": "renderStringify"
