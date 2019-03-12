@@ -6,16 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, CommonModule, HashLocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
+import {APP_BASE_HREF, CommonModule, PlatformLocation} from '@angular/common';
 import {MockPlatformLocation} from '@angular/common/testing';
 import {Inject, InjectionToken, ModuleWithProviders, NgModule, Optional} from '@angular/core';
+import {UpgradeModule} from '@angular/upgrade/static';
+import {$CONTROLLER} from '@angular/upgrade/static/src/common/constants';
 
-import {LocationUpgradeModule} from '../src';
+import {LocationUpgradeModule, LocationUpgradeService} from '../src';
+import {LocationProvider, LocationUpgradeProvider} from '../src/$location';
 
 export interface LocationUpgradeTestingConfig {
   useHash?: boolean;
   startUrl?: string;
   appBaseHref?: string;
+  hashPrefix?: string;
+  html5Mode?: boolean;
 }
 
 /**
@@ -41,7 +46,7 @@ export class LocationUpgradeTestModule {
     return {
       ngModule: LocationUpgradeTestModule,
       providers: [
-        {
+        {provide: LOC_UPGRADE_TEST_CONFIG, useValue: config || {}}, {
           provide: PlatformLocation,
           useFactory: (appBaseHref?: string) => {
             if (config && config.appBaseHref != null) {
@@ -54,6 +59,11 @@ export class LocationUpgradeTestModule {
           },
           deps: [[new Inject(APP_BASE_HREF), new Optional()]]
         },
+        {provide: MockUpgradeModule, useClass: MockUpgradeModule}, {
+          provide: LocationProvider,
+          useFactory: provide$location,
+          deps: [MockUpgradeModule, LocationUpgradeService, LOC_UPGRADE_TEST_CONFIG]
+        },
         LocationUpgradeModule
             .config({
               appBaseHref: config && config.appBaseHref,
@@ -63,4 +73,31 @@ export class LocationUpgradeTestModule {
       ],
     };
   }
+}
+
+export class MockUpgradeModule {
+  $injector = {
+    get(key: string) {
+      if (key === '$rootScope') {
+        return {
+          $watch(fn: any) { return; },
+
+          $broadcast(evt: string, ...args: any[]) { return; }
+        };
+      } else {
+        throw new Error(`Unsupported mock service requested: ${key}`);
+      }
+    }
+  }
+}
+
+export function provide$location(
+    ngUpgrade: UpgradeModule, locationUpgrade: LocationUpgradeService,
+    config?: LocationUpgradeTestingConfig) {
+  const $locationProvider = new LocationUpgradeProvider(ngUpgrade, locationUpgrade);
+
+  $locationProvider.hashPrefix(config && config.hashPrefix);
+  $locationProvider.html5Mode(config && config.html5Mode);
+
+  return $locationProvider.$get();
 }

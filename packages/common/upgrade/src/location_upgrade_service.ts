@@ -8,9 +8,10 @@
 
 import {Location, PlatformLocation} from '@angular/common';
 import {LocationStrategy} from '@angular/common/src/common';
-import {Injectable, InjectionToken} from '@angular/core';
+import {Injectable} from '@angular/core';
 
 import {UrlCodec} from './params';
+import {stripPrefix} from './utils';
 
 const PATH_MATCH = /^([^?#]*)(\?([^#]*))?(#(.*))?$/;
 const DEFAULT_PORTS: {[key: string]: number} = {
@@ -18,11 +19,6 @@ const DEFAULT_PORTS: {[key: string]: number} = {
   'https:': 443,
   'ftp:': 21
 };
-
-function stripPrefix(val: string, prefix: string): string {
-  // strip prefix
-  return val.startsWith(prefix) ? val.substring(prefix.length) : val;
-}
 
 /**
  * A Location service that provides properties and methods to match AngularJS's `$location`
@@ -122,10 +118,20 @@ export class LocationUpgradeService {
     this.locationChanges = null;
   }
 
-  private getServerBase() {
+  getServerBase() {
     const port = this.platformLocation.port;
     return `${this.platformLocation.protocol}//${this.platformLocation.hostname}${port ? ':' + port : ''}`;
   }
+
+  stripServerPrefix(url: string) { return stripPrefix(url, this.getServerBase()) }
+
+  stripBaseHref(url: string) { return stripPrefix(url, this.locationStrategy.getBaseHref()); }
+
+  /**
+   * Given a string representing a URL, returns the normalized URL path without leading or
+   * trailing slashes.
+   */
+  normalize(url: string): string { return this.location.normalize(url); }
 
   /**
    * This method is getter only.
@@ -205,46 +211,6 @@ export class LocationUpgradeService {
         this.urlCodec.encodeSearch(locationChanges.search) +
         this.urlCodec.encodeHash(locationChanges.hash);
   }
-
-  // TODO(jasonaden): Confirm the difference between these two methods in AngularJS source. Check
-  // why fallback in "update browser" section passes oldUrl to $$parse (they both remove server
-  // portion of the URL).
-  $$parse(url: string) {
-    // Remove protocol & hostname if URL starts with it
-    const serverUrl = this.getServerBase();
-    if (url.startsWith(serverUrl)) {
-      url = stripPrefix(url, serverUrl);
-    } else {
-      throw new Error(`Invalid url "${url}", missing path prefix "${serverUrl}".`);
-    }
-
-    this.url(url);
-  }
-
-  $$parseLinkUrl(url: string, relHref?: string): boolean {
-    // When relHref is passed, it should be a hash and is handled separately
-    if (relHref && relHref[0] === '#') {
-      this.hash(relHref.slice(1));
-      return true;
-    }
-
-    // Remove protocol & hostname if URL starts with it
-    const serverUrl = this.getServerBase();
-
-    // If the link is targeting a different hostname/port than the current app, do nothing
-    if (!this.location.normalize(url).startsWith(this.location.normalize(serverUrl))) {
-      return false;
-    }
-    // Strip serverUrl
-    url = stripPrefix(url, serverUrl);
-    // Strip prefix if URL starts with it
-    url = stripPrefix(url, this.locationStrategy.getBaseHref());
-    // Set the URL
-    this.url(url);
-    return true;
-  }
-
-  get $$state() { return this.state(); }
 
   /**
    * This method is getter only.

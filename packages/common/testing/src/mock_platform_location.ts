@@ -12,10 +12,10 @@ import {Subject} from 'rxjs';
 
 function parseUrl(urlStr: string, baseHref: string) {
   const verifyProtocol = /^((http[s]?|ftp):\/\/)/;
-  let serverBase = '';
+  let serverBase;
 
-  // URL class requires full URL. If the URL string doesn't start with protocol, we need to add an
-  // arbitrary base URL which can be removed afterward.
+  // URL class requires full URL. If the URL string doesn't start with protocol, we need to add
+  // an arbitrary base URL which can be removed afterward.
   if (!verifyProtocol.test(urlStr)) {
     serverBase = 'http://empty.com/';
   }
@@ -62,7 +62,7 @@ export class MockPlatformLocation implements PlatformLocation {
       this.baseHref = config.appBaseHref || '';
 
       const parsedChanges =
-          this.parseChanges(null, config.startUrl || 'http://<empty>', this.baseHref);
+          this.parseChanges(null, config.startUrl || 'http://<empty>/', this.baseHref);
       this.urlChanges[0] = {...parsedChanges};
     }
   }

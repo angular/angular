@@ -9,6 +9,7 @@
 import {UpgradeModule} from '@angular/upgrade/static';
 
 import {LocationUpgradeService} from './location_upgrade_service';
+import {stripPrefix} from './utils';
 
 export class LocationProvider {
   private initalizing = true;
@@ -20,7 +21,7 @@ export class LocationProvider {
 
       // If default was prevented, set back to old state
       if (defaultPrevented) {
-        location.$$parse(oldUrl);
+        this.$$parse(oldUrl);
         location.state(oldState);
         // TODO(jasonaden): Test what happens with setBrowserUrlWithFallback
         location.updateLocation();
@@ -54,7 +55,7 @@ export class LocationProvider {
           if (this.location.absUrl() !== newUrl) return;
 
           if (defaultPrevented) {
-            this.location.$$parse(oldUrl);
+            this.$$parse(oldUrl);
             this.location.state(oldState);
           } else {
             // This block doesn't run when initalizing because it's going to perform the update to
@@ -69,11 +70,58 @@ export class LocationProvider {
     });
   }
 
+  // TODO(jasonaden): Confirm the difference between these two methods in AngularJS source. Check
+  // why fallback in "update browser" section passes oldUrl to $$parse (they both remove server
+  // portion of the URL).
+  $$parse(url: string) {
+    // Remove protocol & hostname if URL starts with it
+    const serverUrl = this.location.getServerBase();
+    if (url.startsWith(serverUrl)) {
+      url = stripPrefix(url, serverUrl);
+    } else {
+      throw new Error(`Invalid url "${url}", missing path prefix "${serverUrl}".`);
+    }
+
+    this.url(url);
+  }
+
+  $$parseLinkUrl(url: string, relHref?: string): boolean {
+    // When relHref is passed, it should be a hash and is handled separately
+    if (relHref && relHref[0] === '#') {
+      this.hash(relHref.slice(1));
+      return true;
+    }
+
+    // Remove protocol & hostname if URL starts with it
+    const serverUrl = this.location.getServerBase();
+
+    // If the link is targeting a different hostname/port than the current app, do nothing
+    if (!this.location.normalize(url).startsWith(this.location.normalize(serverUrl))) {
+      return false;
+    }
+    // Strip serverUrl
+    url = this.location.stripServerPrefix(url);
+    // Strip prefix if URL starts with it
+    url = this.location.stripBaseHref(url);
+    // Set the URL
+    this.url(url);
+    return true;
+  }
+
+  get $$state() { return this.state(); }
+
   absUrl(): string { return this.location.absUrl(); }
 
   url(): string;
   url(url: string): this;
-  url(url?: string): string|this { return this.location.url.apply(this.location, arguments); }
+  url(url?: string): string|this {
+    if (typeof url === 'undefined') {
+      return this.location.url();
+    } else {
+      this.location.url(url);
+      return this;
+    }
+  }
 
   protocol(): string { return this.location.protocol(); }
 
@@ -128,10 +176,21 @@ export class LocationProvider {
     return this;
   }
 
-  state(): unknown|this { return this.location.state.apply(this.location, arguments); }
+  state(): unknown;
+  state(state: unknown): this;
+  state(state?: unknown): unknown|this {
+    if (typeof state === 'undefined' && !arguments.length) {
+      return this.location.state();
+    } else {
+      this.location.state.apply(this.location, arguments);
+      return this;
+    }
+  }
 }
 
 export class LocationUpgradeProvider {
+  private _hashPrefix: string = '!';
+  private _html5Mode: boolean = true;
   constructor(private ngUpgrade: UpgradeModule, private locationUpgrade: LocationUpgradeService) {}
 
   $get() {
@@ -140,17 +199,19 @@ export class LocationUpgradeProvider {
   }
   // TODO(jasonaden): How to handle changing these values?
   hashPrefix(prefix?: string) {
-    if (typeof prefix !== undefined) {
+    if (typeof prefix === 'string') {
+      this._hashPrefix = prefix;
       return this;
     } else {
-      return '!';
+      return this._hashPrefix;
     }
   }
   html5Mode(enabled?: boolean) {
-    if (typeof enabled !== undefined) {
+    if (typeof enabled === 'boolean') {
+      this._html5Mode = enabled;
       return this;
     } else {
-      return true;
+      return this._html5Mode;
     }
   }
 }
