@@ -139,47 +139,53 @@ function patchInitialStylingValue(
 }
 
 /**
- * Runs through the initial style data present in the context and renders
- * them via the renderer on the element.
- */
-export function renderInitialStyles(
-    element: RElement, context: StylingContext, renderer: Renderer3) {
-  const initialStyles = context[StylingIndex.InitialStyleValuesPosition];
-  renderInitialStylingValues(element, renderer, initialStyles, false);
-}
-
-/**
- * Runs through the initial class data present in the context and renders
- * them via the renderer on the element.
+ * Runs through the initial class values present in the provided
+ * context and renders them via the provided renderer on the element.
+ *
+ * @param element the element the styling will be applied to
+ * @param context the source styling context which contains the initial class values
+ * @param renderer the renderer instance that will be used to apply the class
+ * @returns the index that the classes were applied up until
  */
 export function renderInitialClasses(
-    element: RElement, context: StylingContext, renderer: Renderer3) {
+    element: RElement, context: StylingContext, renderer: Renderer3, startIndex?: number): number {
   const initialClasses = context[StylingIndex.InitialClassValuesPosition];
-  renderInitialStylingValues(element, renderer, initialClasses, true);
+  let i = startIndex || InitialStylingValuesIndex.KeyValueStartPosition;
+  while (i < initialClasses.length) {
+    const value = initialClasses[i + InitialStylingValuesIndex.ValueOffset];
+    if (value) {
+      setClass(
+          element, initialClasses[i + InitialStylingValuesIndex.PropOffset] as string, true,
+          renderer, null);
+    }
+    i += InitialStylingValuesIndex.Size;
+  }
+  return i;
 }
 
 /**
- * This is a helper function designed to render each entry present within the
- * provided list of initialStylingValues.
+ * Runs through the initial styles values present in the provided
+ * context and renders them via the provided renderer on the element.
+ *
+ * @param element the element the styling will be applied to
+ * @param context the source styling context which contains the initial class values
+ * @param renderer the renderer instance that will be used to apply the class
+ * @returns the index that the styles were applied up until
  */
-function renderInitialStylingValues(
-    element: RElement, renderer: Renderer3, initialStylingValues: InitialStylingValues,
-    isEntryClassBased: boolean) {
-  for (let i = InitialStylingValuesIndex.KeyValueStartPosition; i < initialStylingValues.length;
-       i += InitialStylingValuesIndex.Size) {
-    const value = initialStylingValues[i + InitialStylingValuesIndex.ValueOffset];
+export function renderInitialStyles(
+    element: RElement, context: StylingContext, renderer: Renderer3, startIndex?: number) {
+  const initialStyles = context[StylingIndex.InitialStyleValuesPosition];
+  let i = startIndex || InitialStylingValuesIndex.KeyValueStartPosition;
+  while (i < initialStyles.length) {
+    const value = initialStyles[i + InitialStylingValuesIndex.ValueOffset];
     if (value) {
-      if (isEntryClassBased) {
-        setClass(
-            element, initialStylingValues[i + InitialStylingValuesIndex.PropOffset] as string, true,
-            renderer, null);
-      } else {
-        setStyle(
-            element, initialStylingValues[i + InitialStylingValuesIndex.PropOffset] as string,
-            value as string, renderer, null);
-      }
+      setStyle(
+          element, initialStyles[i + InitialStylingValuesIndex.PropOffset] as string,
+          value as string, renderer, null);
     }
+    i += InitialStylingValuesIndex.Size;
   }
+  return i;
 }
 
 export function allowNewBindingsForStylingContext(context: StylingContext): boolean {
@@ -375,7 +381,7 @@ export function updateContextWithBindings(
     }
 
     // if a property is not found in the initial style values list then it
-    // is ALWAYS added incase a follow-up directive introduces the same initial
+    // is ALWAYS added in case a follow-up directive introduces the same initial
     // style/class value later on.
     let initialValuesToLookup = entryIsClassBased ? initialClasses : initialStyles;
     let indexForInitial = getInitialStylingValuesIndexOf(initialValuesToLookup, propName);
@@ -765,7 +771,7 @@ function patchStylingMapIntoContext(
       const mapProp = props[i];
 
       if (!mapProp) {
-        // this is an early exit incase a value was already encountered above in the
+        // this is an early exit in case a value was already encountered above in the
         // previous loop (which means that the property was applied or rejected)
         continue;
       }
@@ -801,7 +807,7 @@ function patchStylingMapIntoContext(
               // SKIP IF INITIAL CHECK
               // If the former `value` is `null` then it means that an initial value
               // could be being rendered on screen. If that is the case then there is
-              // no point in updating the value incase it matches. In other words if the
+              // no point in updating the value in case it matches. In other words if the
               // new value is the exact same as the previously rendered value (which
               // happens to be the initial value) then do nothing.
               if (distantCtxValue !== null ||
@@ -872,7 +878,7 @@ function patchStylingMapIntoContext(
   // reapply their values into the object. For this to happen, the cached array needs to be updated
   // with dirty flags so that follow-up calls to `updateStylingMap` will reapply their styling code.
   // the reapplication of styling code within the context will reshape it and update the offset
-  // values (also follow-up directives can write new values incase earlier directives set anything
+  // values (also follow-up directives can write new values in case earlier directives set anything
   // to null due to removals or falsy values).
   valuesEntryShapeChange = valuesEntryShapeChange || existingCachedValueCount !== totalUniqueValues;
   updateCachedMapValue(
@@ -1074,7 +1080,7 @@ export function renderStyling(
 
         // VALUE DEFER CASE 2: Use the initial value if all else fails (is falsy)
         // the initial value will always be a string or null,
-        // therefore we can safely adopt it incase there's nothing else
+        // therefore we can safely adopt it in case there's nothing else
         // note that this should always be a falsy check since `false` is used
         // for both class and style comparisons (styles can't be false and false
         // classes are turned off and should therefore defer to their initial values)
@@ -1742,7 +1748,7 @@ function allowValueChange(
   // directive is the parent component directive (the template) and each directive
   // that is added after is considered less important than the previous entry. This
   // prioritization of directives enables the styling algorithm to decide if a style
-  // or class should be allowed to be updated/replaced incase an earlier directive
+  // or class should be allowed to be updated/replaced in case an earlier directive
   // already wrote to the exact same style-property or className value. In other words
   // this decides what to do if and when there is a collision.
   if (currentValue != null) {
@@ -1751,7 +1757,7 @@ function allowValueChange(
       // previous directive's value...
       return newDirectiveOwner <= currentDirectiveOwner;
     } else {
-      // only write a null value incase it's the same owner writing it.
+      // only write a null value in case it's the same owner writing it.
       // this avoids having a higher-priority directive write to null
       // only to have a lesser-priority directive change right to a
       // non-null value immediately afterwards.
@@ -1955,7 +1961,7 @@ function registerMultiMapEntry(
     while (cachedValues.length < limit) {
       // this means that ONLY directive class styling (like ngClass) was used
       // therefore the root directive will still need to be filled in as well
-      // as any other directive spaces incase they only used static values
+      // as any other directive spaces in case they only used static values
       cachedValues.push(0, startPosition, null, 0);
     }
   }

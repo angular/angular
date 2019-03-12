@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, HostBinding} from '@angular/core';
+import {Component, Directive, ElementRef, HostBinding} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
@@ -95,5 +95,62 @@ describe('acceptance integration tests', () => {
     }
     expect(element.classList.contains('foo')).toBeTruthy();
     expect(element.classList.contains('baz')).toBeTruthy();
+  });
+
+  it('should render inline style and class attribute values on the element before a directive is instantiated',
+     () => {
+       @Component({
+         template: `
+        <div directive-expecting-styling style="width:200px" class="abc xyz"></div>
+      `
+       })
+       class Cmp {
+       }
+
+       @Directive({selector: '[directive-expecting-styling]'})
+       class DirectiveExpectingStyling {
+         constructor(elm: ElementRef) {
+           const native = elm.nativeElement;
+           native.setAttribute('data-captured-width', native.style.width);
+           native.setAttribute('data-captured-classes', native.className);
+         }
+       }
+
+       TestBed.configureTestingModule({declarations: [Cmp, DirectiveExpectingStyling]});
+       const fixture = TestBed.createComponent(Cmp);
+       fixture.detectChanges();
+
+       const element = fixture.nativeElement.querySelector('div');
+       expect(element.style.width).toEqual('200px');
+       expect(element.getAttribute('data-captured-width')).toEqual('200px');
+       expect(element.className.trim()).toEqual('abc xyz');
+       expect(element.getAttribute('data-captured-classes')).toEqual('abc xyz');
+     });
+
+  it('should only render the same initial styling values once before a directive runs', () => {
+    @Component({
+      template: `
+        <div directive-expecting-styling style="width:200px" class="abc"></div>
+      `
+    })
+    class Cmp {
+    }
+
+    @Directive({selector: '[directive-expecting-styling]'})
+    class DirectiveExpectingStyling {
+      constructor(elm: ElementRef) {
+        const native = elm.nativeElement;
+        native.style.width = '300px';
+        native.classList.remove('abc');
+      }
+    }
+
+    TestBed.configureTestingModule({declarations: [Cmp, DirectiveExpectingStyling]});
+    const fixture = TestBed.createComponent(Cmp);
+    fixture.detectChanges();
+
+    const element = fixture.nativeElement.querySelector('div');
+    expect(element.style.width).toEqual('300px');
+    expect(element.classList.contains('abc')).toBeFalsy();
   });
 });
