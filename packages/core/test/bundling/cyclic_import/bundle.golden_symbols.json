@@ -606,9 +606,6 @@
     "name": "renderInitialStyles"
   },
   {
-    "name": "renderInitialStylingValues"
-  },
-  {
     "name": "renderStringify"
   },
   {
