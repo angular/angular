@@ -8,6 +8,7 @@ ng_module(
     name = "testing",
     srcs = glob(["**/*.ts"]),
     deps = [
+        "//packages/common",
         "//packages/compiler",
         "//packages/compiler/testing",
         "//packages/core",
