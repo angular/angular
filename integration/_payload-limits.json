@@ -21,7 +21,7 @@
     "master": {
       "uncompressed": {
         "runtime": 1440,
-        "main": 209904,
+        "main": 212976,
         "polyfills": 38390
       }
     }
