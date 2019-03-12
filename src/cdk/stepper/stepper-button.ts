@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input} from '@angular/core';
+import {Directive, HostListener, Input} from '@angular/core';
+
 import {CdkStepper} from './stepper';
 
 /** Button that moves to the next step in a stepper workflow. */
 @Directive({
   selector: 'button[cdkStepperNext]',
   host: {
-    '(click)': '_stepper.next()',
     '[type]': 'type',
   }
 })
@@ -22,13 +22,22 @@ export class CdkStepperNext {
   @Input() type: string = 'submit';
 
   constructor(public _stepper: CdkStepper) {}
+
+  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
+  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
+  // ViewEngine they're overwritte.
+  // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
+  // tslint:disable-next-line:no-host-decorator-in-concrete
+  @HostListener('click')
+  _handleClick() {
+    this._stepper.next();
+  }
 }
 
 /** Button that moves to the previous step in a stepper workflow. */
 @Directive({
   selector: 'button[cdkStepperPrevious]',
   host: {
-    '(click)': '_stepper.previous()',
     '[type]': 'type',
   }
 })
@@ -37,4 +46,14 @@ export class CdkStepperPrevious {
   @Input() type: string = 'button';
 
   constructor(public _stepper: CdkStepper) {}
+
+  // We have to use a `HostListener` here in order to support both Ivy and ViewEngine.
+  // In Ivy the `host` bindings will be merged when this class is extended, whereas in
+  // ViewEngine they're overwritte.
+  // TODO(crisbeto): we move this back into `host` once Ivy is turned on by default.
+  // tslint:disable-next-line:no-host-decorator-in-concrete
+  @HostListener('click')
+  _handleClick() {
+    this._stepper.previous();
+  }
 }

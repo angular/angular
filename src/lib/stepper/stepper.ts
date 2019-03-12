@@ -81,9 +81,7 @@ export class MatStep extends CdkStep implements ErrorStateMatcher {
 }
 
 
-@Directive({
-  selector: '[matStepper]'
-})
+@Directive({selector: '[matStepper]', providers: [{provide: CdkStepper, useExisting: MatStepper}]})
 export class MatStepper extends CdkStepper implements AfterContentInit {
   /** The list of step headers of the steps in the stepper. */
   @ViewChildren(MatStepHeader) _stepHeader: QueryList<MatStepHeader>;
@@ -141,7 +139,10 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
     'role': 'tablist',
   },
   animations: [matStepperAnimations.horizontalStepTransition],
-  providers: [{provide: MatStepper, useExisting: MatHorizontalStepper}],
+  providers: [
+    {provide: MatStepper, useExisting: MatHorizontalStepper},
+    {provide: CdkStepper, useExisting: MatHorizontalStepper}
+  ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -164,7 +165,10 @@ export class MatHorizontalStepper extends MatStepper {
     'role': 'tablist',
   },
   animations: [matStepperAnimations.verticalStepTransition],
-  providers: [{provide: MatStepper, useExisting: MatVerticalStepper}],
+  providers: [
+    {provide: MatStepper, useExisting: MatVerticalStepper},
+    {provide: CdkStepper, useExisting: MatVerticalStepper}
+  ],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
