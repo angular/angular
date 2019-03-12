@@ -19,7 +19,7 @@
 window.testBlocklist = {
   "CdkTable should be able to render multiple header and footer rows": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
-    "notes": "Attempting to access content children before view is initialized"
+    "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
   "CdkTable should render correctly when using native HTML tags": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
@@ -51,15 +51,15 @@ window.testBlocklist = {
   },
   "CdkTable with trackBy should change row implicit data even when trackBy finds no changes": {
     "error": "Error: Expected 'a_1 b_1' to be 'a_2 b_2'.",
-    "notes": "FW-842: View engine dirty-checks projected views when the declaration place is checked"
+    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTable, CdkHeaderRow, CdkFooterRow and CdkRow are OnPush)"
   },
   "CdkTable should be able to apply classes to rows based on their context": {
     "error": "Error: Expected false to be true.",
-    "notes": "FW-842: View engine dirty-checks projected views when the declaration place is checked"
+    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTable, CdkHeaderRow, CdkFooterRow and CdkRow are OnPush)"
   },
   "CdkTable should be able to apply classes to cells based on their row context": {
     "error": "Error: Expected false to be true.",
-    "notes": "FW-842: View engine dirty-checks projected views when the declaration place is checked"
+    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTable, CdkHeaderRow, CdkFooterRow and CdkRow are OnPush)"
   },
   "CdkDrag in a drop container should be able to customize the preview element": {
     "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
@@ -253,33 +253,21 @@ window.testBlocklist = {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
     "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
-  "MatTable with MatTableDataSource and sort/pagination/filter should be able to filter the table contents": {
-    "error": "TypeError: Cannot read property 'length' of undefined",
-    "notes": "Unknown"
-  },
-  "MatTable with MatTableDataSource and sort/pagination/filter should be able to sort the table contents": {
-    "error": "Error: Failed: Expected cell contents to be a_3 but was a_1",
-    "notes": "Unknown"
-  },
   "MatTable with MatTableDataSource and sort/pagination/filter should by default correctly sort an empty string": {
     "error": "Error: Failed: Expected cell contents to be  but was a_1",
-    "notes": "Unknown"
+    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatTable, MatHeaderRow, MatFooterRow and MatRow are OnPush)"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should by default correctly sort undefined values": {
     "error": "Error: Failed: Expected cell contents to be  but was a_1",
-    "notes": "Unknown"
+    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatTable, MatHeaderRow, MatFooterRow and MatRow are OnPush)"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should sort zero correctly": {
     "error": "Error: Failed: Expected cell contents to be -1 but was a_1",
-    "notes": "Unknown"
-  },
-  "MatTable with MatTableDataSource and sort/pagination/filter should be able to page the table contents": {
-    "error": "Error: Failed: Expected 7 total rows but got 105",
-    "notes": "Unknown"
+    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatTable, MatHeaderRow, MatFooterRow and MatRow are OnPush)"
   },
   "MatTable with MatTableDataSource and sort/pagination/filter should sort strings with numbers larger than MAX_SAFE_INTEGER correctly": {
     "error": "Error: Failed: Expected cell contents to be 9563256840123535 but was a_1",
-    "notes": "Unknown"
+    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatTable, MatHeaderRow, MatFooterRow and MatRow are OnPush)"
   }
 };
 // clang-format on
