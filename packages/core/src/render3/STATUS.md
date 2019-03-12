@@ -2,7 +2,7 @@
 
 Ivy is a new backwards-compatible Angular renderer focused on further speed improvements, size reduction, and increased flexibility.
 
-Ivy is currently not feature complete, but can be tested via [`enableIvy: true`](https://next.angular.io/guide/aot-compiler#enableivy) [`angularCompilerOptions` flag](https://next.angular.io/guide/aot-compiler#angular-compiler-options).
+Ivy is currently not feature complete, but can be tested via [`enableIvy: true`](https://next.angular.io/guide/ivy#updating-an-existing-project-to-use-ivy) [`angularCompilerOptions` flag](https://next.angular.io/guide/aot-compiler#angular-compiler-options).
 
 We currently expect Ivy to remain behind the flag until it's feature complete and battle tested at Google. In the meantime you can check out this [Hello World demo](https://ng-ivy-demo.firebaseapp.com/).
 
