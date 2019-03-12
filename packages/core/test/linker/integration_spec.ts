@@ -1426,6 +1426,20 @@ function declareTests(config?: {useJit: boolean}) {
             .toThrowError(`Directive ${stringify(SomeDirective)} has no selector, please add it!`);
       });
 
+      it('should throw when using directives with empty string selector', () => {
+        @Directive({selector: ''})
+        class SomeDirective {
+        }
+
+        @Component({selector: 'comp', template: ''})
+        class SomeComponent {
+        }
+
+        TestBed.configureTestingModule({declarations: [MyComp, SomeDirective, SomeComponent]});
+        expect(() => TestBed.createComponent(MyComp))
+            .toThrowError(`Directive ${stringify(SomeDirective)} has no selector, please add it!`);
+      });
+
       it('should use a default element name for components without selectors', () => {
         let noSelectorComponentFactory: ComponentFactory<SomeComponent> = undefined !;
 
