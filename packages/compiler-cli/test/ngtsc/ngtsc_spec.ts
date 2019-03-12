@@ -738,6 +738,75 @@ describe('ngtsc behavioral tests', () => {
             'i0.ɵNgModuleDefWithMeta<TestModule, [typeof TestPipe, typeof TestCmp], never, never>');
   });
 
+  describe('empty and missing selectors', () => {
+    it('should use default selector for Components when no selector present', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '...',
+        })
+        export class TestCmp {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('selectors: [["ng-component"]]');
+    });
+
+    it('should use default selector for Components with empty string selector', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: '',
+          template: '...',
+        })
+        export class TestCmp {}
+      `);
+
+      env.driveMain();
+
+      const jsContents = env.getContents('test.js');
+      expect(jsContents).toContain('selectors: [["ng-component"]]');
+    });
+
+    it('should throw if selector is missing in Directive decorator params', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({
+          inputs: ['a', 'b']
+        })
+        export class TestDir {}
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(trim(errors[0].messageText as string))
+          .toContain('Directive TestDir has no selector, please add it!');
+    });
+
+    it('should throw if Directive selector is an empty string', () => {
+      env.tsconfig({});
+      env.write('test.ts', `
+        import {Directive} from '@angular/core';
+
+        @Directive({
+          selector: ''
+        })
+        export class TestDir {}
+      `);
+
+      const errors = env.driveDiagnostics();
+      expect(trim(errors[0].messageText as string))
+          .toContain('Directive TestDir has no selector, please add it!');
+    });
+  });
+
   describe('multiple decorators on classes', () => {
     it('should compile @Injectable on Components, Directives, Pipes, and Modules', () => {
       env.tsconfig();

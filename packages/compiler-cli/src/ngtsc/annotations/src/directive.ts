@@ -172,7 +172,8 @@ export function extractDirectiveMetadata(
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, expr, `selector must be a string`);
     }
-    selector = resolved;
+    // use default selector in case selector is an empty string
+    selector = resolved === '' ? defaultSelector : resolved;
   }
   if (!selector) {
     throw new Error(`Directive ${clazz.name !.text} has no selector, please add it!`);
