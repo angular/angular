@@ -1285,6 +1285,55 @@ describe('Runtime i18n', () => {
               `<div><a>trad 1</a>hello<b title="start 2 middle 1 end"><e></e><c>trad</c></b></div>`);
     });
 
+    it('should support multiple sibling i18n blocks', () => {
+      // Translated template:
+      // <div>
+      //  <div i18n>Section 1</div>
+      //  <div i18n>Section 2</div>
+      //  <div i18n>Section 3</div>
+      // </div>
+
+      const MSG_DIV_1 = `Section 1`;
+      const MSG_DIV_2 = `Section 2`;
+      const MSG_DIV_3 = `Section 3`;
+
+      class MyApp {
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          selectors: [['my-app']],
+          factory: () => new MyApp(),
+          consts: 7,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div');
+              {
+                elementStart(1, 'div');
+                { i18n(2, MSG_DIV_1); }
+                elementEnd();
+                elementStart(3, 'div');
+                { i18n(4, MSG_DIV_2); }
+                elementEnd();
+                elementStart(5, 'div');
+                { i18n(6, MSG_DIV_3); }
+                elementEnd();
+              }
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              i18nApply(2);
+              i18nApply(4);
+              i18nApply(6);
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html)
+          .toEqual(`<div><div>Section 1</div><div>Section 2</div><div>Section 3</div></div>`);
+    });
+
     it('should support attribute translations on removed elements', () => {
       // Translated template:
       // <div i18n i18n-title title="start {{exp2}} middle {{exp1}} end">
