@@ -649,15 +649,13 @@ function i18nEndFirstPass(tView: TView) {
   const tI18n = tView.data[rootIndex + HEADER_OFFSET] as TI18n;
   ngDevMode && assertDefined(tI18n, `You should call i18nStart before i18nEnd`);
 
-  // The last placeholder that was added before `i18nEnd`
-  const previousOrParentTNode = getPreviousOrParentTNode();
-  const visitedNodes = readCreateOpCodes(rootIndex, tI18n.create, tI18n.icus, viewData);
-
   // Find the last node that was added before `i18nEnd`
-  let lastCreatedNode = previousOrParentTNode;
+  let lastCreatedNode = getPreviousOrParentTNode();
   if (lastCreatedNode.child) {
     lastCreatedNode = findLastNode(lastCreatedNode.child);
   }
+
+  const visitedNodes = readCreateOpCodes(rootIndex, tI18n.create, tI18n.icus, viewData);
 
   // Remove deleted nodes
   for (let i = rootIndex + 1; i <= lastCreatedNode.index - HEADER_OFFSET; i++) {
@@ -719,7 +717,6 @@ function readCreateOpCodes(
                   currentTNode !,
                   `You need to create or select a node before you can insert it into the DOM`);
           previousTNode = appendI18nNode(currentTNode !, destinationTNode, previousTNode);
-          destinationTNode.next = null;
           break;
         case I18nMutateOpCode.Select:
           const nodeIndex = opCode >>> I18nMutateOpCode.SHIFT_REF;
