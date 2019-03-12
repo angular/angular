@@ -235,7 +235,7 @@ window.testBlocklist = {
   },
   "MatSnackBar with TemplateRef should be able to open a snack bar using a TemplateRef": {
     "error": "Error: Expected ' Fries Pizza  ' to contain 'Pasta'.",
-    "notes": "FW-842: View engine dirty-checks projected views when the declaration place is checked"
+    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatSnackBarContainer is OnPush)"
   },
   "MatTooltip special cases should clear the `user-select` when a tooltip is set on a text field": {
     "error": "Error: Expected 'none' to be falsy.",
