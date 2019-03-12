@@ -61,30 +61,6 @@ window.testBlocklist = {
     "error": "Error: Expected false to be true.",
     "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTable, CdkHeaderRow, CdkFooterRow and CdkRow are OnPush)"
   },
-  "CdkDrag in a drop container should be able to customize the preview element": {
-    "error": "Error: Expected cdk-drag cdk-drag-preview to contain 'custom-preview'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
-  "CdkDrag in a drop container should position custom previews next to the pointer": {
-    "error": "Error: Expected 'translate3d(8px, 33px, 0px)' to be 'translate3d(50px, 50px, 0px)'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
-  "CdkDrag in a drop container should lock position inside a drop container along the x axis": {
-    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
-  "CdkDrag in a drop container should lock position inside a drop container along the y axis": {
-    "error": "Error: Expected 'translate3d(8px, 83px, 0px)' to be 'translate3d(50px, 100px, 0px)'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
-  "CdkDrag in a drop container should inherit the position locking from the drop container": {
-    "error": "Error: Expected 'translate3d(58px, 33px, 0px)' to be 'translate3d(100px, 50px, 0px)'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
-  "CdkDrag in a drop container should be able to customize the placeholder": {
-    "error": "Error: Expected cdk-drag cdk-drag-placeholder to contain 'custom-placeholder'.",
-    "notes": "FW-1134: Queries don't match structural directives with ng-template in selector"
-  },
   "CdkTree flat tree should initialize should be able to use units different from px for the indentation": {
     "error": "Error: Failed: Expected node level to be 15rem but was 28px",
     "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTree is OnPush)"
