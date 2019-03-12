@@ -209,7 +209,7 @@ jobs:
           path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
           destination: core/todo/bundle.br
 
-  test_saucelabs:
+  test_saucelabs_bazel:
     <<: *job_defaults
     # In order to avoid the bottleneck of having a slow host machine, we acquire a better
     # container for this job. This is necessary because we launch a lot of browsers concurrently
@@ -587,6 +587,9 @@ workflows:
       - test_aio:
           requires:
           - setup
+      - legacy-unit-tests-saucelabs:
+          requires:
+          - setup
       - deploy_aio:
           requires:
             - test_aio
@@ -640,6 +643,7 @@ workflows:
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
             - build-ivy-npm-packages
+            - legacy-unit-tests-saucelabs
             - legacy-misc-tests
       - material-unit-tests:
           requires:
@@ -648,14 +652,9 @@ workflows:
   saucelabs_tests:
     jobs:
       - setup
-      - test_saucelabs:
+      - test_saucelabs_bazel:
           requires:
             - setup
-      - legacy-unit-tests-saucelabs:
-          # Don't open up multiple saucelabs tunnels at the same
-          # time to minimize flakes
-          requires:
-            - test_saucelabs
     triggers:
       - schedule:
           # Runs the Saucelabs legacy tests every hour. We still want to run Saucelabs
