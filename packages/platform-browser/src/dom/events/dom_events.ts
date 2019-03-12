@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isPlatformServer} from '@angular/common';
+import {DOCUMENT, isPlatformServer} from '@angular/common';
 import {Inject, Injectable, NgZone, Optional, PLATFORM_ID} from '@angular/core';
-
-
-import {DOCUMENT} from '../dom_tokens';
 
 import {EventManagerPlugin} from './event_manager';
 
