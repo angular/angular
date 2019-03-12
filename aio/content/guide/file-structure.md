@@ -13,37 +13,17 @@ The workspace root folder contains workspace configuration files and a README fi
 
 By default, `ng new` also creates an initial skeleton application, along with its end-to-end tests.
 The skeleton is for a simple Welcome application that is ready to run and easy to modify.
-This *root app* has the same name as the workspace, and the source files reside in the `src/` subfolder of the workspace.
+This *root application* has the same name as the workspace, and the source files reside in the `src/` subfolder of the workspace.
 
-This default behavior is suitable for a development style where each application resides in its own workspace.
-It is compatible with earlier Angular versions, which did not support workspaces with [multiple projects](#multiple-projects).
+This default behavior is suitable for a typical "multi-repo" development style where each application resides in its own workspace.
+Beginners and intermediate users are encouraged to use `ng new` to create a separate workspace for each application.
 
-When you add more projects (apps or libraries) to the workspace, they go into a `projects/` subfolder of the workspace.
+Angular also supports workspaces with [multiple projects](#multiple-projects).
+This type of development environment is suitable for advanced users who are developing [shareable libraries](guide/glossary#library),
+and for enterprises that use a "mono-repo" development style, with a single repository and global configuration for all Angular projects.
 
-<div class="callout is-helpful" >
-
-<header>Setting up for a multi-project workspace</header>
-
-A multi-project workspace is suitable for an enterprise that uses a single repository and global configuration for all Angular projects (the "mono-repo" model). A multi-project workspace also supports library development.
-
-If you do intend to have multiple projects in a workspace, you can skip the initial application generation when you create the workspace, and give the workspace a unique name.
-The following command creates a workspace with all of the workspace-wide configuration files, but no root application.
-
-<code-example language="bash" linenums="false">
-ng new my-workspace --createApplication="false"
-</code-example>
-
-You can then generate apps and libraries with names that are unique within the workspace.
-
-<code-example language="bash" linenums="false">
-cd my-workspace
-ng generate application my-first-app
-</code-example>
-
-This first generated application will go into the `projects/` folder along with all other projects in the workspace.
-When you create projects this way, the file structure of the workspace is entirely consistent with the structure of the [workspace configuration file](guide/workspace-config).
-
-</div>
+To set up a mono-repo workspace, you should skip the creating the root application.
+See [Setting up for a multi-project workspace](#multiple-projects) below.
 
 ## Workspace configuration files
 
@@ -141,23 +121,43 @@ my-app/
 
 ## Multiple projects
 
-When you generate new projects in a workspace, the CLI creates a new `/projects` folder, and adds the generated files there.
+A multi-project workspace is suitable for an enterprise that uses a single repository and global configuration for all Angular projects (the "mono-repo" model). A multi-project workspace also supports library development.
 
-When you generate an application (`ng generate application my-other-app`), the CLI adds a folder under `projects/` for the application and its corresponding end-to-end tests. Newly generated libraries are also added under `projects/`.
+### Setting up for a multi-project workspace
+
+If you intend to have multiple projects in a workspace, you can skip the initial application generation when you create the workspace, and give the workspace a unique name.
+The following command creates a workspace with all of the workspace-wide configuration files, but no root application.
+
+<code-example language="bash" linenums="false">
+ng new my-workspace --createApplication="false"
+</code-example>
+
+You can then generate apps and libraries with names that are unique within the workspace.
+
+<code-example language="bash" linenums="false">
+cd my-workspace
+ng generate application my-first-app
+</code-example>
+
+### Multiple project file structure
+
+The first explicitly generated application goes into the `projects/` folder along with all other projects in the workspace.
+Newly generated libraries are also added under `projects/`.
+When you create projects this way, the file structure of the workspace is entirely consistent with the structure of the [workspace configuration file](guide/workspace-config), `angular.json`.
 
 <code-example language="none" linenums="false">
-my-app/
-  ...
-  projects/         (additional applications and libraries)
-    my-other-app/   (a second application)
-      ...           ( application-specific config)
-      e2e/          (corresponding e2e tests)
-         src/       (e2e tests source)
-         ...        (e2e-specific configuration)
-      src/          (source files for application)
-      ...           (support files for application)
-    my-lib/         (a generated library)
-      ...           (library-specific configuration files)
+my-workspace/
+  ...             (workspace-wide config files)
+  projects/       (generated applications and libraries)
+    my-first-app/ --(an explicitly generated application)
+      ...         --(application-specific config)
+      e2e/        ----(corresponding e2e tests)
+         src/     ----(e2e tests source)
+         ...      ----(e2e-specific config)
+      src/        --(source and support files for application)
+    my-lib/       --(a generated library)
+      ...         --(library-specific config)
+      src/        --source and support files for library)
 </code-example>
 
 Libraries (unlike applications and their associated e2e projects) have their own `package.json` configuration files.
