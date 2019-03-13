@@ -1,5 +1,3 @@
-# Load any settings specific to the current user
-try-import .bazelrc.user
 ################################
 # Settings for Angular team members only
 ################################
@@ -135,3 +133,7 @@ build:remote --remote_instance_name=projects/internal-200822/instances/default_i
 # Do not accept remote cache.
 # We need to understand the security risks of using prior build artifacts.
 build:remote --remote_accept_cached=false
+
+# Load any settings specific to the current user. Needs to be last statement in this
+# config, as the user configuration should be able to overwrite flags from this file.
+try-import .bazelrc.user
