@@ -983,7 +983,7 @@ describe('ngtsc behavioral tests', () => {
            env.tsconfig({strictInjectionParameters: true});
            env.write('test.ts', `
             import {Injectable} from '@angular/core';
-    
+
             @Injectable()
             export class Test {
               constructor(private notInjectable: string) {}
@@ -1000,7 +1000,7 @@ describe('ngtsc behavioral tests', () => {
            env.tsconfig({strictInjectionParameters: true});
            env.write('test.ts', `
             import {Injectable} from '@angular/core';
-    
+
             @Injectable()
             export class Test {
               constructor(private notInjectable: string) {}
@@ -1017,7 +1017,7 @@ describe('ngtsc behavioral tests', () => {
            env.tsconfig({strictInjectionParameters: true});
            env.write('test.ts', `
                import {Injectable} from '@angular/core';
-       
+
                @Injectable({
                  providedIn: 'root',
                  useValue: '42',
@@ -1355,6 +1355,41 @@ describe('ngtsc behavioral tests', () => {
     // match `i0.ɵcontentQuery(dirIndex, _c1, true, TemplateRef)`
     expect(jsContents).toMatch(contentQueryRegExp('\\w+', true, 'TemplateRef'));
     // match `i0.ɵviewQuery(_c2, true, null)`
+    expect(jsContents).toMatch(viewQueryRegExp(true));
+  });
+
+  it('should generate queries for directives', () => {
+    env.tsconfig();
+    env.write(`test.ts`, `
+        import {Directive, ContentChild, ContentChildren, TemplateRef, ViewChild} from '@angular/core';
+
+        @Directive({
+          selector: '[test]',
+          queries: {
+            'mview': new ViewChild('test1'),
+            'mcontent': new ContentChild('test2'),
+          }
+        })
+        class FooCmp {
+          @ContentChild('bar', {read: TemplateRef}) child: any;
+          @ContentChildren(TemplateRef) children: any;
+          get aview(): any { return null; }
+          @ViewChild('accessor') set aview(value: any) {}
+        }
+    `);
+
+    env.driveMain();
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toMatch(varRegExp('bar'));
+    expect(jsContents).toMatch(varRegExp('test1'));
+    expect(jsContents).toMatch(varRegExp('test2'));
+    expect(jsContents).toMatch(varRegExp('accessor'));
+    // match `i0.ɵcontentQuery(dirIndex, _c1, true, TemplateRef)`
+    expect(jsContents).toMatch(contentQueryRegExp('\\w+', true, 'TemplateRef'));
+
+    // match `i0.ɵviewQuery(_c2, true, null)`
+    // Note that while ViewQuery doesn't necessarily make sense on a directive, because it doesn't
+    // have a view, we still need to handle it because a component could extend the directive.
     expect(jsContents).toMatch(viewQueryRegExp(true));
   });
 
@@ -1931,7 +1966,7 @@ describe('ngtsc behavioral tests', () => {
   it('should be able to compile an app using the factory shim', () => {
     env.tsconfig({'allowEmptyCodegenFiles': true});
 
-    env.write('test.ts', `        
+    env.write('test.ts', `
         export {MyModuleNgFactory} from './my-module.ngfactory';
     `);
 
@@ -2217,7 +2252,7 @@ describe('ngtsc behavioral tests', () => {
             import {Component} from '@angular/core';
             import {Other} from './types';
             import Default from './types';
-   
+
             @Component({selector: 'test', template: 'test'})
             export class SomeCmp {
               constructor(arg: Default, other: Other) {}

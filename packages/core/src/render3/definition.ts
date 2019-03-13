@@ -598,6 +598,12 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   contentQueries?: ContentQueriesFunction<T>;
 
   /**
+   * Additional set of instructions specific to view query processing. This could be seen as a
+   * set of instructions to be inserted into the template function.
+   */
+  viewQuery?: ViewQueriesFunction<T>| null;
+
+  /**
    * Defines the name that can be used in the template to assign this directive to a variable.
    *
    * See: {@link Directive.exportAs}
