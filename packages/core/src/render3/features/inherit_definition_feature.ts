@@ -73,18 +73,17 @@ export function InheritDefinitionFeature(definition: DirectiveDef<any>| Componen
       }
 
       // Merge View Queries
-      if (isComponentDef(definition) && isComponentDef(superDef)) {
-        const prevViewQuery = definition.viewQuery;
-        const superViewQuery = superDef.viewQuery;
-        if (superViewQuery) {
-          if (prevViewQuery) {
-            definition.viewQuery = <T>(rf: RenderFlags, ctx: T): void => {
-              superViewQuery(rf, ctx);
-              prevViewQuery(rf, ctx);
-            };
-          } else {
-            definition.viewQuery = superViewQuery;
-          }
+      const prevViewQuery = definition.viewQuery;
+      const superViewQuery = superDef.viewQuery;
+
+      if (superViewQuery) {
+        if (prevViewQuery) {
+          definition.viewQuery = <T>(rf: RenderFlags, ctx: T): void => {
+            superViewQuery(rf, ctx);
+            prevViewQuery(rf, ctx);
+          };
+        } else {
+          definition.viewQuery = superViewQuery;
         }
       }
 

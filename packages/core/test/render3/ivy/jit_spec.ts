@@ -349,16 +349,6 @@ ivyEnabled && describe('render3 jit', () => {
     expect((TestDirective as any).ngDirectiveDef.contentQueries).not.toBeNull();
   });
 
-  it('should not pick up view queries from directives', () => {
-    @Directive({selector: '[test]'})
-    class TestDirective {
-      @ViewChildren('foo') foos: QueryList<ElementRef>|undefined;
-    }
-
-    expect((TestDirective as any).ngDirectiveDef.contentQueries).toBeNull();
-    expect((TestDirective as any).ngDirectiveDef.viewQuery).toBeNull();
-  });
-
   it('should compile ViewChild query on a component', () => {
     @Component({selector: 'test', template: ''})
     class TestComponent {

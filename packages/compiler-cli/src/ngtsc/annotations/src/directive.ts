@@ -160,10 +160,20 @@ export function extractDirectiveMetadata(
 
   const queries = [...contentChildFromFields, ...contentChildrenFromFields];
 
+  // Construct the list of view queries.
+  const viewChildFromFields = queriesFromFields(
+      filterToMembersWithDecorator(decoratedElements, 'ViewChild', coreModule), reflector,
+      evaluator);
+  const viewChildrenFromFields = queriesFromFields(
+      filterToMembersWithDecorator(decoratedElements, 'ViewChildren', coreModule), reflector,
+      evaluator);
+  const viewQueries = [...viewChildFromFields, ...viewChildrenFromFields];
+
   if (directive.has('queries')) {
     const queriesFromDecorator =
         extractQueriesFromDecorator(directive.get('queries') !, reflector, evaluator, isCore);
     queries.push(...queriesFromDecorator.content);
+    viewQueries.push(...queriesFromDecorator.view);
   }
 
   // Parse the selector.
@@ -213,7 +223,7 @@ export function extractDirectiveMetadata(
         usesOnChanges,
     },
     inputs: {...inputsFromMeta, ...inputsFromFields},
-    outputs: {...outputsFromMeta, ...outputsFromFields}, queries, selector,
+    outputs: {...outputsFromMeta, ...outputsFromFields}, queries, viewQueries, selector,
     type: new WrappedNodeExpr(clazz.name !),
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: null !, usesInheritance, exportAs, providers

@@ -69,6 +69,10 @@ function baseDirectiveFields(
     definitionMap.set('contentQueries', createContentQueriesFunction(meta, constantPool));
   }
 
+  if (meta.viewQueries.length) {
+    definitionMap.set('viewQuery', createViewQueriesFunction(meta, constantPool));
+  }
+
   // Initialize hostVarsCount to number of bound host properties (interpolations illegal),
   // except 'style' and 'class' properties, since they should *not* allocate host var slots
   const hostVarsCount = Object.keys(meta.host.properties)
@@ -226,10 +230,6 @@ export function compileComponentFromMetadata(
       matcher.addSelectables(CssSelector.parse(selector), expression);
     }
     directiveMatcher = matcher;
-  }
-
-  if (meta.viewQueries.length) {
-    definitionMap.set('viewQuery', createViewQueriesFunction(meta, constantPool));
   }
 
   // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
@@ -549,7 +549,7 @@ function createTypeForDef(meta: R3DirectiveMetadata, typeBase: o.ExternalReferen
 
 // Define and update any view queries
 function createViewQueriesFunction(
-    meta: R3ComponentMetadata, constantPool: ConstantPool): o.Expression {
+    meta: R3DirectiveMetadata, constantPool: ConstantPool): o.Expression {
   const createStatements: o.Statement[] = [];
   const updateStatements: o.Statement[] = [];
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
