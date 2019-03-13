@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Attribute, ChangeDetectorRef, Component, Directive, Inject, LOCALE_ID, Optional, Pipe, PipeTransform, SkipSelf, ViewChild} from '@angular/core';
+import {Attribute, ChangeDetectorRef, Component, Directive, EventEmitter, Inject, Input, LOCALE_ID, Optional, Output, Pipe, PipeTransform, SkipSelf, ViewChild} from '@angular/core';
 import {ViewRef} from '@angular/core/src/render3/view_ref';
 import {TestBed} from '@angular/core/testing';
 
@@ -155,6 +155,78 @@ describe('di', () => {
 
   describe('@Attribute', () => {
 
+    it('should inject attributes', () => {
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        constructor(
+            @Attribute('exist') public exist: string,
+            @Attribute('nonExist') public nonExist: string) {}
+      }
+
+      @Component({template: '<div dir exist="existValue" other="ignore"></div>'})
+      class MyComp {
+        @ViewChild(MyDir) directiveInstance !: MyDir;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const directive = fixture.componentInstance.directiveInstance;
+
+      expect(directive.exist).toBe('existValue');
+      expect(directive.nonExist).toBeNull();
+    });
+
+    it('should inject attributes on <ng-template>', () => {
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        constructor(
+            @Attribute('exist') public exist: string,
+            @Attribute('dir') public myDirectiveAttrValue: string) {}
+      }
+
+      @Component(
+          {template: '<ng-template dir="initial" exist="existValue" other="ignore"></ng-template>'})
+      class MyComp {
+        @ViewChild(MyDir) directiveInstance !: MyDir;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const directive = fixture.componentInstance.directiveInstance;
+
+      expect(directive.exist).toBe('existValue');
+      expect(directive.myDirectiveAttrValue).toBe('initial');
+    });
+
+    it('should inject attributes on <ng-container>', () => {
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        constructor(
+            @Attribute('exist') public exist: string,
+            @Attribute('dir') public myDirectiveAttrValue: string) {}
+      }
+
+      @Component({
+        template: '<ng-container dir="initial" exist="existValue" other="ignore"></ng-container>'
+      })
+      class MyComp {
+        @ViewChild(MyDir) directiveInstance !: MyDir;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const directive = fixture.componentInstance.directiveInstance;
+
+      expect(directive.exist).toBe('existValue');
+      expect(directive.myDirectiveAttrValue).toBe('initial');
+    });
+
     it('should be able to inject different kinds of attributes', () => {
       @Directive({selector: '[dir]'})
       class MyDir {
@@ -181,7 +253,6 @@ describe('di', () => {
       expect(directive.otherAttr).toBe('value');
       expect(directive.className).toBe('hello there');
       expect(directive.inlineStyles).toBe('margin: 1px; color: red;');
-
     });
 
     it('should not inject attributes with namespace', () => {
@@ -208,6 +279,38 @@ describe('di', () => {
 
       expect(directive.exist).toBe('existValue');
       expect(directive.namespacedExist).toBeNull();
+      expect(directive.other).toBe('otherValue');
+    });
+
+    it('should not inject attributes representing bindings and outputs', () => {
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        @Input() binding !: string;
+        @Output() output = new EventEmitter();
+        constructor(
+            @Attribute('exist') public exist: string,
+            @Attribute('binding') public bindingAttr: string,
+            @Attribute('output') public outputAttr: string,
+            @Attribute('other') public other: string) {}
+      }
+
+      @Component({
+        template:
+            '<div dir exist="existValue" [binding]="bindingValue" (output)="outputValue" other="otherValue" ignore="ignoreValue"></div>'
+      })
+      class MyComp {
+        @ViewChild(MyDir) directiveInstance !: MyDir;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const directive = fixture.componentInstance.directiveInstance;
+
+      expect(directive.exist).toBe('existValue');
+      expect(directive.bindingAttr).toBeNull();
+      expect(directive.outputAttr).toBeNull();
       expect(directive.other).toBe('otherValue');
     });
   });
