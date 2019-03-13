@@ -96,7 +96,7 @@ export class Location {
   }
 
   /**
-   * Given a string representing a URL, returns the normalized URL path without leading or
+   * Given a string representing a URL, returns the URL path after stripping the
    * trailing slashes.
    *
    * @param url String representing a URL.
