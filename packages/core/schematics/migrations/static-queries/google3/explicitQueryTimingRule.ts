@@ -14,6 +14,9 @@ import {NgQueryResolveVisitor} from '../angular/ng_query_visitor';
 import {QueryTiming} from '../angular/query-definition';
 import {getTransformedQueryCallExpr} from '../transform';
 
+const FAILURE_MESSAGE = 'Query does explicitly specify its timing. Read more here: ' +
+    'https://github.com/angular/angular/pull/28810';
+
 /**
  * Rule that reports if an Angular "ViewChild" or "ContentChild" query is not explicitly
  * specifying its timing. The rule also provides TSLint automatic replacements that can
@@ -55,10 +58,12 @@ export class Rule extends Rules.TypedRule {
       // updated call expression node.
       const fix = new Replacement(queryExpr.getStart(), queryExpr.getWidth(), newText);
       const timingStr = timing === QueryTiming.STATIC ? 'static' : 'dynamic';
+      const failureMessage = `${FAILURE_MESSAGE}. Based on analysis of the query it can be ` +
+          `marked as "${timingStr}".`;
 
       failures.push(new RuleFailure(
-          sourceFile, queryExpr.getStart(), queryExpr.getWidth(),
-          `Query is not explicitly marked as "${timingStr}"`, this.ruleName, fix));
+          sourceFile, queryExpr.getStart(), queryExpr.getWidth(), failureMessage, this.ruleName,
+          fix));
     });
 
     return failures;
