@@ -159,6 +159,13 @@ export interface DirectiveDef<T> extends BaseDef<T> {
   contentQueries: ContentQueriesFunction<T>|null;
 
   /**
+   * Query-related instructions for a directive. Note that while directives don't have a
+   * view and as such view queries won't necessarily do anything, there might be
+   * components that extend the directive.
+   */
+  viewQuery: ViewQueriesFunction<T>|null;
+
+  /**
    * Refreshes host bindings on the associated directive.
    */
   hostBindings: HostBindingsFunction<T>|null;
