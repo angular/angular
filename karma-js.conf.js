@@ -94,9 +94,9 @@ module.exports = function(config) {
     plugins: [
       'karma-jasmine',
       'karma-browserstack-launcher',
-      'karma-sauce-launcher',
       'karma-chrome-launcher',
       'karma-sourcemap-loader',
+      require('./third_party/karma-sauce-launcher/index'),
     ],
 
     preprocessors: {
