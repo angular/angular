@@ -8,13 +8,15 @@
 
 import {Injector} from '../di';
 import {getViewComponent} from '../render3/global_utils_api';
+import {LContainer, VIEWS} from '../render3/interfaces/container';
 import {TNode} from '../render3/interfaces/node';
 import {StylingIndex} from '../render3/interfaces/styling';
-import {LView, TData, TVIEW} from '../render3/interfaces/view';
+import {CHILD_HEAD, HEADER_OFFSET, HOST, LView, NEXT, TData, TVIEW} from '../render3/interfaces/view';
 import {getProp, getValue, isClassBasedValue} from '../render3/styling/class_and_style_bindings';
 import {getStylingContext} from '../render3/styling/util';
 import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, isBrowserEvents, loadLContext, loadLContextFromNode} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER, isPropMetadataString, renderStringify} from '../render3/util/misc_utils';
+import {isLView, unwrapLContainer, unwrapLView, unwrapRNode} from '../render3/util/view_utils';
 import {assertDomNode} from '../util/assert';
 import {DebugContext} from '../view/index';
 
@@ -361,13 +363,13 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 
   queryAll(predicate: Predicate<DebugElement>): DebugElement[] {
     const matches: DebugElement[] = [];
-    _queryNodeChildrenR3(this, predicate, matches, true);
+    _queryNodeChildrenR3(this._getLView(), predicate, matches, true);
     return matches;
   }
 
   queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[] {
     const matches: DebugNode[] = [];
-    _queryNodeChildrenR3(this, predicate, matches, false);
+    _queryNodeChildrenR3(this._getLView(), predicate, matches, false);
     return matches;
   }
 
@@ -378,22 +380,43 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       }
     });
   }
+
+  private _getLView(): LView {
+    const context = loadLContext(this.nativeNode) !;
+    return context.lView[context.nodeIndex];
+  }
 }
 
 function _queryNodeChildrenR3(
-    parentNode: DebugNode, predicate: Predicate<DebugNode>, matches: DebugNode[],
-    elementsOnly: boolean) {
-  if (parentNode instanceof DebugElement__POST_R3__) {
-    parentNode.childNodes.forEach(node => {
-      if (predicate(node)) {
-        matches.push(node);
-      }
-      if (node instanceof DebugElement__POST_R3__) {
-        if (elementsOnly ? node.nativeElement : true) {
-          _queryNodeChildrenR3(node, predicate, matches, elementsOnly);
-        }
-      }
-    });
+    viewOrContainer: LView | LContainer, predicate: Predicate<DebugNode>, matches: DebugNode[],
+    elementsOnly: boolean, matchHostNode = false) {
+  if (matchHostNode) {
+    _addQueryMatchR3(viewOrContainer[HOST], matches, predicate, elementsOnly);
+  }
+
+  if (isLView(viewOrContainer)) {
+    let child = viewOrContainer[CHILD_HEAD];
+    while (child) {
+      _queryNodeChildrenR3(child, predicate, matches, elementsOnly, true);
+      child = child[NEXT];
+    }
+    for (let i = HEADER_OFFSET; i < viewOrContainer.length; i++) {
+      _addQueryMatchR3(unwrapRNode(viewOrContainer[i]), matches, predicate, elementsOnly);
+    }
+  } else {
+    const childViews = viewOrContainer[VIEWS];
+    for (let i = 0; i < childViews.length; i++) {
+      _queryNodeChildrenR3(childViews[i], predicate, matches, elementsOnly, true);
+    }
+  }
+}
+
+function _addQueryMatchR3(
+    nativeNode: any, matches: DebugNode[], predicate: Predicate<DebugNode>, elementsOnly: boolean) {
+  const debugNode = getDebugNode(nativeNode);
+  if (debugNode && (elementsOnly ? debugNode instanceof DebugElement__POST_R3__ : true) &&
+      predicate(debugNode)) {
+    matches.push(debugNode);
   }
 }
 

@@ -161,42 +161,6 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
     "notes": "Unknown"
   },
-  "Dialog should set the proper animation states": {
-    "error": "TypeError: Cannot read property 'componentInstance' of null",
-    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatAutocomplete aria should set role of autocomplete panel to listbox": {
-    "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatAutocomplete aria should set aria-owns based on the attached autocomplete": {
-    "error": "TypeError: Cannot read property 'nativeElement' of null",
-    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatDialog should set the proper animation states": {
-    "error": "TypeError: Cannot read property 'componentInstance' of null",
-    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatMenu animations should enable ripples on items by default": {
-    "error": "TypeError: Cannot read property 'query' of null",
-    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatMenu animations should disable ripples on disabled items": {
-    "error": "TypeError: Cannot read property 'query' of undefined",
-    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatMenu animations should disable ripples if disableRipple is set": {
-    "error": "TypeError: Cannot read property 'query' of undefined",
-    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatMenu nested menu should close submenu when hovering over disabled sibling item": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatMenu nested menu should not open submenu when hovering over disabled trigger": {
-    "error": "TypeError: Cannot read property 'componentInstance' of null",
-    "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
   "MatSnackBar with TemplateRef should be able to open a snack bar using a TemplateRef": {
     "error": "Error: Expected ' Fries Pizza  ' to contain 'Pasta'.",
     "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatSnackBarContainer is OnPush)"

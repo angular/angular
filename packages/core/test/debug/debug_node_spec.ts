@@ -7,7 +7,7 @@
  */
 
 
-import {Component, Directive, EventEmitter, Injectable, Input, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, Directive, ElementRef, EventEmitter, Injectable, Input, NO_ERRORS_SCHEMA, ViewChild} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -155,6 +155,15 @@ class BankAccount {
 }
 
 @Component({
+  template: `
+    <div class="content" #content>Some content</div>
+ `
+})
+class SimpleContentComp {
+  @ViewChild('content') content !: ElementRef;
+}
+
+@Component({
   selector: 'test-app',
   template: `
    <bank-account bank="RBC"
@@ -195,6 +204,7 @@ class TestCmpt {
           UsingFor,
           BankAccount,
           TestCmpt,
+          SimpleContentComp,
         ],
         providers: [Logger],
         schemas: [NO_ERRORS_SCHEMA],
@@ -463,5 +473,20 @@ class TestCmpt {
          });
     });
 
+    it('should be able to query for elements that are not in the same DOM tree anymore', () => {
+      fixture = TestBed.createComponent(SimpleContentComp);
+      fixture.detectChanges();
+
+      const parent = getDOM().parentElement(fixture.nativeElement) !;
+      const content = fixture.componentInstance.content.nativeElement;
+
+      // Move the content element outside the component
+      // so that it can't be reached via querySelector.
+      getDOM().appendChild(parent, content);
+
+      expect(fixture.debugElement.query(By.css('.content'))).toBeTruthy();
+
+      getDOM().remove(content);
+    });
   });
 }
