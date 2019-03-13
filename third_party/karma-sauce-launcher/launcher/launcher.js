@@ -66,6 +66,13 @@ function SaucelabsLauncher(args,
     }));
     this.on('kill', (doneFn) => __awaiter(this, void 0, void 0, function* () {
         try {
+
+            yield Promise.all(connectedDrivers.map(driver =>
+              driver.manage().logs().get("browser").then(logs => {
+                logs.forEach(l => console.error(l.toJSON()));
+              })
+            ));
+
             yield Promise.all(connectedDrivers.map(driver => driver.quit()));
         }
         catch (e) {
