@@ -145,7 +145,7 @@ export class ComponentDecoratorHandler implements
     }
 
     // Next, read the `@Component`-specific fields.
-    const {decoratedElements, decorator: component, metadata} = directiveResult;
+    const {decorator: component, metadata} = directiveResult;
 
     // Go through the root directories for this project, and select the one with the smallest
     // relative path representation.
@@ -223,22 +223,6 @@ export class ComponentDecoratorHandler implements
       });
     }
 
-    // Construct the list of view queries.
-    const coreModule = this.isCore ? undefined : '@angular/core';
-    const viewChildFromFields = queriesFromFields(
-        filterToMembersWithDecorator(decoratedElements, 'ViewChild', coreModule), this.reflector,
-        this.evaluator);
-    const viewChildrenFromFields = queriesFromFields(
-        filterToMembersWithDecorator(decoratedElements, 'ViewChildren', coreModule), this.reflector,
-        this.evaluator);
-    const viewQueries = [...viewChildFromFields, ...viewChildrenFromFields];
-
-    if (component.has('queries')) {
-      const queriesFromDecorator = extractQueriesFromDecorator(
-          component.get('queries') !, this.reflector, this.evaluator, this.isCore);
-      viewQueries.push(...queriesFromDecorator.view);
-    }
-
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
     // precede inline styles, and styles defined in the template override styles defined in the
     // component.
@@ -288,7 +272,6 @@ export class ComponentDecoratorHandler implements
         meta: {
           ...metadata,
           template,
-          viewQueries,
           encapsulation,
           interpolation: template.interpolation,
           styles: styles || [],

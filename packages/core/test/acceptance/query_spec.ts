@@ -17,7 +17,8 @@ describe('query logic', () => {
       declarations: [
         AppComp, QueryComp, SimpleCompA, SimpleCompB, StaticViewQueryComp, TextDirective,
         SubclassStaticViewQueryComp, StaticContentQueryComp, SubclassStaticContentQueryComp,
-        QueryCompWithChanges, StaticContentQueryDir
+        QueryCompWithChanges, StaticContentQueryDir, SuperDirectiveQueryTarget, SuperDirective,
+        SubComponent
       ]
     });
   });
@@ -159,6 +160,17 @@ describe('query logic', () => {
       expect(secondComponent.foo.nativeElement).toBe(spans[1]);
       expect(firstComponent.setEvents).toEqual(['textDir set', 'foo set']);
       expect(secondComponent.setEvents).toEqual(['textDir set', 'foo set']);
+    });
+
+    it('should allow for view queries to be inherited from a directive', () => {
+      const fixture = TestBed.createComponent(SubComponent);
+      const comp = fixture.componentInstance;
+      fixture.detectChanges();
+
+      expect(comp.headers).toBeTruthy();
+      expect(comp.headers.length).toBe(2);
+      expect(comp.headers.toArray().every(result => result instanceof SuperDirectiveQueryTarget))
+          .toBe(true);
     });
 
   });
@@ -484,7 +496,7 @@ class StaticViewQueryComp {
   template: `
     <div [text]="text"></div>
     <span #foo></span>
-    
+
     <div #bar></div>
     <span #baz></span>
   `
@@ -563,4 +575,22 @@ export class QueryCompWithChanges {
   @ViewChildren('foo') foos !: QueryList<any>;
 
   showing = false;
+}
+
+@Component({selector: 'query-target', template: '<ng-content></ng-content>'})
+class SuperDirectiveQueryTarget {
+}
+
+@Directive({selector: '[super-directive]'})
+class SuperDirective {
+  @ViewChildren(SuperDirectiveQueryTarget) headers !: QueryList<SuperDirectiveQueryTarget>;
+}
+
+@Component({
+  template: `
+    <query-target>One</query-target>
+    <query-target>Two</query-target>
+  `
+})
+class SubComponent extends SuperDirective {
 }

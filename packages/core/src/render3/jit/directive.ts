@@ -63,8 +63,6 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
           preserveWhitespaces: metadata.preserveWhitespaces || false,
           styles: metadata.styles || EMPTY_ARRAY,
           animations: metadata.animations,
-          viewQueries:
-              extractQueriesMetadata(type, getReflect().ownPropMetadata(type), isViewQuery),
           directives: [],
           changeDetection: metadata.changeDetection,
           pipes: new Map(),
@@ -157,6 +155,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
     usesInheritance: !extendsDirectlyFromObject(type),
     exportAs: extractExportAs(metadata.exportAs),
     providers: metadata.providers || null,
+    viewQueries: extractQueriesMetadata(type, propMetadata, isViewQuery),
   };
 }
 

@@ -133,7 +133,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
           ...convertDirectiveFacadeToMetadata(facade),
           selector: facade.selector || this.elementSchemaRegistry.getDefaultComponentElementName(),
           template,
-          viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
           wrapDirectivesAndPipesInClosure: false,
           styles: facade.styles || [],
           encapsulation: facade.encapsulation as any,
@@ -235,6 +234,7 @@ function convertDirectiveFacadeToMetadata(facade: R3DirectiveMetadataFacade): R3
     outputs: {...outputsFromMetadata, ...outputsFromType},
     queries: facade.queries.map(convertToR3QueryMetadata),
     providers: facade.providers != null ? new WrappedNodeExpr(facade.providers) : null,
+    viewQueries: facade.viewQueries.map(convertToR3QueryMetadata),
   };
 }
 

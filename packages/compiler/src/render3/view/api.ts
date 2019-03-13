@@ -54,6 +54,11 @@ export interface R3DirectiveMetadata {
   queries: R3QueryMetadata[];
 
   /**
+   * Information about the view queries made by the directive.
+   */
+  viewQueries: R3QueryMetadata[];
+
+  /**
    * Mappings indicating how the directive interacts with its host element (host bindings,
    * listeners, etc).
    */
@@ -127,11 +132,6 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
      */
     nodes: t.Node[];
   };
-
-  /**
-   * Information about the view queries made by the component.
-   */
-  viewQueries: R3QueryMetadata[];
 
   /**
    * A map of pipe names to an expression referencing the pipe type which are in the scope of the

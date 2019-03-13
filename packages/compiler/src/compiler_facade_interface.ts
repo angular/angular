@@ -129,13 +129,13 @@ export interface R3DirectiveMetadataFacade {
   usesInheritance: boolean;
   exportAs: string[]|null;
   providers: Provider[]|null;
+  viewQueries: R3QueryMetadataFacade[];
 }
 
 export interface R3ComponentMetadataFacade extends R3DirectiveMetadataFacade {
   template: string;
   preserveWhitespaces: boolean;
   animations: any[]|undefined;
-  viewQueries: R3QueryMetadataFacade[];
   pipes: Map<string, any>;
   directives: {selector: string, expression: any}[];
   styles: string[];
