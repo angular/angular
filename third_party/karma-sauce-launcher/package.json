@@ -1,0 +1,74 @@
+{
+  "name": "karma-sauce-launcher",
+  "version": "2.0.2",
+  "description": "A Karma plugin. Launch any browser on SauceLabs!",
+  "main": "./index.js",
+  "scripts": {
+    "build": "tsc -p src/ && cp package.json dist/",
+    "run-example": "yarn build && yarn copy-dist-to-modules && yarn run-example-karma",
+    "copy-dist-to-modules": "rm -rf node_modules/karma-sauce-launcher && mv dist/ node_modules/karma-sauce-launcher",
+    "run-example-karma": "yarn karma start examples/karma.conf-ci.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/karma-runner/karma-sauce-launcher.git"
+  },
+  "engines": {
+    "node": ">= 8.9.0"
+  },
+  "keywords": [
+    "karma-plugin",
+    "karma-launcher",
+    "sauce",
+    "labs",
+    "saucelabs"
+  ],
+  "author": "Vojta Jina <vojta.jina@gmail.com>",
+  "dependencies": {
+    "sauce-connect-launcher": "^1.2.4",
+    "saucelabs": "^1.5.0",
+    "selenium-webdriver": "^4.0.0-alpha.1"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^10.12.10",
+    "@types/selenium-webdriver": "^3.0.13",
+    "jasmine": "^3.3.0",
+    "karma": "^3.1.1",
+    "karma-jasmine": "^2.0.1",
+    "typescript": "^3.1.6"
+  },
+  "contributors": [
+    "Mark Ethan Trostler <mark@zzo.com>",
+    "dignifiedquire <dignifiedquire@gmail.com>",
+    "Chris Wren <chris@saucelabs.com>",
+    "Friedel Ziegelmayer <dignifiedquire@gmail.com>",
+    "Chris Wren <cthewren@gmail.com>",
+    "Chris Wren <chriswrendev@gmail.com>",
+    "Pawel Kozlowski <pkozlowski.opensource@gmail.com>",
+    "Ralf Kistner <ralf@embarkmobile.com>",
+    "Takashi Aoki <taak77@gmail.com>",
+    "Julian Motz <me@julianmotz.com>",
+    "Jason Marshall <jdmarshall@users.noreply.github.com>",
+    "Santiago Suarez Ordoñez <santiycr@gmail.com>",
+    "Sahat Yalkabov <sakhat@gmail.com>",
+    "Shahar Talmi <shahar.talmi@gmail.com>",
+    "jackspirou <jack.spirou@target.com>",
+    "sebv <seb.vincent@gmail.com>",
+    "Benedikt Rötsch <axe312ger@users.noreply.github.com>",
+    "yhwh <ferrero.nicolas@gmail.com>",
+    "Caitlin Potter <caitpotter88@gmail.com>",
+    "Dylan Lacey <github@dylanlacey.com>",
+    "Eduardo Rabelo <oieduardorabelo@gmail.com>",
+    "Jamie Mason <siunmaru@gmail.com>",
+    "Johannes Würbach <johannes.wuerbach@googlemail.com>",
+    "Johannes Würbach <johannes.wuerbach@googlemail.com>",
+    "Maks3w <github.maks3w@virtualplanets.net>",
+    "Matt Kubej <mkubej@gmail.com>",
+    "OniOni <mathieu.c.sabourin@gmail.com>",
+    "Parashuram <code@nparashuram.com>",
+    "Parashuram N <code@r.nparashuram.com>",
+    "Peter Johason <peter@peterjohanson.com>",
+    "Paul Gschwendtner <paulgschwendtner@gmail.com>"
+  ]
+}
