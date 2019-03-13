@@ -147,7 +147,6 @@
     "tslint": "5.7.0",
     "tslint-eslint-rules": "4.1.1",
     "tsutils": "2.27.2",
-    "uglify-es": "^3.3.9",
     "universal-analytics": "0.4.15",
     "vlq": "0.2.2",
     "vrsource-tslint-rules": "5.1.1",
