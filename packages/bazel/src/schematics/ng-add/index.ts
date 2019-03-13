@@ -81,7 +81,11 @@ function updateGitignore() {
     if (!host.exists(gitignore)) {
       return host;
     }
-    const gitIgnoreContent = host.read(gitignore).toString();
+    const gitIgnoreContentRaw = host.read(gitignore);
+    if (!gitIgnoreContentRaw) {
+      return host;
+    }
+    const gitIgnoreContent = gitIgnoreContentRaw.toString();
     if (gitIgnoreContent.includes('\n/bazel-out\n')) {
       return host;
     }
@@ -102,8 +106,11 @@ function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
     if (!workspacePath) {
       throw new Error('Could not find angular.json');
     }
-    const workspaceContent = host.read(workspacePath).toString();
-    const workspaceJsonAst = parseJsonAst(workspaceContent) as JsonAstObject;
+    const workspaceContent = host.read(workspacePath);
+    if (!workspaceContent) {
+      throw new Error('Failed to read angular.json content');
+    }
+    const workspaceJsonAst = parseJsonAst(workspaceContent.toString()) as JsonAstObject;
     const projects = findPropertyInAstObject(workspaceJsonAst, 'projects');
     if (!projects) {
       throw new SchematicsException('Expect projects in angular.json to be an Object');
@@ -220,7 +227,11 @@ function updateTsconfigJson(): Rule {
     if (!host.exists(tsconfigPath)) {
       return host;
     }
-    const content = host.read(tsconfigPath).toString();
+    const contentRaw = host.read(tsconfigPath).toString();
+    if (!contentRaw) {
+      return host;
+    }
+    const content = contentRaw.toString();
     const ast = parseJsonAst(content);
     if (!isJsonAstObject(ast)) {
       return host;
@@ -255,8 +266,11 @@ function upgradeRxjs() {
     if (!host.exists(packageJson)) {
       throw new Error(`Could not find ${packageJson}`);
     }
-    const content = host.read(packageJson).toString();
-    const jsonAst = parseJsonAst(content);
+    const content = host.read(packageJson);
+    if (!content) {
+      throw new Error('Failed to read package.json content');
+    }
+    const jsonAst = parseJsonAst(content.toString());
     if (!isJsonAstObject(jsonAst)) {
       throw new Error(`Failed to parse JSON for ${packageJson}`);
     }
@@ -300,8 +314,14 @@ function addPostinstallToGenerateNgSummaries() {
     if (!host.exists(packageJson)) {
       throw new Error(`Could not find ${packageJson}`);
     }
-    const content = host.read(packageJson).toString();
-    const jsonAst = parseJsonAst(content) as JsonAstObject;
+    const content = host.read(packageJson);
+    if (!content) {
+      throw new Error('Failed to read package.json content');
+    }
+    const jsonAst = parseJsonAst(content.toString());
+    if (!isJsonAstObject(jsonAst)) {
+      throw new Error(`Failed to parse JSON for ${packageJson}`);
+    }
     const scripts = findPropertyInAstObject(jsonAst, 'scripts') as JsonAstObject;
     const recorder = host.beginUpdate(packageJson);
     if (scripts) {
