@@ -131,30 +131,62 @@ describe('di', () => {
     expect(fixture.componentInstance.myDir.localeId).toBe('en-GB');
   });
 
-  it('should be able to inject different kinds of attributes', () => {
-    @Directive({selector: '[dir]'})
-    class MyDir {
-      constructor(
-          @Attribute('class') public className: string,
-          @Attribute('style') public inlineStyles: string,
-          @Attribute('other-attr') public otherAttr: string) {}
-    }
-    @Component({
-      template:
-          '<div dir style="margin: 1px; color: red;" class="hello there" other-attr="value"></div>'
-    })
-    class MyComp {
-      @ViewChild(MyDir) directiveInstance !: MyDir;
-    }
+  describe('@Attribute', () => {
 
-    TestBed.configureTestingModule({declarations: [MyDir, MyComp, MyComp]});
-    const fixture = TestBed.createComponent(MyComp);
-    fixture.detectChanges();
+    it('should be able to inject different kinds of attributes', () => {
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        constructor(
+            @Attribute('class') public className: string,
+            @Attribute('style') public inlineStyles: string,
+            @Attribute('other-attr') public otherAttr: string) {}
+      }
 
-    const directive = fixture.componentInstance.directiveInstance;
+      @Component({
+        template:
+            '<div dir style="margin: 1px; color: red;" class="hello there" other-attr="value"></div>'
+      })
+      class MyComp {
+        @ViewChild(MyDir) directiveInstance !: MyDir;
+      }
 
-    expect(directive.otherAttr).toBe('value');
-    expect(directive.className).toBe('hello there');
-    expect(directive.inlineStyles).toBe('margin: 1px; color: red;');
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const directive = fixture.componentInstance.directiveInstance;
+
+      expect(directive.otherAttr).toBe('value');
+      expect(directive.className).toBe('hello there');
+      expect(directive.inlineStyles).toBe('margin: 1px; color: red;');
+
+    });
+
+    it('should not inject attributes with namespace', () => {
+      @Directive({selector: '[dir]'})
+      class MyDir {
+        constructor(
+            @Attribute('exist') public exist: string,
+            @Attribute('svg:exist') public namespacedExist: string,
+            @Attribute('other') public other: string) {}
+      }
+
+      @Component({
+        template: '<div dir exist="existValue" svg:exist="testExistValue" other="otherValue"></div>'
+      })
+      class MyComp {
+        @ViewChild(MyDir) directiveInstance !: MyDir;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
+      const fixture = TestBed.createComponent(MyComp);
+      fixture.detectChanges();
+
+      const directive = fixture.componentInstance.directiveInstance;
+
+      expect(directive.exist).toBe('existValue');
+      expect(directive.namespacedExist).toBeNull();
+      expect(directive.other).toBe('otherValue');
+    });
   });
 });
