@@ -49,18 +49,6 @@ window.testBlocklist = {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
     "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
   },
-  "CdkTable with trackBy should change row implicit data even when trackBy finds no changes": {
-    "error": "Error: Expected 'a_1 b_1' to be 'a_2 b_2'.",
-    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTable, CdkHeaderRow, CdkFooterRow and CdkRow are OnPush)"
-  },
-  "CdkTable should be able to apply classes to rows based on their context": {
-    "error": "Error: Expected false to be true.",
-    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTable, CdkHeaderRow, CdkFooterRow and CdkRow are OnPush)"
-  },
-  "CdkTable should be able to apply classes to cells based on their row context": {
-    "error": "Error: Expected false to be true.",
-    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTable, CdkHeaderRow, CdkFooterRow and CdkRow are OnPush)"
-  },
   "CdkTree flat tree should initialize should be able to use units different from px for the indentation": {
     "error": "Error: Failed: Expected node level to be 15rem but was 28px",
     "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTree is OnPush)"
@@ -105,9 +93,29 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
+  "MatStepper basic stepper should not do anything when pressing the ENTER key with a modifier": {
+    "error": "Error: Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'.",
+    "notes": "FW-1146: Components should be able to inherit view queries from directives"
+  },
+  "MatStepper basic stepper should not do anything when pressing the SPACE key with a modifier": {
+    "error": "Error: Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'.",
+    "notes": "FW-1146: Components should be able to inherit view queries from directives"
+  },
   "MatStepper linear stepper should not move to next step if current step is pending": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
+  },
+  "MatStepper vertical stepper should support using the left/right arrows to move focus": {
+    "error": "Error: Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'.",
+    "notes": "FW-1146: Components should be able to inherit view queries from directives"
+  },
+  "MatStepper vertical stepper should support using the up/down arrows to move focus": {
+    "error": "Error: Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'.",
+    "notes": "FW-1146: Components should be able to inherit view queries from directives"
+  },
+  "MatStepper vertical stepper should reverse arrow key focus in RTL mode": {
+    "error": "Error: Expected 0 to be 1.",
+    "notes": "FW-1146: Components should be able to inherit view queries from directives"
   },
   "MatStepper stepper with error state should show error state": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
@@ -121,28 +129,8 @@ window.testBlocklist = {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
-  "MatStepper basic stepper should not do anything when pressing the ENTER key with a modifier": {
-    "error": "Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'",
-    "notes": "FW-1146: Components should be able to inherit view queries from directives"
-  },
-  "MatStepper basic stepper should not do anything when pressing the SPACE key with a modifier": {
-    "error": "Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'",
-    "notes": "FW-1146: Components should be able to inherit view queries from directives"
-  },
-  "MatStepper vertical stepper should support using the left/right arrows to move focus": {
-    "error": "Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'",
-    "notes": "FW-1146: Components should be able to inherit view queries from directives"
-  },
-  "MatStepper vertical stepper should support using the up/down arrows to move focus": {
-    "error": "Expected 0 to be 1, 'Expected index of focused step to increase by 1 after pressing the next key.'",
-    "notes": "FW-1146: Components should be able to inherit view queries from directives"
-  },
-  "MatStepper vertical stepper should reverse arrow key focus in RTL mode": {
-    "error": "Expected 0 to be 1",
-    "notes": "FW-1146: Components should be able to inherit view queries from directives"
-  },
   "MatSidenav should be fixed position when in fixed mode": {
-    "error": "Error: Expected ng-tns-c24896-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
+    "error": "Error: Expected ng-tns-c23383-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
   },
   "MatSidenav should set fixed bottom and top when in fixed mode": {
@@ -228,22 +216,6 @@ window.testBlocklist = {
   "MatTable should apply custom sticky CSS class to sticky cells": {
     "error": "Error: Missing definitions for header, footer, and row; cannot determine which columns should be rendered.",
     "notes": "FW-1141: Direct ContentChildren not found for <tr> tags without a <tbody>"
-  },
-  "MatTable with MatTableDataSource and sort/pagination/filter should by default correctly sort an empty string": {
-    "error": "Error: Failed: Expected cell contents to be  but was a_1",
-    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatTable, MatHeaderRow, MatFooterRow and MatRow are OnPush)"
-  },
-  "MatTable with MatTableDataSource and sort/pagination/filter should by default correctly sort undefined values": {
-    "error": "Error: Failed: Expected cell contents to be  but was a_1",
-    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatTable, MatHeaderRow, MatFooterRow and MatRow are OnPush)"
-  },
-  "MatTable with MatTableDataSource and sort/pagination/filter should sort zero correctly": {
-    "error": "Error: Failed: Expected cell contents to be -1 but was a_1",
-    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatTable, MatHeaderRow, MatFooterRow and MatRow are OnPush)"
-  },
-  "MatTable with MatTableDataSource and sort/pagination/filter should sort strings with numbers larger than MAX_SAFE_INTEGER correctly": {
-    "error": "Error: Failed: Expected cell contents to be 9563256840123535 but was a_1",
-    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatTable, MatHeaderRow, MatFooterRow and MatRow are OnPush)"
   }
 };
 // clang-format on
