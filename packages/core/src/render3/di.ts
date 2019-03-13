@@ -279,7 +279,14 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
       // If we hit a `Bindings` or `Template` marker then we are done.
       if (isNameOnlyAttributeMarker(value)) break;
 
-      if (typeof value === 'number') {
+      // Skip namespaced attributes
+      if (value === AttributeMarker.NamespaceURI) {
+        // we skip the next two values
+        // as namespaced attributes looks like
+        // [..., AttributeMarker.NamespaceURI, 'http://someuri.com/test', 'test:exist',
+        // 'existValue', ...]
+        i = i + 2;
+      } else if (typeof value === 'number') {
         // Skip to the first value of the marked attribute.
         i++;
         if (value === AttributeMarker.Classes && attrNameToInject === 'class') {
@@ -300,7 +307,6 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
           }
         }
       } else if (value === attrNameToInject) {
-        // TODO(FW-1137): Skip namespaced attributes
         return attrs[i + 1] as string;
       } else {
         i = i + 2;
