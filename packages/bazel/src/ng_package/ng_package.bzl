@@ -107,6 +107,13 @@ def _rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, for
         args.add("--output.name", _global_name(package_name))
         args.add("--amd.id", package_name)
 
+    # After updating to build_bazel_rules_nodejs 0.27.0+, rollup has been updated to v1.3.1
+    # which tree shakes @__PURE__ annotations by default. We turn this feature off
+    # for ng_package as Angular bundles contain these annotations and there are
+    # test failures if they are removed. See comments in
+    # https://github.com/angular/angular/pull/29210 for more information.
+    args.add("--no-treeshake.annotations")
+
     # Note: if the input has external source maps then we need to also install and use
     #   `rollup-plugin-sourcemaps`, which will require us to use rollup.config.js file instead
     #   of command line args
