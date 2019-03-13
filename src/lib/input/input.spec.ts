@@ -1621,10 +1621,10 @@ class MatInputHintLabelTestController {
   label: string = '';
 }
 
-@Component({
-  template: `<mat-form-field><input matInput type="file"></mat-form-field>`
-})
-class MatInputInvalidTypeTestController {}
+@Component({template: `<mat-form-field><input matInput [type]="t"></mat-form-field>`})
+class MatInputInvalidTypeTestController {
+  t = 'file';
+}
 
 @Component({
   template: `
