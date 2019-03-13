@@ -1,3 +1,23 @@
+<a name="8.0.0-beta.8"></a>
+# [8.0.0-beta.8](https://github.com/angular/angular/compare/8.0.0-beta.7...8.0.0-beta.8) (2019-03-12)
+
+
+### Bug Fixes
+
+* **bazel:** add missing binary path for api-extractor ([#29202](https://github.com/angular/angular/issues/29202)) ([df354d1](https://github.com/angular/angular/commit/df354d1))
+* **bazel:** ng build should produce prod bundle ([#29136](https://github.com/angular/angular/issues/29136)) ([14ce8a9](https://github.com/angular/angular/commit/14ce8a9))
+* **compiler:** ensure template is updated if an output is transformed ([#29041](https://github.com/angular/angular/issues/29041)) ([c7e4931](https://github.com/angular/angular/commit/c7e4931))
+
+
+### Features
+
+* **bazel:** Eject Bazel ([#29167](https://github.com/angular/angular/issues/29167)) ([36a1550](https://github.com/angular/angular/commit/36a1550))
+* **bazel:** Hide Bazel files in Bazel builder ([#29110](https://github.com/angular/angular/issues/29110)) ([7060d90](https://github.com/angular/angular/commit/7060d90))
+* **forms:** clear (remove all) components from a FormArray ([#28918](https://github.com/angular/angular/issues/28918)) ([a68b1a1](https://github.com/angular/angular/commit/a68b1a1)), closes [#18531](https://github.com/angular/angular/issues/18531)
+* **platform-server:** wait on returned BEFORE_APP_SERIALIZED promises ([#29120](https://github.com/angular/angular/issues/29120)) ([7102ea8](https://github.com/angular/angular/commit/7102ea8))
+
+
+
 <a name="7.2.9"></a>
 ## [7.2.9](https://github.com/angular/angular/compare/7.2.8...7.2.9) (2019-03-12)
 
