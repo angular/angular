@@ -10,9 +10,11 @@ ts_library(
     ],
     deps = [
         "//packages/core/schematics/migrations/static-queries",
+        "//packages/core/schematics/migrations/static-queries/google3",
         "//packages/core/schematics/utils",
         "@npm//@angular-devkit/schematics",
         "@npm//@types/shelljs",
+        "@npm//tslint",
     ],
 )
 
