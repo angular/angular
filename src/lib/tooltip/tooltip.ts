@@ -11,7 +11,6 @@ import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
-import {HammerLoader, HAMMER_LOADER} from '@angular/platform-browser';
 import {
   FlexibleConnectedPositionStrategy,
   HorizontalConnectionPos,
@@ -19,13 +18,12 @@ import {
   Overlay,
   OverlayConnectionPosition,
   OverlayRef,
-  VerticalConnectionPos,
   ScrollStrategy,
+  VerticalConnectionPos,
 } from '@angular/cdk/overlay';
-import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {Platform} from '@angular/cdk/platform';
 import {ComponentPortal} from '@angular/cdk/portal';
-import {take, takeUntil} from 'rxjs/operators';
+import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -37,11 +35,15 @@ import {
   Input,
   NgZone,
   OnDestroy,
+  OnInit,
   Optional,
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
-import {Subject, Observable} from 'rxjs';
+import {HAMMER_LOADER, HammerLoader} from '@angular/platform-browser';
+import {Observable, Subject} from 'rxjs';
+import {take, takeUntil} from 'rxjs/operators';
+
 import {matTooltipAnimations} from './tooltip-animations';
 
 
@@ -116,7 +118,7 @@ export function MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY(): MatTooltipDefaultOptions 
     '(touchend)': '_handleTouchend()',
   },
 })
-export class MatTooltip implements OnDestroy {
+export class MatTooltip implements OnDestroy, OnInit {
   _overlayRef: OverlayRef | null;
   _tooltipInstance: TooltipComponent | null;
 
@@ -214,7 +216,6 @@ export class MatTooltip implements OnDestroy {
 
     this._scrollStrategy = scrollStrategy;
     const element: HTMLElement = _elementRef.nativeElement;
-    const elementStyle = element.style as CSSStyleDeclaration & {webkitUserDrag: string};
     const hasGestures = typeof window === 'undefined' || (window as any).Hammer || hammerLoader;
 
     // The mouse events shouldn't be bound on mobile devices, because they can prevent the
@@ -231,6 +232,27 @@ export class MatTooltip implements OnDestroy {
 
     this._manualListeners.forEach((listener, event) => element.addEventListener(event, listener));
 
+    _focusMonitor.monitor(_elementRef).pipe(takeUntil(this._destroyed)).subscribe(origin => {
+      // Note that the focus monitor runs outside the Angular zone.
+      if (!origin) {
+        _ngZone.run(() => this.hide(0));
+      } else if (origin === 'keyboard') {
+        _ngZone.run(() => this.show());
+      }
+    });
+
+    if (_defaultOptions && _defaultOptions.position) {
+      this.position = _defaultOptions.position;
+    }
+  }
+
+  /**
+   * Setup styling-specific things
+   */
+  ngOnInit() {
+    const element = this._elementRef.nativeElement;
+    const elementStyle = element.style as CSSStyleDeclaration & {webkitUserDrag: string};
+
     if (element.nodeName === 'INPUT' || element.nodeName === 'TEXTAREA') {
       // When we bind a gesture event on an element (in this case `longpress`), HammerJS
       // will add some inline styles by default, including `user-select: none`. This is
@@ -245,19 +267,6 @@ export class MatTooltip implements OnDestroy {
     // the element draggable, clear the `-webkit-user-drag`.
     if (element.draggable && elementStyle.webkitUserDrag === 'none') {
       elementStyle.webkitUserDrag = '';
-    }
-
-    _focusMonitor.monitor(_elementRef).pipe(takeUntil(this._destroyed)).subscribe(origin => {
-      // Note that the focus monitor runs outside the Angular zone.
-      if (!origin) {
-        _ngZone.run(() => this.hide(0));
-      } else if (origin === 'keyboard') {
-        _ngZone.run(() => this.show());
-      }
-    });
-
-    if (_defaultOptions && _defaultOptions.position) {
-      this.position = _defaultOptions.position;
     }
   }
 

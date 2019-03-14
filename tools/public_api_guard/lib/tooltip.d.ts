@@ -14,33 +14,32 @@ export declare const MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER: {
     useFactory: typeof MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY;
 };
 
-export declare class MatTooltip implements OnDestroy {
-    _overlayRef: OverlayRef | null;
-    _tooltipInstance: TooltipComponent | null;
-    disabled: boolean;
-    hideDelay: number;
-    message: string;
-    position: TooltipPosition;
-    showDelay: number;
-    tooltipClass: string | string[] | Set<string> | {
-        [key: string]: any;
-    };
-    constructor(_overlay: Overlay, _elementRef: ElementRef<HTMLElement>, _scrollDispatcher: ScrollDispatcher, _viewContainerRef: ViewContainerRef, _ngZone: NgZone, platform: Platform, _ariaDescriber: AriaDescriber, _focusMonitor: FocusMonitor, scrollStrategy: any, _dir: Directionality, _defaultOptions: MatTooltipDefaultOptions, hammerLoader?: HammerLoader);
-    _getOrigin(): {
-        main: OriginConnectionPosition;
-        fallback: OriginConnectionPosition;
-    };
-    _getOverlayPosition(): {
-        main: OverlayConnectionPosition;
-        fallback: OverlayConnectionPosition;
-    };
-    _handleKeydown(e: KeyboardEvent): void;
-    _handleTouchend(): void;
-    _isTooltipVisible(): boolean;
-    hide(delay?: number): void;
-    ngOnDestroy(): void;
-    show(delay?: number): void;
-    toggle(): void;
+export declare class MatTooltip implements OnDestroy, OnInit {
+  _overlayRef: OverlayRef|null;
+  _tooltipInstance: TooltipComponent|null;
+  disabled: boolean;
+  hideDelay: number;
+  message: string;
+  position: TooltipPosition;
+  showDelay: number;
+  tooltipClass: string|string[]|Set<string>|{
+    [key: string]: any;
+  };
+  constructor(
+      _overlay: Overlay, _elementRef: ElementRef<HTMLElement>, _scrollDispatcher: ScrollDispatcher,
+      _viewContainerRef: ViewContainerRef, _ngZone: NgZone, platform: Platform,
+      _ariaDescriber: AriaDescriber, _focusMonitor: FocusMonitor, scrollStrategy: any,
+      _dir: Directionality, _defaultOptions: MatTooltipDefaultOptions, hammerLoader?: HammerLoader);
+  _getOrigin(): {main: OriginConnectionPosition; fallback: OriginConnectionPosition;};
+  _getOverlayPosition(): {main: OverlayConnectionPosition; fallback: OverlayConnectionPosition;};
+  _handleKeydown(e: KeyboardEvent): void;
+  _handleTouchend(): void;
+  _isTooltipVisible(): boolean;
+  hide(delay?: number): void;
+  ngOnDestroy(): void;
+  ngOnInit(): void;
+  show(delay?: number): void;
+  toggle(): void;
 }
 
 export declare const matTooltipAnimations: {
