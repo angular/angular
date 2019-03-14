@@ -650,7 +650,8 @@ class _Tokenizer {
   }
 
   private _isTextEnd(): boolean {
-    if (this._cursor.peek() === chars.$LT || this._cursor.peek() === chars.$EOF) {
+    if ((this._cursor.peek() === chars.$LT && !this._inInterpolation) ||
+        this._cursor.peek() === chars.$EOF) {
       return true;
     }
 

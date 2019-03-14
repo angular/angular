@@ -7,7 +7,6 @@
  */
 
 import {getHtmlTagDefinition} from '../../src/ml_parser/html_tags';
-import {InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 import * as lex from '../../src/ml_parser/lexer';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
 
@@ -254,6 +253,18 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         ]);
       });
 
+      it('should parse valid start tag in attribute value', () => {
+        expect(tokenizeAndHumanizeParts('<div [if]="a<b">')).toEqual([
+          [lex.TokenType.TAG_OPEN_START, '', 'div'],
+          [lex.TokenType.ATTR_NAME, '', '[if]'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
+          [lex.TokenType.ATTR_VALUE, 'a<b'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
       it('should parse attributes with prefix', () => {
         expect(tokenizeAndHumanizeParts('<t ns1:a>')).toEqual([
           [lex.TokenType.TAG_OPEN_START, '', 't'],
@@ -350,6 +361,18 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.ATTR_NAME, '', 'a'],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.ATTR_VALUE, 'b && c &'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
+          [lex.TokenType.TAG_OPEN_END],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should parse attributes with "=" in values', () => {
+        expect(tokenizeAndHumanizeParts('<div [if]="!(a = b)">')).toEqual([
+          [lex.TokenType.TAG_OPEN_START, '', 'div'],
+          [lex.TokenType.ATTR_NAME, '', '[if]'],
+          [lex.TokenType.ATTR_QUOTE, '"'],
+          [lex.TokenType.ATTR_VALUE, '!(a = b)'],
           [lex.TokenType.ATTR_QUOTE, '"'],
           [lex.TokenType.TAG_OPEN_END],
           [lex.TokenType.EOF],
@@ -542,12 +565,27 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
 
       it('should parse valid start tag in interpolation', () => {
         expect(tokenizeAndHumanizeParts('{{ a <b && c > d }}')).toEqual([
-          [lex.TokenType.TEXT, '{{ a '],
-          [lex.TokenType.TAG_OPEN_START, '', 'b'],
-          [lex.TokenType.ATTR_NAME, '', '&&'],
-          [lex.TokenType.ATTR_NAME, '', 'c'],
-          [lex.TokenType.TAG_OPEN_END],
-          [lex.TokenType.TEXT, ' d }}'],
+          [lex.TokenType.TEXT, '{{ a <b && c > d }}'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should parse valid start tag in interpolation - no spaces between tag name and interpolation end',
+         () => {
+           expect(tokenizeAndHumanizeParts('{{a <b+5}}')).toEqual([
+             [lex.TokenType.TEXT, '{{a <b+5}}'],
+             [lex.TokenType.EOF],
+           ]);
+         });
+
+      it('should parse start tags with invalid attribute names as text', () => {
+        expect(tokenizeAndHumanizeParts('<t ">')).toEqual([
+          [lex.TokenType.TEXT, '<t ">'],
+          [lex.TokenType.EOF],
+        ]);
+
+        expect(tokenizeAndHumanizeParts('<t \'>')).toEqual([
+          [lex.TokenType.TEXT, '<t \'>'],
           [lex.TokenType.EOF],
         ]);
       });
