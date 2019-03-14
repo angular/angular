@@ -1,11 +1,11 @@
 import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
   ElementRef,
   NgZone,
   OnDestroy,
-  OnInit,
   ViewChild
 } from '@angular/core';
 
@@ -15,7 +15,7 @@ import {
   templateUrl: 'focus-monitor-overview-example.html',
   styleUrls: ['focus-monitor-overview-example.css']
 })
-export class FocusMonitorOverviewExample implements OnDestroy, OnInit {
+export class FocusMonitorOverviewExample implements OnDestroy, AfterViewInit {
   @ViewChild('element') element: ElementRef<HTMLElement>;
   @ViewChild('subtree') subtree: ElementRef<HTMLElement>;
 
@@ -26,7 +26,7 @@ export class FocusMonitorOverviewExample implements OnDestroy, OnInit {
               private cdr: ChangeDetectorRef,
               private ngZone: NgZone) {}
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.focusMonitor.monitor(this.element)
         .subscribe(origin => this.ngZone.run(() => {
           this.elementOrigin = this.formatOrigin(origin);
