@@ -600,7 +600,10 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "renderInitialStyling"
+    "name": "renderInitialClasses"
+  },
+  {
+    "name": "renderInitialStyles"
   },
   {
     "name": "renderStringify"

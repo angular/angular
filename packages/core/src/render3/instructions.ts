@@ -678,7 +678,7 @@ export function elementStart(
     }
   }
 
-  // we render the styling again below incase any directives have set any `style` and/or
+  // we render the styling again below in case any directives have set any `style` and/or
   // `class` host attribute values...
   if (tNode.stylingTemplate) {
     renderInitialClasses(native, tNode.stylingTemplate, renderer, initialClassesIndex);
