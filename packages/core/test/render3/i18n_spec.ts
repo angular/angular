@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgForOfContext} from '@angular/common';
 import {noop} from '../../../compiler/src/render3/view/util';
 import {Component as _Component} from '../../src/core';
 import {defineComponent, defineDirective} from '../../src/render3/definition';
@@ -13,8 +14,8 @@ import {getTranslationForTemplate, i18n, i18nApply, i18nAttributes, i18nEnd, i18
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {getNativeByIndex, getTNode} from '../../src/render3/util/view_utils';
-import {NgIf} from './common_with_def';
-import {allocHostVars, element, elementEnd, elementStart, template, text, nextContext, bind, elementProperty, projectionDef, projection, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
+import {NgForOf, NgIf} from './common_with_def';
+import {allocHostVars, element, elementEnd, elementStart, template, text, nextContext, bind, elementProperty, projectionDef, projection, elementContainerStart, elementContainerEnd, textBinding} from '../../src/render3/instructions';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {ComponentFixture, TemplateFixture} from './render_util';
@@ -1332,6 +1333,70 @@ describe('Runtime i18n', () => {
       const fixture = new ComponentFixture(MyApp);
       expect(fixture.html)
           .toEqual(`<div><div>Section 1</div><div>Section 2</div><div>Section 3</div></div>`);
+    });
+
+    it('should support multiple sibling i18n blocks inside of *ngFor', () => {
+      // Translated template:
+      // <ul *ngFor="let item of [1,2,3]">
+      //  <li i18n>Section 1</li>
+      //  <li i18n>Section 2</li>
+      //  <li i18n>Section 3</li>
+      // </ul>
+
+      const MSG_DIV_1 = `Section 1`;
+      const MSG_DIV_2 = `Section 2`;
+      const MSG_DIV_3 = `Section 3`;
+
+      function liTemplate(rf: RenderFlags, ctx: NgForOfContext<string>) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'ul');
+          elementStart(1, 'li');
+          { i18n(2, MSG_DIV_1); }
+          elementEnd();
+          elementStart(3, 'li');
+          { i18n(4, MSG_DIV_2); }
+          elementEnd();
+          elementStart(5, 'li');
+          { i18n(6, MSG_DIV_3); }
+          elementEnd();
+          elementEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          i18nApply(2);
+          i18nApply(4);
+          i18nApply(6);
+        }
+      }
+
+      class MyApp {
+        items: string[] = ['1', '2', '3'];
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          selectors: [['my-app']],
+          factory: () => new MyApp(),
+          consts: 2,
+          vars: 1,
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div');
+              {
+                template(1, liTemplate, 7, 0, 'ul', [AttributeMarker.Template, 'ngFor', 'ngForOf']);
+              }
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(1, 'ngForOf', bind(ctx.items));
+            }
+          },
+          directives: () => [NgForOf]
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html)
+          .toEqual(
+              `<div><ul><li>Section 1</li><li>Section 2</li><li>Section 3</li></ul><ul><li>Section 1</li><li>Section 2</li><li>Section 3</li></ul><ul><li>Section 1</li><li>Section 2</li><li>Section 3</li></ul></div>`);
     });
 
     it('should support attribute translations on removed elements', () => {
