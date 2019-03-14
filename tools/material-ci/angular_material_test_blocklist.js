@@ -41,20 +41,12 @@ window.testBlocklist = {
     "error": "Error: Failed: Expected node descendant num to be 2 but was 0",
     "notes": "Breaking change: Content queries and descendants flag (fix test by removing <div> in NestedCdkTreeAppWithToggle)"
   },
-  "MatStepper basic stepper should go to next available step when the next button is clicked": {
-    "error": "Error: Expected 2 to be 1.",
-    "notes": "Unknown"
-  },
   "MatStepper basic stepper should go to previous available step when the previous button is clicked": {
     "error": "TypeError: Cannot read property 'nativeElement' of undefined",
     "notes": "Unknown"
   },
-  "MatStepper basic stepper should not set focus on header of selected step if header is not clicked": {
-    "error": "Error: Expected 2 to be 1.",
-    "notes": "Unknown"
-  },
   "MatStepper basic stepper should focus next step header if focus is inside the stepper": {
-    "error": "Error: Expected 2 to be 1.",
+    "error": "Error: Expected spy focus to have been called.",
     "notes": "Unknown"
   },
   "MatStepper basic stepper should only be able to return to a previous step if it is editable": {
@@ -100,10 +92,6 @@ window.testBlocklist = {
   "MatTree nested tree with toggle should expand/collapse the node recursively": {
     "error": "Error: Expected 0 to be 3, 'Expect node expanded'.",
     "notes": "1) Breaking change: Content queries and descendants flag (fix test by removing <div> in NestedMatTreeAppWithToggle) - 2) Breaking change: Ivy inherits metadata from superclasses (remove (click) in MatTreeNodeToggle)"
-  },
-  "MatInput without forms validates the type": {
-    "error": "Error: Input type \"file\" isn't supported by matInput.",
-    "notes": "Breaking change: Static directive inputs evaluated in creation mode - material test to be updated"
   },
   "MatInput with textarea autosize should work in a step": {
     "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
