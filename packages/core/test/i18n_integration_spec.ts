@@ -621,4 +621,20 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
     expect(fixture.nativeElement.innerHTML)
         .toBe('<div>Section 1</div><div>Section 2</div><div>Section 3</div>');
   });
+
+  it('should handle multiple i18n sections inside of *ngFor', () => {
+    const template = `
+    <ul *ngFor="let item of [1,2,3]">
+      <li i18n>Section 1</li>
+      <li i18n>Section 2</li>
+      <li i18n>Section 3</li>
+    </ul>
+  `;
+    const fixture = getFixtureWithOverrides({template});
+    const element = fixture.nativeElement;
+    for (let i = 0; i < element.children.length; i++) {
+      const child = element.children[i];
+      expect(child.innerHTML).toBe(`<li>Section 1</li><li>Section 2</li><li>Section 3</li>`);
+    }
+  });
 });
