@@ -399,7 +399,7 @@ export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, '')
   * @param typingsPath the typings bundle entrypoint
   */
   function rewireMetadata(metadataPath: string, typingsPath: string): string {
-    const metadata = fs.readFileSync(metadataPath, 'utf-8');
+    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
 
     let typingsRelativePath =
         normalizeSeparators(path.relative(path.dirname(metadataPath), typingsPath));
@@ -411,7 +411,13 @@ export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, '')
 
     // the regexp here catches all relative paths such as:
     // ./src/core/foo.d.ts and ../src/core/foo.d.ts
-    return metadata.replace(/\.?\.\/[\w\.\-_\/]+/g, typingsRelativePath);
+    const relativePathRegex = /\.?\.\/[\w\.\-_\/]+/g;
+    if (metadata.exports) {
+      // Strip re-exports which are now self-references
+      metadata.exports =
+          metadata.exports.filter((e: {from: string}) => !relativePathRegex.test(e.from));
+    }
+    return JSON.stringify(metadata).replace(relativePathRegex, typingsRelativePath);
   }
 
   /**
