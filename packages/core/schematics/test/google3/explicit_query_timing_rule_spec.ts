@@ -109,7 +109,7 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
     const failures = linter.getResult().failures;
 
     expect(failures.length).toBe(1);
-    expect(failures[0].getFailure()).toMatch(/analysis of the query.*"static"/);
+    expect(failures[0].getFailure()).toMatch(/analysis of the query.*"{static: true}"/);
   });
 
   it('should report non-explicit dynamic query definitions', () => {
@@ -126,6 +126,6 @@ describe('Google3 explicitQueryTiming TSLint rule', () => {
     const failures = linter.getResult().failures;
 
     expect(failures.length).toBe(1);
-    expect(failures[0].getFailure()).toMatch(/analysis of the query.*"dynamic"/);
+    expect(failures[0].getFailure()).toMatch(/analysis of the query.*"{static: false}"/);
   });
 });

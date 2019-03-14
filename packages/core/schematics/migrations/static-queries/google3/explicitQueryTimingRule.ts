@@ -14,7 +14,7 @@ import {NgQueryResolveVisitor} from '../angular/ng_query_visitor';
 import {QueryTiming} from '../angular/query-definition';
 import {getTransformedQueryCallExpr} from '../transform';
 
-const FAILURE_MESSAGE = 'Query does explicitly specify its timing. Read more here: ' +
+const FAILURE_MESSAGE = 'Query does not explicitly specify its timing. Read more here: ' +
     'https://github.com/angular/angular/pull/28810';
 
 /**
@@ -57,9 +57,8 @@ export class Rule extends Rules.TypedRule {
       // Replace the existing query decorator call expression with the
       // updated call expression node.
       const fix = new Replacement(queryExpr.getStart(), queryExpr.getWidth(), newText);
-      const timingStr = timing === QueryTiming.STATIC ? 'static' : 'dynamic';
       const failureMessage = `${FAILURE_MESSAGE}. Based on analysis of the query it can be ` +
-          `marked as "${timingStr}".`;
+          `marked as "{static: ${(timing === QueryTiming.STATIC).toString()}}".`;
 
       failures.push(new RuleFailure(
           sourceFile, queryExpr.getStart(), queryExpr.getWidth(), failureMessage, this.ruleName,
