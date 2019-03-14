@@ -8,13 +8,17 @@
  * @fileoverview Schematics for ng-new project that builds with Bazel.
  */
 
-import {JsonAstObject, parseJsonAst, strings} from '@angular-devkit/core';
-import {Rule, SchematicContext, SchematicsException, Tree, apply, applyTemplates, chain, mergeWith, move, schematic, url} from '@angular-devkit/schematics';
+import {JsonAstObject, parseJsonAst} from '@angular-devkit/core';
+import {Rule, SchematicContext, SchematicsException, Tree, apply, applyTemplates, chain, mergeWith, url} from '@angular-devkit/schematics';
 import {getWorkspacePath} from '@schematics/angular/utility/config';
 import {findPropertyInAstObject, insertPropertyInAstObjectInOrder} from '@schematics/angular/utility/json-utils';
 import {validateProjectName} from '@schematics/angular/utility/validation';
+
 import {isJsonAstObject, removeKeyValueInAstObject, replacePropertyInAstObject} from '../utility/json-utils';
+import {findE2eArchitect} from '../utility/workspace-utils';
+
 import {Schema} from './schema';
+
 
 /**
  * Packages that build under Bazel require additional dev dependencies. This
@@ -98,6 +102,9 @@ function updateGitignore() {
   };
 }
 
+/**
+ * Change the architect in angular.json to use Bazel builder.
+ */
 function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
     const {name} = options;
@@ -153,13 +160,10 @@ function updateAngularJsonToUseBazelBuilder(options: Schema): Rule {
         },
         indent);
 
-    const e2e = `${options.name}-e2e`;
-    const e2eNode = findPropertyInAstObject(projects as JsonAstObject, e2e);
-    if (e2eNode) {
-      const architect =
-          findPropertyInAstObject(e2eNode as JsonAstObject, 'architect') as JsonAstObject;
+    const e2eArchitect = findE2eArchitect(workspaceJsonAst, name);
+    if (e2eArchitect) {
       replacePropertyInAstObject(
-          recorder, architect, 'e2e', {
+          recorder, e2eArchitect, 'e2e', {
             builder: '@angular/bazel:build',
             options: {
               bazelCommand: 'test',
