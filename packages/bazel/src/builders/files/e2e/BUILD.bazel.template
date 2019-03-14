@@ -5,7 +5,7 @@ ts_library(
     name = "e2e_lib",
     testonly = 1,
     srcs = glob(["src/**/*.ts"]),
-    tsconfig = ":tsconfig.e2e.json",
+    tsconfig = ":tsconfig.e2e.json" if len(glob(["tsconfig.e2e.json"])) else ":tsconfig.json",
     deps = [
       "@npm//@types/jasmine",
       "@npm//@types/jasminewd2",
