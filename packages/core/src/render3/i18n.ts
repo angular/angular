@@ -626,16 +626,6 @@ export function i18nEnd(): void {
   i18nEndFirstPass(tView);
 }
 
-function findLastNode(node: TNode): TNode {
-  while (node.next) {
-    node = node.next;
-  }
-  if (node.child) {
-    return findLastNode(node.child);
-  }
-  return node;
-}
-
 /**
  * See `i18nEnd` above.
  */
@@ -651,10 +641,8 @@ function i18nEndFirstPass(tView: TView) {
 
   // Find the last node that was added before `i18nEnd`
   let lastCreatedNode = getPreviousOrParentTNode();
-  if (lastCreatedNode.child) {
-    lastCreatedNode = findLastNode(lastCreatedNode.child);
-  }
 
+  // Read the instructions to insert/move/remove DOM elements
   const visitedNodes = readCreateOpCodes(rootIndex, tI18n.create, tI18n.icus, viewData);
 
   // Remove deleted nodes
