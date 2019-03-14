@@ -14,12 +14,14 @@
     "**/node_modules/**": true,
     "**/bazel-out/**": true,
     "**/dist/**": true,
+    "**/aio/src/generated/**": true,
   },
   "search.exclude": {
     "**/node_modules": true,
     "**/bower_components": true,
     "**/bazel-out": true,
     "**/dist": true,
+    "**/aio/src/generated": true,
   },
   "git.ignoreLimitWarning": true,
 }
