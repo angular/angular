@@ -417,6 +417,11 @@
     "@types/express" "*"
     "@types/node" "*"
 
+"@types/estree@0.0.39":
+  version "0.0.39"
+  resolved "https://registry.yarnpkg.com/@types/estree/-/estree-0.0.39.tgz#e177e699ee1b8c22d23174caaa7422644389509f"
+  integrity sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==
+
 "@types/express-serve-static-core@*":
   version "4.0.55"
   resolved "https://registry.yarnpkg.com/@types/express-serve-static-core/-/express-serve-static-core-4.0.55.tgz#f53868838a955f98b380819ec9134f5df7d9482f"
@@ -456,6 +461,11 @@
 "@types/node@*":
   version "8.0.47"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.47.tgz#968e596f91acd59069054558a00708c445ca30c2"
+
+"@types/node@^11.9.5":
+  version "11.11.3"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-11.11.3.tgz#7c6b0f8eaf16ae530795de2ad1b85d34bf2f5c58"
+  integrity sha512-wp6IOGu1lxsfnrD+5mX6qwSwWuqsdkKKxTN4aQc4wByHAKZJf9/D4KXPQ1POUjEbnCP5LMggB0OEFNY9OTsMqg==
 
 "@types/node@^6.0.46":
   version "6.0.90"
@@ -679,13 +689,18 @@ acorn-dynamic-import@^3.0.0:
   dependencies:
     acorn "^5.0.0"
 
-acorn@^5.0.0, acorn@^5.1.2:
+acorn@^5.0.0:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.1.2.tgz#911cb53e036807cf0fa778dc5d370fbd864246d7"
 
 acorn@^5.6.2:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-5.7.2.tgz#91fa871883485d06708800318404e72bfb26dcc5"
+
+acorn@^6.1.1:
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.1.1.tgz#7d25ae05bb8ad1f9b699108e1094ecd7884adc1f"
+  integrity sha512-jPTiwtOxaHNaAPg/dmrJ/beuzLRnXtB0kQPQ8JpotKJgTB6rX6c8mlf315941pyjBSaPg8NHXS9fhP4u17DpGA==
 
 adm-zip@^0.4.7:
   version "0.4.7"
@@ -1305,12 +1320,6 @@ brorand@^1.0.1:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
 
-browser-resolve@^1.11.0:
-  version "1.11.2"
-  resolved "https://registry.yarnpkg.com/browser-resolve/-/browser-resolve-1.11.2.tgz#8ff09b0a2c421718a1051c260b32e48f442938ce"
-  dependencies:
-    resolve "1.1.7"
-
 browser-sync-client@2.5.1:
   version "2.5.1"
   resolved "https://registry.yarnpkg.com/browser-sync-client/-/browser-sync-client-2.5.1.tgz#ec1ad69a49c2e2d4b645b18b1c06c29b3d9af8eb"
@@ -1459,9 +1468,14 @@ buffer@^4.3.0:
     ieee754 "^1.1.4"
     isarray "^1.0.0"
 
-builtin-modules@^1.0.0, builtin-modules@^1.1.0, builtin-modules@^1.1.1:
+builtin-modules@^1.0.0, builtin-modules@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-1.1.1.tgz#270f076c5a72c02f5b65a47df94c5fe3a278892f"
+
+builtin-modules@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/builtin-modules/-/builtin-modules-3.0.0.tgz#1e587d44b006620d90286cc7a9238bbc6129cab1"
+  integrity sha512-hMIeU4K2ilbXV6Uv93ZZ0Avg/M91RaKXucQ+4me2Do1txxBDyDZWCBa5bJSLqoNTRpXTLwEzIk1KmloenDDjhg==
 
 builtin-status-codes@^3.0.0:
   version "3.0.0"
@@ -2705,13 +2719,15 @@ estraverse@^4.1.0, estraverse@^4.1.1:
   version "4.2.0"
   resolved "https://registry.yarnpkg.com/estraverse/-/estraverse-4.2.0.tgz#0dee3fed31fcd469618ce7342099fc1afa0bdb13"
 
-estree-walker@^0.3.0:
-  version "0.3.1"
-  resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-0.3.1.tgz#e6b1a51cf7292524e7237c312e5fe6660c1ce1aa"
+estree-walker@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-0.5.2.tgz#d3850be7529c9580d815600b53126515e146dd39"
+  integrity sha512-XpCnW/AE10ws/kDAs37cngSkvgIR8aN3G0MS85m7dUpuK2EREo9VJ00uvw6Dg/hXEpfsE1I1TvJOJr+Z+TL+ig==
 
-estree-walker@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-0.5.0.tgz#aae3b57c42deb8010e349c892462f0e71c5dd1aa"
+estree-walker@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/estree-walker/-/estree-walker-0.6.0.tgz#5d865327c44a618dde5699f763891ae31f257dae"
+  integrity sha512-peq1RfVAVzr3PU/jL31RaOjUKLoZJpObQWJJ+LgfcxDUifyLZ1RjPQZTl0pzj2uJ45b7A7XpyppXvxdEqzo4rw==
 
 esutils@^2.0.2:
   version "2.0.2"
@@ -4086,6 +4102,11 @@ is-glob@^4.0.0:
   dependencies:
     is-extglob "^2.1.1"
 
+is-module@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/is-module/-/is-module-1.0.0.tgz#3258fb69f78c14d5b815d664336b4cffb6441591"
+  integrity sha1-Mlj7afeMFNW4FdZkM2tM/7ZEFZE=
+
 is-number-like@^1.0.3:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/is-number-like/-/is-number-like-1.0.8.tgz#2e129620b50891042e44e9bbbb30593e75cfbbe3"
@@ -4813,17 +4834,18 @@ lru-cache@^5.1.1:
   dependencies:
     yallist "^3.0.2"
 
-magic-string@^0.22.4:
-  version "0.22.4"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.22.4.tgz#31039b4e40366395618c1d6cf8193c53917475ff"
-  dependencies:
-    vlq "^0.2.1"
-
 magic-string@^0.25.0:
   version "0.25.0"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.0.tgz#1f3696f9931ff0a1ed4c132250529e19cad6759b"
   dependencies:
     sourcemap-codec "^1.4.1"
+
+magic-string@^0.25.1:
+  version "0.25.2"
+  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.2.tgz#139c3a729515ec55e96e69e82a11fe890a293ad9"
+  integrity sha512-iLs9mPjh9IuTtRsqqhNGYcZXGei0Nh/A4xirrsqW7c+QhKVFL2vm7U09ru6cHRD22azaP/wMDgI+HCqbETMTtg==
+  dependencies:
+    sourcemap-codec "^1.4.4"
 
 make-dir@^1.0.0:
   version "1.1.0"
@@ -4933,7 +4955,7 @@ methods@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/methods/-/methods-1.1.2.tgz#5529a4d67654134edcc5266656835b0f851afcee"
 
-micromatch@2.3.11, micromatch@^2.1.5, micromatch@^2.3.11:
+micromatch@2.3.11, micromatch@^2.1.5:
   version "2.3.11"
   resolved "https://registry.yarnpkg.com/micromatch/-/micromatch-2.3.11.tgz#86677c97d1720b363431d04d0d15293bd38c1565"
   dependencies:
@@ -4950,6 +4972,24 @@ micromatch@2.3.11, micromatch@^2.1.5, micromatch@^2.3.11:
     object.omit "^2.0.0"
     parse-glob "^3.0.4"
     regex-cache "^0.4.2"
+
+micromatch@^3.1.10, micromatch@^3.1.8, micromatch@^3.1.9:
+  version "3.1.10"
+  resolved "https://registry.yarnpkg.com/micromatch/-/micromatch-3.1.10.tgz#70859bc95c9840952f359a068a3fc49f9ecfac23"
+  dependencies:
+    arr-diff "^4.0.0"
+    array-unique "^0.3.2"
+    braces "^2.3.1"
+    define-property "^2.0.2"
+    extend-shallow "^3.0.2"
+    extglob "^2.0.4"
+    fragment-cache "^0.2.1"
+    kind-of "^6.0.2"
+    nanomatch "^1.2.9"
+    object.pick "^1.3.0"
+    regex-not "^1.0.0"
+    snapdragon "^0.8.1"
+    to-regex "^3.0.2"
 
 micromatch@^3.1.4:
   version "3.1.5"
@@ -4968,24 +5008,6 @@ micromatch@^3.1.4:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
-
-micromatch@^3.1.8, micromatch@^3.1.9:
-  version "3.1.10"
-  resolved "https://registry.yarnpkg.com/micromatch/-/micromatch-3.1.10.tgz#70859bc95c9840952f359a068a3fc49f9ecfac23"
-  dependencies:
-    arr-diff "^4.0.0"
-    array-unique "^0.3.2"
-    braces "^2.3.1"
-    define-property "^2.0.2"
-    extend-shallow "^3.0.2"
-    extglob "^2.0.4"
-    fragment-cache "^0.2.1"
-    kind-of "^6.0.2"
-    nanomatch "^1.2.9"
-    object.pick "^1.3.0"
-    regex-not "^1.0.0"
-    snapdragon "^0.8.1"
-    to-regex "^3.0.2"
 
 miller-rabin@^4.0.0:
   version "4.0.1"
@@ -5929,6 +5951,11 @@ path-parse@^1.0.5:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.5.tgz#3c1adf871ea9cd6c9431b6ea2bd74a0ff055c4c1"
 
+path-parse@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/path-parse/-/path-parse-1.0.6.tgz#d62dbb5679405d72c4737ec58600e9ddcf06d24c"
+  integrity sha512-GSmOT2EbHrINBf9SR7CDELwlJ8AENk3Qn7OikK4nFYAu3Ote2+JYNVvkpAEQm3/TLNEJFD/xZJjzyxg3KBWOzw==
+
 path-to-regexp@0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
@@ -6632,15 +6659,22 @@ resolve-url@^0.2.1:
   version "0.2.1"
   resolved "https://registry.yarnpkg.com/resolve-url/-/resolve-url-0.2.1.tgz#2c637fe77c893afd2a663fe21aa9080068e2052a"
 
-resolve@1.1.7, resolve@1.1.x:
+resolve@1.1.x:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.1.7.tgz#203114d82ad2c5ed9e8e0411b3932875e889e97b"
 
-resolve@^1.1.6, resolve@^1.1.7, resolve@^1.4.0:
+resolve@^1.1.6, resolve@^1.1.7:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.5.0.tgz#1f09acce796c9a762579f31b2c1cc4c3cddf9f36"
   dependencies:
     path-parse "^1.0.5"
+
+resolve@^1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.10.0.tgz#3bdaaeaf45cc07f375656dfd2e54ed0810b101ba"
+  integrity sha512-3sUr9aq5OfSg2S9pNtPA9hL1FVEAjvfOC4leW0SNf/mpnaakz2a9femSd6LqAww2RaFctwyf1lCqnTHuF1rxDg==
+  dependencies:
+    path-parse "^1.0.6"
 
 resolve@^1.3.2:
   version "1.7.1"
@@ -6697,23 +6731,24 @@ ripemd160@^2.0.0, ripemd160@^2.0.1:
     hash-base "^2.0.0"
     inherits "^2.0.1"
 
-rollup-plugin-commonjs@^8.0.2:
-  version "8.2.5"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-8.2.5.tgz#924421278a6f879fd976b2ef1a28391b1e4f2a6e"
+rollup-plugin-commonjs@^9.2.1:
+  version "9.2.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-commonjs/-/rollup-plugin-commonjs-9.2.1.tgz#bb151ca8fa23600c7a03e25f9f0a45b1ee922dac"
+  integrity sha512-X0A/Cp/t+zbONFinBhiTZrfuUaVwRIp4xsbKq/2ohA2CDULa/7ONSJTelqxon+Vds2R2t2qJTqJQucKUC8GKkw==
   dependencies:
-    acorn "^5.1.2"
-    estree-walker "^0.5.0"
-    magic-string "^0.22.4"
-    resolve "^1.4.0"
-    rollup-pluginutils "^2.0.1"
+    estree-walker "^0.5.2"
+    magic-string "^0.25.1"
+    resolve "^1.10.0"
+    rollup-pluginutils "^2.3.3"
 
-rollup-plugin-node-resolve@2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-2.0.0.tgz#07e0ae94ac002a3ea36e8f33ca121d9f836b1309"
+rollup-plugin-node-resolve@^4.0.0:
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-node-resolve/-/rollup-plugin-node-resolve-4.0.1.tgz#f95765d174e5daeef9ea6268566141f53aa9d422"
+  integrity sha512-fSS7YDuCe0gYqKsr5OvxMloeZYUSgN43Ypi1WeRZzQcWtHgFayV5tUSPYpxuaioIIWaBXl6NrVk0T2/sKwueLg==
   dependencies:
-    browser-resolve "^1.11.0"
-    builtin-modules "^1.1.0"
-    resolve "^1.1.6"
+    builtin-modules "^3.0.0"
+    is-module "^1.0.0"
+    resolve "^1.10.0"
 
 rollup-plugin-uglify@^1.0.1:
   version "1.0.2"
@@ -6721,18 +6756,22 @@ rollup-plugin-uglify@^1.0.1:
   dependencies:
     uglify-js "^2.6.1"
 
-rollup-pluginutils@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.0.1.tgz#7ec95b3573f6543a46a6461bd9a7c544525d0fc0"
+rollup-pluginutils@^2.3.3:
+  version "2.4.1"
+  resolved "https://registry.yarnpkg.com/rollup-pluginutils/-/rollup-pluginutils-2.4.1.tgz#de43ab54965bbf47843599a7f3adceb723de38db"
+  integrity sha512-wesMQ9/172IJDIW/lYWm0vW0LiKe5Ekjws481R7z9WTRtmO59cqyM/2uUlxvf6yzm/fElFmHUobeQOYz46dZJw==
   dependencies:
-    estree-walker "^0.3.0"
-    micromatch "^2.3.11"
+    estree-walker "^0.6.0"
+    micromatch "^3.1.10"
 
-rollup@^0.41.6:
-  version "0.41.6"
-  resolved "https://registry.yarnpkg.com/rollup/-/rollup-0.41.6.tgz#e0d05497877a398c104d816d2733a718a7a94e2a"
+rollup@^1.1.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/rollup/-/rollup-1.6.0.tgz#4329f4634718197c678d18491724d50d8b7ee76c"
+  integrity sha512-qu9iWyuiOxAuBM8cAwLuqPclYdarIpayrkfQB7aTGTiyYPbvx+qVF33sIznfq4bxZCiytQux/FvZieUBAXivCw==
   dependencies:
-    source-map-support "^0.4.0"
+    "@types/estree" "0.0.39"
+    "@types/node" "^11.9.5"
+    acorn "^6.1.1"
 
 run-async@^2.2.0:
   version "2.3.0"
@@ -7304,7 +7343,7 @@ source-map-support@0.5.9, source-map-support@^0.5.5, source-map-support@^0.5.6, 
     buffer-from "^1.0.0"
     source-map "^0.6.0"
 
-source-map-support@^0.4.0, source-map-support@~0.4.0:
+source-map-support@~0.4.0:
   version "0.4.18"
   resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.4.18.tgz#0286a6de8be42641338594e97ccea75f0a2c585f"
   dependencies:
@@ -7351,6 +7390,11 @@ source-map@~0.2.0:
 sourcemap-codec@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.1.tgz#c8fd92d91889e902a07aee392bdd2c5863958ba2"
+
+sourcemap-codec@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.4.tgz#c63ea927c029dd6bd9a2b7fa03b3fec02ad56e9f"
+  integrity sha512-CYAPYdBu34781kLHkaW3m6b/uUSyMOC2R61gcYMWooeuaGtjof86ZA/8T+qVPPt7np1085CR9hmMGrySwEc8Xg==
 
 spawn-command@^0.0.2-1:
   version "0.0.2"
@@ -8207,10 +8251,6 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
-
-vlq@^0.2.1:
-  version "0.2.3"
-  resolved "https://registry.yarnpkg.com/vlq/-/vlq-0.2.3.tgz#8f3e4328cf63b1540c0d67e1b2778386f8975b26"
 
 vm-browserify@0.0.4:
   version "0.0.4"
