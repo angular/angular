@@ -1,5 +1,7 @@
 <h1 class="no-toc">Tutorial: Tour of Heroes</h1>
 
+foo
+
 The _Tour of Heroes_ tutorial covers the fundamentals of Angular.  
 In this tutorial you will build an app that helps a staffing agency manage its stable of heroes.
 
