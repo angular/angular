@@ -9,7 +9,7 @@
 import {TemplateRef} from '@angular/core';
 
 import {ComponentFixture, createComponent, getDirectiveOnNode} from './render_util';
-import {bind, directiveInject, element, elementContainerStart, elementContainerEnd, elementProperty, template, text} from '../../src/render3/instructions';
+import {bind, directiveInject, element, elementContainerStart, elementContainerEnd, elementProperty, template, text} from '../../src/render3/instructions/all';
 import {RenderFlags, defineDirective, AttributeMarker} from '../../src/render3/index';
 
 import {NgIf} from './common_with_def';

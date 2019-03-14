@@ -8,7 +8,7 @@
 import '../util/ng_dev_mode';
 
 import {getLContext} from './context_discovery';
-import {scheduleTick} from './instructions';
+import {scheduleTick} from './instructions/all';
 import {ComponentInstance, DirectiveInstance, Player} from './interfaces/player';
 import {RootContextFlags} from './interfaces/view';
 import {addPlayerInternal, getOrCreatePlayerContext, getPlayerContext, getPlayersInternal, getStylingContext, throwInvalidRefError} from './styling/util';

@@ -9,7 +9,7 @@
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
 
 import {bind, defineComponent, defineDirective, markDirty, reference, resolveBody, resolveDocument, textBinding} from '../../src/render3/index';
-import {container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, getCurrentView, listener, text} from '../../src/render3/instructions';
+import {container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, getCurrentView, listener, text} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {GlobalTargetResolver} from '../../src/render3/interfaces/renderer';
 import {restoreView} from '../../src/render3/state';

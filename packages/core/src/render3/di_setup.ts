@@ -13,7 +13,7 @@ import {isClassProvider, isTypeProvider, providerToFactory} from '../di/r3_injec
 
 import {DirectiveDef} from '.';
 import {diPublicInInjector, getNodeInjectable, getOrCreateNodeInjectorForNode} from './di';
-import {directiveInject} from './instructions';
+import {directiveInject} from './instructions/all';
 import {NodeInjectorFactory} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNodeFlags, TNodeProviderIndexes} from './interfaces/node';
 import {LView, TData, TVIEW, TView} from './interfaces/view';

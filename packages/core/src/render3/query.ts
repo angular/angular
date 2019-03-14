@@ -18,7 +18,7 @@ import {assertDataInRange, assertDefined, assertEqual} from '../util/assert';
 import {assertPreviousIsParent} from './assert';
 import {getNodeInjectable, locateDirectiveOrProvider} from './di';
 import {NG_ELEMENT_ID} from './fields';
-import {load, store, storeCleanupWithContext} from './instructions';
+import {load, store, storeCleanupWithContext} from './instructions/all';
 import {unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';

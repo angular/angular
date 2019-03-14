@@ -9,7 +9,7 @@
 import {WrappedValue} from '../change_detection/change_detection_util';
 import {PipeTransform} from '../change_detection/pipe_transform';
 
-import {load, store} from './instructions';
+import {load, store} from './instructions/all';
 import {PipeDef, PipeDefList} from './interfaces/definition';
 import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';

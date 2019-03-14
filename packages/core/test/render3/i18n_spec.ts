@@ -15,7 +15,7 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {getNativeByIndex, getTNode} from '../../src/render3/util/view_utils';
 import {NgForOf, NgIf} from './common_with_def';
-import {allocHostVars, element, elementEnd, elementStart, template, text, nextContext, bind, elementProperty, projectionDef, projection, elementContainerStart, elementContainerEnd, textBinding} from '../../src/render3/instructions';
+import {allocHostVars, element, elementEnd, elementStart, template, text, nextContext, bind, elementProperty, projectionDef, projection, elementContainerStart, elementContainerEnd, textBinding} from '../../src/render3/instructions/all';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nUpdateOpCode, I18nUpdateOpCodes, TI18n} from '../../src/render3/interfaces/i18n';
 import {HEADER_OFFSET, LView, TVIEW} from '../../src/render3/interfaces/view';
 import {ComponentFixture, TemplateFixture} from './render_util';
