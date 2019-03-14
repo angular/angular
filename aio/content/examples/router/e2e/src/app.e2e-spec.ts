@@ -143,6 +143,7 @@ describe('Router', () => {
     const page = getPageStruct();
 
     // go to login page and login
+    await browser.get('');
     await page.loginHref.click();
     await page.loginButton.click();
 
