@@ -41,34 +41,6 @@ window.testBlocklist = {
     "error": "Error: Failed: Expected node descendant num to be 2 but was 0",
     "notes": "Breaking change: Content queries and descendants flag (fix test by removing <div> in NestedCdkTreeAppWithToggle)"
   },
-  "MatStepper basic stepper should go to previous available step when the previous button is clicked": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper basic stepper should focus next step header if focus is inside the stepper": {
-    "error": "Error: Expected spy focus to have been called.",
-    "notes": "Unknown"
-  },
-  "MatStepper basic stepper should only be able to return to a previous step if it is editable": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper linear stepper should not move to next step if current step is pending": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper stepper with error state should show error state": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper stepper with error state should respect a custom falsy hasError value": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
-  "MatStepper stepper using Material UI Guideline logic should show done state when step is completed and its not the current step": {
-    "error": "TypeError: Cannot read property 'nativeElement' of undefined",
-    "notes": "Unknown"
-  },
   "MatSidenav should be fixed position when in fixed mode": {
     "error": "Error: Expected ng-tns-c22979-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
@@ -92,10 +64,6 @@ window.testBlocklist = {
   "MatTree nested tree with toggle should expand/collapse the node recursively": {
     "error": "Error: Expected 0 to be 3, 'Expect node expanded'.",
     "notes": "1) Breaking change: Content queries and descendants flag (fix test by removing <div> in NestedMatTreeAppWithToggle) - 2) Breaking change: Ivy inherits metadata from superclasses (remove (click) in MatTreeNodeToggle)"
-  },
-  "MatInput with textarea autosize should work in a step": {
-    "error": "TypeError: Cannot read property 'getBoundingClientRect' of null",
-    "notes": "Unknown"
   },
   "Dialog should set the proper animation states": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
