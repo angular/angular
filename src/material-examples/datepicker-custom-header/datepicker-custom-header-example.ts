@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  Host,
   Inject,
   OnDestroy
 } from '@angular/core';
@@ -66,10 +65,9 @@ export class DatepickerCustomHeaderExample {
 export class ExampleHeader<D> implements OnDestroy {
   private destroyed = new Subject<void>();
 
-  constructor(@Host() private calendar: MatCalendar<D>,
-              private dateAdapter: DateAdapter<D>,
-              @Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats,
-              cdr: ChangeDetectorRef) {
+  constructor(
+      private calendar: MatCalendar<D>, private dateAdapter: DateAdapter<D>,
+      @Inject(MAT_DATE_FORMATS) private dateFormats: MatDateFormats, cdr: ChangeDetectorRef) {
     calendar.stateChanges
         .pipe(takeUntil(this.destroyed))
         .subscribe(() => cdr.markForCheck());

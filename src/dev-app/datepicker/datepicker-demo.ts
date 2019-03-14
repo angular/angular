@@ -10,7 +10,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  Host,
   Inject,
   ViewChild,
   Optional,
@@ -69,10 +68,9 @@ export class DatepickerDemo {
 export class CustomHeader<D> implements OnDestroy {
   private _destroyed = new Subject<void>();
 
-  constructor(@Host() private _calendar: MatCalendar<D>,
-              private _dateAdapter: DateAdapter<D>,
-              @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
-              cdr: ChangeDetectorRef) {
+  constructor(
+      private _calendar: MatCalendar<D>, private _dateAdapter: DateAdapter<D>,
+      @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats, cdr: ChangeDetectorRef) {
     _calendar.stateChanges
         .pipe(takeUntil(this._destroyed))
         .subscribe(() => cdr.markForCheck());
