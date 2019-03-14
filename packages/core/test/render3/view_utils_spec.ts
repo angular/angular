@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {createLContainer, createLView, createTView} from '@angular/core/src/render3/instructions';
+import {createLContainer, createLView, createTView} from '@angular/core/src/render3/instructions/all';
 import {createEmptyStylingContext} from '@angular/core/src/render3/styling/util';
 import {isLContainer, isLView, isStylingContext, unwrapLContainer, unwrapLView, unwrapRNode, unwrapStylingContext} from '@angular/core/src/render3/util/view_utils';
 

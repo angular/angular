@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 
 import {AttributeMarker, defineComponent, element, getCurrentView, templateRefExtractor} from '../../src/render3/index';
 
-import {bind, template, elementEnd, elementProperty, elementStart, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, text, textBinding, elementContainerStart, elementContainerEnd, reference} from '../../src/render3/instructions';
+import {bind, template, elementEnd, elementProperty, elementStart, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, text, textBinding, elementContainerStart, elementContainerEnd, reference} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {restoreView} from '../../src/render3/state';
 

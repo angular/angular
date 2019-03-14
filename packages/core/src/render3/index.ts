@@ -86,7 +86,7 @@ export {
   injectAttribute,
 
   getCurrentView
-} from './instructions';
+} from './instructions/all';
 
 export {
   restoreView,

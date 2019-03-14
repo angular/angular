@@ -17,7 +17,7 @@ import {assertComponentType} from './assert';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {registerPostOrderHooks, registerPreOrderHooks} from './hooks';
-import {CLEAN_PROMISE, addToViewTree, createLView, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions';
+import {CLEAN_PROMISE, addToViewTree, createLView, createNodeAtIndex, createTView, getOrCreateTView, initNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, queueComponentIndexForCheck, refreshDescendantViews} from './instructions/all';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';

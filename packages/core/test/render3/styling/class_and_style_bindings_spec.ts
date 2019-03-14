@@ -8,7 +8,7 @@
 import {createRootContext} from '../../../src/render3/component';
 import {getLContext} from '../../../src/render3/context_discovery';
 import {defineComponent, defineDirective} from '../../../src/render3/index';
-import {createLView, createTView, elementClassProp, elementEnd, elementHostAttrs, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, namespaceSVG} from '../../../src/render3/instructions';
+import {createLView, createTView, elementClassProp, elementEnd, elementHostAttrs, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, namespaceSVG} from '../../../src/render3/instructions/all';
 import {RenderFlags} from '../../../src/render3/interfaces/definition';
 import {AttributeMarker, TAttributes} from '../../../src/render3/interfaces/node';
 import {BindingStore, BindingType, PlayState, Player, PlayerContext, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';

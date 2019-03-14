@@ -9,7 +9,7 @@
 import {ComponentFactoryResolver, OnDestroy, SimpleChange, SimpleChanges, ViewContainerRef} from '../../src/core';
 import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective, injectComponentFactoryResolver} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, flushHooksUpTo, listener, markDirty, projection, projectionDef, store, template, text} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, flushHooksUpTo, listener, markDirty, projection, projectionDef, store, template, text} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';

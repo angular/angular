@@ -9,7 +9,7 @@
 import {InjectionToken, ViewEncapsulation, defineInjectable, defineInjector} from '../../src/core';
 
 import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty, template, getRenderedText, ProvidersFeature} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, text, textBinding, tick} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, text, textBinding, tick} from '../../src/render3/instructions/all';
 import {ComponentDef, RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';

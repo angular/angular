@@ -10,7 +10,7 @@ import {EventEmitter, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {AttributeMarker, RenderFlags, defineComponent, defineDirective, directiveInject} from '../../src/render3/index';
 
-import {bind, element, elementEnd, elementProperty, elementStart, listener, template, elementContainerStart, elementContainerEnd, text} from '../../src/render3/instructions';
+import {bind, element, elementEnd, elementProperty, elementStart, listener, template, elementContainerStart, elementContainerEnd, text} from '../../src/render3/instructions/all';
 
 import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
 import {NgIf} from './common_with_def';
