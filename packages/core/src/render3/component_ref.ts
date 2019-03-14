@@ -26,7 +26,7 @@ import {assertComponentType} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
-import {addToViewTree, assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
+import {addToViewTree, assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, refreshDescendantViews} from './instructions/all';
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
 import {RNode, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';

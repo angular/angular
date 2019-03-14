@@ -11,7 +11,7 @@ import {createInjector} from '../../src/di/r3_injector';
 import {ViewEncapsulation} from '../../src/metadata';
 import {AttributeMarker, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, listener, loadViewQuery, NgOnChangesFeature, queryRefresh, viewQuery,} from '../../src/render3/index';
 
-import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementHostAttrs, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding,} from '../../src/render3/instructions';
+import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, directiveInject, element, elementEnd, elementHostAttrs, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, nextContext, projection, projectionDef, reference, template, text, textBinding,} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement} from '../../src/render3/interfaces/renderer';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';

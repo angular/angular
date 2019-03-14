@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 
 import {RenderFlags} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
-import {bind, element, elementAttribute, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, interpolation1, renderTemplate, template, text, textBinding} from '../../src/render3/instructions';
+import {bind, element, elementAttribute, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, interpolation1, renderTemplate, template, text, textBinding} from '../../src/render3/instructions/all';
 import {AttributeMarker} from '../../src/render3/interfaces/node';
 import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
 import {defaultStyleSanitizer, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';

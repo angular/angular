@@ -11,7 +11,7 @@ import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
 import {attachPatchData} from './context_discovery';
-import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions';
+import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions/all';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
