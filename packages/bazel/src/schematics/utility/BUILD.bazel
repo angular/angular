@@ -6,6 +6,7 @@ ts_library(
     name = "utility",
     srcs = [
         "json-utils.ts",
+        "workspace-utils.ts",
     ],
     module_name = "@angular/bazel/src/schematics/utility",
     deps = [
@@ -21,6 +22,7 @@ ts_library(
     testonly = True,
     srcs = [
         "json-utils_spec.ts",
+        "workspace-utils_spec.ts",
     ],
     deps = [
         ":utility",
