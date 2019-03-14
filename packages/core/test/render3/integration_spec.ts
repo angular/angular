@@ -11,7 +11,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective, templateRefExtractor} from '../../src/render3/index';
 
-import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, elementStart, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, element, elementStyling, elementStylingApply, elementStyleProp, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, projection, projectionDef, reference, text, textBinding, template, elementStylingMap, directiveInject, elementHostAttrs} from '../../src/render3/instructions';
+import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, elementStart, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, element, elementStyling, elementStylingApply, elementStyleProp, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, projection, projectionDef, reference, text, textBinding, template, elementStylingMap, directiveInject, elementHostAttrs} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, CONTEXT} from '../../src/render3/interfaces/view';

@@ -10,7 +10,7 @@ import {SelectorFlags} from '@angular/core/src/render3/interfaces/projection';
 
 import {AttributeMarker, defineComponent, defineDirective, detectChanges, directiveInject, loadViewQuery, queryRefresh, reference, templateRefExtractor, viewQuery} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, template, text, textBinding, interpolation1} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, template, text, textBinding, interpolation1} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {TemplateRef, ViewContainerRef, QueryList} from '@angular/core';

@@ -9,7 +9,7 @@ import {QueryList} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {defineComponent, getHostElement, loadViewQuery, viewQuery} from '../../../src/render3/index';
-import {element, elementEnd, elementStart, elementStyling, elementStylingApply, markDirty} from '../../../src/render3/instructions';
+import {element, elementEnd, elementStart, elementStyling, elementStylingApply, markDirty} from '../../../src/render3/instructions/all';
 import {PlayState, Player, PlayerHandler} from '../../../src/render3/interfaces/player';
 import {RElement} from '../../../src/render3/interfaces/renderer';
 import {addPlayer, getPlayers} from '../../../src/render3/players';
