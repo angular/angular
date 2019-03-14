@@ -29,7 +29,7 @@ export * from './platform_core_providers';
 export {TRANSLATIONS, TRANSLATIONS_FORMAT, LOCALE_ID, MissingTranslationStrategy} from './i18n/tokens';
 export {ApplicationModule} from './application_module';
 export {wtfCreateScope, wtfLeave, wtfStartTimeRange, wtfEndTimeRange, WtfScopeFn} from './profile/profile';
-export {Type} from './interface/type';
+export {AbstractType, Type} from './interface/type';
 export {EventEmitter} from './event_emitter';
 export {ErrorHandler} from './error_handler';
 export * from './core_private_export';
