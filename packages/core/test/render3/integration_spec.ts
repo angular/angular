@@ -11,7 +11,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {RendererType2} from '../../src/render/api';
 import {AttributeMarker, defineComponent, defineDirective, templateRefExtractor} from '../../src/render3/index';
 
-import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, elementStart, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, element, elementStyling, elementStylingApply, elementStyleProp, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, projection, projectionDef, reference, text, textBinding, template, elementStylingMap, directiveInject, elementHostAttrs} from '../../src/render3/instructions/all';
+import {allocHostVars, bind, container, containerRefreshEnd, containerRefreshStart, elementStart, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, element, elementStyling, elementStylingApply, elementStyleProp, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, projection, projectionDef, reference, text, textBinding, template, elementStylingMap, directiveInject, elementHostAttrs, elementHostStyleProp, elementHostStyling, elementHostClassProp, elementHostStylingApply, elementHostStylingMap} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, CONTEXT} from '../../src/render3/interfaces/view';
@@ -480,7 +480,7 @@ describe('render3 integration test', () => {
           vars: 0,
           hostBindings: function(rf, ctx, elIndex) {
             if (rf & RenderFlags.Create) {
-              elementHostAttrs(ctx, ['role', 'button']);
+              elementHostAttrs(['role', 'button']);
             }
           },
           template: (rf: RenderFlags, ctx: HostAttributeComp) => {},
@@ -1764,7 +1764,7 @@ describe('render3 integration test', () => {
                hostBindings: function(
                    rf: RenderFlags, ctx: DirWithInitialStyling, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
-                   elementHostAttrs(ctx, [
+                   elementHostAttrs([
                      'title', 'foo', AttributeMarker.Classes, 'heavy', 'golden',
                      AttributeMarker.Styles, 'color', 'purple', 'font-weight', 'bold'
                    ]);
@@ -1816,15 +1816,14 @@ describe('render3 integration test', () => {
                    rf: RenderFlags, ctx: DirWithSingleStylingBindings, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
                    elementHostAttrs(
-                       ctx,
                        [AttributeMarker.Classes, 'def', AttributeMarker.Styles, 'width', '555px']);
-                   elementStyling(['xyz'], ['width', 'height'], null, ctx);
+                   elementHostStyling(['xyz'], ['width', 'height']);
                  }
                  if (rf & RenderFlags.Update) {
-                   elementStyleProp(elementIndex, 0, ctx.width, null, ctx);
-                   elementStyleProp(elementIndex, 1, ctx.height, null, ctx);
-                   elementClassProp(elementIndex, 0, ctx.activateXYZClass, ctx);
-                   elementStylingApply(elementIndex, ctx);
+                   elementHostStyleProp(0, ctx.width);
+                   elementHostStyleProp(1, ctx.height);
+                   elementHostClassProp(0, ctx.activateXYZClass);
+                   elementHostStylingApply();
                  }
                }
              });
@@ -1891,11 +1890,11 @@ describe('render3 integration test', () => {
                factory: () => dir1Instance = new Dir1WithStyle(),
                hostBindings: function(rf: RenderFlags, ctx: Dir1WithStyle, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
-                   elementStyling(null, ['width'], null, ctx);
+                   elementHostStyling(null, ['width']);
                  }
                  if (rf & RenderFlags.Update) {
-                   elementStyleProp(elementIndex, 0, ctx.width, null, ctx);
-                   elementStylingApply(elementIndex, ctx);
+                   elementHostStyleProp(0, ctx.width);
+                   elementHostStylingApply();
                  }
                }
              });
@@ -1915,12 +1914,12 @@ describe('render3 integration test', () => {
                factory: () => dir2Instance = new Dir2WithStyle(),
                hostBindings: function(rf: RenderFlags, ctx: Dir2WithStyle, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
-                   elementHostAttrs(ctx, [AttributeMarker.Styles, 'width', '111px']);
-                   elementStyling(null, ['width'], null, ctx);
+                   elementHostAttrs([AttributeMarker.Styles, 'width', '111px']);
+                   elementHostStyling(null, ['width']);
                  }
                  if (rf & RenderFlags.Update) {
-                   elementStyleProp(elementIndex, 0, ctx.width, null, ctx);
-                   elementStylingApply(elementIndex, ctx);
+                   elementHostStyleProp(0, ctx.width);
+                   elementHostStylingApply();
                  }
                }
              });
@@ -1988,11 +1987,11 @@ describe('render3 integration test', () => {
                factory: () => dir1Instance = new Dir1WithStyling(),
                hostBindings: function(rf: RenderFlags, ctx: Dir1WithStyling, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
-                   elementStyling(null, null, null, ctx);
+                   elementHostStyling();
                  }
                  if (rf & RenderFlags.Update) {
-                   elementStylingMap(elementIndex, ctx.classesExp, ctx.stylesExp, ctx);
-                   elementStylingApply(elementIndex, ctx);
+                   elementHostStylingMap(ctx.classesExp, ctx.stylesExp);
+                   elementHostStylingApply();
                  }
                }
              });
@@ -2014,12 +2013,12 @@ describe('render3 integration test', () => {
                factory: () => dir2Instance = new Dir2WithStyling(),
                hostBindings: function(rf: RenderFlags, ctx: Dir2WithStyling, elementIndex: number) {
                  if (rf & RenderFlags.Create) {
-                   elementHostAttrs(ctx, [AttributeMarker.Styles, 'width', '111px']);
-                   elementStyling(null, null, null, ctx);
+                   elementHostAttrs([AttributeMarker.Styles, 'width', '111px']);
+                   elementHostStyling();
                  }
                  if (rf & RenderFlags.Update) {
-                   elementStylingMap(elementIndex, null, ctx.stylesExp, ctx);
-                   elementStylingApply(elementIndex, ctx);
+                   elementHostStylingMap(null, ctx.stylesExp);
+                   elementHostStylingApply();
                  }
                }
              });

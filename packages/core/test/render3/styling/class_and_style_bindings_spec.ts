@@ -8,7 +8,7 @@
 import {createRootContext} from '../../../src/render3/component';
 import {getLContext} from '../../../src/render3/context_discovery';
 import {defineComponent, defineDirective} from '../../../src/render3/index';
-import {createLView, createTView, elementClassProp, elementEnd, elementHostAttrs, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, namespaceSVG} from '../../../src/render3/instructions/all';
+import {createLView, createTView, elementClassProp, elementEnd, elementHostAttrs, elementHostClassProp, elementHostStyleProp, elementHostStyling, elementHostStylingApply, elementHostStylingMap, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, namespaceSVG} from '../../../src/render3/instructions/all';
 import {RenderFlags} from '../../../src/render3/interfaces/definition';
 import {AttributeMarker, TAttributes} from '../../../src/render3/interfaces/node';
 import {BindingStore, BindingType, PlayState, Player, PlayerContext, PlayerFactory, PlayerHandler} from '../../../src/render3/interfaces/player';
@@ -3238,12 +3238,12 @@ describe('style and class based bindings', () => {
           factory: () => new MyDir(),
           hostBindings: function(rf: RenderFlags, ctx: MyDir, elementIndex: number) {
             if (rf & RenderFlags.Create) {
-              elementStyling(['foo'], ['width'], null, ctx);
+              elementHostStyling(['foo'], ['width']);
             }
             if (rf & RenderFlags.Update) {
-              elementStyleProp(0, 0, ctx.widthFactory, null, ctx);
-              elementClassProp(0, 0, ctx.fooFactory, ctx);
-              elementStylingApply(0, ctx);
+              elementHostStyleProp(0, ctx.widthFactory);
+              elementHostClassProp(0, ctx.fooFactory);
+              elementHostStylingApply();
             }
           }
         });
