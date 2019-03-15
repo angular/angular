@@ -17,7 +17,8 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {CHILD_HEAD, CLEANUP, FLAGS, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {StylingContext} from './interfaces/styling';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, FLAGS, HEADER_OFFSET, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
 import {renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
@@ -811,6 +812,65 @@ function appendProjectedNode(
 
     if (isLContainer(nodeOrContainer)) {
       appendChild(nodeOrContainer[NATIVE], tProjectionNode, currentView);
+    }
+  }
+}
+
+/**
+ * Adds an {@link LContainer} as a child to an LView in the dynamic case, where the
+ * view may be added at any point in the DOM tree.
+ *
+ * This assures that the linked list of {@link LView} instances is in the same order as they
+ * appear in the DOM, depth first.
+ *
+ * To simply append a child view to a container in the common case, use {@link appendChildView}
+ *
+ * @see appendChildView
+ * @see LView[CHILD_HEAD]
+ * @see LView[CHILD_TAIL]
+ * @see LView[NEXT]
+ *
+ * @param parentLView the LView to add the child container to
+ * @param lContainerToAdd The container to add to the parent
+ */
+export function insertLContainerIntoParentLView(
+    parentLView: LView, lContainerToAdd: LContainer): void {
+  ngDevMode && assertLView(parentLView);
+  ngDevMode && assertLContainer(lContainerToAdd);
+
+  // TODO(benlesh): Switching this from `HOST` to `NATIVE` didn't cause any tests to break!
+  const commentNode = lContainerToAdd[NATIVE];
+  const tView = parentLView[TVIEW];
+
+  const constsEnd = tView.bindingStartIndex;
+  let lastLContainerOrLView: LContainer|LView|null = null;
+
+  // We're iterating over the LView here instead of traversing TNodes, because we need to support
+  // directives that inject ViewContainerRef.
+  for (let i = HEADER_OFFSET; i < constsEnd; i++) {
+    let item = parentLView[i] as LView | RNode | LContainer | StylingContext;
+    if (unwrapRNode(item) === commentNode) {
+      if (!lastLContainerOrLView) {
+        // HEAD
+        if ((lContainerToAdd[NEXT] = parentLView[CHILD_HEAD]) === null) {
+          parentLView[CHILD_TAIL] = lContainerToAdd;
+        }
+        parentLView[CHILD_HEAD] = lContainerToAdd;
+        return;
+      } else if (!lastLContainerOrLView[NEXT]) {
+        // TAIL
+        lastLContainerOrLView[NEXT] = lContainerToAdd;
+        parentLView[CHILD_TAIL] = lContainerToAdd;
+        return;
+      } else {
+        // Middle
+        const _next = lastLContainerOrLView[NEXT];
+        lastLContainerOrLView[NEXT] = lContainerToAdd;
+        lContainerToAdd[NEXT] = _next;
+        return;
+      }
+    } else if (isLContainer(item) || isLView(item)) {
+      lastLContainerOrLView = item;
     }
   }
 }

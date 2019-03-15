@@ -49,14 +49,42 @@ export const PREORDER_HOOK_FLAGS = 18;
 /** Size of LView's header. Necessary to adjust for it when setting slots.  */
 export const HEADER_OFFSET = 20;
 
-
-// This interface replaces the real LView interface if it is an arg or a
-// return value of a public instruction. This ensures we don't need to expose
-// the actual interface, which should be kept private.
-export interface OpaqueViewState {
-  '__brand__': 'Brand for OpaqueViewState that nothing will match';
+/**
+ * This interface replaces the real {@link LView} interface if it is an argument or the return value
+ * of a public API. This ensures we don't expose implementation details.
+ */
+export interface View<T extends{} = {}> {
+  __ng_brand__: 'Angular opaque reference representing a View. DO NOT READ/MANIPULATE!';
 }
 
+/**
+ * This interface replaces the real {@link LContainer} interface if it is an argument or the return
+ * value of a public API. This ensures we don't expose implementation details.
+ */
+export interface ViewContainer {
+  __ng_brand__: 'Angular opaque reference representing a ViewContainer. DO NOT READ/MANIPULATE!';
+}
+
+/**
+ * The public API for creating an embedded view.
+ *
+ * @see getEmbeddedViewFactory
+ */
+export interface EmbeddedViewFactory<T extends{}> {
+  /**
+   * Creates an embedded view.
+   * @param context The context to give to the embedded view
+   */
+  (context: T): View<T>;
+}
+
+export interface EmbeddedViewFactoryInternal<T extends{}> {
+  /**
+   * The internal method for creating an {@link LView} for an embedded view.
+   * @param context
+   */
+  (context: T): LView;
+}
 
 /**
  * `LView` stores all of the information needed to process the instructions as
@@ -366,7 +394,7 @@ export interface TView {
    * If this is a `TElementNode`, this is the view of a root component. It has exactly one
    * root TNode.
    *
-   * If this is null, this is the view of a component that is not at root. We do not store
+   * If this is `null`, this is the view of a component that is not at root. We do not store
    * the host TNodes for child component views because they can potentially have several
    * different host TNodes, depending on where the component is being used. These host
    * TNodes cannot be shared (due to different indices, etc).

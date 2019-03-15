@@ -376,7 +376,7 @@ function i18nStartFirstPass(
   const createOpCodes: I18nMutateOpCodes = [];
   // If the previous node wasn't the direct parent then we have a translation without top level
   // element and we need to keep a reference of the previous element if there is one
-  if (index > 0 && previousOrParentTNode !== parentTNode) {
+  if (index > 0 && parentTNode !== null && previousOrParentTNode !== parentTNode) {
     // Create an OpCode to select the previous TNode
     createOpCodes.push(
         previousOrParentTNode.index << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select);
