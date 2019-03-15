@@ -461,12 +461,14 @@ class _Tokenizer {
     let tagName: string;
     let prefix: string;
     let openTagToken: Token|undefined;
+    let tokensBeforeTagOpen = this.tokens.length;
     const innerStart = this._cursor.clone();
     try {
       if (!chars.isAsciiLetter(this._cursor.peek())) {
         throw this._createError(
             _unexpectedCharacterErrorMsg(this._cursor.peek()), this._cursor.getSpan(start));
       }
+
       openTagToken = this._consumeTagOpenStart(start);
       prefix = openTagToken.parts[0];
       tagName = openTagToken.parts[1];
@@ -483,10 +485,10 @@ class _Tokenizer {
       this._consumeTagOpenEnd();
     } catch (e) {
       if (e instanceof _ControlFlowError) {
-        // When the start tag is invalid, assume we want a "<"
+        // When the start tag is invalid (including invalid "attributes"), assume we want a "<"
         this._cursor = innerStart;
         if (openTagToken) {
-          this.tokens.pop();
+          this.tokens.length = tokensBeforeTagOpen;
         }
         // Back to back text tokens are merged at the end
         this._beginToken(TokenType.TEXT, start);
@@ -528,6 +530,10 @@ class _Tokenizer {
   }
 
   private _consumeAttributeName() {
+    const attrNameStart = this._cursor.peek();
+    if (attrNameStart === chars.$SQ || attrNameStart === chars.$DQ) {
+      throw this._createError(_unexpectedCharacterErrorMsg(attrNameStart), this._cursor.getSpan());
+    }
     this._beginToken(TokenType.ATTR_NAME);
     const prefixAndName = this._consumePrefixAndName();
     this._endToken(prefixAndName);
