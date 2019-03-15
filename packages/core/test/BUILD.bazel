@@ -58,7 +58,6 @@ ts_library(
 jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
-    shard_count = 4,
     deps = [
         ":test_lib",
         ":test_node_only_lib",
