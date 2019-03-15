@@ -228,8 +228,8 @@ export declare class FormControl extends AbstractControl {
         emitModelToViewChange?: boolean;
         emitViewToModelChange?: boolean;
     }): void;
-    registerOnChange(fn: Function): void;
-    registerOnDisabledChange(fn: (isDisabled: boolean) => void): void;
+    registerOnChange(fn: Function): () => void;
+    registerOnDisabledChange(fn: (isDisabled: boolean) => void): () => void;
     reset(formState?: any, options?: {
         onlySelf?: boolean;
         emitEvent?: boolean;
@@ -243,14 +243,12 @@ export declare class FormControl extends AbstractControl {
 }
 
 export declare class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
-    readonly asyncValidator: AsyncValidatorFn | null;
     readonly control: FormControl;
     form: FormControl;
     isDisabled: boolean;
     /** @deprecated */ model: any;
     readonly path: string[];
     /** @deprecated */ update: EventEmitter<{}>;
-    readonly validator: ValidatorFn | null;
     viewModel: any;
     constructor(validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
     ngOnChanges(changes: SimpleChanges): void;
@@ -259,7 +257,6 @@ export declare class FormControlDirective extends NgControl implements OnChanges
 }
 
 export declare class FormControlName extends NgControl implements OnChanges, OnDestroy {
-    readonly asyncValidator: AsyncValidatorFn;
     readonly control: FormControl;
     readonly formDirective: any;
     isDisabled: boolean;
@@ -267,7 +264,6 @@ export declare class FormControlName extends NgControl implements OnChanges, OnD
     name: string;
     readonly path: string[];
     /** @deprecated */ update: EventEmitter<{}>;
-    readonly validator: ValidatorFn | null;
     constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
@@ -412,7 +408,6 @@ export declare class NgFormSelectorWarning {
 }
 
 export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
-    readonly asyncValidator: AsyncValidatorFn | null;
     readonly control: FormControl;
     readonly formDirective: any;
     isDisabled: boolean;
@@ -425,7 +420,6 @@ export declare class NgModel extends NgControl implements OnChanges, OnDestroy {
     };
     readonly path: string[];
     update: EventEmitter<{}>;
-    readonly validator: ValidatorFn | null;
     viewModel: any;
     constructor(parent: ControlContainer, validators: Array<Validator | ValidatorFn>, asyncValidators: Array<AsyncValidator | AsyncValidatorFn>, valueAccessors: ControlValueAccessor[]);
     ngOnChanges(changes: SimpleChanges): void;

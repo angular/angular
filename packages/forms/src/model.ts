@@ -88,6 +88,20 @@ function coerceToAsyncValidator(
                                              origAsyncValidator || null;
 }
 
+function registerFn(array: Function[], fn: Function): () => void {
+  array.push(fn);
+  let registered = true;
+  return () => {
+    if (registered) {
+      let index = array.indexOf(fn);
+      if (index > -1) {
+        array.splice(index, 1);
+        registered = false;
+      }
+    }
+  };
+}
+
 export type FormHooks = 'change' | 'blur' | 'submit';
 
 /**
@@ -1108,8 +1122,10 @@ export class FormControl extends AbstractControl {
    * Register a listener for change events.
    *
    * @param fn The method that is called when the value changes
+   *
+   * @returns A function that unregisters the listener.
    */
-  registerOnChange(fn: Function): void { this._onChange.push(fn); }
+  registerOnChange(fn: Function): () => void { return registerFn(this._onChange, fn); }
 
   /**
    * @internal
@@ -1124,9 +1140,11 @@ export class FormControl extends AbstractControl {
    * Register a listener for disabled events.
    *
    * @param fn The method that is called when the disabled status changes.
+   *
+   * @returns A function that unregisters the listener.
    */
-  registerOnDisabledChange(fn: (isDisabled: boolean) => void): void {
-    this._onDisabledChange.push(fn);
+  registerOnDisabledChange(fn: (isDisabled: boolean) => void): () => void {
+    return registerFn(this._onDisabledChange, fn);
   }
 
   /**

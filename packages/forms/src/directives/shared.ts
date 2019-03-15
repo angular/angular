@@ -41,14 +41,19 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   dir.valueAccessor !.writeValue(control.value);
 
   setUpViewChangePipeline(control, dir);
-  setUpModelChangePipeline(control, dir);
+  const unbindModelChange = setUpModelChangePipeline(control, dir);
 
   setUpBlurPipeline(control, dir);
 
-  if (dir.valueAccessor !.setDisabledState) {
-    control.registerOnDisabledChange(
-        (isDisabled: boolean) => { dir.valueAccessor !.setDisabledState !(isDisabled); });
-  }
+  const unbindDisabled = (dir.valueAccessor !.setDisabledState) ?
+      control.registerOnDisabledChange(
+          (isDisabled: boolean) => { dir.valueAccessor !.setDisabledState !(isDisabled); }) :
+      () => {};
+
+  dir._unbind = () => {
+    unbindModelChange();
+    unbindDisabled();
+  };
 
   // re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
   dir._rawValidators.forEach((validator: Validator | ValidatorFn) => {
@@ -78,7 +83,15 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
     }
   });
 
-  if (control) control._clearChangeFns();
+  if (dir._unbind) {
+    dir._unbind();
+    dir._unbind = undefined;
+  }
+
+  if (control) {
+    control.validator = Validators.uncompose(control.validator, dir.validator);
+    control.asyncValidator = Validators.uncomposeAsync(control.asyncValidator, dir.asyncValidator);
+  }
 }
 
 function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
@@ -107,8 +120,8 @@ function updateControl(control: FormControl, dir: NgControl): void {
   control._pendingChange = false;
 }
 
-function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
-  control.registerOnChange((newValue: any, emitModelEvent: boolean) => {
+function setUpModelChangePipeline(control: FormControl, dir: NgControl): () => void {
+  return control.registerOnChange((newValue: any, emitModelEvent: boolean) => {
     // control -> view
     dir.valueAccessor !.writeValue(newValue);
 

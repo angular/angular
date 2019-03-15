@@ -10,6 +10,7 @@
 import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {ControlValueAccessor} from './control_value_accessor';
+import {composeAsyncValidators, composeValidators} from './shared';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 function unimplemented(): any {
@@ -62,19 +63,49 @@ export abstract class NgControl extends AbstractControlDirective {
 
   /**
    * @description
-   * The registered synchronous validator function for the control
+   * The synchronous validator for the control (composed on the first call of the validator getter)
    *
-   * @throws An exception that this method is not implemented
+   * @internal
    */
-  get validator(): ValidatorFn|null { return <ValidatorFn>unimplemented(); }
+  _validator: ValidatorFn|null|undefined;
+
+  /**
+   * @description
+   * The async validator for the control (composed on the first call of the asyncValidator getter)
+   *
+   * @internal
+   */
+  _asyncValidator: AsyncValidatorFn|null|undefined;
+
+  /**
+   * @description
+   * A function to call to unbind the directive from the form control.
+   *
+   * @internal
+   */
+  _unbind: undefined|(() => void);
+
+  /**
+   * @description
+   * The registered synchronous validator function for the control
+   */
+  get validator(): ValidatorFn|null {
+    if (this._validator === undefined) {
+      this._validator = composeValidators(this._rawValidators);
+    }
+    return this._validator;
+  }
 
   /**
    * @description
    * The registered async validator function for the control
-   *
-   * @throws An exception that this method is not implemented
    */
-  get asyncValidator(): AsyncValidatorFn|null { return <AsyncValidatorFn>unimplemented(); }
+  get asyncValidator(): AsyncValidatorFn|null {
+    if (this._asyncValidator === undefined) {
+      this._asyncValidator = composeAsyncValidators(this._rawAsyncValidators);
+    }
+    return this._asyncValidator;
+  }
 
   /**
    * @description

@@ -248,22 +248,6 @@ export class NgModel extends NgControl implements OnChanges,
 
               /**
                * @description
-               * Synchronous validator function composed of all the synchronous validators
-               * registered with this directive.
-               */
-              get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
-
-              /**
-               * @description
-               * Async validator function composed of all the async validators registered with this
-               * directive.
-               */
-              get asyncValidator(): AsyncValidatorFn|null {
-                return composeAsyncValidators(this._rawAsyncValidators);
-              }
-
-              /**
-               * @description
                * Sets the new value for the view model and emits an `ngModelChange` event.
                *
                * @param newValue The new value emitted by `ngModelChange`.

@@ -215,22 +215,6 @@ export class FormControlDirective extends NgControl implements OnChanges, OnDest
 
               /**
                * @description
-               * Synchronous validator function composed of all the synchronous validators
-               * registered with this directive.
-               */
-              get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
-
-              /**
-               * @description
-               * Async validator function composed of all the async validators registered with this
-               * directive.
-               */
-              get asyncValidator(): AsyncValidatorFn|null {
-                return composeAsyncValidators(this._rawAsyncValidators);
-              }
-
-              /**
-               * @description
                * The `FormControl` bound to this directive.
                */
               get control(): FormControl { return this.form; }

@@ -149,7 +149,10 @@ export class FormGroupDirective extends ControlContainer implements Form,
    *
    * @param dir The `FormControlName` directive instance.
    */
-  removeControl(dir: FormControlName): void { removeDir<FormControlName>(this.directives, dir); }
+  removeControl(dir: FormControlName): void {
+    cleanUpControl(dir.control, dir);
+    removeDir<FormControlName>(this.directives, dir);
+  }
 
   /**
    * Adds a new `FormGroupName` directive instance to the form.

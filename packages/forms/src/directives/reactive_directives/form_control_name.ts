@@ -246,22 +246,6 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
    */
   get formDirective(): any { return this._parent ? this._parent.formDirective : null; }
 
-  /**
-   * @description
-   * Synchronous validator function composed of all the synchronous validators
-   * registered with this directive.
-   */
-  get validator(): ValidatorFn|null { return composeValidators(this._rawValidators); }
-
-  /**
-   * @description
-   * Async validator function composed of all the async validators registered with this
-   * directive.
-   */
-  get asyncValidator(): AsyncValidatorFn {
-    return composeAsyncValidators(this._rawAsyncValidators) !;
-  }
-
   private _checkParentType(): void {
     if (!(this._parent instanceof FormGroupName) &&
         this._parent instanceof AbstractFormGroupDirective) {
