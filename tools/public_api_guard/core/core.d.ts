@@ -721,7 +721,7 @@ export declare class QueryList<T> {
     map<U>(fn: (item: T, index: number, array: T[]) => U): U[];
     notifyOnChanges(): void;
     reduce<U>(fn: (prevValue: U, curValue: T, curIndex: number, array: T[]) => U, init: U): U;
-    reset(res: Array<T | any[]>): void;
+    reset(resultsTree: Array<T | any[]>): void;
     setDirty(): void;
     some(fn: (value: T, index: number, array: T[]) => boolean): boolean;
     toArray(): T[];
