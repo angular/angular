@@ -7,12 +7,16 @@
  */
 
 import {NgModule} from '@angular/core';
+import {MatTooltipModule} from '@angular/material';
 import {ExampleModule} from '../example/example-module';
-import {TableDemo} from './table-demo';
+import {TooltipDemo} from './tooltip-demo';
 
 @NgModule({
-  imports: [ExampleModule],
-  declarations: [TableDemo],
+  imports: [
+    ExampleModule,
+    MatTooltipModule,
+  ],
+  declarations: [TooltipDemo],
 })
-export class TableDemoModule {
+export class TooltipDemoModule {
 }

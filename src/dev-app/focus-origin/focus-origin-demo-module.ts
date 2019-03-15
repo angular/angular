@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {A11yModule} from '@angular/cdk/a11y';
 import {NgModule} from '@angular/core';
-import {ExampleModule} from '../example/example-module';
-import {TableDemo} from './table-demo';
+import {FocusOriginDemo} from './focus-origin-demo';
 
 @NgModule({
-  imports: [ExampleModule],
-  declarations: [TableDemo],
+  imports: [
+    A11yModule,
+  ],
+  declarations: [FocusOriginDemo],
 })
-export class TableDemoModule {
+export class FocusOriginDemoModule {
 }

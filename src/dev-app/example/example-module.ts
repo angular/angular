@@ -7,15 +7,18 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {MatExpansionModule} from '@angular/material';
 import {NgModule} from '@angular/core';
-
-import {ExampleList} from './example-list';
+import {MatExpansionModule} from '@angular/material';
+import {ExampleModule as ExampleDataModule} from '@angular/material-examples';
 import {Example} from './example';
 
+
+import {ExampleList} from './example-list';
+
 @NgModule({
-  imports: [MatExpansionModule, CommonModule],
+  imports: [CommonModule, ExampleDataModule, MatExpansionModule],
   declarations: [Example, ExampleList],
   exports: [Example, ExampleList]
 })
-export class ExamplePageModule {}
+export class ExampleModule {
+}

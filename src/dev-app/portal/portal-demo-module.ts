@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {PortalModule} from '@angular/cdk/portal';
 import {NgModule} from '@angular/core';
-import {ExampleModule} from '../example/example-module';
-import {TableDemo} from './table-demo';
+import {PortalDemo, ScienceJoke} from './portal-demo';
 
 @NgModule({
-  imports: [ExampleModule],
-  declarations: [TableDemo],
+  imports: [
+    PortalModule,
+  ],
+  declarations: [PortalDemo, ScienceJoke],
+  entryComponents: [ScienceJoke],
 })
-export class TableDemoModule {
+export class PortalDemoModule {
 }

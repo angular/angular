@@ -7,12 +7,10 @@
  */
 
 import {NgModule} from '@angular/core';
-import {ExampleModule} from '../example/example-module';
-import {TableDemo} from './table-demo';
+import {GesturesDemo} from './gestures-demo';
 
 @NgModule({
-  imports: [ExampleModule],
-  declarations: [TableDemo],
+  declarations: [GesturesDemo],
 })
-export class TableDemoModule {
+export class GesturesDemoModule {
 }

@@ -7,12 +7,14 @@
  */
 
 import {NgModule} from '@angular/core';
-import {ExampleModule} from '../example/example-module';
-import {TableDemo} from './table-demo';
+import {MatIconModule} from '@angular/material';
+import {IconDemo} from './icon-demo';
 
 @NgModule({
-  imports: [ExampleModule],
-  declarations: [TableDemo],
+  imports: [
+    MatIconModule,
+  ],
+  declarations: [IconDemo],
 })
-export class TableDemoModule {
+export class IconDemoModule {
 }

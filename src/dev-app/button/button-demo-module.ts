@@ -7,12 +7,15 @@
  */
 
 import {NgModule} from '@angular/core';
-import {ExampleModule} from '../example/example-module';
-import {TableDemo} from './table-demo';
+import {MatButtonModule, MatIconModule} from '@angular/material';
+import {ButtonDemo} from './button-demo';
 
 @NgModule({
-  imports: [ExampleModule],
-  declarations: [TableDemo],
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+  ],
+  declarations: [ButtonDemo],
 })
-export class TableDemoModule {
+export class ButtonDemoModule {
 }
