@@ -26,7 +26,7 @@ genrule(
 
 genrule(
     name = "ngsw_worker_renamed",
-    srcs = ["//packages/service-worker/worker:ngsw_worker.es2015.js"],
+    srcs = ["//packages/service-worker/worker:ngsw_worker.es6.js"],
     outs = ["ngsw-worker.js"],
     # Remove sourcemap since this file will be served in production site
     # See https://github.com/angular/angular/issues/23596
