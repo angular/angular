@@ -21,7 +21,6 @@ jasmine_node_test(
     data = [
         "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
     ],
-    shard_count = 4,
     tags = [
         "ivy-only",
     ],
