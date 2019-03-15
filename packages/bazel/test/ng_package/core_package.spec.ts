@@ -89,6 +89,8 @@ describe('@angular/core ng_package', () => {
         .describe('angular metadata', () => {
           it('should have metadata.json files',
              () => { expect(shx.cat('core.metadata.json')).toContain(`"__symbolic":"module"`); });
+          it('should not have self-references in metadata.json',
+             () => { expect(shx.cat('core.metadata.json')).not.toContain(`"from":"./core"`); });
         });
 
     describe('fesm2015', () => {
