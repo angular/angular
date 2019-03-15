@@ -1,11 +1,11 @@
-import {Component, Input, OnDestroy, OnInit, Optional, ViewChild} from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {Component, Input, OnDestroy, OnInit, Optional, ViewChild} from '@angular/core';
 import {
-    MatColumnDef,
-    MatSort,
-    MatSortHeader,
-    MatTable,
-    MatTableDataSource
+  MatColumnDef,
+  MatSort,
+  MatSortHeader,
+  MatTable,
+  MatTableDataSource
 } from '@angular/material';
 
 export interface PeriodicElement {
@@ -41,7 +41,7 @@ export class TableSimpleColumnExample implements OnInit {
   dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
   getWeight = (data: PeriodicElement) => '~' + data.weight;
 
-  @ViewChild('sort') sort: MatSort;
+  @ViewChild('sort', {static: true}) sort: MatSort;
 
   ngOnInit() {
     this.dataSource.sort = this.sort;
@@ -75,7 +75,9 @@ export class TableSimpleColumnExample implements OnInit {
 export class SimpleColumn<T> implements OnDestroy, OnInit {
   /** Column name that should be used to reference this column. */
   @Input()
-  get name(): string { return this._name; }
+  get name(): string {
+    return this._name;
+  }
   set name(name: string) {
     this._name = name;
     this.columnDef.name = name;
@@ -96,21 +98,23 @@ export class SimpleColumn<T> implements OnDestroy, OnInit {
   @Input() dataAccessor: ((data: T, name: string) => string);
 
   /** Alignment of the cell values. */
-  @Input() align: 'before' | 'after' = 'before';
+  @Input() align: 'before'|'after' = 'before';
 
   /** Whether the column is sortable */
   @Input()
-  get sortable(): boolean { return this._sortable; }
+  get sortable(): boolean {
+    return this._sortable;
+  }
   set sortable(sortable: boolean) {
     this._sortable = coerceBooleanProperty(sortable);
   }
   _sortable: boolean;
 
-  @ViewChild(MatColumnDef) columnDef: MatColumnDef;
+  @ViewChild(MatColumnDef, {static: true}) columnDef: MatColumnDef;
 
   @ViewChild(MatSortHeader) sortHeader: MatSortHeader;
 
-  constructor(@Optional() public table: MatTable<any>) { }
+  constructor(@Optional() public table: MatTable<any>) {}
 
   ngOnInit() {
     if (this.table) {
