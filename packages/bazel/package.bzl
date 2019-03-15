@@ -28,11 +28,10 @@ def rules_angular_dev_dependencies():
     _maybe(
         http_archive,
         name = "bazel_toolchains",
-        sha256 = "67335b3563d9b67dc2550b8f27cc689b64fadac491e69ce78763d9ba894cc5cc",
-        strip_prefix = "bazel-toolchains-cddc376d428ada2927ad359211c3e356bd9c9fbb",
+        sha256 = "142bcbd8cb751ce1193a1d7fef4e328493cd0a69cc0555183ad237f81418ba40",
+        strip_prefix = "bazel-toolchains-628224f6cf48e81116d0ee0bf65424eaa630d5b3",
         urls = [
-            "https://mirror.bazel.build/github.com/bazelbuild/bazel-toolchains/archive/cddc376d428ada2927ad359211c3e356bd9c9fbb.tar.gz",
-            "https://github.com/bazelbuild/bazel-toolchains/archive/cddc376d428ada2927ad359211c3e356bd9c9fbb.tar.gz",
+            "https://github.com/xingao267/bazel-toolchains/archive/628224f6cf48e81116d0ee0bf65424eaa630d5b3.tar.gz",
         ],
     )
 

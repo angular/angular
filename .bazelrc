@@ -116,16 +116,21 @@ build --define=compile=legacy
 #  --config=remote
 ###############################
 
-# Load default settings for Remote Build Execution
-# When updating, the URLs of bazel_toolchains in packages/bazel/package.bzl
-# may also need to be updated (see https://github.com/angular/angular/pull/27935)
-import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/bazel-0.24.0.bazelrc
+# Load default settings for Remote Build Execution.
+import %workspace%/third_party/github.com/bazelbuild/bazel-toolchains/bazelrc/.bazelrc.notoolchain
 
 # Increase the default number of jobs by 50% because our build has lots of
 # parallelism
 build:remote --jobs=150
 
-# Point to our custom execution platform; see tools/BUILD.bazel
+# Toolchain and platform related flags
+build:remote --host_javabase=@rbe_ubuntu1604_angular//java:jdk
+build:remote --javabase=@rbe_ubuntu1604_angular//java:jdk
+build:remote --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
+build:remote --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
+build:remote --crosstool_top=@rbe_ubuntu1604_angular//cc:toolchain
+build:remote --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
+build:remote --extra_toolchains=@rbe_ubuntu1604_angular//config:cc-toolchain
 build:remote --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
 build:remote --host_platform=//tools:rbe_ubuntu1604-angular
 build:remote --platforms=//tools:rbe_ubuntu1604-angular
