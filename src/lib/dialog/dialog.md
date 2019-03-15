@@ -52,7 +52,8 @@ MAT_DIALOG_DEFAULT_OPTIONS in your application's root module.
 ```
 
 ### Sharing data with the Dialog component.
-If you want to share data with your dialog, you can use the `data` option to pass information to the dialog component.
+If you want to share data with your dialog, you can use the `data`
+option to pass information to the dialog component.
 
 ```ts
 let dialogRef = dialog.open(YourDialog, {
@@ -80,11 +81,11 @@ export class YourDialog {
 ### Dialog content
 Several directives are available to make it easier to structure your dialog content:
 
-| Name                  | Description                                                                                                   |
-|-----------------------|---------------------------------------------------------------------------------------------------------------|
+| Name                   | Description                                                                                                   |
+|------------------------|---------------------------------------------------------------------------------------------------------------|
 | `mat-dialog-title`     | \[Attr] Dialog title, applied to a heading element (e.g., `<h1>`, `<h2>`)                                     |
-| `<mat-dialog-content>` | Primary scrollable content of the dialog                                                                      |
-| `<mat-dialog-actions>` | Container for action buttons at the bottom of the dialog                                                      |
+| `<mat-dialog-content>` | Primary scrollable content of the dialog.                                                                     |
+| `<mat-dialog-actions>` | Container for action buttons at the bottom of the dialog. Button alignment can be controlled via the `align` attribute which can be set to `end` and `center`.                                                      |
 | `mat-dialog-close`     | \[Attr] Added to a `<button>`, makes the button close the dialog with an optional result from the bound value.|
 
 For example:
