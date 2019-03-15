@@ -119,6 +119,29 @@ export function getLView(): LView {
   return lView;
 }
 
+let activeHostContext: {}|null = null;
+let activeHostElementIndex: number|null = null;
+
+/**
+ * Sets the active host context (the directive/component instance) and its host element index.
+ *
+ * @param host the directive/component instance
+ * @param index the element index value for the host element where the directive/component instance
+ * lives
+ */
+export function setActiveHost(host: {} | null, index: number | null = null) {
+  activeHostContext = host;
+  activeHostElementIndex = index;
+}
+
+export function getActiveHostContext() {
+  return activeHostContext;
+}
+
+export function getActiveHostElementIndex() {
+  return activeHostElementIndex;
+}
+
 /**
  * Restores `contextViewData` to the given OpaqueViewState instance.
  *

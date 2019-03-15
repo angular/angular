@@ -13,11 +13,9 @@ import {Type} from '../../interface/type';
 import {CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA, SchemaMetadata} from '../../metadata/schema';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/security';
-import {StyleSanitizeFn} from '../../sanitization/style_sanitizer';
 import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertLessThan, assertNotEqual} from '../../util/assert';
 import {isObservable} from '../../util/lang';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
-
 import {assertHasParent, assertLContainerOrUndefined, assertLView, assertPreviousIsParent} from '../assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings';
 import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
@@ -29,7 +27,6 @@ import {ACTIVE_INDEX, LContainer, VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
-import {PlayerFactory} from '../interfaces/player';
 import {CssSelectorList} from '../interfaces/projection';
 import {LQueries} from '../interfaces/query';
 import {GlobalTargetResolver, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
@@ -40,15 +37,16 @@ import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {appendChild, appendProjectedNodes, createTextNode, insertView, removeView} from '../node_manipulation';
 import {isNodeMatchingSelectorList, matchingProjectionSelectorIndex} from '../node_selector_matcher';
 import {applyOnCreateInstructions} from '../node_util';
-import {decreaseElementDepthCount, enterView, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from '../state';
-import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles, renderStyling, updateClassProp as updateElementClassProp, updateContextWithBindings, updateStyleProp as updateElementStyleProp, updateStylingMap} from '../styling/class_and_style_bindings';
-import {BoundPlayerFactory} from '../styling/player_factory';
-import {ANIMATION_PROP_PREFIX, allocateDirectiveIntoContext, createEmptyStylingContext, forceClassesAsString, forceStylesAsString, getStylingContext, hasClassInput, hasStyleInput, isAnimationProp} from '../styling/util';
+import {decreaseElementDepthCount, enterView, getActiveHostContext, getBindingsEnabled, getCheckNoChangesMode, getContextLView, getCurrentDirectiveDef, getElementDepthCount, getIsParent, getLView, getPreviousOrParentTNode, increaseElementDepthCount, isCreationMode, leaveView, nextContextImpl, resetComponentState, setActiveHost, setBindingRoot, setCheckNoChangesMode, setCurrentDirectiveDef, setCurrentQueryIndex, setIsParent, setPreviousOrParentTNode} from '../state';
+import {getInitialClassNameValue, getInitialStyleStringValue, initializeStaticContext as initializeStaticStylingContext, patchContextWithStaticAttrs, renderInitialClasses, renderInitialStyles} from '../styling/class_and_style_bindings';
+import {ANIMATION_PROP_PREFIX, getStylingContext, hasClassInput, hasStyleInput, isAnimationProp} from '../styling/util';
 import {NO_CHANGE} from '../tokens';
 import {attrsStylingIndexOf, setUpAttributes} from '../util/attrs_utils';
 import {INTERPOLATION_DELIMITER, renderStringify} from '../util/misc_utils';
 import {findComponentView, getLViewParent, getRootContext, getRootView} from '../util/view_traversal_utils';
 import {getComponentViewByIndex, getNativeByIndex, getNativeByTNode, getTNode, isComponent, isComponentDef, isContentQueryHost, isRootView, loadInternal, readPatchedLView, resetPreOrderHookFlags, unwrapRNode, viewAttachedToChangeDetector} from '../util/view_utils';
+
+import {setInputsForProperty} from './shared';
 
 
 
@@ -140,9 +138,10 @@ export function setHostBindings(tView: TView, viewData: LView): void {
         // If it's not a number, it's a host binding function that needs to be executed.
         if (instruction !== null) {
           viewData[BINDING_INDEX] = bindingRootIndex;
-          instruction(
-              RenderFlags.Update, unwrapRNode(viewData[currentDirectiveIndex]),
-              currentElementIndex);
+          const hostCtx = unwrapRNode(viewData[currentDirectiveIndex]);
+          setActiveHost(hostCtx, currentElementIndex);
+          instruction(RenderFlags.Update, hostCtx, currentElementIndex);
+          setActiveHost(null);
         }
         currentDirectiveIndex++;
       }
@@ -1328,32 +1327,6 @@ export function createTNode(
   };
 }
 
-/**
- * Set the inputs of directives at the current node to corresponding value.
- *
- * @param lView the `LView` which contains the directives.
- * @param inputAliases mapping between the public "input" name and privately-known,
- * possibly minified, property names to write to.
- * @param value Value to set.
- */
-function setInputsForProperty(lView: LView, inputs: PropertyAliasValue, value: any): void {
-  const tView = lView[TVIEW];
-  for (let i = 0; i < inputs.length;) {
-    const index = inputs[i++] as number;
-    const publicName = inputs[i++] as string;
-    const privateName = inputs[i++] as string;
-    const instance = lView[index];
-    ngDevMode && assertDataInRange(lView, index);
-    const def = tView.data[index] as DirectiveDef<any>;
-    const setInput = def.setInput;
-    if (setInput) {
-      def.setInput !(instance, value, publicName, privateName);
-    } else {
-      instance[privateName] = value;
-    }
-  }
-}
-
 function setNgReflectProperties(
     lView: LView, element: RElement | RComment, type: TNodeType, inputs: PropertyAliasValue,
     value: any) {
@@ -1412,63 +1385,6 @@ function generatePropertyAliases(tNode: TNode, direction: BindingDirection): Pro
 }
 
 /**
- * Assign any inline style values to the element during creation mode.
- *
- * This instruction is meant to be called during creation mode to register all
- * dynamic style and class bindings on the element. Note for static values (no binding)
- * see `elementStart` and `elementHostAttrs`.
- *
- * @param classBindingNames An array containing bindable class names.
- *        The `elementClassProp` refers to the class name by index in this array.
- *        (i.e. `['foo', 'bar']` means `foo=0` and `bar=1`).
- * @param styleBindingNames An array containing bindable style properties.
- *        The `elementStyleProp` refers to the class name by index in this array.
- *        (i.e. `['width', 'height']` means `width=0` and `height=1`).
- * @param styleSanitizer An optional sanitizer function that will be used to sanitize any CSS
- *        property values that are applied to the element (during rendering).
- *        Note that the sanitizer instance itself is tied to the `directive` (if  provided).
- * @param directive A directive instance the styling is associated with. If not provided
- *        current view's controller instance is assumed.
- *
- * @publicApi
- */
-export function elementStyling(
-    classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
-    styleSanitizer?: StyleSanitizeFn | null, directive?: {}): void {
-  const tNode = getPreviousOrParentTNode();
-  if (!tNode.stylingTemplate) {
-    tNode.stylingTemplate = createEmptyStylingContext();
-  }
-
-  if (directive) {
-    // this will ALWAYS happen first before the bindings are applied so that the ordering
-    // of directives is correct (otherwise if a follow-up directive contains static styling,
-    // which is applied through elementHostAttrs, then it may end up being listed in the
-    // context directive array before a former one (because the former one didn't contain
-    // any static styling values))
-    allocateDirectiveIntoContext(tNode.stylingTemplate, directive);
-
-    const fns = tNode.onElementCreationFns = tNode.onElementCreationFns || [];
-    fns.push(
-        () => initElementStyling(
-            tNode, classBindingNames, styleBindingNames, styleSanitizer, directive));
-  } else {
-    // this will make sure that the root directive (the template) will always be
-    // run FIRST before all the other styling properties are populated into the
-    // context...
-    initElementStyling(tNode, classBindingNames, styleBindingNames, styleSanitizer, directive);
-  }
-}
-
-function initElementStyling(
-    tNode: TNode, classBindingNames?: string[] | null, styleBindingNames?: string[] | null,
-    styleSanitizer?: StyleSanitizeFn | null, directive?: {}): void {
-  updateContextWithBindings(
-      tNode.stylingTemplate !, directive || null, classBindingNames, styleBindingNames,
-      styleSanitizer);
-}
-
-/**
  * Assign static attribute values to a host element.
  *
  * This instruction will assign static attribute values as well as class and style
@@ -1507,13 +1423,14 @@ function initElementStyling(
  *
  * @publicApi
  */
-export function elementHostAttrs(directive: any, attrs: TAttributes) {
+export function elementHostAttrs(attrs: TAttributes) {
   const tNode = getPreviousOrParentTNode();
   const lView = getLView();
   const native = getNativeByTNode(tNode, lView) as RElement;
   const lastAttrIndex = setUpAttributes(native, attrs);
   const stylingAttrsStartIndex = attrsStylingIndexOf(attrs, lastAttrIndex);
   if (stylingAttrsStartIndex >= 0) {
+    const directive = getActiveHostContext();
     if (tNode.stylingTemplate) {
       patchContextWithStaticAttrs(tNode.stylingTemplate, attrs, stylingAttrsStartIndex, directive);
     } else {
@@ -1521,171 +1438,6 @@ export function elementHostAttrs(directive: any, attrs: TAttributes) {
           initializeStaticStylingContext(attrs, stylingAttrsStartIndex, directive);
     }
   }
-}
-
-/**
- * Apply styling binding to the element.
- *
- * This instruction is meant to be run after `elementStyle` and/or `elementStyleProp`.
- * if any styling bindings have changed then the changes are flushed to the element.
- *
- *
- * @param index Index of the element's with which styling is associated.
- * @param directive Directive instance that is attempting to change styling. (Defaults to the
- *        component of the current view).
-components
- *
- * @publicApi
- */
-export function elementStylingApply(index: number, directive?: any): void {
-  const lView = getLView();
-  const isFirstRender = (lView[FLAGS] & LViewFlags.FirstLViewPass) !== 0;
-  const totalPlayersQueued = renderStyling(
-      getStylingContext(index + HEADER_OFFSET, lView), lView[RENDERER], lView, isFirstRender, null,
-      null, directive);
-  if (totalPlayersQueued > 0) {
-    const rootContext = getRootContext(lView);
-    scheduleTick(rootContext, RootContextFlags.FlushPlayers);
-  }
-}
-
-/**
- * Update a style bindings value on an element.
- *
- * If the style value is `null` then it will be removed from the element
- * (or assigned a different value depending if there are any styles placed
- * on the element with `elementStyle` or any styles that are present
- * from when the element was created (with `elementStyling`).
- *
- * (Note that the styling element is updated as part of `elementStylingApply`.)
- *
- * @param index Index of the element's with which styling is associated.
- * @param styleIndex Index of style to update. This index value refers to the
- *        index of the style in the style bindings array that was passed into
- *        `elementStlyingBindings`.
- * @param value New value to write (null to remove). Note that if a directive also
- *        attempts to write to the same binding value then it will only be able to
- *        do so if the template binding value is `null` (or doesn't exist at all).
- * @param suffix Optional suffix. Used with scalar values to add unit such as `px`.
- *        Note that when a suffix is provided then the underlying sanitizer will
- *        be ignored.
- * @param directive Directive instance that is attempting to change styling. (Defaults to the
- *        component of the current view).
-components
- *
- * @publicApi
- */
-export function elementStyleProp(
-    index: number, styleIndex: number, value: string | number | String | PlayerFactory | null,
-    suffix?: string | null, directive?: {}, forceOverride?: boolean): void {
-  let valueToAdd: string|null = null;
-  if (value !== null) {
-    if (suffix) {
-      // when a suffix is applied then it will bypass
-      // sanitization entirely (b/c a new string is created)
-      valueToAdd = renderStringify(value) + suffix;
-    } else {
-      // sanitization happens by dealing with a String value
-      // this means that the string value will be passed through
-      // into the style rendering later (which is where the value
-      // will be sanitized before it is applied)
-      valueToAdd = value as any as string;
-    }
-  }
-  updateElementStyleProp(
-      getStylingContext(index + HEADER_OFFSET, getLView()), styleIndex, valueToAdd, directive,
-      forceOverride);
-}
-
-/**
- * Add or remove a class via a class binding on a DOM element.
- *
- * This instruction is meant to handle the [class.foo]="exp" case and, therefore,
- * the class itself must already be applied using `elementStyling` within
- * the creation block.
- *
- * @param index Index of the element's with which styling is associated.
- * @param classIndex Index of class to toggle. This index value refers to the
- *        index of the class in the class bindings array that was passed into
- *        `elementStlyingBindings` (which is meant to be called before this
- *        function is).
- * @param value A true/false value which will turn the class on or off.
- * @param directive Directive instance that is attempting to change styling. (Defaults to the
- *        component of the current view).
- * @param forceOverride Whether or not this value will be applied regardless of where it is being
- *        set within the directive priority structure.
- *
- * @publicApi
- */
-export function elementClassProp(
-    index: number, classIndex: number, value: boolean | PlayerFactory, directive?: {},
-    forceOverride?: boolean): void {
-  const input = (value instanceof BoundPlayerFactory) ?
-      (value as BoundPlayerFactory<boolean|null>) :
-      booleanOrNull(value);
-  updateElementClassProp(
-      getStylingContext(index + HEADER_OFFSET, getLView()), classIndex, input, directive,
-      forceOverride);
-}
-
-function booleanOrNull(value: any): boolean|null {
-  if (typeof value === 'boolean') return value;
-  return value ? true : null;
-}
-
-/**
- * Update style and/or class bindings using object literal.
- *
- * This instruction is meant apply styling via the `[style]="exp"` and `[class]="exp"` template
- * bindings. When styles are applied to the element they will then be placed with respect to
- * any styles set with `elementStyleProp`. If any styles are set to `null` then they will be
- * removed from the element. This instruction is also called for host bindings that write to
- * `[style]` and `[class]` (the directive param helps the instruction code determine where the
- * binding values come from).
- *
- * (Note that the styling instruction will not be applied until `elementStylingApply` is called.)
- *
- * @param index Index of the element's with which styling is associated.
- * @param classes A key/value style map of CSS classes that will be added to the given element.
- *        Any missing classes (that have already been applied to the element beforehand) will be
- *        removed (unset) from the element's list of CSS classes.
- * @param styles A key/value style map of the styles that will be applied to the given element.
- *        Any missing styles (that have already been applied to the element beforehand) will be
- *        removed (unset) from the element's styling.
- * @param directive Directive instance that is attempting to change styling. (Defaults to the
- *        component of the current view).
- *
- * @publicApi
- */
-export function elementStylingMap<T>(
-    index: number, classes: {[key: string]: any} | string | NO_CHANGE | null,
-    styles?: {[styleName: string]: any} | NO_CHANGE | null, directive?: {}): void {
-  const lView = getLView();
-  const tNode = getTNode(index, lView);
-  const stylingContext = getStylingContext(index + HEADER_OFFSET, lView);
-
-  // inputs are only evaluated from a template binding into a directive, therefore,
-  // there should not be a situation where a directive host bindings function
-  // evaluates the inputs (this should only happen in the template function)
-  if (!directive) {
-    if (hasClassInput(tNode) && classes !== NO_CHANGE) {
-      const initialClasses = getInitialClassNameValue(stylingContext);
-      const classInputVal =
-          (initialClasses.length ? (initialClasses + ' ') : '') + forceClassesAsString(classes);
-      setInputsForProperty(lView, tNode.inputs !['class'] !, classInputVal);
-      classes = NO_CHANGE;
-    }
-
-    if (hasStyleInput(tNode) && styles !== NO_CHANGE) {
-      const initialStyles = getInitialClassNameValue(stylingContext);
-      const styleInputVal =
-          (initialStyles.length ? (initialStyles + ' ') : '') + forceStylesAsString(styles);
-      setInputsForProperty(lView, tNode.inputs !['style'] !, styleInputVal);
-      styles = NO_CHANGE;
-    }
-  }
-
-  updateStylingMap(stylingContext, classes, styles, directive);
 }
 
 //////////////////////////
@@ -1838,7 +1590,10 @@ export function invokeHostBindingsInCreationMode(
     firstTemplatePass: boolean) {
   const previousExpandoLength = expando.length;
   setCurrentDirectiveDef(def);
-  def.hostBindings !(RenderFlags.Create, directive, tNode.index - HEADER_OFFSET);
+  const elementIndex = tNode.index - HEADER_OFFSET;
+  setActiveHost(directive, elementIndex);
+  def.hostBindings !(RenderFlags.Create, directive, elementIndex);
+  setActiveHost(null);
   setCurrentDirectiveDef(null);
   // `hostBindings` function may or may not contain `allocHostVars` call
   // (e.g. it may not if it only contains host listeners), so we need to check whether
@@ -2713,6 +2468,24 @@ export function markViewDirty(lView: LView): LView|null {
 }
 
 /**
+ * Used to perform change detection on the whole application.
+ *
+ * This is equivalent to `detectChanges`, but invoked on root component. Additionally, `tick`
+ * executes lifecycle hooks and conditionally checks components based on their
+ * `ChangeDetectionStrategy` and dirtiness.
+ *
+ * The preferred way to trigger change detection is to call `markDirty`. `markDirty` internally
+ * schedules `tick` using a scheduler in order to coalesce multiple `markDirty` calls into a
+ * single change detection run. By default, the scheduler is `requestAnimationFrame`, but can
+ * be changed when calling `renderComponent` and providing the `scheduler` option.
+ */
+export function tick<T>(component: T): void {
+  const rootView = getRootView(component);
+  const rootContext = rootView[CONTEXT] as RootContext;
+  tickRootContext(rootContext);
+}
+
+/**
  * Used to schedule change detection on the whole application.
  *
  * Unlike `tick`, `scheduleTick` coalesces multiple calls into one change detection run.
@@ -2748,24 +2521,6 @@ export function scheduleTick<T>(rootContext: RootContext, flags: RootContextFlag
       res !(null);
     });
   }
-}
-
-/**
- * Used to perform change detection on the whole application.
- *
- * This is equivalent to `detectChanges`, but invoked on root component. Additionally, `tick`
- * executes lifecycle hooks and conditionally checks components based on their
- * `ChangeDetectionStrategy` and dirtiness.
- *
- * The preferred way to trigger change detection is to call `markDirty`. `markDirty` internally
- * schedules `tick` using a scheduler in order to coalesce multiple `markDirty` calls into a
- * single change detection run. By default, the scheduler is `requestAnimationFrame`, but can
- * be changed when calling `renderComponent` and providing the `scheduler` option.
- */
-export function tick<T>(component: T): void {
-  const rootView = getRootView(component);
-  const rootContext = rootView[CONTEXT] as RootContext;
-  tickRootContext(rootContext);
 }
 
 function tickRootContext(rootContext: RootContext) {
