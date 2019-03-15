@@ -6,16 +6,47 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from '../util/assert';
+import {assertDefined, assertEqual} from '../util/assert';
 
 import {assertLViewOrUndefined} from './assert';
 import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
-import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
+import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, TVIEW, View} from './interfaces/view';
 import {resetPreOrderHookFlags} from './util/view_utils';
 
 
+let _addingEmbeddedRootChild = false;
+let _useIvyAnimationCheck = false;
+
+/**
+ * Returns whether or not we're adding children at the root of an embedded view.
+ *
+ * This is used primarily to tell {@link AnimationRenderer} how to handle insertions appropriately.
+ */
+export function getAddingEmbeddedRootChild() {
+  ngDevMode && assertEqual(_useIvyAnimationCheck, true, 'Call setAddingEmbeddedRootChild first');
+  return _addingEmbeddedRootChild;
+}
+
+/**
+ * Sets whether or not the node being added is a root child of an embedded view.
+ * When we start adding nodes as direct children to embedded views, this flag should be flipped on.
+ *
+ * This is used to tell {@link AnimationRenderer} how to handle insertions appropriately.
+ */
+export function setAddingEmbeddedRootChild(value: boolean) {
+  _useIvyAnimationCheck = true;
+  _addingEmbeddedRootChild = value;
+}
+
+/**
+ * Returns true if Ivy path has been touched and {@link AnimationRenderer} needs to take the
+ * appropriate path on `appendChild` or `insertBefore`.
+ */
+export function shouldUseIvyAnimationCheck() {
+  return _useIvyAnimationCheck;
+}
 
 /**
  * Store the element depth count. This is used to identify the root elements of the template
@@ -128,7 +159,7 @@ export function getLView(): LView {
  *
  * @param viewToRestore The OpaqueViewState instance to restore.
  */
-export function restoreView(viewToRestore: OpaqueViewState) {
+export function restoreView(viewToRestore: View) {
   contextLView = viewToRestore as any as LView;
 }
 

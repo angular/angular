@@ -79,13 +79,16 @@ export function toDebug(obj: any): any {
 function toHtml(value: any, includeChildren: boolean = false): string|null {
   const node: HTMLElement|null = unwrapRNode(value) as any;
   if (node) {
-    const isTextNode = node.nodeType === Node.TEXT_NODE;
-    const outerHTML = (isTextNode ? node.textContent : node.outerHTML) || '';
-    if (includeChildren || isTextNode) {
-      return outerHTML;
-    } else {
+    const isElementNode = node.nodeType === Node.ELEMENT_NODE;
+    const outerHTML = (isElementNode ? node.outerHTML : node.textContent) || '';
+    if (node.nodeType === Node.COMMENT_NODE) {
+      return '<!--' + outerHTML + '-->';
+    } else if (isElementNode && !includeChildren) {
       const innerHTML = node.innerHTML;
-      return outerHTML.split(innerHTML)[0] || null;
+      const outer = outerHTML.split('>' + innerHTML + '<')[0];
+      return outer + '>';
+    } else {
+      return outerHTML;
     }
   } else {
     return null;
@@ -168,6 +171,7 @@ export interface DebugNode {
   native: Node;
   nodes: DebugNode[]|null;
   component: LViewDebug|null;
+  tNode: TNode;
 }
 
 /**
@@ -181,14 +185,15 @@ export function toDebugNodes(tNode: TNode | null, lView: LView): DebugNode[]|nul
     const debugNodes: DebugNode[] = [];
     let tNodeCursor: TNode|null = tNode;
     while (tNodeCursor) {
-      const rawValue = lView[tNode.index];
+      const rawValue = lView[tNodeCursor.index];
       const native = unwrapRNode(rawValue);
       const componentLViewDebug = toDebug(readLViewValue(rawValue));
       debugNodes.push({
         html: toHtml(native),
         native: native as any,
-        nodes: toDebugNodes(tNode.child, lView),
-        component: componentLViewDebug
+        nodes: toDebugNodes(tNodeCursor.child, lView),
+        component: componentLViewDebug,
+        tNode: tNodeCursor,
       });
       tNodeCursor = tNodeCursor.next;
     }

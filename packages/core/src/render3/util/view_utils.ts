@@ -6,16 +6,32 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertEqual, assertGreaterOrEqual, assertGreaterThan, assertLessThan} from '../../util/assert';
 import {LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
 import {ComponentDef, DirectiveDef} from '../interfaces/definition';
 import {TNode, TNodeFlags} from '../interfaces/node';
 import {RNode} from '../interfaces/renderer';
 import {StylingContext} from '../interfaces/styling';
-import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, TData, TVIEW} from '../interfaces/view';
+import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, TData, TVIEW, View, ViewContainer} from '../interfaces/view';
 
 
+
+export function viewToLView(view: View): LView {
+  ngDevMode && assertDefined(view, 'LView must be defined');
+  ngDevMode && assertEqual(isLView(view), true, 'Expecting LView');
+  return view as any;
+}
+
+export const lViewToView: (view: LView) => View = viewToLView as any;
+
+export function lContainerToViewContainer(view: LContainer): ViewContainer {
+  ngDevMode && assertDefined(view, 'LContainer must be defined');
+  ngDevMode && assertEqual(isLContainer(view), true, 'Expecting LContainer');
+  return view as any;
+}
+export const viewContainerToLContainer: (view: ViewContainer) => LContainer =
+    lContainerToViewContainer as any;
 
 /**
  * For efficiency reasons we often put several different data types (`RNode`, `LView`, `LContainer`,
@@ -133,7 +149,8 @@ export function getNativeByTNode(tNode: TNode, hostView: LView): RNode {
 
 export function getTNode(index: number, view: LView): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
-  ngDevMode && assertLessThan(index, view[TVIEW].data.length, 'wrong index for TNode');
+  ngDevMode &&
+      assertLessThan(index + HEADER_OFFSET, view[TVIEW].data.length, 'wrong index for TNode');
   return view[TVIEW].data[index + HEADER_OFFSET] as TNode;
 }
 
@@ -204,4 +221,30 @@ export function viewAttachedToContainer(view: LView): boolean {
  */
 export function resetPreOrderHookFlags(lView: LView) {
   lView[PREORDER_HOOK_FLAGS] = 0;
+}
+
+/**
+ * Finds the last DOM element in the view by traversing the view's TNodes.
+ * This is used when inserting an {@link LView} into the middle of a container.
+ *
+ * @param lView The view to traverse to find its last DOM node.
+ */
+export function getLastRootElementFromView(lView: LView): RNode {
+  const tView = lView[TVIEW];
+  let child = tView.firstChild;
+  ngDevMode && assertDefined(child, 'tView must have at least one root element');
+  let lastChild: TNode;
+  while (child) {
+    lastChild = child;
+    child = child.next;
+  }
+  return unwrapRNode(lView[lastChild !.index]);
+}
+
+export function getRNode(lView: LView, index: number): RNode {
+  ngDevMode && assertDefined(lView, 'LView must be defined');
+  ngDevMode && assertEqual(isLView(lView), true, 'Expecting LView');
+  ngDevMode && assertGreaterOrEqual(index, HEADER_OFFSET, 'index must be past the HEADER_OFFSET');
+
+  return unwrapRNode(lView[index]);
 }

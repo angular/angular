@@ -20,7 +20,6 @@ export const enum TNodeType {
   Projection = 0b001,
   View = 0b010,
   Element = 0b011,
-  ViewOrElement = 0b010,
   ElementContainer = 0b100,
   IcuContainer = 0b101,
 }

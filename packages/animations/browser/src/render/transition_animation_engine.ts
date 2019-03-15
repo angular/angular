@@ -657,7 +657,8 @@ export class TransitionAnimationEngine {
     return false;
   }
 
-  insertNode(namespaceId: string, element: any, parent: any, insertBefore: boolean): void {
+  insertNode(namespaceId: string, element: any, parent: any, shouldCollectEnterElement: boolean):
+      void {
     if (!isElementNode(element)) return;
 
     // special case for when an element is removed and reinserted (move operation)
@@ -688,8 +689,8 @@ export class TransitionAnimationEngine {
       }
     }
 
-    // only *directives and host elements are inserted before
-    if (insertBefore) {
+    // For embedded views (*directives)
+    if (shouldCollectEnterElement) {
       this.collectEnterElement(element);
     }
   }

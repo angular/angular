@@ -9,7 +9,7 @@
 import {Component, ContentChild, ContentChildren, Directive, QueryList, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {onlyInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
+import {fixmeIvy, onlyInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
 
 @Directive({
   selector: '[tplRef]',
@@ -230,13 +230,14 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       const content = 'Hello {{ name }}';
       const template = `
         <div *ngIf="visible">
-          <div i18n>${content}</div>
+          <div class="test" i18n>${content}</div>
         </div>
       `;
       const fixture = getFixtureWithOverrides({template});
 
-      const element = fixture.nativeElement.firstChild;
-      expect(element.children[0]).toHaveText('Bonjour John');
+      const element = fixture.nativeElement.querySelector('.test');
+
+      expect(element).toHaveText('Bonjour John');
     });
 
     it('should ignore i18n attributes on self-closing tags', () => {
@@ -250,11 +251,11 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
     it('should handle i18n attribute with directives', () => {
       const content = 'Hello {{ name }}';
       const template = `
-        <div *ngIf="visible" i18n>${content}</div>
+        <div class="test" *ngIf="visible" i18n>${content}</div>
       `;
       const fixture = getFixtureWithOverrides({template});
 
-      const element = fixture.nativeElement.firstChild;
+      const element = fixture.nativeElement.querySelector('.test');
       expect(element).toHaveText('Bonjour John');
     });
 
@@ -284,8 +285,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
       `;
       const fixture = getFixtureWithOverrides({template});
 
-      const element = fixture.nativeElement.firstChild;
-      expect(element).toHaveText('Bonjour John');
+      expect(fixture.nativeElement.innerHTML).toBe('<!--ng-container-->Bonjour John');
     });
 
     it('should handle single translation message within ng-template', () => {
@@ -460,7 +460,7 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
     it('should handle multiple ICUs in one block', () => {
       const template = `
             <div i18n>
-              {age, select, 10 {ten} 20 {twenty} other {other}} - 
+              {age, select, 10 {ten} 20 {twenty} other {other}} -
               {count, select, 1 {one} 2 {two} other {more than two}}
             </div>
           `;
@@ -552,8 +552,9 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           .replace(/<!--bindings=\{(\W.*\W\s*)?\}-->/g, '');
     }
 
-    it('detached nodes should still be part of query', () => {
-      const template = `
+    fixmeIvy('FW-1166: i18n not removing TNodes properly')
+        .it('detached nodes should still be part of query', () => {
+          const template = `
           <div-query #q i18n>
             <ng-template>
               <div>
@@ -565,50 +566,50 @@ onlyInIvy('Ivy i18n logic').describe('i18n', function() {
           </div-query>
         `;
 
-      @Directive({selector: '[text]', inputs: ['text'], exportAs: 'textDir'})
-      class TextDirective {
-        // TODO(issue/24571): remove '!'.
-        text !: string;
-        constructor() {}
-      }
+          @Directive({selector: '[text]', inputs: ['text'], exportAs: 'textDir'})
+          class TextDirective {
+            // TODO(issue/24571): remove '!'.
+            text !: string;
+            constructor() {}
+          }
 
-      @Component({selector: 'div-query', template: '<ng-container #vc></ng-container>'})
-      class DivQuery {
-        // TODO(issue/24571): remove '!'.
-        @ContentChild(TemplateRef) template !: TemplateRef<any>;
+          @Component({selector: 'div-query', template: '<ng-container #vc></ng-container>'})
+          class DivQuery {
+            // TODO(issue/24571): remove '!'.
+            @ContentChild(TemplateRef) template !: TemplateRef<any>;
 
-        // TODO(issue/24571): remove '!'.
-        @ViewChild('vc', {read: ViewContainerRef})
-        vc !: ViewContainerRef;
+            // TODO(issue/24571): remove '!'.
+            @ViewChild('vc', {read: ViewContainerRef})
+            vc !: ViewContainerRef;
 
-        // TODO(issue/24571): remove '!'.
-        @ContentChildren(TextDirective, {descendants: true})
-        query !: QueryList<TextDirective>;
+            // TODO(issue/24571): remove '!'.
+            @ContentChildren(TextDirective, {descendants: true})
+            query !: QueryList<TextDirective>;
 
-        create() { this.vc.createEmbeddedView(this.template); }
+            create() { this.vc.createEmbeddedView(this.template); }
 
-        destroy() { this.vc.clear(); }
-      }
+            destroy() { this.vc.clear(); }
+          }
 
-      TestBed.configureTestingModule({declarations: [TextDirective, DivQuery]});
-      const fixture = getFixtureWithOverrides({template});
-      const q = fixture.debugElement.children[0].references.q;
-      expect(q.query.length).toEqual(0);
+          TestBed.configureTestingModule({declarations: [TextDirective, DivQuery]});
+          const fixture = getFixtureWithOverrides({template});
+          const q = fixture.debugElement.children[0].references.q;
+          expect(q.query.length).toEqual(0);
 
-      // Create embedded view
-      q.create();
-      fixture.detectChanges();
-      expect(q.query.length).toEqual(1);
-      expect(toHtml(fixture.nativeElement))
-          .toEqual(`<div-query><!--ng-container-->Contenu<!--container--></div-query>`);
+          // Create embedded view
+          q.create();
+          fixture.detectChanges();
+          expect(q.query.length).toEqual(1);
+          expect(toHtml(fixture.nativeElement))
+              .toEqual(`<div-query><!--ng-container-->Contenu<!--container--></div-query>`);
 
-      // Disable ng-if
-      fixture.componentInstance.visible = false;
-      fixture.detectChanges();
-      expect(q.query.length).toEqual(0);
-      expect(toHtml(fixture.nativeElement))
-          .toEqual(`<div-query><!--ng-container-->Contenu<!--container--></div-query>`);
-    });
+          // Disable ng-if
+          fixture.componentInstance.visible = false;
+          fixture.detectChanges();
+          expect(q.query.length).toEqual(0);
+          expect(toHtml(fixture.nativeElement))
+              .toEqual(`<div-query><!--ng-container-->Contenu<!--container--></div-query>`);
+        });
   });
 
   it('should handle multiple i18n sections', () => {

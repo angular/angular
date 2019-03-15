@@ -147,9 +147,6 @@
     "name": "ViewEncapsulation"
   },
   {
-    "name": "__values"
-  },
-  {
     "name": "_currentNamespace"
   },
   {
@@ -165,9 +162,6 @@
     "name": "addOrUpdateStaticStyle"
   },
   {
-    "name": "addToViewTree"
-  },
-  {
     "name": "allocStylingContext"
   },
   {
@@ -178,6 +172,9 @@
   },
   {
     "name": "appendChild"
+  },
+  {
+    "name": "appendChildView"
   },
   {
     "name": "applyOnCreateInstructions"
@@ -315,7 +312,7 @@
     "name": "generatePropertyAliases"
   },
   {
-    "name": "getBeforeNodeForView"
+    "name": "getBeforeNodeForContainedView"
   },
   {
     "name": "getBindingsEnabled"
@@ -376,9 +373,6 @@
   },
   {
     "name": "getNameOnlyMarkerIndex"
-  },
-  {
-    "name": "getNativeAnchorNode"
   },
   {
     "name": "getNativeByTNode"
@@ -459,6 +453,12 @@
     "name": "insertBloom"
   },
   {
+    "name": "insertChildBefore"
+  },
+  {
+    "name": "insertNodeOrNodesBefore"
+  },
+  {
     "name": "instantiateAllDirectives"
   },
   {
@@ -531,12 +531,6 @@
     "name": "namespaceHTML"
   },
   {
-    "name": "nativeAppendChild"
-  },
-  {
-    "name": "nativeAppendOrInsertBefore"
-  },
-  {
     "name": "nativeInsertBefore"
   },
   {
@@ -591,6 +585,9 @@
     "name": "registerPreOrderHooks"
   },
   {
+    "name": "renderChild"
+  },
+  {
     "name": "renderComponent"
   },
   {
@@ -622,6 +619,9 @@
   },
   {
     "name": "saveResolvedLocalsInData"
+  },
+  {
+    "name": "setAddingEmbeddedRootChild"
   },
   {
     "name": "setBindingRoot"

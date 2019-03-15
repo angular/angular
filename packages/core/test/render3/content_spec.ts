@@ -16,6 +16,7 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {TemplateRef, ViewContainerRef, QueryList} from '@angular/core';
 import {NgIf, NgForOf} from './common_with_def';
 import {ComponentFixture, createComponent, getDirectiveOnNode, renderComponent, toHtml} from './render_util';
+import {fixmeIvy} from '@angular/private/testing';
 
 describe('content projection', () => {
   it('should project content', () => {
@@ -573,6 +574,7 @@ describe('content projection', () => {
        expect(toHtml(parent)).toEqual('<child><div></div></child>');
      });
 
+
   it('should project containers into containers', () => {
     /**
      * <div>
@@ -745,6 +747,7 @@ describe('content projection', () => {
     expect(fixture.html)
         .toEqual('<parent><child><div>Before text-After text</div></child></parent>');
   });
+
 
   it('should support projection into embedded views when ng-content is a root node of an embedded view, with other nodes after',
      () => {

@@ -1630,7 +1630,7 @@ describe('Integration', () => {
          expect(location.path()).toEqual('/team/22');
          expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
 
-         const teamCmp = fixture.debugElement.childNodes[1].componentInstance;
+         const teamCmp = fixture.debugElement.childNodes[2].componentInstance;
 
          teamCmp.routerLink = ['/team/0'];
          advance(fixture);

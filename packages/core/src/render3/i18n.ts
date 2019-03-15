@@ -9,17 +9,18 @@
 import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent} from '../sanitization/html_sanitizer';
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
-import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
+import {assertDefined, assertDomNode, assertEqual, assertGreaterThan, isDomNode} from '../util/assert';
+
 import {attachPatchData} from './context_discovery';
 import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions';
 import {LContainer, NATIVE} from './interfaces/container';
 import {COMMENT_MARKER, ELEMENT_MARKER, I18nMutateOpCode, I18nMutateOpCodes, I18nUpdateOpCode, I18nUpdateOpCodes, IcuType, TI18n, TIcu} from './interfaces/i18n';
 import {TElementNode, TIcuContainerNode, TNode, TNodeType} from './interfaces/node';
-import {RComment, RElement, RText} from './interfaces/renderer';
+import {RComment, RElement, RNode, RText} from './interfaces/renderer';
 import {SanitizerFn} from './interfaces/sanitization';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, HEADER_OFFSET, LView, RENDERER, TVIEW, TView, T_HOST} from './interfaces/view';
-import {appendChild, createTextNode, nativeRemoveNode} from './node_manipulation';
+import {appendChild, createTextNode, getRenderParent, nativeInsertBefore, nativeParentNode, nativeRemoveNode} from './node_manipulation';
 import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviousOrParentTNode} from './state';
 import {NO_CHANGE} from './tokens';
 import {addAllToArray} from './util/array_utils';
@@ -376,7 +377,7 @@ function i18nStartFirstPass(
   const createOpCodes: I18nMutateOpCodes = [];
   // If the previous node wasn't the direct parent then we have a translation without top level
   // element and we need to keep a reference of the previous element if there is one
-  if (index > 0 && previousOrParentTNode !== parentTNode) {
+  if (index > 0 && parentTNode !== null && previousOrParentTNode !== parentTNode) {
     // Create an OpCode to select the previous TNode
     createOpCodes.push(
         previousOrParentTNode.index << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select);
@@ -497,7 +498,22 @@ function appendI18nNode(tNode: TNode, parentTNode: TNode, previousTNode: TNode |
     cursor = cursor.next;
   }
 
-  appendChild(getNativeByTNode(tNode, viewData), tNode, viewData);
+  // Insert before this node
+  let beforeNode: RNode|null = null;
+  if (tNode.parent && tNode.parent.type === TNodeType.IcuContainer) {
+    beforeNode = getNativeByTNode(tNode.parent, viewData);
+
+    // HACK(benlesh): In some cases, ICU comment nodes were not appropriately added to the intended
+    // parent. This forces them to be added, so insertion of what's important below does not error.
+    // This is highly suspect, IMO, but it seems to have things working.
+    const renderer = viewData[RENDERER];
+    const renderParent = getRenderParent(tNode, viewData) !;
+    if (nativeParentNode(renderer, beforeNode) !== renderParent) {
+      nativeInsertBefore(renderer, renderParent, beforeNode, null);
+    }
+  }
+
+  appendChild(getNativeByTNode(tNode, viewData), tNode, viewData, beforeNode);
 
   const slotValue = viewData[tNode.index];
   if (tNode.type !== TNodeType.Container && isLContainer(slotValue)) {
@@ -660,6 +676,7 @@ function createDynamicNodeAtIndex(
     index: number, type: TNodeType, native: RElement | RText | null,
     name: string | null): TElementNode|TIcuContainerNode {
   const previousOrParentTNode = getPreviousOrParentTNode();
+  ngDevMode && assertDefined(previousOrParentTNode, 'parent TNode required');
   const tNode = createNodeAtIndex(index, type as any, native, name, null);
 
   // We are creating a dynamic node, the previous tNode might not be pointing at this node.
@@ -869,6 +886,7 @@ function removeNode(index: number, viewData: LView) {
   const removedPhTNode = getTNode(index, viewData);
   const removedPhRNode = getNativeByIndex(index, viewData);
   if (removedPhRNode) {
+    ngDevMode && assertDomNode(removedPhRNode);
     nativeRemoveNode(viewData[RENDERER], removedPhRNode);
   }
 

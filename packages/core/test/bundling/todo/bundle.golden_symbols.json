@@ -291,6 +291,9 @@
     "name": "__values"
   },
   {
+    "name": "_addingEmbeddedRootChild"
+  },
+  {
     "name": "_c0"
   },
   {
@@ -375,6 +378,9 @@
     "name": "_symbolIterator"
   },
   {
+    "name": "_useIvyAnimationCheck"
+  },
+  {
     "name": "addComponentLogic"
   },
   {
@@ -390,9 +396,6 @@
     "name": "addTContainerToQueries"
   },
   {
-    "name": "addToViewTree"
-  },
-  {
     "name": "allocPlayerContext"
   },
   {
@@ -406,6 +409,9 @@
   },
   {
     "name": "appendChild"
+  },
+  {
+    "name": "appendChildView"
   },
   {
     "name": "applyOnCreateInstructions"
@@ -484,9 +490,6 @@
   },
   {
     "name": "createElementRef"
-  },
-  {
-    "name": "createEmbeddedViewAndNode"
   },
   {
     "name": "createEmptyStylingContext"
@@ -654,7 +657,10 @@
     "name": "generatePropertyAliases"
   },
   {
-    "name": "getBeforeNodeForView"
+    "name": "getAddingEmbeddedRootChild"
+  },
+  {
+    "name": "getBeforeNodeForContainedView"
   },
   {
     "name": "getBindingsEnabled"
@@ -705,6 +711,9 @@
     "name": "getElementDepthCount"
   },
   {
+    "name": "getEmbeddedViewFactoryInternal"
+  },
+  {
     "name": "getErrorLogger"
   },
   {
@@ -750,6 +759,9 @@
     "name": "getLViewParent"
   },
   {
+    "name": "getLastRootElementFromView"
+  },
+  {
     "name": "getMatchingBindingIndex"
   },
   {
@@ -763,9 +775,6 @@
   },
   {
     "name": "getNameOnlyMarkerIndex"
-  },
-  {
-    "name": "getNativeAnchorNode"
   },
   {
     "name": "getNativeByIndex"
@@ -930,6 +939,12 @@
     "name": "insertBloom"
   },
   {
+    "name": "insertChildBefore"
+  },
+  {
+    "name": "insertNodeOrNodesBefore"
+  },
+  {
     "name": "insertView"
   },
   {
@@ -1023,6 +1038,12 @@
     "name": "iterateListLike"
   },
   {
+    "name": "lContainerToViewContainer"
+  },
+  {
+    "name": "lViewToView"
+  },
+  {
     "name": "leaveView"
   },
   {
@@ -1063,12 +1084,6 @@
   },
   {
     "name": "namespaceHTML"
-  },
-  {
-    "name": "nativeAppendChild"
-  },
-  {
-    "name": "nativeAppendOrInsertBefore"
   },
   {
     "name": "nativeInsertBefore"
@@ -1158,7 +1173,7 @@
     "name": "removeListeners"
   },
   {
-    "name": "removeView"
+    "name": "renderChild"
   },
   {
     "name": "renderComponent"
@@ -1213,6 +1228,9 @@
   },
   {
     "name": "searchTokensOnInjector"
+  },
+  {
+    "name": "setAddingEmbeddedRootChild"
   },
   {
     "name": "setBindingRoot"
@@ -1293,6 +1311,9 @@
     "name": "shouldSearchParent"
   },
   {
+    "name": "shouldUseIvyAnimationCheck"
+  },
+  {
     "name": "storeBindingMetadata"
   },
   {
@@ -1323,6 +1344,9 @@
     "name": "trackByIdentity"
   },
   {
+    "name": "unwrapLContainer"
+  },
+  {
     "name": "unwrapRNode"
   },
   {
@@ -1342,6 +1366,33 @@
   },
   {
     "name": "viewAttachedToContainer"
+  },
+  {
+    "name": "viewContainerGet"
+  },
+  {
+    "name": "viewContainerGetInternal"
+  },
+  {
+    "name": "viewContainerIndexOfInternal"
+  },
+  {
+    "name": "viewContainerInsertAfter"
+  },
+  {
+    "name": "viewContainerInsertAfterInternal"
+  },
+  {
+    "name": "viewContainerRemove"
+  },
+  {
+    "name": "viewContainerRemoveInternal"
+  },
+  {
+    "name": "viewContainerToLContainer"
+  },
+  {
+    "name": "viewToLView"
   },
   {
     "name": "walkTNodeTree"

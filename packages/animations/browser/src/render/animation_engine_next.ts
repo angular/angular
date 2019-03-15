@@ -62,8 +62,9 @@ export class AnimationEngine {
     this._transitionEngine.destroy(namespaceId, context);
   }
 
-  onInsert(namespaceId: string, element: any, parent: any, insertBefore: boolean): void {
-    this._transitionEngine.insertNode(namespaceId, element, parent, insertBefore);
+  onInsert(namespaceId: string, element: any, parent: any, shouldCollectEnterElement: boolean):
+      void {
+    this._transitionEngine.insertNode(namespaceId, element, parent, shouldCollectEnterElement);
   }
 
   onRemove(namespaceId: string, element: any, context: any, isHostElement?: boolean): void {
