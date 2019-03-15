@@ -21,7 +21,7 @@ load(
     "ROLLUP_OUTPUTS",
     "run_rollup",
     "run_sourcemapexplorer",
-    "run_uglify",
+    "run_terser",
     "write_rollup_config",
 )
 load("@build_bazel_rules_nodejs//internal/common:collect_es6_sources.bzl", collect_es2015_sources = "collect_es6_sources")
@@ -101,10 +101,12 @@ def _run_tsc(ctx, input, output):
 # Borrowed from bazelbuild/rules_nodejs, with the addition of brotli compression output
 def _plain_rollup_bundle(ctx):
     rollup_config = write_rollup_config(ctx)
-    run_rollup(ctx, collect_es2015_sources(ctx), rollup_config, ctx.outputs.build_es6)
-    _run_tsc(ctx, ctx.outputs.build_es6, ctx.outputs.build_es5)
-    source_map = run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min)
-    run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min_debug, debug = True)
+    run_rollup(ctx, collect_es2015_sources(ctx), rollup_config, ctx.outputs.build_es2015)
+    run_terser(ctx, ctx.outputs.build_es2015, ctx.outputs.build_es2015_min, config_name = ctx.label.name + "es2015_min")
+    run_terser(ctx, ctx.outputs.build_es2015, ctx.outputs.build_es2015_min_debug, debug = True, config_name = ctx.label.name + "es2015_min_debug")
+    _run_tsc(ctx, ctx.outputs.build_es2015, ctx.outputs.build_es5)
+    source_map = run_terser(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min)
+    run_terser(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min_debug, debug = True)
     umd_rollup_config = write_rollup_config(ctx, filename = "_%s_umd.rollup.conf.js", output_format = "umd")
     run_rollup(ctx, collect_es2015_sources(ctx), umd_rollup_config, ctx.outputs.build_umd)
     cjs_rollup_config = write_rollup_config(ctx, filename = "_%s_cjs.rollup.conf.js", output_format = "cjs")
@@ -123,25 +125,44 @@ def _ng_rollup_bundle(ctx):
     # We don't expect anyone to make use of this bundle yet, but it makes this rule
     # compatible with rollup_bundle which allows them to be easily swapped back and
     # forth.
-    esm2015_rollup_config = write_rollup_config(ctx, filename = "_%s.rollup_es6.conf.js")
-    run_rollup(ctx, collect_es2015_sources(ctx), esm2015_rollup_config, ctx.outputs.build_es6)
+    esm2015_rollup_config = write_rollup_config(ctx, filename = "_%s.rollup_es2015.conf.js")
+    esm2015_rollup_sourcemap = run_rollup(ctx, collect_es2015_sources(ctx), esm2015_rollup_config, ctx.outputs.build_es2015)
+
+    run_terser(
+        ctx,
+        ctx.outputs.build_es2015,
+        ctx.outputs.build_es2015_min,
+        config_name = ctx.label.name + "es2015_min",
+        comments = False,
+        in_source_map = esm2015_rollup_sourcemap,
+    )
+    run_terser(
+        ctx,
+        ctx.outputs.build_es2015,
+        ctx.outputs.build_es2015_min_debug,
+        config_name = ctx.label.name + "es2015_min_debug",
+        debug = True,
+        comments = False,
+    )
 
     esm5_sources = flatten_esm5(ctx)
 
     rollup_config = write_rollup_config(ctx, [BO_PLUGIN], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]))
     rollup_sourcemap = run_rollup(ctx, esm5_sources, rollup_config, ctx.outputs.build_es5)
 
-    sourcemap = run_uglify(
+    sourcemap = run_terser(
         ctx,
         ctx.outputs.build_es5,
         ctx.outputs.build_es5_min,
+        config_name = ctx.label.name + "es5_min",
         comments = False,
         in_source_map = rollup_sourcemap,
     )
-    run_uglify(
+    run_terser(
         ctx,
         ctx.outputs.build_es5,
         ctx.outputs.build_es5_min_debug,
+        config_name = ctx.label.name + "es5_min_debug",
         debug = True,
         comments = False,
     )
