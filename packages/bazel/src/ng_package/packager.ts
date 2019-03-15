@@ -415,7 +415,7 @@ export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, '')
     if (metadata.exports) {
       // Strip re-exports which are now self-references
       metadata.exports =
-          metadata.exports.filter((e: {from: string}) => !relativePathRegex.test(e.from));
+          metadata.exports.filter((e: {from: string}) => !e.from.match(relativePathRegex));
     }
     return JSON.stringify(metadata).replace(relativePathRegex, typingsRelativePath);
   }
