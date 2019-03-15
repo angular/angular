@@ -44,14 +44,14 @@ src/
   index.html                 <i>app web page</i>
   main.ts                    <i>bootstrapper for client app</i>
   main.server.ts             <i>* bootstrapper for server app</i>
-  tsconfig.app.json          <i>TypeScript client configuration</i>
-  tsconfig.server.json       <i>* TypeScript server configuration</i>
-  tsconfig.spec.json         <i>TypeScript spec configuration</i>
   style.css                  <i>styles for the app</i>
   app/ ...                   <i>application code</i>
     app.server.module.ts     <i>* server-side application module</i>
 server.ts                    <i>* express web server</i>
 tsconfig.json                <i>TypeScript client configuration</i>
+tsconfig.app.json            <i>TypeScript client configuration</i>
+tsconfig.server.json         <i>* TypeScript server configuration</i>
+tsconfig.spec.json           <i>TypeScript spec configuration</i>
 package.json                 <i>npm configuration</i>
 webpack.server.config.js     <i>* webpack server configuration</i>
 </code-example>
