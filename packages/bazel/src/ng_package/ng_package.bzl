@@ -20,7 +20,7 @@ load(
     "@build_bazel_rules_nodejs//:internal/rollup/rollup_bundle.bzl",
     "ROLLUP_ATTRS",
     "ROLLUP_DEPS_ASPECTS",
-    "run_terser",
+    "run_uglify",
     "write_rollup_config",
 )
 load(
@@ -309,13 +309,13 @@ def _ng_package_impl(ctx):
                 include_tslib = True,
             ),
         )
-        terser_sourcemap = run_terser(
+        uglify_sourcemap = run_uglify(
             ctx,
             umd_output,
             min_output,
             config_name = entry_point.replace("/", "_"),
         )
-        bundles.append(struct(js = min_output, map = terser_sourcemap))
+        bundles.append(struct(js = min_output, map = uglify_sourcemap))
 
     packager_inputs = (
         ctx.files.srcs +
@@ -432,6 +432,11 @@ NG_PACKAGE_ATTRS = dict(NPM_PACKAGE_ATTRS, **dict(ROLLUP_ATTRS, **{
     "_rollup_config_tmpl": attr.label(
         default = Label("@build_bazel_rules_nodejs//internal/rollup:rollup.config.js"),
         allow_single_file = True,
+    ),
+    "_uglify": attr.label(
+        default = Label("@build_bazel_rules_nodejs//internal/rollup:uglify"),
+        executable = True,
+        cfg = "host",
     ),
 }))
 
