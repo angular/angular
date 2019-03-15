@@ -1043,7 +1043,7 @@ export class Router {
           this.currentNavigation = null;
           t.resolve(true);
         },
-        e => { this.console.warn(`Unhandled Navigation Error: `); });
+        e => { this.console.warn({message: `Unhandled Navigation Error.`, error: e}); });
   }
 
   private scheduleNavigation(
