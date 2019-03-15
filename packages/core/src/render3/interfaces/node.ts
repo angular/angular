@@ -32,7 +32,7 @@ export const enum TNodeType {
    */
   Element = 3,
   /**
-   * The TNode contains information about a container comment {@link RNode}.
+   * The TNode contains information about an `<ng-container>` element {@link RNode}.
    */
   ElementContainer = 4,
   /**
