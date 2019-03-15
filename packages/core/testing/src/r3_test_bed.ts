@@ -210,7 +210,8 @@ export class TestBedRender3 implements Injector, TestBed {
     useValue?: any,
     deps?: any[],
   }): TestBedStatic {
-    throw new Error('Render3TestBed.deprecatedOverrideProvider is not implemented');
+    _getTestBedRender3().deprecatedOverrideProvider(token, provider as any);
+    return TestBedRender3 as any as TestBedStatic;
   }
 
   static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND): any {
@@ -495,7 +496,16 @@ export class TestBedRender3 implements Injector, TestBed {
   deprecatedOverrideProvider(token: any, provider: {useValue: any;}): void;
   deprecatedOverrideProvider(
       token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}): void {
-    throw new Error('No implemented in IVY');
+    // HACK: This is NOT the correct implementation for deprecatedOverrideProvider.
+    // To implement it in a backward compatible way, we would need to record some state
+    // so we know to prevent eager instantiation of NgModules. However, we don't plan
+    // to implement this at all since the API is deprecated and scheduled for removal
+    // in V8. This hack is here temporarily for Ivy testing until we transition apps
+    // inside Google to the overrideProvider API. At that point, we will be able to
+    // remove this method entirely. In the meantime, we can use overrideProvider to
+    // test apps with Ivy that don't care about eager instantiation. This fixes 85%
+    // of cases in our blueprint.
+    this.overrideProvider(token, provider as any);
   }
 
   createComponent<T>(type: Type<T>): ComponentFixture<T> {
