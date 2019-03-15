@@ -8,6 +8,7 @@
 import {AnimationTriggerMetadata} from '@angular/animations';
 import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
 import {Injectable, NgZone, Renderer2, RendererFactory2, RendererStyleFlags2, RendererType2} from '@angular/core';
+import {getAddingEmbeddedRootChild, shouldUseIvyAnimationCheck} from '@angular/core/src/render3/state';
 
 const ANIMATION_PREFIX = '@';
 const DISABLE_ANIMATIONS_FLAG = '@.disabled';
@@ -140,12 +141,16 @@ export class BaseAnimationRenderer implements Renderer2 {
 
   appendChild(parent: any, newChild: any): void {
     this.delegate.appendChild(parent, newChild);
-    this.engine.onInsert(this.namespaceId, newChild, parent, false);
+    const shouldCollectEnterElement =
+        shouldUseIvyAnimationCheck() ? getAddingEmbeddedRootChild() : false;
+    this.engine.onInsert(this.namespaceId, newChild, parent, shouldCollectEnterElement);
   }
 
   insertBefore(parent: any, newChild: any, refChild: any): void {
     this.delegate.insertBefore(parent, newChild, refChild);
-    this.engine.onInsert(this.namespaceId, newChild, parent, true);
+    const shouldCollectEnterElement =
+        shouldUseIvyAnimationCheck() ? getAddingEmbeddedRootChild() : true;
+    this.engine.onInsert(this.namespaceId, newChild, parent, shouldCollectEnterElement);
   }
 
   removeChild(parent: any, oldChild: any, isHostElement: boolean): void {

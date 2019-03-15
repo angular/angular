@@ -126,19 +126,16 @@
     "name": "ViewEncapsulation"
   },
   {
-    "name": "__values"
-  },
-  {
     "name": "_global"
   },
   {
     "name": "_renderCompCount"
   },
   {
-    "name": "addToViewTree"
+    "name": "appendChild"
   },
   {
-    "name": "appendChild"
+    "name": "appendChildView"
   },
   {
     "name": "applyOnCreateInstructions"
@@ -228,7 +225,7 @@
     "name": "generateExpandoInstructionBlock"
   },
   {
-    "name": "getBeforeNodeForView"
+    "name": "getBeforeNodeForContainedView"
   },
   {
     "name": "getCheckNoChangesMode"
@@ -271,9 +268,6 @@
   },
   {
     "name": "getLViewParent"
-  },
-  {
-    "name": "getNativeAnchorNode"
   },
   {
     "name": "getNativeByTNode"
@@ -330,6 +324,12 @@
     "name": "insertBloom"
   },
   {
+    "name": "insertChildBefore"
+  },
+  {
+    "name": "insertNodeOrNodesBefore"
+  },
+  {
     "name": "instantiateRootComponent"
   },
   {
@@ -369,12 +369,6 @@
     "name": "namespaceHTML"
   },
   {
-    "name": "nativeAppendChild"
-  },
-  {
-    "name": "nativeAppendOrInsertBefore"
-  },
-  {
     "name": "nativeInsertBefore"
   },
   {
@@ -409,6 +403,9 @@
   },
   {
     "name": "refreshDynamicEmbeddedViews"
+  },
+  {
+    "name": "renderChild"
   },
   {
     "name": "renderComponent"

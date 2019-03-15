@@ -26,14 +26,15 @@ import {assertComponentType} from './assert';
 import {LifecycleHooksFeature, createRootComponent, createRootComponentView, createRootContext} from './component';
 import {getComponentDef} from './definition';
 import {NodeInjector} from './di';
-import {addToViewTree, assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
+import {assignTViewNodeToLView, createLView, createTView, elementCreate, locateHostElement, refreshDescendantViews} from './instructions';
 import {ComponentDef} from './interfaces/definition';
 import {TContainerNode, TElementContainerNode, TElementNode} from './interfaces/node';
 import {RNode, RendererFactory3, domRendererFactory3, isProceduralRenderer} from './interfaces/renderer';
-import {HEADER_OFFSET, LView, LViewFlags, RootContext, TVIEW} from './interfaces/view';
+import {LViewFlags, RootContext, TVIEW, View} from './interfaces/view';
+import {appendChildView} from './node_manipulation';
 import {enterView, leaveView} from './state';
 import {defaultScheduler} from './util/misc_utils';
-import {getTNode} from './util/view_utils';
+import {getTNode, lViewToView, viewToLView} from './util/view_utils';
 import {createElementRef} from './view_engine_compatibility';
 import {RootViewRef, ViewRef} from './view_ref';
 
@@ -169,8 +170,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     // rootView is the parent when bootstrapping
     const oldLView = enterView(rootLView, null);
 
-    let component: T;
-    let tElementNode: TElementNode;
+    let component: T = null !;
+    let tElementNode: TElementNode = null !;
     try {
       const componentView = createRootComponentView(
           hostRNode, this.componentDef, rootLView, rendererFactory, renderer);
@@ -191,7 +192,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       component = createRootComponent(
           componentView, this.componentDef, rootLView, rootContext, [LifecycleHooksFeature]);
 
-      addToViewTree(rootLView, componentView);
+      appendChildView(rootLView, componentView);
       refreshDescendantViews(rootLView);
     } finally {
       leaveView(oldLView);
@@ -199,7 +200,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     const componentRef = new ComponentRef(
         this.componentType, component,
-        createElementRef(viewEngine_ElementRef, tElementNode, rootLView), rootLView, tElementNode);
+        createElementRef(viewEngine_ElementRef, tElementNode, rootLView), lViewToView(rootLView),
+        tElementNode);
 
     if (isInternalRootView) {
       // The host element of the internal root view is attached to the component's host view node
@@ -239,16 +241,16 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
 
   constructor(
       componentType: Type<T>, instance: T, public location: viewEngine_ElementRef,
-      private _rootLView: LView,
-      private _tNode: TElementNode|TContainerNode|TElementContainerNode) {
+      private _rootView: View, private _tNode: TElementNode|TContainerNode|TElementContainerNode) {
     super();
     this.instance = instance;
-    this.hostView = this.changeDetectorRef = new RootViewRef<T>(_rootLView);
+    this.hostView = this.changeDetectorRef = new RootViewRef<T>(_rootView);
+    const _rootLView = viewToLView(_rootView);
     this.hostView._tViewNode = assignTViewNodeToLView(_rootLView[TVIEW], null, -1, _rootLView);
     this.componentType = componentType;
   }
 
-  get injector(): Injector { return new NodeInjector(this._tNode, this._rootLView); }
+  get injector(): Injector { return new NodeInjector(this._tNode, viewToLView(this._rootView)); }
 
   destroy(): void {
     ngDevMode && assertDefined(this.destroyCbs, 'NgModule already destroyed');

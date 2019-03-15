@@ -23,6 +23,7 @@ import {NgForOf} from '../../test/render3/common_with_def';
 
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, createComponent, getDirectiveOnNode, TemplateFixture,} from './render_util';
+import {fixmeIvy} from '@angular/private/testing';
 
 const Component: typeof _Component = function(...args: any[]): any {
   // In test we use @Component for documentation only so it's safe to mock out the implementation.
@@ -911,8 +912,21 @@ describe('ViewContainerRef', () => {
         fixture.update();
         expect(fixture.html).toEqual('<p vcref=""></p>ABC');
 
+        /**
+         * Current state of the DOM should be:
+         *
+         * <div>
+         *   <!-- container -->
+         *   <p vcref=""></p>
+         *   <!-- container -->
+         *   A  <-- text node
+         *   B  <-- text node
+         *   C  <-- text node
+         * </div>
+         */
+
         // The DOM is manually modified here to ensure that the text node is actually moved
-        fixture.hostElement.childNodes[2].nodeValue = '**A**';
+        fixture.hostElement.childNodes[3].nodeValue = '**A**';
         expect(fixture.html).toEqual('<p vcref=""></p>**A**BC');
 
         let viewRef = directiveInstance !.vcref.get(0);
