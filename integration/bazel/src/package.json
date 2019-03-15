@@ -18,7 +18,7 @@
     "@angular/bazel": "packages-dist:bazel",
     "@angular/compiler": "packages-dist:compiler",
     "@angular/compiler-cli": "packages-dist:compiler-cli",
-    "@bazel/karma": "0.26.0",
+    "@bazel/karma": "0.27.4",
     "@types/jasmine": "2.8.8",
     "@types/source-map": "0.5.1",
     "protractor": "5.1.2",
