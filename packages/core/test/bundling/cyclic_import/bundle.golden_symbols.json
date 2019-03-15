@@ -624,6 +624,9 @@
     "name": "saveResolvedLocalsInData"
   },
   {
+    "name": "setActiveHost"
+  },
+  {
     "name": "setBindingRoot"
   },
   {

@@ -347,7 +347,7 @@ describe('compiler compliance: bindings', () => {
           factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵelementHostAttrs(ctx, $c0$);
+              $r3$.ɵelementHostAttrs($c0$);
             }
           }
         });
@@ -405,7 +405,7 @@ describe('compiler compliance: bindings', () => {
           factory: function HostAttributeComp_Factory(t) { return new (t || HostAttributeComp)(); },
           hostBindings: function HostAttributeComp_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵelementHostAttrs(ctx, $c0$);
+              $r3$.ɵelementHostAttrs($c0$);
               …
             }
             …
@@ -417,7 +417,7 @@ describe('compiler compliance: bindings', () => {
           factory: function HostAttributeDir_Factory(t) { return new (t || HostAttributeDir)(); },
           hostBindings: function HostAttributeDir_HostBindings(rf, ctx, elIndex) {
             if (rf & 1) {
-              $r3$.ɵelementHostAttrs(ctx, $c1$);
+              $r3$.ɵelementHostAttrs($c1$);
               …
             }
             …
