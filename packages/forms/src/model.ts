@@ -110,7 +110,7 @@ export interface AbstractControlOptions {
    * @description
    * The event name for control to update upon.
    */
-  updateOn?: 'change'|'blur'|'submit';
+  updateOn?: FormHooks;
 }
 
 
