@@ -12,17 +12,33 @@ import {LView, TView} from './view';
 
 
 /**
- * TNodeType corresponds to the TNode.type property. It contains information
- * on how to map a particular set of bits in TNode.flags to the node type.
+ * TNodeType corresponds to the {@link TNode} `type` property.
  */
 export const enum TNodeType {
-  Container = 0b000,
-  Projection = 0b001,
-  View = 0b010,
-  Element = 0b011,
-  ViewOrElement = 0b010,
-  ElementContainer = 0b100,
-  IcuContainer = 0b101,
+  /**
+   * The TNode contains information about an {@link LContainer} for embedded views.
+   */
+  Container = 0,
+  /**
+   * The TNode contains information about an `<ng-content>` projection
+   */
+  Projection = 1,
+  /**
+   * The TNode contains information about an {@link LView}
+   */
+  View = 2,
+  /**
+   * The TNode contains information about a DOM element aka {@link RNode}.
+   */
+  Element = 3,
+  /**
+   * The TNode contains information about an `<ng-container>` element {@link RNode}.
+   */
+  ElementContainer = 4,
+  /**
+   * The TNode contains information about an ICU comment used in `i18n`.
+   */
+  IcuContainer = 5,
 }
 
 /**
