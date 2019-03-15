@@ -7,7 +7,6 @@
  */
 
 import {getHtmlTagDefinition} from '../../src/ml_parser/html_tags';
-import {InterpolationConfig} from '../../src/ml_parser/interpolation_config';
 import * as lex from '../../src/ml_parser/lexer';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_util';
 
@@ -378,6 +377,18 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
         ]);
       });
 
+      it('should report missing closing single quote', () => {
+        expect(tokenizeAndHumanizeErrors('<t a=\'b>')).toEqual([
+          [lex.TokenType.ATTR_VALUE, 'Unexpected character "EOF"', '0:8'],
+        ]);
+      });
+
+      it('should report missing closing double quote', () => {
+        expect(tokenizeAndHumanizeErrors('<t a="b>')).toEqual([
+          [lex.TokenType.ATTR_VALUE, 'Unexpected character "EOF"', '0:8'],
+        ]);
+      });
+
     });
 
     describe('closing tags', () => {
@@ -551,6 +562,31 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
           [lex.TokenType.EOF],
         ]);
       });
+
+      it('should parse start tags quotes in place of an attribute name as text', () => {
+        expect(tokenizeAndHumanizeParts('<t ">')).toEqual([
+          [lex.TokenType.TEXT, '<t ">'],
+          [lex.TokenType.EOF],
+        ]);
+
+        expect(tokenizeAndHumanizeParts('<t \'>')).toEqual([
+          [lex.TokenType.TEXT, '<t \'>'],
+          [lex.TokenType.EOF],
+        ]);
+      });
+
+      it('should parse start tags quotes in place of an attribute name (after a valid attribute) as text',
+         () => {
+           expect(tokenizeAndHumanizeParts('<t a="b" ">')).toEqual([
+             [lex.TokenType.TEXT, '<t a="b" ">'],
+             [lex.TokenType.EOF],
+           ]);
+
+           expect(tokenizeAndHumanizeParts('<t a=\'b\' \'>')).toEqual([
+             [lex.TokenType.TEXT, '<t a=\'b\' \'>'],
+             [lex.TokenType.EOF],
+           ]);
+         });
 
       it('should be able to escape {', () => {
         expect(tokenizeAndHumanizeParts('{{ "{" }}')).toEqual([
