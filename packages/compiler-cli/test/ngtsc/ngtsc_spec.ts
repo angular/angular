@@ -1594,13 +1594,13 @@ describe('ngtsc behavioral tests', () => {
           i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onClick($event); });
           i0.ɵlistener("click", function FooCmp_click_HostBindingHandler($event) { return ctx.onBodyClick($event); }, false, i0.ɵresolveBody);
           i0.ɵlistener("change", function FooCmp_change_HostBindingHandler($event) { return ctx.onChange(ctx.arg1, ctx.arg2, ctx.arg3); });
-          i0.ɵelementStyling(_c0, null, null, ctx);
+          i0.ɵelementHostStyling(_c0);
         }
         if (rf & 2) {
           i0.ɵelementAttribute(elIndex, "hello", i0.ɵbind(ctx.foo));
           i0.ɵelementProperty(elIndex, "prop", i0.ɵbind(ctx.bar), null, true);
-          i0.ɵelementClassProp(elIndex, 0, ctx.someClass, ctx);
-          i0.ɵelementStylingApply(elIndex, ctx);
+          i0.ɵelementHostClassProp(0, ctx.someClass);
+          i0.ɵelementHostStylingApply();
         }
       }
     `;
@@ -1629,7 +1629,7 @@ describe('ngtsc behavioral tests', () => {
     `);
     env.driveMain();
     const jsContents = env.getContents('test.js');
-    expect(jsContents).toContain('i0.ɵelementHostAttrs(ctx, ["test", test])');
+    expect(jsContents).toContain('i0.ɵelementHostAttrs(["test", test])');
   });
 
   it('should accept enum values as host bindings', () => {
@@ -3107,8 +3107,8 @@ describe('ngtsc behavioral tests', () => {
   describe('listLazyRoutes()', () => {
     // clang-format off
     const lazyRouteMatching = (
-        route: string, fromModulePath: RegExp, fromModuleName: string, toModulePath: RegExp,
-        toModuleName: string) => {
+      route: string, fromModulePath: RegExp, fromModuleName: string, toModulePath: RegExp,
+      toModuleName: string) => {
       return {
         route,
         module: jasmine.objectContaining({

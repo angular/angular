@@ -573,6 +573,9 @@
     "name": "elementClassProp"
   },
   {
+    "name": "elementClassPropInternal"
+  },
+  {
     "name": "elementCreate"
   },
   {
@@ -592,6 +595,9 @@
   },
   {
     "name": "elementStylingApply"
+  },
+  {
+    "name": "elementStylingApplyInternal"
   },
   {
     "name": "enterView"
@@ -1213,6 +1219,9 @@
   },
   {
     "name": "searchTokensOnInjector"
+  },
+  {
+    "name": "setActiveHost"
   },
   {
     "name": "setBindingRoot"

@@ -51,14 +51,28 @@ export class Identifiers {
 
   static elementStyling: o.ExternalReference = {name: 'ɵelementStyling', moduleName: CORE};
 
-  static elementHostAttrs: o.ExternalReference = {name: 'ɵelementHostAttrs', moduleName: CORE};
-
   static elementStylingMap: o.ExternalReference = {name: 'ɵelementStylingMap', moduleName: CORE};
 
   static elementStyleProp: o.ExternalReference = {name: 'ɵelementStyleProp', moduleName: CORE};
 
   static elementStylingApply:
       o.ExternalReference = {name: 'ɵelementStylingApply', moduleName: CORE};
+
+  static elementHostAttrs: o.ExternalReference = {name: 'ɵelementHostAttrs', moduleName: CORE};
+
+  static elementHostStyling: o.ExternalReference = {name: 'ɵelementHostStyling', moduleName: CORE};
+
+  static elementHostStylingMap:
+      o.ExternalReference = {name: 'ɵelementHostStylingMap', moduleName: CORE};
+
+  static elementHostStyleProp:
+      o.ExternalReference = {name: 'ɵelementHostStyleProp', moduleName: CORE};
+
+  static elementHostClassProp:
+      o.ExternalReference = {name: 'ɵelementHostClassProp', moduleName: CORE};
+
+  static elementHostStylingApply:
+      o.ExternalReference = {name: 'ɵelementHostStylingApply', moduleName: CORE};
 
   static containerCreate: o.ExternalReference = {name: 'ɵcontainer', moduleName: CORE};
 

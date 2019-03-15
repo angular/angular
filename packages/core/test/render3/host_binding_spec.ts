@@ -9,7 +9,7 @@
 import {ElementRef, QueryList, ViewContainerRef} from '@angular/core';
 
 import {AttributeMarker, defineComponent, template, defineDirective, InheritDefinitionFeature, ProvidersFeature, NgOnChangesFeature} from '../../src/render3/index';
-import {allocHostVars, bind, directiveInject, element, elementAttribute, elementEnd, elementProperty, elementStyleProp, elementStyling, elementStylingApply, elementStart, listener, load, text, textBinding, elementHostAttrs} from '../../src/render3/instructions/all';
+import {allocHostVars, bind, directiveInject, element, elementAttribute, elementEnd, elementProperty, elementStyleProp, elementStyling, elementStylingApply, elementStart, listener, load, text, textBinding, elementHostAttrs, elementHostStylingApply, elementHostStyleProp, elementHostStyling} from '../../src/render3/instructions/all';
 import {loadContentQuery, contentQuery, queryRefresh} from '../../src/render3/query';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2} from '../../src/render3/pure_function';
@@ -968,7 +968,7 @@ describe('host bindings', () => {
         factory: () => new HostAttributeDir(),
         hostBindings: function(rf, ctx, elIndex) {
           if (rf & RenderFlags.Create) {
-            elementHostAttrs(ctx, ['role', 'listbox']);
+            elementHostAttrs(['role', 'listbox']);
           }
         }
       });
@@ -1107,11 +1107,11 @@ describe('host bindings', () => {
           vars: 0,
           hostBindings: (rf: RenderFlags, ctx: HostBindingToStyles, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              elementStyling(null, ['width'], null, ctx);
+              elementHostStyling(null, ['width']);
             }
             if (rf & RenderFlags.Update) {
-              elementStyleProp(0, 0, ctx.width, 'px', ctx);
-              elementStylingApply(0, ctx);
+              elementHostStyleProp(0, ctx.width, 'px');
+              elementHostStylingApply();
             }
           },
           template: (rf: RenderFlags, cmp: HostBindingToStyles) => {}
@@ -1151,11 +1151,11 @@ describe('host bindings', () => {
           factory: () => hostBindingDir = new HostBindingToStyles(),
           hostBindings: (rf: RenderFlags, ctx: HostBindingToStyles, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              elementStyling(null, ['width'], null, ctx);
+              elementHostStyling(null, ['width']);
             }
             if (rf & RenderFlags.Update) {
-              elementStyleProp(0, 0, ctx.width, 'px', ctx);
-              elementStylingApply(0, ctx);
+              elementHostStyleProp(0, ctx.width, 'px');
+              elementHostStylingApply();
             }
           }
         });
@@ -1202,11 +1202,11 @@ describe('host bindings', () => {
           vars: 0,
           hostBindings: (rf: RenderFlags, ctx: StaticHostClass, elIndex: number) => {
             if (rf & RenderFlags.Create) {
-              elementHostAttrs(ctx, [AttributeMarker.Classes, 'mat-toolbar']);
-              elementStyling(['mat-toolbar'], null, null, ctx);
+              elementHostAttrs([AttributeMarker.Classes, 'mat-toolbar']);
+              elementHostStyling(['mat-toolbar']);
             }
             if (rf & RenderFlags.Update) {
-              elementStylingApply(0, ctx);
+              elementHostStylingApply();
             }
           },
           template: (rf: RenderFlags, cmp: StaticHostClass) => {}

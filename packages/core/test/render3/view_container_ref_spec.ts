@@ -1862,7 +1862,7 @@ describe('ViewContainerRef', () => {
           template: (rf: RenderFlags, cmp: HostBindingCmpt) => {},
           hostBindings: function(rf: RenderFlags, ctx: HostBindingCmpt, elIndex: number) {
             if (rf & RenderFlags.Create) {
-              elementHostAttrs(ctx, ['id', 'attribute']);
+              elementHostAttrs(['id', 'attribute']);
               allocHostVars(1);
             }
             if (rf & RenderFlags.Update) {
