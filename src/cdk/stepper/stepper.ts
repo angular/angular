@@ -121,7 +121,7 @@ export class CdkStep implements OnChanges {
   @ContentChild(CdkStepLabel) stepLabel: CdkStepLabel;
 
   /** Template for step content. */
-  @ViewChild(TemplateRef) content: TemplateRef<any>;
+  @ViewChild(TemplateRef, {static: true}) content: TemplateRef<any>;
 
   /** The top level abstract control of the step. */
   @Input() stepControl: FormControlLike;
