@@ -68,6 +68,9 @@ export abstract class BaseFixture {
    */
   get html(): string { return toHtml(this.hostElement as any as Element); }
 
+  get htmlWithContainerComments(): string {
+    return toHtml(this.hostElement as any as Element, {keepContainerComments: true});
+  }
   /**
    * Current state of HTML rendered by the fixture (will include HTML rendered by the bootstrapped
    * component as well as any elements outside of the component's host).
@@ -240,7 +243,7 @@ export function renderToHtml(
   hostView = renderTemplate(
       containerEl, template, consts, vars, ctx, providedRendererFactory || testRendererFactory,
       hostView, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
-  return toHtml(containerEl, keepNgReflect);
+  return toHtml(containerEl, {keepNgReflect});
 }
 
 function toDefs(
@@ -281,7 +284,15 @@ export function renderComponent<T>(type: ComponentType<T>, opts?: CreateComponen
 /**
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
-export function toHtml<T>(componentOrElement: T | RElement, keepNgReflect = false): string {
+export function toHtml<T>(
+    componentOrElement: T | RElement,  //
+    {
+        keepNgReflect,  //
+        keepContainerComments,
+    }: {
+      keepNgReflect?: boolean,
+      keepContainerComments?: boolean,
+    } = {}): string {
   let element: any;
   if (isComponentInstance(componentOrElement)) {
     const context = getLContext(componentOrElement);
@@ -301,9 +312,12 @@ export function toHtml<T>(componentOrElement: T | RElement, keepNgReflect = fals
     html = html.replace(/^<div host="">(.*)<\/div>$/, '$1')
                .replace(/^<div fixture="mark">(.*)<\/div>$/, '$1')
                .replace(/^<div host="mark">(.*)<\/div>$/, '$1')
-               .replace(' style=""', '')
-               .replace(/<!--container-->/g, '')
-               .replace(/<!--ng-container-->/g, '');
+               .replace(' style=""', '');
+
+    if (!keepContainerComments) {
+      html = html.replace(/<!--container-->/g, '').replace(/<!--ng-container-->/g, '');
+    }
+
     return html;
   } else {
     return '';
@@ -410,7 +424,7 @@ class MockRenderer implements ProceduralRenderer3 {
   selectRootElement(selectorOrNode: string|any): RElement {
     return ({} as any);
   }
-  parentNode(node: RNode): RElement|null { return node.parentNode as RElement; }
+  parentNode(node: RNode): RElement|null { return node.parentElement; }
   nextSibling(node: RNode): RNode|null { return node.nextSibling; }
   setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {
     // set all synthetic attributes as properties

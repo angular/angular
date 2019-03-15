@@ -8,7 +8,7 @@
 
 import {TNode} from './node';
 import {LQueries} from './query';
-import {RComment, RElement} from './renderer';
+import {RComment, RElement, RNode} from './renderer';
 import {StylingContext} from './styling';
 import {HOST, LView, NEXT, PARENT, QUERIES, T_HOST} from './view';
 
@@ -89,17 +89,22 @@ export interface LContainer extends Array<any> {
    */
   [T_HOST]: TNode;
 
-  /** The comment element that serves as an anchor for this LContainer. */
+  /**
+   * The DOM Node that serves as an anchor for this LContainer.
+   *
+   * This is usually a comment like `<!--container-->`, but may be another type of node for
+   * containers that were created programmatically via {@link viewContainerGet}.
+   */
   readonly[NATIVE]:
-      RComment;  // TODO(misko): remove as this value can be gotten by unwrapping `[HOST]`
+      RNode;  // TODO(misko): remove as this value can be gotten by unwrapping `[HOST]`
 
   /**
-*A list of the container's currently active child views. Views will be inserted
-*here as they are added and spliced from here when they are removed. We need
-*to keep a record of current views so we know which views are already in the DOM
-*(and don't need to be re-added) and so we can remove views from the DOM when they
-*are no longer required.
-*/
+   * A list of the container's currently active child views. Views will be inserted
+   * here as they are added and spliced from here when they are removed. We need
+   * to keep a record of current views so we know which views are already in the DOM
+   * (and don't need to be re-added) and so we can remove views from the DOM when they
+   * are no longer required.
+   */
   [VIEWS]: LView[];
 }
 

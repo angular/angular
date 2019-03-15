@@ -17,7 +17,8 @@ import {NodeInjectorFactory} from './interfaces/injector';
 import {TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {CHILD_HEAD, CLEANUP, FLAGS, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {StylingContext} from './interfaces/styling';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, FLAGS, HEADER_OFFSET, HookData, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, T_HOST, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
 import {renderStringify} from './util/misc_utils';
 import {findComponentView, getLViewParent} from './util/view_traversal_utils';
@@ -729,7 +730,8 @@ function getHighestElementOrICUContainer(tNode: TNode): TNode {
   return tNode;
 }
 
-export function getBeforeNodeForView(index: number, views: LView[], containerNative: RComment) {
+// TODO(benlesh): This an getViewFirstRNode are essentially the same, we should refactor.
+export function getBeforeNodeForView(index: number, views: LView[], containerNative: RNode) {
   if (index + 1 < views.length) {
     const view = views[index + 1] as LView;
     const viewTNode = view[T_HOST] as TViewNode;
@@ -737,6 +739,50 @@ export function getBeforeNodeForView(index: number, views: LView[], containerNat
   } else {
     return containerNative;
   }
+}
+
+
+/**
+ * Finds the last DOM element in the view by traversing the view's TNodes.
+ * This is used when inserting an {@link LView} at the end of a container.
+ *
+ * @param lView The view to traverse to find its last DOM node.
+ */
+export function getViewLastNative(lView: LView): RNode {
+  const tView = lView[TVIEW];
+  let child = tView.firstChild;
+  ngDevMode && assertDefined(child, 'tView must have at least one root element');
+  let lastChild: TNode;
+  while (child) {
+    lastChild = child;
+    child = child.next;
+  }
+  // If we happen land on a container, we have to make sure we check to see if we need to crawl into
+  // it, as it may have nodes it has already appended to the DOM beyond its initial comment.
+  if (lastChild !.type === TNodeType.Container) {
+    const childLContainer = lView[lastChild !.index] as LContainer;
+    const views = childLContainer[VIEWS];
+    // If no views have been added, we don't need to dig into this, just return the comment node.
+    if (views && views.length > 0) {
+      // There are views, get the last one and find the last RNode of that.
+      const lastView = views[views.length - 1];
+      return getViewLastNative(lastView);
+    } else {
+      // If there aren't any views in the container yet, there will still be a native container
+      // anchor to use.
+      return childLContainer[NATIVE];
+    }
+  }
+  return getNativeByTNode(lastChild !, lView);
+}
+
+/**
+ * Gets the first RNode from a view.
+ * @param lView the lView to get the first RNode from
+ */
+export function getViewFirstNative(lView: LView): RNode|null {
+  const tView = lView[TVIEW];
+  return tView.firstChild ? getNativeByTNode(tView.firstChild, lView) : null;
 }
 
 /**
@@ -832,6 +878,69 @@ function appendProjectedNode(
 
     if (isLContainer(nodeOrContainer)) {
       appendChild(nodeOrContainer[NATIVE], tProjectionNode, currentView);
+    }
+  }
+}
+
+/**
+ * Attaches a container at the appropriate position in a parent view.
+ *
+ * Finds the `LView` that directly precedes the container's comment node in the parent `LView`,
+ * and attaches the {@link LContainer} as that view's NEXT.
+ *
+ * This ensures that the linked list of {@link LView} instances is in the same order as they
+ * appear in the DOM, depth first.
+ *
+ * This code is used for dynamic cases, such as embedded views.
+ *
+ * To simply append a child view to a container in the common case, use {@link appendChildView}
+ *
+ * @see appendChildView
+ * @see LView[CHILD_HEAD]
+ * @see LView[CHILD_TAIL]
+ * @see LView[NEXT]
+ *
+ * @param parentLView the LView to add the child container to
+ * @param lContainerToAdd The container to add to the parent
+ */
+export function attachLContainerToParentLView(
+    parentLView: LView, lContainerToAdd: LContainer): void {
+  ngDevMode && assertLView(parentLView);
+  ngDevMode && assertLContainer(lContainerToAdd);
+
+  // TODO(benlesh): Switching this from `HOST` to `NATIVE` didn't cause any tests to break!
+  const commentNode = lContainerToAdd[NATIVE];
+  const tView = parentLView[TVIEW];
+
+  const constsEnd = tView.bindingStartIndex;
+  let lastLContainerOrLView: LContainer|LView|null = null;
+
+  // These directives will create `LContainer`s, but they are harder to identify by their host
+  // `TNodes` alone because they will not be `TNodeType.Container`.
+  for (let i = HEADER_OFFSET; i < constsEnd; i++) {
+    let item = parentLView[i] as LView | RNode | LContainer | StylingContext;
+    if (unwrapRNode(item) === commentNode) {
+      if (!lastLContainerOrLView) {
+        // HEAD
+        if ((lContainerToAdd[NEXT] = parentLView[CHILD_HEAD]) === null) {
+          parentLView[CHILD_TAIL] = lContainerToAdd;
+        }
+        parentLView[CHILD_HEAD] = lContainerToAdd;
+        return;
+      } else if (!lastLContainerOrLView[NEXT]) {
+        // TAIL
+        lastLContainerOrLView[NEXT] = lContainerToAdd;
+        parentLView[CHILD_TAIL] = lContainerToAdd;
+        return;
+      } else {
+        // Middle
+        const _next = lastLContainerOrLView[NEXT];
+        lastLContainerOrLView[NEXT] = lContainerToAdd;
+        lContainerToAdd[NEXT] = _next;
+        return;
+      }
+    } else if (isLContainer(item) || isLView(item)) {
+      lastLContainerOrLView = item;
     }
   }
 }

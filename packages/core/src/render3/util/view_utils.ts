@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDataInRange, assertDefined, assertGreaterThan, assertLessThan} from '../../util/assert';
+import {assertDataInRange, assertDefined, assertEqual, assertGreaterOrEqual, assertGreaterThan, assertLessThan} from '../../util/assert';
+import {View, ViewContainer} from '../api/view_interface';
 import {LContainer, TYPE} from '../interfaces/container';
 import {LContext, MONKEY_PATCH_KEY_NAME} from '../interfaces/context';
 import {ComponentDef, DirectiveDef} from '../interfaces/definition';
@@ -15,7 +16,36 @@ import {RNode} from '../interfaces/renderer';
 import {StylingContext} from '../interfaces/styling';
 import {FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, PARENT, PREORDER_HOOK_FLAGS, TData, TVIEW} from '../interfaces/view';
 
+/**
+ * Converts a public api `View` to an `LView`
+ * @param view the view to convert
+ */
+export function viewToLView(view: View): LView {
+  ngDevMode && assertDefined(view, 'LView must be defined');
+  ngDevMode && assertEqual(isLView(view), true, 'Expecting LView');
+  return view as any;
+}
 
+/**
+ * Converts an `LView` to a public api `View`.
+ */
+export const lViewToView: (view: LView) => View = viewToLView as any;
+
+/**
+ * Converts a public api `ViewContainer` to an `LContainer`.
+ * @param viewContainer The lContainer to convert
+ */
+export function viewContainerToLContainer(viewContainer: ViewContainer): LContainer {
+  ngDevMode && assertDefined(viewContainer, 'LContainer must be defined');
+  ngDevMode && assertEqual(isLContainer(viewContainer), true, 'Expecting LContainer');
+  return viewContainer as any;
+}
+
+/**
+ * Converts an `LContainer` to a public api `ViewContainer`.
+ */
+export const lContainerToViewContainer: (container: LContainer) => ViewContainer =
+    viewContainerToLContainer as any;
 
 /**
  * For efficiency reasons we often put several different data types (`RNode`, `LView`, `LContainer`,
@@ -133,7 +163,8 @@ export function getNativeByTNode(tNode: TNode, hostView: LView): RNode {
 
 export function getTNode(index: number, view: LView): TNode {
   ngDevMode && assertGreaterThan(index, -1, 'wrong index for TNode');
-  ngDevMode && assertLessThan(index, view[TVIEW].data.length, 'wrong index for TNode');
+  ngDevMode &&
+      assertLessThan(index + HEADER_OFFSET, view[TVIEW].data.length, 'wrong index for TNode');
   return view[TVIEW].data[index + HEADER_OFFSET] as TNode;
 }
 

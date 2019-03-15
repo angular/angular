@@ -16,6 +16,7 @@ import {Sanitizer} from '../../sanitization/security';
 import {assertDataInRange, assertDefined, assertDomNode, assertEqual, assertLessThan, assertNotEqual} from '../../util/assert';
 import {isObservable} from '../../util/lang';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
+import {View} from '../api/view_interface';
 import {assertHasParent, assertLContainerOrUndefined, assertLView, assertPreviousIsParent} from '../assert';
 import {bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4} from '../bindings';
 import {attachPatchData, getComponentViewByInstance} from '../context_discovery';
@@ -29,10 +30,10 @@ import {INJECTOR_BLOOM_PARENT_SIZE, NodeInjectorFactory} from '../interfaces/inj
 import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeProviderIndexes, TNodeType, TProjectionNode, TViewNode} from '../interfaces/node';
 import {CssSelectorList} from '../interfaces/projection';
 import {LQueries} from '../interfaces/query';
-import {GlobalTargetResolver, RComment, RElement, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
+import {GlobalTargetResolver, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from '../interfaces/renderer';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {StylingContext} from '../interfaces/styling';
-import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
+import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_VIEW, ExpandoInstructions, FLAGS, HEADER_OFFSET, HOST, INJECTOR, InitPhaseState, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, TData, TVIEW, TView, T_HOST} from '../interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from '../node_assert';
 import {appendChild, appendProjectedNodes, createTextNode, insertView, removeView} from '../node_manipulation';
 import {isNodeMatchingSelectorList, matchingProjectionSelectorIndex} from '../node_selector_matcher';
@@ -208,7 +209,7 @@ export function createNodeAtIndex(
     index: number, type: TNodeType.Element, native: RElement | RText | null, name: string | null,
     attrs: TAttributes | null): TElementNode;
 export function createNodeAtIndex(
-    index: number, type: TNodeType.Container, native: RComment, name: string | null,
+    index: number, type: TNodeType.Container, native: RElement | RComment, name: string | null,
     attrs: TAttributes | null): TContainerNode;
 export function createNodeAtIndex(
     index: number, type: TNodeType.Projection, native: null, name: null,
@@ -1951,7 +1952,7 @@ function generateInitialInputs(
  * @returns LContainer
  */
 export function createLContainer(
-    hostNative: RElement | RComment | StylingContext | LView, currentView: LView, native: RComment,
+    hostNative: RElement | RComment | StylingContext | LView, currentView: LView, native: RNode,
     tNode: TNode, isForViewContainerRef?: boolean): LContainer {
   ngDevMode && assertDomNode(native);
   ngDevMode && assertLView(currentView);
@@ -3077,14 +3078,14 @@ function initializeTNodeInputs(tNode: TNode | null): PropertyAliases|null {
 
 
 /**
- * Returns the current OpaqueViewState instance.
+ * Returns the current public api `View` instance.
  *
  * Used in conjunction with the restoreView() instruction to save a snapshot
  * of the current view and restore it when listeners are invoked. This allows
  * walking the declaration view tree in listeners to get vars from parent views.
  */
-export function getCurrentView(): OpaqueViewState {
-  return getLView() as any as OpaqueViewState;
+export function getCurrentView(): View {
+  return getLView() as any as View;
 }
 
 function getCleanup(view: LView): any[] {

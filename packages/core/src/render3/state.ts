@@ -6,16 +6,61 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined} from '../util/assert';
+import {assertDefined, assertEqual} from '../util/assert';
 
+import {View} from './api/view_interface';
 import {assertLViewOrUndefined} from './assert';
 import {executeHooks} from './hooks';
 import {ComponentDef, DirectiveDef} from './interfaces/definition';
 import {TElementNode, TNode, TViewNode} from './interfaces/node';
-import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, OpaqueViewState, TVIEW} from './interfaces/view';
+import {BINDING_INDEX, CONTEXT, DECLARATION_VIEW, FLAGS, InitPhaseState, LView, LViewFlags, TVIEW} from './interfaces/view';
 import {resetPreOrderHookFlags} from './util/view_utils';
 
 
+let _addingEmbeddedRootChild = false;
+let _useIvyAnimationCheck = false;
+
+/**
+ * Returns whether or not we're adding children at the root of an embedded view.
+ *
+ * This is used primarily to tell {@link AnimationRenderer} how to handle insertions appropriately.
+ */
+export function getAddingEmbeddedRootChild() {
+  ngDevMode && assertEqual(_useIvyAnimationCheck, true, 'Call setAddingEmbeddedRootChild first');
+  return _addingEmbeddedRootChild;
+}
+
+/**
+ * Sets whether or not the node being added is a root child of an embedded view.
+ * When we start adding nodes as direct children to embedded views, this flag should be flipped on.
+ *
+ * This is used to tell {@link AnimationRenderer} how to handle insertions appropriately.
+ */
+export function setAddingEmbeddedRootChild(value: boolean) {
+  _useIvyAnimationCheck = true;
+  _addingEmbeddedRootChild = value;
+}
+
+/**
+ * Returns true if Ivy path has been touched and {@link AnimationRenderer} needs to check
+ * {@link getAddingEmbeddedRootChild} in order to handle embedded view animations appropriately.
+ *
+ * Angular animations previously relied on the fact that all view insertions for `*ngIf`, `*ngFor`
+ * and other `*directive` were handled by using `insertBefore`. There is special logic that the
+ * Animation Engine executes to animate these views. This logic is hooked up in the
+ * AnimationRenderer's `insertBefore` and `appendChild` implementations. The signatures of those
+ * functions cannot be changed because they are public renderer APIs which need to be backwards
+ * compatible, so we can't pass in an additional argument showing that we need special handling
+ * because we are inserting a component. However, since we are now inserting views _after_ the
+ * LContainer's `<!-- container -->` comment node, Animations can no longer rely on what renderer
+ * API was called in order to "know" whether or not to do special handling for these `*directives`.
+ * Therefore, we track this bit in global state, so we can determine, when those render methods are
+ * called, whether or not we are inserting a root-child DOM node into an embedded view, so the
+ * Animation Engine can do the correct thing.
+ */
+export function shouldUseIvyAnimationCheck() {
+  return _useIvyAnimationCheck;
+}
 
 /**
  * Store the element depth count. This is used to identify the root elements of the template
@@ -143,7 +188,7 @@ export function getActiveHostElementIndex() {
 }
 
 /**
- * Restores `contextViewData` to the given OpaqueViewState instance.
+ * Restores `contextViewData` to the given public api `View` instance.
  *
  * Used in conjunction with the getCurrentView() instruction to save a snapshot
  * of the current view and restore it when listeners are invoked. This allows
@@ -151,7 +196,7 @@ export function getActiveHostElementIndex() {
  *
  * @param viewToRestore The OpaqueViewState instance to restore.
  */
-export function restoreView(viewToRestore: OpaqueViewState) {
+export function restoreView(viewToRestore: View) {
   contextLView = viewToRestore as any as LView;
 }
 

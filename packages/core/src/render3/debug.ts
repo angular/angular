@@ -11,7 +11,7 @@ import {assertDefined} from '../util/assert';
 import {ACTIVE_INDEX, LContainer, NATIVE, VIEWS} from './interfaces/container';
 import {TNode} from './interfaces/node';
 import {LQueries} from './interfaces/query';
-import {RComment, RElement} from './interfaces/renderer';
+import {RComment, RElement, RNode} from './interfaces/renderer';
 import {StylingContext} from './interfaces/styling';
 import {BINDING_INDEX, CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTENT_QUERIES, CONTEXT, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, INJECTOR, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, TVIEW, TView, T_HOST} from './interfaces/view';
 import {unwrapRNode} from './util/view_utils';
@@ -208,7 +208,7 @@ export class LContainerDebug {
   get parent(): LViewDebug|LContainerDebug|null { return toDebug(this._raw_lContainer[PARENT]); }
   get queries(): LQueries|null { return this._raw_lContainer[QUERIES]; }
   get host(): RElement|RComment|StylingContext|LView { return this._raw_lContainer[HOST]; }
-  get native(): RComment { return this._raw_lContainer[NATIVE]; }
+  get native(): RNode { return this._raw_lContainer[NATIVE]; }
   get __other__() {
     return {
       next: toDebug(this._raw_lContainer[NEXT]),
