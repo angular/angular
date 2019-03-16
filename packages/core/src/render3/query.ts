@@ -366,7 +366,8 @@ export function query<T>(
  * Refreshes a query by combining matches from all active views and removing matches from deleted
  * views.
  *
- * @returns `true` if a query got dirty during change detection, `false` otherwise.
+ * @returns `true` if a query got dirty during change detection or if this is a static query
+ * resolving in creation mode, `false` otherwise.
  */
 export function queryRefresh(queryList: QueryList<any>): boolean {
   const queryListImpl = (queryList as any as QueryList_<any>);
