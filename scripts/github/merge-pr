@@ -109,6 +109,7 @@ SQUASH_PR="git rebase --autosquash --interactive merge_pr_base merge_pr"
 REWRITE_MESSAGE="git filter-branch -f --msg-filter \"$BASEDIR/utils/github_closes.js $PR_NUMBER\" merge_pr_base..merge_pr"
 PUSH_BRANCHES="git push git@github.com:angular/angular.git merge_pr_master:$MASTER_BRANCH merge_pr_patch:$PATCH_BRANCH"
 CHERRY_PICK_PR="git cherry-pick merge_pr_base..merge_pr"
+CHECK_FIXUP_REMAINS="git cherry -v merge_master merge_pr | grep fixup"
 
 # Checks that each PR branch to be merged upstream contains SHAs of commits that significantly changed our CI infrastructure.
 #
@@ -160,6 +161,20 @@ else
 fi
 echo ">>> Autosquash: $SQUASH_PR"
 GIT_EDITOR=echo $SQUASH_PR
+
+# Checks if there are fixup commits remaining after merge and throw a friendly error.
+# This would prevent caretakers from accidentally muddying the commit history with a bad squash
+if [[ $($CHECK_FIXUP_REMAINS) ]]; then
+  echo ""
+  echo ""
+  echo "Failed to merge pull request #${PR_NUMBER} because it has detached fixup commits that can't be seuqashed automatically"
+  echo ""
+  echo "Please fix the PR and try again."
+  echo ""
+  $RESTORE_BRANCH
+  exit 1
+fi
+
 echo ">>> Rewrite message: $REWRITE_MESSAGE"
 # Next line should work, but it errors, hence copy paste the command.
 # $REWRITE_MESSAGE
