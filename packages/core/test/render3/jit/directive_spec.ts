@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, HostListener} from '@angular/core';
+import {Directive, HostListener, Input} from '@angular/core';
 import {setClassMetadata} from '@angular/core/src/render3/metadata';
 
 import {convertToR3QueryMetadata, directiveMetadata, extendsDirectlyFromObject} from '../../../src/render3/jit/directive';
@@ -130,5 +130,29 @@ describe('jit directive helper functions', () => {
       expect(directiveMetadata(SuperDirective, {}).propMetadata.handleClick).toBeFalsy();
       expect(directiveMetadata(SubDirective, {}).propMetadata.handleClick).toBeFalsy();
     });
+
+    it('should not inherit propMetadata from super class when sub class has its own propMetadata',
+       () => {
+         class SuperDirective {}
+         setClassMetadata(SuperDirective, [{type: Directive}], null, {
+           someInput: [{type: Input}],
+           handleClick: [{type: HostListener, args: ['click', ['$event']]}]
+         });
+
+         class SubDirective extends SuperDirective {}
+         setClassMetadata(
+             SubDirective, [{type: Directive}], null, {someOtherInput: [{type: Input}]});
+
+         const superPropMetadata = directiveMetadata(SuperDirective, {}).propMetadata;
+         const subPropMetadata = directiveMetadata(SubDirective, {}).propMetadata;
+
+         expect(superPropMetadata.handleClick).toBeTruthy();
+         expect(superPropMetadata.someInput).toBeTruthy();
+
+         expect(subPropMetadata.handleClick).toBeFalsy();
+         expect(subPropMetadata.someInput).toBeFalsy();
+         expect(subPropMetadata.someOtherInput).toBeTruthy();
+       });
+
   });
 });
