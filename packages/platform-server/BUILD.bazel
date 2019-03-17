@@ -16,7 +16,6 @@ ng_module(
         "//packages/common/http",
         "//packages/compiler",
         "//packages/core",
-        "//packages/http",
         "//packages/platform-browser",
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",

@@ -21,6 +21,7 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
+        "//packages/http/server:package.json",
         "//packages/http/testing:package.json",
     ],
     entry_point = "packages/http/index.js",
@@ -34,6 +35,7 @@ ng_package(
     ],
     deps = [
         ":http",
+        "//packages/http/server",
         "//packages/http/testing",
     ],
 )

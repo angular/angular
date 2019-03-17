@@ -1,0 +1,27 @@
+{
+  "extends": "../tsconfig-build.json",
+
+  "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "../",
+    "paths": {
+      "@angular/core": ["../../../dist/packages/core"],
+      "@angular/http": ["../../../dist/packages/http"]
+    },
+    "outDir": "../../../dist/packages/http"
+  },
+
+  "files": [
+    "public_api.ts",
+    "../../node_modules/@types/node/index.d.ts",
+    "../../node_modules/zone.js/dist/zone.js.d.ts"
+  ],
+
+  "angularCompilerOptions": {
+    "annotateForClosureCompiler": true,
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "server.js",
+    "flatModuleId": "@angular/http/server"
+  }
+}

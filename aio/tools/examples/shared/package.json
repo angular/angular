@@ -24,7 +24,6 @@
     "@angular/core": "^7.1.0",
     "@angular/elements": "^7.1.0",
     "@angular/forms": "^7.1.0",
-    "@angular/http": "^7.1.0",
     "@angular/platform-browser": "^7.1.0",
     "@angular/platform-browser-dynamic": "^7.1.0",
     "@angular/router": "^7.1.0",

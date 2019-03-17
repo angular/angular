@@ -174,11 +174,6 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/http@file:../../dist/packages-dist/http":
-  version "8.0.0-beta.0"
-  dependencies:
-    tslib "^1.9.0"
-
 "@angular/language-service@file:../../dist/packages-dist/language-service":
   version "8.0.0-beta.0"
 
