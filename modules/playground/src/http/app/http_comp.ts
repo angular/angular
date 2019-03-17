@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HttpClient} from '@angular/common/http';
 import {Component} from '@angular/core';
-import {Http, Response} from '@angular/http';
-import {map} from 'rxjs/operators';
+
+interface Person {
+  name: string;
+}
 
 @Component({
   selector: 'http-app',
@@ -16,16 +19,14 @@ import {map} from 'rxjs/operators';
     <h1>people</h1>
     <ul class="people">
       <li *ngFor="let person of people">
-        hello, {{person['name']}}
+        hello, {{person.name}}
       </li>
     </ul>
   `
 })
 export class HttpCmp {
-  people: Object[];
-  constructor(http: Http) {
-    http.get('./people.json')
-        .pipe(map((res: Response) => res.json()))
-        .subscribe((people: Array<Object>) => this.people = people);
+  people: Person[];
+  constructor(http: HttpClient) {
+    http.get('./people.json').subscribe((people: Person[]) => this.people = people);
   }
 }
