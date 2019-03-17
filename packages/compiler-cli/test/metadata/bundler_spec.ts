@@ -422,6 +422,21 @@ describe('metadata bundler', () => {
     expect(result.metadata.origins !['E']).toBeUndefined();
   });
 
+  it('should be able to bundle a library with multiple unnamed re-exports', () => {
+    const host = new MockStringBundlerHost('/', {
+      'public-api.ts': `
+        export * from '@mypkg/secondary1';
+        export * from '@mypkg/secondary2';
+      `,
+    });
+
+    const bundler = new MetadataBundler('/public-api', undefined, host);
+    const result = bundler.getMetadataBundle();
+    expect(result.metadata.exports).toEqual([
+      {from: '@mypkg/secondary1'}, {from: '@mypkg/secondary2'}
+    ]);
+  });
+
   it('should be able to de-duplicate symbols of re-exported modules', () => {
     const host = new MockStringBundlerHost('/', {
       'public-api.ts': `

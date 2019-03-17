@@ -180,6 +180,7 @@ export class MetadataBundler {
 
     // Export all the re-exports from this module
     if (module && module.exports) {
+      let unnamedModuleExportsIdx = 0;
       for (const exportDeclaration of module.exports) {
         const exportFrom = resolveModule(exportDeclaration.from, moduleName);
         // Record all the exports from the module even if we don't use it directly.
@@ -202,7 +203,12 @@ export class MetadataBundler {
           // Re-export all the symbols from the module
           const exportedSymbols = this.exportAll(exportFrom);
           for (const exportedSymbol of exportedSymbols) {
-            const name = exportedSymbol.name;
+            // In case the exported symbol does not have a name, we need to give it an unique
+            // name for the current module. This is necessary because there can be multiple
+            // unnamed re-exports in a given module.
+            const name = exportedSymbol.name === '*' ?
+                `unnamed_reexport_${unnamedModuleExportsIdx++}` :
+                exportedSymbol.name;
             exportSymbol(exportedSymbol, name);
           }
         }
