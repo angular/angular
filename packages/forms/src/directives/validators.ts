@@ -312,6 +312,17 @@ export interface ValidatorFn { (control: AbstractControl): ValidationErrors|null
 
 /**
  * @description
+ * A validator function created by calling Validator.compose, which exposes the
+ * validators it contains.
+ *
+ * @publicApi
+ */
+export interface ComposedValidatorFn extends ValidatorFn {
+  composition: (ValidatorFn|ComposedValidatorFn)[];
+}
+
+/**
+ * @description
  * A function that receives a control and returns a Promise or observable
  * that emits validation errors if present, otherwise null.
  *
@@ -319,6 +330,17 @@ export interface ValidatorFn { (control: AbstractControl): ValidationErrors|null
  */
 export interface AsyncValidatorFn {
   (control: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
+}
+
+/**
+ * @description
+ * A validator function created by calling Validator.composeAsync, which exposes the
+ * validators it contains.
+ *
+ * @publicApi
+ */
+export interface ComposedAsyncValidatorFn extends AsyncValidatorFn {
+  composition: (AsyncValidatorFn|ComposedAsyncValidatorFn)[];
 }
 
 /**

@@ -124,6 +124,14 @@ export declare class CheckboxRequiredValidator extends RequiredValidator {
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
+export interface ComposedAsyncValidatorFn extends AsyncValidatorFn {
+    composition: (AsyncValidatorFn | ComposedAsyncValidatorFn)[];
+}
+
+export interface ComposedValidatorFn extends ValidatorFn {
+    composition: (ValidatorFn | ComposedValidatorFn)[];
+}
+
 export declare const COMPOSITION_BUFFER_MODE: InjectionToken<boolean>;
 
 export declare abstract class ControlContainer extends AbstractControlDirective {
@@ -529,9 +537,12 @@ export interface ValidatorFn {
 }
 
 export declare class Validators {
-    static compose(validators: (ValidatorFn | null | undefined)[]): ValidatorFn | null;
+    static uncompose: (validator: ValidatorFn | null | undefined, validatorToRemove: ValidatorFn | null | undefined) => ValidatorFn | null;
+    static uncomposeAsync: (validator: AsyncValidatorFn | null | undefined, validatorToRemove: AsyncValidatorFn | null | undefined) => AsyncValidatorFn | null;
+    static compose(validators: (ValidatorFn | null | undefined)[]): ComposedValidatorFn | null;
     static compose(validators: null): null;
-    static composeAsync(validators: (AsyncValidatorFn | null)[]): AsyncValidatorFn | null;
+    static composeAsync(validators: (AsyncValidatorFn | null | undefined)[]): ComposedAsyncValidatorFn | null;
+    static composeAsync(validators: null): null;
     static email(control: AbstractControl): ValidationErrors | null;
     static max(max: number): ValidatorFn;
     static maxLength(maxLength: number): ValidatorFn;

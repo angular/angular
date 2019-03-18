@@ -9,7 +9,7 @@
 import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
 import {Observable, forkJoin, from} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
+import {AsyncValidatorFn, ComposedAsyncValidatorFn, ComposedValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 import {AbstractControl, FormControl} from './model';
 
 function isEmptyInputValue(value: any): boolean {
@@ -340,15 +340,17 @@ export class Validators {
    * merged error maps of the validators if the validation check fails, otherwise `null`.
    */
   static compose(validators: null): null;
-  static compose(validators: (ValidatorFn|null|undefined)[]): ValidatorFn|null;
-  static compose(validators: (ValidatorFn|null|undefined)[]|null): ValidatorFn|null {
+  static compose(validators: (ValidatorFn|null|undefined)[]): ComposedValidatorFn|null;
+  static compose(validators: (ValidatorFn|null|undefined)[]|null): ComposedValidatorFn|null {
     if (!validators) return null;
     const presentValidators: ValidatorFn[] = validators.filter(isPresent) as any;
     if (presentValidators.length == 0) return null;
 
-    return function(control: AbstractControl) {
+    const result = function(control: AbstractControl) {
       return _mergeErrors(_executeValidators(control, presentValidators));
     };
+    result.composition = presentValidators.slice(0);
+    return result;
   }
 
   /**
@@ -359,16 +361,60 @@ export class Validators {
    * @returns A validator function that returns an error map with the
    * merged error objects of the async validators if the validation check fails, otherwise `null`.
   */
-  static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
+  static composeAsync(validators: null): null;
+  static composeAsync(validators: (AsyncValidatorFn|null|undefined)[]): ComposedAsyncValidatorFn
+      |null;
+  static composeAsync(validators: (AsyncValidatorFn|null|undefined)[]|
+                      null): ComposedAsyncValidatorFn|null {
     if (!validators) return null;
     const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
     if (presentValidators.length == 0) return null;
 
-    return function(control: AbstractControl) {
+    const result = function(control: AbstractControl) {
       const observables = _executeAsyncValidators(control, presentValidators).map(toObservable);
       return forkJoin(observables).pipe(map(_mergeErrors));
     };
+    result.composition = presentValidators.slice(0);
+    return result;
   }
+
+  /**
+   * @description
+   * If the validator given as the first argument is the result of a (possibly deep) composition
+   * returned by Validators.compose, which includes the validator passed as the second argument,
+   * this function returns a new validator that is composed in the same way but without the
+   * validator passed as the second argument.
+   * If the second argument is the same validator function as the first one, or if the first
+   * argument is null or undefined, this function returns null.
+   * Otherwise, the first argument is returned as is.
+   *
+   * ```typescript
+   * // If a validator v was added to a form control with:
+   * formControl.validator = Validators.compose([formControl.validator, v])
+   * // Then it can be properly removed with:
+   * formControl.validator = Validators.uncompose(formControl.validator, v)
+   * ```
+   */
+  static uncompose = _uncomposeFactory(Validators.compose);
+
+  /**
+   * @description
+   * If the async validator given as the first argument is the result of a (possibly deep)
+   * composition returned by Validators.composeAsync, which includes the async validator passed
+   * as the second argument, this function returns a new async validator that is composed in the
+   * same way but without the async validator passed as the second argument.
+   * If the second argument is the same async validator function as the first one, or if the first
+   * argument is null or undefined, this function returns null.
+   * Otherwise, the first argument is returned as is.
+   *
+   * ```typescript
+   * // If an async validator v was added to a form control with:
+   * formControl.asyncValidator = Validators.composeAsync([formControl.asyncValidator, v])
+   * // Then it can be properly removed with:
+   * formControl.asyncValidator = Validators.uncomposeAsync(formControl.asyncValidator, v)
+   * ```
+   */
+  static uncomposeAsync = _uncomposeFactory(Validators.composeAsync);
 }
 
 function isPresent(o: any): boolean {
@@ -397,4 +443,33 @@ function _mergeErrors(arrayOfErrors: ValidationErrors[]): ValidationErrors|null 
         return errors != null ? {...res !, ...errors} : res !;
       }, {});
   return Object.keys(res).length === 0 ? null : res;
+}
+
+function _uncomposeFactory<T>(compose: (validators: (T | undefined | null)[]) => T | null) {
+  const uncompose =
+      (validator: T | null | undefined, validatorToRemove: T | null | undefined): T | null => {
+        if (!validator || validator == validatorToRemove) {
+          return null;
+        }
+        const composition = (validator as{composition?: T[] | undefined}).composition;
+        if (validatorToRemove && composition) {
+          let found = false;
+          const newComposition = composition.map(item => {
+            const newItem = uncompose(item, validatorToRemove);
+            if (newItem != item) {
+              found = true;
+            }
+            return newItem;
+          });
+          if (found) {
+            const filteredComposition = newComposition.filter(isPresent);
+            if (filteredComposition.length <= 1) {
+              return filteredComposition.length === 1 ? filteredComposition[0] : null;
+            }
+            return compose(filteredComposition);
+          }
+        }
+        return validator;
+      };
+  return uncompose;
 }

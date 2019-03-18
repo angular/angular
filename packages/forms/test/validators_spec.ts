@@ -312,6 +312,131 @@ import {first, map} from 'rxjs/operators';
       });
     });
 
+    describe('uncompose', () => {
+      it('should return null when the validator to modify is null',
+         () => { expect(Validators.uncompose(null !, null)).toBe(null); });
+
+      it('should return the unmodified validator when the validator to remove is null', () => {
+        const v = () => null;
+        expect(Validators.uncompose(v, null)).toBe(v);
+      });
+
+      it('should return null when the validator to remove is the one to modify', () => {
+        const v = () => null;
+        expect(Validators.uncompose(v, v)).toBe(null);
+      });
+
+      it('should return the first argument unmodified when it is unrelated to the second one',
+         () => {
+           const v1 = Validators.compose([() => null, () => null]);
+           const v2 = () => null;
+           expect(Validators.uncompose(v1, v2)).toBe(v1);
+         });
+
+      it('should return the original validator when it was composed only with the one to remove',
+         () => {
+           const v1 = () => null;
+           const v2 = () => null;
+           const composed = Validators.compose([v1, v2]);
+           expect(Validators.uncompose(composed, v2)).toBe(v1);
+           expect(Validators.uncompose(composed, v1)).toBe(v2);
+         });
+
+      it('should return a modified validator when the first argument is a 1-level composition with the second',
+         () => {
+           const v1 = jasmine.createSpy('v1');
+           const v2 = jasmine.createSpy('v2');
+           const v3 = jasmine.createSpy('v3');
+           const composed = Validators.compose([v1, v2, v3]);
+           const uncomposed = Validators.uncompose(composed, v2);
+           expect(uncomposed).not.toBe(composed);
+           uncomposed !(new FormControl());
+           expect(v1).toHaveBeenCalled();
+           expect(v2).not.toHaveBeenCalled();
+           expect(v3).toHaveBeenCalled();
+         });
+
+      it('should return a modified validator when the first argument is a 2-level composition with the second',
+         () => {
+           const v1 = jasmine.createSpy('v1');
+           const v2 = jasmine.createSpy('v2');
+           const v3 = jasmine.createSpy('v3');
+           const v4 = jasmine.createSpy('v4');
+           const composed = Validators.compose([v1, Validators.compose([v2, v3, v4])]);
+           const uncomposed = Validators.uncompose(composed, v2);
+           expect(uncomposed).not.toBe(composed);
+           uncomposed !(new FormControl());
+           expect(v1).toHaveBeenCalled();
+           expect(v2).not.toHaveBeenCalled();
+           expect(v3).toHaveBeenCalled();
+           expect(v4).toHaveBeenCalled();
+         });
+
+    });
+
+    describe('uncomposeAsync', () => {
+      it('should return null when the validator to modify is null',
+         () => { expect(Validators.uncomposeAsync(null !, null)).toBe(null); });
+
+      it('should return the unmodified validator when the validator to remove is null', () => {
+        const v = () => Promise.resolve(null);
+        expect(Validators.uncomposeAsync(v, null)).toBe(v);
+      });
+
+      it('should return null when the validator to remove is the one to modify', () => {
+        const v = () => Promise.resolve(null);
+        expect(Validators.uncomposeAsync(v, v)).toBe(null);
+      });
+
+      it('should return the first argument unmodified when it is unrelated to the second one',
+         () => {
+           const v1 =
+               Validators.composeAsync([() => Promise.resolve(null), () => Promise.resolve(null)]);
+           const v2 = () => Promise.resolve(null);
+           expect(Validators.uncomposeAsync(v1, v2)).toBe(v1);
+         });
+
+
+      it('should return the original validator when it was composed only with the one to remove',
+         () => {
+           const v1 = () => Promise.resolve(null);
+           const v2 = () => Promise.resolve(null);
+           const composed = Validators.composeAsync([v1, v2]);
+           expect(Validators.uncomposeAsync(composed, v2)).toBe(v1);
+           expect(Validators.uncomposeAsync(composed, v1)).toBe(v2);
+         });
+
+      it('should return a modified validator when the first argument is a 1-level composition with the second',
+         () => {
+           const v1 = jasmine.createSpy('v1').and.returnValue(Promise.resolve(null));
+           const v2 = jasmine.createSpy('v2').and.returnValue(Promise.resolve(null));
+           const v3 = jasmine.createSpy('v3').and.returnValue(Promise.resolve(null));
+           const composed = Validators.composeAsync([v1, v2, v3]);
+           const uncomposed = Validators.uncomposeAsync(composed, v2);
+           expect(uncomposed).not.toBe(composed);
+           uncomposed !(new FormControl());
+           expect(v1).toHaveBeenCalled();
+           expect(v2).not.toHaveBeenCalled();
+           expect(v3).toHaveBeenCalled();
+         });
+
+      it('should return a modified validator when the first argument is a 2-level composition with the second',
+         () => {
+           const v1 = jasmine.createSpy('v1').and.returnValue(Promise.resolve(null));
+           const v2 = jasmine.createSpy('v2').and.returnValue(Promise.resolve(null));
+           const v3 = jasmine.createSpy('v3').and.returnValue(Promise.resolve(null));
+           const v4 = jasmine.createSpy('v4').and.returnValue(Promise.resolve(null));
+           const composed = Validators.composeAsync([v1, Validators.composeAsync([v2, v3, v4])]);
+           const uncomposed = Validators.uncomposeAsync(composed, v2);
+           expect(uncomposed).not.toBe(composed);
+           uncomposed !(new FormControl());
+           expect(v1).toHaveBeenCalled();
+           expect(v2).not.toHaveBeenCalled();
+           expect(v3).toHaveBeenCalled();
+           expect(v4).toHaveBeenCalled();
+         });
+
+    });
     describe('composeAsync', () => {
 
       describe('promises', () => {
