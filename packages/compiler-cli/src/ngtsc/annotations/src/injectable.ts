@@ -50,6 +50,8 @@ export class InjectableDecoratorHandler implements
 
   analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<InjectableHandlerData> {
     return {
+      // @Injectable()s cannot depend on other files for their compilation output.
+      allowSkipAnalysisAndEmit: true,
       analysis: {
         meta: extractInjectableMetadata(
             node, decorator, this.reflector, this.defaultImportRecorder, this.isCore,
