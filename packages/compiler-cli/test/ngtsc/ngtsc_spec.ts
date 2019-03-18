@@ -1251,6 +1251,36 @@ describe('ngtsc behavioral tests', () => {
           .toContain(
               'i0.ɵNgModuleDefWithMeta<TestModule, never, [typeof i1.InternalRouterModule], never>');
     });
+
+    it('should not reference a constant with a ModuleWithProviders value in ngModuleDef imports',
+       () => {
+         env.tsconfig();
+         env.write('dep.d.ts', `
+          import {ModuleWithProviders, ɵNgModuleDefWithMeta as NgModuleDefWithMeta} from '@angular/core';
+      
+          export declare class DepModule {
+            static forRoot(arg1: any, arg2: any): ModuleWithProviders<DepModule>;
+            static ngModuleDef: NgModuleDefWithMeta<DepModule, never, never, never>;
+          }
+        `);
+         env.write('test.ts', `
+          import {NgModule, ModuleWithProviders} from '@angular/core';
+          import {DepModule} from './dep';
+    
+          @NgModule({})
+          export class Base {}
+    
+          const mwp = DepModule.forRoot(1,2);
+    
+          @NgModule({
+            imports: [mwp],
+          })
+          export class Module {}
+        `);
+         env.driveMain();
+         const jsContents = env.getContents('test.js');
+         expect(jsContents).toContain('imports: [i1.DepModule]');
+       });
   });
 
   it('should unwrap a ModuleWithProviders-like function if a matching literal type is provided for it',

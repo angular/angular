@@ -218,7 +218,12 @@ export class StaticInterpreter {
     const result =
         this.visitDeclaration(decl.node, {...context, ...joinModuleContext(context, node, decl)});
     if (result instanceof Reference) {
-      result.addIdentifier(node);
+      // Only record identifiers to non-synthetic references. Synthetic references may not have the
+      // same value at runtime as they do at compile time, so it's not legal to refer to them by the
+      // identifier here.
+      if (!result.synthetic) {
+        result.addIdentifier(node);
+      }
     } else if (result instanceof DynamicValue) {
       return DynamicValue.fromDynamicInput(node, result);
     }
@@ -404,7 +409,14 @@ export class StaticInterpreter {
         };
       }
 
-      return this.visitExpression(expr, context);
+      const res = this.visitExpression(expr, context);
+      if (res instanceof Reference) {
+        // This Reference was created synthetically, via a foreign function resolver. The real
+        // runtime value of the function expression may be different than the foreign function
+        // resolved value, so mark the Reference as synthetic to avoid it being misinterpreted.
+        res.synthetic = true;
+      }
+      return res;
     }
 
     const body = fn.body;
