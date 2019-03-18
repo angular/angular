@@ -8,8 +8,8 @@
   "bugs": "https://github.com/angular/angular/issues",
   "license": "MIT",
   "engines": {
-    "node": ">=10.9.0 <11.0.0",
-    "yarn": ">=1.12.1 <=1.14.0"
+    "node": ">=10.9.0 <12.0.0",
+    "yarn": ">=1.12.1 <=1.16.0"
   },
   "repository": {
     "type": "git",
