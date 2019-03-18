@@ -563,7 +563,24 @@ jobs:
     steps:
       - *attach_workspace
       - *init_environment
-      - run: ./scripts/ci/run_angular_material_unit_tests.sh
+      - run:
+          name: "Determining SHA of Material Ivy branch"
+          command: git ls-remote ${MATERIAL_REPO_URL} ${MATERIAL_REPO_BRANCH} | cut -f1 > material_repo_sha
+      - run:
+          name: "Cloning Material repository"
+          command: ./scripts/ci/clone_angular_material_repo.sh
+      - restore_cache:
+          keys:
+            - v1-angular-material-{{ checksum "material_repo_sha" }}
+            - v1-angular-material-
+      - run:
+          name: "Running Material unit tests"
+          command: ./scripts/ci/run_angular_material_unit_tests.sh
+      - save_cache:
+          key: v1-angular-material-{{ checksum "material_repo_sha" }}
+          paths:
+            # Needs to be hardcoded because environment variables are not interpolated here.
+            - "/tmp/material2/node_modules"
 
 workflows:
   version: 2
