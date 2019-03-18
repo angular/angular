@@ -62,6 +62,15 @@ setPublicVar SAUCE_TUNNEL_IDENTIFIER "angular-${CIRCLE_BUILD_NUM}-${CIRCLE_NODE_
 # acquire CircleCI instances for too long if sauceconnect failed, we need a connect timeout.
 setPublicVar SAUCE_READY_FILE_TIMEOUT 120
 
+####################################################################################################
+# Define environment variables for the Angular Material unit tests job.
+####################################################################################################
+# We specifically use a directory within "/tmp" here because we want the cloned repo to be
+# completely isolated from angular/angular in order to avoid any bad interactions between
+# their separate build setups.
+setPublicVar MATERIAL_REPO_TMP_DIR "/tmp/material2"
+setPublicVar MATERIAL_REPO_URL "https://github.com/angular/material2.git"
+setPublicVar MATERIAL_REPO_BRANCH "ivy-2019"
 
 # Source `$BASH_ENV` to make the variables available immediately.
 source $BASH_ENV;
