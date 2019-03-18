@@ -8,5 +8,5 @@ import { Component } from '@angular/core';
   // #enddocregion hero-birthday-template
 })
 export class HeroBirthdayComponent {
-  birthday = new Date(1988, 3, 15); // April 15, 1988
+  birthday = new Date(1988, 4, 15); // April 15, 1988
 }
