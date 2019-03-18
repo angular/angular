@@ -61,8 +61,9 @@ export declare class MatTreeNodeDef<T> extends CdkTreeNodeDef<T> {
 }
 
 export declare class MatTreeNodeOutlet implements CdkTreeNodeOutlet {
+    _node?: any;
     viewContainer: ViewContainerRef;
-    constructor(viewContainer: ViewContainerRef);
+    constructor(viewContainer: ViewContainerRef, _node?: any);
 }
 
 export declare class MatTreeNodePadding<T> extends CdkTreeNodePadding<T> {

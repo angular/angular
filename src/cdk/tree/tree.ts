@@ -54,10 +54,14 @@ import {
     'role': 'tree',
   },
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+
+  // The "OnPush" status for the `CdkTree` component is effectively a noop, so we are removing it.
+  // The view for `CdkTree` consists entirely of templates declared in other views. As they are
+  // declared elsewhere, they are checked when their declaration points are checked.
+  // tslint:disable-next-line:validate-decorators
+  changeDetection: ChangeDetectionStrategy.Default
 })
-export class CdkTree<T>
-    implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
+export class CdkTree<T> implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
 
@@ -299,11 +303,17 @@ export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
   /** Subject that emits when the component has been destroyed. */
   protected _destroyed = new Subject<void>();
 
+  /** Emits when the node's data has changed. */
+  _dataChanges = new Subject<void>();
+
   /** The tree node's data. */
   get data(): T { return this._data; }
   set data(value: T) {
-    this._data = value;
-    this._setRoleFromData();
+    if (value !== this._data) {
+      this._data = value;
+      this._setRoleFromData();
+      this._dataChanges.next();
+    }
   }
   protected _data: T;
 
@@ -333,6 +343,7 @@ export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
       CdkTreeNode.mostRecentTreeNode = null;
     }
 
+    this._dataChanges.complete();
     this._destroyed.next();
     this._destroyed.complete();
   }

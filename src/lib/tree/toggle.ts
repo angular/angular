@@ -14,9 +14,6 @@ import {Directive, Input} from '@angular/core';
  */
 @Directive({
   selector: '[matTreeNodeToggle]',
-  host: {
-    '(click)': '_toggle($event)',
-  },
   providers: [{provide: CdkTreeNodeToggle, useExisting: MatTreeNodeToggle}]
 })
 export class MatTreeNodeToggle<T> extends CdkTreeNodeToggle<T> {

@@ -5,9 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CdkTreeNodeOutlet} from '@angular/cdk/tree';
+import {CDK_TREE_NODE_OUTLET_NODE, CdkTreeNodeOutlet} from '@angular/cdk/tree';
 import {
   Directive,
+  Inject,
+  Optional,
   ViewContainerRef,
 } from '@angular/core';
 
@@ -19,5 +21,7 @@ import {
   selector: '[matTreeNodeOutlet]'
 })
 export class MatTreeNodeOutlet implements CdkTreeNodeOutlet {
-  constructor(public viewContainer: ViewContainerRef) {}
+  constructor(
+      public viewContainer: ViewContainerRef,
+      @Inject(CDK_TREE_NODE_OUTLET_NODE) @Optional() public _node?: any) {}
 }

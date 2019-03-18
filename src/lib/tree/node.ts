@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CdkNestedTreeNode, CdkTree, CdkTreeNode, CdkTreeNodeDef} from '@angular/cdk/tree';
+import {
+  CDK_TREE_NODE_OUTLET_NODE,
+  CdkNestedTreeNode,
+  CdkTree,
+  CdkTreeNode,
+  CdkTreeNodeDef,
+} from '@angular/cdk/tree';
 import {
   AfterContentInit,
   Attribute,
@@ -19,12 +25,14 @@ import {
   QueryList,
 } from '@angular/core';
 import {
-  CanDisable, CanDisableCtor,
+  CanDisable,
+  CanDisableCtor,
   HasTabIndex,
   HasTabIndexCtor,
   mixinDisabled,
   mixinTabIndex,
 } from '@angular/material/core';
+
 import {MatTreeNodeOutlet} from './outlet';
 
 export const _MatTreeNodeMixinBase: HasTabIndexCtor & CanDisableCtor & typeof CdkTreeNode =
@@ -90,15 +98,21 @@ export class MatTreeNodeDef<T> extends CdkTreeNodeDef<T> {
   inputs: ['disabled', 'tabIndex'],
   providers: [
     {provide: CdkNestedTreeNode, useExisting: MatNestedTreeNode},
-    {provide: CdkTreeNode, useExisting: MatNestedTreeNode}
+    {provide: CdkTreeNode, useExisting: MatNestedTreeNode},
+    {provide: CDK_TREE_NODE_OUTLET_NODE, useExisting: MatNestedTreeNode}
   ]
 })
-export class MatNestedTreeNode<T> extends _MatNestedTreeNodeMixinBase<T>
-    implements AfterContentInit, CanDisable, HasTabIndex, OnDestroy {
-
+export class MatNestedTreeNode<T> extends _MatNestedTreeNodeMixinBase<T> implements
+    AfterContentInit, CanDisable, HasTabIndex, OnDestroy {
   @Input('matNestedTreeNode') node: T;
 
-  @ContentChildren(MatTreeNodeOutlet) nodeOutlet: QueryList<MatTreeNodeOutlet>;
+  /** The children node placeholder. */
+  @ContentChildren(MatTreeNodeOutlet, {
+    // We need to use `descendants: true`, because Ivy will no longer match
+    // indirect descendants if it's left as false.
+    descendants: true
+  })
+  nodeOutlet: QueryList<MatTreeNodeOutlet>;
 
   constructor(protected _elementRef: ElementRef<HTMLElement>,
               protected _tree: CdkTree<T>,

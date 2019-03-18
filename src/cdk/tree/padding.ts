@@ -24,6 +24,9 @@ const cssUnitPattern = /([A-Za-z%]+)$/;
   selector: '[cdkTreeNodePadding]',
 })
 export class CdkTreeNodePadding<T> implements OnDestroy {
+  /** Current padding value applied to the element. Used to avoid unnecessarily hitting the DOM. */
+  private _currentPadding: string|null;
+
   /** Subject that emits when the component has been destroyed. */
   private _destroyed = new Subject<void>();
 
@@ -68,8 +71,13 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
               @Optional() private _dir: Directionality) {
     this._setPadding();
     if (_dir) {
-      _dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => this._setPadding());
+      _dir.change.pipe(takeUntil(this._destroyed)).subscribe(() => this._setPadding(true));
     }
+
+    // In Ivy the indentation binding might be set before the tree node's data has been added,
+    // which means that we'll miss the first render. We have to subscribe to changes in the
+    // data to ensure that everything is up to date.
+    _treeNode._dataChanges.subscribe(() => this._setPadding());
   }
 
   ngOnDestroy() {
@@ -86,13 +94,16 @@ export class CdkTreeNodePadding<T> implements OnDestroy {
     return level ? `${level * this._indent}${this.indentUnits}` : null;
   }
 
-  _setPadding() {
-    const element = this._element.nativeElement;
+  _setPadding(forceChange = false) {
     const padding = this._paddingIndent();
-    const paddingProp = this._dir && this._dir.value === 'rtl' ? 'paddingRight' : 'paddingLeft';
-    const resetProp = paddingProp === 'paddingLeft' ? 'paddingRight' : 'paddingLeft';
 
-    this._renderer.setStyle(element, paddingProp, padding);
-    this._renderer.setStyle(element, resetProp, '');
+    if (padding !== this._currentPadding || forceChange) {
+      const element = this._element.nativeElement;
+      const paddingProp = this._dir && this._dir.value === 'rtl' ? 'paddingRight' : 'paddingLeft';
+      const resetProp = paddingProp === 'paddingLeft' ? 'paddingRight' : 'paddingLeft';
+      this._renderer.setStyle(element, paddingProp, padding);
+      this._renderer.setStyle(element, resetProp, null);
+      this._currentPadding = padding;
+    }
   }
 }
