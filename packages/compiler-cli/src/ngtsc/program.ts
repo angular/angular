@@ -18,6 +18,7 @@ import {CycleAnalyzer, ImportGraph} from './cycles';
 import {ErrorCode, ngErrorCode} from './diagnostics';
 import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatIndexEntryPoint} from './entry_point';
 import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
+import {IncrementalState} from './incremental';
 import {PartialEvaluator} from './partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from './path';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
@@ -60,6 +61,7 @@ export class NgtscProgram implements api.Program {
   private defaultImportTracker: DefaultImportTracker;
   private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER;
   private perfTracker: PerfTracker|null = null;
+  private incrementalState: IncrementalState;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
@@ -143,6 +145,13 @@ export class NgtscProgram implements api.Program {
     this.moduleResolver = new ModuleResolver(this.tsProgram, options, this.host);
     this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
     this.defaultImportTracker = new DefaultImportTracker();
+    if (oldProgram === undefined) {
+      this.incrementalState = IncrementalState.fresh();
+    } else {
+      const oldNgtscProgram = oldProgram as NgtscProgram;
+      this.incrementalState = IncrementalState.reconcile(
+          oldNgtscProgram.incrementalState, oldNgtscProgram.tsProgram, this.tsProgram);
+    }
   }
 
   getTsProgram(): ts.Program { return this.tsProgram; }
@@ -332,6 +341,10 @@ export class NgtscProgram implements api.Program {
         continue;
       }
 
+      if (this.incrementalState.safeToSkipEmit(targetSourceFile)) {
+        continue;
+      }
+
       const fileEmitSpan = this.perfRecorder.start('emitFile', targetSourceFile);
       emitResults.push(emitCallback({
         targetSourceFile,
@@ -440,8 +453,8 @@ export class NgtscProgram implements api.Program {
     ];
 
     return new IvyCompilation(
-        handlers, checker, this.reflector, this.importRewriter, this.perfRecorder,
-        this.sourceToFactorySymbols);
+        handlers, checker, this.reflector, this.importRewriter, this.incrementalState,
+        this.perfRecorder, this.sourceToFactorySymbols);
   }
 
   private get reflector(): TypeScriptReflectionHost {

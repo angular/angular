@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
+import {IncrementalState} from '../../incremental';
 import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
@@ -76,7 +77,8 @@ export class IvyCompilation {
   constructor(
       private handlers: DecoratorHandler<any, any>[], private checker: ts.TypeChecker,
       private reflector: ReflectionHost, private importRewriter: ImportRewriter,
-      private perf: PerfRecorder, private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
+      private incrementalState: IncrementalState, private perf: PerfRecorder,
+      private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
 
 
   get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
@@ -170,6 +172,10 @@ export class IvyCompilation {
   private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
     const promises: Promise<void>[] = [];
 
+    // This flag begins as true for the file. If even one handler is matched and does not explicitly
+    // state that analysis/emit can be skipped, then the flag will be set to false.
+    let allowSkipAnalysisAndEmit = true;
+
     const analyzeClass = (node: ClassDeclaration): void => {
       const ivyClass = this.detectHandlersForClass(node);
 
@@ -196,6 +202,11 @@ export class IvyCompilation {
                 this.sourceToFactorySymbols.has(sf.fileName)) {
               this.sourceToFactorySymbols.get(sf.fileName) !.add(match.analyzed.factorySymbolName);
             }
+
+            // Update the allowSkipAnalysisAndEmit flag - it will only remain true if match.analyzed
+            // also explicitly specifies a value of true for the flag.
+            allowSkipAnalysisAndEmit =
+                allowSkipAnalysisAndEmit && (!!match.analyzed.allowSkipAnalysisAndEmit);
 
           } catch (err) {
             if (err instanceof FatalDiagnosticError) {
@@ -239,9 +250,19 @@ export class IvyCompilation {
 
     visit(sf);
 
+    const updateIncrementalState = () => {
+      if (allowSkipAnalysisAndEmit) {
+        this.incrementalState.markFileAsSafeToSkipEmitIfUnchanged(sf);
+      }
+    };
+
     if (preanalyze && promises.length > 0) {
-      return Promise.all(promises).then(() => undefined);
+      return Promise.all(promises).then(() => {
+        updateIncrementalState();
+        return undefined;
+      });
     } else {
+      updateIncrementalState();
       return undefined;
     }
   }
