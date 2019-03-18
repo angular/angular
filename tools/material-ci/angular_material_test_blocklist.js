@@ -17,30 +17,6 @@
 // tslint:disable
 
 window.testBlocklist = {
-  "CdkTree flat tree should initialize should be able to use units different from px for the indentation": {
-    "error": "Error: Failed: Expected node level to be 15rem but was 28px",
-    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTree is OnPush)"
-  },
-  "CdkTree flat tree should initialize should default to px if no unit is set for string value indentation": {
-    "error": "Error: Failed: Expected node level to be 17px but was 28px",
-    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTree is OnPush)"
-  },
-  "CdkTree flat tree with toggle should expand/collapse the node": {
-    "error": "Error: Failed: Expected node level to be 40px but was ",
-    "notes": "Breaking change: Static directive inputs evaluated in creation mode (CdkTreeNode.mostRecentTreeNode.data is set after inputs)"
-  },
-  "CdkTree flat tree with toggle should expand/collapse the node recursively": {
-    "error": "Error: Failed: Expected node level to be 40px but was ",
-    "notes": "Breaking change: Static directive inputs evaluated in creation mode (CdkTreeNode.mostRecentTreeNode.data is set after inputs)"
-  },
-  "CdkTree nested tree with toggle should expand/collapse the node multiple times": {
-    "error": "Error: Expected 3 to be 1, 'Expect node expanded'.",
-    "notes": "1) Breaking change: Change detection follows insertion tree only, not declaration tree (CdkTree is OnPush) - 2) Breaking change: Content queries and descendants flag (fix test by removing <div> in NestedCdkTreeAppWithToggle)"
-  },
-  "CdkTree nested tree with toggle should expand/collapse the node recursively": {
-    "error": "Error: Failed: Expected node descendant num to be 2 but was 0",
-    "notes": "Breaking change: Content queries and descendants flag (fix test by removing <div> in NestedCdkTreeAppWithToggle)"
-  },
   "MatSidenav should be fixed position when in fixed mode": {
     "error": "Error: Expected ng-tns-c22979-0 ng-trigger ng-trigger-transform mat-drawer mat-sidenav mat-drawer-over ng-star-inserted to contain 'mat-sidenav-fixed'.",
     "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
@@ -48,22 +24,6 @@ window.testBlocklist = {
   "MatSidenav should set fixed bottom and top when in fixed mode": {
     "error": "Error: Expected '' to be '20px'.",
     "notes": "FW-1132: Host class bindings don't work if super class has host class bindings"
-  },
-  "MatTree flat tree with toggle should expand/collapse the node": {
-    "error": "Error: Expected 0 to be 1, 'Expect node expanded one level'.",
-    "notes": "Breaking change: Static directive inputs evaluated in creation mode (CdkTreeNode.mostRecentTreeNode.data is set after inputs)"
-  },
-  "MatTree flat tree with toggle should expand/collapse the node recursively": {
-    "error": "Error: Expected 0 to be 3, 'Expect nodes expanded'.",
-    "notes": "Breaking change: Static directive inputs evaluated in creation mode (CdkTreeNode.mostRecentTreeNode.data is set after inputs)"
-  },
-  "MatTree nested tree with toggle should expand/collapse the node": {
-    "error": "Error: Expected 0 to be 1, 'Expect node expanded'.",
-    "notes": "1) Breaking change: Content queries and descendants flag (fix test by removing <div> in NestedMatTreeAppWithToggle) - 2) Breaking change: Ivy inherits metadata from superclasses (remove (click) in MatTreeNodeToggle)"
-  },
-  "MatTree nested tree with toggle should expand/collapse the node recursively": {
-    "error": "Error: Expected 0 to be 3, 'Expect node expanded'.",
-    "notes": "1) Breaking change: Content queries and descendants flag (fix test by removing <div> in NestedMatTreeAppWithToggle) - 2) Breaking change: Ivy inherits metadata from superclasses (remove (click) in MatTreeNodeToggle)"
   },
   "Dialog should set the proper animation states": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
