@@ -369,10 +369,15 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
         /* emitSourceMaps */ false);
     const sf = ts.createSourceFile(
         genFile.genFileUrl, sourceText, this.options.target || ts.ScriptTarget.Latest);
-    if ((this.options.module === ts.ModuleKind.AMD || this.options.module === ts.ModuleKind.UMD) &&
-        this.context.amdModuleName) {
-      const moduleName = this.context.amdModuleName(sf);
-      if (moduleName) sf.moduleName = moduleName;
+    if (this.options.module === ts.ModuleKind.AMD || this.options.module === ts.ModuleKind.UMD) {
+      if (this.context.amdModuleName) {
+        const moduleName = this.context.amdModuleName(sf);
+        if (moduleName) sf.moduleName = moduleName;
+      } else if (/node_modules/.test(genFile.genFileUrl)) {
+        // If we are generating an ngModule file under node_modules, we know the right module name
+        // We don't need the host to supply a function in this case.
+        sf.moduleName = stripNodeModulesPrefix(genFile.genFileUrl.replace(EXT, ''));
+      }
     }
     this.generatedSourceFiles.set(genFile.genFileUrl, {
       sourceFile: sf,
