@@ -1,3 +1,4 @@
+/// <reference types="trusted-types" />
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -149,7 +150,23 @@ export function domSanitizerImplFactory(injector: Injector) {
 
 @Injectable({providedIn: 'root', useFactory: domSanitizerImplFactory, deps: [Injector]})
 export class DomSanitizerImpl extends DomSanitizer {
-  constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
+  _supportsTrustedTypes: boolean;
+  _policy: TrustedTypePolicy|undefined;
+  constructor(@Inject(DOCUMENT) private _doc: any) {
+    super();
+    this._supportsTrustedTypes =
+        typeof TrustedTypes !== 'undefined' && Boolean(TrustedTypes.createPolicy);
+    if (this._supportsTrustedTypes) {
+      this._policy = TrustedTypes.createPolicy(
+          'angular-sanitizer', {
+            createURL: (s: string) => s,
+            createScriptURL: (s: string) => s,
+            createScript: (s: string) => s,
+            createHTML: (s: string) => s
+          },
+          false);
+    }
+  }
 
   sanitize(ctx: SecurityContext, value: SafeValue|string|null): string|null {
     if (value == null) return null;
@@ -157,29 +174,46 @@ export class DomSanitizerImpl extends DomSanitizer {
       case SecurityContext.NONE:
         return value as string;
       case SecurityContext.HTML:
-        if (allowSanitizationBypassOrThrow(value, BypassType.Html)) {
-          return unwrapSafeValue(value);
+        if (value instanceof SafeHtmlImpl)
+          return value.changingThisBreaksApplicationSecurity as string;
+        if (this._supportsTrustedTypes && value instanceof TrustedHTML &&
+            (TrustedTypes as any).isHTML(value)) {
+          return value as unknown as string;
         }
-        return _sanitizeHtml(this._doc, String(value));
+        this.checkNotSafeValue(value, 'HTML');
+        return this.sanitizeHTML(String(value));
       case SecurityContext.STYLE:
-        if (allowSanitizationBypassOrThrow(value, BypassType.Style)) {
-          return unwrapSafeValue(value);
-        }
+        if (value instanceof SafeStyleImpl)
+          return value.changingThisBreaksApplicationSecurity as string;
+        this.checkNotSafeValue(value, 'Style');
         return _sanitizeStyle(value as string);
       case SecurityContext.SCRIPT:
-        if (allowSanitizationBypassOrThrow(value, BypassType.Script)) {
-          return unwrapSafeValue(value);
+        if (value instanceof SafeScriptImpl)
+          return value.changingThisBreaksApplicationSecurity as string;
+        if (this._supportsTrustedTypes && value instanceof TrustedScript &&
+            (TrustedTypes as any).isScript(value)) {
+          return value as unknown as string;
         }
+        this.checkNotSafeValue(value, 'Script');
         throw new Error('unsafe value used in a script context');
       case SecurityContext.URL:
-        const type = getSanitizationBypassType(value);
-        if (allowSanitizationBypassOrThrow(value, BypassType.Url)) {
-          return unwrapSafeValue(value);
+        if (value instanceof SafeResourceUrlImpl || value instanceof SafeUrlImpl) {
+          // Allow resource URLs in URL contexts, they are strictly more trusted.
+          return value.changingThisBreaksApplicationSecurity as string;
         }
-        return _sanitizeUrl(String(value));
+        if (this._supportsTrustedTypes && value instanceof TrustedURL &&
+            (TrustedTypes as any).isURL(value)) {
+          return value as unknown as string;
+        }
+        this.checkNotSafeValue(value, 'URL');
+        return this.sanitizeURL(String(value));
       case SecurityContext.RESOURCE_URL:
-        if (allowSanitizationBypassOrThrow(value, BypassType.ResourceUrl)) {
-          return unwrapSafeValue(value);
+        if (value instanceof SafeResourceUrlImpl) {
+          return value.changingThisBreaksApplicationSecurity as string;
+        }
+        if (this._supportsTrustedTypes && value instanceof TrustedScriptURL &&
+            (TrustedTypes as any).isScriptURL(value)) {
+          return value as unknown as string;
         }
         throw new Error(
             'unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
@@ -188,13 +222,68 @@ export class DomSanitizerImpl extends DomSanitizer {
     }
   }
 
-  bypassSecurityTrustHtml(value: string): SafeHtml { return bypassSanitizationTrustHtml(value); }
-  bypassSecurityTrustStyle(value: string): SafeStyle { return bypassSanitizationTrustStyle(value); }
+  private sanitizeURL(value: string): string {
+    const sanitized = _sanitizeUrl(value);
+    return this._supportsTrustedTypes && this._policy ?
+        this._policy.createURL(sanitized) as unknown as string :
+        sanitized;
+  }
+
+  private sanitizeHTML(value: string): string {
+    const sanitized = _sanitizeHtml(this._doc, value);
+    return this._supportsTrustedTypes && this._policy ?
+        this._policy.createHTML(sanitized) as unknown as string :
+        sanitized;
+  }
+
+  private checkNotSafeValue(value: any, expectedType: string) {
+    if (value instanceof SafeValueImpl) {
+      throw new Error(
+          `Required a safe ${expectedType}, got a ${value.getTypeName()} ` +
+          `(see http://g.co/ng/security#xss)`);
+    }
+  }
+
+  bypassSecurityTrustHtml(value: string): SafeHtml {
+    return new SafeHtmlImpl(this._policy ? this._policy.createHTML(value) : value);
+  }
+  bypassSecurityTrustStyle(value: string): SafeStyle { return new SafeStyleImpl(value); }
   bypassSecurityTrustScript(value: string): SafeScript {
-    return bypassSanitizationTrustScript(value);
+    return new SafeScriptImpl(this._policy ? this._policy.createScript(value) : value);
   }
-  bypassSecurityTrustUrl(value: string): SafeUrl { return bypassSanitizationTrustUrl(value); }
+  bypassSecurityTrustUrl(value: string): SafeUrl {
+    return new SafeUrlImpl(this._policy ? this._policy.createURL(value) : value);
+  }
   bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl {
-    return bypassSanitizationTrustResourceUrl(value);
+    return new SafeResourceUrlImpl(this._policy ? this._policy.createScriptURL(value) : value);
   }
+}
+
+abstract class SafeValueImpl<T> implements SafeValue {
+  constructor(public changingThisBreaksApplicationSecurity: string|T) {
+    // empty
+  }
+
+  abstract getTypeName(): string;
+
+  toString() {
+    return `SafeValue must use [property]=binding: ${this.changingThisBreaksApplicationSecurity}` +
+        ` (see http://g.co/ng/security#xss)`;
+  }
+}
+
+class SafeHtmlImpl extends SafeValueImpl<TrustedHTML> implements SafeHtml {
+  getTypeName() { return 'HTML'; }
+}
+class SafeStyleImpl extends SafeValueImpl<string> implements SafeStyle {
+  getTypeName() { return 'Style'; }
+}
+class SafeScriptImpl extends SafeValueImpl<TrustedScript> implements SafeScript {
+  getTypeName() { return 'Script'; }
+}
+class SafeUrlImpl extends SafeValueImpl<TrustedURL> implements SafeUrl {
+  getTypeName() { return 'URL'; }
+}
+class SafeResourceUrlImpl extends SafeValueImpl<TrustedScriptURL> implements SafeResourceUrl {
+  getTypeName() { return 'ResourceURL'; }
 }
