@@ -92,8 +92,9 @@ describe('DecorationAnalyzer', () => {
     let testHandler: jasmine.SpyObj<DecoratorHandler<any, any>>;
     let result: DecorationAnalyses;
 
-    beforeEach(() => {
-      const {options, host, ...bundle} = makeTestBundleProgram([TEST_PROGRAM]);
+    // Helpers
+    const setUpAndAnalyzeProgram = (...progArgs: Parameters<typeof makeTestBundleProgram>) => {
+      const {options, host, ...bundle} = makeTestBundleProgram(...progArgs);
       program = bundle.program;
 
       const reflectionHost = new Esm2015ReflectionHost(false, program.getTypeChecker());
@@ -104,50 +105,48 @@ describe('DecorationAnalyzer', () => {
       testHandler = createTestHandler();
       analyzer.handlers = [testHandler];
       result = analyzer.analyzeProgram();
-    });
+    };
 
-    it('should return an object containing a reference to the original source file', () => {
-      const file = program.getSourceFile(TEST_PROGRAM.name) !;
-      expect(result.get(file) !.sourceFile).toBe(file);
-    });
+    describe('basic usage', () => {
+      beforeEach(() => setUpAndAnalyzeProgram([TEST_PROGRAM]));
 
-    it('should call detect on the decorator handlers with each class from the parsed file', () => {
-      expect(testHandler.detect).toHaveBeenCalledTimes(2);
-      expect(testHandler.detect.calls.allArgs()[0][1]).toEqual([jasmine.objectContaining(
-          {name: 'Component'})]);
-      expect(testHandler.detect.calls.allArgs()[1][1]).toEqual([jasmine.objectContaining(
-          {name: 'Injectable'})]);
-    });
+      it('should return an object containing a reference to the original source file', () => {
+        const file = program.getSourceFile(TEST_PROGRAM.name) !;
+        expect(result.get(file) !.sourceFile).toBe(file);
+      });
 
-    it('should return an object containing the classes that were analyzed', () => {
-      const file = program.getSourceFile(TEST_PROGRAM.name) !;
-      const compiledFile = result.get(file) !;
-      expect(compiledFile.compiledClasses.length).toEqual(1);
-      expect(compiledFile.compiledClasses[0].name).toEqual('MyComponent');
-    });
+      it('should call detect on the decorator handlers with each class from the parsed file',
+         () => {
+           expect(testHandler.detect).toHaveBeenCalledTimes(2);
+           expect(testHandler.detect.calls.allArgs()[0][1]).toEqual([jasmine.objectContaining(
+               {name: 'Component'})]);
+           expect(testHandler.detect.calls.allArgs()[1][1]).toEqual([jasmine.objectContaining(
+               {name: 'Injectable'})]);
+         });
 
-    it('should analyze and compile the classes that are detected', () => {
-      expect(testHandler.analyze).toHaveBeenCalledTimes(1);
-      expect(testHandler.analyze.calls.allArgs()[0][1].name).toEqual('Component');
+      it('should return an object containing the classes that were analyzed', () => {
+        const file = program.getSourceFile(TEST_PROGRAM.name) !;
+        const compiledFile = result.get(file) !;
+        expect(compiledFile.compiledClasses.length).toEqual(1);
+        expect(compiledFile.compiledClasses[0].name).toEqual('MyComponent');
+      });
 
-      expect(testHandler.compile).toHaveBeenCalledTimes(1);
-      expect(testHandler.compile.calls.allArgs()[0][1]).toEqual('Component');
+      it('should analyze and compile the classes that are detected', () => {
+        expect(testHandler.analyze).toHaveBeenCalledTimes(1);
+        expect(testHandler.analyze.calls.allArgs()[0][1].name).toEqual('Component');
+
+        expect(testHandler.compile).toHaveBeenCalledTimes(1);
+        expect(testHandler.compile.calls.allArgs()[0][1]).toEqual('Component');
+      });
     });
 
     describe('internal components', () => {
+      beforeEach(() => setUpAndAnalyzeProgram(INTERNAL_COMPONENT_PROGRAM));
+
       // The problem of exposing the type of these internal components in the .d.ts typing files
       // is not yet solved.
       it('should analyze an internally imported component, which is not publicly exported from the entry-point',
          () => {
-           const {program, options, host} = makeTestBundleProgram(INTERNAL_COMPONENT_PROGRAM);
-           const reflectionHost = new Esm2015ReflectionHost(false, program.getTypeChecker());
-           const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
-           const analyzer = new DecorationAnalyzer(
-               program, options, host, program.getTypeChecker(), reflectionHost, referencesRegistry,
-               [AbsoluteFsPath.fromUnchecked('/')], false);
-           const testHandler = createTestHandler();
-           analyzer.handlers = [testHandler];
-           const result = analyzer.analyzeProgram();
            const file = program.getSourceFile('component.js') !;
            const analysis = result.get(file) !;
            expect(analysis).toBeDefined();
@@ -157,15 +156,6 @@ describe('DecorationAnalyzer', () => {
          });
 
       it('should analyze an internally defined component, which is not exported at all', () => {
-        const {program, options, host} = makeTestBundleProgram(INTERNAL_COMPONENT_PROGRAM);
-        const reflectionHost = new Esm2015ReflectionHost(false, program.getTypeChecker());
-        const referencesRegistry = new NgccReferencesRegistry(reflectionHost);
-        const analyzer = new DecorationAnalyzer(
-            program, options, host, program.getTypeChecker(), reflectionHost, referencesRegistry,
-            [AbsoluteFsPath.fromUnchecked('/')], false);
-        const testHandler = createTestHandler();
-        analyzer.handlers = [testHandler];
-        const result = analyzer.analyzeProgram();
         const file = program.getSourceFile('entrypoint.js') !;
         const analysis = result.get(file) !;
         expect(analysis).toBeDefined();
