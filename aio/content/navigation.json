@@ -688,6 +688,11 @@
           "url": "https://blog.angular.io/",
           "title": "Blog",
           "tooltip": "Angular Blog"
+        },
+        {
+          "url": "analytics",
+          "title": "Usage Analytics",
+          "tooltip": "Angular Usage Analytics"
         }
       ]
     },
