@@ -650,6 +650,11 @@
           "title": "Overview",
           "tooltip": "An introduction to the CLI tool, commands, and syntax.",
           "url": "cli"
+        },
+        {
+          "title": "Usage Analytics",
+          "tooltip": "For administrators, guide to gathering usage analytics from your users.",
+          "url": "cli/usage-analytics-gathering"
         }
       ]
     },
