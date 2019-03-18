@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
+import {PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
 import {getSourceFile} from '../../util/src/typescript';
@@ -75,7 +76,7 @@ export class IvyCompilation {
   constructor(
       private handlers: DecoratorHandler<any, any>[], private checker: ts.TypeChecker,
       private reflector: ReflectionHost, private importRewriter: ImportRewriter,
-      private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
+      private perf: PerfRecorder, private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
 
 
   get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
@@ -182,6 +183,7 @@ export class IvyCompilation {
       for (const match of ivyClass.matchedHandlers) {
         // The analyze() function will run the analysis phase of the handler.
         const analyze = () => {
+          const analyzeClassSpan = this.perf.start('analyzeClass', node);
           try {
             match.analyzed = match.handler.analyze(node, match.detected.metadata);
 
@@ -201,6 +203,8 @@ export class IvyCompilation {
             } else {
               throw err;
             }
+          } finally {
+            this.perf.stop(analyzeClassSpan);
           }
         };
 
@@ -243,10 +247,12 @@ export class IvyCompilation {
   }
 
   resolve(): void {
+    const resolveSpan = this.perf.start('resolve');
     this.ivyClasses.forEach((ivyClass, node) => {
       for (const match of ivyClass.matchedHandlers) {
         if (match.handler.resolve !== undefined && match.analyzed !== null &&
             match.analyzed.analysis !== undefined) {
+          const resolveClassSpan = this.perf.start('resolveClass', node);
           try {
             const res = match.handler.resolve(node, match.analyzed.analysis);
             if (res.reexports !== undefined) {
@@ -268,10 +274,13 @@ export class IvyCompilation {
             } else {
               throw err;
             }
+          } finally {
+            this.perf.stop(resolveClassSpan);
           }
         }
       }
     });
+    this.perf.stop(resolveSpan);
   }
 
   typeCheck(context: TypeCheckContext): void {
@@ -305,8 +314,10 @@ export class IvyCompilation {
         continue;
       }
 
+      const compileSpan = this.perf.start('compileClass', original);
       const compileMatchRes =
           match.handler.compile(node as ClassDeclaration, match.analyzed.analysis, constantPool);
+      this.perf.stop(compileSpan);
       if (!Array.isArray(compileMatchRes)) {
         res.push(compileMatchRes);
       } else {
