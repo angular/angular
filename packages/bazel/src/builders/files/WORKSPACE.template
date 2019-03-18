@@ -21,8 +21,8 @@ http_archive(
 )
 
 # Rules for compiling sass
-RULES_SASS_VERSION = "1.17.2"
-RULES_SASS_SHA256 = "e5316ee8a09d1cbb732d3938b400836bf94dba91a27476e9e27706c4c0edae1f"
+RULES_SASS_VERSION = "1.17.3"
+RULES_SASS_SHA256 = "ea79647e5cd36867568d80811a951c7b3170791058f50a5cbd3d542627e78881"
 http_archive(
     name = "io_bazel_rules_sass",
     sha256 = RULES_SASS_SHA256,
