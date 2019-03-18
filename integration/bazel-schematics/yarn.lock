@@ -68,18 +68,18 @@
     rxjs "6.3.3"
 
 "@angular/bazel@file:../../dist/packages-dist/bazel":
-  version "8.0.0-beta.7"
+  version "8.0.0-beta.9"
   dependencies:
     "@angular-devkit/architect" "^0.13.4"
     "@angular-devkit/core" "^7.0.4"
     "@angular-devkit/schematics" "^7.3.0-rc.0"
-    "@bazel/typescript" "^0.26.0"
+    "@bazel/typescript" "^0.27.7"
     "@microsoft/api-extractor" "^7.0.21"
     "@schematics/angular" "^7.3.5"
     "@types/node" "6.0.84"
     semver "^5.6.0"
     shelljs "0.8.2"
-    tsickle "0.34.0"
+    tsickle "0.34.3"
 
 "@angular/cli@file:../../node_modules/@angular/cli":
   version "7.3.2"
@@ -120,12 +120,11 @@
     "@bazel/bazel-linux_x64" "0.23.0"
     "@bazel/bazel-win32_x64" "0.23.0"
 
-"@bazel/typescript@^0.26.0":
-  version "0.26.0"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.26.0.tgz#c06139d76c8b9d3a3ed98a721b776fedb4b11c82"
-  integrity sha512-dh/Y/SZzmeChsLap8FVHYl0FuaeLh/6t9WBVhm5nOgyVrqfEyVpNzy4W20E4NqnmJY2/PqmD5qncf+Oo1q9h1A==
+"@bazel/typescript@^0.27.7":
+  version "0.27.7"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.27.7.tgz#ff2d6469357ff68faccc75976d435fec0175e988"
+  integrity sha512-Eeu42RM6Ss/se3Bdv+OBfY159N9uOlUZp4XHgZixq1PHwuohRDPIEdEnci/pe3TDsiY25YOi7hjemM90gu5ppg==
   dependencies:
-    jasmine-core "2.8.0"
     protobufjs "5.0.3"
     semver "5.6.0"
     source-map-support "0.5.9"
@@ -1279,11 +1278,6 @@ isobject@^3.0.0, isobject@^3.0.1:
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
 
-jasmine-core@2.8.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-2.8.0.tgz#bcc979ae1f9fd05701e45e52e65d3a5d63f1a24e"
-  integrity sha1-vMl5rh+f0FcB5F5S5l06XWPxok4=
-
 jju@~1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/jju/-/jju-1.4.0.tgz#a3abe2718af241a2b2904f84a625970f389ae32a"
@@ -2364,10 +2358,10 @@ to-regex@^3.0.1, to-regex@^3.0.2:
     regex-not "^1.0.2"
     safe-regex "^1.1.0"
 
-tsickle@0.34.0:
-  version "0.34.0"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.34.0.tgz#10187fa6401a288a65efb93a60bf28b2ff95f90b"
-  integrity sha512-O3wCPRtL18Hc/ZBnaiKwmmjVzeCWTOTpsi0btfC7FWL3RnXpxLPxD6hoJ0QEXuSfG/0QJk+MWNjqT9N6fOyyIg==
+tsickle@0.34.3:
+  version "0.34.3"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.34.3.tgz#8085067a26d7bff466ddadb2eba18849b49159b8"
+  integrity sha512-mb1v3nsr6rYaZky22xj0d6qv4ogAR40Bc6r37jwWOg3bEIO/ZppEFZiEADs/NNVLcWTPgmNmPZgaX5CfAH6oXA==
   dependencies:
     minimist "^1.2.0"
     mkdirp "^0.5.1"
