@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../../ngtsc/path';
 import {Decorator} from '../../../ngtsc/reflection';
 import {DecoratorHandler, DetectResult} from '../../../ngtsc/transform';
-import {DecorationAnalyses, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
+import {CompiledClass, DecorationAnalyses, DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
 import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {makeTestBundleProgram} from '../helpers/utils';
@@ -78,8 +78,8 @@ function createTestHandler() {
   const handler = jasmine.createSpyObj<DecoratorHandlerWithResolve>('TestDecoratorHandler', [
     'detect',
     'analyze',
-    'compile',
     'resolve',
+    'compile',
   ]);
   // Only detect the Component and Directive decorators
   handler.detect.and.callFake(
@@ -99,18 +99,19 @@ function createTestHandler() {
       });
   // The "test" analysis is an object with the name of the decorator being analyzed
   handler.analyze.and.callFake((decl: ts.Declaration, dec: Decorator) => {
-    expect(handler.compile).not.toHaveBeenCalled();
-    return {analysis: {decoratorName: dec.name}, diagnostics: undefined};
-  });
-  // The "test" compilation result is just the name of the decorator being compiled
-  handler.compile.and.callFake((decl: ts.Declaration, analysis: any) => {
     expect(handler.resolve).not.toHaveBeenCalled();
-    return {analysis};
+    return {analysis: {decoratorName: dec.name}, diagnostics: undefined};
   });
   // The "test" resolution is just setting `resolved: true` on the analysis
   handler.resolve.and.callFake((decl: ts.Declaration, analysis: any) => {
-    expect(handler.compile).toHaveBeenCalledWith(decl, jasmine.anything(), jasmine.anything());
+    expect(handler.compile).not.toHaveBeenCalled();
     analysis.resolved = true;
+  });
+  // The "test" compilation result is just the name of the decorator being compiled (suffixed with
+  // `(compiled)`), as long as it has already passed through `resolve()`
+  handler.compile.and.callFake((decl: ts.Declaration, analysis: any) => {
+    expect(handler.resolve).toHaveBeenCalledWith(decl, analysis);
+    return analysis.resolved && `@${analysis.decoratorName} (compiled)`;
   });
   return handler;
 }
@@ -161,16 +162,22 @@ describe('DecorationAnalyzer', () => {
         const file1 = program.getSourceFile(TEST_PROGRAM[0].name) !;
         const compiledFile1 = result.get(file1) !;
         expect(compiledFile1.compiledClasses.length).toEqual(2);
-        expect(compiledFile1.compiledClasses[0].name).toEqual('MyComponent');
-        expect(compiledFile1.compiledClasses[1].name).toEqual('MyDirective');
+        expect(compiledFile1.compiledClasses[0]).toEqual(jasmine.objectContaining({
+          name: 'MyComponent', compilation: ['@Component (compiled)'],
+        } as unknown as CompiledClass));
+        expect(compiledFile1.compiledClasses[1]).toEqual(jasmine.objectContaining({
+          name: 'MyDirective', compilation: ['@Directive (compiled)'],
+        } as unknown as CompiledClass));
 
         const file2 = program.getSourceFile(TEST_PROGRAM[1].name) !;
         const compiledFile2 = result.get(file2) !;
         expect(compiledFile2.compiledClasses.length).toEqual(1);
-        expect(compiledFile2.compiledClasses[0].name).toEqual('MyOtherComponent');
+        expect(compiledFile2.compiledClasses[0]).toEqual(jasmine.objectContaining({
+          name: 'MyOtherComponent', compilation: ['@Component (compiled)'],
+        } as unknown as CompiledClass));
       });
 
-      it('should analyze, compile and resolve the classes that are detected', () => {
+      it('should analyze, resolve and compile the classes that are detected', () => {
         expect(testHandler.analyze).toHaveBeenCalledTimes(3);
         expect(testHandler.analyze.calls.allArgs().map(args => args[1])).toEqual([
           jasmine.objectContaining({name: 'Component'}),
@@ -178,15 +185,15 @@ describe('DecorationAnalyzer', () => {
           jasmine.objectContaining({name: 'Component'}),
         ]);
 
-        expect(testHandler.compile).toHaveBeenCalledTimes(3);
-        expect(testHandler.compile.calls.allArgs().map(args => args[1])).toEqual([
+        expect(testHandler.resolve).toHaveBeenCalledTimes(3);
+        expect(testHandler.resolve.calls.allArgs().map(args => args[1])).toEqual([
           {decoratorName: 'Component', resolved: true},
           {decoratorName: 'Directive', resolved: true},
           {decoratorName: 'Component', resolved: true},
         ]);
 
-        expect(testHandler.resolve).toHaveBeenCalledTimes(3);
-        expect(testHandler.resolve.calls.allArgs().map(args => args[1])).toEqual([
+        expect(testHandler.compile).toHaveBeenCalledTimes(3);
+        expect(testHandler.compile.calls.allArgs().map(args => args[1])).toEqual([
           {decoratorName: 'Component', resolved: true},
           {decoratorName: 'Directive', resolved: true},
           {decoratorName: 'Component', resolved: true},
