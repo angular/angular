@@ -1603,7 +1603,6 @@ describe('query', () => {
          });
 
       // https://stackblitz.com/edit/angular-7vvo9j?file=src%2Fapp%2Fapp.component.ts
-      // https://stackblitz.com/edit/angular-xzwp6n
       it('should report results when the same TemplateRef is inserted into different ViewContainerRefs',
          () => {
            let tpl: TemplateRef<{}>;
