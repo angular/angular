@@ -23,9 +23,10 @@ export function findExportedNameOfNode(
   // Look for the export which declares the node.
   const found = exports.find(sym => symbolDeclaresNode(sym, target, checker));
   if (found === undefined) {
-    throw new Error(`failed to find target in ${file.fileName}`);
+    throw new Error(
+        `Failed to find exported name of node (${target.getText()}) in '${file.fileName}'.`);
   }
-  return found !== undefined ? found.name : null;
+  return found.name;
 }
 
 /**
