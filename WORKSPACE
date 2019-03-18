@@ -15,8 +15,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "251a023b6c5c5c97db1bfe24652dc19dad05f4da68f8e1821d92d911fa3f4ef4",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.27.4/rules_nodejs-0.27.4.tar.gz"],
+    sha256 = "35511e7e9aa7d6fcfd429200a6e9b40733ebdd40ab1420935079798e9903c904",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/0.27.6/rules_nodejs-0.27.6.tar.gz"],
 )
 
 # Check the bazel version and download npm dependencies
