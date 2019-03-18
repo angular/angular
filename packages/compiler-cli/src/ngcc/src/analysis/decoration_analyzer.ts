@@ -116,8 +116,10 @@ export class DecorationAnalyzer {
                               .map(sourceFile => this.analyzeFile(sourceFile))
                               .filter(isDefined);
     const compiledFiles = analysedFiles.map(analysedFile => this.compileFile(analysedFile));
-    compiledFiles.forEach(
-        compiledFile => decorationAnalyses.set(compiledFile.sourceFile, compiledFile));
+    compiledFiles.forEach(compiledFile => {
+      this.resolveFile(compiledFile);
+      decorationAnalyses.set(compiledFile.sourceFile, compiledFile);
+    });
     return decorationAnalyses;
   }
 
@@ -201,6 +203,16 @@ export class DecorationAnalyzer {
       }
     }
     return compilations;
+  }
+
+  protected resolveFile(compiledFile: CompiledFile): void {
+    compiledFile.compiledClasses.forEach(({declaration, matches}) => {
+      matches.forEach(({handler, analysis}) => {
+        if ((handler.resolve !== undefined) && analysis) {
+          handler.resolve(declaration, analysis);
+        }
+      });
+    });
   }
 }
 
