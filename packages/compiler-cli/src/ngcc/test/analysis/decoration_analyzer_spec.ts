@@ -74,56 +74,61 @@ type DecoratorHandlerWithResolve = DecoratorHandler<any, any>& {
   resolve: NonNullable<DecoratorHandler<any, any>['resolve']>;
 };
 
-function createTestHandler() {
-  const handler = jasmine.createSpyObj<DecoratorHandlerWithResolve>('TestDecoratorHandler', [
-    'detect',
-    'analyze',
-    'resolve',
-    'compile',
-  ]);
-  // Only detect the Component and Directive decorators
-  handler.detect.and.callFake(
-      (node: ts.Declaration, decorators: Decorator[]): DetectResult<any>| undefined => {
-        if (!decorators) {
-          return undefined;
-        }
-        const metadata = decorators.find(d => d.name === 'Component' || d.name === 'Directive');
-        if (metadata === undefined) {
-          return undefined;
-        } else {
-          return {
-            metadata,
-            trigger: metadata.node,
-          };
-        }
-      });
-  // The "test" analysis is an object with the name of the decorator being analyzed
-  handler.analyze.and.callFake((decl: ts.Declaration, dec: Decorator) => {
-    expect(handler.resolve).not.toHaveBeenCalled();
-    return {analysis: {decoratorName: dec.name}, diagnostics: undefined};
-  });
-  // The "test" resolution is just setting `resolved: true` on the analysis
-  handler.resolve.and.callFake((decl: ts.Declaration, analysis: any) => {
-    expect(handler.compile).not.toHaveBeenCalled();
-    analysis.resolved = true;
-  });
-  // The "test" compilation result is just the name of the decorator being compiled (suffixed with
-  // `(compiled)`), as long as it has already passed through `resolve()`
-  handler.compile.and.callFake((decl: ts.Declaration, analysis: any) => {
-    expect(handler.resolve).toHaveBeenCalledWith(decl, analysis);
-    return analysis.resolved && `@${analysis.decoratorName} (compiled)`;
-  });
-  return handler;
-}
-
 describe('DecorationAnalyzer', () => {
   describe('analyzeProgram()', () => {
+    let logs: string[];
     let program: ts.Program;
     let testHandler: jasmine.SpyObj<DecoratorHandlerWithResolve>;
     let result: DecorationAnalyses;
 
     // Helpers
+    const createTestHandler = () => {
+      const handler = jasmine.createSpyObj<DecoratorHandlerWithResolve>('TestDecoratorHandler', [
+        'detect',
+        'analyze',
+        'resolve',
+        'compile',
+      ]);
+      // Only detect the Component and Directive decorators
+      handler.detect.and.callFake(
+          (node: ts.Declaration, decorators: Decorator[]): DetectResult<any>| undefined => {
+            logs.push(`detect: ${(node as any).name.text}@${decorators.map(d => d.name)}`);
+            if (!decorators) {
+              return undefined;
+            }
+            const metadata = decorators.find(d => d.name === 'Component' || d.name === 'Directive');
+            if (metadata === undefined) {
+              return undefined;
+            } else {
+              return {
+                metadata,
+                trigger: metadata.node,
+              };
+            }
+          });
+      // The "test" analysis is an object with the name of the decorator being analyzed
+      handler.analyze.and.callFake((decl: ts.Declaration, dec: Decorator) => {
+        logs.push(`analyze: ${(decl as any).name.text}@${dec.name}`);
+        return {analysis: {decoratorName: dec.name}, diagnostics: undefined};
+      });
+      // The "test" resolution is just setting `resolved: true` on the analysis
+      handler.resolve.and.callFake((decl: ts.Declaration, analysis: any) => {
+        logs.push(`resolve: ${(decl as any).name.text}@${analysis.decoratorName}`);
+        analysis.resolved = true;
+      });
+      // The "test" compilation result is just the name of the decorator being compiled
+      // (suffixed with `(compiled)`)
+      handler.compile.and.callFake((decl: ts.Declaration, analysis: any) => {
+        logs.push(
+            `compile: ${(decl as any).name.text}@${analysis.decoratorName} (resolved: ${analysis.resolved})`);
+        return `@${analysis.decoratorName} (compiled)`;
+      });
+      return handler;
+    };
+
     const setUpAndAnalyzeProgram = (...progArgs: Parameters<typeof makeTestBundleProgram>) => {
+      logs = [];
+
       const {options, host, ...bundle} = makeTestBundleProgram(...progArgs);
       program = bundle.program;
 
@@ -178,25 +183,23 @@ describe('DecorationAnalyzer', () => {
       });
 
       it('should analyze, resolve and compile the classes that are detected', () => {
-        expect(testHandler.analyze).toHaveBeenCalledTimes(3);
-        expect(testHandler.analyze.calls.allArgs().map(args => args[1])).toEqual([
-          jasmine.objectContaining({name: 'Component'}),
-          jasmine.objectContaining({name: 'Directive'}),
-          jasmine.objectContaining({name: 'Component'}),
-        ]);
-
-        expect(testHandler.resolve).toHaveBeenCalledTimes(3);
-        expect(testHandler.resolve.calls.allArgs().map(args => args[1])).toEqual([
-          {decoratorName: 'Component', resolved: true},
-          {decoratorName: 'Directive', resolved: true},
-          {decoratorName: 'Component', resolved: true},
-        ]);
-
-        expect(testHandler.compile).toHaveBeenCalledTimes(3);
-        expect(testHandler.compile.calls.allArgs().map(args => args[1])).toEqual([
-          {decoratorName: 'Component', resolved: true},
-          {decoratorName: 'Directive', resolved: true},
-          {decoratorName: 'Component', resolved: true},
+        expect(logs).toEqual([
+          // First detect and (potentially) analyze.
+          'detect: MyComponent@Component',
+          'analyze: MyComponent@Component',
+          'detect: MyDirective@Directive',
+          'analyze: MyDirective@Directive',
+          'detect: MyService@Injectable',
+          'detect: MyOtherComponent@Component',
+          'analyze: MyOtherComponent@Component',
+          // The resolve.
+          'resolve: MyComponent@Component',
+          'resolve: MyDirective@Directive',
+          'resolve: MyOtherComponent@Component',
+          // Finally compile.
+          'compile: MyComponent@Component (resolved: true)',
+          'compile: MyDirective@Directive (resolved: true)',
+          'compile: MyOtherComponent@Component (resolved: true)',
         ]);
       });
     });
