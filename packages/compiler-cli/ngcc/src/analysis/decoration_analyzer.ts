@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
+import {NOOP_PERF_RECORDER} from '@angular/compiler-cli/src/ngtsc/perf';
 import * as path from 'canonical-path';
 import * as fs from 'fs';
 import * as ts from 'typescript';
@@ -90,7 +91,8 @@ export class DecorationAnalyzer {
         this.reflectionHost, this.evaluator, this.scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER,
         this.isCore),
     new InjectableDecoratorHandler(
-        this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore, /* strictCtorDeps */ false),
+        this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
+        /* strictCtorDeps */ false),
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.scopeRegistry, this.referencesRegistry,
         this.isCore, /* routeAnalyzer */ null, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER),
