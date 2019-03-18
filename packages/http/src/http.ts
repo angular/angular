@@ -6,22 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
-import {BaseRequestOptions, RequestOptions} from './base_request_options';
-import {RequestMethod} from './enums';
-import {ConnectionBackend, RequestArgs, RequestOptionsArgs} from './interfaces';
-import {Request} from './static_request';
-import {Response} from './static_response';
+import { BaseRequestOptions, RequestOptions } from './base_request_options';
+import { RequestMethod } from './enums';
+import { ConnectionBackend, RequestArgs, RequestOptionsArgs } from './interfaces';
+import { Request } from './static_request';
+import { Response } from './static_response';
 
 function httpRequest(backend: ConnectionBackend, request: Request): Observable<Response> {
   return backend.createConnection(request).response;
 }
 
 function mergeOptions(
-    defaultOpts: BaseRequestOptions, providedOpts: RequestOptionsArgs | undefined,
-    method: RequestMethod, url: string): RequestArgs {
+  defaultOpts: BaseRequestOptions, providedOpts: RequestOptionsArgs | undefined,
+  method: RequestMethod, url: string): RequestArgs {
   const newOptions = defaultOpts;
   if (providedOpts) {
     // Hack so Dart can used named parameters
@@ -37,7 +37,7 @@ function mergeOptions(
     })) as RequestArgs;
   }
 
-  return newOptions.merge(new RequestOptions({method, url})) as RequestArgs;
+  return newOptions.merge(new RequestOptions({ method, url })) as RequestArgs;
 }
 
 /**
@@ -105,7 +105,7 @@ function mergeOptions(
  */
 @Injectable()
 export class Http {
-  constructor(protected _backend: ConnectionBackend, protected _defaultOptions: RequestOptions) {}
+  constructor(protected _backend: ConnectionBackend, protected _defaultOptions: RequestOptions) { }
 
   /**
    * Performs any type of http request. First argument is required, and can either be a url or
@@ -113,12 +113,12 @@ export class Http {
    * object can be provided as the 2nd argument. The options object will be merged with the values
    * of {@link BaseRequestOptions} before performing the request.
    */
-  request(url: string|Request, options?: RequestOptionsArgs): Observable<Response> {
+  request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
     let responseObservable: any;
     if (typeof url === 'string') {
       responseObservable = httpRequest(
-          this._backend,
-          new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, <string>url)));
+        this._backend,
+        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, <string>url)));
     } else if (url instanceof Request) {
       responseObservable = httpRequest(this._backend, url);
     } else {
@@ -132,7 +132,7 @@ export class Http {
    */
   get(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(
-        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url)));
+      new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, url)));
   }
 
   /**
@@ -140,8 +140,8 @@ export class Http {
    */
   post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(new Request(mergeOptions(
-        this._defaultOptions.merge(new RequestOptions({body: body})), options, RequestMethod.Post,
-        url)));
+      this._defaultOptions.merge(new RequestOptions({ body: body })), options, RequestMethod.Post,
+      url)));
   }
 
   /**
@@ -149,16 +149,16 @@ export class Http {
    */
   put(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(new Request(mergeOptions(
-        this._defaultOptions.merge(new RequestOptions({body: body})), options, RequestMethod.Put,
-        url)));
+      this._defaultOptions.merge(new RequestOptions({ body: body })), options, RequestMethod.Put,
+      url)));
   }
 
   /**
    * Performs a request with `delete` http method.
    */
-  delete (url: string, options?: RequestOptionsArgs): Observable<Response> {
+  delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(
-        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Delete, url)));
+      new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Delete, url)));
   }
 
   /**
@@ -166,8 +166,8 @@ export class Http {
    */
   patch(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(new Request(mergeOptions(
-        this._defaultOptions.merge(new RequestOptions({body: body})), options, RequestMethod.Patch,
-        url)));
+      this._defaultOptions.merge(new RequestOptions({ body: body })), options, RequestMethod.Patch,
+      url)));
   }
 
   /**
@@ -175,7 +175,7 @@ export class Http {
    */
   head(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(
-        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Head, url)));
+      new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Head, url)));
   }
 
   /**
@@ -183,13 +183,13 @@ export class Http {
    */
   options(url: string, options?: RequestOptionsArgs): Observable<Response> {
     return this.request(
-        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Options, url)));
+      new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Options, url)));
   }
 }
 
 
 /**
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [http](/api/common/http), [HttpClient guide](/guide/http)
  * @publicApi
  */
 @Injectable()
@@ -212,11 +212,11 @@ export class Jsonp extends Http {
    * future security issues (e.g. content sniffing).  For more detail, see the
    * [Security Guide](http://g.co/ng/security).
    */
-  request(url: string|Request, options?: RequestOptionsArgs): Observable<Response> {
+  request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
     let responseObservable: any;
     if (typeof url === 'string') {
       url =
-          new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, <string>url));
+        new Request(mergeOptions(this._defaultOptions, options, RequestMethod.Get, <string>url));
     }
     if (url instanceof Request) {
       if (url.method !== RequestMethod.Get) {

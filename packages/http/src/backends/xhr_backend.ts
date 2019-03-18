@@ -6,17 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
-import {ɵgetDOM as getDOM} from '@angular/platform-browser';
-import {Observable, Observer} from 'rxjs';
-import {ResponseOptions} from '../base_response_options';
-import {ContentType, ReadyState, RequestMethod, ResponseContentType, ResponseType} from '../enums';
-import {Headers} from '../headers';
-import {getResponseURL, isSuccess} from '../http_utils';
-import {Connection, ConnectionBackend, XSRFStrategy} from '../interfaces';
-import {Request} from '../static_request';
-import {Response} from '../static_response';
-import {BrowserXhr} from './browser_xhr';
+import { Injectable } from '@angular/core';
+import { ɵgetDOM as getDOM } from '@angular/platform-browser';
+import { Observable, Observer } from 'rxjs';
+import { ResponseOptions } from '../base_response_options';
+import { ContentType, ReadyState, RequestMethod, ResponseContentType, ResponseType } from '../enums';
+import { Headers } from '../headers';
+import { getResponseURL, isSuccess } from '../http_utils';
+import { Connection, ConnectionBackend, XSRFStrategy } from '../interfaces';
+import { Request } from '../static_request';
+import { Response } from '../static_response';
+import { BrowserXhr } from './browser_xhr';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
@@ -80,7 +80,7 @@ export class XHRConnection implements Connection {
         const url = getResponseURL(_xhr) || req.url;
         const statusText: string = _xhr.statusText || 'OK';
 
-        let responseOptions = new ResponseOptions({body, status, headers, statusText, url});
+        let responseOptions = new ResponseOptions({ body, status, headers, statusText, url });
         if (baseResponseOptions != null) {
           responseOptions = baseResponseOptions.merge(responseOptions);
         }
@@ -116,7 +116,7 @@ export class XHRConnection implements Connection {
       if (!req.headers.has('Accept')) {
         req.headers.append('Accept', 'application/json, text/plain, */*');
       }
-      req.headers.forEach((values, name) => _xhr.setRequestHeader(name !, values.join(',')));
+      req.headers.forEach((values, name) => _xhr.setRequestHeader(name!, values.join(',')));
 
       // Select the correct buffer type to store the response
       if (req.responseType != null && _xhr.responseType != null) {
@@ -194,7 +194,7 @@ export class XHRConnection implements Connection {
  */
 export class CookieXSRFStrategy implements XSRFStrategy {
   constructor(
-      private _cookieName: string = 'XSRF-TOKEN', private _headerName: string = 'X-XSRF-TOKEN') {}
+    private _cookieName: string = 'XSRF-TOKEN', private _headerName: string = 'X-XSRF-TOKEN') { }
 
   configureRequest(req: Request): void {
     const xsrfToken = getDOM().getCookie(this._cookieName);
@@ -229,14 +229,14 @@ export class CookieXSRFStrategy implements XSRFStrategy {
  *   }
  * }
  * ```
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpClientXsrfModule](/api/common/http/HttpClientXsrfModule#description), [HttpClient guide](/guide/http)
  * @publicApi
  */
 @Injectable()
 export class XHRBackend implements ConnectionBackend {
   constructor(
-      private _browserXHR: BrowserXhr, private _baseResponseOptions: ResponseOptions,
-      private _xsrfStrategy: XSRFStrategy) {}
+    private _browserXHR: BrowserXhr, private _baseResponseOptions: ResponseOptions,
+    private _xsrfStrategy: XSRFStrategy) { }
 
   createConnection(request: Request): XHRConnection {
     this._xsrfStrategy.configureRequest(request);

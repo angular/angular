@@ -12,16 +12,16 @@
  * The http module provides services to perform http requests. To get started, see the {@link Http}
  * class.
  */
-import {NgModule} from '@angular/core';
+import { NgModule } from '@angular/core';
 
-import {BrowserJsonp} from './backends/browser_jsonp';
-import {BrowserXhr} from './backends/browser_xhr';
-import {JSONPBackend} from './backends/jsonp_backend';
-import {CookieXSRFStrategy, XHRBackend} from './backends/xhr_backend';
-import {BaseRequestOptions, RequestOptions} from './base_request_options';
-import {BaseResponseOptions, ResponseOptions} from './base_response_options';
-import {Http, Jsonp} from './http';
-import {XSRFStrategy} from './interfaces';
+import { BrowserJsonp } from './backends/browser_jsonp';
+import { BrowserXhr } from './backends/browser_xhr';
+import { JSONPBackend } from './backends/jsonp_backend';
+import { CookieXSRFStrategy, XHRBackend } from './backends/xhr_backend';
+import { BaseRequestOptions, RequestOptions } from './base_request_options';
+import { BaseResponseOptions, ResponseOptions } from './base_response_options';
+import { Http, Jsonp } from './http';
+import { XSRFStrategy } from './interfaces';
 
 
 export function _createDefaultCookieXSRFStrategy() {
@@ -47,12 +47,12 @@ export function jsonpFactory(jsonpBackend: JSONPBackend, requestOptions: Request
   providers: [
     // TODO(pascal): use factory type annotations once supported in DI
     // issue: https://github.com/angular/angular/issues/3183
-    {provide: Http, useFactory: httpFactory, deps: [XHRBackend, RequestOptions]},
+    { provide: Http, useFactory: httpFactory, deps: [XHRBackend, RequestOptions] },
     BrowserXhr,
-    {provide: RequestOptions, useClass: BaseRequestOptions},
-    {provide: ResponseOptions, useClass: BaseResponseOptions},
+    { provide: RequestOptions, useClass: BaseRequestOptions },
+    { provide: ResponseOptions, useClass: BaseResponseOptions },
     XHRBackend,
-    {provide: XSRFStrategy, useFactory: _createDefaultCookieXSRFStrategy},
+    { provide: XSRFStrategy, useFactory: _createDefaultCookieXSRFStrategy },
   ],
 })
 export class HttpModule {
@@ -61,17 +61,22 @@ export class HttpModule {
 /**
  * The module that includes jsonp's providers
  *
+<<<<<<< HEAD
  * @deprecated see https://angular.io/api/common/http/HttpClient#jsonp
+=======
+ * @deprecated see [HttpClientModule](/api/common/http/HttpClientModule), [HttpClientJsonpModule(/api/common/http/HttpClientJsonpModule),
+ * [HttpClient guide](/guide/http)
+>>>>>>> docs(http): add cross-reference to apis is common/http package
  * @publicApi
  */
 @NgModule({
   providers: [
     // TODO(pascal): use factory type annotations once supported in DI
     // issue: https://github.com/angular/angular/issues/3183
-    {provide: Jsonp, useFactory: jsonpFactory, deps: [JSONPBackend, RequestOptions]},
+    { provide: Jsonp, useFactory: jsonpFactory, deps: [JSONPBackend, RequestOptions] },
     BrowserJsonp,
-    {provide: RequestOptions, useClass: BaseRequestOptions},
-    {provide: ResponseOptions, useClass: BaseResponseOptions},
+    { provide: RequestOptions, useClass: BaseRequestOptions },
+    { provide: ResponseOptions, useClass: BaseResponseOptions },
     JSONPBackend,
   ],
 })

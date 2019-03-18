@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 
-import {RequestMethod, ResponseContentType} from './enums';
-import {Headers} from './headers';
-import {normalizeMethodName} from './http_utils';
-import {RequestOptionsArgs} from './interfaces';
-import {URLSearchParams} from './url_search_params';
+import { RequestMethod, ResponseContentType } from './enums';
+import { Headers } from './headers';
+import { normalizeMethodName } from './http_utils';
+import { RequestOptionsArgs } from './interfaces';
+import { URLSearchParams } from './url_search_params';
 
 
 /**
@@ -45,11 +45,11 @@ export class RequestOptions {
    * Http method with which to execute a {@link Request}.
    * Acceptable methods are defined in the {@link RequestMethod} enum.
    */
-  method: RequestMethod|string|null;
+  method: RequestMethod | string | null;
   /**
    * {@link Headers} to be attached to a {@link Request}.
    */
-  headers: Headers|null;
+  headers: Headers | null;
   /**
    * Body to be used when creating a {@link Request}.
    */
@@ -57,7 +57,7 @@ export class RequestOptions {
   /**
    * Url with which to perform a {@link Request}.
    */
-  url: string|null;
+  url: string | null;
   /**
    * Search parameters to be included in a {@link Request}.
    */
@@ -73,15 +73,15 @@ export class RequestOptions {
   /**
    * Enable use credentials for a {@link Request}.
    */
-  withCredentials: boolean|null;
+  withCredentials: boolean | null;
   /*
    * Select a buffer to store the response, such as ArrayBuffer, Blob, Json (or Document)
    */
-  responseType: ResponseContentType|null;
+  responseType: ResponseContentType | null;
 
   // TODO(Dzmitry): remove search when this.search is removed
   constructor(opts: RequestOptionsArgs = {}) {
-    const {method, headers, body, url, search, params, withCredentials, responseType} = opts;
+    const { method, headers, body, url, search, params, withCredentials, responseType } = opts;
     this.method = method != null ? normalizeMethodName(method) : null;
     this.headers = headers != null ? headers : null;
     this.body = body != null ? body : null;
@@ -122,14 +122,14 @@ export class RequestOptions {
       url: options && options.url != null ? options.url : this.url,
       params: options && this._mergeSearchParams(options.params || options.search),
       withCredentials: options && options.withCredentials != null ? options.withCredentials :
-                                                                    this.withCredentials,
+        this.withCredentials,
       responseType: options && options.responseType != null ? options.responseType :
-                                                              this.responseType
+        this.responseType
     });
   }
 
-  private _mergeSearchParams(params?: string|URLSearchParams|{[key: string]: any | any[]}|
-                             null): URLSearchParams {
+  private _mergeSearchParams(params?: string | URLSearchParams | { [key: string]: any | any[] } |
+    null): URLSearchParams {
     if (!params) return this.params;
 
     if (params instanceof URLSearchParams) {
@@ -143,10 +143,10 @@ export class RequestOptions {
     return this._parseParams(params);
   }
 
-  private _parseParams(objParams: {[key: string]: any | any[]} = {}): URLSearchParams {
+  private _parseParams(objParams: { [key: string]: any | any[] } = {}): URLSearchParams {
     const params = new URLSearchParams();
     Object.keys(objParams).forEach((key: string) => {
-      const value: any|any[] = objParams[key];
+      const value: any | any[] = objParams[key];
       if (Array.isArray(value)) {
         value.forEach((item: any) => this._appendParam(key, item, params));
       } else {
@@ -201,10 +201,10 @@ export class RequestOptions {
  * console.log('req.url:', req.url); // https://google.com
  * ```
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpParams](/api/common/http/HttpParams), [HttpClient guide](/guide/http)
  * @publicApi
  */
 @Injectable()
 export class BaseRequestOptions extends RequestOptions {
-  constructor() { super({method: RequestMethod.Get, headers: new Headers()}); }
+  constructor() { super({ method: RequestMethod.Get, headers: new Headers() }); }
 }

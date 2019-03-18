@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ReadyState, RequestMethod, ResponseContentType, ResponseType} from './enums';
-import {Headers} from './headers';
-import {Request} from './static_request';
-import {URLSearchParams} from './url_search_params';
+import { ReadyState, RequestMethod, ResponseContentType, ResponseType } from './enums';
+import { Headers } from './headers';
+import { Request } from './static_request';
+import { URLSearchParams } from './url_search_params';
 
 /**
  * Abstract class from which real backends are derived.
@@ -52,34 +52,34 @@ export abstract class XSRFStrategy { abstract configureRequest(req: Request): vo
  * @publicApi
  */
 export interface RequestOptionsArgs {
-  url?: string|null;
-  method?: string|RequestMethod|null;
+  url?: string | null;
+  method?: string | RequestMethod | null;
   /** @deprecated from 4.0.0. Use params instead. */
-  search?: string|URLSearchParams|{[key: string]: any | any[]}|null;
-  params?: string|URLSearchParams|{[key: string]: any | any[]}|null;
-  headers?: Headers|null;
+  search?: string | URLSearchParams | { [key: string]: any | any[] } | null;
+  params?: string | URLSearchParams | { [key: string]: any | any[] } | null;
+  headers?: Headers | null;
   body?: any;
-  withCredentials?: boolean|null;
-  responseType?: ResponseContentType|null;
+  withCredentials?: boolean | null;
+  responseType?: ResponseContentType | null;
 }
 
 /**
  * Required structure when constructing new Request();
  */
-export interface RequestArgs extends RequestOptionsArgs { url: string|null; }
+export interface RequestArgs extends RequestOptionsArgs { url: string | null; }
 
 /**
  * Interface for options to construct a Response, based on
  * [ResponseInit](https://fetch.spec.whatwg.org/#responseinit) from the Fetch spec.
  *
- * @deprecated see https://angular.io/guide/http
+ * @deprecated see [HttpBackend](/api/common/http/HttpBackend), [HttpClient guide](/guide/http)
  * @publicApi
  */
 export interface ResponseOptionsArgs {
-  body?: string|Object|FormData|ArrayBuffer|Blob|null;
-  status?: number|null;
-  statusText?: string|null;
-  headers?: Headers|null;
-  type?: ResponseType|null;
-  url?: string|null;
+  body?: string | Object | FormData | ArrayBuffer | Blob | null;
+  status?: number | null;
+  statusText?: string | null;
+  headers?: Headers | null;
+  type?: ResponseType | null;
+  url?: string | null;
 }
