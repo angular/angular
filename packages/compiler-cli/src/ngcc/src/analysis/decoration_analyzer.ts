@@ -115,6 +115,7 @@ export class DecorationAnalyzer {
     const analysedFiles = this.program.getSourceFiles()
                               .map(sourceFile => this.analyzeFile(sourceFile))
                               .filter(isDefined);
+    analysedFiles.forEach(analysedFile => this.resolveFile(analysedFile));
     const compiledFiles = analysedFiles.map(analysedFile => this.compileFile(analysedFile));
     compiledFiles.forEach(
         compiledFile => decorationAnalyses.set(compiledFile.sourceFile, compiledFile));
@@ -201,6 +202,16 @@ export class DecorationAnalyzer {
       }
     }
     return compilations;
+  }
+
+  protected resolveFile(analyzedFile: AnalyzedFile): void {
+    analyzedFile.analyzedClasses.forEach(({declaration, matches}) => {
+      matches.forEach(({handler, analysis}) => {
+        if ((handler.resolve !== undefined) && analysis) {
+          handler.resolve(declaration, analysis);
+        }
+      });
+    });
   }
 }
 
