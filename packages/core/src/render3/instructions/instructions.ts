@@ -547,6 +547,13 @@ export function elementContainerStart(
   const tNode =
       createNodeAtIndex(index, TNodeType.ElementContainer, native, tagName, attrs || null);
 
+
+  if (attrs) {
+    // While ng-container doesn't necessarily support styling, we use the style context to identify
+    // and execute directives on the ng-container.
+    setNodeStylingTemplate(tView, tNode, attrs, 0);
+  }
+
   appendChild(native, tNode, lView);
   createDirectivesAndLocals(tView, lView, localRefs);
   attachPatchData(native, lView);
@@ -557,6 +564,25 @@ export function elementContainerStart(
     lView[QUERIES] = currentQueries.clone();
   }
   executeContentQueries(tView, tNode, lView);
+}
+
+/**
+ * Appropriately sets `stylingTemplate` on a TNode
+ *
+ * Does not apply styles to DOM nodes
+ *
+ * @param tNode The node whose `stylingTemplate` to set
+ * @param attrs The attribute array source to set the attributes from
+ * @param attrsStartIndex Optional start index to start processing the `attrs` from
+ */
+function setNodeStylingTemplate(
+    tView: TView, tNode: TNode, attrs: TAttributes, attrsStartIndex: number) {
+  if (tView.firstTemplatePass && !tNode.stylingTemplate) {
+    const stylingAttrsStartIndex = attrsStylingIndexOf(attrs, attrsStartIndex);
+    if (stylingAttrsStartIndex >= 0) {
+      tNode.stylingTemplate = initializeStaticStylingContext(attrs, stylingAttrsStartIndex);
+    }
+  }
 }
 
 function executeContentQueries(tView: TView, tNode: TNode, lView: LView) {
@@ -636,12 +662,7 @@ export function elementStart(
     // value is evaluated). When the template is allocated (when it turns into a context)
     // then the styling template is locked and cannot be further extended (it can only be
     // instantiated into a context per element)
-    if (tView.firstTemplatePass && !tNode.stylingTemplate) {
-      const stylingAttrsStartIndex = attrsStylingIndexOf(attrs, lastAttrIndex);
-      if (stylingAttrsStartIndex >= 0) {
-        tNode.stylingTemplate = initializeStaticStylingContext(attrs, stylingAttrsStartIndex);
-      }
-    }
+    setNodeStylingTemplate(tView, tNode, attrs, lastAttrIndex);
 
     if (tNode.stylingTemplate) {
       // the initial style/class values are rendered immediately after having been
