@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CustomTransformers} from '@angular/compiler-cli';
-import {setAugmentHostForTest} from '@angular/compiler-cli/src/transformers/compiler_host';
+import {CustomTransformers, Program} from '@angular/compiler-cli';
+import {setWrapHostForTest} from '@angular/compiler-cli/src/transformers/compiler_host';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
@@ -37,6 +37,9 @@ function setupFakeCore(support: TestSupport): void {
  * TypeScript code.
  */
 export class NgtscTestEnvironment {
+  private multiCompileHostExt: MultiCompileHostExt|null = null;
+  private oldProgram: Program|null = null;
+
   private constructor(private support: TestSupport, readonly outDir: string) {}
 
   get basePath(): string { return this.support.basePath; }
@@ -50,7 +53,7 @@ export class NgtscTestEnvironment {
     process.chdir(support.basePath);
 
     setupFakeCore(support);
-    setAugmentHostForTest(null);
+    setWrapHostForTest(null);
 
     const env = new NgtscTestEnvironment(support, outDir);
 
@@ -74,7 +77,10 @@ export class NgtscTestEnvironment {
       },
       "angularCompilerOptions": {
         "enableIvy": true
-      }
+      },
+      "exclude": [
+        "built"
+      ]
     }`);
 
     return env;
@@ -98,7 +104,47 @@ export class NgtscTestEnvironment {
     return fs.readFileSync(modulePath, 'utf8');
   }
 
-  write(fileName: string, content: string) { this.support.write(fileName, content); }
+  enableMultipleCompilations(): void {
+    this.multiCompileHostExt = new MultiCompileHostExt();
+    setWrapHostForTest(makeWrapHost(this.multiCompileHostExt));
+  }
+
+  flushWrittenFileTracking(): void {
+    if (this.multiCompileHostExt === null) {
+      throw new Error(`Not tracking written files - call enableMultipleCompilations()`);
+    }
+    this.multiCompileHostExt.flushWrittenFileTracking();
+  }
+
+  getFilesWrittenSinceLastFlush(): Set<string> {
+    if (this.multiCompileHostExt === null) {
+      throw new Error(`Not tracking written files - call enableMultipleCompilations()`);
+    }
+    const outDir = path.join(this.support.basePath, 'built');
+    const writtenFiles = new Set<string>();
+    this.multiCompileHostExt.getFilesWrittenSinceLastFlush().forEach(rawFile => {
+      if (rawFile.startsWith(outDir)) {
+        writtenFiles.add(rawFile.substr(outDir.length));
+      }
+    });
+    return writtenFiles;
+  }
+
+  write(fileName: string, content: string) {
+    if (this.multiCompileHostExt !== null) {
+      const absFilePath = path.resolve(this.support.basePath, fileName);
+      this.multiCompileHostExt.invalidate(absFilePath);
+    }
+    this.support.write(fileName, content);
+  }
+
+  invalidateCachedFile(fileName: string): void {
+    if (this.multiCompileHostExt === null) {
+      throw new Error(`Not caching files - call enableMultipleCompilations()`);
+    }
+    const fullFile = path.join(this.support.basePath, fileName);
+    this.multiCompileHostExt.invalidate(fullFile);
+  }
 
   tsconfig(extraOpts: {[key: string]: string | boolean} = {}, extraRootDirs?: string[]): void {
     const tsconfig: {[key: string]: any} = {
@@ -113,12 +159,7 @@ export class NgtscTestEnvironment {
     this.write('tsconfig.json', JSON.stringify(tsconfig, null, 2));
 
     if (extraOpts['_useHostForImportGeneration'] === true) {
-      const cwd = process.cwd();
-      setAugmentHostForTest({
-        fileNameToModuleName: (importedFilePath: string) => {
-          return 'root' + importedFilePath.substr(cwd.length).replace(/(\.d)?.ts$/, '');
-        }
-      });
+      setWrapHostForTest(makeWrapHost(new FileNameToModuleNameHost()));
     }
   }
 
@@ -127,9 +168,19 @@ export class NgtscTestEnvironment {
    */
   driveMain(customTransformers?: CustomTransformers): void {
     const errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    const exitCode = main(['-p', this.basePath], errorSpy, undefined, customTransformers);
+    let reuseProgram: {program: Program | undefined}|undefined = undefined;
+    if (this.multiCompileHostExt !== null) {
+      reuseProgram = {
+        program: this.oldProgram || undefined,
+      };
+    }
+    const exitCode =
+        main(['-p', this.basePath], errorSpy, undefined, customTransformers, reuseProgram);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
+    if (this.multiCompileHostExt !== null) {
+      this.oldProgram = reuseProgram !.program !;
+    }
   }
 
   /**
@@ -146,4 +197,66 @@ export class NgtscTestEnvironment {
     const program = createProgram({rootNames, host, options});
     return program.listLazyRoutes(entryPoint);
   }
+}
+
+class AugmentedCompilerHost {
+  delegate !: ts.CompilerHost;
+}
+
+class FileNameToModuleNameHost extends AugmentedCompilerHost {
+  // CWD must be initialized lazily as `this.delegate` is not set until later.
+  private cwd: string|null = null;
+  fileNameToModuleName(importedFilePath: string): string {
+    if (this.cwd === null) {
+      this.cwd = this.delegate.getCurrentDirectory();
+    }
+    return 'root' + importedFilePath.substr(this.cwd.length).replace(/(\.d)?.ts$/, '');
+  }
+}
+
+class MultiCompileHostExt extends AugmentedCompilerHost implements Partial<ts.CompilerHost> {
+  private cache = new Map<string, ts.SourceFile>();
+  private writtenFiles = new Set<string>();
+
+  getSourceFile(
+      fileName: string, languageVersion: ts.ScriptTarget, onError?: (message: string) => void,
+      shouldCreateNewSourceFile?: boolean): ts.SourceFile|undefined {
+    if (this.cache.has(fileName)) {
+      return this.cache.get(fileName) !;
+    }
+    const sf =
+        this.delegate.getSourceFile(fileName, languageVersion, onError, shouldCreateNewSourceFile);
+    if (sf !== undefined) {
+      this.cache.set(sf.fileName, sf);
+    }
+    return sf;
+  }
+
+  flushWrittenFileTracking(): void { this.writtenFiles.clear(); }
+
+  writeFile(
+      fileName: string, data: string, writeByteOrderMark: boolean,
+      onError: ((message: string) => void)|undefined,
+      sourceFiles?: ReadonlyArray<ts.SourceFile>): void {
+    this.delegate.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+    this.writtenFiles.add(fileName);
+  }
+
+  getFilesWrittenSinceLastFlush(): Set<string> { return this.writtenFiles; }
+
+  invalidate(fileName: string): void { this.cache.delete(fileName); }
+}
+
+function makeWrapHost(wrapped: AugmentedCompilerHost): (host: ts.CompilerHost) => ts.CompilerHost {
+  return (delegate) => {
+    wrapped.delegate = delegate;
+    return new Proxy(delegate, {
+      get: (target: ts.CompilerHost, name: string): any => {
+        if ((wrapped as any)[name] !== undefined) {
+          return (wrapped as any)[name] !.bind(wrapped);
+        }
+        return (target as any)[name];
+      }
+    });
+  };
 }
