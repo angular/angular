@@ -110,6 +110,7 @@ export interface AnalysisOutput<A> {
   diagnostics?: ts.Diagnostic[];
   factorySymbolName?: string;
   typeCheck?: boolean;
+  allowSkipAnalysisAndEmit?: boolean;
 }
 
 /**
