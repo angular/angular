@@ -9,7 +9,7 @@
 //  TODO(alxhub): Unify this file with `util/src/path`.
 
 const TS_DTS_JS_EXTENSION = /(?:\.d)?\.ts$|\.js$/;
-const ABSOLUTE_PATH = /^([a-zA-Z]\:\/|\/)/;
+const ABSOLUTE_PATH = /^([a-zA-Z]:\/|\/)/;
 
 /**
  * Convert Windows-style separators to POSIX separators.
