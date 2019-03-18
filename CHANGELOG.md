@@ -1,3 +1,13 @@
+## 7.3.5 "asphalt-lightning" (2019-03-18)
+
+
+### Bug Fixes
+
+* **schematics:** do not run migrations multiple times ([#15424](https://github.com/angular/material2/issues/15424)) ([7b77740](https://github.com/angular/material2/commit/7b77740))
+* **stepper:** avoid breaking change in stepControl type ([#15464](https://github.com/angular/material2/issues/15464)) ([f02ebe1](https://github.com/angular/material2/commit/f02ebe1)), closes [#15134](https://github.com/angular/material2/issues/15134) [#15462](https://github.com/angular/material2/issues/15462)
+
+
+
 ## 7.3.4 "tapioca-turtle" (2019-03-11)
 
 
