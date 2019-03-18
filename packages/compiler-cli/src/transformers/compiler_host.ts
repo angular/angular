@@ -21,19 +21,18 @@ const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-|\.)+|(@(\w|-|\.)+\/(\w|-
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 const CSS_PREPROCESSOR_EXT = /(\.scss|\.less|\.styl)$/;
 
-let augmentHostForTest: {[name: string]: Function}|null = null;
+let wrapHostForTest: ((host: ts.CompilerHost) => ts.CompilerHost)|null = null;
 
-export function setAugmentHostForTest(augmentation: {[name: string]: Function} | null): void {
-  augmentHostForTest = augmentation;
+export function setWrapHostForTest(wrapFn: ((host: ts.CompilerHost) => ts.CompilerHost) | null):
+    void {
+  wrapHostForTest = wrapFn;
 }
 
 export function createCompilerHost(
     {options, tsHost = ts.createCompilerHost(options, true)}:
         {options: CompilerOptions, tsHost?: ts.CompilerHost}): CompilerHost {
-  if (augmentHostForTest !== null) {
-    for (const name of Object.keys(augmentHostForTest)) {
-      (tsHost as any)[name] = augmentHostForTest[name];
-    }
+  if (wrapHostForTest !== null) {
+    tsHost = wrapHostForTest(tsHost);
   }
   return tsHost;
 }
