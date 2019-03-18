@@ -404,13 +404,23 @@ export function transitiveScopesFor<T>(
   });
 
   maybeUnwrapFn(def.imports).forEach(<I>(imported: Type<I>) => {
-    const importedType = imported as Type<I>& {
+    let importedType = imported as Type<I>& {
       // If imported is an @NgModule:
       ngModuleDef?: NgModuleDef<I>;
     };
 
     if (!isNgModule<I>(importedType)) {
-      throw new Error(`Importing ${importedType.name} which does not have an ngModuleDef`);
+      // HACK: In some cases, we are ending up with ModuleWithProviders here instead of an NgModule.
+      // Theoretically, all ModuleWithProviders instances should have been flattened into NgModules
+      // by now. The fact that this isn't happening is a bug. We will need to fix it properly during
+      // the larger re-work of TestBed compilation. For now, we will just unwrap ModuleWithProviders
+      // if we see them here.
+      importedType = expandModuleWithProviders(importedType);
+
+      // If it's still not an NgModule, throw.
+      if (!isNgModule<I>(importedType)) {
+        throw new Error(`Importing ${importedType.name} which does not have an ngModuleDef`);
+      }
     }
 
     if (processNgModuleFn) {
