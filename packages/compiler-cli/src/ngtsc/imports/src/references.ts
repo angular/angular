@@ -49,6 +49,14 @@ export class Reference<T extends ts.Node = ts.Node> {
 
   private identifiers: ts.Identifier[] = [];
 
+  /**
+   * Indicates that the Reference was created synthetically, not as a result of natural value
+   * resolution.
+   *
+   * This is used to avoid misinterpreting the Reference in certain contexts.
+   */
+  synthetic = false;
+
   private _alias: Expression|null = null;
 
   constructor(readonly node: T, bestGuessOwningModule: OwningModule|null = null) {
