@@ -275,7 +275,6 @@ def jasmine_node_test(deps = [], **kwargs):
         # Very common dependencies for tests
         "@npm//chokidar",
         "@npm//domino",
-        "@npm//jasmine-core",
         "@npm//mock-fs",
         "@npm//reflect-metadata",
         "@npm//source-map-support",
@@ -286,7 +285,6 @@ def jasmine_node_test(deps = [], **kwargs):
         deps = deps,
         # Pass-thru --define=compile=foo as an environment variable
         configuration_env_vars = ["compile"],
-        jasmine = "@npm//jasmine",
         **kwargs
     )
 
