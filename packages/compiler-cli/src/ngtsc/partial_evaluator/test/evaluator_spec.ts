@@ -12,7 +12,7 @@ import {Reference} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {DynamicValue} from '../src/dynamic';
-import {PartialEvaluator} from '../src/interface';
+import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
 import {EnumValue, ResolvedValue} from '../src/result';
 
 function makeSimpleProgram(contents: string): ts.Program {
@@ -41,11 +41,12 @@ function makeExpression(
 }
 
 function evaluate<T extends ResolvedValue>(
-    code: string, expr: string, supportingFiles: {name: string, contents: string}[] = []): T {
+    code: string, expr: string, supportingFiles: {name: string, contents: string}[] = [],
+    foreignFunctionResolver?: ForeignFunctionResolver): T {
   const {expression, checker, program, options, host} = makeExpression(code, expr, supportingFiles);
   const reflectionHost = new TypeScriptReflectionHost(checker);
   const evaluator = new PartialEvaluator(reflectionHost, checker);
-  return evaluator.evaluate(expression) as T;
+  return evaluator.evaluate(expression, foreignFunctionResolver) as T;
 }
 
 describe('ngtsc metadata', () => {
@@ -313,8 +314,34 @@ describe('ngtsc metadata', () => {
         evaluate(`enum Test { VALUE = 'test', } const value = \`a.\${Test.VALUE}.b\`;`, 'value');
     expect(value).toBe('a.test.b');
   });
+
+  it('should not attach identifiers to FFR-resolved values', () => {
+    const value = evaluate(
+        `
+    declare function foo(arg: any): any;
+    class Target {}
+
+    const indir = foo(Target);
+    const value = indir;
+  `,
+        'value', [], firstArgFfr);
+    if (!(value instanceof Reference)) {
+      return fail('Expected value to be a Reference');
+    }
+    const id = value.getIdentityIn(value.node.getSourceFile());
+    if (id === null) {
+      return fail('Expected value to have an identity');
+    }
+    expect(id.text).toEqual('Target');
+  });
 });
 
 function owningModuleOf(ref: Reference): string|null {
   return ref.bestGuessOwningModule !== null ? ref.bestGuessOwningModule.specifier : null;
+}
+
+function firstArgFfr(
+    node: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
+    args: ReadonlyArray<ts.Expression>): ts.Expression {
+  return args[0];
 }
