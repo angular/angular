@@ -560,6 +560,16 @@ jobs:
     resource_class: xlarge
     docker:
       - image: *browsers_docker_image
+    # The Material unit tests support splitting the browsers across multiple CircleCI
+    # instances. Since by default this job launches two browsers, we run each browser
+    # in its own container instance.
+    # https://github.com/angular/material2/blob/master/test/karma.conf.js#L109-L113
+    parallelism: 2
+    environment:
+      # The Material unit tests also support launching the same browser multiple times by
+      # sharding individual specs across the defined multiple instances.
+      # See: https://github.com/angular/material2/blob/master/test/karma.conf.js#L118
+      KARMA_PARALLEL_BROWSERS: 3
     steps:
       - *attach_workspace
       - *init_environment
