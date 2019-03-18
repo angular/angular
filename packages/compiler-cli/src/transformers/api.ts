@@ -205,6 +205,17 @@ export interface CompilerOptions extends ts.CompilerOptions {
   /** @internal */
   collectAllErrors?: boolean;
 
+  /** An option to enable ngtsc's internal performance tracing.
+   *
+   * This should be a path to a JSON file where trace information will be written. An optional 'ts:'
+   * prefix will cause the trace to be written via the TS host instead of directly to the filesystem
+   * (not all hosts support this mode of operation).
+   *
+   * This is currently not exposed to users as the trace format is still unstable.
+   *
+   * @internal */
+  tracePerformance?: string;
+
   /**
    * Whether NGC should generate re-exports for external symbols which are referenced
    * in Angular metadata (e.g. @Component, @Inject, @ViewChild). This can be enabled in

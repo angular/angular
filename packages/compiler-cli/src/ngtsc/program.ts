@@ -20,6 +20,7 @@ import {FlatIndexGenerator, ReferenceGraph, checkForPrivateExports, findFlatInde
 import {AbsoluteModuleStrategy, AliasGenerator, AliasStrategy, DefaultImportTracker, FileToModuleHost, FileToModuleStrategy, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, R3SymbolsImportRewriter, Reference, ReferenceEmitter} from './imports';
 import {PartialEvaluator} from './partial_evaluator';
 import {AbsoluteFsPath, LogicalFileSystem} from './path';
+import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
 import {TypeScriptReflectionHost} from './reflection';
 import {HostResourceLoader} from './resource_loader';
 import {NgModuleRouteAnalyzer, entryPointKeyFor} from './routing';
@@ -57,10 +58,17 @@ export class NgtscProgram implements api.Program {
   private refEmitter: ReferenceEmitter|null = null;
   private fileToModuleHost: FileToModuleHost|null = null;
   private defaultImportTracker: DefaultImportTracker;
+  private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER;
+  private perfTracker: PerfTracker|null = null;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
       host: api.CompilerHost, oldProgram?: api.Program) {
+    if (shouldEnablePerfTracing(options)) {
+      this.perfTracker = PerfTracker.zeroedToNow();
+      this.perfRecorder = this.perfTracker;
+    }
+
     this.rootDirs = getRootDirs(host, options);
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
     this.resourceManager = new HostResourceLoader(host, options);
@@ -187,10 +195,23 @@ export class NgtscProgram implements api.Program {
     if (this.compilation === undefined) {
       this.compilation = this.makeCompilation();
     }
+    const analyzeSpan = this.perfRecorder.start('analyze');
     await Promise.all(this.tsProgram.getSourceFiles()
                           .filter(file => !file.fileName.endsWith('.d.ts'))
-                          .map(file => this.compilation !.analyzeAsync(file))
+                          .map(file => {
+
+                            const analyzeFileSpan = this.perfRecorder.start('analyzeFile', file);
+                            let analysisPromise = this.compilation !.analyzeAsync(file);
+                            if (analysisPromise === undefined) {
+                              this.perfRecorder.stop(analyzeFileSpan);
+                            } else if (this.perfRecorder.enabled) {
+                              analysisPromise = analysisPromise.then(
+                                  () => this.perfRecorder.stop(analyzeFileSpan));
+                            }
+                            return analysisPromise;
+                          })
                           .filter((result): result is Promise<void> => result !== undefined));
+    this.perfRecorder.stop(analyzeSpan);
     this.compilation.resolve();
   }
 
@@ -245,10 +266,16 @@ export class NgtscProgram implements api.Program {
 
   private ensureAnalyzed(): IvyCompilation {
     if (this.compilation === undefined) {
+      const analyzeSpan = this.perfRecorder.start('analyze');
       this.compilation = this.makeCompilation();
       this.tsProgram.getSourceFiles()
           .filter(file => !file.fileName.endsWith('.d.ts'))
-          .forEach(file => this.compilation !.analyzeSync(file));
+          .forEach(file => {
+            const analyzeFileSpan = this.perfRecorder.start('analyzeFile', file);
+            this.compilation !.analyzeSync(file);
+            this.perfRecorder.stop(analyzeFileSpan);
+          });
+      this.perfRecorder.stop(analyzeSpan);
       this.compilation.resolve();
     }
     return this.compilation;
@@ -298,12 +325,14 @@ export class NgtscProgram implements api.Program {
       beforeTransforms.push(...customTransforms.beforeTs);
     }
 
+    const emitSpan = this.perfRecorder.start('emit');
     const emitResults: ts.EmitResult[] = [];
     for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
       if (targetSourceFile.isDeclarationFile) {
         continue;
       }
 
+      const fileEmitSpan = this.perfRecorder.start('emitFile', targetSourceFile);
       emitResults.push(emitCallback({
         targetSourceFile,
         program: this.tsProgram,
@@ -316,6 +345,12 @@ export class NgtscProgram implements api.Program {
           afterDeclarations: afterDeclarationsTransforms,
         },
       }));
+      this.perfRecorder.stop(fileEmitSpan);
+    }
+    this.perfRecorder.stop(emitSpan);
+
+    if (this.perfTracker !== null && this.options.tracePerformance !== undefined) {
+      this.perfTracker.serializeToFile(this.options.tracePerformance, this.host);
     }
 
     // Run the emit, including a custom transformer that will downlevel the Ivy decorators in code.
@@ -405,7 +440,8 @@ export class NgtscProgram implements api.Program {
     ];
 
     return new IvyCompilation(
-        handlers, checker, this.reflector, this.importRewriter, this.sourceToFactorySymbols);
+        handlers, checker, this.reflector, this.importRewriter, this.perfRecorder,
+        this.sourceToFactorySymbols);
   }
 
   private get reflector(): TypeScriptReflectionHost {
@@ -455,6 +491,7 @@ function mergeEmitResults(emitResults: ts.EmitResult[]): ts.EmitResult {
     emitSkipped = emitSkipped || er.emitSkipped;
     emittedFiles.push(...(er.emittedFiles || []));
   }
+
   return {diagnostics, emitSkipped, emittedFiles};
 }
 
@@ -518,4 +555,8 @@ export class ReferenceGraphAdapter implements ReferencesRegistry {
       }
     }
   }
+}
+
+function shouldEnablePerfTracing(options: api.CompilerOptions): boolean {
+  return options.tracePerformance !== undefined;
 }
