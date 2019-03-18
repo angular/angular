@@ -15,18 +15,32 @@ import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registr
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {makeTestBundleProgram} from '../helpers/utils';
 
-const TEST_PROGRAM = {
-  name: 'test.js',
-  contents: `
-  import {Component, Injectable} from '@angular/core';
+const TEST_PROGRAM = [
+  {
+    name: 'test.js',
+    contents: `
+      import {Component, Directive, Injectable} from '@angular/core';
 
-  export class MyComponent {}
-  MyComponent.decorators = [{type: Component}];
+      export class MyComponent {}
+      MyComponent.decorators = [{type: Component}];
 
-  export class MyService {}
-  MyService.decorators = [{type: Injectable}];
-  `
-};
+      export class MyDirective {}
+      MyDirective.decorators = [{type: Directive}];
+
+      export class MyService {}
+      MyService.decorators = [{type: Injectable}];
+    `,
+  },
+  {
+    name: 'other.js',
+    contents: `
+      import {Component} from '@angular/core';
+
+      export class MyOtherComponent {}
+      MyOtherComponent.decorators = [{type: Component}];
+    `,
+  },
+];
 
 const INTERNAL_COMPONENT_PROGRAM = [
   {
@@ -62,13 +76,13 @@ function createTestHandler() {
     'analyze',
     'compile',
   ]);
-  // Only detect the Component decorator
+  // Only detect the Component and Directive decorators
   handler.detect.and.callFake(
       (node: ts.Declaration, decorators: Decorator[]): DetectResult<any>| undefined => {
         if (!decorators) {
           return undefined;
         }
-        const metadata = decorators.find(d => d.name === 'Component');
+        const metadata = decorators.find(d => d.name === 'Component' || d.name === 'Directive');
         if (metadata === undefined) {
           return undefined;
         } else {
@@ -78,11 +92,13 @@ function createTestHandler() {
           };
         }
       });
-  // The "test" analysis is just the name of the decorator being analyzed
-  handler.analyze.and.callFake(
-      ((decl: ts.Declaration, dec: Decorator) => ({analysis: dec.name, diagnostics: undefined})));
+  // The "test" analysis is an object with the name of the decorator being analyzed
+  handler.analyze.and.callFake((decl: ts.Declaration, dec: Decorator) => {
+    expect(handler.compile).not.toHaveBeenCalled();
+    return {analysis: {decoratorName: dec.name}, diagnostics: undefined};
+  });
   // The "test" compilation result is just the name of the decorator being compiled
-  handler.compile.and.callFake(((decl: ts.Declaration, analysis: any) => ({analysis})));
+  handler.compile.and.callFake((decl: ts.Declaration, analysis: any) => ({analysis}));
   return handler;
 }
 
@@ -108,35 +124,53 @@ describe('DecorationAnalyzer', () => {
     };
 
     describe('basic usage', () => {
-      beforeEach(() => setUpAndAnalyzeProgram([TEST_PROGRAM]));
+      beforeEach(() => setUpAndAnalyzeProgram(TEST_PROGRAM));
 
       it('should return an object containing a reference to the original source file', () => {
-        const file = program.getSourceFile(TEST_PROGRAM.name) !;
-        expect(result.get(file) !.sourceFile).toBe(file);
+        TEST_PROGRAM.forEach(({name}) => {
+          const file = program.getSourceFile(name) !;
+          expect(result.get(file) !.sourceFile).toBe(file);
+        });
       });
 
       it('should call detect on the decorator handlers with each class from the parsed file',
          () => {
-           expect(testHandler.detect).toHaveBeenCalledTimes(2);
-           expect(testHandler.detect.calls.allArgs()[0][1]).toEqual([jasmine.objectContaining(
-               {name: 'Component'})]);
-           expect(testHandler.detect.calls.allArgs()[1][1]).toEqual([jasmine.objectContaining(
-               {name: 'Injectable'})]);
+           expect(testHandler.detect).toHaveBeenCalledTimes(4);
+           expect(testHandler.detect.calls.allArgs().map(args => args[1][0])).toEqual([
+             jasmine.objectContaining({name: 'Component'}),
+             jasmine.objectContaining({name: 'Directive'}),
+             jasmine.objectContaining({name: 'Injectable'}),
+             jasmine.objectContaining({name: 'Component'}),
+           ]);
          });
 
       it('should return an object containing the classes that were analyzed', () => {
-        const file = program.getSourceFile(TEST_PROGRAM.name) !;
-        const compiledFile = result.get(file) !;
-        expect(compiledFile.compiledClasses.length).toEqual(1);
-        expect(compiledFile.compiledClasses[0].name).toEqual('MyComponent');
+        const file1 = program.getSourceFile(TEST_PROGRAM[0].name) !;
+        const compiledFile1 = result.get(file1) !;
+        expect(compiledFile1.compiledClasses.length).toEqual(2);
+        expect(compiledFile1.compiledClasses[0].name).toEqual('MyComponent');
+        expect(compiledFile1.compiledClasses[1].name).toEqual('MyDirective');
+
+        const file2 = program.getSourceFile(TEST_PROGRAM[1].name) !;
+        const compiledFile2 = result.get(file2) !;
+        expect(compiledFile2.compiledClasses.length).toEqual(1);
+        expect(compiledFile2.compiledClasses[0].name).toEqual('MyOtherComponent');
       });
 
       it('should analyze and compile the classes that are detected', () => {
-        expect(testHandler.analyze).toHaveBeenCalledTimes(1);
-        expect(testHandler.analyze.calls.allArgs()[0][1].name).toEqual('Component');
+        expect(testHandler.analyze).toHaveBeenCalledTimes(3);
+        expect(testHandler.analyze.calls.allArgs().map(args => args[1])).toEqual([
+          jasmine.objectContaining({name: 'Component'}),
+          jasmine.objectContaining({name: 'Directive'}),
+          jasmine.objectContaining({name: 'Component'}),
+        ]);
 
-        expect(testHandler.compile).toHaveBeenCalledTimes(1);
-        expect(testHandler.compile.calls.allArgs()[0][1]).toEqual('Component');
+        expect(testHandler.compile).toHaveBeenCalledTimes(3);
+        expect(testHandler.compile.calls.allArgs().map(args => args[1])).toEqual([
+          {decoratorName: 'Component'},
+          {decoratorName: 'Directive'},
+          {decoratorName: 'Component'},
+        ]);
       });
     });
 
