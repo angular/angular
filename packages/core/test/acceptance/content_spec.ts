@@ -166,5 +166,63 @@ describe('projection', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText('inline()ng-template(onetwothree)');
     });
+
+    describe('on containers', () => {
+      it('should work when matching attributes', () => {
+        let xDirectives = 0;
+        @Component({selector: 'selector-proj', template: '<ng-content select="[x]"></ng-content>'})
+        class SelectedNgContentComp {
+        }
+
+        @Directive({selector: '[x]'})
+        class XDirective {
+          constructor() { xDirectives++; }
+        }
+
+        @Component({
+          selector: 'main-selector',
+          template:
+              '<selector-proj><ng-container x="true">Hello world!</ng-container></selector-proj>'
+        })
+        class SelectorMainComp {
+        }
+
+        TestBed.configureTestingModule(
+            {declarations: [XDirective, SelectedNgContentComp, SelectorMainComp]});
+        const fixture = TestBed.createComponent<SelectorMainComp>(SelectorMainComp);
+
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('Hello world!');
+        expect(xDirectives).toEqual(1);
+      });
+
+      it('should work when matching classes', () => {
+        let xDirectives = 0;
+        @Component({selector: 'selector-proj', template: '<ng-content select=".x"></ng-content>'})
+        class SelectedNgContentComp {
+        }
+
+        @Directive({selector: '.x'})
+        class XDirective {
+          constructor() { xDirectives++; }
+        }
+
+        @Component({
+          selector: 'main-selector',
+          template:
+              '<selector-proj><ng-container class="x">Hello world!</ng-container></selector-proj>'
+        })
+        class SelectorMainComp {
+        }
+
+        TestBed.configureTestingModule(
+            {declarations: [XDirective, SelectedNgContentComp, SelectorMainComp]});
+        const fixture = TestBed.createComponent<SelectorMainComp>(SelectorMainComp);
+
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('Hello world!');
+        expect(xDirectives).toEqual(1);
+      });
+    });
   });
 });
