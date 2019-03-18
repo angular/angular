@@ -157,7 +157,7 @@
     "ts-node": "^3.3.0",
     "tslib": "^1.9.0",
     "tslint": "~5.9.1",
-    "typescript": "~3.3.3333",
+    "typescript": "~3.4.2",
     "uglify-js": "^3.0.15",
     "unist-util-filter": "^0.2.1",
     "unist-util-source": "^1.0.1",

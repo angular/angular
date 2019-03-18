@@ -30,7 +30,7 @@ function testBazel() {
   yarn
   # Force more recent TS version until new Angular CLI projects also use it.
   # --ignore-scripts is necessary because there is a postinstall script that uses ngc.
-  yarn add typescript@3.3.3333 --dev --ignore-scripts
+  yarn add typescript@3.4.2 --dev --ignore-scripts
   installLocalPackages
   yarn webdriver-manager update --gecko=false --standalone=false ${CI_CHROMEDRIVER_VERSION_ARG:---versions.chrome 2.45}
   ng generate component widget --style=css

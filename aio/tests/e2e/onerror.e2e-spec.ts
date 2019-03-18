@@ -190,7 +190,9 @@ createViewNodes@???`);
       // reset the ga queue
       (window as any).ga.q.length = 0;
       // post the error to the handler
-      window.onerror(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
+      if (window.onerror) {
+        window.onerror(arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
+      }
     }, message, url, line, column, error);
     const gaCalls = await page.ga();
     const exceptionCall = gaCalls.find(call => call[0] === 'send' && call[1] === 'exception');
