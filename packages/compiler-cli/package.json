@@ -24,7 +24,7 @@
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
-    "typescript": ">=3.3.3333 <3.4"
+    "typescript": ">=3.4 <3.5"
   },
   "engines": {
     "node": ">=8.0"

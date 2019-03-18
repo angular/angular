@@ -91,7 +91,7 @@ export abstract class Renderer {
     const renderedFiles: FileInfo[] = [];
 
     // Transform the source files.
-    this.bundle.src.program.getSourceFiles().map(sourceFile => {
+    this.bundle.src.program.getSourceFiles().forEach(sourceFile => {
       const compiledFile = decorationAnalyses.get(sourceFile);
       const switchMarkerAnalysis = switchMarkerAnalyses.get(sourceFile);
 
