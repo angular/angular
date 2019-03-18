@@ -480,6 +480,11 @@
   resolved "https://registry.yarnpkg.com/@types/systemjs/-/systemjs-0.19.32.tgz#e9204c4cdbc8e275d645c00e6150e68fc5615a24"
   integrity sha1-6SBMTNvI4nXWRcAOYVDmj8VhWiQ=
 
+"@types/trusted-types@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-1.0.0.tgz#6cac8cd45ee0d73c99a0ce7b930414e690b82fcf"
+  integrity sha512-JS3ovvpdyZK/Yei5Tl9tSyr7yXyS14iZbAxo8/xR97d9JCmW1zf8I4bNmaxGg9Nc2dgRSvA5TL68XU7B3fTjgw==
+
 "@types/yargs@^11.1.1":
   version "11.1.1"
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-11.1.1.tgz#2e724257167fd6b615dbe4e54301e65fe597433f"
