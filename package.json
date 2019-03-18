@@ -36,7 +36,7 @@
     "@angular-devkit/core": "^7.3.2",
     "@angular-devkit/schematics": "^7.3.2",
     "@angular/bazel": "file:./tools/npm/@angular_bazel",
-    "@bazel/jasmine": "0.26.0",
+    "@bazel/jasmine": "0.27.4",
     "@bazel/karma": "0.27.4",
     "@bazel/typescript": "0.27.4",
     "@microsoft/api-extractor": "^7.0.21",

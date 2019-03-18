@@ -21,7 +21,15 @@ import 'reflect-metadata/Reflect';
 // jasmine_node_test under Bazel will check if `jasmineCore.boot(jasmineCore)`
 // has been called and re-use the env if it has.
 // See https://github.com/bazelbuild/rules_nodejs/pull/539
-const jasmineCore: any = require('jasmine-core');
+let jasmineCore: any = null;
+try {
+  // Under Bazel we want to use the jasmine-core version that is
+  // a transive dep of @bazel/typescript. Attempt to require under
+  // its nested node_modules incase it was not hoisted.
+  jasmineCore = require('@bazel/jasmine/node_modules/jasmine-core');
+} catch (_) {
+  jasmineCore = require('jasmine-core');
+}
 jasmineCore.boot(jasmineCore);
 import 'zone.js/dist/jasmine-patch.js';
 
