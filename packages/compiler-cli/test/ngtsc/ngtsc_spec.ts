@@ -792,6 +792,26 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('return new (t || TestPipe)(i0.ɵdirectiveInject(Dep));');
   });
 
+  it('should compile Pipes with generic types', () => {
+    env.tsconfig();
+    env.write('test.ts', `
+        import {Pipe} from '@angular/core';
+
+        @Pipe({
+          name: 'test-pipe',
+        })
+        export class TestPipe<T> {}
+    `);
+
+    env.driveMain();
+
+    const jsContents = env.getContents('test.js');
+    expect(jsContents).toContain('TestPipe.ngPipeDef =');
+    const dtsContents = env.getContents('test.d.ts');
+    expect(dtsContents)
+        .toContain('static ngPipeDef: i0.ɵPipeDefWithMeta<TestPipe<any>, "test-pipe">;');
+  });
+
   it('should include @Pipes in @NgModule scopes', () => {
     env.tsconfig();
     env.write('test.ts', `

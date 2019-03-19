@@ -98,7 +98,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
         meta: {
           name,
           type,
-          pipeName,
+          typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0, pipeName,
           deps: getValidConstructorDependencies(
               clazz, this.reflector, this.defaultImportRecorder, this.isCore),
           pure,
