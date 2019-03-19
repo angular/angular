@@ -673,17 +673,24 @@
     "group": "Collaborator",
     "picture": "cexbrayat.jpg",
     "bio": "Author of `Become a ninja with Angular (2+)` https://books.ninja-squad.com/angular - Angular trainer and @Ninja-Squad co-founder"
-  }, 
+  },
   "CaerusKaru": {
     "name": "Adam Plumer",
     "group": "Collaborator",
     "mentor": "vikerman",
     "picture": "CaerusKaru.jpg"
-  }, 
+  },
   "jbedard": {
     "name": "Jason Bedard",
     "group": "Collaborator",
     "mentor": "kyliau",
     "picture": "jbedard.png"
+  },
+  "bbrennan": {
+    "name": "Bonnie Brennan",
+    "twitter": "bonnster75",
+    "group": "GDE",
+    "picture": "bonnie.jpg",
+    "bio": "Bonnie has been specializing in Angular since 2013. She is the founder of ngHouston Angular Meetup and a regular panelist on Angular Air. She is also the very proud parent component of @thelittlestdev!"
   }
 }
