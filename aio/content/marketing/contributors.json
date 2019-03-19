@@ -673,13 +673,13 @@
     "group": "Collaborator",
     "picture": "cexbrayat.jpg",
     "bio": "Author of `Become a ninja with Angular (2+)` https://books.ninja-squad.com/angular - Angular trainer and @Ninja-Squad co-founder"
-  }, 
+  },
   "CaerusKaru": {
     "name": "Adam Plumer",
     "group": "Collaborator",
     "mentor": "vikerman",
     "picture": "CaerusKaru.jpg"
-  }, 
+  },
   "jbedard": {
     "name": "Jason Bedard",
     "group": "Collaborator",
@@ -739,5 +739,13 @@
     "bio": "Kapunahele is a developer and Angular fan who works on the Angular docs writing guides and developing example apps. She also enjoys Native Hawaiian practices, textile arts, and marveling at little, inconspicuous plants growing in forgotten places outdoors.",
     "group": "Angular",
     "lead": "dennispbrown"
+  },
+  "luixaviles": {
+    "name": "Luis Aviles",
+    "picture": "luixaviles.jpg",
+    "twitter": "luixaviles",
+    "website": "https://luixaviles.com",
+    "bio": "Luis is an enthusiast of Open Source software and communities, as well as being a public speaker, a technology trainer and an author of courses and technical articles. He is the organizer of the Angular Bolivia community and NG Bolivia conference. When he's not coding, Luis is reading about Astronomy or nerding about outer space, photography or even doing Astrophotography.",
+    "group": "GDE"
   }
 }
