@@ -694,5 +694,50 @@
     "website": "https://schwarty.com",
     "bio": "Justin (aka Schwarty) is a Google Developer Expert in Web Technologies and Angular, the host and maintainer of the weekly AngularAir live video broadcast, educator, writer and content creator. He has Angular courses available on LinkedIn Learning and Pluralsight and loves passing on years of full stack development knowledge to help empower others to find their inner awesomeness!",
     "group": "GDE"
+  },
+  "brandonroberts": {
+    "name": "Brandon Roberts",
+    "picture": "brandonroberts.jpg",
+    "twitter": "brandontroberts",
+    "website": "https://brandonroberts.dev",
+    "bio": "Brandon is a developer and technical writer working on guides, tutorials, application development, and infrastructure for the Angular docs. He is also a maintainer of the NgRx project, building reactive libraries for Angular.",
+    "group": "Angular",
+    "lead": "dennispbrown"
+  },
+  "chembu": {
+    "name": "Sreevani Sreejith",
+    "picture": "sreevani.jpg",
+    "bio": "Sreevani is a tech writer with prior programming experience. She writes documentation for the Angular framework team. Outside of work, she likes practicing yoga, honing her skills on classical dance forms, and baking cakes.",
+    "group": "Angular",
+    "lead": "dennispbrown"
+  },
+  "dennispbrown": {
+    "name": "Denny Brown",
+    "picture": "denny.jpg",
+    "bio": "Denny is founder of Expert Support, a professional services firm specializing in technical communication, and leads the Angular technical writing team. His lifelong passion has been to reduce the time and effort required to understand complex technical information. Early on, he was Associate Chairman of the Computer Science Department at Stanford, where he taught introductory courses in programming. He also plays old-timers baseball in local leagues and national tournaments.",
+    "group": "Angular",
+    "lead": "bradlygreen"
+  },
+  "jbogarthyde": {
+    "name": "Judy Bogart",
+    "picture": "judy.png",
+    "group": "Angular",
+    "lead": "dennispbrown"
+  },
+  "jenniferfell": {
+    "name": "Jennifer Fell",
+    "picture": "jennifer.jpg",
+    "website": "http://silverpath.org",
+    "bio": "Jennifer is a technical content strategist, architect, designer, and writer. As lead of the Angular docs team, she's always interested in learning more about how developers learn and use Angular. Her offline persona is a horsewoman in Idaho.",
+    "group": "Angular",
+    "lead": "dennispbrown"
+  },
+  "kapunahelewong": {
+    "name": "Kapunahele Wong",
+    "picture": "kapunahele.jpg",
+    "twitter": "kapunahele",
+    "bio": "Kapunahele is a developer and Angular fan who works on the Angular docs writing guides and developing example apps. She also enjoys Native Hawaiian practices, textile arts, and marveling at little, inconspicuous plants growing in forgotten places outdoors.",
+    "group": "Angular",
+    "lead": "dennispbrown"
   }
 }
