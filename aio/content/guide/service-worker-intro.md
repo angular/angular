@@ -106,4 +106,4 @@ You may also be interested in the following:
 * [Getting Started with service workers](guide/service-worker-getting-started).
 -->
 이제 다음 내용을 확인해 보세요:
-* [서비스 워커 도입하기](guide/service-worker-getting-started)
+* [서비스 워커 추가하기](guide/service-worker-getting-started)
