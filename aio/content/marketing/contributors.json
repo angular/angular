@@ -685,5 +685,14 @@
     "group": "Collaborator",
     "mentor": "kyliau",
     "picture": "jbedard.png"
+  },
+  "jschwarty":
+  {
+    "name": "Justin Schwartzenberger",
+    "picture": "justinschwartzenberger.jpg",
+    "twitter": "schwarty",
+    "website": "https://schwarty.com",
+    "bio": "Justin (aka Schwarty) is a Google Developer Expert in Web Technologies and Angular, the host and maintainer of the weekly AngularAir live video broadcast, educator, writer and content creator. He has Angular courses available on LinkedIn Learning and Pluralsight and loves passing on years of full stack development knowledge to help empower others to find their inner awesomeness!",
+    "group": "GDE"
   }
 }
