@@ -714,7 +714,7 @@
     "name": "Denny Brown",
     "picture": "denny.jpg",
     "group": "Angular",
-    "lead": "dennispbrown"
+    "lead": "bradlygreen"
   },
   "jbogarthyde": {
     "name": "Judy Bogart",
@@ -726,7 +726,7 @@
     "name": "Jennifer Fell",
     "picture": "jennifer.jpg",
     "website": "http://silverpath.org",
-    "bio": "Technical content strategist, architect, project manager, and writer.",
+    "bio": "Jennifer is a technical content strategist, architect, designer, and writer. As lead of the Angular docs team, she's always interested in learning more about how developers learn and use Angular. Her offline persona is a horsewoman in Idaho.",
     "group": "Angular",
     "lead": "dennispbrown"
   },
