@@ -18,7 +18,7 @@ import {Renderer2} from '../render/api';
 import {assertDefined, assertGreaterThan, assertLessThan} from '../util/assert';
 
 import {NodeInjector, getParentInjectorLocation} from './di';
-import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions';
+import {addToViewTree, createEmbeddedViewAndNode, createLContainer, renderEmbeddedTemplate} from './instructions/all';
 import {ACTIVE_INDEX, LContainer, NATIVE, VIEWS} from './interfaces/container';
 import {TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
 import {RComment, RElement, isProceduralRenderer} from './interfaces/renderer';

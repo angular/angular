@@ -11,7 +11,7 @@ import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/brow
 
 import {RendererType2, ViewEncapsulation} from '../../src/core';
 import {defineComponent} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text, tick} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text, tick} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {getAnimationRendererFactory2, getRendererFactory2} from './imported_renderer2';

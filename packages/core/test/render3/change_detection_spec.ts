@@ -13,7 +13,7 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck, RendererType2} from
 import {whenRendered} from '../../src/render3/component';
 import {LifecycleHooksFeature, NgOnChangesFeature, defineComponent, defineDirective, getCurrentView, getRenderedText, templateRefExtractor} from '../../src/render3/index';
 
-import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, reference, text, template, textBinding, tick} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, directiveInject, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, reference, text, template, textBinding, tick} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {RElement, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {FLAGS, LViewFlags} from '../../src/render3/interfaces/view';
