@@ -694,5 +694,48 @@
     "website": "https://schwarty.com",
     "bio": "Justin (aka Schwarty) is a Google Developer Expert in Web Technologies and Angular, the host and maintainer of the weekly AngularAir live video broadcast, educator, writer and content creator. He has Angular courses available on LinkedIn Learning and Pluralsight and loves passing on years of full stack development knowledge to help empower others to find their inner awesomeness!",
     "group": "GDE"
+  },
+  "brandonroberts": {
+    "name": "Brandon Roberts",
+    "picture": "brandonroberts.jpg",
+    "twitter": "brandontroberts",
+    "website": "https://brandonroberts.dev",
+    "bio": "Brandon is a developer and technical writer working on guides, tutorials, application development, and infrastructure for the Angular docs. He is also a maintainer of the NgRx project, building reactive libraries for Angular.",
+    "group": "Angular",
+    "lead": "dennispbrown"
+  },
+  "chembu": {
+    "name": "Sreevani Sreejith",
+    "picture": "sreevani.jpg",
+    "group": "Angular",
+    "lead": "dennispbrown"
+  },
+  "dennispbrown": {
+    "name": "Denny Brown",
+    "picture": "denny.jpg",
+    "group": "Angular",
+    "lead": "dennispbrown"
+  },
+  "jbogarthyde": {
+    "name": "Judy Bogart",
+    "picture": "judy.png",
+    "group": "Angular",
+    "lead": "dennispbrown"
+  },
+  "jenniferfell": {
+    "name": "Jennifer Fell",
+    "picture": "jennifer.jpg",
+    "website": "http://silverpath.org",
+    "bio": "Technical content strategist, architect, project manager, and writer.",
+    "group": "Angular",
+    "lead": "dennispbrown"
+  },
+  "kapunahelewong": {
+    "name": "Kapunahele Wong",
+    "picture": "kapunahele.jpg",
+    "twitter": "kapunahele",
+    "bio": "Developer. Angular. Front end stuff.",
+    "group": "Angular",
+    "lead": "dennispbrown"
   }
 }
