@@ -56,7 +56,7 @@ The following top-level configuration properties are available for each project,
 | `sourceRoot`    | The root folder for this project's source files. |
 | `projectType`   | One of "application" or "library". An application can run independently in a browser, while a library cannot. Both an app and its e2e test app are of type "application".|
 | `prefix`        | A string that Angular prepends to generated selectors. Can be customized to identify an app or feature area. |
-| `schematics`    | An object containing configuration defaults that customize the CLI command behavior for this project. See [Schematics Overview](guide/schematics-overview). |
+| `schematics`    | An object containing configuration defaults that customize the CLI command behavior for this project. See [Schematics Overview](guide/schematics). |
 | `architect`     | An object containing configuration defaults for Architect builder targets for this project. |
 
 ## Project tool configuration options

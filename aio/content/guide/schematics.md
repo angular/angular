@@ -47,7 +47,7 @@ As a library developer, you can create your own collections of custom schematics
 * An *update schematic* can tell the `ng update` command how to update your library's dependencies and adjust for breaking changes when you release a new version.
 
 For more details of what these look like and how to create them, see:
-* [Authoring Schematics](guide/authoring-schematics)
+* [Authoring Schematics](guide/schematics-authoring)
 * [Schematics for Libraries](guide/schematics-for-libraries)
 
 ### Add schematics
