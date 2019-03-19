@@ -7,7 +7,6 @@ set -u -e -E -o pipefail
 
 BASEDIR=$(dirname "$0")
 BASEDIR=`(cd $BASEDIR; pwd)`
-
 PR_NUMBER=0
 PUSH_UPSTREAM=1
 FORCE=0
@@ -109,7 +108,21 @@ SQUASH_PR="git rebase --autosquash --interactive merge_pr_base merge_pr"
 REWRITE_MESSAGE="git filter-branch -f --msg-filter \"$BASEDIR/utils/github_closes.js $PR_NUMBER\" merge_pr_base..merge_pr"
 PUSH_BRANCHES="git push git@github.com:angular/angular.git merge_pr_master:$MASTER_BRANCH merge_pr_patch:$PATCH_BRANCH"
 CHERRY_PICK_PR="git cherry-pick merge_pr_base..merge_pr"
-CHECK_FIXUP_REMAINS="git cherry -v merge_master merge_pr | grep fixup"
+if [[ $MERGE_MASTER == 1 ]]; then
+  CHECK_FIXUP_REMAINS="git cherry -v merge_pr_master merge_pr"
+elif [[ $MERGE_PATCH == 1 ]]; then
+  CHECK_FIXUP_REMAINS="git cherry -v merge_pr_patch merge_pr"
+fi;
+check_cherry_output() {
+  OUTPUT=$( $1 );
+  while read -r line; do
+    COMMIT_MSG=${line:43}
+    if [[ ${COMMIT_MSG:0:6} == "fixup!" ]]; then
+      return 1;
+    fi;
+  done <<< "$OUTPUT";
+  return 0;
+}
 
 # Checks that each PR branch to be merged upstream contains SHAs of commits that significantly changed our CI infrastructure.
 #
@@ -132,6 +145,7 @@ echo "   $FETCH_PR"
 echo "   $BASE_PR"
 echo "   $CHECK_IF_PR_REBASED"
 echo "   $SQUASH_PR"
+echo "   $CHECK_FIXUP_REMAINS"
 echo "   $REWRITE_MESSAGE"
 if [[ $MERGE_MASTER == 1 ]]; then
   echo "   $CHECKOUT_MASTER && $CHERRY_PICK_PR"
@@ -164,10 +178,11 @@ GIT_EDITOR=echo $SQUASH_PR
 
 # Checks if there are fixup commits remaining after merge and throw a friendly error.
 # This would prevent caretakers from accidentally muddying the commit history with a bad squash
-if [[ $($CHECK_FIXUP_REMAINS) ]]; then
+echo ">>> Fixup: check fixup's remains"
+if ! check_cherry_output "$CHECK_FIXUP_REMAINS"; then
   echo ""
   echo ""
-  echo "Failed to merge pull request #${PR_NUMBER} because it has detached fixup commits that can't be seuqashed automatically"
+  echo "Failed to merge pull request #${PR_NUMBER} because it has detached fixup commits that can't be squashed automatically"
   echo ""
   echo "Please fix the PR and try again."
   echo ""
