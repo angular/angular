@@ -16,6 +16,9 @@
     "**/dist/**": true,
     "**/aio/src/generated/**": true,
   },
+  "workbench.colorCustomizations": {
+    "statusBar.background" : "#CB2B38",
+  },
   "search.exclude": {
     "**/node_modules": true,
     "**/bower_components": true,
