@@ -35,7 +35,7 @@ After running this command you will notice that the `angular.json` configuration
   "options": {
     "outputPath": "dist/my-app-server",
     "main": "src/main.server.ts",
-    "tsConfig": "src/tsconfig.server.json"
+    "tsConfig": "tsconfig.server.json"
   }
 },
 "app-shell": {
