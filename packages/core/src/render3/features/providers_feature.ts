@@ -40,12 +40,11 @@ import {DirectiveDef} from '../interfaces/definition';
 export function ProvidersFeature<T>(providers: Provider[], viewProviders: Provider[] = []) {
   return (definition: DirectiveDef<T>) => {
     definition.providersResolver =
-        (def: DirectiveDef<T>, processProvidersFn?: ProcessProvidersFunction,
-         processViewProvidersFn?: ProcessProvidersFunction) => {
+        (def: DirectiveDef<T>, processProvidersFn?: ProcessProvidersFunction) => {
           return providersResolver(
-              def,  //
-              processProvidersFn ? processProvidersFn(providers) : providers,
-              processViewProvidersFn ? processViewProvidersFn(viewProviders) : viewProviders);
+              def,                                                             //
+              processProvidersFn ? processProvidersFn(providers) : providers,  //
+              viewProviders);
         };
   };
 }

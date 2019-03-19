@@ -140,9 +140,8 @@ export interface DirectiveDef<T> extends BaseDef<T> {
 
   /** Function that resolves providers and publishes them into the DI system. */
   providersResolver:
-      (<U extends T>(
-           def: DirectiveDef<U>, processProvidersFn?: ProcessProvidersFunction,
-           processViewProvidersFn?: ProcessProvidersFunction) => void)|null;
+      (<U extends T>(def: DirectiveDef<U>, processProvidersFn?: ProcessProvidersFunction) =>
+           void)|null;
 
   /** The selectors that will be used to match nodes to this directive. */
   readonly selectors: CssSelectorList;
