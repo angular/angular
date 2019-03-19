@@ -822,7 +822,8 @@ export class TestBedRender3 implements Injector, TestBed {
           // if we have template override via `TestBed.overrideTemplateUsingTestingModule` -
           // define Component scope as TestingModule scope, instead of the scope of NgModule
           // where this Component was declared
-          calcTransitiveScopesFor(this._testModuleType) :
+          // TODO: This is only a partial fix. Should be fixed completely with FW-1178 refactor.
+          transitiveScopesFor(this._testModuleType) :
           transitiveScope;
       patchComponentDefWithScope((cmp as any).ngComponentDef, scope);
     });
