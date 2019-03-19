@@ -12,12 +12,6 @@
       "--no-sandbox"
     ]
   },
-  "FirefoxHeadless": {
-    "base": "Firefox",
-    "flags": [
-      "-headless"
-    ]
-  },
   "SAUCELABS_CHROME": {
     "base": "SauceLabs",
     "browserName": "chrome",

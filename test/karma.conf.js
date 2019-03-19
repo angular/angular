@@ -81,10 +81,8 @@ module.exports = config => {
       video: false,
     },
 
-    browserDisconnectTimeout: 180000,
-    browserDisconnectTolerance: 3,
+    browserDisconnectTolerance: 1,
     browserNoActivityTimeout: 300000,
-    captureTimeout: 180000,
 
     browsers: ['ChromeHeadlessLocal'],
     singleRun: false,
@@ -137,6 +135,15 @@ module.exports = config => {
       // Setup the saucelabs reporter so that we report back to Saucelabs once
       // our tests finished.
       config.reporters.push('saucelabs');
+    }
+
+    // If the test platform is not "local", browsers are launched externally and can take
+    // up more time to capture. Also the connection can be flaky and therefore needs a
+    // higher disconnect timeout.
+    if (testPlatform !== 'local') {
+      config.browserDisconnectTimeout = 180000;
+      config.browserDisconnectTolerance = 3;
+      config.captureTimeout = 180000;
     }
 
     const platformBrowsers = platformMap[testPlatform];
