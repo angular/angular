@@ -121,12 +121,7 @@ function getBaseElementHref(): string|null {
 }
 
 // based on urlUtils.js in AngularJS 1
-let urlParsingNode: any;
 function relativePath(url: any): string {
-  if (!urlParsingNode) {
-    urlParsingNode = document.createElement('a');
-  }
-  urlParsingNode.setAttribute('href', url);
-  return (urlParsingNode.pathname.charAt(0) === '/') ? urlParsingNode.pathname :
-                                                       '/' + urlParsingNode.pathname;
+  const urlObj = new URL(url, document.baseURI);
+  return (urlObj.pathname.charAt(0) === '/') ? urlObj.pathname : '/' + urlObj.pathname;
 }
