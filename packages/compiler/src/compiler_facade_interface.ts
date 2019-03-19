@@ -77,6 +77,7 @@ export interface R3DependencyMetadataFacade {
 export interface R3PipeMetadataFacade {
   name: string;
   type: any;
+  typeArgumentCount: number;
   pipeName: string;
   deps: R3DependencyMetadataFacade[]|null;
   pure: boolean;
