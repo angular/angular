@@ -9,6 +9,7 @@
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatSliderModule, MatTabsModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {SliderDemo} from './slider-demo';
 
 @NgModule({
@@ -16,6 +17,7 @@ import {SliderDemo} from './slider-demo';
     FormsModule,
     MatSliderModule,
     MatTabsModule,
+    RouterModule.forChild([{path: '', component: SliderDemo}]),
   ],
   declarations: [SliderDemo],
 })

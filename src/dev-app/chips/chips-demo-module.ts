@@ -18,6 +18,7 @@ import {
   MatIconModule,
   MatToolbarModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {ChipsDemo} from './chips-demo';
 
 @NgModule({
@@ -31,6 +32,7 @@ import {ChipsDemo} from './chips-demo';
     MatFormFieldModule,
     MatIconModule,
     MatToolbarModule,
+    RouterModule.forChild([{path: '', component: ChipsDemo}]),
   ],
   declarations: [ChipsDemo],
 })

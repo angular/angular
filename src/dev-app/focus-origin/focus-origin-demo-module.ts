@@ -8,11 +8,13 @@
 
 import {A11yModule} from '@angular/cdk/a11y';
 import {NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
 import {FocusOriginDemo} from './focus-origin-demo';
 
 @NgModule({
   imports: [
     A11yModule,
+    RouterModule.forChild([{path: '', component: FocusOriginDemo}]),
   ],
   declarations: [FocusOriginDemo],
 })

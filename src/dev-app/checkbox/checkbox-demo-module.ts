@@ -10,6 +10,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatCheckboxModule, MatPseudoCheckboxModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {CheckboxDemo, MatCheckboxDemoNestedChecklist} from './checkbox-demo';
 
 @NgModule({
@@ -18,6 +19,7 @@ import {CheckboxDemo, MatCheckboxDemoNestedChecklist} from './checkbox-demo';
     FormsModule,
     MatCheckboxModule,
     MatPseudoCheckboxModule,
+    RouterModule.forChild([{path: '', component: CheckboxDemo}]),
   ],
   declarations: [CheckboxDemo, MatCheckboxDemoNestedChecklist],
 })

@@ -10,6 +10,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule, MatCardModule, MatGridListModule, MatIconModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {GridListDemo} from './grid-list-demo';
 
 @NgModule({
@@ -20,6 +21,7 @@ import {GridListDemo} from './grid-list-demo';
     MatCardModule,
     MatGridListModule,
     MatIconModule,
+    RouterModule.forChild([{path: '', component: GridListDemo}]),
   ],
   declarations: [GridListDemo],
 })

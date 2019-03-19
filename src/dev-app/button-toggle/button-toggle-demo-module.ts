@@ -10,6 +10,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatButtonToggleModule, MatCheckboxModule, MatIconModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {ButtonToggleDemo} from './button-toggle-demo';
 
 @NgModule({
@@ -19,6 +20,7 @@ import {ButtonToggleDemo} from './button-toggle-demo';
     MatButtonToggleModule,
     MatCheckboxModule,
     MatIconModule,
+    RouterModule.forChild([{path: '', component: ButtonToggleDemo}]),
   ],
   declarations: [ButtonToggleDemo],
 })

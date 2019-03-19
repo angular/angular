@@ -37,15 +37,15 @@
           <button mat-button (click)="rippleOptions.disabled = !rippleOptions.disabled">
             {{rippleOptions.disabled ? 'Enable' : 'Disable'}} ripples
           </button>
-          <button mat-button (click)="root.dir = (root.dir === 'rtl' ? 'ltr' : 'rtl')"
+          <button mat-button (click)="dir.value = (dir.value === 'rtl' ? 'ltr' : 'rtl')"
                   title="Toggle between RTL and LTR">
-            {{root.dir.toUpperCase()}}
+            {{dir.value.toUpperCase()}}
           </button>
         </div>
       </div>
     </mat-toolbar>
 
-    <div #root="dir" dir="ltr" class="demo-content mat-app-background">
+    <div [attr.dir]="dir.value" class="demo-content mat-app-background">
       <ng-content></ng-content>
     </div>
   </main>

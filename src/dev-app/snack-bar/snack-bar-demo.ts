@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Dir} from '@angular/cdk/bidi';
+import {Directionality} from '@angular/cdk/bidi';
 import {Component, TemplateRef, ViewChild} from '@angular/core';
 import {
   MatSnackBar,
@@ -33,8 +33,7 @@ export class SnackBarDemo {
   horizontalPosition: MatSnackBarHorizontalPosition = 'center';
   verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
-  constructor(public snackBar: MatSnackBar, private dir: Dir) {
-  }
+  constructor(public snackBar: MatSnackBar, private dir: Directionality) {}
 
   open() {
     const config = this._createConfig();

@@ -16,6 +16,8 @@ import {
   MatToolbarModule
 } from '@angular/material';
 import {RouterModule} from '@angular/router';
+import {DevApp404} from './dev-app-404';
+import {DevAppHome} from './dev-app-home';
 import {DevAppLayout} from './dev-app-layout';
 
 @NgModule({
@@ -28,8 +30,8 @@ import {DevAppLayout} from './dev-app-layout';
     MatToolbarModule,
     RouterModule,
   ],
-  declarations: [DevAppLayout],
+  declarations: [DevAppLayout, DevAppHome, DevApp404],
   exports: [DevAppLayout],
 })
-export class DevAppLayoutModule {
+export class DevAppModule {
 }

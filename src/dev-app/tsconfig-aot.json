@@ -32,10 +32,10 @@
       "@angular/material-examples": ["../../dist/releases/material-examples"]
     }
   },
-  "files": [
+  "include": [
     "./typings.d.ts",
-    "./dev-app-module.ts",
-    "./main-aot.ts"
+    "./main-aot.ts",
+    "**/*-module.ts"
   ],
   "angularCompilerOptions": {
     "skipTemplateCodegen": false,

@@ -10,6 +10,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatBadgeModule, MatButtonModule, MatIconModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {BadgeDemo} from './badge-demo';
 
 @NgModule({
@@ -19,6 +20,7 @@ import {BadgeDemo} from './badge-demo';
     MatBadgeModule,
     MatButtonModule,
     MatIconModule,
+    RouterModule.forChild([{path: '', component: BadgeDemo}]),
   ],
   declarations: [BadgeDemo],
 })

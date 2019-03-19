@@ -111,7 +111,7 @@
 /src/dev-app/connected-overlay/**                  @jelbourn @crisbeto
 /src/dev-app/dataset/**                            @andrewseguin
 /src/dev-app/datepicker/**                         @mmalerba
-/src/dev-app/dev-app-layout/**                     @mmalerba
+/src/dev-app/dev-app/**                            @mmalerba
 /src/dev-app/dialog/**                             @jelbourn @crisbeto
 /src/dev-app/drag-drop/**                          @crisbeto
 /src/dev-app/drawer/**                             @mmalerba

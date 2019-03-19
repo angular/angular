@@ -20,6 +20,7 @@ import {
   MatListModule,
   MatSelectModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {BottomSheetDemo, ExampleBottomSheet} from './bottom-sheet-demo';
 
 @NgModule({
@@ -35,6 +36,7 @@ import {BottomSheetDemo, ExampleBottomSheet} from './bottom-sheet-demo';
     MatInputModule,
     MatListModule,
     MatSelectModule,
+    RouterModule.forChild([{path: '', component: BottomSheetDemo}]),
   ],
   declarations: [BottomSheetDemo, ExampleBottomSheet],
   entryComponents: [ExampleBottomSheet],

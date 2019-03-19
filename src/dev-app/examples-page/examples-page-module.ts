@@ -7,12 +7,14 @@
  */
 
 import {NgModule} from '@angular/core';
+import {RouterModule} from '@angular/router';
 import {ExampleModule} from '../example/example-module';
 import {ExamplesPage} from './examples-page';
 
 @NgModule({
   imports: [
     ExampleModule,
+    RouterModule.forChild([{path: '', component: ExamplesPage}]),
   ],
   declarations: [ExamplesPage],
 })

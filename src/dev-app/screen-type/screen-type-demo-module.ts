@@ -10,6 +10,7 @@ import {LayoutModule} from '@angular/cdk/layout';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatGridListModule, MatIconModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {ScreenTypeDemo} from './screen-type-demo';
 
 @NgModule({
@@ -18,6 +19,7 @@ import {ScreenTypeDemo} from './screen-type-demo';
     LayoutModule,
     MatGridListModule,
     MatIconModule,
+    RouterModule.forChild([{path: '', component: ScreenTypeDemo}]),
   ],
   declarations: [ScreenTypeDemo],
 })

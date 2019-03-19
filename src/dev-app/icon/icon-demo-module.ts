@@ -8,11 +8,13 @@
 
 import {NgModule} from '@angular/core';
 import {MatIconModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {IconDemo} from './icon-demo';
 
 @NgModule({
   imports: [
     MatIconModule,
+    RouterModule.forChild([{path: '', component: IconDemo}]),
   ],
   declarations: [IconDemo],
 })

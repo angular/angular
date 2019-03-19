@@ -9,10 +9,15 @@
 import {A11yModule} from '@angular/cdk/a11y';
 import {NgModule} from '@angular/core';
 import {MatButtonModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {LiveAnnouncerDemo} from './live-announcer-demo';
 
 @NgModule({
-  imports: [A11yModule, MatButtonModule],
+  imports: [
+    A11yModule,
+    MatButtonModule,
+    RouterModule.forChild([{path: '', component: LiveAnnouncerDemo}]),
+  ],
   declarations: [LiveAnnouncerDemo],
 })
 export class LiveAnnouncerDemoModule {

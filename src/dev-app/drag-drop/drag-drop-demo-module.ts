@@ -11,6 +11,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatFormFieldModule, MatIconModule, MatSelectModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {DragAndDropDemo} from './drag-drop-demo';
 
 @NgModule({
@@ -21,6 +22,7 @@ import {DragAndDropDemo} from './drag-drop-demo';
     MatFormFieldModule,
     MatIconModule,
     MatSelectModule,
+    RouterModule.forChild([{path: '', component: DragAndDropDemo}]),
   ],
   declarations: [DragAndDropDemo],
 })

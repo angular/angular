@@ -9,6 +9,7 @@
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule, MatSlideToggleModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {SlideToggleDemo} from './slide-toggle-demo';
 
 @NgModule({
@@ -16,6 +17,7 @@ import {SlideToggleDemo} from './slide-toggle-demo';
     FormsModule,
     MatButtonModule,
     MatSlideToggleModule,
+    RouterModule.forChild([{path: '', component: SlideToggleDemo}]),
   ],
   declarations: [SlideToggleDemo],
 })

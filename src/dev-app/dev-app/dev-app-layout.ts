@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Directionality} from '@angular/cdk/bidi';
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {Component, ElementRef, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectorRef, Component, ElementRef, Inject, ViewEncapsulation} from '@angular/core';
 import {DevAppRippleOptions} from '../ripple/ripple-options';
+import {DevAppDirectionality} from './dev-app-directionality';
 
 /** Root component for the dev-app demos. */
 @Component({
@@ -70,7 +72,10 @@ export class DevAppLayout {
 
   constructor(
       private _element: ElementRef<HTMLElement>, private _overlayContainer: OverlayContainer,
-      public rippleOptions: DevAppRippleOptions) {}
+      public rippleOptions: DevAppRippleOptions,
+      @Inject(Directionality) public dir: DevAppDirectionality, cdr: ChangeDetectorRef) {
+    dir.change.subscribe(() => cdr.markForCheck());
+  }
 
   toggleFullscreen() {
     // Cast to `any`, because the typings don't include the browser-prefixed methods.

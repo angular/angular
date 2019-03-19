@@ -17,6 +17,7 @@ import {
   MatInputModule,
   MatSelectModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog} from './dialog-demo';
 
 @NgModule({
@@ -29,6 +30,7 @@ import {ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog} from './dial
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    RouterModule.forChild([{path: '', component: DialogDemo}]),
   ],
   declarations: [ContentElementDialog, DialogDemo, IFrameDialog, JazzDialog],
   entryComponents: [ContentElementDialog, IFrameDialog, JazzDialog],

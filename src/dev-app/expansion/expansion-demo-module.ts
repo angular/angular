@@ -19,12 +19,22 @@ import {
   MatRadioModule,
   MatSlideToggleModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {ExpansionDemo} from './expansion-demo';
 
 @NgModule({
   imports: [
-    CdkAccordionModule, CommonModule, FormsModule, MatButtonModule, MatCheckboxModule,
-    MatExpansionModule, MatFormFieldModule, MatInputModule, MatRadioModule, MatSlideToggleModule
+    CdkAccordionModule,
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatRadioModule,
+    MatSlideToggleModule,
+    RouterModule.forChild([{path: '', component: ExpansionDemo}]),
   ],
   declarations: [ExpansionDemo],
 })

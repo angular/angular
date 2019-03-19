@@ -21,6 +21,7 @@ import {
   MatTabsModule,
   MatToolbarModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {InputDemo} from './input-demo';
 
 @NgModule({
@@ -38,6 +39,7 @@ import {InputDemo} from './input-demo';
     MatTabsModule,
     MatToolbarModule,
     ReactiveFormsModule,
+    RouterModule.forChild([{path: '', component: InputDemo}]),
   ],
   declarations: [InputDemo],
 })

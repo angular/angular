@@ -16,6 +16,7 @@ import {
   MatInputModule,
   MatRippleModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {ExampleModule} from '../example/example-module';
 import {RippleDemo} from './ripple-demo';
 
@@ -29,6 +30,7 @@ import {RippleDemo} from './ripple-demo';
     MatIconModule,
     MatInputModule,
     MatRippleModule,
+    RouterModule.forChild([{path: '', component: RippleDemo}]),
   ],
   declarations: [RippleDemo],
 })

@@ -8,6 +8,7 @@
 
 import {NgModule} from '@angular/core';
 import {MatButtonModule, MatListModule, MatSidenavModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {DrawerDemo} from './drawer-demo';
 
 @NgModule({
@@ -15,6 +16,7 @@ import {DrawerDemo} from './drawer-demo';
     MatButtonModule,
     MatListModule,
     MatSidenavModule,
+    RouterModule.forChild([{path: '', component: DrawerDemo}]),
   ],
   declarations: [DrawerDemo],
 })

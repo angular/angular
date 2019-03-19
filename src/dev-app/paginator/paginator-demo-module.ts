@@ -16,6 +16,7 @@ import {
   MatPaginatorModule,
   MatSlideToggleModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {PaginatorDemo} from './paginator-demo';
 
 @NgModule({
@@ -27,6 +28,7 @@ import {PaginatorDemo} from './paginator-demo';
     MatInputModule,
     MatPaginatorModule,
     MatSlideToggleModule,
+    RouterModule.forChild([{path: '', component: PaginatorDemo}]),
   ],
   declarations: [PaginatorDemo],
 })

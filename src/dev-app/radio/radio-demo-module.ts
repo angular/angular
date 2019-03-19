@@ -10,6 +10,7 @@ import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MatButtonModule, MatCheckboxModule, MatRadioModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {RadioDemo} from './radio-demo';
 
 @NgModule({
@@ -19,6 +20,7 @@ import {RadioDemo} from './radio-demo';
     MatButtonModule,
     MatCheckboxModule,
     MatRadioModule,
+    RouterModule.forChild([{path: '', component: RadioDemo}]),
   ],
   declarations: [RadioDemo],
 })

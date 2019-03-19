@@ -15,6 +15,7 @@ import {
   MatMenuModule,
   MatToolbarModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {MenuDemo} from './menu-demo';
 
 @NgModule({
@@ -25,6 +26,7 @@ import {MenuDemo} from './menu-demo';
     MatIconModule,
     MatMenuModule,
     MatToolbarModule,
+    RouterModule.forChild([{path: '', component: MenuDemo}]),
   ],
   declarations: [MenuDemo],
 })

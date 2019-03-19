@@ -8,6 +8,7 @@
 
 import {NgModule} from '@angular/core';
 import {MatTabsModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {ExampleModule} from '../example/example-module';
 import {TabsDemo} from './tabs-demo';
 
@@ -15,6 +16,7 @@ import {TabsDemo} from './tabs-demo';
   imports: [
     ExampleModule,
     MatTabsModule,
+    RouterModule.forChild([{path: '', component: TabsDemo}]),
   ],
   declarations: [TabsDemo],
 })

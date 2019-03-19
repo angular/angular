@@ -8,12 +8,14 @@
 
 import {NgModule} from '@angular/core';
 import {MatButtonModule, MatIconModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {ButtonDemo} from './button-demo';
 
 @NgModule({
   imports: [
     MatButtonModule,
     MatIconModule,
+    RouterModule.forChild([{path: '', component: ButtonDemo}]),
   ],
   declarations: [ButtonDemo],
 })

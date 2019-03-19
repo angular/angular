@@ -8,6 +8,7 @@
 
 import {NgModule} from '@angular/core';
 import {MatTooltipModule} from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {ExampleModule} from '../example/example-module';
 import {TooltipDemo} from './tooltip-demo';
 
@@ -15,6 +16,7 @@ import {TooltipDemo} from './tooltip-demo';
   imports: [
     ExampleModule,
     MatTooltipModule,
+    RouterModule.forChild([{path: '', component: TooltipDemo}]),
   ],
   declarations: [TooltipDemo],
 })

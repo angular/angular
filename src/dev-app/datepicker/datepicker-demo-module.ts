@@ -16,8 +16,10 @@ import {
   MatFormFieldModule,
   MatIconModule,
   MatInputModule,
+  MatNativeDateModule,
   MatSelectModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {CustomHeader, CustomHeaderNgContent, DatepickerDemo} from './datepicker-demo';
 
 @NgModule({
@@ -30,8 +32,10 @@ import {CustomHeader, CustomHeaderNgContent, DatepickerDemo} from './datepicker-
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
+    MatNativeDateModule,
     MatSelectModule,
     ReactiveFormsModule,
+    RouterModule.forChild([{path: '', component: DatepickerDemo}]),
   ],
   declarations: [CustomHeader, CustomHeaderNgContent, DatepickerDemo],
   entryComponents: [CustomHeader, CustomHeaderNgContent],

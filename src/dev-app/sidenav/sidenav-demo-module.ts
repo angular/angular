@@ -15,6 +15,7 @@ import {
   MatSidenavModule,
   MatToolbarModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {SidenavDemo} from './sidenav-demo';
 
 @NgModule({
@@ -25,6 +26,7 @@ import {SidenavDemo} from './sidenav-demo';
     MatCheckboxModule,
     MatSidenavModule,
     MatToolbarModule,
+    RouterModule.forChild([{path: '', component: SidenavDemo}]),
   ],
   declarations: [SidenavDemo],
 })

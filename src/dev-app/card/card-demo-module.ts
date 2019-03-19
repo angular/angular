@@ -13,6 +13,7 @@ import {
   MatDividerModule,
   MatProgressBarModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {CardDemo} from './card-demo';
 
 @NgModule({
@@ -21,6 +22,7 @@ import {CardDemo} from './card-demo';
     MatCardModule,
     MatDividerModule,
     MatProgressBarModule,
+    RouterModule.forChild([{path: '', component: CardDemo}]),
   ],
   declarations: [CardDemo],
 })

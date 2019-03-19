@@ -14,6 +14,7 @@ import {
   MatCheckboxModule,
   MatProgressSpinnerModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 import {ProgressSpinnerDemo} from './progress-spinner-demo';
 
 @NgModule({
@@ -23,6 +24,7 @@ import {ProgressSpinnerDemo} from './progress-spinner-demo';
     MatButtonToggleModule,
     MatCheckboxModule,
     MatProgressSpinnerModule,
+    RouterModule.forChild([{path: '', component: ProgressSpinnerDemo}]),
   ],
   declarations: [ProgressSpinnerDemo],
 })

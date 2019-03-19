@@ -19,6 +19,7 @@ import {
   MatProgressBarModule,
   MatTreeModule
 } from '@angular/material';
+import {RouterModule} from '@angular/router';
 
 import {ExampleModule} from '../example/example-module';
 
@@ -42,6 +43,7 @@ import {TreeDemo} from './tree-demo';
     MatTreeModule,
     MatProgressBarModule,
     ExampleModule,
+    RouterModule.forChild([{path: '', component: TreeDemo}]),
   ],
   declarations:
       [ChecklistNestedTreeDemo, ChecklistTreeDemo, TreeDemo, DynamicTreeDemo, LoadmoreTreeDemo],
