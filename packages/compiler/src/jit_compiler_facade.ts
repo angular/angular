@@ -38,6 +38,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
     const res = compilePipeFromMetadata({
       name: facade.name,
       type: new WrappedNodeExpr(facade.type),
+      typeArgumentCount: facade.typeArgumentCount,
       deps: convertR3DependencyMetadataArray(facade.deps),
       pipeName: facade.pipeName,
       pure: facade.pure,
