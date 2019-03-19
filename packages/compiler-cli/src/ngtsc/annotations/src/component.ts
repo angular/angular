@@ -322,7 +322,27 @@ export class ComponentDecoratorHandler implements
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during resolve() the whole compilation unit has been
       // fully analyzed.
+      //
+      // First it needs to be determined if actually importing the directives/pipes used in the
+      // template would create a cycle. Currently ngtsc refuses to generate cycles, so an option
+      // known as "remote scoping" is used if a cycle would be created. In remote scoping, the
+      // module file sets the directives/pipes on the ngComponentDef of the component, without
+      // requiring new imports (but also in a way that breaks tree shaking).
+      //
+      // Determining this is challenging, because the TemplateDefinitionBuilder is responsible for
+      // matching directives and pipes in the template; however, that doesn't run until the actual
+      // compile() step. It's not possible to run template compilation sooner as it requires the
+      // ConstantPool for the overall file being compiled (which isn't available until the transform
+      // step).
+      //
+      // Instead, directives/pipes are matched independently here, using the R3TargetBinder. This is
+      // an alternative implementation of template matching which is used for template type-checking
+      // and will eventually replace matching in the TemplateDefinitionBuilder.
 
+
+      // Set up the R3TargetBinder, as well as a 'directives' array and a 'pipes' map that are later
+      // fed to the TemplateDefinitionBuilder. First, a SelectorMatcher is constructed to match
+      // directives that are in scope.
       const matcher = new SelectorMatcher<ScopeDirective&{expression: Expression}>();
       const directives: {selector: string, expression: Expression}[] = [];
 
@@ -330,7 +350,6 @@ export class ComponentDecoratorHandler implements
         const {ref, selector} = dir;
         const expression = this.refEmitter.emit(ref, context);
         directives.push({selector, expression});
-
         matcher.addSelectables(CssSelector.parse(selector), {...dir, expression});
       }
       const pipes = new Map<string, Expression>();
@@ -338,36 +357,52 @@ export class ComponentDecoratorHandler implements
         pipes.set(pipe.name, this.refEmitter.emit(pipe.ref, context));
       }
 
-      // Scan through the references of the `scope.directives` array and check whether
-      // any import which needs to be generated for the directive would create a cycle.
-      const cycleDetected = directives.some(dir => this._isCyclicImport(dir.expression, context)) ||
-          Array.from(pipes.values()).some(pipe => this._isCyclicImport(pipe, context));
+      // Next, the component template AST is bound using the R3TargetBinder. This produces an
+      // BoundTarget, which is similar to a ts.TypeChecker.
+      const binder = new R3TargetBinder(matcher);
+      const bound = binder.bind({template: metadata.template.nodes});
+
+      // The BoundTarget knows which directives and pipes matched the template.
+      const usedDirectives = bound.getUsedDirectives();
+      const usedPipes = bound.getUsedPipes().map(name => pipes.get(name) !);
+
+      // Scan through the directives/pipes actually used in the template and check whether any
+      // import which needs to be generated would create a cycle.
+      const cycleDetected =
+          usedDirectives.some(dir => this._isCyclicImport(dir.expression, context)) ||
+          usedPipes.some(pipe => this._isCyclicImport(pipe, context));
+
       if (!cycleDetected) {
+        // No cycle was detected. Record the imports that need to be created in the cycle detector
+        // so that future cyclic import checks consider their production.
+        for (const {expression} of usedDirectives) {
+          this._recordSyntheticImport(expression, context);
+        }
+        for (const pipe of usedPipes) {
+          this._recordSyntheticImport(pipe, context);
+        }
+
+        // Check whether the directive/pipe arrays in ngComponentDef need to be wrapped in closures.
+        // This is required if any directive/pipe reference is to a declaration in the same file but
+        // declared after this component.
         const wrapDirectivesAndPipesInClosure =
-            directives.some(
+            usedDirectives.some(
                 dir => isExpressionForwardReference(dir.expression, node.name, context)) ||
-            Array.from(pipes.values())
-                .some(pipe => isExpressionForwardReference(pipe, node.name, context));
+            usedPipes.some(pipe => isExpressionForwardReference(pipe, node.name, context));
+
+        // Actual compilation still uses the full scope, not the narrowed scope determined by
+        // R3TargetBinder. This is a hedge against potential issues with the R3TargetBinder - right
+        // now the TemplateDefinitionBuilder is the "source of truth" for which directives/pipes are
+        // actually used (though the two should agree perfectly).
+        //
+        // TODO(alxhub): switch TemplateDefinitionBuilder over to using R3TargetBinder directly.
         metadata.directives = directives;
         metadata.pipes = pipes;
         metadata.wrapDirectivesAndPipesInClosure = wrapDirectivesAndPipesInClosure;
-        for (const dir of directives) {
-          this._recordSyntheticImport(dir.expression, context);
-        }
-        pipes.forEach((pipe: Expression) => this._recordSyntheticImport(pipe, context));
-
-        const binder = new R3TargetBinder(matcher);
-        const bound = binder.bind({template: metadata.template.nodes});
-        for (const {expression} of bound.getUsedDirectives()) {
-          this._recordSyntheticImport(expression, context);
-        }
-
-        for (const name of bound.getUsedPipes()) {
-          if (pipes.has(name)) {
-            this._recordSyntheticImport(pipes.get(name) !, context);
-          }
-        }
       } else {
+        // Declaring the directiveDefs/pipeDefs arrays directly would require imports that would
+        // create a cycle. Instead, mark this component as requiring remote scoping, so that the
+        // NgModule file will take care of setting the directives for the component.
         this.scopeRegistry.setComponentAsRequiringRemoteScoping(node);
       }
     }
