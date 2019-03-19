@@ -14,19 +14,38 @@ import {OutputContext, error} from '../util';
 
 import {R3DependencyMetadata, compileFactoryFunction, dependenciesFromGlobalMetadata} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
+import {typeWithParameters} from './util';
 
 export interface R3PipeMetadata {
+  /**
+   * Name of the pipe type.
+   */
   name: string;
-  type: o.Expression;
-  pipeName: string;
-  deps: R3DependencyMetadata[]|null;
-  pure: boolean;
-}
 
-export interface R3PipeDef {
-  expression: o.Expression;
-  type: o.Type;
-  statements: o.Statement[];
+  /**
+   * An expression representing a reference to the pipe itself.
+   */
+  type: o.Expression;
+
+  /**
+   * Number of generic type parameters of the type itself.
+   */
+  typeArgumentCount: number;
+
+  /**
+   * Name of the pipe.
+   */
+  pipeName: string;
+
+  /**
+   * Dependencies of the pipe's constructor.
+   */
+  deps: R3DependencyMetadata[]|null;
+
+  /**
+   * Whether the pipe is marked as pure.
+   */
+  pure: boolean;
 }
 
 export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
@@ -51,7 +70,7 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
 
   const expression = o.importExpr(R3.definePipe).callFn([o.literalMap(definitionMapValues)]);
   const type = new o.ExpressionType(o.importExpr(R3.PipeDefWithMeta, [
-    new o.ExpressionType(metadata.type),
+    typeWithParameters(metadata.type, metadata.typeArgumentCount),
     new o.ExpressionType(new o.LiteralExpr(metadata.pipeName)),
   ]));
   return {expression, type, statements: templateFactory.statements};
@@ -73,6 +92,7 @@ export function compilePipeFromRender2(
     name,
     pipeName: pipe.name,
     type: outputCtx.importExpr(pipe.type.reference),
+    typeArgumentCount: 0,
     deps: dependenciesFromGlobalMetadata(pipe.type, outputCtx, reflector),
     pure: pipe.pure,
   };

@@ -23,6 +23,7 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
         ngPipeDef = getCompilerFacade().compilePipe(
             angularCoreEnv, `ng://${renderStringify(type)}/ngPipeDef.js`, {
               type: type,
+              typeArgumentCount: 0,
               name: type.name,
               deps: reflectDependencies(type),
               pipeName: meta.name,
