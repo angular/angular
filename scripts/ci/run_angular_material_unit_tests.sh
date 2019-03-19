@@ -16,8 +16,8 @@ yarn install --frozen-lockfile --non-interactive
 rm -rf ./node_modules/@angular/*
 cp -r ${angular_dir}/dist/packages-dist-ivy-aot/* ./node_modules/@angular/
 
-# The angular/material2 CI sets TEST_PLATFORM to either local, saucelabs, or BrowserStack.
-# For angular/angular, we only want to run the local tests.
+# The angular/material2 CI sets TEST_PLATFORM to either "local", "saucelabs", or "browserstack".
+# For angular/angular, we only want to run the "local" tests.
 export TEST_PLATFORM=local
 
 # Append the test blocklist into angular/material2's karma-test-shim.js.
