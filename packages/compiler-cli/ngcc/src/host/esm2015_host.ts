@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, CtorParameter, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, isDefined} from '../utils';
 
@@ -199,15 +199,15 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @param node the node whose symbol we are finding.
    * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
-  getClassSymbol(declaration: ts.Node): ts.Symbol|undefined {
+  getClassSymbol(declaration: ts.Node): ClassSymbol|undefined {
     if (ts.isClassDeclaration(declaration)) {
-      return declaration.name && this.checker.getSymbolAtLocation(declaration.name);
+      return declaration.name && this.checker.getSymbolAtLocation(declaration.name) as ClassSymbol;
     }
     if (ts.isVariableDeclaration(declaration) && declaration.initializer) {
       declaration = declaration.initializer;
     }
     if (ts.isClassExpression(declaration)) {
-      return declaration.name && this.checker.getSymbolAtLocation(declaration.name);
+      return declaration.name && this.checker.getSymbolAtLocation(declaration.name) as ClassSymbol;
     }
     return undefined;
   }
@@ -405,7 +405,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
   }
 
-  protected getDecoratedClassFromSymbol(symbol: ts.Symbol|undefined): DecoratedClass|null {
+  protected getDecoratedClassFromSymbol(symbol: ClassSymbol|undefined): DecoratedClass|null {
     if (symbol) {
       const decorators = this.getDecoratorsOfSymbol(symbol);
       if (decorators && decorators.length) {

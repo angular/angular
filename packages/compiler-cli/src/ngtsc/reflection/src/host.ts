@@ -43,6 +43,29 @@ export interface Decorator {
 }
 
 /**
+ * The `ts.Declaration` of a "class".
+ *
+ * Classes are represented differently in different code formats:
+ * - In TS code, they are typically defined using the `class` keyword.
+ * - In ES2015 code, they are usually defined using the `class` keyword, but they can also be
+ *   variable declarations, which are initialized to a class expression (e.g.
+ *   `let Foo = Foo1 = class Foo {}`).
+ * - In ES5 code, they are typically defined as variable declarations being assigned the return
+ *   value of an IIFE. The actual "class" is implemented as a constructor function inside the IIFE,
+ *   but the outer variable declaration represents the "class" to the rest of the program.
+ *
+ * For `ReflectionHost` purposes, a class declaration should always have a `name` identifier,
+ * because we need to be able to reference it in other parts of the program.
+ */
+export type ClassDeclaration<T extends ts.Declaration = ts.Declaration> = T & {name: ts.Identifier};
+
+/**
+ * The symbol corresponding to a "class" declaration. I.e. a `ts.Symbol` whose `valueDeclaration` is
+ * a `ClassDeclaration`.
+ */
+export type ClassSymbol = ts.Symbol & {valueDeclaration: ClassDeclaration};
+
+/**
  * An enumeration of possible kinds of class members.
  */
 export enum ClassMemberKind {
@@ -452,7 +475,7 @@ export interface ReflectionHost {
   /**
    * Check whether the given node actually represents a class.
    */
-  isClass(node: ts.Node): node is ts.NamedDeclaration;
+  isClass(node: ts.Node): node is ClassDeclaration;
 
   /**
    * Determines whether the given declaration has a base class.

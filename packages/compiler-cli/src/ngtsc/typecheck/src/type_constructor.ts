@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {ClassDeclaration} from '../../reflection';
 import {TypeCtorMetadata} from './api';
 
 /**
@@ -29,19 +30,20 @@ import {TypeCtorMetadata} from './api';
  *
  * NgForOf.ngTypeCtor(init: {ngForOf: ['foo', 'bar']}); // Infers a type of NgForOf<string>.
  *
- * @param node the `ts.ClassDeclaration` for which a type constructor will be generated.
+ * @param node the `ClassDeclaration<ts.ClassDeclaration>` for which a type constructor will be
+ * generated.
  * @param meta additional metadata required to generate the type constructor.
  * @returns a `ts.MethodDeclaration` for the type constructor.
  */
 export function generateTypeCtor(
-    node: ts.ClassDeclaration, meta: TypeCtorMetadata): ts.MethodDeclaration {
+    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata): ts.MethodDeclaration {
   // Build rawType, a `ts.TypeNode` of the class with its generic parameters passed through from
   // the definition without any type bounds. For example, if the class is
   // `FooDirective<T extends Bar>`, its rawType would be `FooDirective<T>`.
   const rawTypeArgs = node.typeParameters !== undefined ?
       node.typeParameters.map(param => ts.createTypeReferenceNode(param.name, undefined)) :
       undefined;
-  const rawType: ts.TypeNode = ts.createTypeReferenceNode(node.name !, rawTypeArgs);
+  const rawType: ts.TypeNode = ts.createTypeReferenceNode(node.name, rawTypeArgs);
 
   // initType is the type of 'init', the single argument to the type constructor method.
   // If the Directive has any inputs, outputs, or queries, its initType will be:

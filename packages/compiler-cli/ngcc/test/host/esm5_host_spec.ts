@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMemberKind, Import} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMemberKind, ClassSymbol, Import} from '../../../src/ngtsc/reflection';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
@@ -1551,7 +1551,7 @@ describe('Esm5ReflectionHost', () => {
 
     it('should return the class symbol returned by the superclass (if any)', () => {
       const mockNode = {} as ts.Node;
-      const mockSymbol = {} as ts.Symbol;
+      const mockSymbol = {} as ClassSymbol;
       superGetClassSymbolSpy.and.returnValue(mockSymbol);
 
       const host = new Esm5ReflectionHost(false, {} as any);
@@ -1590,7 +1590,7 @@ describe('Esm5ReflectionHost', () => {
          const innerNode = (((outerNode.initializer as ts.ParenthesizedExpression)
                                  .expression as ts.CallExpression)
                                 .expression as ts.FunctionExpression)
-                               .body.statements.find(ts.isFunctionDeclaration) !;
+                               .body.statements.find(ts.isFunctionDeclaration) as ClassDeclaration;
 
          expect(host.getClassSymbol(innerNode)).toBe(host.getClassSymbol(outerNode));
          expect(host.getClassSymbol(innerNode) !.valueDeclaration).toBe(innerNode);

@@ -9,12 +9,12 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassMemberKind, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
-import {nodeDebugInfo} from '../../util/src/typescript';
+import {ClassDeclaration, ClassMemberKind, ReflectionHost, reflectTypeEntityToDeclaration} from '../../reflection';
+import {isNamedClassDeclaration, nodeDebugInfo} from '../../util/src/typescript';
 
 export function extractReferencesFromType(
     checker: ts.TypeChecker, def: ts.TypeNode, ngModuleImportedFrom: string | null,
-    resolutionContext: string): Reference<ts.ClassDeclaration>[] {
+    resolutionContext: string): Reference<ClassDeclaration>[] {
   if (!ts.isTupleTypeNode(def)) {
     return [];
   }
@@ -24,8 +24,8 @@ export function extractReferencesFromType(
     }
     const type = element.exprName;
     const {node, from} = reflectTypeEntityToDeclaration(type, checker);
-    if (!ts.isClassDeclaration(node)) {
-      throw new Error(`Expected ClassDeclaration: ${nodeDebugInfo(node)}`);
+    if (!isNamedClassDeclaration(node)) {
+      throw new Error(`Expected named ClassDeclaration: ${nodeDebugInfo(node)}`);
     }
     const specifier = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
     if (specifier !== null) {
