@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath} from '../../src/ngtsc/path';
+import {resolve} from 'canonical-path';
+
+import {AbsoluteFsPath, PathSegment} from '../../src/ngtsc/path';
 
 import {checkMarker, writeMarker} from './packages/build_marker';
 import {DependencyHost} from './packages/dependency_host';
@@ -21,21 +23,23 @@ import {Transformer} from './packages/transformer';
  * The options to configure the ngcc compiler.
  */
 export interface NgccOptions {
-  /** The path to the node_modules folder that contains the packages to compile. */
-  baseSourcePath: AbsoluteFsPath;
+  /** The absolute path to the `node_modules` folder that contains the packages to process. */
+  basePath: string;
   /**
-   * The path, relative to `baseSourcePath` of the primary package to be compiled.
-   * All its dependencies will need to be compiled too.
+   * The path, relative to `basePath` to the primary package to be processed.
+   *
+   * All its dependencies will need to be processed too.
    */
-  targetEntryPointPath?: AbsoluteFsPath;
+  targetEntryPointPath?: string;
   /**
-   * Which entry-point properties in the package.json to consider when compiling.
-   * Each of properties contain a path to particular bundle format for a given entry-point.
+   * Which entry-point properties in the package.json to consider when processing an entry-point.
+   * Each property should hold a path to the particular bundle format for the entry-point.
+   * Defaults to all the properties in the package.json.
    */
-  propertiesToConsider?: EntryPointJsonProperty[];
+  propertiesToConsider?: string[];
   /**
-   * Whether to compile all specified formats or to stop compiling this entry-point at the first
-   * matching format. Defaults to `true`.
+   * Whether to process all formats specified by (`propertiesToConsider`)  or to stop processing
+   * this entry-point at the first matching format. Defaults to `true`.
    */
   compileAllFormats?: boolean;
 }
@@ -50,15 +54,19 @@ const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
  *
  * @param options The options telling ngcc what to compile and how.
  */
-export function mainNgcc({baseSourcePath, targetEntryPointPath,
+export function mainNgcc({basePath, targetEntryPointPath,
                           propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
                           compileAllFormats = true}: NgccOptions): void {
-  const transformer = new Transformer(baseSourcePath, baseSourcePath);
+  const transformer = new Transformer(basePath, basePath);
   const host = new DependencyHost();
   const resolver = new DependencyResolver(host);
   const finder = new EntryPointFinder(resolver);
 
-  const {entryPoints} = finder.findEntryPoints(baseSourcePath, targetEntryPointPath);
+  const absoluteTargetEntryPointPath = targetEntryPointPath ?
+      AbsoluteFsPath.from(resolve(basePath, targetEntryPointPath)) :
+      undefined;
+  const {entryPoints} =
+      finder.findEntryPoints(AbsoluteFsPath.from(basePath), absoluteTargetEntryPointPath);
   entryPoints.forEach(entryPoint => {
 
     // Are we compiling the Angular core?
@@ -67,7 +75,7 @@ export function mainNgcc({baseSourcePath, targetEntryPointPath,
     const compiledFormats = new Set<string>();
 
     for (let i = 0; i < propertiesToConsider.length; i++) {
-      const property = propertiesToConsider[i];
+      const property = propertiesToConsider[i] as EntryPointJsonProperty;
       const formatPath = entryPoint.packageJson[property];
       const format = getEntryPointFormat(property);
 

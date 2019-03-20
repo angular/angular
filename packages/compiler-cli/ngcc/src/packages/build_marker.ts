@@ -14,23 +14,41 @@ import {EntryPoint, EntryPointJsonProperty} from './entry_point';
 export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
 
 /**
- * Check whether there is a build marker for the given entry-point and format property.
- * @param entryPoint the entry-point to check for a marker.
- * @param format the property in the package.json of the format for which we are checking for a
- * marker.
- * @returns true if the entry-point and format have already been built with this ngcc version.
- * @throws Error if the entry-point and format have already been built with a different ngcc
+ * Check whether ngcc has already processed a given entry-point format.
+ *
+ * The entry-point is defined by the package.json contents provided.
+ * The format is defined by the provided property name of the path to the bundle in the package.json
+ *
+ * @param packageJson The parsed contents of the package.json file for the entry-point.
+ * @param format The entry-point format property in the package.json to check.
+ * @returns true if the entry-point and format have already been processed with this ngcc version.
+ * @throws Error if the entry-point has already been processed with a different ngcc
  * version.
  */
-export function checkMarker(entryPoint: EntryPoint, format: EntryPointJsonProperty): boolean {
-  const pkg = entryPoint.packageJson;
-  const compiledVersion = pkg.__modified_by_ngcc__ && pkg.__modified_by_ngcc__[format];
+export function hasBeenProcessed(packageJson: any, format: string): boolean {
+  const compiledVersion =
+      packageJson && packageJson.__modified_by_ngcc__ && packageJson.__modified_by_ngcc__[format];
   if (compiledVersion && compiledVersion !== NGCC_VERSION) {
     throw new Error(
         'The ngcc compiler has changed since the last ngcc build.\n' +
         'Please completely remove `node_modules` and try again.');
   }
   return !!compiledVersion;
+}
+
+/**
+ * Check whether there is a marker for the given entry-point and format property, indicating that
+ * the given bundle has already been processed.
+ * @param entryPoint the entry-point to check for a marker.
+ * @param format the property in the package.json of the format for which we are checking for a
+ * marker.
+ * @returns true if the entry-point and format have already been processed with this ngcc version.
+ * @throws Error if the entry-point and format have already been processed with a different ngcc
+ * version.
+ */
+export function checkMarker(entryPoint: EntryPoint, format: EntryPointJsonProperty): boolean {
+  const pkg = entryPoint.packageJson;
+  return hasBeenProcessed(pkg, format);
 }
 
 /**
