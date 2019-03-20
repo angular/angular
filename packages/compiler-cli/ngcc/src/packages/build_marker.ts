@@ -22,18 +22,24 @@ export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
  * @param packageJson The parsed contents of the package.json file for the entry-point.
  * @param format The entry-point format property in the package.json to check.
  * @returns true if the entry-point and format have already been processed with this ngcc version.
- * @throws Error if the entry-point has already been processed with a different ngcc
- * version.
+ * @throws Error if the `packageJson` property is not an object.
+ * @throws Error if the entry-point has already been processed with a different ngcc version.
  */
 export function hasBeenProcessed(packageJson: any, format: string): boolean {
-  const compiledVersion =
-      packageJson && packageJson.__modified_by_ngcc__ && packageJson.__modified_by_ngcc__[format];
-  if (compiledVersion && compiledVersion !== NGCC_VERSION) {
+  if (typeof packageJson !== 'object') {
+    throw new Error('`packageJson` parameter is invalid. It parameter must be an object.');
+  }
+  if (!packageJson.__modified_by_ngcc__) {
+    return false;
+  }
+  if (Object.keys(packageJson.__modified_by_ngcc__)
+          .some(property => packageJson.__modified_by_ngcc__[property] !== NGCC_VERSION)) {
     throw new Error(
         'The ngcc compiler has changed since the last ngcc build.\n' +
         'Please completely remove `node_modules` and try again.');
   }
-  return !!compiledVersion;
+
+  return packageJson.__modified_by_ngcc__[format] === NGCC_VERSION;
 }
 
 /**

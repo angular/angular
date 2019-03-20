@@ -10,7 +10,7 @@ import {readFileSync, writeFileSync} from 'fs';
 import * as mockFs from 'mock-fs';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-import {checkMarker, writeMarker} from '../../src/packages/build_marker';
+import {checkMarker, hasBeenProcessed, writeMarker} from '../../src/packages/build_marker';
 import {EntryPoint} from '../../src/packages/entry_point';
 
 function createMockFileSystem() {
@@ -145,6 +145,54 @@ describe('Marker files', () => {
       pkg.__modified_by_ngcc__ = {fesm2015: 'WRONG_VERSION'};
       writeFileSync('/node_modules/@angular/common/package.json', JSON.stringify(pkg), 'utf8');
       expect(() => checkMarker(createEntryPoint('/node_modules/@angular/common'), 'fesm2015'))
+          .toThrowError(
+              'The ngcc compiler has changed since the last ngcc build.\n' +
+              'Please completely remove `node_modules` and try again.');
+    });
+  });
+
+  describe('hasBeenProcessed', () => {
+    it('should return true if the marker exists for the given format property', () => {
+      expect(
+          hasBeenProcessed({__modified_by_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}}, 'fesm2015'))
+          .toBe(true);
+    });
+    it('should return false if the marker does not exist for the given format property', () => {
+      expect(hasBeenProcessed({__modified_by_ngcc__: {'fesm2015': '0.0.0-PLACEHOLDER'}}, 'module'))
+          .toBe(false);
+    });
+    it('should return false if the no markers exist',
+       () => { expect(hasBeenProcessed({}, 'module')).toBe(false); });
+    it('should throw an Error if the packageJson is not an object', () => {
+      expect(() => hasBeenProcessed(undefined, 'fesm2015'))
+          .toThrowError('`packageJson` parameter is invalid. It parameter must be an object.');
+      expect(
+          () => hasBeenProcessed(
+              '{"__modified_by_ngcc__": {"fesm2015": "0.0.0-PLACEHOLDER"}}', 'fesm2015'))
+          .toThrowError('`packageJson` parameter is invalid. It parameter must be an object.');
+    });
+    it('should throw an Error if the format has been compiled with a different version.', () => {
+      expect(() => hasBeenProcessed({__modified_by_ngcc__: {'fesm2015': '8.0.0'}}, 'fesm2015'))
+          .toThrowError(
+              'The ngcc compiler has changed since the last ngcc build.\n' +
+              'Please completely remove `node_modules` and try again.');
+    });
+    it('should throw an Error if any format has been compiled with a different version.', () => {
+      expect(() => hasBeenProcessed({__modified_by_ngcc__: {'fesm2015': '8.0.0'}}, 'module'))
+          .toThrowError(
+              'The ngcc compiler has changed since the last ngcc build.\n' +
+              'Please completely remove `node_modules` and try again.');
+      expect(
+          () => hasBeenProcessed(
+              {__modified_by_ngcc__: {'module': '0.0.0-PLACEHOLDER', 'fesm2015': '8.0.0'}},
+              'module'))
+          .toThrowError(
+              'The ngcc compiler has changed since the last ngcc build.\n' +
+              'Please completely remove `node_modules` and try again.');
+      expect(
+          () => hasBeenProcessed(
+              {__modified_by_ngcc__: {'module': '0.0.0-PLACEHOLDER', 'fesm2015': '8.0.0'}},
+              'fesm2015'))
           .toThrowError(
               'The ngcc compiler has changed since the last ngcc build.\n' +
               'Please completely remove `node_modules` and try again.');
