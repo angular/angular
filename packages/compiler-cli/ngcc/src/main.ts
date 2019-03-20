@@ -7,10 +7,11 @@
  */
 
 import {resolve} from 'canonical-path';
+import {readFileSync} from 'fs';
 
-import {AbsoluteFsPath, PathSegment} from '../../src/ngtsc/path';
+import {AbsoluteFsPath} from '../../src/ngtsc/path';
 
-import {checkMarker, writeMarker} from './packages/build_marker';
+import {hasBeenProcessed, markAsProcessed} from './packages/build_marker';
 import {DependencyHost} from './packages/dependency_host';
 import {DependencyResolver} from './packages/dependency_resolver';
 import {EntryPointFormat, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
@@ -67,22 +68,41 @@ export function mainNgcc({basePath, targetEntryPointPath,
       undefined;
   const {entryPoints} =
       finder.findEntryPoints(AbsoluteFsPath.from(basePath), absoluteTargetEntryPointPath);
-  entryPoints.forEach(entryPoint => {
 
+  if (absoluteTargetEntryPointPath && entryPoints.every(entryPoint => {
+        return entryPoint.path !== absoluteTargetEntryPointPath;
+      })) {
+    // If we get here, then the requested entry-point did not contain anything compiled by
+    // the old Angular compiler. Therefore there is nothing for ngcc to do.
+    // So mark all formats in this entry-point as processed so that clients of ngcc can avoid
+    // triggering ngcc for this entry-point in the future.
+    const packageJsonPath =
+        AbsoluteFsPath.from(resolve(absoluteTargetEntryPointPath, 'package.json'));
+    const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+    propertiesToConsider.forEach(formatProperty => {
+      if (packageJson[formatProperty])
+        markAsProcessed(packageJson, packageJsonPath, formatProperty as EntryPointJsonProperty);
+    });
+    return;
+  }
+
+  entryPoints.forEach(entryPoint => {
     // Are we compiling the Angular core?
     const isCore = entryPoint.name === '@angular/core';
 
     const compiledFormats = new Set<string>();
+    const entryPointPackageJson = entryPoint.packageJson;
+    const entryPointPackageJsonPath = AbsoluteFsPath.from(resolve(entryPoint.path, 'package.json'));
 
     for (let i = 0; i < propertiesToConsider.length; i++) {
       const property = propertiesToConsider[i] as EntryPointJsonProperty;
-      const formatPath = entryPoint.packageJson[property];
+      const formatPath = entryPointPackageJson[property];
       const format = getEntryPointFormat(property);
 
       // No format then this property is not supposed to be compiled.
       if (!formatPath || !format || SUPPORTED_FORMATS.indexOf(format) === -1) continue;
 
-      if (checkMarker(entryPoint, property)) {
+      if (hasBeenProcessed(entryPointPackageJson, property)) {
         compiledFormats.add(formatPath);
         console.warn(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
         continue;
@@ -109,7 +129,7 @@ export function mainNgcc({basePath, targetEntryPointPath,
       // Either this format was just compiled or its underlying format was compiled because of a
       // previous property.
       if (compiledFormats.has(formatPath)) {
-        writeMarker(entryPoint, property);
+        markAsProcessed(entryPointPackageJson, entryPointPackageJsonPath, property);
       }
     }
 
