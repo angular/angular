@@ -60,6 +60,6 @@ npm_package(
     ],
     deps = [
         ":compiler-cli",
-        "//packages/compiler-cli/src/ngcc",
+        "//packages/compiler-cli/ngcc",
     ],
 )
