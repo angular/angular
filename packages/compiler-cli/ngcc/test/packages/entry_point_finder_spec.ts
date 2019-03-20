@@ -7,10 +7,14 @@
  */
 
 import * as mockFs from 'mock-fs';
+
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DependencyHost} from '../../src/packages/dependency_host';
 import {DependencyResolver} from '../../src/packages/dependency_resolver';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {EntryPointFinder} from '../../src/packages/entry_point_finder';
+
+const _ = AbsoluteFsPath.from;
 
 describe('findEntryPoints()', () => {
   let resolver: DependencyResolver;
@@ -26,56 +30,56 @@ describe('findEntryPoints()', () => {
   afterEach(restoreRealFileSystem);
 
   it('should find sub-entry-points within a package', () => {
-    const {entryPoints} = finder.findEntryPoints('/sub_entry_points');
+    const {entryPoints} = finder.findEntryPoints(_('/sub_entry_points'));
     const entryPointPaths = entryPoints.map(x => [x.package, x.path]);
     expect(entryPointPaths).toEqual([
-      ['/sub_entry_points/common', '/sub_entry_points/common'],
-      ['/sub_entry_points/common', '/sub_entry_points/common/http'],
-      ['/sub_entry_points/common', '/sub_entry_points/common/http/testing'],
-      ['/sub_entry_points/common', '/sub_entry_points/common/testing'],
+      [_('/sub_entry_points/common'), _('/sub_entry_points/common')],
+      [_('/sub_entry_points/common'), _('/sub_entry_points/common/http')],
+      [_('/sub_entry_points/common'), _('/sub_entry_points/common/http/testing')],
+      [_('/sub_entry_points/common'), _('/sub_entry_points/common/testing')],
     ]);
   });
 
   it('should find packages inside a namespace', () => {
-    const {entryPoints} = finder.findEntryPoints('/namespaced');
+    const {entryPoints} = finder.findEntryPoints(_('/namespaced'));
     const entryPointPaths = entryPoints.map(x => [x.package, x.path]);
     expect(entryPointPaths).toEqual([
-      ['/namespaced/@angular/common', '/namespaced/@angular/common'],
-      ['/namespaced/@angular/common', '/namespaced/@angular/common/http'],
-      ['/namespaced/@angular/common', '/namespaced/@angular/common/http/testing'],
-      ['/namespaced/@angular/common', '/namespaced/@angular/common/testing'],
+      [_('/namespaced/@angular/common'), _('/namespaced/@angular/common')],
+      [_('/namespaced/@angular/common'), _('/namespaced/@angular/common/http')],
+      [_('/namespaced/@angular/common'), _('/namespaced/@angular/common/http/testing')],
+      [_('/namespaced/@angular/common'), _('/namespaced/@angular/common/testing')],
     ]);
   });
 
   it('should return an empty array if there are no packages', () => {
-    const {entryPoints} = finder.findEntryPoints('/no_packages');
+    const {entryPoints} = finder.findEntryPoints(_('/no_packages'));
     expect(entryPoints).toEqual([]);
   });
 
   it('should return an empty array if there are no valid entry-points', () => {
-    const {entryPoints} = finder.findEntryPoints('/no_valid_entry_points');
+    const {entryPoints} = finder.findEntryPoints(_('/no_valid_entry_points'));
     expect(entryPoints).toEqual([]);
   });
 
   it('should ignore folders starting with .', () => {
-    const {entryPoints} = finder.findEntryPoints('/dotted_folders');
+    const {entryPoints} = finder.findEntryPoints(_('/dotted_folders'));
     expect(entryPoints).toEqual([]);
   });
 
   it('should ignore folders that are symlinked', () => {
-    const {entryPoints} = finder.findEntryPoints('/symlinked_folders');
+    const {entryPoints} = finder.findEntryPoints(_('/symlinked_folders'));
     expect(entryPoints).toEqual([]);
   });
 
   it('should handle nested node_modules folders', () => {
-    const {entryPoints} = finder.findEntryPoints('/nested_node_modules');
+    const {entryPoints} = finder.findEntryPoints(_('/nested_node_modules'));
     const entryPointPaths = entryPoints.map(x => [x.package, x.path]);
     expect(entryPointPaths).toEqual([
-      ['/nested_node_modules/outer', '/nested_node_modules/outer'],
+      [_('/nested_node_modules/outer'), _('/nested_node_modules/outer')],
       // Note that the inner entry point does not get included as part of the outer package
       [
-        '/nested_node_modules/outer/node_modules/inner',
-        '/nested_node_modules/outer/node_modules/inner'
+        _('/nested_node_modules/outer/node_modules/inner'),
+        _('/nested_node_modules/outer/node_modules/inner'),
       ],
     ]);
   });

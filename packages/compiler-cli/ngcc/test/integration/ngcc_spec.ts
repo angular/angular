@@ -13,33 +13,29 @@ const Module = require('module');
 
 import {mainNgcc} from '../../src/main';
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../../../test/runfile_helpers';
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
+
+const NODE_MODULES = AbsoluteFsPath.from('/node_modules');
 
 describe('ngcc main()', () => {
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
-  it('should run ngcc without errors for fesm2015', () => {
-    expect(() => mainNgcc({baseSourcePath: '/node_modules', propertiesToConsider: ['fesm2015']}))
-        .not.toThrow();
-  });
-
-  it('should run ngcc without errors for fesm5', () => {
-    expect(() => mainNgcc({baseSourcePath: '/node_modules', propertiesToConsider: ['fesm5']}))
-        .not.toThrow();
-  });
-
   it('should run ngcc without errors for esm2015', () => {
-    expect(() => mainNgcc({baseSourcePath: '/node_modules', propertiesToConsider: ['esm2015']}))
+    expect(() => mainNgcc({baseSourcePath: NODE_MODULES, propertiesToConsider: ['esm2015']}))
         .not.toThrow();
   });
 
   it('should run ngcc without errors for esm5', () => {
-    expect(() => mainNgcc({baseSourcePath: '/node_modules', propertiesToConsider: ['esm5']}))
+    expect(() => mainNgcc({baseSourcePath: NODE_MODULES, propertiesToConsider: ['esm5']}))
         .not.toThrow();
   });
 
   it('should only compile the given package entry-point (and its dependencies)', () => {
-    mainNgcc({baseSourcePath: '/node_modules', targetEntryPointPath: '@angular/common/http'});
+    mainNgcc({
+      baseSourcePath: NODE_MODULES,
+      targetEntryPointPath: AbsoluteFsPath.from(`${NODE_MODULES}/@angular/common/http`)
+    });
 
     expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
       module: '0.0.0-PLACEHOLDER',
@@ -69,7 +65,7 @@ describe('ngcc main()', () => {
   });
 
   it('should only build the format properties specified for each entry-point', () => {
-    mainNgcc({baseSourcePath: '/node_modules', propertiesToConsider: ['main', 'esm5', 'module']});
+    mainNgcc({baseSourcePath: NODE_MODULES, propertiesToConsider: ['main', 'esm5', 'module']});
 
     expect(loadPackage('@angular/core').__modified_by_ngcc__).toEqual({
       esm5: '0.0.0-PLACEHOLDER',
@@ -95,6 +91,7 @@ function createMockFileSystem() {
   mockFs({
     '/node_modules/@angular': loadAngularPackages(),
     '/node_modules/rxjs': loadDirectory(resolveNpmTreeArtifact('rxjs', 'index.js')),
+    '/node_modules/tslib': loadDirectory(resolveNpmTreeArtifact('tslib', 'tslib.js')),
   });
   spyOn(Module, '_resolveFilename').and.callFake(mockResolve);
 }
@@ -163,6 +160,6 @@ function mockResolve(request: string): string|null {
   }
 }
 
-function loadPackage(packageName: string) {
+function loadPackage(packageName: string): any {
   return JSON.parse(readFileSync(`/node_modules/${packageName}/package.json`, 'utf8'));
 }
