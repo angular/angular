@@ -18,8 +18,6 @@ import {MockServerState, MockServerStateBuilder} from './mock';
 
 const EMPTY_SERVER_STATE = new MockServerStateBuilder().build();
 
-const MOCK_ORIGIN = 'http://localhost/';
-
 export class MockClient {
   queue = new Subject<Object>();
 
@@ -35,10 +33,12 @@ export class MockClient {
 
 export class SwTestHarnessBuilder {
   private server = EMPTY_SERVER_STATE;
-  private caches = new MockCacheStorage(MOCK_ORIGIN);
+  private caches = new MockCacheStorage(this.origin);
+
+  constructor(private origin = 'http://localhost/') {}
 
   withCacheState(cache: string): SwTestHarnessBuilder {
-    this.caches = new MockCacheStorage(MOCK_ORIGIN, cache);
+    this.caches = new MockCacheStorage(this.origin, cache);
     return this;
   }
 
@@ -47,7 +47,7 @@ export class SwTestHarnessBuilder {
     return this;
   }
 
-  build(): SwTestHarness { return new SwTestHarness(this.server, this.caches); }
+  build(): SwTestHarness { return new SwTestHarness(this.server, this.caches, this.origin); }
 }
 
 export class MockClients implements Clients {
@@ -88,7 +88,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     active: {
       postMessage: (msg: any) => { this.selfMessageQueue.push(msg); },
     },
-    scope: MOCK_ORIGIN,
+    scope: this.origin,
     showNotification: (title: string, options: Object) => {
       this.notifications.push({title, options});
     },
@@ -114,7 +114,8 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
     fired: boolean,
   }[] = [];
 
-  constructor(private server: MockServerState, readonly caches: MockCacheStorage) {
+  constructor(
+      private server: MockServerState, readonly caches: MockCacheStorage, private origin: string) {
     this.time = Date.now();
     const baseHref = new URL(this.registration.scope).pathname;
     this.cacheNamePrefix = 'ngsw:' + baseHref;
@@ -153,14 +154,14 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
 
   fetch(req: string|Request): Promise<Response> {
     if (typeof req === 'string') {
-      if (req.startsWith(MOCK_ORIGIN)) {
-        req = '/' + req.substr(MOCK_ORIGIN.length);
+      if (req.startsWith(this.origin)) {
+        req = '/' + req.substr(this.origin.length);
       }
       return this.server.fetch(new MockRequest(req));
     } else {
       const mockReq = req.clone() as MockRequest;
-      if (mockReq.url.startsWith(MOCK_ORIGIN)) {
-        mockReq.url = '/' + mockReq.url.substr(MOCK_ORIGIN.length);
+      if (mockReq.url.startsWith(this.origin)) {
+        mockReq.url = '/' + mockReq.url.substr(this.origin.length);
       }
       return this.server.fetch(mockReq);
     }
