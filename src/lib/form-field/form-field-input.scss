@@ -1,5 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/vendor-prefixes';
+@import '../../cdk/a11y/a11y';
 
 // The Input element proper.
 .mat-input-element {
@@ -175,6 +176,16 @@ select.mat-input-element {
     // We need to reset the `color` as well, because IE sets it to white.
     color: inherit;
     background: none;
+
+    // IE and Edge in high contrast mode reset the color for a focused select to the same color
+    // as the background, however this causes it blend in because we've reset the `background`
+    // above. We have to add a more specific selector in order to ensure that it gets the
+    // `color` from our theme instead.
+    @include cdk-high-contrast {
+      .mat-focused & {
+        color: inherit;
+      }
+    }
   }
 }
 
