@@ -587,7 +587,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       serverUpdate.assertNoOtherRequests();
 
       let keys = await scope.caches.keys();
-      let hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:${manifestHash}:`));
+      let hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:/:${manifestHash}:`));
       expect(hasOriginalCaches).toEqual(true);
 
       scope.clients.remove('default');
@@ -600,7 +600,7 @@ import {async_beforeEach, async_fit, async_it} from './async';
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo v2');
 
       keys = await scope.caches.keys();
-      hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:${manifestHash}:`));
+      hasOriginalCaches = keys.some(name => name.startsWith(`ngsw:/:${manifestHash}:`));
       expect(hasOriginalCaches).toEqual(false);
     });
 
@@ -938,13 +938,21 @@ import {async_beforeEach, async_fit, async_it} from './async';
 
     describe('cleanupOldSwCaches()', () => {
       async_it('should delete the correct caches', async() => {
-        const oldSwCacheNames = ['ngsw:active', 'ngsw:staged', 'ngsw:manifest:a1b2c3:super:duper'];
+        const oldSwCacheNames = [
+          // Example cache names from the beta versions of `@angular/service-worker`.
+          'ngsw:active',
+          'ngsw:staged',
+          'ngsw:manifest:a1b2c3:super:duper',
+          // Example cache names from the beta versions of `@angular/service-worker`.
+          'ngsw:a1b2c3:assets:foo',
+          'ngsw:db:a1b2c3:assets:bar',
+        ];
         const otherCacheNames = [
           'ngsuu:active',
           'not:ngsw:active',
-          'ngsw:staged:not',
           'NgSw:StAgEd',
-          'ngsw:manifest',
+          'ngsw:/:active',
+          'ngsw:/foo/:staged',
         ];
         const allCacheNames = oldSwCacheNames.concat(otherCacheNames);
 
