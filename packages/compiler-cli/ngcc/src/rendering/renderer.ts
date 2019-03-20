@@ -137,7 +137,8 @@ export abstract class Renderer {
 
     if (compiledFile) {
       const importManager = new ImportManager(
-          this.getImportRewriter(this.bundle.src.r3SymbolsFile, this.bundle.isFlat), IMPORT_PREFIX);
+          this.getImportRewriter(this.bundle.src.r3SymbolsFile, this.bundle.isFlatCore),
+          IMPORT_PREFIX);
 
       // TODO: remove constructor param metadata and property decorators (we need info from the
       // handlers to do this)

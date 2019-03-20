@@ -9,12 +9,16 @@
 import * as path from 'canonical-path';
 import * as mockFs from 'mock-fs';
 import * as ts from 'typescript';
+
+import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
 import {DependencyHost} from '../../src/packages/dependency_host';
 const Module = require('module');
 
 interface DepMap {
   [path: string]: {resolved: string[], missing: string[]};
 }
+
+const _ = AbsoluteFsPath.from;
 
 describe('DependencyHost', () => {
   let host: DependencyHost;
@@ -27,7 +31,8 @@ describe('DependencyHost', () => {
     it('should not generate a TS AST if the source does not contain any imports or re-exports',
        () => {
          spyOn(ts, 'createSourceFile');
-         host.computeDependencies('/no/imports/or/re-exports.js', new Set(), new Set(), new Set());
+         host.computeDependencies(
+             _('/no/imports/or/re-exports.js'), new Set(), new Set(), new Set());
          expect(ts.createSourceFile).not.toHaveBeenCalled();
        });
 
@@ -37,7 +42,7 @@ describe('DependencyHost', () => {
       const resolved = new Set();
       const missing = new Set();
       const deepImports = new Set();
-      host.computeDependencies('/external/imports.js', resolved, missing, deepImports);
+      host.computeDependencies(_('/external/imports.js'), resolved, missing, deepImports);
       expect(resolved.size).toBe(2);
       expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
       expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
@@ -49,7 +54,7 @@ describe('DependencyHost', () => {
       const resolved = new Set();
       const missing = new Set();
       const deepImports = new Set();
-      host.computeDependencies('/external/re-exports.js', resolved, missing, deepImports);
+      host.computeDependencies(_('/external/re-exports.js'), resolved, missing, deepImports);
       expect(resolved.size).toBe(2);
       expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
       expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
@@ -64,7 +69,7 @@ describe('DependencyHost', () => {
       const resolved = new Set();
       const missing = new Set();
       const deepImports = new Set();
-      host.computeDependencies('/external/imports-missing.js', resolved, missing, deepImports);
+      host.computeDependencies(_('/external/imports-missing.js'), resolved, missing, deepImports);
       expect(resolved.size).toBe(1);
       expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
       expect(missing.size).toBe(1);
@@ -84,7 +89,7 @@ describe('DependencyHost', () => {
       const resolved = new Set();
       const missing = new Set();
       const deepImports = new Set();
-      host.computeDependencies('/external/deep-import.js', resolved, missing, deepImports);
+      host.computeDependencies(_('/external/deep-import.js'), resolved, missing, deepImports);
       expect(resolved.size).toBe(0);
       expect(missing.size).toBe(0);
       expect(deepImports.size).toBe(1);
@@ -101,7 +106,7 @@ describe('DependencyHost', () => {
       const resolved = new Set();
       const missing = new Set();
       const deepImports = new Set();
-      host.computeDependencies('/internal/outer.js', resolved, missing, deepImports);
+      host.computeDependencies(_('/internal/outer.js'), resolved, missing, deepImports);
       expect(getDependenciesSpy)
           .toHaveBeenCalledWith('/internal/outer.js', resolved, missing, deepImports);
       expect(getDependenciesSpy)
@@ -121,7 +126,7 @@ describe('DependencyHost', () => {
       const resolved = new Set();
       const missing = new Set();
       const deepImports = new Set();
-      host.computeDependencies('/internal/circular-a.js', resolved, missing, deepImports);
+      host.computeDependencies(_('/internal/circular-a.js'), resolved, missing, deepImports);
       expect(resolved.size).toBe(2);
       expect(resolved.has('RESOLVED/path/to/x')).toBe(true);
       expect(resolved.has('RESOLVED/path/to/y')).toBe(true);
@@ -144,14 +149,15 @@ describe('DependencyHost', () => {
 
   describe('resolveInternal', () => {
     it('should resolve the dependency via `Module._resolveFilename`', () => {
-      spyOn(Module, '_resolveFilename').and.returnValue('RESOLVED_PATH');
-      const result = host.resolveInternal('/SOURCE/PATH/FILE', '../TARGET/PATH/FILE');
-      expect(result).toEqual('RESOLVED_PATH');
+      spyOn(Module, '_resolveFilename').and.returnValue('/RESOLVED_PATH');
+      const result = host.resolveInternal(
+          _('/SOURCE/PATH/FILE'), PathSegment.fromFsPath('../TARGET/PATH/FILE'));
+      expect(result).toEqual('/RESOLVED_PATH');
     });
 
     it('should first resolve the `to` on top of the `from` directory', () => {
-      const resolveSpy = spyOn(Module, '_resolveFilename').and.returnValue('RESOLVED_PATH');
-      host.resolveInternal('/SOURCE/PATH/FILE', '../TARGET/PATH/FILE');
+      const resolveSpy = spyOn(Module, '_resolveFilename').and.returnValue('/RESOLVED_PATH');
+      host.resolveInternal(_('/SOURCE/PATH/FILE'), PathSegment.fromFsPath('../TARGET/PATH/FILE'));
       expect(resolveSpy)
           .toHaveBeenCalledWith('/SOURCE/TARGET/PATH/FILE', jasmine.any(Object), false, undefined);
     });
@@ -159,37 +165,39 @@ describe('DependencyHost', () => {
 
   describe('tryResolveExternal', () => {
     it('should call `tryResolve`, appending `package.json` to the target path', () => {
-      const tryResolveSpy = spyOn(host, 'tryResolve').and.returnValue('PATH/TO/RESOLVED');
-      host.tryResolveEntryPoint('SOURCE_PATH', 'TARGET_PATH');
-      expect(tryResolveSpy).toHaveBeenCalledWith('SOURCE_PATH', 'TARGET_PATH/package.json');
+      const tryResolveSpy = spyOn(host, 'tryResolve').and.returnValue('/PATH/TO/RESOLVED');
+      host.tryResolveEntryPoint(_('/SOURCE_PATH'), PathSegment.fromFsPath('TARGET_PATH'));
+      expect(tryResolveSpy).toHaveBeenCalledWith('/SOURCE_PATH', 'TARGET_PATH/package.json');
     });
 
     it('should return the directory containing the result from `tryResolve', () => {
-      spyOn(host, 'tryResolve').and.returnValue('PATH/TO/RESOLVED');
-      expect(host.tryResolveEntryPoint('SOURCE_PATH', 'TARGET_PATH')).toEqual('PATH/TO');
+      spyOn(host, 'tryResolve').and.returnValue('/PATH/TO/RESOLVED');
+      expect(host.tryResolveEntryPoint(_('/SOURCE_PATH'), PathSegment.fromFsPath('TARGET_PATH')))
+          .toEqual(_('/PATH/TO'));
     });
 
     it('should return null if `tryResolve` returns null', () => {
       spyOn(host, 'tryResolve').and.returnValue(null);
-      expect(host.tryResolveEntryPoint('SOURCE_PATH', 'TARGET_PATH')).toEqual(null);
+      expect(host.tryResolveEntryPoint(_('/SOURCE_PATH'), PathSegment.fromFsPath('TARGET_PATH')))
+          .toEqual(null);
     });
   });
 
   describe('tryResolve()', () => {
     it('should resolve the dependency via `Module._resolveFilename`, passing the `from` path to the `paths` option',
        () => {
-         const resolveSpy = spyOn(Module, '_resolveFilename').and.returnValue('RESOLVED_PATH');
-         const result = host.tryResolve('SOURCE_PATH', 'TARGET_PATH');
+         const resolveSpy = spyOn(Module, '_resolveFilename').and.returnValue('/RESOLVED_PATH');
+         const result = host.tryResolve(_('/SOURCE_PATH'), PathSegment.fromFsPath('TARGET_PATH'));
          expect(resolveSpy).toHaveBeenCalledWith('TARGET_PATH', jasmine.any(Object), false, {
-           paths: ['SOURCE_PATH']
+           paths: ['/SOURCE_PATH']
          });
-         expect(result).toEqual('RESOLVED_PATH');
+         expect(result).toEqual(_('/RESOLVED_PATH'));
        });
 
     it('should return null if `Module._resolveFilename` throws an error', () => {
       const resolveSpy =
           spyOn(Module, '_resolveFilename').and.throwError(`Cannot find module 'TARGET_PATH'`);
-      const result = host.tryResolve('SOURCE_PATH', 'TARGET_PATH');
+      const result = host.tryResolve(_('/SOURCE_PATH'), PathSegment.fromFsPath('TARGET_PATH'));
       expect(result).toBe(null);
     });
   });

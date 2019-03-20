@@ -8,40 +8,30 @@
 
 import * as path from 'canonical-path';
 import * as fs from 'fs';
-import {isDefined} from '../utils';
 
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 
-/**
- * An object containing paths to the entry-points for each format.
- */
-export interface EntryPointPaths {
-  esm5?: string;
-  fesm5?: string;
-  esm2015?: string;
-  fesm2015?: string;
-  umd?: string;
-}
 
 /**
  * The possible values for the format of an entry-point.
  */
-export type EntryPointFormat = keyof(EntryPointPaths);
+export type EntryPointFormat = 'esm5' | 'esm2015' | 'umd';
 
 /**
  * An object containing information about an entry-point, including paths
  * to each of the possible entry-point formats.
  */
-export interface EntryPoint extends EntryPointPaths {
+export interface EntryPoint {
   /** The name of the package (e.g. `@angular/core`). */
   name: string;
   /** The parsed package.json file for this entry-point. */
   packageJson: EntryPointPackageJson;
   /** The path to the package that contains this entry-point. */
-  package: string;
+  package: AbsoluteFsPath;
   /** The path to this entry point. */
-  path: string;
+  path: AbsoluteFsPath;
   /** The path to a typings (.d.ts) file for this entry-point. */
-  typings: string;
+  typings: AbsoluteFsPath;
 }
 
 interface PackageJsonFormatProperties {
@@ -73,7 +63,8 @@ export type EntryPointJsonProperty = keyof(PackageJsonFormatProperties);
  * @param entryPointPath the absolute path to the potential entry-point.
  * @returns An entry-point if it is valid, `null` otherwise.
  */
-export function getEntryPointInfo(packagePath: string, entryPointPath: string): EntryPoint|null {
+export function getEntryPointInfo(
+    packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath): EntryPoint|null {
   const packageJsonPath = path.resolve(entryPointPath, 'package.json');
   if (!fs.existsSync(packageJsonPath)) {
     return null;
@@ -98,25 +89,13 @@ export function getEntryPointInfo(packagePath: string, entryPointPath: string): 
     return null;
   }
 
-  const formats = Object.keys(entryPointPackageJson)
-                      .map((property: EntryPointJsonProperty) => {
-                        const format = getEntryPointFormat(entryPointPackageJson, property);
-                        return format ? {property, format} : undefined;
-                      })
-                      .filter(isDefined);
-
   const entryPointInfo: EntryPoint = {
     name: entryPointPackageJson.name,
     packageJson: entryPointPackageJson,
     package: packagePath,
     path: entryPointPath,
-    typings: path.resolve(entryPointPath, typings)
+    typings: AbsoluteFsPath.from(path.resolve(entryPointPath, typings)),
   };
-
-  // Add the formats to the entry-point info object.
-  formats.forEach(
-      item => entryPointInfo[item.format] =
-          path.resolve(entryPointPath, entryPointPackageJson[item.property] !));
 
   return entryPointInfo;
 }
@@ -124,22 +103,17 @@ export function getEntryPointInfo(packagePath: string, entryPointPath: string): 
 /**
  * Convert a package.json property into an entry-point format.
  *
- * The actual format is dependent not only on the property itself but also
- * on what other properties exist in the package.json.
- *
- * @param entryPointProperties The package.json that contains the properties.
  * @param property The property to convert to a format.
  * @returns An entry-point format or `undefined` if none match the given property.
  */
-export function getEntryPointFormat(
-    entryPointProperties: EntryPointPackageJson, property: string): EntryPointFormat|undefined {
+export function getEntryPointFormat(property: string): EntryPointFormat|undefined {
   switch (property) {
     case 'fesm2015':
-      return 'fesm2015';
+      return 'esm2015';
     case 'fesm5':
-      return 'fesm5';
+      return 'esm5';
     case 'es2015':
-      return !entryPointProperties.fesm2015 ? 'fesm2015' : 'esm2015';
+      return 'esm2015';
     case 'esm2015':
       return 'esm2015';
     case 'esm5':
@@ -147,7 +121,7 @@ export function getEntryPointFormat(
     case 'main':
       return 'umd';
     case 'module':
-      return !entryPointProperties.fesm5 ? 'fesm5' : 'esm5';
+      return 'esm5';
     default:
       return undefined;
   }

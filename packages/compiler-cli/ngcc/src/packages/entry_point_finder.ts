@@ -8,6 +8,7 @@
 import * as path from 'canonical-path';
 import * as fs from 'fs';
 
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DependencyResolver, SortedEntryPointsInfo} from './dependency_resolver';
 import {EntryPoint, getEntryPointInfo} from './entry_point';
 
@@ -18,10 +19,9 @@ export class EntryPointFinder {
    * Search the given directory, and sub-directories, for Angular package entry points.
    * @param sourceDirectory An absolute path to the directory to search for entry points.
    */
-  findEntryPoints(sourceDirectory: string, targetEntryPointPath?: string): SortedEntryPointsInfo {
+  findEntryPoints(sourceDirectory: AbsoluteFsPath, targetEntryPointPath?: AbsoluteFsPath):
+      SortedEntryPointsInfo {
     const unsortedEntryPoints = walkDirectoryForEntryPoints(sourceDirectory);
-    targetEntryPointPath =
-        targetEntryPointPath && path.resolve(sourceDirectory, targetEntryPointPath);
     const targetEntryPoint = targetEntryPointPath ?
         unsortedEntryPoints.find(entryPoint => entryPoint.path === targetEntryPointPath) :
         undefined;
@@ -34,7 +34,7 @@ export class EntryPointFinder {
  * The function will recurse into directories that start with `@...`, e.g. `@angular/...`.
  * @param sourceDirectory An absolute path to the root directory where searching begins.
  */
-function walkDirectoryForEntryPoints(sourceDirectory: string): EntryPoint[] {
+function walkDirectoryForEntryPoints(sourceDirectory: AbsoluteFsPath): EntryPoint[] {
   const entryPoints: EntryPoint[] = [];
   fs.readdirSync(sourceDirectory)
       // Not interested in hidden files
@@ -49,14 +49,15 @@ function walkDirectoryForEntryPoints(sourceDirectory: string): EntryPoint[] {
       .forEach(p => {
         // Either the directory is a potential package or a namespace containing packages (e.g
         // `@angular`).
-        const packagePath = path.join(sourceDirectory, p);
+        const packagePath = AbsoluteFsPath.from(path.join(sourceDirectory, p));
         if (p.startsWith('@')) {
           entryPoints.push(...walkDirectoryForEntryPoints(packagePath));
         } else {
           entryPoints.push(...getEntryPointsForPackage(packagePath));
 
           // Also check for any nested node_modules in this package
-          const nestedNodeModulesPath = path.resolve(packagePath, 'node_modules');
+          const nestedNodeModulesPath =
+              AbsoluteFsPath.from(path.resolve(packagePath, 'node_modules'));
           if (fs.existsSync(nestedNodeModulesPath)) {
             entryPoints.push(...walkDirectoryForEntryPoints(nestedNodeModulesPath));
           }
@@ -70,7 +71,7 @@ function walkDirectoryForEntryPoints(sourceDirectory: string): EntryPoint[] {
  * @param packagePath The absolute path to an npm package that may contain entry points
  * @returns An array of entry points that were discovered.
  */
-function getEntryPointsForPackage(packagePath: string): EntryPoint[] {
+function getEntryPointsForPackage(packagePath: AbsoluteFsPath): EntryPoint[] {
   const entryPoints: EntryPoint[] = [];
 
   // Try to get an entry point from the top level package directory
@@ -96,7 +97,7 @@ function getEntryPointsForPackage(packagePath: string): EntryPoint[] {
  * @param dir the directory to recursively walk.
  * @param fn the function to apply to each directory.
  */
-function walkDirectory(dir: string, fn: (dir: string) => void) {
+function walkDirectory(dir: AbsoluteFsPath, fn: (dir: AbsoluteFsPath) => void) {
   return fs
       .readdirSync(dir)
       // Not interested in hidden files
@@ -108,9 +109,9 @@ function walkDirectory(dir: string, fn: (dir: string) => void) {
         const stat = fs.lstatSync(path.resolve(dir, p));
         return stat.isDirectory() && !stat.isSymbolicLink();
       })
-      .forEach(subdir => {
-        subdir = path.resolve(dir, subdir);
-        fn(subdir);
-        walkDirectory(subdir, fn);
+      .forEach(subDir => {
+        const resolvedSubDir = AbsoluteFsPath.from(path.resolve(dir, subDir));
+        fn(resolvedSubDir);
+        walkDirectory(resolvedSubDir, fn);
       });
 }

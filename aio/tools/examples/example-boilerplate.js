@@ -72,7 +72,7 @@ class ExampleBoilerPlate {
       // the module typings if we specified an "es2015" format. This means that
       // we also need to build with "fesm2015" in order to get updated typings
       // which are needed for compilation.
-      shelljs.exec(`yarn --cwd ${SHARED_PATH} ivy-ngcc`);
+      shelljs.exec(`yarn --cwd ${SHARED_PATH} ivy-ngcc --properties module es2015`);
     }
 
     exampleFolders.forEach(exampleFolder => {
