@@ -25,9 +25,17 @@ export function isSwitchableVariableDeclaration(node: ts.Node):
  */
 export interface ModuleWithProvidersFunction {
   /**
+   * The name of the declared function.
+   */
+  name: string;
+  /**
    * The declaration of the function that returns the `ModuleWithProviders` object.
    */
   declaration: ts.SignatureDeclaration;
+  /**
+   * Declaration of the containing class (if this is a method)
+   */
+  container: ts.Declaration|null;
   /**
    * The identifier of the `ngModule` property on the `ModuleWithProviders` object.
    */

@@ -374,16 +374,20 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       if (this.isClass(declaration.node)) {
         this.getMembersOfClass(declaration.node).forEach(member => {
           if (member.isStatic) {
-            const info = this.parseForModuleWithProviders(member.node);
+            const info = this.parseForModuleWithProviders(
+                member.name, member.node, member.implementation, declaration.node);
             if (info) {
               infos.push(info);
             }
           }
         });
       } else {
-        const info = this.parseForModuleWithProviders(declaration.node);
-        if (info) {
-          infos.push(info);
+        if (isNamedDeclaration(declaration.node)) {
+          const info =
+              this.parseForModuleWithProviders(declaration.node.name.text, declaration.node);
+          if (info) {
+            infos.push(info);
+          }
         }
       }
     });
@@ -659,8 +663,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Matching statements will look like:  `tslib_1.__decorate(...);`.
    * @param statement the statement that may contain the call.
    * @param helperName the name of the helper we are looking for.
-   * @returns the node that corresponds to the `__decorate(...)` call or null if the statement does
-   * not match.
+   * @returns the node that corresponds to the `__decorate(...)` call or null if the statement
+   * does not match.
    */
   protected getHelperCall(statement: ts.Statement, helperName: string): ts.CallExpression|null {
     if (ts.isExpressionStatement(statement)) {
@@ -1004,7 +1008,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   /**
    * Search statements related to the given class for calls to the specified helper.
    * @param classSymbol the class whose helper calls we are interested in.
-   * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested in.
+   * @param helperName the name of the helper (e.g. `__decorate`) whose calls we are interested
+   * in.
    * @returns an array of CallExpression nodes for each matching helper call.
    */
   protected getHelperCallsForClass(classSymbol: ts.Symbol, helperName: string):
@@ -1099,8 +1104,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * Only the first declaration with a given name is added to the map; subsequent classes will be
    * ignored.
    *
-   * We are most interested in classes that are publicly exported from the entry point, so these are
-   * added to the map first, to ensure that they are not ignored.
+   * We are most interested in classes that are publicly exported from the entry point, so these
+   * are added to the map first, to ensure that they are not ignored.
    *
    * @param dtsRootFileName The filename of the entry-point to the `dtsTypings` program.
    * @param dtsProgram The program containing all the typings files.
@@ -1126,15 +1131,23 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
-   * Parse the given node, to see if it is a function that returns a `ModuleWithProviders` object.
-   * @param node a node to check to see if it is a function that returns a `ModuleWithProviders`
-   * object.
+   * Parse a function/method node (or its implementation), to see if it returns a
+   * `ModuleWithProviders` object.
+   * @param name The name of the function.
+   * @param node the node to check - this could be a function, a method or a variable declaration.
+   * @param implementation the actual function expression if `node` is a variable declaration.
+   * @param container the class that contains the function, if it is a method.
    * @returns info about the function if it does return a `ModuleWithProviders` object; `null`
    * otherwise.
    */
-  protected parseForModuleWithProviders(node: ts.Node|null): ModuleWithProvidersFunction|null {
-    const declaration =
-        node && (ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node)) ? node : null;
+  protected parseForModuleWithProviders(
+      name: string, node: ts.Node|null, implementation: ts.Node|null = node,
+      container: ts.Declaration|null = null): ModuleWithProvidersFunction|null {
+    const declaration = implementation &&
+            (ts.isFunctionDeclaration(implementation) || ts.isMethodDeclaration(implementation) ||
+             ts.isFunctionExpression(implementation)) ?
+        implementation :
+        null;
     const body = declaration ? this.getDefinitionOfFunction(declaration).body : null;
     const lastStatement = body && body[body.length - 1];
     const returnExpression =
@@ -1147,7 +1160,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     const ngModule = ngModuleProperty && ts.isPropertyAssignment(ngModuleProperty) &&
             ts.isIdentifier(ngModuleProperty.initializer) && ngModuleProperty.initializer ||
         null;
-    return ngModule && declaration && {ngModule, declaration};
+    return ngModule && declaration && {name, ngModule, declaration, container};
   }
 }
 

@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {ReferencesRegistry} from '../../../src/ngtsc/annotations';
 import {Reference} from '../../../src/ngtsc/imports';
 import {Declaration} from '../../../src/ngtsc/reflection';
-import {NgccReflectionHost} from '../host/ngcc_host';
+import {ModuleWithProvidersFunction, NgccReflectionHost} from '../host/ngcc_host';
 import {isDefined} from '../utils';
 
 export interface ModuleWithProvidersInfo {
@@ -38,7 +38,7 @@ export class ModuleWithProvidersAnalyzer {
     rootFiles.forEach(f => {
       const fns = this.host.getModuleWithProvidersFunctions(f);
       fns && fns.forEach(fn => {
-        const dtsFn = this.getDtsDeclaration(fn.declaration);
+        const dtsFn = this.getDtsDeclarationForFunction(fn);
         const typeParam = dtsFn.type && ts.isTypeReferenceNode(dtsFn.type) &&
                 dtsFn.type.typeArguments && dtsFn.type.typeArguments[0] ||
             null;
@@ -82,28 +82,27 @@ export class ModuleWithProvidersAnalyzer {
     return program.getRootFileNames().map(f => program.getSourceFile(f)).filter(isDefined);
   }
 
-  private getDtsDeclaration(fn: ts.SignatureDeclaration) {
+  private getDtsDeclarationForFunction(fn: ModuleWithProvidersFunction) {
     let dtsFn: ts.Declaration|null = null;
-    const containerClass = this.host.getClassSymbol(fn.parent);
-    const fnName = fn.name && ts.isIdentifier(fn.name) && fn.name.text;
-    if (containerClass && fnName) {
+    const containerClass = fn.container && this.host.getClassSymbol(fn.container);
+    if (containerClass) {
       const dtsClass = this.host.getDtsDeclaration(containerClass.valueDeclaration);
       // Get the declaration of the matching static method
       dtsFn = dtsClass && ts.isClassDeclaration(dtsClass) ?
           dtsClass.members
               .find(
                   member => ts.isMethodDeclaration(member) && ts.isIdentifier(member.name) &&
-                      member.name.text === fnName) as ts.Declaration :
+                      member.name.text === fn.name) as ts.Declaration :
           null;
     } else {
-      dtsFn = this.host.getDtsDeclaration(fn);
+      dtsFn = this.host.getDtsDeclaration(fn.declaration);
     }
     if (!dtsFn) {
-      throw new Error(`Matching type declaration for ${fn.getText()} is missing`);
+      throw new Error(`Matching type declaration for ${fn.declaration.getText()} is missing`);
     }
     if (!isFunctionOrMethod(dtsFn)) {
       throw new Error(
-          `Matching type declaration for ${fn.getText()} is not a function: ${dtsFn.getText()}`);
+          `Matching type declaration for ${fn.declaration.getText()} is not a function: ${dtsFn.getText()}`);
     }
     return dtsFn;
   }
