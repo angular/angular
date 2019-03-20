@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {TNode} from './node';
 import {LQueries} from './query';
 import {RComment, RElement} from './renderer';
 import {StylingContext} from './styling';
-import {HOST, LView, NEXT, PARENT, QUERIES} from './view';
+import {HOST, LView, NEXT, PARENT, QUERIES, T_HOST} from './view';
+
 
 /**
  * Special location which allows easy identification of type. If we have an array which was
@@ -23,10 +25,10 @@ export const TYPE = 1;
  * Uglify will inline these when minifying so there shouldn't be a cost.
  */
 export const ACTIVE_INDEX = 2;
-// PARENT, NEXT, and QUERIES are indices 3, 4, and 5.
+// PARENT, NEXT, QUERIES and T_HOST are indices 3, 4, 5 and 6.
 // As we already have these constants in LView, we don't need to re-create them.
-export const VIEWS = 6;
 export const NATIVE = 7;
+export const VIEWS = 8;
 
 /**
  * The state associated with a container.
@@ -83,17 +85,22 @@ export interface LContainer extends Array<any> {
   // `[QUERIES]` in it which are not needed for `LContainer` (only needed for Template)
 
   /**
-   * A list of the container's currently active child views. Views will be inserted
-   * here as they are added and spliced from here when they are removed. We need
-   * to keep a record of current views so we know which views are already in the DOM
-   * (and don't need to be re-added) and so we can remove views from the DOM when they
-   * are no longer required.
+   * Pointer to the `TNode` which represents the host of the container.
    */
-  [VIEWS]: LView[];
+  [T_HOST]: TNode;
 
   /** The comment element that serves as an anchor for this LContainer. */
   readonly[NATIVE]:
       RComment;  // TODO(misko): remove as this value can be gotten by unwrapping `[HOST]`
+
+  /**
+*A list of the container's currently active child views. Views will be inserted
+*here as they are added and spliced from here when they are removed. We need
+*to keep a record of current views so we know which views are already in the DOM
+*(and don't need to be re-added) and so we can remove views from the DOM when they
+*are no longer required.
+*/
+  [VIEWS]: LView[];
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

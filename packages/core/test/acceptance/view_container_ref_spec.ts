@@ -6,15 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Component, Directive, NO_ERRORS_SCHEMA, QueryList, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
-import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
+import {ivyEnabled, onlyInIvy, polyfillGoogGetMsg} from '@angular/private/testing';
 
 describe('ViewContainerRef', () => {
 
+  const TRANSLATIONS: any = {
+    'Bar': 'o',
+    '{$startTagBefore}{$closeTagBefore}{$startTagDiv}{$startTagInside}{$closeTagInside}{$closeTagDiv}{$startTagAfter}{$closeTagAfter}':
+        'F{$startTagDiv}{$closeTagDiv}o',
+    '{$startTagBefore}{$closeTagBefore}{$startTagDiv}{$startTagIn}{$closeTagIn}{$closeTagDiv}{$startTagAfter}{$closeTagAfter}':
+        '{$startTagDiv}{$closeTagDiv}{$startTagBefore}{$closeTagBefore}'
+  };
+
   beforeEach(() => {
-    TestBed.configureTestingModule({declarations: [ViewContainerRefComp, ViewContainerRefApp]});
+    polyfillGoogGetMsg(TRANSLATIONS);
+    TestBed.configureTestingModule(
+        {declarations: [StructDir, ViewContainerRefComp, ViewContainerRefApp, DestroyCasesComp]});
   });
 
   describe('insert', () => {
@@ -80,6 +90,142 @@ describe('ViewContainerRef', () => {
         });
   });
 
+  describe('destroy should clean the DOM in all cases:', () => {
+    function executeTest(template: string) {
+      TestBed.overrideTemplate(DestroyCasesComp, template).configureTestingModule({
+        schemas: [NO_ERRORS_SCHEMA]
+      });
+
+      const fixture = TestBed.createComponent(DestroyCasesComp);
+      fixture.detectChanges();
+      const initial = fixture.nativeElement.innerHTML;
+
+      const structDirs = fixture.componentInstance.structDirs.toArray();
+
+      structDirs.forEach(structDir => structDir.create());
+      fixture.detectChanges();
+      expect(fixture.nativeElement).toHaveText('Foo');
+
+      structDirs.forEach(structDir => structDir.destroy());
+      fixture.detectChanges();
+      expect(fixture.nativeElement.innerHTML).toEqual(initial);
+    }
+
+    it('when nested ng-container', () => {
+      executeTest(`
+        <ng-template structDir>
+          <before></before>
+          <ng-container>
+            <before></before>
+            <ng-container>
+              <inside>Foo</inside>
+            </ng-container>
+            <after></after>
+          </ng-container>
+          <after></after>
+        </ng-template>`);
+    });
+
+    it('when ViewContainerRef is on a ng-container', () => {
+      executeTest(`
+        <ng-template #foo>
+          <span>Foo</span>
+        </ng-template>
+        
+        <ng-template structDir>
+          <before></before>
+          <ng-container [ngTemplateOutlet]="foo">
+            <inside></inside>
+          </ng-container>
+          <after></after>
+        </ng-template>`);
+    });
+
+    it('when ViewContainerRef is on an element', () => {
+      executeTest(`
+      <ng-template #foo>
+        <span>Foo</span>
+      </ng-template>
+      
+      <ng-template structDir>
+        <before></before>
+        <div [ngTemplateOutlet]="foo">
+          <inside></inside>
+        </div>
+        <after></after>
+      </ng-template>`);
+    });
+
+    it('when ViewContainerRef is on a ng-template', () => {
+      executeTest(`
+      <ng-template #foo>
+        <span>Foo</span>
+      </ng-template>
+      
+      <ng-template structDir>
+        <before></before>
+        <ng-template [ngTemplateOutlet]="foo"></ng-template>
+        <after></after>
+      </ng-template>`);
+    });
+
+    it('when ViewContainerRef is on an element inside a ng-container', () => {
+      executeTest(`
+      <ng-template #foo>
+        <span>Foo</span>
+      </ng-template>
+      
+      <ng-template structDir>
+        <before></before>
+        <ng-container>
+          <before></before>
+          <div [ngTemplateOutlet]="foo">
+            <inside></inside>
+          </div>
+          <after></after>
+        </ng-container>
+        <after></after>
+      </ng-template>`);
+    });
+
+    onlyInIvy('Ivy i18n logic')
+        .it('when ViewContainerRef is on an element inside a ng-container with i18n', () => {
+          executeTest(`
+      <ng-template #foo>
+        <span i18n>Bar</span>
+      </ng-template>
+      
+      <ng-template structDir>
+        <before></before>
+        <ng-container i18n>
+          <before></before>
+          <div [ngTemplateOutlet]="foo">
+            <inside></inside>
+          </div>
+          <after></after>
+        </ng-container>
+        <after></after>
+      </ng-template>`);
+        });
+
+    onlyInIvy('Ivy i18n logic')
+        .it('when ViewContainerRef is on an element, and i18n is on the parent ViewContainerRef',
+            () => {
+              executeTest(`
+      <ng-template #foo>
+        <span>Foo</span>
+      </ng-template>
+      
+      <ng-template structDir i18n>
+        <before></before>
+        <div [ngTemplateOutlet]="foo">
+          <in></in>
+        </div>
+        <after></after>
+      </ng-template>`);
+            });
+  });
+
 });
 
 @Component({
@@ -104,4 +250,18 @@ class ViewContainerRefComp {
 })
 class ViewContainerRefApp {
   @ViewChild(ViewContainerRefComp) vcrComp !: ViewContainerRefComp;
+}
+
+@Directive({selector: '[structDir]'})
+export class StructDir {
+  constructor(private vcref: ViewContainerRef, private tplRef: TemplateRef<any>) {}
+
+  create() { this.vcref.createEmbeddedView(this.tplRef); }
+
+  destroy() { this.vcref.clear(); }
+}
+
+@Component({selector: 'destroy-cases', template: `  `})
+class DestroyCasesComp {
+  @ViewChildren(StructDir) structDirs !: QueryList<StructDir>;
 }

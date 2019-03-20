@@ -17,7 +17,8 @@ export function polyfillGoogGetMsg(translations: {[key: string]: string} = {}): 
   const glob = (global as any);
   glob.goog = glob.goog || {};
   glob.goog.getMsg = function(input: string, placeholders: {[key: string]: string} = {}) {
-    if (typeof translations[input] !== 'undefined') {  // to account for empty string
+    if (typeof translations[input] !== 'undefined') {  // to account for
+                                                       // empty string
       input = translations[input];
     }
     return Object.keys(placeholders).length ?
