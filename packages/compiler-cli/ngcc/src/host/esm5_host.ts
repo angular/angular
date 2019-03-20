@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, Declaration, Decorator, FunctionDefinition, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {getNameText, hasNameIdentifier} from '../utils';
 
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
@@ -36,9 +36,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   /**
    * Check whether the given node actually represents a class.
    */
-  isClass(node: ts.Node): node is ClassDeclaration {
-    return super.isClass(node) || !!this.getClassSymbol(node);
-  }
+  isClass(node: ts.Node): node is ClassDeclaration { return !!this.getClassDeclaration(node); }
 
   /**
    * Determines whether the given declaration, which should be a "class", has a base "class".
@@ -48,11 +46,13 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    */
   hasBaseClass(clazz: ClassDeclaration): boolean {
-    const classSymbol = this.getClassSymbol(clazz);
-    if (!classSymbol) return false;
+    if (super.hasBaseClass(clazz)) return true;
 
-    const iifeBody = classSymbol.valueDeclaration.parent;
-    if (!iifeBody || !ts.isBlock(iifeBody)) return false;
+    const classDeclaration = this.getClassDeclaration(clazz);
+    if (!classDeclaration) return false;
+
+    const iifeBody = getIifeBody(classDeclaration);
+    if (!iifeBody) return false;
 
     const iife = iifeBody.parent;
     if (!iife || !ts.isFunctionExpression(iife)) return false;
@@ -61,38 +61,39 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   }
 
   /**
-   * Find a symbol for a node that we think is a class.
+   * Find the declaration of a class given a node that we think represents the class.
    *
-   * In ES5, the implementation of a class is a function expression that is hidden inside an IIFE.
-   * So we might need to dig around inside to get hold of the "class" symbol.
+   * In ES5, the implementation of a class is a function expression that is hidden inside an IIFE,
+   * whose value is assigned to a variable (which represents the class to the rest of the program).
+   * So we might need to dig around to get hold of the "class" declaration.
    *
    * `node` might be one of:
-   * - A class declaration (from a declaration file).
+   * - A class declaration (from a typings file).
    * - The declaration of the outer variable, which is assigned the result of the IIFE.
    * - The function declaration inside the IIFE, which is eventually returned and assigned to the
    *   outer variable.
    *
-   * @param node the top level declaration that represents an exported class or the function
-   *     expression inside the IIFE.
-   * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
+   * The returned declaration is either the class declaration (from the typings file) or the outer
+   * variable declaration.
+   *
+   * @param node the node that represents the class whose declaration we are finding.
+   * @returns the declaration of the class or `undefined` if it is not a "class".
    */
-  getClassSymbol(node: ts.Node): ClassSymbol|undefined {
-    const symbol = super.getClassSymbol(node);
-    if (symbol) return symbol;
+  getClassDeclaration(node: ts.Node): ClassDeclaration|undefined {
+    const superDeclaration = super.getClassDeclaration(node);
+    if (superDeclaration) return superDeclaration;
 
-    if (ts.isVariableDeclaration(node)) {
-      const iifeBody = getIifeBody(node);
-      if (!iifeBody) return undefined;
+    const outerClass = getClassDeclarationFromInnerFunctionDeclaration(node);
+    if (outerClass) return outerClass;
 
-      const innerClassIdentifier = getReturnIdentifier(iifeBody);
-      if (!innerClassIdentifier) return undefined;
-
-      return this.checker.getSymbolAtLocation(innerClassIdentifier) as ClassSymbol;
+    // At this point, `node` could be the outer variable declaration of an ES5 class.
+    // If so, ensure that it has a `name` identifier and the correct structure.
+    if (!isNamedVariableDeclaration(node) ||
+        !this.getInnerFunctionDeclarationFromClassDeclaration(node)) {
+      return undefined;
     }
 
-    const outerClassNode = getClassDeclarationFromInnerFunctionDeclaration(node);
-
-    return outerClassNode && this.getClassSymbol(outerClassNode);
+    return node;
   }
 
   /**
@@ -115,12 +116,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     // Get the identifier for the outer class node (if any).
     const outerClassNode = getClassDeclarationFromInnerFunctionDeclaration(id.parent);
-
-    if (outerClassNode && hasNameIdentifier(outerClassNode)) {
-      id = outerClassNode.name;
-    }
-
-    const declaration = super.getDeclarationOfIdentifier(id);
+    const declaration = super.getDeclarationOfIdentifier(outerClassNode ? outerClassNode.name : id);
 
     if (!declaration || !ts.isVariableDeclaration(declaration.node) ||
         declaration.node.initializer !== undefined ||
@@ -172,29 +168,147 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     return {node, body: statements || null, parameters};
   }
 
+  /**
+   * Examine a declaration which should be of a class, and return metadata about the members of the
+   * class.
+   *
+   * @param declaration a TypeScript `ts.Declaration` node representing the class over which to
+   * reflect.
+   *
+   * @returns an array of `ClassMember` metadata representing the members of the class.
+   *
+   * @throws if `declaration` does not resolve to a class declaration.
+   */
+  getMembersOfClass(clazz: ClassDeclaration): ClassMember[] {
+    if (super.isClass(clazz)) return super.getMembersOfClass(clazz);
+
+    // The necessary info is on the inner function declaration (inside the ES5 class IIFE).
+    const innerFunctionSymbol = this.getInnerFunctionSymbolFromClassDeclaration(clazz);
+    if (!innerFunctionSymbol) {
+      throw new Error(
+          `Attempted to get members of a non-class: "${(clazz as ClassDeclaration).getText()}"`);
+    }
+
+    return this.getMembersOfSymbol(innerFunctionSymbol);
+  }
+
 
   ///////////// Protected Helpers /////////////
 
   /**
+   * Get the inner function declaration of an ES5-style class.
+   *
+   * In ES5, the implementation of a class is a function expression that is hidden inside an IIFE
+   * and returned to be assigned to a variable outside the IIFE, which is what the rest of the
+   * program interacts with.
+   *
+   * Given the outer variable declaration, we want to get to the inner function declaration.
+   *
+   * @param node a node that could be the variable expression outside an ES5 class IIFE.
+   * @param checker the TS program TypeChecker
+   * @returns the inner function declaration or `undefined` if it is not a "class".
+   */
+  protected getInnerFunctionDeclarationFromClassDeclaration(node: ts.Node): ts.FunctionDeclaration
+      |undefined {
+    if (!ts.isVariableDeclaration(node)) return undefined;
+
+    // Extract the IIFE body (if any).
+    const iifeBody = getIifeBody(node);
+    if (!iifeBody) return undefined;
+
+    // Extract the function declaration from inside the IIFE.
+    const functionDeclaration = iifeBody.statements.find(ts.isFunctionDeclaration);
+    if (!functionDeclaration) return undefined;
+
+    // Extract the return identifier of the IIFE.
+    const returnIdentifier = getReturnIdentifier(iifeBody);
+    const returnIdentifierSymbol =
+        returnIdentifier && this.checker.getSymbolAtLocation(returnIdentifier);
+    if (!returnIdentifierSymbol) return undefined;
+
+    // Verify that the inner function is returned.
+    if (returnIdentifierSymbol.valueDeclaration !== functionDeclaration) return undefined;
+
+    return functionDeclaration;
+  }
+
+  /**
+   * Get the identifier symbol of the inner function declaration of an ES5-style class.
+   *
+   * In ES5, the implementation of a class is a function expression that is hidden inside an IIFE
+   * and returned to be assigned to a variable outside the IIFE, which is what the rest of the
+   * program interacts with.
+   *
+   * Given the outer variable declaration, we want to get to the identifier symbol of the inner
+   * function declaration.
+   *
+   * @param clazz a node that could be the variable expression outside an ES5 class IIFE.
+   * @param checker the TS program TypeChecker
+   * @returns the inner function declaration identifier symbol or `undefined` if it is not a "class"
+   * or has no identifier.
+   */
+  protected getInnerFunctionSymbolFromClassDeclaration(clazz: ClassDeclaration): ClassSymbol
+      |undefined {
+    const innerFunctionDeclaration = this.getInnerFunctionDeclarationFromClassDeclaration(clazz);
+    if (!innerFunctionDeclaration || !hasNameIdentifier(innerFunctionDeclaration)) return undefined;
+
+    return this.checker.getSymbolAtLocation(innerFunctionDeclaration.name) as ClassSymbol;
+  }
+
+  /**
    * Find the declarations of the constructor parameters of a class identified by its symbol.
    *
-   * In ESM5 there is no "class" so the constructor that we want is actually the declaration
-   * function itself.
+   * In ESM5, there is no "class" so the constructor that we want is actually the inner function
+   * declaration inside the IIFE, whose return value is assigned to the outer variable declaration
+   * (that represents the class to the rest of the program).
    *
-   * @param classSymbol the class whose parameters we want to find.
+   * @param classSymbol the symbol of the class (i.e. the outer variable declaration) whose
+   * parameters we want to find.
    * @returns an array of `ts.ParameterDeclaration` objects representing each of the parameters in
-   * the class's constructor or null if there is no constructor.
+   * the class's constructor or `null` if there is no constructor.
    */
   protected getConstructorParameterDeclarations(classSymbol: ClassSymbol):
       ts.ParameterDeclaration[]|null {
-    const constructor = classSymbol.valueDeclaration as ts.FunctionDeclaration;
+    const constructor =
+        this.getInnerFunctionDeclarationFromClassDeclaration(classSymbol.valueDeclaration);
+    if (!constructor) return null;
+
     if (constructor.parameters.length > 0) {
       return Array.from(constructor.parameters);
     }
+
     if (isSynthesizedConstructor(constructor)) {
       return null;
     }
+
     return [];
+  }
+
+  /**
+   * Get the parameter decorators of a class constructor.
+   *
+   * @param classSymbol the symbol of the class (i.e. the outer variable declaration) whose
+   * parameter info we want to get.
+   * @param parameterNodes the array of TypeScript parameter nodes for this class's constructor.
+   * @returns an array of constructor parameter info objects.
+   */
+  protected getConstructorParamInfo(
+      classSymbol: ClassSymbol, parameterNodes: ts.ParameterDeclaration[]): CtorParameter[] {
+    // The necessary info is on the inner function declaration (inside the ES5 class IIFE).
+    const innerFunctionSymbol =
+        this.getInnerFunctionSymbolFromClassDeclaration(classSymbol.valueDeclaration);
+    if (!innerFunctionSymbol) return [];
+
+    return super.getConstructorParamInfo(innerFunctionSymbol, parameterNodes);
+  }
+
+  protected getDecoratorsOfSymbol(symbol: ClassSymbol): Decorator[]|null {
+    // The necessary info is on the inner function declaration (inside the ES5 class IIFE).
+    const innerFunctionSymbol =
+        this.getInnerFunctionSymbolFromClassDeclaration(symbol.valueDeclaration);
+    if (!innerFunctionSymbol) return null;
+
+    return super.getDecoratorsOfSymbol(innerFunctionSymbol);
   }
 
   /**
@@ -389,8 +503,8 @@ function readPropertyFunctionExpression(object: ts.ObjectLiteralExpression, name
  * @param node a node that could be the function expression inside an ES5 class IIFE.
  * @returns the outer variable declaration or `undefined` if it is not a "class".
  */
-function getClassDeclarationFromInnerFunctionDeclaration(node: ts.Node): ts.VariableDeclaration|
-    undefined {
+function getClassDeclarationFromInnerFunctionDeclaration(node: ts.Node):
+    ClassDeclaration<ts.VariableDeclaration>|undefined {
   if (ts.isFunctionDeclaration(node)) {
     // It might be the function expression inside the IIFE. We need to go 5 levels up...
 
@@ -414,14 +528,16 @@ function getClassDeclarationFromInnerFunctionDeclaration(node: ts.Node): ts.Vari
     outerNode = outerNode.parent;
     if (!outerNode || !ts.isVariableDeclaration(outerNode)) return undefined;
 
-    return outerNode;
+    // Finally, ensure that the variable declaration has a `name` identifier.
+    return hasNameIdentifier(outerNode) ? outerNode : undefined;
   }
 
   return undefined;
 }
 
-function getIifeBody(declaration: ts.VariableDeclaration): ts.Block|undefined {
-  if (!declaration.initializer || !ts.isParenthesizedExpression(declaration.initializer)) {
+export function getIifeBody(declaration: ts.Declaration): ts.Block|undefined {
+  if (!ts.isVariableDeclaration(declaration) || !declaration.initializer ||
+      !ts.isParenthesizedExpression(declaration.initializer)) {
     return undefined;
   }
   const call = declaration.initializer;

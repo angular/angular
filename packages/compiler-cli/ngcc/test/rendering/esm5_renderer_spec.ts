@@ -258,28 +258,16 @@ SOME DEFINITION TEXT
       const {renderer, host, sourceFile, program} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
 
-      const badSymbolDeclaration =
-          getDeclaration(program, sourceFile.fileName, 'A', ts.isVariableDeclaration);
-      const badSymbol: any = {name: 'BadSymbol', declaration: badSymbolDeclaration};
-      const hostSpy = spyOn(host, 'getClassSymbol').and.returnValue(null);
-      expect(() => renderer.addDefinitions(output, badSymbol, 'SOME DEFINITION TEXT'))
-          .toThrowError('Compiled class does not have a valid symbol: BadSymbol in /some/file.js');
-
-
       const noIifeDeclaration =
           getDeclaration(program, sourceFile.fileName, 'NoIife', ts.isFunctionDeclaration);
       const mockNoIifeClass: any = {declaration: noIifeDeclaration, name: 'NoIife'};
-      hostSpy.and.returnValue({valueDeclaration: noIifeDeclaration});
       expect(() => renderer.addDefinitions(output, mockNoIifeClass, 'SOME DEFINITION TEXT'))
           .toThrowError(
               'Compiled class declaration is not inside an IIFE: NoIife in /some/file.js');
 
-      const badIifeWrapper: any =
-          getDeclaration(program, sourceFile.fileName, 'BadIife', ts.isVariableDeclaration);
       const badIifeDeclaration =
-          badIifeWrapper.initializer.expression.expression.body.statements[0];
+          getDeclaration(program, sourceFile.fileName, 'BadIife', ts.isVariableDeclaration);
       const mockBadIifeClass: any = {declaration: badIifeDeclaration, name: 'BadIife'};
-      hostSpy.and.returnValue({valueDeclaration: badIifeDeclaration});
       expect(() => renderer.addDefinitions(output, mockBadIifeClass, 'SOME DEFINITION TEXT'))
           .toThrowError(
               'Compiled class wrapper IIFE does not have a return statement: BadIife in /some/file.js');
