@@ -60,6 +60,10 @@ jasmine_node_test(
         "//packages/core:npm_package",
         "@npm//rxjs",
     ],
+    tags = [
+        # Disabled in AOT mode because we want ngcc to compile non-AOT Angular packages.
+        "no-ivy-aot",
+    ],
     deps = [
         ":integration_lib",
         "//tools/testing:node_no_angular",
