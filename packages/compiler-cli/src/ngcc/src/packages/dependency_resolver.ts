@@ -74,7 +74,7 @@ export class DependencyResolver {
     const ignoredDependencies: IgnoredDependency[] = [];
     const graph = new DepGraph<EntryPoint>();
 
-    // Add the entry ponts to the graph as nodes
+    // Add the entry points to the graph as nodes
     entryPoints.forEach(entryPoint => graph.addNode(entryPoint.path, entryPoint));
 
     // Now add the dependencies between them
