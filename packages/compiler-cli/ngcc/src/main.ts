@@ -7,13 +7,15 @@
  */
 
 import {AbsoluteFsPath} from '../../src/ngtsc/path';
+
 import {checkMarker, writeMarker} from './packages/build_marker';
 import {DependencyHost} from './packages/dependency_host';
 import {DependencyResolver} from './packages/dependency_resolver';
-import {EntryPointFormat, EntryPointJsonProperty, getEntryPointFormat} from './packages/entry_point';
+import {EntryPointFormat, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, getEntryPointFormat} from './packages/entry_point';
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {EntryPointFinder} from './packages/entry_point_finder';
 import {Transformer} from './packages/transformer';
+
 
 /**
  * The options to configure the ngcc compiler.
@@ -48,7 +50,8 @@ const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
  *
  * @param options The options telling ngcc what to compile and how.
  */
-export function mainNgcc({baseSourcePath, targetEntryPointPath, propertiesToConsider,
+export function mainNgcc({baseSourcePath, targetEntryPointPath,
+                          propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
                           compileAllFormats = true}: NgccOptions): void {
   const transformer = new Transformer(baseSourcePath, baseSourcePath);
   const host = new DependencyHost();
@@ -61,12 +64,10 @@ export function mainNgcc({baseSourcePath, targetEntryPointPath, propertiesToCons
     // Are we compiling the Angular core?
     const isCore = entryPoint.name === '@angular/core';
 
-    const propertiesToCompile =
-        propertiesToConsider || Object.keys(entryPoint.packageJson) as EntryPointJsonProperty[];
     const compiledFormats = new Set<string>();
 
-    for (let i = 0; i < propertiesToCompile.length; i++) {
-      const property = propertiesToCompile[i];
+    for (let i = 0; i < propertiesToConsider.length; i++) {
+      const property = propertiesToConsider[i];
       const formatPath = entryPoint.packageJson[property];
       const format = getEntryPointFormat(property);
 
@@ -106,7 +107,7 @@ export function mainNgcc({baseSourcePath, targetEntryPointPath, propertiesToCons
 
     if (compiledFormats.size === 0) {
       throw new Error(
-          `Failed to compile any formats for entry-point at (${entryPoint.path}). Tried ${propertiesToCompile}.`);
+          `Failed to compile any formats for entry-point at (${entryPoint.path}). Tried ${propertiesToConsider}.`);
     }
   });
 }
