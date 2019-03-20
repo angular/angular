@@ -18,9 +18,14 @@ export class EntryPointFinder {
    * Search the given directory, and sub-directories, for Angular package entry points.
    * @param sourceDirectory An absolute path to the directory to search for entry points.
    */
-  findEntryPoints(sourceDirectory: string): SortedEntryPointsInfo {
+  findEntryPoints(sourceDirectory: string, targetEntryPointPath?: string): SortedEntryPointsInfo {
     const unsortedEntryPoints = walkDirectoryForEntryPoints(sourceDirectory);
-    return this.resolver.sortEntryPointsByDependency(unsortedEntryPoints);
+    targetEntryPointPath =
+        targetEntryPointPath && path.resolve(sourceDirectory, targetEntryPointPath);
+    const targetEntryPoint = targetEntryPointPath ?
+        unsortedEntryPoints.find(entryPoint => entryPoint.path === targetEntryPointPath) :
+        undefined;
+    return this.resolver.sortEntryPointsByDependency(unsortedEntryPoints, targetEntryPoint);
   }
 }
 

@@ -7,7 +7,7 @@
  */
 
 import {DependencyHost} from '../../src/packages/dependency_host';
-import {DependencyResolver} from '../../src/packages/dependency_resolver';
+import {DependencyResolver, SortedEntryPointsInfo} from '../../src/packages/dependency_resolver';
 import {EntryPoint} from '../../src/packages/entry_point';
 
 describe('DependencyResolver', () => {
@@ -83,7 +83,7 @@ describe('DependencyResolver', () => {
     it('should error if the entry point does not have either the fesm2015 nor esm2015 formats',
        () => {
          expect(() => resolver.sortEntryPointsByDependency([{ path: 'first' } as EntryPoint]))
-             .toThrowError(`ESM2015 format (flat and non-flat) missing in 'first' entry-point.`);
+             .toThrowError(`There is no format with import statements in 'first' entry-point.`);
        });
 
     it('should capture any dependencies that were ignored', () => {
@@ -93,6 +93,23 @@ describe('DependencyResolver', () => {
         {entryPoint: first, dependencyPath: 'ignored-1'},
         {entryPoint: third, dependencyPath: 'ignored-2'},
       ]);
+    });
+
+    it('should only return dependencies of the target, if provided', () => {
+      spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies(dependencies));
+      const entryPoints = [fifth, first, fourth, second, third];
+      let sorted: SortedEntryPointsInfo;
+
+      sorted = resolver.sortEntryPointsByDependency(entryPoints, first);
+      expect(sorted.entryPoints).toEqual([fifth, fourth, third, second, first]);
+      sorted = resolver.sortEntryPointsByDependency(entryPoints, second);
+      expect(sorted.entryPoints).toEqual([fifth, fourth, third, second]);
+      sorted = resolver.sortEntryPointsByDependency(entryPoints, third);
+      expect(sorted.entryPoints).toEqual([fifth, fourth, third]);
+      sorted = resolver.sortEntryPointsByDependency(entryPoints, fourth);
+      expect(sorted.entryPoints).toEqual([fifth, fourth]);
+      sorted = resolver.sortEntryPointsByDependency(entryPoints, fifth);
+      expect(sorted.entryPoints).toEqual([fifth]);
     });
 
     interface DepMap {
