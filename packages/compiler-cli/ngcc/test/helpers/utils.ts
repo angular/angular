@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {makeProgram} from '../../../src/ngtsc/testing/in_memory_typescript';
 import {BundleProgram} from '../../src/packages/bundle_program';
-import {EntryPointFormat} from '../../src/packages/entry_point';
+import {EntryPointFormat, EntryPointJsonProperty} from '../../src/packages/entry_point';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 
 export {getDeclaration} from '../../../src/ngtsc/testing/in_memory_typescript';
@@ -22,13 +22,17 @@ export {getDeclaration} from '../../../src/ngtsc/testing/in_memory_typescript';
  * @param dtsFiles The typings files to include the bundle.
  */
 export function makeTestEntryPointBundle(
-    format: EntryPointFormat, isCore: boolean,
+    formatProperty: EntryPointJsonProperty, format: EntryPointFormat, isCore: boolean,
     files: {name: string, contents: string, isRoot?: boolean}[],
     dtsFiles?: {name: string, contents: string, isRoot?: boolean}[]): EntryPointBundle {
   const src = makeTestBundleProgram(files);
   const dts = dtsFiles ? makeTestBundleProgram(dtsFiles) : null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
-  return {format, rootDirs: [AbsoluteFsPath.fromUnchecked('/')], src, dts, isCore, isFlatCore};
+  return {
+    formatProperty,
+    format,
+    rootDirs: [AbsoluteFsPath.fromUnchecked('/')], src, dts, isCore, isFlatCore
+  };
 }
 
 /**
