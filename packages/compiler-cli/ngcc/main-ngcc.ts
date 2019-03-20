@@ -9,6 +9,8 @@
 import * as path from 'canonical-path';
 import * as yargs from 'yargs';
 
+import {AbsoluteFsPath} from '../src/ngtsc/path';
+
 import {mainNgcc} from './src/main';
 import {EntryPointJsonProperty} from './src/packages/entry_point';
 
@@ -19,7 +21,7 @@ if (require.main === module) {
       yargs
           .option('s', {
             alias: 'source',
-            describe: 'A path to the root folder to compile.',
+            describe: 'A path to the `node_modules` folder to compile.',
             default: './node_modules'
           })
           .option('f', {alias: 'formats', hidden: true, array: true})
@@ -34,8 +36,7 @@ if (require.main === module) {
           })
           .option('t', {
             alias: 'target',
-            describe: 'A path to a root folder where the compiled files will be written.',
-            defaultDescription: 'The `source` folder.'
+            describe: 'A path to a single entry-point to compile (plus its dependencies).',
           })
           .help()
           .parse(args);
@@ -45,11 +46,12 @@ if (require.main === module) {
         'The formats option (-f/--formats) has been removed. Consider the properties option (-p/--properties) instead.');
     process.exit(1);
   }
-  const baseSourcePath: string = path.resolve(options['s']);
+  const baseSourcePath = AbsoluteFsPath.from(path.resolve(options['s'] || './node_modules'));
   const propertiesToConsider: EntryPointJsonProperty[] = options['p'];
-  const baseTargetPath: string = options['t'];
+  const targetEntryPointPath =
+      options['t'] ? AbsoluteFsPath.from(path.resolve(options['t'])) : undefined;
   try {
-    mainNgcc({baseSourcePath, propertiesToConsider, baseTargetPath});
+    mainNgcc({baseSourcePath, propertiesToConsider, targetEntryPointPath});
     process.exitCode = 0;
   } catch (e) {
     console.error(e.stack || e.message);

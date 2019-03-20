@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AbsoluteFsPath} from '../../src/ngtsc/path';
 import {checkMarker, writeMarker} from './packages/build_marker';
 import {DependencyHost} from './packages/dependency_host';
 import {DependencyResolver} from './packages/dependency_resolver';
@@ -19,14 +20,12 @@ import {Transformer} from './packages/transformer';
  */
 export interface NgccOptions {
   /** The path to the node_modules folder that contains the packages to compile. */
-  baseSourcePath: string;
-  /** The path to the node_modules folder where modified files should be written. */
-  baseTargetPath?: string;
+  baseSourcePath: AbsoluteFsPath;
   /**
    * The path, relative to `baseSourcePath` of the primary package to be compiled.
    * All its dependencies will need to be compiled too.
    */
-  targetEntryPointPath?: string;
+  targetEntryPointPath?: AbsoluteFsPath;
   /**
    * Which entry-point properties in the package.json to consider when compiling.
    * Each of properties contain a path to particular bundle format for a given entry-point.
@@ -34,7 +33,7 @@ export interface NgccOptions {
   propertiesToConsider?: EntryPointJsonProperty[];
 }
 
-const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015', 'fesm5', 'fesm2015'];
+const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015'];
 
 /**
  * This is the main entry-point into ngcc (aNGular Compatibility Compiler).
@@ -44,9 +43,9 @@ const SUPPORTED_FORMATS: EntryPointFormat[] = ['esm5', 'esm2015', 'fesm5', 'fesm
  *
  * @param options The options telling ngcc what to compile and how.
  */
-export function mainNgcc({baseSourcePath, baseTargetPath = baseSourcePath, targetEntryPointPath,
-                          propertiesToConsider}: NgccOptions): void {
-  const transformer = new Transformer(baseSourcePath, baseTargetPath);
+export function mainNgcc({baseSourcePath, targetEntryPointPath, propertiesToConsider}: NgccOptions):
+    void {
+  const transformer = new Transformer(baseSourcePath, baseSourcePath);
   const host = new DependencyHost();
   const resolver = new DependencyResolver(host);
   const finder = new EntryPointFinder(resolver);
@@ -57,51 +56,50 @@ export function mainNgcc({baseSourcePath, baseTargetPath = baseSourcePath, targe
     // Are we compiling the Angular core?
     const isCore = entryPoint.name === '@angular/core';
 
-    let dtsTransformFormat: EntryPointFormat|undefined;
-
     const propertiesToCompile =
         propertiesToConsider || Object.keys(entryPoint.packageJson) as EntryPointJsonProperty[];
-    const compiledFormats = new Set<EntryPointFormat>();
+    const compiledFormats = new Set<string>();
 
     for (let i = 0; i < propertiesToCompile.length; i++) {
       const property = propertiesToCompile[i];
-      const format = getEntryPointFormat(entryPoint.packageJson, property);
+      const formatPath = entryPoint.packageJson[property];
+      const format = getEntryPointFormat(property);
 
       // No format then this property is not supposed to be compiled.
-      if (!format || SUPPORTED_FORMATS.indexOf(format) === -1) continue;
+      if (!formatPath || !format || SUPPORTED_FORMATS.indexOf(format) === -1) continue;
 
-      // We don't want to compile a format more than once.
-      // This could happen if there are multiple properties that map to the same format...
-      // E.g. `fesm5` and `module` both can point to the flat ESM5 format.
-      if (!compiledFormats.has(format)) {
-        compiledFormats.add(format);
-
-        // Use the first format found for typings transformation.
-        dtsTransformFormat = dtsTransformFormat || format;
-
-
-        if (checkMarker(entryPoint, property)) {
-          const bundle =
-              makeEntryPointBundle(entryPoint, isCore, format, format === dtsTransformFormat);
-          if (bundle) {
-            transformer.transform(entryPoint, isCore, bundle);
-          } else {
-            console.warn(
-                `Skipping ${entryPoint.name} : ${format} (no entry point file for this format).`);
-          }
-        } else {
-          console.warn(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
-        }
+      if (checkMarker(entryPoint, property)) {
+        compiledFormats.add(formatPath);
+        console.warn(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
+        continue;
       }
-      // Write the built-with-ngcc marker.
-      writeMarker(entryPoint, property);
+
+      if (!compiledFormats.has(formatPath)) {
+        const bundle = makeEntryPointBundle(
+            entryPoint.path, formatPath, entryPoint.typings, isCore, format,
+            compiledFormats.size === 0);
+        if (bundle) {
+          console.warn(`Compiling ${entryPoint.name} : ${property} as ${format}`);
+          transformer.transform(entryPoint, isCore, bundle);
+          compiledFormats.add(formatPath);
+        } else {
+          console.warn(
+              `Skipping ${entryPoint.name} : ${format} (no valid entry point file for this format).`);
+        }
+      } else {
+        console.warn(`Skipping ${entryPoint.name} : ${property} (already compiled).`);
+      }
+
+      // Either this format was just compiled or its underlying format was compiled because of a
+      // previous property.
+      if (compiledFormats.has(formatPath)) {
+        writeMarker(entryPoint, property);
+      }
     }
 
-    if (!dtsTransformFormat) {
+    if (compiledFormats.size === 0) {
       throw new Error(
           `Failed to compile any formats for entry-point at (${entryPoint.path}). Tried ${propertiesToCompile}.`);
     }
   });
 }
-
-export {NGCC_VERSION} from './packages/build_marker';

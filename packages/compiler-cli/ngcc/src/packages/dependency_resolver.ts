@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {resolve} from 'canonical-path';
 import {DepGraph} from 'dependency-graph';
+
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {DependencyHost} from './dependency_host';
-import {EntryPoint} from './entry_point';
+import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat} from './entry_point';
 
 
 /**
@@ -105,11 +108,8 @@ export class DependencyResolver {
 
     // Now add the dependencies between them
     entryPoints.forEach(entryPoint => {
-      const dependencies = new Set<string>();
-      const missing = new Set<string>();
-      const deepImports = new Set<string>();
       const entryPointPath = getEntryPointPath(entryPoint);
-      this.host.computeDependencies(entryPointPath, dependencies, missing, deepImports);
+      const {dependencies, missing, deepImports} = this.host.computeDependencies(entryPointPath);
 
       if (missing.size > 0) {
         // This entry point has dependencies that are missing
@@ -152,12 +152,16 @@ export class DependencyResolver {
   }
 }
 
-function getEntryPointPath(entryPoint: EntryPoint): string {
-  const entryPointPath =
-      entryPoint.fesm2015 || entryPoint.fesm5 || entryPoint.esm2015 || entryPoint.esm5;
-  if (!entryPointPath) {
-    throw new Error(
-        `There is no format with import statements in '${entryPoint.path}' entry-point.`);
+function getEntryPointPath(entryPoint: EntryPoint): AbsoluteFsPath {
+  const properties = Object.keys(entryPoint.packageJson);
+  for (let i = 0; i < properties.length; i++) {
+    const property = properties[i] as EntryPointJsonProperty;
+    const format = getEntryPointFormat(property);
+
+    if (format === 'esm2015' || format === 'esm5') {
+      const formatPath = entryPoint.packageJson[property] !;
+      return AbsoluteFsPath.from(resolve(entryPoint.path, formatPath));
+    }
   }
-  return entryPointPath;
+  throw new Error(`There is no format with import statements in '${entryPoint.path}' entry-point.`);
 }

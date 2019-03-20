@@ -15,8 +15,6 @@ import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 
 export {getDeclaration} from '../../../src/ngtsc/testing/in_memory_typescript';
 
-
-
 /**
  *
  * @param format The format of the bundle.
@@ -28,8 +26,8 @@ export function makeTestEntryPointBundle(
     dtsFiles?: {name: string, contents: string, isRoot?: boolean}[]): EntryPointBundle {
   const src = makeTestBundleProgram(files);
   const dts = dtsFiles ? makeTestBundleProgram(dtsFiles) : null;
-  const isFlat = src.r3SymbolsFile === null;
-  return {format, rootDirs: [AbsoluteFsPath.fromUnchecked('/')], src, dts, isFlat};
+  const isFlatCore = src.r3SymbolsFile === null;
+  return {format, rootDirs: [AbsoluteFsPath.fromUnchecked('/')], src, dts, isFlatCore};
 }
 
 /**
