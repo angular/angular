@@ -26,17 +26,17 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         .filter((dec): dec is Decorator => dec !== null);
   }
 
-  getMembersOfClass(declaration: ts.Declaration): ClassMember[] {
-    const clazz = castDeclarationToClassOrDie(declaration);
-    return clazz.members.map(member => this._reflectMember(member))
+  getMembersOfClass(clazz: ClassDeclaration): ClassMember[] {
+    const tsClazz = castDeclarationToClassOrDie(clazz);
+    return tsClazz.members.map(member => this._reflectMember(member))
         .filter((member): member is ClassMember => member !== null);
   }
 
-  getConstructorParameters(declaration: ts.Declaration): CtorParameter[]|null {
-    const clazz = castDeclarationToClassOrDie(declaration);
+  getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null {
+    const tsClazz = castDeclarationToClassOrDie(clazz);
 
     // First, find the constructor.
-    const ctor = clazz.members.find(ts.isConstructorDeclaration);
+    const ctor = tsClazz.members.find(ts.isConstructorDeclaration);
     if (ctor === undefined) {
       return null;
     }
@@ -139,9 +139,9 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return ts.isClassDeclaration(node) && (node.name !== undefined) && ts.isIdentifier(node.name);
   }
 
-  hasBaseClass(node: ts.Declaration): boolean {
-    return ts.isClassDeclaration(node) && node.heritageClauses !== undefined &&
-        node.heritageClauses.some(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
+  hasBaseClass(clazz: ClassDeclaration): boolean {
+    return ts.isClassDeclaration(clazz) && clazz.heritageClauses !== undefined &&
+        clazz.heritageClauses.some(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
@@ -166,7 +166,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     };
   }
 
-  getGenericArityOfClass(clazz: ts.Declaration): number|null {
+  getGenericArityOfClass(clazz: ClassDeclaration): number|null {
     if (!ts.isClassDeclaration(clazz)) {
       return null;
     }
@@ -419,7 +419,8 @@ export function reflectObjectLiteral(node: ts.ObjectLiteralExpression): Map<stri
   return map;
 }
 
-function castDeclarationToClassOrDie(declaration: ts.Declaration): ts.ClassDeclaration {
+function castDeclarationToClassOrDie(declaration: ClassDeclaration):
+    ClassDeclaration<ts.ClassDeclaration> {
   if (!ts.isClassDeclaration(declaration)) {
     throw new Error(
         `Reflecting on a ${ts.SyntaxKind[declaration.kind]} instead of a ClassDeclaration.`);

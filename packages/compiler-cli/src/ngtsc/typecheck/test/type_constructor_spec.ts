@@ -10,8 +10,9 @@ import * as ts from 'typescript';
 
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ReferenceEmitter} from '../../imports';
 import {LogicalFileSystem} from '../../path';
+import {isNamedClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
-import {getRootDirs, isNamedClassDeclaration} from '../../util/src/typescript';
+import {getRootDirs} from '../../util/src/typescript';
 import {TypeCheckContext} from '../src/context';
 import {TypeCheckProgramHost} from '../src/host';
 

@@ -362,16 +362,13 @@ export interface ReflectionHost {
    * Examine a declaration which should be of a class, and return metadata about the members of the
    * class.
    *
-   * @param declaration a TypeScript `ts.Declaration` node representing the class over which to
-   * reflect. If the source is in ES6 format, this will be a `ts.ClassDeclaration` node. If the
-   * source is in ES5 format, this might be a `ts.VariableDeclaration` as classes in ES5 are
-   * represented as the result of an IIFE execution.
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    *
    * @returns an array of `ClassMember` metadata representing the members of the class.
    *
    * @throws if `declaration` does not resolve to a class declaration.
    */
-  getMembersOfClass(clazz: ts.Declaration): ClassMember[];
+  getMembersOfClass(clazz: ClassDeclaration): ClassMember[];
 
   /**
    * Reflect over the constructor of a class and return metadata about its parameters.
@@ -379,16 +376,13 @@ export interface ReflectionHost {
    * This method only looks at the constructor of a class directly and not at any inherited
    * constructors.
    *
-   * @param declaration a TypeScript `ts.Declaration` node representing the class over which to
-   * reflect. If the source is in ES6 format, this will be a `ts.ClassDeclaration` node. If the
-   * source is in ES5 format, this might be a `ts.VariableDeclaration` as classes in ES5 are
-   * represented as the result of an IIFE execution.
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    *
    * @returns an array of `Parameter` metadata representing the parameters of the constructor, if
    * a constructor exists. If the constructor exists and has 0 parameters, this array will be empty.
    * If the class has no constructor, this method returns `null`.
    */
-  getConstructorParameters(declaration: ts.Declaration): CtorParameter[]|null;
+  getConstructorParameters(clazz: ClassDeclaration): CtorParameter[]|null;
 
   /**
    * Reflect over a function and return metadata about its parameters and body.
@@ -478,17 +472,21 @@ export interface ReflectionHost {
   isClass(node: ts.Node): node is ClassDeclaration;
 
   /**
-   * Determines whether the given declaration has a base class.
+   * Determines whether the given declaration, which should be a class, has a base class.
+   *
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
    */
-  hasBaseClass(node: ts.Declaration): boolean;
+  hasBaseClass(clazz: ClassDeclaration): boolean;
 
   /**
    * Get the number of generic type parameters of a given class.
    *
+   * @param clazz a `ClassDeclaration` representing the class over which to reflect.
+   *
    * @returns the number of type parameters of the class, if known, or `null` if the declaration
    * is not a class or has an unknown number of type parameters.
    */
-  getGenericArityOfClass(clazz: ts.Declaration): number|null;
+  getGenericArityOfClass(clazz: ClassDeclaration): number|null;
 
   /**
    * Find the assigned value of a variable declaration.

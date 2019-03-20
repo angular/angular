@@ -11,9 +11,9 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
-import {ClassDeclaration, ReflectionHost, reflectNameOfDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost, isNamedClassDeclaration, reflectNameOfDeclaration} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
-import {getSourceFile, isNamedClassDeclaration} from '../../util/src/typescript';
+import {getSourceFile} from '../../util/src/typescript';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from './api';
 import {DtsFileTransformer} from './declaration';

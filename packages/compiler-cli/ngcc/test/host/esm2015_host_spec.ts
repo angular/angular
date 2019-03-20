@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMemberKind, Import} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
 
@@ -559,8 +559,8 @@ describe('Esm2015ReflectionHost', () => {
     it('should find the decorators on a class', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const classNode =
-          getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const classNode = getDeclaration(
+          program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators).toBeDefined();
@@ -578,7 +578,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(FOO_FUNCTION_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const functionNode =
-          getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', ts.isFunctionDeclaration);
+          getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(functionNode);
       expect(decorators).toBe(null);
     });
@@ -587,7 +587,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(SIMPLE_CLASS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode =
-          getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isClassDeclaration);
+          getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode);
       expect(decorators).toBe(null);
     });
@@ -596,7 +596,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(INVALID_DECORATORS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
-          program, INVALID_DECORATORS_FILE.name, 'NotArrayLiteral', ts.isClassDeclaration);
+          program, INVALID_DECORATORS_FILE.name, 'NotArrayLiteral', isNamedClassDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode);
       expect(decorators).toEqual([]);
     });
@@ -605,7 +605,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(INVALID_DECORATORS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
-          program, INVALID_DECORATORS_FILE.name, 'NotObjectLiteral', ts.isClassDeclaration);
+          program, INVALID_DECORATORS_FILE.name, 'NotObjectLiteral', isNamedClassDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators.length).toBe(1);
@@ -616,7 +616,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(INVALID_DECORATORS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
-          program, INVALID_DECORATORS_FILE.name, 'NoTypeProperty', ts.isClassDeclaration);
+          program, INVALID_DECORATORS_FILE.name, 'NoTypeProperty', isNamedClassDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators.length).toBe(1);
@@ -627,7 +627,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(INVALID_DECORATORS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
-          program, INVALID_DECORATORS_FILE.name, 'NotIdentifier', ts.isClassDeclaration);
+          program, INVALID_DECORATORS_FILE.name, 'NotIdentifier', isNamedClassDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators.length).toBe(1);
@@ -641,8 +641,8 @@ describe('Esm2015ReflectionHost', () => {
 
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const classNode =
-          getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const classNode = getDeclaration(
+          program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators.length).toEqual(1);
@@ -657,7 +657,7 @@ describe('Esm2015ReflectionHost', () => {
         const program = makeTestProgram(INVALID_DECORATOR_ARGS_FILE);
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
-            program, INVALID_DECORATOR_ARGS_FILE.name, 'NoArgsProperty', ts.isClassDeclaration);
+            program, INVALID_DECORATOR_ARGS_FILE.name, 'NoArgsProperty', isNamedClassDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toBe(1);
@@ -670,7 +670,7 @@ describe('Esm2015ReflectionHost', () => {
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
-            ts.isClassDeclaration);
+            isNamedClassDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toBe(1);
@@ -682,7 +682,7 @@ describe('Esm2015ReflectionHost', () => {
         const program = makeTestProgram(INVALID_DECORATOR_ARGS_FILE);
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
-            program, INVALID_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral', ts.isClassDeclaration);
+            program, INVALID_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral', isNamedClassDeclaration);
         const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
         expect(decorators.length).toBe(1);
@@ -696,8 +696,8 @@ describe('Esm2015ReflectionHost', () => {
     it('should find decorated properties on a class', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const classNode =
-          getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const classNode = getDeclaration(
+          program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
       const members = host.getMembersOfClass(classNode);
 
       const input1 = members.find(member => member.name === 'input1') !;
@@ -714,8 +714,8 @@ describe('Esm2015ReflectionHost', () => {
     it('should find non decorated properties on a class', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const classNode =
-          getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const classNode = getDeclaration(
+          program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
       const members = host.getMembersOfClass(classNode);
 
       const instanceProperty = members.find(member => member.name === 'instanceProperty') !;
@@ -729,7 +729,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(ACCESSORS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode =
-          getDeclaration(program, ACCESSORS_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+          getDeclaration(program, ACCESSORS_FILE.name, 'SomeDirective', isNamedClassDeclaration);
       const members = host.getMembersOfClass(classNode);
 
       const [combinedSetter, combinedGetter] =
@@ -749,8 +749,8 @@ describe('Esm2015ReflectionHost', () => {
     it('should find static methods on a class', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const classNode =
-          getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const classNode = getDeclaration(
+          program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
       const members = host.getMembersOfClass(classNode);
 
       const staticMethod = members.find(member => member.name === 'staticMethod') !;
@@ -762,8 +762,8 @@ describe('Esm2015ReflectionHost', () => {
     it('should find static properties on a class', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const classNode =
-          getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const classNode = getDeclaration(
+          program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
       const members = host.getMembersOfClass(classNode);
 
       const staticProperty = members.find(member => member.name === 'staticProperty') !;
@@ -777,7 +777,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(FOO_FUNCTION_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const functionNode =
-          getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', ts.isFunctionDeclaration);
+          getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
       expect(() => {
         host.getMembersOfClass(functionNode);
       }).toThrowError(`Attempted to get members of a non-class: "function foo() {}"`);
@@ -787,7 +787,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(SIMPLE_CLASS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode =
-          getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isClassDeclaration);
+          getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
       const members = host.getMembersOfClass(classNode);
 
       expect(members).toEqual([]);
@@ -798,7 +798,8 @@ describe('Esm2015ReflectionHost', () => {
          const program = makeTestProgram(INVALID_PROP_DECORATORS_FILE);
          const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
          const classNode = getDeclaration(
-             program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteral', ts.isClassDeclaration);
+             program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteral',
+             isNamedClassDeclaration);
          const members = host.getMembersOfClass(classNode);
 
          expect(members.map(member => member.name)).not.toContain('prop');
@@ -809,7 +810,7 @@ describe('Esm2015ReflectionHost', () => {
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
           program, INVALID_PROP_DECORATORS_FILE.name, 'NotObjectLiteralProp',
-          ts.isClassDeclaration);
+          isNamedClassDeclaration);
       const members = host.getMembersOfClass(classNode);
       const prop = members.find(m => m.name === 'prop') !;
       const decorators = prop.decorators !;
@@ -822,7 +823,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(INVALID_PROP_DECORATORS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
-          program, INVALID_PROP_DECORATORS_FILE.name, 'NoTypeProperty', ts.isClassDeclaration);
+          program, INVALID_PROP_DECORATORS_FILE.name, 'NoTypeProperty', isNamedClassDeclaration);
       const members = host.getMembersOfClass(classNode);
       const prop = members.find(m => m.name === 'prop') !;
       const decorators = prop.decorators !;
@@ -835,7 +836,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(INVALID_PROP_DECORATORS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
-          program, INVALID_PROP_DECORATORS_FILE.name, 'NotIdentifier', ts.isClassDeclaration);
+          program, INVALID_PROP_DECORATORS_FILE.name, 'NotIdentifier', isNamedClassDeclaration);
       const members = host.getMembersOfClass(classNode);
       const prop = members.find(m => m.name === 'prop') !;
       const decorators = prop.decorators !;
@@ -854,8 +855,8 @@ describe('Esm2015ReflectionHost', () => {
 
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const classNode =
-          getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const classNode = getDeclaration(
+          program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
       const members = host.getMembersOfClass(classNode);
 
       expect(spy).toHaveBeenCalled();
@@ -878,7 +879,7 @@ describe('Esm2015ReflectionHost', () => {
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
-            ts.isClassDeclaration);
+            isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
         const prop = members.find(m => m.name === 'prop') !;
         const decorators = prop.decorators !;
@@ -893,7 +894,7 @@ describe('Esm2015ReflectionHost', () => {
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
-            ts.isClassDeclaration);
+            isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
         const prop = members.find(m => m.name === 'prop') !;
         const decorators = prop.decorators !;
@@ -908,7 +909,7 @@ describe('Esm2015ReflectionHost', () => {
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_PROP_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
-            ts.isClassDeclaration);
+            isNamedClassDeclaration);
         const members = host.getMembersOfClass(classNode);
         const prop = members.find(m => m.name === 'prop') !;
         const decorators = prop.decorators !;
@@ -924,8 +925,8 @@ describe('Esm2015ReflectionHost', () => {
     it('should find the decorated constructor parameters', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const classNode =
-          getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const classNode = getDeclaration(
+          program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
       const parameters = host.getConstructorParameters(classNode) !;
 
       expect(parameters).toBeDefined();
@@ -939,7 +940,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(FOO_FUNCTION_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const functionNode =
-          getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', ts.isFunctionDeclaration);
+          getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
       expect(() => { host.getConstructorParameters(functionNode); })
           .toThrowError(
               'Attempted to get constructor parameters of a non-class: "function foo() {}"');
@@ -949,7 +950,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(SIMPLE_CLASS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode =
-          getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isClassDeclaration);
+          getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
       const parameters = host.getConstructorParameters(classNode);
       expect(parameters).toBe(null);
     });
@@ -958,7 +959,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(SIMPLE_CLASS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
-          program, SIMPLE_CLASS_FILE.name, 'NoDecoratorConstructorClass', ts.isClassDeclaration);
+          program, SIMPLE_CLASS_FILE.name, 'NoDecoratorConstructorClass', isNamedClassDeclaration);
       const parameters = host.getConstructorParameters(classNode) !;
 
       expect(parameters).toEqual(jasmine.any(Array));
@@ -971,7 +972,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
-          program, INVALID_CTOR_DECORATORS_FILE.name, 'NoParameters', ts.isClassDeclaration);
+          program, INVALID_CTOR_DECORATORS_FILE.name, 'NoParameters', isNamedClassDeclaration);
       const parameters = host.getConstructorParameters(classNode);
 
       expect(parameters).toEqual([]);
@@ -981,7 +982,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
-          program, INVALID_CTOR_DECORATORS_FILE.name, 'NotFromCore', ts.isClassDeclaration);
+          program, INVALID_CTOR_DECORATORS_FILE.name, 'NotFromCore', isNamedClassDeclaration);
       const parameters = host.getConstructorParameters(classNode) !;
 
       expect(parameters.length).toBe(1);
@@ -995,7 +996,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
-          program, INVALID_CTOR_DECORATORS_FILE.name, 'NotArrowFunction', ts.isClassDeclaration);
+          program, INVALID_CTOR_DECORATORS_FILE.name, 'NotArrowFunction', isNamedClassDeclaration);
       const parameters = host.getConstructorParameters(classNode) !;
 
       expect(parameters.length).toBe(1);
@@ -1009,7 +1010,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const classNode = getDeclaration(
-          program, INVALID_CTOR_DECORATORS_FILE.name, 'NotArrayLiteral', ts.isClassDeclaration);
+          program, INVALID_CTOR_DECORATORS_FILE.name, 'NotArrayLiteral', isNamedClassDeclaration);
       const parameters = host.getConstructorParameters(classNode) !;
 
       expect(parameters.length).toBe(1);
@@ -1033,7 +1034,7 @@ describe('Esm2015ReflectionHost', () => {
 
         const program = makeTestProgram(file);
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-        const classNode = getDeclaration(program, file.name, 'TestClass', ts.isClassDeclaration);
+        const classNode = getDeclaration(program, file.name, 'TestClass', isNamedClassDeclaration);
         return host.getConstructorParameters(classNode);
       }
 
@@ -1088,7 +1089,8 @@ describe('Esm2015ReflectionHost', () => {
         const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
-            program, INVALID_CTOR_DECORATORS_FILE.name, 'NotObjectLiteral', ts.isClassDeclaration);
+            program, INVALID_CTOR_DECORATORS_FILE.name, 'NotObjectLiteral',
+            isNamedClassDeclaration);
         const parameters = host.getConstructorParameters(classNode);
 
         expect(parameters !.length).toBe(2);
@@ -1106,7 +1108,7 @@ describe('Esm2015ReflectionHost', () => {
         const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
-            program, INVALID_CTOR_DECORATORS_FILE.name, 'NoTypeProperty', ts.isClassDeclaration);
+            program, INVALID_CTOR_DECORATORS_FILE.name, 'NoTypeProperty', isNamedClassDeclaration);
         const parameters = host.getConstructorParameters(classNode);
         const decorators = parameters ![0].decorators !;
 
@@ -1118,7 +1120,7 @@ describe('Esm2015ReflectionHost', () => {
         const program = makeTestProgram(INVALID_CTOR_DECORATORS_FILE);
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
-            program, INVALID_CTOR_DECORATORS_FILE.name, 'NotIdentifier', ts.isClassDeclaration);
+            program, INVALID_CTOR_DECORATORS_FILE.name, 'NotIdentifier', isNamedClassDeclaration);
         const parameters = host.getConstructorParameters(classNode);
         const decorators = parameters ![0].decorators !;
 
@@ -1134,7 +1136,7 @@ describe('Esm2015ReflectionHost', () => {
         const program = makeTestProgram(SOME_DIRECTIVE_FILE);
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
-            program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+            program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
         const parameters = host.getConstructorParameters(classNode) !;
         const decorators = parameters[2].decorators !;
 
@@ -1152,7 +1154,7 @@ describe('Esm2015ReflectionHost', () => {
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoArgsProperty',
-            ts.isClassDeclaration);
+            isNamedClassDeclaration);
         const parameters = host.getConstructorParameters(classNode);
         expect(parameters !.length).toBe(1);
         const decorators = parameters ![0].decorators !;
@@ -1167,7 +1169,7 @@ describe('Esm2015ReflectionHost', () => {
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NoPropertyAssignment',
-            ts.isClassDeclaration);
+            isNamedClassDeclaration);
         const parameters = host.getConstructorParameters(classNode);
         const decorators = parameters ![0].decorators !;
 
@@ -1181,7 +1183,7 @@ describe('Esm2015ReflectionHost', () => {
         const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
         const classNode = getDeclaration(
             program, INVALID_CTOR_DECORATOR_ARGS_FILE.name, 'NotArrayLiteral',
-            ts.isClassDeclaration);
+            isNamedClassDeclaration);
         const parameters = host.getConstructorParameters(classNode);
         const decorators = parameters ![0].decorators !;
 
@@ -1198,7 +1200,7 @@ describe('Esm2015ReflectionHost', () => {
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
 
       const fooNode =
-          getDeclaration(program, FUNCTION_BODY_FILE.name, 'foo', ts.isFunctionDeclaration) !;
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'foo', isNamedFunctionDeclaration) !;
       const fooDef = host.getDefinitionOfFunction(fooNode);
       expect(fooDef.node).toBe(fooNode);
       expect(fooDef.body !.length).toEqual(1);
@@ -1208,7 +1210,7 @@ describe('Esm2015ReflectionHost', () => {
       expect(fooDef.parameters[0].initializer).toBe(null);
 
       const barNode =
-          getDeclaration(program, FUNCTION_BODY_FILE.name, 'bar', ts.isFunctionDeclaration) !;
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'bar', isNamedFunctionDeclaration) !;
       const barDef = host.getDefinitionOfFunction(barNode);
       expect(barDef.node).toBe(barNode);
       expect(barDef.body !.length).toEqual(1);
@@ -1221,7 +1223,7 @@ describe('Esm2015ReflectionHost', () => {
       expect(barDef.parameters[1].initializer !.getText()).toEqual('42');
 
       const bazNode =
-          getDeclaration(program, FUNCTION_BODY_FILE.name, 'baz', ts.isFunctionDeclaration) !;
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'baz', isNamedFunctionDeclaration) !;
       const bazDef = host.getDefinitionOfFunction(bazNode);
       expect(bazDef.node).toBe(bazNode);
       expect(bazDef.body !.length).toEqual(3);
@@ -1230,7 +1232,7 @@ describe('Esm2015ReflectionHost', () => {
       expect(bazDef.parameters[0].initializer).toBe(null);
 
       const quxNode =
-          getDeclaration(program, FUNCTION_BODY_FILE.name, 'qux', ts.isFunctionDeclaration) !;
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'qux', isNamedFunctionDeclaration) !;
       const quxDef = host.getDefinitionOfFunction(quxNode);
       expect(quxDef.node).toBe(quxNode);
       expect(quxDef.body !.length).toEqual(2);
@@ -1239,14 +1241,14 @@ describe('Esm2015ReflectionHost', () => {
       expect(quxDef.parameters[0].initializer).toBe(null);
 
       const mooNode =
-          getDeclaration(program, FUNCTION_BODY_FILE.name, 'moo', ts.isFunctionDeclaration) !;
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'moo', isNamedFunctionDeclaration) !;
       const mooDef = host.getDefinitionOfFunction(mooNode);
       expect(mooDef.node).toBe(mooNode);
       expect(mooDef.body !.length).toEqual(3);
       expect(mooDef.parameters).toEqual([]);
 
       const juuNode =
-          getDeclaration(program, FUNCTION_BODY_FILE.name, 'juu', ts.isFunctionDeclaration) !;
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'juu', isNamedFunctionDeclaration) !;
       const juuDef = host.getDefinitionOfFunction(juuNode);
       expect(juuDef.node).toBe(juuNode);
       expect(juuDef.body !.length).toEqual(2);
@@ -1259,7 +1261,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(...IMPORTS_FILES);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const variableNode =
-          getDeclaration(program, IMPORTS_FILES[1].name, 'b', ts.isVariableDeclaration);
+          getDeclaration(program, IMPORTS_FILES[1].name, 'b', isNamedVariableDeclaration);
       const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
 
       expect(importOfIdent).toEqual({name: 'a', from: './a.js'});
@@ -1269,7 +1271,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(...IMPORTS_FILES);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const variableNode =
-          getDeclaration(program, IMPORTS_FILES[1].name, 'c', ts.isVariableDeclaration);
+          getDeclaration(program, IMPORTS_FILES[1].name, 'c', isNamedVariableDeclaration);
       const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
 
       expect(importOfIdent).toEqual({name: 'a', from: './a.js'});
@@ -1279,7 +1281,7 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(...IMPORTS_FILES);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const variableNode =
-          getDeclaration(program, IMPORTS_FILES[1].name, 'd', ts.isVariableDeclaration);
+          getDeclaration(program, IMPORTS_FILES[1].name, 'd', isNamedVariableDeclaration);
       const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
 
       expect(importOfIdent).toBeNull();
@@ -1290,8 +1292,8 @@ describe('Esm2015ReflectionHost', () => {
     it('should return the declaration of a locally defined identifier', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const classNode =
-          getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const classNode = getDeclaration(
+          program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
       const ctrDecorators = host.getConstructorParameters(classNode) !;
       const identifierOfViewContainerRef = (ctrDecorators[0].typeValueReference !as{
                                              local: true,
@@ -1300,7 +1302,7 @@ describe('Esm2015ReflectionHost', () => {
                                            }).expression;
 
       const expectedDeclarationNode = getDeclaration(
-          program, SOME_DIRECTIVE_FILE.name, 'ViewContainerRef', ts.isVariableDeclaration);
+          program, SOME_DIRECTIVE_FILE.name, 'ViewContainerRef', isNamedVariableDeclaration);
       const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfViewContainerRef);
       expect(actualDeclaration).not.toBe(null);
       expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
@@ -1310,15 +1312,15 @@ describe('Esm2015ReflectionHost', () => {
     it('should return the declaration of an externally defined identifier', () => {
       const program = makeTestProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const classNode =
-          getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
+      const classNode = getDeclaration(
+          program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', isNamedClassDeclaration);
       const classDecorators = host.getDecoratorsOfDeclaration(classNode) !;
       const identifierOfDirective = ((classDecorators[0].node as ts.ObjectLiteralExpression)
                                          .properties[0] as ts.PropertyAssignment)
                                         .initializer as ts.Identifier;
 
       const expectedDeclarationNode = getDeclaration(
-          program, 'node_modules/@angular/core/index.ts', 'Directive', ts.isVariableDeclaration);
+          program, 'node_modules/@angular/core/index.ts', 'Directive', isNamedVariableDeclaration);
       const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective);
       expect(actualDeclaration).not.toBe(null);
       expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
@@ -1366,14 +1368,15 @@ describe('Esm2015ReflectionHost', () => {
       const program = makeTestProgram(SIMPLE_CLASS_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
       const node =
-          getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isClassDeclaration);
+          getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
       expect(host.isClass(node)).toBe(true);
     });
 
     it('should return false if a given node is a TS function declaration', () => {
       const program = makeTestProgram(FOO_FUNCTION_FILE);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker());
-      const node = getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', ts.isFunctionDeclaration);
+      const node =
+          getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
       expect(host.isClass(node)).toBe(false);
     });
   });
@@ -1385,13 +1388,13 @@ describe('Esm2015ReflectionHost', () => {
       const dts = makeTestBundleProgram([ARITY_CLASSES[1]]);
       const host = new Esm2015ReflectionHost(false, program.getTypeChecker(), dts);
       const noTypeParamClass =
-          getDeclaration(program, '/src/class.js', 'NoTypeParam', ts.isClassDeclaration);
+          getDeclaration(program, '/src/class.js', 'NoTypeParam', isNamedClassDeclaration);
       expect(host.getGenericArityOfClass(noTypeParamClass)).toBe(0);
       const oneTypeParamClass =
-          getDeclaration(program, '/src/class.js', 'OneTypeParam', ts.isClassDeclaration);
+          getDeclaration(program, '/src/class.js', 'OneTypeParam', isNamedClassDeclaration);
       expect(host.getGenericArityOfClass(oneTypeParamClass)).toBe(1);
       const twoTypeParamsClass =
-          getDeclaration(program, '/src/class.js', 'TwoTypeParams', ts.isClassDeclaration);
+          getDeclaration(program, '/src/class.js', 'TwoTypeParams', isNamedClassDeclaration);
       expect(host.getGenericArityOfClass(twoTypeParamsClass)).toBe(2);
     });
   });
@@ -1440,7 +1443,8 @@ describe('Esm2015ReflectionHost', () => {
     it('should find the dts declaration that has the same relative path to the source file', () => {
       const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
-      const class1 = getDeclaration(srcProgram, '/src/class1.js', 'Class1', ts.isClassDeclaration);
+      const class1 =
+          getDeclaration(srcProgram, '/src/class1.js', 'Class1', isNamedClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
       const dtsDeclaration = host.getDtsDeclaration(class1);
@@ -1450,7 +1454,8 @@ describe('Esm2015ReflectionHost', () => {
     it('should find the dts declaration for exported functions', () => {
       const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
       const dtsProgram = makeTestBundleProgram(TYPINGS_DTS_FILES);
-      const mooFn = getDeclaration(srcProgram, '/src/func1.js', 'mooFn', ts.isFunctionDeclaration);
+      const mooFn =
+          getDeclaration(srcProgram, '/src/func1.js', 'mooFn', isNamedFunctionDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dtsProgram);
 
       const dtsDeclaration = host.getDtsDeclaration(mooFn);
@@ -1461,7 +1466,7 @@ describe('Esm2015ReflectionHost', () => {
       const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const missingClass =
-          getDeclaration(srcProgram, '/src/class1.js', 'MissingClass1', ts.isClassDeclaration);
+          getDeclaration(srcProgram, '/src/class1.js', 'MissingClass1', isNamedClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
       expect(host.getDtsDeclaration(missingClass)).toBe(null);
@@ -1471,7 +1476,7 @@ describe('Esm2015ReflectionHost', () => {
       const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const missingClass = getDeclaration(
-          srcProgram, '/src/missing-class.js', 'MissingClass2', ts.isClassDeclaration);
+          srcProgram, '/src/missing-class.js', 'MissingClass2', isNamedClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
       expect(host.getDtsDeclaration(missingClass)).toBe(null);
@@ -1482,7 +1487,7 @@ describe('Esm2015ReflectionHost', () => {
          const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
          const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
          const class1 =
-             getDeclaration(srcProgram, '/src/flat-file.js', 'Class1', ts.isClassDeclaration);
+             getDeclaration(srcProgram, '/src/flat-file.js', 'Class1', isNamedClassDeclaration);
          const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
          const dtsDeclaration = host.getDtsDeclaration(class1);
@@ -1493,7 +1498,7 @@ describe('Esm2015ReflectionHost', () => {
       const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
       const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
       const class3 =
-          getDeclaration(srcProgram, '/src/flat-file.js', 'Class3', ts.isClassDeclaration);
+          getDeclaration(srcProgram, '/src/flat-file.js', 'Class3', isNamedClassDeclaration);
       const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
       const dtsDeclaration = host.getDtsDeclaration(class3);
@@ -1504,8 +1509,8 @@ describe('Esm2015ReflectionHost', () => {
        () => {
          const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
          const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
-         const internalClass =
-             getDeclaration(srcProgram, '/src/internal.js', 'InternalClass', ts.isClassDeclaration);
+         const internalClass = getDeclaration(
+             srcProgram, '/src/internal.js', 'InternalClass', isNamedClassDeclaration);
          const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
          const dtsDeclaration = host.getDtsDeclaration(internalClass);
@@ -1517,9 +1522,9 @@ describe('Esm2015ReflectionHost', () => {
          const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
          const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
          const class2 =
-             getDeclaration(srcProgram, '/src/class2.js', 'Class2', ts.isClassDeclaration);
+             getDeclaration(srcProgram, '/src/class2.js', 'Class2', isNamedClassDeclaration);
          const internalClass2 =
-             getDeclaration(srcProgram, '/src/internal.js', 'Class2', ts.isClassDeclaration);
+             getDeclaration(srcProgram, '/src/internal.js', 'Class2', isNamedClassDeclaration);
          const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
 
          const class2DtsDeclaration = host.getDtsDeclaration(class2);

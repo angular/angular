@@ -67,12 +67,11 @@ export class NgTscPlugin implements TscPlugin {
     const afterDeclarations: Array<ts.TransformerFactory<ts.SourceFile|ts.Bundle>> =
         [(context: ts.TransformationContext) => (sf: ts.SourceFile | ts.Bundle) => {
           const visitor = (node: ts.Node): ts.Node => {
-            if (node.kind === ts.SyntaxKind.ClassDeclaration) {
-              const clz = node as ts.ClassDeclaration;
+            if (ts.isClassDeclaration(node)) {
               // For demo purposes, transform the class name in the .d.ts output
               return ts.updateClassDeclaration(
-                  clz, clz.decorators, node.modifiers, ts.createIdentifier('NEWNAME'),
-                  clz.typeParameters, clz.heritageClauses, clz.members);
+                  node, node.decorators, node.modifiers, ts.createIdentifier('NEWNAME'),
+                  node.typeParameters, node.heritageClauses, node.members);
             }
             return ts.visitEachChild(node, visitor, context);
           };
