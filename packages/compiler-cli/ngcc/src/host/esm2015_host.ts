@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Decorator, Import, TypeScriptReflectionHost, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {BundleProgram} from '../packages/bundle_program';
-import {findAll, getNameText, isDefined} from '../utils';
+import {findAll, getNameText, hasNameIdentifier, isDefined} from '../utils';
 
 import {DecoratedClass} from './decorated_class';
 import {ModuleWithProvidersFunction, NgccReflectionHost, PRE_R3_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
@@ -55,6 +55,37 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
+   * Find the declaration of a node that we think is a class.
+   * Classes should have a `name` identifier, because they may need to be referenced in other parts
+   * of the program.
+   *
+   * @param node the node that represents the class whose declaration we are finding.
+   * @returns the declaration of the class or `undefined` if it is not a "class".
+   */
+  getClassDeclaration(node: ts.Node): ClassDeclaration|undefined {
+    if (ts.isVariableDeclaration(node) && node.initializer) {
+      node = node.initializer;
+    }
+
+    if (!ts.isClassDeclaration(node) && !ts.isClassExpression(node)) {
+      return undefined;
+    }
+
+    return hasNameIdentifier(node) ? node : undefined;
+  }
+
+  /**
+   * Find a symbol for a node that we think is a class.
+   * @param node the node whose symbol we are finding.
+   * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
+   */
+  getClassSymbol(declaration: ts.Node): ClassSymbol|undefined {
+    const classDeclaration = this.getClassDeclaration(declaration);
+    return classDeclaration &&
+        this.checker.getSymbolAtLocation(classDeclaration.name) as ClassSymbol;
+  }
+
+  /**
    * Examine a declaration (for example, of a class or function) and return metadata about any
    * decorators present on the declaration.
    *
@@ -86,79 +117,12 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * @throws if `declaration` does not resolve to a class declaration.
    */
   getMembersOfClass(clazz: ClassDeclaration): ClassMember[] {
-    const members: ClassMember[] = [];
-    const symbol = this.getClassSymbol(clazz);
-    if (!symbol) {
+    const classSymbol = this.getClassSymbol(clazz);
+    if (!classSymbol) {
       throw new Error(`Attempted to get members of a non-class: "${clazz.getText()}"`);
     }
 
-    // The decorators map contains all the properties that are decorated
-    const decoratorsMap = this.getMemberDecorators(symbol);
-
-    // The member map contains all the method (instance and static); and any instance properties
-    // that are initialized in the class.
-    if (symbol.members) {
-      symbol.members.forEach((value, key) => {
-        const decorators = decoratorsMap.get(key as string);
-        const reflectedMembers = this.reflectMembers(value, decorators);
-        if (reflectedMembers) {
-          decoratorsMap.delete(key as string);
-          members.push(...reflectedMembers);
-        }
-      });
-    }
-
-    // The static property map contains all the static properties
-    if (symbol.exports) {
-      symbol.exports.forEach((value, key) => {
-        const decorators = decoratorsMap.get(key as string);
-        const reflectedMembers = this.reflectMembers(value, decorators, true);
-        if (reflectedMembers) {
-          decoratorsMap.delete(key as string);
-          members.push(...reflectedMembers);
-        }
-      });
-    }
-
-    // If this class was declared as a VariableDeclaration then it may have static properties
-    // attached to the variable rather than the class itself
-    // For example:
-    // ```
-    // let MyClass = class MyClass {
-    //   // no static properties here!
-    // }
-    // MyClass.staticProperty = ...;
-    // ```
-    if (ts.isVariableDeclaration(symbol.valueDeclaration.parent)) {
-      const variableSymbol = this.checker.getSymbolAtLocation(symbol.valueDeclaration.parent.name);
-      if (variableSymbol && variableSymbol.exports) {
-        variableSymbol.exports.forEach((value, key) => {
-          const decorators = decoratorsMap.get(key as string);
-          const reflectedMembers = this.reflectMembers(value, decorators, true);
-          if (reflectedMembers) {
-            decoratorsMap.delete(key as string);
-            members.push(...reflectedMembers);
-          }
-        });
-      }
-    }
-
-    // Deal with any decorated properties that were not initialized in the class
-    decoratorsMap.forEach((value, key) => {
-      members.push({
-        implementation: null,
-        decorators: value,
-        isStatic: false,
-        kind: ClassMemberKind.Property,
-        name: key,
-        nameNode: null,
-        node: null,
-        type: null,
-        value: null
-      });
-    });
-
-    return members;
+    return this.getMembersOfSymbol(classSymbol);
   }
 
   /**
@@ -186,24 +150,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return this.getConstructorParamInfo(classSymbol, parameterNodes);
     }
     return null;
-  }
-
-  /**
-   * Find a symbol for a node that we think is a class.
-   * @param node the node whose symbol we are finding.
-   * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
-   */
-  getClassSymbol(declaration: ts.Node): ClassSymbol|undefined {
-    if (ts.isClassDeclaration(declaration)) {
-      return declaration.name && this.checker.getSymbolAtLocation(declaration.name) as ClassSymbol;
-    }
-    if (ts.isVariableDeclaration(declaration) && declaration.initializer) {
-      declaration = declaration.initializer;
-    }
-    if (ts.isClassExpression(declaration)) {
-      return declaration.name && this.checker.getSymbolAtLocation(declaration.name) as ClassSymbol;
-    }
-    return undefined;
   }
 
   /**
@@ -495,6 +441,84 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           .forEach(decorator => decorators.push(decorator));
     });
     return decorators.length ? decorators : null;
+  }
+
+  /**
+   * Examine a symbol which should be of a class, and return metadata about its members.
+   *
+   * @param symbol the `ClassSymbol` representing the class over which to reflect.
+   * @returns an array of `ClassMember` metadata representing the members of the class.
+   */
+  protected getMembersOfSymbol(symbol: ClassSymbol): ClassMember[] {
+    const members: ClassMember[] = [];
+
+    // The decorators map contains all the properties that are decorated
+    const decoratorsMap = this.getMemberDecorators(symbol);
+
+    // The member map contains all the method (instance and static); and any instance properties
+    // that are initialized in the class.
+    if (symbol.members) {
+      symbol.members.forEach((value, key) => {
+        const decorators = decoratorsMap.get(key as string);
+        const reflectedMembers = this.reflectMembers(value, decorators);
+        if (reflectedMembers) {
+          decoratorsMap.delete(key as string);
+          members.push(...reflectedMembers);
+        }
+      });
+    }
+
+    // The static property map contains all the static properties
+    if (symbol.exports) {
+      symbol.exports.forEach((value, key) => {
+        const decorators = decoratorsMap.get(key as string);
+        const reflectedMembers = this.reflectMembers(value, decorators, true);
+        if (reflectedMembers) {
+          decoratorsMap.delete(key as string);
+          members.push(...reflectedMembers);
+        }
+      });
+    }
+
+    // If this class was declared as a VariableDeclaration then it may have static properties
+    // attached to the variable rather than the class itself
+    // For example:
+    // ```
+    // let MyClass = class MyClass {
+    //   // no static properties here!
+    // }
+    // MyClass.staticProperty = ...;
+    // ```
+    if (ts.isVariableDeclaration(symbol.valueDeclaration.parent)) {
+      const variableSymbol = this.checker.getSymbolAtLocation(symbol.valueDeclaration.parent.name);
+      if (variableSymbol && variableSymbol.exports) {
+        variableSymbol.exports.forEach((value, key) => {
+          const decorators = decoratorsMap.get(key as string);
+          const reflectedMembers = this.reflectMembers(value, decorators, true);
+          if (reflectedMembers) {
+            decoratorsMap.delete(key as string);
+            members.push(...reflectedMembers);
+          }
+        });
+      }
+    }
+
+    // Deal with any decorated properties that were not initialized in the class
+    decoratorsMap.forEach((value, key) => {
+      members.push({
+        implementation: null,
+        decorators: value,
+        isStatic: false,
+        kind: ClassMemberKind.Property,
+        name: key,
+        nameNode: null,
+        node: null,
+        type: null,
+        value: null
+      });
+    });
+
+    return members;
   }
 
   /**
