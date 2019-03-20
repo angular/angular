@@ -349,7 +349,9 @@ export function createViewRef(
     const componentIndex = hostTNode.directiveStart;
     const componentView = getComponentViewByIndex(hostTNode.index, hostView);
     return new ViewRef(componentView, context, componentIndex);
-  } else if (hostTNode.type === TNodeType.Element || hostTNode.type === TNodeType.Container) {
+  } else if (
+      hostTNode.type === TNodeType.Element || hostTNode.type === TNodeType.Container ||
+      hostTNode.type === TNodeType.ElementContainer) {
     const hostComponentView = findComponentView(hostView);
     return new ViewRef(hostComponentView, hostComponentView[CONTEXT], -1);
   }

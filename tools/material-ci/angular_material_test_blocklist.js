@@ -17,10 +17,6 @@
 // tslint:disable
 
 window.testBlocklist = {
-  "CdkDrag standalone draggable should throw if attached to an ng-container": {
-    "error": "Error: Expected function to throw an exception with a message matching /^cdkDrag must be attached to an element node/, but it threw an exception with message 'No provider for ChangeDetectorRef!'.",
-    "notes": "Unknown"
-  },
   "MatBadge should clear any pre-existing badges": {
     "error": "Error: Expected 2 to be 1.",
     "notes": "Breaking change: Static directive inputs evaluated in creation mode (MatBadge._clearExistingBadges is executed before child nodes of PreExistingBadge are aded to the DOM)"
