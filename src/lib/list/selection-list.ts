@@ -405,8 +405,8 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const disableRippleChanges = changes.disableRipple;
-    const colorChanges = changes.color;
+    const disableRippleChanges = changes['disableRipple'];
+    const colorChanges = changes['color'];
 
     if ((disableRippleChanges && !disableRippleChanges.firstChange) ||
         (colorChanges && !colorChanges.firstChange)) {

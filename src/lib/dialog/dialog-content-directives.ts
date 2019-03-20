@@ -83,8 +83,8 @@ export class MatDialogClose implements OnInit, OnChanges {
       this.dialogResult = proxiedChange.currentValue;
     }
 
-    if (changes.ariaLabel) {
-      this._hasAriaLabel = !!changes.ariaLabel.currentValue;
+    if (changes['ariaLabel']) {
+      this._hasAriaLabel = !!changes['ariaLabel'].currentValue;
     }
   }
 }
