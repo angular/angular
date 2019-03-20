@@ -194,7 +194,8 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
   }
 
   .mat-badge-small .mat-badge-content {
-    font-size: $mat-badge-font-size / 2;
+    // Set the font size to 75% of the original.
+    font-size: $mat-badge-font-size * 0.75;
   }
 
   .mat-badge-large .mat-badge-content {
