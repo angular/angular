@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, CtorParameter, Declaration, Decorator, FunctionDefinition, Parameter, isNamedVariableDeclaration, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {getNameText, hasNameIdentifier} from '../utils';
 
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
@@ -87,13 +87,13 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
     if (outerClass) return outerClass;
 
     // At this point, `node` could be the outer variable declaration of an ES5 class.
-    // If so, ensure that it has the correct structure.
-    if (!this.getInnerFunctionDeclarationFromClassDeclaration(node)) return undefined;
+    // If so, ensure that it has a `name` identifier and the correct structure.
+    if (!isNamedVariableDeclaration(node) ||
+        !this.getInnerFunctionDeclarationFromClassDeclaration(node)) {
+      return undefined;
+    }
 
-    const node_ = node as ts.VariableDeclaration;
-
-    // Finally, ensure that the variable declaration has a `name` identifier.
-    return hasNameIdentifier(node_) ? node_ : undefined;
+    return node;
   }
 
   /**

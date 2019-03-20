@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMemberKind, ClassSymbol, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+import {ClassMemberKind, Import, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost, getIifeBody} from '../../src/host/esm5_host';
 import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
@@ -1562,7 +1562,10 @@ describe('Esm5ReflectionHost', () => {
       const host = new Esm5ReflectionHost(false, program.getTypeChecker());
       const node = getDeclaration(
           program, SIMPLE_ES2015_CLASS_FILE.name, 'EmptyClass', isNamedClassDeclaration);
-      expect(host.getClassSymbol(node)).toBeDefined();
+      const classSymbol = host.getClassSymbol(node);
+
+      expect(classSymbol).toBeDefined();
+      expect(classSymbol !.valueDeclaration).toBe(node);
     });
 
     it('should return the class symbol for an ES5 class (outer variable declaration)', () => {
@@ -1570,7 +1573,10 @@ describe('Esm5ReflectionHost', () => {
       const host = new Esm5ReflectionHost(false, program.getTypeChecker());
       const node =
           getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
-      expect(host.getClassSymbol(node)).toBeDefined();
+      const classSymbol = host.getClassSymbol(node);
+
+      expect(classSymbol).toBeDefined();
+      expect(classSymbol !.valueDeclaration).toBe(node);
     });
 
     it('should return the class symbol for an ES5 class (inner function declaration)', () => {
@@ -1579,8 +1585,10 @@ describe('Esm5ReflectionHost', () => {
       const outerNode =
           getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', isNamedVariableDeclaration);
       const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
+      const classSymbol = host.getClassSymbol(innerNode);
 
-      expect(host.getClassSymbol(innerNode)).toBeDefined();
+      expect(classSymbol).toBeDefined();
+      expect(classSymbol !.valueDeclaration).toBe(outerNode);
     });
 
     it('should return the same class symbol (of the outer declaration) for outer and inner declarations',
@@ -1592,7 +1600,6 @@ describe('Esm5ReflectionHost', () => {
          const innerNode = getIifeBody(outerNode) !.statements.find(isNamedFunctionDeclaration) !;
 
          expect(host.getClassSymbol(innerNode)).toBe(host.getClassSymbol(outerNode));
-         expect(host.getClassSymbol(innerNode) !.valueDeclaration).toBe(outerNode);
        });
 
     it('should return undefined if node is not an ES5 class', () => {
@@ -1600,7 +1607,9 @@ describe('Esm5ReflectionHost', () => {
       const host = new Esm5ReflectionHost(false, program.getTypeChecker());
       const node =
           getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', isNamedFunctionDeclaration);
-      expect(host.getClassSymbol(node)).toBeUndefined();
+      const classSymbol = host.getClassSymbol(node);
+
+      expect(classSymbol).toBeUndefined();
     });
   });
 
