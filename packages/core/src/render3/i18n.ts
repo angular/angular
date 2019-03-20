@@ -10,6 +10,7 @@ import {SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS, getTemplateContent
 import {InertBodyHelper} from '../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../sanitization/url_sanitizer';
 import {assertDefined, assertEqual, assertGreaterThan} from '../util/assert';
+
 import {attachPatchData} from './context_discovery';
 import {allocExpando, createNodeAtIndex, elementAttribute, load, textBinding} from './instructions/all';
 import {LContainer, NATIVE} from './interfaces/container';
@@ -24,6 +25,7 @@ import {getIsParent, getLView, getPreviousOrParentTNode, setIsParent, setPreviou
 import {NO_CHANGE} from './tokens';
 import {addAllToArray} from './util/array_utils';
 import {renderStringify} from './util/misc_utils';
+import {Stack} from './util/stack';
 import {getNativeByIndex, getNativeByTNode, getTNode, isLContainer} from './util/view_utils';
 
 const MARKER = `�`;
@@ -319,7 +321,7 @@ function toMaskBit(bindingIndex: number): number {
   return 1 << Math.min(bindingIndex, 31);
 }
 
-const parentIndexStack: number[] = [];
+const parentIndexStack = new Stack<number>();
 
 /**
  * Marks a block of text as translatable.
@@ -369,10 +371,8 @@ function i18nStartFirstPass(
   const previousOrParentTNode = getPreviousOrParentTNode();
   const parentTNode = getIsParent() ? getPreviousOrParentTNode() :
                                       previousOrParentTNode && previousOrParentTNode.parent;
-  let parentIndex =
-      parentTNode && parentTNode !== viewData[T_HOST] ? parentTNode.index - HEADER_OFFSET : index;
-  let parentIndexPointer = 0;
-  parentIndexStack[parentIndexPointer] = parentIndex;
+  parentIndexStack.push(
+      parentTNode && parentTNode !== viewData[T_HOST] ? parentTNode.index - HEADER_OFFSET : index);
   const createOpCodes: I18nMutateOpCodes = [];
   // If the previous node wasn't the direct parent then we have a translation without top level
   // element and we need to keep a reference of the previous element if there is one
@@ -394,7 +394,7 @@ function i18nStartFirstPass(
         // It is a closing tag
         if (value.charAt(1) === '#') {
           const phIndex = parseInt(value.substr(2), 10);
-          parentIndex = parentIndexStack[--parentIndexPointer];
+          parentIndexStack.pop();
           createOpCodes.push(phIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.ElementEnd);
         }
       } else {
@@ -402,10 +402,11 @@ function i18nStartFirstPass(
         // The value represents a placeholder that we move to the designated index
         createOpCodes.push(
             phIndex << I18nMutateOpCode.SHIFT_REF | I18nMutateOpCode.Select,
-            parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
+            parentIndexStack.current ! << I18nMutateOpCode.SHIFT_PARENT |
+                I18nMutateOpCode.AppendChild);
 
         if (value.charAt(0) === '#') {
-          parentIndexStack[++parentIndexPointer] = parentIndex = phIndex;
+          parentIndexStack.push(phIndex);
         }
       }
     } else {
@@ -418,7 +419,8 @@ function i18nStartFirstPass(
           const icuNodeIndex = startIndex + i18nVarsCount++;
           createOpCodes.push(
               COMMENT_MARKER, ngDevMode ? `ICU ${icuNodeIndex}` : '', icuNodeIndex,
-              parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
+              parentIndexStack.current ! << I18nMutateOpCode.SHIFT_PARENT |
+                  I18nMutateOpCode.AppendChild);
 
           // Update codes for the ICU expression
           const icuExpression = parts[j] as IcuExpression;
@@ -443,7 +445,8 @@ function i18nStartFirstPass(
           createOpCodes.push(
               // If there is a binding, the value will be set during update
               hasBinding ? '' : text, textNodeIndex,
-              parentIndex << I18nMutateOpCode.SHIFT_PARENT | I18nMutateOpCode.AppendChild);
+              parentIndexStack.current ! << I18nMutateOpCode.SHIFT_PARENT |
+                  I18nMutateOpCode.AppendChild);
 
           if (hasBinding) {
             addAllToArray(generateBindingUpdateOpCodes(text, textNodeIndex), updateOpCodes);
