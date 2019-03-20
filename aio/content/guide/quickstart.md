@@ -1,14 +1,22 @@
-# Getting started 
+# QuickStart to Local Environment Setup and Development 
 
 Welcome to Angular! Angular helps you build modern applications for the web, mobile, or desktop.  
 
-This guide shows you how to build and run a simple Angular
-app. You'll use the [Angular CLI tool](cli "CLI command reference") to accelerate development, 
-while adhering to the [Style Guide](guide/styleguide "Angular style guide") recommendations that
-benefit _every_ Angular project.
 
+<div class="callout is-helpful">
+<header>Getting Started - Stackblitz</header>
+
+
+We recently introduced a [**new Getting Started**](getting-started) that leverages the [StackBlitz](https://stackblitz.com/) online development environment. 
+We recommend the new Getting Started for anyone who wants to quickly learn the essentials of Angular, in the context of building a basic online store app. 
+
+
+</div> 
+
+
+This guide shows you how to build and run a simple Angular app in your local development environment using the [Angular CLI tool](cli "CLI command reference"). 
+At the end of this guide&mdash;as part of final code review&mdash;there is a link to download a copy of the final application code, so that you can compare your work, validate your local setup, or just explore a simple Angular app. 
 This guide takes less than 30 minutes to complete. 
-At the end of this guide&mdash;as part of final code review&mdash;there is a link to download a copy of the final application code. (If you don't execute the commands in this guide, you can still download the final application code.)
 
 
 {@a devenv}
