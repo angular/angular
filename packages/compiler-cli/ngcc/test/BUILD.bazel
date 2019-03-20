@@ -45,8 +45,10 @@ ts_library(
     ),
     deps = [
         "//packages/compiler-cli/ngcc",
+        "//packages/compiler-cli/src/ngtsc/path",
         "//packages/compiler-cli/test:test_utils",
         "@npm//@types/mock-fs",
+        "@npm//rxjs",
     ],
 )
 
@@ -60,7 +62,6 @@ jasmine_node_test(
     ],
     deps = [
         ":integration_lib",
-        "//packages/common",
         "//tools/testing:node_no_angular",
         "@npm//canonical-path",
         "@npm//convert-source-map",

@@ -9,6 +9,7 @@
 import {readFileSync, writeFileSync} from 'fs';
 import * as mockFs from 'mock-fs';
 
+import {AbsoluteFsPath} from '../../../src/ngtsc/path';
 import {checkMarker, writeMarker} from '../../src/packages/build_marker';
 import {EntryPoint} from '../../src/packages/entry_point';
 
@@ -94,11 +95,12 @@ function restoreRealFileSystem() {
 }
 
 function createEntryPoint(path: string): EntryPoint {
+  const absolutePath = AbsoluteFsPath.from(path);
   return {
     name: 'some-package',
-    path,
-    package: path,
-    typings: '',
+    path: absolutePath,
+    package: absolutePath,
+    typings: AbsoluteFsPath.from('/typings'),
     packageJson: JSON.parse(readFileSync(path + '/package.json', 'utf8'))
   };
 }

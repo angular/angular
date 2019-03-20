@@ -6,84 +6,76 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/path';
 import {readFileSync} from 'fs';
 import * as mockFs from 'mock-fs';
+
 import {getEntryPointInfo} from '../../src/packages/entry_point';
 
 describe('getEntryPointInfo()', () => {
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
+  const _ = AbsoluteFsPath.from;
+  const SOME_PACKAGE = _('/some_package');
+
   it('should return an object containing absolute paths to the formats of the specified entry-point',
      () => {
-       const entryPoint = getEntryPointInfo('/some_package', '/some_package/valid_entry_point');
+       const entryPoint = getEntryPointInfo(SOME_PACKAGE, _('/some_package/valid_entry_point'));
        expect(entryPoint).toEqual({
          name: 'some-package/valid_entry_point',
-         package: '/some_package',
-         path: '/some_package/valid_entry_point',
-         typings: `/some_package/valid_entry_point/valid_entry_point.d.ts`,
-         fesm2015: `/some_package/valid_entry_point/fesm2015/valid_entry_point.js`,
-         esm2015: `/some_package/valid_entry_point/esm2015/valid_entry_point.js`,
-         fesm5: `/some_package/valid_entry_point/fesm2015/valid_entry_point.js`,
-         esm5: `/some_package/valid_entry_point/esm2015/valid_entry_point.js`,
-         umd: `/some_package/valid_entry_point/bundles/valid_entry_point.umd.js`,
+         package: SOME_PACKAGE,
+         path: _('/some_package/valid_entry_point'),
+         typings: _(`/some_package/valid_entry_point/valid_entry_point.d.ts`),
          packageJson: loadPackageJson('/some_package/valid_entry_point'),
        });
      });
 
   it('should return null if there is no package.json at the entry-point path', () => {
-    const entryPoint = getEntryPointInfo('/some_package', '/some_package/missing_package_json');
+    const entryPoint = getEntryPointInfo(SOME_PACKAGE, _('/some_package/missing_package_json'));
     expect(entryPoint).toBe(null);
   });
 
   it('should return null if there is no typings or types field in the package.json', () => {
-    const entryPoint = getEntryPointInfo('/some_package', '/some_package/missing_typings');
+    const entryPoint = getEntryPointInfo(SOME_PACKAGE, _('/some_package/missing_typings'));
     expect(entryPoint).toBe(null);
   });
 
   it('should return null if there is no esm2015 nor fesm2015 field in the package.json', () => {
-    const entryPoint = getEntryPointInfo('/some_package', '/some_package/missing_esm2015');
+    const entryPoint = getEntryPointInfo(SOME_PACKAGE, _('/some_package/missing_esm2015'));
     expect(entryPoint).toBe(null);
   });
 
   it('should return null if there is no metadata.json file next to the typing file', () => {
-    const entryPoint = getEntryPointInfo('/some_package', '/some_package/missing_metadata.json');
+    const entryPoint = getEntryPointInfo(SOME_PACKAGE, _('/some_package/missing_metadata.json'));
     expect(entryPoint).toBe(null);
   });
 
   it('should work if the typings field is named `types', () => {
     const entryPoint =
-        getEntryPointInfo('/some_package', '/some_package/types_rather_than_typings');
+        getEntryPointInfo(SOME_PACKAGE, _('/some_package/types_rather_than_typings'));
     expect(entryPoint).toEqual({
       name: 'some-package/types_rather_than_typings',
-      package: '/some_package',
-      path: '/some_package/types_rather_than_typings',
-      typings: `/some_package/types_rather_than_typings/types_rather_than_typings.d.ts`,
-      fesm2015: `/some_package/types_rather_than_typings/fesm2015/types_rather_than_typings.js`,
-      esm2015: `/some_package/types_rather_than_typings/esm2015/types_rather_than_typings.js`,
-      fesm5: `/some_package/types_rather_than_typings/fesm2015/types_rather_than_typings.js`,
-      esm5: `/some_package/types_rather_than_typings/esm2015/types_rather_than_typings.js`,
-      umd: `/some_package/types_rather_than_typings/bundles/types_rather_than_typings.umd.js`,
+      package: SOME_PACKAGE,
+      path: _('/some_package/types_rather_than_typings'),
+      typings: _(`/some_package/types_rather_than_typings/types_rather_than_typings.d.ts`),
       packageJson: loadPackageJson('/some_package/types_rather_than_typings'),
     });
   });
 
   it('should work with Angular Material style package.json', () => {
-    const entryPoint = getEntryPointInfo('/some_package', '/some_package/material_style');
+    const entryPoint = getEntryPointInfo(SOME_PACKAGE, _('/some_package/material_style'));
     expect(entryPoint).toEqual({
       name: 'some_package/material_style',
-      package: '/some_package',
-      path: '/some_package/material_style',
-      typings: `/some_package/material_style/material_style.d.ts`,
-      fesm2015: `/some_package/material_style/esm2015/material_style.js`,
-      fesm5: `/some_package/material_style/esm5/material_style.es5.js`,
-      umd: `/some_package/material_style/bundles/material_style.umd.js`,
-      packageJson: loadPackageJson('/some_package/material_style'),
+      package: SOME_PACKAGE,
+      path: _('/some_package/material_style'),
+      typings: _(`/some_package/material_style/material_style.d.ts`),
+      packageJson: JSON.parse(readFileSync('/some_package/material_style/package.json', 'utf8')),
     });
   });
 
   it('should return null if the package.json is not valid JSON', () => {
-    const entryPoint = getEntryPointInfo('/some_package', '/some_package/unexpected_symbols');
+    const entryPoint = getEntryPointInfo(SOME_PACKAGE, _('/some_package/unexpected_symbols'));
     expect(entryPoint).toBe(null);
   });
 });

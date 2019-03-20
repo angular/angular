@@ -56,8 +56,6 @@ export class Transformer {
    * @param bundle the bundle to transform.
    */
   transform(entryPoint: EntryPoint, isCore: boolean, bundle: EntryPointBundle): void {
-    console.warn(`Compiling ${entryPoint.name} - ${bundle.format}`);
-
     const reflectionHost = this.getHost(isCore, bundle);
 
     // Parse and analyze the files.
@@ -78,10 +76,8 @@ export class Transformer {
     const typeChecker = bundle.src.program.getTypeChecker();
     switch (bundle.format) {
       case 'esm2015':
-      case 'fesm2015':
         return new Esm2015ReflectionHost(isCore, typeChecker, bundle.dts);
       case 'esm5':
-      case 'fesm5':
         return new Esm5ReflectionHost(isCore, typeChecker, bundle.dts);
       default:
         throw new Error(`Reflection host for "${bundle.format}" not yet implemented.`);
@@ -91,10 +87,8 @@ export class Transformer {
   getRenderer(host: NgccReflectionHost, isCore: boolean, bundle: EntryPointBundle): Renderer {
     switch (bundle.format) {
       case 'esm2015':
-      case 'fesm2015':
         return new EsmRenderer(host, isCore, bundle, this.sourcePath, this.targetPath);
       case 'esm5':
-      case 'fesm5':
         return new Esm5Renderer(host, isCore, bundle, this.sourcePath, this.targetPath);
       default:
         throw new Error(`Renderer for "${bundle.format}" not yet implemented.`);

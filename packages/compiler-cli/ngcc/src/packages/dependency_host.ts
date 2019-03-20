@@ -10,6 +10,8 @@ import * as path from 'canonical-path';
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
+import {AbsoluteFsPath, PathSegment} from '../../../src/ngtsc/path';
+
 /**
  * Helper functions for computing dependencies.
  */
@@ -17,7 +19,8 @@ export class DependencyHost {
   /**
    * Get a list of the resolved paths to all the dependencies of this entry point.
    * @param from An absolute path to the file whose dependencies we want to get.
-   * @param resolved A set that will have the absolute paths of resolved entry points added to it.
+   * @param dependencies A set that will have the absolute paths of resolved entry points added to
+   * it.
    * @param missing A set that will have the dependencies that could not be found added to it.
    * @param deepImports A set that will have the import paths that exist but cannot be mapped to
    * entry-points, i.e. deep-imports.
@@ -25,11 +28,16 @@ export class DependencyHost {
    * circular dependency loop.
    */
   computeDependencies(
-      from: string, resolved: Set<string>, missing: Set<string>, deepImports: Set<string>,
-      internal: Set<string> = new Set()): void {
+      from: AbsoluteFsPath, dependencies: Set<AbsoluteFsPath> = new Set(),
+      missing: Set<PathSegment> = new Set(), deepImports: Set<PathSegment> = new Set(),
+      internal: Set<AbsoluteFsPath> = new Set()): {
+    dependencies: Set<AbsoluteFsPath>,
+    missing: Set<PathSegment>,
+    deepImports: Set<PathSegment>
+  } {
     const fromContents = fs.readFileSync(from, 'utf8');
     if (!this.hasImportOrReexportStatements(fromContents)) {
-      return;
+      return {dependencies, missing, deepImports};
     }
 
     // Parse the source into a TypeScript AST and then walk it looking for imports and re-exports.
@@ -41,7 +49,7 @@ export class DependencyHost {
         // Grab the id of the module that is being imported
         .map(stmt => stmt.moduleSpecifier.text)
         // Resolve this module id into an absolute path
-        .forEach(importPath => {
+        .forEach((importPath: PathSegment) => {
           if (importPath.startsWith('.')) {
             // This is an internal import so follow it
             const internalDependency = this.resolveInternal(from, importPath);
@@ -49,12 +57,12 @@ export class DependencyHost {
             if (!internal.has(internalDependency)) {
               internal.add(internalDependency);
               this.computeDependencies(
-                  internalDependency, resolved, missing, deepImports, internal);
+                  internalDependency, dependencies, missing, deepImports, internal);
             }
           } else {
             const resolvedEntryPoint = this.tryResolveEntryPoint(from, importPath);
             if (resolvedEntryPoint !== null) {
-              resolved.add(resolvedEntryPoint);
+              dependencies.add(resolvedEntryPoint);
             } else {
               // If the import could not be resolved as entry point, it either does not exist
               // at all or is a deep import.
@@ -67,6 +75,7 @@ export class DependencyHost {
             }
           }
         });
+    return {dependencies, missing, deepImports};
   }
 
   /**
@@ -75,11 +84,11 @@ export class DependencyHost {
    * @param to the module specifier of the internal dependency to resolve
    * @returns the resolved path to the import.
    */
-  resolveInternal(from: string, to: string): string {
+  resolveInternal(from: AbsoluteFsPath, to: PathSegment): AbsoluteFsPath {
     const fromDirectory = path.dirname(from);
     // `fromDirectory` is absolute so we don't need to worry about telling `require.resolve`
-    // about it - unlike `tryResolve` below.
-    return require.resolve(path.resolve(fromDirectory, to));
+    // about it by adding it to a `paths` parameter - unlike `tryResolve` below.
+    return AbsoluteFsPath.from(require.resolve(path.resolve(fromDirectory, to)));
   }
 
   /**
@@ -99,9 +108,9 @@ export class DependencyHost {
    * @returns the resolved path to the entry point directory of the import or null
    * if it cannot be resolved.
    */
-  tryResolveEntryPoint(from: string, to: string): string|null {
-    const entryPoint = this.tryResolve(from, `${to}/package.json`);
-    return entryPoint && path.dirname(entryPoint);
+  tryResolveEntryPoint(from: AbsoluteFsPath, to: PathSegment): AbsoluteFsPath|null {
+    const entryPoint = this.tryResolve(from, `${to}/package.json` as PathSegment);
+    return entryPoint && AbsoluteFsPath.from(path.dirname(entryPoint));
   }
 
   /**
@@ -112,9 +121,9 @@ export class DependencyHost {
    * @returns an absolute path to the entry-point of the dependency or null if it could not be
    * resolved.
    */
-  tryResolve(from: string, to: string): string|null {
+  tryResolve(from: AbsoluteFsPath, to: PathSegment): AbsoluteFsPath|null {
     try {
-      return require.resolve(to, {paths: [from]});
+      return AbsoluteFsPath.from(require.resolve(to, {paths: [from]}));
     } catch (e) {
       return null;
     }

@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {resolve} from 'canonical-path';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-
 import {BundleProgram, makeBundleProgram} from './bundle_program';
-import {EntryPoint, EntryPointFormat} from './entry_point';
+import {EntryPointFormat} from './entry_point';
 
 
 
@@ -20,7 +20,7 @@ import {EntryPoint, EntryPointFormat} from './entry_point';
  */
 export interface EntryPointBundle {
   format: EntryPointFormat;
-  isFlat: boolean;
+  isFlatCore: boolean;
   rootDirs: AbsoluteFsPath[];
   src: BundleProgram;
   dts: BundleProgram|null;
@@ -28,34 +28,33 @@ export interface EntryPointBundle {
 
 /**
  * Get an object that describes a formatted bundle for an entry-point.
- * @param entryPoint The entry-point that contains the bundle.
- * @param format The format of the bundle.
- * @param transformDts True if processing this bundle should also process its `.d.ts` files.
+ * @param entryPointPath The path to the entry-point that contains the bundle.
+ * @param formatPath The path to the source files for this bundle.
+ * @param typingsPath The path to the typings files if we should transform them with this bundle.
+ * @param isCore This entry point is the Angular core package.
+ * @param format The underlying format of the bundle.
+ * @param transformDts Whether to transform the typings along with this bundle.
  */
 export function makeEntryPointBundle(
-    entryPoint: EntryPoint, isCore: boolean, format: EntryPointFormat,
-    transformDts: boolean): EntryPointBundle|null {
-  // Bail out if the entry-point does not have this format.
-  const path = entryPoint[format];
-  if (!path) {
-    return null;
-  }
-
+    entryPointPath: string, formatPath: string, typingsPath: string, isCore: boolean,
+    format: EntryPointFormat, transformDts: boolean): EntryPointBundle|null {
   // Create the TS program and necessary helpers.
   const options: ts.CompilerOptions = {
     allowJs: true,
     maxNodeModuleJsDepth: Infinity,
-    rootDir: entryPoint.path,
+    rootDir: entryPointPath,
   };
   const host = ts.createCompilerHost(options);
-  const rootDirs = [AbsoluteFsPath.from(entryPoint.path)];
+  const rootDirs = [AbsoluteFsPath.from(entryPointPath)];
 
   // Create the bundle programs, as necessary.
-  const src = makeBundleProgram(isCore, path, 'r3_symbols.js', options, host);
+  const src = makeBundleProgram(
+      isCore, resolve(entryPointPath, formatPath), 'r3_symbols.js', options, host);
   const dts = transformDts ?
-      makeBundleProgram(isCore, entryPoint.typings, 'r3_symbols.d.ts', options, host) :
+      makeBundleProgram(
+          isCore, resolve(entryPointPath, typingsPath), 'r3_symbols.d.ts', options, host) :
       null;
-  const isFlat = src.r3SymbolsFile === null;
+  const isFlatCore = isCore && src.r3SymbolsFile === null;
 
-  return {format, rootDirs, isFlat, src, dts};
+  return {format, rootDirs, isFlatCore, src, dts};
 }
