@@ -34,9 +34,9 @@ ng_package(
     visibility = [
         "//packages/bazel/test/ng_package:__pkg__",
         "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/ngcc/test:__pkg__",
         "//packages/compiler-cli/test:__pkg__",
         "//packages/compiler-cli/test/diagnostics:__pkg__",
-        "//packages/compiler-cli/test/ngcc:__pkg__",
         "//packages/compiler-cli/test/transformers:__pkg__",
         "//packages/compiler/test:__pkg__",
         "//packages/language-service/test:__pkg__",
