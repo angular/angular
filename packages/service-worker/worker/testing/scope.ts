@@ -116,9 +116,9 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
 
   constructor(
       private server: MockServerState, readonly caches: MockCacheStorage, private origin: string) {
-    this.time = Date.now();
-    const baseHref = new URL(this.registration.scope).pathname;
+    const baseHref = this.parseUrl(origin).path;
     this.cacheNamePrefix = 'ngsw:' + baseHref;
+    this.time = Date.now();
   }
 
   async resolveSelfMessages(): Promise<void> {

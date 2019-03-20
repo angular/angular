@@ -18,7 +18,7 @@ export class Adapter {
   constructor(scope: ServiceWorkerGlobalScope) {
     // Suffixing `ngsw` with the baseHref to avoid clash of cache names
     // for SWs with different scopes on the same domain.
-    const baseHref = new URL(scope.registration.scope).pathname;
+    const baseHref = this.parseUrl(scope.registration.scope).path;
     this.cacheNamePrefix = 'ngsw:' + baseHref;
   }
 
