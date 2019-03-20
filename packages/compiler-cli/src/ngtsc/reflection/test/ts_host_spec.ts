@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {CtorParameter} from '../src/host';
 import {TypeScriptReflectionHost} from '../src/typescript';
+import {isNamedClassDeclaration} from '../src/util';
 
 describe('reflector', () => {
   describe('ctor params', () => {
@@ -25,7 +26,7 @@ describe('reflector', () => {
             }
         `
       }]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
+      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
@@ -54,7 +55,7 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
+      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
@@ -83,7 +84,7 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
+      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
@@ -111,7 +112,7 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
+      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
@@ -139,7 +140,7 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
+      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
@@ -166,7 +167,7 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
+      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
@@ -198,7 +199,7 @@ describe('reflector', () => {
         `
         }
       ]);
-      const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
+      const clazz = getDeclaration(program, 'entry.ts', 'Foo', isNamedClassDeclaration);
       const checker = program.getTypeChecker();
       const host = new TypeScriptReflectionHost(checker);
       const args = host.getConstructorParameters(clazz) !;
