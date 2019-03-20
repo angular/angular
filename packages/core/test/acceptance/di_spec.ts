@@ -39,6 +39,28 @@ describe('di', () => {
       fixture.detectChanges();
       expect((pipeInstance !.cdr as ViewRef<MyApp>).context).toBe(fixture.componentInstance);
     });
+
+    it('should inject host component ChangeDetectorRef into directives on ng-container', () => {
+      let dirInstance: MyDirective;
+
+      @Directive({selector: '[getCDR]'})
+      class MyDirective {
+        constructor(public cdr: ChangeDetectorRef) { dirInstance = this; }
+      }
+
+      @Component({
+        selector: 'my-app',
+        template: `<ng-container getCDR>Visible</ng-container>`,
+      })
+      class MyApp {
+        constructor(public cdr: ChangeDetectorRef) {}
+      }
+
+      TestBed.configureTestingModule({declarations: [MyApp, MyDirective]});
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+      expect((dirInstance !.cdr as ViewRef<MyApp>).context).toBe(fixture.componentInstance);
+    });
   });
 
   it('should not cause cyclic dependency if same token is requested in deps with @SkipSelf', () => {
