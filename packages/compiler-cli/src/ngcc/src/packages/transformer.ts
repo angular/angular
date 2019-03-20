@@ -82,7 +82,7 @@ export class Transformer {
         return new Esm2015ReflectionHost(isCore, typeChecker, bundle.dts);
       case 'esm5':
       case 'fesm5':
-        return new Esm5ReflectionHost(isCore, typeChecker);
+        return new Esm5ReflectionHost(isCore, typeChecker, bundle.dts);
       default:
         throw new Error(`Reflection host for "${bundle.format}" not yet implemented.`);
     }

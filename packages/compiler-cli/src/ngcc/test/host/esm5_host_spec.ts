@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {ClassMemberKind, Import} from '../../../ngtsc/reflection';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
-import {getDeclaration, makeTestProgram} from '../helpers/utils';
+import {getDeclaration, makeTestBundleProgram, makeTestProgram} from '../helpers/utils';
 
 import {expectTypeValueReferencesForParameters} from './util';
 
@@ -528,6 +528,107 @@ const UNWANTED_PROTOTYPE_EXPORT_FILE = {
       static someStaticProp: any;
     }`
 };
+
+const TYPINGS_SRC_FILES = [
+  {
+    name: '/src/index.js',
+    contents:
+        `import {InternalClass} from './internal'; export * from './class1'; export * from './class2';`
+  },
+  {
+    name: '/src/class1.js',
+    contents: `
+        var Class1 = (function() {
+          function Class1() {}
+          return Class1;
+        }());
+        var MissingClass1 = (function() {
+          function MissingClass1() {}
+          return MissingClass1;
+        }());
+        export {Class1, MissingClass1};
+        `
+  },
+  {
+    name: '/src/class2.js',
+    contents: `
+        var Class2 = (function() {
+          function Class2() {}
+          return Class2;
+        }());
+        export {Class2};
+      `
+  },
+  {name: '/src/func1.js', contents: 'function mooFn() {} export {mooFn}'}, {
+    name: '/src/internal.js',
+    contents: `
+        var InternalClass = (function() {
+          function InternalClass() {}
+          return InternalClass;
+        }());
+        var Class2 = (function() {
+          function Class2() {}
+          return Class2;
+        }());
+        export {InternalClass, Class2};
+      `
+  },
+  {
+    name: '/src/missing-class.js',
+    contents: `
+        var MissingClass2 = (function() {
+          function MissingClass2() {}
+          return MissingClass2;
+        }());
+        export {MissingClass2};
+      `
+  },
+  {
+    name: '/src/flat-file.js',
+    contents: `
+        var Class1 = (function() {
+          function Class1() {}
+          return Class1;
+        }());
+        var MissingClass1 = (function() {
+          function MissingClass1() {}
+          return MissingClass1;
+        }());
+        var MissingClass2 = (function() {
+          function MissingClass2() {}
+          return MissingClass2;
+        }());
+        var Class3 = (function() {
+          function Class3() {}
+          return Class3;
+        }());
+        export {Class1, Class3 as xClass3, MissingClass1, MissingClass2};
+      `
+  }
+];
+
+const TYPINGS_DTS_FILES = [
+  {
+    name: '/typings/index.d.ts',
+    contents:
+        `import {InternalClass} from './internal'; export * from './class1'; export * from './class2';`
+  },
+  {
+    name: '/typings/class1.d.ts',
+    contents: `export declare class Class1 {}\nexport declare class OtherClass {}`
+  },
+  {
+    name: '/typings/class2.d.ts',
+    contents:
+        `export declare class Class2 {}\nexport declare interface SomeInterface {}\nexport {Class3 as xClass3} from './class3';`
+  },
+  {name: '/typings/func1.d.ts', contents: 'export declare function mooFn(): void;'},
+  {
+    name: '/typings/internal.d.ts',
+    contents: `export declare class InternalClass {}\nexport declare class Class2 {}`
+  },
+  {name: '/typings/class3.d.ts', contents: `export declare class Class3 {}`},
+];
 
 describe('Esm5ReflectionHost', () => {
 
@@ -1546,5 +1647,101 @@ describe('Esm5ReflectionHost', () => {
       expect(classD.name).toEqual('D');
       expect(classD.decorators.map(decorator => decorator.name)).toEqual(['Directive']);
     });
+  });
+
+  describe('getDtsDeclarationsOfClass()', () => {
+    it('should find the dts declaration that has the same relative path to the source file', () => {
+      const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
+      const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
+      const class1 =
+          getDeclaration(srcProgram, '/src/class1.js', 'Class1', ts.isVariableDeclaration);
+      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+
+      const dtsDeclaration = host.getDtsDeclaration(class1);
+      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
+    });
+
+    it('should find the dts declaration for exported functions', () => {
+      const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
+      const dtsProgram = makeTestBundleProgram(TYPINGS_DTS_FILES);
+      const mooFn = getDeclaration(srcProgram, '/src/func1.js', 'mooFn', ts.isFunctionDeclaration);
+      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dtsProgram);
+
+      const dtsDeclaration = host.getDtsDeclaration(mooFn);
+      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/func1.d.ts');
+    });
+
+    it('should return null if there is no matching class in the matching dts file', () => {
+      const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
+      const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
+      const missingClass =
+          getDeclaration(srcProgram, '/src/class1.js', 'MissingClass1', ts.isVariableDeclaration);
+      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+
+      expect(host.getDtsDeclaration(missingClass)).toBe(null);
+    });
+
+    it('should return null if there is no matching dts file', () => {
+      const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
+      const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
+      const missingClass = getDeclaration(
+          srcProgram, '/src/missing-class.js', 'MissingClass2', ts.isVariableDeclaration);
+      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+
+      expect(host.getDtsDeclaration(missingClass)).toBe(null);
+    });
+
+    it('should find the dts file that contains a matching class declaration, even if the source files do not match',
+       () => {
+         const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
+         const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
+         const class1 =
+             getDeclaration(srcProgram, '/src/flat-file.js', 'Class1', ts.isVariableDeclaration);
+         const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+
+         const dtsDeclaration = host.getDtsDeclaration(class1);
+         expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class1.d.ts');
+       });
+
+    it('should find aliased exports', () => {
+      const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
+      const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
+      const class3 =
+          getDeclaration(srcProgram, '/src/flat-file.js', 'Class3', ts.isVariableDeclaration);
+      const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+
+      const dtsDeclaration = host.getDtsDeclaration(class3);
+      expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class3.d.ts');
+    });
+
+    it('should find the dts file that contains a matching class declaration, even if the class is not publicly exported',
+       () => {
+         const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
+         const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
+         const internalClass = getDeclaration(
+             srcProgram, '/src/internal.js', 'InternalClass', ts.isVariableDeclaration);
+         const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+
+         const dtsDeclaration = host.getDtsDeclaration(internalClass);
+         expect(dtsDeclaration !.getSourceFile().fileName).toEqual('/typings/internal.d.ts');
+       });
+
+    it('should prefer the publicly exported class if there are multiple classes with the same name',
+       () => {
+         const srcProgram = makeTestProgram(...TYPINGS_SRC_FILES);
+         const dts = makeTestBundleProgram(TYPINGS_DTS_FILES);
+         const class2 =
+             getDeclaration(srcProgram, '/src/class2.js', 'Class2', ts.isVariableDeclaration);
+         const internalClass2 =
+             getDeclaration(srcProgram, '/src/internal.js', 'Class2', ts.isVariableDeclaration);
+         const host = new Esm2015ReflectionHost(false, srcProgram.getTypeChecker(), dts);
+
+         const class2DtsDeclaration = host.getDtsDeclaration(class2);
+         expect(class2DtsDeclaration !.getSourceFile().fileName).toEqual('/typings/class2.d.ts');
+
+         const internalClass2DtsDeclaration = host.getDtsDeclaration(internalClass2);
+         expect(internalClass2DtsDeclaration !.getSourceFile().fileName)
+             .toEqual('/typings/class2.d.ts');
+       });
   });
 });
