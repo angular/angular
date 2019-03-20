@@ -22,12 +22,13 @@ export {getDeclaration} from '../../../src/ngtsc/testing/in_memory_typescript';
  * @param dtsFiles The typings files to include the bundle.
  */
 export function makeTestEntryPointBundle(
-    format: EntryPointFormat, files: {name: string, contents: string, isRoot?: boolean}[],
+    format: EntryPointFormat, isCore: boolean,
+    files: {name: string, contents: string, isRoot?: boolean}[],
     dtsFiles?: {name: string, contents: string, isRoot?: boolean}[]): EntryPointBundle {
   const src = makeTestBundleProgram(files);
   const dts = dtsFiles ? makeTestBundleProgram(dtsFiles) : null;
-  const isFlatCore = src.r3SymbolsFile === null;
-  return {format, rootDirs: [AbsoluteFsPath.fromUnchecked('/')], src, dts, isFlatCore};
+  const isFlatCore = isCore && src.r3SymbolsFile === null;
+  return {format, rootDirs: [AbsoluteFsPath.fromUnchecked('/')], src, dts, isCore, isFlatCore};
 }
 
 /**

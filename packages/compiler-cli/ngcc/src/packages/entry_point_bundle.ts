@@ -20,6 +20,7 @@ import {EntryPointFormat} from './entry_point';
  */
 export interface EntryPointBundle {
   format: EntryPointFormat;
+  isCore: boolean;
   isFlatCore: boolean;
   rootDirs: AbsoluteFsPath[];
   src: BundleProgram;
@@ -56,5 +57,5 @@ export function makeEntryPointBundle(
       null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 
-  return {format, rootDirs, isFlatCore, src, dts};
+  return {format, rootDirs, isCore, isFlatCore, src, dts};
 }
