@@ -371,6 +371,18 @@ describe('Esm5ReflectionHost [import helper style]', () => {
           expect(actualDeclaration !.node).toBe(expectedDeclarationNode);
           expect(actualDeclaration !.viaModule).toBe('@angular/core');
         });
+
+        it('should find the "actual" declaration of an aliased variable identifier', () => {
+          const program = makeTestProgram(fileSystem.files[2]);
+          const host = new Esm5ReflectionHost(false, program.getTypeChecker());
+          const ngModuleRef = findIdentifier(
+              program.getSourceFile(fileSystem.files[2].name) !, 'HttpClientXsrfModule_1',
+              isNgModulePropertyAssignment);
+
+          const declaration = host.getDeclarationOfIdentifier(ngModuleRef !);
+          expect(declaration).not.toBe(null);
+          expect(declaration !.node.getText()).toContain('function HttpClientXsrfModule()');
+        });
       });
     });
 
@@ -422,3 +434,20 @@ describe('Esm5ReflectionHost [import helper style]', () => {
     return node.forEachChild(node => findVariableDeclaration(node, variableName));
   }
 });
+
+function findIdentifier(
+    node: ts.Node | undefined, identifierName: string,
+    requireFn: (node: ts.Identifier) => boolean): ts.Identifier|undefined {
+  if (!node) {
+    return undefined;
+  }
+  if (ts.isIdentifier(node) && node.text === identifierName && requireFn(node)) {
+    return node;
+  }
+  return node.forEachChild(node => findIdentifier(node, identifierName, requireFn));
+}
+
+function isNgModulePropertyAssignment(identifier: ts.Identifier): boolean {
+  return ts.isPropertyAssignment(identifier.parent) &&
+      identifier.parent.name.getText() === 'ngModule';
+}
