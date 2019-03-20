@@ -74,6 +74,7 @@ export class MockClients implements Clients {
 }
 
 export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context {
+  readonly cacheNamePrefix: string;
   readonly clients = new MockClients();
   private eventHandlers = new Map<string, Function>();
   private skippedWaiting = true;
@@ -115,6 +116,8 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
 
   constructor(private server: MockServerState, readonly caches: MockCacheStorage) {
     this.time = Date.now();
+    const baseHref = new URL(this.registration.scope).pathname;
+    this.cacheNamePrefix = 'ngsw:' + baseHref;
   }
 
   async resolveSelfMessages(): Promise<void> {
