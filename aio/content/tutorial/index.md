@@ -1,12 +1,25 @@
 <h1 class="no-toc">Tutorial: Tour of Heroes</h1>
 
-The _Tour of Heroes_ tutorial covers the fundamentals of Angular.  
-In this tutorial you will build an app that helps a staffing agency manage its stable of heroes.
+This _Tour of Heroes_ tutorial provides a deep dive into the fundamentals of Angular. 
+It shows you how to set up your local development environment and develop an app using the [Angular CLI tool](cli "CLI command reference"). 
 
-This basic app has many of the features you'd expect to find in a data-driven application.
+<div class="callout is-helpful">
+<header>Getting Started - Stackblitz</header>
+
+
+We recently introduced a [**new Getting Started**](getting-started) that leverages the [StackBlitz](https://stackblitz.com/) online development environment. 
+We recommend the new Getting Started for anyone who wants to quickly learn the essentials of Angular, in the context of building an online store app. 
+The new Getting Started covers the same major topics as this Tour of Heroes&mdash;components, template syntax, routing, services, and accessing data via HTTP&mdash;in a condensed format.
+
+
+</div> 
+
+In this _Tour of Heroes_ tutorial, you will build an app that helps a staffing agency manage its stable of heroes.
+
+This app has many of the features you'd expect to find in a data-driven application.
 It acquires and displays a list of heroes, edits a selected hero's detail, and navigates among different views of heroic data.
 
-By the end of the tutorial you will be able to do the following:
+By the end of this tutorial you will be able to do the following:
 
 * Use built-in Angular directives to show and hide elements and display lists of hero data.
 * Create Angular components to display hero details and show an array of heroes.
@@ -21,7 +34,7 @@ By the end of the tutorial you will be able to do the following:
 You'll learn enough Angular to get started and gain confidence that
 Angular can do whatever you need it to do. 
 
-After completing all tutorial steps, the final app will look like this <live-example name="toh-pt6"></live-example>.
+After completing all tutorial steps, the final app will look like this: <live-example name="toh-pt6"></live-example>.
 
 
 ## What you'll build
