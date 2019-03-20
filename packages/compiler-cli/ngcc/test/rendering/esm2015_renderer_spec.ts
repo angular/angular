@@ -18,7 +18,7 @@ import {makeTestEntryPointBundle} from '../helpers/utils';
 
 function setup(file: {name: string, contents: string}) {
   const dir = dirname(file.name);
-  const bundle = makeTestEntryPointBundle('esm2015', false, [file]) !;
+  const bundle = makeTestEntryPointBundle('es2015', 'esm2015', false, [file]) !;
   const typeChecker = bundle.src.program.getTypeChecker();
   const host = new Esm2015ReflectionHost(false, typeChecker);
   const referencesRegistry = new NgccReferencesRegistry(host);

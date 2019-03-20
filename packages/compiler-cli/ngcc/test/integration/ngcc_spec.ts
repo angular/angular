@@ -141,6 +141,44 @@ describe('ngcc main()', () => {
       });
     });
   });
+
+  describe('with createNewEntryPointFormats', () => {
+    it('should create new files rather than overwriting the originals', () => {
+      const ANGULAR_CORE_IMPORT_REGEX = /import \* as ɵngcc\d+ from '@angular\/core';/;
+      mainNgcc({
+        basePath: '/node_modules',
+        createNewEntryPointFormats: true,
+        propertiesToConsider: ['esm5']
+      });
+
+      // Updates the package.json
+      expect(loadPackage('@angular/common').esm5).toEqual('./esm5/common.js');
+      expect((loadPackage('@angular/common') as any).esm5_ivy_ngcc)
+          .toEqual('__ivy_ngcc__/esm5/common.js');
+
+      // Doesn't touch original files
+      expect(readFileSync(`/node_modules/@angular/common/esm5/src/common_module.js`, 'utf8'))
+          .not.toMatch(ANGULAR_CORE_IMPORT_REGEX);
+      // Or create a backup of the original
+      expect(existsSync(`/node_modules/@angular/common/esm5/src/common_module.js.__ivy_ngcc_bak`))
+          .toBe(false);
+
+      // Creates new files
+      expect(readFileSync(
+                 `/node_modules/@angular/common/__ivy_ngcc__/esm5/src/common_module.js`, 'utf8'))
+          .toMatch(ANGULAR_CORE_IMPORT_REGEX);
+
+      // Copies over files (unchanged) that did not need compiling
+      expect(existsSync(`/node_modules/@angular/common/__ivy_ngcc__/esm5/src/version.js`));
+      expect(readFileSync(`/node_modules/@angular/common/__ivy_ngcc__/esm5/src/version.js`, 'utf8'))
+          .toEqual(readFileSync(`/node_modules/@angular/common/esm5/src/version.js`, 'utf8'));
+
+      // Overwrites .d.ts files (as usual)
+      expect(readFileSync(`/node_modules/@angular/common/common.d.ts`, 'utf8'))
+          .toMatch(ANGULAR_CORE_IMPORT_REGEX);
+      expect(existsSync(`/node_modules/@angular/common/common.d.ts.__ivy_ngcc_bak`)).toBe(true);
+    });
+  });
 });
 
 
