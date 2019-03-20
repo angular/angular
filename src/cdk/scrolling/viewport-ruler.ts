@@ -38,7 +38,7 @@ export class ViewportRuler implements OnDestroy {
   constructor(private _platform: Platform, ngZone: NgZone) {
     ngZone.runOutsideAngular(() => {
       this._change = _platform.isBrowser ?
-          merge<Event>(fromEvent(window, 'resize'), fromEvent(window, 'orientationchange')) :
+          merge(fromEvent(window, 'resize'), fromEvent(window, 'orientationchange')) :
           observableOf();
 
       // Note that we need to do the subscription inside `runOutsideAngular`

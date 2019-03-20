@@ -212,11 +212,14 @@ export class MatTableDataSource<T> extends DataSource<T> {
     // pipeline can progress to the next step. Note that the value from these streams are not used,
     // they purely act as a signal to progress in the pipeline.
     const sortChange: Observable<Sort|null|void> = this._sort ?
-        merge<Sort|void>(this._sort.sortChange, this._sort.initialized) :
+        merge(this._sort.sortChange, this._sort.initialized) as Observable<Sort|void> :
         observableOf(null);
     const pageChange: Observable<PageEvent|null|void> = this._paginator ?
-        merge<PageEvent|void>(
-          this._paginator.page, this._internalPageChanges, this._paginator.initialized) :
+        merge(
+          this._paginator.page,
+          this._internalPageChanges,
+          this._paginator.initialized
+        ) as Observable<PageEvent|void> :
         observableOf(null);
     const dataStream = this._data;
     // Watch for base data or filter changes to provide a filtered set of data.

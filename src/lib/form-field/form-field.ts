@@ -287,7 +287,7 @@ export class MatFormField extends _MatFormFieldMixinBase
     }
 
     // Subscribe to changes in the child control state in order to update the form field UI.
-    control.stateChanges.pipe(startWith<void>(null!)).subscribe(() => {
+    control.stateChanges.pipe(startWith(null!)).subscribe(() => {
       this._validatePlaceholders();
       this._syncDescribedByIds();
       this._changeDetectorRef.markForCheck();

@@ -56,8 +56,8 @@ export class Dialog implements OnDestroy {
   _afterAllClosedBase = new Subject<void>();
 
   // TODO(jelbourn): tighten the type on the right-hand side of this expression.
-  afterAllClosed: Observable<void> = defer<any>(() => this.openDialogs.length ?
-      this._afterAllClosed : this._afterAllClosed.pipe(startWith<void>(undefined))) as any;
+  afterAllClosed: Observable<void> = defer(() => this.openDialogs.length ?
+      this._afterAllClosed : this._afterAllClosed.pipe(startWith(undefined)));
 
   /** Stream that emits when a dialog is opened. */
   get afterOpened(): Subject<DialogRef<any>> {

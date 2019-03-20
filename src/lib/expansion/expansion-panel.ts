@@ -194,7 +194,7 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
     if (this._lazyContent) {
       // Render the content as soon as the panel becomes open.
       this.opened.pipe(
-        startWith<void>(null!),
+        startWith(null!),
         filter(() => this.expanded && !this._portal),
         take(1)
       ).subscribe(() => {

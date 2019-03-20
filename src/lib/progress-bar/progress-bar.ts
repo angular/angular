@@ -22,7 +22,7 @@ import {
   InjectionToken,
   inject,
 } from '@angular/core';
-import {fromEvent, Subscription} from 'rxjs';
+import {fromEvent, Subscription, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
@@ -195,11 +195,12 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
       // Run outside angular so change detection didn't get triggered on every transition end
       // instead only on the animation that we care about (primary value bar's transitionend)
       this._ngZone.runOutsideAngular((() => {
+        const element = this._primaryValueBar.nativeElement;
+
         this._animationEndSubscription =
-            fromEvent<TransitionEvent>(this._primaryValueBar.nativeElement, 'transitionend')
-            .pipe(filter(((e: TransitionEvent) =>
-              e.target === this._primaryValueBar.nativeElement)))
-            .subscribe(_ => this._ngZone.run(() => this.emitAnimationEnd()));
+            (fromEvent(element, 'transitionend') as Observable<TransitionEvent>)
+              .pipe(filter(((e: TransitionEvent) => e.target === element)))
+              .subscribe(() => this._ngZone.run(() => this.emitAnimationEnd()));
       }));
     }
   }

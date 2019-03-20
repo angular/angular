@@ -34,7 +34,7 @@ export class MatLine {}
 export function setLines(lines: QueryList<MatLine>, element: ElementRef<HTMLElement>) {
   // Note: doesn't need to unsubscribe, because `changes`
   // gets completed by Angular when the view is destroyed.
-  lines.changes.pipe(startWith<QueryList<MatLine>>(lines)).subscribe(({length}) => {
+  lines.changes.pipe(startWith(lines)).subscribe(({length}) => {
     setClass(element, 'mat-2-line', false);
     setClass(element, 'mat-3-line', false);
     setClass(element, 'mat-multi-line', false);

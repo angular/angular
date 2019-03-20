@@ -27,7 +27,7 @@ export class AutocompleteDisplayExample implements OnInit {
   ngOnInit() {
     this.filteredOptions = this.myControl.valueChanges
       .pipe(
-        startWith<string | User>(''),
+        startWith(''),
         map(value => typeof value === 'string' ? value : value.name),
         map(name => name ? this._filter(name) : this.options.slice())
       );

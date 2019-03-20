@@ -262,7 +262,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
      * and we don't have close disabled.
      */
     this._ngZone.runOutsideAngular(() => {
-        fromEvent<KeyboardEvent>(this._elementRef.nativeElement, 'keydown').pipe(
+        (fromEvent(this._elementRef.nativeElement, 'keydown') as Observable<KeyboardEvent>).pipe(
             filter(event => event.keyCode === ESCAPE && !this.disableClose),
             takeUntil(this._destroyed)
         ).subscribe(event => this._ngZone.run(() => {
