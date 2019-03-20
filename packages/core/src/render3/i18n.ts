@@ -306,8 +306,7 @@ function getBindingMask(icuExpression: IcuExpression, mask = 0): number {
   return mask;
 }
 
-const i18nIndexStack: number[] = [];
-let i18nIndexStackPointer = -1;
+const i18nIndexStack = new Stack<number>();
 
 /**
  * Convert binding index to mask bit.
@@ -349,7 +348,7 @@ const parentIndexStack = new Stack<number>();
 export function i18nStart(index: number, message: string, subTemplateIndex?: number): void {
   const tView = getLView()[TVIEW];
   ngDevMode && assertDefined(tView, `tView should be defined`);
-  i18nIndexStack[++i18nIndexStackPointer] = index;
+  i18nIndexStack.push(index);
   if (tView.firstTemplatePass && tView.data[index + HEADER_OFFSET] === null) {
     i18nStartFirstPass(tView, index, message, subTemplateIndex);
   }
@@ -638,7 +637,7 @@ function i18nEndFirstPass(tView: TView) {
                    viewData[BINDING_INDEX], viewData[TVIEW].bindingStartIndex,
                    'i18nEnd should be called before any binding');
 
-  const rootIndex = i18nIndexStack[i18nIndexStackPointer--];
+  const rootIndex = i18nIndexStack.pop() !;
   const tI18n = tView.data[rootIndex + HEADER_OFFSET] as TI18n;
   ngDevMode && assertDefined(tI18n, `You should call i18nStart before i18nEnd`);
 
