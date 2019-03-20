@@ -37,7 +37,7 @@ Try running `yarn bazel` instead.
 # Setup the Node.js toolchain
 node_repositories(
     node_version = "10.9.0",
-    yarn_version = "1.13.0",
+    yarn_version = "1.12.1",
 )
 
 # Install our npm dependencies into @npm
