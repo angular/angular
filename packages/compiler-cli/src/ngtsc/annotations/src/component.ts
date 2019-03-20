@@ -14,7 +14,7 @@ import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
-import {Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
+import {ClassDeclaration, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry, ScopeDirective, extractDirectiveGuards} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TypeCheckContext} from '../../typecheck';
@@ -60,7 +60,7 @@ export class ComponentDecoratorHandler implements
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
-  detect(node: ts.Declaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
       return undefined;
     }
@@ -75,7 +75,7 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  preanalyze(node: ts.ClassDeclaration, decorator: Decorator): Promise<void>|undefined {
+  preanalyze(node: ClassDeclaration, decorator: Decorator): Promise<void>|undefined {
     // In preanalyze, resource URLs associated with the component are asynchronously preloaded via
     // the resourceLoader. This is the only time async operations are allowed for a component.
     // These resources are:
@@ -127,7 +127,7 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<ComponentHandlerData> {
+  analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<ComponentHandlerData> {
     const containingFile = node.getSourceFile().fileName;
     const meta = this._resolveLiteral(decorator);
     this.literalCache.delete(decorator);
@@ -213,7 +213,7 @@ export class ComponentDecoratorHandler implements
       const ref = new Reference(node);
       this.scopeRegistry.registerDirective({
         ref,
-        name: node.name !.text,
+        name: node.name.text,
         selector: metadata.selector,
         exportAs: metadata.exportAs,
         inputs: metadata.inputs,
@@ -297,7 +297,7 @@ export class ComponentDecoratorHandler implements
     return output;
   }
 
-  typeCheck(ctx: TypeCheckContext, node: ts.Declaration, meta: ComponentHandlerData): void {
+  typeCheck(ctx: TypeCheckContext, node: ClassDeclaration, meta: ComponentHandlerData): void {
     if (!ts.isClassDeclaration(node)) {
       return;
     }
@@ -312,7 +312,7 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  resolve(node: ts.ClassDeclaration, analysis: ComponentHandlerData): ResolveResult {
+  resolve(node: ClassDeclaration, analysis: ComponentHandlerData): ResolveResult {
     const context = node.getSourceFile();
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
@@ -345,9 +345,9 @@ export class ComponentDecoratorHandler implements
       if (!cycleDetected) {
         const wrapDirectivesAndPipesInClosure =
             directives.some(
-                dir => isExpressionForwardReference(dir.expression, node.name !, context)) ||
+                dir => isExpressionForwardReference(dir.expression, node.name, context)) ||
             Array.from(pipes.values())
-                .some(pipe => isExpressionForwardReference(pipe, node.name !, context));
+                .some(pipe => isExpressionForwardReference(pipe, node.name, context));
         metadata.directives = directives;
         metadata.pipes = pipes;
         metadata.wrapDirectivesAndPipesInClosure = wrapDirectivesAndPipesInClosure;
@@ -374,7 +374,7 @@ export class ComponentDecoratorHandler implements
     return {};
   }
 
-  compile(node: ts.ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):
+  compile(node: ClassDeclaration, analysis: ComponentHandlerData, pool: ConstantPool):
       CompileResult {
     const res = compileComponentFromMetadata(analysis.meta, pool, makeBindingParser());
 

@@ -13,6 +13,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
+import {isNamedClassDeclaration} from '../../util/src/typescript';
 import {DirectiveDecoratorHandler} from '../src/directive';
 
 
@@ -47,7 +48,7 @@ describe('DirectiveDecoratorHandler', () => {
         reflectionHost, evaluator, scopeRegistry, NOOP_DEFAULT_IMPORT_RECORDER, false);
 
     const analyzeDirective = (dirName: string) => {
-      const DirNode = getDeclaration(program, 'entry.ts', dirName, ts.isClassDeclaration);
+      const DirNode = getDeclaration(program, 'entry.ts', dirName, isNamedClassDeclaration);
 
       const detected = handler.detect(DirNode, reflectionHost.getDecoratorsOfDeclaration(DirNode));
       if (detected === undefined) {

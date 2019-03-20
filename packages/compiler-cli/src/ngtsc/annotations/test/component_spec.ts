@@ -15,6 +15,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
+import {isNamedClassDeclaration} from '../../util/src/typescript';
 import {ResourceLoader} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
 
@@ -56,7 +57,7 @@ describe('ComponentDecoratorHandler', () => {
     const handler = new ComponentDecoratorHandler(
         reflectionHost, evaluator, scopeRegistry, false, new NoopResourceLoader(), [''], false,
         true, moduleResolver, cycleAnalyzer, refEmitter, NOOP_DEFAULT_IMPORT_RECORDER);
-    const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', ts.isClassDeclaration);
+    const TestCmp = getDeclaration(program, 'entry.ts', 'TestCmp', isNamedClassDeclaration);
     const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
     if (detected === undefined) {
       return fail('Failed to recognize @Component');

@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, ExternalExpr} from '@angular/compiler';
+import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {ImportRewriter} from '../../imports';
-import {ReflectionHost, reflectNameOfDeclaration} from '../../reflection';
+import {ClassDeclaration, ReflectionHost, reflectNameOfDeclaration} from '../../reflection';
 import {TypeCheckContext} from '../../typecheck';
-import {getSourceFile} from '../../util/src/typescript';
+import {getSourceFile, isNamedClassDeclaration} from '../../util/src/typescript';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from './api';
 import {DtsFileTransformer} from './declaration';
@@ -48,7 +48,7 @@ export class IvyCompilation {
    * Tracks classes which have been analyzed and found to have an Ivy decorator, and the
    * information recorded about them for later compilation.
    */
-  private ivyClasses = new Map<ts.Declaration, IvyClass>();
+  private ivyClasses = new Map<ClassDeclaration, IvyClass>();
 
   /**
    * Tracks factory information which needs to be generated.
@@ -84,7 +84,7 @@ export class IvyCompilation {
 
   analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined { return this.analyze(sf, true); }
 
-  private detectHandlersForClass(node: ts.Declaration): IvyClass|null {
+  private detectHandlersForClass(node: ClassDeclaration): IvyClass|null {
     // The first step is to reflect the decorators.
     const classDecorators = this.reflector.getDecoratorsOfDeclaration(node);
     let ivyClass: IvyClass|null = null;
@@ -169,7 +169,7 @@ export class IvyCompilation {
   private analyze(sf: ts.SourceFile, preanalyze: boolean): Promise<void>|undefined {
     const promises: Promise<void>[] = [];
 
-    const analyzeClass = (node: ts.Declaration): void => {
+    const analyzeClass = (node: ClassDeclaration): void => {
       const ivyClass = this.detectHandlersForClass(node);
 
       // If the class has no Ivy behavior (or had errors), skip it.
@@ -227,7 +227,7 @@ export class IvyCompilation {
 
     const visit = (node: ts.Node): void => {
       // Process nodes recursively, and look for class declarations with decorators.
-      if (ts.isClassDeclaration(node)) {
+      if (isNamedClassDeclaration(node)) {
         analyzeClass(node);
       }
       ts.forEachChild(node, visit);
@@ -291,8 +291,8 @@ export class IvyCompilation {
    */
   compileIvyFieldFor(node: ts.Declaration, constantPool: ConstantPool): CompileResult[]|undefined {
     // Look to see whether the original node was analyzed. If not, there's nothing to do.
-    const original = ts.getOriginalNode(node) as ts.Declaration;
-    if (!this.ivyClasses.has(original)) {
+    const original = ts.getOriginalNode(node) as typeof node;
+    if (!isNamedClassDeclaration(original) || !this.ivyClasses.has(original)) {
       return undefined;
     }
 
@@ -305,7 +305,8 @@ export class IvyCompilation {
         continue;
       }
 
-      const compileMatchRes = match.handler.compile(node, match.analyzed.analysis, constantPool);
+      const compileMatchRes =
+          match.handler.compile(node as ClassDeclaration, match.analyzed.analysis, constantPool);
       if (!Array.isArray(compileMatchRes)) {
         res.push(compileMatchRes);
       } else {
@@ -327,9 +328,9 @@ export class IvyCompilation {
    * Lookup the `ts.Decorator` which triggered transformation of a particular class declaration.
    */
   ivyDecoratorsFor(node: ts.Declaration): ts.Decorator[] {
-    const original = ts.getOriginalNode(node) as ts.Declaration;
+    const original = ts.getOriginalNode(node) as typeof node;
 
-    if (!this.ivyClasses.has(original)) {
+    if (!isNamedClassDeclaration(original) || !this.ivyClasses.has(original)) {
       return EMPTY_ARRAY;
     }
     const ivyClass = this.ivyClasses.get(original) !;

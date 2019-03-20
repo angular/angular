@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost, TypeValueReference} from './host';
+import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost} from './host';
 import {typeToValue} from './type_to_value';
 
 /**
@@ -133,9 +133,10 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return map;
   }
 
-  isClass(node: ts.Node): node is ts.NamedDeclaration {
+  isClass(node: ts.Node): node is ClassDeclaration {
     // In TypeScript code, classes are ts.ClassDeclarations.
-    return ts.isClassDeclaration(node);
+    // (`name` can be undefined in unnamed default exports: `default export class { ... }`)
+    return ts.isClassDeclaration(node) && (node.name !== undefined) && ts.isIdentifier(node.name);
   }
 
   hasBaseClass(node: ts.Declaration): boolean {

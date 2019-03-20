@@ -7,10 +7,9 @@
  */
 
 import {R3BaseRefMetaData, compileBaseDefFromMetadata} from '@angular/compiler';
-import * as ts from 'typescript';
 
 import {PartialEvaluator} from '../../partial_evaluator';
-import {ClassMember, Decorator, ReflectionHost} from '../../reflection';
+import {ClassDeclaration, ClassMember, Decorator, ReflectionHost} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {isAngularDecorator} from './util';
@@ -33,7 +32,7 @@ export class BaseDefDecoratorHandler implements
 
   readonly precedence = HandlerPrecedence.WEAK;
 
-  detect(node: ts.ClassDeclaration, decorators: Decorator[]|null):
+  detect(node: ClassDeclaration, decorators: Decorator[]|null):
       DetectResult<R3BaseRefDecoratorDetection>|undefined {
     if (containsNgTopLevelDecorator(decorators, this.isCore)) {
       // If the class is already decorated by @Component or @Directive let that
@@ -70,7 +69,7 @@ export class BaseDefDecoratorHandler implements
     }
   }
 
-  analyze(node: ts.ClassDeclaration, metadata: R3BaseRefDecoratorDetection):
+  analyze(node: ClassDeclaration, metadata: R3BaseRefDecoratorDetection):
       AnalysisOutput<R3BaseRefMetaData> {
     const analysis: R3BaseRefMetaData = {};
     if (metadata.inputs) {
@@ -114,7 +113,7 @@ export class BaseDefDecoratorHandler implements
     return {analysis};
   }
 
-  compile(node: ts.Declaration, analysis: R3BaseRefMetaData): CompileResult[]|CompileResult {
+  compile(node: ClassDeclaration, analysis: R3BaseRefMetaData): CompileResult[]|CompileResult {
     const {expression, type} = compileBaseDefFromMetadata(analysis);
 
     return {

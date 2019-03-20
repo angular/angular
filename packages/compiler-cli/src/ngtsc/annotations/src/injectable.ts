@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder} from '../../imports';
-import {Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
+import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {generateSetClassMetadataCall} from './metadata';
@@ -33,7 +33,7 @@ export class InjectableDecoratorHandler implements
 
   readonly precedence = HandlerPrecedence.SHARED;
 
-  detect(node: ts.Declaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
       return undefined;
     }
@@ -48,7 +48,7 @@ export class InjectableDecoratorHandler implements
     }
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<InjectableHandlerData> {
+  analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<InjectableHandlerData> {
     return {
       analysis: {
         meta: extractInjectableMetadata(
@@ -60,7 +60,7 @@ export class InjectableDecoratorHandler implements
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: InjectableHandlerData): CompileResult {
+  compile(node: ClassDeclaration, analysis: InjectableHandlerData): CompileResult {
     const res = compileIvyInjectable(analysis.meta);
     const statements = res.statements;
     if (analysis.metadataStmt !== null) {
@@ -81,13 +81,9 @@ export class InjectableDecoratorHandler implements
  * A `null` return value indicates this is @Injectable has invalid data.
  */
 function extractInjectableMetadata(
-    clazz: ts.ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
+    clazz: ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
     defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
     strictCtorDeps: boolean): R3InjectableMetadata {
-  if (clazz.name === undefined) {
-    throw new FatalDiagnosticError(
-        ErrorCode.DECORATOR_ON_ANONYMOUS_CLASS, decorator.node, `@Injectable on anonymous class`);
-  }
   const name = clazz.name.text;
   const type = new WrappedNodeExpr(clazz.name);
   const typeArgumentCount = reflector.getGenericArityOfClass(clazz) || 0;
