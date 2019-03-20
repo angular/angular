@@ -38,7 +38,7 @@ This meachanism of automatic wrapping / auto-correcting was problematic for seve
 </projecting-tr-inside-tbody>
 ```
 
-In the above example the `<projecting-tr-inside-tbody>` component culd be "surprised" to see additional
+In the above example the `<projecting-tr-inside-tbody>` component could be "surprised" to see additional
 `<tbody>` elements inserted by Angular HTML parser.
 
 
