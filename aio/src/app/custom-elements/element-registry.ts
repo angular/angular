@@ -39,27 +39,7 @@ export const ELEMENT_MODULE_PATHS_AS_ROUTES = [
   {
     selector: 'live-example',
     loadChildren: './live-example/live-example.module#LiveExampleModule'
-  },
-  {
-    selector: 'aio-gs-interpolation',
-    loadChildren: './getting-started/interpolation/interpolation.module#InterpolationModule'
-  },
-  {
-    selector: 'aio-gs-property-binding',
-    loadChildren: './getting-started/property-binding/property-binding.module#PropertyBindingModule'
-  },
-  {
-    selector: 'aio-gs-event-binding',
-    loadChildren: './getting-started/event-binding/event-binding.module#EventBindingModule'
-  },
-  {
-    selector: 'aio-gs-ng-if',
-    loadChildren: './getting-started/ng-if/ng-if.module#NgIfModule'
-  },
-  {
-    selector: 'aio-gs-ng-for',
-    loadChildren: './getting-started/ng-for/ng-for.module#NgForModule'
-  },
+  }
 ];
 
 /**
