@@ -68,10 +68,6 @@ window.testBlocklist = {
   "MatMenu nested menu should not open submenu when hovering over disabled trigger": {
     "error": "TypeError: Cannot read property 'componentInstance' of null",
     "notes": "FW-1059: DebugNode.query should query nodes in the logical tree"
-  },
-  "MatSnackBar with TemplateRef should be able to open a snack bar using a TemplateRef": {
-    "error": "Error: Expected ' Fries Pizza  ' to contain 'Pasta'.",
-    "notes": "Breaking change: Change detection follows insertion tree only, not declaration tree (MatSnackBarContainer is OnPush)"
   }
 };
 // clang-format on
