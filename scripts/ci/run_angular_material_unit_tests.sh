@@ -9,9 +9,6 @@ angular_dir=$(pwd)
 # Switch into Material directory.
 cd ${MATERIAL_REPO_TMP_DIR}
 
-# Install dependencies for the freshly cloned repo.
-yarn install --frozen-lockfile --non-interactive
-
 # Install this version of Angular into the freshly cloned repo.
 rm -rf ./node_modules/@angular/*
 cp -r ${angular_dir}/dist/packages-dist-ivy-aot/* ./node_modules/@angular/
