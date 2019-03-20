@@ -6,4 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {mainNgcc} from './src/main';
+export {NgccOptions, mainNgcc as process} from './src/main';
+export {hasBeenProcessed} from './src/packages/build_marker';

@@ -13,30 +13,24 @@ const Module = require('module');
 
 import {mainNgcc} from '../../src/main';
 import {getAngularPackagesFromRunfiles, resolveNpmTreeArtifact} from '../../../test/runfile_helpers';
-import {AbsoluteFsPath} from '../../../src/ngtsc/path';
-
-const NODE_MODULES = AbsoluteFsPath.from('/node_modules');
 
 describe('ngcc main()', () => {
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
   it('should run ngcc without errors for esm2015', () => {
-    expect(() => mainNgcc({baseSourcePath: NODE_MODULES, propertiesToConsider: ['esm2015']}))
+    expect(() => mainNgcc({basePath: '/node_modules', propertiesToConsider: ['esm2015']}))
         .not.toThrow();
   });
 
   it('should run ngcc without errors for esm5', () => {
-    expect(() => mainNgcc({baseSourcePath: NODE_MODULES, propertiesToConsider: ['esm5']}))
+    expect(() => mainNgcc({basePath: '/node_modules', propertiesToConsider: ['esm5']}))
         .not.toThrow();
   });
 
   describe('with targetEntryPointPath', () => {
     it('should only compile the given package entry-point (and its dependencies).', () => {
-      mainNgcc({
-        baseSourcePath: NODE_MODULES,
-        targetEntryPointPath: AbsoluteFsPath.from('/node_modules/@angular/common/http')
-      });
+      mainNgcc({basePath: '/node_modules', targetEntryPointPath: '@angular/common/http'});
 
       expect(loadPackage('@angular/common/http').__modified_by_ngcc__).toEqual({
         module: '0.0.0-PLACEHOLDER',
@@ -74,7 +68,7 @@ describe('ngcc main()', () => {
     it('should only compile the entry-point formats given in the `propertiesToConsider` list',
        () => {
          mainNgcc({
-           baseSourcePath: NODE_MODULES,
+           basePath: '/node_modules',
            propertiesToConsider: ['main', 'esm5', 'module', 'fesm5']
          });
 
@@ -107,7 +101,7 @@ describe('ngcc main()', () => {
   describe('with compileAllFormats set to false', () => {
     it('should only compile the first matching format', () => {
       mainNgcc({
-        baseSourcePath: NODE_MODULES,
+        basePath: '/node_modules',
         propertiesToConsider: ['main', 'module', 'fesm5', 'esm5'],
         compileAllFormats: false
       });
