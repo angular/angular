@@ -13,6 +13,12 @@
  * from the global scope.
  */
 export class Adapter {
+  cacheNamePrefix: string;
+  constructor(scope: ServiceWorkerGlobalScope) {
+    // Suffixing the baseHref with `ngsw` string to avoid clash of cache files
+    const baseHref = new URL(scope.registration.scope).pathname;
+    this.cacheNamePrefix = 'ngsw:' + baseHref;
+  }
   /**
    * Wrapper around the `Request` constructor.
    */
