@@ -58,12 +58,43 @@
       "hidden": true
     },
     {
-      "url": "guide/quickstart",
       "title": "Getting Started",
-      "tooltip": "A brief introduction to Angular and Angular CLI essentials."
+      "tooltip": "Learn the basics by building your first Angular application.",
+      "children": [
+        {
+          "url": "getting-started",
+          "title": "Your First App",
+          "tooltip": "Introduction to Angular's component model, template syntax, and component communication"
+        },
+        {
+          "url": "getting-started/routing",
+          "title": "Routing",
+          "tooltip": "Introduction to routing between components using the browser's URL"
+        },        
+        {
+          "url": "getting-started/data",
+          "title": "Managing Data",
+          "tooltip": "Introduction to services, and accessing external data"
+        },
+        {
+          "url": "getting-started/forms",
+          "title": "Forms",
+          "tooltip": "Learn about fetching and managing data from users with forms"
+        },
+        {
+          "url": "getting-started/deployment",
+          "title": "Deployment",
+          "tooltip": "Share your application with the world by hosting it on Firebase or your own server"
+        }
+      ]
     },
     {
-      "title": "Tutorial",
+      "url": "guide/quickstart",
+      "title": "Environment Quickstart",
+      "tooltip": "A brief introduction to local development with the Angular CLI."
+    },
+    {
+      "title": "Tutorial: Tour of Heroes",
       "tooltip": "The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.",
       "children": [
         {
@@ -538,7 +569,7 @@
     },
     {
       "title": "Setup & Deployment",
-      "tooltip": "Setup, build, testing, and deployment environment and tool information.",
+      "tooltip": "Build, testing, and deployment environment, tool, and configuration information.",
       "children": [
         {
           "url": "guide/setup",

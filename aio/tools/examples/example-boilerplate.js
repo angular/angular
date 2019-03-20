@@ -39,6 +39,11 @@ BOILERPLATE_PATHS.testing = [...cliRelativePath, 'angular.json'];
 
 BOILERPLATE_PATHS.universal = [...cliRelativePath, 'angular.json', 'package.json'];
 
+BOILERPLATE_PATHS['getting-started'] = [
+  ...cliRelativePath,
+  'src/styles.css'
+];
+
 BOILERPLATE_PATHS.ivy = {
   systemjs: ['rollup-config.js', 'tsconfig-aot.json'],
   cli: ['src/tsconfig.app.json']
@@ -87,8 +92,11 @@ class ExampleBoilerPlate {
           filePath => this.copyFile(boilerPlateBasePath, exampleFolder, filePath));
 
       // Copy the boilerplate common files
-      BOILERPLATE_PATHS.common.forEach(
-          filePath => this.copyFile(BOILERPLATE_COMMON_BASE_PATH, exampleFolder, filePath));
+      const useCommonBoilerplate = exampleConfig.useCommonBoilerplate !== false;
+      
+      if (useCommonBoilerplate) {
+        BOILERPLATE_PATHS.common.forEach(filePath => this.copyFile(BOILERPLATE_COMMON_BASE_PATH, exampleFolder, filePath));
+      }
 
       // Copy Ivy specific files
       if (ivy) {
