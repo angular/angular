@@ -5,9 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname} from 'canonical-path';
-import {existsSync, writeFileSync} from 'fs';
-import {mkdir, mv} from 'shelljs';
 import * as ts from 'typescript';
 
 import {CompiledFile, DecorationAnalyzer} from '../analysis/decoration_analyzer';
@@ -22,7 +19,6 @@ import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {EsmRenderer} from '../rendering/esm_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
 
-import {EntryPoint} from './entry_point';
 import {EntryPointBundle} from './entry_point_bundle';
 
 
@@ -54,8 +50,9 @@ export class Transformer {
   /**
    * Transform the source (and typings) files of a bundle.
    * @param bundle the bundle to transform.
+   * @returns information about the files that were transformed.
    */
-  transform(bundle: EntryPointBundle): void {
+  transform(bundle: EntryPointBundle): FileInfo[] {
     const isCore = bundle.isCore;
     const reflectionHost = this.getHost(isCore, bundle);
 
@@ -69,8 +66,7 @@ export class Transformer {
         decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
         moduleWithProvidersAnalyses);
 
-    // Write out all the transformed files.
-    renderedFiles.forEach(file => this.writeFile(file));
+    return renderedFiles;
   }
 
   getHost(isCore: boolean, bundle: EntryPointBundle): NgccReflectionHost {
@@ -121,15 +117,6 @@ export class Transformer {
 
     return {decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
             moduleWithProvidersAnalyses};
-  }
-
-  writeFile(file: FileInfo): void {
-    mkdir('-p', dirname(file.path));
-    const backPath = file.path + '.bak';
-    if (existsSync(file.path) && !existsSync(backPath)) {
-      mv(file.path, backPath);
-    }
-    writeFileSync(file.path, file.contents, 'utf8');
   }
 }
 

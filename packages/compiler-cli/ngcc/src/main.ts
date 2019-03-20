@@ -18,6 +18,8 @@ import {EntryPointFormat, EntryPointJsonProperty, SUPPORTED_FORMAT_PROPERTIES, g
 import {makeEntryPointBundle} from './packages/entry_point_bundle';
 import {EntryPointFinder} from './packages/entry_point_finder';
 import {Transformer} from './packages/transformer';
+import {FileWriter} from './writing/file_writer';
+import {InPlaceFileWriter} from './writing/in_place_file_writer';
 
 
 /**
@@ -62,6 +64,7 @@ export function mainNgcc({basePath, targetEntryPointPath,
   const host = new DependencyHost();
   const resolver = new DependencyResolver(host);
   const finder = new EntryPointFinder(resolver);
+  const fileWriter = getFileWriter();
 
   const absoluteTargetEntryPointPath = targetEntryPointPath ?
       AbsoluteFsPath.from(resolve(basePath, targetEntryPointPath)) :
@@ -116,7 +119,8 @@ export function mainNgcc({basePath, targetEntryPointPath,
             compiledFormats.size === 0);
         if (bundle) {
           console.warn(`Compiling ${entryPoint.name} : ${property} as ${format}`);
-          transformer.transform(bundle);
+          const transformedFiles = transformer.transform(bundle);
+          fileWriter.writeBundle(entryPoint, bundle, transformedFiles);
           compiledFormats.add(formatPath);
         } else {
           console.warn(
@@ -138,4 +142,8 @@ export function mainNgcc({basePath, targetEntryPointPath,
           `Failed to compile any formats for entry-point at (${entryPoint.path}). Tried ${propertiesToConsider}.`);
     }
   });
+}
+
+function getFileWriter(): FileWriter {
+  return new InPlaceFileWriter();
 }
