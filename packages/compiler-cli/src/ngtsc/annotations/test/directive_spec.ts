@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {TypeScriptReflectionHost} from '../../reflection';
+import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {isNamedClassDeclaration} from '../../util/src/typescript';
@@ -79,5 +79,5 @@ describe('DirectiveDecoratorHandler', () => {
 class TestReflectionHost extends TypeScriptReflectionHost {
   hasBaseClassReturnValue = false;
 
-  hasBaseClass(node: ts.Declaration): boolean { return this.hasBaseClassReturnValue; }
+  hasBaseClass(clazz: ClassDeclaration): boolean { return this.hasBaseClassReturnValue; }
 }
