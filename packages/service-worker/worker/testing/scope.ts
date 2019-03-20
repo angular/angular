@@ -95,8 +95,13 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   } as any;
 
   static envIsSupported(): boolean {
-    return (typeof URL === 'function') ||
-        (typeof require === 'function' && typeof require('url')['parse'] === 'function');
+    if (typeof URL === 'function') {
+      return true;
+    }
+
+    // In older Node.js versions, the `URL` global does not exist. We can use `url` instead.
+    const url = (typeof require === 'function') && require('url');
+    return url && (typeof url.parse === 'function') && (typeof url.resolve === 'function');
   }
 
   time: number;
@@ -176,13 +181,14 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
   }
 
   parseUrl(url: string, relativeTo?: string): {origin: string, path: string} {
-    if (typeof URL === 'function') {
-      const obj = new URL(url, relativeTo);
-      return {origin: obj.origin, path: obj.pathname};
-    } else {
-      const obj = require('url').parse(url);
-      return {origin: `${obj.protocol}//${obj.host}`, path: obj.pathname};
-    }
+    const parsedUrl: URL = (typeof URL === 'function') ?
+        new URL(url, relativeTo) :
+        require('url').parse(require('url').resolve(relativeTo || '', url));
+
+    return {
+      origin: parsedUrl.origin || `${parsedUrl.protocol}//${parsedUrl.host}`,
+      path: parsedUrl.pathname,
+    };
   }
 
   async skipWaiting(): Promise<void> { this.skippedWaiting = true; }
