@@ -25,7 +25,7 @@ describe('findEntryPoints()', () => {
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
-  it('should find sub-entry-points within a  package', () => {
+  it('should find sub-entry-points within a package', () => {
     const {entryPoints} = finder.findEntryPoints('/sub_entry_points');
     const entryPointPaths = entryPoints.map(x => [x.package, x.path]);
     expect(entryPointPaths).toEqual([

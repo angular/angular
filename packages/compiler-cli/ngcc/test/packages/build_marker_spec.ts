@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {existsSync, readFileSync, writeFileSync} from 'fs';
+import {readFileSync, writeFileSync} from 'fs';
 import * as mockFs from 'mock-fs';
 
-import {checkMarkerFile, writeMarkerFile} from '../../src/packages/build_marker';
+import {checkMarker, writeMarker} from '../../src/packages/build_marker';
 import {EntryPoint} from '../../src/packages/entry_point';
 
 function createMockFileSystem() {
@@ -94,58 +94,55 @@ function restoreRealFileSystem() {
 }
 
 function createEntryPoint(path: string): EntryPoint {
-  return {name: 'some-package', path, package: '', typings: ''};
+  return {
+    name: 'some-package',
+    path,
+    package: path,
+    typings: '',
+    packageJson: JSON.parse(readFileSync(path + '/package.json', 'utf8'))
+  };
 }
 
 describe('Marker files', () => {
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
-  describe('writeMarkerFile', () => {
-    it('should write a file containing the version placeholder', () => {
-      expect(existsSync('/node_modules/@angular/common/__modified_by_ngcc_for_fesm2015__'))
-          .toBe(false);
-      expect(existsSync('/node_modules/@angular/common/__modified_by_ngcc_for_esm5__')).toBe(false);
+  describe('writeMarker', () => {
+    it('should write a property in the package.json containing the version placeholder', () => {
+      let pkg = JSON.parse(readFileSync('/node_modules/@angular/common/package.json', 'utf8'));
+      expect(pkg.__modified_by_ngcc__).toBeUndefined();
+      expect(pkg.__modified_by_ngcc__).toBeUndefined();
 
-      writeMarkerFile(createEntryPoint('/node_modules/@angular/common'), 'fesm2015');
-      expect(existsSync('/node_modules/@angular/common/__modified_by_ngcc_for_fesm2015__'))
-          .toBe(true);
-      expect(existsSync('/node_modules/@angular/common/__modified_by_ngcc_for_esm5__')).toBe(false);
-      expect(
-          readFileSync('/node_modules/@angular/common/__modified_by_ngcc_for_fesm2015__', 'utf8'))
-          .toEqual('0.0.0-PLACEHOLDER');
+      writeMarker(createEntryPoint('/node_modules/@angular/common'), 'fesm2015');
+      pkg = JSON.parse(readFileSync('/node_modules/@angular/common/package.json', 'utf8'));
+      expect(pkg.__modified_by_ngcc__.fesm2015).toEqual('0.0.0-PLACEHOLDER');
+      expect(pkg.__modified_by_ngcc__.esm5).toBeUndefined();
 
-      writeMarkerFile(createEntryPoint('/node_modules/@angular/common'), 'esm5');
-      expect(existsSync('/node_modules/@angular/common/__modified_by_ngcc_for_fesm2015__'))
-          .toBe(true);
-      expect(existsSync('/node_modules/@angular/common/__modified_by_ngcc_for_esm5__')).toBe(true);
-      expect(
-          readFileSync('/node_modules/@angular/common/__modified_by_ngcc_for_fesm2015__', 'utf8'))
-          .toEqual('0.0.0-PLACEHOLDER');
-      expect(readFileSync('/node_modules/@angular/common/__modified_by_ngcc_for_esm5__', 'utf8'))
-          .toEqual('0.0.0-PLACEHOLDER');
+      writeMarker(createEntryPoint('/node_modules/@angular/common'), 'esm5');
+      pkg = JSON.parse(readFileSync('/node_modules/@angular/common/package.json', 'utf8'));
+      expect(pkg.__modified_by_ngcc__.fesm2015).toEqual('0.0.0-PLACEHOLDER');
+      expect(pkg.__modified_by_ngcc__.esm5).toEqual('0.0.0-PLACEHOLDER');
     });
   });
 
-  describe('checkMarkerFile', () => {
-    it('should return false if the marker file does not exist', () => {
-      expect(checkMarkerFile(createEntryPoint('/node_modules/@angular/common'), 'fesm2015'))
+  describe('checkMarker', () => {
+    it('should return false if the marker property does not exist', () => {
+      expect(checkMarker(createEntryPoint('/node_modules/@angular/common'), 'fesm2015'))
           .toBe(false);
     });
 
-    it('should return true if the marker file exists and contains the correct version', () => {
-      writeFileSync(
-          '/node_modules/@angular/common/__modified_by_ngcc_for_fesm2015__', '0.0.0-PLACEHOLDER',
-          'utf8');
-      expect(checkMarkerFile(createEntryPoint('/node_modules/@angular/common'), 'fesm2015'))
-          .toBe(true);
+    it('should return true if the marker property exists and contains the correct version', () => {
+      const pkg = JSON.parse(readFileSync('/node_modules/@angular/common/package.json', 'utf8'));
+      pkg.__modified_by_ngcc__ = {fesm2015: '0.0.0-PLACEHOLDER'};
+      writeFileSync('/node_modules/@angular/common/package.json', JSON.stringify(pkg), 'utf8');
+      expect(checkMarker(createEntryPoint('/node_modules/@angular/common'), 'fesm2015')).toBe(true);
     });
 
-    it('should throw if the marker file exists but contains the wrong version', () => {
-      writeFileSync(
-          '/node_modules/@angular/common/__modified_by_ngcc_for_fesm2015__', 'WRONG_VERSION',
-          'utf8');
-      expect(() => checkMarkerFile(createEntryPoint('/node_modules/@angular/common'), 'fesm2015'))
+    it('should throw if the marker property exists but contains the wrong version', () => {
+      const pkg = JSON.parse(readFileSync('/node_modules/@angular/common/package.json', 'utf8'));
+      pkg.__modified_by_ngcc__ = {fesm2015: 'WRONG_VERSION'};
+      writeFileSync('/node_modules/@angular/common/package.json', JSON.stringify(pkg), 'utf8');
+      expect(() => checkMarker(createEntryPoint('/node_modules/@angular/common'), 'fesm2015'))
           .toThrowError(
               'The ngcc compiler has changed since the last ngcc build.\n' +
               'Please completely remove `node_modules` and try again.');

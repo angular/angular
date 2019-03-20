@@ -10,7 +10,7 @@ import * as path from 'canonical-path';
 import * as yargs from 'yargs';
 
 import {mainNgcc} from './src/main';
-import {EntryPointFormat} from './src/packages/entry_point';
+import {EntryPointJsonProperty} from './src/packages/entry_point';
 
 // CLI entry point
 if (require.main === module) {
@@ -22,11 +22,15 @@ if (require.main === module) {
             describe: 'A path to the root folder to compile.',
             default: './node_modules'
           })
-          .option('f', {
-            alias: 'formats',
+          .option('f', {alias: 'formats', hidden: true, array: true})
+          .option('p', {
+            alias: 'properties',
             array: true,
-            describe: 'An array of formats to compile.',
-            default: ['fesm2015', 'esm2015', 'fesm5', 'esm5']
+            describe:
+                'An array of names of properties in package.json (e.g. `module` or `es2015`)\n' +
+                'These properties should hold a path to a bundle-format to compile.\n' +
+                'If provided, only the specified properties are considered for processing.\n' +
+                'If not provided, all the supported format properties (e.g. fesm2015, fesm5, es2015, esm2015, esm5, main, module) in the package.json are considered.'
           })
           .option('t', {
             alias: 'target',
@@ -36,11 +40,16 @@ if (require.main === module) {
           .help()
           .parse(args);
 
+  if (options['f'] && options['f'].length) {
+    console.error(
+        'The formats option (-f/--formats) has been removed. Consider the properties option (-p/--properties) instead.');
+    process.exit(1);
+  }
   const baseSourcePath: string = path.resolve(options['s']);
-  const formats: EntryPointFormat[] = options['f'];
+  const propertiesToConsider: EntryPointJsonProperty[] = options['p'];
   const baseTargetPath: string = options['t'];
   try {
-    mainNgcc({baseSourcePath, formats, baseTargetPath});
+    mainNgcc({baseSourcePath, propertiesToConsider, baseTargetPath});
     process.exitCode = 0;
   } catch (e) {
     console.error(e.stack || e.message);
