@@ -25,7 +25,7 @@ import {valueReferenceToExpression} from './util';
 export function generateSetClassMetadataCall(
     clazz: ts.Declaration, reflection: ReflectionHost, defaultImportRecorder: DefaultImportRecorder,
     isCore: boolean): Statement|null {
-  if (!reflection.isClass(clazz) || clazz.name === undefined || !ts.isIdentifier(clazz.name)) {
+  if (!reflection.isClass(clazz)) {
     return null;
   }
   const id = ts.updateIdentifier(clazz.name);

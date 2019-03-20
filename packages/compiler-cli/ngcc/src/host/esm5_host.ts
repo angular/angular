@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, Declaration, Decorator, FunctionDefinition, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, ClassSymbol, Declaration, Decorator, FunctionDefinition, Parameter, reflectObjectLiteral} from '../../../src/ngtsc/reflection';
 import {getNameText, hasNameIdentifier} from '../utils';
 
 import {Esm2015ReflectionHost, ParamInfo, getPropertyValueFromSymbol, isAssignmentStatement} from './esm2015_host';
@@ -36,7 +36,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   /**
    * Check whether the given node actually represents a class.
    */
-  isClass(node: ts.Node): node is ts.NamedDeclaration {
+  isClass(node: ts.Node): node is ClassDeclaration {
     return super.isClass(node) || !!this.getClassSymbol(node);
   }
 
@@ -74,7 +74,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    *     expression inside the IIFE.
    * @returns the symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
-  getClassSymbol(node: ts.Node): ts.Symbol|undefined {
+  getClassSymbol(node: ts.Node): ClassSymbol|undefined {
     const symbol = super.getClassSymbol(node);
     if (symbol) return symbol;
 
@@ -85,7 +85,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       const innerClassIdentifier = getReturnIdentifier(iifeBody);
       if (!innerClassIdentifier) return undefined;
 
-      return this.checker.getSymbolAtLocation(innerClassIdentifier);
+      return this.checker.getSymbolAtLocation(innerClassIdentifier) as ClassSymbol;
     }
 
     const outerClassNode = getClassDeclarationFromInnerFunctionDeclaration(node);

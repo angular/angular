@@ -9,16 +9,17 @@
 import * as ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../imports';
+import {ClassDeclaration} from '../../reflection';
 import {ScopeData, ScopeDirective, ScopePipe} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
 import {LocalModuleScopeRegistry} from '../src/local';
 
 function registerFakeRefs(registry: LocalModuleScopeRegistry):
-    {[name: string]: Reference<ts.ClassDeclaration>} {
-  const get = (target: {}, name: string): Reference<ts.ClassDeclaration> => {
+    {[name: string]: Reference<ClassDeclaration>} {
+  const get = (target: {}, name: string): Reference<ClassDeclaration> => {
     const sf = ts.createSourceFile(
         name + '.ts', `export class ${name} {}`, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
-    const clazz = sf.statements[0] as ts.ClassDeclaration;
+    const clazz = sf.statements[0] as unknown as ClassDeclaration;
     const ref = new Reference(clazz);
     if (name.startsWith('Dir') || name.startsWith('Cmp')) {
       registry.registerDirective(fakeDirective(ref));
@@ -136,7 +137,7 @@ describe('LocalModuleScopeRegistry', () => {
   });
 });
 
-function fakeDirective(ref: Reference<ts.ClassDeclaration>): ScopeDirective {
+function fakeDirective(ref: Reference<ClassDeclaration>): ScopeDirective {
   const name = ref.debugName !;
   return {
     ref,
@@ -152,16 +153,16 @@ function fakeDirective(ref: Reference<ts.ClassDeclaration>): ScopeDirective {
   };
 }
 
-function fakePipe(ref: Reference<ts.ClassDeclaration>): ScopePipe {
+function fakePipe(ref: Reference<ClassDeclaration>): ScopePipe {
   const name = ref.debugName !;
   return {ref, name};
 }
 
 class MockDtsModuleScopeResolver implements DtsModuleScopeResolver {
-  resolve(ref: Reference<ts.ClassDeclaration>): null { return null; }
+  resolve(ref: Reference<ClassDeclaration>): null { return null; }
 }
 
-function scopeToRefs(scopeData: ScopeData): Reference<ts.Declaration>[] {
+function scopeToRefs(scopeData: ScopeData): Reference<ClassDeclaration>[] {
   const directives = scopeData.directives.map(dir => dir.ref);
   const pipes = scopeData.pipes.map(pipe => pipe.ref);
   return [...directives, ...pipes].sort((a, b) => a.debugName !.localeCompare(b.debugName !));

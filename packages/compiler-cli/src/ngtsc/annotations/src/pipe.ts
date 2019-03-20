@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LiteralExpr, R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
+import {R3PipeMetadata, Statement, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
+import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope/src/local';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
@@ -32,7 +32,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
-  detect(node: ts.Declaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
       return undefined;
     }
@@ -47,11 +47,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     }
   }
 
-  analyze(clazz: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<PipeHandlerData> {
-    if (clazz.name === undefined) {
-      throw new FatalDiagnosticError(
-          ErrorCode.DECORATOR_ON_ANONYMOUS_CLASS, clazz, `@Pipes must have names`);
-    }
+  analyze(clazz: ClassDeclaration, decorator: Decorator): AnalysisOutput<PipeHandlerData> {
     const name = clazz.name.text;
     const type = new WrappedNodeExpr(clazz.name);
     if (decorator.args === null) {
@@ -109,7 +105,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<PipeHandlerData, D
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: PipeHandlerData): CompileResult {
+  compile(node: ClassDeclaration, analysis: PipeHandlerData): CompileResult {
     const res = compilePipeFromMetadata(analysis.meta);
     const statements = res.statements;
     if (analysis.metadataStmt !== null) {

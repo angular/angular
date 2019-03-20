@@ -15,6 +15,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
+import {isNamedClassDeclaration} from '../../util/src/typescript';
 import {NgModuleDecoratorHandler} from '../src/ng_module';
 import {NoopReferencesRegistry} from '../src/references_registry';
 
@@ -63,7 +64,7 @@ describe('NgModuleDecoratorHandler', () => {
     const handler = new NgModuleDecoratorHandler(
         reflectionHost, evaluator, scopeRegistry, referencesRegistry, false, null, refEmitter,
         NOOP_DEFAULT_IMPORT_RECORDER);
-    const TestModule = getDeclaration(program, 'entry.ts', 'TestModule', ts.isClassDeclaration);
+    const TestModule = getDeclaration(program, 'entry.ts', 'TestModule', isNamedClassDeclaration);
     const detected =
         handler.detect(TestModule, reflectionHost.getDecoratorsOfDeclaration(TestModule));
     if (detected === undefined) {

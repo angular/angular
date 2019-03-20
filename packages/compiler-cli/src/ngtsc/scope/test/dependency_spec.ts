@@ -10,7 +10,7 @@ import {ExternalExpr, ExternalReference} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AliasGenerator, FileToModuleHost, Reference} from '../../imports';
-import {TypeScriptReflectionHost} from '../../reflection';
+import {ClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {makeProgram} from '../../testing/in_memory_typescript';
 import {ExportScope} from '../src/api';
 import {MetadataDtsModuleScopeResolver} from '../src/dependency';
@@ -42,7 +42,7 @@ export declare type PipeMeta<A, B> = never;
  */
 function makeTestEnv(
     modules: {[module: string]: string}, aliasGenerator: AliasGenerator | null = null): {
-  refs: {[name: string]: Reference<ts.ClassDeclaration>},
+  refs: {[name: string]: Reference<ClassDeclaration>},
   resolver: MetadataDtsModuleScopeResolver,
 } {
   // Map the modules object to an array of files for `makeProgram`.
@@ -123,7 +123,7 @@ describe('MetadataDtsModuleScopeResolver', () => {
           export declare class Dir {
             static ngDirectiveDef: DirectiveMeta<Dir, '[dir]', never, never, never, never>;
           }
-  
+
           export declare class ModuleA {
             static ngModuleDef: ModuleMeta<ModuleA, [typeof Dir], never, [typeof Dir]>;
           }
@@ -270,13 +270,13 @@ describe('MetadataDtsModuleScopeResolver', () => {
      });
 });
 
-function scopeToRefs(scope: ExportScope): Reference<ts.ClassDeclaration>[] {
+function scopeToRefs(scope: ExportScope): Reference<ClassDeclaration>[] {
   const directives = scope.exported.directives.map(dir => dir.ref);
-  const pipes = scope.exported.pipes.map(pipe => pipe.ref as Reference<ts.ClassDeclaration>);
+  const pipes = scope.exported.pipes.map(pipe => pipe.ref);
   return [...directives, ...pipes].sort((a, b) => a.debugName !.localeCompare(b.debugName !));
 }
 
-function getAlias(ref: Reference<ts.ClassDeclaration>): ExternalReference|null {
+function getAlias(ref: Reference<ClassDeclaration>): ExternalReference|null {
   if (ref.alias === null) {
     return null;
   } else {

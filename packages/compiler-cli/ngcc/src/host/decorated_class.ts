@@ -7,7 +7,7 @@
  */
 
 import * as ts from 'typescript';
-import {Decorator} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
 
 /**
  * A simple container that holds the details of a decorated class that has been
@@ -22,5 +22,5 @@ export class DecoratedClass {
    * @param decorators The collection of decorators that have been found on this class.
    */
   constructor(
-      public name: string, public declaration: ts.Declaration, public decorators: Decorator[], ) {}
+      public name: string, public declaration: ClassDeclaration, public decorators: Decorator[]) {}
 }

@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
-import {ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, ReflectionHost, filterToMembersWithDecorator, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope/src/local';
 import {extractDirectiveGuards} from '../../scope/src/util';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
@@ -35,7 +35,7 @@ export class DirectiveDecoratorHandler implements
 
   readonly precedence = HandlerPrecedence.PRIMARY;
 
-  detect(node: ts.Declaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
+  detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<Decorator>|undefined {
     if (!decorators) {
       return undefined;
     }
@@ -50,7 +50,7 @@ export class DirectiveDecoratorHandler implements
     }
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<DirectiveHandlerData> {
+  analyze(node: ClassDeclaration, decorator: Decorator): AnalysisOutput<DirectiveHandlerData> {
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore);
     const analysis = directiveResult && directiveResult.metadata;
@@ -61,7 +61,7 @@ export class DirectiveDecoratorHandler implements
       const ref = new Reference(node);
       this.scopeRegistry.registerDirective({
         ref,
-        name: node.name !.text,
+        name: node.name.text,
         selector: analysis.selector,
         exportAs: analysis.exportAs,
         inputs: analysis.inputs,
@@ -84,7 +84,7 @@ export class DirectiveDecoratorHandler implements
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: DirectiveHandlerData, pool: ConstantPool):
+  compile(node: ClassDeclaration, analysis: DirectiveHandlerData, pool: ConstantPool):
       CompileResult {
     const res = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
     const statements = res.statements;
@@ -104,7 +104,7 @@ export class DirectiveDecoratorHandler implements
  * Helper function to extract metadata from a `Directive` or `Component`.
  */
 export function extractDirectiveMetadata(
-    clazz: ts.ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
+    clazz: ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
     evaluator: PartialEvaluator, defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
     defaultSelector: string | null = null): {
   decorator: Map<string, ts.Expression>,
@@ -189,7 +189,7 @@ export function extractDirectiveMetadata(
     selector = resolved === '' ? defaultSelector : resolved;
   }
   if (!selector) {
-    throw new Error(`Directive ${clazz.name !.text} has no selector, please add it!`);
+    throw new Error(`Directive ${clazz.name.text} has no selector, please add it!`);
   }
 
   const host = extractHostBindings(directive, decoratedElements, evaluator, coreModule);
@@ -217,14 +217,14 @@ export function extractDirectiveMetadata(
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
   const metadata: R3DirectiveMetadata = {
-    name: clazz.name !.text,
+    name: clazz.name.text,
     deps: getValidConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore), host,
     lifecycle: {
         usesOnChanges,
     },
     inputs: {...inputsFromMeta, ...inputsFromFields},
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, viewQueries, selector,
-    type: new WrappedNodeExpr(clazz.name !),
+    type: new WrappedNodeExpr(clazz.name),
     typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: null !, usesInheritance, exportAs, providers
   };

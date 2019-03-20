@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, ImportMode, Reference, ReferenceEmitter} from '../../imports';
 import {ForeignFunctionResolver} from '../../partial_evaluator';
-import {ClassMemberKind, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference} from '../../reflection';
+import {ClassDeclaration, CtorParameter, Decorator, Import, ReflectionHost, TypeValueReference} from '../../reflection';
 
 export enum ConstructorDepErrorKind {
   NO_SUITABLE_TOKEN,
@@ -33,7 +33,7 @@ export interface ConstructorDepError {
 }
 
 export function getConstructorDependencies(
-    clazz: ts.ClassDeclaration, reflector: ReflectionHost,
+    clazz: ClassDeclaration, reflector: ReflectionHost,
     defaultImportRecorder: DefaultImportRecorder, isCore: boolean): ConstructorDeps|null {
   const deps: R3DependencyMetadata[] = [];
   const errors: ConstructorDepError[] = [];
@@ -128,14 +128,14 @@ export function valueReferenceToExpression(
 }
 
 export function getValidConstructorDependencies(
-    clazz: ts.ClassDeclaration, reflector: ReflectionHost,
+    clazz: ClassDeclaration, reflector: ReflectionHost,
     defaultImportRecorder: DefaultImportRecorder, isCore: boolean): R3DependencyMetadata[]|null {
   return validateConstructorDependencies(
       clazz, getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore));
 }
 
 export function validateConstructorDependencies(
-    clazz: ts.ClassDeclaration, deps: ConstructorDeps | null): R3DependencyMetadata[]|null {
+    clazz: ClassDeclaration, deps: ConstructorDeps | null): R3DependencyMetadata[]|null {
   if (deps === null) {
     return null;
   } else if (deps.deps !== null) {

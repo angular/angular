@@ -10,6 +10,7 @@ import {AST, BindingType, BoundTarget, ImplicitReceiver, PropertyRead, TmplAstBo
 import * as ts from 'typescript';
 
 import {NOOP_DEFAULT_IMPORT_RECORDER, Reference, ReferenceEmitter} from '../../imports';
+import {ClassDeclaration} from '../../reflection';
 import {ImportManager, translateExpression} from '../../translator';
 
 import {TypeCheckBlockMetadata, TypeCheckableDirectiveMeta} from './api';
@@ -29,8 +30,8 @@ import {astToTypescript} from './expression';
  * @param importManager an `ImportManager` for the file into which the TCB will be written.
  */
 export function generateTypeCheckBlock(
-    node: ts.ClassDeclaration, meta: TypeCheckBlockMetadata, importManager: ImportManager,
-    refEmitter: ReferenceEmitter): ts.FunctionDeclaration {
+    node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCheckBlockMetadata,
+    importManager: ImportManager, refEmitter: ReferenceEmitter): ts.FunctionDeclaration {
   const tcb = new Context(meta.boundTarget, node.getSourceFile(), importManager, refEmitter);
   const scope = new Scope(tcb);
   tcbProcessNodes(meta.boundTarget.target.template !, tcb, scope);
