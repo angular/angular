@@ -8,6 +8,7 @@
 
 import * as path from 'canonical-path';
 import * as fs from 'fs';
+import {isDefined} from '../utils';
 
 
 /**
@@ -33,6 +34,8 @@ export type EntryPointFormat = keyof(EntryPointPaths);
 export interface EntryPoint extends EntryPointPaths {
   /** The name of the package (e.g. `@angular/core`). */
   name: string;
+  /** The parsed package.json file for this entry-point. */
+  packageJson: EntryPointPackageJson;
   /** The path to the package that contains this entry-point. */
   package: string;
   /** The path to this entry point. */
@@ -41,11 +44,7 @@ export interface EntryPoint extends EntryPointPaths {
   typings: string;
 }
 
-/**
- * The properties that may be loaded from the `package.json` file.
- */
-interface EntryPointPackageJson {
-  name: string;
+interface PackageJsonFormatProperties {
   fesm2015?: string;
   fesm5?: string;
   es2015?: string;  // if exists then it is actually FESM2015
@@ -55,6 +54,103 @@ interface EntryPointPackageJson {
   module?: string;   // if exists then it is actually FESM5
   types?: string;    // Synonymous to `typings` property - see https://bit.ly/2OgWp2H
   typings?: string;  // TypeScript .d.ts files
+}
+
+/**
+ * The properties that may be loaded from the `package.json` file.
+ */
+export interface EntryPointPackageJson extends PackageJsonFormatProperties {
+  name: string;
+  __modified_by_ngcc__?: {[key: string]: string};
+}
+
+export type EntryPointJsonProperty = keyof(PackageJsonFormatProperties);
+
+/**
+ * Try to create an entry-point from the given paths and properties.
+ *
+ * @param packagePath the absolute path to the containing npm package
+ * @param entryPointPath the absolute path to the potential entry-point.
+ * @returns An entry-point if it is valid, `null` otherwise.
+ */
+export function getEntryPointInfo(packagePath: string, entryPointPath: string): EntryPoint|null {
+  const packageJsonPath = path.resolve(entryPointPath, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    return null;
+  }
+
+  const entryPointPackageJson = loadEntryPointPackage(packageJsonPath);
+  if (!entryPointPackageJson) {
+    return null;
+  }
+
+
+  // We must have a typings property
+  const typings = entryPointPackageJson.typings || entryPointPackageJson.types;
+  if (!typings) {
+    return null;
+  }
+
+  // Also there must exist a `metadata.json` file next to the typings entry-point.
+  const metadataPath =
+      path.resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
+  if (!fs.existsSync(metadataPath)) {
+    return null;
+  }
+
+  const formats = Object.keys(entryPointPackageJson)
+                      .map((property: EntryPointJsonProperty) => {
+                        const format = getEntryPointFormat(entryPointPackageJson, property);
+                        return format ? {property, format} : undefined;
+                      })
+                      .filter(isDefined);
+
+  const entryPointInfo: EntryPoint = {
+    name: entryPointPackageJson.name,
+    packageJson: entryPointPackageJson,
+    package: packagePath,
+    path: entryPointPath,
+    typings: path.resolve(entryPointPath, typings)
+  };
+
+  // Add the formats to the entry-point info object.
+  formats.forEach(
+      item => entryPointInfo[item.format] =
+          path.resolve(entryPointPath, entryPointPackageJson[item.property] !));
+
+  return entryPointInfo;
+}
+
+/**
+ * Convert a package.json property into an entry-point format.
+ *
+ * The actual format is dependent not only on the property itself but also
+ * on what other properties exist in the package.json.
+ *
+ * @param entryPointProperties The package.json that contains the properties.
+ * @param property The property to convert to a format.
+ * @returns An entry-point format or `undefined` if none match the given property.
+ */
+export function getEntryPointFormat(
+    entryPointProperties: EntryPointPackageJson, property: string): EntryPointFormat|undefined {
+  switch (property) {
+    case 'fesm2015':
+      return 'fesm2015';
+    case 'fesm5':
+      return 'fesm5';
+    case 'es2015':
+      return !entryPointProperties.fesm2015 ? 'fesm2015' : 'esm2015';
+    case 'esm2015':
+      return 'esm2015';
+    case 'esm5':
+      return 'esm5';
+    case 'main':
+      return 'umd';
+    case 'module':
+      return !entryPointProperties.fesm5 ? 'fesm5' : 'esm5';
+    default:
+      return undefined;
+  }
 }
 
 /**
@@ -70,73 +166,4 @@ function loadEntryPointPackage(packageJsonPath: string): EntryPointPackageJson|n
     console.warn(`Failed to read entry point info from ${packageJsonPath} with error ${e}.`);
     return null;
   }
-}
-
-/**
- * Try to get an entry point from the given path.
- * @param packagePath the absolute path to the containing npm package
- * @param entryPointPath the absolute path to the potential entry point.
- * @returns Info about the entry point if it is valid, `null` otherwise.
- */
-export function getEntryPointInfo(packagePath: string, entryPointPath: string): EntryPoint|null {
-  const packageJsonPath = path.resolve(entryPointPath, 'package.json');
-  if (!fs.existsSync(packageJsonPath)) {
-    return null;
-  }
-
-  const entryPointPackageJson = loadEntryPointPackage(packageJsonPath);
-  if (!entryPointPackageJson) {
-    return null;
-  }
-
-  // If there is `esm2015` then `es2015` will be FESM2015, otherwise ESM2015.
-  // If there is `esm5` then `module` will be FESM5, otherwise it will be ESM5.
-  const {
-    name,
-    module: modulePath,
-    types,
-    typings = types,  // synonymous
-    es2015,
-    fesm2015 = es2015,   // synonymous
-    fesm5 = modulePath,  // synonymous
-    esm2015,
-    esm5,
-    main
-  } = entryPointPackageJson;
-  // Minimum requirement is that we have typings and one of esm2015 or fesm2015 formats.
-  if (!typings || !(fesm2015 || esm2015)) {
-    return null;
-  }
-
-  // Also there must exist a `metadata.json` file next to the typings entry-point.
-  const metadataPath =
-      path.resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
-  if (!fs.existsSync(metadataPath)) {
-    return null;
-  }
-
-  const entryPointInfo: EntryPoint = {
-    name,
-    package: packagePath,
-    path: entryPointPath,
-    typings: path.resolve(entryPointPath, typings),
-  };
-
-  if (esm2015) {
-    entryPointInfo.esm2015 = path.resolve(entryPointPath, esm2015);
-  }
-  if (fesm2015) {
-    entryPointInfo.fesm2015 = path.resolve(entryPointPath, fesm2015);
-  }
-  if (fesm5) {
-    entryPointInfo.fesm5 = path.resolve(entryPointPath, fesm5);
-  }
-  if (esm5) {
-    entryPointInfo.esm5 = path.resolve(entryPointPath, esm5);
-  }
-  if (main) {
-    entryPointInfo.umd = path.resolve(entryPointPath, main);
-  }
-
-  return entryPointInfo;
 }

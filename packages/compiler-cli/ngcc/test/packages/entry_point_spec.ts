@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {readFileSync} from 'fs';
 import * as mockFs from 'mock-fs';
 import {getEntryPointInfo} from '../../src/packages/entry_point';
-
 
 describe('getEntryPointInfo()', () => {
   beforeEach(createMockFileSystem);
@@ -27,6 +27,7 @@ describe('getEntryPointInfo()', () => {
          fesm5: `/some_package/valid_entry_point/fesm2015/valid_entry_point.js`,
          esm5: `/some_package/valid_entry_point/esm2015/valid_entry_point.js`,
          umd: `/some_package/valid_entry_point/bundles/valid_entry_point.umd.js`,
+         packageJson: loadPackageJson('/some_package/valid_entry_point'),
        });
      });
 
@@ -63,6 +64,7 @@ describe('getEntryPointInfo()', () => {
       fesm5: `/some_package/types_rather_than_typings/fesm2015/types_rather_than_typings.js`,
       esm5: `/some_package/types_rather_than_typings/esm2015/types_rather_than_typings.js`,
       umd: `/some_package/types_rather_than_typings/bundles/types_rather_than_typings.umd.js`,
+      packageJson: loadPackageJson('/some_package/types_rather_than_typings'),
     });
   });
 
@@ -76,6 +78,7 @@ describe('getEntryPointInfo()', () => {
       fesm2015: `/some_package/material_style/esm2015/material_style.js`,
       fesm5: `/some_package/material_style/esm5/material_style.es5.js`,
       umd: `/some_package/material_style/bundles/material_style.umd.js`,
+      packageJson: loadPackageJson('/some_package/material_style'),
     });
   });
 
@@ -153,4 +156,8 @@ function createPackageJson(
     excludes.forEach(exclude => delete packageJson[exclude]);
   }
   return JSON.stringify(packageJson);
+}
+
+export function loadPackageJson(packagePath: string) {
+  return JSON.parse(readFileSync(packagePath + '/package.json', 'utf8'));
 }

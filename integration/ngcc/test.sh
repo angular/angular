@@ -10,11 +10,25 @@ ivy-ngcc --help
 ivy-ngcc
 
 # Did it add the appropriate build markers?
-  # - fesm2015
-  ls node_modules/@angular/common | grep __modified_by_ngcc_for_fesm2015
-  if [[ $? != 0 ]]; then exit 1; fi
+
   # - esm2015
-  ls node_modules/@angular/common | grep __modified_by_ngcc_for_esm2015
+  grep '"__modified_by_ngcc__":[^}]*"esm2015":"' node_modules/@angular/common/package.json
+  if [[ $? != 0 ]]; then exit 1; fi
+
+  # - fesm2015
+  grep '"__modified_by_ngcc__":[^}]*"fesm2015":"' node_modules/@angular/common/package.json
+  if [[ $? != 0 ]]; then exit 1; fi
+  grep '"__modified_by_ngcc__":[^}]*"es2015":"' node_modules/@angular/common/package.json
+  if [[ $? != 0 ]]; then exit 1; fi
+
+  # - esm5
+  grep '"__modified_by_ngcc__":[^}]*"esm5":"' node_modules/@angular/common/package.json
+  if [[ $? != 0 ]]; then exit 1; fi
+
+  # - fesm5
+  grep '"__modified_by_ngcc__":[^}]*"module":"' node_modules/@angular/common/package.json
+  if [[ $? != 0 ]]; then exit 1; fi
+  grep '"__modified_by_ngcc__":[^}]*"fesm5":"' node_modules/@angular/common/package.json
   if [[ $? != 0 ]]; then exit 1; fi
 
 # Did it replace the PRE_R3 markers correctly?
@@ -47,6 +61,9 @@ ivy-ngcc
 
 # Can it be safely run again (as a noop)?
 ivy-ngcc
+
+# Does running it with --formats fail?
+ivy-ngcc --formats fesm2015 && exit 1
 
 # Now try compiling the app using the ngcc compiled libraries
 ngc -p tsconfig-app.json
