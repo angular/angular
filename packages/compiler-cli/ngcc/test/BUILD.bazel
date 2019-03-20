@@ -34,6 +34,7 @@ jasmine_node_test(
         "//tools/testing:node_no_angular",
         "@npm//canonical-path",
         "@npm//convert-source-map",
+        "@npm//shelljs",
     ],
 )
 
